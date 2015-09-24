@@ -92,6 +92,10 @@ TcpSocketBase::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&TcpSocketBase::m_winScalingEnabled),
                    MakeBooleanChecker ())
+    .AddAttribute ("NoDelay", "Enable or disable Nagle algorithm",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpSocketBase::GetTcpNoDelay,&TcpSocketBase::SetTcpNoDelay),
+                   MakeBooleanChecker ())
     .AddAttribute ("Timestamp", "Enable or disable Timestamp option",
                    BooleanValue (true),
                    MakeBooleanAccessor (&TcpSocketBase::m_timestampEnabled),
