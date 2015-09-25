@@ -167,13 +167,12 @@ Ns3TcpNoDelayTestCase::DoRun (void)
       if (m_noDelay)
         {
           oss << "tcp-no-delay-on-test-case";
-          pointToPoint.EnablePcapAll (oss.str ());
         }
       else
         {
           oss << "tcp-no-delay-off-test-case";
-          pointToPoint.EnablePcapAll (oss.str ());
         }
+      pointToPoint.EnablePcapAll (oss.str ());
     }
 
   Simulator::Stop (simStopTimeObj);

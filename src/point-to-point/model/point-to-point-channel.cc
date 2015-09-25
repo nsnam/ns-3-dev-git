@@ -36,9 +36,14 @@ PointToPointChannel::GetTypeId (void)
     .SetParent<Channel> ()
     .SetGroupName ("PointToPoint")
     .AddConstructor<PointToPointChannel> ()
-    .AddAttribute ("Delay", "Transmission delay through the channel",
+    .AddAttribute ("AlternateDelay",
+                    "Transmission delay through the channel in the other direction: has to be set after Delay",
+                   TimeValue (Seconds (42)),
+                   MakeTimeAccessor (&PointToPointChannel::m_alternateDelay),
+                   MakeTimeChecker ())
+    .AddAttribute ("Delay", "Transmission delay through the channel in one direction",
                    TimeValue (Seconds (0)),
-                   MakeTimeAccessor (&PointToPointChannel::m_delay),
+                   MakeTimeAccessor ( (Time (PointToPointChannel::*)() const)&PointToPointChannel::GetDelay, &PointToPointChannel::SetDelay),
                    MakeTimeChecker ())
     .AddTraceSource ("TxRxPointToPoint",
                      "Trace source indicating transmission of packet "
@@ -57,6 +62,7 @@ PointToPointChannel::PointToPointChannel()
   :
     Channel (),
     m_delay (Seconds (0.)),
+    m_alternateDelay (Seconds (0.)),
     m_nDevices (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -80,6 +86,8 @@ PointToPointChannel::Attach (Ptr<PointToPointNetDevice> device)
       m_link[1].m_dst = m_link[0].m_src;
       m_link[0].m_state = IDLE;
       m_link[1].m_state = IDLE;
+      m_link[0].m_delay = m_delay;
+      m_link[1].m_delay = m_alternateDelay;
     }
 }
 
@@ -97,12 +105,13 @@ PointToPointChannel::TransmitStart (
 
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
 
-  Simulator::ScheduleWithContext (m_link[wire].m_dst->GetNode ()->GetId (),
-                                  txTime + m_delay, &PointToPointNetDevice::Receive,
-                                  m_link[wire].m_dst, p);
+  Simulator::ScheduleWithContext (GetDestination(wire)->GetNode ()->GetId (),
+                                  txTime + GetDelay(wire),
+                                  &PointToPointNetDevice::Receive,
+                                  GetDestination(wire), p);
 
   // Call the tx anim callback on the net device
-  m_txrxPointToPoint (p, src, m_link[wire].m_dst, txTime, txTime + m_delay);
+  m_txrxPointToPoint (p, src, GetDestination(wire), txTime, txTime + GetDelay(wire));
   return true;
 }
 
@@ -125,33 +134,56 @@ Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
+  NS_ASSERT (i < 2);
   return GetPointToPointDevice (i);
 }
 
 Time
-PointToPointChannel::GetDelay (void) const
+PointToPointChannel::GetDelay () const
 {
-  return m_delay;
+  return GetDelay(0);
+}
+
+
+Time
+PointToPointChannel::GetDelay (uint32_t i) const
+{
+  NS_ASSERT (i < 2);
+  return m_link[i].m_delay;
+}
+
+void
+PointToPointChannel::SetDelay (Time owd)
+{
+  NS_ASSERT(!IsInitialized());
+  m_delay = owd;
+
+  /* if m_alternateDelay set to its default value than we update it */
+  struct TypeId::AttributeInformation info;
+  if(GetTypeId().LookupAttributeByName("AlternateDelay", &info) && info.originalInitialValue == info.initialValue) {
+    m_alternateDelay = owd;
+  }
+
 }
 
 Ptr<PointToPointNetDevice>
 PointToPointChannel::GetSource (uint32_t i) const
 {
+  NS_ASSERT (i < 2);
   return m_link[i].m_src;
 }
 
 Ptr<PointToPointNetDevice>
 PointToPointChannel::GetDestination (uint32_t i) const
 {
+  NS_ASSERT (i < 2);
   return m_link[i].m_dst;
 }
 
 bool
 PointToPointChannel::IsInitialized (void) const
 {
-  NS_ASSERT (m_link[0].m_state != INITIALIZING);
-  NS_ASSERT (m_link[1].m_state != INITIALIZING);
-  return true;
+  return (m_link[0].m_state != INITIALIZING && m_link[1].m_state != INITIALIZING);
 }
 
 } // namespace ns3
