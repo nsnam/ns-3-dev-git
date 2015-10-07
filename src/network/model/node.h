@@ -202,12 +202,26 @@ public:
    */
   void UnregisterDeviceAdditionListener (DeviceAdditionListener listener);
 
-
-
   /**
    * \returns true if checksums are enabled, false otherwise.
    */
   static bool ChecksumEnabled (void);
+
+  /**
+   * \brief Protocol handler entry.
+   * This structure is used to demultiplex all the protocols.
+   */
+  struct ProtocolHandlerEntry {
+    ProtocolHandler handler; //!< the protocol handler
+    Ptr<NetDevice> device;   //!< the NetDevice
+    uint16_t protocol;       //!< the protocol number
+    bool promiscuous;        //!< true if it is a promiscuous handler
+  };
+
+  /// Typedef for protocol handlers container
+  typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
+  /// Typedef for NetDevice addition listeners container
+  typedef std::vector<DeviceAdditionListener> DeviceAdditionListenerList;
 
 
 protected:
@@ -265,22 +279,6 @@ private:
    * \brief Finish node's construction by setting the correct node ID.
    */
   void Construct (void);
-
-  /**
-   * \brief Protocol handler entry.
-   * This structure is used to demultiplex all the protocols.
-   */
-  struct ProtocolHandlerEntry {
-    ProtocolHandler handler; //!< the protocol handler
-    Ptr<NetDevice> device;   //!< the NetDevice
-    uint16_t protocol;       //!< the protocol number
-    bool promiscuous;        //!< true if it is a promiscuous handler
-  };
-
-  /// Typedef for protocol handlers container
-  typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
-  /// Typedef for NetDevice addition listeners container
-  typedef std::vector<DeviceAdditionListener> DeviceAdditionListenerList;
 
   uint32_t    m_id;         //!< Node id for this node
   uint32_t    m_sid;        //!< System id for this node
