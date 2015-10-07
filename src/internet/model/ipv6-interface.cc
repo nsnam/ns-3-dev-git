@@ -30,6 +30,7 @@
 #include "ipv6-l3-protocol.h"
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
+#include "ns3/traffic-control-layer.h"
 
 namespace ns3
 {
@@ -372,14 +373,19 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address d
 void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
 {
   NS_LOG_FUNCTION (this << p << dest);
-  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
   if (!IsUp ())
     {
       return;
     }
 
-  /* check if destination is localhost (::1) */
+  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
+  Ptr<TrafficControlLayer> tc = m_node->GetObject<TrafficControlLayer> ();
+
+  NS_ASSERT (tc != 0);
+
+  /* check if destination is localhost (::1), if yes we don't pass through
+   * traffic control layer */
   if (DynamicCast<LoopbackNetDevice> (m_device))
     {
       /** \todo additional checks needed here (such as whether multicast
@@ -394,11 +400,10 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
     {
       if (dest == it->first.GetAddress ())
         {
-          ipv6->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
-                         m_device->GetBroadcast (),
-                         m_device->GetBroadcast (),
-                         NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
-                         );
+          tc->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
+                       m_device->GetBroadcast (),
+                       m_device->GetBroadcast (),
+                       NetDevice::PACKET_HOST);
           return;
         }
     }
@@ -430,13 +435,13 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
       if (found)
         {
           NS_LOG_LOGIC ("Address Resolved.  Send.");
-          m_device->Send (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
+          tc->Send (m_device, p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
       NS_LOG_LOGIC ("Doesn't need ARP");
-      m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
+      tc->Send (m_device, p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
     }
 }
 
