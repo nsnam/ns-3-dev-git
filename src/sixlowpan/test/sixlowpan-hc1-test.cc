@@ -37,6 +37,7 @@
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/ipv6-list-routing.h"
 #include "ns3/ipv6-static-routing.h"
+#include "ns3/traffic-control-layer.h"
 
 #include "ns3/sixlowpan-net-device.h"
 
@@ -65,6 +66,9 @@ AddInternetStack6 (Ptr<Node> node)
   //UDP
   Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
   node->AggregateObject (udp);
+  // Traffic Control
+  Ptr<TrafficControlLayer> tc = CreateObject<TrafficControlLayer> ();
+  node->AggregateObject (tc);
 }
 
 
