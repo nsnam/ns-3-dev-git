@@ -75,6 +75,7 @@ SOURCES = \
 	$(SRC)/wimax/doc/wimax.rst \
 	$(SRC)/uan/doc/uan.rst \
 	$(SRC)/topology-read/doc/topology.rst \
+	$(SRC)/traffic-control/doc/traffic-control.rst \
 	$(SRC)/spectrum/doc/spectrum.rst \
 	$(SRC)/stats/doc/adaptor.rst \
 	$(SRC)/stats/doc/aggregator.rst \
