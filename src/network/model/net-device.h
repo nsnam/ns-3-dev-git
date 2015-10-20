@@ -55,7 +55,6 @@ class NetDevice;
  * to an object of this class.
  *
  * This class roughly models the struct netdev_queue of Linux.
- * \todo Store the state information (done in a next commit)
  * \todo Implement BQL
  */
 class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
@@ -67,6 +66,7 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  NetDeviceQueue ();
   virtual ~NetDeviceQueue();
 
   /**
@@ -81,8 +81,55 @@ public:
    */
   virtual void SetDevice (Ptr<NetDevice> device);
 
+  /**
+   * \return true if the (hardware) transmission queue is stopped.
+   *
+   * Called by queue discs to enquire about the status of a given transmission queue.
+   * This is the analogous to the netif_tx_queue_stopped function of the Linux kernel.
+   */
+  inline bool IsStopped (void) const;
+
+  /**
+   * Called by the device or the stack to start this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
+   */
+  virtual void Start (void);
+
+  /**
+   * Called by the device or the stack to stop this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
+   */
+  virtual void Stop (void);
+
+  /**
+   * Called by the device or the stack to wake this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
+   */
+  virtual void Wake (void);
+
+  typedef Callback< void > WakeCallback;
+
+  /**
+   * \param cb callback to invoke whenever it is needed to "wake" the upper layers (i.e.,
+   *        solicitate the queue disc aggregated to this transmission queue (in case of
+   *        multi-queue aware queue discs) or to the network device (otherwise) to send
+   *        packets down to the device).
+   *
+   * Set the callback to be used to wake the upper layers.
+   */
+  virtual void SetWakeCallback (WakeCallback cb);
+
+  /**
+   * \return true if the wake callback has been set.
+   *
+   * Used to check whether a queue disc has been installed on the device.
+   */
+  virtual bool HasWakeCallbackSet (void) const;
+
 private:
   Ptr<NetDevice> m_device;
+  bool m_stopped;
+  WakeCallback m_wakeCallback;
 };
 
 /**
@@ -422,6 +469,12 @@ Ptr<NetDevice>
 NetDeviceQueue::GetDevice (void) const
 {
   return m_device;
+}
+
+bool
+NetDeviceQueue::IsStopped (void) const
+{
+  return m_stopped;
 }
 
 Ptr<NetDeviceQueue>

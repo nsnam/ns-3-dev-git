@@ -39,6 +39,12 @@ TypeId NetDeviceQueue::GetTypeId (void)
   return tid;
 }
 
+NetDeviceQueue::NetDeviceQueue()
+  : m_stopped (false)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
 NetDeviceQueue::~NetDeviceQueue ()
 {
   NS_LOG_FUNCTION (this);
@@ -49,6 +55,42 @@ NetDeviceQueue::SetDevice (Ptr<NetDevice> device)
 {
   NS_ABORT_MSG_UNLESS (m_device == 0, "Cannot change the device which a transmission queue belongs to.");
   m_device = device;
+}
+
+void
+NetDeviceQueue::Start (void)
+{
+  m_stopped = false;
+}
+
+void
+NetDeviceQueue::Stop (void)
+{
+  m_stopped = true;
+}
+
+void
+NetDeviceQueue::Wake (void)
+{
+  Start ();
+
+  // Request the queue disc to dequeue a packet
+  if (!m_wakeCallback.IsNull ())
+  {
+      m_wakeCallback ();
+  }
+}
+
+void
+NetDeviceQueue::SetWakeCallback (WakeCallback cb)
+{
+  m_wakeCallback = cb;
+}
+
+bool
+NetDeviceQueue::HasWakeCallbackSet (void) const
+{
+  return (!m_wakeCallback.IsNull ());
 }
 
 
@@ -81,7 +123,14 @@ NetDevice::SetTxQueuesN (uint8_t numTxQueues)
 {
   NS_ASSERT (numTxQueues > 0);
 
-  /// \todo check whether a queue disc has been aggregated to the device
+  // check whether a queue disc has been aggregated to the device by
+  // verifying whether a wake callback has been set on a transmission queue
+  if (GetTxQueue (0)->HasWakeCallbackSet ())
+    {
+      NS_LOG_WARN ("Cannot change the number of transmission queues after installing"
+                   " a queue disc on the device.");
+      return ;
+    }
 
   uint8_t prevNumTxQueues = m_txQueuesVector.size ();
   m_txQueuesVector.resize (numTxQueues);
