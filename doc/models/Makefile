@@ -263,6 +263,8 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-tv-rand-geo-points.eps \
 	$(SRC)/spectrum/doc/spectrum-tv-8vsb.png \
 	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
+	$(SRC)/traffic-control/doc/root-queue-disc.dia \
+	$(SRC)/traffic-control/doc/child-queue-discs.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
@@ -349,6 +351,8 @@ IMAGES_EPS = \
 	$(FIGURES)/auvmobility-classes.eps \
 	$(FIGURES)/spectrum-analyzer-example.eps \
 	$(FIGURES)/spectrum-tv-rand-geo-points.eps \
+	$(FIGURES)/root-queue-disc.eps \
+	$(FIGURES)/child-queue-discs.eps \
 	$(FIGURES)/lr-wpan-primitives.eps \
 	$(FIGURES)/lr-wpan-data-example.eps \
 	$(FIGURES)/lr-wpan-arch.eps \

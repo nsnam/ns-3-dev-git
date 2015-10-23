@@ -117,3 +117,88 @@ IPv{4,6}Interface is added in the IPv{4,6}L3Protocol, the callback chain is
 configured to have the following packet exchange:
 
 NetDevice --> Node --> TrafficControlLayer --> IPv{4,6}L3Protocol
+
+Queue disciplines
+--------------------------------------------------------------
+Packets received by the Traffic Control layer for transmission to a netdevice
+can be passed to a Queue Discipline to perform scheduling and policing.
+A netdevice can have a single (root) queue disc aggregated to it.
+Aggregating a queue disc to a netdevice is not mandatory. If a netdevice does
+not have a queue disc aggregated to it, the traffic control layer sends the packets
+directly to the netdevice. This is the case, for instance, of the loopback netdevice.
+
+The traffic control layer interacts with a queue disc in a simple manner: after requesting
+to enqueue a packet, the traffic control layer requests the qdisc to "run", i.e., to
+dequeue a set of packets, until a predefined number ("quota") of packets is dequeued
+or the netdevice stops the queue disc.
+
+Multi-queue devices (such as Wifi) are explicitly taken into account. Each
+netdevice has a vector of as many NetDeviceQueue objects as the number of
+transmission queues.A NetDeviceQueue object stores information related to a
+single transmission queue, such as the status (i.e., whether the queue has been
+stopped or not) and (yet to come) data used by techniques such as Byte Queue Limits.
+Additionally, the NetDeviceQueue class offers public methods to enquire about the
+status of a transmission queue and to start, stop or wake a transmission queue.
+To wake a transmission queue means requesting the associated queue disc (see
+below for details) to run.
+
+"Classic" queue discs (such as pfifo_fast, red, codel and many others) are not aware
+of the number of transmission queues used by the netdevice. More recently,
+multi-queue aware queue discs (such mq and mq-prio) have been mainlined into the
+Linux kernel. Multi-queue aware queue discs create as many queues internally as
+the number of transmission queues used by the netdevice. Additionally, they
+enqueue packets into their internal queues based on a packet field (implemented
+as an |ns3| tag) that can be set by calling a netdevice function. Therefore,
+each packet is enqueued in the "same" queue both inside the queue disc and inside
+the netdevice. Classic queue discs (such as fq-codel) are classful, i.e., they
+manage internal queues whose packets are scheduled by means of other kinds of
+queue discs. However, there is no close relationship between the internal queues
+of the queue disc and the transmission queues of the netdevice.
+
+When a root queue disc, be it a classic classful one or a multi-queue aware one,
+receives a packet to enqueue, it selects an internal queue disc and requests it
+to enqueue a packet. When a root queue disc is requested to dequeue a packet, it
+selects an internal queue disc and requests it to dequeue a packet. A multi-queue
+aware queue disc is requested to select an internal queue disc whose corresponding
+device transmission queue is not stopped.
+
+There are a couple of operations that need to be performed when setting up a queue
+disc, which vary depending on whether we are setting up a root queue disc or a
+child queue disc.
+
+Setting up a root queue disc
+*****************************
+
+.. _fig-root-queue-disc:
+
+.. figure:: figures/root-queue-disc.*
+
+    Setup of a root queue disc
+
+
+:ref:`fig-root-queue-disc` shows how to configure a root queue disc. Basically:
+
+* A root queue disc needs to be aggregated to a netdevice object
+* The m_devQueue member of the root queue disc must point to one of the device transmission queues (e.g., the first one)
+* A wake callback must be set on all the device transmissio queues to point to the Run method of the root queue disc
+
+Setting up child queue discs
+*******************************
+
+.. _fig-child-queue-discs:
+
+.. figure:: figures/child-queue-discs.*
+
+    Setup of child queue discs
+
+
+:ref:`fig-child-queue-discs` shows how to configure queue discs that are children
+of a multi-queue aware (root) queue disc. Basically:
+
+* Each child queue disc needs to be aggregated to a NetDeviceQueue object
+* The m_devQueue member of a child queue disc must point to the corresponding device transmission queue
+* A wake callback must be set on each device transmissio queue to point to the Run method of the corresponding child queue disc
+
+In case of queue discs that are children of a classic classful (root) queue disc,
+none of the above operations need to be performed, as there is not a match between
+the child queue discs and the device transmission queues.
