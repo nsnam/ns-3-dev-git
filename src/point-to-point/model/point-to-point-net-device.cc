@@ -280,18 +280,26 @@ PointToPointNetDevice::TransmitComplete (void)
   m_phyTxEndTrace (m_currentPkt);
   m_currentPkt = 0;
 
+  Ptr<NetDeviceQueue> txq = GetTxQueue (0);
+
   Ptr<Packet> p = m_queue->Dequeue ();
   if (p == 0)
     {
-      //
-      // No packet was on the queue, so we just exit.
-      //
+      NS_LOG_LOGIC ("No pending packets in device queue after tx complete");
+      txq->Wake ();
       return;
     }
 
   //
-  // Got another packet off of the queue, so start the transmit process agin.
+  // Got another packet off of the queue, so start the transmit process again.
+  // If the queue was stopped, start it again. Note that we cannot wake the upper
+  // layers because otherwise a packet is sent to the device while the machine
+  // state is busy, thus causing the assert in TransmitStart to fail.
   //
+  if (txq->IsStopped ())
+    {
+      txq->Start ();
+    }
   m_snifferTrace (p);
   m_promiscSnifferTrace (p);
   TransmitStart (p);
@@ -510,6 +518,12 @@ PointToPointNetDevice::Send (
   const Address &dest, 
   uint16_t protocolNumber)
 {
+  Ptr<NetDeviceQueue> txq = GetTxQueue (0);
+  if (txq->IsStopped ())
+    {
+      NS_LOG_WARN ("Send should not be called when the device is stopped");
+    }
+
   NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
   NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
   NS_LOG_LOGIC ("UID is " << packet->GetUid ());
@@ -552,6 +566,7 @@ PointToPointNetDevice::Send (
 
   // Enqueue may fail (overflow)
   m_macTxDropTrace (packet);
+  txq->Stop ();
   return false;
 }
 
