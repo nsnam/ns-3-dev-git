@@ -20,12 +20,37 @@
 
 #include "ns3/object.h"
 #include "ns3/log.h"
+#include "ns3/abort.h"
 #include "ns3/uinteger.h"
 #include "net-device.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NetDevice");
+
+NS_OBJECT_ENSURE_REGISTERED (NetDeviceQueue);
+
+TypeId NetDeviceQueue::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NetDeviceQueue")
+    .SetParent<Object> ()
+    .SetGroupName("Network")
+  ;
+  return tid;
+}
+
+NetDeviceQueue::~NetDeviceQueue ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+NetDeviceQueue::SetDevice (Ptr<NetDevice> device)
+{
+  NS_ABORT_MSG_UNLESS (m_device == 0, "Cannot change the device which a transmission queue belongs to.");
+  m_device = device;
+}
+
 
 NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 
@@ -38,9 +63,36 @@ TypeId NetDevice::GetTypeId (void)
   return tid;
 }
 
+NetDevice::NetDevice ()
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Ptr<NetDeviceQueue> devQueue = Create<NetDeviceQueue> ();
+  devQueue->SetDevice (this);
+  m_txQueuesVector.push_back (devQueue);
+}
+
 NetDevice::~NetDevice ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+NetDevice::SetTxQueuesN (uint8_t numTxQueues)
+{
+  NS_ASSERT (numTxQueues > 0);
+
+  /// \todo check whether a queue disc has been aggregated to the device
+
+  uint8_t prevNumTxQueues = m_txQueuesVector.size ();
+  m_txQueuesVector.resize (numTxQueues);
+
+  // Allocate new NetDeviceQueues if the number of queues increased
+  for (uint8_t i = prevNumTxQueues; i < numTxQueues; i++)
+    {
+      Ptr<NetDeviceQueue> devQueue = Create<NetDeviceQueue> ();
+      devQueue->SetDevice (this);
+      m_txQueuesVector[i] = devQueue;
+    }
 }
 
 } // namespace ns3

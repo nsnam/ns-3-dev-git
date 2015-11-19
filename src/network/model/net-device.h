@@ -22,6 +22,7 @@
 #define NET_DEVICE_H
 
 #include <string>
+#include <vector>
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/object.h"
@@ -35,11 +36,55 @@ namespace ns3 {
 class Node;
 class Channel;
 class Packet;
+class NetDevice;
 
 /**
  * \ingroup network
  * \defgroup netdevice Network Device
  */
+/**
+ * \ingroup netdevice
+ *
+ * \brief Network device transmission queue
+ *
+ * This class stores information about a single transmission queue
+ * of a network device that is exposed to queue discs. Such information
+ * includes the state of the transmission queue (whether it has been
+ * stopped or not) and data used by techniques such as Byte Queue Limits.
+ * Also, multi-queue aware queue discs can aggregate a child queue disc
+ * to an object of this class.
+ *
+ * This class roughly models the struct netdev_queue of Linux.
+ * \todo Store the state information (done in a next commit)
+ * \todo Implement BQL
+ */
+class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  virtual ~NetDeviceQueue();
+
+  /**
+   * \return the device which this transmission queue belongs to.
+   */
+  inline Ptr<NetDevice> GetDevice (void) const;
+
+  /**
+   * \param device the device which this transmission queue belongs to.
+   *
+   * The device can be set just once.
+   */
+  virtual void SetDevice (Ptr<NetDevice> device);
+
+private:
+  Ptr<NetDevice> m_device;
+};
+
 /**
  * \ingroup netdevice
  *
@@ -80,6 +125,8 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+
+  NetDevice ();
   virtual ~NetDevice();
 
   /**
@@ -339,7 +386,56 @@ public:
    */
   virtual bool SupportsSendFrom (void) const = 0;
 
+  /**
+   * \return the i-th transmission queue of the device.
+   *
+   * The index of the first transmission queue is zero.
+   */
+  inline Ptr<NetDeviceQueue> GetTxQueue (uint8_t i) const;
+
+  /**
+   * \return the number of (hardware) transmission queues.
+   */
+  inline uint8_t GetTxQueuesN (void) const;
+
+protected:
+  /**
+   * \param numTxQueues number of (hardware) transmission queues.
+   *
+   * Modifying the number of transmission queues is only permitted before a queue
+   * disc is aggregated to the device. This is because we have to set a wake
+   * callback for each transmission queue, and this is done when setting up
+   * queue discs.
+   */
+  virtual void SetTxQueuesN (uint8_t numTxQueues);
+
+private:
+  std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;
 };
+
+} // namespace ns3
+
+
+namespace ns3 {
+
+Ptr<NetDevice>
+NetDeviceQueue::GetDevice (void) const
+{
+  return m_device;
+}
+
+Ptr<NetDeviceQueue>
+NetDevice::GetTxQueue (uint8_t i) const
+{
+  NS_ASSERT (i < m_txQueuesVector.size ());
+  return m_txQueuesVector[i];
+}
+
+uint8_t
+NetDevice::GetTxQueuesN (void) const
+{
+  return m_txQueuesVector.size ();
+}
 
 } // namespace ns3
 
