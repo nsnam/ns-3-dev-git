@@ -439,6 +439,15 @@ RegularWifiMac::GetSsid (void) const
   return m_ssid;
 }
 
+uint8_t
+RegularWifiMac::GetTxQueuesN (void) const
+{
+  if (m_qosSupported)
+    return 4;
+
+  return 1;
+}
+
 void
 RegularWifiMac::SetBssid (Mac48Address bssid)
 {

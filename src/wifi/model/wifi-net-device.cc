@@ -131,6 +131,7 @@ void
 WifiNetDevice::SetMac (Ptr<WifiMac> mac)
 {
   m_mac = mac;
+  SetTxQueuesN (m_mac->GetTxQueuesN ());
   CompleteConfig ();
 }
 
