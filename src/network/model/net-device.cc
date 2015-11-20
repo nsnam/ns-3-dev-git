@@ -118,6 +118,12 @@ NetDevice::~NetDevice ()
   NS_LOG_FUNCTION (this);
 }
 
+uint8_t
+NetDevice::GetSelectedQueue (Ptr<Packet> packet) const
+{
+  return 0;
+}
+
 void
 NetDevice::SetTxQueuesN (uint8_t numTxQueues)
 {

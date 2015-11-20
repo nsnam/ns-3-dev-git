@@ -445,6 +445,11 @@ public:
    */
   inline uint8_t GetTxQueuesN (void) const;
 
+  /**
+   * \return the id of the transmission queue selected for the given packet
+   */
+  virtual uint8_t GetSelectedQueue (Ptr<Packet> packet) const;
+
 protected:
   /**
    * \param numTxQueues number of (hardware) transmission queues.
