@@ -11,7 +11,9 @@ def build(bld):
     module.source = [
       'model/traffic-control-layer.cc',
       'model/queue-disc.cc',
-      'model/pfifo-fast-queue-disc.cc'
+      'model/pfifo-fast-queue-disc.cc',
+      'helper/queue-disc-helper.cc',
+      'helper/queue-disc-container.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('traffic-control')
@@ -23,7 +25,9 @@ def build(bld):
     headers.source = [
       'model/traffic-control-layer.h',
       'model/queue-disc.h',
-      'model/pfifo-fast-queue-disc.h'
+      'model/pfifo-fast-queue-disc.h',
+      'helper/queue-disc-helper.h',
+      'helper/queue-disc-container.h'
         ]
 
     if bld.env.ENABLE_EXAMPLES:
