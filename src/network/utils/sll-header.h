@@ -27,44 +27,45 @@
 namespace ns3 {
 
 /**
-\ingroup packet
-
-\brief Protocol header serialization and deserialization.
-
-Libpcap sometimes add an additional header to provide information that would be
-lost otherwise due to the link-layer/capture mechanism, for instance when capturing from
-"nlmon" device on linux
-
-\see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
-
-\verbatim
-+---------------------------+
-|         Packet type       |
-|         (2 Octets)        |
-+---------------------------+
-|        ARPHRD_ type       |
-|         (2 Octets)        |
-+---------------------------+
-| Link-layer address length |
-|         (2 Octets)        |
-+---------------------------+
-|    Link-layer address     |
-|         (8 Octets)        |
-+---------------------------+
-|        Protocol type      |
-|         (2 Octets)        |
-+---------------------------+
-|           Payload         |
-.                           .
-.                           .
-.                           .
-\endverbatim
- */
+  * \ingroup packet
+  *
+  * \brief Protocol header serialization and deserialization.
+  *
+  * Libpcap sometimes add an additional header to provide information that would be
+  * lost otherwise due to the link-layer/capture mechanism, for instance when capturing from
+  * "nlmon" device on linux
+  *
+  * \see http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html
+  * \see https://wiki.wireshark.org/SLL
+  *
+  * \verbatim
+  * +---------------------------+
+  * |         Packet type       |
+  * |         (2 Octets)        |
+  * +---------------------------+
+  * |        ARPHRD_ type       |
+  * |         (2 Octets)        |
+  * +---------------------------+
+  * | Link-layer address length |
+  * |         (2 Octets)        |
+  * +---------------------------+
+  * |    Link-layer address     |
+  * |         (8 Octets)        |
+  * +---------------------------+
+  * |        Protocol type      |
+  * |         (2 Octets)        |
+  * +---------------------------+
+  * |           Payload         |
+  * .                           .
+  * .                           .
+  * .                           .
+  * \endverbatim
+  */
 class SllHeader : public Header
 {
 public:
-
-  enum PacketType {
+  enum PacketType
+  {
     UNICAST_FROM_PEER_TO_ME = 0, /**< the packet was specifically sent to us by somebody else */
     BROADCAST_BY_PEER = 1, /**< packet was broadcast by somebody else */
     MULTICAST_BY_PEER = 2, /**< packet was multicast, but not broadcast, by somebody else */
@@ -73,36 +74,34 @@ public:
   };
 
   /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
+    * \brief Get the type ID.
+    * \return the object TypeId
+    */
   static TypeId GetTypeId (void);
   TypeId GetInstanceTypeId (void) const;
 
-
-  SllHeader();
+  SllHeader ();
   virtual ~SllHeader ();
 
   /**
-   *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the link-layer device type.
-   *
-   */
-  uint16_t GetArpType() const;
+    *  The ARPHRD_ type field is in network byte order; it contains a Linux ARPHRD_ value for the link-layer device type.
+    */
+  uint16_t GetArpType () const;
 
   /**
-   \return Packet type
-   */
-  PacketType GetPacketType() const;
+    * \return Packet type
+    */
+  PacketType GetPacketType () const;
 
   /**
-   \param arphw ARP protocol hardware identifier
-   */
-  void SetArpType(uint16_t arphdType);
+    * \param arphw ARP protocol hardware identifier
+    */
+  void SetArpType (uint16_t arphdType);
 
   /**
-   \param type Depends on source and address of the packet
-   */
-  void SetPacketType(PacketType type);
+    * \param type Depends on source and address of the packet
+    */
+  void SetPacketType (PacketType type);
 
   //! Inherited
   virtual uint32_t GetSerializedSize (void) const;
@@ -111,14 +110,13 @@ public:
 
   virtual void Print (std::ostream &os) const;
 
-
 protected:
-    // declared in packet order
-    PacketType m_packetType;
-    uint16_t m_arphdType;   /**< ARP protocol hardware identifier */
-    uint16_t m_addressLength;
-    uint64_t m_address;
-    uint16_t m_protocolType;
+  // declared in packet order
+  PacketType m_packetType;
+  uint16_t m_arphdType;   /**< ARP protocol hardware identifier */
+  uint16_t m_addressLength;
+  uint64_t m_address;
+  uint16_t m_protocolType;
 };
 
 

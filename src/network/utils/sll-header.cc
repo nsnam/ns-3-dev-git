@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 Georgia Tech Research Corporation
+ * Copyright (c) 2015 Université Pierre et Marie Curie
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,26 +21,25 @@
 #include "ns3/log.h"
 
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SllHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (SllHeader);
 
-SllHeader::SllHeader() :
-    m_packetType(UNICAST_FROM_PEER_TO_ME),
-    m_arphdType(0),
-    m_addressLength(0),
-    m_address(0),
-    m_protocolType(0)
+SllHeader::SllHeader ()
+  : m_packetType (UNICAST_FROM_PEER_TO_ME),
+    m_arphdType (0),
+    m_addressLength (0),
+    m_address (0),
+    m_protocolType (0)
 {
-    NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
 }
 
-SllHeader::~SllHeader()
+SllHeader::~SllHeader ()
 {
-    NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -62,23 +61,23 @@ SllHeader::GetInstanceTypeId (void) const
 }
 
 uint16_t
-SllHeader::GetArpType() const
+SllHeader::GetArpType () const
 {
-    return m_arphdType;
+  return m_arphdType;
 }
 
 void
-SllHeader::SetArpType(uint16_t arphdType)
+SllHeader::SetArpType (uint16_t arphdType)
 {
-    NS_LOG_FUNCTION(arphdType);
-    m_arphdType = arphdType;
+  NS_LOG_FUNCTION (arphdType);
+  m_arphdType = arphdType;
 }
 
 void
-SllHeader::SetPacketType(PacketType type)
+SllHeader::SetPacketType (PacketType type)
 {
-    NS_LOG_FUNCTION(type);
-    m_packetType = type;
+  NS_LOG_FUNCTION (type);
+  m_packetType = type;
 }
 
 void
@@ -108,7 +107,7 @@ uint32_t
 SllHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  m_packetType = static_cast<PacketType>(i.ReadNtohU16 ());
+  m_packetType = static_cast<PacketType> (i.ReadNtohU16 ());
   m_arphdType = i.ReadNtohU16 ();
   m_addressLength = i.ReadNtohU16 ();
   m_address = i.ReadNtohU64 ();
