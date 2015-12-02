@@ -169,16 +169,13 @@ PcapHelper::DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (file << p);
 
-    // TODO addition matt
+  /* in case of a netlink packet, we add a linux cooked header */
   if(file->GetDataLinkType() == PcapHelper::DLT_NETLINK)
   {
-    NS_LOG_DEBUG("Prepending a cooked header");
-
+    const uint16_t ARPHRD_NETLINK = 824;
     SllHeader sll = SllHeader ();
     sll.SetArpType(ARPHRD_NETLINK);
     sll.SetPacketType(SllHeader::UNICAST_FROM_PEER_TO_ME);
-//    p2->AddHeader(sll);
-    // + sll.GetSerializedSize()
     file->Write (Simulator::Now (), sll, p);
   }
   else {
