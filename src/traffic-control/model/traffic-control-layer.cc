@@ -19,6 +19,7 @@
 #include "traffic-control-layer.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
+#include "ns3/queue-disc.h"
 
 namespace ns3 {
 
@@ -110,7 +111,27 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,
   NS_LOG_DEBUG ("Send packet to device " << device << " protocol number " <<
                 protocolNumber);
 
-  device->Send (packet, dest, protocolNumber);
+  // determine the transmission queue of the device where the packet will be enqueued
+  uint8_t txq = device->GetSelectedQueue (packet);
+
+  Ptr<QueueDisc> qDisc = device->GetObject<QueueDisc> ();
+
+  if (qDisc == 0)
+    {
+      // The device has no attached queue disc, thus send the packet
+      // directly to the device if the selected queue is not stopped
+      if (!device->GetTxQueue (txq)->IsStopped ())
+        {
+          device->Send (packet, dest, protocolNumber);
+        }
+    }
+  else
+    {
+      Ptr<QueueDiscItem> item = Create<QueueDiscItem> (packet, dest, protocolNumber, txq);
+
+      qDisc->Enqueue (item);
+      qDisc->Run ();
+    }
 }
 
 } // namespace ns3

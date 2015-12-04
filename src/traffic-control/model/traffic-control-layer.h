@@ -28,6 +28,8 @@ namespace ns3 {
 class Packet;
 
 /**
+ * \ingroup traffic-control
+ *
  * \brief Traffic control layer definition
  *
  * This layer stays between NetDevices (L2) and any network protocol (e.g. IP).
@@ -37,7 +39,9 @@ class Packet;
  * Basically, we manage both IN and OUT directions (sometimes called RX and TX,
  * respectively). The OUT direction is easy to follow, since it involves
  * direct calls: upper layer (e.g. IP) calls the Send method on an instance of
- * this class, which then call the Send method of some NetDevice.
+ * this class, which then calls the Enqueue method of the QueueDisc associated
+ * with the device. The Dequeue method of the QueueDisc finally calls the Send
+ * method of the NetDevice.
  *
  * The IN direction uses a little trick to reduce dependencies between modules.
  * In simple words, we use Callbacks to connect upper layer (which should register
