@@ -28,6 +28,7 @@
 #include "ns3/names.h"
 #include "ns3/net-device.h"
 #include "ns3/pcap-file-wrapper.h"
+#include "ns3/sll-header.h"
 
 #include "trace-helper.h"
 
@@ -167,7 +168,19 @@ void
 PcapHelper::DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (file << p);
-  file->Write (Simulator::Now (), p);
+
+  /* in case of a netlink packet, we add a linux cooked header */
+  if(file->GetDataLinkType() == PcapHelper::DLT_NETLINK)
+  {
+    const uint16_t ARPHRD_NETLINK = 824;
+    SllHeader sll = SllHeader ();
+    sll.SetArpType(ARPHRD_NETLINK);
+    sll.SetPacketType(SllHeader::UNICAST_FROM_PEER_TO_ME);
+    file->Write (Simulator::Now (), sll, p);
+  }
+  else {
+    file->Write (Simulator::Now (), p);
+  }
 }
 
 void
