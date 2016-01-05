@@ -209,9 +209,10 @@ RedQueue::AssignStreams (int64_t stream)
 }
 
 bool
-RedQueue::DoEnqueue (Ptr<Packet> p)
+RedQueue::DoEnqueue (Ptr<QueueItem> item)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << item);
+  Ptr<Packet> p = item->GetPacket ();
 
   if (!m_hasRedStarted )
     {
@@ -324,7 +325,7 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
     }
 
   m_bytesInQueue += p->GetSize ();
-  m_packets.push_back (p);
+  m_packets.push_back (item);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
@@ -609,7 +610,7 @@ RedQueue::GetQueueSize (void)
     }
 }
 
-Ptr<Packet>
+Ptr<QueueItem>
 RedQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
@@ -625,20 +626,20 @@ RedQueue::DoDequeue (void)
   else
     {
       m_idle = 0;
-      Ptr<Packet> p = m_packets.front ();
+      Ptr<QueueItem> item = m_packets.front ();
       m_packets.pop_front ();
-      m_bytesInQueue -= p->GetSize ();
+      m_bytesInQueue -= item->GetPacket ()->GetSize ();
 
-      NS_LOG_LOGIC ("Popped " << p);
+      NS_LOG_LOGIC ("Popped " << item);
 
       NS_LOG_LOGIC ("Number packets " << m_packets.size ());
       NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
-      return p;
+      return item;
     }
 }
 
-Ptr<const Packet>
+Ptr<const QueueItem>
 RedQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -648,12 +649,12 @@ RedQueue::DoPeek (void) const
       return 0;
     }
 
-  Ptr<Packet> p = m_packets.front ();
+  Ptr<QueueItem> item = m_packets.front ();
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
-  return p;
+  return item;
 }
 
 } // namespace ns3

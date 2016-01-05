@@ -36,6 +36,70 @@ namespace ns3 {
  * \ingroup network
  * \defgroup queue Queue
  */
+
+/**
+ * \ingroup queue
+ * \brief Base class to represent items of packet Queues
+ * 
+ * An item stored in an ns-3 packet Queue contains a packet and possibly other
+ * information. An item of the base class only contains a packet. Subclasses
+ * can be derived from this base class to allow items to contain additional
+ * information.
+ */
+class QueueItem : public SimpleRefCount<QueueItem>
+{
+public:
+  /**
+   * \brief Create a queue item containing a packet.
+   * \param p the packet included in the created item.
+   */
+  QueueItem (Ptr<Packet> p);
+
+  virtual ~QueueItem ();
+
+  /**
+   * \return the packet included in this item.
+   */
+  Ptr<Packet> GetPacket (void) const;
+  /**
+   * \brief Print the item contents.
+   * \param os output stream in which the data should be printed.
+   */
+  virtual void Print (std::ostream &os) const;
+
+private:
+  /**
+   * \brief Default constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueItem ();
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  QueueItem (const QueueItem &);
+  /**
+   * \brief Assignment operator
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  QueueItem &operator = (const QueueItem &);
+
+  Ptr<Packet> m_packet;
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param item the item
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const QueueItem &item);
+
 /**
  * \ingroup queue
  * \brief Abstract base class for packet Queues
@@ -59,21 +123,21 @@ public:
    */
   bool IsEmpty (void) const;
   /**
-   * Place a packet into the rear of the Queue
-   * \param p packet to enqueue
+   * Place a queue item into the rear of the Queue
+   * \param item item to enqueue
    * \return True if the operation was successful; false otherwise
    */
-  bool Enqueue (Ptr<Packet> p);
+  bool Enqueue (Ptr<QueueItem> item);
   /**
-   * Remove a packet from the front of the Queue
-   * \return 0 if the operation was not successful; the packet otherwise.
+   * Remove an item from the front of the Queue
+   * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<Packet> Dequeue (void);
+  Ptr<QueueItem> Dequeue (void);
   /**
    * Get a copy of the item at the front of the queue without removing it
-   * \return 0 if the operation was not successful; the packet otherwise.
+   * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<const Packet> Peek (void) const;
+  Ptr<const QueueItem> Peek (void) const;
 
   /**
    * Flush the queue.
@@ -156,29 +220,29 @@ public:
 private:
 
   /**
-   * Push a packet in the queue
-   * \param p the packet to enqueue
+   * Push an item in the queue
+   * \param item the item to enqueue
    * \return true if success, false if the packet has been dropped.
    */
-  virtual bool DoEnqueue (Ptr<Packet> p) = 0;
+  virtual bool DoEnqueue (Ptr<QueueItem> item) = 0;
   /**
-   * Pull a packet from the queue
-   * \return the packet.
+   * Pull an item from the queue
+   * \return the item.
    */
-  virtual Ptr<Packet> DoDequeue (void) = 0;
+  virtual Ptr<QueueItem> DoDequeue (void) = 0;
   /**
-   * Peek the front packet in the queue
-   * \return the packet.
+   * Peek the front item in the queue
+   * \return the item.
    */
-  virtual Ptr<const Packet> DoPeek (void) const = 0;
+  virtual Ptr<const QueueItem> DoPeek (void) const = 0;
 
 protected:
   /**
-   *  \brief Drop a packet 
-   *  \param packet packet that was dropped
+   *  \brief Drop a packet
+   *  \param p packet that was dropped
    *  This method is called by subclasses to notify parent (this class) of packet drops.
    */
-  void Drop (Ptr<Packet> packet);
+  void Drop (Ptr<Packet> p);
 
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const Packet> > m_traceEnqueue;

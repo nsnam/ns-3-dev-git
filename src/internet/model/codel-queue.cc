@@ -276,9 +276,10 @@ CoDelQueue::GetMode (void)
 }
 
 bool
-CoDelQueue::DoEnqueue (Ptr<Packet> p)
+CoDelQueue::DoEnqueue (Ptr<QueueItem> item)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << item);
+  Ptr<Packet> p = item->GetPacket ();
 
   if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () + 1 > m_maxPackets))
     {
@@ -301,7 +302,7 @@ CoDelQueue::DoEnqueue (Ptr<Packet> p)
   p->AddPacketTag (tag);
 
   m_bytesInQueue += p->GetSize ();
-  m_packets.push (p);
+  m_packets.push (item);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
@@ -351,7 +352,7 @@ CoDelQueue::OkToDrop (Ptr<Packet> p, uint32_t now)
   return okToDrop;
 }
 
-Ptr<Packet>
+Ptr<QueueItem>
 CoDelQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
@@ -365,11 +366,12 @@ CoDelQueue::DoDequeue (void)
       return 0;
     }
   uint32_t now = CoDelGetTime ();
-  Ptr<Packet> p = m_packets.front ();
+  Ptr<QueueItem> item = m_packets.front ();
   m_packets.pop ();
+  Ptr<Packet> p = item->GetPacket ();
   m_bytesInQueue -= p->GetSize ();
 
-  NS_LOG_LOGIC ("Popped " << p);
+  NS_LOG_LOGIC ("Popped " << item);
   NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
@@ -416,11 +418,12 @@ CoDelQueue::DoDequeue (void)
                   ++m_states;
                   return 0;
                 }
-              p = m_packets.front ();
+              item = m_packets.front ();
               m_packets.pop ();
+              p = item ->GetPacket ();
               m_bytesInQueue -= p->GetSize ();
 
-              NS_LOG_LOGIC ("Popped " << p);
+              NS_LOG_LOGIC ("Popped " << item);
               NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
               NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
@@ -466,11 +469,12 @@ CoDelQueue::DoDequeue (void)
             }
           else
             {
-              p = m_packets.front ();
+              item = m_packets.front ();
               m_packets.pop ();
+              p = item->GetPacket ();
               m_bytesInQueue -= p->GetSize ();
 
-              NS_LOG_LOGIC ("Popped " << p);
+              NS_LOG_LOGIC ("Popped " << item);
               NS_LOG_LOGIC ("Number packets remaining " << m_packets.size ());
               NS_LOG_LOGIC ("Number bytes remaining " << m_bytesInQueue);
 
@@ -501,7 +505,7 @@ CoDelQueue::DoDequeue (void)
         }
     }
   ++m_states;
-  return p;
+  return item;
 }
 
 uint32_t
@@ -552,7 +556,7 @@ CoDelQueue::GetDropNext (void)
   return m_dropNext;
 }
 
-Ptr<const Packet>
+Ptr<const QueueItem>
 CoDelQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -563,12 +567,12 @@ CoDelQueue::DoPeek (void) const
       return 0;
     }
 
-  Ptr<Packet> p = m_packets.front ();
+  Ptr<QueueItem> item = m_packets.front ();
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
-  return p;
+  return item;
 }
 
 bool
