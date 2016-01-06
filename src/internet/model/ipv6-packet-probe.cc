@@ -70,26 +70,27 @@ Ipv6PacketProbe::~Ipv6PacketProbe ()
 }
 
 void
-Ipv6PacketProbe::SetValue (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
+Ipv6PacketProbe::SetValue (const Ipv6Header & header, Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv6 << interface);
+  NS_LOG_FUNCTION (this << header << packet << ipv6 << interface);
+  m_header    = header;
   m_packet    = packet;
   m_ipv6      = ipv6;
   m_interface = interface;
-  m_output (packet, ipv6, interface);
+  m_output (header, packet, ipv6, interface);
 
-  uint32_t packetSizeNew = packet->GetSize ();
+  uint32_t packetSizeNew = packet->GetSize () + header.GetSerializedSize ();
   m_outputBytes (m_packetSizeOld, packetSizeNew);
   m_packetSizeOld = packetSizeNew;
 }
 
 void
-Ipv6PacketProbe::SetValueByPath (std::string path, Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
+Ipv6PacketProbe::SetValueByPath (std::string path, const Ipv6Header & header, Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (path << packet << ipv6 << interface);
+  NS_LOG_FUNCTION (path << header << packet << ipv6 << interface);
   Ptr<Ipv6PacketProbe> probe = Names::Find<Ipv6PacketProbe> (path);
   NS_ASSERT_MSG (probe, "Error:  Can't find probe for path " << path);
-  probe->SetValue (packet, ipv6, interface);
+  probe->SetValue (header, packet, ipv6, interface);
 }
 
 bool
@@ -110,17 +111,18 @@ Ipv6PacketProbe::ConnectByPath (std::string path)
 }
 
 void
-Ipv6PacketProbe::TraceSink (Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
+Ipv6PacketProbe::TraceSink (const Ipv6Header & header, Ptr<const Packet> packet, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv6 << interface);
+  NS_LOG_FUNCTION (this << header << packet << ipv6 << interface);
   if (IsEnabled ())
     {
+      m_header    = header;
       m_packet    = packet;
       m_ipv6      = ipv6;
       m_interface = interface;
-      m_output (packet, ipv6, interface);
+      m_output (header, packet, ipv6, interface);
 
-      uint32_t packetSizeNew = packet->GetSize ();
+      uint32_t packetSizeNew = packet->GetSize () + header.GetSerializedSize ();
       m_outputBytes (m_packetSizeOld, packetSizeNew);
       m_packetSizeOld = packetSizeNew;
     }

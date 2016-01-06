@@ -35,7 +35,8 @@ namespace ns3 {
  *
  * QueueDiscItem represents the kind of items that are stored in a queue
  * disc. It is derived from QueueItem (which only consists of a Ptr<Packet>)
- * to additionally store the destination MAC address, the
+ * to additionally store the IP header (that will be added when the packet
+ * is dequeued from the queue disc), the destination MAC address, the
  * protocol number and the transmission queue index,
  */
 class QueueDiscItem : public QueueItem {
@@ -43,13 +44,44 @@ public:
   /**
    * \brief Create a queue disc item containing an IPv4 packet.
    * \param p the packet included in the created item.
+   * \param hdr the IPv4 header
    * \param addr the destination MAC address
    * \param protocol the protocol number
    * \param txq the transmission queue index
    */
-  QueueDiscItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, uint8_t txq);
+  QueueDiscItem (Ptr<Packet> p, const Ipv4Header & hdr, const Address & addr, uint16_t protocol, uint8_t txq);
+
+  /**
+   * \brief Create a queue disc item containing an IPv6 packet.
+   * \param p the packet included in the created item.
+   * \param hdr the IPv6 header
+   * \param addr the destination MAC address
+   * \param protocol the protocol number
+   * \param txq the transmission queue index
+   */
+  QueueDiscItem (Ptr<Packet> p, const Ipv6Header & hdr, const Address & addr, uint16_t protocol, uint8_t txq);
 
   virtual ~QueueDiscItem ();
+
+  /**
+   * \brief Enumeration of the header types.
+   *
+   */
+  enum HeaderType
+  {
+    IPV4_HEADER,
+    IPV6_HEADER
+  };
+
+  /**
+   * \return the type of IP header included in this item.
+   */
+  HeaderType GetHeaderType (void) const;
+
+  /**
+   * \return the IP header included in this item.
+   */
+  const Header & GetHeader (void) const;
 
   /**
    * \return the MAC address included in this item.
@@ -93,6 +125,9 @@ private:
    */
   QueueDiscItem &operator = (const QueueDiscItem &);
 
+  Ipv4Header m_ipv4Header;
+  Ipv6Header m_ipv6Header;
+  HeaderType m_headerType;
   Address m_address;
   uint16_t m_protocol;
   uint8_t m_txq;

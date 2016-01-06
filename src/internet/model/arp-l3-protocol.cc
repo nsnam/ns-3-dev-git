@@ -229,10 +229,10 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
                                        << " for waiting entry -- flush");
                   Address from_mac = arp.GetSourceHardwareAddress ();
                   entry->MarkAlive (from_mac);
-                  Ptr<Packet> pending = entry->DequeuePending ();
-                  while (pending != 0)
+                  ArpCache::PacketWithHeader pending = entry->DequeuePending ();
+                  while (pending.first != 0)
                     {
-                      cache->GetInterface ()->Send (pending,
+                      cache->GetInterface ()->Send (pending.first, pending.second,
                                                     arp.GetSourceIpv4Address ());
                       pending = entry->DequeuePending ();
                     }
@@ -264,7 +264,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
 }
 
 bool 
-ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination, 
+ArpL3Protocol::Lookup (Ptr<Packet> packet, const Ipv4Header & ipHeader, Ipv4Address destination,
                        Ptr<NetDevice> device,
                        Ptr<ArpCache> cache,
                        Address *hardwareDestination)
@@ -279,14 +279,14 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", dead entry for " << destination << " expired -- send arp request");
-              entry->MarkWaitReply (packet);
+              entry->MarkWaitReply (ArpCache::PacketWithHeader (packet, ipHeader));
               Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
             } 
           else if (entry->IsAlive ()) 
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", alive entry for " << destination << " expired -- send arp request");
-              entry->MarkWaitReply (packet);
+              entry->MarkWaitReply (ArpCache::PacketWithHeader (packet, ipHeader));
               Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
             } 
           else
@@ -313,7 +313,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                             ", wait reply for " << destination << " valid -- drop previous");
-              if (!entry->UpdateWaitReply (packet))
+              if (!entry->UpdateWaitReply (ArpCache::PacketWithHeader (packet, ipHeader)))
                 {
                   m_dropTrace (packet);
                 }
@@ -337,7 +337,7 @@ ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination,
       NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                     ", no entry for " << destination << " -- send arp request");
       entry = cache->Add (destination);
-      entry->MarkWaitReply (packet);
+      entry->MarkWaitReply (ArpCache::PacketWithHeader (packet, ipHeader));
       Simulator::Schedule (Time (MilliSeconds (m_requestJitter->GetValue ())), &ArpL3Protocol::SendArpRequest, this, cache, destination);
     }
   return false;

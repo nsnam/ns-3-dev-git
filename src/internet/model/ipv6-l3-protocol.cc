@@ -957,7 +957,6 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         {
           if (ipv6Interface->IsUp ())
             {
-              m_rxTrace (packet, m_node->GetObject<Ipv6> (), interface);
               break;
             }
           else
@@ -974,6 +973,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
 
   Ipv6Header hdr;
   packet->RemoveHeader (hdr);
+  m_rxTrace (hdr, packet, m_node->GetObject<Ipv6> (), interface);
 
   // Trim any residual frame padding from underlying devices
   if (hdr.GetPayloadLength () < packet->GetSize ())
@@ -1095,7 +1095,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << dev->GetIfIndex () << " Ipv6InterfaceIndex " << interface);
 
   // Check packet size
-  std::list<Ptr<Packet> > fragments;
+  std::list<Ipv6ExtensionFragment::PacketWithHeader> fragments;
 
   // Check if we have a Path MTU stored. If so, use it. Else, use the link MTU.
   size_t targetMtu = (size_t)(m_pmtuCache->GetPmtu (ipHeader.GetDestinationAddress()));
@@ -1133,12 +1133,10 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 
       Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
 
-      packet->AddHeader (ipHeader);
-
       // To get specific method GetFragments from Ipv6ExtensionFragmentation
       Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *> (PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
       NS_ASSERT (ipv6Fragment != 0);
-      ipv6Fragment->GetFragments (packet, targetMtu, fragments);
+      ipv6Fragment->GetFragments (packet, ipHeader, targetMtu, fragments);
     }
 
   if (!route->GetGateway ().IsEqual (Ipv6Address::GetAny ()))
@@ -1151,18 +1149,16 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
             {
               std::ostringstream oss;
 
-              /* IPv6 header is already added in fragments */
-              for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
+              for (std::list<Ipv6ExtensionFragment::PacketWithHeader>::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  m_txTrace (*it, m_node->GetObject<Ipv6> (), interface);
-                  outInterface->Send (*it, route->GetGateway ());
+                  m_txTrace (it->second, it->first, m_node->GetObject<Ipv6> (), interface);
+                  outInterface->Send (it->first, it->second, route->GetGateway ());
                 }
             }
           else
             {
-              packet->AddHeader (ipHeader);
-              m_txTrace (packet, m_node->GetObject<Ipv6> (), interface);
-              outInterface->Send (packet, route->GetGateway ());
+              m_txTrace (ipHeader, packet, m_node->GetObject<Ipv6> (), interface);
+              outInterface->Send (packet, ipHeader, route->GetGateway ());
             }
         }
       else
@@ -1181,18 +1177,16 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
             {
               std::ostringstream oss;
 
-              /* IPv6 header is already added in fragments */
-              for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
+              for (std::list<Ipv6ExtensionFragment::PacketWithHeader>::const_iterator it = fragments.begin (); it != fragments.end (); it++)
                 {
-                  m_txTrace (*it, m_node->GetObject<Ipv6> (), interface);
-                  outInterface->Send (*it, ipHeader.GetDestinationAddress ());
+                  m_txTrace (it->second, it->first, m_node->GetObject<Ipv6> (), interface);
+                  outInterface->Send (it->first, it->second, ipHeader.GetDestinationAddress ());
                 }
             }
           else
             {
-              packet->AddHeader (ipHeader);
-              m_txTrace (packet, m_node->GetObject<Ipv6> (), interface);
-              outInterface->Send (packet, ipHeader.GetDestinationAddress ());
+              m_txTrace (ipHeader, packet, m_node->GetObject<Ipv6> (), interface);
+              outInterface->Send (packet, ipHeader, ipHeader.GetDestinationAddress ());
             }
         }
       else

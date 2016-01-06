@@ -22,6 +22,7 @@
 #include "ns3/address.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/header.h"
 
 namespace ns3 {
 
@@ -142,7 +143,7 @@ public:
    *        is received.
    *
    */
-  virtual void Send (Ptr<NetDevice> device, Ptr<Packet> packet,
+  virtual void Send (Ptr<NetDevice> device, Ptr<Packet> packet, const Header & hdr,
                      const Address& dest, uint16_t protocolNumber);
 
 protected:

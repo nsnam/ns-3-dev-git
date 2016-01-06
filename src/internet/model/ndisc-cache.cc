@@ -217,15 +217,15 @@ bool NdiscCache::Entry::IsRouter () const
   return m_router;
 }
 
-void NdiscCache::Entry::AddWaitingPacket (Ptr<Packet> p)
+void NdiscCache::Entry::AddWaitingPacket (PacketWithHeader p)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << p.second << p.first);	
 
   if (m_waiting.size () >= m_ndCache->GetUnresQlen ())
     {
       /* we store only m_unresQlen packet => first packet in first packet remove */
       /** \todo report packet as 'dropped' */
-      m_waiting.remove (0);
+      // m_waiting.remove (0);
     }
   m_waiting.push_back (p);
 }
@@ -276,13 +276,17 @@ void NdiscCache::Entry::FunctionRetransmitTimeout ()
     }
   else
     {
-      Ptr<Packet> malformedPacket = m_waiting.front ();
-      if (malformedPacket == 0)
+      PacketWithHeader malformedPacket = m_waiting.front ();
+      if (malformedPacket.first == 0)
         {
-          malformedPacket = Create<Packet> ();
+          malformedPacket.first = Create<Packet> ();
+        }
+      else
+        {
+          malformedPacket.first->AddHeader (malformedPacket.second);
         }
 
-      icmpv6->SendErrorDestinationUnreachable (malformedPacket, addr, Icmpv6Header::ICMPV6_ADDR_UNREACHABLE);
+      icmpv6->SendErrorDestinationUnreachable (malformedPacket.first, addr, Icmpv6Header::ICMPV6_ADDR_UNREACHABLE);
 
       /* delete the entry */
       m_ndCache->Remove (this);
@@ -318,8 +322,9 @@ void NdiscCache::Entry::FunctionDelayTimeout ()
       return;
     }
 
-  Ptr<Packet> p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
-  m_ndCache->GetDevice ()->Send (p, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
+  PacketWithHeader p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
+  p.first->AddHeader (p.second);
+  m_ndCache->GetDevice ()->Send (p.first, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
 
   m_nsRetransmit = 1;
   StartProbeTimer ();
@@ -358,8 +363,9 @@ void NdiscCache::Entry::FunctionProbeTimeout ()
         }
 
       /* icmpv6->SendNS (m_ndCache->GetInterface ()->GetLinkLocalAddress (), m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ()); */
-      Ptr<Packet> p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
-      m_ndCache->GetDevice ()->Send (p, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
+      PacketWithHeader p = icmpv6->ForgeNS (addr, m_ipv6Address, m_ipv6Address, m_ndCache->GetDevice ()->GetAddress ());
+      p.first->AddHeader (p.second);
+      m_ndCache->GetDevice ()->Send (p.first, this->GetMacAddress (), Ipv6L3Protocol::PROT_NUMBER);
 
       /* arm the timer again */
       StartProbeTimer ();
@@ -444,18 +450,18 @@ void NdiscCache::Entry::StopNudTimer ()
   m_nsRetransmit = 0;
 }
 
-void NdiscCache::Entry::MarkIncomplete (Ptr<Packet> p)
+void NdiscCache::Entry::MarkIncomplete (PacketWithHeader p)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << p.second << p.first);
   m_state = INCOMPLETE;
 
-  if (p)
+  if (p.first)
     {
       m_waiting.push_back (p);
     }
 }
 
-std::list<Ptr<Packet> > NdiscCache::Entry::MarkReachable (Address mac)
+std::list<NdiscCache::PacketWithHeader> NdiscCache::Entry::MarkReachable (Address mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_state = REACHABLE;
@@ -481,7 +487,7 @@ void NdiscCache::Entry::MarkReachable ()
   m_state = REACHABLE;
 }
 
-std::list<Ptr<Packet> > NdiscCache::Entry::MarkStale (Address mac)
+std::list<NdiscCache::PacketWithHeader> NdiscCache::Entry::MarkStale (Address mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_state = STALE;

@@ -69,26 +69,27 @@ Ipv4PacketProbe::~Ipv4PacketProbe ()
 }
 
 void
-Ipv4PacketProbe::SetValue (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv4PacketProbe::SetValue (const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv4 << interface);
+  NS_LOG_FUNCTION (this << header << packet << ipv4 << interface);
+  m_header    = header;
   m_packet    = packet;
   m_ipv4      = ipv4;
   m_interface = interface;
-  m_output (packet, ipv4, interface);
+  m_output (header, packet, ipv4, interface);
 
-  uint32_t packetSizeNew = packet->GetSize ();
+  uint32_t packetSizeNew = packet->GetSize () + header.GetSerializedSize ();
   m_outputBytes (m_packetSizeOld, packetSizeNew);
   m_packetSizeOld = packetSizeNew;
 }
 
 void
-Ipv4PacketProbe::SetValueByPath (std::string path, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv4PacketProbe::SetValueByPath (std::string path, const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  NS_LOG_FUNCTION (path << packet << ipv4 << interface);
+  NS_LOG_FUNCTION (path << header << packet << ipv4 << interface);
   Ptr<Ipv4PacketProbe> probe = Names::Find<Ipv4PacketProbe> (path);
   NS_ASSERT_MSG (probe, "Error:  Can't find probe for path " << path);
-  probe->SetValue (packet, ipv4, interface);
+  probe->SetValue (header, packet, ipv4, interface);
 }
 
 bool
@@ -109,17 +110,18 @@ Ipv4PacketProbe::ConnectByPath (std::string path)
 }
 
 void
-Ipv4PacketProbe::TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv4PacketProbe::TraceSink (const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  NS_LOG_FUNCTION (this << packet << ipv4 << interface);
+  NS_LOG_FUNCTION (this << header << packet << ipv4 << interface);
   if (IsEnabled ())
     {
+      m_header    = header;
       m_packet    = packet;
       m_ipv4      = ipv4;
       m_interface = interface;
-      m_output (packet, ipv4, interface);
+      m_output (header, packet, ipv4, interface);
 
-      uint32_t packetSizeNew = packet->GetSize ();
+      uint32_t packetSizeNew = packet->GetSize () + header.GetSerializedSize ();
       m_outputBytes (m_packetSizeOld, packetSizeNew);
       m_packetSizeOld = packetSizeNew;
     }

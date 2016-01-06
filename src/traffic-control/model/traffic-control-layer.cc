@@ -103,7 +103,7 @@ TrafficControlLayer::Receive (Ptr<NetDevice> device, Ptr<const Packet> p,
 }
 
 void
-TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,
+TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,  const Header & hdr,
                            const Address &dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << device << packet << dest << protocolNumber);
@@ -118,16 +118,35 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<Packet> packet,
 
   if (qDisc == 0)
     {
-      // The device has no attached queue disc, thus send the packet
-      // directly to the device if the selected queue is not stopped
+      // The device has no attached queue disc, thus add the header to the packet and
+      // send it directly to the device if the selected queue is not stopped
       if (!device->GetTxQueue (txq)->IsStopped ())
         {
+          packet->AddHeader (hdr);
           device->Send (packet, dest, protocolNumber);
         }
     }
   else
     {
-      Ptr<QueueDiscItem> item = Create<QueueDiscItem> (packet, dest, protocolNumber, txq);
+      // determine the header type (IPv4 or IPv6) to create the queue disc item
+      Ptr<QueueDiscItem> item;
+      try
+        {
+          const Ipv4Header & ipv4Header = dynamic_cast<const Ipv4Header &> (hdr);
+          item = Create<QueueDiscItem> (packet, ipv4Header, dest, protocolNumber, txq);
+        }
+      catch (std::bad_cast)
+        {
+          try
+            {
+              const Ipv6Header & ipv6Header = dynamic_cast<const Ipv6Header &> (hdr);
+              item = Create<QueueDiscItem> (packet, ipv6Header, dest, protocolNumber, txq);
+            }
+          catch (std::bad_cast)
+            {
+              NS_ASSERT (false);
+            }
+        }
 
       qDisc->Enqueue (item);
       qDisc->Run ();

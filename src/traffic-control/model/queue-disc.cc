@@ -25,8 +25,20 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("QueueDisc");
 
-QueueDiscItem::QueueDiscItem (Ptr<Packet> p, const Address& addr, uint16_t protocol, uint8_t txq)
+QueueDiscItem::QueueDiscItem (Ptr<Packet> p, const Ipv4Header& hdr, const Address& addr, uint16_t protocol, uint8_t txq)
   : QueueItem (p),
+    m_ipv4Header (hdr),
+    m_headerType (IPV4_HEADER),
+    m_address (addr),
+    m_protocol (protocol),
+    m_txq (txq)
+{
+}
+
+QueueDiscItem::QueueDiscItem (Ptr<Packet> p, const Ipv6Header& hdr, const Address& addr, uint16_t protocol, uint8_t txq)
+  : QueueItem (p),
+    m_ipv6Header (hdr),
+    m_headerType (IPV6_HEADER),
     m_address (addr),
     m_protocol (protocol),
     m_txq (txq)
@@ -36,6 +48,26 @@ QueueDiscItem::QueueDiscItem (Ptr<Packet> p, const Address& addr, uint16_t proto
 QueueDiscItem::~QueueDiscItem()
 {
   NS_LOG_FUNCTION (this);
+}
+
+QueueDiscItem::HeaderType
+QueueDiscItem::GetHeaderType (void) const
+{
+  return m_headerType;
+}
+
+const Header &
+QueueDiscItem::GetHeader (void) const
+{
+  if (m_headerType == IPV4_HEADER)
+    {
+      return m_ipv4Header;
+    }
+  if (m_headerType == IPV6_HEADER)
+    {
+      return m_ipv6Header;
+    }
+  NS_ASSERT (false);
 }
 
 Address
@@ -381,6 +413,11 @@ QueueDisc::DequeuePacket ()
       if (m_devQueue->GetDevice ()->GetTxQueuesN ()>1 || !m_devQueue->IsStopped ())
         {
           item = Dequeue ();
+          // If the item is not null, add the IP header to the packet.
+          if (item != 0)
+            {
+              item->GetPacket ()->AddHeader (item->GetHeader ());
+            }
           // Here, Linux tries bulk dequeues
         }
     }

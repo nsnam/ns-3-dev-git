@@ -399,7 +399,8 @@ EpcS1uUlTestCase::DoRun ()
           Ptr<ArpCache> ueArpCache = ueLteIpv4Iface->GetArpCache (); 
           ueArpCache->SetAliveTimeout (Seconds (1000));          
           ArpCache::Entry* arpCacheEntry = ueArpCache->Add (gwAddr);
-          arpCacheEntry->MarkWaitReply(0);
+          Ipv4Header ipHeader;
+          arpCacheEntry->MarkWaitReply(ArpCache::PacketWithHeader(0, ipHeader));
           arpCacheEntry->MarkAlive (Mac48Address::GetBroadcast ()); 
   
           

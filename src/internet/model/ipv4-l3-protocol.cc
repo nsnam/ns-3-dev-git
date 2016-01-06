@@ -569,7 +569,6 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
         {
           if (ipv4Interface->IsUp ())
             {
-              m_rxTrace (packet, m_node->GetObject<Ipv4> (), interface);
               break;
             }
           else
@@ -589,6 +588,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       ipHeader.EnableChecksum ();
     }
   packet->RemoveHeader (ipHeader);
+  m_rxTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
 
   // Trim any residual frame padding from underlying devices
   if (ipHeader.GetPayloadSize () < packet->GetSize ())
@@ -736,9 +736,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
           NS_ASSERT (packetCopy->GetSize () <= outInterface->GetDevice ()->GetMtu ());
 
           m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
-          packetCopy->AddHeader (ipHeader);
-          m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
-          outInterface->Send (packetCopy, destination);
+          m_txTrace (ipHeader, packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
+          outInterface->Send (packetCopy, ipHeader, destination);
         }
       return;
     }
@@ -760,9 +759,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
               ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tos, mayFragment);
               Ptr<Packet> packetCopy = packet->Copy ();
               m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
-              packetCopy->AddHeader (ipHeader);
-              m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
-              outInterface->Send (packetCopy, destination);
+              m_txTrace (ipHeader, packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
+              outInterface->Send (packetCopy, ipHeader, destination);
               return;
             }
         }
@@ -877,7 +875,6 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), 0);
       return;
     }
-  packet->AddHeader (ipHeader);
   Ptr<NetDevice> outDev = route->GetOutputDevice ();
   int32_t interface = GetInterfaceForDevice (outDev);
   NS_ASSERT (interface >= 0);
@@ -889,27 +886,25 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       if (outInterface->IsUp ())
         {
           NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
-          if ( packet->GetSize () > outInterface->GetDevice ()->GetMtu () )
+          if ( packet->GetSize () + ipHeader.GetSerializedSize () > outInterface->GetDevice ()->GetMtu () )
             {
-              std::list<Ptr<Packet> > listFragments;
-              DoFragmentation (packet, outInterface->GetDevice ()->GetMtu (), listFragments);
-              for ( std::list<Ptr<Packet> >::iterator it = listFragments.begin (); it != listFragments.end (); it++ )
+              std::list<PacketWithHeader> listFragments;
+              DoFragmentation (packet, ipHeader, outInterface->GetDevice ()->GetMtu (), listFragments);
+              for ( std::list<PacketWithHeader>::iterator it = listFragments.begin (); it != listFragments.end (); it++ )
                 {
-                  m_txTrace (*it, m_node->GetObject<Ipv4> (), interface);
-                  outInterface->Send (*it, route->GetGateway ());
+                  m_txTrace (it->second, it->first, m_node->GetObject<Ipv4> (), interface);
+                  outInterface->Send (it->first, it->second, route->GetGateway ());
                 }
             }
           else
             {
-              m_txTrace (packet, m_node->GetObject<Ipv4> (), interface);
-              outInterface->Send (packet, route->GetGateway ());
+              m_txTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
+              outInterface->Send (packet, ipHeader, route->GetGateway ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping -- outgoing interface is down: " << route->GetGateway ());
-          Ipv4Header ipHeader;
-          packet->RemoveHeader (ipHeader);
           m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
         }
     } 
@@ -918,28 +913,26 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       if (outInterface->IsUp ())
         {
           NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestination ());
-          if ( packet->GetSize () > outInterface->GetDevice ()->GetMtu () )
+          if ( packet->GetSize () + ipHeader.GetSerializedSize () > outInterface->GetDevice ()->GetMtu () )
             {
-              std::list<Ptr<Packet> > listFragments;
-              DoFragmentation (packet, outInterface->GetDevice ()->GetMtu (), listFragments);
-              for ( std::list<Ptr<Packet> >::iterator it = listFragments.begin (); it != listFragments.end (); it++ )
+              std::list<PacketWithHeader> listFragments;
+              DoFragmentation (packet, ipHeader, outInterface->GetDevice ()->GetMtu (), listFragments);
+              for ( std::list<PacketWithHeader>::iterator it = listFragments.begin (); it != listFragments.end (); it++ )
                 {
-                  NS_LOG_LOGIC ("Sending fragment " << **it );
-                  m_txTrace (*it, m_node->GetObject<Ipv4> (), interface);
-                  outInterface->Send (*it, ipHeader.GetDestination ());
+                  NS_LOG_LOGIC ("Sending fragment " << *(it->first) );
+                  m_txTrace (it->second, it->first, m_node->GetObject<Ipv4> (), interface);
+                  outInterface->Send (it->first, it->second, ipHeader.GetDestination ());
                 }
             }
           else
             {
-              m_txTrace (packet, m_node->GetObject<Ipv4> (), interface);
-              outInterface->Send (packet, ipHeader.GetDestination ());
+              m_txTrace (ipHeader, packet, m_node->GetObject<Ipv4> (), interface);
+              outInterface->Send (packet, ipHeader, ipHeader.GetDestination ());
             }
         }
       else
         {
           NS_LOG_LOGIC ("Dropping -- outgoing interface is down: " << ipHeader.GetDestination ());
-          Ipv4Header ipHeader;
-          packet->RemoveHeader (ipHeader);
           m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
         }
     }
@@ -1329,7 +1322,7 @@ Ipv4L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeade
 }
 
 void
-Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::list<Ptr<Packet> >& listFragments)
+Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Header, uint32_t outIfaceMtu, std::list<PacketWithHeader>& listFragments)
 {
   // BEWARE: here we do assume that the header options are not present.
   // a much more complex handling is necessary in case there are options.
@@ -1339,9 +1332,6 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
   NS_LOG_FUNCTION (this << *packet << outIfaceMtu << &listFragments);
 
   Ptr<Packet> p = packet->Copy ();
-
-  Ipv4Header ipv4Header;
-  p->RemoveHeader (ipv4Header);
 
   NS_ASSERT_MSG( (ipv4Header.GetSerializedSize() == 5*4),
                  "IPv4 fragmentation implementation only works without option headers." );
@@ -1404,14 +1394,14 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::
       NS_LOG_LOGIC ("Fragment check - " << fragmentHeader.GetFragmentOffset ()  );
 
       NS_LOG_LOGIC ("New fragment Header " << fragmentHeader);
-      fragment->AddHeader (fragmentHeader);
 
       std::ostringstream oss;
+      oss << fragmentHeader;
       fragment->Print (oss);
 
       NS_LOG_LOGIC ("New fragment " << *fragment);
 
-      listFragments.push_back (fragment);
+      listFragments.push_back (PacketWithHeader (fragment, fragmentHeader));
 
       offset += currentFragmentablePartSize;
 
