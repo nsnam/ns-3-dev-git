@@ -22,6 +22,7 @@
 #define NET_DEVICE_H
 
 #include <string>
+#include <vector>
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/object.h"
@@ -35,11 +36,102 @@ namespace ns3 {
 class Node;
 class Channel;
 class Packet;
+class NetDevice;
 
 /**
  * \ingroup network
  * \defgroup netdevice Network Device
  */
+/**
+ * \ingroup netdevice
+ *
+ * \brief Network device transmission queue
+ *
+ * This class stores information about a single transmission queue
+ * of a network device that is exposed to queue discs. Such information
+ * includes the state of the transmission queue (whether it has been
+ * stopped or not) and data used by techniques such as Byte Queue Limits.
+ * Also, multi-queue aware queue discs can aggregate a child queue disc
+ * to an object of this class.
+ *
+ * This class roughly models the struct netdev_queue of Linux.
+ * \todo Implement BQL
+ */
+class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  NetDeviceQueue ();
+  virtual ~NetDeviceQueue();
+
+  /**
+   * \return the device which this transmission queue belongs to.
+   */
+  inline Ptr<NetDevice> GetDevice (void) const;
+
+  /**
+   * \param device the device which this transmission queue belongs to.
+   *
+   * The device can be set just once.
+   */
+  virtual void SetDevice (Ptr<NetDevice> device);
+
+  /**
+   * \return true if the (hardware) transmission queue is stopped.
+   *
+   * Called by queue discs to enquire about the status of a given transmission queue.
+   * This is the analogous to the netif_tx_queue_stopped function of the Linux kernel.
+   */
+  inline bool IsStopped (void) const;
+
+  /**
+   * Called by the device or the stack to start this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_start_queue function of the Linux kernel.
+   */
+  virtual void Start (void);
+
+  /**
+   * Called by the device or the stack to stop this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_stop_queue function of the Linux kernel.
+   */
+  virtual void Stop (void);
+
+  /**
+   * Called by the device or the stack to wake this (hardware) transmission queue.
+   * This is the analogous to the netif_tx_wake_queue function of the Linux kernel.
+   */
+  virtual void Wake (void);
+
+  typedef Callback< void > WakeCallback;
+
+  /**
+   * \param cb callback to invoke whenever it is needed to "wake" the upper layers (i.e.,
+   *        solicitate the queue disc aggregated to this transmission queue (in case of
+   *        multi-queue aware queue discs) or to the network device (otherwise) to send
+   *        packets down to the device).
+   *
+   * Set the callback to be used to wake the upper layers.
+   */
+  virtual void SetWakeCallback (WakeCallback cb);
+
+  /**
+   * \return true if the wake callback has been set.
+   *
+   * Used to check whether a queue disc has been installed on the device.
+   */
+  virtual bool HasWakeCallbackSet (void) const;
+
+private:
+  Ptr<NetDevice> m_device;
+  bool m_stopped;
+  WakeCallback m_wakeCallback;
+};
+
 /**
  * \ingroup netdevice
  *
@@ -80,6 +172,8 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+
+  NetDevice ();
   virtual ~NetDevice();
 
   /**
@@ -339,7 +433,67 @@ public:
    */
   virtual bool SupportsSendFrom (void) const = 0;
 
+  /**
+   * \return the i-th transmission queue of the device.
+   *
+   * The index of the first transmission queue is zero.
+   */
+  inline Ptr<NetDeviceQueue> GetTxQueue (uint8_t i) const;
+
+  /**
+   * \return the number of (hardware) transmission queues.
+   */
+  inline uint8_t GetTxQueuesN (void) const;
+
+  /**
+   * \return the id of the transmission queue selected for the given packet
+   */
+  virtual uint8_t GetSelectedQueue (Ptr<Packet> packet) const;
+
+protected:
+  /**
+   * \param numTxQueues number of (hardware) transmission queues.
+   *
+   * Modifying the number of transmission queues is only permitted before a queue
+   * disc is aggregated to the device. This is because we have to set a wake
+   * callback for each transmission queue, and this is done when setting up
+   * queue discs.
+   */
+  virtual void SetTxQueuesN (uint8_t numTxQueues);
+
+private:
+  std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;
 };
+
+} // namespace ns3
+
+
+namespace ns3 {
+
+Ptr<NetDevice>
+NetDeviceQueue::GetDevice (void) const
+{
+  return m_device;
+}
+
+bool
+NetDeviceQueue::IsStopped (void) const
+{
+  return m_stopped;
+}
+
+Ptr<NetDeviceQueue>
+NetDevice::GetTxQueue (uint8_t i) const
+{
+  NS_ASSERT (i < m_txQueuesVector.size ());
+  return m_txQueuesVector[i];
+}
+
+uint8_t
+NetDevice::GetTxQueuesN (void) const
+{
+  return m_txQueuesVector.size ();
+}
 
 } // namespace ns3
 

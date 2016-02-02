@@ -175,6 +175,7 @@
 #include "ns3/ipv6-extension-header.h"
 #include "ns3/icmpv6-l4-protocol.h"
 #include "ns3/global-router-interface.h"
+#include "ns3/traffic-control-layer.h"
 #include <limits>
 #include <map>
 
@@ -473,6 +474,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
 
   if (m_ipv4Enabled || m_ipv6Enabled)
     {
+      CreateAndAggregateObjectFromTypeId (node, "ns3::TrafficControlLayer");
       CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
       node->AggregateObject (m_tcpFactory.Create<Object> ());
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
@@ -489,12 +491,13 @@ InternetStackHelper::Install (std::string nodeName) const
 
 /**
  * \brief Sync function for IPv4 packet - Pcap output
+ * \param header IPv4 header
  * \param p smart pointer to the packet
  * \param ipv4 smart pointer to the node's IPv4 stack
  * \param interface incoming interface
  */
 static void
-Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
+Ipv4L3ProtocolRxTxSink (Ipv4Header const &header, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   NS_LOG_FUNCTION (p << ipv4 << interface);
 
@@ -512,7 +515,7 @@ Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
     }
 
   Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv4[pair];
-  file->Write (Simulator::Now (), p);
+  file->Write (Simulator::Now (), header, p);
 }
 
 bool
@@ -587,12 +590,13 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
 
 /**
  * \brief Sync function for IPv6 packet - Pcap output
+ * \param header IPv6 header
  * \param p smart pointer to the packet
  * \param ipv6 smart pointer to the node's IPv6 stack
  * \param interface incoming interface
  */
 static void
-Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
+Ipv6L3ProtocolRxTxSink (Ipv6Header const &header, Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
 {
   NS_LOG_FUNCTION (p << ipv6 << interface);
 
@@ -610,7 +614,7 @@ Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
     }
 
   Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv6[pair];
-  file->Write (Simulator::Now (), p);
+  file->Write (Simulator::Now (), header, p);
 }
 
 bool
@@ -722,6 +726,7 @@ Ipv4L3ProtocolDropSinkWithoutContext (
 /**
  * \brief Sync function for IPv4 transmitted packet - Ascii output
  * \param stream the output stream
+ * \param header IPv4 header
  * \param packet smart pointer to the packet
  * \param ipv4 smart pointer to the node's IPv4 stack
  * \param interface incoming interface
@@ -729,6 +734,7 @@ Ipv4L3ProtocolDropSinkWithoutContext (
 static void
 Ipv4L3ProtocolTxSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
+  Ipv4Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
@@ -740,12 +746,13 @@ Ipv4L3ProtocolTxSinkWithoutContext (
       return;
     }
 
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << header << *packet << std::endl;
 }
 
 /**
  * \brief Sync function for IPv4 received packet - Ascii output
  * \param stream the output stream
+ * \param header IPv4 header
  * \param packet smart pointer to the packet
  * \param ipv4 smart pointer to the node's IPv4 stack
  * \param interface incoming interface
@@ -753,6 +760,7 @@ Ipv4L3ProtocolTxSinkWithoutContext (
 static void
 Ipv4L3ProtocolRxSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
+  Ipv4Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
@@ -764,7 +772,7 @@ Ipv4L3ProtocolRxSinkWithoutContext (
       return;
     }
 
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << header << *packet << std::endl;
 }
 
 /**
@@ -814,6 +822,7 @@ Ipv4L3ProtocolDropSinkWithContext (
  * \brief Sync function for IPv4 transmitted packet - Ascii output
  * \param stream the output stream
  * \param context the context
+ * \param header IPv4 header
  * \param packet smart pointer to the packet
  * \param ipv4 smart pointer to the node's IPv4 stack
  * \param interface incoming interface
@@ -822,6 +831,7 @@ static void
 Ipv4L3ProtocolTxSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
+  Ipv4Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
@@ -835,9 +845,10 @@ Ipv4L3ProtocolTxSinkWithContext (
 
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-                        << *packet << std::endl;
+                        << header << *packet << std::endl;
 #else
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " "  << *packet << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " "
+                        << header << *packet << std::endl;
 #endif
 }
 
@@ -845,6 +856,7 @@ Ipv4L3ProtocolTxSinkWithContext (
  * \brief Sync function for IPv4 received packet - Ascii output
  * \param stream the output stream
  * \param context the context
+ * \param header IPv4 header
  * \param packet smart pointer to the packet
  * \param ipv4 smart pointer to the node's IPv4 stack
  * \param interface incoming interface
@@ -853,6 +865,7 @@ static void
 Ipv4L3ProtocolRxSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
+  Ipv4Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
@@ -866,9 +879,10 @@ Ipv4L3ProtocolRxSinkWithContext (
 
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-                        << *packet << std::endl;
+                        << header << *packet << std::endl;
 #else
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " "  << *packet << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " "
+                        << header << *packet << std::endl;
 #endif
 }
 
@@ -1060,6 +1074,7 @@ Ipv6L3ProtocolDropSinkWithoutContext (
 /**
  * \brief Sync function for IPv6 transmitted packet - Ascii output
  * \param stream the output stream
+ * \param header IPv6 header
  * \param packet smart pointer to the packet
  * \param ipv6 smart pointer to the node's IPv6 stack
  * \param interface incoming interface
@@ -1067,6 +1082,7 @@ Ipv6L3ProtocolDropSinkWithoutContext (
 static void
 Ipv6L3ProtocolTxSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
+  Ipv6Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv6> ipv6, 
   uint32_t interface)
@@ -1078,12 +1094,13 @@ Ipv6L3ProtocolTxSinkWithoutContext (
       return;
     }
 
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << header << *packet << std::endl;
 }
 
 /**
  * \brief Sync function for IPv6 received packet - Ascii output
  * \param stream the output stream
+ * \param header IPv6 header
  * \param packet smart pointer to the packet
  * \param ipv6 smart pointer to the node's IPv6 stack
  * \param interface incoming interface
@@ -1091,6 +1108,7 @@ Ipv6L3ProtocolTxSinkWithoutContext (
 static void
 Ipv6L3ProtocolRxSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
+  Ipv6Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv6> ipv6, 
   uint32_t interface)
@@ -1102,7 +1120,7 @@ Ipv6L3ProtocolRxSinkWithoutContext (
       return;
     }
 
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *packet << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << header << *packet << std::endl;
 }
 
 /**
@@ -1152,6 +1170,7 @@ Ipv6L3ProtocolDropSinkWithContext (
  * \brief Sync function for IPv6 transmitted packet - Ascii output
  * \param stream the output stream
  * \param context the context
+ * \param header IPv6 header
  * \param packet smart pointer to the packet
  * \param ipv6 smart pointer to the node's IPv6 stack
  * \param interface incoming interface
@@ -1160,6 +1179,7 @@ static void
 Ipv6L3ProtocolTxSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
+  Ipv6Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv6> ipv6, 
   uint32_t interface)
@@ -1173,9 +1193,9 @@ Ipv6L3ProtocolTxSinkWithContext (
 
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-                        << *packet << std::endl;
+                        << header << *packet << std::endl;
 #else
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << header << *packet << std::endl;
 #endif
 }
 
@@ -1183,6 +1203,7 @@ Ipv6L3ProtocolTxSinkWithContext (
  * \brief Sync function for IPv6 received packet - Ascii output
  * \param stream the output stream
  * \param context the context
+ * \param header IPv6 header
  * \param packet smart pointer to the packet
  * \param ipv6 smart pointer to the node's IPv6 stack
  * \param interface incoming interface
@@ -1191,6 +1212,7 @@ static void
 Ipv6L3ProtocolRxSinkWithContext (
   Ptr<OutputStreamWrapper> stream,
   std::string context,
+  Ipv6Header const &header,
   Ptr<const Packet> packet,
   Ptr<Ipv6> ipv6, 
   uint32_t interface)
@@ -1204,9 +1226,9 @@ Ipv6L3ProtocolRxSinkWithContext (
 
 #ifdef INTERFACE_CONTEXT
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << "(" << interface << ") " 
-                        << *packet << std::endl;
+                        << header << *packet << std::endl;
 #else
-  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << header << *packet << std::endl;
 #endif
 }
 

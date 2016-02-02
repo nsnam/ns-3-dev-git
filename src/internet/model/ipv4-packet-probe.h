@@ -30,6 +30,7 @@
 #include "ns3/nstime.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-header.h"
 #include "ns3/traced-value.h"
 #include "ns3/simulator.h"
 #include "ns3/probe.h"
@@ -37,11 +38,11 @@
 namespace ns3 {
 
 /**
- * This class is designed to probe an underlying ns3 TraceSource
- * exporting a packet, an IPv4 object, and an interface.  This probe
- * exports a trace source "Output" with arguments of type Ptr<const Packet>,
- * Ptr<Ipv4>, and uint32_t.  The Output trace source emits a value
- * when either the trace source emits a new value, or when SetValue ()
+ * This class is designed to probe an underlying ns3 TraceSource exporting
+ * an IPv4 header, a packet, an IPv4 object, and an interface.  This probe
+ * exports a trace source "Output" with arguments of type const Ipv4Header&,
+ * Ptr<const Packet>, Ptr<Ipv4>, and uint32_t.  The Output trace source emits
+ * a value when either the trace source emits a new value, or when SetValue ()
  * is called.
  */
 class Ipv4PacketProbe : public Probe
@@ -58,21 +59,23 @@ public:
   /**
    * \brief Set a probe value
    *
+   * \param header set the Ipv4 header equal to this
    * \param packet set the traced packet equal to this
    * \param ipv4 set the IPv4 object for the traced packet equal to this
    * \param interface set the IPv4 interface for the traced packet equal to this
    */
-  void SetValue (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  void SetValue (const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * \brief Set a probe value by its name in the Config system
    *
    * \param path config path to access the probe
+   * \param header set the Ipv4 header equal to this
    * \param packet set the traced packet equal to this
    * \param ipv4 set the IPv4 object for the traced packet equal to this
    * \param interface set the IPv4 interface for the traced packet equal to this
    */
-  static void SetValueByPath (std::string path, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  static void SetValueByPath (std::string path, const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * \brief connect to a trace source attribute provided by a given object
@@ -95,19 +98,23 @@ public:
 
 private:
   /**
-   * \brief Method to connect to an underlying ns3::TraceSource with
-   * arguments of type Ptr<const Packet>, Ptr<Ipv4>, and uint32_t
+   * \brief Method to connect to an underlying ns3::TraceSource with arguments
+   * of type const Ipv4Header&, Ptr<const Packet>, Ptr<Ipv4>, and uint32_t
    *
+   * \param header the Ipv4 header of the traced packet
    * \param packet the traced packet
    * \param ipv4 the IPv4 object for the traced packet
    * \param interface the IPv4 interface for the traced packet
    */
-  void TraceSink (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  void TraceSink (const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
-  /// Traced Callback: the packet, the Ipv4 object and the interface.
-  ns3::TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_output;
+  /// Traced Callback: the Ipv4 header, the packet, the Ipv4 object and the interface.
+  ns3::TracedCallback<const Ipv4Header&, Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_output;
   /// Traced Callback: the previous packet's size and the actual packet's size.
   ns3::TracedCallback<uint32_t, uint32_t> m_outputBytes;
+
+  /// The traced IPv4 header.
+  Ipv4Header m_header;
 
   /// The traced packet.
   Ptr<const Packet> m_packet;

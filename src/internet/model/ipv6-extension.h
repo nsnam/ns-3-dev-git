@@ -286,12 +286,17 @@ public:
                            Ipv6L3Protocol::DropReason& dropReason);
 
   /**
+   * \brief Pair of a packet and an Ipv6 header.
+   */
+  typedef std::pair<Ptr<Packet>, Ipv6Header> PacketWithHeader;
+
+  /**
    * \brief Fragment a packet
    * \param packet the packet
    * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation header + fragmentable part)
    * \param listFragments the list of fragments
    */
-  void GetFragments (Ptr<Packet> packet, uint32_t fragmentSize, std::list<Ptr<Packet> >& listFragments);
+  void GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Header, uint32_t fragmentSize, std::list<PacketWithHeader>& listFragments);
 
 protected:
   /**

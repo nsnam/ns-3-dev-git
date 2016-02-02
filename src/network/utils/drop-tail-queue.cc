@@ -83,9 +83,10 @@ DropTailQueue::GetMode (void) const
 }
 
 bool 
-DropTailQueue::DoEnqueue (Ptr<Packet> p)
+DropTailQueue::DoEnqueue (Ptr<QueueItem> item)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << item);
+  Ptr<Packet> p = item->GetPacket ();
 
   if (m_mode == QUEUE_MODE_PACKETS && (m_packets.size () >= m_maxPackets))
     {
@@ -102,7 +103,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
     }
 
   m_bytesInQueue += p->GetSize ();
-  m_packets.push (p);
+  m_packets.push (item);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
@@ -110,7 +111,7 @@ DropTailQueue::DoEnqueue (Ptr<Packet> p)
   return true;
 }
 
-Ptr<Packet>
+Ptr<QueueItem>
 DropTailQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
@@ -121,19 +122,19 @@ DropTailQueue::DoDequeue (void)
       return 0;
     }
 
-  Ptr<Packet> p = m_packets.front ();
+  Ptr<QueueItem> item = m_packets.front ();
   m_packets.pop ();
-  m_bytesInQueue -= p->GetSize ();
+  m_bytesInQueue -= item->GetPacket ()->GetSize ();
 
-  NS_LOG_LOGIC ("Popped " << p);
+  NS_LOG_LOGIC ("Popped " << item);
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
-  return p;
+  return item;
 }
 
-Ptr<const Packet>
+Ptr<const QueueItem>
 DropTailQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -144,12 +145,12 @@ DropTailQueue::DoPeek (void) const
       return 0;
     }
 
-  Ptr<Packet> p = m_packets.front ();
+  Ptr<QueueItem> item = m_packets.front ();
 
   NS_LOG_LOGIC ("Number packets " << m_packets.size ());
   NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
-  return p;
+  return item;
 }
 
 } // namespace ns3

@@ -168,6 +168,10 @@ public:
    */
   uint8_t GetTos (void) const;
   /**
+   * \returns the version field of this packet (typically '4').
+   */
+  uint8_t GetVersion (void) const;
+  /**
    * \returns the DSCP field of this packet.
    */
   DscpType GetDscp (void) const;
@@ -175,7 +179,7 @@ public:
    * \param dscp the dscp
    * \returns std::string of DSCPType
    */
-  std::string DscpTypeToString (DscpType dscp) const;
+  static std::string DscpTypeToString (DscpType dscp);
   /**
    * \returns the ECN field of this packet.
    */
@@ -254,6 +258,7 @@ private:
   uint16_t m_checksum; //!< checksum
   bool m_goodChecksum; //!< true if checksum is correct
   uint16_t m_headerSize; //!< IP header size
+  uint16_t m_version;  //!< IP version (4)
 };
 
 } // namespace ns3

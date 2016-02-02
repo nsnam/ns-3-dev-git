@@ -411,8 +411,8 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty, empty);
 
   CHECK (Ipv4L3Protocol::TxRxTracedCallback,
-         Ptr<const Packet>, Ptr<Ipv4>, uint32_t,
-         empty, empty);
+         const Ipv4Header &, Ptr<const Packet>, Ptr<Ipv4>,
+          uint32_t, empty);
   
   CHECK (Ipv6L3Protocol::DropTracedCallback,
          const Ipv6Header &, Ptr<const Packet>,
@@ -424,8 +424,8 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty, empty);
 
   CHECK (Ipv6L3Protocol::TxRxTracedCallback,
-         Ptr<const Packet>, Ptr<Ipv6>, uint32_t,
-         empty, empty);
+         const Ipv6Header &, Ptr<const Packet>, Ptr<Ipv6>,
+         uint32_t, empty);
 
   CHECK (LrWpanMac::SentTracedCallback,
          Ptr<const Packet>, uint8_t, uint8_t,

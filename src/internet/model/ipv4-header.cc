@@ -41,7 +41,8 @@ Ipv4Header::Ipv4Header ()
     m_fragmentOffset (0),
     m_checksum (0),
     m_goodChecksum (true),
-    m_headerSize(5*4)
+    m_headerSize(5*4),
+    m_version (4)
 {
 }
 
@@ -110,9 +111,9 @@ Ipv4Header::GetDscp (void) const
 }
 
 std::string 
-Ipv4Header::DscpTypeToString (DscpType dscp) const
+Ipv4Header::DscpTypeToString (DscpType dscp)
 {
-  NS_LOG_FUNCTION (this << dscp);
+  NS_LOG_FUNCTION_NOARGS ();
   switch (dscp)
     {
       case DscpDefault:
@@ -195,6 +196,12 @@ Ipv4Header::GetTos (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_tos;
+}
+uint8_t
+Ipv4Header::GetVersion (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_version;
 }
 void 
 Ipv4Header::SetMoreFragments (void)
@@ -425,9 +432,9 @@ Ipv4Header::Deserialize (Buffer::Iterator start)
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
   uint8_t verIhl = i.ReadU8 ();
+  m_version = verIhl >> 4;
   uint8_t ihl = verIhl & 0x0f; 
   uint16_t headerSize = ihl * 4;
-  NS_ASSERT ((verIhl >> 4) == 4);
   m_tos = i.ReadU8 ();
   uint16_t size = i.ReadNtohU16 ();
   m_payloadSize = size - headerSize;

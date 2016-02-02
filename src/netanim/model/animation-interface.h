@@ -664,9 +664,11 @@ private:
   void QueueDropTrace (std::string context,
                      Ptr<const Packet>);
   void Ipv4TxTrace (std::string context,
+                    const Ipv4Header &,
                     Ptr<const Packet>, Ptr<Ipv4>,  
                     uint32_t);
   void Ipv4RxTrace (std::string context,
+                    const Ipv4Header &,
                     Ptr<const Packet>, Ptr<Ipv4>,
                     uint32_t);
   void Ipv4DropTrace (std::string context,

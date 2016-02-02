@@ -686,14 +686,14 @@ AnimationInterface::WifiMacRxDropTrace (std::string context, Ptr<const Packet> p
 }
 
 void
-AnimationInterface::Ipv4TxTrace (std::string context, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
+AnimationInterface::Ipv4TxTrace (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
 {
   const Ptr <const Node> node = GetNodeFromContext (context);
   ++m_nodeIpv4Tx[node->GetId ()];
 }
  
 void
-AnimationInterface::Ipv4RxTrace (std::string context, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
+AnimationInterface::Ipv4RxTrace (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
 {
   const Ptr <const Node> node = GetNodeFromContext (context);
   ++m_nodeIpv4Rx[node->GetId ()];

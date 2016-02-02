@@ -137,6 +137,10 @@ public:
    */
   virtual Ssid GetSsid (void) const;
   /**
+   * \return the number of transmission queues handled by this MAC layer.
+   */
+  virtual uint8_t GetTxQueuesN (void) const;
+  /**
    * \param address the current address of this MAC layer.
    */
   virtual void SetAddress (Mac48Address address);

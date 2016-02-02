@@ -78,7 +78,7 @@ private:
   bool m_needToClose;
   std::string m_tcpModel;
 
-  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  void Ipv4L3Tx (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
   void CwndTracer (uint32_t oldval, uint32_t newval);
   void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
   void StartFlow (Ptr<Socket> localSocket, 
@@ -145,18 +145,10 @@ Ns3TcpLossTestCase::DoTeardown (void)
 }
 
 void
-Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   //
-  // We're not testing IP so remove and toss the header.  In order to do this,
-  // though, we need to copy the packet since we have a const version.
-  //
-  Ptr<Packet> p = packet->Copy ();
-  Ipv4Header ipHeader;
-  p->RemoveHeader (ipHeader);
-
-  //
-  // What is left is the TCP header and any data that may be sent.  We aren't
+  // packet includes the TCP header and any data that may be sent.  We aren't
   // sending any TCP data, so we expect what remains is only TCP header, which
   // is a small thing to save.
   //
@@ -171,7 +163,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
 
       m_pcapFile.Write (uint32_t (tMicroSeconds / 1000000), 
                         uint32_t (tMicroSeconds % 1000000), 
-                        p
+                        packet
                         );
     }
   else
@@ -187,7 +179,7 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
       NS_LOG_DEBUG ("read " << readLen);
 
       uint8_t *actual = new uint8_t[readLen];
-      p->CopyData (actual, readLen);
+      packet->CopyData (actual, readLen);
 
       int result = memcmp (actual, expected, readLen);
 

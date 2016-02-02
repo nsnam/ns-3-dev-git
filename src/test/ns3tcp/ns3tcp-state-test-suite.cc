@@ -78,7 +78,7 @@ private:
   bool m_writeLogging;
   bool m_needToClose;
 
-  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  void Ipv4L3Tx (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
   void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
   void StartFlow (Ptr<Socket> localSocket, 
                   Ipv4Address servAddress, 
@@ -143,20 +143,12 @@ Ns3TcpStateTestCase::DoTeardown (void)
 }
 
 void
-Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, const Ipv4Header & ipv4Header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  //
-  // We're not testing IP so remove and toss the header.  In order to do this,
-  // though, we need to copy the packet since we have a const version.
-  //
-  Ptr<Packet> p = packet->Copy ();
-  Ipv4Header ipHeader;
-  p->RemoveHeader (ipHeader);
-
   if (g_log.IsEnabled (ns3::LOG_DEBUG))
     {
       TcpHeader th;
-      p->PeekHeader (th);
+      packet->PeekHeader (th);
       std::clog << Simulator::Now ().GetSeconds () << " TCP header " << th << std::endl;
     }
 
@@ -175,7 +167,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
 
       m_pcapFile.Write (uint32_t (tMicroSeconds / 1000000), 
                         uint32_t (tMicroSeconds % 1000000), 
-                        p);
+                        packet);
     }
   else
     {
@@ -188,7 +180,7 @@ Ns3TcpStateTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
       m_pcapFile.Read (expected, sizeof(expected), tsSec, tsUsec, inclLen, origLen, readLen);
 
       uint8_t *actual = new uint8_t[readLen];
-      p->CopyData (actual, readLen);
+      packet->CopyData (actual, readLen);
 
       uint32_t result = memcmp (actual, expected, readLen);
 

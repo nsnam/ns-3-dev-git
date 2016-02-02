@@ -52,7 +52,6 @@ class Ipv4RawSocketImpl;
 class IpL4Protocol;
 class Icmpv4L4Protocol;
 
-
 /**
  * \brief Implement the Ipv4 layer.
  * 
@@ -282,6 +281,7 @@ public:
   /**
    * TracedCallback signature for packet transmission or reception events.
    *
+   * \param [in] header The Ipv4Header.
    * \param [in] packet The packet.
    * \param [in] ipv4
    * \param [in] interface
@@ -289,7 +289,7 @@ public:
    * and will be changed to \c Ptr<const Ipv4> in a future release.
    */
   typedef void (* TxRxTracedCallback)
-    (Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+    (const Ipv4Header & header, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * TracedCallback signature for packet drop events.
@@ -435,12 +435,18 @@ private:
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
 
   /**
+   * \brief Pair of a packet and an Ipv4 header.
+   */
+  typedef std::pair<Ptr<Packet>, Ipv4Header> PacketWithHeader;
+
+  /**
    * \brief Fragment a packet
    * \param packet the packet
+   * \param ipHeader the IPv4 header
    * \param outIfaceMtu the MTU of the interface
    * \param listFragments the list of fragments
    */
-  void DoFragmentation (Ptr<Packet> packet, uint32_t outIfaceMtu, std::list<Ptr<Packet> >& listFragments);
+  void DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Header, uint32_t outIfaceMtu, std::list<PacketWithHeader>& listFragments);
 
   /**
    * \brief Process a packet fragment
@@ -494,15 +500,14 @@ private:
   /// Trace of locally delivered packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
-  // The following two traces pass a packet with an IP header
   /// Trace of transmitted packets
   /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
   /// and will be changed to \c Ptr<const Ipv4> in a future release.
-  TracedCallback<Ptr<const Packet>, Ptr<Ipv4>,  uint32_t> m_txTrace;
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, Ptr<Ipv4>,  uint32_t> m_txTrace;
   /// Trace of received packets
   /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
   /// and will be changed to \c Ptr<const Ipv4> in a future release.
-  TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
   // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
   /// Trace of dropped packets
   /// \deprecated The non-const \c Ptr<Ipv4> argument is deprecated
