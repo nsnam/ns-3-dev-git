@@ -35,3 +35,9 @@ TAGS
 
 build-dir/
 build/
+
+# ignore eclipse and idea files
+.settings/language.settings.xml
+.cproject
+.project
+.idea/
