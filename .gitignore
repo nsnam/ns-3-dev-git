@@ -37,7 +37,9 @@ build-dir/
 build/
 
 # ignore eclipse and idea files
-.settings/language.settings.xml
+.externalToolBuilders/
+.settings/
 .cproject
 .project
 .idea/
+/Default/
