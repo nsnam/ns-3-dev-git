@@ -36,9 +36,10 @@
 
 namespace ns3 {
 
-class Queue;
+template <typename Item> class Queue;
 class CsmaChannel;
 class ErrorModel;
+class NetDeviceQueueInterface;
 
 /** 
  * \defgroup csma CSMA Network Device
@@ -128,20 +129,20 @@ public:
    *
    * The CsmaNetDevice "owns" a queue.  This queue may be set by higher
    * level topology objects to implement a particular queueing method such as
-   * DropTail or RED.
+   * DropTail.
    *
    * \see Queue
    * \see DropTailQueue
    * \param queue a Ptr to the queue for being assigned to the device.
    */
-  void SetQueue (Ptr<Queue> queue);
+  void SetQueue (Ptr<Queue<Packet> > queue);
 
   /**
    * Get a copy of the attached Queue.
    *
    * \return a pointer to the queue.
    */
-  Ptr<Queue> GetQueue (void) const; 
+  Ptr<Queue<Packet> > GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the CsmaNetDevice.
@@ -356,6 +357,9 @@ protected:
    */
   void AddHeader (Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
 
+  virtual void DoInitialize (void);
+  virtual void NotifyNewAggregate (void);
+
 private:
 
   /**
@@ -530,7 +534,7 @@ private:
    * \see class Queue
    * \see class DropTailQueue
    */
-  Ptr<Queue> m_queue;
+  Ptr<Queue<Packet> > m_queue;
 
   /**
    * Error model for receive packet events.  When active this model will be
@@ -682,6 +686,11 @@ private:
    * The Node to which this device is attached.
    */
   Ptr<Node> m_node;
+
+  /**
+   * NetDevice queue interface.
+   */
+  Ptr<NetDeviceQueueInterface> m_queueInterface;
 
   /**
    * The MAC address which has been assigned to this device.

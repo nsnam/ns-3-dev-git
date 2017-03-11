@@ -110,7 +110,7 @@ LteCqiGenerationTestCase::LteCqiGenerationTestCase (std::string name, bool usePd
     m_dlMcs (dlMcs),
     m_ulMcs (ulMcs)
 {
-  m_usePdcchForCqiGeneration = usePdcchForCqiGeneration;
+  m_usePdschForCqiGeneration = usePdcchForCqiGeneration;
   NS_LOG_INFO ("Creating LteCqiGenerationTestCase");
 }
 
@@ -148,7 +148,7 @@ LteCqiGenerationTestCase::DoRun (void)
 
   Config::Reset ();
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
-  Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (m_usePdcchForCqiGeneration));
+  Config::SetDefault ("ns3::LteHelper::UsePdschForCqiGeneration", BooleanValue (m_usePdschForCqiGeneration));
 
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));

@@ -25,7 +25,6 @@
 
 #include "ns3/traced-callback.h"
 #include "ns3/net-device.h"
-#include "ns3/queue.h"
 #include "ns3/data-rate.h"
 #include "ns3/event-id.h"
 
@@ -33,9 +32,11 @@
 
 namespace ns3 {
 
+template <typename Item> class Queue;
 class SimpleChannel;
 class Node;
 class ErrorModel;
+class NetDeviceQueueInterface;
 
 /**
  * \ingroup netdevice
@@ -87,14 +88,14 @@ public:
    *
    * \param queue Ptr to the new queue.
    */
-  void SetQueue (Ptr<Queue> queue);
+  void SetQueue (Ptr<Queue<Packet> > queue);
 
   /**
    * Get a copy of the attached Queue.
    *
    * \returns Ptr to the queue.
    */
-  Ptr<Queue> GetQueue (void) const;
+  Ptr<Queue<Packet> > GetQueue (void) const;
 
   /**
    * Attach a receive ErrorModel to the SimpleNetDevice.
@@ -137,11 +138,15 @@ public:
 
 protected:
   virtual void DoDispose (void);
+  virtual void DoInitialize (void);
+  virtual void NotifyNewAggregate (void);
+
 private:
   Ptr<SimpleChannel> m_channel; //!< the channel the device is connected to
   NetDevice::ReceiveCallback m_rxCallback; //!< Receive callback
   NetDevice::PromiscReceiveCallback m_promiscCallback; //!< Promiscuous receive callback
   Ptr<Node> m_node; //!< Node this netDevice is associated to
+  Ptr<NetDeviceQueueInterface> m_queueInterface;   //!< NetDevice queue interface
   uint16_t m_mtu;   //!< MTU
   uint32_t m_ifIndex; //!< Interface index
   Mac48Address m_address; //!< MAC address
@@ -171,7 +176,7 @@ private:
    */
   bool m_pointToPointMode;
 
-  Ptr<Queue> m_queue; //!< The Queue for outgoing packets.
+  Ptr<Queue<Packet> > m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
   EventId TransmitCompleteEvent; //!< the Tx Complete event
 

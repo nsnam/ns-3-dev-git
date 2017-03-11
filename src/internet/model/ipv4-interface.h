@@ -25,7 +25,6 @@
 #include <list>
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "ns3/traffic-control-layer.h"
 
 namespace ns3 {
 
@@ -36,6 +35,7 @@ class ArpCache;
 class Ipv4InterfaceAddress;
 class Ipv4Address;
 class Ipv4Header;
+class TrafficControlLayer;
 
 /**
  * \ingroup ipv4
@@ -191,6 +191,23 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv4Interface (const Ipv4Interface &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv4Interface &operator = (const Ipv4Interface &o);
+
   /**
    * \brief Initialize interface.
    */

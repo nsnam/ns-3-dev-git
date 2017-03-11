@@ -25,7 +25,6 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ipv6-interface-address.h"
-#include "ns3/traffic-control-layer.h"
 
 namespace ns3
 {
@@ -37,6 +36,7 @@ class NdiscCache;
 class Ipv6InterfaceAddress;
 class Ipv6Address;
 class Ipv6Header;
+class TrafficControlLayer;
 
 /**
  * \ingroup ipv6
@@ -279,6 +279,23 @@ protected:
   virtual void DoDispose ();
 
 private:
+  /**
+   * \brief Copy constructor
+   * \param o object to copy
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv6Interface (const Ipv6Interface &o);
+
+  /**
+   * \brief Assignment operator
+   * \param o object to copy
+   * \returns the copied object
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  Ipv6Interface &operator = (const Ipv6Interface &o);
+
   /**
    * \brief Container for the Ipv6InterfaceAddresses.
    */
