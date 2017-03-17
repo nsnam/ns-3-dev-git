@@ -16,6 +16,8 @@
  * Author: George F. Riley<riley@ece.gatech.edu>
  * Modified by: John Abraham <john.abraham@gatech.edu>
  * Contributions: Eugene Kalishenko <ydginster@gmail.com> (Open Source and Linux Laboratory http://dev.osll.ru/)
+ *                Tommaso Pecorella <tommaso.pecorella@unifi.it>
+ *                Pavel Vasilyev <pavel.vasilyev@sredasolutions.com>
  */
 
 // Interface between ns-3 and the network animator
@@ -44,11 +46,14 @@
 #include "ns3/wimax-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/lr-wpan-mac-header.h"
+#include "ns3/lr-wpan-net-device.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/lte-ue-phy.h"
 #include "ns3/lte-enb-phy.h"
 #include "ns3/uan-net-device.h"
 #include "ns3/uan-mac.h"
+#include "ns3/double.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv4-routing-protocol.h"
@@ -453,6 +458,8 @@ AnimationInterface::MobilityAutoCheck ()
       PurgePendingPackets (AnimationInterface::WIMAX);
       PurgePendingPackets (AnimationInterface::LTE);
       PurgePendingPackets (AnimationInterface::CSMA);
+      PurgePendingPackets (AnimationInterface::LRWPAN);
+      PurgePendingPackets (AnimationInterface::WAVE);
       Simulator::Schedule (m_mobilityPollInterval, &AnimationInterface::MobilityAutoCheck, this);
     }
 }
@@ -690,6 +697,34 @@ AnimationInterface::WifiMacRxDropTrace (std::string context, Ptr<const Packet> p
 }
 
 void
+AnimationInterface::LrWpanMacTxTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacTx[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacTxDropTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacTxDrop[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacRxTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacRx[node->GetId ()];
+}
+
+void
+AnimationInterface::LrWpanMacRxDropTrace (std::string context, Ptr<const Packet> p)
+{
+  const Ptr <const Node> node = GetNodeFromContext (context);
+  ++m_nodeLrWpanMacRxDrop[node->GetId ()];
+}
+
+void
 AnimationInterface::Ipv4TxTrace (std::string context, Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interfaceIndex)
 {
   const Ptr <const Node> node = GetNodeFromContext (context);
@@ -877,6 +912,133 @@ AnimationInterface::WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> 
 }
 
 void 
+AnimationInterface::LrWpanPhyTxBeginTrace (std::string context,
+                                           Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
+
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr<LrWpanNetDevice> netDevice = DynamicCast<LrWpanNetDevice> (ndev);
+
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  UpdatePosition (n);
+
+  LrWpanMacHeader hdr;
+  if (!p->PeekHeader (hdr))
+  {
+    NS_LOG_WARN ("LrWpanMacHeader not present");
+    return;
+  }
+
+  std::ostringstream oss;
+  if (hdr.GetSrcAddrMode () == 2)
+    {
+      Mac16Address nodeAddr = netDevice->GetMac ()->GetShortAddress ();
+      oss << nodeAddr;
+    }
+  else if (hdr.GetSrcAddrMode () == 3)
+    {
+      Mac64Address nodeAddr = netDevice->GetMac ()->GetExtendedAddress ();
+      oss << nodeAddr;
+    }
+  else
+    {
+      NS_LOG_WARN ("LrWpanMacHeader without source address");
+      return;
+    }
+  m_macToNodeIdMap[oss.str ()] = n->GetId ();
+  NS_LOG_INFO ("Added Mac" << oss.str () << " node:" <<m_macToNodeIdMap[oss.str ()]);
+
+  ++gAnimUid;
+  NS_LOG_INFO ("LrWpan TxBeginTrace for packet:" << gAnimUid);
+  AddByteTag (gAnimUid, p);
+
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
+  AddPendingPacket (AnimationInterface::LRWPAN, gAnimUid, pktInfo);
+
+  OutputWirelessPacketTxInfo (p, m_pendingLrWpanPackets[gAnimUid], gAnimUid);
+}
+
+void
+AnimationInterface::LrWpanPhyRxBeginTrace (std::string context,
+                                           Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  Ptr <Node> n = ndev->GetNode ();
+  NS_ASSERT (n);
+
+  AnimByteTag tag;
+  if (!p->FindFirstMatchingByteTag (tag))
+    {
+      return;
+    }
+
+  uint64_t animUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("LrWpan RxBeginTrace for packet:" << animUid);
+  if (!IsPacketPending (animUid, AnimationInterface::LRWPAN))
+    {
+      NS_LOG_WARN ("LrWpanPhyRxBeginTrace: unknown Uid - most probably it's an ACK.");
+    }
+
+  UpdatePosition (n);
+  m_pendingLrWpanPackets[animUid].ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, m_pendingLrWpanPackets[animUid], animUid);
+}
+
+void
+AnimationInterface::WavePhyTxBeginTrace (std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  return GenericWirelessTxTrace (context, p, AnimationInterface::WAVE);
+}
+
+void
+AnimationInterface::WavePhyRxBeginTrace (std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (this);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
+  Ptr <NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  UpdatePosition (ndev);
+  uint64_t animUid = GetAnimUidFromPacket (p);
+  NS_LOG_INFO ("Wave RxBeginTrace for packet:" << animUid);
+  if (!IsPacketPending (animUid, AnimationInterface::WAVE))
+    {
+      NS_ASSERT (0);
+      NS_LOG_WARN ("WavePhyRxBeginTrace: unknown Uid");
+      std::ostringstream oss;
+      WifiMacHeader hdr;
+      if (!p->PeekHeader (hdr))
+      {
+        NS_LOG_WARN ("WaveMacHeader not present");
+        return;
+      }
+      oss << hdr.GetAddr2 ();
+      if (m_macToNodeIdMap.find (oss.str ()) == m_macToNodeIdMap.end ())
+      {
+        NS_LOG_WARN ("Transmitter Mac address " << oss.str () << " never seen before. Skipping");
+        return;
+      }
+      Ptr <Node> txNode = NodeList::GetNode (m_macToNodeIdMap[oss.str ()]);
+      UpdatePosition (txNode);
+      AnimPacketInfo pktInfo (0, Simulator::Now (), m_macToNodeIdMap[oss.str ()]);
+      AddPendingPacket (AnimationInterface::WAVE, animUid, pktInfo);
+      NS_LOG_WARN ("WavePhyRxBegin: unknown Uid, but we are adding a wave packet");
+    }
+  /// \todo NS_ASSERT (WavePacketIsPending (animUid) == true);
+  m_pendingWavePackets[animUid].ProcessRxBegin (ndev, Simulator::Now ().GetSeconds ());
+  OutputWirelessPacketRxInfo (p, m_pendingWavePackets[animUid], animUid);
+}
+
+
+void
 AnimationInterface::WimaxTxTrace (std::string context, Ptr<const Packet> p, const Mac48Address & m)
 {
   NS_LOG_FUNCTION (this);
@@ -1171,6 +1333,16 @@ AnimationInterface::ProtocolTypeToPendingPackets (AnimationInterface::ProtocolTy
           pendingPackets = &m_pendingLtePackets;
           break;
         }
+      case AnimationInterface::LRWPAN:
+        {
+          pendingPackets = &m_pendingLrWpanPackets;
+          break;
+        }
+      case AnimationInterface::WAVE:
+        {
+          pendingPackets = &m_pendingWavePackets;
+          break;
+        }
     }
   return pendingPackets;
 
@@ -1205,6 +1377,16 @@ AnimationInterface::ProtocolTypeToString (AnimationInterface::ProtocolType proto
       case AnimationInterface::LTE:
         {
           result = "LTE";
+          break;
+        }
+      case AnimationInterface::LRWPAN:
+        {
+          result = "LRWPAN";
+          break;
+        }
+      case AnimationInterface::WAVE:
+        {
+          result = "WAVE";
           break;
         }
     }
@@ -1493,6 +1675,26 @@ AnimationInterface::ConnectCallbacks ()
                    MakeCallback (&AnimationInterface::WifiPhyTxDropTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop",
                    MakeCallback (&AnimationInterface::WifiPhyRxDropTrace, this));
+
+  // LrWpan
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyTxBegin",
+                   MakeCallback (&AnimationInterface::LrWpanPhyTxBeginTrace, this));
+  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyRxBegin",
+                   MakeCallback (&AnimationInterface::LrWpanPhyRxBeginTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTx",
+                   MakeCallback (&AnimationInterface::LrWpanMacTxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTxDrop",
+                   MakeCallback (&AnimationInterface::LrWpanMacTxDropTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRx",
+                   MakeCallback (&AnimationInterface::LrWpanMacRxTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
+                   MakeCallback (&AnimationInterface::LrWpanMacRxDropTrace, this));
+
+  // Wave
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyTxBegin",
+                   MakeCallback (&AnimationInterface::WavePhyTxBeginTrace, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyRxBegin",
+                   MakeCallback (&AnimationInterface::WavePhyRxBeginTrace, this));
 }
 
 Vector 
@@ -1506,7 +1708,13 @@ AnimationInterface::UpdatePosition (Ptr <Node> n)
   else
    {
      NS_LOG_UNCOND ( "AnimationInterface WARNING:Node:" << n->GetId () << " Does not have a mobility model. Use SetConstantPosition if it is stationary");
-     m_nodeLocation[n->GetId ()] = Vector (0, 0, 0);
+     Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+     x->SetAttribute ("Min", DoubleValue (0));
+     x->SetAttribute ("Max", DoubleValue (100));
+     Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable> ();
+     y->SetAttribute ("Min", DoubleValue (0));
+     y->SetAttribute ("Max", DoubleValue (100));
+     m_nodeLocation[n->GetId ()] = Vector (int (x->GetValue ()), int (y->GetValue ()), 0);
    }
   return m_nodeLocation[n->GetId ()];
 }
@@ -1570,22 +1778,35 @@ AnimationInterface::GetIpv4Address (Ptr <NetDevice> nd)
 std::string
 AnimationInterface::GetIpv6Address(Ptr <NetDevice> nd)
 {
-	Ptr<Ipv6> ipv6 = NodeList::GetNode(nd->GetNode()->GetId())->GetObject <Ipv6>();
-	if (!ipv6)
-	{
-		NS_LOG_WARN("Node: " << nd->GetNode()->GetId() << " No ipv4 object found");
-		return "::";
-	}
-	int32_t ifIndex = ipv6->GetInterfaceForDevice(nd);
-	if (ifIndex == -1)
-	{
-		NS_LOG_WARN("Node :" << nd->GetNode()->GetId() << " Could not find index of NetDevice");
-		return "::";
-	}
-	Ipv6InterfaceAddress addr = ipv6->GetAddress(ifIndex, 0);
-	std::ostringstream oss;
-	oss << addr.GetAddress();
-	return oss.str();
+  Ptr<Ipv6> ipv6 = NodeList::GetNode(nd->GetNode()->GetId())->GetObject <Ipv6>();
+  if (!ipv6)
+    {
+      NS_LOG_WARN("Node: " << nd->GetNode()->GetId() << " No ipv4 object found");
+      return "::";
+    }
+  int32_t ifIndex = ipv6->GetInterfaceForDevice(nd);
+  if (ifIndex == -1)
+    {
+      NS_LOG_WARN("Node :" << nd->GetNode()->GetId() << " Could not find index of NetDevice");
+      return "::";
+    }
+  bool nonLinkLocalFound = false;
+  uint32_t nAddresses = ipv6->GetNAddresses(ifIndex);
+  Ipv6InterfaceAddress addr;
+  for (uint32_t addressIndex = 0; addressIndex < nAddresses; ++addressIndex)
+    {
+      addr = ipv6->GetAddress(ifIndex, addressIndex);
+      if (!addr.GetAddress().IsLinkLocal())
+        {
+          nonLinkLocalFound = true;
+	  break;
+        }
+    }
+  if (!nonLinkLocalFound)
+    addr = ipv6->GetAddress(ifIndex, 0);
+  std::ostringstream oss;
+  oss << addr.GetAddress();
+  return oss.str();
 }
 
 
@@ -1721,10 +1942,12 @@ AnimationInterface::WriteLinkProperties ()
               AddToIpv6AddressNodeIdTable(ipv6Addresses, n->GetId ());
 	      if (!ipv4Addresses.empty ())
                 {
-	          WriteNonP2pLinkProperties(n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType);
+                   NS_LOG_INFO ("Writing Ipv4 link");
+	           WriteNonP2pLinkProperties(n->GetId (), GetIpv4Address (dev) + "~" + GetMacAddress (dev), channelType);
 		}
 	      else if (!ipv6Addresses.empty ())
 	        {
+                  NS_LOG_INFO ("Writing Ipv6 link");
                   WriteNonP2pLinkProperties(n->GetId (), GetIpv6Address (dev) + "~" + GetMacAddress (dev), channelType);
 		}
               continue;

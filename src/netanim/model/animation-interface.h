@@ -497,7 +497,9 @@ private:
       LTE,
       WIFI,
       WIMAX,
-      CSMA
+      CSMA,
+      LRWPAN,
+      WAVE
     } ProtocolType;
 
   typedef struct
@@ -590,9 +592,12 @@ private:
   
   AnimUidPacketInfoMap m_pendingWifiPackets;
   AnimUidPacketInfoMap m_pendingWimaxPackets;
+  AnimUidPacketInfoMap m_pendingLrWpanPackets;
   AnimUidPacketInfoMap m_pendingLtePackets;
   AnimUidPacketInfoMap m_pendingCsmaPackets;
   AnimUidPacketInfoMap m_pendingUanPackets;
+  AnimUidPacketInfoMap m_pendingWavePackets;
+
   std::map <uint32_t, Vector> m_nodeLocation;
   std::map <std::string, uint32_t> m_macToNodeIdMap;
   std::map <std::string, uint32_t> m_ipv4ToNodeIdMap;
@@ -623,6 +628,10 @@ private:
   NodeCounterMap64 m_nodeWifiMacRxDrop;
   NodeCounterMap64 m_nodeWifiPhyTxDrop;
   NodeCounterMap64 m_nodeWifiPhyRxDrop;
+  NodeCounterMap64 m_nodeLrWpanMacTx;
+  NodeCounterMap64 m_nodeLrWpanMacTxDrop;
+  NodeCounterMap64 m_nodeLrWpanMacRx;
+  NodeCounterMap64 m_nodeLrWpanMacRxDrop;
 
   const std::vector<std::string> GetElementsFromContext (const std::string& context) const;
   Ptr <Node> GetNodeFromContext (const std::string& context) const;
@@ -698,9 +707,17 @@ private:
   void WifiMacRxDropTrace (std::string context,
                            Ptr<const Packet>);
   void WifiPhyTxDropTrace (std::string context,
-                       Ptr<const Packet>);
+                           Ptr<const Packet>);
   void WifiPhyRxDropTrace (std::string context,
-                       Ptr<const Packet>);
+                           Ptr<const Packet>);
+  void LrWpanMacTxTrace (std::string context,
+                         Ptr<const Packet>);
+  void LrWpanMacTxDropTrace (std::string context,
+                             Ptr<const Packet>);
+  void LrWpanMacRxTrace (std::string context,
+                         Ptr<const Packet>);
+  void LrWpanMacRxDropTrace (std::string context,
+                             Ptr<const Packet>);
   void DevTxTrace (std::string context,
                    Ptr<const Packet> p,
                    Ptr<NetDevice> tx,
@@ -711,9 +728,17 @@ private:
                             Ptr<const Packet> p);
   void WifiPhyRxBeginTrace (std::string context,
                             Ptr<const Packet> p);
+  void WavePhyTxBeginTrace (std::string context, 
+                            Ptr<const Packet> p);
+  void WavePhyRxBeginTrace (std::string context, 
+                            Ptr<const Packet> p);
+  void LrWpanPhyTxBeginTrace (std::string context,
+                              Ptr<const Packet> p);
+  void LrWpanPhyRxBeginTrace (std::string context,
+                              Ptr<const Packet> p);
   void WimaxTxTrace (std::string context,
                      Ptr<const Packet> p,
-		     const Mac48Address &);
+                     const Mac48Address &);
   void WimaxRxTrace (std::string context,
                      Ptr<const Packet> p,
                      const Mac48Address &);
