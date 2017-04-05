@@ -207,7 +207,7 @@ Ipv4RoutingTableEntry::CreateDefaultRoute (Ipv4Address nextHop,
                                            uint32_t interface)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return Ipv4RoutingTableEntry (Ipv4Address::GetZero (), nextHop, interface);
+  return Ipv4RoutingTableEntry (Ipv4Address::GetZero (), Ipv4Mask::GetZero (), nextHop, interface);
 }
 
 
@@ -253,6 +253,14 @@ std::ostream& operator<< (std::ostream& os, Ipv4RoutingTableEntry const& route)
       NS_ASSERT (false);
     }
   return os;
+}
+
+bool operator== (const Ipv4RoutingTableEntry a, const Ipv4RoutingTableEntry b)
+{
+  return (a.GetDest () == b.GetDest () && 
+          a.GetDestNetworkMask () == b.GetDestNetworkMask () &&
+          a.GetGateway () == b.GetGateway () &&
+          a.GetInterface () == b.GetInterface ());
 }
 
 /*****************************************************
@@ -368,6 +376,14 @@ operator<< (std::ostream& os, Ipv4MulticastRoutingTableEntry const& route)
     }
 
   return os;
+}
+
+bool operator== (const Ipv4MulticastRoutingTableEntry a, const Ipv4MulticastRoutingTableEntry b)
+{
+  return (a.GetOrigin () == b.GetOrigin () && 
+          a.GetGroup () == b.GetGroup () &&
+          a.GetInputInterface () == b.GetInputInterface () &&
+          a.GetOutputInterfaces () == b.GetOutputInterfaces ());
 }
 
 } // namespace ns3

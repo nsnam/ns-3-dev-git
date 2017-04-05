@@ -64,89 +64,34 @@ public:
   static const uint8_t PROT_NUMBER;
 
   /**
-   * \brief Neighbor Discovery router constants : max initial RA initial interval.
+   * \brief Neighbor Discovery node constants: max multicast solicitations.
+   * \returns The max multicast solicitations number.
    */
-  static const uint8_t MAX_INITIAL_RTR_ADVERT_INTERVAL;
+  uint8_t GetMaxMulticastSolicit () const;
 
   /**
-   * \brief Neighbor Discovery router constants : max initial RA transmission.
+   * \brief Neighbor Discovery node constants: max unicast solicitations.
+   * \returns The max unicast solicitations number.
    */
-  static const uint8_t MAX_INITIAL_RTR_ADVERTISEMENTS;
+  uint8_t GetMaxUnicastSolicit () const;;
 
   /**
-   * \brief Neighbor Discovery router constants : max final RA transmission.
+   * \brief Neighbor Discovery node constants: reachable time.
+   * \returns The Reachable time for an Neighbor cache entry.
    */
-  static const uint8_t MAX_FINAL_RTR_ADVERTISEMENTS;
+  Time GetReachableTime () const;;
 
   /**
-   * \brief Neighbor Discovery router constants : min delay between RA.
+   * \brief Neighbor Discovery node constants: retransmission timer.
+   * \returns The Retransmission time for an Neighbor cache entry probe.
    */
-  static const uint8_t MIN_DELAY_BETWEEN_RAS;
-
-  /**
-   * \brief Neighbor Discovery router constants : max delay between RA.
-   */
-  static const uint32_t MAX_RA_DELAY_TIME;
-
-  /**
-   * \brief Neighbor Discovery host constants : max RS delay.
-   */
-  static const uint8_t MAX_RTR_SOLICITATION_DELAY;
-
-  /**
-   * \brief Neighbor Discovery host constants : RS interval.
-   */
-  static const uint8_t RTR_SOLICITATION_INTERVAL;
-
-  /**
-   * \brief Neighbor Discovery host constants : max RS transmission.
-   */
-  static const uint8_t MAX_RTR_SOLICITATIONS;
-
-  /**
-   * \brief Neighbor Discovery node constants : max multicast solicitations.
-   */
-  static const uint8_t MAX_MULTICAST_SOLICIT;
-
-  /**
-   * \brief Neighbor Discovery node constants : max unicast solicitations.
-   */
-  static const uint8_t MAX_UNICAST_SOLICIT;
-
-  /**
-   * \brief Neighbor Discovery node constants : max anycast delay.
-   */
-  static const uint8_t MAX_ANYCAST_DELAY_TIME;
-
-  /**
-   * \brief Neighbor Discovery node constants : max NA transmission.
-   */
-  static const uint8_t MAX_NEIGHBOR_ADVERTISEMENT;
-
-  /**
-   * \brief Neighbor Discovery node constants : reachable time.
-   */
-  static const uint32_t REACHABLE_TIME;
-
-  /**
-   * \brief Neighbor Discovery node constants : retransmission timer.
-   */
-  static const uint32_t RETRANS_TIMER;
+  Time GetRetransmissionTime () const;
 
   /**
    * \brief Neighbor Discovery node constants : delay for the first probe.
+   * \returns The time before a first probe for an Neighbor cache entry.
    */
-  static const uint8_t DELAY_FIRST_PROBE_TIME;
-
-  /**
-   * \brief Neighbor Discovery node constants : min random factor.
-   */
-  static const double MIN_RANDOM_FACTOR;
-
-  /**
-   * \brief Neighbor Discovery node constants : max random factor.
-   */
-  static const double MAX_RANDOM_FACTOR;
+  Time GetDelayFirstProbe () const;
 
   /**
    * \brief Get ICMPv6 protocol number.
@@ -437,6 +382,32 @@ protected:
 
 private:
   typedef std::list<Ptr<NdiscCache> > CacheList; //!< container of NdiscCaches
+
+
+  /**
+   * \brief Neighbor Discovery node constants: max multicast solicitations.
+   */
+  uint8_t m_maxMulticastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: max unicast solicitations.
+   */
+  uint8_t m_maxUnicastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: reachable time.
+   */
+  Time m_reachableTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: retransmission timer.
+   */
+  Time m_retransmissionTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: delay for the first probe.
+   */
+  Time m_delayFirstProbe;
 
   /**
    * \brief The node.
