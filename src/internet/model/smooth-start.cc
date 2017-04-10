@@ -1,6 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2015 Natale Patriciello <natale.patriciello@gmail.com>
+ * Copyright (c) 2017 Asavari Limaye <asavari.limaye@gmail.com>  
+ *                    Snigdh Manasvi <snigdhmanas@gmail.com>
+ *                    Shrinidhi Talpankar <shrinidhitalpankar@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -149,15 +151,6 @@ SmoothStart::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
       NS_LOG_INFO("SmoothStart: Calling Congestion Avoidance");
       CongestionAvoidance (tcb, segmentsAcked);
     }
-
-  /* At this point, we could have segmentsAcked != 0. This because RFC says
-   * that in slow start, we should increase cWnd by min (N, SMSS); if in
-   * slow start we receive a cumulative ACK, it counts only for 1 SMSS of
-   * increase, wasting the others.
-   *
-   * // Uncorrect assert, I am sorry
-   * NS_ASSERT (segmentsAcked == 0);
-   */
 }
 
 } // namespace ns3
