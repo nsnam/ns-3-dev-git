@@ -81,6 +81,8 @@ public:
   virtual void Run (void) = 0;
   /** \copydoc Simulator::Now */
   virtual Time Now (void) const = 0;
+  /** \copydoc Simulator::AddProcessingTime */
+  virtual void AddProcessingTime (uint64_t nanos) = 0;
   /** \copydoc Simulator::GetDelayLeft */
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   /** \copydoc Simulator::GetMaximumSimulationTime */

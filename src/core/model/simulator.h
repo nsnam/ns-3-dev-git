@@ -1251,6 +1251,13 @@ public:
   static Time Now (void);
 
   /**
+   * Adds node's processing time to the current simulation virtual time.
+   *
+   * @param [in] number of nanoseconds of processing time.
+   */
+  static void AddProcessingTime (uint64_t nanos);
+
+  /**
    * Get the remaining time until this event will execute.
    *
    * @param [in] id The event id to analyse.

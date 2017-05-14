@@ -311,6 +311,12 @@ DefaultSimulatorImpl::Now (void) const
   return TimeStep (m_currentTs);
 }
 
+void
+DefaultSimulatorImpl::AddProcessingTime (uint64_t nanos)
+{
+  m_currentTs += nanos;
+}
+
 Time 
 DefaultSimulatorImpl::GetDelayLeft (const EventId &id) const
 {
