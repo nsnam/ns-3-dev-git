@@ -42,8 +42,10 @@ public:
    * to set up simulations with echos.
    *
    * \param port The port the server will wait on for incoming packets
+   * \param processing_time The time in nanoseconds that the server will process
+   *                        each request for. Defaults to 0.
    */
-  UdpEchoServerHelper (uint16_t port);
+  UdpEchoServerHelper (uint16_t port, uint64_t processing_time = 0);
 
   /**
    * Record an attribute to be set in each Application after it is is created.

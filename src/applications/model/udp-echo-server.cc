@@ -49,6 +49,10 @@ UdpEchoServer::GetTypeId (void)
                    UintegerValue (9),
                    MakeUintegerAccessor (&UdpEchoServer::m_port),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("ProcessingTime", "Processing time for each request.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&UdpEchoServer::m_ptime),
+                   MakeUintegerChecker<uint64_t> ())
   ;
   return tid;
 }
@@ -63,6 +67,7 @@ UdpEchoServer::~UdpEchoServer()
   NS_LOG_FUNCTION (this);
   m_socket = 0;
   m_socket6 = 0;
+  m_ptime = 0;
 }
 
 void
@@ -168,6 +173,9 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
                        Inet6SocketAddress::ConvertFrom (from).GetPort ());
         }
 
+      // adding node's processing time
+      HandleProcessing();
+
       packet->RemoveAllPacketTags ();
       packet->RemoveAllByteTags ();
 
@@ -187,6 +195,12 @@ UdpEchoServer::HandleRead (Ptr<Socket> socket)
                        Inet6SocketAddress::ConvertFrom (from).GetPort ());
         }
     }
+}
+
+void 
+UdpEchoServer::HandleProcessing ()
+{
+  Simulator::AddProcessingTime(m_ptime);
 }
 
 } // Namespace ns3
