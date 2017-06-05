@@ -35,3 +35,11 @@ TAGS
 
 build-dir/
 build/
+
+# ignore eclipse and idea files
+.externalToolBuilders/
+.settings/
+.cproject
+.project
+.idea/
+/Default/
