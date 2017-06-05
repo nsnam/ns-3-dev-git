@@ -472,6 +472,12 @@ NullMessageSimulatorImpl::Now (void) const
   return TimeStep (m_currentTs);
 }
 
+void
+NullMessageSimulatorImpl::AddProcessingTime (uint64_t nanos)
+{
+  m_currentTs += nanos;
+}
+
 Time
 NullMessageSimulatorImpl::GetDelayLeft (const EventId &id) const
 {

@@ -68,10 +68,18 @@ private:
    */
   void HandleRead (Ptr<Socket> socket);
 
+  /**
+   * \brief Handle a packet processing.
+   *
+   * This function is called by lower layers.
+   */
+  void HandleProcessing ();
+
   uint16_t m_port; //!< Port on which we listen for incoming packets.
   Ptr<Socket> m_socket; //!< IPv4 Socket
   Ptr<Socket> m_socket6; //!< IPv6 Socket
   Address m_local; //!< local multicast address
+  uint64_t m_ptime; //!< server node's request processing time
 };
 
 } // namespace ns3

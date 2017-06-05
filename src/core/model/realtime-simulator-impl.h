@@ -102,6 +102,7 @@ public:
   virtual bool IsExpired (const EventId &ev) const;
   virtual void Run (void);
   virtual Time Now (void) const;
+  virtual void AddProcessingTime (uint64_t nanos);
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (ObjectFactory schedulerFactory);

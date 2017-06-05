@@ -540,6 +540,12 @@ DistributedSimulatorImpl::Now (void) const
   return TimeStep (m_currentTs);
 }
 
+void
+DistributedSimulatorImpl::AddProcessingTime (uint64_t nanos)
+{
+  m_currentTs += nanos;
+}
+
 Time
 DistributedSimulatorImpl::GetDelayLeft (const EventId &id) const
 {

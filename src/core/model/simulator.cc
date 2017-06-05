@@ -254,6 +254,12 @@ Simulator::Now (void)
   return GetImpl ()->Now ();
 }
 
+void
+Simulator::AddProcessingTime (uint64_t nanos)
+{
+  GetImpl ()->AddProcessingTime (nanos);
+}
+
 Time
 Simulator::GetDelayLeft (const EventId &id)
 {

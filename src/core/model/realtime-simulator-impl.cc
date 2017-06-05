@@ -601,6 +601,12 @@ RealtimeSimulatorImpl::Now (void) const
   return TimeStep (m_currentTs);
 }
 
+void
+RealtimeSimulatorImpl::AddProcessingTime (uint64_t nanos)
+{
+  m_currentTs += nanos;
+}
+
 //
 // Schedule an event for a _relative_ time in the future.
 //
