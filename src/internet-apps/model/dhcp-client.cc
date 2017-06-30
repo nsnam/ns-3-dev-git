@@ -136,9 +136,19 @@ DhcpClient::StartApplication (void)
   m_gateway = Ipv4Address ("0.0.0.0");
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
   uint32_t ifIndex = ipv4->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
-  uint32_t i;
+
+  uint8_t buffer[Address::MAX_SIZE];
+  uint32_t len = GetNode ()->GetDevice (m_device)->GetAddress ().CopyTo (buffer);
+
+  m_chaddr = 0;
+  for (uint32_t j=len; j>0; j--)
+    {
+      m_chaddr = buffer[j-1];
+      m_chaddr <<= 8;
+    }
+
   bool found = false;
-  for (i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
+  for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
     {
       if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
         {
@@ -244,7 +254,7 @@ void DhcpClient::NetHandler (Ptr<Socket> socket)
     {
       return;
     }
-  if (header.GetChaddr () != GetNode ()->GetDevice (m_device)->GetAddress ())
+  if (header.GetChaddr () != m_chaddr)
     {
       return;
     }
@@ -275,7 +285,7 @@ void DhcpClient::Boot (void)
   header.SetTran (m_tran);
   header.SetType (DhcpHeader::DHCPDISCOVER);
   header.SetTime ();
-  header.SetChaddr (GetNode ()->GetDevice (m_device)->GetAddress ());
+  header.SetChaddr (m_chaddr);
   packet->AddHeader (header);
 
   if ((m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), DHCP_PEER_PORT))) >= 0)
@@ -336,7 +346,7 @@ void DhcpClient::Request (void)
       header.SetTime ();
       header.SetTran (m_tran);
       header.SetReq (m_offeredAddress);
-      header.SetChaddr (GetNode ()->GetDevice (m_device)->GetAddress ());
+      header.SetChaddr (m_chaddr);
       packet->AddHeader (header);
       m_socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("255.255.255.255"), DHCP_PEER_PORT));
       m_state = WAIT_ACK;
@@ -353,7 +363,7 @@ void DhcpClient::Request (void)
       header.SetType (DhcpHeader::DHCPREQ);
       header.SetReq (m_myAddress);
       m_offeredAddress = m_myAddress;
-      header.SetChaddr (GetNode ()->GetDevice (m_device)->GetAddress ());
+      header.SetChaddr (m_chaddr);
       packet->AddHeader (header);
       if ((m_socket->SendTo (packet, 0, InetSocketAddress (m_remoteAddress, DHCP_PEER_PORT))) >= 0)
         {

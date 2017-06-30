@@ -111,11 +111,30 @@ private:
   Ipv4Address m_poolAddress;             //!< The network address available to the server
   Ipv4Address m_minAddress;              //!< The first address in the address pool
   Ipv4Address m_maxAddress;              //!< The last address in the address pool
-  uint32_t m_usedRange;                  //!< Number of used address in the pool
   Ipv4Mask m_poolMask;                   //!< The network mask of the pool
   Ipv4Address m_gateway;                 //!< The gateway address
-  std::map<std::pair<Address, Ipv4Address>, uint32_t> m_leasedAddresses; //!< Leased address and their status (cache memory)
-  uint32_t m_nextAddressSeq;             //!< The next address in the sequence which can be alloted
+
+  /// Leased address container - chaddr + IP addr / lease time
+  typedef std::map<uint128_t, std::pair<Ipv4Address, uint32_t> > LeasedAddress;
+  /// Leased address iterator - chaddr + IP addr / lease time
+  typedef std::map<uint128_t, std::pair<Ipv4Address, uint32_t> >::iterator LeasedAddressIter;
+  /// Leased address const iterator - chaddr + IP addr / lease time
+  typedef std::map<uint128_t, std::pair<Ipv4Address, uint32_t> >::const_iterator LeasedAddressCIter;
+
+  /// Expired address container - chaddr
+  typedef std::list<uint128_t> ExpiredAddress;
+  /// Expired address iterator - chaddr
+  typedef std::list<uint128_t>::iterator ExpiredAddressIter;
+  /// Expired address const iterator - chaddr
+  typedef std::list<uint128_t>::const_iterator ExpiredAddressCIter;
+
+  /// Available address container - IP addr
+  typedef std::list<Ipv4Address> AvailableAddress;
+
+  LeasedAddress m_leasedAddresses;       //!< Leased address and their status (cache memory)
+  ExpiredAddress m_expiredAddresses;     //!< Expired addresses to be reused (chaddr of the clients)
+  AvailableAddress m_availableAddresses; //!< Available addresses to be used (IP addresses)
+  uint32_t m_nextAddressSeq;             //!< The next address in the sequence which can be allocated
   Time m_lease;                          //!< The granted lease time for an address
   Time m_renew;                          //!< The renewal time for an address
   Time m_rebind;                         //!< The rebinding time for an address

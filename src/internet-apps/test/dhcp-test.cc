@@ -131,8 +131,8 @@ DhcpTestCase::DoRun (void)
 
   Simulator::Run ();
 
-  NS_TEST_ASSERT_MSG_EQ (Ipv4Address ("172.30.0.11"), m_leasedAddress,
-                         m_leasedAddress << " instead of " << "172.30.0.11");
+  NS_TEST_ASSERT_MSG_EQ (m_leasedAddress, Ipv4Address ("172.30.0.10"),
+                         m_leasedAddress << " instead of " << "172.30.0.10");
 
   Simulator::Destroy ();
 }

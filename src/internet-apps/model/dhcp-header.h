@@ -161,13 +161,13 @@ public:
    * \brief Set the Address of the device
    * \param addr Address of the device
    */
-  void SetChaddr (Address addr);
+  void SetChaddr (uint128_t addr);
 
   /**
    * \brief Get the Address of the client
    * \return Address of the client
    */
-  Address GetChaddr (void);
+  uint128_t GetChaddr (void);
 
   /**
    * \brief Set the IPv4Address of the client
@@ -287,7 +287,7 @@ private:
   uint32_t m_len;                        //!< The length of the header
   uint16_t m_secs;                       //!< Seconds elapsed
   uint16_t m_flags;                      //!< BOOTP flags
-  uint8_t m_chaddr[16];                  //!< The address identifier
+  uint128_t m_chaddr;                    //!< The address identifier
   Ipv4Address m_yiAddr;                  //!< Your (client) IP address
   Ipv4Address m_ciAddr;                  //!< The IP address of the client
   Ipv4Address m_siAddr;                  //!< Next Server IP address

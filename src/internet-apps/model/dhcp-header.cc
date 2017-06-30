@@ -109,16 +109,14 @@ void DhcpHeader::SetTime ()
   m_secs = (uint16_t) Simulator::Now ().GetSeconds ();
 }
 
-void DhcpHeader::SetChaddr (Address addr)
+void DhcpHeader::SetChaddr (uint128_t addr)
 {
-  addr.CopyAllTo (m_chaddr, 16);
+  m_chaddr = addr;
 }
 
-Address DhcpHeader::GetChaddr ()
+uint128_t DhcpHeader::GetChaddr ()
 {
-  Address addr;
-  addr.CopyAllFrom (m_chaddr, 16);
-  return addr;
+  return m_chaddr;
 }
 
 void DhcpHeader::SetYiaddr (Ipv4Address addr)
@@ -286,7 +284,8 @@ DhcpHeader::Serialize (Buffer::Iterator start) const
   WriteTo (i, m_yiAddr);
   WriteTo (i, m_siAddr);
   WriteTo (i, m_giAddr);
-  i.Write (m_chaddr,16);
+  i.WriteU64 (m_chaddr >> 64);
+  i.WriteU64 (m_chaddr & 0xFFFFFFFF);
   i.Write (m_sname,64);
   i.Write (m_file,128);
   i.Write (m_magic_cookie,4);
@@ -361,7 +360,13 @@ uint32_t DhcpHeader::Deserialize (Buffer::Iterator start)
   ReadFrom (i,m_yiAddr);
   ReadFrom (i,m_siAddr);
   ReadFrom (i,m_giAddr);
-  i.Read (m_chaddr, 16);
+
+  uint128_t tmp;
+  tmp = i.ReadU64 ();
+  m_chaddr = tmp << 64;
+  tmp = i.ReadU64 ();
+  m_chaddr |= tmp;
+
   i.Read (m_sname, 64);
   i.Read (m_file,128);
   i.Read (m_magic_cookie,4);

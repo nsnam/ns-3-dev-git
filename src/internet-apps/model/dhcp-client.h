@@ -155,6 +155,7 @@ private:
   Ipv4Address m_remoteAddress;           //!< Initially set to 255.255.255.255 to start DHCP
   Ipv4Address m_offeredAddress;          //!< Address offered to the client
   Ipv4Address m_myAddress;               //!< Address assigned to the client
+  uint128_t m_chaddr;                    //!< chaddr of the interface.
   Ipv4Mask m_myMask;                     //!< Mask of the address assigned
   Ipv4Address m_server;                  //!< Address of the DHCP server
   Ipv4Address m_gateway;                 //!< Address of the gateway
