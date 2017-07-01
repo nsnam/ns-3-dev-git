@@ -266,7 +266,7 @@ public:
    *
    * \param phy WifiPhy associated with this MacLow
    */
-  void SetPhy (Ptr<WifiPhy> phy);
+  void SetPhy (const Ptr<WifiPhy> phy);
   /**
    * \return current attached PHY device
    */
@@ -280,7 +280,7 @@ public:
    *
    * \param manager WifiRemoteStationManager associated with this MacLow
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * Set MAC address of this MacLow.
    *
@@ -619,41 +619,42 @@ private:
    *
    * \return the total ACK size
    */
-  uint32_t GetAckSize (void) const;
+  static uint32_t GetAckSize (void);
   /**
    * Return the total Block ACK size (including FCS trailer).
    *
    * \param type the Block ACK type
    * \return the total Block ACK size
    */
-  uint32_t GetBlockAckSize (BlockAckType type) const;
+  static uint32_t GetBlockAckSize (BlockAckType type);
   /**
    * Return the total RTS size (including FCS trailer).
    *
    * \return the total RTS size
    */
-  uint32_t GetRtsSize (void) const;
+  static uint32_t GetRtsSize (void);
   /**
    * Return the total CTS size (including FCS trailer).
    *
    * \return the total CTS size
    */
-  uint32_t GetCtsSize (void) const;
+  static uint32_t GetCtsSize (void);
   /**
    * Return the total size of the packet after WifiMacHeader and FCS trailer
    * have been added.
    *
    * \param packet the packet to be encapsulated with WifiMacHeader and FCS trailer
    * \param hdr the WifiMacHeader
+   * \param isAmpdu whether packet is part of an A-MPDU
    * \return the total packet size
    */
-  uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  static uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
   /**
    * Add FCS trailer to a packet.
    *
    * \param packet
    */
-  void AddWifiMacTrailer (Ptr<Packet> packet) const;
+  static void AddWifiMacTrailer (Ptr<Packet> packet);
   /**
    * Forward the packet down to WifiPhy for transmission. This is called for the entire A-MPDu when MPDU aggregation is used.
    *
@@ -976,7 +977,7 @@ private:
    *
    * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
    */
-  bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize) const;
+  static bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize);
   /**
    * \param packet the packet
    * \param hdr the header
@@ -1049,7 +1050,7 @@ private:
    *
    * \param phy the WifiPhy this MacLow is connected to
    */
-  void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
+  void SetupPhyMacLowListener (const Ptr<WifiPhy> phy);
   /**
    * Remove current WifiPhy listener for this MacLow.
    *

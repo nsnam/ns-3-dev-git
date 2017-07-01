@@ -69,7 +69,7 @@ struct Bar
  * \brief Manages all block ack agreements for an originator station.
  * \ingroup wifi
  */
-class BlockAckManager
+class BlockAckManager : public Object
 {
 private:
   /// type conversion operator
@@ -87,7 +87,7 @@ public:
    *
    * \param manager WifiRemoteStationManager associated with this BlockAckManager
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -256,12 +256,12 @@ public:
   /**
    * \param queue The WifiMacQueue object.
    */
-  void SetQueue (Ptr<WifiMacQueue> queue);
+  void SetQueue (const Ptr<WifiMacQueue> queue);
   /**
    * Set the MacTxMiddle
    * \param txMiddle the MacTxMiddle
    */
-  void SetTxMiddle (MacTxMiddle* txMiddle);
+  void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
   /**
    * \param bAckType Type of block ack
@@ -509,7 +509,7 @@ private:
   uint8_t m_blockAckThreshold; ///< bock ack threshold
   BlockAckType m_blockAckType; ///< bock ack type
   Time m_maxDelay; ///< maximum delay
-  MacTxMiddle* m_txMiddle; ///< the MacTxMiddle
+  Ptr<MacTxMiddle> m_txMiddle; ///< the MacTxMiddle
   Mac48Address m_address; ///< address
   Ptr<WifiMacQueue> m_queue; ///< queue
   Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout; ///< block ack inactivity timeout callback

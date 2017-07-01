@@ -26,6 +26,7 @@
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 #include "mac-low.h"
+#include "mac-tx-middle.h"
 
 namespace ns3 {
 
@@ -152,7 +153,7 @@ ApWifiMac::GetBeaconInterval (void) const
 }
 
 void
-ApWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
+ApWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_beaconDca->SetWifiRemoteStationManager (stationManager);

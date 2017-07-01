@@ -74,8 +74,8 @@ EdcaTxopN::EdcaTxopN ()
     m_currentIsFragmented (false)
 {
   NS_LOG_FUNCTION (this);
-  m_qosBlockedDestinations = new QosBlockedDestinations ();
-  m_baManager = new BlockAckManager ();
+  m_qosBlockedDestinations = CreateObject<QosBlockedDestinations> ();
+  m_baManager = CreateObject<BlockAckManager> ();
   m_baManager->SetQueue (m_queue);
   m_baManager->SetBlockAckType (m_blockAckType);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
@@ -94,10 +94,8 @@ void
 EdcaTxopN::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  delete m_qosBlockedDestinations;
-  delete m_baManager;
-  m_qosBlockedDestinations = 0;
   m_baManager = 0;
+  m_qosBlockedDestinations = 0;
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   DcaTxop::DoDispose ();
@@ -128,7 +126,7 @@ EdcaTxopN::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
 }
 
 void
-EdcaTxopN::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
+EdcaTxopN::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {
   DcaTxop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
@@ -1223,14 +1221,14 @@ EdcaTxopN::MapDestAddressForAggregation (const WifiMacHeader &hdr)
 }
 
 void
-EdcaTxopN::SetMsduAggregator (Ptr<MsduAggregator> aggr)
+EdcaTxopN::SetMsduAggregator (const Ptr<MsduAggregator> aggr)
 {
   NS_LOG_FUNCTION (this << aggr);
   m_msduAggregator = aggr;
 }
 
 void
-EdcaTxopN::SetMpduAggregator (Ptr<MpduAggregator> aggr)
+EdcaTxopN::SetMpduAggregator (const Ptr<MpduAggregator> aggr)
 {
   NS_LOG_FUNCTION (this << aggr);
   m_mpduAggregator = aggr;

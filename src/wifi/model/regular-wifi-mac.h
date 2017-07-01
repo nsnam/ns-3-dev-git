@@ -216,7 +216,7 @@ public:
   /**
    * \param phy the physical layer attached to this MAC.
    */
-  void SetWifiPhy (Ptr<WifiPhy> phy);
+  void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
    * \return the physical layer attached to this MAC.
    */
@@ -228,7 +228,7 @@ public:
   /**
    * \param stationManager the station manager attached to this MAC.
    */
-  virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
+  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
   /**
    * \return the station manager attached to this MAC.
    */
@@ -288,10 +288,10 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  MacRxMiddle *m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
-  MacTxMiddle *m_txMiddle;  //!< TX middle (aggregation etc.)
+  Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
+  Ptr<MacTxMiddle> m_txMiddle;  //!< TX middle (aggregation etc.)
   Ptr<MacLow> m_low;        //!< MacLow (RTS, CTS, DATA, ACK etc.)
-  DcfManager *m_dcfManager; //!< DCF manager (access to channel)
+  Ptr<DcfManager> m_dcfManager; //!< DCF manager (access to channel)
   Ptr<WifiPhy> m_phy;       //!< Wifi PHY
 
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
