@@ -118,7 +118,6 @@ void DhcpServer::StartApplication (void)
 
   NS_ASSERT_MSG (m_minAddress < m_maxAddress,"Invalid Address range");
 
-  m_nextAddressSeq = 0;
   Ipv4Address myOwnAddress;
 
   if (m_socket)
@@ -146,7 +145,7 @@ void DhcpServer::StartApplication (void)
           // set infinite GRANTED_LEASED_TIME for my address
 
           myOwnAddress = ipv4->GetAddress (ifIndex, addrIndex).GetLocal ();
-          m_leasedAddresses[0] = std::make_pair (myOwnAddress, 0xffffffff);
+          m_leasedAddresses[Address ()] = std::make_pair (myOwnAddress, 0xffffffff);
           break;
         }
     }
@@ -162,9 +161,10 @@ void DhcpServer::StartApplication (void)
   uint32_t range = m_maxAddress.Get () - m_minAddress.Get () + 1;
   for (uint32_t searchSeq = 0; searchSeq < range; searchSeq ++)
     {
-      Ipv4Address poolAddress = Ipv4Address (m_minAddress.Get () + m_nextAddressSeq);
+      Ipv4Address poolAddress = Ipv4Address (m_minAddress.Get () + searchSeq);
       if (poolAddress != myOwnAddress)
         {
+          NS_LOG_LOGIC ("Adding " << poolAddress << " to the pool");
           m_availableAddresses.push_back (poolAddress);
         }
     }
@@ -199,7 +199,7 @@ void DhcpServer::TimerHandler ()
           if (i->second.second == 0)
             {
               NS_LOG_INFO ("Address leased state expired, address removed - " <<
-                           "chaddr: " << int(i->first) <<
+                           "chaddr: " << i->first <<
                            "IP address " << i->second.first);
               i->second.second = 0;
               m_expiredAddresses.push_front (i->first);
@@ -243,7 +243,7 @@ void DhcpServer::NetHandler (Ptr<Socket> socket)
 void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from)
 {
   DhcpHeader newDhcpHeader;
-  uint128_t sourceChaddr = header.GetChaddr ();
+  Address sourceChaddr = header.GetChaddr ();
   uint32_t tran = header.GetTran ();
   Ptr<Packet> packet = 0;
   bool found = false;
@@ -257,7 +257,7 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
       // We know this client from some time ago
       if (m_leasedAddresses[sourceChaddr].second != 0)
         {
-          NS_LOG_LOGIC ("This client is sending a DISCOVER but it has still a lease active - perhaps it didn't shut down gracefully: " << int (sourceChaddr));
+          NS_LOG_LOGIC ("This client is sending a DISCOVER but it has still a lease active - perhaps it didn't shut down gracefully: " << sourceChaddr);
         }
       else
         {
@@ -281,7 +281,7 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
           // there's still hope: reuse the old ones.
           if (!m_expiredAddresses.empty ())
             {
-              uint128_t oldestChaddr = m_expiredAddresses.back ();
+              Address oldestChaddr = m_expiredAddresses.back ();
               m_expiredAddresses.pop_back ();
               offeredAddress = m_leasedAddresses[oldestChaddr].first;
               m_leasedAddresses.erase (oldestChaddr);
@@ -390,7 +390,7 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
 void DhcpServer::SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from)
 {
   DhcpHeader newDhcpHeader;
-  uint128_t sourceChaddr = header.GetChaddr ();
+  Address sourceChaddr = header.GetChaddr ();
   uint32_t tran = header.GetTran ();
   Ptr<Packet> packet = 0;
   Ipv4Address address = header.GetReq ();

@@ -137,15 +137,15 @@ DhcpClient::StartApplication (void)
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
   uint32_t ifIndex = ipv4->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
 
-  uint8_t buffer[Address::MAX_SIZE];
-  uint32_t len = GetNode ()->GetDevice (m_device)->GetAddress ().CopyTo (buffer);
-
-  m_chaddr = 0;
-  for (uint32_t j=len; j>0; j--)
-    {
-      m_chaddr = buffer[j-1];
-      m_chaddr <<= 8;
-    }
+  // We need to cleanup the type from the stored chaddr, or later we'll fail to compare it.
+  // Moreover, the length is always 16, because chaddr is 16 bytes.
+  Address myAddress = GetNode ()->GetDevice (m_device)->GetAddress ();
+  NS_LOG_INFO ("My address is " << myAddress);
+  uint8_t addr[Address::MAX_SIZE];
+  uint32_t len = myAddress.CopyTo (addr);
+  NS_ASSERT_MSG (len <= 16, "DHCP client can not handle a chaddr larger than 16 bytes");
+  m_chaddr.CopyFrom (addr, 16);
+  NS_LOG_INFO ("My m_chaddr is " << m_chaddr);
 
   bool found = false;
   for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)

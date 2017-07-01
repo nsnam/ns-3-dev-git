@@ -158,16 +158,29 @@ public:
   void SetTime ();
 
   /**
-   * \brief Set the Address of the device
+   * \brief Set the Address of the device.
+   *
+   * Only the relevant bits are considered (i.e., not the type and length)
+   *
    * \param addr Address of the device
    */
-  void SetChaddr (uint128_t addr);
+  void SetChaddr (Address addr);
 
   /**
-   * \brief Get the Address of the client
+   * \brief Set the Address of the device
+   * \param addr Address of the device
+   * \param len Address length
+   */
+  void SetChaddr (uint8_t* addr, uint8_t len);
+
+  /**
+   * \brief Get the Address of the client.
+   *
+   * Note: the address is always 16-bytes long.
+   *
    * \return Address of the client
    */
-  uint128_t GetChaddr (void);
+  Address GetChaddr (void);
 
   /**
    * \brief Set the IPv4Address of the client
@@ -287,7 +300,7 @@ private:
   uint32_t m_len;                        //!< The length of the header
   uint16_t m_secs;                       //!< Seconds elapsed
   uint16_t m_flags;                      //!< BOOTP flags
-  uint128_t m_chaddr;                    //!< The address identifier
+  uint8_t m_chaddr[16];                  //!< The address identifier
   Ipv4Address m_yiAddr;                  //!< Your (client) IP address
   Ipv4Address m_ciAddr;                  //!< The IP address of the client
   Ipv4Address m_siAddr;                  //!< Next Server IP address

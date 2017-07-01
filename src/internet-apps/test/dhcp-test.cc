@@ -101,14 +101,8 @@ DhcpTestCase::DoRun (void)
   ipv4MN->SetUp (ifIndex);
 
   // Setup IPv4 addresses and forwarding
-//  Ipv4AddressHelper ipv4;
-//
-//  ipv4.SetBase (Ipv4Address ("172.30.0.0"), Ipv4Mask ("255.255.255.0"));
-//  Ipv4InterfaceContainer iic1 = ipv4.Assign (devNet.Get (1));
-
   Ptr<Ipv4> ipv4Router = net.Get (1)->GetObject<Ipv4> ();
   ifIndex = ipv4Router->AddInterface (devNet.Get (1));
-  ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.1"), Ipv4Mask ("/0"))); // need to remove this workaround
   ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.1"), Ipv4Mask ("/24")));
   ipv4Router->SetForwarding (ifIndex, true);
   ipv4Router->SetUp (ifIndex);

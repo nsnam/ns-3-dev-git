@@ -49,13 +49,15 @@ main (int argc, char *argv[])
 
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
- if (verbose)
-   {
-     LogComponentEnable ("DhcpClient", LOG_LEVEL_INFO);
-     LogComponentEnable ("DhcpServer", LOG_LEVEL_INFO);
-     LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-     LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-   }
+  if (verbose)
+    {
+      LogComponentEnable ("DhcpClient", LOG_LEVEL_ALL);
+      LogComponentEnable ("DhcpServer", LOG_LEVEL_ALL);
+      LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+      LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    }
+
+  Time stopTime = Seconds (20);
 
   NS_LOG_INFO ("Create nodes.");
   NodeContainer nodes;
@@ -100,30 +102,29 @@ main (int argc, char *argv[])
   staticRoutingA->AddNetworkRouteTo (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
                                      Ipv4Address ("172.30.1.1"), 1);
 
-
+  uint32_t ifIndex;
   Ptr<Ipv4> ipv4MN = net.Get (0)->GetObject<Ipv4> ();
-  uint32_t ifIndex = ipv4MN->AddInterface (dev_net.Get (0));
+  ifIndex = ipv4MN->AddInterface (dev_net.Get (0));
   ipv4MN->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  ipv4MN->SetForwarding (ifIndex, true);
+  // ipv4MN->SetForwarding (ifIndex, true);
   ipv4MN->SetUp (ifIndex);
 
   Ptr<Ipv4> ipv4MN1 = net.Get (1)->GetObject<Ipv4> ();
-  uint32_t ifIndex1 = ipv4MN1->AddInterface (dev_net.Get (1));
-  ipv4MN1->AddAddress (ifIndex1, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  ipv4MN1->SetForwarding (ifIndex1, true);
-  ipv4MN1->SetUp (ifIndex1);
+  ifIndex = ipv4MN1->AddInterface (dev_net.Get (1));
+  ipv4MN1->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
+  // ipv4MN1->SetForwarding (ifIndex, true);
+  ipv4MN1->SetUp (ifIndex);
 
   Ptr<Ipv4> ipv4MN2 = net.Get (2)->GetObject<Ipv4> ();
-  uint32_t ifIndex2 = ipv4MN2->AddInterface (dev_net.Get (2));
-  ipv4MN2->AddAddress (ifIndex2, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  ipv4MN2->SetForwarding (ifIndex2, true);
-  ipv4MN2->SetUp (ifIndex2);
+  ifIndex = ipv4MN2->AddInterface (dev_net.Get (2));
+  ipv4MN2->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
+  // ipv4MN2->SetForwarding (ifIndex, true);
+  ipv4MN2->SetUp (ifIndex);
 
   Ptr<Ipv4> ipv4Router = net.Get (3)->GetObject<Ipv4> ();
   ifIndex = ipv4Router->AddInterface (dev_net.Get (3));
-   ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.12"), Ipv4Mask ("/0"))); // need to remove this workaround
   ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.12"), Ipv4Mask ("/24")));
-  ipv4Router->SetForwarding (ifIndex, true);
+  // ipv4Router->SetForwarding (ifIndex, true);
   ipv4Router->SetUp (ifIndex);
 
   Ptr<Ipv4> ipv4Router1 = net.Get (4)->GetObject<Ipv4> ();
@@ -147,28 +148,28 @@ main (int argc, char *argv[])
 
   ApplicationContainer ap_dhcp_server = dhcp_server.Install (router.Get (0));
   ap_dhcp_server.Start (Seconds (1.0));
-  ap_dhcp_server.Stop (Seconds (100.0));
+  ap_dhcp_server.Stop (stopTime);
 
   DhcpClientHelper dhcp_client (0);
   ApplicationContainer ap_dhcp_client = dhcp_client.Install (nodes.Get (0));
   ap_dhcp_client.Start (Seconds (1.0));
-  ap_dhcp_client.Stop (Seconds (100.0));
+  ap_dhcp_client.Stop (stopTime);
 
   DhcpClientHelper dhcp_client1 (0);
   ApplicationContainer ap_dhcp_client1 = dhcp_client1.Install (nodes.Get (1));
   ap_dhcp_client1.Start (Seconds (1.0));
-  ap_dhcp_client1.Stop (Seconds (100.0));
+  ap_dhcp_client1.Stop (stopTime);
 
   DhcpClientHelper dhcp_client2 (0);
   ApplicationContainer ap_dhcp_client2 = dhcp_client2.Install (nodes.Get (2));
   ap_dhcp_client2.Start (Seconds (1.0));
-  ap_dhcp_client2.Stop (Seconds (100.0));
+  ap_dhcp_client2.Stop (stopTime);
 
   UdpEchoServerHelper echoServer (9);
 
   ApplicationContainer serverApps = echoServer.Install (p2pNodes.Get (1));
   serverApps.Start (Seconds (1.0));
-  serverApps.Stop (Seconds (100.0));
+  serverApps.Stop (stopTime);
 
   UdpEchoClientHelper echoClient (p2pInterfaces.GetAddress (1), 9);
   echoClient.SetAttribute ("MaxPackets", UintegerValue (100));
@@ -177,9 +178,9 @@ main (int argc, char *argv[])
 
   ApplicationContainer clientApps = echoClient.Install (nodes.Get (1));
   clientApps.Start (Seconds (2.0));
-  clientApps.Stop (Seconds (100.0));
+  clientApps.Stop (stopTime);
 
-  Simulator::Stop (Seconds (110.0));
+  Simulator::Stop (stopTime + Seconds (10.0));
 
   if (tracing)
     {
