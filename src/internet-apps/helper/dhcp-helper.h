@@ -30,6 +30,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ipv4-interface-container.h"
 
 namespace ns3 {
 
@@ -91,6 +92,13 @@ public:
                                           Ipv4Address poolAddr, Ipv4Mask poolMask,
                                           Ipv4Address minAddr, Ipv4Address maxAddr,
                                           Ipv4Address gateway = Ipv4Address ());
+  /**
+   * \brief Assign a fixed IP addresses to a net device.
+   * \param netDevice The NetDevice on which the address has to be installed
+   * \param serverAddr The Ipv4Address
+   * \param poolMask The network mask
+   */
+  Ipv4InterfaceContainer InstallFixedAddress (Ptr<NetDevice> netDevice, Ipv4Address addr, Ipv4Mask mask);
 
 private:
   /**
@@ -100,7 +108,7 @@ private:
    */
   Ptr<Application> InstallDhcpClientPriv (Ptr<NetDevice> netDevice) const;
   ObjectFactory m_clientFactory;                 //!< DHCP client factory
-  ObjectFactory m_serverFactory;                 //!< DHCP client factory
+  ObjectFactory m_serverFactory;                 //!< DHCP server factory
 };
 
 } // namespace ns3

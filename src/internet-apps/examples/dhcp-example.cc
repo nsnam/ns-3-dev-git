@@ -102,17 +102,15 @@ main (int argc, char *argv[])
   staticRoutingA->AddNetworkRouteTo (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
                                      Ipv4Address ("172.30.1.1"), 1);
 
-  uint32_t ifIndex;
-  Ptr<Ipv4> ipv4Router1 = net.Get (4)->GetObject<Ipv4> ();
-  ifIndex = ipv4Router1->AddInterface (devNet.Get (4));
-  ipv4Router1->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.17"), Ipv4Mask ("/24")));
-  ipv4Router1->SetForwarding (ifIndex, true);
-  ipv4Router1->SetUp (ifIndex);
-
-  NS_LOG_INFO ("Create Applications.");
-
+  NS_LOG_INFO ("Setup the IP addresses and create DHCP applications.");
   DhcpHelper dhcpHelper;
 
+  // The router must have a fixed IP.
+  Ipv4InterfaceContainer fixedNodes = dhcpHelper.InstallFixedAddress (devNet.Get (4), Ipv4Address ("172.30.0.17"), Ipv4Mask ("/24"));
+  // Not really necessary, IP forwarding is enbled by default in IPv4.
+  fixedNodes.Get (0).first->SetAttribute ("IpForward", BooleanValue (true));
+
+  // DHCP server
   ApplicationContainer dhcpServerApp = dhcpHelper.InstallDhcpServer (devNet.Get (3), Ipv4Address ("172.30.0.12"),
                                                                      Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
                                                                      Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
@@ -120,6 +118,7 @@ main (int argc, char *argv[])
   dhcpServerApp.Start (Seconds (1.0));
   dhcpServerApp.Stop (stopTime);
 
+  // DHCP clients
   NetDeviceContainer dhcpClientNetDevs;
   dhcpClientNetDevs.Add (devNet.Get (0));
   dhcpClientNetDevs.Add (devNet.Get (1));

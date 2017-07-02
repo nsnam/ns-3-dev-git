@@ -87,7 +87,7 @@ Ptr<Application> DhcpHelper::InstallDhcpClientPriv (Ptr<NetDevice> netDevice) co
     {
       interface = ipv4->AddInterface (netDevice);
     }
-  NS_ASSERT_MSG (interface >= 0, "DhcpHelper Interface index not found");
+  NS_ASSERT_MSG (interface >= 0, "DhcpHelper: Interface index not found");
 
   ipv4->SetMetric (interface, 1);
   ipv4->SetUp (interface);
@@ -155,6 +155,45 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
   Ptr<Application> app = m_serverFactory.Create<DhcpServer> ();
   node->AddApplication (app);
   return ApplicationContainer (app);
+}
+
+Ipv4InterfaceContainer DhcpHelper::InstallFixedAddress (Ptr<NetDevice> netDevice, Ipv4Address addr, Ipv4Mask mask)
+{
+  Ipv4InterfaceContainer retval;
+
+  Ptr<Node> node = netDevice->GetNode ();
+  NS_ASSERT_MSG (node != 0, "DhcpHelper: NetDevice is not not associated with any node -> fail");
+
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  NS_ASSERT_MSG (ipv4, "DhcpHelper: NetDevice is associated"
+                 " with a node without IPv4 stack installed -> fail "
+                 "(maybe need to use InternetStackHelper?)");
+
+  int32_t interface = ipv4->GetInterfaceForDevice (netDevice);
+  if (interface == -1)
+    {
+      interface = ipv4->AddInterface (netDevice);
+    }
+  NS_ASSERT_MSG (interface >= 0, "DhcpHelper: Interface index not found");
+
+  Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (addr, mask);
+  ipv4->AddAddress (interface, ipv4Addr);
+  ipv4->SetMetric (interface, 1);
+  ipv4->SetUp (interface);
+  retval.Add (ipv4, interface);
+
+  // Install the default traffic control configuration if the traffic
+  // control layer has been aggregated, if this is not
+  // a loopback interface, and there is no queue disc installed already
+  Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
+  if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
+    {
+      NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration");
+      TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
+      tcHelper.Install (netDevice);
+    }
+
+  return retval;
 }
 
 } // namespace ns3
