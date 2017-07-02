@@ -27,8 +27,15 @@
 #include "ns3/dhcp-client.h"
 #include "ns3/uinteger.h"
 #include "ns3/names.h"
+#include "ns3/ipv4.h"
+#include "ns3/loopback-net-device.h"
+#include "ns3/traffic-control-layer.h"
+#include "ns3/traffic-control-helper.h"
+#include "ns3/log.h"
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("DhcpHelper");
 
 DhcpClientHelper::DhcpClientHelper ()
 {
@@ -84,7 +91,34 @@ ApplicationContainer DhcpServerHelper::Install (Ptr<Node> node) const
 Ptr<Application> DhcpClientHelper::InstallPriv (Ptr<NetDevice> netDevice) const
 {
   Ptr<Node> node = netDevice->GetNode ();
-  NS_ASSERT_MSG (node != 0, "DhcpClientHelper: NetDevice must be installed in a node before adding DhcpClient.");
+  NS_ASSERT_MSG (node != 0, "DhcpClientHelper: NetDevice is not not associated with any node -> fail");
+
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  NS_ASSERT_MSG (ipv4, "DhcpClientHelper: NetDevice is associated"
+                 " with a node without IPv4 stack installed -> fail "
+                 "(maybe need to use InternetStackHelper?)");
+
+  int32_t interface = ipv4->GetInterfaceForDevice (netDevice);
+  if (interface == -1)
+    {
+      interface = ipv4->AddInterface (netDevice);
+    }
+  NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Assign(): "
+                 "Interface index not found");
+
+  ipv4->SetMetric (interface, 1);
+  ipv4->SetUp (interface);
+
+  // Install the default traffic control configuration if the traffic
+  // control layer has been aggregated, if this is not
+  // a loopback interface, and there is no queue disc installed already
+  Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
+  if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
+    {
+      NS_LOG_LOGIC ("DhcpClienHelper - Installing default traffic control configuration");
+      TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
+      tcHelper.Install (netDevice);
+    }
 
   Ptr<DhcpClient> app = DynamicCast <DhcpClient> (m_factory.Create<DhcpClient> ());
   app->SetDhcpClientNetDevice (netDevice);

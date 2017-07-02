@@ -167,6 +167,7 @@ DhcpClient::StartApplication (void)
   Address myAddress = m_device->GetAddress ();
   NS_LOG_INFO ("My address is " << myAddress);
   uint8_t addr[Address::MAX_SIZE];
+  std::memset (addr, 0, Address::MAX_SIZE);
   uint32_t len = myAddress.CopyTo (addr);
   NS_ASSERT_MSG (len <= 16, "DHCP client can not handle a chaddr larger than 16 bytes");
   m_chaddr.CopyFrom (addr, 16);
@@ -175,7 +176,7 @@ DhcpClient::StartApplication (void)
   bool found = false;
   for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
     {
-      if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
+      if (ipv4->GetAddress (ifIndex, i).GetLocal () == m_myAddress)
         {
           found = true;
         }
@@ -415,6 +416,7 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
     {
       if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
         {
+          NS_LOG_LOGIC ("Got a new address, removing old one: " << m_myAddress);
           ipv4->RemoveAddress (ifIndex, i);
           break;
         }
@@ -430,10 +432,8 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
       m_newLease (m_offeredAddress);
       if (m_myAddress != Ipv4Address ("0.0.0.0"))
         {
+          m_expiry (m_myAddress);
         }
-      {
-        m_expiry (m_myAddress);
-      }
     }
   m_myAddress = m_offeredAddress;
   Ipv4StaticRoutingHelper ipv4RoutingHelper;

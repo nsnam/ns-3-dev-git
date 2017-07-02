@@ -103,24 +103,6 @@ main (int argc, char *argv[])
                                      Ipv4Address ("172.30.1.1"), 1);
 
   uint32_t ifIndex;
-  Ptr<Ipv4> ipv4MN = net.Get (0)->GetObject<Ipv4> ();
-  ifIndex = ipv4MN->AddInterface (dev_net.Get (0));
-  ipv4MN->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  // ipv4MN->SetForwarding (ifIndex, true);
-  ipv4MN->SetUp (ifIndex);
-
-  Ptr<Ipv4> ipv4MN1 = net.Get (1)->GetObject<Ipv4> ();
-  ifIndex = ipv4MN1->AddInterface (dev_net.Get (1));
-  ipv4MN1->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  // ipv4MN1->SetForwarding (ifIndex, true);
-  ipv4MN1->SetUp (ifIndex);
-
-  Ptr<Ipv4> ipv4MN2 = net.Get (2)->GetObject<Ipv4> ();
-  ifIndex = ipv4MN2->AddInterface (dev_net.Get (2));
-  ipv4MN2->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  // ipv4MN2->SetForwarding (ifIndex, true);
-  ipv4MN2->SetUp (ifIndex);
-
   Ptr<Ipv4> ipv4Router = net.Get (3)->GetObject<Ipv4> ();
   ifIndex = ipv4Router->AddInterface (dev_net.Get (3));
   ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.12"), Ipv4Mask ("/24")));
@@ -157,7 +139,7 @@ main (int argc, char *argv[])
   dhcpClientNetDevs.Add (dev_net.Get (2));
 
   ApplicationContainer dhcpClients = dhcpClient.Install (dhcpClientNetDevs);
-  dhcpClients.Start (Seconds (1.0));
+  dhcpClients.Start (Seconds (10.0));
   dhcpClients.Stop (stopTime);
 
   UdpEchoServerHelper echoServer (9);

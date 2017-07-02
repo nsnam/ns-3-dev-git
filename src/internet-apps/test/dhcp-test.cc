@@ -94,11 +94,7 @@ DhcpTestCase::DoRun (void)
   tcpip.Install (nodes);
   tcpip.Install (routers);
 
-  Ptr<Ipv4> ipv4MN = net.Get (0)->GetObject<Ipv4> ();
-  uint32_t ifIndex = ipv4MN->AddInterface (devNet.Get (0));
-  ipv4MN->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("0.0.0.0"), Ipv4Mask ("/32")));
-  ipv4MN->SetForwarding (ifIndex, true);
-  ipv4MN->SetUp (ifIndex);
+  uint32_t ifIndex;
 
   // Setup IPv4 addresses and forwarding
   Ptr<Ipv4> ipv4Router = net.Get (1)->GetObject<Ipv4> ();
