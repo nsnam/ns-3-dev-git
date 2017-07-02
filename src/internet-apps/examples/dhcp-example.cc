@@ -124,21 +124,21 @@ main (int argc, char *argv[])
    *                   Ipv4Address gateway = Ipv4Address ());
    *
    */
-  DhcpServerHelper dhcpServer (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
-                               Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
-                               Ipv4Address ("172.30.0.17"));
+  DhcpServerHelper dhcpServerHelper (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
+                                     Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
+                                     Ipv4Address ("172.30.0.17"));
 
-  ApplicationContainer ap_dhcp_server = dhcpServer.Install (router.Get (0));
-  ap_dhcp_server.Start (Seconds (1.0));
-  ap_dhcp_server.Stop (stopTime);
+  ApplicationContainer dhcpServerApp = dhcpServerHelper.Install (router.Get (0));
+  dhcpServerApp.Start (Seconds (1.0));
+  dhcpServerApp.Stop (stopTime);
 
-  DhcpClientHelper dhcpClient;
+  DhcpClientHelper dhcpClientHelper;
   NetDeviceContainer dhcpClientNetDevs;
   dhcpClientNetDevs.Add (dev_net.Get (0));
   dhcpClientNetDevs.Add (dev_net.Get (1));
   dhcpClientNetDevs.Add (dev_net.Get (2));
 
-  ApplicationContainer dhcpClients = dhcpClient.Install (dhcpClientNetDevs);
+  ApplicationContainer dhcpClients = dhcpClientHelper.Install (dhcpClientNetDevs);
   dhcpClients.Start (Seconds (10.0));
   dhcpClients.Stop (stopTime);
 
