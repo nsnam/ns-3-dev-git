@@ -152,6 +152,17 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
       tcHelper.Install (netDevice);
     }
 
+  // check that the already fixed addresses are not in conflict with the pool
+  std::list<Ipv4Address>::iterator iter;
+  for (iter=m_fixedAddresses.begin (); iter!=m_fixedAddresses.end (); iter ++)
+    {
+      if (iter->Get () >= minAddr.Get () && iter->Get () <= maxAddr.Get ())
+        {
+          NS_ABORT_MSG ("DhcpHelper: Fixed address can not conflict with a pool: " << *iter << " is in [" << minAddr << ",  " << maxAddr << "]");
+        }
+    }
+  m_addressPools.push_back (std::make_pair (minAddr, maxAddr));
+
   Ptr<Application> app = m_serverFactory.Create<DhcpServer> ();
   node->AddApplication (app);
   return ApplicationContainer (app);
@@ -193,6 +204,16 @@ Ipv4InterfaceContainer DhcpHelper::InstallFixedAddress (Ptr<NetDevice> netDevice
       tcHelper.Install (netDevice);
     }
 
+  // check that the already fixed addresses are not in conflict with the pool
+  std::list<std::pair<Ipv4Address, Ipv4Address> >::iterator iter;
+  for (iter=m_addressPools.begin (); iter!=m_addressPools.end (); iter ++)
+    {
+      if (addr.Get () >= iter->first.Get () && addr.Get () <= iter->second.Get ())
+        {
+          NS_ABORT_MSG ("DhcpHelper: Fixed address can not conflict with a pool: " << addr << " is in [" << iter->first << ",  " << iter->second << "]");
+        }
+    }
+  m_fixedAddresses.push_back (addr);
   return retval;
 }
 

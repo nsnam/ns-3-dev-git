@@ -137,7 +137,7 @@ Ipv4Address DhcpClient::GetDhcpServer (void)
 void
 DhcpClient::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   m_device = 0;
 
@@ -155,7 +155,8 @@ DhcpClient::AssignStreams (int64_t stream)
 void
 DhcpClient::StartApplication (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   m_remoteAddress = Ipv4Address ("255.255.255.255");
   m_myAddress = Ipv4Address ("0.0.0.0");
   m_gateway = Ipv4Address ("0.0.0.0");
@@ -204,7 +205,8 @@ DhcpClient::StartApplication (void)
 void
 DhcpClient::StopApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   Simulator::Remove (m_discoverEvent);
   Simulator::Remove (m_requestEvent);
   Simulator::Remove (m_rebindEvent);
@@ -229,7 +231,8 @@ DhcpClient::StopApplication ()
 
 void DhcpClient::LinkStateHandler (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   if (m_device->IsLinkUp ())
     {
       NS_LOG_INFO ("Link up at " << Simulator::Now ().As (Time::S));
@@ -273,6 +276,7 @@ void DhcpClient::LinkStateHandler (void)
 void DhcpClient::NetHandler (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
+
   Address from;
   Ptr<Packet> packet = m_socket->RecvFrom (from);
   DhcpHeader header;
@@ -302,7 +306,8 @@ void DhcpClient::NetHandler (Ptr<Socket> socket)
 
 void DhcpClient::Boot (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   DhcpHeader header;
   Ptr<Packet> packet;
   packet = Create<Packet> ();
@@ -329,6 +334,8 @@ void DhcpClient::Boot (void)
 
 void DhcpClient::OfferHandler (DhcpHeader header)
 {
+  NS_LOG_FUNCTION (this << header);
+
   m_offerList.push_back (header);
   if (m_offered == false)
     {
@@ -340,11 +347,14 @@ void DhcpClient::OfferHandler (DhcpHeader header)
 
 void DhcpClient::Select (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   if (m_offerList.empty ())
     {
       Boot ();
+      return;
     }
+
   DhcpHeader header = m_offerList.front ();
   m_offerList.pop_front ();
   m_lease = Time (Seconds (header.GetLease ()));
@@ -361,7 +371,8 @@ void DhcpClient::Select (void)
 
 void DhcpClient::Request (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   DhcpHeader header;
   Ptr<Packet> packet;
   if (m_state != REFRESH_LEASE)
@@ -405,6 +416,8 @@ void DhcpClient::Request (void)
 
 void DhcpClient::AcceptAck (DhcpHeader header, Address from)
 {
+  NS_LOG_FUNCTION (this << header << from);
+
   Simulator::Remove (m_rebindEvent);
   Simulator::Remove (m_refreshEvent);
   Simulator::Remove (m_timeout);
@@ -457,7 +470,8 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
 
 void DhcpClient::RemoveAndStart ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
+
   Simulator::Remove (m_nextOfferEvent);
   Simulator::Remove (m_refreshEvent);
   Simulator::Remove (m_rebindEvent);

@@ -109,6 +109,8 @@ private:
   Ptr<Application> InstallDhcpClientPriv (Ptr<NetDevice> netDevice) const;
   ObjectFactory m_clientFactory;                 //!< DHCP client factory
   ObjectFactory m_serverFactory;                 //!< DHCP server factory
+  std::list<Ipv4Address> m_fixedAddresses;       //!< list of fixed addresses already allocated.
+  std::list< std::pair <Ipv4Address, Ipv4Address> > m_addressPools; //!< list of address pools.
 };
 
 } // namespace ns3

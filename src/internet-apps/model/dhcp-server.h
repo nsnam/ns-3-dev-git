@@ -54,15 +54,17 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  /**
-   * \brief Constructor
-   */
   DhcpServer ();
+  virtual ~DhcpServer ();
 
   /**
-   * \brief Destructor
+   * \brief Add a static entry to the pool.
+   *
+   * \param chaddr The client chaddr.
+   * \param addr The address to handle to the client.
    */
-  virtual ~DhcpServer ();
+  void AddStaticDhcpEntry (Address chaddr, Ipv4Address addr);
+
 
 protected:
   virtual void DoDispose (void);

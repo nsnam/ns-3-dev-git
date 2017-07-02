@@ -55,21 +55,14 @@ public:
   static TypeId
   GetTypeId (void);
 
-  /**
-   * \brief Constructor
-   */
   DhcpClient ();
+  virtual ~DhcpClient ();
 
   /**
    * \brief Constructor
    * \param netDevice the NetDevice DHCP should work on
    */
   DhcpClient (Ptr<NetDevice> netDevice);
-
-  /**
-   * \brief Destructor
-   */
-  virtual ~DhcpClient ();
 
   /**
    * \brief Get the the NetDevice DHCP should work on
