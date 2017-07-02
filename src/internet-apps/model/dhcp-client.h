@@ -61,9 +61,27 @@ public:
   DhcpClient ();
 
   /**
+   * \brief Constructor
+   * \param netDevice the NetDevice DHCP should work on
+   */
+  DhcpClient (Ptr<NetDevice> netDevice);
+
+  /**
    * \brief Destructor
    */
   virtual ~DhcpClient ();
+
+  /**
+   * \brief Get the the NetDevice DHCP should work on
+   * \return the NetDevice DHCP should work on
+   */
+  Ptr<NetDevice> GetDhcpClientNetDevice (void);
+
+  /**
+   * \brief Set the NetDevice DHCP should work on
+   * \param netDevice the NetDevice DHCP should work on
+   */
+  void SetDhcpClientNetDevice (Ptr<NetDevice> netDevice);
 
   /**
    * \brief Get the IPv4Address of current DHCP server
@@ -150,7 +168,7 @@ private:
   void RemoveAndStart ();
 
   uint8_t m_state;                       //!< State of the DHCP client
-  uint32_t m_device;                     //!< Device identifier
+  Ptr<NetDevice> m_device;               //!< NetDevice pointer
   Ptr<Socket> m_socket;                  //!< Socket for remote communication
   Ipv4Address m_remoteAddress;           //!< Initially set to 255.255.255.255 to start DHCP
   Ipv4Address m_offeredAddress;          //!< Address offered to the client

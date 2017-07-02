@@ -113,13 +113,16 @@ DhcpTestCase::DoRun (void)
   dhcpServerApps.Start (Seconds (1.0));
   dhcpServerApps.Stop (Seconds (20.0));
 
-  DhcpClientHelper dhcpClientHelper (0);
-  ApplicationContainer dhcpClientApps = dhcpClientHelper.Install (nodes.Get (0));
-  dhcpClientApps.Start (Seconds (1.0));
-  dhcpClientApps.Stop (Seconds (20.0));
+  DhcpClientHelper dhcpClient;
+  NetDeviceContainer dhcpClientNetDevs;
+  dhcpClientNetDevs.Add (devNet.Get (0));
+
+  ApplicationContainer dhcpClients = dhcpClient.Install (dhcpClientNetDevs);
+  dhcpClients.Start (Seconds (1.0));
+  dhcpClients.Stop (Seconds (20.0));
 
 
-  dhcpClientApps.Get(0)->TraceConnectWithoutContext ("NewLease", MakeCallback(&DhcpTestCase::LeaseObtained, this));
+  dhcpClients.Get(0)->TraceConnectWithoutContext ("NewLease", MakeCallback(&DhcpTestCase::LeaseObtained, this));
 
   Simulator::Stop (Seconds (21.0));
 

@@ -58,10 +58,6 @@ DhcpClient::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<DhcpClient> ()
     .SetGroupName ("Internet-Apps")
-    .AddAttribute ("NetDevice", "Index of netdevice of the node for DHCP",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&DhcpClient::m_device),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RTRS", "Time for retransmission of Discover message",
                    TimeValue (Seconds (5)),
                    MakeTimeAccessor (&DhcpClient::m_rtrs),
@@ -90,9 +86,24 @@ DhcpClient::GetTypeId (void)
   return tid;
 }
 
-DhcpClient::DhcpClient () : m_server (Ipv4Address::GetAny ())
+DhcpClient::DhcpClient ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_server = Ipv4Address::GetAny ();
+  m_socket = 0;
+  m_refreshEvent = EventId ();
+  m_requestEvent = EventId ();
+  m_discoverEvent = EventId ();
+  m_rebindEvent = EventId ();
+  m_nextOfferEvent = EventId ();
+  m_timeout = EventId ();
+}
+
+DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_device = netDevice;
+  m_server = Ipv4Address::GetAny ();
   m_socket = 0;
   m_refreshEvent = EventId ();
   m_requestEvent = EventId ();
@@ -107,6 +118,17 @@ DhcpClient::~DhcpClient ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
+Ptr<NetDevice> DhcpClient::GetDhcpClientNetDevice (void)
+{
+  return m_device;
+}
+
+
+void DhcpClient::SetDhcpClientNetDevice (Ptr<NetDevice> netDevice)
+{
+  m_device = netDevice;
+}
+
 Ipv4Address DhcpClient::GetDhcpServer (void)
 {
   return m_server;
@@ -116,6 +138,9 @@ void
 DhcpClient::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  m_device = 0;
+
   Application::DoDispose ();
 }
 
@@ -135,11 +160,11 @@ DhcpClient::StartApplication (void)
   m_myAddress = Ipv4Address ("0.0.0.0");
   m_gateway = Ipv4Address ("0.0.0.0");
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
-  uint32_t ifIndex = ipv4->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
+  uint32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
 
   // We need to cleanup the type from the stored chaddr, or later we'll fail to compare it.
   // Moreover, the length is always 16, because chaddr is 16 bytes.
-  Address myAddress = GetNode ()->GetDevice (m_device)->GetAddress ();
+  Address myAddress = m_device->GetAddress ();
   NS_LOG_INFO ("My address is " << myAddress);
   uint8_t addr[Address::MAX_SIZE];
   uint32_t len = myAddress.CopyTo (addr);
@@ -166,11 +191,11 @@ DhcpClient::StartApplication (void)
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 68);
       m_socket->SetAllowBroadcast (true);
       m_socket->Bind (local);
-      m_socket->BindToNetDevice (GetNode ()->GetDevice (m_device));
+      m_socket->BindToNetDevice (m_device);
     }
   m_socket->SetRecvCallback (MakeCallback (&DhcpClient::NetHandler, this));
 
-  GetNode ()->GetDevice (m_device)->AddLinkChangeCallback (MakeCallback (&DhcpClient::LinkStateHandler, this));
+  m_device->AddLinkChangeCallback (MakeCallback (&DhcpClient::LinkStateHandler, this));
   Boot ();
 
 }
@@ -187,7 +212,7 @@ DhcpClient::StopApplication ()
   Simulator::Remove (m_nextOfferEvent);
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
 
-  int32_t ifIndex = ipv4->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
+  int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
   for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
     {
       if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
@@ -204,7 +229,7 @@ DhcpClient::StopApplication ()
 void DhcpClient::LinkStateHandler (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (GetNode ()->GetDevice (m_device)->IsLinkUp ())
+  if (m_device->IsLinkUp ())
     {
       NS_LOG_INFO ("Link up at " << Simulator::Now ().As (Time::S));
       m_socket->SetRecvCallback (MakeCallback (&DhcpClient::NetHandler, this));
@@ -219,7 +244,7 @@ void DhcpClient::LinkStateHandler (void)
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());  //stop receiving on this socket !!!
 
       Ptr<Ipv4> ipv4MN = GetNode ()->GetObject<Ipv4> ();
-      int32_t ifIndex = ipv4MN->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
+      int32_t ifIndex = ipv4MN->GetInterfaceForDevice (m_device);
 
       for (uint32_t i = 0; i < ipv4MN->GetNAddresses (ifIndex); i++)
         {
@@ -384,7 +409,7 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
   Simulator::Remove (m_timeout);
   NS_LOG_INFO ("DHCP ACK received");
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
-  int32_t ifIndex = ipv4->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
+  int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
 
   for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
     {
@@ -439,7 +464,7 @@ void DhcpClient::RemoveAndStart ()
   Simulator::Remove (m_timeout);
 
   Ptr<Ipv4> ipv4MN = GetNode ()->GetObject<Ipv4> ();
-  int32_t ifIndex = ipv4MN->GetInterfaceForDevice (GetNode ()->GetDevice (m_device));
+  int32_t ifIndex = ipv4MN->GetInterfaceForDevice (m_device);
 
   for (uint32_t i = 0; i < ipv4MN->GetNAddresses (ifIndex); i++)
     {

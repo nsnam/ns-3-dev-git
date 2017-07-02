@@ -142,28 +142,23 @@ main (int argc, char *argv[])
    *                   Ipv4Address gateway = Ipv4Address ());
    *
    */
-  DhcpServerHelper dhcp_server (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
-                                Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
-                                Ipv4Address ("172.30.0.17"));
+  DhcpServerHelper dhcpServer (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
+                               Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
+                               Ipv4Address ("172.30.0.17"));
 
-  ApplicationContainer ap_dhcp_server = dhcp_server.Install (router.Get (0));
+  ApplicationContainer ap_dhcp_server = dhcpServer.Install (router.Get (0));
   ap_dhcp_server.Start (Seconds (1.0));
   ap_dhcp_server.Stop (stopTime);
 
-  DhcpClientHelper dhcp_client (0);
-  ApplicationContainer ap_dhcp_client = dhcp_client.Install (nodes.Get (0));
-  ap_dhcp_client.Start (Seconds (1.0));
-  ap_dhcp_client.Stop (stopTime);
+  DhcpClientHelper dhcpClient;
+  NetDeviceContainer dhcpClientNetDevs;
+  dhcpClientNetDevs.Add (dev_net.Get (0));
+  dhcpClientNetDevs.Add (dev_net.Get (1));
+  dhcpClientNetDevs.Add (dev_net.Get (2));
 
-  DhcpClientHelper dhcp_client1 (0);
-  ApplicationContainer ap_dhcp_client1 = dhcp_client1.Install (nodes.Get (1));
-  ap_dhcp_client1.Start (Seconds (1.0));
-  ap_dhcp_client1.Stop (stopTime);
-
-  DhcpClientHelper dhcp_client2 (0);
-  ApplicationContainer ap_dhcp_client2 = dhcp_client2.Install (nodes.Get (2));
-  ap_dhcp_client2.Start (Seconds (1.0));
-  ap_dhcp_client2.Stop (stopTime);
+  ApplicationContainer dhcpClients = dhcpClient.Install (dhcpClientNetDevs);
+  dhcpClients.Start (Seconds (1.0));
+  dhcpClients.Stop (stopTime);
 
   UdpEchoServerHelper echoServer (9);
 

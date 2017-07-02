@@ -27,7 +27,7 @@
 
 #include <stdint.h>
 #include "ns3/application-container.h"
-#include "ns3/node-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
 
@@ -44,9 +44,8 @@ class DhcpClientHelper
 public:
   /**
    * \brief Constructor of client helper
-   * \param device The interface on which DHCP client has to be installed
    */
-  DhcpClientHelper (uint32_t device);
+  DhcpClientHelper ();
 
   /**
    * \brief Function to set DHCP client attributes
@@ -57,10 +56,17 @@ public:
 
   /**
    * \brief Function to install DHCP client of a node
-   * \param node The node on which DHCP client application has to be installed
+   * \param netDevice The NetDevice on which DHCP client application has to be installed
    * \return The application container with DHCP client installed
    */
-  ApplicationContainer Install (Ptr<Node> node) const;
+  ApplicationContainer Install (Ptr<NetDevice> netDevice) const;
+
+  /**
+   * \brief Function to install DHCP client of a node
+   * \param netDevices The NetDevices on which DHCP client application has to be installed
+   * \return The application container with DHCP client installed
+   */
+  ApplicationContainer Install (NetDeviceContainer netDevices) const;
 
 private:
   /**
@@ -68,7 +74,7 @@ private:
    * \param node The node on which DHCP client application has to be installed
    * \return The pointer to the installed DHCP client
    */
-  Ptr<Application> InstallPriv (Ptr<Node> node) const;
+  Ptr<Application> InstallPriv (Ptr<NetDevice> netDevice) const;
   ObjectFactory m_factory;                 //!< The subset of ns3::object for setting attributes
 };
 

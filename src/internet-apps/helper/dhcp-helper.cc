@@ -30,10 +30,9 @@
 
 namespace ns3 {
 
-DhcpClientHelper::DhcpClientHelper (uint32_t device)
+DhcpClientHelper::DhcpClientHelper ()
 {
   m_factory.SetTypeId (DhcpClient::GetTypeId ());
-  SetAttribute ("NetDevice", UintegerValue (device));
 }
 
 DhcpServerHelper::DhcpServerHelper (Ipv4Address pool_addr, Ipv4Mask pool_mask,
@@ -62,9 +61,19 @@ void DhcpServerHelper::SetAttribute (
   m_factory.Set (name, value);
 }
 
-ApplicationContainer DhcpClientHelper::Install (Ptr<Node> node) const
+ApplicationContainer DhcpClientHelper::Install (Ptr<NetDevice> netDevice) const
 {
-  return ApplicationContainer (InstallPriv (node));
+  return ApplicationContainer (InstallPriv (netDevice));
+}
+
+ApplicationContainer DhcpClientHelper::Install (NetDeviceContainer netDevices) const
+{
+  ApplicationContainer apps;
+  for (NetDeviceContainer::Iterator i = netDevices.Begin (); i != netDevices.End (); ++i)
+    {
+      apps.Add (InstallPriv (*i));
+    }
+  return apps;
 }
 
 ApplicationContainer DhcpServerHelper::Install (Ptr<Node> node) const
@@ -72,9 +81,13 @@ ApplicationContainer DhcpServerHelper::Install (Ptr<Node> node) const
   return ApplicationContainer (InstallPriv (node));
 }
 
-Ptr<Application> DhcpClientHelper::InstallPriv (Ptr<Node> node) const
+Ptr<Application> DhcpClientHelper::InstallPriv (Ptr<NetDevice> netDevice) const
 {
-  Ptr<Application> app = m_factory.Create<DhcpClient> ();
+  Ptr<Node> node = netDevice->GetNode ();
+  NS_ASSERT_MSG (node != 0, "DhcpClientHelper: NetDevice must be installed in a node before adding DhcpClient.");
+
+  Ptr<DhcpClient> app = DynamicCast <DhcpClient> (m_factory.Create<DhcpClient> ());
+  app->SetDhcpClientNetDevice (netDevice);
   node->AddApplication (app);
 
   return app;
