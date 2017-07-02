@@ -94,26 +94,19 @@ DhcpTestCase::DoRun (void)
   tcpip.Install (nodes);
   tcpip.Install (routers);
 
-  uint32_t ifIndex;
+  DhcpHelper dhcpHelper;
 
-  // Setup IPv4 addresses and forwarding
-  Ptr<Ipv4> ipv4Router = net.Get (1)->GetObject<Ipv4> ();
-  ifIndex = ipv4Router->AddInterface (devNet.Get (1));
-  ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.1"), Ipv4Mask ("/24")));
-  ipv4Router->SetForwarding (ifIndex, true);
-  ipv4Router->SetUp (ifIndex);
+  ApplicationContainer dhcpServerApp = dhcpHelper.InstallDhcpServer (devNet.Get (1), Ipv4Address ("172.30.0.12"),
+                                                                     Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
+                                                                     Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
+                                                                     Ipv4Address ("172.30.0.17"));
+  dhcpServerApp.Start (Seconds (1.0));
+  dhcpServerApp.Stop (Seconds (20.0));
 
-  DhcpServerHelper dhcpServerHelper (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
-                                     Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.100"));
-  ApplicationContainer dhcpServerApps = dhcpServerHelper.Install (routers.Get (0));
-  dhcpServerApps.Start (Seconds (1.0));
-  dhcpServerApps.Stop (Seconds (20.0));
-
-  DhcpClientHelper dhcpClientHelper;
   NetDeviceContainer dhcpClientNetDevs;
   dhcpClientNetDevs.Add (devNet.Get (0));
 
-  ApplicationContainer dhcpClientApps = dhcpClientHelper.Install (dhcpClientNetDevs);
+  ApplicationContainer dhcpClientApps = dhcpHelper.InstallDhcpClient (dhcpClientNetDevs);
   dhcpClientApps.Start (Seconds (1.0));
   dhcpClientApps.Stop (Seconds (20.0));
 

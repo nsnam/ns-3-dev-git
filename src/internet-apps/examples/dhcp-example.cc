@@ -72,7 +72,7 @@ main (int argc, char *argv[])
   csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
   csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
   csma.SetDeviceAttribute ("Mtu", UintegerValue (1500));
-  NetDeviceContainer dev_net = csma.Install (net);
+  NetDeviceContainer devNet = csma.Install (net);
 
   NodeContainer p2pNodes;
   p2pNodes.Add (net.Get (4));
@@ -103,42 +103,29 @@ main (int argc, char *argv[])
                                      Ipv4Address ("172.30.1.1"), 1);
 
   uint32_t ifIndex;
-  Ptr<Ipv4> ipv4Router = net.Get (3)->GetObject<Ipv4> ();
-  ifIndex = ipv4Router->AddInterface (dev_net.Get (3));
-  ipv4Router->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.12"), Ipv4Mask ("/24")));
-  // ipv4Router->SetForwarding (ifIndex, true);
-  ipv4Router->SetUp (ifIndex);
-
   Ptr<Ipv4> ipv4Router1 = net.Get (4)->GetObject<Ipv4> ();
-  ifIndex = ipv4Router1->AddInterface (dev_net.Get (4));
+  ifIndex = ipv4Router1->AddInterface (devNet.Get (4));
   ipv4Router1->AddAddress (ifIndex, Ipv4InterfaceAddress (Ipv4Address ("172.30.0.17"), Ipv4Mask ("/24")));
   ipv4Router1->SetForwarding (ifIndex, true);
   ipv4Router1->SetUp (ifIndex);
 
   NS_LOG_INFO ("Create Applications.");
 
-  /*
-   * DhcpServerHelper (Ipv4Address pool_addr, Ipv4Mask pool_mask,
-   *                   Ipv4Address serv_addr,
-   *                   Ipv4Address min_addr, Ipv4Address max_addr,
-   *                   Ipv4Address gateway = Ipv4Address ());
-   *
-   */
-  DhcpServerHelper dhcpServerHelper (Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
-                                     Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
-                                     Ipv4Address ("172.30.0.17"));
+  DhcpHelper dhcpHelper;
 
-  ApplicationContainer dhcpServerApp = dhcpServerHelper.Install (router.Get (0));
+  ApplicationContainer dhcpServerApp = dhcpHelper.InstallDhcpServer (devNet.Get (3), Ipv4Address ("172.30.0.12"),
+                                                                     Ipv4Address ("172.30.0.0"), Ipv4Mask ("/24"),
+                                                                     Ipv4Address ("172.30.0.10"), Ipv4Address ("172.30.0.15"),
+                                                                     Ipv4Address ("172.30.0.17"));
   dhcpServerApp.Start (Seconds (1.0));
   dhcpServerApp.Stop (stopTime);
 
-  DhcpClientHelper dhcpClientHelper;
   NetDeviceContainer dhcpClientNetDevs;
-  dhcpClientNetDevs.Add (dev_net.Get (0));
-  dhcpClientNetDevs.Add (dev_net.Get (1));
-  dhcpClientNetDevs.Add (dev_net.Get (2));
+  dhcpClientNetDevs.Add (devNet.Get (0));
+  dhcpClientNetDevs.Add (devNet.Get (1));
+  dhcpClientNetDevs.Add (devNet.Get (2));
 
-  ApplicationContainer dhcpClients = dhcpClientHelper.Install (dhcpClientNetDevs);
+  ApplicationContainer dhcpClients = dhcpHelper.InstallDhcpClient (dhcpClientNetDevs);
   dhcpClients.Start (Seconds (10.0));
   dhcpClients.Stop (stopTime);
 
