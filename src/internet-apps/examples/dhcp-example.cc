@@ -48,10 +48,10 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
-  LogComponentEnable ("DhcpServer", LOG_LEVEL_ALL);
 
   if (verbose)
     {
+      LogComponentEnable ("DhcpServer", LOG_LEVEL_ALL);
       LogComponentEnable ("DhcpClient", LOG_LEVEL_ALL);
       LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
       LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
