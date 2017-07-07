@@ -33,9 +33,7 @@ namespace ns3 {
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class MacTxMiddle;
-class WifiMacQueueItem;
-template <typename Item> class WifiQueue;
-typedef WifiQueue<WifiMacQueueItem> WifiMacQueue;
+class WifiMacQueue;
 
 /**
  * \ingroup wifi
@@ -79,6 +77,12 @@ private:
 
 
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
   BlockAckManager ();
   ~BlockAckManager ();
 
