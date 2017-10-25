@@ -69,11 +69,9 @@ HelicsSimulatorImpl::HelicsSimulatorImpl ()
   if (federate == nullptr)
   {
     // Create helics federate with connection to broker
-    NS_LOG_INFO ("Federate not created");
     NS_LOG_INFO ("Creating federate");
     HelicsHelper helics;
     helics.SetupFederate ();
-    NS_LOG_INFO ("Federate created");
   }
 
   m_stop = false;

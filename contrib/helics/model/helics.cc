@@ -4,8 +4,7 @@
 
 namespace ns3 {
 
-/* ... */
-
+std::shared_ptr<helics::MessageFederate> federate;
 
 }
 
