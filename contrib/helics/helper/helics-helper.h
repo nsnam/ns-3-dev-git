@@ -6,7 +6,10 @@
 
 namespace ns3 {
 
-/* ... */
+class HelicsHelper {
+public:
+  void SetupFederate(void);
+};
 
 }
 

@@ -2,11 +2,13 @@
 #ifndef HELICS_H
 #define HELICS_H
 
-#include "helics/application_api/Federate.h"
+#include <memory>
+
+#include "helics/application_api/application_api.h"
 
 namespace ns3 {
 
-/* ... */
+static std::shared_ptr<helics::MessageFederate> federate;
 
 }
 

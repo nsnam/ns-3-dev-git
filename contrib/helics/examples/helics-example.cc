@@ -5,6 +5,7 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("HelicsExample");
 
 int 
 main (int argc, char *argv[])
@@ -16,7 +17,11 @@ main (int argc, char *argv[])
 
   cmd.Parse (argc,argv);
 
-  /* ... */
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::HelicsSimulatorImpl"));
+
+   HelicsHelper helics;
+   helics.SetupFederate();
+  NS_LOG_INFO ("Simulator Impl bound, about to Run simulator");
 
   Simulator::Run ();
   Simulator::Destroy ();
