@@ -124,6 +124,14 @@ int main()
         # if they are enabled.
         conf.env['MODULES_NOT_BUILT'].append('helics')
 
+    # if HELICS is enabled, we must use c++14 instead of c++11
+    if conf.env['HELICS']:
+        for index,flag in enumerate(conf.env['CXXFLAGS']):
+            if 'c++11' in flag:
+                conf.env['CXXFLAGS'][index] = '-std=c++14'
+                break
+        print(conf.env['CXXFLAGS'])
+
 def build(bld):
     if 'helics' in bld.env['MODULES_NOT_BUILT']:
         return

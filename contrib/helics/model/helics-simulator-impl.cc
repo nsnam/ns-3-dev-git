@@ -231,6 +231,7 @@ HelicsSimulatorImpl::Run (void)
   federate->enterExecutionState ();
 
   // Requests time of next event, or max simulation time if nothing in the queue
+  NS_LOG_INFO ("Requesting time");
   Time grantedTime = Time::FromDouble (federate->requestTime (Next ().GetSeconds ()), Time::S);
   Time nextTime = Next ();
 
