@@ -10,7 +10,7 @@ NS_LOG_COMPONENT_DEFINE ("HelicsExample");
 int 
 main (int argc, char *argv[])
 {
-  bool verbose = true;
+  bool verbose = false;
 
   HelicsHelper helics;
 
@@ -19,14 +19,21 @@ main (int argc, char *argv[])
   helics.SetupCommandLine(cmd);
   cmd.Parse (argc,argv);
 
+  if (verbose) {
+    LogComponentEnable ("HelicsExample", LOG_LEVEL_ALL);
+    LogComponentEnable ("HelicsSimulatorImpl", LOG_LEVEL_ALL);
+  }
+
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::HelicsSimulatorImpl"));
 
   helics.SetupFederate();
   NS_LOG_INFO ("Simulator Impl bound, about to Run simulator");
 
-  Simulator::Run ();
   Simulator::Stop (Seconds (10.0));
+
+  Simulator::Run ();
   Simulator::Destroy ();
+
   return 0;
 }
 

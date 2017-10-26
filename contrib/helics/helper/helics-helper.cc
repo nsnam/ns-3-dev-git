@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ns3/helics.h"
+#include "helics/core/core-types.h"
 
 namespace ns3 {
 
