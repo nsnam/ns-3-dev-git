@@ -30,7 +30,8 @@ HelicsHelper::SetupFederate(void)
   if (!coreinit.empty()) {
     fi.coreInitString = coreinit;
   }
-  federate = std::make_shared<helics::MessageFederate> (fi);
+  helics_federate = std::make_shared<helics::MessageFilterFederate> (fi);
+  helics_endpoint = helics_federate->registerEndpoint ("fout");
 }
 
 void

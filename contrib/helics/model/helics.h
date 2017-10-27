@@ -8,7 +8,8 @@
 
 namespace ns3 {
 
-extern std::shared_ptr<helics::MessageFederate> federate;
+extern std::shared_ptr<helics::MessageFilterFederate> helics_federate;
+extern helics::endpoint_id_t helics_endpoint;
 
 }
 

@@ -66,7 +66,7 @@ HelicsSimulatorImpl::HelicsSimulatorImpl ()
   NS_LOG_FUNCTION (this);
 
   // Check if HELICS federate has already been setup
-  if (federate == nullptr)
+  if (helics_federate == nullptr)
   {
     // Create helics federate with connection to broker
     NS_LOG_INFO ("Creating federate");
@@ -147,7 +147,7 @@ uint32_t
 HelicsSimulatorImpl::GetSystemId (void) const
 {
   // Return HELICS federate ID
-  return federate->getID ();
+  return helics_federate->getID ();
 }
 
 void
@@ -230,12 +230,12 @@ HelicsSimulatorImpl::Run (void)
 
   // Begin HELICS simulation
   NS_LOG_INFO ("Entering execution state");
-  federate->enterExecutionState ();
+  helics_federate->enterExecutionState ();
 
   // Requests time of next event, or max simulation time if nothing in the queue
   auto requested = Next ().GetSeconds ();
   NS_LOG_INFO ("    Requesting time: " << requested);
-  auto granted = federate->requestTime (requested);
+  auto granted = helics_federate->requestTime (requested);
   NS_LOG_INFO ("Granted time helics: " << granted);
   Time grantedTime = Time::FromDouble (granted, Time::S);
   NS_LOG_INFO ("  Granted time ns-3: " << grantedTime);
@@ -258,14 +258,13 @@ HelicsSimulatorImpl::Run (void)
           NS_LOG_INFO ("                 m_stop: " << m_stop);
           NS_LOG_INFO ("nextTime <= grantedTime: " << (nextTime<=grantedTime));
         }
-  
 
       if (!m_stop)
         {
           m_currentTs = grantedTime.GetTimeStep ();
           requested = Next ().GetSeconds ();
           NS_LOG_INFO ("    Requesting time: " << requested);
-          granted = federate->requestTime (requested);
+          granted = helics_federate->requestTime (requested);
           NS_LOG_INFO ("Granted time helics: " << granted);
           grantedTime = Time::FromDouble (granted, Time::S);
           NS_LOG_INFO ("  Granted time ns-3: " << grantedTime);
@@ -273,7 +272,7 @@ HelicsSimulatorImpl::Run (void)
    }
 
   // End HELICS simulation
-  federate->finalize ();
+  helics_federate->finalize ();
 
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.
