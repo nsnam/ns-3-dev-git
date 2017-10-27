@@ -18,7 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-using namespace std;
+
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
@@ -274,7 +274,7 @@ HelicsApplication::FilterCallback (helics::filter_id_t id, helics::Time time)
       InetSocketAddress address = to->GetLocalInet();
       if (~f_name.empty())
       {
-        std::ofstream outFile(f_name.c_str(), ios::app);
+        std::ofstream outFile(f_name.c_str(), std::ios::app);
         outFile << Simulator::Now ().GetNanoSeconds ()  << ","
                 << p->GetUid () << ","
                 << "s,"
@@ -307,7 +307,7 @@ HelicsApplication::FilterCallback (helics::filter_id_t id, helics::Time time)
       Inet6SocketAddress address = to->GetLocalInet6();
       if (~f_name.empty())
       {
-        std::ofstream outFile(f_name.c_str(), ios::app);
+        std::ofstream outFile(f_name.c_str(), std::ios::app);
         outFile << Simulator::Now ().GetNanoSeconds ()  << ","
                 << p->GetUid () << ","
                 << "s,"
@@ -389,14 +389,14 @@ HelicsApplication::HandleRead (Ptr<Socket> socket)
         {
           if (~f_name.empty())
           {
-            std::ofstream outFile(f_name.c_str(), ios::app);
+            std::ofstream outFile(f_name.c_str(), std::ios::app);
             outFile << Simulator::Now ().GetNanoSeconds ()  << ","
                     << packet->GetUid () << ","
                     << "r,"
                     << size << ","
                     << InetSocketAddress::ConvertFrom (from).GetIpv4 () << ","
                     << InetSocketAddress::ConvertFrom (from).GetPort () << ","
-                    << sdata << endl;
+                    << sdata << std::endl;
             outFile.close();
           }
           NS_LOG_INFO ("At time '"
@@ -418,14 +418,14 @@ HelicsApplication::HandleRead (Ptr<Socket> socket)
         {
           if (~f_name.empty())
           {
-            std::ofstream outFile(f_name.c_str(), ios::app);
+            std::ofstream outFile(f_name.c_str(), std::ios::app);
             outFile << Simulator::Now ().GetNanoSeconds ()  << ","
                     << packet->GetUid () << ","
                     << "r,"
                     << size << ","
                     << Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << ","
                     << Inet6SocketAddress::ConvertFrom (from).GetPort () << ","
-                    << sdata << endl;
+                    << sdata << std::endl;
             outFile.close();
           }
           NS_LOG_INFO ("At time '"

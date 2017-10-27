@@ -1,10 +1,14 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-#include "helics-helper.h"
 
+#include "ns3/application-container.h"
+#include "ns3/node-container.h"
 #include <memory>
 
 #include "ns3/helics.h"
+#include "ns3/helics-application.h"
+#include "ns3/helics-helper.h"
+
 #include "helics/core/core-types.h"
 
 namespace ns3 {
@@ -17,6 +21,7 @@ HelicsHelper::HelicsHelper()
 , timedelta(1.0)
 , coreinit("")
 {
+    m_factory.SetTypeId (HelicsApplication::GetTypeId ());
 }
 
 void
@@ -32,6 +37,8 @@ HelicsHelper::SetupFederate(void)
   }
   helics_federate = std::make_shared<helics::MessageFilterFederate> (fi);
   helics_endpoint = helics_federate->registerEndpoint ("fout");
+
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::HelicsSimulatorImpl"));
 }
 
 void
@@ -43,6 +50,17 @@ HelicsHelper::SetupCommandLine(CommandLine &cmd)
   cmd.AddValue ("stop", "the time to stop the player", stop);
   cmd.AddValue ("timedelta", "the time delta of the federate", timedelta);
   cmd.AddValue ("coreinit", "the core initializion string", coreinit);
+}
+
+ApplicationContainer
+HelicsHelper::Install (Ptr<Node> node, const std::string &name) const
+{
+    ApplicationContainer apps;
+    Ptr<HelicsApplication> app = m_factory.Create<HelicsApplication> ();
+    app->SetName (name);
+    node->AddApplication (app);
+    apps.Add (app);
+    return apps;
 }
 
 }

@@ -232,14 +232,13 @@ HelicsSimulatorImpl::Run (void)
   NS_LOG_INFO ("Entering execution state");
   helics_federate->enterExecutionState ();
 
-  // Requests time of next event, or max simulation time if nothing in the queue
-  auto requested = Next ().GetSeconds ();
-  NS_LOG_INFO ("    Requesting time: " << requested);
-  auto granted = helics_federate->requestTime (requested);
-  NS_LOG_INFO ("Granted time helics: " << granted);
-  Time grantedTime = Time::FromDouble (granted, Time::S);
-  NS_LOG_INFO ("  Granted time ns-3: " << grantedTime);
-  Time nextTime = Next ();
+  double requested;
+  helics::Time granted;
+  Time grantedTime;
+  Time nextTime;
+
+  grantedTime = Seconds (0.0);
+  nextTime = Next ();
   NS_LOG_INFO ("     Next time ns-3: " << grantedTime);
 
   // Keep processing events until stop time is reached

@@ -26,6 +26,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/random-variable-stream.h"
 
+#include <map>
 #include <string>
 
 #include "helics-id-tag.h"
