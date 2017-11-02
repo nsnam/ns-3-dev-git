@@ -39,11 +39,22 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("HelicsExample");
 
+/*
+ * The "SimpleFederate" is a placeholder for a federate that is *not*
+ * ns-3. It is a helics::MessageFederate, so it sends messages between
+ * registered endpoints.
+ *
+ * The main() loop below represents the ns-3 model. The helics ns-3
+ * integration will filter messages sent by MessageFederate instances by
+ * creating HelicsApplication instances at Nodes. The name given to the
+ * HelicsApplication should match a registered endpoint.
+ */
+
 void SimpleFederate()
 {
   helics::FederateInfo fi ("SimpleFederate");
   fi.coreType = helics::coreTypeFromString ("zmq");
-  auto mFed = std::make_shared<helics::MessageFilterFederate> (fi);
+  auto mFed = std::make_shared<helics::MessageFederate> (fi);
   auto p1 = mFed->registerGlobalEndpoint ("port1");
   auto p2 = mFed->registerGlobalEndpoint ("port2");
   mFed->enterExecutionState ();
