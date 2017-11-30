@@ -66,7 +66,7 @@ HelicsSimulatorImpl::HelicsSimulatorImpl ()
   NS_LOG_FUNCTION (this);
 
   // Check if HELICS federate has already been setup
-  if (federate == nullptr)
+  if (helics_federate == nullptr)
   {
     // Create helics federate with connection to broker
     NS_LOG_INFO ("Creating federate");
@@ -147,12 +147,13 @@ uint32_t
 HelicsSimulatorImpl::GetSystemId (void) const
 {
   // Return HELICS federate ID
-  return federate->getID ();
+  return helics_federate->getID ();
 }
 
 void
 HelicsSimulatorImpl::ProcessOneEvent (void)
 {
+  NS_LOG_FUNCTION (this);
   Scheduler::Event next = m_events->RemoveNext ();
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
@@ -228,29 +229,49 @@ HelicsSimulatorImpl::Run (void)
   m_stop = false;
 
   // Begin HELICS simulation
-  federate->enterExecutionState ();
+  NS_LOG_INFO ("Entering execution state");
+  helics_federate->enterExecutionState ();
 
-  // Requests time of next event, or max simulation time if nothing in the queue
-  NS_LOG_INFO ("Requesting time");
-  Time grantedTime = Time::FromDouble (federate->requestTime (Next ().GetSeconds ()), Time::S);
-  Time nextTime = Next ();
+  double requested;
+  helics::Time granted;
+  Time grantedTime;
+  Time nextTime;
+
+  grantedTime = Seconds (0.0);
+  nextTime = Next ();
+  NS_LOG_INFO ("     Next time ns-3: " << grantedTime);
 
   // Keep processing events until stop time is reached
   while (!m_stop) 
     {
       // Only process events up until the granted time
-      while (!m_events->IsEmpty () && !m_stop && nextTime < grantedTime) 
+      NS_LOG_INFO ("    m_events->IsEmpty(): " << m_events->IsEmpty());
+      NS_LOG_INFO ("                 m_stop: " << m_stop);
+      NS_LOG_INFO ("nextTime <= grantedTime: " << (nextTime<=grantedTime));
+      while (!m_events->IsEmpty () && !m_stop && nextTime <= grantedTime) 
         {
           ProcessOneEvent ();
           nextTime = Next ();
+          NS_LOG_INFO ("Next time ns-3: " << nextTime);
+          NS_LOG_INFO ("    m_events->IsEmpty(): " << m_events->IsEmpty());
+          NS_LOG_INFO ("                 m_stop: " << m_stop);
+          NS_LOG_INFO ("nextTime <= grantedTime: " << (nextTime<=grantedTime));
         }
-  
-        m_currentTs = grantedTime.GetTimeStep ();
-        grantedTime = Time::FromDouble (federate->requestTime (Next ().GetSeconds ()), Time::S);
+
+      if (!m_stop)
+        {
+          m_currentTs = grantedTime.GetTimeStep ();
+          requested = Next ().GetSeconds ();
+          NS_LOG_INFO ("    Requesting time: " << requested);
+          granted = helics_federate->requestTime (requested);
+          NS_LOG_INFO ("Granted time helics: " << granted);
+          grantedTime = Time::FromDouble (granted, Time::S);
+          NS_LOG_INFO ("  Granted time ns-3: " << grantedTime);
+        }
    }
 
   // End HELICS simulation
-  federate->finalize ();
+  helics_federate->finalize ();
 
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.

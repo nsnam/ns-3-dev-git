@@ -136,10 +136,12 @@ def build(bld):
     if 'helics' in bld.env['MODULES_NOT_BUILT']:
         return
 
-    module = bld.create_ns3_module('helics', ['core'])
+    module = bld.create_ns3_module('helics', ['core', 'internet'])
     module.source = [
         'model/helics.cc',
+        'model/helics-application.cc',
         'model/helics-simulator-impl.cc',
+        'model/helics-id-tag.cc',
         'helper/helics-helper.cc',
         ]
     module_test = bld.create_ns3_module_test_library('helics')
@@ -154,7 +156,9 @@ def build(bld):
     headers.module = 'helics'
     headers.source = [
         'model/helics.h',
+        'model/helics-application.h',
         'model/helics-simulator-impl.h',
+        'model/helics-id-tag.h',
         'helper/helics-helper.h',
         ]
 
