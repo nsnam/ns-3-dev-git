@@ -20,7 +20,7 @@ def required_boost_libs(conf):
 
 def configure(conf):
     if not conf.env['LIB_BOOST']:
-        conf.report_optional_feature("fskit", "fskit integration", False,
+        conf.report_optional_feature("helics", "helics integration", False,
                                      "Required boost libraries not found")
         return;
 
