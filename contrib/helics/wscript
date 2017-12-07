@@ -99,6 +99,7 @@ int main()
 
 
     conf.env.append_value('NS3_MODULE_PATH', os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'build', 'default')))
+    conf.env.append_value('NS3_MODULE_PATH', os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'lib', 'helics')))
     conf.env.append_value('NS3_MODULE_PATH', os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'lib')))
 
     conf.env['INCLUDES_HELICS'] = [
@@ -107,6 +108,7 @@ int main()
         ]
     conf.env['LIBPATH_HELICS'] = [
             os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'build', 'default')),
+            os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'lib', 'helics')),
             os.path.abspath(os.path.join(conf.env['WITH_HELICS'], 'lib'))
         ]
 
