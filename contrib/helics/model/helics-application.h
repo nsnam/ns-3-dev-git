@@ -64,6 +64,16 @@ public:
    */
   void SetName (const std::string &name);
   /**
+   * \brief set the named endpoint to filter
+   * \param name name
+   */
+  void SetFilterName (const std::string &name);
+  /**
+   * \brief set the named of this endpoint
+   * \param name name
+   */
+  void SetEndpointName (const std::string &name);
+  /**
    * \brief set the local address and port
    * \param ip local IPv4 address
    * \param port local port
@@ -92,12 +102,15 @@ public:
    * \brief Handle a packet creation based on HELICS data.
    *
    * This function is called internally by HELICS.
-   *
-   * \param to the destination application
-   * \param topic the topic string
-   * \param value the associated value
    */
   void FilterCallback (helics::filter_id_t id, helics::Time time);
+
+  /**
+   * \brief Receive a HELICS message.
+   *
+   * This function is called internally by HELICS.
+   */
+  virtual void EndpointCallback (helics::endpoint_id_t id, helics::Time time);
 
 protected:
   virtual void DoDispose (void);
@@ -136,6 +149,7 @@ private:
 
   uint32_t m_next_tag_id;
   helics::filter_id_t m_filter_id;
+  helics::endpoint_id_t m_endpoint_id;
   std::map<uint32_t,std::unique_ptr<helics::Message> > m_messages;
 };
 

@@ -16,7 +16,8 @@ public:
   void SetupFederate(void);
   void SetupCommandLine(CommandLine &cmd);
 
-  ApplicationContainer Install (Ptr<Node> node, const std::string &name) const;
+  ApplicationContainer InstallFilter (Ptr<Node> node, const std::string &name) const;
+  ApplicationContainer InstallEndpoint (Ptr<Node> node, const std::string &name) const;
 
 private:
   std::string broker;

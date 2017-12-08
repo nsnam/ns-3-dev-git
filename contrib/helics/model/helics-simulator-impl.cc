@@ -239,7 +239,8 @@ HelicsSimulatorImpl::Run (void)
 
   grantedTime = Seconds (0.0);
   nextTime = Next ();
-  NS_LOG_INFO ("     Next time ns-3: " << grantedTime);
+  NS_LOG_INFO ("     Next time ns-3: " << nextTime);
+  NS_LOG_INFO ("Granted time helics: " << grantedTime);
 
   // Keep processing events until stop time is reached
   while (!m_stop) 
@@ -247,14 +248,17 @@ HelicsSimulatorImpl::Run (void)
       // Only process events up until the granted time
       NS_LOG_INFO ("    m_events->IsEmpty(): " << m_events->IsEmpty());
       NS_LOG_INFO ("                 m_stop: " << m_stop);
+      NS_LOG_INFO ("         Next time ns-3: " << nextTime);
+      NS_LOG_INFO ("    Granted time helics: " << grantedTime);
       NS_LOG_INFO ("nextTime <= grantedTime: " << (nextTime<=grantedTime));
       while (!m_events->IsEmpty () && !m_stop && nextTime <= grantedTime) 
         {
           ProcessOneEvent ();
           nextTime = Next ();
-          NS_LOG_INFO ("Next time ns-3: " << nextTime);
           NS_LOG_INFO ("    m_events->IsEmpty(): " << m_events->IsEmpty());
           NS_LOG_INFO ("                 m_stop: " << m_stop);
+          NS_LOG_INFO ("         Next time ns-3: " << nextTime);
+          NS_LOG_INFO ("    Granted time helics: " << grantedTime);
           NS_LOG_INFO ("nextTime <= grantedTime: " << (nextTime<=grantedTime));
         }
 

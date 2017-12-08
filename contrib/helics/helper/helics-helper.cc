@@ -19,7 +19,7 @@ HelicsHelper::HelicsHelper()
 , core("zmq")
 , stop(1.0)
 , timedelta(1.0)
-, coreinit("")
+, coreinit("--loglevel=4")
 {
     m_factory.SetTypeId (HelicsApplication::GetTypeId ());
 }
@@ -53,11 +53,22 @@ HelicsHelper::SetupCommandLine(CommandLine &cmd)
 }
 
 ApplicationContainer
-HelicsHelper::Install (Ptr<Node> node, const std::string &name) const
+HelicsHelper::InstallFilter (Ptr<Node> node, const std::string &name) const
 {
     ApplicationContainer apps;
     Ptr<HelicsApplication> app = m_factory.Create<HelicsApplication> ();
-    app->SetName (name);
+    app->SetFilterName (name);
+    node->AddApplication (app);
+    apps.Add (app);
+    return apps;
+}
+
+ApplicationContainer
+HelicsHelper::InstallEndpoint (Ptr<Node> node, const std::string &name) const
+{
+    ApplicationContainer apps;
+    Ptr<HelicsApplication> app = m_factory.Create<HelicsApplication> ();
+    app->SetEndpointName (name);
     node->AddApplication (app);
     apps.Add (app);
     return apps;

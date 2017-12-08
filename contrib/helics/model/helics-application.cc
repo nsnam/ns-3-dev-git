@@ -119,17 +119,38 @@ HelicsApplication::~HelicsApplication()
 }
 
 void
-HelicsApplication::SetName (const std::string &name)
+HelicsApplication::SetFilterName (const std::string &name)
 {
   NS_LOG_FUNCTION (this << name);
-  m_name = name;
-  Names::Add("helics_"+name, this);
+  SetName(name);
+  Names::Add("helics_filter_"+name, this);
   m_filter_id = helics_federate->registerSourceFilter ("ns3_"+name, name);
   using std::placeholders::_1;
   using std::placeholders::_2;
   std::function<void(helics::filter_id_t,helics::Time)> func;
   func = std::bind (&HelicsApplication::FilterCallback, this, _1, _2);
   helics_federate->registerFilterCallback(m_filter_id, func);
+}
+
+void
+HelicsApplication::SetEndpointName (const std::string &name)
+{
+  NS_LOG_FUNCTION (this << name);
+  SetName(name);
+  m_endpoint_id = helics_federate->registerEndpoint (name);
+  using std::placeholders::_1;
+  using std::placeholders::_2;
+  std::function<void(helics::endpoint_id_t,helics::Time)> func;
+  func = std::bind (&HelicsApplication::EndpointCallback, this, _1, _2);
+  helics_federate->registerEndpointCallback(m_endpoint_id, func);
+}
+
+void
+HelicsApplication::SetName (const std::string &name)
+{
+  NS_LOG_FUNCTION (this << name);
+  m_name = name;
+  Names::Add("helics_"+name, this);
 }
 
 std::string
@@ -338,6 +359,12 @@ HelicsApplication::FilterCallback (helics::filter_id_t id, helics::Time time)
   ++m_sent;
 }
 
+void 
+HelicsApplication::EndpointCallback (helics::endpoint_id_t id, helics::Time time)
+{
+  NS_LOG_FUNCTION (this << "Helics endpoint callback");
+}
+ 
 InetSocketAddress HelicsApplication::GetLocalInet (void) const
 {
   return InetSocketAddress(Ipv4Address::ConvertFrom(m_localAddress), m_localPort);

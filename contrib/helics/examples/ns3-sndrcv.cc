@@ -49,8 +49,8 @@ main (int argc, char *argv[])
 {
   bool verbose = true;
   uint32_t nCsma = 3;
-  std::string endpoint1 = "port1";
-  std::string endpoint2 = "port2";
+  std::string endpoint1 = "endpoint1";
+  std::string endpoint2 = "endpoint2";
 
   HelicsHelper helicsHelper;
 
@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   if (verbose)
     {
       LogComponentEnable ("HelicsExample", LOG_LEVEL_INFO);
-      LogComponentEnable ("HelicsSimulatorImpl", LOG_LEVEL_INFO);
+      LogComponentEnable ("HelicsSimulatorImpl", LOG_LEVEL_LOGIC);
     }
 
   NS_LOG_INFO ("Calling helicsHelper.SetupFederate");
@@ -107,12 +107,12 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer csmaInterfaces;
   csmaInterfaces = address.Assign (csmaDevices);
 
-  ApplicationContainer apps1 = helicsHelper.Install (
+  ApplicationContainer apps1 = helicsHelper.InstallEndpoint (
           csmaNodes.Get (nCsma), endpoint1);
   apps1.Start (Seconds (1.0));
   apps1.Stop (Seconds (10.0));
 
-  ApplicationContainer apps2 = helicsHelper.Install (
+  ApplicationContainer apps2 = helicsHelper.InstallEndpoint (
           p2pNodes.Get (0), endpoint2);
   apps2.Start (Seconds (1.0));
   apps2.Stop (Seconds (10.0));

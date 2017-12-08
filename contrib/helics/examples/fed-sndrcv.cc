@@ -28,18 +28,22 @@
 int 
 main (int argc, char *argv[])
 {
-  helics::FederateInfo fi ("SimpleFederate");
+  helics::FederateInfo fi ("fed-sndrcv");
   fi.coreType = helics::coreTypeFromString ("zmq");
+  fi.coreInitString = "--loglevel=4";
   auto mFed = std::make_shared<helics::MessageFederate> (fi);
-  auto p1 = mFed->registerGlobalEndpoint ("port1");
-  auto p2 = mFed->registerGlobalEndpoint ("port2");
+  auto p1 = mFed->registerEndpoint ("endpoint1");
+  auto p2 = mFed->registerEndpoint ("endpoint2");
   mFed->enterExecutionState ();
+  std::cout << "fed-sndrcv entered execution state" << std::endl;
   auto granted = mFed->requestTime (1.0);
+  std::cout << "fed-sndrcv granted time " << granted << std::endl;
   helics::data_block data (500, 'a');
-  mFed->sendMessage (p1, "port2", data);
+  mFed->sendMessage (p1, "ns3/endpoint1", data);
+  std::cout << "fed-sndrcv sent message to ns3/endpoint1" << std::endl;
   while (granted < 8.0) {
     granted = mFed->requestTime (granted + 1.0);
-    std::cout << "SimpleFederate hasMessage? " << mFed->hasMessage (p2) << std::endl;
+    std::cout << "fed-sndrcv hasMessage? " << mFed->hasMessage (p2) << std::endl;
   }
   mFed->finalize ();
   return 0;
