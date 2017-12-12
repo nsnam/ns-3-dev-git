@@ -38,7 +38,7 @@
 
 #include "ns3/helics.h"
 #include "ns3/helics-application.h"
-#include "helics/application_api/application_api.h"
+#include "helics/helics.hpp"
 
 #include <algorithm>
 #include <sstream>

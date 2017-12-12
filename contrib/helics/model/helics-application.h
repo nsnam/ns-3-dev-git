@@ -30,7 +30,7 @@
 #include <string>
 
 #include "helics-id-tag.h"
-#include "helics/application_api/application_api.h"
+#include "helics/helics.hpp"
 
 namespace ns3 {
 

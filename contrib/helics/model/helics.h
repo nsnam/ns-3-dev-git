@@ -4,11 +4,11 @@
 
 #include <memory>
 
-#include "helics/application_api/application_api.h"
+#include "helics/helics.hpp"
 
 namespace ns3 {
 
-extern std::shared_ptr<helics::MessageFilterFederate> helics_federate;
+extern std::shared_ptr<helics::MessageFederate> helics_federate;
 extern helics::endpoint_id_t helics_endpoint;
 
 }
