@@ -132,7 +132,7 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -272,6 +272,18 @@ MgtProbeResponseHeader::GetHeCapabilities (void) const
 }
 
 void
+MgtProbeResponseHeader::SetHeOperation (HeOperation heoperation)
+{
+  m_heOperation = heoperation;
+}
+
+HeOperation
+MgtProbeResponseHeader::GetHeOperation (void) const
+{
+  return m_heOperation;
+}
+
+void
 MgtProbeResponseHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
@@ -360,6 +372,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_vhtCapability.GetSerializedSize ();
   size += m_vhtOperation.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
+  size += m_heOperation.GetSerializedSize ();
   return size;
 }
 
@@ -368,13 +381,13 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
 {
   os << "ssid=" << m_ssid << ", "
      << "rates=" << m_rates << ", "
-     << "DSSS Parameter Set=" << m_dsssParameterSet << " , "
      << "ERP information=" << m_erpInformation << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "HT Operation=" << m_htOperation << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
      << "VHT Operation=" << m_vhtOperation << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability << " , "
+     << "HE Operation=" << m_heOperation;
 }
 
 void
@@ -404,6 +417,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtCapability.Serialize (i);
   i = m_vhtOperation.Serialize (i);
   i = m_heCapability.Serialize (i);
+  i = m_heOperation.Serialize (i);
 }
 
 uint32_t
@@ -424,6 +438,8 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_vhtOperation.DeserializeIfPresent (i);
+  i = m_heCapability.DeserializeIfPresent (i);
+  i = m_heOperation.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -585,7 +601,7 @@ MgtAssocRequestHeader::Print (std::ostream &os) const
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -730,6 +746,18 @@ MgtAssocResponseHeader::GetHeCapabilities (void) const
 }
 
 void
+MgtAssocResponseHeader::SetHeOperation (HeOperation heoperation)
+{
+  m_heOperation = heoperation;
+}
+
+HeOperation
+MgtAssocResponseHeader::GetHeOperation (void) const
+{
+  return m_heOperation;
+}
+
+void
 MgtAssocResponseHeader::SetErpInformation (ErpInformation erpInformation)
 {
   m_erpInformation = erpInformation;
@@ -786,6 +814,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_vhtCapability.GetSerializedSize ();
   size += m_vhtOperation.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
+  size += m_heOperation.GetSerializedSize ();
   return size;
 }
 
@@ -799,7 +828,8 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
      << "HT Operation=" << m_htOperation << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
      << "VHT Operation=" << m_vhtOperation << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability << " , "
+     << "HE Operation=" << m_heOperation;
 }
 
 void
@@ -818,6 +848,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtCapability.Serialize (i);
   i = m_vhtOperation.Serialize (i);
   i = m_heCapability.Serialize (i);
+  i = m_heOperation.Serialize (i);
 }
 
 uint32_t
@@ -835,6 +866,8 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_vhtOperation.DeserializeIfPresent (i);
+  i = m_heCapability.DeserializeIfPresent (i);
+  i = m_heOperation.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 

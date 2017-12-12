@@ -72,15 +72,24 @@ WifiInformationElementVector::Serialize (Buffer::Iterator start) const
 uint32_t
 WifiInformationElementVector::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
-  uint32_t size = start.GetSize ();
-  while (size > 0)
+  NS_FATAL_ERROR ("This variant should not be called on a variable-sized header");
+  return 0;
+}
+
+uint32_t
+WifiInformationElementVector::Deserialize (Buffer::Iterator start, Buffer::Iterator end)
+{
+  uint32_t size = start.GetDistanceFrom (end);
+  uint32_t remaining = size;
+  while (remaining > 0)
     {
-      uint32_t deserialized = DeserializeSingleIe (i);
-      i.Next (deserialized);
-      size -= deserialized;
+      uint32_t deserialized = DeserializeSingleIe (start);
+      start.Next (deserialized);
+      NS_ASSERT (deserialized <= remaining);
+      remaining -= deserialized;
     }
-  return i.GetDistanceFrom (start);
+  NS_ASSERT_MSG (remaining == 0, "Error in deserialization");
+  return size;
 }
 
 uint32_t
@@ -121,12 +130,6 @@ WifiInformationElementVector::Print (std::ostream & os) const
     }
 }
 
-void
-WifiInformationElementVector::SetMaxSize (uint16_t size)
-{
-  m_maxSize = size;
-}
-
 WifiInformationElementVector::Iterator
 WifiInformationElementVector::Begin ()
 {
@@ -162,29 +165,6 @@ WifiInformationElementVector::FindFirst (WifiInformationElementId id) const
     }
   return 0;
 }
-
-
-namespace {
-
-/// PIEComparator structure
-struct PIEComparator
-{
-  /**
-   * comparison operator
-   *
-   * \param a left side
-   * \param b right side
-   * \returns true if less than
-   */
-  bool
-  operator () (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
-  {
-    return ((*PeekPointer (a)) < (*PeekPointer (b)));
-  }
-};
-
-}
-
 
 uint32_t
 WifiInformationElementVector::GetSize () const

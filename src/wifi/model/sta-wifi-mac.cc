@@ -106,34 +106,6 @@ StaWifiMac::~StaWifiMac ()
 }
 
 void
-StaWifiMac::SetMaxMissedBeacons (uint32_t missed)
-{
-  NS_LOG_FUNCTION (this << missed);
-  m_maxMissedBeacons = missed;
-}
-
-void
-StaWifiMac::SetProbeRequestTimeout (Time timeout)
-{
-  NS_LOG_FUNCTION (this << timeout);
-  m_probeRequestTimeout = timeout;
-}
-
-void
-StaWifiMac::SetAssocRequestTimeout (Time timeout)
-{
-  NS_LOG_FUNCTION (this << timeout);
-  m_assocRequestTimeout = timeout;
-}
-
-void
-StaWifiMac::StartActiveAssociation (void)
-{
-  NS_LOG_FUNCTION (this);
-  TryToEnsureAssociated ();
-}
-
-void
 StaWifiMac::SetActiveProbing (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
@@ -158,7 +130,7 @@ StaWifiMac::SendProbeRequest (void)
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
-  hdr.SetProbeReq ();
+  hdr.SetType (WIFI_MAC_MGT_PROBE_REQUEST);
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
@@ -202,7 +174,7 @@ StaWifiMac::SendAssociationRequest (void)
 {
   NS_LOG_FUNCTION (this << GetBssid ());
   WifiMacHeader hdr;
-  hdr.SetAssocReq ();
+  hdr.SetType (WIFI_MAC_MGT_ASSOCIATION_REQUEST);
   hdr.SetAddr1 (GetBssid ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetBssid ());
@@ -391,7 +363,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   else
     {
-      hdr.SetTypeData ();
+      hdr.SetType (WIFI_MAC_DATA);
     }
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
@@ -484,6 +456,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       MgtBeaconHeader beacon;
       packet->RemoveHeader (beacon);
       CapabilityInformation capabilities = beacon.GetCapabilities ();
+      NS_ASSERT (capabilities.IsEss ());
       bool goodBeacon = false;
       if (GetSsid ().IsBroadcast ()
           || beacon.GetSsid ().IsEqual (GetSsid ()))
@@ -592,14 +565,6 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     {
                       m_stationManager->SetRifsPermitted (false);
                     }
-                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
-                    {
-                      WifiMode mcs = m_phy->GetMcs (i);
-                      if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
-                        {
-                          m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                        }
-                    }
                 }
             }
           if (m_vhtSupported)
@@ -625,6 +590,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
               //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
               m_stationManager->AddStationHeCapabilities (hdr->GetAddr2 (), heCapabilities);
+              HeOperation heOperation = beacon.GetHeOperation ();
               for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
                 {
                   WifiMode mcs = m_phy->GetMcs (i);
@@ -660,7 +626,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
             {
               uint32_t selector = m_phy->GetBssMembershipSelector (i);
-              if (!rates.IsSupportedRate (selector))
+              if (!rates.IsBssMembershipSelectorRate (selector))
                 {
                   return;
                 }
@@ -841,6 +807,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   HeCapabilities hecapabilities = assocResp.GetHeCapabilities ();
                   //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
                   m_stationManager->AddStationHeCapabilities (hdr->GetAddr2 (), hecapabilities);
+                  HeOperation heOperation = assocResp.GetHeOperation ();
                 }
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {

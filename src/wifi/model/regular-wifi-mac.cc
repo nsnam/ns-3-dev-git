@@ -183,6 +183,9 @@ RegularWifiMac::GetHtCapabilities (void) const
       capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
       capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
       capabilities.SetTxMaxNSpatialStreams (m_phy->GetMaxSupportedTxSpatialStreams ());
+      //we do not support unequal modulations
+      capabilities.SetTxRxMcsSetUnequal (0);
+      capabilities.SetTxUnequalModulation (0);
     }
   return capabilities;
 }
@@ -208,11 +211,7 @@ RegularWifiMac::GetVhtCapabilities (void) const
       capabilities.SetRxLdpc (m_phy->GetLdpc ());
       capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && m_phy->GetShortGuardInterval ());
       capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && m_phy->GetShortGuardInterval ());
-      double maxAmpduLengthExponent = std::max (std::ceil ((std::log (std::max (std::max (m_beMaxAmpduSize, m_bkMaxAmpduSize), std::max (m_voMaxAmpduSize, m_viMaxAmpduSize))
-                                                                      + 1.0)
-                                                            / std::log (2.0))
-                                                           - 13.0),
-                                                0.0);
+      double maxAmpduLengthExponent = std::max (std::ceil ((std::log (std::max (std::max (m_beMaxAmpduSize, m_bkMaxAmpduSize), std::max (m_voMaxAmpduSize, m_viMaxAmpduSize)) + 1.0) / std::log (2.0)) - 13.0), 0.0);
       NS_ASSERT (maxAmpduLengthExponent >= 0 && maxAmpduLengthExponent <= 255);
       capabilities.SetMaxAmpduLengthExponent (std::max<uint8_t> (7, static_cast<uint8_t> (maxAmpduLengthExponent))); //0 to 7 for VHT
       uint8_t maxMcs = 0;
@@ -249,6 +248,10 @@ RegularWifiMac::GetVhtCapabilities (void) const
             }
         }
       capabilities.SetRxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
+      capabilities.SetTxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
+      //To be filled in once supported
+      capabilities.SetRxStbc (0);
+      capabilities.SetTxStbc (0);
     }
   return capabilities;
 }
@@ -1002,7 +1005,7 @@ RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (originator);
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetAddress ());

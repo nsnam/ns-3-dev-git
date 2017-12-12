@@ -46,7 +46,7 @@ VhtOperation::SetVhtSupported (uint8_t vhtsupported)
 uint8_t
 VhtOperation::GetInformationFieldSize () const
 {
-  //we should not be here if ht is not supported
+  //we should not be here if vht is not supported
   NS_ASSERT (m_vhtSupported > 0);
   return 5;
 }
@@ -167,7 +167,7 @@ ATTRIBUTE_HELPER_CPP (VhtOperation);
  * output stream output operator
  *
  * \param os output stream
- * \param VhtOperation
+ * \param VhtOperation the VHT operation
  *
  * \returns output stream
  */
@@ -185,7 +185,7 @@ operator << (std::ostream &os, const VhtOperation &VhtOperation)
  * input stream input operator
  *
  * \param is input stream
- * \param VhtOperation
+ * \param VhtOperation the VHT operation
  *
  * \returns input stream
  */

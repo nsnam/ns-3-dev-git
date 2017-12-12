@@ -25,7 +25,6 @@
 
 #include "regular-wifi-mac.h"
 #include "capability-information.h"
-#include "ht-operation.h"
 #include "supported-rates.h"
 #include "dsss-parameter-set.h"
 #include "erp-information.h"
@@ -100,10 +99,6 @@ public:
    * \return the interval between two beacon transmissions.
    */
   Time GetBeaconInterval (void) const;
-  /**
-   * Start beacon transmission immediately.
-   */
-  void StartBeaconing (void);
   /**
    * Determine whether short slot time should be enabled or not in the BSS.
    * Typically, true is returned only when there is no non-erp stations associated
@@ -245,6 +240,12 @@ private:
    * \return the VHT operation that we support
    */
   VhtOperation GetVhtOperation (void) const;
+  /**
+   * Return the HE operation of the current AP.
+   *
+   * \return the HE operation that we support
+   */
+  HeOperation GetHeOperation (void) const;
   /**
    * Return an instance of SupportedRates that contains all rates that we support
    * including HT rates.

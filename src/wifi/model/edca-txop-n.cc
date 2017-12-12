@@ -106,18 +106,6 @@ EdcaTxopN::GetBaAgreementExists (Mac48Address address, uint8_t tid) const
   return m_baManager->ExistsAgreement (address, tid);
 }
 
-uint32_t
-EdcaTxopN::GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid) const
-{
-  return m_baManager->GetNBufferedPackets (address, tid);
-}
-
-uint32_t
-EdcaTxopN::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const
-{
-  return m_baManager->GetNRetryNeededPackets (recipient, tid);
-}
-
 void
 EdcaTxopN::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
 {
@@ -144,13 +132,6 @@ EdcaTxopN::GetTypeOfStation (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_typeOfStation;
-}
-
-bool
-EdcaTxopN::NeedsAccess (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return !m_queue->IsEmpty () || m_currentPacket != 0 || m_baManager->HasPackets ();
 }
 
 uint16_t EdcaTxopN::GetNextSequenceNumberFor (WifiMacHeader *hdr)
@@ -194,7 +175,7 @@ EdcaTxopN::NotifyAccessGranted (void)
           return;
         }
       /* check if packets need retransmission are stored in BlockAckManager */
-      m_currentPacket = m_baManager->GetNextPacket (m_currentHdr);
+      m_currentPacket = m_baManager->GetNextPacket (m_currentHdr, true);
       if (m_currentPacket == 0)
         {
           Ptr<const WifiMacQueueItem> item = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
@@ -234,7 +215,6 @@ EdcaTxopN::NotifyAccessGranted (void)
             }
         }
     }
-  m_currentParams.DisableOverrideDurationId ();
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
       m_currentParams.DisableRts ();
@@ -350,7 +330,7 @@ void EdcaTxopN::NotifyInternalCollision (void)
     {
       if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->PeekNextPacket (header);
+          packet = m_baManager->GetNextPacket (header, false);
         }
       else
         {
@@ -525,7 +505,7 @@ EdcaTxopN::GotAck (void)
               p->PeekHeader (delBa);
               if (delBa.IsByOriginator ())
                 {
-                  m_baManager->TearDownBlockAck (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                  m_baManager->DestroyAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
                 }
               else
                 {
@@ -733,7 +713,7 @@ EdcaTxopN::RestartAccessIfNeeded (void)
         }
       else if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->PeekNextPacket (hdr);
+          packet = m_baManager->GetNextPacket (hdr, false);
         }
       else
         {
@@ -774,7 +754,7 @@ EdcaTxopN::StartAccessIfNeeded (void)
         }
       else if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->PeekNextPacket (hdr);
+          packet = m_baManager->GetNextPacket (hdr, false);
         }
       else
         {
@@ -832,7 +812,7 @@ EdcaTxopN::StartNextPacket (void)
   Time txopLimit = GetTxopLimit ();
   NS_ASSERT (txopLimit.IsZero () || Simulator::Now () - m_startTxop <= txopLimit);
   WifiMacHeader hdr = m_currentHdr;
-  Ptr<const Packet> peekedPacket = m_baManager->GetNextPacket (hdr);
+  Ptr<const Packet> peekedPacket = m_baManager->GetNextPacket (hdr, true);
   if (peekedPacket == 0)
     {
       Ptr<const WifiMacQueueItem> peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
@@ -858,7 +838,6 @@ EdcaTxopN::StartNextPacket (void)
         }
       return;
     }
-  m_currentParams.DisableOverrideDurationId ();
   m_currentParams.DisableNextData ();
   if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
     {
@@ -1021,7 +1000,7 @@ EdcaTxopN::GetTxopFragmentSize () const
   while (!found)
     {
       size = (minSize + ((maxSize - minSize) / 2));
-      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) > txopDuration)
+      if (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size) > txopDuration)
         {
           maxSize = size;
         }
@@ -1029,8 +1008,8 @@ EdcaTxopN::GetTxopFragmentSize () const
         {
           minSize = size;
         }
-      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) <= txopDuration
-          && GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size + 1) > txopDuration)
+      if (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size) <= txopDuration
+          && GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size + 1) > txopDuration)
         {
           found = true;
         }
@@ -1270,7 +1249,7 @@ EdcaTxopN::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient
 {
   NS_LOG_FUNCTION (this << delBaHdr << recipient);
   NS_LOG_DEBUG ("received DELBA frame from=" << recipient);
-  m_baManager->TearDownBlockAck (recipient, delBaHdr->GetTid ());
+  m_baManager->DestroyAgreement (recipient, delBaHdr->GetTid ());
 }
 
 void
@@ -1404,7 +1383,6 @@ EdcaTxopN::SendBlockAckRequest (const Bar &bar)
 
   m_currentParams.DisableRts ();
   m_currentParams.DisableNextData ();
-  m_currentParams.DisableOverrideDurationId ();
   if (bar.immediate)
     {
       if (m_blockAckType == BASIC_BLOCK_ACK)
@@ -1466,7 +1444,7 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   NS_LOG_FUNCTION (this << dest << (uint16_t)tid << startSeq << timeout << immediateBAck);
   NS_LOG_DEBUG ("sent ADDBA request to " << dest);
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (dest);
   hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (m_low->GetAddress ());
@@ -1516,7 +1494,6 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   m_currentParams.EnableAck ();
   m_currentParams.DisableRts ();
   m_currentParams.DisableNextData ();
-  m_currentParams.DisableOverrideDurationId ();
 
   m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
 }
@@ -1526,7 +1503,7 @@ EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
 {
   NS_LOG_FUNCTION (this << addr << (uint16_t)tid << byOriginator);
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (addr);
   hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (m_low->GetAddress ());

@@ -475,9 +475,43 @@ public:
    *
    * \param address the address of the station
    *
-   * \return he channel width supported by the station
+   * \return the channel width supported by the station
    */
   uint8_t GetChannelWidthSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports HT/VHT short guard interval.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station supports HT/VHT short guard interval,
+   *         false otherwise
+   */
+  bool GetShortGuardInterval (Mac48Address address) const;
+  /**
+   * Return the number of spatial streams supported by the station.
+   *
+   * \param address the address of the station
+   *
+   * \return the number of spatial streams supported by the station
+   */
+  uint8_t GetNumberOfSupportedStreams (Mac48Address address) const;
+  /**
+   * Return the number of MCS supported by the station.
+   *
+   * \param address the address of the station
+   *
+   * \return the number of MCS supported by the station
+   */
+  uint8_t GetNMcsSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports HT or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if HT is supported by the station,
+   *         false otherwise
+   */
+  bool GetHtSupported (Mac48Address address) const;
   /**
    * Return whether the station supports VHT or not.
    *
@@ -494,14 +528,6 @@ public:
    * \return WifiMode for non-unicast packets
    */
   WifiMode GetNonUnicastMode (void) const;
-
-  /**
-   * Invoked in an AP upon disassociation of a
-   * specific STA.
-   *
-   * \param address the address of the STA
-   */
-  void Reset (Mac48Address address);
 
   /**
    * Invoked in a STA or AP to store the set of
@@ -956,7 +982,7 @@ protected:
    *
    * \return the number of MCS supported by the given station
    */
-  uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
+  uint8_t GetNMcsSupported (const WifiRemoteStation *station) const;
   /**
    * Return whether non-ERP mode associated with the specified station at the specified index.
    *
@@ -1016,15 +1042,6 @@ protected:
    *         false otherwise
    */
   bool GetAggregation (const WifiRemoteStation *station) const;
-  /**
-   * Return whether the given station supports space-time block coding (STBC).
-   *
-   * \param station the station being queried
-   *
-   * \return true if the station supports STBC,
-   *         false otherwise
-   */
-  bool GetStbc (const WifiRemoteStation *station) const;
   /**
    * Return whether the station supports Greenfield or not.
    *
@@ -1228,13 +1245,6 @@ private:
    * \param address the address of the recipient
    * \param ctsMode the mode to be used
    *
-   * \return the CTS transmit STBC
-   */
-  virtual bool  DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
    * \return the ack transmit channel width
    */
   virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
@@ -1259,13 +1269,6 @@ private:
    * \return the ack transmit NESS
    */
   virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient
-   * \param ackMode the mode to be used
-   *
-   * \return the ack transmit STBC
-   */
-  virtual bool DoGetAckTxStbc (Mac48Address address, WifiMode ackMode);
   /**
    * \param address the address of the recipient
    * \param ctsMode the mode to be used
@@ -1294,13 +1297,6 @@ private:
    * \return the block ack transmit NESS
    */
   virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
-  /**
-   * \param address the address of the recipient
-   * \param blockAckMode the mode to be used
-   *
-   * \return the block ack transmit STBC
-   */
-  virtual bool DoGetBlockAckTxStbc (Mac48Address address, WifiMode blockAckMode);
 
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
@@ -1570,6 +1566,7 @@ struct WifiRemoteStationState
   uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is supported by the remote station
+  bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
   bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station

@@ -31,6 +31,7 @@
 #include "block-ack-cache.h"
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
+#include "mac-low-transmission-parameters.h"
 
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;
@@ -42,200 +43,6 @@ class EdcaTxopN;
 class DcfManager;
 class WifiMacQueueItem;
 class WifiMacQueue;
-
-/**
- * \brief control how a packet is transmitted.
- * \ingroup wifi
- *
- * The ns3::MacLow::StartTransmission method expects
- * an instance of this class to describe how the packet
- * should be transmitted.
- */
-class MacLowTransmissionParameters
-{
-public:
-  MacLowTransmissionParameters ();
-
-  /**
-   * Wait ACKTimeout for an ACK. If we get an ACK
-   * on time, call MacLowTransmissionListener::GotAck.
-   * Call MacLowTransmissionListener::MissedAck otherwise.
-   */
-  void EnableAck (void);
-  /**
-   *   - wait PIFS after end-of-tx. If idle, call
-   *     MacLowTransmissionListener::MissedAck.
-   *   - if busy at end-of-tx+PIFS, wait end-of-rx
-   *   - if Ack ok at end-of-rx, call
-   *     MacLowTransmissionListener::GotAck.
-   *   - if Ack not ok at end-of-rx, report call
-   *     MacLowTransmissionListener::MissedAck
-   *     at end-of-rx+SIFS.
-   *
-   * This is really complicated but it is needed for
-   * proper HCCA support.
-   */
-  void EnableFastAck (void);
-  /**
-   *  - if busy at end-of-tx+PIFS, call
-   *    MacLowTransmissionListener::GotAck
-   *  - if idle at end-of-tx+PIFS, call
-   *    MacLowTransmissionListener::MissedAck
-   */
-  void EnableSuperFastAck (void);
-  /**
-   * Wait BASICBLOCKACKTimeout for a Basic Block Ack Response frame.
-   */
-  void EnableBasicBlockAck (void);
-  /**
-   * Wait COMPRESSEDBLOCKACKTimeout for a Compressed Block Ack Response frame.
-   */
-  void EnableCompressedBlockAck (void);
-  /**
-   * NOT IMPLEMENTED FOR NOW
-   */
-  void EnableMultiTidBlockAck (void);
-  /**
-   * Send a RTS, and wait CTSTimeout for a CTS. If we get a
-   * CTS on time, call MacLowTransmissionListener::GotCts
-   * and send data. Otherwise, call MacLowTransmissionListener::MissedCts
-   * and do not send data.
-   */
-  void EnableRts (void);
-  /**
-   * \param size size of next data to send after current packet is
-   *        sent.
-   *
-   * Add the transmission duration of the next data to the
-   * durationId of the outgoing packet and call
-   * MacLowTransmissionListener::StartNextFragment at the end of
-   * the current transmission + SIFS.
-   */
-  void EnableNextData (uint32_t size);
-  /**
-   * \param durationId the value to set in the duration/Id field of
-   *        the outgoing packet.
-   *
-   * Ignore all other durationId calculation and simply force the
-   * packet's durationId field to this value.
-   */
-  void EnableOverrideDurationId (Time durationId);
-  /**
-   * Do not wait for Ack after data transmission. Typically
-   * used for Broadcast and multicast frames.
-   */
-  void DisableAck (void);
-  /**
-   * Do not send rts and wait for cts before sending data.
-   */
-  void DisableRts (void);
-  /**
-   * Do not attempt to send data burst after current transmission
-   */
-  void DisableNextData (void);
-  /**
-   * Do not force the duration/id field of the packet: its
-   * value is automatically calculated by the MacLow before
-   * calling WifiPhy::Send.
-   */
-  void DisableOverrideDurationId (void);
-  /**
-   * \returns true if must wait for ACK after data transmission,
-   *          false otherwise.
-   *
-   * This methods returns true when any of MustWaitNormalAck,
-   * MustWaitFastAck, or MustWaitSuperFastAck return true.
-   */
-  bool MustWaitAck (void) const;
-  /**
-   * \returns true if normal ACK protocol should be used, false
-   *          otherwise.
-   *
-   * \sa EnableAck
-   */
-  bool MustWaitNormalAck (void) const;
-  /**
-   * \returns true if fast ack protocol should be used, false
-   *          otherwise.
-   *
-   * \sa EnableFastAck
-   */
-  bool MustWaitFastAck (void) const;
-  /**
-   * \returns true if super fast ack protocol should be used, false
-   *          otherwise.
-   *
-   * \sa EnableSuperFastAck
-   */
-  bool MustWaitSuperFastAck (void) const;
-  /**
-   * \returns true if block ack mechanism is used, false otherwise.
-   *
-   * \sa EnableBlockAck
-   */
-  bool MustWaitBasicBlockAck (void) const;
-  /**
-   * \returns true if compressed block ack mechanism is used, false otherwise.
-   *
-   * \sa EnableCompressedBlockAck
-   */
-  bool MustWaitCompressedBlockAck (void) const;
-  /**
-   * \returns true if multi-tid block ack mechanism is used, false otherwise.
-   *
-   * \sa EnableMultiTidBlockAck
-   */
-  bool MustWaitMultiTidBlockAck (void) const;
-  /**
-   * \returns true if RTS should be sent and CTS waited for before
-   *          sending data, false otherwise.
-   */
-  bool MustSendRts (void) const;
-  /**
-   * \returns true if a duration/id was forced with
-   *         EnableOverrideDurationId, false otherwise.
-   */
-  bool HasDurationId (void) const;
-  /**
-   * \returns the duration/id forced by EnableOverrideDurationId
-   */
-  Time GetDurationId (void) const;
-  /**
-   * \returns true if EnableNextData was called, false otherwise.
-   */
-  bool HasNextPacket (void) const;
-  /**
-   * \returns the size specified by EnableNextData.
-   */
-  uint32_t GetNextPacketSize (void) const;
-
-private:
-  friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
-  uint32_t m_nextSize; //!< the next size
-  /// wait ack enumerated type
-  enum
-  {
-    ACK_NONE,
-    ACK_NORMAL,
-    ACK_FAST,
-    ACK_SUPER_FAST,
-    BLOCK_ACK_BASIC,
-    BLOCK_ACK_COMPRESSED,
-    BLOCK_ACK_MULTI_TID
-  } m_waitAck; //!< wait ack
-  bool m_sendRts; //!< send an RTS?
-  Time m_overrideDurationId; //!< override duration ID
-};
-
-/**
- * Serialize MacLowTransmissionParameters to ostream in a human-readable form.
- *
- * \param os std::ostream
- * \param params MacLowTransmissionParameters
- * \return std::ostream
- */
-std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
-
 
 /**
  * \ingroup wifi
@@ -455,6 +262,7 @@ public:
    * \param packet to send (does not include the 802.11 MAC header and checksum)
    * \param hdr header associated to the packet to send.
    * \param params transmission parameters of packet.
+   * \param fragmentSize the packet fragment size (if fragmentation is used)
    * \return the transmission time that includes the time for the next packet transmission
    *
    * This transmission time includes the time required for
@@ -462,22 +270,8 @@ public:
    */
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
-                               const MacLowTransmissionParameters &params) const;
-
-  /**
-   * \param packet to send (does not include the 802.11 MAC header and checksum)
-   * \param hdr header associated to the packet to send.
-   * \param params transmission parameters of packet.
-   * \param fragmentSize the packet fragment size
-   * \return the transmission time that includes the time for the next packet transmission
-   *
-   * This transmission time includes the time required for
-   * the next packet fragment transmission if one was selected.
-   */
-  Time CalculateOverallTxFragmentTime (Ptr<const Packet> packet,
-                                       const WifiMacHeader* hdr,
-                                       const MacLowTransmissionParameters& params,
-                                       uint32_t fragmentSize) const;
+                               const MacLowTransmissionParameters& params,
+                               uint32_t fragmentSize = 0) const;
 
   /**
    * \param packet packet to send
@@ -616,31 +410,6 @@ private:
    */
   void CancelAllEvents (void);
   /**
-   * Return the total ACK size (including FCS trailer).
-   *
-   * \return the total ACK size
-   */
-  static uint32_t GetAckSize (void);
-  /**
-   * Return the total Block ACK size (including FCS trailer).
-   *
-   * \param type the Block ACK type
-   * \return the total Block ACK size
-   */
-  static uint32_t GetBlockAckSize (BlockAckType type);
-  /**
-   * Return the total RTS size (including FCS trailer).
-   *
-   * \return the total RTS size
-   */
-  static uint32_t GetRtsSize (void);
-  /**
-   * Return the total CTS size (including FCS trailer).
-   *
-   * \return the total CTS size
-   */
-  static uint32_t GetCtsSize (void);
-  /**
    * Return the total size of the packet after WifiMacHeader and FCS trailer
    * have been added.
    *
@@ -715,16 +484,6 @@ private:
    * \return TXVECTOR for the Block ACK
    */
   WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
-  /**
-   * Return a TXVECTOR for the CTS-to-self frame.
-   * The function consults WifiRemoteStationManager, which controls the rate
-   * to different destinations.
-   *
-   * \param packet the packet that requires CTS-to-self
-   * \param hdr the Wifi header of the packet
-   * \return TXVECTOR for the CTS-to-self operation
-   */
-  WifiTxVector GetCtsToSelfTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   /**
    * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
    * used by the sender.
@@ -971,15 +730,6 @@ private:
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
   /**
-   * \param seq MPDU sequence number
-   * \param winstart sequence number window start
-   * \param winsize the size of the sequence number window (currently default is 64)
-   * \returns true if in the window
-   *
-   * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
-   */
-  static bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize);
-  /**
    * \param packet the packet
    * \param hdr the header
    * \returns true if MPDU received
@@ -1102,8 +852,6 @@ private:
     WifiMacHeader hdr; //!< the header
     Time timestamp; //!< the timestamp
   }; //!< item structure
-
-  typedef struct Item Item;
 
   /**
    * typedef for an iterator for a list of DcfManager.

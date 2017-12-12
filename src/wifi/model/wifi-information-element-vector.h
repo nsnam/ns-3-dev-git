@@ -51,13 +51,23 @@ public:
   virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
   /**
-   * \attention When you use RemoveHeader, WifiInformationElementVector supposes, that
-   * all buffer consists of information elements
+   * \attention This variant should not be used but is implemented due to
+   * backward compatibility reasons
    *
-   * \param start the iterator
-   * \returns distance
+   * \param start buffer location to start deserializing from
+   * \return number of bytes deserialized
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * Deserialize a number of WifiInformationElements 
+   *
+   * The size of this Header should equal start.GetDistanceFrom (end).
+   *
+   * \param start starting buffer location
+   * \param end ending buffer location
+   * \return number of bytes deserialized
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start, Buffer::Iterator end);
   virtual void Print (std::ostream &os) const;
 
   /**
@@ -68,12 +78,6 @@ public:
    * \return deserialized bytes
    */
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
-  /**
-   * Set maximum size to control overflow of the max packet length
-   *
-   * \param size the maximum size to set (bytes)
-   */
-  void SetMaxSize (uint16_t size);
   /// As soon as this is a vector, we define an Iterator
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
   /**

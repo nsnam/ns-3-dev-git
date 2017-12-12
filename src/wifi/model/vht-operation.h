@@ -131,7 +131,7 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   /**
    * This information element is a bit special in that it is only
-   * included if the STA is an HT STA. To support this we
+   * included if the STA is a VHT STA. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
    *
@@ -141,9 +141,9 @@ public:
    */
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
   /**
-   * Return the serialized size of this HT Operations IE.
+   * Return the serialized size of this VHT Operations IE.
    *
-   * \return the serialized size of this HT Operations IE
+   * \return the serialized size of this VHT Operations IE
    */
   uint16_t GetSerializedSize () const;
 
@@ -154,30 +154,14 @@ private:
   uint8_t m_channelCenterFrequencySegment0; ///< channel center frequency segment 0
   uint8_t m_channelCenterFrequencySegment1; ///< channel center frequency segment 0
 
-  //Basic VHT-MCSS and NSS Set
+  //Basic VHT-MCS and NSS Set
   uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
 
   /// This is used to decide whether this element should be added to the frame or not
   uint8_t m_vhtSupported;
 };
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param VhtOperation
- *
- * \returns output stream
- */
 std::ostream &operator << (std::ostream &os, const VhtOperation &VhtOperation);
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param VhtOperation
- *
- * \returns input stream
- */
 std::istream &operator >> (std::istream &is, VhtOperation &VhtOperation);
 
 ATTRIBUTE_HELPER_HEADER (VhtOperation);
