@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#include "helics/application_api/application_api.h"
+#include "helics/helics.hpp"
 #include "helics/core/core-types.h"
 
 int 
