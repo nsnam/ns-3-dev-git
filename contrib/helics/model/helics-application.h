@@ -45,7 +45,7 @@ class Inet6SocketAddress;
  *
  * Every packet sent should be returned by the server and received here.
  */
-class HelicsApplication : public Application 
+class HelicsApplication : public Application
 {
 public:
   /**
@@ -103,7 +103,7 @@ public:
    *
    * This function is called internally by HELICS.
    */
-  void FilterCallback (helics::filter_id_t id, helics::Time time);
+  void FilterCallback (std::unique_ptr<helics::Message> message);
 
   /**
    * \brief Receive a HELICS message.
@@ -151,6 +151,22 @@ private:
   helics::filter_id_t m_filter_id;
   helics::endpoint_id_t m_endpoint_id;
   std::map<uint32_t,std::unique_ptr<helics::Message> > m_messages;
+
+  class Ns3Operator : public helics::FilterOperator
+  {
+  public:
+    /** default constructor */
+    Ns3Operator () = default;
+    /** set the filter callback function in the constructor */
+    Ns3Operator (std::function<void(std::unique_ptr<helics::Message> message)> cb);
+    /** set the filter callback function */
+    void setFilterCallback (std::function<void(std::unique_ptr<helics::Message> message)> cb);
+  private:
+    std::function<void(std::unique_ptr<helics::Message> message)> filterCallback; //!<the filter callback function
+    virtual std::unique_ptr<helics::Message> process (std::unique_ptr<helics::Message> message) override;
+  };
+
+  std::shared_ptr<Ns3Operator> m_filterOp; //!< the filter operator for this application
 };
 
 } // namespace ns3

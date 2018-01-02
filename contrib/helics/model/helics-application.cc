@@ -126,10 +126,10 @@ HelicsApplication::SetFilterName (const std::string &name)
   Names::Add("helics_filter_"+name, this);
   m_filter_id = helics_federate->registerSourceFilter ("ns3_"+name, name);
   using std::placeholders::_1;
-  using std::placeholders::_2;
-  std::function<void(helics::filter_id_t,helics::Time)> func;
-  func = std::bind (&HelicsApplication::FilterCallback, this, _1, _2);
-  helics_federate->registerFilterCallback(m_filter_id, func);
+  std::function<void(std::unique_ptr<helics::Message>)> func;
+  func = std::bind (&HelicsApplication::FilterCallback, this, _1);
+  m_filterOp = std::make_shared<Ns3Operator> (func);
+  helics_federate->setFilterOperator (m_filter_id, m_filterOp);
 }
 
 void
@@ -251,26 +251,23 @@ HelicsApplication::NewTag ()
 }
 
 void 
-HelicsApplication::FilterCallback (helics::filter_id_t id, helics::Time time)
+HelicsApplication::FilterCallback (std::unique_ptr<helics::Message> message)
 {
   NS_LOG_FUNCTION (this << "Helics filter callback");
  
   Ptr<Packet> p;
 
-  // Get the helics Message.
-  auto m = helics_federate->getMessageToFilter (id);
-
   // Find the HelicsApplication for the destination.
-  Ptr<HelicsApplication> to = Names::Find<HelicsApplication>("helics_"+m->dest);
+  Ptr<HelicsApplication> to = Names::Find<HelicsApplication>("helics_"+message->dest);
   if (!to) {
-    NS_FATAL_ERROR("failed HelicsApplication lookup to '" << m->dest << "'");
+    NS_FATAL_ERROR("failed HelicsApplication lookup to '" << message->dest << "'");
   }
 
   // Convert given Message into a Packet.
-  size_t total_size = m->data.size();
+  size_t total_size = message->data.size();
   uint8_t *buffer = new uint8_t[total_size];
   uint8_t *buffer_ptr = buffer;
-  std::transform (m->data.begin(), m->data.end(), buffer_ptr, char_to_uint8_t);
+  std::transform (message->data.begin(), message->data.end(), buffer_ptr, char_to_uint8_t);
   p = Create<Packet> (buffer, total_size);
   NS_LOG_INFO("buffer='" << p << "'");
   delete [] buffer;
@@ -282,7 +279,7 @@ HelicsApplication::FilterCallback (helics::filter_id_t id, helics::Time time)
   p->AddPacketTag(tag);
 
   // Store the Message at the destination application for later sending.
-  to->m_messages.insert(std::make_pair(tag, std::move (m)));
+  to->m_messages.insert(std::make_pair(tag, std::move (message)));
 
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
@@ -471,6 +468,25 @@ HelicsApplication::HandleRead (Ptr<Socket> socket)
                   << packet->GetUid () <<"'");
         }
     }
+}
+
+/** HELICS message FilterOperator for ns3 */
+
+HelicsApplication::Ns3Operator::Ns3Operator (std::function<void(std::unique_ptr<helics::Message> message)> cb)
+{
+  setFilterCallback (cb);
+}
+
+void
+HelicsApplication::Ns3Operator::setFilterCallback (std::function<void(std::unique_ptr<helics::Message> message)> cb)
+{
+  filterCallback = cb;
+}
+
+std::unique_ptr<helics::Message>
+HelicsApplication::Ns3Operator::process (std::unique_ptr<helics::Message> message)
+{
+  return nullptr;
 }
 
 } // Namespace ns3
