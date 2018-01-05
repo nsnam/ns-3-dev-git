@@ -114,7 +114,7 @@ int main()
 
     conf.env['DEFINES_HELICS'] = ['NS3_HELICS']
 
-    conf.env['HELICS'] = conf.check(fragment=helics_test_code, lib='helics', libpath=conf.env['LIBPATH_HELICS'], use='HELICS')
+    conf.env['HELICS'] = conf.check(fragment=helics_test_code, lib='helics-static', libpath=conf.env['LIBPATH_HELICS'], use='HELICS')
 
     conf.env.append_value('LIB_HELICS', 'helics-static')
     conf.report_optional_feature("helics", "NS-3 HELICS Integration", conf.env['HELICS'], "HELICS library not found")
