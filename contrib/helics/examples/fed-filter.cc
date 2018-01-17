@@ -23,7 +23,7 @@
 #include <iostream>
 
 #include "helics/helics.hpp"
-#include "helics/core/core-types.h"
+#include "helics/core/core-types.hpp"
 
 int 
 main (int argc, char *argv[])

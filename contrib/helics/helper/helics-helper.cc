@@ -9,7 +9,7 @@
 #include "ns3/helics-application.h"
 #include "ns3/helics-helper.h"
 
-#include "helics/core/core-types.h"
+#include "helics/core/core-types.hpp"
 
 namespace ns3 {
 
