@@ -1,0 +1,22 @@
+<configuration>
+  <modules>
+    <module name="helics">
+      <source type="git">
+        <attribute name="url" value="https://github.com/GMLC-TDC/HELICS-src.git"/>
+        <attribute name="module_directory" value="helics"/>
+      </source>
+      <build type="cmake" objdir="yes">
+      </build>
+    </module>
+
+    <module name="helics-ns3" type="ns-contrib" min_version="ns-3.27">
+     <source type="git">
+        <attribute name="url" value="https://github.com/GMLC-TDC/helics-ns3.git"/>
+        <attribute name="module_directory" value="helics"/>
+      </source>
+      <build type="none">
+      </build>
+      <depends_on name="helics" optional="False"/>
+    </module>
+  </modules>
+</configuration>
