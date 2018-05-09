@@ -160,6 +160,7 @@ def build(bld):
         'model/tcp-illinois.cc',
         'model/tcp-htcp.cc',
         'model/tcp-lp.cc',
+        'model/tcp-dctcp.cc',
         'model/tcp-rx-buffer.cc',
         'model/tcp-tx-buffer.cc',
         'model/tcp-tx-item.cc',
@@ -298,6 +299,7 @@ def build(bld):
         'test/tcp-close-test.cc',
         'test/icmp-test.cc',
         'test/ipv4-deduplication-test.cc',
+        'test/tcp-dctcp-test.cc',
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
@@ -402,6 +404,7 @@ def build(bld):
         'model/tcp-illinois.h',
         'model/tcp-htcp.h',
         'model/tcp-lp.h',
+        'model/tcp-dctcp.h',
         'model/tcp-ledbat.h',
         'model/tcp-socket-base.h',
         'model/tcp-socket-state.h',

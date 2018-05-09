@@ -44,7 +44,7 @@ connection setup and close logic.  Several congestion control algorithms
 are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
-(LEDBAT) and TCP Low Priority (TCP-LP) also supported. The model also supports
+(LEDBAT), TCP Low Priority (TCP-LP) and and Data Center TCP (DCTCP) also supported. The model also supports
 Selective Acknowledgements (SACK), Proportional Rate Reduction (PRR) and
 Explicit Congestion Notification (ECN). Multipath-TCP is not yet supported in
 the |ns3| releases.
@@ -781,6 +781,87 @@ throughout the connection, LP_WITHIN_INF indicates if TCP-LP is in inference
 phase or not
 
 More information (paper): http://cs.northwestern.edu/~akuzma/rice/doc/TCP-LP.pdf
+
+Data Center TCP (DCTCP)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+DCTCP is an enhancement to the TCP congestion control algorithm for data center
+networks and leverages Explicit Congestion Notification (ECN) to provide multi-bit
+feedback to the end hosts. DCTCP extends the Explicit Congestion Notification
+to estimate the fraction of bytes that encounter congestion, rather than simply
+detecting that the congestion has occurred. DCTCP then scales the congestion
+window based on this estimate. This approach achieves high burst tolerance, low
+latency, and high throughput with shallow-buffered switches.
+
+* Receiver functionality: If CE is set in IP header of incoming packet, send congestion notification to the sender by setting ECE in TCP header.
+
+* Sender functionality: It should maintain an average of fraction of packets marked (α) by using the exponential weighted moving average as shown below:
+
+::
+
+               α = (1 - g) x α + g x F
+
+where
+
+* g is the estimation gain (between 0 and 1)
+* F is the fraction of packets marked in current RTT.
+
+On receipt of an ACK with ECE bit set, the sender should respond by reducing the congestion
+window as follows, once for every window of data:
+
+::
+
+               cwnd = cwnd * (1 - α / 2)
+
+Following the recommendation of RFC 8257, the default values of the parameters are:
+
+::
+
+  g = 0.0625
+
+  alpha (α) = 1
+
+
+
+To enable DCTCP on all TCP sockets, the following configuration can be used:
+
+::
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
+
+To enable DCTCP on a chosen TCP socket, the following configuration can be used:
+
+::
+
+  Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
+
+DCTCP requires ECN to be enabled:
+
+::
+
+  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("ClassicEcn"));
+
+DCTCP depends on a simple queue management algorithm in routers / switches to
+mark packets. The current implementation of DCTCP in ns-3 uses RED with a simple
+configuration to achieve the behavior of desired queue management algorithm.
+
+To configure RED router for DCTCP:
+
+::
+
+  Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
+  Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (1.0));
+
+The following unit tests have been written to validate the implementation of DCTCP:
+
+* ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
+* ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
+* ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
+* Test to validate cwnd increment in DCTCP
+* Test to validate cwnd decrement in DCTCP
+
+More information about DCTCP is available in the RFC 8257:
+https://tools.ietf.org/html/rfc8257
 
 Support for Explicit Congestion Notification (ECN)
 ++++++++++++++++++++++++++++++++++++++++++++++++++
