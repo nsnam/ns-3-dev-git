@@ -25,43 +25,11 @@
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
 #include "ns3/sequence-number.h"
-#include "ns3/nstime.h"
 #include "ns3/tcp-option-sack.h"
-#include "ns3/packet.h"
+#include "ns3/tcp-tx-item.h"
 
 namespace ns3 {
 class Packet;
-
-/**
- * \ingroup tcp
- *
- * \brief Item that encloses the application packet and some flags for it
- */
-class TcpTxItem
-{
-public:
-  // Default constructor, copy-constructor, destructor
-
-  /**
-   * \brief Print the time
-   * \param os ostream
-   */
-  void Print (std::ostream &os) const;
-
-  /**
-   * \brief Get the size in the sequence number space
-   *
-   * \return 1 if the packet size is 0 or there's no packet, otherwise the size of the packet
-   */
-  uint32_t GetSeqSize (void) const { return m_packet && m_packet->GetSize () > 0 ? m_packet->GetSize () : 1; }
-
-  SequenceNumber32 m_startSeq {0};     //!< Sequence number of the item (if transmitted)
-  Ptr<Packet> m_packet {nullptr};    //!< Application packet (can be null)
-  bool m_lost          {false};      //!< Indicates if the segment has been lost (RTO)
-  bool m_retrans       {false};      //!< Indicates if the segment is retransmitted
-  Time m_lastSent      {Time::Min()};//!< Timestamp of the time at which the segment has been sent last time
-  bool m_sacked        {false};      //!< Indicates if the segment has been SACKed
-};
 
 /**
  * \ingroup tcp
@@ -208,13 +176,13 @@ public:
    * \brief Set the DupAckThresh
    * \param dupAckThresh the threshold
    */
-  void SetDupAckThresh (uint32_t dupAckThresh) { m_dupAckThresh = dupAckThresh; }
+  void SetDupAckThresh (uint32_t dupAckThresh);
 
   /**
    * \brief Set the segment size
    * \param segmentSize the segment size
    */
-  void SetSegmentSize (uint32_t segmentSize) { m_segmentSize = segmentSize; }
+  void SetSegmentSize (uint32_t segmentSize);
 
   /**
    * \brief Return the number of segments in the sent list that
@@ -225,7 +193,7 @@ public:
    *
    * \returns number of segments that have been transmitted more than once, without acknowledgment
    */
-  uint32_t GetRetransmitsCount (void) const { return m_retrans; }
+  uint32_t GetRetransmitsCount (void) const;
 
   /**
    * \brief Get the number of segments that we believe are lost in the network
@@ -233,13 +201,13 @@ public:
    * It is calculated in UpdateLostCount.
    * \return the number of lost segment
    */
-  uint32_t GetLost (void) const { return m_lostOut; }
+  uint32_t GetLost (void) const;
 
   /**
    * \brief Get the number of segments that have been explicitly sacked by the receiver.
    * \return the number of sacked segment.
    */
-  uint32_t GetSacked (void) const { return m_sackedOut; }
+  uint32_t GetSacked (void) const;
 
   /**
    * \brief Append a data packet to the end of the buffer
@@ -274,9 +242,10 @@ public:
    *
    * \param numBytes number of bytes to copy
    * \param seq start sequence number to extract
-   * \returns a packet
+   * \returns a pointer to the TcpTxItem that corresponds to what requested.
+   * Please do not delete the pointer, nor modify Packet data or sequence numbers.
    */
-  Ptr<Packet> CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq);
+  TcpTxItem* CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq);
 
   /**
    * \brief Set the head sequence of the buffer

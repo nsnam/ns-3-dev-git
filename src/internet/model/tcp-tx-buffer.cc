@@ -32,45 +32,6 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpTxBuffer");
-
-void
-TcpTxItem::Print (std::ostream &os) const
-{
-  bool comma = false;
-  os << "[" << m_startSeq << ";" << m_startSeq + GetSeqSize () << "|"
-     << GetSeqSize () << "]";
-
-  if (m_lost)
-    {
-      os << "[lost]";
-      comma = true;
-    }
-  if (m_retrans)
-    {
-      if (comma)
-        {
-          os << ",";
-        }
-
-      os << "[retrans]";
-      comma = true;
-    }
-  if (m_sacked)
-    {
-      if (comma)
-        {
-          os << ",";
-        }
-      os << "[sacked]";
-      comma = true;
-    }
-  if (comma)
-    {
-      os << ",";
-    }
-  os << "[" << m_lastSent.GetSeconds () << "]";
-}
-
 NS_OBJECT_ENSURE_REGISTERED (TcpTxBuffer);
 
 TypeId
@@ -156,6 +117,36 @@ TcpTxBuffer::Available (void) const
 }
 
 void
+TcpTxBuffer::SetDupAckThresh (uint32_t dupAckThresh)
+{
+  m_dupAckThresh = dupAckThresh;
+}
+
+void
+TcpTxBuffer::SetSegmentSize (uint32_t segmentSize)
+{
+  m_segmentSize = segmentSize;
+}
+
+uint32_t
+TcpTxBuffer::GetRetransmitsCount (void) const
+{
+  return m_retrans;
+}
+
+uint32_t
+TcpTxBuffer::GetLost (void) const
+{
+  return m_lostOut;
+}
+
+uint32_t
+TcpTxBuffer::GetSacked (void) const
+{
+  return m_sackedOut;
+}
+
+void
 TcpTxBuffer::SetHeadSequence (const SequenceNumber32& seq)
 {
   NS_LOG_FUNCTION (this << seq);
@@ -212,7 +203,7 @@ TcpTxBuffer::SizeFromSequence (const SequenceNumber32& seq) const
   return 0;
 }
 
-Ptr<Packet>
+TcpTxItem *
 TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 {
   NS_LOG_FUNCTION (this << numBytes << seq);
@@ -226,7 +217,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 
   if (s == 0)
     {
-      return Create<Packet> ();
+      return nullptr;
     }
 
   TcpTxItem *outItem = nullptr;
@@ -265,14 +256,11 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
     }
 
   outItem->m_lastSent = Simulator::Now ();
-  Ptr<Packet> toRet = outItem->m_packet->Copy ();
-
-  NS_ASSERT (toRet->GetSize () <= s);
   NS_ASSERT_MSG (outItem->m_startSeq >= m_firstByteSeq,
                  "Returning an item " << *outItem << " with SND.UNA as " <<
                  m_firstByteSeq);
   ConsistencyCheck ();
-  return toRet;
+  return outItem;
 }
 
 TcpTxItem*
@@ -671,7 +659,7 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
       if (i == m_sentList.end ())
         {
           // Move data from app list to sent list, so we can delete the item
-          Ptr<Packet> p = CopyFromSequence (offset, m_firstByteSeq);
+          Ptr<Packet> p = CopyFromSequence (offset, m_firstByteSeq)->GetPacketCopy ();
           NS_ASSERT (p != nullptr);
           NS_UNUSED (p);
           i = m_sentList.begin ();
@@ -1423,10 +1411,10 @@ operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
   SequenceNumber32 beginOfCurrentPacket = tcpTxBuf.m_firstByteSeq;
   uint32_t sentSize = 0, appSize = 0;
 
-  Ptr<Packet> p;
+  Ptr<const Packet> p;
   for (it = tcpTxBuf.m_sentList.begin (); it != tcpTxBuf.m_sentList.end (); ++it)
     {
-      p = (*it)->m_packet;
+      p = (*it)->GetPacket ();
       ss << "{";
       (*it)->Print (ss);
       ss << "}";
@@ -1436,7 +1424,7 @@ operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf)
 
   for (it = tcpTxBuf.m_appList.begin (); it != tcpTxBuf.m_appList.end (); ++it)
     {
-      appSize += (*it)->m_packet->GetSize ();
+      appSize += (*it)->GetPacket ()->GetSize ();
     }
 
   os << "Sent list: " << ss.str () << ", size = " << tcpTxBuf.m_sentList.size () <<
