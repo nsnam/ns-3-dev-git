@@ -128,13 +128,13 @@ TcpSocketAdvertisedWindowProxy::AdvertisedWindowSize (bool scale) const
   uint16_t newAwnd = TcpSocketMsgBase::AdvertisedWindowSize (scale);
   uint16_t oldAwnd = OldAdvertisedWindowSize (scale);
 
-  if (!m_rxBuffer->Finished ())
+  if (!m_tcb->m_rxBuffer->Finished ())
     {
       // The calculated windows will only be exactly equal if there is no data
       // in the receive buffer yet.
       if (newAwnd != oldAwnd)
         {
-          uint32_t available = m_rxBuffer->Available ();
+          uint32_t available = m_tcb->m_rxBuffer->Available ();
           // If the values differ, make sure this is only due to the single segment
           // the socket just got, which has not yet been read by the application.
           // Therefore, the difference should be exactly the size of one segment
@@ -180,13 +180,13 @@ uint16_t
 TcpSocketAdvertisedWindowProxy::OldAdvertisedWindowSize (bool scale) const
 {
   NS_LOG_FUNCTION (this << scale);
-  //NS_LOG_DEBUG ("MaxRxSequence () = " << m_rxBuffer->MaxRxSequence ());
-  //NS_LOG_DEBUG ("NextRxSequence () = " << m_rxBuffer->NextRxSequence ());
-  //NS_LOG_DEBUG ("MaxBufferSize () = " << m_rxBuffer->MaxBufferSize ());
+  //NS_LOG_DEBUG ("MaxRxSequence () = " << m_tcb->m_rxBuffer->MaxRxSequence ());
+  //NS_LOG_DEBUG ("NextRxSequence () = " << m_tcb->m_rxBuffer->NextRxSequence ());
+  //NS_LOG_DEBUG ("MaxBufferSize () = " << m_tcb->m_rxBuffer->MaxBufferSize ());
   //NS_LOG_DEBUG ("m_rcvWindShift = " << static_cast<uint16_t> (m_rcvWindShift));
   //NS_LOG_DEBUG ("m_maxWinSize = " << m_maxWinSize);
-  //NS_LOG_DEBUG ("Available () = " << m_rxBuffer->Available ());
-  uint32_t w = m_rxBuffer->MaxBufferSize ();
+  //NS_LOG_DEBUG ("Available () = " << m_tcb->m_rxBuffer->Available ());
+  uint32_t w = m_tcb->m_rxBuffer->MaxBufferSize ();
 
   if (scale)
     {
@@ -262,11 +262,11 @@ TcpDropRatioErrorModel::ShouldDrop (const Ipv4Header &ipHeader, const TcpHeader 
  *
  * In TcpSocketBase, the advertised window is now calculated as
  *
- *   m_rxBuffer->MaxRxSequence () - m_rxBuffer->NextRxSequence ()
+ *   m_tcb->m_rxBuffer->MaxRxSequence () - m_tcb->m_rxBuffer->NextRxSequence ()
  * 
  * instead of the previous
  *
- *   m_rxBuffer->MaxBufferSize ()
+ *   m_tcb->m_rxBuffer->MaxBufferSize ()
  * 
  * This change was introduced with regard to situations in which the receiviing
  * application does not read from the socket as fast as possible (see bug 2559

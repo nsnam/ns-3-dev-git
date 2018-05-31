@@ -1217,8 +1217,7 @@ protected:
 
   Ptr<RttEstimator> m_rtt; //!< Round trip time estimator
 
-  // Rx and Tx buffer management
-  Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
+  // Tx buffer management
   Ptr<TcpTxBuffer> m_txBuffer; //!< Tx buffer
 
   // State-related attributes
