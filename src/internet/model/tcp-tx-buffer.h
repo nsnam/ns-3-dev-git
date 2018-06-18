@@ -267,9 +267,9 @@ public:
   /**
    * \brief Update the scoreboard
    * \param list list of SACKed blocks
-   * \returns true in case of an update
+   * \returns the number of bytes newly sacked by the list of blocks
    */
-  bool Update (const TcpOptionSack::SackList &list);
+  uint32_t Update (const TcpOptionSack::SackList &list);
 
   /**
    * \brief Check if a segment is lost

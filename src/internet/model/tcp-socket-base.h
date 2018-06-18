@@ -1051,10 +1051,9 @@ protected:
    * Timestamp and Window scale are managed in other pieces of code.
    *
    * \param tcpHeader Header of the segment
-   * \param scoreboardUpdated indicates if the scoreboard was updated due to a
-   * SACK option
+   * \param [out] bytesSacked Number of bytes SACKed, or 0
    */
-  void ReadOptions (const TcpHeader &tcpHeader, bool &scoreboardUpdated);
+  void ReadOptions (const TcpHeader &tcpHeader, uint32_t *bytesSacked);
 
   /**
    * \brief Return true if the specified option is enabled
@@ -1106,9 +1105,9 @@ protected:
    * \brief Read the SACK option
    *
    * \param option SACK option from the header
-   * \returns true in case of an update to the SACKed blocks
+   * \returns the number of bytes sacked by this option
    */
-  bool ProcessOptionSack (const Ptr<const TcpOption> option);
+  uint32_t ProcessOptionSack(const Ptr<const TcpOption> option);
 
   /**
    * \brief Add the SACK PERMITTED option to the header

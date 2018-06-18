@@ -1506,7 +1506,7 @@ TcpSocketBase::IsTcpOptionEnabled (uint8_t kind) const
 }
 
 void
-TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader, bool &scoreboardUpdated)
+TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader, uint32_t *bytesSacked)
 {
   NS_LOG_FUNCTION (this << tcpHeader);
   TcpHeader::TcpOptionList::const_iterator it;
@@ -1520,7 +1520,7 @@ TcpSocketBase::ReadOptions (const TcpHeader &tcpHeader, bool &scoreboardUpdated)
       switch (option->GetKind ())
         {
         case TcpOption::SACK:
-          scoreboardUpdated = ProcessOptionSack (option);
+          *bytesSacked = ProcessOptionSack (option);
           break;
         default:
           continue;
@@ -1680,8 +1680,8 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   // RFC 6675, Section 5, 1st paragraph:
   // Upon the receipt of any ACK containing SACK information, the
   // scoreboard MUST be updated via the Update () routine (done in ReadOptions)
-  bool scoreboardUpdated = false;
-  ReadOptions (tcpHeader, scoreboardUpdated);
+  uint32_t bytesSacked = 0;
+  ReadOptions (tcpHeader, &bytesSacked);
 
   SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
   SequenceNumber32 oldHeadSequence = m_txBuffer->HeadSequence ();
@@ -1704,7 +1704,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   // RFC 6675 Section 5: 2nd, 3rd paragraph and point (A), (B) implementation
   // are inside the function ProcessAck
-  ProcessAck (ackNumber, scoreboardUpdated, oldHeadSequence);
+  ProcessAck (ackNumber, (bytesSacked > 0), oldHeadSequence);
 
   // If there is any data piggybacked, store it into m_rxBuffer
   if (packet->GetSize () > 0)
@@ -3946,14 +3946,13 @@ TcpSocketBase::AddOptionWScale (TcpHeader &header)
                static_cast<int> (m_rcvWindShift));
 }
 
-bool
+uint32_t
 TcpSocketBase::ProcessOptionSack (const Ptr<const TcpOption> option)
 {
   NS_LOG_FUNCTION (this << option);
 
   Ptr<const TcpOptionSack> s = DynamicCast<const TcpOptionSack> (option);
-  TcpOptionSack::SackList list = s->GetSackList ();
-  return m_txBuffer->Update (list);
+  return m_txBuffer->Update (s->GetSackList ());
 }
 
 void

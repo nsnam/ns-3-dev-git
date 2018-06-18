@@ -746,23 +746,23 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
   ConsistencyCheck ();
 }
 
-bool
+uint32_t
 TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Updating scoreboard, got " << list.size () << " blocks to analyze");
 
-  bool modified = false;
+  uint32_t bytesSacked = 0;
 
   for (auto option_it = list.begin (); option_it != list.end (); ++option_it)
     {
       PacketList::iterator item_it = m_sentList.begin ();
       SequenceNumber32 beginOfCurrentPacket = m_firstByteSeq;
 
-      if (m_firstByteSeq + m_sentSize < (*option_it).first && !modified)
+      if (m_firstByteSeq + m_sentSize < (*option_it).first)
         {
           NS_LOG_INFO ("Not updating scoreboard, the option block is outside the sent list");
-          return false;
+          return bytesSacked;
         }
 
       while (item_it != m_sentList.end ())
@@ -794,6 +794,7 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
 
                   (*item_it)->m_sacked = true;
                   m_sackedOut += (*item_it)->m_packet->GetSize ();
+                  bytesSacked += (*item_it)->m_packet->GetSize ();
 
                   if (m_highestSack.first == m_sentList.end()
                       || m_highestSack.second <= beginOfCurrentPacket + pktSize)
@@ -806,7 +807,6 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
                                ", found in the sackboard, sacking, current highSack: " <<
                                m_highestSack.second);
                 }
-              modified = true;
             }
           else if (beginOfCurrentPacket + pktSize > (*option_it).second)
             {
@@ -822,9 +822,9 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
         }
     }
 
-  if (modified)
+  if (bytesSacked > 0)
     {
-      NS_ASSERT_MSG (modified && m_highestSack.first != m_sentList.end(), "Buffer status: " << *this);
+      NS_ASSERT_MSG (m_highestSack.first != m_sentList.end(), "Buffer status: " << *this);
       UpdateLostCount ();
     }
 
@@ -833,7 +833,7 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
   //NS_ASSERT (list.size () == 0 || modified);   // Assert for duplicated SACK or
                                                  // impossiblity to map the option into the sent blocks
   ConsistencyCheck ();
-  return modified;
+  return bytesSacked;
 }
 
 void
