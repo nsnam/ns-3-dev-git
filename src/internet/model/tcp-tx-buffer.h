@@ -261,15 +261,21 @@ public:
    *
    * \param seq The first sequence number to maintain after discarding all the
    * previous sequences.
+   * \param beforeDelCb Callback invoked, if it is not null, before the deletion
+   * of an Item (because it was, probably, ACKed)
    */
-  void DiscardUpTo (const SequenceNumber32& seq);
+  void DiscardUpTo (const SequenceNumber32& seq,
+                    const Callback<void, TcpTxItem *> &beforeDelCb = m_nullCb);
 
   /**
    * \brief Update the scoreboard
    * \param list list of SACKed blocks
+   * \param sackedCb Callback invoked, if it is not null, when a segment has been
+   * SACKed by the receiver.
    * \returns the number of bytes newly sacked by the list of blocks
    */
-  uint32_t Update (const TcpOptionSack::SackList &list);
+  uint32_t Update (const TcpOptionSack::SackList &list,
+                   const Callback<void, TcpTxItem *> &sackedCb = m_nullCb);
 
   /**
    * \brief Check if a segment is lost
@@ -585,6 +591,7 @@ private:
   uint32_t m_segmentSize {0}; //!< Segment size from TcpSocketBase
   bool     m_renoSack {false}; //!< Indicates if AddRenoSack was called
 
+  static Callback<void, TcpTxItem *> m_nullCb; //!< Null callback for an item
 };
 
 /**
