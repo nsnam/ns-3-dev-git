@@ -49,6 +49,7 @@ class TcpTxBuffer;
 class TcpOption;
 class Ipv4Interface;
 class Ipv6Interface;
+class TcpRateOps;
 
 /**
  * \ingroup tcp
@@ -965,9 +966,11 @@ protected:
    * \param scoreboardUpdated if true indicates that the scoreboard has been
    * \param oldHeadSequence value of HeadSequence before ack
    * updated with SACK information
+   * \param currentDelivered The number of bytes (S)ACKed
+   * \return the number of bytes (newly) acked, or 0 if it was a dupack
    */
   virtual void ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated,
-                           const SequenceNumber32 &oldHeadSequence);
+                           uint32_t currentDelivered, const SequenceNumber32 &oldHeadSequence);
 
   /**
    * \brief Recv of a data, put into buffer, call L7 to get it if necessary
@@ -1002,13 +1005,17 @@ protected:
 
   /**
    * \brief Dupack management
+   *
+   * \param currentDelivered Current (S)ACKed bytes
    */
-  void DupAck ();
+  void DupAck (uint32_t currentDelivered);
 
   /**
    * \brief Enter the CA_RECOVERY, and retransmit the head
+   *
+   * \param currentDelivered Currently (S)ACKed bytes
    */
-  void EnterRecovery ();
+  void EnterRecovery (uint32_t currentDelivered);
 
   /**
    * \brief An RTO event happened
@@ -1252,6 +1259,7 @@ protected:
   Ptr<TcpSocketState>    m_tcb;               //!< Congestion control information
   Ptr<TcpCongestionOps>  m_congestionControl; //!< Congestion control
   Ptr<TcpRecoveryOps>    m_recoveryOps;       //!< Recovery Algorithm
+  Ptr<TcpRateOps>        m_rateOps;           //!< Rate operations
 
   // Guesses over the other connection end
   bool m_isFirstPartialAck {true}; //!< First partial ACK during RECOVERY
