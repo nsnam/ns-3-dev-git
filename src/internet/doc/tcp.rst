@@ -1146,6 +1146,35 @@ ExitRecovery is called just prior to exiting recovery phase in order to perform 
 required congestion window ajustments. UpdateBytesSent is used to keep track of
 bytes sent and is called whenever a data packet is sent during recovery phase.
 
+Delivery Rate Estimation
+++++++++++++++++++++++++
+Current TCP implementation measures the approximate value of the delivery rate of
+inflight data based on Delivery Rate Estimation.
+
+As high level idea, keep in mind that the algorithm keeps track of 2 variables:
+
+1. `delivered`: Total amount of data delivered so far.
+
+2. `deliveredStamp`: Last time `delivered` was updated.
+
+When a packet is transmitted, the value of `delivered (d0)` and `deliveredStamp (t0)`
+is stored in its respective TcpTxItem.
+
+When an acknowledgement comes for this packet, the value of `delivered` and `deliveredStamp`
+is updated to `d1` and `t1` in the same TcpTxItem.
+
+After processing the acknowledgement, the rate sample is calculated and then passed
+to a congestion avoidance algorithm:
+
+.. math:: delivery_rate = (d1 - d0)/(t1 - t0)
+
+
+The implementation to estimate delivery rate is a joint work between TcpTxBuffer and TcpRateOps.
+For more information, please take a look at their doxygen documentation.
+
+The implementation follows the Internet draft (Delivery Rate Estimation):
+https://tools.ietf.org/html/draft-cheng-iccrg-delivery-rate-estimation-00
+
 Current limitations
 +++++++++++++++++++
 
