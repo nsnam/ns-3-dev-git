@@ -20,6 +20,7 @@
 #define TCPCONGESTIONOPS_H
 
 #include "ns3/tcp-socket-state.h"
+#include "ns3/tcp-rate-ops.h"
 
 namespace ns3 {
 
@@ -101,7 +102,7 @@ public:
    * \param tcb internal congestion state
    * \param segmentsAcked count of segments acked
    */
-  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked) = 0;
+  virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
 
   /**
    * \brief Timing information on received ACK
@@ -116,12 +117,7 @@ public:
    * \param rtt last rtt
    */
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt)
-  {
-    NS_UNUSED (tcb);
-    NS_UNUSED (segmentsAcked);
-    NS_UNUSED (rtt);
-  }
+                          const Time& rtt);
 
   /**
    * \brief Trigger events/calculations specific to a congestion state
@@ -140,11 +136,7 @@ public:
    * \param newState new congestion state to which the TCP is going to switch
    */
   virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState)
-  {
-    NS_UNUSED (tcb);
-    NS_UNUSED (newState);
-  }
+                                   const TcpSocketState::TcpCongState_t newState);
 
   /**
    * \brief Trigger events/calculations on occurrence of congestion window event
@@ -156,11 +148,36 @@ public:
    * \param event the event which triggered this function
    */
   virtual void CwndEvent (Ptr<TcpSocketState> tcb,
-                          const TcpSocketState::TcpCAEvent_t event)
-  {
-    NS_UNUSED (tcb);
-    NS_UNUSED (event);
-  }
+                          const TcpSocketState::TcpCAEvent_t event);
+
+  /**
+   * \brief Returns true when Congestion Control Algorithm implements CongControl
+   *
+   * \return true if CC implements CongControl function
+   *
+   * This function is the equivalent in C++ of the C checks that are used
+   * in the Linux kernel to see if an optional function has been defined.
+   * Since CongControl is optional, not all congestion controls have it. But,
+   * from the perspective of TcpSocketBase, the behavior is different if
+   * CongControl is present. Therefore, this check should return true for any
+   * congestion controls that implements the CongControl optional function.
+   */
+  virtual bool HasCongControl () const;
+
+  /**
+   * \brief Called when packets are delivered to update cwnd and pacing rate
+   *
+   * This function mimics the function cong_control in Linux. It is allowed to
+   * change directly cWnd and pacing rate.
+   *
+   * \param tcb internal congestion state
+   * \param rc Rate information for the connection
+   * \param rs Rate sample (over a period of time) information
+   */
+  virtual void CongControl (Ptr<TcpSocketState> tcb,
+                            const TcpRateOps::TcpRateConnection &rc,
+                            const TcpRateOps::TcpRateSample &rs);
+
   // Present in Linux but not in ns-3 yet:
   /* call when ack arrives (optional) */
   //     void (*in_ack_event)(struct sock *sk, u32 flags);

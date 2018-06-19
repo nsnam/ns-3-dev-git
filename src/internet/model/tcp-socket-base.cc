@@ -1576,12 +1576,16 @@ TcpSocketBase::EnterRecovery (uint32_t currentDelivered)
   // compatibility with old ns-3 versions
   uint32_t bytesInFlight = m_sackEnabled ? BytesInFlight () : BytesInFlight () + m_tcb->m_segmentSize;
   m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, bytesInFlight);
-  m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
 
-  NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
-               "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
-               m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover <<
-               " calculated in flight: " << bytesInFlight);
+  if (!m_congestionControl->HasCongControl ())
+    {
+      m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
+      NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
+                  "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
+                   m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover <<
+                   " calculated in flight: " << bytesInFlight);
+    }
+
 
   // (4.3) Retransmit the first data segment presumed dropped
   DoRetransmit ();
@@ -1634,9 +1638,12 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
           // has left the network. This is equivalent to a SACK of one block.
           m_txBuffer->AddRenoSack ();
         }
-      m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
-      NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
-                   "Increase cwnd to " << m_tcb->m_cWnd);
+      if (!m_congestionControl->HasCongControl ())
+        {
+          m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+          NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
+                       "Increase cwnd to " << m_tcb->m_cWnd);
+        }
     }
   else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
     {
@@ -1717,6 +1724,20 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   // RFC 6675 Section 5: 2nd, 3rd paragraph and point (A), (B) implementation
   // are inside the function ProcessAck
   ProcessAck (ackNumber, (bytesSacked > 0), currentDelivered, oldHeadSequence);
+
+  if (m_congestionControl->HasCongControl ())
+    {
+      uint32_t previousLost = m_txBuffer->GetLost ();
+      uint32_t priorInFlight = m_tcb->m_bytesInFlight.Get ();
+      uint32_t currentLost = m_txBuffer->GetLost ();
+      uint32_t lost = (currentLost > previousLost) ?
+            currentLost - previousLost :
+            previousLost - currentLost;
+      auto rateSample = m_rateOps->GenerateSample (currentDelivered, lost,
+                                              false, priorInFlight, m_tcb->m_minRtt);
+      auto rateConn = m_rateOps->GetConnectionRate ();
+      m_congestionControl->CongControl(m_tcb, rateConn, rateSample);
+    }
 
   // If there is any data piggybacked, store it into m_rxBuffer
   if (packet->GetSize () > 0)
@@ -1856,7 +1877,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
             }
           DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
           m_tcb->m_cWndInfl = SafeSubtraction (m_tcb->m_cWndInfl, bytesAcked);
-          if (segsAcked >= 1)
+          if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
             {
               m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
             }
