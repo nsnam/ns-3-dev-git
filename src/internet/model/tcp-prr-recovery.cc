@@ -22,7 +22,6 @@
  */
 
 #include "tcp-prr-recovery.h"
-#include "ns3/tcp-socket-base.h"
 #include "ns3/tcp-congestion-ops.h"
 #include "ns3/log.h"
 
@@ -58,7 +57,6 @@ TcpPrrRecovery::TcpPrrRecovery (const TcpPrrRecovery& recovery)
     m_prrDelivered (recovery.m_prrDelivered),
     m_prrOut (recovery.m_prrOut),
     m_recoveryFlightSize (recovery.m_recoveryFlightSize),
-    m_previousSackedBytes (recovery.m_previousSackedBytes),
     m_reductionBoundMode (recovery.m_reductionBoundMode)
 {
   NS_LOG_FUNCTION (this);
@@ -71,29 +69,23 @@ TcpPrrRecovery::~TcpPrrRecovery (void)
 
 void
 TcpPrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
-                            uint32_t unAckDataCount, uint32_t lastSackedBytes)
+                               uint32_t unAckDataCount, uint32_t deliveredBytes)
 {
-  NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount << lastSackedBytes);
+  NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount);
   NS_UNUSED (dupAckCount);
 
   m_prrOut = 0;
   m_prrDelivered = 0;
   m_recoveryFlightSize = unAckDataCount;
-  m_previousSackedBytes = lastSackedBytes;
 
-  DoRecovery (tcb, 0, lastSackedBytes);
+  DoRecovery (tcb, deliveredBytes);
 }
 
 void
-TcpPrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
-                         uint32_t lastSackedBytes)
+TcpPrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t deliveredBytes)
 {
-  NS_LOG_FUNCTION (this << tcb << lastAckedBytes << lastSackedBytes);
-  uint32_t lastDeliveredBytes;
-  int changeInSackedBytes = int (lastSackedBytes - m_previousSackedBytes);
-  lastDeliveredBytes = lastAckedBytes + changeInSackedBytes > 0 ? lastAckedBytes + changeInSackedBytes : 0;
-  m_previousSackedBytes = lastSackedBytes;
-  m_prrDelivered += lastDeliveredBytes;
+  NS_LOG_FUNCTION (this << tcb << deliveredBytes);
+  m_prrDelivered += deliveredBytes;
 
   int sendCount;
   if (tcb->m_bytesInFlight > tcb->m_ssThresh)
@@ -109,7 +101,7 @@ TcpPrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
         }
       else if (m_reductionBoundMode == SSRB)
         {
-          limit = std::max (m_prrDelivered - m_prrOut, lastDeliveredBytes) + tcb->m_segmentSize;
+          limit = std::max (m_prrDelivered - m_prrOut, deliveredBytes) + tcb->m_segmentSize;
         }
       sendCount = std::min (limit, static_cast<int> (tcb->m_ssThresh - tcb->m_bytesInFlight));
     }

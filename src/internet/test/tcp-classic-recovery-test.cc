@@ -98,7 +98,7 @@ ClassicRecoveryTest::DoRun ()
 
   uint32_t cWndInflPrevious = m_state->m_cWndInfl;
   uint32_t cWndPrevious = m_state->m_cWnd;
-  recovery->DoRecovery (m_state, 0, 500);
+  recovery->DoRecovery (m_state, 500);
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWndInfl, (cWndInflPrevious + m_state->m_segmentSize),
                          "m_cWndInfl should be incresed by one segmentSize on calling DoRecovery");
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd, cWndPrevious,
@@ -122,9 +122,6 @@ class ClassicRecoveryTestSuite : public TestSuite
 public:
   ClassicRecoveryTestSuite () : TestSuite ("tcp-classic-recovery-test", UNIT)
   {
-    AddTestCase (new ClassicRecoveryTest (3000, 500, 2500, 3,
-                                          "Classic recovery test on cWnd and cWndInfl with 500 bytes segmentSize"),
-                 TestCase::QUICK);
     AddTestCase (new ClassicRecoveryTest (3000, 500, 2500, 3, "Classic recovery test with 500 bytes segmentSize"),
                  TestCase::QUICK);
     AddTestCase (new ClassicRecoveryTest (3000, 1000, 2500, 3, "Classic recovery test with 1000 bytes segmentSize"),

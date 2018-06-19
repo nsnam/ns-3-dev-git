@@ -46,7 +46,7 @@ public:
    * \param ssThresh Slow Start Threshold.
    * \param unAckDataCount Unacknowledged data at the start of recovery.
    * \param bytesInFlight Current bytes in flight.
-   * \para m_lastSackedBytes Bytes SACKed on last acknowledgment.
+   * \para m_deliveredBytes Bytes SACKed on last acknowledgment.
    * \para bytesSent Bytes sent while in recovery phase.
    * \para reductionBound Type of reduction bound to be used.
    * \param name Test description.
@@ -56,7 +56,7 @@ public:
                    uint32_t ssThresh,
                    uint32_t unAckDataCount,
                    uint32_t bytesInFlight,
-                   uint32_t m_lastSackedBytes,
+                   uint32_t m_deliveredBytes,
                    uint32_t bytesSent,
                    const std::string &reductionBound,
                    const std::string &name);
@@ -69,7 +69,7 @@ private:
   uint32_t m_ssThresh;                //!< Slow Start Threshold.
   uint32_t m_unAckDataCount;          //!< Unacknowledged data at the start of recovery.
   uint32_t m_bytesInFlight;           //!< Current bytes in flight.
-  uint32_t m_lastSackedBytes;         //!< Bytes SACKed on last acknowledgment.
+  uint32_t m_deliveredBytes;         //!< Bytes SACKed on last acknowledgment.
   uint32_t m_bytesSent;               //!< Bytes sent while in recovery phase.
   const std::string m_reductionBound; //!< Type of reduction bound to be used.
 
@@ -81,7 +81,7 @@ PrrRecoveryTest::PrrRecoveryTest (uint32_t cWnd,
                                   uint32_t ssThresh,
                                   uint32_t unAckDataCount,
                                   uint32_t bytesInFlight,
-                                  uint32_t lastSackedBytes,
+                                  uint32_t deliveredBytes,
                                   uint32_t bytesSent,
                                   const std::string &reductionBound,
                                   const std::string &name)
@@ -91,7 +91,7 @@ PrrRecoveryTest::PrrRecoveryTest (uint32_t cWnd,
     m_ssThresh (ssThresh),
     m_unAckDataCount (unAckDataCount),
     m_bytesInFlight (bytesInFlight),
-    m_lastSackedBytes (lastSackedBytes),
+    m_deliveredBytes (deliveredBytes),
     m_bytesSent (bytesSent),
     m_reductionBound (reductionBound)
 {
@@ -125,7 +125,7 @@ PrrRecoveryTest::DoRun ()
   m_bytesInFlight += m_state->m_cWnd.Get () - m_cWnd;
   m_state->m_bytesInFlight = m_bytesInFlight;
   m_cWnd = m_state->m_cWnd.Get ();
-  recovery->DoRecovery (m_state, 0, m_lastSackedBytes);
+  recovery->DoRecovery (m_state, m_deliveredBytes);
 
   if (m_bytesInFlight > m_state->m_ssThresh)
     {
