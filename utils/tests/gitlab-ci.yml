@@ -1,0 +1,83 @@
+# NS3 CI script
+
+# For naming purposes, we will prepend ".base-" on the jobs
+# that are not complete and need to be extended (hopefully
+# we write in the documentation before the job what should be
+# added to have a working jobs).
+
+# As per Gitlab documentation, extends supports multi-level inheritance,
+# however it is not recommended to use more than three levels.
+
+
+# Any scheduled pipeline should define a variable, named "RELEASE", that
+# indicates what this script is run for. Allowed values, for the moment,
+# are "daily" and "weekly" to denote a daily (or weekly) job.
+
+# Our configuration is not strictly sequential, or by using different
+# words, we do not expect the CI infrastructure to run build, test, and
+# documentation jobs each time that a commit is done. We use a different
+# configuration, still in definition. It will be in the documentation.
+
+
+stages:
+  - build
+  - test
+  - documentation
+
+
+###################### BUILD STAGE #############################################
+
+# Defines the steps to run the tests
+# Inherit with "extends: .base-build" and remember to set
+# the following variables: COMPILER (g++, clang++, ...) and
+# MODE (debug, release, optimized)
+.base-build:
+  stage: build
+  script:
+    - mkdir -p $CCACHE_BASEDIR_VALUE
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
+    - ./waf
+  cache:
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+
+# Defines the per-commit jobs. They are executed for any branch
+per-commit-compile-debug:
+  extends: .base-build
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: debug
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+per-commit-compile-release:
+  extends: .base-build
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: release
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+per-commit-compile-optimized:
+  extends: .base-build
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: optimized
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+# Weekly jobs for other distribution and compilers
+include:
+  - 'utils/tests/gitlab-ci-ubuntu.yml'
+  - 'utils/tests/gitlab-ci-fedora.yml'
+  - 'utils/tests/gitlab-ci-gcc.yml'
+  - 'utils/tests/gitlab-ci-clang.yml'
+  - 'utils/tests/gitlab-ci-test.yml'
+  - 'utils/tests/gitlab-ci-doc.yml'

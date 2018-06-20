@@ -1,0 +1,86 @@
+# NS3 CI script for ubuntu
+
+# Any scheduled pipeline for Ubuntu should define a variable, named
+# "RELEASE", that has a value "weekly". Also, the variale "UBUNTU" should be
+# set to True.
+
+# Please take a look at .gitlab-ci.yml to check the dependencies of Ubuntu jobs.
+
+# Ubuntu base
+.weekly-build-ubuntu:
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $UBUNTU == "True"
+  before_script:
+    - apt-get --quiet update --yes
+    - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev $LIBGSL --yes
+  variables:
+    COMPILER: g++
+
+# Ubuntu 16.04 (Until April 2021)
+weekly-build-ubuntu-16.04-debug:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:16.04
+  variables:
+    MODE: debug
+    LIBGSL: libgsl2
+
+weekly-build-ubuntu-16.04-release:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:16.04
+  variables:
+    MODE: release
+    LIBGSL: libgsl2
+
+weekly-build-ubuntu-16.04-optimized:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:16.04
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl2
+
+# Ubuntu 18.04 (Until April 2023)
+weekly-build-ubuntu-18.04-debug:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.04
+  variables:
+    MODE: debug
+    LIBGSL: libgsl23
+
+weekly-build-ubuntu-18.04-release:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.04
+  variables:
+    MODE: release
+    LIBGSL: libgsl23
+
+weekly-build-ubuntu-18.04-optimized:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.04
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl23
+
+# Ubuntu 18.10 (Until July 2019)
+weekly-build-ubuntu-18.10-debug:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.10
+  variables:
+    MODE: debug
+    LIBGSL: libgsl23
+
+weekly-build-ubuntu-18.10-release:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.10
+  variables:
+    MODE: release
+    LIBGSL: libgsl23
+
+weekly-build-ubuntu-18.10-optimized:
+  extends: .weekly-build-ubuntu
+  image: ubuntu:18.10
+  variables:
+    MODE: optimized
+    LIBGSL: libgsl23

@@ -1,0 +1,76 @@
+# NS3 CI script for fedora
+
+# Any scheduled pipeline for Fedora should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "FEDORA" should be set
+# to True.
+
+# Please take a look at .gitlab-ci.yml to check the dependencies of Fedora jobs.
+
+# Weekly jobs: Fedora
+.weekly-build-fedora:
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $FEDORA == "True"
+  before_script:
+    - dnf install gcc gcc-c++ python python-devel ccache gsl gsl-devel libgcrypt gtk3 gtk3-devel sqlite sqlite-devel libxml2 libxml2-devel openmpi openmpi-devel boost-devel pygobject3-devel python3-gobject gobject-introspection-devel goocanvas2-devel graphviz-devel graphviz ipython --assumeyes
+  variables:
+    COMPILER: g++
+
+# Fedora 27
+weekly-build-fedora-27-debug:
+  extends: .weekly-build-fedora
+  image: fedora:27
+  variables:
+    MODE: debug
+
+weekly-build-fedora-27-release:
+  extends: .weekly-build-fedora
+  image: fedora:27
+  variables:
+    MODE: release
+
+weekly-build-fedora-27-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:27
+  variables:
+    MODE: optimized
+
+# Fedora 28
+weekly-build-fedora-28-debug:
+  extends: .weekly-build-fedora
+  image: fedora:28
+  variables:
+    MODE: debug
+
+weekly-build-fedora-28-release:
+  extends: .weekly-build-fedora
+  image: fedora:28
+  variables:
+    MODE: release
+
+weekly-build-fedora-28-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:28
+  variables:
+    MODE: optimized
+
+# Fedora 29
+weekly-build-fedora-29-debug:
+  extends: .weekly-build-fedora
+  image: fedora:29
+  variables:
+    MODE: debug
+
+weekly-build-fedora-29-release:
+  extends: .weekly-build-fedora
+  image: fedora:29
+  variables:
+    MODE: release
+
+weekly-build-fedora-29-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:29
+  variables:
+    MODE: optimized

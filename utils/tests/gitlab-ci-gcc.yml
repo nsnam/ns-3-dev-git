@@ -1,0 +1,115 @@
+# NS3 CI script for GCC
+
+# Any scheduled pipeline for GCC should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "GCC" should be set
+# to True.
+
+# We support from 4.9.2 to the latest version. Check if everything builds fine
+# under debug, release, and optimized, on Linux.
+
+.weekly-build-gcc:
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $GCC == "True"
+  before_script:
+    - apt-get --quiet update --yes
+    - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev gsl-bin libgsl0-dev --yes
+  variables:
+    COMPILER: g++
+
+# GCC 4.9 : it could be unsupported ?
+weekly-build-gcc-4.9-debug:
+  extends: .weekly-build-gcc
+  image: gcc:4.9
+  variables:
+    MODE: debug
+
+weekly-build-gcc-4.9-release:
+  extends: .weekly-build-gcc
+  image: gcc:4.9
+  variables:
+    MODE: release
+
+weekly-build-gcc-4.9-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:4.9
+  variables:
+    MODE: optimized
+
+# GCC 5
+weekly-build-gcc-5-debug:
+  extends: .weekly-build-gcc
+  image: gcc:5
+  variables:
+    MODE: debug
+
+weekly-build-gcc-5-release:
+  extends: .weekly-build-gcc
+  image: gcc:5
+  variables:
+    MODE: release
+
+weekly-build-gcc-5-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:5
+  variables:
+    MODE: optimized
+
+# GCC 6
+weekly-build-gcc-6-debug:
+  extends: .weekly-build-gcc
+  image: gcc:6
+  variables:
+    MODE: debug
+
+weekly-build-gcc-6-release:
+  extends: .weekly-build-gcc
+  image: gcc:6
+  variables:
+    MODE: release
+
+weekly-build-gcc-6-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:6
+  variables:
+    MODE: optimized
+
+# GCC 7
+weekly-build-gcc-7-debug:
+  extends: .weekly-build-gcc
+  image: gcc:7
+  variables:
+    MODE: debug
+
+weekly-build-gcc-7-release:
+  extends: .weekly-build-gcc
+  image: gcc:7
+  variables:
+    MODE: release
+
+weekly-build-gcc-7-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:7
+  variables:
+    MODE: optimized
+
+# GCC 8
+weekly-build-gcc-8-debug:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: debug
+
+weekly-build-gcc-8-release:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: release
+
+weekly-build-gcc-8-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:8
+  variables:
+    MODE: optimized

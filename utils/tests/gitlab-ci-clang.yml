@@ -1,0 +1,70 @@
+# NS3 CI script for CLANG
+
+# Any scheduled pipeline for CLANG should define a variable, named
+# "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
+# to True.
+
+# We support CLANG 6 and 7 (8 in the near future).
+# The test is done under Linux.
+
+.weekly-build-clang:
+  image: ubuntu:18.04
+  extends: .base-build
+  only:
+    variables:
+      - $RELEASE == "weekly"
+      - $CLANG == "True"
+  before_script:
+    - apt-get --quiet update --yes
+    - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk2.0-0 libgtk2.0-dev libboost-all-dev libgsl23 --yes
+    - apt-get --quiet install software-properties-common gnupg wget --yes
+    - echo -en "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main \n deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main" > /etc/apt/sources.list.d/llvm.list
+    - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+    - apt-get --quiet update --yes
+    - apt-get --quiet install ca-certificates build-essential clang-$CLANG clang-tools-$CLANG clang-format-$CLANG python-clang-$CLANG libfuzzer-$CLANG-dev lldb-$CLANG lld-$CLANG $EXTRA --yes
+  variables:
+    COMPILER: clang++-$CLANG
+
+# CLANG 6
+weekly-build-clang-6-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: "6.0"
+    MODE: debug
+    EXTRA: ""
+
+weekly-build-clang-6-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: "6.0"
+    MODE: release
+    EXTRA: ""
+
+weekly-build-clang-6-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: "6.0"
+    MODE: optimized
+    EXTRA: ""
+
+# CLANG 7
+weekly-build-clang-7-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 7
+    MODE: debug
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-7-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 7
+    MODE: release
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-7-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 7
+    MODE: optimized
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
