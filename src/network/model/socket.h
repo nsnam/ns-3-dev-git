@@ -981,6 +981,16 @@ public:
   virtual void Ipv6LeaveGroup (void);
 
 protected:
+  Callback<void, Ptr<Socket> >                   m_connectionSucceeded;  //!< connection succeeded callback
+  Callback<void, Ptr<Socket> >                   m_connectionFailed;     //!< connection failed callback
+  Callback<void, Ptr<Socket> >                   m_normalClose;          //!< connection closed callback
+  Callback<void, Ptr<Socket> >                   m_errorClose;           //!< connection closed due to errors callback
+  Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;    //!< connection request callback
+  Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated; //!< connection created callback
+  Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;             //!< data sent callback
+  Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;               //!< packet sent callback
+  Callback<void, Ptr<Socket> >                   m_receivedData;         //!< data received callback
+
   /**
    * \brief Notify through the callback (if set) that the connection has been
    *        established.
@@ -1074,15 +1084,6 @@ protected:
   Ipv6Address m_ipv6MulticastGroupAddress; //!< IPv6 multicast group address.
 
 private:
-  Callback<void, Ptr<Socket> >                   m_connectionSucceeded;  //!< connection succeeded callback
-  Callback<void, Ptr<Socket> >                   m_connectionFailed;     //!< connection failed callback
-  Callback<void, Ptr<Socket> >                   m_normalClose;          //!< connection closed callback
-  Callback<void, Ptr<Socket> >                   m_errorClose;           //!< connection closed due to errors callback
-  Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;    //!< connection request callback
-  Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated; //!< connection created callback
-  Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;             //!< data sent callback
-  Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;               //!< packet sent callback
-  Callback<void, Ptr<Socket> >                   m_receivedData;         //!< data received callback
 
   uint8_t m_priority; //!< the socket priority
 

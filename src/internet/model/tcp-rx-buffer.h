@@ -85,6 +85,14 @@ public:
   TcpRxBuffer (uint32_t n = 0);
   virtual ~TcpRxBuffer ();
 
+  /**
+  * \return First in order sequence sumber
+  *
+  **/
+  SequenceNumber32 HeadSequence(void) const;
+
+  void Dump() const;
+
   // Accessors
   /**
    * \brief Get Next Rx Sequence number
@@ -148,6 +156,7 @@ public:
    * \return True when success, false otherwise.
    */
   bool Add (Ptr<Packet> p, TcpHeader const& tcph);
+  bool Add (Ptr<Packet> p,  SequenceNumber32 const& headSeq); //for MPTCP
 
   /**
    * Extract data from the head of the buffer as indicated by nextRxSeq.

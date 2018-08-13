@@ -58,6 +58,10 @@
 #include "tcp-option-sack.h"
 #include "tcp-congestion-ops.h"
 #include "tcp-recovery-ops.h"
+#include "mptcp-crypto.h"
+#include "mptcp-subflow.h"
+#include "mptcp-socket-base.h"
+#include "tcp-option-mptcp.h"
 
 #include <math.h>
 #include <algorithm>
@@ -89,6 +93,11 @@ TcpSocketBase::GetTypeId (void)
                    UintegerValue (65535),
                    MakeUintegerAccessor (&TcpSocketBase::m_maxWinSize),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("EnableMpTcp",
+                   "Enable or disable MPTCP support",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpSocketBase::m_mptcpEnabled),
+                   MakeBooleanChecker ())
     .AddAttribute ("IcmpCallback", "Callback invoked whenever an icmp error is received on this socket.",
                    CallbackValue (),
                    MakeCallbackAccessor (&TcpSocketBase::m_icmpCallback),
@@ -102,11 +111,11 @@ TcpSocketBase::GetTypeId (void)
                    MakeBooleanAccessor (&TcpSocketBase::m_winScalingEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("Sack", "Enable or disable Sack option",
-                   BooleanValue (true),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&TcpSocketBase::m_sackEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("Timestamp", "Enable or disable Timestamp option",
-                   BooleanValue (true),
+                   BooleanValue (false),
                    MakeBooleanAccessor (&TcpSocketBase::m_timestampEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("MinRto",
@@ -320,6 +329,10 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_rWnd (sock.m_rWnd),
     m_highRxMark (sock.m_highRxMark),
     m_highRxAckMark (sock.m_highRxAckMark),
+    m_mptcpEnabled (sock.m_mptcpEnabled),
+    m_mptcpLocalKey(sock.m_mptcpLocalKey),
+    m_mptcpLocalToken(sock.m_mptcpLocalToken),
+    m_mptcpPeerToken(sock.m_mptcpPeerToken),
     m_sackEnabled (sock.m_sackEnabled),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_rcvWindShift (sock.m_rcvWindShift),
@@ -457,6 +470,12 @@ void
 TcpSocketBase::SetRtt (Ptr<RttEstimator> rtt)
 {
   m_rtt = rtt;
+}
+
+TcpSocket::TcpStates_t
+TcpSocketBase::GetState() const
+{
+  return m_state;
 }
 
 /* Inherit from Socket class: Returns error code */
@@ -1369,9 +1388,19 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
           h.SetSourcePort (tcpHeader.GetDestinationPort ());
           h.SetDestinationPort (tcpHeader.GetSourcePort ());
           h.SetWindowSize (AdvertisedWindowSize ());
-          AddOptions (h);
+          if (!m_mptcpEnabled)
+           {
+             AddOptions (h);
+           }
           m_txTrace (p, h, this);
+          if (m_mptcpEnabled)
+           {
+              SendPacket(h,p);
+           }
+          else
+           {
           m_tcp->SendPacket (p, h, toAddress, fromAddress, m_boundnetdevice);
+           }
         }
       break;
     case SYN_SENT:
@@ -1418,6 +1447,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
   // Different flags are different events
   if (tcpflags == TcpHeader::ACK)
     {
+      ProcessTcpOptions(tcpHeader);
       if (tcpHeader.GetAckNumber () < m_txBuffer->HeadSequence ())
         {
           // Case 1:  If the ACK is a duplicate (SEG.ACK < SND.UNA), it can be ignored.
@@ -1461,6 +1491,13 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     }
   else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK))
     { // No action for received SYN+ACK, it is probably a duplicated packet
+      Ptr<const TcpOptionMpTcpJoin> join;
+      // If it is a SYN packet with an MP_JOIN option
+      if( GetTcpOption(tcpHeader, join))
+       {
+         ProcessSynSent(packet, tcpHeader);
+         return;
+       }
     }
   else if (tcpflags == TcpHeader::FIN || tcpflags == (TcpHeader::FIN | TcpHeader::ACK))
     { // Received FIN or FIN+ACK, bring down this socket nicely
@@ -1468,6 +1505,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
     }
   else if (tcpflags == 0)
     { // No flags means there is only data
+      ProcessTcpOptions(tcpHeader);
       ReceivedData (packet, tcpHeader);
       if (m_rxBuffer->Finished ())
         {
@@ -1499,6 +1537,8 @@ TcpSocketBase::IsTcpOptionEnabled (uint8_t kind) const
     case TcpOption::SACKPERMITTED:
     case TcpOption::SACK:
       return m_sackEnabled;
+    case TcpOption::MPTCP:
+         return m_mptcpEnabled;
     default:
       break;
     }
@@ -2004,11 +2044,116 @@ TcpSocketBase::ProcessListen (Ptr<Packet> packet, const TcpHeader& tcpHeader,
     {
       return;
     }
-  // Clone the socket, simulate fork
-  Ptr<TcpSocketBase> newSock = Fork ();
+
+  // If it is a SYN packet with an MP_JOIN option
+  Ptr<const TcpOptionMpTcpJoin> join;
+  if( (tcpHeader.GetFlags() & TcpHeader::SYN)
+        && GetTcpOption(tcpHeader, join)
+        && join->GetMode() == TcpOptionMpTcpJoin::Syn
+       )
+    {
+      return;
+    }
+  ///! we first forked here
+  //////////////////////////////////////
+  if (ProcessTcpOptions(tcpHeader) == 1)
+    {
+     NS_LOG_LOGIC("Fork & Upgrade to meta " << this);
+     Ptr<MpTcpSubflow> master = this->UpgradeToMeta();
+     Simulator::ScheduleNow (&MpTcpSubflow::CompleteFork, master,
+                         packet, tcpHeader, fromAddress, toAddress);
+       return;
+    }
+
+  Ptr<TcpSocketBase> newSock = Fork();
   NS_LOG_LOGIC ("Cloned a TcpSocketBase " << newSock);
   Simulator::ScheduleNow (&TcpSocketBase::CompleteFork, newSock,
                           packet, tcpHeader, fromAddress, toAddress);
+}
+
+Ptr<MpTcpSubflow>
+TcpSocketBase::UpgradeToMeta()
+{
+  NS_LOG_FUNCTION("Upgrading to meta " << this);
+
+  MpTcpSubflow *subflow = new MpTcpSubflow(*this);
+  Ptr<MpTcpSubflow> master(subflow, true);
+
+  // the master is always a new socket, hence we should register it
+  bool result = m_tcp->AddSocket(master);
+  NS_ASSERT_MSG(result, "Could not register master");
+
+  // set callbacks
+  Callback<void, Ptr<Socket>, uint32_t > cbSend = this->m_sendCb;
+  Callback<void, Ptr<Socket> >  cbRcv = this->m_receivedData;
+  Callback<void, Ptr<Socket>, uint32_t>  cbDataSent = this->m_dataSent;
+  Callback<void, Ptr<Socket> >  cbConnectFail = this->m_connectionFailed;
+  Callback<void, Ptr<Socket> >  cbConnectSuccess = this->m_connectionSucceeded;
+  Callback<bool, Ptr<Socket>, const Address &> connectionRequest = this->m_connectionRequest;
+  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated = this->m_newConnectionCreated;
+  ////////////////////////
+  //// !! CAREFUL !!
+  //// all callbacks are disabled
+  // Otherwise timers
+  this->CancelAllTimers();
+
+  // I don't want the destructor to be called in that moment
+  MpTcpSocketBase* meta = new (this) MpTcpSocketBase(*master);
+  meta->SetTcp(master->m_tcp);
+  meta->SetNode(master->GetNode());
+  // we add it to tcp so that it can be freed and used for token lookup
+  meta->AddSubflow(master);
+  meta->SetSendCallback(cbSend);
+  meta->SetConnectCallback (cbConnectSuccess, cbConnectFail);
+  meta->SetDataSentCallback (cbDataSent);
+  meta->SetRecvCallback (cbRcv);
+  meta->SetAcceptCallback(connectionRequest, newConnectionCreated);
+  return master;
+}
+
+int
+TcpSocketBase::ProcessTcpOptions(const TcpHeader& header)
+{
+  NS_LOG_FUNCTION (this << header);
+
+  TcpHeader::TcpOptionList options;
+  header.GetOptions (options);
+  for(TcpHeader::TcpOptionList::const_iterator it(options.begin()); it != options.end(); ++it)
+  {
+    Ptr<const TcpOption> option = *it;
+    switch(option->GetKind())
+      {
+        case TcpOption::WINSCALE:
+          if ((header.GetFlags () & TcpHeader::SYN) && m_winScalingEnabled && m_state < ESTABLISHED)
+            {
+              ProcessOptionWScale (option);
+            }
+          break;
+        case TcpOption::MPTCP:
+          //! this will interrupt option processing but this function will be scheduled again
+          //! thus some options may be processed twice, it should not trigger errors
+          if (ProcessOptionMpTcp(option) != 0)
+            {
+              return 1;
+            }
+          break;
+        case TcpOption::TS:
+          if (m_timestampEnabled)
+            {
+              ProcessOptionTimestamp (header.GetOption (TcpOption::TS),
+                                header.GetSequenceNumber ());
+            }
+          break;
+        // Ignore those
+        case TcpOption::NOP:
+        case TcpOption::END:
+          break;
+        default:
+            NS_LOG_WARN("Unsupported option [" << (int)option->GetKind() << "]");
+          break;
+      }
+  }
+  return 0;
 }
 
 /* Received a packet upon SYN_SENT */
@@ -2016,6 +2161,7 @@ void
 TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 {
   NS_LOG_FUNCTION (this << tcpHeader);
+  Ptr<const TcpOptionMpTcpJoin> join;
 
   // Extract the flags. PSH and URG are disregarded.
   uint8_t tcpflags = tcpHeader.GetFlags () & ~(TcpHeader::PSH | TcpHeader::URG);
@@ -2059,6 +2205,13 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   else if (tcpflags & (TcpHeader::SYN | TcpHeader::ACK)
            && m_tcb->m_nextTxSequence + SequenceNumber32 (1) == tcpHeader.GetAckNumber ())
     { // Handshake completed
+      if(ProcessTcpOptions(tcpHeader) == 1)
+      {
+        // upgrade to mptcp socket
+        Ptr<MpTcpSubflow> master = UpgradeToMeta();
+        Simulator::ScheduleNow( &MpTcpSubflow::ProcessSynSent, master, packet, tcpHeader);
+        return;
+      }
       NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
       m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
       m_state = ESTABLISHED;
@@ -2082,6 +2235,28 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
         {
           m_tcb->m_ecnState = TcpSocketState::ECN_DISABLED;
         }
+      SendPendingData (m_connected);
+      Simulator::ScheduleNow (&TcpSocketBase::ConnectionSucceeded, this);
+      // Always respond to first data packet to speed up the connection.
+      // Remove to get the behaviour of old NS-3 code.
+      m_delAckCount = m_delAckMaxCount;
+    }
+  else if (tcpflags == (TcpHeader::SYN | TcpHeader::ACK)
+           && GetTcpOption(tcpHeader, join))
+    {
+      if (ProcessTcpOptions(tcpHeader) == 1)
+        {
+          return;
+        }
+      NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
+      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+      m_state = ESTABLISHED;
+      m_connected = true;
+      m_retxEvent.Cancel ();
+      m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
+      m_tcb->m_highTxMark = ++m_tcb->m_nextTxSequence;
+      m_txBuffer->SetHeadSequence (m_tcb->m_nextTxSequence);
+      SendEmptyPacket (TcpHeader::ACK);
       SendPendingData (m_connected);
       Simulator::ScheduleNow (&TcpSocketBase::ConnectionSucceeded, this);
       // Always respond to first data packet to speed up the connection.
@@ -2137,6 +2312,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       // Always respond to first data packet to speed up the connection.
       // Remove to get the behaviour of old NS-3 code.
       m_delAckCount = m_delAckMaxCount;
+      ProcessTcpOptions(tcpHeader);
       NotifyNewConnectionCreated (this, fromAddress);
       ReceivedAck (packet, tcpHeader);
       // As this connection is established, the socket is available to send data now
@@ -2151,7 +2327,14 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN
        * packet and the  traffic is ECN Capable
        */
-      if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+
+      Ptr<const TcpOptionMpTcpJoin> join;
+      //If it is a SYN packet with an MP_JOIN option then don't send SYN|ACK, because it Already sent by MpTcpSublow::completefork
+      if (GetTcpOption(tcpHeader, join))
+        {
+          return;
+        }
+      else if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN packet");
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
@@ -2293,6 +2476,7 @@ TcpSocketBase::ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     {
       if (tcpHeader.GetSequenceNumber () == m_rxBuffer->NextRxSequence ())
         { // This ACK corresponds to the FIN sent
+          ProcessTcpOptions(tcpHeader);
           TimeWait ();
         }
     }
@@ -2301,6 +2485,7 @@ TcpSocketBase::ProcessClosing (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       // anyone. If anything other than ACK is received, respond with a reset.
       if (tcpflags == TcpHeader::FIN || tcpflags == (TcpHeader::FIN | TcpHeader::ACK))
         { // FIN from the peer as well. We can close immediately.
+          ProcessTcpOptions(tcpHeader);
           SendEmptyPacket (TcpHeader::ACK);
         }
       else if (tcpflags != TcpHeader::RST)
@@ -2323,21 +2508,25 @@ TcpSocketBase::ProcessLastAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   if (tcpflags == 0)
     {
+      ProcessTcpOptions(tcpHeader);
       ReceivedData (packet, tcpHeader);
     }
   else if (tcpflags == TcpHeader::ACK)
     {
       if (tcpHeader.GetSequenceNumber () == m_rxBuffer->NextRxSequence ())
         { // This ACK corresponds to the FIN sent. This socket closed peacefully.
+          ProcessTcpOptions(tcpHeader);
           CloseAndNotify ();
         }
     }
   else if (tcpflags == TcpHeader::FIN)
     { // Received FIN again, the peer probably lost the FIN+ACK
+      ProcessTcpOptions(tcpHeader);
       SendEmptyPacket (TcpHeader::FIN | TcpHeader::ACK);
     }
   else if (tcpflags == (TcpHeader::FIN | TcpHeader::ACK) || tcpflags == TcpHeader::RST)
     {
+      ProcessTcpOptions(tcpHeader);
       CloseAndNotify ();
     }
   else
@@ -2496,7 +2685,10 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       header.SetSourcePort (m_endPoint6->GetLocalPort ());
       header.SetDestinationPort (m_endPoint6->GetPeerPort ());
     }
-  AddOptions (header);
+  if (!m_mptcpEnabled)
+     {
+       AddOptions (header);
+     }
 
   // RFC 6298, clause 2.4
   m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4), m_minRto);
@@ -2561,7 +2753,11 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
   m_txTrace (p, header, this);
 
-  if (m_endPoint != nullptr)
+  if (m_mptcpEnabled)
+    {
+     SendPacket(header, p);
+    }
+  else if (m_endPoint != nullptr)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
                          m_endPoint->GetPeerAddress (), m_boundnetdevice);
@@ -2917,7 +3113,10 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       header.SetDestinationPort (m_endPoint6->GetPeerPort ());
     }
   header.SetWindowSize (AdvertisedWindowSize ());
-  AddOptions (header);
+  if (!m_mptcpEnabled)
+    {
+      AddOptions (header);
+    }
 
   if (m_retxEvent.IsExpired ())
     {
@@ -2931,7 +3130,11 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
 
   m_txTrace (p, header, this);
 
-  if (m_endPoint)
+  if (m_mptcpEnabled)
+    {
+     SendPacket(header, p);
+    }
+  else if (m_endPoint)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
                          m_endPoint->GetPeerAddress (), m_boundnetdevice);
@@ -2965,6 +3168,30 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   // Update highTxMark
   m_tcb->m_highTxMark = std::max (seq + sz, m_tcb->m_highTxMark.Get ());
   return sz;
+}
+
+void
+TcpSocketBase::SendPacket(TcpHeader header, Ptr<Packet> p)
+{
+  NS_LOG_LOGIC ("Send packet via TcpL4Protocol with flags");
+
+  AddOptions (header);
+  m_txTrace (p, header, this);
+  if (m_endPoint != nullptr)
+    {
+      m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
+                         m_endPoint->GetPeerAddress (), m_boundnetdevice);
+    }
+  else
+    {
+      m_tcp->SendPacket (p, header, m_endPoint6->GetLocalAddress (),
+                         m_endPoint6->GetPeerAddress (), m_boundnetdevice);
+    }
+  if (header.GetFlags() & TcpHeader::ACK)
+    { // If sending an ACK, cancel the delay ACK as well
+      m_delAckEvent.Cancel ();
+      m_delAckCount = 0;
+    }
 }
 
 void
@@ -3863,15 +4090,79 @@ TcpSocketBase::GetAllowBroadcast (void) const
   return false;
 }
 
+uint64_t
+TcpSocketBase::GenerateUniqueMpTcpKey()
+{
+  NS_LOG_FUNCTION("Generating key");
+  NS_ASSERT(m_tcp);
+  uint64_t localKey, idsn;
+  uint32_t localToken;
+
+  do
+  {
+    localKey = (rand() % 1000 + 1);
+    GenerateTokenForKey( HMAC_SHA1, localKey, localToken, idsn );
+  }
+  while(m_tcp->LookupMpTcpToken(localToken));
+
+  m_mptcpLocalToken = localToken;
+  m_mptcpLocalKey = localKey;
+  m_mptcpPeerToken = localToken;
+  return localKey;
+}
+
+void
+TcpSocketBase::AddMpTcpOptions (TcpHeader& header)
+{
+  NS_LOG_FUNCTION(this);
+  // If key not genereated yet
+  if (m_mptcpLocalKey == 0)
+    {
+      // for the sake of simplicity, we generate a key even if unused
+      GenerateUniqueMpTcpKey();
+    }
+  if ((header.GetFlags () == TcpHeader::SYN))
+    {
+      // Append the MPTCP capable option
+      Ptr<TcpOptionMpTcpCapable> mpc = CreateObject<TcpOptionMpTcpCapable>();
+      mpc->SetSenderKey(m_mptcpLocalKey);
+      header.AppendOption(mpc);
+    }
+  else if(m_state == ESTABLISHED && (header.GetFlags () == TcpHeader::SYN)) 
+    {
+      Ptr<TcpOptionMpTcpJoin> join =  CreateObject<TcpOptionMpTcpJoin>();
+      join->SetMode(TcpOptionMpTcpJoin::Syn);
+      m_mptcpPeerToken = 887;
+      join->SetPeerToken(m_mptcpPeerToken);
+      join->SetNonce(0);
+      NS_LOG_INFO("Appended option / TcpSocketBase" << join);
+      header.AppendOption( join );
+    }
+}
+
 void
 TcpSocketBase::AddOptions (TcpHeader& header)
 {
   NS_LOG_FUNCTION (this << header);
+  AddMpTcpOptions(header);
 
   if (m_timestampEnabled)
     {
       AddOptionTimestamp (header);
     }
+}
+
+int
+TcpSocketBase::ProcessOptionMpTcp ( const Ptr<const TcpOption> option)
+{
+  Ptr<const TcpOptionMpTcpCapable> mpc = DynamicCast<const TcpOptionMpTcpCapable>(option);
+
+  if (!mpc)
+   {
+     NS_LOG_WARN("Invalid option " << option);
+     return 0;
+   }
+  return 1;
 }
 
 void
@@ -4043,7 +4334,8 @@ TcpSocketBase::AddOptionTimestamp (TcpHeader& header)
                option->GetTimestamp () << " echo=" << m_timestampToEcho);
 }
 
-void TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
+bool
+ TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
 {
   NS_LOG_FUNCTION (this << header);
   //  If the connection is not established, the window size is always
@@ -4055,7 +4347,7 @@ void TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
     {
       m_rWnd = receivedWindow;
       NS_LOG_LOGIC ("State less than ESTABLISHED; updating rWnd to " << m_rWnd);
-      return;
+      return true; 
     }
 
   // Test for conditions that allow updating of the window
@@ -4085,6 +4377,7 @@ void TcpSocketBase::UpdateWindowSize (const TcpHeader &header)
       m_rWnd = receivedWindow;
       NS_LOG_LOGIC ("updating rWnd to " << m_rWnd);
     }
+ return update;
 }
 
 void

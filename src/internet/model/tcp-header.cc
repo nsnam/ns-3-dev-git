@@ -22,6 +22,7 @@
 #include <iostream>
 #include "tcp-header.h"
 #include "tcp-option.h"
+#include "tcp-option-mptcp.h"
 #include "ns3/buffer.h"
 #include "ns3/address-utils.h"
 #include "ns3/log.h"
@@ -260,6 +261,12 @@ TcpHeader::CalculateHeaderChecksum (uint16_t size) const
   return ~(it.CalculateIpChecksum (hdrSize));
 }
 
+void
+TcpHeader::GetOptions (TcpHeader::TcpOptionList& l) const
+{
+  l = m_options;
+}
+
 bool
 TcpHeader::IsChecksumOk (void) const
 {
@@ -366,7 +373,7 @@ TcpHeader::Deserialize (Buffer::Iterator start)
   m_sequenceNumber = i.ReadNtohU32 ();
   m_ackNumber = i.ReadNtohU32 ();
   uint16_t field = i.ReadNtohU16 ();
-  m_flags = field & 0xFF;
+  m_flags = field & 0xFF;   // changed from 0x3F to 0xFF by kashif
   m_length = field >> 12;
   m_windowSize = i.ReadNtohU16 ();
   i.Next (2);
@@ -385,7 +392,15 @@ TcpHeader::Deserialize (Buffer::Iterator start)
       uint8_t kind = i.PeekU8 ();
       Ptr<TcpOption> op;
       uint32_t optionSize;
-      if (TcpOption::IsKindKnown (kind))
+
+      if ( kind == TcpOption::MPTCP)
+        {
+          i.ReadU16(); // skip TCP kind & length
+          uint8_t subtype = i.ReadU8() >> 4;  // read MPTCP subtype
+          i.Prev(3); // revert the iterator back to where it should be
+          op = TcpOptionMpTcpMain::CreateMpTcpOption(subtype);
+        }
+      else if (TcpOption::IsKindKnown (kind))
         {
           op = TcpOption::CreateOption (kind);
         }

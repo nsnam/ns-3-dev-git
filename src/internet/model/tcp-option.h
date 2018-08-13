@@ -61,6 +61,7 @@ public:
     SACKPERMITTED = 4,          //!< SACKPERMITTED
     SACK = 5,                   //!< SACK
     TS = 8,                     //!< TS
+    MPTCP = 30,   //! Multipath TCP options share the same Kind
     UNKNOWN = 255               //!< not a standardized value; for unknown recv'd options
   };
 

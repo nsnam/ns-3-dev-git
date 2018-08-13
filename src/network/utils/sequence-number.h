@@ -468,6 +468,11 @@ std::istream & operator >> (std::istream &is, const SequenceNumber<NUMERIC_TYPE,
 
 /**
  * \ingroup network
+ * 64 bit Sequence number.
+ */
+typedef SequenceNumber<uint64_t, int64_t> SequenceNumber64; // For MPTCP DSN
+/**
+ * \ingroup network
  * 32 bit Sequence number.
  */
 typedef SequenceNumber<uint32_t, int32_t> SequenceNumber32;
