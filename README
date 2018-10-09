@@ -72,9 +72,9 @@ improve the portability of the code to these other platforms.
 On recent Linux systems, once you have built ns-3 (with examples
 enabled), it should be easy to run the sample programs with the
 following command, such as:
-```sh
+
 ./waf --run simple-global-routing
-```
+
 That program should generate a simple-global-routing.tr text 
 trace file and a set of simple-global-routing-xx-xx.pcap binary
 pcap trace files, which can be read by tcpdump -tt -r filename.pcap
