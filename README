@@ -2,7 +2,7 @@
     The Network Simulator, Version 3
     --------------------------------
 
-###Table of Contents:
+Table of Contents:
 ------------------
 
 1) An overview
@@ -49,13 +49,13 @@ included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
 type the command
-```sh
+
   ./waf configure --enable-examples
-```
+
 followed by
-```sh
+
   ./waf 
-```
+`
 in the directory which contains
 this README file. The files built will be copied in the
 build/ directory.
@@ -74,7 +74,7 @@ enabled), it should be easy to run the sample programs with the
 following command, such as:
 ```sh
 ./waf --run simple-global-routing
-```sh
+```
 That program should generate a simple-global-routing.tr text 
 trace file and a set of simple-global-routing-xx-xx.pcap binary
 pcap trace files, which can be read by tcpdump -tt -r filename.pcap
