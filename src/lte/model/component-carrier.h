@@ -63,7 +63,7 @@ public:
   /**
    * \param bw the uplink bandwidth in RBs
    */
-  void SetUlBandwidth (uint8_t bw);
+  virtual void SetUlBandwidth (uint8_t bw);
 
   /**
    * \return the downlink bandwidth in RBs
@@ -73,7 +73,7 @@ public:
   /**
    * \param bw the downlink bandwidth in RBs
    */
-  void SetDlBandwidth (uint8_t bw);
+  virtual void SetDlBandwidth (uint8_t bw);
 
   /**
    * \return the downlink carrier frequency (EARFCN)
