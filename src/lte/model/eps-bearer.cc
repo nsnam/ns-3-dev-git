@@ -45,131 +45,74 @@ AllocationRetentionPriority::AllocationRetentionPriority ()
 EpsBearer::EpsBearer ()
   : qci (NGBR_VIDEO_TCP_DEFAULT)
 {
+  m_requirements = GetRequirementsRel11 ();
 }
 
 EpsBearer::EpsBearer (Qci x)
   : qci (x)
 {
+  m_requirements = GetRequirementsRel11 ();
 }
 
 EpsBearer::EpsBearer (Qci x, struct GbrQosInformation y)
   : qci (x), gbrQosInfo (y)
 {
+  m_requirements = GetRequirementsRel11 ();
 }
 
 bool
 EpsBearer::IsGbr () const
 {
-  // 3GPP 23.203 Section 6.1.7.2
-  switch (qci)
-    {
-    case GBR_CONV_VOICE:
-    case GBR_CONV_VIDEO:
-    case GBR_GAMING:
-    case GBR_NON_CONV_VIDEO:
-      return true;
-    case NGBR_IMS:
-    case NGBR_VIDEO_TCP_OPERATOR:
-    case NGBR_VOICE_VIDEO_GAMING:
-    case NGBR_VIDEO_TCP_PREMIUM:
-    case NGBR_VIDEO_TCP_DEFAULT:
-      return false;
-    default:
-      NS_FATAL_ERROR ("unknown QCI value " << qci);
-      return false;
-    }
+  return IsGbr (m_requirements, qci);
 }
 
 uint8_t
 EpsBearer::GetPriority () const
 {
-  // 3GPP 23.203 Section 6.1.7.2
-  switch (qci)
-    {
-    case GBR_CONV_VOICE:
-      return 2;
-    case GBR_CONV_VIDEO:
-      return 4;
-    case GBR_GAMING:
-      return 3;
-    case GBR_NON_CONV_VIDEO:
-      return 5;
-    case NGBR_IMS:
-      return 1;
-    case NGBR_VIDEO_TCP_OPERATOR:
-      return 6;
-    case NGBR_VOICE_VIDEO_GAMING:
-      return 7;
-    case NGBR_VIDEO_TCP_PREMIUM:
-      return 8;
-    case NGBR_VIDEO_TCP_DEFAULT:
-      return 9;
-    default:
-      NS_FATAL_ERROR ("unknown QCI value " << qci);
-      return 0;
-    }
+  return GetPriority (m_requirements, qci);
 }
 
 uint16_t
 EpsBearer::GetPacketDelayBudgetMs () const
 {
-  // 3GPP 23.203 Section 6.1.7.2
-  switch (qci)
-    {
-    case GBR_CONV_VOICE:
-      return 100;
-    case GBR_CONV_VIDEO:
-      return 150;
-    case GBR_GAMING:
-      return 50;
-    case GBR_NON_CONV_VIDEO:
-      return 300;
-    case NGBR_IMS:
-      return 100;
-    case NGBR_VIDEO_TCP_OPERATOR:
-      return 300;
-    case NGBR_VOICE_VIDEO_GAMING:
-      return 100;
-    case NGBR_VIDEO_TCP_PREMIUM:
-      return 300;
-    case NGBR_VIDEO_TCP_DEFAULT:
-      return 300;
-    default:
-      NS_FATAL_ERROR ("unknown QCI value " << qci);
-      return 0;
-    }
+  return GetPacketDelayBudgetMs (m_requirements, qci);
 }
 
 double
 EpsBearer::GetPacketErrorLossRate () const
 {
-  // 3GPP 23.203 Section 6.1.7.2
-  switch (qci)
-    {
-    case GBR_CONV_VOICE:
-      return 1.0e-2;
-    case GBR_CONV_VIDEO:
-      return 1.0e-3;
-    case GBR_GAMING:
-      return 1.0e-3;
-    case GBR_NON_CONV_VIDEO:
-      return 1.0e-6;
-    case NGBR_IMS:
-      return 1.0e-6;
-    case NGBR_VIDEO_TCP_OPERATOR:
-      return 1.0e-6;
-    case NGBR_VOICE_VIDEO_GAMING:
-      return 1.0e-3;
-    case NGBR_VIDEO_TCP_PREMIUM:
-      return 1.0e-6;
-    case NGBR_VIDEO_TCP_DEFAULT:
-      return 1.0e-6;
-    default:
-      NS_FATAL_ERROR ("unknown QCI value " << qci);
-      return 0;
-    }
+  return GetPacketErrorLossRate (m_requirements, qci);
 }
 
+EpsBearer::BearerRequirementsMap
+EpsBearer::GetRequirementsRel11 ()
+{
+  /* Needed to support GCC 4.9. Otherwise, use list constructors, for example:
+   * EpsBearer::BearerRequirementsMap
+   * EpsBearer::GetRequirementsRel15 ()
+   * {
+   *   return
+   *     {
+   *       { GBR_CONV_VOICE          , { true,  20, 100, 1.0e-2,    0, 2000} },
+   *       ...
+   *     };
+   * }
+   */
+  static EpsBearer::BearerRequirementsMap ret;
 
+  if (ret.size () == 0)
+    {
+      ret.insert (std::make_pair (GBR_CONV_VOICE,          std::make_tuple (true,  2, 100, 1.0e-2,    0,    0)));
+      ret.insert (std::make_pair (GBR_CONV_VIDEO,          std::make_tuple (true,  4, 150, 1.0e-3,    0,    0)));
+      ret.insert (std::make_pair (GBR_GAMING,              std::make_tuple (true,  3,  50, 1.0e-3,    0,    0)));
+      ret.insert (std::make_pair (GBR_NON_CONV_VIDEO,      std::make_tuple (true,  5, 300, 1.0e-6,    0,    0)));
+      ret.insert (std::make_pair (NGBR_IMS,                std::make_tuple (false, 1, 100, 1.0e-6,    0,    0)));
+      ret.insert (std::make_pair (NGBR_VIDEO_TCP_OPERATOR, std::make_tuple (false, 6, 300, 1.0e-6,    0,    0)));
+      ret.insert (std::make_pair (NGBR_VOICE_VIDEO_GAMING, std::make_tuple (false, 7, 100, 1.0e-3,    0,    0)));
+      ret.insert (std::make_pair (NGBR_VIDEO_TCP_PREMIUM,  std::make_tuple (false, 8, 300, 1.0e-6,    0,    0)));
+      ret.insert (std::make_pair (NGBR_VIDEO_TCP_DEFAULT,  std::make_tuple (false, 9, 300, 1.0e-6,    0,    0)));
+    }
+  return ret;
+}
 
 } // namespace ns3

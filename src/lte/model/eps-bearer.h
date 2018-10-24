@@ -23,6 +23,7 @@
 #define EPS_BEARER
 
 #include <ns3/uinteger.h>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -73,18 +74,19 @@ struct EpsBearer
 
   /**
    * QoS Class Indicator. See 3GPP 23.203 Section 6.1.7.2 for standard values.
+   * Updated to Release 15.
    */
-  enum Qci
+  enum Qci : uint8_t
   {
-    GBR_CONV_VOICE          = 1,
-    GBR_CONV_VIDEO          = 2,
-    GBR_GAMING              = 3,
-    GBR_NON_CONV_VIDEO      = 4,
-    NGBR_IMS                = 5,
-    NGBR_VIDEO_TCP_OPERATOR = 6,
-    NGBR_VOICE_VIDEO_GAMING = 7,
-    NGBR_VIDEO_TCP_PREMIUM  = 8,
-    NGBR_VIDEO_TCP_DEFAULT  = 9,
+    GBR_CONV_VOICE          = 1,    ///< GBR Conversational Voice
+    GBR_CONV_VIDEO          = 2,    ///< GBR Conversational Video (Live streaming)
+    GBR_GAMING              = 3,    ///< GBR Real Time Gaming
+    GBR_NON_CONV_VIDEO      = 4,    ///< GBR Non-Conversational Video (Buffered Streaming)
+    NGBR_IMS                = 5,    ///< Non-GBR IMS Signalling
+    NGBR_VIDEO_TCP_OPERATOR = 6,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
+    NGBR_VOICE_VIDEO_GAMING = 7,    ///< Non-GBR Voice, Video, Interactive Streaming
+    NGBR_VIDEO_TCP_PREMIUM  = 8,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
+    NGBR_VIDEO_TCP_DEFAULT  = 9,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
   } qci; ///< Qos class indicator
 
   GbrQosInformation gbrQosInfo; ///< GBR QOS information
@@ -139,6 +141,95 @@ struct EpsBearer
    */
   double  GetPacketErrorLossRate () const;
 
+private:
+  /**
+   * \brief Hashing QCI
+   *
+   * Qci are just uint8_t, so that's how we calculate the hash. Unfortunately,
+   * we have to provide this struct because gcc 4.9 would not compile otherwise.
+   */
+  struct QciHash
+  {
+    /**
+     * \brief Hash the QCI like a normal uint8_t
+     * \param s Qci to hash
+     * \return Hash of Qci
+     */
+    std::size_t
+    operator () (Qci const& s) const noexcept
+      {
+        return std::hash<uint8_t> {} (s);
+      }
+  };
+
+  /**
+    * \brief Map between QCI and requirements
+    *
+    * The tuple is formed by: isGbr, priority, packet delay budget, packet error rate,
+    *  default maximum data burst, default averaging window (0 when does not apply)
+    */
+  typedef std::unordered_map<Qci, std::tuple<bool, uint8_t, uint16_t, double, uint32_t, uint32_t>, QciHash > BearerRequirementsMap;
+
+  /**
+   * \brief Is the selected QCI GBR?
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return GBR flag for the selected CQI
+   */
+  static uint32_t
+  IsGbr (const BearerRequirementsMap &map, Qci qci) {return std::get<0> (map.at (qci));}
+
+  /**
+   * \brief Get priority for the selected QCI
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return priority for the selected QCI
+   */
+  static uint8_t
+  GetPriority (const BearerRequirementsMap &map, Qci qci) {return std::get<1> (map.at (qci));}
+  /**
+   * \brief Get packet delay in ms for the selected QCI
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return packet delay in ms for the selected QCI
+   */
+  static uint16_t
+  GetPacketDelayBudgetMs (const BearerRequirementsMap &map, Qci qci) {return std::get<2> (map.at (qci));}
+  /**
+   * \brief Get packet error rate for the selected QCI
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return packet error rate for the selected QCI
+   */
+  static double
+  GetPacketErrorLossRate (const BearerRequirementsMap &map, Qci qci) {return std::get<3> (map.at (qci));}
+  /**
+   * \brief Get maximum data burst for the selected QCI
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return maximum data burst for the selected QCI
+   */
+  static uint32_t
+  GetMaxDataBurst (const BearerRequirementsMap &map, Qci qci) {return std::get<4> (map.at (qci));}
+  /**
+   * \brief Get default averaging window for the selected QCI
+   * \param map Map between QCI and requirements
+   * \param qci QCI to look for
+   * \return default averaging window for the selected QCI
+   */
+  static uint32_t
+  GetAvgWindow (const BearerRequirementsMap &map, Qci qci) {return std::get<5> (map.at (qci));}
+
+  /**
+   * \brief Retrieve requirements for Rel. 11
+   * \return the BearerRequirementsMap for Release 11
+   */
+  static BearerRequirementsMap GetRequirementsRel11 ();
+
+  /**
+    * \brief Requirements per bearer
+    */
+  BearerRequirementsMap m_requirements;
 };
 
 } // namespace ns3
