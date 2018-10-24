@@ -402,7 +402,7 @@ EmuEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi, Ptr<Epc
 
 
 Ptr<Node>
-EmuEpcHelper::GetPgwNode ()
+EmuEpcHelper::GetPgwNode () const
 {
   return m_sgwPgw;
 }
