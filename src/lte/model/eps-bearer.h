@@ -82,11 +82,23 @@ struct EpsBearer
     GBR_CONV_VIDEO          = 2,    ///< GBR Conversational Video (Live streaming)
     GBR_GAMING              = 3,    ///< GBR Real Time Gaming
     GBR_NON_CONV_VIDEO      = 4,    ///< GBR Non-Conversational Video (Buffered Streaming)
+    GBR_MC_PUSH_TO_TALK     = 65,   ///< GBR Mission Critical User Plane Push To Talk voice
+    GBR_NMC_PUSH_TO_TALK    = 66,   ///< GBR Non-Mission-Critical User Plane Push To Talk voice
+    GBR_MC_VIDEO            = 67,   ///< GBR Mission Critical Video User Plane
+    GBR_V2X                 = 75,   ///< GBR V2X Messages
     NGBR_IMS                = 5,    ///< Non-GBR IMS Signalling
     NGBR_VIDEO_TCP_OPERATOR = 6,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
     NGBR_VOICE_VIDEO_GAMING = 7,    ///< Non-GBR Voice, Video, Interactive Streaming
     NGBR_VIDEO_TCP_PREMIUM  = 8,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
     NGBR_VIDEO_TCP_DEFAULT  = 9,    ///< Non-GBR TCP-based Video (Buffered Streaming, e.g., www, e-mail...)
+    NGBR_MC_DELAY_SIGNAL    = 69,   ///< Non-GBR Mission Critical Delay Sensitive Signalling (e.g., MC-PTT)
+    NGBR_MC_DATA            = 70,   ///< Non-GBR Mission Critical Data
+    NGBR_V2X                = 79,   ///< Non-GBR V2X Messages
+    NGBR_LOW_LAT_EMBB       = 80,   ///< Non-GBR Low Latency eMBB applications
+    DGBR_DISCRETE_AUT_SMALL = 82,   ///< Delay-Critical GBR Discrete Automation Small Packets (TS 22.261)
+    DGBR_DISCRETE_AUT_LARGE = 83,   ///< Delay-Critical GBR Discrete Automation Large Packets (TS 22.261)
+    DGBR_ITS                = 84,   ///< Delay-Critical GBR Intelligent Transport Systems (TS 22.261)
+    DGBR_ELECTRICITY        = 85,   ///< Delay-Critical GBR Electricity Distribution High Voltage (TS 22.261)
   } qci; ///< Qos class indicator
 
   GbrQosInformation gbrQosInfo; ///< GBR QOS information
@@ -225,6 +237,12 @@ private:
    * \return the BearerRequirementsMap for Release 11
    */
   static BearerRequirementsMap GetRequirementsRel11 ();
+
+  /**
+   * \brief Retrieve requirements for Rel. 15
+   * \return the BearerRequirementsMap for Release 15
+   */
+  static BearerRequirementsMap GetRequirementsRel15 ();
 
   /**
     * \brief Requirements per bearer
