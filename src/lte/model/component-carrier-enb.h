@@ -45,7 +45,7 @@ class LteFfrAlgorithm;
  * LteEnbMac, LteFfrAlgorithm, and FfMacScheduler objects.
  *
  */
-class ComponentCarrierEnb : public ComponentCarrier
+class ComponentCarrierEnb : public ComponentCarrierBaseStation
 {
 public:
   /**
@@ -58,12 +58,6 @@ public:
 
   virtual ~ComponentCarrierEnb (void);
   virtual void DoDispose (void);
-
-  /**
-   * Get cell identifier
-   * \return cell identifier
-   */
-  uint16_t GetCellId ();
 
   /**
    * \return a pointer to the physical layer.
@@ -84,12 +78,6 @@ public:
    * \return a pointer to the Mac Scheduler.
    */
   Ptr<FfMacScheduler> GetFfMacScheduler ();
-
-  /**
-   * Set physical cell identifier
-   * \param cellId cell identifier
-   */
-  void SetCellId (uint16_t cellId);
 
   /**
    * Set the LteEnbPhy
@@ -119,18 +107,12 @@ protected:
   virtual void DoInitialize (void);
 
 private:
-
-  uint16_t m_cellId; ///< Cell identifier
   Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier
   Ptr<LteEnbMac> m_mac; ///< the MAC instance of this eNodeB component carrier
   Ptr<FfMacScheduler> m_scheduler; ///< the scheduler instance of this eNodeB component carrier
   Ptr<LteFfrAlgorithm> m_ffrAlgorithm; ///< the FFR algorithm instance of this eNodeB component carrier
- 
-
 };
 
 } // namespace ns3
-
-
 
 #endif /* COMPONENT_CARRIER_H */

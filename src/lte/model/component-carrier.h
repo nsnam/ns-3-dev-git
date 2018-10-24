@@ -35,12 +35,11 @@ namespace ns3 {
  * \ingroup lte
  *
  * ComponentCarrier Object, it defines a single Carrier
- * This is the parent class for both ComponentCarrierEnb
+ * This is the parent class for both ComponentCarrierBaseStation
  * and ComponentCarrierUe.
  * This class contains the main physical configuration
  * parameters for a carrier. Does not contain pointers to
  * the MAC/PHY objects of the carrier.
-
  */
 class ComponentCarrier : public Object
 {
@@ -172,7 +171,40 @@ protected:
 
 };
 
+/**
+ * \ingroup lte
+ *
+ * Defines a Base station, that is a ComponentCarrier but with a cell Id.
+ *
+ */
+class ComponentCarrierBaseStation : public ComponentCarrier
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
 
+  ComponentCarrierBaseStation ();
+
+  virtual ~ComponentCarrierBaseStation (void);
+
+  /**
+   * Get cell identifier
+   * \return cell identifier
+   */
+  uint16_t GetCellId ();
+
+  /**
+   * Set physical cell identifier
+   * \param cellId cell identifier
+   */
+  void SetCellId (uint16_t cellId);
+
+protected:
+  uint16_t m_cellId; ///< Cell identifier
+};
 
 } // namespace ns3
 

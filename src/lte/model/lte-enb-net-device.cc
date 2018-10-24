@@ -187,25 +187,25 @@ LteEnbNetDevice::DoDispose ()
 Ptr<LteEnbMac>
 LteEnbNetDevice::GetMac () const
 {
-  return m_ccMap.at (0)->GetMac ();
+  return GetMac (0);
 }
 
 Ptr<LteEnbPhy>
 LteEnbNetDevice::GetPhy () const
 {
-  return m_ccMap.at (0)->GetPhy ();
+  return GetPhy (0);
 }
 
 Ptr<LteEnbMac>
-LteEnbNetDevice::GetMac (uint8_t index) 
+LteEnbNetDevice::GetMac (uint8_t index) const
 {
-  return m_ccMap.at (index)->GetMac ();
+  return DynamicCast<ComponentCarrierEnb> (m_ccMap.at (index))->GetMac ();
 }
 
 Ptr<LteEnbPhy>
-LteEnbNetDevice::GetPhy(uint8_t index)  
+LteEnbNetDevice::GetPhy(uint8_t index) const
 {
-  return m_ccMap.at (index)->GetPhy ();
+  return DynamicCast<ComponentCarrierEnb> (m_ccMap.at (index))->GetPhy ();
 }
 
 Ptr<LteEnbRrc>
@@ -347,14 +347,14 @@ LteEnbNetDevice::SetCsgIndication (bool csgIndication)
   UpdateConfig (); // propagate the change to RRC level
 }
 
-std::map < uint8_t, Ptr<ComponentCarrierEnb> >
-LteEnbNetDevice::GetCcMap ()
+std::map < uint8_t, Ptr<ComponentCarrierBaseStation> >
+LteEnbNetDevice::GetCcMap () const
 {
   return m_ccMap;
 }
 
 void
-LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm)
+LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierBaseStation> > ccm)
 {
   NS_ASSERT_MSG (!m_isConfigured, "attempt to set CC map after configuration");
   m_ccMap = ccm;
@@ -366,8 +366,7 @@ LteEnbNetDevice::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   m_isConstructed = true;
   UpdateConfig ();
-  std::map< uint8_t, Ptr<ComponentCarrierEnb> >::iterator it;
-  for (it = m_ccMap.begin (); it != m_ccMap.end (); ++it)
+  for (auto it = m_ccMap.begin (); it != m_ccMap.end (); ++it)
     {
        it->second->Initialize ();
     }

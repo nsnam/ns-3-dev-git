@@ -79,7 +79,7 @@ public:
    * \param index CC index
    * \return a pointer to the MAC of the CC addressed by index.
    */
-  Ptr<LteEnbMac> GetMac (uint8_t index);
+  Ptr<LteEnbMac> GetMac (uint8_t index) const;
 
   /**
    * \return a pointer to the physical layer of the PCC.
@@ -90,7 +90,7 @@ public:
    * \param index SCC index
    * \return a pointer to the physical layer of the SCC addressed by index.
    */
-  Ptr<LteEnbPhy> GetPhy (uint8_t index);
+  Ptr<LteEnbPhy> GetPhy (uint8_t index) const;
 
   /** 
    * \return a pointer to the Radio Resource Control instance of the eNB
@@ -204,14 +204,14 @@ public:
    *
    */
 
-  void SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm);
+  void SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierBaseStation> > ccm);
 
   /**
    * \returns  The Component Carrier Map of the Enb.
    *
    */
 
-  std::map< uint8_t, Ptr<ComponentCarrierEnb> >  GetCcMap (void);
+  std::map< uint8_t, Ptr<ComponentCarrierBaseStation> >  GetCcMap (void) const;
 
 protected:
   // inherited from Object
@@ -253,7 +253,7 @@ private:
   uint16_t m_csgId; ///< CSG ID
   bool m_csgIndication; ///< CSG indication
 
-  std::map < uint8_t, Ptr<ComponentCarrierEnb> > m_ccMap; /**< ComponentCarrier map */
+  std::map < uint8_t, Ptr<ComponentCarrierBaseStation> > m_ccMap; /**< ComponentCarrier map */
   
   Ptr<LteEnbComponentCarrierManager> m_componentCarrierManager; ///< the component carrier manager of this eNb
 
