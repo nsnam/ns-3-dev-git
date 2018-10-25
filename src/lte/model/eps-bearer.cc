@@ -18,14 +18,13 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-
 #include "eps-bearer.h"
-
 #include <ns3/fatal-error.h>
-
+#include <ns3/attribute-construction-list.h>
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (EpsBearer);
 
 GbrQosInformation::GbrQosInformation ()
   : gbrDl (0),
@@ -42,49 +41,105 @@ AllocationRetentionPriority::AllocationRetentionPriority ()
 {
 }
 
-EpsBearer::EpsBearer ()
-  : qci (NGBR_VIDEO_TCP_DEFAULT)
+TypeId
+EpsBearer::GetTypeId (void)
 {
-  m_requirements = GetRequirementsRel11 ();
+  static TypeId tid = TypeId ("ns3::EpsBearer")
+    .SetParent<ObjectBase> ()
+    .SetGroupName("Lte")
+    .AddConstructor<EpsBearer> ()
+    .AddAttribute ("Release", "Change from 11 to 15 if you need bearer definition as per Release 15."
+                   " Reference document: TS 23.203. The change does not impact other LTE code than "
+                   " bearers definition.",
+                   UintegerValue (11),
+                   MakeUintegerAccessor (&EpsBearer::GetRelease,
+                                         &EpsBearer::SetRelease),
+                   MakeUintegerChecker<uint32_t> ())
+  ;
+  return tid;
+}
+
+TypeId
+EpsBearer::GetInstanceTypeId () const
+{
+  return EpsBearer::GetTypeId ();
+}
+
+EpsBearer::EpsBearer ()
+  : ObjectBase (),
+    qci (NGBR_VIDEO_TCP_DEFAULT)
+{
+
+  ObjectBase::ConstructSelf (AttributeConstructionList ());
 }
 
 EpsBearer::EpsBearer (Qci x)
-  : qci (x)
+  : ObjectBase (),
+    qci (x)
 {
-  m_requirements = GetRequirementsRel11 ();
+  ObjectBase::ConstructSelf (AttributeConstructionList ());
 }
 
 EpsBearer::EpsBearer (Qci x, struct GbrQosInformation y)
-  : qci (x), gbrQosInfo (y)
+  : ObjectBase (),
+    qci (x), gbrQosInfo (y)
 {
-  m_requirements = GetRequirementsRel11 ();
+  ObjectBase::ConstructSelf (AttributeConstructionList ());
+}
+
+EpsBearer::EpsBearer (const EpsBearer &o) : ObjectBase (o)
+{
+  qci = o.qci;
+  gbrQosInfo = o.gbrQosInfo;
+  ObjectBase::ConstructSelf (AttributeConstructionList ());
+}
+
+void
+EpsBearer::SetRelease(uint8_t release)
+{
+  switch (release)
+    {
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+      m_requirements = GetRequirementsRel11 ();
+      break;
+    case 15:
+      m_requirements = GetRequirementsRel15 ();
+      break;
+    default:
+      NS_FATAL_ERROR ("Not recognized release " << static_cast<uint32_t> (release) <<
+                      " please use a value between 8 and 11, or 15");
+    }
+  m_release = release;
 }
 
 bool
 EpsBearer::IsGbr () const
 {
-  return IsGbr (m_requirements, qci);
+  return IsGbr (*m_requirements, qci);
 }
 
 uint8_t
 EpsBearer::GetPriority () const
 {
-  return GetPriority (m_requirements, qci);
+  return GetPriority (*m_requirements, qci);
 }
 
 uint16_t
 EpsBearer::GetPacketDelayBudgetMs () const
 {
-  return GetPacketDelayBudgetMs (m_requirements, qci);
+  return GetPacketDelayBudgetMs (*m_requirements, qci);
 }
 
 double
 EpsBearer::GetPacketErrorLossRate () const
 {
-  return GetPacketErrorLossRate (m_requirements, qci);
+  return GetPacketErrorLossRate (*m_requirements, qci);
 }
 
-EpsBearer::BearerRequirementsMap
+EpsBearer::BearerRequirementsMap *
 EpsBearer::GetRequirementsRel11 ()
 {
   /* Needed to support GCC 4.9. Otherwise, use list constructors, for example:
@@ -112,10 +167,10 @@ EpsBearer::GetRequirementsRel11 ()
       ret.insert (std::make_pair (NGBR_VIDEO_TCP_PREMIUM,  std::make_tuple (false, 8, 300, 1.0e-6,    0,    0)));
       ret.insert (std::make_pair (NGBR_VIDEO_TCP_DEFAULT,  std::make_tuple (false, 9, 300, 1.0e-6,    0,    0)));
     }
-  return ret;
+  return &ret;
 }
 
-EpsBearer::BearerRequirementsMap
+EpsBearer::BearerRequirementsMap *
 EpsBearer::GetRequirementsRel15 ()
 {
   // Needed to support GCC 4.9. Otherwise, use list constructors (see GetRequirementsRel10)
@@ -145,7 +200,7 @@ EpsBearer::GetRequirementsRel15 ()
       ret.insert (std::make_pair (DGBR_ITS,                std::make_tuple (false, 24,  30, 1.0e-5, 1354, 2000)));
       ret.insert (std::make_pair (DGBR_ELECTRICITY,        std::make_tuple (false, 21,  5,  1.0e-5,  255, 2000)));
     }
-  return ret;
+  return &ret;
 }
 
 } // namespace ns3
