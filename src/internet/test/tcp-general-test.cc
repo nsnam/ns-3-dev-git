@@ -224,6 +224,10 @@ TcpGeneralTest::DoRun (void)
                                               MakeCallback (&TcpGeneralTest::NextTxSeqTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("HighestSequence",
                                               MakeCallback (&TcpGeneralTest::HighestTxSeqTrace, this));
+  m_senderSocket->m_rateOps->TraceConnectWithoutContext ("TcpRateUpdated",
+                                              MakeCallback (&TcpGeneralTest::RateUpdatedTrace, this));
+  m_senderSocket->m_rateOps->TraceConnectWithoutContext ("TcpRateSampleUpdated",
+                                              MakeCallback (&TcpGeneralTest::RateSampleUpdatedTrace, this));
 
 
   m_remoteAddr = InetSocketAddress (serverAddress, 4477);

@@ -96,10 +96,10 @@ public:
    * \param tcb internal congestion state
    * \param dupAckCount duplicate acknowldgement count
    * \param unAckDataCount total bytes of data unacknowledged
-   * \param lastSackedBytes bytes acknowledged via SACK in the last ACK
+   * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
    */
   virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
-                              uint32_t unAckDataCount, uint32_t lastSackedBytes) = 0;
+                              uint32_t unAckDataCount, uint32_t deliveredBytes) = 0;
 
   /**
    * \brief Performs recovery based on the recovery algorithm
@@ -108,15 +108,10 @@ public:
    * is set to CA_RECOVERY. It performs the necessary cwnd changes
    * as per the recovery algorithm.
    *
-   * TODO: lastAckedBytes and lastSackedBytes should be one parameter
-   * that indicates how much data has been ACKed or SACKed.
-   *
    * \param tcb internal congestion state
-   * \param lastAckedBytes bytes acknowledged in the last ACK
-   * \param lastSackedBytes bytes acknowledged via SACK in the last ACK
+   * \param deliveredBytes bytes (S)ACKed in the last (S)ACK
    */
-  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
-                           uint32_t lastSackedBytes) = 0;
+  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) = 0;
 
   /**
    * \brief Performs cwnd adjustments at the end of recovery
@@ -191,10 +186,9 @@ public:
   virtual std::string GetName () const override;
 
   virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
-                              uint32_t unAckDataCount, uint32_t lastSackedBytes) override;
+                              uint32_t unAckDataCount, uint32_t deliveredBytes) override;
 
-  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
-                           uint32_t lastSackedBytes) override;
+  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t deliveredBytes) override;
 
   virtual void ExitRecovery (Ptr<TcpSocketState> tcb) override;
 

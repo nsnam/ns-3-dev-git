@@ -173,6 +173,20 @@ public:
   {
     return m_ssThresh / m_segmentSize;
   }
+
+  /**
+   * \brief Get the initial sequence number of the connection
+   *
+   * The returned value is, right now, the value used in the inizialization
+   * of the m_nextTxSequence variable. It has no effect on the value 'on the wire'.
+   * \return the initial sequence number
+   */
+  SequenceNumber32 GetInitialTxSeq () const
+  {
+    // To see a different value "on the wire", it is necessary to add
+    // a "SetInitialTxSequence" and its logic here and in TcpSocketBase.
+    return SequenceNumber32 (0);
+  }
 };
 
 namespace TracedValueCallback {

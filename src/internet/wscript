@@ -162,6 +162,8 @@ def build(bld):
         'model/tcp-lp.cc',
         'model/tcp-rx-buffer.cc',
         'model/tcp-tx-buffer.cc',
+        'model/tcp-tx-item.cc',
+        'model/tcp-rate-ops.cc',
         'model/tcp-option.cc',
         'model/tcp-option-rfc793.cc',
         'model/tcp-option-winscale.cc',
@@ -293,6 +295,7 @@ def build(bld):
         'test/tcp-datasentcb-test.cc',
         'test/ipv4-rip-test.cc',
         'test/tcp-close-test.cc',
+        'test/tcp-rate-ops-test.cc',
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
@@ -397,6 +400,8 @@ def build(bld):
         'model/tcp-socket-base.h',
         'model/tcp-socket-state.h',
         'model/tcp-tx-buffer.h',
+        'model/tcp-tx-item.h',
+        'model/tcp-rate-ops.h',
         'model/tcp-rx-buffer.h',
         'model/tcp-recovery-ops.h',
         'model/tcp-prr-recovery.h',
