@@ -115,7 +115,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector differend of \p a less \p b.
+   * \returns The vector difference of \p a and \p b.
    */
   friend Vector3D operator - (const Vector3D &a, const Vector3D &b);
 };
@@ -193,7 +193,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector differend of \p a less \p b.
+   * \returns The vector difference of \p a and \p b.
    */
   friend Vector2D operator - (const Vector2D &a, const Vector2D &b);
 };
