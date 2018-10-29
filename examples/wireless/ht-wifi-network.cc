@@ -262,8 +262,7 @@ int main (int argc, char *argv[])
                 {
                   if (throughput < minExpectedThroughput)
                     {
-                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                      exit (1);
+                      NS_FATAL_ERROR ("Obtained throughput " << throughput << " is not expected!");
                     }
                 }
               //test last element
@@ -271,8 +270,7 @@ int main (int argc, char *argv[])
                 {
                   if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput)
                     {
-                      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                      exit (1);
+                      NS_FATAL_ERROR ("Obtained throughput " << throughput << " is not expected!");
                     }
                 }
               //test previous throughput is smaller (for the same mcs)
@@ -282,8 +280,7 @@ int main (int argc, char *argv[])
                 }
               else
                 {
-                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                  exit (1);
+                  NS_FATAL_ERROR ("Obtained throughput " << throughput << " is not expected!");
                 }
               //test previous throughput is smaller (for the same channel width and GI)
               if (throughput > prevThroughput [index])
@@ -292,8 +289,7 @@ int main (int argc, char *argv[])
                 }
               else
                 {
-                  NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
-                  exit (1);
+                  NS_FATAL_ERROR ("Obtained throughput " << throughput << " is not expected!");
                 }
               index++;
 
