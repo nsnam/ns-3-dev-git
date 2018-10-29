@@ -9,6 +9,9 @@ def configure(conf):
     conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
                                  conf.env['SQLITE_STATS'],
                                  "library 'sqlite3' not found")
+    have_sem = conf.check_nonfatal(header_name='semaphore.h', define_name='HAVE_SEMAPHORE_H')
+    conf.env['SEMAPHORE_ENABLED'] = have_sem
+    conf.write_config_header('ns3/stats-config.h', top=True)
 
 def build(bld):
     obj = bld.create_ns3_module('stats', ['core'])
@@ -73,6 +76,10 @@ def build(bld):
         headers.source.append('model/sqlite-data-output.h')
         obj.source.append('model/sqlite-data-output.cc')
         obj.use.append('SQLITE3')
+
+    if bld.env['SQLITE_STATS'] and bld.env['SEMAPHORE_ENABLED']:
+        obj.source.append('model/sqlite-output.cc')
+        headers.source.append('model/sqlite-output.h')
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')
