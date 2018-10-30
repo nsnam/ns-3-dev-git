@@ -54,6 +54,8 @@
 #include "ns3/packet-socket-helper.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-server.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/he-configuration.h"
 
 using namespace ns3;
 
@@ -420,17 +422,19 @@ int main (int argc, char *argv[])
       || serverSelectedStandard.m_name == "802.11ac")
     {
       wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
-      wifiPhyPtrServer->SetShortGuardInterval (serverShortGuardInterval == 400);
       wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
-      wifiPhyPtrClient->SetShortGuardInterval (clientShortGuardInterval == 400);
+      Ptr<HtConfiguration> clientHtConfiguration = wndClient->GetHtConfiguration ();
+      clientHtConfiguration->SetShortGuardIntervalSupported (clientShortGuardInterval == 400);
+      Ptr<HtConfiguration> serverHtConfiguration = wndServer->GetHtConfiguration ();
+      serverHtConfiguration->SetShortGuardIntervalSupported (serverShortGuardInterval == 400);
     }
   else if (serverSelectedStandard.m_name == "802.11ax-5GHz"
            || serverSelectedStandard.m_name == "802.11ax-2.4GHz")
     {
       wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
-      wifiPhyPtrServer->SetGuardInterval (NanoSeconds (serverShortGuardInterval));
       wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
-      wifiPhyPtrClient->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
+      wndServer->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
+      wndClient->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
     }
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
   NS_LOG_DEBUG ("NSS " << wifiPhyPtrClient->GetMaxSupportedTxSpatialStreams ());

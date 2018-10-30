@@ -138,6 +138,7 @@ public:
    *
    * \param enable true if RIFS is to be supported,
    *               false otherwise
+   * \deprecated
    */
   void SetRifsSupported (bool enable);
   /**
@@ -145,9 +146,9 @@ public:
    *
    * \return true if short RIFS is supported,
    *         false otherwise.
+   * \deprecated
    */
   bool GetRifsSupported (void) const;
-
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -649,24 +650,6 @@ private:
    */
   bool m_qosSupported;
   /**
-    * This Boolean is set \c true iff this WifiMac is to model
-    * 802.11n. It is exposed through the attribute system.
-    *
-    * At the moment, this flag is the sole selection between HT and
-    * non-HT operation for the STA (whether IBSS, AP, or
-    * non-AP). Ultimately, we will want a HT-enabled STA to be able to
-    * fall back to non-HT operation with a non-HT peer. This'll
-    * require further intelligence - i.e., per-association HT
-    * state. Having a big switch seems like a good intermediate stage,
-    * however.
-    */
-  bool m_htSupported;
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11ac. It is exposed through the attribute system.
-   */
-  bool m_vhtSupported;
-  /**
    * This Boolean is set \c true iff this WifiMac is to model
    * 802.11g. It is exposed through the attribute system.
    */
@@ -676,11 +659,6 @@ private:
    * 802.11b. It is exposed through the attribute system.
    */
   bool m_dsssSupported;
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11ax. It is exposed through the attribute system.
-   */
-  bool m_heSupported;
 
   /// Configure aggregation function
   void ConfigureAggregation (void);
@@ -703,7 +681,7 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
-  bool m_rifsSupported; ///< flag whether RIFS is supported
+  bool m_rifsSupported; ///< flag whether RIFS is supported (deprecated)
 };
 
 } //namespace ns3

@@ -34,6 +34,9 @@
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/wifi-mac-queue.h"
 #include "ns3/qos-utils.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -646,8 +649,23 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+      if (m_standard >= WIFI_PHY_STANDARD_80211n_2_4GHZ)
+        {
+          Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
+          device->SetHtConfiguration (htConfiguration);
+        }
+      if ((m_standard == WIFI_PHY_STANDARD_80211ac) || (m_standard == WIFI_PHY_STANDARD_80211ax_5GHZ))
+        {
+          Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
+          device->SetVhtConfiguration (vhtConfiguration);
+        }
+      if (m_standard >= WIFI_PHY_STANDARD_80211ax_2_4GHZ)
+        {
+          Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
+          device->SetHeConfiguration (heConfiguration);
+        }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = macHelper.Create ();
+      Ptr<WifiMac> mac = macHelper.Create (device);
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       mac->SetAddress (Mac48Address::Allocate ());
       mac->ConfigureStandard (m_standard);

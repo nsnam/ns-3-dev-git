@@ -392,7 +392,7 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
       for (std::vector<uint32_t>::const_iterator k = m_macsForChannelNumber.begin ();
            k != m_macsForChannelNumber.end (); ++k)
         {
-          Ptr<WifiMac> wifiMac = macHelper.Create ();
+          Ptr<WifiMac> wifiMac = macHelper.Create (device);
           Ptr<OcbWifiMac> ocbMac = DynamicCast<OcbWifiMac> (wifiMac);
           // we use WaveMacLow to replace original MacLow
           ocbMac->EnableForWave (device);

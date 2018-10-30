@@ -25,7 +25,7 @@
 #include "ns3/packet.h"
 #include "ns3/traced-callback.h"
 #include "ns3/mac48-address.h"
-#include "ns3/net-device.h"
+#include "ns3/wifi-net-device.h"
 #include "ocb-wifi-mac.h"
 #include "vendor-specific-action.h"
 #include "channel-coordinator.h"
@@ -157,7 +157,7 @@ struct TxProfile
  * UtcTime GetUtcTime ();
  * void SetUtcTime ();
  */
-class WaveNetDevice : public NetDevice
+class WaveNetDevice : public WifiNetDevice
 {
 public:
   /**

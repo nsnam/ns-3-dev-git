@@ -21,6 +21,7 @@
 #ifndef WIFI_MAC_H
 #define WIFI_MAC_H
 
+#include "ns3/net-device.h"
 #include "wifi-phy-standard.h"
 #include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
@@ -42,11 +43,26 @@ class Txop;
 class WifiMac : public Object
 {
 public:
+  virtual void DoDispose ();
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
+
+  /**
+   * Sets the device this PHY is associated with.
+   *
+   * \param device the device this PHY is associated with
+   */
+  void SetDevice (const Ptr<NetDevice> device);
+  /**
+   * Return the device this PHY is associated with
+   *
+   * \return the device this PHY is associated with
+   */
+  Ptr<NetDevice> GetDevice (void) const;
 
   /**
    * \param slotTime the slot duration
@@ -151,10 +167,6 @@ public:
    * \return whether the device supports short slot time capability.
    */
   virtual bool GetShortSlotTimeSupported (void) const = 0;
-  /**
-   * \return whether the device supports RIFS capability.
-   */
-  virtual bool GetRifsSupported (void) const = 0;
 
   /**
    * \param packet the packet to send.
@@ -398,6 +410,7 @@ private:
   virtual void FinishConfigureStandard (WifiPhyStandard standard) = 0;
 
   Time m_maxPropagationDelay; ///< maximum propagation delay
+  Ptr<NetDevice> m_device;    ///< Pointer to the device
 
   /**
    * This method sets 802.11a standards-compliant defaults for following attributes:

@@ -27,6 +27,9 @@
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
+#include "ht-configuration.h"
+#include "vht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -65,6 +68,21 @@ WifiNetDevice::GetTypeId (void)
                    MakePointerAccessor (&WifiNetDevice::SetRemoteStationManager,
                                         &WifiNetDevice::GetRemoteStationManager),
                    MakePointerChecker<WifiRemoteStationManager> ())
+    .AddAttribute ("HtConfiguration",
+                   "The HtConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetHtConfiguration),
+                   MakePointerChecker<HtConfiguration> ())
+    .AddAttribute ("VhtConfiguration",
+                   "The VhtConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetVhtConfiguration),
+                   MakePointerChecker<VhtConfiguration> ())
+    .AddAttribute ("HeConfiguration",
+                   "The HeConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetHeConfiguration),
+                   MakePointerChecker<HeConfiguration> ())
   ;
   return tid;
 }
@@ -392,6 +410,42 @@ bool
 WifiNetDevice::SupportsSendFrom (void) const
 {
   return m_mac->SupportsSendFrom ();
+}
+
+void
+WifiNetDevice::SetHtConfiguration (Ptr<HtConfiguration> htConfiguration)
+{
+  m_htConfiguration = htConfiguration;
+}
+
+Ptr<HtConfiguration>
+WifiNetDevice::GetHtConfiguration (void) const
+{
+  return m_htConfiguration;
+}
+
+void
+WifiNetDevice::SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration)
+{
+  m_vhtConfiguration = vhtConfiguration;
+}
+
+Ptr<VhtConfiguration>
+WifiNetDevice::GetVhtConfiguration (void) const
+{
+  return m_vhtConfiguration;
+}
+
+void
+WifiNetDevice::SetHeConfiguration (Ptr<HeConfiguration> heConfiguration)
+{
+  m_heConfiguration = heConfiguration;
+}
+
+Ptr<HeConfiguration>
+WifiNetDevice::GetHeConfiguration (void) const
+{
+  return m_heConfiguration;
 }
 
 } //namespace ns3

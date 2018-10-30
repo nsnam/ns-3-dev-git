@@ -208,6 +208,24 @@ WifiMac::GetTypeId (void)
 }
 
 void
+WifiMac::DoDispose ()
+{
+  m_device = 0;
+}
+
+void
+WifiMac::SetDevice (const Ptr<NetDevice> device)
+{
+  m_device = device;
+}
+
+Ptr<NetDevice>
+WifiMac::GetDevice (void) const
+{
+  return m_device;
+}
+
+void
 WifiMac::SetMaxPropagationDelay (Time delay)
 {
   NS_LOG_FUNCTION (this << delay);

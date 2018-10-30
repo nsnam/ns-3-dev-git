@@ -127,9 +127,6 @@ int main (int argc, char *argv[])
               YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
               phy.SetChannel (channel.Create ());
 
-              // Set guard interval
-              phy.Set ("GuardInterval", TimeValue (NanoSeconds (gi)));
-
               WifiMacHelper mac;
               WifiHelper wifi;
               if (frequency == 5.0)
@@ -167,8 +164,9 @@ int main (int argc, char *argv[])
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);
 
-              // Set channel width
+              // Set channel width and guard interval
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (gi)));
 
               // mobility.
               MobilityHelper mobility;

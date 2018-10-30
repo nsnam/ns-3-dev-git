@@ -25,6 +25,7 @@
 
 namespace ns3 {
 
+class WifiNetDevice;
 class WifiMacHeader;
 class WifiMode;
 class Packet;
@@ -72,6 +73,15 @@ bool Is2_4Ghz (double frequency);
  * \return whether frequency is in the 5 GHz band
  */
 bool Is5Ghz (double frequency);
+/**
+ * Convert the guard interval to nanoseconds based on the wifimode.
+ *
+ * \param mode the wifimode
+ * \param device pointer to the WifiNetDevice object
+ *
+ * \return the guard interval duration in nanoseconds
+ */
+uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, const Ptr<WifiNetDevice> device);
 /**
  * Convert the guard interval to nanoseconds based on the wifimode.
  *

@@ -34,6 +34,8 @@
 #include "msdu-aggregator.h"
 #include "amsdu-subframe-header.h"
 #include "wifi-phy.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
 
 namespace ns3 {
 
@@ -562,6 +564,8 @@ ApWifiMac::GetHtOperation (void) const
   HtOperation operation;
   if (GetHtSupported ())
     {
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
       operation.SetHtSupported (1);
       operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (GetRifsMode ());
@@ -589,7 +593,7 @@ ApWifiMac::GetHtOperation (void) const
             }
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
-          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetShortGuardInterval () ? 400 : 800, nss);
+          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), htConfiguration->GetShortGuardIntervalSupported () ? 400 : 800, nss);
           if (dataRate > maxSupportedRate)
             {
               maxSupportedRate = dataRate;
@@ -612,7 +616,7 @@ ApWifiMac::GetHtOperation (void) const
                     }
                   uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
                   NS_ASSERT (nss > 0 && nss < 5);
-                  uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (i->second), m_stationManager->GetShortGuardInterval (i->second) ? 400 : 800, nss);
+                  uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (i->second), m_stationManager->GetShortGuardIntervalSupported (i->second) ? 400 : 800, nss);
                   if (dataRate > maxSupportedRateByHtSta)
                     {
                       maxSupportedRateByHtSta = dataRate;
@@ -1584,7 +1588,9 @@ ApWifiMac::GetRifsMode (void) const
           rifsMode = true;
         }
     }
-  if (GetRifsSupported () && rifsMode)
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+  if (htConfiguration && htConfiguration->GetRifsSupported () && rifsMode)
     {
       m_stationManager->SetRifsPermitted (true);
     }

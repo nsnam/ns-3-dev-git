@@ -196,8 +196,6 @@ int main (int argc, char *argv[])
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
 
-  wifiPhy.Set ("ShortGuardEnabled", BooleanValue (shortGuardInterval));
-
   NetDeviceContainer wifiApDevices;
   NetDeviceContainer wifiStaDevices;
   NetDeviceContainer wifiDevices;
@@ -295,6 +293,9 @@ int main (int argc, char *argv[])
 
   // Set channel width
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (chWidth));
+
+  // Set guard interval
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (shortGuardInterval));
 
   // Configure the mobility.
   MobilityHelper mobility;

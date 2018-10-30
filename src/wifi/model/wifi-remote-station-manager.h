@@ -191,53 +191,53 @@ public:
    */
   void AddStationHeCapabilities (Mac48Address from, HeCapabilities hecapabilities);
   /**
-   * Enable or disable HT capability support.
-   *
-   * \param enable enable or disable HT capability support
-   */
-  virtual void SetHtSupported (bool enable);
-  /**
    * Return whether the device has HT capability support enabled.
    *
    * \return true if HT capability support is enabled, false otherwise
    */
-  bool HasHtSupported (void) const;
-  /**
-   * Enable or disable VHT capability support.
-   *
-   * \param enable enable or disable VHT capability support
-   */
-  virtual void SetVhtSupported (bool enable);
+  bool GetHtSupported (void) const;
   /**
    * Return whether the device has VHT capability support enabled.
    *
    * \return true if VHT capability support is enabled, false otherwise
    */
-  bool HasVhtSupported (void) const;
-  /**
-   * Enable or disable HE capability support.
-   *
-   * \param enable enable or disable HE capability support
-   */
-  virtual void SetHeSupported (bool enable);
+  bool GetVhtSupported (void) const;
   /**
    * Return whether the device has HE capability support enabled.
    *
    * \return true if HE capability support is enabled, false otherwise
    */
-  bool HasHeSupported (void) const;
+  bool GetHeSupported (void) const;
   /**
    * Enable or disable PCF capability support.
    *
    * \param enable enable or disable PCF capability support
    */
-  virtual void SetPcfSupported (bool enable);
+  void SetPcfSupported (bool enable);
   /**
    * Return whether the device has PCF capability support enabled.
    *
    * \return true if PCF capability support is enabled, false otherwise
    */
-  bool HasPcfSupported (void) const;
+  bool GetPcfSupported (void) const;
+  /**
+   * Return whether the device has HT Greenfield support enabled.
+   *
+   * \return true if HT Grenfield support is enabled, false otherwise
+   */
+  bool GetGreenfieldSupported (void) const;
+  /**
+   * Return whether the device has SGI support enabled.
+   *
+   * \return true if SGI support is enabled, false otherwise
+   */
+  bool GetShortGuardIntervalSupported (void) const;
+  /**
+   * Return the supported HE guard interval duration (in nanoseconds).
+   *
+   * \return the supported HE guard interval duration (in nanoseconds)
+   */
+  uint16_t GetGuardInterval (void) const;
   /**
    * Enable or disable protection for non-ERP stations.
    *
@@ -450,7 +450,7 @@ public:
    * \return true if the station supports HT/VHT short guard interval,
    *         false otherwise
    */
-  bool GetShortGuardInterval (Mac48Address address) const;
+  bool GetShortGuardIntervalSupported (Mac48Address address) const;
   /**
    * Return the number of spatial streams supported by the station.
    *
@@ -993,7 +993,7 @@ protected:
    * \return true if the station supports HT/VHT short guard interval,
    *         false otherwise
    */
-  bool GetShortGuardInterval (const WifiRemoteStation *station) const;
+  bool GetShortGuardIntervalSupported (const WifiRemoteStation *station) const;
   /**
    * Return the HE guard interval duration supported by the station.
    *
@@ -1438,9 +1438,6 @@ private:
   WifiMode m_defaultTxMode; //!< The default transmission mode
   WifiMode m_defaultTxMcs;   //!< The default transmission modulation-coding scheme (MCS)
 
-  bool m_htSupported;  //!< Flag if HT capability is supported
-  bool m_vhtSupported; //!< Flag if VHT capability is supported
-  bool m_heSupported;  //!< Flag if HE capability is supported
   bool m_pcfSupported; //!< Flag if PCF capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)

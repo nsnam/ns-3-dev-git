@@ -137,8 +137,6 @@ int main (int argc, char *argv[])
           YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
           phy.SetChannel (channel.Create ());
 
-          // Set guard interval
-          phy.Set ("ShortGuardEnabled", BooleanValue (shortGuardInterval));
           // Set MIMO capabilities
           phy.Set ("Antennas", UintegerValue (nStreams));
           phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (nStreams));
@@ -183,6 +181,9 @@ int main (int argc, char *argv[])
             {
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
             }
+
+          // Set guard interval
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (shortGuardInterval));
 
           // mobility.
           MobilityHelper mobility;

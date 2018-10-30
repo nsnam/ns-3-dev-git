@@ -950,10 +950,10 @@ bool
 QosTxop::NeedFragmentation (void) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_stationManager->HasVhtSupported ()
-      || m_stationManager->HasHeSupported ()
+  if (m_stationManager->GetVhtSupported ()
+      || m_stationManager->GetHeSupported ()
       || GetAmpduExist (m_currentHdr.GetAddr1 ())
-      || (m_stationManager->HasHtSupported ()
+      || (m_stationManager->GetHtSupported ()
           && m_currentHdr.IsQosData ()
           && GetBaAgreementExists (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
           && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
@@ -1347,8 +1347,8 @@ QosTxop::SetupBlockAckIfNeeded (void)
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
       || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
-      || m_stationManager->HasVhtSupported ()
-      || m_stationManager->HasHeSupported ())
+      || m_stationManager->GetVhtSupported ()
+      || m_stationManager->GetHeSupported ())
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);

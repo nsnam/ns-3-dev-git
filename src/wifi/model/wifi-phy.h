@@ -1350,55 +1350,44 @@ public:
    * Enable or disable support for HT/VHT short guard interval.
    *
    * \param shortGuardInterval Enable or disable support for short guard interval
+   *
+   * \deprecated
    */
   void SetShortGuardInterval (bool shortGuardInterval);
   /**
    * Return whether short guard interval is supported.
    *
    * \return true if short guard interval is supported, false otherwise
+   *
+   * \deprecated
    */
   bool GetShortGuardInterval (void) const;
   /**
    * \param guardInterval the supported HE guard interval
+   *
+   * \deprecated
    */
   void SetGuardInterval (Time guardInterval);
   /**
    * \return the supported HE guard interval
+   *
+   * \deprecated
    */
   Time GetGuardInterval (void) const;
-  /**
-   * Enable or disable LDPC.
-   * \param ldpc Enable or disable LDPC
-   */
-  void SetLdpc (bool ldpc);
-  /**
-   * Return if LDPC is supported.
-   *
-   * \return true if LDPC is supported, false otherwise
-   */
-  bool GetLdpc (void) const;
-  /**
-   * Enable or disable STBC.
-   *
-   * \param stbc Enable or disable STBC
-   */
-  void SetStbc (bool stbc);
-  /**
-   * Return whether STBC is supported.
-   *
-   * \return true if STBC is supported, false otherwise
-   */
-  bool GetStbc (void) const;
   /**
    * Enable or disable Greenfield support.
    *
    * \param greenfield Enable or disable Greenfield
+   *
+   * \deprecated
    */
   void SetGreenfield (bool greenfield);
   /**
    * Return whether Greenfield is supported.
    *
    * \return true if Greenfield is supported, false otherwise
+   *
+   * \deprecated
    */
   bool GetGreenfield (void) const;
   /**
@@ -1761,13 +1750,11 @@ private:
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
-  bool     m_ldpc;               //!< Flag if LDPC is used
-  bool     m_stbc;               //!< Flag if STBC is used
-  bool     m_greenfield;         //!< Flag if GreenField format is supported
-  bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported
+  bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
+  bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)
   bool     m_shortPreamble;      //!< Flag if short PLCP preamble is supported
 
-  Time m_guardInterval; //!< Supported HE guard interval
+  Time m_guardInterval; //!< Supported HE guard interval (deprecated)
 
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams

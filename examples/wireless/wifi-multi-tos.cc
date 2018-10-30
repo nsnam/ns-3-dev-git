@@ -74,9 +74,6 @@ int main (int argc, char *argv[])
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
 
-  // Set guard interval
-  phy.Set ("ShortGuardEnabled", BooleanValue (useShortGuardInterval));
-
   WifiMacHelper mac;
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
@@ -104,6 +101,9 @@ int main (int argc, char *argv[])
 
   // Set channel width
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+
+  // Set guard interval
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (useShortGuardInterval));
 
   // mobility
   MobilityHelper mobility;

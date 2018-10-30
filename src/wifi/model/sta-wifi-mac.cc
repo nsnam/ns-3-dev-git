@@ -28,6 +28,8 @@
 #include "mac-low.h"
 #include "mgt-headers.h"
 #include "snr-tag.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
 
 namespace ns3 {
 
@@ -802,7 +804,9 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
             {
               m_stationManager->SetUseGreenfieldProtection (false);
             }
-          if (!GetVhtSupported () && GetRifsSupported () && htOperation.GetRifsMode ())
+          Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+          Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+          if (!GetVhtSupported () && htConfiguration && htConfiguration->GetRifsSupported () && htOperation.GetRifsMode ())
             {
               m_stationManager->SetRifsPermitted (true);
             }
@@ -1001,7 +1005,9 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
             {
               m_stationManager->SetUseGreenfieldProtection (false);
             }
-          if (!GetVhtSupported () && GetRifsSupported () && htOperation.GetRifsMode ())
+          Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+          Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+          if (!GetVhtSupported () && htConfiguration && htConfiguration->GetRifsSupported () && htOperation.GetRifsMode ())
             {
               m_stationManager->SetRifsPermitted (true);
             }

@@ -73,7 +73,9 @@ PowerRateAdaptationTest::ConfigureNode ()
   /*
    * Create mac layer. We use Adhoc because association is not needed to get supported rates.
    */
+  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac> ();
+  mac->SetDevice (dev);
   mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
 
   /*
@@ -84,7 +86,6 @@ PowerRateAdaptationTest::ConfigureNode ()
   /*
    * Create and configure phy layer.
    */
-  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   phy->SetChannel (channel);
   phy->SetDevice (dev);

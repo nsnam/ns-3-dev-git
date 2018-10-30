@@ -29,6 +29,9 @@ namespace ns3 {
 class WifiRemoteStationManager;
 class WifiPhy;
 class WifiMac;
+class HtConfiguration;
+class VhtConfiguration;
+class HeConfiguration;
 
 /// This value conforms to the 802.11 specification
 static const uint16_t MAX_MSDU_SIZE = 2304;
@@ -83,6 +86,31 @@ public:
    * \returns the remote station manager we are currently using.
    */
   Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
+
+  /**
+   * \param htConfiguration pointer to HtConfiguration
+   */
+  void SetHtConfiguration (Ptr<HtConfiguration> htConfiguration);
+  /**
+   * \return pointer to HtConfiguration if it exists
+   */
+  Ptr<HtConfiguration> GetHtConfiguration (void) const;
+  /**
+   * \param vhtConfiguration pointer to VhtConfiguration
+   */
+  void SetVhtConfiguration (Ptr<VhtConfiguration> vhtConfiguration);
+  /**
+   * \return pointer to VhtConfiguration if it exists
+   */
+  Ptr<VhtConfiguration> GetVhtConfiguration (void) const;
+  /**
+   * \param heConfiguration pointer to HeConfiguration
+   */
+  void SetHeConfiguration (Ptr<HeConfiguration> heConfiguration);
+  /**
+   * \return pointer to HeConfiguration if it exists
+   */
+  Ptr<HeConfiguration> GetHeConfiguration (void) const;
 
   //inherited from NetDevice base class.
   void SetIfIndex (const uint32_t index);
@@ -162,6 +190,9 @@ private:
   Ptr<WifiPhy> m_phy; //!< the phy
   Ptr<WifiMac> m_mac; //!< the MAC
   Ptr<WifiRemoteStationManager> m_stationManager; //!< the station manager
+  Ptr<HtConfiguration> m_htConfiguration; //!< the HtConfiguration
+  Ptr<VhtConfiguration> m_vhtConfiguration; //!< the VhtConfiguration
+  Ptr<HeConfiguration> m_heConfiguration; //!< the HeConfiguration
   NetDevice::ReceiveCallback m_forwardUp; //!< forward up callback
   NetDevice::PromiscReceiveCallback m_promiscRx; //!< promiscious receive callback
 

@@ -151,14 +151,6 @@ Note that we haven't actually created any WifiPhy objects yet; we've just
 prepared the YansWifiPhyHelper by telling it which channel it is connected to.
 The Phy objects are created in the next step.
 
-802.11n/ac PHY layer can use either either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter, the following line of code could be used (in this example, it enables the support of a short guard interval)::
-
- wifiPhyHelper.Set ("ShortGuardEnabled", BooleanValue(true));
-
-802.11ax PHY layer can use either either 3200 ns, 1600 ns or 800 ns OFDM guard intervals. To configure this parameter, the following line of code could be used (in this example, it enables the support of 1600 ns guard interval)::
-
- wifiPhyHelper.Set ("GuardInterval", TimeValue(NanoSeconds (1600)));
-
 In order to enable 802.11n/ac/ax MIMO, the number of antennas as well as the number of supported spatial streams need to be configured.
 For example, this code enables MIMO with 2 antennas and 2 spatial streams::
 
@@ -173,18 +165,14 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
  wifiPhyHelper.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
  wifiPhyHelper.Set ("MaxSupportedRxSpatialStreams", UintegerValue (1));
 
-Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
-
- wifiPhyHelper.Set ("GreenfieldEnabled",BooleanValue(true));
-
 802.11n PHY layer can support both 20 (default) or 40 MHz channel width, and 802.11ac/ax PHY layer can use either 20, 40, 80 (default) or 160 MHz channel width.  See below for further documentation on setting the frequency, channel width, and channel number.
 
 ::
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", 
-                                "DataMode", StringValue ("VhtMcs9"), 
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue ("VhtMcs9"),
                                 "ControlMode", StringValue ("VhtMcs0"));
 
   //Install PHY and MAC
@@ -254,7 +242,8 @@ WifiHelper::SetStandard()
 ``WifiHelper::SetStandard ()`` is a method to set various parameters
 in the Mac and Phy to standard values and some reasonable defaults.
 For example, ``SetStandard (WIFI_PHY_STANDARD_80211a)`` will set the
-WifiPhy to Channel 36 in the 5 GHz band, among other settings.
+WifiPhy to Channel 36 in the 5 GHz band, among other settings appropriate
+for 802.11a.
 
 The following values for WifiPhyStandard are defined in 
 ``src/wifi/model/wifi-phy-standard.h``:
@@ -750,6 +739,56 @@ In order to change parameters that are overwritten by ``WifiHelper::SetStandard`
 There are many |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of
 this reconfiguration.
+
+HT configuration
+================
+
+HT is an acronym for High Throughput, a term synonymous with the IEEE 802.11n
+standard.  Once the ``ns3::WifiHelper::Install`` has been called and the
+user sets the standard to a variant that supports HT capabilities (802.11n,
+802.11ac, or 802.11ax), an HT configuration object will automatically be
+created for the device.  The configuration object is used to store and 
+manage HT-specific attributes.
+
+802.11n/ac PHY layer can use either either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter for a given device, the following lines of code could be used (in this example, it enables the support of a short guard interval for the first station)::
+
+ Ptr<NetDevice> nd = wifiStaDevices.Get (0);
+ Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
+ Ptr<HtConfiguration> htConfiguration = wnd->GetHtConfiguration ();
+ htConfiguration->SetShortGuardIntervalSupported (true);
+
+It is also possible to configure HT-specific attributes using ``Config::Set``.
+The following line of code enables the support of a short guard interval for all stations:
+
+ Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
+
+Furthermore, 802.11n provides an optional mode (Greenfield mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
+
+ htConfiguration->SetGreenfieldSupported (true);
+
+VHT configuration
+=================
+
+IEEE 802.11ac devices are also known as supporting Very High Throughput (VHT).  Once the ``ns3::WifiHelper::Install`` has been called and either the 802.11ac
+or 802.11ax 5 GHz standards are configured, a VHT configuration object will be
+automatically created to manage VHT-specific attributes.
+
+As of ns-3.29, however, there are no VHT-specific configuration items to
+manage; therefore, this object is a placeholder for future growth.
+
+HE configuration
+================
+
+IEEE 802.11ax is also known as High Efficiency (HE).  Once the ``ns3::WifiHelper::Install`` has been called and IEEE 802.11ax configured as the standard, an 
+HE configuration object will automatically be created to manage HE-specific
+attributes for 802.11ax devices.
+
+802.11ax PHY layer can use either either 3200 ns, 1600 ns or 800 ns OFDM guard intervals. To configure this parameter, the following line of code could be used (in this example, it enables the support of 1600 ns guard interval), such as in this example code snippet::
+
+ Ptr<NetDevice> nd = wifiStaDevices.Get (0);
+ Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
+ Ptr<HeConfiguration> heConfiguration = wnd->GetHeConfiguration ();
+ heConfiguration->SetGuardInterval (NanoSeconds (1600));
 
 Mobility configuration
 ======================

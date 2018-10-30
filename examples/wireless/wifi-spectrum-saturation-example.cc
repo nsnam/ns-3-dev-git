@@ -151,57 +151,29 @@ int main (int argc, char *argv[])
           phy.Set ("TxPowerStart", DoubleValue (1));
           phy.Set ("TxPowerEnd", DoubleValue (1));
 
-          if (i <= 7)
+          if (i > 31 && i <= 39)
             {
-              phy.Set ("ShortGuardEnabled", BooleanValue (false));
-              channelWidth = 20;
-            }
-          else if (i > 7 && i <= 15)
-            {
-              phy.Set ("ShortGuardEnabled", BooleanValue (true));
-              channelWidth = 20;
-            }
-          else if (i > 15 && i <= 23)
-            {
-              phy.Set ("ShortGuardEnabled", BooleanValue (false));
-              channelWidth = 40;
-            }
-          else if (i > 23 && i <= 31)
-            {
-              phy.Set ("ShortGuardEnabled", BooleanValue (true));
-              channelWidth = 40;
-            }
-          else if (i > 31 && i <= 39)
-            {
-              phy.Set ("ShortGuardEnabled", BooleanValue (false));
               phy.Set ("Antennas", UintegerValue (2));
               phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 20;
             }
           else if (i > 39 && i <= 47)
             {
-              phy.Set ("ShortGuardEnabled", BooleanValue (true));
               phy.Set ("Antennas", UintegerValue (2));
               phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 20;
             }
           else if (i > 47 && i <= 55)
             {
-              phy.Set ("ShortGuardEnabled", BooleanValue (false));
               phy.Set ("Antennas", UintegerValue (2));
               phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 40;
             }
           else if (i > 55 && i <= 63)
             {
-              phy.Set ("ShortGuardEnabled", BooleanValue (true));
               phy.Set ("Antennas", UintegerValue (2));
               phy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               phy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 40;
             }
         }
       else if (wifiType == "ns3::SpectrumWifiPhy")
@@ -225,57 +197,29 @@ int main (int argc, char *argv[])
           spectrumPhy.Set ("TxPowerStart", DoubleValue (1));
           spectrumPhy.Set ("TxPowerEnd", DoubleValue (1));
 
-          if (i <= 7)
+          if (i > 31 && i <= 39)
             {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
-              channelWidth = 20;
-            }
-          else if (i > 7 && i <= 15)
-            {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
-              channelWidth = 20;
-            }
-          else if (i > 15 && i <= 23)
-            {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
-              channelWidth = 40;
-            }
-          else if (i > 23 && i <= 31)
-            {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
-              channelWidth = 40;
-            }
-          else if (i > 31 && i <= 39)
-            {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
               spectrumPhy.Set ("Antennas", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 20;
             }
           else if (i > 39 && i <= 47)
             {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
               spectrumPhy.Set ("Antennas", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 20;
             }
           else if (i > 47 && i <= 55)
             {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (false));
               spectrumPhy.Set ("Antennas", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 40;
             }
           else if (i > 55 && i <= 63)
             {
-              spectrumPhy.Set ("ShortGuardEnabled", BooleanValue (true));
               spectrumPhy.Set ("Antennas", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedTxSpatialStreams", UintegerValue (2));
               spectrumPhy.Set ("MaxSupportedRxSpatialStreams", UintegerValue (2));
-              channelWidth = 40;
             }
         }
       else
@@ -642,9 +586,26 @@ int main (int argc, char *argv[])
           apDevice = wifi.Install (spectrumPhy, mac, wifiApNode);
         }
 
-      // Channel width must be set *after* installation because the attribute
-      // is overwritten by the ConfigureStandard method ()
-      Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+     if ((i <= 7) || (i > 31 && i <= 39))
+        {
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
+        }
+      else if ((i > 7 && i <= 15) || (i > 39 && i <= 47))
+        {
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
+        }
+      else if ((i > 15 && i <= 23) || (i > 47 && i <= 55))
+        {
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
+        }
+      else
+        {
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
+          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
+        }
 
       // mobility.
       MobilityHelper mobility;

@@ -43,6 +43,7 @@
 #include "ns3/wifi-phy-tag.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
+#include "ns3/ht-configuration.h"
 
 using namespace ns3;
 
@@ -131,6 +132,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  mac->SetDevice (dev);
   mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
@@ -298,6 +300,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  mac->SetDevice (dev);
   mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
@@ -492,6 +495,7 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   Ptr<Node> txNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> txDev = CreateObject<WifiNetDevice> ();
   Ptr<WifiMac> txMac = m_mac.Create<WifiMac> ();
+  txMac->SetDevice (txDev);
   txMac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   //Fix the stream assignment to the Dcf Txop objects (backoffs)
   //The below stream assignment will result in the Txop object
@@ -1447,16 +1451,22 @@ Bug2831TestCase::DoRun (void)
 
   Ptr<Node> apNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
+  Ptr<HtConfiguration> apHtConfiguration = CreateObject<HtConfiguration> ();
+  apDev->SetHtConfiguration (apHtConfiguration);
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
   Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
+  apMac->SetDevice (apDev);
   apMac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
 
   Ptr<Node> staNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
+  Ptr<HtConfiguration> staHtConfiguration = CreateObject<HtConfiguration> ();
+  staDev->SetHtConfiguration (staHtConfiguration);
   mac.SetTypeId ("ns3::StaWifiMac");
   Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
+  staMac->SetDevice (staDev);
   staMac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
 
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();

@@ -204,7 +204,6 @@ public:
   // Inherited from WifiRemoteStationManager
   void SetupPhy (const Ptr<WifiPhy> phy);
   void SetupMac (const Ptr<WifiMac> mac);
-  void SetHeSupported (bool enable); //HE rates not yet supported
 
   /**
    * TracedCallback signature for rate change events.

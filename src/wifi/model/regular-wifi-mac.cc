@@ -31,6 +31,10 @@
 #include "wifi-utils.h"
 #include "mgt-headers.h"
 #include "amsdu-subframe-header.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
+#include "vht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -40,11 +44,8 @@ NS_OBJECT_ENSURE_REGISTERED (RegularWifiMac);
 
 RegularWifiMac::RegularWifiMac ()
   : m_qosSupported (0),
-    m_htSupported (0),
-    m_vhtSupported (0),
     m_erpSupported (0),
-    m_dsssSupported (0),
-    m_heSupported (0)
+    m_dsssSupported (0)
 {
   NS_LOG_FUNCTION (this);
   m_rxMiddle = Create<MacRxMiddle> ();
@@ -117,6 +118,8 @@ RegularWifiMac::DoDispose ()
 
   m_channelAccessManager->Dispose ();
   m_channelAccessManager = 0;
+  
+  WifiMac::DoDispose ();
 }
 
 void
@@ -124,13 +127,8 @@ RegularWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager>
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  m_stationManager->SetHtSupported (GetHtSupported ());
-  m_stationManager->SetVhtSupported (GetVhtSupported ());
-  m_stationManager->SetHeSupported (GetHeSupported ());
   m_low->SetWifiRemoteStationManager (stationManager);
-
   m_txop->SetWifiRemoteStationManager (stationManager);
-
   for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       i->second->SetWifiRemoteStationManager (stationManager);
@@ -148,17 +146,8 @@ RegularWifiMac::GetExtendedCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   ExtendedCapabilities capabilities;
-  if (m_htSupported || m_vhtSupported)
-    {
-      if (m_htSupported)
-        {
-          capabilities.SetHtSupported (1);
-        }
-      if (m_vhtSupported)
-        {
-          capabilities.SetVhtSupported (1);
-        }
-    }
+  capabilities.SetHtSupported (GetHtSupported ());
+  capabilities.SetVhtSupported (GetVhtSupported ());
   //TODO: to be completed
   return capabilities;
 }
@@ -168,17 +157,21 @@ RegularWifiMac::GetHtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   HtCapabilities capabilities;
-  if (m_htSupported)
+  if (GetHtSupported ())
     {
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      bool greenfieldSupported = htConfiguration->GetGreenfieldSupported ();
+      bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
       capabilities.SetHtSupported (1);
-      capabilities.SetLdpc (m_phy->GetLdpc ());
+      capabilities.SetLdpc (0);
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () >= 40);
-      capabilities.SetShortGuardInterval20 (m_phy->GetShortGuardInterval ());
-      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && m_phy->GetShortGuardInterval ());
-      capabilities.SetGreenfield (m_phy->GetGreenfield ());
+      capabilities.SetShortGuardInterval20 (sgiSupported);
+      capabilities.SetShortGuardInterval40 (m_phy->GetChannelWidth () >= 40 && sgiSupported);
+      capabilities.SetGreenfield (greenfieldSupported);
       uint32_t maxAmsduLength = std::max (std::max (m_beMaxAmsduSize, m_bkMaxAmsduSize), std::max (m_voMaxAmsduSize, m_viMaxAmsduSize));
       capabilities.SetMaxAmsduLength (maxAmsduLength > 3839); //0 if 3839 and 1 if 7935
-      capabilities.SetLSigProtectionSupport (!m_phy->GetGreenfield ());
+      capabilities.SetLSigProtectionSupport (!greenfieldSupported);
       double maxAmpduLengthExponent = std::max (std::ceil ((std::log (std::max (std::max (m_beMaxAmpduSize, m_bkMaxAmpduSize), std::max (m_voMaxAmpduSize, m_viMaxAmpduSize))
                                                                       + 1.0)
                                                             / std::log (2.0))
@@ -197,7 +190,7 @@ RegularWifiMac::GetHtCapabilities (void) const
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
-          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetShortGuardInterval () ? 400 : 800, nss);
+          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), sgiSupported ? 400 : 800, nss);
           if (dataRate > maxSupportedRate)
             {
               maxSupportedRate = dataRate;
@@ -219,8 +212,11 @@ RegularWifiMac::GetVhtCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   VhtCapabilities capabilities;
-  if (m_vhtSupported)
+  if (GetVhtSupported ())
     {
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      bool sgiSupported = htConfiguration->GetShortGuardIntervalSupported ();
       capabilities.SetVhtSupported (1);
       if (m_phy->GetChannelWidth () == 160)
         {
@@ -232,9 +228,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
         }
       uint32_t maxMpduLength = std::max (std::max (m_beMaxAmsduSize, m_bkMaxAmsduSize), std::max (m_voMaxAmsduSize, m_viMaxAmsduSize)) + 56; //see section 9.11 of 11ac standard
       capabilities.SetMaxMpduLength (uint8_t (maxMpduLength > 3895) + uint8_t (maxMpduLength > 7991)); //0 if 3895, 1 if 7991, 2 for 11454
-      capabilities.SetRxLdpc (m_phy->GetLdpc ());
-      capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && m_phy->GetShortGuardInterval ());
-      capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && m_phy->GetShortGuardInterval ());
+      capabilities.SetRxLdpc (0);
+      capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && sgiSupported);
+      capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && sgiSupported);
       double maxAmpduLengthExponent = std::max (std::ceil ((std::log (std::max (std::max (m_beMaxAmpduSize, m_bkMaxAmpduSize), std::max (m_voMaxAmpduSize, m_viMaxAmpduSize)) + 1.0) / std::log (2.0)) - 13.0), 0.0);
       NS_ASSERT (maxAmpduLengthExponent >= 0 && maxAmpduLengthExponent <= 255);
       capabilities.SetMaxAmpduLengthExponent (std::max<uint8_t> (7, static_cast<uint8_t> (maxAmpduLengthExponent))); //0 to 7 for VHT
@@ -285,8 +281,10 @@ RegularWifiMac::GetHeCapabilities (void) const
 {
   NS_LOG_FUNCTION (this);
   HeCapabilities capabilities;
-  if (m_heSupported)
+  if (GetHeSupported ())
     {
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
       capabilities.SetHeSupported (1);
       uint8_t channelWidthSet = 0;
       if (m_phy->GetChannelWidth () >= 40 && Is2_4Ghz (m_phy->GetFrequency ()))
@@ -303,12 +301,12 @@ RegularWifiMac::GetHeCapabilities (void) const
         }
       capabilities.SetChannelWidthSet (channelWidthSet);
       uint8_t gi = 0;
-      if (m_phy->GetGuardInterval () <= NanoSeconds (1600))
+      if (heConfiguration->GetGuardInterval () <= NanoSeconds (1600))
         {
           //todo: We assume for now that if we support 800ns GI then 1600ns GI is supported as well
           gi |= 0x01;
         }
-      if (m_phy->GetGuardInterval () == NanoSeconds (800))
+      if (heConfiguration->GetGuardInterval () == NanoSeconds (800))
         {
           gi |= 0x02;
         }
@@ -580,76 +578,52 @@ RegularWifiMac::GetQosSupported () const
 void
 RegularWifiMac::SetVhtSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this << enable);
-  m_vhtSupported = enable;
-  if (enable)
-    {
-      SetQosSupported (true);
-    }
-  if (!enable && !m_htSupported)
-    {
-      DisableAggregation ();
-    }
-  else
-    {
-      EnableAggregation ();
-    }
+  //To be removed once deprecated API is cleaned up
 }
 
 void
 RegularWifiMac::SetHtSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this << enable);
-  m_htSupported = enable;
-  if (enable)
-    {
-      SetQosSupported (true);
-    }
-  if (!enable && !m_vhtSupported)
-    {
-      DisableAggregation ();
-    }
-  else
-    {
-      EnableAggregation ();
-    }
+  //To be removed once deprecated API is cleaned up
 }
 
 void
 RegularWifiMac::SetHeSupported (bool enable)
 {
-  NS_LOG_FUNCTION (this << enable);
-  m_heSupported = enable;
-  if (enable)
-    {
-      SetQosSupported (true);
-    }
-  if (!enable && !m_htSupported && !m_vhtSupported)
-    {
-      DisableAggregation ();
-    }
-  else
-    {
-      EnableAggregation ();
-    }
-}
-
-bool
-RegularWifiMac::GetVhtSupported () const
-{
-  return m_vhtSupported;
+  //To be removed once deprecated API is cleaned up
 }
 
 bool
 RegularWifiMac::GetHtSupported () const
 {
-  return m_htSupported;
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device->GetHtConfiguration ())
+    {
+      return true;
+    }
+  return false;
+}
+
+bool
+RegularWifiMac::GetVhtSupported () const
+{
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device->GetVhtConfiguration ())
+    {
+      return true;
+    }
+  return false;
 }
 
 bool
 RegularWifiMac::GetHeSupported () const
 {
-  return m_heSupported;
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device->GetHeConfiguration ())
+    {
+      return true;
+    }
+  return false;
 }
 
 bool
@@ -870,12 +844,30 @@ void
 RegularWifiMac::SetRifsSupported (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device)
+    {
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      if (htConfiguration)
+        {
+          htConfiguration->SetRifsSupported (enable);
+        }
+    }
   m_rifsSupported = enable;
 }
 
 bool
 RegularWifiMac::GetRifsSupported (void) const
 {
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device)
+    {
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      if (htConfiguration)
+        {
+          return htConfiguration->GetRifsSupported ();
+        }
+    }
   return m_rifsSupported;
 }
 
@@ -1090,19 +1082,22 @@ RegularWifiMac::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetHtSupported,
                                         &RegularWifiMac::GetHtSupported),
-                   MakeBooleanChecker ())
+                   MakeBooleanChecker (),
+                   TypeId::DEPRECATED, "Not used anymore")
     .AddAttribute ("VhtSupported",
                    "This Boolean attribute is set to enable 802.11ac support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetVhtSupported,
                                         &RegularWifiMac::GetVhtSupported),
-                   MakeBooleanChecker ())
+                   MakeBooleanChecker (),
+                   TypeId::DEPRECATED, "Not used anymore")
     .AddAttribute ("HeSupported",
                    "This Boolean attribute is set to enable 802.11ax support at this STA.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetHeSupported,
                                         &RegularWifiMac::GetHeSupported),
-                   MakeBooleanChecker ())
+                   MakeBooleanChecker (),
+                   TypeId::DEPRECATED, "Not used anymore")
     .AddAttribute ("CtsToSelfSupported",
                    "Use CTS to Self when using a rate that is not in the basic rate set.",
                    BooleanValue (false),
@@ -1227,7 +1222,8 @@ RegularWifiMac::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RegularWifiMac::SetRifsSupported,
                                         &RegularWifiMac::GetRifsSupported),
-                   MakeBooleanChecker ())
+                   MakeBooleanChecker (),
+                   TypeId::DEPRECATED, "Use the HtConfiguration instead")
     .AddAttribute ("Txop",
                    "The Txop object.",
                    PointerValue (),
@@ -1274,18 +1270,31 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
   switch (standard)
     {
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
-      SetHeSupported (true);
     case WIFI_PHY_STANDARD_80211ac:
-      SetVhtSupported (true);
     case WIFI_PHY_STANDARD_80211n_5GHZ:
-      SetHtSupported (true);
-      cwmin = 15;
-      cwmax = 1023;
-      break;
+      {
+        EnableAggregation ();
+        //To be removed once deprecated RifsSupported attribute is removed
+        Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+        Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+        NS_ASSERT (htConfiguration);
+        htConfiguration->SetRifsSupported (m_rifsSupported);
+        SetQosSupported (true);
+        cwmin = 15;
+        cwmax = 1023;
+        break;
+      }
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-      SetHeSupported (true);
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      SetHtSupported (true);
+      {
+        EnableAggregation ();
+        //To be removed once deprecated RifsSupported attribute is removed
+        Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+        Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+        NS_ASSERT (htConfiguration);
+        htConfiguration->SetRifsSupported (m_rifsSupported);
+        SetQosSupported (true);
+      }
     case WIFI_PHY_STANDARD_80211g:
       SetErpSupported (true);
     case WIFI_PHY_STANDARD_holland:

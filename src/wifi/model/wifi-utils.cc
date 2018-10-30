@@ -18,12 +18,14 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "wifi-utils.h"
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
+#include "he-configuration.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
@@ -62,6 +64,25 @@ bool
 Is5Ghz (double frequency)
 {
   return frequency >= 5000 && frequency <= 6000;
+}
+
+uint16_t
+ConvertGuardIntervalToNanoSeconds (WifiMode mode, const Ptr<WifiNetDevice> device)
+{
+  uint16_t gi = 800;
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+    {
+      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+      NS_ASSERT (heConfiguration); //If HE modulation is used, we should have a HE configuration attached
+      gi = static_cast<uint16_t> (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
+      NS_ASSERT (htConfiguration); //If HT/VHT modulation is used, we should have a HT configuration attached
+      gi = htConfiguration->GetShortGuardIntervalSupported () ? 400 : 800;
+    }
+  return gi;
 }
 
 uint16_t

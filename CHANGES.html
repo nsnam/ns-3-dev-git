@@ -54,6 +54,8 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.29 to ns-3.30</h1>
 <h2>New API:</h2>
 <ul>
+<li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Intead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

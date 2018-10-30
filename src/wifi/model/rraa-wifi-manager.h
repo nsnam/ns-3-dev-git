@@ -70,13 +70,11 @@ public:
   // Inherited from WifiRemoteStationManager
   virtual void SetupPhy (const Ptr<WifiPhy> phy);
   virtual void SetupMac (const Ptr<WifiMac> mac);
-  void SetHtSupported (bool enable);
-  void SetVhtSupported (bool enable);
-  void SetHeSupported (bool enable);
 
 
 private:
-  //overridden from base class
+  // Overridden from base class.
+  void DoInitialize (void);
   WifiRemoteStation * DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode);
