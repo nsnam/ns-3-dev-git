@@ -879,6 +879,24 @@ TcpGeneralTest::GetRxBuffer (SocketWho who)
     }
 }
 
+ Ptr<TcpTxBuffer>
+ TcpGeneralTest::GetTxBuffer (SocketWho who)
+ {
+  if (who == SENDER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_senderSocket)->m_txBuffer;
+    }
+  else if (who == RECEIVER)
+    {
+      return DynamicCast<TcpSocketMsgBase> (m_receiverSocket)->m_txBuffer;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+ }
+
+
 void
 TcpGeneralTest::SetRcvBufSize (SocketWho who, uint32_t size)
 {
