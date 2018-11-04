@@ -46,6 +46,10 @@ HeConfiguration::GetTypeId (void)
                    MakeTimeAccessor (&HeConfiguration::GetGuardInterval,
                                      &HeConfiguration::SetGuardInterval),
                    MakeTimeChecker (NanoSeconds (800), NanoSeconds (3200)))
+    .AddAttribute ("BssColor", "BSS color",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_bssColor),
+                   MakeUintegerChecker<uint8_t> ())
     ;
     return tid;
 }

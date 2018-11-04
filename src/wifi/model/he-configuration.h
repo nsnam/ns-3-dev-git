@@ -50,6 +50,7 @@ public:
 
 private:
   Time m_guardInterval; //!< Supported HE guard interval
+  uint8_t m_bssColor;   //!< BSS color
 };
 
 } //namespace ns3

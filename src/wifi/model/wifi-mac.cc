@@ -23,6 +23,9 @@
 #include "wifi-mac.h"
 #include "txop.h"
 #include "ssid.h"
+#include "wifi-net-device.h"
+#include "ht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -468,6 +471,20 @@ WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDss
       NS_FATAL_ERROR ("I don't know what to do with this");
       break;
     }
+}
+
+Ptr<HtConfiguration>
+WifiMac::GetHtConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetHtConfiguration ();
+}
+
+Ptr<HeConfiguration>
+WifiMac::GetHeConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetHeConfiguration ();
 }
 
 } //namespace ns3

@@ -36,6 +36,7 @@
 #include "wifi-phy.h"
 #include "wifi-net-device.h"
 #include "ht-configuration.h"
+#include "he-configuration.h"
 
 namespace ns3 {
 
@@ -564,8 +565,6 @@ ApWifiMac::GetHtOperation (void) const
   HtOperation operation;
   if (GetHtSupported ())
     {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
       operation.SetHtSupported (1);
       operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (GetRifsMode ());
@@ -593,7 +592,7 @@ ApWifiMac::GetHtOperation (void) const
             }
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
-          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), htConfiguration->GetShortGuardIntervalSupported () ? 400 : 800, nss);
+          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), GetHtConfiguration ()->GetShortGuardIntervalSupported () ? 400 : 800, nss);
           if (dataRate > maxSupportedRate)
             {
               maxSupportedRate = dataRate;
@@ -718,6 +717,9 @@ ApWifiMac::GetHeOperation (void) const
         {
           operation.SetMaxHeMcsPerNss (nss, 11); //TBD: hardcode to 11 for now since we assume all MCS values are supported
         }
+      UintegerValue bssColor;
+      GetHeConfiguration ()->GetAttribute ("BssColor", bssColor);
+      operation.SetBssColor (bssColor.Get ());
     }
   return operation;
 }
@@ -1588,9 +1590,7 @@ ApWifiMac::GetRifsMode (void) const
           rifsMode = true;
         }
     }
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-  if (htConfiguration && htConfiguration->GetRifsSupported () && rifsMode)
+  if (GetHtSupported () && GetHtConfiguration ()->GetRifsSupported () && rifsMode)
     {
       m_stationManager->SetRifsPermitted (true);
     }

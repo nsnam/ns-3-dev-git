@@ -72,6 +72,16 @@ public:
    * \return the Basic HE-MCS And Nss field in the HE Operation information element
    */
   uint16_t GetBasicHeMcsAndNssSet (void) const;
+  /**
+   * Set the BSS color
+   * \param bssColor the BSS color value
+   */
+  void SetBssColor (uint8_t bssColor);
+  /**
+   * Get the BSS color
+   * \return the BSS color value
+   */
+  uint8_t GetBssColor (void) const;
 
   /**
    * Return the element ID.
