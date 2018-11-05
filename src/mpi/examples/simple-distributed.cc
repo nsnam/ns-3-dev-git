@@ -122,7 +122,7 @@ main (int argc, char *argv[])
   routerNodes.Add (routerNode1);
   routerNodes.Add (routerNode2);
 
-  // Create leaf nodes on left with system id 1
+  // Create leaf nodes on right with system id 1
   NodeContainer rightLeafNodes;
   rightLeafNodes.Create (4, 1);
 
