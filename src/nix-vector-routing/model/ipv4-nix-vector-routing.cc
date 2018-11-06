@@ -781,9 +781,7 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
   std::queue< Ptr<Node> > greyNodeList;  // discovered nodes with unexplored children
 
   // reset the parent vector
-  parentVector.clear ();
-  parentVector.reserve (sizeof (Ptr<Node>)*numberOfNodes);
-  parentVector.insert (parentVector.begin (), sizeof (Ptr<Node>)*numberOfNodes, 0); // initialize to 0
+  parentVector.assign (numberOfNodes, 0); // initialize to 0
 
   // Add the source node to the queue, set its parent to itself 
   greyNodeList.push (source);
