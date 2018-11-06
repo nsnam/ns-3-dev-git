@@ -243,19 +243,26 @@ TMP_OUTPUT_DIR = "testpy-output"
 def read_test(test):
     result = test.find('Result').text
     name = test.find('Name').text
+    if not test.find('Reason') is None:
+        reason = test.find('Reason').text
+    else:
+        reason = ''
     if not test.find('Time') is None:
         time_real = test.find('Time').get('real')
     else:
         time_real = ''
-    return (result, name, time_real)
+    return (result, name, reason, time_real)
 
 #
 # A simple example of writing a text file with a test result summary.  It is 
 # expected that this output will be fine for developers looking for problems.
 #
 def node_to_text (test, f):
-    (result, name, time_real) = read_test(test)
-    output = "%s: Test Suite \"%s\" (%s)\n" % (result, name, time_real)
+    (result, name, reason, time_real) = read_test(test)
+    if reason:
+        reason = " (%s)" % reason
+        
+    output = "%s: Test Suite \"%s\" (%s)%s\n" % (result, name, time_real, reason)
     f.write(output)
     for details in test.findall('FailureDetails'):
         f.write("    Details:\n")
@@ -269,6 +276,8 @@ def node_to_text (test, f):
         node_to_text(child, f)
 
 def translate_to_text(results_file, text_file):
+    text_file += '.txt'
+    print('Writing results to text file \"%s\"...' % text_file, end='')
     f = open(text_file, 'w')
     import xml.etree.ElementTree as ET
     et = ET.parse (results_file)
@@ -286,6 +295,7 @@ def translate_to_text(results_file, text_file):
         f.write(output)
 
     f.close()
+    print('done.')
     
 #
 # A simple example of writing an HTML file with a test result summary.  It is 
@@ -294,6 +304,8 @@ def translate_to_text(results_file, text_file):
 # since it will probably grow over time.
 #
 def translate_to_html(results_file, html_file):
+    html_file += '.html'
+    print('Writing results to html file %s...' % html_file, end='')
     f = open(html_file, 'w')
     f.write("<html>\n")
     f.write("<body>\n")
@@ -313,7 +325,7 @@ def translate_to_html(results_file, html_file):
         #
         # For each test suite, get its name, result and execution time info
         #
-        (result, name, time) = read_test (suite)
+        (result, name, reason, time) = read_test (suite)
 
         # 
         # Print a level three header with the result, name and time.  If the 
@@ -324,7 +336,7 @@ def translate_to_html(results_file, html_file):
         if result == "PASS":
             f.write("<h3 style=\"color:green\">%s: %s (%s)</h3>\n" % (result, name, time))
         elif result == "SKIP":
-            f.write("<h3 style=\"color:#ff6600\">%s: %s (%s)</h3>\n" % (result, name, time))
+            f.write("<h3 style=\"color:#ff6600\">%s: %s (%s) (%s)</h3>\n" % (result, name, time, reason))
         else:
             f.write("<h3 style=\"color:red\">%s: %s (%s)</h3>\n" % (result, name, time))
 
@@ -391,7 +403,7 @@ def translate_to_html(results_file, html_file):
             # Get the name, result and timing information from xml to use in
             # printing table below.
             #
-            (result, name, time) = read_test(case)
+            (result, name, reason, time) = read_test(case)
 
             #
             # If the test case failed, we iterate through possibly multiple
@@ -463,7 +475,7 @@ def translate_to_html(results_file, html_file):
                 f.write("<td style=\"color:green\">%s</td>\n" % result)
                 f.write("<td>%s</td>\n" % name)
                 f.write("<td>%s</td>\n" % time)
-                f.write("<td></td>\n")
+                f.write("<td>%s</td>\n" % reason)
                 f.write("</tr>\n")
         #
         # All of the rows are written, so we need to end the table.
@@ -484,13 +496,14 @@ def translate_to_html(results_file, html_file):
     #
     # The table headings look like,
     #
-    #   +--------+--------------+--------------+
-    #   | Result | Example Name | Elapsed Time |
-    #   +--------+--------------+--------------+
-    #
-    f.write("<th> Result </th>\n")
+    #   +--------+--------------+--------------+---------+
+    #   | Result | Example Name | Elapsed Time | Details |
+    #   +--------+--------------+--------------+---------+
+    #                                           
+    f.write("<th> Result </th>\n")              
     f.write("<th>Example Name</th>\n")
     f.write("<th>Elapsed Time</th>\n")
+    f.write("<th>Details</th>\n")
 
     #
     # Now iterate through all of the examples
@@ -505,7 +518,7 @@ def translate_to_html(results_file, html_file):
         #
         # Get the result and name of the example in question
         #
-        (result, name, time) = read_test(example)
+        (result, name, reason, time) = read_test(example)
 
         #
         # If the example either failed or crashed, print its result status
@@ -529,6 +542,11 @@ def translate_to_html(results_file, html_file):
         f.write("<td>%s</td>\n" % time)
 
         #
+        # Write the reason, if it exist
+        #
+        f.write("<td>%s</td>\n" % reason)
+
+        #
         # That's it for the current example, so terminate the row.
         #
         f.write("</tr>\n")
@@ -544,6 +562,7 @@ def translate_to_html(results_file, html_file):
     f.write("</body>\n")
     f.write("</html>\n")
     f.close()
+    print('done.')
     
 #
 # Python Control-C handling is broken in the presence of multiple threads.  
@@ -795,6 +814,7 @@ class Job:
     def __init__(self):
         self.is_break = False
         self.is_skip = False
+        self.skip_reason = ""
         self.is_example = False
         self.is_pyexample = False
         self.shell_command = ""
@@ -821,6 +841,12 @@ class Job:
     #
     def set_is_skip(self, is_skip):
         self.is_skip = is_skip
+
+    #
+    # If a job is to be skipped, log the reason.
+    #
+    def set_skip_reason(self, skip_reason):
+        self.skip_reason = skip_reason
 
     #
     # Examples are treated differently than standard test suites.  This is
@@ -1409,10 +1435,12 @@ def run_tests():
 
             if options.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
+                job.set_skip_reason("crashes valgrind")
 
             # Skip tests that will fail if NSC is missing.
             if not NSC_ENABLED and test in core_nsc_missing_skip_tests:
                 job.set_is_skip(True)
+                job.set_skip_reason("requires NSC")
 
             if options.verbose:
                 print("Queue %s" % test)
@@ -1484,6 +1512,7 @@ def run_tests():
 
                             if options.valgrind and not eval(do_valgrind_run):
                                 job.set_is_skip (True)
+                                job.set_skip_reason("skip in valgrind runs")
 
                             if options.verbose:
                                 print("Queue %s" % test)
@@ -1576,6 +1605,7 @@ def run_tests():
                             #
                             if options.valgrind:
                                 job.set_is_skip (True)
+                                job.set_skip_reason("skip in valgrind runs")
 
                             #
                             # The user can disable python bindings, so we need
@@ -1584,6 +1614,7 @@ def run_tests():
                             #
                             if not ENABLE_PYTHON_BINDINGS:
                                 job.set_is_skip (True)
+                                job.set_skip_reason("requires Python bindings")
 
                             if options.verbose:
                                 print("Queue %s" % test)
@@ -1658,7 +1689,7 @@ def run_tests():
         if job.is_skip:
             status = "SKIP"
             skipped_tests = skipped_tests + 1
-            skipped_testnames.append(job.display_name)
+            skipped_testnames.append(job.display_name + (" (%s)" % job.skip_reason))
         else:
             if job.returncode == 0:
                 status = "PASS"
@@ -1761,6 +1792,7 @@ def run_tests():
                 f.write("<Test>\n")
                 f.write("  <Name>%s</Name>\n" % job.display_name)
                 f.write('  <Result>SKIP</Result>\n')
+                f.write("  <Reason>%s</Reason>\n" % job.skip_reason)
                 f.write("</Test>\n")
                 f.close()
             else:
@@ -1820,6 +1852,9 @@ def run_tests():
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
     #
+    if len(options.html) + len(options.text) + len(options.xml):
+        print()
+        
     if len(options.html):
         translate_to_html(xml_results_file, options.html)
 
@@ -1827,7 +1862,10 @@ def run_tests():
         translate_to_text(xml_results_file, options.text)
 
     if len(options.xml):
-        shutil.copyfile(xml_results_file, options.xml)
+        xml_file = options.xml + '.xml'
+        print('Writing results to xml file %s...' % xml_file, end='')
+        shutil.copyfile(xml_results_file, xml_file)
+        print('done.')
 
     #
     # Let the user know if they need to turn on tests or examples.
