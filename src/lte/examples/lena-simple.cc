@@ -30,11 +30,11 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  std::string simTime = "1050ms";
+  Time simTime = MilliSeconds (1050);
   bool useCa = false;
 
   CommandLine cmd;
-  cmd.AddValue ("simTime", "Total duration of the simulation (as a Time string)", simTime);
+  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("useCa", "Whether to use carrier aggregation.", useCa);
   cmd.Parse (argc, argv);
 
@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
   lteHelper->EnableTraces ();
 
-  Simulator::Stop (Time (simTime));
+  Simulator::Stop (simTime);
   Simulator::Run ();
 
   // GtkConfigStore config;
