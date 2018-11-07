@@ -357,7 +357,7 @@ uint32_t
 Ipv4StaticRouting::GetNRoutes (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_networkRoutes.size ();;
+  return m_networkRoutes.size ();
 }
 
 Ipv4RoutingTableEntry

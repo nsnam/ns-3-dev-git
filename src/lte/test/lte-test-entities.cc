@@ -54,7 +54,7 @@ LteTestRrc::LteTestRrc ()
   m_rxPdus = 0;
   m_rxBytes = 0;
   m_txLastTime = Time (0);
-  m_rxLastTime = Time (0);;
+  m_rxLastTime = Time (0);
 
   m_pdcpSapUser = new LtePdcpSpecificLtePdcpSapUser<LteTestRrc> (this);
 //   Simulator::ScheduleNow (&LteTestRrc::Start, this);

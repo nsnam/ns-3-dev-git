@@ -557,7 +557,7 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   // value.
   //
   ok = CheckGetCodePaths (p, "TestUint8", "1", UintegerValue (1));
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");;
+  NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
 
   //
   // Set the Attribute to zero.

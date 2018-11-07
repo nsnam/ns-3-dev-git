@@ -910,7 +910,7 @@ PacketTagListTest::DoRun (void)
   
   { // Peek
     std::cout << GetName () << "check Peek (missing tag) returns false"
-              << std::endl;;
+              << std::endl;
     ATestTag<10> t10;
     NS_TEST_EXPECT_MSG_EQ (ref.Peek (t10), false, "missing tag");
   }

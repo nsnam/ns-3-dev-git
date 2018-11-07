@@ -96,7 +96,7 @@ OhBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
           if (a1->GetBuilding () == b1->GetBuilding ())
             {
               // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = m_okumuraHata->GetLoss (a, b) + InternalWallsLoss (a1, b1);;
+              loss = m_okumuraHata->GetLoss (a, b) + InternalWallsLoss (a1, b1);
               NS_LOG_INFO (this << " I-I (same building)" << loss);
 
             }

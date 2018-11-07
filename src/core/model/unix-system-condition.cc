@@ -208,7 +208,7 @@ SystemConditionPrivate::TimedWait (uint64_t ns)
 SystemCondition::SystemCondition() 
   : m_priv (new SystemConditionPrivate ())
 {
-  NS_LOG_FUNCTION (this);;
+  NS_LOG_FUNCTION (this);
 }
 
 SystemCondition::~SystemCondition () 

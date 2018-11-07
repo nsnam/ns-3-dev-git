@@ -281,7 +281,7 @@ void NdiscCache::Entry::FunctionRetransmitTimeout ()
   /* determine source address */
   if (m_ipv6Address.IsLinkLocal ())
     {
-      addr = m_ndCache->GetInterface ()->GetLinkLocalAddress ().GetAddress ();;
+      addr = m_ndCache->GetInterface ()->GetLinkLocalAddress ().GetAddress ();
     }
   else if (!m_ipv6Address.IsAny ())
     {

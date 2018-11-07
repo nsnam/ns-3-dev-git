@@ -71,7 +71,7 @@ public:
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const;
   virtual uint32_t GetContext (void) const;
-  virtual uint64_t GetEventCount (void) const;;
+  virtual uint64_t GetEventCount (void) const;
 
   /**
    * \return singleton instance

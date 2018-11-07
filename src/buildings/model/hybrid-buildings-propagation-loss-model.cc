@@ -213,7 +213,7 @@ HybridBuildingsPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobility
           if (a1->GetBuilding () == b1->GetBuilding ())
             {
               // nodes are in same building -> indoor communication ITU-R P.1238
-              loss = ItuR1238 (a, b) + InternalWallsLoss (a1, b1);;
+              loss = ItuR1238 (a, b) + InternalWallsLoss (a1, b1);
               NS_LOG_INFO (this << " I-I (same building) ITUR1238 : " << loss);
 
             }

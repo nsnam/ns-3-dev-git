@@ -78,7 +78,7 @@ main (int argc, char *argv[])
   p2p.SetChannelAttribute ("Delay", StringValue ("2ms"));
   NetDeviceContainer dAdB = p2p.Install (nAnB);
 
-  NetDeviceContainer dBdC = p2p.Install (nBnC);;
+  NetDeviceContainer dBdC = p2p.Install (nBnC);
 
   Ptr<CsmaNetDevice> deviceA = CreateObject<CsmaNetDevice> ();
   deviceA->SetAddress (Mac48Address::Allocate ());

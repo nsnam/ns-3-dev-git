@@ -75,9 +75,9 @@ public:
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (ObjectFactory schedulerFactory);
-  virtual uint32_t GetSystemId (void) const; 
+  virtual uint32_t GetSystemId (void) const;
   virtual uint32_t GetContext (void) const;
-  virtual uint64_t GetEventCount (void) const;;
+  virtual uint64_t GetEventCount (void) const;
 
 private:
   virtual void DoDispose (void);

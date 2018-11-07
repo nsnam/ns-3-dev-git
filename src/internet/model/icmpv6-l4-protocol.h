@@ -73,13 +73,13 @@ public:
    * \brief Neighbor Discovery node constants: max unicast solicitations.
    * \returns The max unicast solicitations number.
    */
-  uint8_t GetMaxUnicastSolicit () const;;
+  uint8_t GetMaxUnicastSolicit () const;
 
   /**
    * \brief Neighbor Discovery node constants: reachable time.
    * \returns The Reachable time for an Neighbor cache entry.
    */
-  Time GetReachableTime () const;;
+  Time GetReachableTime () const;
 
   /**
    * \brief Neighbor Discovery node constants: retransmission timer.
