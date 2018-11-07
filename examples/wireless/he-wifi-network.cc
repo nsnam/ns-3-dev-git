@@ -75,7 +75,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.AddValue ("useRts", "Enable/disable RTS/CTS", useRts);
-  cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
+  cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
