@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2018 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -44,20 +44,25 @@ NS_LOG_COMPONENT_DEFINE ("EpcFirstExample");
 int
 main (int argc, char *argv[])
 {
-
   uint16_t numberOfNodes = 2;
   double simTime = 1.1;
   double distance = 60.0;
   double interPacketInterval = 100;
   bool useCa = false;
+  bool disableDl = false;
+  bool disableUl = false;
+  bool disablePl = false;
 
   // Command line arguments
   CommandLine cmd;
-  cmd.AddValue("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
-  cmd.AddValue("simTime", "Total duration of the simulation [s])", simTime);
-  cmd.AddValue("distance", "Distance between eNBs [m]", distance);
-  cmd.AddValue("interPacketInterval", "Inter packet interval [ms])", interPacketInterval);
-  cmd.AddValue("useCa", "Whether to use carrier aggregation.", useCa);
+  cmd.AddValue ("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
+  cmd.AddValue ("simTime", "Total duration of the simulation [s])", simTime);
+  cmd.AddValue ("distance", "Distance between eNBs [m]", distance);
+  cmd.AddValue ("interPacketInterval", "Inter packet interval [ms])", interPacketInterval);
+  cmd.AddValue ("useCa", "Whether to use carrier aggregation.", useCa);
+  cmd.AddValue ("disableDl", "Disable downlink data flows", disableDl);
+  cmd.AddValue ("disableUl", "Disable uplink data flows", disableUl);
+  cmd.AddValue ("disablePl", "Disable data flows between peer UEs", disablePl);
   cmd.Parse(argc, argv);
 
   if (useCa)
@@ -138,66 +143,68 @@ main (int argc, char *argv[])
 
   // Attach one UE per eNodeB
   for (uint16_t i = 0; i < numberOfNodes; i++)
-      {
-        lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
-        // side effect: the default EPS bearer will be activated
-      }
+    {
+      lteHelper->Attach (ueLteDevs.Get(i), enbLteDevs.Get(i));
+      // side effect: the default EPS bearer will be activated
+    }
 
 
   // Install and start applications on UEs and remote host
-  uint16_t dlPort = 1234;
+  uint16_t dlPort = 1100;
   uint16_t ulPort = 2000;
   uint16_t otherPort = 3000;
   ApplicationContainer clientApps;
   ApplicationContainer serverApps;
   for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
     {
-      ++ulPort;
-      ++otherPort;
-      PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-      PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-      PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), otherPort));
-      serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get(u)));
-      serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
-      serverApps.Add (packetSinkHelper.Install (ueNodes.Get(u)));
-
-      UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort);
-      dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
-      dlClient.SetAttribute ("MaxPackets", UintegerValue(1000000));
-
-      UdpClientHelper ulClient (remoteHostAddr, ulPort);
-      ulClient.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
-      ulClient.SetAttribute ("MaxPackets", UintegerValue(1000000));
-
-      UdpClientHelper client (ueIpIface.GetAddress (u), otherPort);
-      client.SetAttribute ("Interval", TimeValue (MilliSeconds(interPacketInterval)));
-      client.SetAttribute ("MaxPackets", UintegerValue(1000000));
-
-      clientApps.Add (dlClient.Install (remoteHost));
-      clientApps.Add (ulClient.Install (ueNodes.Get(u)));
-      if (u+1 < ueNodes.GetN ())
+      if (!disableDl)
         {
-          clientApps.Add (client.Install (ueNodes.Get(u+1)));
+          PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+          serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get(u)));
+
+          UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort);
+          dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          dlClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
+          clientApps.Add (dlClient.Install (remoteHost));
         }
-      else
+
+      if (!disableUl)
         {
-          clientApps.Add (client.Install (ueNodes.Get(0)));
+          ++ulPort;
+          PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
+
+          UdpClientHelper ulClient (remoteHostAddr, ulPort);
+          ulClient.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          ulClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
+          clientApps.Add (ulClient.Install (ueNodes.Get(u)));
+        }
+
+      if (!disablePl && numberOfNodes > 1)
+        {
+          ++otherPort;
+          PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), otherPort));
+          serverApps.Add (packetSinkHelper.Install (ueNodes.Get(u)));
+
+          UdpClientHelper client (ueIpIface.GetAddress (u), otherPort);
+          client.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          client.SetAttribute ("MaxPackets", UintegerValue (1000000));
+          clientApps.Add (client.Install (ueNodes.Get ((u + 1) % numberOfNodes)));
         }
     }
+
   serverApps.Start (Seconds (0.01));
-  clientApps.Start (Seconds (0.01));
+  clientApps.Start (Seconds (0.04));
   lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing
-  //p2ph.EnablePcapAll("lena-epc-first");
+  //p2ph.EnablePcapAll("lena-simple-epc");
 
-  Simulator::Stop(Seconds(simTime));
-  Simulator::Run();
+  Simulator::Stop (Seconds (simTime));
+  Simulator::Run ();
 
   /*GtkConfigStore config;
   config.ConfigureAttributes();*/
 
-  Simulator::Destroy();
+  Simulator::Destroy ();
   return 0;
-
 }
-
