@@ -45,9 +45,9 @@ int
 main (int argc, char *argv[])
 {
   uint16_t numberOfNodes = 2;
-  double simTime = 1.1;
+  Time simTime = MilliSeconds (1100);
   double distance = 60.0;
-  double interPacketInterval = 100;
+  Time interPacketInterval = MilliSeconds (100);
   bool useCa = false;
   bool disableDl = false;
   bool disableUl = false;
@@ -56,9 +56,9 @@ main (int argc, char *argv[])
   // Command line arguments
   CommandLine cmd;
   cmd.AddValue ("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
-  cmd.AddValue ("simTime", "Total duration of the simulation [s])", simTime);
+  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("distance", "Distance between eNBs [m]", distance);
-  cmd.AddValue ("interPacketInterval", "Inter packet interval [ms])", interPacketInterval);
+  cmd.AddValue ("interPacketInterval", "Inter packet interval", interPacketInterval);
   cmd.AddValue ("useCa", "Whether to use carrier aggregation.", useCa);
   cmd.AddValue ("disableDl", "Disable downlink data flows", disableDl);
   cmd.AddValue ("disableUl", "Disable uplink data flows", disableUl);
@@ -95,7 +95,7 @@ main (int argc, char *argv[])
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
-  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (10)));
   NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
@@ -163,7 +163,7 @@ main (int argc, char *argv[])
           serverApps.Add (dlPacketSinkHelper.Install (ueNodes.Get(u)));
 
           UdpClientHelper dlClient (ueIpIface.GetAddress (u), dlPort);
-          dlClient.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          dlClient.SetAttribute ("Interval", TimeValue (interPacketInterval));
           dlClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
           clientApps.Add (dlClient.Install (remoteHost));
         }
@@ -175,7 +175,7 @@ main (int argc, char *argv[])
           serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
 
           UdpClientHelper ulClient (remoteHostAddr, ulPort);
-          ulClient.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          ulClient.SetAttribute ("Interval", TimeValue (interPacketInterval));
           ulClient.SetAttribute ("MaxPackets", UintegerValue (1000000));
           clientApps.Add (ulClient.Install (ueNodes.Get(u)));
         }
@@ -187,19 +187,19 @@ main (int argc, char *argv[])
           serverApps.Add (packetSinkHelper.Install (ueNodes.Get(u)));
 
           UdpClientHelper client (ueIpIface.GetAddress (u), otherPort);
-          client.SetAttribute ("Interval", TimeValue (MilliSeconds (interPacketInterval)));
+          client.SetAttribute ("Interval", TimeValue (interPacketInterval));
           client.SetAttribute ("MaxPackets", UintegerValue (1000000));
           clientApps.Add (client.Install (ueNodes.Get ((u + 1) % numberOfNodes)));
         }
     }
 
-  serverApps.Start (Seconds (0.01));
-  clientApps.Start (Seconds (0.04));
+  serverApps.Start (MilliSeconds (10));
+  clientApps.Start (MilliSeconds (40));
   lteHelper->EnableTraces ();
   // Uncomment to enable PCAP tracing
   //p2ph.EnablePcapAll("lena-simple-epc");
 
-  Simulator::Stop (Seconds (simTime));
+  Simulator::Stop (simTime);
   Simulator::Run ();
 
   /*GtkConfigStore config;
