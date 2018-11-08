@@ -138,7 +138,7 @@ main (int argc, char *argv[])
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
   uint16_t numBearersPerUe = 2;
-  double simTime = 0.490;
+  Time simTime = MilliSeconds (490);
   double distance = 100.0;
   bool disableDl = false;
   bool disableUl = false;
@@ -154,7 +154,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("numberOfUes", "Number of UEs", numberOfUes);
   cmd.AddValue ("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
-  cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
+  cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("disableDl", "Disable downlink data flows", disableDl);
   cmd.AddValue ("disableUl", "Disable uplink data flows", disableUl);
   cmd.Parse (argc, argv);
@@ -297,7 +297,7 @@ main (int argc, char *argv[])
           Time startTime = Seconds (startTimeSeconds->GetValue ());
           serverApps.Start (startTime);
           clientApps.Start (startTime);
-          clientApps.Stop (Seconds (simTime));
+          clientApps.Stop (simTime);
 
         } // end for b
     }
@@ -307,7 +307,7 @@ main (int argc, char *argv[])
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover
-  lteHelper->HandoverRequest (Seconds (0.300), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
+  lteHelper->HandoverRequest (MilliSeconds (300), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
 
   // Uncomment to enable PCAP tracing
   //p2ph.EnablePcapAll("lena-x2-handover");
@@ -337,7 +337,7 @@ main (int argc, char *argv[])
                    MakeCallback (&NotifyHandoverEndOkUe));
 
 
-  Simulator::Stop (Seconds (simTime + 0.02));
+  Simulator::Stop (simTime + MilliSeconds (20));
   Simulator::Run ();
 
   // GtkConfigStore config;
