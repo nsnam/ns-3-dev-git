@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2012-2018 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -140,6 +140,8 @@ main (int argc, char *argv[])
   uint16_t numBearersPerUe = 2;
   double simTime = 0.300;
   double distance = 100.0;
+  bool disableDl = false;
+  bool disableUl = false;
 
   // change some default attributes so that they are reasonable for
   // this scenario, but do this before processing command line
@@ -153,6 +155,8 @@ main (int argc, char *argv[])
   cmd.AddValue ("numberOfUes", "Number of UEs", numberOfUes);
   cmd.AddValue ("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
+  cmd.AddValue ("disableDl", "Disable downlink data flows", disableDl);
+  cmd.AddValue ("disableUl", "Disable uplink data flows", disableUl);
   cmd.Parse (argc, argv);
 
 
@@ -249,35 +253,44 @@ main (int argc, char *argv[])
 
       for (uint32_t b = 0; b < numBearersPerUe; ++b)
         {
-          ++dlPort;
-          ++ulPort;
-
           ApplicationContainer clientApps;
           ApplicationContainer serverApps;
-
-          NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
-          UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
-          clientApps.Add (dlClientHelper.Install (remoteHost));
-          PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory",
-                                               InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-          serverApps.Add (dlPacketSinkHelper.Install (ue));
-
-          NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
-          UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
-          clientApps.Add (ulClientHelper.Install (ue));
-          PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory",
-                                               InetSocketAddress (Ipv4Address::GetAny (), ulPort));
-          serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
-
           Ptr<EpcTft> tft = Create<EpcTft> ();
-          EpcTft::PacketFilter dlpf;
-          dlpf.localPortStart = dlPort;
-          dlpf.localPortEnd = dlPort;
-          tft->Add (dlpf);
-          EpcTft::PacketFilter ulpf;
-          ulpf.remotePortStart = ulPort;
-          ulpf.remotePortEnd = ulPort;
-          tft->Add (ulpf);
+
+          if (!disableDl)
+            {
+              ++dlPort;
+
+              NS_LOG_LOGIC ("installing UDP DL app for UE " << u);
+              UdpClientHelper dlClientHelper (ueIpIfaces.GetAddress (u), dlPort);
+              clientApps.Add (dlClientHelper.Install (remoteHost));
+              PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory",
+                                                   InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+              serverApps.Add (dlPacketSinkHelper.Install (ue));
+
+              EpcTft::PacketFilter dlpf;
+              dlpf.localPortStart = dlPort;
+              dlpf.localPortEnd = dlPort;
+              tft->Add (dlpf);
+            }
+
+          if (!disableUl)
+            {
+              ++ulPort;
+
+              NS_LOG_LOGIC ("installing UDP UL app for UE " << u);
+              UdpClientHelper ulClientHelper (remoteHostAddr, ulPort);
+              clientApps.Add (ulClientHelper.Install (ue));
+              PacketSinkHelper ulPacketSinkHelper ("ns3::UdpSocketFactory",
+                                                   InetSocketAddress (Ipv4Address::GetAny (), ulPort));
+              serverApps.Add (ulPacketSinkHelper.Install (remoteHost));
+
+              EpcTft::PacketFilter ulpf;
+              ulpf.remotePortStart = ulPort;
+              ulpf.remotePortEnd = ulPort;
+              tft->Add (ulpf);
+            }
+
           EpsBearer bearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT);
           lteHelper->ActivateDedicatedEpsBearer (ueLteDevs.Get (u), bearer, tft);
 
@@ -331,5 +344,4 @@ main (int argc, char *argv[])
 
   Simulator::Destroy ();
   return 0;
-
 }
