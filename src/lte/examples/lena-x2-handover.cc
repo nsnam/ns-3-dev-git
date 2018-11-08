@@ -138,7 +138,7 @@ main (int argc, char *argv[])
   uint16_t numberOfUes = 1;
   uint16_t numberOfEnbs = 2;
   uint16_t numBearersPerUe = 2;
-  double simTime = 0.300;
+  double simTime = 0.490;
   double distance = 100.0;
   bool disableDl = false;
   bool disableUl = false;
@@ -241,8 +241,8 @@ main (int argc, char *argv[])
   // (e.g., buffer overflows due to packet transmissions happening
   // exactly at the same time)
   Ptr<UniformRandomVariable> startTimeSeconds = CreateObject<UniformRandomVariable> ();
-  startTimeSeconds->SetAttribute ("Min", DoubleValue (0));
-  startTimeSeconds->SetAttribute ("Max", DoubleValue (0.010));
+  startTimeSeconds->SetAttribute ("Min", DoubleValue (0.05));
+  startTimeSeconds->SetAttribute ("Max", DoubleValue (0.06));
 
   for (uint32_t u = 0; u < numberOfUes; ++u)
     {
@@ -297,6 +297,7 @@ main (int argc, char *argv[])
           Time startTime = Seconds (startTimeSeconds->GetValue ());
           serverApps.Start (startTime);
           clientApps.Start (startTime);
+          clientApps.Stop (Seconds (simTime));
 
         } // end for b
     }
@@ -306,7 +307,7 @@ main (int argc, char *argv[])
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover
-  lteHelper->HandoverRequest (Seconds (0.100), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
+  lteHelper->HandoverRequest (Seconds (0.300), ueLteDevs.Get (0), enbLteDevs.Get (0), enbLteDevs.Get (1));
 
   // Uncomment to enable PCAP tracing
   //p2ph.EnablePcapAll("lena-x2-handover");
@@ -336,7 +337,7 @@ main (int argc, char *argv[])
                    MakeCallback (&NotifyHandoverEndOkUe));
 
 
-  Simulator::Stop (Seconds (simTime));
+  Simulator::Stop (Seconds (simTime + 0.02));
   Simulator::Run ();
 
   // GtkConfigStore config;
