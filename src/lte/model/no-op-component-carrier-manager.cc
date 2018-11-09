@@ -411,6 +411,18 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
     }
 }
 
+void
+NoOpComponentCarrierManager::DoUlReceiveSr (uint16_t rnti, uint8_t componentCarrierId)
+{
+  NS_LOG_FUNCTION (this);
+
+  auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
+  NS_ABORT_MSG_IF (sapIt == m_ccmMacSapProviderMap.end (),
+                   "Sap not found in the CcmMacSapProviderMap");
+
+  sapIt->second->ReportSrToScheduler (rnti);
+}
+
 
 //////////////////////////////////////////
 
@@ -512,6 +524,23 @@ RrComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t com
     {
       auto ueManager = m_ccmRrcSapUser->GetUeManager (bsr.m_rnti);
       m_ccmMacSapProviderMap.at (ueManager->GetComponentCarrierId ())->ReportMacCeToScheduler (bsr);
+    }
+}
+
+void
+RrComponentCarrierManager::DoUlReceiveSr(uint16_t rnti, uint8_t componentCarrierId)
+{
+  NS_LOG_FUNCTION (this);
+  NS_UNUSED (componentCarrierId);
+  // split traffic in uplink equally among carriers
+  uint32_t numberOfCarriersForUe = m_enabledComponentCarrier.find (rnti)->second;
+
+  m_ccmMacSapProviderMap.find (m_lastCcIdForSr)->second->ReportSrToScheduler (rnti);
+
+  m_lastCcIdForSr++;
+  if (m_lastCcIdForSr > numberOfCarriersForUe - 1)
+    {
+      m_lastCcIdForSr = 0;
     }
 }
 

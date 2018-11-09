@@ -343,6 +343,17 @@ private:
    * \param bsr the BSR
    */
   void DoReportMacCeToScheduler (MacCeListElement_s bsr);
+
+  /**
+   * \brief Report SR to scheduler
+   * \param rnti RNTI of the UE that requested the SR
+   *
+   * Since SR is not implemented in LTE, this method does nothing.
+   */
+  void DoReportSrToScheduler (uint16_t rnti)
+  {
+    NS_UNUSED (rnti);
+  }
   
 public:
   /**
