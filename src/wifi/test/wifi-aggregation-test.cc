@@ -128,6 +128,7 @@ AmpduAggregationTest::DoRun (void)
   reqHdr.SetTimeout (0);
   reqHdr.SetStartingSequence (0);
   m_mac->GetBEQueue ()->m_baManager->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
+  m_mac->GetBEQueue ()->m_baManager->NotifyAgreementEstablished (hdr.GetAddr1 (), 0, 0);
 
   //-----------------------------------------------------------------------------------------------------
 

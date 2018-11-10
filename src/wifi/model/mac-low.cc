@@ -2594,8 +2594,8 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
       if (!hdr.GetAddr1 ().IsBroadcast () && edcaIt->second->GetMpduAggregator () != 0)
         {
-          //Have to make sure that their exist a block Ack agreement before sending an AMPDU (BlockAck Manager)
-          if (edcaIt->second->GetBaAgreementExists (hdr.GetAddr1 (), tid))
+          //Have to make sure that the block ACK agreement is established before sending an AMPDU (BlockAck Manager)
+          if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
             {
               /* here is performed mpdu aggregation */
               /* MSDU aggregation happened in edca if the user asked for it so m_currentPacket may contains a normal packet or a A-MSDU*/
@@ -2849,7 +2849,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                 {
                   InsertInTxQueue (packet, peekedHdr, tstamp, tid);
                 }
-              if (edcaIt->second->GetBaAgreementExists (hdr.GetAddr1 (), tid))
+              if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
                 {
                   edcaIt->second->CompleteAmpduTransfer (peekedHdr.GetAddr1 (), tid);
                 }

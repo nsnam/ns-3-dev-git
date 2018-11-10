@@ -225,11 +225,27 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
    *
-   * Marks an agreement as unsuccessful. This happens if <i>recipient</i> station reject block ack setup
+   * Marks an agreement as rejected. This happens if <i>recipient</i> station reject block ack setup
    * by an ADDBA Response frame with a failure status code. For now we assume that every QoS station accepts
    * a block ack setup.
    */
-  void NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t tid);
+  void NotifyAgreementRejected (Mac48Address recipient, uint8_t tid);
+  /**
+   * \param recipient Address of peer station involved in block ack mechanism.
+   * \param tid Traffic ID of transmitted packet.
+   *
+   * Marks an agreement after not receiving response to ADDBA request. During this state
+   * any packets in queue will be transmitted using normal MPDU. This also unblock
+   * recipient adress.
+   */
+  void NotifyAgreementNoReply (Mac48Address recipient, uint8_t tid);
+  /**
+   * \param recipient Address of peer station involved in block ack mechanism.
+   * \param tid Traffic ID of transmitted packet.
+   *
+   * Set BA agreement to a transitory state to reset it after not receiving response to ADDBA request.
+   */
+  void NotifyAgreementReset (Mac48Address recipient, uint8_t tid);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.

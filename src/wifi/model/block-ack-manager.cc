@@ -104,8 +104,12 @@ BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
           return it->second.first.IsEstablished ();
         case OriginatorBlockAckAgreement::PENDING:
           return it->second.first.IsPending ();
-        case OriginatorBlockAckAgreement::UNSUCCESSFUL:
-          return it->second.first.IsUnsuccessful ();
+        case OriginatorBlockAckAgreement::REJECTED:
+          return it->second.first.IsRejected ();
+        case OriginatorBlockAckAgreement::NO_REPLY:
+          return it->second.first.IsNoReply ();
+        case OriginatorBlockAckAgreement::RESET:
+          return it->second.first.IsReset ();
         default:
           NS_FATAL_ERROR ("Invalid state for block ack agreement");
         }
@@ -138,6 +142,12 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   agreement.SetState (OriginatorBlockAckAgreement::PENDING);
   PacketQueue queue;
   std::pair<OriginatorBlockAckAgreement, PacketQueue> value (agreement, queue);
+  if (ExistsAgreement (recipient, reqHdr->GetTid ()))
+    {
+      // Delete agreement if it exists and in RESET state
+      NS_ASSERT (ExistsAgreementInState (recipient, reqHdr->GetTid (), OriginatorBlockAckAgreement::RESET));
+      m_agreements.erase (key);
+    }
   m_agreements.insert (std::make_pair (key, value));
   m_blockPackets (recipient, reqHdr->GetTid ());
 }
@@ -710,15 +720,31 @@ BlockAckManager::NotifyAgreementEstablished (Mac48Address recipient, uint8_t tid
 }
 
 void
-BlockAckManager::NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyAgreementRejected (Mac48Address recipient, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  if (it != m_agreements.end ())
-    {
-      it->second.first.SetState (OriginatorBlockAckAgreement::UNSUCCESSFUL);
-    }
+  it->second.first.SetState (OriginatorBlockAckAgreement::REJECTED);
+}
+
+void
+BlockAckManager::NotifyAgreementNoReply (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (it != m_agreements.end ());
+  it->second.first.SetState (OriginatorBlockAckAgreement::NO_REPLY);
+  m_unblockPackets (recipient, tid);
+}
+
+void
+BlockAckManager::NotifyAgreementReset (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (it != m_agreements.end ());
+  it->second.first.SetState (OriginatorBlockAckAgreement::RESET);
 }
 
 void
@@ -761,7 +787,7 @@ BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, 
 {
   NS_LOG_FUNCTION (this << recipient << +tid << startingSeq);
   NS_ASSERT (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING));
-  if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::UNSUCCESSFUL) && ExistsAgreement (recipient, tid))
+  if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::REJECTED) && ExistsAgreement (recipient, tid))
     {
       uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient) +
         GetNBufferedPackets (recipient, tid);

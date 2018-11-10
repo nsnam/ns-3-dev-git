@@ -147,12 +147,12 @@ public:
    * \param address recipient address of the peer station
    * \param tid traffic ID.
    *
-   * \return true if a block ack agreement exists, false otherwise.
+   * \return true if a block ack agreement is established, false otherwise.
    *
-   * Checks if a block ack agreement exists with station addressed by
+   * Checks if a block ack agreement is established with station addressed by
    * <i>recipient</i> for tid <i>tid</i>.
    */
-  bool GetBaAgreementExists (Mac48Address address, uint8_t tid) const;
+  bool GetBaAgreementEstablished (Mac48Address address, uint8_t tid) const;
   /**
    * \param recipient address of peer station involved in block ack mechanism.
    * \param tid Ttraffic ID of transmitted packet.
@@ -349,6 +349,31 @@ public:
    * \param enableAmpdu flag whether A-MPDU is used or not.
    */
   void SetAmpduExist (Mac48Address dest, bool enableAmpdu);
+  /**
+   * Set the timeout to wait for ADDBA response.
+   *
+   * \param addBaResponseTimeout the timeout to wait for ADDBA response
+   */
+  void SetAddBaResponseTimeout (Time addBaResponseTimeout);
+  /**
+   * Get the timeout for ADDBA response.
+   *
+   * \returns the timeout to wait for ADDBA response
+   */
+  Time GetAddBaResponseTimeout (void) const;
+  /**
+   * Set the timeout for failed BA agreement. During the timeout period,
+   * all packets will be transmitted using normal MPDU.
+   *
+   * \param failedAddBaTimeout the timeout for failed BA agreement
+   */
+  void SetFailedAddBaTimeout (Time failedAddBaTimeout);
+  /**
+   * Get the timeout for failed BA agreement.
+   *
+   * \returns the timeout for failed BA agreement
+   */
+  Time GetFailedAddBaTimeout (void) const;
 
   /**
    * Return the next sequence number for the given header.
@@ -533,6 +558,20 @@ private:
    * \returns the TXOP fragment offset
    */
   uint32_t GetTxopFragmentOffset (uint32_t fragmentNumber) const;
+  /**
+   * Callback when ADDBA response is not received after timeout.
+   *
+   * \param recipient MAC address of recipient
+   * \param tid traffic ID
+   */
+  void AddBaResponseTimeout (Mac48Address recipient, uint8_t tid);
+  /**
+   * Reset BA agreement after BA negotiation failed.
+   *
+   * \param recipient MAC address of recipient
+   * \param tid traffic ID
+   */
+  void ResetBa (Mac48Address recipient, uint8_t tid);
 
   void DoDispose (void);
   void DoInitialize (void);
@@ -551,6 +590,8 @@ private:
   Time m_startTxop;                                 //!< the start TXOP time
   bool m_isAccessRequestedForRts;                   //!< flag whether access is requested to transmit a RTS frame
   bool m_currentIsFragmented;                       //!< flag whether current packet is fragmented
+  Time m_addBaResponseTimeout;                      //!< timeout for ADDBA response
+  Time m_failedAddBaTimeout;                        //!< timeout after failed BA agreement
 
   TracedValue<uint32_t> m_backoffTrace;   //!< backoff trace value
   TracedValue<uint32_t> m_cwTrace;        //!< CW trace value

@@ -41,6 +41,7 @@ class WifiPhyStateHelper;
 class FrameCaptureModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
+class ErrorModel;
 
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm
@@ -1410,6 +1411,18 @@ public:
    */
   void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
   /**
+   * Attach a receive ErrorModel to the WifiPhy.
+   *
+   * The WifiPhy may optionally include an ErrorModel in
+   * the packet receive chain. The error model is additive
+   * to any modulation-based error model based on SNR, and
+   * is typically used to force specific packet losses or
+   * for testing purposes.
+   *
+   * \param em Ptr to the ErrorModel.
+   */
+  void SetPostReceptionErrorModel (const Ptr<ErrorModel> em);
+  /**
    * Sets the frame capture model.
    *
    * \param frameCaptureModel the frame capture model
@@ -1777,6 +1790,7 @@ private:
   Ptr<Event> m_currentEvent; //!< Hold the current event
   Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
   Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel; //!< Wifi radio energy model
+  Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
 
   Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };
