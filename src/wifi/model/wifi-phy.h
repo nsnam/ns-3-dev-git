@@ -23,6 +23,7 @@
 #define WIFI_PHY_H
 
 #include "ns3/event-id.h"
+#include "ns3/error-model.h"
 #include "wifi-mpdu-type.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
@@ -41,7 +42,6 @@ class WifiPhyStateHelper;
 class FrameCaptureModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
-class ErrorModel;
 
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm
