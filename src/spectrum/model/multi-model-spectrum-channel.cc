@@ -82,6 +82,7 @@ RxSpectrumModelInfo::RxSpectrumModelInfo (Ptr<const SpectrumModel> rxSpectrumMod
 
 
 MultiModelSpectrumChannel::MultiModelSpectrumChannel ()
+  : m_numDevices {0}
 {
   NS_LOG_FUNCTION (this);
 }
