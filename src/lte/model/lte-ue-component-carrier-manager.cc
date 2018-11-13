@@ -51,8 +51,6 @@ void
 LteUeComponentCarrierManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_ccmRrcSapProvider;
-  delete m_ccmRrcSapUser;
 }
 
 void
