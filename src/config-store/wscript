@@ -1,6 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import wutils
+import sys
+import subprocess
 from waflib import Options
 
 # Bug 2936 gcc version issue for GTK+ and -Wparentheses
@@ -80,6 +82,15 @@ def build(bld):
     if bld.env['ENABLE_LIBXML2']:
         module.source.append('model/xml-config.cc')
         module.use.append('LIBXML2')
+        # Bug 2637:  use xcrun utility to find where macOS puts headers
+        if sys.platform == 'darwin':
+            find_sdk_path = '/usr/bin/xcrun --show-sdk-path'.split()
+            try:
+                p = subprocess.Popen(find_sdk_path, stdout=subprocess.PIPE)
+                xcrun_output = p.stdout.read().strip()
+                module.includes = xcrun_output + '/usr/include/libxml2'
+            except OSError:
+                pass
 
     if bld.env['ENABLE_EXAMPLES']:
         bld.recurse('examples')
