@@ -401,7 +401,7 @@ MultiModelSpectrumChannel::GetDevice (std::size_t i) const
           j++;
         }
     }
-  NS_FATAL_ERROR ("m_numDevice > actual number of devices");
+  NS_FATAL_ERROR ("m_numDevices > actual number of devices");
   return 0;
 }
 
