@@ -103,12 +103,21 @@ WifiNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
-  m_mac->Dispose ();
-  m_phy->Dispose ();
-  m_stationManager->Dispose ();
-  m_mac = 0;
-  m_phy = 0;
-  m_stationManager = 0;
+  if (m_mac)
+    {
+      m_mac->Dispose ();
+      m_mac = 0;
+    }
+  if (m_phy)
+    {
+      m_phy->Dispose ();
+      m_phy = 0;
+    }
+  if (m_stationManager)
+    {
+      m_stationManager->Dispose ();
+      m_stationManager = 0;
+    }
   NetDevice::DoDispose ();
 }
 
