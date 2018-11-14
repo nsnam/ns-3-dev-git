@@ -324,7 +324,7 @@ IpL4Protocol::DownTargetCallback6
 Icmpv4L4Protocol::GetDownTarget6 (void) const
 {
   NS_LOG_FUNCTION (this);
-  return (IpL4Protocol::DownTargetCallback6)NULL;
+  return IpL4Protocol::DownTargetCallback6 ();
 }
 
 } // namespace ns3

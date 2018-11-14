@@ -22,7 +22,7 @@
 #ifndef MATRIX_BASED_CHANNEL_H
 #define MATRIX_BASED_CHANNEL_H
 
-#include <complex.h>
+// #include <complex>
 #include <ns3/object.h>
 #include <ns3/nstime.h>
 #include <ns3/vector.h>

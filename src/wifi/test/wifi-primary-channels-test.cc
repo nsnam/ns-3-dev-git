@@ -474,7 +474,7 @@ WifiPrimaryChannelsTest::DoRun (void)
           auto dev = DynamicCast<WifiNetDevice> (m_staDevices[bss].Get (i));
           Simulator::Schedule (m_time, &WifiPhy::SetReceiveOkCallback, dev->GetPhy (),
                                MakeCallback (&WifiPrimaryChannelsTest::ReceiveDl, this)
-                                             .TwoBind (bss, i));
+                                             .Bind (bss, i));
         }
       auto dev = DynamicCast<WifiNetDevice> (m_apDevices.Get (bss));
       Simulator::Schedule (m_time, &WifiPhy::SetReceiveOkCallback, dev->GetPhy (),

@@ -45,7 +45,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("FdReader");
 
 FdReader::FdReader ()
-  : m_fd (-1), m_readCallback (0), m_stop (false),
+  : m_fd (-1), m_stop (false),
     m_destroyEvent ()
 {
   NS_LOG_FUNCTION (this);

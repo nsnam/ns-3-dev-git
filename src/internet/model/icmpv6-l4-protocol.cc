@@ -1606,7 +1606,7 @@ IpL4Protocol::DownTargetCallback
 Icmpv6L4Protocol::GetDownTarget (void) const
 {
   NS_LOG_FUNCTION (this);
-  return (IpL4Protocol::DownTargetCallback)NULL;
+  return IpL4Protocol::DownTargetCallback ();
 }
 
 IpL4Protocol::DownTargetCallback6
