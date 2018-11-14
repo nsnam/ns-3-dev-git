@@ -2631,6 +2631,11 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
+    ## simulator.h (module 'core'): static uint64_t ns3::Simulator::GetEventCount() [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
+                   is_static=True)
     ## simulator.h (module 'core'): static ns3::Ptr<ns3::SimulatorImpl> ns3::Simulator::GetImplementation() [member function]
     cls.add_method('GetImplementation', 
                    'ns3::Ptr< ns3::SimulatorImpl >', 
@@ -3100,6 +3105,7 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::int64x64_t'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -4307,7 +4313,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
@@ -7505,8 +7514,8 @@ def register_Ns3DsdvQueueEntry_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
     ## dsdv-packet-queue.h (module 'dsdv'): ns3::dsdv::QueueEntry::QueueEntry(ns3::dsdv::QueueEntry const & arg0) [constructor]
     cls.add_constructor([param('ns3::dsdv::QueueEntry const &', 'arg0')])
-    ## dsdv-packet-queue.h (module 'dsdv'): ns3::dsdv::QueueEntry::QueueEntry(ns3::Ptr<const ns3::Packet> pa=0, ns3::Ipv4Header const & h=ns3::Ipv4Header(), ns3::dsdv::QueueEntry::UnicastForwardCallback ucb=ns3::dsdv::QueueEntry::UnicastForwardCallback(), ns3::dsdv::QueueEntry::ErrorCallback ecb=ns3::dsdv::QueueEntry::ErrorCallback()) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Packet const >', 'pa', default_value='0'), param('ns3::Ipv4Header const &', 'h', default_value='ns3::Ipv4Header()'), param('ns3::dsdv::QueueEntry::UnicastForwardCallback', 'ucb', default_value='ns3::dsdv::QueueEntry::UnicastForwardCallback()'), param('ns3::dsdv::QueueEntry::ErrorCallback', 'ecb', default_value='ns3::dsdv::QueueEntry::ErrorCallback()')])
+    ## dsdv-packet-queue.h (module 'dsdv'): ns3::dsdv::QueueEntry::QueueEntry(ns3::Ptr<const ns3::Packet> pa=0, ns3::Ipv4Header const & h=ns3::Ipv4Header(), ns3::dsdv::QueueEntry::UnicastForwardCallback ucb=::ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( ), ns3::dsdv::QueueEntry::ErrorCallback ecb=::ns3::Callback<void, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( )) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet const >', 'pa', default_value='0'), param('ns3::Ipv4Header const &', 'h', default_value='ns3::Ipv4Header()'), param('ns3::dsdv::QueueEntry::UnicastForwardCallback', 'ucb', default_value='::ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( )'), param('ns3::dsdv::QueueEntry::ErrorCallback', 'ecb', default_value='::ns3::Callback<void, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( )')])
     ## dsdv-packet-queue.h (module 'dsdv'): ns3::dsdv::QueueEntry::ErrorCallback ns3::dsdv::QueueEntry::GetErrorCallback() const [member function]
     cls.add_method('GetErrorCallback', 
                    'ns3::dsdv::QueueEntry::ErrorCallback', 

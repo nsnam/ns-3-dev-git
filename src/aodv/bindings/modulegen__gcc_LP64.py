@@ -2684,6 +2684,11 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
                    is_static=True)
+    ## simulator.h (module 'core'): static uint64_t ns3::Simulator::GetEventCount() [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
+                   is_static=True)
     ## simulator.h (module 'core'): static ns3::Ptr<ns3::SimulatorImpl> ns3::Simulator::GetImplementation() [member function]
     cls.add_method('GetImplementation', 
                    'ns3::Ptr< ns3::SimulatorImpl >', 
@@ -3153,6 +3158,7 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::int64x64_t'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -4364,7 +4370,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
@@ -4981,11 +4990,6 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('SetMacAddress', 
                    'void', 
                    [param('ns3::Address', 'macAddress')])
-    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
-    cls.add_method('SetMacAddresss', 
-                   'void', 
-                   [param('ns3::Address', 'macAddress')], 
-                   deprecated=True)
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::UpdateSeen() [member function]
     cls.add_method('UpdateSeen', 
                    'void', 
@@ -7888,8 +7892,8 @@ def register_Ns3AodvQueueEntry_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
     ## aodv-rqueue.h (module 'aodv'): ns3::aodv::QueueEntry::QueueEntry(ns3::aodv::QueueEntry const & arg0) [constructor]
     cls.add_constructor([param('ns3::aodv::QueueEntry const &', 'arg0')])
-    ## aodv-rqueue.h (module 'aodv'): ns3::aodv::QueueEntry::QueueEntry(ns3::Ptr<const ns3::Packet> pa=0, ns3::Ipv4Header const & h=ns3::Ipv4Header(), ns3::aodv::QueueEntry::UnicastForwardCallback ucb=ns3::aodv::QueueEntry::UnicastForwardCallback(), ns3::aodv::QueueEntry::ErrorCallback ecb=ns3::aodv::QueueEntry::ErrorCallback(), ns3::Time exp=ns3::Simulator::Now()) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Packet const >', 'pa', default_value='0'), param('ns3::Ipv4Header const &', 'h', default_value='ns3::Ipv4Header()'), param('ns3::aodv::QueueEntry::UnicastForwardCallback', 'ucb', default_value='ns3::aodv::QueueEntry::UnicastForwardCallback()'), param('ns3::aodv::QueueEntry::ErrorCallback', 'ecb', default_value='ns3::aodv::QueueEntry::ErrorCallback()'), param('ns3::Time', 'exp', default_value='ns3::Simulator::Now()')])
+    ## aodv-rqueue.h (module 'aodv'): ns3::aodv::QueueEntry::QueueEntry(ns3::Ptr<const ns3::Packet> pa=0, ns3::Ipv4Header const & h=ns3::Ipv4Header(), ns3::aodv::QueueEntry::UnicastForwardCallback ucb=::ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( ), ns3::aodv::QueueEntry::ErrorCallback ecb=::ns3::Callback<void, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( ), ns3::Time exp=ns3::Simulator::Now()) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet const >', 'pa', default_value='0'), param('ns3::Ipv4Header const &', 'h', default_value='ns3::Ipv4Header()'), param('ns3::aodv::QueueEntry::UnicastForwardCallback', 'ucb', default_value='::ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( )'), param('ns3::aodv::QueueEntry::ErrorCallback', 'ecb', default_value='::ns3::Callback<void, ns3::Ptr<const ns3::Packet>, const ns3::Ipv4Header &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>( )'), param('ns3::Time', 'exp', default_value='ns3::Simulator::Now()')])
     ## aodv-rqueue.h (module 'aodv'): ns3::aodv::QueueEntry::ErrorCallback ns3::aodv::QueueEntry::GetErrorCallback() const [member function]
     cls.add_method('GetErrorCallback', 
                    'ns3::aodv::QueueEntry::ErrorCallback', 

@@ -113,6 +113,8 @@ def register_types(module):
     module.add_class('RngSeedManager')
     ## rng-stream.h (module 'core'): ns3::RngStream [class]
     module.add_class('RngStream')
+    ## show-progress.h (module 'core'): ns3::ShowProgress [class]
+    module.add_class('ShowProgress')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
@@ -369,12 +371,12 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::ObjectPtrContainerValue*', u'ns3::ObjectMapValue*')
     typehandlers.add_type_alias(u'ns3::ObjectPtrContainerValue&', u'ns3::ObjectMapValue&')
     module.add_typedef(root_module['ns3::ObjectPtrContainerValue'], 'ObjectMapValue')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogTimePrinter')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogTimePrinter*')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogTimePrinter&')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogNodePrinter')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogNodePrinter*')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogNodePrinter&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::TimePrinter')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::TimePrinter*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::TimePrinter&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::NodePrinter')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::NodePrinter*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::NodePrinter&')
     
     ## Register a nested module for the namespace CommandLineHelper
     
@@ -554,6 +556,7 @@ def register_methods(root_module):
     register_Ns3RandomVariableStreamHelper_methods(root_module, root_module['ns3::RandomVariableStreamHelper'])
     register_Ns3RngSeedManager_methods(root_module, root_module['ns3::RngSeedManager'])
     register_Ns3RngStream_methods(root_module, root_module['ns3::RngStream'])
+    register_Ns3ShowProgress_methods(root_module, root_module['ns3::ShowProgress'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
     register_Ns3Singleton__Ns3DesMetrics_methods(root_module, root_module['ns3::Singleton< ns3::DesMetrics >'])
@@ -1345,6 +1348,33 @@ def register_Ns3RngStream_methods(root_module, cls):
                    [])
     return
 
+def register_Ns3ShowProgress_methods(root_module, cls):
+    ## show-progress.h (module 'core'): ns3::ShowProgress::ShowProgress(ns3::Time const interval=ns3::Seconds(1.), std::ostream & os=std::cout) [constructor]
+    cls.add_constructor([param('ns3::Time const', 'interval', default_value='ns3::Seconds(1.)'), param('std::ostream &', 'os', default_value='std::cout')])
+    ## show-progress.h (module 'core'): void ns3::ShowProgress::SetInterval(ns3::Time const interval) [member function]
+    cls.add_method('SetInterval', 
+                   'void', 
+                   [param('ns3::Time const', 'interval')])
+    ## show-progress.h (module 'core'): void ns3::ShowProgress::SetTimePrinter(ns3::TimePrinter lp) [member function]
+    cls.add_method('SetTimePrinter', 
+                   'void', 
+                   [param('void ( * ) ( std::ostream & )', 'lp')])
+    ## show-progress.h (module 'core'): void ns3::ShowProgress::SetStream(std::ostream & os) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('std::ostream &', 'os')])
+    ## show-progress.h (module 'core'): void ns3::ShowProgress::Start() [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [])
+    ## show-progress.h (module 'core'): void ns3::ShowProgress::SetVerbose(bool verbose) [member function]
+    cls.add_method('SetVerbose', 
+                   'void', 
+                   [param('bool', 'verbose')])
+    ## show-progress.h (module 'core'): ns3::ShowProgress::ShowProgress(ns3::ShowProgress const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ShowProgress const &', 'arg0')])
+    return
+
 def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter>::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -1374,6 +1404,11 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('GetDelayLeft', 
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
+                   is_static=True)
+    ## simulator.h (module 'core'): static uint64_t ns3::Simulator::GetEventCount() [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
                    is_static=True)
     ## simulator.h (module 'core'): static ns3::Ptr<ns3::SimulatorImpl> ns3::Simulator::GetImplementation() [member function]
     cls.add_method('GetImplementation', 
@@ -1892,6 +1927,7 @@ def register_Ns3Empty_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::int64x64_t'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -2294,6 +2330,11 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h (module 'core'): uint64_t ns3::SimulatorImpl::GetEventCount() const [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::GetMaximumSimulationTime() const [member function]
     cls.add_method('GetMaximumSimulationTime', 
                    'ns3::Time', 
@@ -2503,7 +2544,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
@@ -3329,6 +3373,11 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
     cls.add_method('GetDelayLeft', 
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
+                   is_const=True, is_virtual=True)
+    ## default-simulator-impl.h (module 'core'): uint64_t ns3::DefaultSimulatorImpl::GetEventCount() const [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
                    is_const=True, is_virtual=True)
     ## default-simulator-impl.h (module 'core'): ns3::Time ns3::DefaultSimulatorImpl::GetMaximumSimulationTime() const [member function]
     cls.add_method('GetMaximumSimulationTime', 
@@ -4301,6 +4350,11 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
                    is_const=True, is_virtual=True)
+    ## realtime-simulator-impl.h (module 'core'): uint64_t ns3::RealtimeSimulatorImpl::GetEventCount() const [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): ns3::Time ns3::RealtimeSimulatorImpl::GetHardLimit() const [member function]
     cls.add_method('GetHardLimit', 
                    'ns3::Time', 
@@ -4947,6 +5001,14 @@ def register_functions(root_module):
     module.add_function('Days', 
                         'ns3::Time', 
                         [param('double', 'value')])
+    ## node-printer.h (module 'core'): void ns3::DefaultNodePrinter(std::ostream & os) [free function]
+    module.add_function('DefaultNodePrinter', 
+                        'void', 
+                        [param('std::ostream &', 'os')])
+    ## time-printer.h (module 'core'): void ns3::DefaultTimePrinter(std::ostream & os) [free function]
+    module.add_function('DefaultTimePrinter', 
+                        'void', 
+                        [param('std::ostream &', 'os')])
     ## nstime.h (module 'core'): ns3::Time ns3::FemtoSeconds(ns3::int64x64_t value) [free function]
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
@@ -5003,22 +5065,22 @@ def register_functions(root_module):
     module.add_function('LogComponentPrintList', 
                         'void', 
                         [])
-    ## log.h (module 'core'): ns3::LogNodePrinter ns3::LogGetNodePrinter() [free function]
+    ## log.h (module 'core'): ns3::NodePrinter ns3::LogGetNodePrinter() [free function]
     module.add_function('LogGetNodePrinter', 
-                        'ns3::LogNodePrinter', 
+                        'ns3::NodePrinter', 
                         [])
-    ## log.h (module 'core'): ns3::LogTimePrinter ns3::LogGetTimePrinter() [free function]
+    ## log.h (module 'core'): ns3::TimePrinter ns3::LogGetTimePrinter() [free function]
     module.add_function('LogGetTimePrinter', 
-                        'ns3::LogTimePrinter', 
+                        'ns3::TimePrinter', 
                         [])
-    ## log.h (module 'core'): void ns3::LogSetNodePrinter(ns3::LogNodePrinter np) [free function]
+    ## log.h (module 'core'): void ns3::LogSetNodePrinter(ns3::NodePrinter np) [free function]
     module.add_function('LogSetNodePrinter', 
                         'void', 
-                        [param('ns3::LogNodePrinter', 'np')])
-    ## log.h (module 'core'): void ns3::LogSetTimePrinter(ns3::LogTimePrinter lp) [free function]
+                        [param('ns3::NodePrinter', 'np')])
+    ## log.h (module 'core'): void ns3::LogSetTimePrinter(ns3::TimePrinter lp) [free function]
     module.add_function('LogSetTimePrinter', 
                         'void', 
-                        [param('ns3::LogTimePrinter', 'lp')])
+                        [param('ns3::TimePrinter', 'lp')])
     ## boolean.h (module 'core'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeBooleanChecker() [free function]
     module.add_function('MakeBooleanChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
