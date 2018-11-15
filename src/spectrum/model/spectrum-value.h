@@ -157,7 +157,18 @@ public:
    */
   Values::iterator ValuesEnd ();
 
+  /**
+   * \brief Get the number of values stored in the array
+   * \return the values array size
+   */
+  uint32_t GetValuesN () const;
 
+  /**
+   * \brief Get the value element at the position
+   * \param pos position
+   * \return the value element in that position (with bounds checking)
+   */
+  const double & ValuesAt (uint32_t pos) const;
 
   /**
    *  addition operator
