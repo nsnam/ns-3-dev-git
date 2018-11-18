@@ -36,282 +36,11 @@
 #include "vht-configuration.h"
 #include "he-configuration.h"
 #include "wifi-net-device.h"
+#include "tx-vector-tag.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
-
-/**
- * HighLatencyDataTxVectorTag class
- */
-class HighLatencyDataTxVectorTag : public Tag
-{
-public:
-  HighLatencyDataTxVectorTag ();
-  /**
-   * Constructor
-   *
-   * \param dataTxVector TXVECTOR for data frames
-   */
-  HighLatencyDataTxVectorTag (WifiTxVector dataTxVector);
-  /**
-   * \returns the transmission mode to use to send this packet
-   */
-  WifiTxVector GetDataTxVector (void) const;
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-private:
-  WifiTxVector m_dataTxVector; ///< TXVECTOR for data frames
-};
-
-HighLatencyDataTxVectorTag::HighLatencyDataTxVectorTag ()
-{
-}
-
-HighLatencyDataTxVectorTag::HighLatencyDataTxVectorTag (WifiTxVector dataTxVector)
-  : m_dataTxVector (dataTxVector)
-{
-}
-
-WifiTxVector
-HighLatencyDataTxVectorTag::GetDataTxVector (void) const
-{
-  return m_dataTxVector;
-}
-
-TypeId
-HighLatencyDataTxVectorTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::HighLatencyDataTxVectorTag")
-    .SetParent<Tag> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<HighLatencyDataTxVectorTag> ()
-  ;
-  return tid;
-}
-
-TypeId
-HighLatencyDataTxVectorTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-HighLatencyDataTxVectorTag::GetSerializedSize (void) const
-{
-  return sizeof (WifiTxVector);
-}
-
-void
-HighLatencyDataTxVectorTag::Serialize (TagBuffer i) const
-{
-  i.Write ((uint8_t *)&m_dataTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyDataTxVectorTag::Deserialize (TagBuffer i)
-{
-  i.Read ((uint8_t *)&m_dataTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyDataTxVectorTag::Print (std::ostream &os) const
-{
-  os << "Data=" << m_dataTxVector;
-}
-
-/**
- * HighLatencyRtsTxVectorTag class
- */
-class HighLatencyRtsTxVectorTag : public Tag
-{
-public:
-  HighLatencyRtsTxVectorTag ();
-  /**
-   * Constructor
-   *
-   * \param rtsTxVector TXVECTOR for RTS frames
-   */
-  HighLatencyRtsTxVectorTag (WifiTxVector rtsTxVector);
-  /**
-   * \returns the transmission mode to use to send the RTS prior to the
-   *          transmission of the data packet itself.
-   */
-  WifiTxVector GetRtsTxVector (void) const;
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-private:
-  WifiTxVector m_rtsTxVector; ///< TXVECTOR for data frames
-};
-
-HighLatencyRtsTxVectorTag::HighLatencyRtsTxVectorTag ()
-{
-}
-
-HighLatencyRtsTxVectorTag::HighLatencyRtsTxVectorTag (WifiTxVector rtsTxVector)
-  : m_rtsTxVector (rtsTxVector)
-{
-}
-
-WifiTxVector
-HighLatencyRtsTxVectorTag::GetRtsTxVector (void) const
-{
-  return m_rtsTxVector;
-}
-
-TypeId
-HighLatencyRtsTxVectorTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::HighLatencyRtsTxVectorTag")
-    .SetParent<Tag> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<HighLatencyRtsTxVectorTag> ()
-  ;
-  return tid;
-}
-
-TypeId
-HighLatencyRtsTxVectorTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-HighLatencyRtsTxVectorTag::GetSerializedSize (void) const
-{
-  return sizeof (WifiTxVector);
-}
-
-void
-HighLatencyRtsTxVectorTag::Serialize (TagBuffer i) const
-{
-  i.Write ((uint8_t *)&m_rtsTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyRtsTxVectorTag::Deserialize (TagBuffer i)
-{
-  i.Read ((uint8_t *)&m_rtsTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyRtsTxVectorTag::Print (std::ostream &os) const
-{
-  os << "Rts=" << m_rtsTxVector;
-}
-
-/**
- * HighLatencyCtsToSelfTxVectorTag class
- */
-class HighLatencyCtsToSelfTxVectorTag : public Tag
-{
-public:
-  HighLatencyCtsToSelfTxVectorTag ();
-  /**
-   * Constructor
-   *
-   * \param ctsToSelfTxVector TXVECTOR for CTS-to-self frames
-   */
-  HighLatencyCtsToSelfTxVectorTag (WifiTxVector ctsToSelfTxVector);
-  /**
-   * \returns the transmission mode to use for the CTS-to-self.
-   */
-  WifiTxVector GetCtsToSelfTxVector (void) const;
-
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-private:
-  WifiTxVector m_ctsToSelfTxVector; ///< TXVECTOR for CTS-to-self frames
-};
-
-HighLatencyCtsToSelfTxVectorTag::HighLatencyCtsToSelfTxVectorTag ()
-{
-}
-
-HighLatencyCtsToSelfTxVectorTag::HighLatencyCtsToSelfTxVectorTag (WifiTxVector ctsToSelfTxVector)
-  : m_ctsToSelfTxVector (ctsToSelfTxVector)
-{
-}
-
-WifiTxVector
-HighLatencyCtsToSelfTxVectorTag::GetCtsToSelfTxVector (void) const
-{
-  return m_ctsToSelfTxVector;
-}
-
-TypeId
-HighLatencyCtsToSelfTxVectorTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::HighLatencyCtsToSelfTxVectorTag")
-    .SetParent<Tag> ()
-    .SetGroupName ("Wifi")
-    .AddConstructor<HighLatencyCtsToSelfTxVectorTag> ()
-  ;
-  return tid;
-}
-
-TypeId
-HighLatencyCtsToSelfTxVectorTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-HighLatencyCtsToSelfTxVectorTag::GetSerializedSize (void) const
-{
-  return sizeof (WifiTxVector);
-}
-
-void
-HighLatencyCtsToSelfTxVectorTag::Serialize (TagBuffer i) const
-{
-  i.Write ((uint8_t *)&m_ctsToSelfTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyCtsToSelfTxVectorTag::Deserialize (TagBuffer i)
-{
-  i.Read ((uint8_t *)&m_ctsToSelfTxVector, sizeof (WifiTxVector));
-}
-
-void
-HighLatencyCtsToSelfTxVectorTag::Print (std::ostream &os) const
-{
-  os << "Cts To Self=" << m_ctsToSelfTxVector;
-}
-
-} //namespace ns3
-
-namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager);
 
@@ -815,27 +544,6 @@ WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHe
   packet->AddPacketTag (ctstoselftag);
 }
 
-uint16_t
-WifiRemoteStationManager::GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth)
-{
-  NS_LOG_FUNCTION (mode << maxSupportedChannelWidth);
-  WifiModulationClass modulationClass = mode.GetModulationClass ();
-  if (maxSupportedChannelWidth > 20
-      && (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_OFDM // all non-HT OFDM control and management frames
-          || modulationClass == WifiModulationClass::WIFI_MOD_CLASS_ERP_OFDM)) // special case of beacons at 2.4 GHz
-    {
-      NS_LOG_LOGIC ("Channel width reduced to 20 MHz");
-      return 20;
-    }
-  //at 2.4 GHz basic rate can be non-ERP DSSS
-  if (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_DSSS
-      || modulationClass == WifiModulationClass::WIFI_MOD_CLASS_HR_DSSS)
-    {
-      return 22;
-    }
-  return maxSupportedChannelWidth;
-}
-
 WifiTxVector
 WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHeader *header, Ptr<const Packet> packet)
 {
@@ -845,7 +553,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       WifiMode mode = GetNonUnicastMode ();
       WifiTxVector v;
       v.SetMode (mode);
-      v.SetPreambleType (GetPreambleForTransmission (mode, address));
+      v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
       v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
       v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
@@ -876,7 +584,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
           mgtMode = GetDefaultMode ();
         }
       txVector.SetMode (mgtMode);
-      txVector.SetPreambleType (GetPreambleForTransmission (mgtMode, address));
+      txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
     }
@@ -1347,29 +1055,6 @@ WifiRemoteStationManager::IsLastFragment (Mac48Address address, const WifiMacHea
   return isLast;
 }
 
-bool
-WifiRemoteStationManager::IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const
-{
-  switch (modClassReq)
-    {
-    case WIFI_MOD_CLASS_DSSS:
-      return (modClassAnswer == WIFI_MOD_CLASS_DSSS);
-    case WIFI_MOD_CLASS_HR_DSSS:
-      return (modClassAnswer == WIFI_MOD_CLASS_DSSS || modClassAnswer == WIFI_MOD_CLASS_HR_DSSS);
-    case WIFI_MOD_CLASS_ERP_OFDM:
-      return (modClassAnswer == WIFI_MOD_CLASS_DSSS || modClassAnswer == WIFI_MOD_CLASS_HR_DSSS || modClassAnswer == WIFI_MOD_CLASS_ERP_OFDM);
-    case WIFI_MOD_CLASS_OFDM:
-      return (modClassAnswer == WIFI_MOD_CLASS_OFDM);
-    case WIFI_MOD_CLASS_HT:
-    case WIFI_MOD_CLASS_VHT:
-    case WIFI_MOD_CLASS_HE:
-      return true;
-    default:
-      NS_FATAL_ERROR ("Modulation class not defined");
-      return false;
-    }
-}
-
 WifiMode
 WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode)
 {
@@ -1518,7 +1203,7 @@ WifiRemoteStationManager::GetCtsTxVector (Mac48Address address, WifiMode rtsMode
   WifiMode ctsMode = GetControlAnswerMode (rtsMode);
   WifiTxVector v;
   v.SetMode (ctsMode);
-  v.SetPreambleType (GetPreambleForTransmission (ctsMode, address));
+  v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
   v.SetTxPowerLevel (DoGetCtsTxPowerLevel (address, ctsMode));
   v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, DoGetCtsTxChannelWidth (address, ctsMode)));
   v.SetGuardInterval (DoGetCtsTxGuardInterval (address, ctsMode));
@@ -1535,7 +1220,7 @@ WifiRemoteStationManager::GetAckTxVector (Mac48Address address, WifiMode dataMod
   WifiMode ackMode = GetControlAnswerMode (dataMode);
   WifiTxVector v;
   v.SetMode (ackMode);
-  v.SetPreambleType (GetPreambleForTransmission (ackMode, address));
+  v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
   v.SetTxPowerLevel (DoGetAckTxPowerLevel (address, ackMode));
   v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, DoGetAckTxChannelWidth (address, ackMode)));
   v.SetGuardInterval (DoGetAckTxGuardInterval (address, ackMode));
@@ -1552,7 +1237,7 @@ WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address address, WifiMode bl
   WifiMode blockAckMode = GetControlAnswerMode (blockAckReqMode);
   WifiTxVector v;
   v.SetMode (blockAckMode);
-  v.SetPreambleType (GetPreambleForTransmission (blockAckMode, address));
+  v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
   v.SetTxPowerLevel (DoGetBlockAckTxPowerLevel (address, blockAckMode));
   v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, DoGetBlockAckTxChannelWidth (address, blockAckMode)));
   v.SetGuardInterval (DoGetBlockAckTxGuardInterval (address, blockAckMode));
@@ -2256,90 +1941,21 @@ WifiRemoteStationManager::SetDefaultTxPowerLevel (uint8_t txPower)
 }
 
 uint8_t
-WifiRemoteStationManager::GetNumberOfAntennas (void)
+WifiRemoteStationManager::GetNumberOfAntennas (void) const
 {
   return m_wifiPhy->GetNumberOfAntennas ();
 }
 
 uint8_t
-WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void)
+WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void) const
 {
   return m_wifiPhy->GetMaxSupportedTxSpatialStreams ();
 }
 
-WifiPreamble
-WifiRemoteStationManager::GetPreambleForTransmission (WifiMode mode, Mac48Address dest)
+bool
+WifiRemoteStationManager::UseGreenfieldForDestination (Mac48Address dest) const
 {
-  NS_LOG_FUNCTION (this << mode << dest);
-  WifiPreamble preamble;
-  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
-    {
-      preamble = WIFI_PREAMBLE_HE_SU;
-    }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-    {
-      preamble = WIFI_PREAMBLE_VHT;
-    }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT && GetGreenfieldSupported () && GetGreenfieldSupported (dest) && !GetUseGreenfieldProtection ())
-    {
-      //If protection for greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
-      preamble = WIFI_PREAMBLE_HT_GF;
-    }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-    {
-      preamble = WIFI_PREAMBLE_HT_MF;
-    }
-  else if (GetShortPreambleEnabled ())
-    {
-      preamble = WIFI_PREAMBLE_SHORT;
-    }
-  else
-    {
-      preamble = WIFI_PREAMBLE_LONG;
-    }
-  NS_LOG_DEBUG ("selected preamble=" << preamble);
-  return preamble;
-}
-
-WifiRemoteStation::~WifiRemoteStation ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
-WifiRemoteStationInfo::WifiRemoteStationInfo ()
-  : m_memoryTime (Seconds (1.0)),
-    m_lastUpdate (Seconds (0.0)),
-    m_failAvg (0.0)
-{
-  NS_LOG_FUNCTION (this);
-}
-
-double
-WifiRemoteStationInfo::CalculateAveragingCoefficient ()
-{
-  double retval = std::exp (static_cast<double> (m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds ()) / m_memoryTime.GetMicroSeconds ());
-  m_lastUpdate = Simulator::Now ();
-  return retval;
-}
-
-void
-WifiRemoteStationInfo::NotifyTxSuccess (uint32_t retryCounter)
-{
-  double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = static_cast<double> (retryCounter) / (1 + retryCounter) * (1 - coefficient) + coefficient * m_failAvg;
-}
-
-void
-WifiRemoteStationInfo::NotifyTxFailed ()
-{
-  double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = (1 - coefficient) + coefficient * m_failAvg;
-}
-
-double
-WifiRemoteStationInfo::GetFrameErrorRate () const
-{
-  return m_failAvg;
+  return (GetGreenfieldSupported () && GetGreenfieldSupported (dest) && !GetUseGreenfieldProtection ());
 }
 
 } //namespace ns3

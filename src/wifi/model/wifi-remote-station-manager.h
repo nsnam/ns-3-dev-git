@@ -23,16 +23,13 @@
 
 #include "ns3/traced-callback.h"
 #include "ns3/object.h"
-#include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/mac48-address.h"
 #include "wifi-mode.h"
-#include "wifi-preamble.h"
+#include "wifi-utils.h"
+#include "wifi-remote-station-info.h"
 
 namespace ns3 {
-
-struct WifiRemoteStation;
-struct WifiRemoteStationState;
 
 class WifiPhy;
 class WifiMac;
@@ -43,45 +40,73 @@ class VhtCapabilities;
 class HeCapabilities;
 class WifiTxVector;
 
+struct WifiRemoteStationState;
+
 /**
- * \brief Tid independent remote station statistics
+ * \brief hold per-remote-station state.
  *
- * Structure is similar to struct sta_info in Linux kernel (see
- * net/mac80211/sta_info.h)
+ * The state in this class is used to keep track
+ * of association status if we are in an infrastructure
+ * network and to perform the selection of tx parameters
+ * on a per-packet basis.
+ *
+ * This class is typically subclassed and extended by
+ * rate control implementations
  */
-class WifiRemoteStationInfo
+struct WifiRemoteStation
 {
-public:
-  WifiRemoteStationInfo ();
+  virtual ~WifiRemoteStation () {};
+  WifiRemoteStationState *m_state;  //!< Remote station state
+  uint32_t m_ssrc;                  //!< STA short retry count
+  uint32_t m_slrc;                  //!< STA long retry count
+  uint8_t m_tid;                    //!< traffic ID
+};
+
+/**
+ * A struct that holds information about each remote station.
+ */
+struct WifiRemoteStationState
+{
   /**
-   * \brief Updates average frame error rate when data or RTS was transmitted successfully.
-   *
-   * \param retryCounter is slrc or ssrc value at the moment of success transmission.
+   * State of the station
    */
-  void NotifyTxSuccess (uint32_t retryCounter);
-  /// Updates average frame error rate when final data or RTS has failed.
-  void NotifyTxFailed ();
+  enum
+  {
+    BRAND_NEW,
+    DISASSOC,
+    WAIT_ASSOC_TX_OK,
+    GOT_ASSOC_TX_OK
+  } m_state;
+
   /**
-   * Return frame error rate (probability that frame is corrupted due to transmission error).
-   * \returns the frame error rate
+   * This member is the list of WifiMode objects that comprise the
+   * OperationalRateSet parameter for this remote station. This list
+   * is constructed through calls to
+   * WifiRemoteStationManager::AddSupportedMode(), and an API that
+   * allows external access to it is available through
+   * WifiRemoteStationManager::GetNSupported() and
+   * WifiRemoteStationManager::GetSupported().
    */
-  double GetFrameErrorRate () const;
-private:
-  /**
-   * \brief Calculate averaging coefficient for frame error rate. Depends on time of the last update.
-   *
-   * \attention Calling this method twice gives different results,
-   * because it resets time of last update.
-   *
-   * \return average coefficient for frame error rate
-   */
-  double CalculateAveragingCoefficient ();
-  /// averaging coefficient depends on the memory time
-  Time m_memoryTime;
-  /// when last update has occurred
-  Time m_lastUpdate;
-  /// moving percentage of failed frames
-  double m_failAvg;
+  WifiModeList m_operationalRateSet; //!< opertional rate set
+  WifiModeList m_operationalMcsSet; //!< operational MCS set
+  Mac48Address m_address;  //!< Mac48Address of the remote station
+  WifiRemoteStationInfo m_info; //!< remote station info
+
+  uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
+  bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
+  uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
+  uint8_t m_streams;          //!< Number of supported streams by the remote station
+  uint8_t m_ness;             //!< Number of streams in beamforming of the remote station
+  bool m_stbc;                //!< Flag if STBC is supported by the remote station
+  bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
+  bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
+  bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
+  bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
+  bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
+  bool m_qosSupported;        //!< Flag if HT is supported by the station
+  bool m_htSupported;         //!< Flag if HT is supported by the station
+  bool m_vhtSupported;        //!< Flag if VHT is supported by the station
+  bool m_heSupported;         //!< Flag if HE is supported by the station
 };
 
 /**
@@ -108,6 +133,15 @@ public:
     RTS_CTS,
     CTS_TO_SELF
   };
+
+  /**
+   * A vector of WifiRemoteStations
+   */
+  typedef std::vector <WifiRemoteStation *> Stations;
+  /**
+   * A vector of WifiRemoteStationStates
+   */
+  typedef std::vector <WifiRemoteStationState *> StationStates;
 
   /**
    * Set up PHY associated with this device since it is the object that
@@ -854,11 +888,11 @@ public:
   /**
    * \return the number of antennas supported by the phy layer
    */
-  uint8_t GetNumberOfAntennas (void);
+  uint8_t GetNumberOfAntennas (void) const;
   /**
    * \return the maximum number of spatial streams supported by the phy layer
    */
-  uint8_t GetMaxNumberOfTransmitStreams (void);
+  uint8_t GetMaxNumberOfTransmitStreams (void) const;
 
   /**
    * TracedCallback signature for power change events.
@@ -1038,24 +1072,13 @@ protected:
    */
   uint8_t GetNess (const WifiRemoteStation *station) const;
   /**
-   * Return the preamble to be used for the transmission.
+   * \returns whether HT greenfield should be used for a given destination address.
    *
-   * \param mode the mode selected for the transmission
-   * \param dest address of the recipient
+   * \param dest the destination address
    *
-   * \return the preamble to be used for the transmission
+   * \return whether HT greenfield should be used for a given destination address
    */
-  WifiPreamble GetPreambleForTransmission (WifiMode mode, Mac48Address dest);
-  /**
-   * Return the channel width that corresponds to the selected mode (instead of
-   * letting the PHY's default channel width). This is especially useful when using
-   * non-HT modes with HT/VHT/HE capable stations (with default width above 20 MHz).
-   *
-   * \param mode selected WifiMode
-   * \param maxSupportedChannelWidth maximum channel width supported by the PHY layer
-   * \return channel width adapted to the selected mode
-   */
-  static uint16_t GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth);
+  bool UseGreenfieldForDestination (Mac48Address dest) const;
 
   /**
    * Return the WifiPhy.
@@ -1351,18 +1374,6 @@ private:
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
 
   /**
-   * Return whether the modulation class of the selected mode for the
-   * control answer frame is allowed.
-   *
-   * \param modClassReq modulation class of the request frame
-   * \param modClassAnswer modulation class of the answer frame
-   *
-   * \return true if the modulation class of the selected mode for the
-   * control answer frame is allowed, false otherwise
-   */
-  bool IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModulationClass modClassAnswer) const;
-
-  /**
    * Get control answer mode function.
    *
    * \param reqMode request mode
@@ -1393,15 +1404,6 @@ private:
    * \return the number of fragments needed
    */
   uint32_t GetNFragments (const WifiMacHeader *header, Ptr<const Packet> packet);
-
-  /**
-   * A vector of WifiRemoteStations
-   */
-  typedef std::vector <WifiRemoteStation *> Stations;
-  /**
-   * A vector of WifiRemoteStationStates
-   */
-  typedef std::vector <WifiRemoteStationState *> StationStates;
 
   /**
    * This is a pointer to the WifiPhy associated with this
@@ -1473,73 +1475,6 @@ private:
    * exceeded the maximum number of attempts
    */
   TracedCallback<Mac48Address> m_macTxFinalDataFailed;
-};
-
-/**
- * A struct that holds information about each remote station.
- */
-struct WifiRemoteStationState
-{
-  /**
-   * State of the station
-   */
-  enum
-  {
-    BRAND_NEW,
-    DISASSOC,
-    WAIT_ASSOC_TX_OK,
-    GOT_ASSOC_TX_OK
-  } m_state;
-
-  /**
-   * This member is the list of WifiMode objects that comprise the
-   * OperationalRateSet parameter for this remote station. This list
-   * is constructed through calls to
-   * WifiRemoteStationManager::AddSupportedMode(), and an API that
-   * allows external access to it is available through
-   * WifiRemoteStationManager::GetNSupported() and
-   * WifiRemoteStationManager::GetSupported().
-   */
-  WifiModeList m_operationalRateSet; //!< opertional rate set
-  WifiModeList m_operationalMcsSet; //!< operational MCS set
-  Mac48Address m_address;  //!< Mac48Address of the remote station
-  WifiRemoteStationInfo m_info; //!< remote station info
-
-  uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
-  bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
-  uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
-  uint8_t m_streams;          //!< Number of supported streams by the remote station
-  uint8_t m_ness;             //!< Number of streams in beamforming of the remote station
-  bool m_stbc;                //!< Flag if STBC is supported by the remote station
-  bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
-  bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
-  bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
-  bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
-  bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
-  bool m_qosSupported;        //!< Flag if HT is supported by the station
-  bool m_htSupported;         //!< Flag if HT is supported by the station
-  bool m_vhtSupported;        //!< Flag if VHT is supported by the station
-  bool m_heSupported;         //!< Flag if HE is supported by the station
-};
-
-/**
- * \brief hold per-remote-station state.
- *
- * The state in this class is used to keep track
- * of association status if we are in an infrastructure
- * network and to perform the selection of tx parameters
- * on a per-packet basis.
- *
- * This class is typically subclassed and extended by
- * rate control implementations
- */
-struct WifiRemoteStation
-{
-  virtual ~WifiRemoteStation ();
-  WifiRemoteStationState *m_state;  //!< Remote station state
-  uint32_t m_ssrc;                  //!< STA short retry count
-  uint32_t m_slrc;                  //!< STA long retry count
-  uint8_t m_tid;                    //!< traffic ID
 };
 
 } //namespace ns3
