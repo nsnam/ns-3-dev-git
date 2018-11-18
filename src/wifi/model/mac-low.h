@@ -542,6 +542,14 @@ private:
    */
   WifiTxVector GetAckTxVectorForData (Mac48Address to, WifiMode dataTxMode) const;
   /**
+   * Get control answer mode function.
+   *
+   * \param reqMode request mode
+   *
+   * \return control answer mode
+   */
+  WifiMode GetControlAnswerMode (WifiMode reqMode) const;
+  /**
    * Return the time required to transmit the CTS (including preamble and FCS).
    *
    * \param ctsTxVector

@@ -849,27 +849,6 @@ public:
                        Ptr<const Packet> packet, uint32_t fragmentNumber);
 
   /**
-   * \param address remote address
-   * \param rtsMode the transmission mode used to send an RTS we just received
-   *
-   * \return the transmission mode to use for the CTS to complete the RTS/CTS handshake.
-   */
-  WifiTxVector GetCtsTxVector (Mac48Address address, WifiMode rtsMode);
-  /**
-   * \param address
-   * \param dataMode the transmission mode used to send an ACK we just received
-   *
-   * \return the transmission mode to use for the ACK to complete the data/ACK handshake.
-   */
-  WifiTxVector GetAckTxVector (Mac48Address address, WifiMode dataMode);
-  /**
-   * \param address
-   * \param dataMode the transmission mode used to send an ACK we just received
-   *
-   * \return the transmission mode to use for the ACK to complete the data/ACK handshake.
-   */
-  WifiTxVector GetBlockAckTxVector (Mac48Address address, WifiMode dataMode);
-  /**
    * \return the default transmission power
    */
   uint8_t GetDefaultTxPowerLevel (void) const;
@@ -893,6 +872,14 @@ public:
    * \return the maximum number of spatial streams supported by the phy layer
    */
   uint8_t GetMaxNumberOfTransmitStreams (void) const;
+  /**
+   * \returns whether HT greenfield should be used for a given destination address.
+   *
+   * \param dest the destination address
+   *
+   * \return whether HT greenfield should be used for a given destination address
+   */
+  bool UseGreenfieldForDestination (Mac48Address dest) const;
 
   /**
    * TracedCallback signature for power change events.
@@ -1071,14 +1058,6 @@ protected:
    * \return the number of Ness the station has
    */
   uint8_t GetNess (const WifiRemoteStation *station) const;
-  /**
-   * \returns whether HT greenfield should be used for a given destination address.
-   *
-   * \param dest the destination address
-   *
-   * \return whether HT greenfield should be used for a given destination address
-   */
-  bool UseGreenfieldForDestination (Mac48Address dest) const;
 
   /**
    * Return the WifiPhy.
@@ -1163,112 +1142,6 @@ private:
    *       to decide which transmission mode to use for the rts.
    */
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) = 0;
-  /**
-   * \param address the address of the recipient of the CTS
-   * \param ctsMode the mode to be used for the CTS
-   *
-   * \return the power level to be used to send the CTS
-   */
-  virtual uint8_t DoGetCtsTxPowerLevel (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient of the ACK
-   * \param ackMode the mode to be used for the ACK
-   *
-   * \return the power level to be used to send the ACK
-   */
-  virtual uint8_t DoGetAckTxPowerLevel (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient of the Block ACK
-   * \param blockAckMode the mode to be used for the Block ACK
-   *
-   * \return the power level to be used to send the Block ACK
-   */
-  virtual uint8_t DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode);
-
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the CTS transmit channel width
-   */
-  virtual uint16_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the CTS transmit guard interval
-   */
-  virtual uint16_t DoGetCtsTxGuardInterval (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the CTS transmit NSS
-   */
-  virtual uint8_t DoGetCtsTxNss (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the CTS transmit NESS
-   */
-  virtual uint8_t DoGetCtsTxNess (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the ack transmit channel width
-   */
-  virtual uint16_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ackMode the mode to be used
-   *
-   * \return the ack transmit guard interval
-   */
-  virtual uint16_t DoGetAckTxGuardInterval (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient
-   * \param ackMode the mode to be used
-   *
-   * \return the ack transmit NSS
-   */
-  virtual uint8_t DoGetAckTxNss (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient
-   * \param ackMode the mode to be used
-   *
-   * \return the ack transmit NESS
-   */
-  virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
-   * \return the block ack transmit channel width
-   */
-  virtual uint16_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param blockAckMode the mode to be used
-   *
-   * \return the block ack transmit guard interval
-   */
-  virtual uint16_t DoGetBlockAckTxGuardInterval (Mac48Address address, WifiMode blockAckMode);
-  /**
-   * \param address the address of the recipient
-   * \param blockAckMode the mode to be used
-   *
-   * \return the block ack transmit NSS
-   */
-  virtual uint8_t DoGetBlockAckTxNss (Mac48Address address, WifiMode blockAckMode);
-  /**
-   * \param address the address of the recipient
-   * \param blockAckMode the mode to be used
-   *
-   * \return the block ack transmit NESS
-   */
-  virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
 
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
@@ -1372,15 +1245,6 @@ private:
    * \return WifiRemoteStation corresponding to the address
    */
   WifiRemoteStation* Lookup (Mac48Address address, const WifiMacHeader *header) const;
-
-  /**
-   * Get control answer mode function.
-   *
-   * \param reqMode request mode
-   *
-   * \return control answer mode
-   */
-  WifiMode GetControlAnswerMode (WifiMode reqMode);
 
   /**
    * Actually sets the fragmentation threshold, it also checks the validity of
