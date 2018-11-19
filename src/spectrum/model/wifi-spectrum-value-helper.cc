@@ -438,7 +438,7 @@ WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, 
   // see "LTE - From theory to practice"
   // Section 22.4.4.2 Thermal Noise and Receiver Noise Figure
   const double kT_dBm_Hz = -174.0;  // dBm/Hz
-  double kT_W_Hz = std::pow (10.0, (kT_dBm_Hz - 30) / 10.0);
+  double kT_W_Hz = DbmToW (kT_dBm_Hz);
   double noiseFigureLinear = std::pow (10.0, noiseFigureDb / 10.0);
   double noisePowerSpectralDensity =  kT_W_Hz * noiseFigureLinear;
 
@@ -620,8 +620,7 @@ WifiSpectrumValueHelper::NormalizeSpectrumMask (Ptr<SpectrumValue> c, double txP
 double
 WifiSpectrumValueHelper::DbmToW (double dBm)
 {
-  double mW = std::pow (10.0, dBm / 10.0);
-  return mW / 1000.0;
+  return std::pow (10.0, 0.1 * (dBm - 30.0));
 }
 
 static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz; ///< static initializer for the class
