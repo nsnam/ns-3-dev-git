@@ -53,7 +53,6 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/virtual-net-device.h"
-#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 
@@ -185,7 +184,7 @@ public:
 int 
 main (int argc, char *argv[])
 {
-  // Users may find it convenient to turn on explicit debugging
+  // Users may find it convenient to turn on explicit logging
   // for selected modules; the below lines suggest how to do this
 #if 0 
   LogComponentEnable ("VirtualNetDeviceExample", LOG_LEVEL_INFO);
@@ -197,15 +196,11 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("448kb/s"));
 
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);
-
   // Allow the user to override any of the defaults and the above
-  // DefaultValue::Bind ()s at run-time, via command-line arguments
+  // Config::SetDefault ()s at run-time, via command-line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  // Here, we will explicitly create four nodes.  In more sophisticated
-  // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
   NodeContainer c;
   c.Create (4);
