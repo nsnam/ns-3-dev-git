@@ -79,7 +79,7 @@ public:
     * \brief As per 3GPP TS version 9.8.0 section 8.2.3.2.2, the eNB initiates the procedure by sending an E-RAB RELEASE INDICATION message towards MME
     * \param mmeUeS1Id in practice, we use the IMSI
     * \param enbUeS1Id in practice, we use the RNTI
-    * \param erabToBeReleaseIndication the List of bearers to be deactivated
+    * \param erabToBeReleaseIndication, List of bearers to be deactivated
     *
     */
   virtual void ErabReleaseIndication (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ErabToBeReleasedIndication> erabToBeReleaseIndication ) = 0;
