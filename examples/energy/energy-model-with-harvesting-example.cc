@@ -169,11 +169,6 @@ main (int argc, char *argv[])
   double interval = 1;          // seconds
   double startTime = 0.0;       // seconds
   double distanceToRx = 100.0;  // meters
-  /*
-   * This is a magic number used to set the transmit power, based on other
-   * configuration.
-   */
-  double offset = 81;
   
   // Energy Harvester variables
   double harvestingUpdateInterval = 1;  // seconds
@@ -218,15 +213,12 @@ main (int argc, char *argv[])
   /** Wifi PHY **/
   /***************************************************************************/
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-  wifiPhy.Set ("RxGain", DoubleValue (-10));
-  wifiPhy.Set ("TxGain", DoubleValue (offset + Prss));
-  wifiPhy.Set ("CcaMode1Threshold", DoubleValue (0.0));
-  /***************************************************************************/
 
   /** wifi channel **/
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
+
   // create wifi channel
   Ptr<YansWifiChannel> wifiChannelPtr = wifiChannel.Create ();
   wifiPhy.SetChannel (wifiChannelPtr);

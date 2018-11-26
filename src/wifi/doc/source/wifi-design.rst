@@ -284,8 +284,7 @@ The PHY layer can be in one of six states:
 #. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
 
 Packet reception works as follows.  The ``YansWifiPhy`` attribute 
-CcaMode1Threshold 
-corresponds to what the standard calls the "ED threshold" for CCA Mode 1.  
+CcaEdThreshold corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
 In section 16.4.8.5:  "CCA Mode 1: Energy above threshold. CCA shall report 
 a busy medium upon detection of any energy above the ED threshold."  
 
@@ -295,23 +294,17 @@ However, the model doesn't support this, because there are no 'foreign'
 signals in the YansWifi model-- everything is a Wi-Fi signal.
 
 In the standard, there is also what is called the "minimum modulation
-and coding rate sensitivity" in section 18.3.10.6 CCA requirements. This is 
-the -82 dBm requirement for 20 MHz channels.  This is analogous to the 
-EnergyDetectionThreshold attribute in ``YansWifiPhy``.  CCA busy state is 
-not raised in this model when this threshold is exceeded but instead RX 
-state is immediately reached, since it is assumed that PLCP sync always 
-succeeds in this model.  Even if the PLCP header reception fails, the 
+and coding rate sensitivity" in section 18.3.10.6 CCA requirements. 
+This is analogous to the RxSensitivity attribute in ``YansWifiPhy``.
+CCA busy state is not raised in this model when this threshold is exceeded
+but instead RX state is immediately reached, since it is assumed that PLCP
+sync always succeeds in this model. Even if the PLCP header reception fails, the 
 channel state is still held in RX until YansWifiPhy::EndReceive().
 
-In ns-3, the values of these attributes are set to small default values 
-(-96 dBm for EnergyDetectionThreshold and -99 dBm for CcaMode1Threshold).  
-So, if a signal comes in at > -96 dBm and the state is IDLE or CCA BUSY, 
-this model will lock onto it for the signal duration and raise RX state.  
-If it comes in at <= -96 dBm but >= -99 dBm, it will definitely raise 
-CCA BUSY but not RX state.  If it comes in < -99 dBm, it gets added to 
-the interference tracker and, by itself, it will not raise CCA BUSY, but 
-maybe a later signal will contribute more power so that the threshold 
-of -99 dBm is reached at a later time.
+In ns-3, the values of these attributes are -101 dBm for RxSensitivity
+and -62 dBm for CcaEdThreshold.  
+So, if a signal comes in at > -101 dBm and the state is IDLE or CCA BUSY, 
+this model will lock onto it for the signal duration and raise RX state.
 
 The energy of the signal intended to be received is 
 calculated from the transmission power and adjusted based on the Tx gain
@@ -443,12 +436,9 @@ add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
 late from a hidden node) are added to the noise.
 
-Third, the default value for CcaMode1Threshold attribute is -62 dBm
-rather than the value of -99 dBm used for YansWifiPhy.  This is because,
-unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
-will be raised for foreign signals that are higher than this 'energy
-detection' threshold (see section 16.4.8.5 in the 802.11-2012 standard
-for definition of CCA Mode 1).  
+Unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
+will be raised for foreign signals that are higher than CcaEdThreshold
+(see section 16.4.8.5 in the 802.11-2012 standard for definition of CCA Mode 1).  
 
 To support the Spectrum channel, the ``YansWifiPhy`` transmit and receive methods
 were adapted to use the Spectrum channel API.  This required developing

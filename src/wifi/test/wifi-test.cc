@@ -1290,7 +1290,6 @@ Bug2483TestCase::DoRun (void)
   spectrumPhy.Set ("ChannelWidth", UintegerValue (channelWidth));
   spectrumPhy.Set ("TxPowerStart", DoubleValue (10));
   spectrumPhy.Set ("TxPowerEnd", DoubleValue (10));
-  spectrumPhy.Set ("CcaMode1Threshold", DoubleValue (-62.0));
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);

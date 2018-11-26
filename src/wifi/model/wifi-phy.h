@@ -23,6 +23,7 @@
 #define WIFI_PHY_H
 
 #include "ns3/event-id.h"
+#include "ns3/deprecated.h"
 #include "ns3/error-model.h"
 #include "wifi-mpdu-type.h"
 #include "wifi-phy-standard.h"
@@ -73,6 +74,13 @@ public:
 
   WifiPhy ();
   virtual ~WifiPhy ();
+  
+  /**
+   * Return the WifiPhyStateHelper of this PHY
+   *
+   * \return the WifiPhyStateHelper of this PHY
+   */
+  Ptr<WifiPhyStateHelper> GetState (void) const;
 
   /**
    * \param callback the callback to invoke
@@ -1190,14 +1198,24 @@ public:
    * this threshold (dbm) to allow the PHY layer to detect the signal.
    *
    * \param threshold the energy detection threshold in dBm
+   *
+   * \deprecated
    */
   void SetEdThreshold (double threshold);
   /**
-   * Return the energy detection threshold (dBm).
+   * Sets the receive sensitivity threshold (dBm).
+   * The energy of a received signal should be higher than
+   * this threshold to allow the PHY layer to detect the signal.
    *
-   * \return the energy detection threshold in dBm
+   * \param threshold the receive sensitivity threshold in dBm
    */
-  double GetEdThreshold (void) const;
+  void SetRxSensitivity (double threshold);
+  /**
+   * Return the receive sensitivity threshold (dBm).
+   *
+   * \return the receive sensitivity threshold in dBm
+   */
+  double GetRxSensitivity (void) const;
   /**
    * Sets the CCA threshold (dBm). The energy of a received signal
    * should be higher than this threshold to allow the PHY
@@ -1205,13 +1223,13 @@ public:
    *
    * \param threshold the CCA threshold in dBm
    */
-  void SetCcaMode1Threshold (double threshold);
+  void SetCcaEdThreshold (double threshold);
   /**
    * Return the CCA threshold (dBm).
    *
    * \return the CCA threshold in dBm
    */
-  double GetCcaMode1Threshold (void) const;
+  double GetCcaEdThreshold (void) const;
   /**
    * Sets the RX loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.
    *
@@ -1493,7 +1511,7 @@ protected:
    * Check if Phy state should move to CCA busy state based on current
    * state of interference tracker.  In this model, CCA becomes busy when
    * the aggregation of all signals as tracked by the InterferenceHelper
-   * class is higher than the CcaMode1Threshold
+   * class is higher than the CcaEdThreshold
    */
   void SwitchMaybeToCcaBusy (void);
 
@@ -1755,8 +1773,8 @@ private:
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
   uint16_t m_channelWidth;                  //!< Channel width
 
-  double   m_edThresholdW;        //!< Energy detection threshold in watts
-  double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
+  double   m_rxSensitivityW;      //!< Receive sensitivity threshold in watts
+  double   m_ccaEdThresholdW;     //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)
   double   m_rxGainDb;            //!< Reception gain (dB)
   double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)

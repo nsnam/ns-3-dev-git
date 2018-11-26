@@ -137,10 +137,6 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   wifi.SetStandard (wifiStandard);
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  // This is one parameter that matters when using FixedRssLossModel
-  // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (0) ); 
-  wifiPhy.Set ("CcaMode1Threshold", DoubleValue (0.0) );
 
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO); 
@@ -172,7 +168,6 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
 
   // This will disable these sending devices from detecting a signal 
   // so that they do not backoff
-  wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (0.0) );
   wifiPhy.Set ("TxGain", DoubleValue (offset + Prss) ); 
   devices.Add (wifi.Install (wifiPhy, wifiMac, c.Get (1)));
   wifiPhy.Set ("TxGain", DoubleValue (offset + Irss) ); 

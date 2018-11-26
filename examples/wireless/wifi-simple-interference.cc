@@ -178,9 +178,6 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  // set it to zero; otherwise, gain will be added
-  wifiPhy.Set ("RxGain", DoubleValue (0) );
-  wifiPhy.Set ("CcaMode1Threshold", DoubleValue (0.0) );
 
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
   wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
@@ -200,7 +197,6 @@ int main (int argc, char *argv[])
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c.Get (0));
   // This will disable these sending devices from detecting a signal
   // so that they do not backoff
-  wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (0.0) );
   wifiPhy.Set ("TxGain", DoubleValue (offset + Prss) );
   devices.Add (wifi.Install (wifiPhy, wifiMac, c.Get (1)));
   wifiPhy.Set ("TxGain", DoubleValue (offset + Irss) );

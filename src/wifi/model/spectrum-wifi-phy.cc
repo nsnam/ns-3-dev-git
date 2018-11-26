@@ -242,6 +242,14 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   // Log the signal arrival to the trace source
   m_signalCb (wifiRxParams ? true : false, senderNodeId, WToDbm (rxPowerW), rxDuration);
+
+  // Do no further processing if signal is too weak
+  // Current implementation assumes constant rx power over the packet duration
+  if (WToDbm (rxPowerW) < GetRxSensitivity ())
+    {
+      NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (rxPowerW) << " dBm");
+      return;
+    }
   if (wifiRxParams == 0)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");

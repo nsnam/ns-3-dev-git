@@ -517,6 +517,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
     {
       m_startCcaBusy = now;
     }
+  m_stateLogger (now, duration, WifiPhyState::CCA_BUSY);
   m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
 }
 
