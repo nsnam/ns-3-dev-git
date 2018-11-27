@@ -193,7 +193,6 @@ Experiment::Run (Parameters params)
   NetDeviceContainer nNGFStaDevice, nGFStaDevice;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
-               "BE_MaxAmpduSize", UintegerValue (0),
                "BE_BlockAckThreshold", UintegerValue (2),
                "ShortSlotTimeSupported", BooleanValue (params.enableShortSlotTime));
   nNGFStaDevice = wifi.Install (phy, mac, wifiNNGFStaNodes);
@@ -205,7 +204,6 @@ Experiment::Run (Parameters params)
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
                "EnableBeaconJitter", BooleanValue (false),
-               "BE_MaxAmpduSize", UintegerValue (0),
                "BE_BlockAckThreshold", UintegerValue (2),
                "RifsMode", BooleanValue (params.rifsMode),
                "EnableNonErpProtection", BooleanValue (params.enableErpProtection),
@@ -251,6 +249,8 @@ Experiment::Run (Parameters params)
       Ptr<QosTxop> edca = ptr.Get<QosTxop> ();
       edca->SetTxopLimit (MicroSeconds (3008));
     }
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/BeMaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
 
   // Define mobility model
   MobilityHelper mobility;

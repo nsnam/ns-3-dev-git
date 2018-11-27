@@ -790,6 +790,13 @@ attributes for 802.11ax devices.
  Ptr<HeConfiguration> heConfiguration = wnd->GetHeConfiguration ();
  heConfiguration->SetGuardInterval (NanoSeconds (1600));
 
+ 802.11ax allows extended compressed Block ACKs containing a 256-bits bitmap, making possible transmissions of A-MPDUs containing up to 256 MPDUs,
+ depending on the negotiated buffer size. In order to configure the buffer size of an 802.11ax device, the following line of code could be used::
+
+ heConfiguration->SetMpduBufferSize (256);
+
+ For transmitting large MPDUs, it might also be needed to increase the maximum aggregation size (see above).
+
 Mobility configuration
 ======================
 

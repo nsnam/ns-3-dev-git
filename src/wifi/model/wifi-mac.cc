@@ -25,6 +25,7 @@
 #include "ssid.h"
 #include "wifi-net-device.h"
 #include "ht-configuration.h"
+#include "vht-configuration.h"
 #include "he-configuration.h"
 
 namespace ns3 {
@@ -414,6 +415,7 @@ WifiMac::Configure80211ax_5Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211ac ();
+  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + MicroSeconds (85) + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void
@@ -478,6 +480,13 @@ WifiMac::GetHtConfiguration (void) const
 {
       Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
       return device->GetHtConfiguration ();
+}
+
+Ptr<VhtConfiguration>
+WifiMac::GetVhtConfiguration (void) const
+{
+      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+      return device->GetVhtConfiguration ();
 }
 
 Ptr<HeConfiguration>

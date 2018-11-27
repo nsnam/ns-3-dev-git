@@ -31,6 +31,7 @@ namespace ns3 {
 class Ssid;
 class Txop;
 class HtConfiguration;
+class VhtConfiguration;
 class HeConfiguration;
 
 /**
@@ -312,6 +313,19 @@ public:
    */
   void ConfigureStandard (WifiPhyStandard standard);
 
+  /**
+   * \return pointer to HtConfiguration if it exists
+   */
+  Ptr<HtConfiguration> GetHtConfiguration (void) const;
+  /**
+   * \return pointer to VhtConfiguration if it exists
+   */
+  Ptr<VhtConfiguration> GetVhtConfiguration (void) const;
+  /**
+   * \return pointer to HeConfiguration if it exists
+   */
+  Ptr<HeConfiguration> GetHeConfiguration (void) const;
+
 
 protected:
   /**
@@ -324,15 +338,6 @@ protected:
    * Configure the DCF with appropriate values depending on the given access category.
    */
   void ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac);
-
-  /**
-   * \return pointer to HtConfiguration if it exists
-   */
-  Ptr<HtConfiguration> GetHtConfiguration (void) const;
-  /**
-   * \return pointer to HeConfiguration if it exists
-   */
-  Ptr<HeConfiguration> GetHeConfiguration (void) const;
 
 
 private:

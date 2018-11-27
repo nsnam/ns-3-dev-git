@@ -56,6 +56,12 @@ MacLowTransmissionParameters::EnableCompressedBlockAck (void)
 }
 
 void
+MacLowTransmissionParameters::EnableExtendedCompressedBlockAck (void)
+{
+  m_waitAck = EXTENDED_BLOCK_ACK_COMPRESSED;
+}
+
+void
 MacLowTransmissionParameters::EnableMultiTidBlockAck (void)
 {
   m_waitAck = BLOCK_ACK_MULTI_TID;
@@ -104,6 +110,12 @@ MacLowTransmissionParameters::MustWaitCompressedBlockAck (void) const
 }
 
 bool
+MacLowTransmissionParameters::MustWaitExtendedCompressedBlockAck (void) const
+{
+  return (m_waitAck == EXTENDED_BLOCK_ACK_COMPRESSED) ? true : false;
+}
+
+bool
 MacLowTransmissionParameters::MustWaitMultiTidBlockAck (void) const
 {
   return (m_waitAck == BLOCK_ACK_MULTI_TID) ? true : false;
@@ -147,6 +159,9 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
       break;
     case MacLowTransmissionParameters::BLOCK_ACK_COMPRESSED:
       os << "compressed-block-ack";
+      break;
+    case MacLowTransmissionParameters::EXTENDED_BLOCK_ACK_COMPRESSED:
+      os << "extended-compressed-block-ack";
       break;
     case MacLowTransmissionParameters::BLOCK_ACK_MULTI_TID:
       os << "multi-tid-block-ack";

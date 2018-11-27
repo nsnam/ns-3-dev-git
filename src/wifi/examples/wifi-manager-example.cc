@@ -354,18 +354,15 @@ int main (int argc, char *argv[])
     {
       Ssid ssid = Ssid ("ns-3-ssid");
       wifiMac.SetType ("ns3::StaWifiMac",
-                       "Ssid", SsidValue (ssid),
-                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+                       "Ssid", SsidValue (ssid));
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
       wifiMac.SetType ("ns3::ApWifiMac",
-                       "Ssid", SsidValue (ssid),
-                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+                       "Ssid", SsidValue (ssid));
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
   else
     {
-      wifiMac.SetType ("ns3::AdhocWifiMac",
-                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+      wifiMac.SetType ("ns3::AdhocWifiMac");
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
@@ -374,6 +371,10 @@ int main (int argc, char *argv[])
   RngSeedManager::SetRun (2);
   wifi.AssignStreams (serverDevice, 100);
   wifi.AssignStreams (clientDevice, 100);
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/BeMaxAmpduSize", UintegerValue (maxAmpduSize));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/VhtConfiguration/BeMaxAmpduSize", UintegerValue (maxAmpduSize));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/BeMaxAmpduSize", UintegerValue (maxAmpduSize));
 
   Config::ConnectWithoutContext ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$ns3::" + wifiManager + "WifiManager/Rate", MakeCallback (&RateChange));
 

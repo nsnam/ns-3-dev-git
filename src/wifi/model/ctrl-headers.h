@@ -88,6 +88,12 @@ public:
    */
   bool MustSendHtImmediateAck (void) const;
   /**
+   * Return the block ACK type ID.
+   *
+   * \return type
+   */
+  BlockAckType GetType (void) const;
+  /**
    * Return the Traffic ID (TID).
    *
    * \return TID
@@ -115,6 +121,13 @@ public:
    *         false otherwise
    */
   bool IsCompressed (void) const;
+  /**
+   * Check if the current BA policy is extended compressed block ACK.
+   *
+   * \return true if the current BA policy is extended compressed block ACK,
+   *         false otherwise
+   */
+  bool IsExtendedCompressed (void) const;
   /**
    * Check if the current ACK policy has multiple TID.
    *
@@ -158,10 +171,9 @@ private:
    * For now only non HT immediate block ack is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_barAckPolicy; ///< bar ack policy
-  bool m_multiTid; ///< multi TID
-  bool m_compressed; ///< compressed
-  uint16_t m_tidInfo; ///< TID info
+  bool m_barAckPolicy;    ///< bar ack policy
+  BlockAckType m_baType;  ///< BA type
+  uint16_t m_tidInfo;     ///< TID info
   uint16_t m_startingSeq; ///< starting seq
 };
 
@@ -228,6 +240,12 @@ public:
    */
   bool MustSendHtImmediateAck (void) const;
   /**
+   * Return the block ACK type ID.
+   *
+   * \return type
+   */
+  BlockAckType GetType (void) const;
+  /**
    * Return the Traffic ID (TID).
    *
    * \return TID
@@ -240,25 +258,30 @@ public:
    */
   uint16_t GetStartingSequence (void) const;
   /**
-   * Check if the current ACK policy is basic
-   * (i.e. not multiple TID and not compressed ACK).
+   * Check if the current BA policy is basic block ACK.
    *
-   * \return true if the current ACK policy is basic,
+   * \return true if the current BA policy is basic block ACK,
    *         false otherwise
    */
   bool IsBasic (void) const;
   /**
-   * Check if the current ACK policy is compressed ACK
-   * and not multiple TID.
+   * Check if the current BA policy is compressed block ACK.
    *
-   * \return true if the current ACK policy is compressed ACK,
+   * \return true if the current BA policy is compressed block ACK,
    *         false otherwise
    */
   bool IsCompressed (void) const;
   /**
-   * Check if the current ACK policy has multiple TID.
+   * Check if the current BA policy is extended compressed block ACK.
    *
-   * \return true if the current ACK policy has multiple TID,
+   * \return true if the current BA policy is extended compressed block ACK,
+   *         false otherwise
+   */
+  bool IsExtendedCompressed (void) const;
+  /**
+   * Check if the current BA policy is multi-TID block ACK.
+   *
+   * \return true if the current BA policy is multi-TID block ACK,
    *         false otherwise
    */
   bool IsMultiTid (void) const;
@@ -317,6 +340,7 @@ public:
    *
    * \return the bitmap from the block ACK response header
    */
+
   const uint16_t* GetBitmap (void) const;
   /**
    * Return the compressed bitmap from the block ACK response header.
@@ -324,6 +348,12 @@ public:
    * \return the compressed bitmap from the block ACK response header
    */
   uint64_t GetCompressedBitmap (void) const;
+  /**
+   * Return the extended compressed bitmap from the block ACK response header.
+   *
+   * \return the extended compressed bitmap from the block ACK response header
+   */
+  const uint64_t* GetExtendedCompressedBitmap (void) const;
 
   /**
    * Reset the bitmap to 0.
@@ -391,16 +421,16 @@ private:
    * For now only non HT immediate block ack is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_baAckPolicy; ///< BA ack policy
-  bool m_multiTid; ///< multi TID
-  bool m_compressed; ///< compressed
-  uint16_t m_tidInfo; ///< TID info
+  bool m_baAckPolicy;     ///< BA ack policy
+  BlockAckType m_baType;  ///< BA type
+  uint16_t m_tidInfo;     ///< TID info
   uint16_t m_startingSeq; ///< starting seq
 
   union
   {
     uint16_t m_bitmap[64]; ///< the block ack bitmap
     uint64_t m_compressedBitmap; ///< the compressed block ack bitmap
+    uint64_t m_extendedCompressedBitmap[4]; ///< the extended compressed block ack bitmap
   } bitmap; ///< bitmap union type
 };
 

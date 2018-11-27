@@ -107,19 +107,19 @@ int main (int argc, char *argv[])
 
   Ssid ssid = Ssid ("simple-mpdu-aggregation");
   mac.SetType ("ns3::StaWifiMac",
-               "Ssid", SsidValue (ssid),
-               "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+               "Ssid", SsidValue (ssid));
 
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "EnableBeaconJitter", BooleanValue (false),
-               "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
+               "EnableBeaconJitter", BooleanValue (false));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/BeMaxAmpduSize", UintegerValue (maxAmpduSize));
 
   // Setting mobility model
   MobilityHelper mobility;

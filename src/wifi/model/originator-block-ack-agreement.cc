@@ -88,8 +88,7 @@ OriginatorBlockAckAgreement::NotifyMpduTransmission (uint16_t nextSeqNumber)
   NS_ASSERT (m_sentMpdus < m_bufferSize);
   m_sentMpdus++;
   uint16_t delta = (nextSeqNumber - m_startingSeq + 4096) % 4096;
-  uint16_t min = m_bufferSize < 64 ? m_bufferSize : 64;
-  if (delta >= min || m_sentMpdus == m_bufferSize)
+  if (delta >= m_bufferSize || m_sentMpdus == m_bufferSize)
     {
       m_needBlockAckReq = true;
     }

@@ -29,6 +29,7 @@
 #include "qos-utils.h"
 
 class AmpduAggregationTest;
+class HeAggregationTest;
 
 namespace ns3 {
 
@@ -92,6 +93,7 @@ class QosTxop : public Txop
 public:
   /// Allow test cases to access private members
   friend class ::AmpduAggregationTest;
+  friend class ::HeAggregationTest;
 
   std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
 
@@ -161,6 +163,16 @@ public:
    * of an A-MPDU with ImmediateBlockAck policy (i.e. no BAR is scheduled).
    */
   void CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid);
+  /**
+   * \param address recipient address of the peer station
+   * \param tid traffic ID.
+   *
+   * \return the negociated buffer size during ADDBA handshake.
+   *
+   * Returns the negociated buffer size during ADDBA handshake with station addressed by
+   * <i>recipient</i> for tid <i>tid</i>.
+   */
+  uint16_t GetBaBufferSize (Mac48Address address, uint8_t tid) const;
 
   /* dcf notifications forwarded here */
   /**

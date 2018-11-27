@@ -153,7 +153,7 @@ uint32_t GetCtsSize (void);
 /**
  * \param seq MPDU sequence number
  * \param winstart sequence number window start
- * \param winsize the size of the sequence number window (currently default is 64)
+ * \param winsize the size of the sequence number window
  * \returns true if in the window
  *
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not

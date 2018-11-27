@@ -36,7 +36,7 @@ BlockAckCache::Init (uint16_t winStart, uint16_t winSize)
 {
   NS_LOG_FUNCTION (this << winStart << winSize);
   m_winStart = winStart;
-  m_winSize = winSize <= 64 ? winSize : 64;
+  m_winSize = winSize;
   m_winEnd = (m_winStart + m_winSize - 1) % 4096;
   memset (m_bitmap, 0, sizeof (m_bitmap));
 }
@@ -119,7 +119,7 @@ BlockAckCache::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader)
     {
       NS_FATAL_ERROR ("Basic block ack is only partially implemented.");
     }
-  else if (blockAckHeader->IsCompressed ())
+  else if (blockAckHeader->IsCompressed () || blockAckHeader->IsExtendedCompressed ())
     {
       uint16_t i = blockAckHeader->GetStartingSequence ();
       uint16_t end = (i + m_winSize - 1) % 4096;

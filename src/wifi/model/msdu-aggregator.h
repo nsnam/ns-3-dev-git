@@ -51,21 +51,6 @@ public:
   virtual ~MsduAggregator ();
 
   /**
-   * Sets the maximum A-MSDU size in bytes.
-   * Value 0 means that MSDU aggregation is disabled.
-   *
-   * \param maxSize the maximum A-MSDU size in bytes.
-   */
-  void SetMaxAmsduSize (uint16_t maxSize);
-  /**
-   * Returns the maximum A-MSDU size in bytes.
-   * Value 0 means that MSDU aggregation is disabled.
-   *
-   * \return the maximum A-MSDU size in bytes.
-   */
-  uint16_t GetMaxAmsduSize (void) const;
-
-  /**
    * Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
    * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>. If <i>packet</i>
    * can be added returns true, false otherwise.
@@ -74,10 +59,11 @@ public:
    * \param aggregatedPacket the aggregated packet.
    * \param src the source address.
    * \param dest the destination address
+   * \param maxAmsduSize the maximum A-MSDU size.
    * \return true if successful.
    */
   bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
-                  Mac48Address src, Mac48Address dest) const;
+                  Mac48Address src, Mac48Address dest, uint16_t maxAmsduSize) const;
 
   /**
    *
@@ -98,8 +84,6 @@ private:
    * \return the number of octets required for padding
    */
   uint8_t CalculatePadding (Ptr<const Packet> packet) const;
-
-  uint16_t m_maxAmsduLength; ///< maximum AMSDU length
 };
 
 } //namespace ns3

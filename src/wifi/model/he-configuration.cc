@@ -46,10 +46,65 @@ HeConfiguration::GetTypeId (void)
                    MakeTimeAccessor (&HeConfiguration::GetGuardInterval,
                                      &HeConfiguration::SetGuardInterval),
                    MakeTimeChecker (NanoSeconds (800), NanoSeconds (3200)))
-    .AddAttribute ("BssColor", "BSS color",
+    .AddAttribute ("BssColor",
+                   "The BSS color",
                    UintegerValue (0),
                    MakeUintegerAccessor (&HeConfiguration::m_bssColor),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("MpduBufferSize",
+                   "The MPDU buffer size for receiving A-MPDUs",
+                   UintegerValue (64),
+                   MakeUintegerAccessor (&HeConfiguration::GetMpduBufferSize,
+                                         &HeConfiguration::SetMpduBufferSize),
+                   MakeUintegerChecker<uint16_t> (64, 256))
+    .AddAttribute ("VoMaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_VO access class. "
+                   "Value 0 means A-MSDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_voMaxAmsduSize),
+                   MakeUintegerChecker<uint16_t> (0, 11454))
+    .AddAttribute ("ViMaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_VI access class."
+                   "Value 0 means A-MSDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_viMaxAmsduSize),
+                   MakeUintegerChecker<uint16_t> (0, 11454))
+    .AddAttribute ("BeMaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_BE access class."
+                   "Value 0 means A-MSDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_beMaxAmsduSize),
+                   MakeUintegerChecker<uint16_t> (0, 11454))
+    .AddAttribute ("BkMaxAmsduSize",
+                   "Maximum length in bytes of an A-MSDU for AC_BK access class."
+                   "Value 0 means A-MSDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_bkMaxAmsduSize),
+                   MakeUintegerChecker<uint16_t> (0, 11454))
+    .AddAttribute ("VoMaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_VO access class."
+                   "Value 0 means A-MPDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_voMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> (0, 4194303))
+    .AddAttribute ("ViMaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_VI access class."
+                   "Value 0 means A-MPDU is disabled for that AC.",
+                   UintegerValue (4194303),
+                   MakeUintegerAccessor (&HeConfiguration::m_viMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> (0, 4194303))
+    .AddAttribute ("BeMaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_BE access class."
+                   "Value 0 means A-MPDU is disabled for that AC.",
+                   UintegerValue (4194303),
+                   MakeUintegerAccessor (&HeConfiguration::m_beMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> (0, 4194303))
+    .AddAttribute ("BkMaxAmpduSize",
+                   "Maximum length in bytes of an A-MPDU for AC_BK access class."
+                   "Value 0 means A-MPDU is disabled for that AC.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&HeConfiguration::m_bkMaxAmpduSize),
+                   MakeUintegerChecker<uint32_t> (0, 4194303))
     ;
     return tid;
 }
@@ -66,6 +121,19 @@ Time
 HeConfiguration::GetGuardInterval (void) const
 {
   return m_guardInterval;
+}
+
+void
+HeConfiguration::SetMpduBufferSize (uint16_t size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_mpduBufferSize = size;
+}
+
+uint16_t
+HeConfiguration::GetMpduBufferSize (void) const
+{
+  return m_mpduBufferSize;
 }
 
 } //namespace ns3

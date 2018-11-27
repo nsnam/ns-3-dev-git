@@ -38,6 +38,11 @@ WifiMacQueue::GetTypeId (void)
     .SetParent<Queue<WifiMacQueueItem> > ()
     .SetGroupName ("Wifi")
     .AddConstructor<WifiMacQueue> ()
+    .AddAttribute ("MaxQueueSize",
+                   "The max queue size",
+                   QueueSizeValue (QueueSize ("500p")),
+                   MakeQueueSizeAccessor (&WifiMacQueue::SetMaxQueueSize),
+                   MakeQueueSizeChecker ())
     .AddAttribute ("MaxDelay", "If a packet stays longer than this delay in the queue, it is dropped.",
                    TimeValue (MilliSeconds (500)),
                    MakeTimeAccessor (&WifiMacQueue::SetMaxDelay),
@@ -59,6 +64,19 @@ WifiMacQueue::WifiMacQueue ()
 WifiMacQueue::~WifiMacQueue ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+void
+WifiMacQueue::SetMaxQueueSize (QueueSize size)
+{
+  NS_LOG_FUNCTION (this << size);
+  m_maxSize = size;
+}
+
+QueueSize
+WifiMacQueue::GetMaxQueueSize (void) const
+{
+  return m_maxSize;
 }
 
 void
@@ -97,6 +115,8 @@ WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
   NS_ASSERT_MSG (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS,
                  "WifiMacQueues must be in packet mode");
 
+  QueueBase::SetMaxSize (GetMaxQueueSize ()); //Make sure QueueBase has the same maximum queue size
+
   // if the queue is full, remove the first stale packet (if any) encountered
   // starting from the head of the queue, in order to make room for the new packet.
   if (QueueBase::GetNPackets () == GetMaxSize ().GetValue ())
@@ -123,6 +143,8 @@ WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
   NS_LOG_FUNCTION (this << item);
   NS_ASSERT_MSG (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS,
                  "WifiMacQueues must be in packet mode");
+
+  QueueBase::SetMaxSize (GetMaxQueueSize ()); //Make sure QueueBase has the same maximum queue size
 
   // if the queue is full, remove the first stale packet (if any) encountered
   // starting from the head of the queue, in order to make room for the new packet.

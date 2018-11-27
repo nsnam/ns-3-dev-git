@@ -126,7 +126,7 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   agreement.SetStartingSequence (reqHdr->GetStartingSequence ());
   /* For now we assume that originator doesn't use this field. Use of this field
      is mandatory only for recipient */
-  agreement.SetBufferSize (64);
+  agreement.SetBufferSize (reqHdr->GetBufferSize());
   agreement.SetWinEnd ((agreement.GetStartingSequence () + agreement.GetBufferSize () - 1) % 4096);
   agreement.SetTimeout (reqHdr->GetTimeout ());
   agreement.SetAmsduSupport (reqHdr->IsAmsduSupported ());
@@ -528,7 +528,6 @@ BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uin
   std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
   while (it != m_retryPackets.end ())
     {
-      NS_LOG_FUNCTION (this << (*it)->hdr.GetType ());
       if (!(*it)->hdr.IsQosData ())
         {
           NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
@@ -598,7 +597,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                     }
                 }
             }
-          else if (blockAck->IsCompressed ())
+          else if (blockAck->IsCompressed () || blockAck->IsExtendedCompressed ())
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
@@ -681,20 +680,10 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
       agreement.CompleteExchange ();
 
       CtrlBAckRequestHeader reqHdr;
-      if (m_blockAckType == BASIC_BLOCK_ACK || m_blockAckType == COMPRESSED_BLOCK_ACK)
-        {
-          reqHdr.SetType (m_blockAckType);
-          reqHdr.SetTidInfo (agreement.GetTid ());
-          reqHdr.SetStartingSequence (agreement.GetStartingSequence ());
-        }
-      else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Invalid block ack type.");
-        }
+      reqHdr.SetType (m_blockAckType);
+      reqHdr.SetTidInfo (agreement.GetTid ());
+      reqHdr.SetStartingSequence (agreement.GetStartingSequence ());
+
       Ptr<Packet> bar = Create<Packet> ();
       bar->AddHeader (reqHdr);
       return bar;
@@ -975,6 +964,18 @@ BlockAckManager::InsertInRetryQueue (PacketQueueI item)
             }
         }
     }
+}
+
+uint16_t
+BlockAckManager::GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) const
+{
+  uint16_t size = 0;
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  if (it != m_agreements.end ())
+    {
+      size = it->second.first.GetBufferSize ();
+    }
+  return size;
 }
 
 } //namespace ns3

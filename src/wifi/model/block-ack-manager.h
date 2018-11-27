@@ -377,6 +377,15 @@ public:
    * \returns true if BAR retransmission needed
    */
   bool NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient);
+  /**
+   * This function returns the buffer size negociated with the recipient.
+   *
+   * \param tid Traffic ID
+   * \param recipient MAC address
+   *
+   * \returns the buffer size negociated with the recipient
+   */
+  uint16_t GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) const;
 
   /**
    * typedef for a callback to invoke when a

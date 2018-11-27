@@ -51,7 +51,6 @@ AmpduTag::AmpduTag ()
 void
 AmpduTag::SetRemainingNbOfMpdus (uint8_t nbofmpdus)
 {
-  NS_ASSERT (nbofmpdus <= 64);
   m_nbOfMpdus = nbofmpdus;
 }
 

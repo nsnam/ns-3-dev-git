@@ -64,6 +64,18 @@ public:
   };
 
   /**
+   * \brief Set the maximum size of this queue
+   *
+   * Trying to set a null size has no effect.
+   *
+   * \param size the maximum size
+   */
+  void SetMaxQueueSize (QueueSize size);
+  /**
+   * \return the maximum size of this queue
+   */
+  QueueSize GetMaxQueueSize (void) const;
+  /**
    * Set the maximum delay before the packet is discarded.
    *
    * \param delay the maximum delay
@@ -229,6 +241,7 @@ private:
    */
   bool TtlExceeded (ConstIterator &it);
 
+  QueueSize m_maxSize;                      //!< max queue size
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
 

@@ -62,6 +62,7 @@ int main (int argc, char *argv[])
 {
   bool udp = true;
   bool useRts = false;
+  bool useExtendedBlockAck = false;
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
   double frequency = 5.0; //whether 2.4 or 5.0 GHz
@@ -75,6 +76,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.AddValue ("useRts", "Enable/disable RTS/CTS", useRts);
+  cmd.AddValue ("useExtendedBlockAck", "Enable/disable use of extended BACK", useExtendedBlockAck);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
@@ -164,9 +166,10 @@ int main (int argc, char *argv[])
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);
 
-              // Set channel width and guard interval
+              // Set channel width, guard interval and MPDU buffer size
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (gi)));
+              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/MpduBufferSize", UintegerValue (useExtendedBlockAck ? 256 : 64));
 
               // mobility.
               MobilityHelper mobility;

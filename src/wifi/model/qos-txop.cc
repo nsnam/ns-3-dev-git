@@ -133,6 +133,12 @@ QosTxop::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
   m_baManager->CompleteAmpduExchange (recipient, tid);
 }
 
+uint16_t
+QosTxop::GetBaBufferSize (Mac48Address address, uint8_t tid) const
+{
+  return m_baManager->GetRecipientBufferSize (address, tid);
+}
+
 void
 QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {
@@ -300,7 +306,8 @@ QosTxop::NotifyAccessGranted (void)
               Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
               m_msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
                                            MapSrcAddressForAggregation (peekedHdr),
-                                           MapDestAddressForAggregation (peekedHdr));
+                                           MapDestAddressForAggregation (peekedHdr),
+                                           GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
               bool aggregated = false;
               bool isAmsdu = false;
               Ptr<const WifiMacQueueItem> peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
@@ -310,7 +317,8 @@ QosTxop::NotifyAccessGranted (void)
                   peekedHdr = peekedItem->GetHeader ();
                   aggregated = m_msduAggregator->Aggregate (peekedItem->GetPacket (), currentAggregatedPacket,
                                                             MapSrcAddressForAggregation (peekedHdr),
-                                                            MapDestAddressForAggregation (peekedHdr));
+                                                            MapDestAddressForAggregation (peekedHdr),
+                                                            GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
                   if (aggregated)
                     {
                       isAmsdu = true;
@@ -463,7 +471,7 @@ QosTxop::MissedCts (void)
             {
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
-              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
               reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
@@ -618,7 +626,7 @@ QosTxop::MissedAck (void)
               //send Block ACK Request in order to shift WinStart at the receiver
               NS_LOG_DEBUG ("Transmit Block Ack Request");
               CtrlBAckRequestHeader reqHdr;
-              reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+              reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
               reqHdr.SetStartingSequence (m_txMiddle->PeekNextSequenceNumberFor (&m_currentHdr));
               reqHdr.SetTidInfo (tid);
               reqHdr.SetHtImmediateAck (true);
@@ -682,7 +690,7 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
           //standard says when losing a BlockAck originator may send a BAR page 139
           NS_LOG_DEBUG ("Transmit Block Ack Request");
           CtrlBAckRequestHeader reqHdr;
-          reqHdr.SetType (COMPRESSED_BLOCK_ACK);
+          reqHdr.SetType (GetBaBufferSize (m_currentHdr.GetAddr1 (), tid) > 64 ? EXTENDED_COMPRESSED_BLOCK_ACK : COMPRESSED_BLOCK_ACK);
           if (m_currentHdr.IsQosData ())
             {
               reqHdr.SetStartingSequence (m_currentHdr.GetSequenceNumber ());
@@ -998,7 +1006,7 @@ QosTxop::NeedFragmentation (void) const
       || (m_stationManager->GetHtSupported ()
           && m_currentHdr.IsQosData ()
           && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
-          && GetMpduAggregator ()->GetMaxAmpduSize () >= m_currentPacket->GetSize ()))
+          && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (GetTid (m_currentPacket, m_currentHdr))) >= m_currentPacket->GetSize ()))
     {
       //MSDU is not fragmented when it is transmitted using an HT-immediate or
       //HT-delayed Block Ack agreement or when it is carried in an A-MPDU.
@@ -1331,7 +1339,7 @@ QosTxop::VerifyBlockAck (void)
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
   if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
-      && (GetMpduAggregator () == 0 || GetMpduAggregator ()->GetMaxAmpduSize () == 0))
+      && (GetMpduAggregator () == 0 || GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) == 0))
     {
       m_currentHdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
     }
@@ -1388,7 +1396,7 @@ QosTxop::SetupBlockAckIfNeeded (void)
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
-      || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
+      || (m_mpduAggregator != 0 && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) > 0 && packets > 1)
       || m_stationManager->GetVhtSupported ()
       || m_stationManager->GetHeSupported ())
     {
@@ -1427,7 +1435,14 @@ QosTxop::SendBlockAckRequest (const Bar &bar)
         }
       else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
         {
-          m_currentParams.EnableCompressedBlockAck ();
+          if (GetBaBufferSize (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr)) > 64)
+            {
+              m_currentParams.EnableExtendedCompressedBlockAck ();
+            }
+          else
+            {
+              m_currentParams.EnableCompressedBlockAck ();
+            }
         }
       else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
         {

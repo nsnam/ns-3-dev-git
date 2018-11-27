@@ -81,6 +81,7 @@ New user-visible features
   This trace is fired whenever a new path loss value is calculated. It exports pointers
   to the mobility model of the transmitter and the receiver, Tx antenna gain, Rx antenna gain,
   propagation gain and the pathloss value.
+- (wifi) It is now possible to transmit A-MPDUs containing up to 256 MPDUs (802.11ax only)
 
 Bugs fixed
 ----------

@@ -48,21 +48,9 @@ MsduAggregator::~MsduAggregator ()
 {
 }
 
-void
-MsduAggregator::SetMaxAmsduSize (uint16_t maxSize)
-{
-  m_maxAmsduLength = maxSize;
-}
-
-uint16_t
-MsduAggregator::GetMaxAmsduSize (void) const
-{
-  return m_maxAmsduLength;
-}
-
 bool
 MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
-                           Mac48Address src, Mac48Address dest) const
+                           Mac48Address src, Mac48Address dest, uint16_t maxAmsduSize) const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> currentPacket;
@@ -71,7 +59,7 @@ MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacke
   uint8_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
 
-  if ((14 + packet->GetSize () + actualSize + padding) <= GetMaxAmsduSize ())
+  if ((14 + packet->GetSize () + actualSize + padding) <= maxAmsduSize)
     {
       if (padding)
         {

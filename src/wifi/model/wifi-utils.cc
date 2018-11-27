@@ -190,19 +190,7 @@ GetBlockAckSize (BlockAckType type)
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_BACKRESP);
   CtrlBAckResponseHeader blockAck;
-  if (type == BASIC_BLOCK_ACK)
-    {
-      blockAck.SetType (BASIC_BLOCK_ACK);
-    }
-  else if (type == COMPRESSED_BLOCK_ACK)
-    {
-      blockAck.SetType (COMPRESSED_BLOCK_ACK);
-    }
-  else if (type == MULTI_TID_BLOCK_ACK)
-    {
-      //Not implemented
-      NS_ASSERT (false);
-    }
+  blockAck.SetType (type);
   return hdr.GetSize () + blockAck.GetSerializedSize () + 4;
 }
 

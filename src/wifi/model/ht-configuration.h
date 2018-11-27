@@ -55,7 +55,6 @@ public:
    *         false otherwise.
    */
   bool GetShortGuardIntervalSupported (void) const;
-
   /**
    * Enable or disable Greenfield support.
    *
@@ -70,7 +69,6 @@ public:
    *         false otherwise.
    */
   bool GetGreenfieldSupported (void) const;
-
   /**
    * Enable or disable RIFS support.
    *
@@ -88,9 +86,19 @@ public:
 
 
 private:
-  bool m_sgiSupported; ///< flag whether short guard interval is supported
-  bool m_rifsSupported; ///< flag whether RIFS is supported
+  bool m_sgiSupported;        ///< flag whether short guard interval is supported
+  bool m_rifsSupported;       ///< flag whether RIFS is supported
   bool m_greenfieldSupported; ///< flag whether Greenfield is supported
+
+  uint16_t m_voMaxAmsduSize; ///< maximum A-MSDU size for AC_VO
+  uint16_t m_viMaxAmsduSize; ///< maximum A-MSDU size for AC_VI
+  uint16_t m_beMaxAmsduSize; ///< maximum A-MSDU size for AC_BE
+  uint16_t m_bkMaxAmsduSize; ///< maximum A-MSDU size for AC_BK
+
+  uint32_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO
+  uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI
+  uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE
+  uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK
 };
 
 } //namespace ns3

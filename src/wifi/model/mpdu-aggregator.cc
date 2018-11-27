@@ -48,20 +48,8 @@ MpduAggregator::~MpduAggregator ()
 {
 }
 
-void
-MpduAggregator::SetMaxAmpduSize (uint16_t maxSize)
-{
-  m_maxAmpduLength = maxSize;
-}
-
-uint16_t
-MpduAggregator::GetMaxAmpduSize (void) const
-{
-  return m_maxAmpduLength;
-}
-
 bool
-MpduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const
+MpduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket, uint32_t maxAmpduSize) const
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> currentPacket;
@@ -70,7 +58,7 @@ MpduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacke
   uint8_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
 
-  if ((4 + packet->GetSize () + actualSize + padding) <= GetMaxAmpduSize ())
+  if ((4 + packet->GetSize () + actualSize + padding) <= maxAmpduSize)
     {
       if (padding)
         {
@@ -134,7 +122,7 @@ MpduAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool isSingleMpd
 }
 
 bool
-MpduAggregator::CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize) const
+MpduAggregator::CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize, uint32_t maxAmpduSize) const
 {
   uint8_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
@@ -142,7 +130,7 @@ MpduAggregator::CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPack
     {
       blockAckSize = blockAckSize + 4 + padding;
     }
-  if ((4 + packetSize + actualSize + padding + blockAckSize) <= GetMaxAmpduSize ())
+  if ((4 + packetSize + actualSize + padding + blockAckSize) <= maxAmpduSize)
     {
       return true;
     }

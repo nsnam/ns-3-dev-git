@@ -55,6 +55,10 @@ public:
    */
   void EnableCompressedBlockAck (void);
   /**
+   * Wait COMPRESSEDBLOCKACKTimeout for an Extended Compressed Block Ack Response frame.
+   */
+  void EnableExtendedCompressedBlockAck (void);
+  /**
    * NOT IMPLEMENTED FOR NOW
    */
   void EnableMultiTidBlockAck (void);
@@ -108,6 +112,12 @@ public:
    */
   bool MustWaitCompressedBlockAck (void) const;
   /**
+   * \returns true if extended compressed block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableExtendedCompressedBlockAck
+   */
+  bool MustWaitExtendedCompressedBlockAck (void) const;
+  /**
    * \returns true if multi-tid block ack mechanism is used, false otherwise.
    *
    * \sa EnableMultiTidBlockAck
@@ -137,6 +147,7 @@ private:
     ACK_NORMAL,
     BLOCK_ACK_BASIC,
     BLOCK_ACK_COMPRESSED,
+    EXTENDED_BLOCK_ACK_COMPRESSED,
     BLOCK_ACK_MULTI_TID
   } m_waitAck; //!< wait ack
   bool m_sendRts; //!< send an RTS?

@@ -565,25 +565,25 @@ private:
    *
    * \param size the maximum A-MPDU size for AC_VO.
    */
-  void SetVoMaxAmpduSize (uint16_t size);
+  void SetVoMaxAmpduSize (uint32_t size);
   /**
    * Set the maximum A-MPDU size for AC_VI.
    *
    * \param size the maximum A-MPDU size for AC_VI.
    */
-  void SetViMaxAmpduSize (uint16_t size);
+  void SetViMaxAmpduSize (uint32_t size);
   /**
    * Set the maximum A-MPDU size for AC_BE.
    *
    * \param size the maximum A-MPDU size for AC_BE.
    */
-  void SetBeMaxAmpduSize (uint16_t size);
+  void SetBeMaxAmpduSize (uint32_t size);
   /**
    * Set the maximum A-MPDU size for AC_BK.
    *
    * \param size the maximum A-MPDU size for AC_BK.
    */
-  void SetBkMaxAmpduSize (uint16_t size);
+  void SetBkMaxAmpduSize (uint32_t size);
 
   /**
    * Set the Block ACK threshold for AC_VO.
@@ -660,8 +660,6 @@ private:
    */
   bool m_dsssSupported;
 
-  /// Configure aggregation function
-  void ConfigureAggregation (void);
   /// Enable aggregation function
   void EnableAggregation (void);
   /// Disable aggregation function
@@ -672,10 +670,10 @@ private:
   uint16_t m_beMaxAmsduSize; ///< maximum A-MSDU size for AC_BE
   uint16_t m_bkMaxAmsduSize; ///< maximum A-MSDU size for AC_BK
 
-  uint16_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO
-  uint16_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI
-  uint16_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE
-  uint16_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK
+  uint32_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO
+  uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI
+  uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE
+  uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback; ///< transmit OK callback
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
