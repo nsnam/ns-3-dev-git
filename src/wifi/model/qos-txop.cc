@@ -1609,7 +1609,7 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
   if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING))
     {
       m_baManager->NotifyAgreementNoReply (recipient, tid);
-      Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, m_currentHdr.GetAddr1 (), tid);
+      Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
       m_backoffTrace = m_rng->GetInteger (0, GetCw ());
       StartBackoffNow (m_backoffTrace);
       RestartAccessIfNeeded ();
