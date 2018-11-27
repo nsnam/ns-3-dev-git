@@ -43,7 +43,7 @@ def register_types(module):
     ## wifi-preamble.h (module 'wifi'): ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT', 'WIFI_PREAMBLE_HT_MF', 'WIFI_PREAMBLE_HT_GF', 'WIFI_PREAMBLE_VHT', 'WIFI_PREAMBLE_HE_SU', 'WIFI_PREAMBLE_HE_ER_SU', 'WIFI_PREAMBLE_HE_MU', 'WIFI_PREAMBLE_HE_TB', 'WIFI_PREAMBLE_NONE'])
     ## block-ack-type.h (module 'wifi'): ns3::BlockAckType [enumeration]
-    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'])
+    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'EXTENDED_COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiModulationClass [enumeration]
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_HR_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT', 'WIFI_MOD_CLASS_VHT', 'WIFI_MOD_CLASS_HE'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
@@ -3551,6 +3551,10 @@ def register_Ns3MacLowTransmissionParameters_methods(root_module, cls):
     cls.add_method('EnableCompressedBlockAck', 
                    'void', 
                    [])
+    ## mac-low-transmission-parameters.h (module 'wifi'): void ns3::MacLowTransmissionParameters::EnableExtendedCompressedBlockAck() [member function]
+    cls.add_method('EnableExtendedCompressedBlockAck', 
+                   'void', 
+                   [])
     ## mac-low-transmission-parameters.h (module 'wifi'): void ns3::MacLowTransmissionParameters::EnableMultiTidBlockAck() [member function]
     cls.add_method('EnableMultiTidBlockAck', 
                    'void', 
@@ -3585,6 +3589,11 @@ def register_Ns3MacLowTransmissionParameters_methods(root_module, cls):
                    is_const=True)
     ## mac-low-transmission-parameters.h (module 'wifi'): bool ns3::MacLowTransmissionParameters::MustWaitCompressedBlockAck() const [member function]
     cls.add_method('MustWaitCompressedBlockAck', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## mac-low-transmission-parameters.h (module 'wifi'): bool ns3::MacLowTransmissionParameters::MustWaitExtendedCompressedBlockAck() const [member function]
+    cls.add_method('MustWaitExtendedCompressedBlockAck', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -8813,6 +8822,16 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HeConfiguration> ns3::WifiMac::GetHeConfiguration() const [member function]
+    cls.add_method('GetHeConfiguration', 
+                   'ns3::Ptr< ns3::HeConfiguration >', 
+                   [], 
+                   is_const=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HtConfiguration> ns3::WifiMac::GetHtConfiguration() const [member function]
+    cls.add_method('GetHtConfiguration', 
+                   'ns3::Ptr< ns3::HtConfiguration >', 
+                   [], 
+                   is_const=True)
     ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetPifs() const [member function]
     cls.add_method('GetPifs', 
                    'ns3::Time', 
@@ -8848,6 +8867,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::VhtConfiguration> ns3::WifiMac::GetVhtConfiguration() const [member function]
+    cls.add_method('GetVhtConfiguration', 
+                   'ns3::Ptr< ns3::VhtConfiguration >', 
+                   [], 
+                   is_const=True)
     ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::WifiMac::GetWifiPhy() const [member function]
     cls.add_method('GetWifiPhy', 
                    'ns3::Ptr< ns3::WifiPhy >', 
@@ -8991,16 +9015,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Txop >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('bool', 'isDsss'), param('ns3::AcIndex', 'ac')], 
                    visibility='protected')
-    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HeConfiguration> ns3::WifiMac::GetHeConfiguration() const [member function]
-    cls.add_method('GetHeConfiguration', 
-                   'ns3::Ptr< ns3::HeConfiguration >', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HtConfiguration> ns3::WifiMac::GetHtConfiguration() const [member function]
-    cls.add_method('GetHtConfiguration', 
-                   'ns3::Ptr< ns3::HtConfiguration >', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -12076,6 +12090,11 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('GetNextPacket', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [param('ns3::WifiMacHeader &', 'hdr'), param('bool', 'removePacket')])
+    ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetRecipientBufferSize(ns3::Mac48Address recipient, uint8_t tid) const [member function]
+    cls.add_method('GetRecipientBufferSize', 
+                   'uint16_t', 
+                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')], 
+                   is_const=True)
     ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetSeqNumOfNextRetryPacket(ns3::Mac48Address recipient, uint8_t tid) const [member function]
     cls.add_method('GetSeqNumOfNextRetryPacket', 
                    'uint16_t', 
@@ -12971,6 +12990,11 @@ def register_Ns3CtrlBAckRequestHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType ns3::CtrlBAckRequestHeader::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'ns3::BlockAckType', 
+                   [], 
+                   is_const=True)
     ## ctrl-headers.h (module 'wifi'): static ns3::TypeId ns3::CtrlBAckRequestHeader::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -12983,6 +13007,11 @@ def register_Ns3CtrlBAckRequestHeader_methods(root_module, cls):
                    is_const=True)
     ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::IsCompressed() const [member function]
     cls.add_method('IsCompressed', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::IsExtendedCompressed() const [member function]
+    cls.add_method('IsExtendedCompressed', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -13044,6 +13073,11 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
+    ## ctrl-headers.h (module 'wifi'): uint64_t const * ns3::CtrlBAckResponseHeader::GetExtendedCompressedBitmap() const [member function]
+    cls.add_method('GetExtendedCompressedBitmap', 
+                   'uint64_t const *', 
+                   [], 
+                   is_const=True)
     ## ctrl-headers.h (module 'wifi'): ns3::TypeId ns3::CtrlBAckResponseHeader::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -13069,6 +13103,11 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType ns3::CtrlBAckResponseHeader::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'ns3::BlockAckType', 
+                   [], 
+                   is_const=True)
     ## ctrl-headers.h (module 'wifi'): static ns3::TypeId ns3::CtrlBAckResponseHeader::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -13081,6 +13120,11 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
                    is_const=True)
     ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsCompressed() const [member function]
     cls.add_method('IsCompressed', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsExtendedCompressed() const [member function]
+    cls.add_method('IsExtendedCompressed', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -14662,6 +14706,11 @@ def register_Ns3HeConfiguration_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## he-configuration.h (module 'wifi'): uint16_t ns3::HeConfiguration::GetMpduBufferSize() const [member function]
+    cls.add_method('GetMpduBufferSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
     ## he-configuration.h (module 'wifi'): static ns3::TypeId ns3::HeConfiguration::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -14671,6 +14720,10 @@ def register_Ns3HeConfiguration_methods(root_module, cls):
     cls.add_method('SetGuardInterval', 
                    'void', 
                    [param('ns3::Time', 'guardInterval')])
+    ## he-configuration.h (module 'wifi'): void ns3::HeConfiguration::SetMpduBufferSize(uint16_t size) [member function]
+    cls.add_method('SetMpduBufferSize', 
+                   'void', 
+                   [param('uint16_t', 'size')])
     return
 
 def register_Ns3HeOperation_methods(root_module, cls):
@@ -15889,6 +15942,16 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'ns3::WifiTxVector', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
                    is_const=True, is_virtual=True)
+    ## mac-low.h (module 'wifi'): uint32_t ns3::MacLow::GetMaxAmpduSize(ns3::AcIndex ac) const [member function]
+    cls.add_method('GetMaxAmpduSize', 
+                   'uint32_t', 
+                   [param('ns3::AcIndex', 'ac')], 
+                   is_const=True)
+    ## mac-low.h (module 'wifi'): uint16_t ns3::MacLow::GetMaxAmsduSize(ns3::AcIndex ac) const [member function]
+    cls.add_method('GetMaxAmsduSize', 
+                   'uint16_t', 
+                   [param('ns3::AcIndex', 'ac')], 
+                   is_const=True)
     ## mac-low.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::MacLow::GetPhy() const [member function]
     cls.add_method('GetPhy', 
                    'ns3::Ptr< ns3::WifiPhy >', 
@@ -16002,6 +16065,10 @@ def register_Ns3MacLow_methods(root_module, cls):
     cls.add_method('SetCtsToSelfSupported', 
                    'void', 
                    [param('bool', 'enable')])
+    ## mac-low.h (module 'wifi'): void ns3::MacLow::SetMac(ns3::Ptr<ns3::WifiMac> const mac) [member function]
+    cls.add_method('SetMac', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMac > const', 'mac')])
     ## mac-low.h (module 'wifi'): void ns3::MacLow::SetPhy(ns3::Ptr<ns3::WifiPhy> const phy) [member function]
     cls.add_method('SetPhy', 
                    'void', 
@@ -16039,11 +16106,6 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr'), param('ns3::MacLowTransmissionParameters', 'parameters'), param('ns3::Ptr< ns3::Txop >', 'txop')], 
                    is_virtual=True)
-    ## mac-low.h (module 'wifi'): bool ns3::MacLow::StopMpduAggregation(ns3::Ptr<const ns3::Packet> peekedPacket, ns3::WifiMacHeader peekedHdr, ns3::Ptr<ns3::Packet> aggregatedPacket, uint8_t blockAckSize) const [member function]
-    cls.add_method('StopMpduAggregation', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'peekedPacket'), param('ns3::WifiMacHeader', 'peekedHdr'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('uint8_t', 'blockAckSize')], 
-                   is_const=True)
     ## mac-low.h (module 'wifi'): void ns3::MacLow::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -16432,40 +16494,31 @@ def register_Ns3MpduAggregator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('bool', 'last'), param('bool', 'isSingleMpdu')], 
                    is_const=True)
-    ## mpdu-aggregator.h (module 'wifi'): bool ns3::MpduAggregator::Aggregate(ns3::Ptr<const ns3::Packet> packet, ns3::Ptr<ns3::Packet> aggregatedPacket) const [member function]
+    ## mpdu-aggregator.h (module 'wifi'): bool ns3::MpduAggregator::Aggregate(ns3::Ptr<const ns3::Packet> packet, ns3::Ptr<ns3::Packet> aggregatedPacket, uint32_t maxAmpduSize) const [member function]
     cls.add_method('Aggregate', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('uint32_t', 'maxAmpduSize')], 
                    is_const=True)
     ## mpdu-aggregator.h (module 'wifi'): void ns3::MpduAggregator::AggregateSingleMpdu(ns3::Ptr<const ns3::Packet> packet, ns3::Ptr<ns3::Packet> aggregatedPacket) const [member function]
     cls.add_method('AggregateSingleMpdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
                    is_const=True)
-    ## mpdu-aggregator.h (module 'wifi'): bool ns3::MpduAggregator::CanBeAggregated(uint32_t packetSize, ns3::Ptr<ns3::Packet> aggregatedPacket, uint8_t blockAckSize) const [member function]
+    ## mpdu-aggregator.h (module 'wifi'): bool ns3::MpduAggregator::CanBeAggregated(uint32_t packetSize, ns3::Ptr<ns3::Packet> aggregatedPacket, uint8_t blockAckSize, uint32_t maxAmpduSize) const [member function]
     cls.add_method('CanBeAggregated', 
                    'bool', 
-                   [param('uint32_t', 'packetSize'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('uint8_t', 'blockAckSize')], 
+                   [param('uint32_t', 'packetSize'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('uint8_t', 'blockAckSize'), param('uint32_t', 'maxAmpduSize')], 
                    is_const=True)
     ## mpdu-aggregator.h (module 'wifi'): static ns3::MpduAggregator::DeaggregatedMpdus ns3::MpduAggregator::Deaggregate(ns3::Ptr<ns3::Packet> aggregatedPacket) [member function]
     cls.add_method('Deaggregate', 
                    'ns3::MpduAggregator::DeaggregatedMpdus', 
                    [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
                    is_static=True)
-    ## mpdu-aggregator.h (module 'wifi'): uint16_t ns3::MpduAggregator::GetMaxAmpduSize() const [member function]
-    cls.add_method('GetMaxAmpduSize', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
     ## mpdu-aggregator.h (module 'wifi'): static ns3::TypeId ns3::MpduAggregator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## mpdu-aggregator.h (module 'wifi'): void ns3::MpduAggregator::SetMaxAmpduSize(uint16_t maxSize) [member function]
-    cls.add_method('SetMaxAmpduSize', 
-                   'void', 
-                   [param('uint16_t', 'maxSize')])
     return
 
 def register_Ns3MsduAggregator_methods(root_module, cls):
@@ -16473,30 +16526,21 @@ def register_Ns3MsduAggregator_methods(root_module, cls):
     cls.add_constructor([param('ns3::MsduAggregator const &', 'arg0')])
     ## msdu-aggregator.h (module 'wifi'): ns3::MsduAggregator::MsduAggregator() [constructor]
     cls.add_constructor([])
-    ## msdu-aggregator.h (module 'wifi'): bool ns3::MsduAggregator::Aggregate(ns3::Ptr<const ns3::Packet> packet, ns3::Ptr<ns3::Packet> aggregatedPacket, ns3::Mac48Address src, ns3::Mac48Address dest) const [member function]
+    ## msdu-aggregator.h (module 'wifi'): bool ns3::MsduAggregator::Aggregate(ns3::Ptr<const ns3::Packet> packet, ns3::Ptr<ns3::Packet> aggregatedPacket, ns3::Mac48Address src, ns3::Mac48Address dest, uint16_t maxAmsduSize) const [member function]
     cls.add_method('Aggregate', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dest')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('ns3::Mac48Address', 'src'), param('ns3::Mac48Address', 'dest'), param('uint16_t', 'maxAmsduSize')], 
                    is_const=True)
     ## msdu-aggregator.h (module 'wifi'): static ns3::MsduAggregator::DeaggregatedMsdus ns3::MsduAggregator::Deaggregate(ns3::Ptr<ns3::Packet> aggregatedPacket) [member function]
     cls.add_method('Deaggregate', 
                    'ns3::MsduAggregator::DeaggregatedMsdus', 
                    [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
                    is_static=True)
-    ## msdu-aggregator.h (module 'wifi'): uint16_t ns3::MsduAggregator::GetMaxAmsduSize() const [member function]
-    cls.add_method('GetMaxAmsduSize', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
     ## msdu-aggregator.h (module 'wifi'): static ns3::TypeId ns3::MsduAggregator::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## msdu-aggregator.h (module 'wifi'): void ns3::MsduAggregator::SetMaxAmsduSize(uint16_t maxSize) [member function]
-    cls.add_method('SetMaxAmsduSize', 
-                   'void', 
-                   [param('uint16_t', 'maxSize')])
     return
 
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
@@ -17377,6 +17421,11 @@ def register_Ns3QosTxop_methods(root_module, cls):
     ## qos-txop.h (module 'wifi'): bool ns3::QosTxop::GetBaAgreementEstablished(ns3::Mac48Address address, uint8_t tid) const [member function]
     cls.add_method('GetBaAgreementEstablished', 
                    'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
+                   is_const=True)
+    ## qos-txop.h (module 'wifi'): uint16_t ns3::QosTxop::GetBaBufferSize(ns3::Mac48Address address, uint8_t tid) const [member function]
+    cls.add_method('GetBaBufferSize', 
+                   'uint16_t', 
                    [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
                    is_const=True)
     ## qos-txop.h (module 'wifi'): uint8_t ns3::QosTxop::GetBlockAckThreshold() const [member function]
@@ -19116,6 +19165,15 @@ def register_Ns3WifiMacQueue_methods(root_module, cls):
                    is_static=True)
     ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue::WifiMacQueue() [constructor]
     cls.add_constructor([])
+    ## wifi-mac-queue.h (module 'wifi'): void ns3::WifiMacQueue::SetMaxQueueSize(ns3::QueueSize size) [member function]
+    cls.add_method('SetMaxQueueSize', 
+                   'void', 
+                   [param('ns3::QueueSize', 'size')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::QueueSize ns3::WifiMacQueue::GetMaxQueueSize() const [member function]
+    cls.add_method('GetMaxQueueSize', 
+                   'ns3::QueueSize', 
+                   [], 
+                   is_const=True)
     ## wifi-mac-queue.h (module 'wifi'): void ns3::WifiMacQueue::SetMaxDelay(ns3::Time delay) [member function]
     cls.add_method('SetMaxDelay', 
                    'void', 
