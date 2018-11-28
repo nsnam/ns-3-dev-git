@@ -444,9 +444,19 @@ public:
    * This function decides if a CF frame can be transmitted in the current CFP.
    */
   bool CanTransmitNextCfFrame (void) const;
-  //TODO
+  /**
+   * Return the maximum A-MSDU size in bytes for a given AC.
+   *
+   * \param ac the AC index
+   * \return the maximum A-MSDU size (in bytes)
+   */
   uint16_t GetMaxAmsduSize (AcIndex ac) const;
-  //TODO
+  /**
+   * Return the maximum A-MPDU size in bytes for a given AC.
+   *
+   * \param ac the AC index
+   * \return the maximum A-MPDU size (in bytes)
+   */
   uint32_t GetMaxAmpduSize (AcIndex ac) const;
 
 
