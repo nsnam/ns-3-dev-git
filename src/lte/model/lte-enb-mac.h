@@ -450,7 +450,7 @@ private:
  
   std::map<uint8_t, uint32_t> m_receivedRachPreambleCount; ///< received RACH preamble count
 
-  std::map<uint8_t, uint32_t> m_rapIdRntiMap; ///< RAPID RNTI map
+  std::map<uint16_t, uint32_t> m_rapIdRntiMap; ///< RAPID RNTI map
 
   /// component carrier Id used to address sap
   uint8_t m_componentCarrierId;
