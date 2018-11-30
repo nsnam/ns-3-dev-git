@@ -65,25 +65,6 @@ public:
    * \param channel the SpectrumChannel this SpectrumWifiPhy is to be connected to
    */
   void SetChannel (const Ptr<SpectrumChannel> channel);
-  /**
-   * Add a channel number to the list of operational channels.  This method
-   * is used to support scanning for strongest base station.
-   *
-   * \param channelNumber the channel number to add
-   */
-  void AddOperationalChannel (uint8_t channelNumber);
-  /**
-   * Return a list of channels to which it may be possible to roam
-   * By default, this method will return the current channel number followed
-   * by any other channel numbers that have been added.
-   *
-   * \return vector of channel numbers to which it may be possible to roam
-   */
-  std::vector<uint8_t> GetOperationalChannelList (void) const;
-  /**
-   * Clear the list of operational channels.
-   */
-  void ClearOperationalChannelList (void);
 
   /**
    * Input method for delivering a signal from the spectrum channel
@@ -210,7 +191,6 @@ private:
   void ResetSpectrumModel (void);
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
-  std::vector<uint8_t> m_operationalChannelList; //!< List of possible channels
 
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum phy interface
   Ptr<AntennaModel> m_antenna; //!< antenna model

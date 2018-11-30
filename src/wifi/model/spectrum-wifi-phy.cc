@@ -188,33 +188,6 @@ SpectrumWifiPhy::ConfigureStandard (WifiPhyStandard standard)
 }
 
 void
-SpectrumWifiPhy::AddOperationalChannel (uint8_t channelNumber)
-{
-  m_operationalChannelList.push_back (channelNumber);
-}
-
-std::vector<uint8_t>
-SpectrumWifiPhy::GetOperationalChannelList () const
-{
-  std::vector<uint8_t> channelList;
-  channelList.push_back (GetChannelNumber ());  // first channel of list
-  for (std::vector<uint8_t>::size_type i = 0; i != m_operationalChannelList.size (); i++)
-    {
-      if (m_operationalChannelList[i] != GetChannelNumber ())
-        {
-          channelList.push_back (m_operationalChannelList[i]);
-        }
-    }
-  return channelList;
-}
-
-void
-SpectrumWifiPhy::ClearOperationalChannelList ()
-{
-  m_operationalChannelList.clear ();
-}
-
-void
 SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 {
   NS_LOG_FUNCTION (this << rxParams);
