@@ -185,7 +185,7 @@ WifiPhy::GetTypeId (void)
                    DoubleValue (-101.0),
                    MakeDoubleAccessor (&WifiPhy::SetEdThreshold),
                    MakeDoubleChecker<double> (),
-                   TypeId::DEPRECATED, "Replaced by RxSensitivity, this attribute has no effect.")
+                   TypeId::DEPRECATED, "Replaced by RxSensitivity.")
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal.",
