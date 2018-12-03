@@ -367,6 +367,10 @@ WifiPhy::GetTypeId (void)
                      "in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace),
                      "ns3::WifiPhy::MonitorSnifferTxTracedCallback")
+    .AddTraceSource ("EndOfHePreamble",
+                     "Trace source indicating the end of the 802.11ax preamble (after training fields)",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyEndOfHePreambleTrace),
+                     "ns3::WifiPhy::EndOfHePreambleTracedCallback")
   ;
   return tid;
 }
@@ -2381,6 +2385,12 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz
 }
 
 void
+WifiPhy::NotifyEndOfHePreamble (HePreambleParameters params)
+{
+  m_phyEndOfHePreambleTrace (params);
+}
+
+void
 WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode ()
@@ -2654,6 +2664,13 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
         {
           NS_LOG_DEBUG ("receiving plcp payload"); //endReceive is already scheduled
           m_plcpSuccess = true;
+          if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+            {
+              HePreambleParameters params;
+              params.rssiW = event->GetRxPowerW ();
+              params.bssColor = txVector.GetBssColor ();
+              NotifyEndOfHePreamble (params);
+            }
         }
       else //mode is not allowed
         {

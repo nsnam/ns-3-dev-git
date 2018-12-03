@@ -59,6 +59,13 @@ struct MpduInfo
   uint32_t mpduRefNumber; ///< MPDU ref number
 };
 
+// Parameters for receive HE preamble
+struct HePreambleParameters
+{
+  double rssiW; ///< RSSI in W
+  uint8_t bssColor; ///< BSS color
+};
+
 /**
  * \brief 802.11 PHY layer model
  * \ingroup wifi
@@ -1204,6 +1211,21 @@ public:
                                             MpduInfo aMpdu);
 
   /**
+   * Public method used to fire a EndOfHePreamble trace once both HE SIG fields have been received, as well as training fields.
+   *
+   * \param params the HE preamble parameters
+   */
+  void NotifyEndOfHePreamble (HePreambleParameters params);
+
+  /**
+   * TracedCallback signature for end of HE-SIG-A events.
+   *
+   *
+   * \param params the HE preamble parameters
+   */
+  typedef void (* EndOfHePreambleCallback)(HePreambleParameters params);
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model. Return the number of streams (possibly zero) that
    * have been assigned.
@@ -1752,6 +1774,13 @@ private:
    * of its size.
    */
   TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
+
+  /**
+   * A trace source that indiates the end of both HE SIG fields as well as training fields for received 802.11ax packets
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<HePreambleParameters> m_phyEndOfHePreambleTrace;
 
   /**
    * This vector holds the set of transmission modes that this

@@ -588,6 +588,14 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
     }
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
+  Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+  if (heConfiguration)
+    {
+      UintegerValue bssColor;
+      heConfiguration->GetAttribute ("BssColor", bssColor);
+      txVector.SetBssColor (bssColor.Get ());
+    }
   return txVector;
 }
 

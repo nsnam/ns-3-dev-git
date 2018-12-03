@@ -32,6 +32,7 @@ WifiTxVector::WifiTxVector ()
     m_ness (0),
     m_aggregation (false),
     m_stbc (false),
+    m_bssColor (0),
     m_modeInitialized (false),
     m_txPowerLevelInitialized (false)
 {
@@ -46,7 +47,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             uint8_t ness,
                             uint16_t channelWidth,
                             bool aggregation,
-                            bool stbc)
+                            bool stbc,
+                            uint8_t bssColor)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_preamble (preamble),
@@ -57,6 +59,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_ness (ness),
     m_aggregation (aggregation),
     m_stbc (stbc),
+    m_bssColor (bssColor),
     m_modeInitialized (true),
     m_txPowerLevelInitialized (true)
 {
@@ -190,6 +193,18 @@ void
 WifiTxVector::SetStbc (bool stbc)
 {
   m_stbc = stbc;
+}
+
+void
+WifiTxVector::SetBssColor (uint8_t color)
+{
+  m_bssColor = color;
+}
+
+uint8_t
+WifiTxVector::GetBssColor (void) const
+{
+  return m_bssColor;
 }
 
 bool

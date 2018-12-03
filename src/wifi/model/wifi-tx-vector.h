@@ -75,6 +75,7 @@ public:
    * \param channelWidth the channel width in MHz
    * \param aggregation enable or disable MPDU aggregation
    * \param stbc enable or disable STBC
+   * \param bssColor the BSS color
    */
   WifiTxVector (WifiMode mode,
                 uint8_t powerLevel,
@@ -85,7 +86,8 @@ public:
                 uint8_t ness,
                 uint16_t channelWidth,
                 bool aggregation,
-                bool stbc);
+                bool stbc,
+                uint8_t bssColor = 0);
   /**
    * \returns the selected payload transmission mode
    */
@@ -192,6 +194,16 @@ public:
    */
   void SetStbc (bool stbc);
   /**
+   * Set the BSS color
+   * \param color the BSS color
+   */
+  void SetBssColor (uint8_t color);
+  /**
+   * Get the BSS color
+   * \return the BSS color
+   */
+  uint8_t GetBssColor (void) const;
+  /**
    * The standard disallows certain combinations of WifiMode, number of
    * spatial streams, and channel widths.  This method can be used to
    * check whether this WifiTxVector contains an invalid combination.
@@ -216,6 +228,7 @@ private:
   uint8_t  m_ness;               /**< number of spatial streams in beamforming */
   bool     m_aggregation;        /**< Flag whether the PSDU contains A-MPDU. */
   bool     m_stbc;               /**< STBC used or not */
+  uint8_t  m_bssColor;           /**< BSS color */
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
   bool     m_txPowerLevelInitialized; /**< Internal initialization flag */
