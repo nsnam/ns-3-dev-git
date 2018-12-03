@@ -137,6 +137,16 @@ DropTailQueue<Item>::Peek (void) const
   return DoPeek (Head ());
 }
 
+// The following explicit template instantiation declarations prevent all the
+// translation units including this header file to implicitly instantiate the
+// DropTailQueue<Packet> class and the DropTailQueue<QueueDiscItem> class. The
+// unique instances of these classes are explicitly created through the macros
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (DropTailQueue,Packet) and
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (DropTailQueue,QueueDiscItem), which are included
+// in drop-tail-queue.cc
+extern template class DropTailQueue<Packet>;
+extern template class DropTailQueue<QueueDiscItem>;
+
 } // namespace ns3
 
 #endif /* DROPTAIL_H */

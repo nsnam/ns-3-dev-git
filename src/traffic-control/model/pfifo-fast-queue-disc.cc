@@ -23,7 +23,6 @@
 #include "ns3/log.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
-#include "ns3/net-device-queue-interface.h"
 #include "ns3/socket.h"
 #include "pfifo-fast-queue-disc.h"
 

@@ -18,11 +18,12 @@
  * Author: Stefano Avallone <stefano.avallone@.unina.it>
  */
 
-#include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/queue-limits.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/simulator.h"
+#include "ns3/uinteger.h"
+#include "ns3/queue-item.h"
 
 namespace ns3 {
 
@@ -30,7 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("NetDeviceQueueInterface");
 
 NetDeviceQueue::NetDeviceQueue ()
   : m_stoppedByDevice (false),
-    m_stoppedByQueueLimits (false)
+    m_stoppedByQueueLimits (false),
+    NS_LOG_TEMPLATE_DEFINE ("NetDeviceQueueInterface")
 {
   NS_LOG_FUNCTION (this);
 }
@@ -38,6 +40,10 @@ NetDeviceQueue::NetDeviceQueue ()
 NetDeviceQueue::~NetDeviceQueue ()
 {
   NS_LOG_FUNCTION (this);
+
+  m_queueLimits = 0;
+  m_wakeCallback.Nullify ();
+  m_device = 0;
 }
 
 bool
@@ -74,6 +80,15 @@ NetDeviceQueue::Wake (void)
     {
       Simulator::ScheduleNow (&NetDeviceQueue::m_wakeCallback, this);
     }
+}
+
+void
+NetDeviceQueue::NotifyAggregatedObject (Ptr<NetDeviceQueueInterface> ndqi)
+{
+  NS_LOG_FUNCTION (this << ndqi);
+
+  m_device = ndqi->GetObject<NetDevice> ();
+  NS_ABORT_MSG_IF (!m_device, "No NetDevice object was aggregated to the NetDeviceQueueInterface");
 }
 
 void
@@ -196,21 +211,21 @@ NetDeviceQueueInterface::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  for (auto t : m_traceMap)
-    {
-      if (!t.first->TraceDisconnectWithoutContext ("Enqueue", t.second[0])
-          || !t.first->TraceDisconnectWithoutContext ("Dequeue", t.second[1])
-          || !t.first->TraceDisconnectWithoutContext ("DropAfterDequeue", t.second[1])
-          || !t.first->TraceDisconnectWithoutContext ("DropBeforeEnqueue", t.second[2]))
-        {
-          NS_LOG_WARN ("NetDeviceQueueInterface: Trying to disconnected a callback that"
-                       " has not been connected to a traced callback");
-        }
-    }
-
-  m_traceMap.clear ();
   m_txQueuesVector.clear ();
   Object::DoDispose ();
+}
+
+void
+NetDeviceQueueInterface::NotifyNewAggregate (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // Notify the NetDeviceQueue objects that an object was aggregated
+  for (auto& tx : m_txQueuesVector)
+    {
+      tx->NotifyAggregatedObject (this);
+    }
+  Object::NotifyNewAggregate ();
 }
 
 void

@@ -32,6 +32,7 @@
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/data-rate.h"
 #include "ns3/net-device-queue-interface.h"
+#include "ns3/queue.h"
 #include "ns3/config.h"
 
 using namespace ns3;

@@ -22,6 +22,8 @@
  */
 
 #include "ns3/simulator.h"
+#include "ns3/packet.h"
+#include "ns3/log.h"
 #include "wifi-mac-queue-item.h"
 
 namespace ns3 {
@@ -68,7 +70,5 @@ WifiMacQueueItem::GetSize (void) const
 {
   return m_packet->GetSize () + m_header.GetSerializedSize ();
 }
-
-NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue, WifiMacQueueItem);
 
 } //namespace ns3

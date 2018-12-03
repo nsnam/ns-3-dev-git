@@ -22,7 +22,6 @@
 #include "fifo-queue-disc.h"
 #include "ns3/object-factory.h"
 #include "ns3/drop-tail-queue.h"
-#include "ns3/net-device-queue-interface.h"
 
 namespace ns3 {
 

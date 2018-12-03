@@ -30,6 +30,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiMacQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue, WifiMacQueueItem);
 
 TypeId
 WifiMacQueue::GetTypeId (void)

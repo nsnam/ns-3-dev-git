@@ -27,13 +27,10 @@
 #include "ns3/unused.h"
 #include "ns3/simulator.h"
 #include "queue-disc.h"
-#include <ns3/drop-tail-queue.h>
 #include "ns3/net-device-queue-interface.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
-
-NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,QueueDiscItem);
-NS_OBJECT_TEMPLATE_CLASS_DEFINE (DropTailQueue,QueueDiscItem);
 
 NS_LOG_COMPONENT_DEFINE ("QueueDisc");
 

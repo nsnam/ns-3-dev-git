@@ -241,10 +241,10 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   devB->SetQueue (queueB);
   // Aggregate NetDeviceQueueInterface objects
   Ptr<NetDeviceQueueInterface> ndqiA = CreateObject<NetDeviceQueueInterface> ();
-  ndqiA->ConnectQueueTraces (queueA, 0);
+  ndqiA->GetTxQueue (0)->ConnectQueueTraces (queueA);
   devA->AggregateObject (ndqiA);
   Ptr<NetDeviceQueueInterface> ndqiB = CreateObject<NetDeviceQueueInterface> ();
-  ndqiB->ConnectQueueTraces (queueB, 0);
+  ndqiB->GetTxQueue (0)->ConnectQueueTraces (queueB);
   devB->AggregateObject (ndqiB);
 
   // If MPI is enabled, we need to see if both nodes have the same system id 

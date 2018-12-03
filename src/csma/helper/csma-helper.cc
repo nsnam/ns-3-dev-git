@@ -312,7 +312,7 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
   device->Attach (channel);
   // Aggregate a NetDeviceQueueInterface object
   Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
-  ndqi->ConnectQueueTraces (queue, 0);
+  ndqi->GetTxQueue (0)->ConnectQueueTraces (queue);
   device->AggregateObject (ndqi);
 
   return device;

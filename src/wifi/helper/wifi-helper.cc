@@ -693,19 +693,19 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
 
               rmac->GetAttributeFailSafe ("BE_Txop", ptr);
               wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+              ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
 
               rmac->GetAttributeFailSafe ("BK_Txop", ptr);
               wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 1);
+              ndqi->GetTxQueue (1)->ConnectQueueTraces (wmq);
 
               rmac->GetAttributeFailSafe ("VI_Txop", ptr);
               wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 2);
+              ndqi->GetTxQueue (2)->ConnectQueueTraces (wmq);
 
               rmac->GetAttributeFailSafe ("VO_Txop", ptr);
               wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 3);
+              ndqi->GetTxQueue (3)->ConnectQueueTraces (wmq);
               ndqi->SetSelectQueueCallback (m_selectQueueCallback);
             }
           else
@@ -714,7 +714,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
 
               rmac->GetAttributeFailSafe ("Txop", ptr);
               wmq = ptr.Get<Txop> ()->GetWifiMacQueue ();
-              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+              ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
             }
           device->AggregateObject (ndqi);
         }

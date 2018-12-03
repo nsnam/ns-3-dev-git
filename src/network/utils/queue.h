@@ -30,6 +30,7 @@
 #include "ns3/unused.h"
 #include "ns3/log.h"
 #include "ns3/queue-size.h"
+#include "ns3/queue-item.h"
 #include <string>
 #include <sstream>
 #include <list>
@@ -293,6 +294,9 @@ public:
    * Flush the queue.
    */
   void Flush (void);
+
+  /// Define ItemType as the type of the stored elements
+  typedef Item ItemType;
 
 protected:
 
@@ -597,6 +601,15 @@ Queue<Item>::DropAfterDequeue (Ptr<Item> item)
   m_traceDrop (item);
   m_traceDropAfterDequeue (item);
 }
+
+// The following explicit template instantiation declarations prevent all the
+// translation units including this header file to implicitly instantiate the
+// Queue<Packet> class and the Queue<QueueDiscItem> class. The unique instances
+// of these classes are explicitly created through the macros
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,Packet) and
+// NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,QueueDiscItem), which are included in queue.cc
+extern template class Queue<Packet>;
+extern template class Queue<QueueDiscItem>;
 
 } // namespace ns3
 

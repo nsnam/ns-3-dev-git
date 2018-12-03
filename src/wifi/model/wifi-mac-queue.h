@@ -25,10 +25,19 @@
 #define WIFI_MAC_QUEUE_H
 
 #include "wifi-mac-queue-item.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
 class QosBlockedDestinations;
+
+// The following explicit template instantiation declaration prevents modules
+// including this header file from implicitly instantiating Queue<WifiMacQueueItem>.
+// This would cause python examples using wifi to crash at runtime with the
+// following error message: "Trying to allocate twice the same uid:
+// ns3::Queue<WifiMacQueueItem>"
+extern template class Queue<WifiMacQueueItem>;
+
 
 /**
  * \ingroup wifi

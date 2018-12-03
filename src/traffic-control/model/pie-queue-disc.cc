@@ -33,7 +33,6 @@
 #include "ns3/abort.h"
 #include "pie-queue-disc.h"
 #include "ns3/drop-tail-queue.h"
-#include "ns3/net-device-queue-interface.h"
 
 namespace ns3 {
 

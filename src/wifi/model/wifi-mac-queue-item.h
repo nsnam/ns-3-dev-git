@@ -25,12 +25,12 @@
 #define WIFI_MAC_QUEUE_ITEM_H
 
 #include "ns3/nstime.h"
-#include "ns3/queue.h"
 #include "wifi-mac-header.h"
 
 namespace ns3 {
 
 class QosBlockedDestinations;
+class Packet;
 
 /**
  * \ingroup wifi
@@ -106,14 +106,6 @@ private:
   WifiMacHeader m_header;      //!< Wifi MAC header associated with the packet
   Time m_tstamp;               //!< timestamp when the packet arrived at the queue
 };
-
-
-// The following explicit template instantiation declaration prevents modules
-// including this header file from implicitly instantiating Queue<WifiMacQueueItem>.
-// This would cause python examples using wifi to crash at runtime with the
-// following error message: "Trying to allocate twice the same uid:
-// ns3::Queue<WifiMacQueueItem>"
-extern template class Queue<WifiMacQueueItem>;
 
 
 } //namespace ns3

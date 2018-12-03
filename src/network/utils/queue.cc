@@ -28,6 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("Queue");
 
 NS_OBJECT_ENSURE_REGISTERED (QueueBase);
 NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,Packet);
+NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,QueueDiscItem);
 
 TypeId
 QueueBase::GetTypeId (void)
