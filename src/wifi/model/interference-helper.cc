@@ -25,6 +25,7 @@
 #include "interference-helper.h"
 #include "wifi-phy.h"
 #include "error-rate-model.h"
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -229,26 +230,36 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint1
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
+  NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr=" << RatioToDb(snr) << "dB");
   return snr;
 }
 
 double
 InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const
 {
-  double noiseInterference = m_firstPower;
+  double noiseInterferenceW = m_firstPower;
   auto it = m_niChanges.find (event->GetStartTime ());
-  for (; it != m_niChanges.end () && it->second.GetEvent () != event; ++it)
+  for (; it != m_niChanges.end (); ++it)
     {
-      noiseInterference = it->second.GetPower ();
+      if (it->second.GetEvent () == event)
+        {
+          continue;
+        }
+      if (it->first > Simulator::Now ())
+        {
+          break;
+        }
+      noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
     }
+  it = m_niChanges.find (event->GetStartTime ());
+  for (; it != m_niChanges.end () && it->second.GetEvent () != event; ++it);
   ni->emplace (event->GetStartTime (), NiChange (0, event));
   while (++it != m_niChanges.end () && it->second.GetEvent () != event)
     {
       ni->insert (*it);
     }
   ni->emplace (event->GetEndTime (), NiChange (0, event));
-  return noiseInterference;
+  return noiseInterferenceW;
 }
 
 double

@@ -175,7 +175,6 @@ The following details pertain to the physical layer and channel models:
 * 802.11 PCF implementation currently assumes a DTIM interval equal to the beacon interval
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported
 * The current implementation assumes that secondary channels are always higher than primary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
@@ -297,9 +296,9 @@ In the standard, there is also what is called the "minimum modulation
 and coding rate sensitivity" in section 18.3.10.6 CCA requirements. 
 This is analogous to the RxSensitivity attribute in ``YansWifiPhy``.
 CCA busy state is not raised in this model when this threshold is exceeded
-but instead RX state is immediately reached, since it is assumed that PLCP
-sync always succeeds in this model. Even if the PLCP header reception fails, the 
-channel state is still held in RX until YansWifiPhy::EndReceive().
+but instead RX state is immediately reachedif PHY preamble detection is successful.
+Even if the PHY header reception fails, the channel state is still held
+in RX until YansWifiPhy::EndReceive().
 
 In ns-3, the values of these attributes are -101 dBm for RxSensitivity
 and -62 dBm for CcaEdThreshold.  
@@ -311,10 +310,15 @@ calculated from the transmission power and adjusted based on the Tx gain
 of the transmitter, Rx gain of the receiver, and any path loss propagation
 model in effect.
 
-The packet reception occurs in two stages.   First, an event is scheduled
-for when the PLCP header has been received. PLCP header is often transmitted
+The packet reception occurs in three stages. First, an event is scheduled
+for when PHY preamble has been detected. This decides whether the preamble
+can be detected, by calling a preamble detection model. In case there is no
+preamble detection model attached to the PHY, it assumes preamble is always detected.
+Currently, there is only a simple threshold-based preamble detection model in ns-3,
+called ``ThresholdPreambleDetectionModel``. If PHY preamble has been successfully detected,
+it schedules a second event for when PHY header has been received. PHY header is often transmitted
 at a lower modulation rate than is the payload.  The portion of the packet
-corresponding to the PLCP header is evaluated for probability of error 
+corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
 for "probability of error (PER)" for this header based on the SNR that has
 been tracked by the InterferenceHelper.  The ``YansWifiPhy`` then draws

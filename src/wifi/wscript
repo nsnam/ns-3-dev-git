@@ -85,6 +85,8 @@ def build(bld):
         'model/he-capabilities.cc',
         'model/frame-capture-model.cc',
         'model/simple-frame-capture-model.cc',
+        'model/preamble-detection-model.cc',
+        'model/threshold-preamble-detection-model.cc',
         'model/he-operation.cc',
         'model/he-configuration.cc',
         'model/extended-capabilities.cc',
@@ -112,6 +114,7 @@ def build(bld):
         'test/wifi-error-rate-models-test.cc',
         'test/wifi-transmit-mask-test.cc',
         'test/wifi-phy-thresholds-test.cc',
+        'test/preamble-detection-test.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -200,6 +203,8 @@ def build(bld):
         'model/he-capabilities.h',
         'model/frame-capture-model.h',
         'model/simple-frame-capture-model.h',
+        'model/preamble-detection-model.h',
+        'model/threshold-preamble-detection-model.h',
         'model/qos-blocked-destinations.h',
         'model/he-operation.h',
         'model/he-configuration.h',

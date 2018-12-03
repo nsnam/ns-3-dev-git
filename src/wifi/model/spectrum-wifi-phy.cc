@@ -240,7 +240,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<Packet> packet = wifiRxParams->packet->Copy ();
-  StartReceivePreambleAndHeader (packet, rxPowerW, rxDuration);
+  StartReceivePreamble (packet, rxPowerW, rxDuration);
 }
 
 Ptr<AntennaModel>

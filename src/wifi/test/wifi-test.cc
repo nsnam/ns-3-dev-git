@@ -1025,7 +1025,6 @@ SetChannelFrequencyTest::DoRun ()
   }
 
   Simulator::Destroy ();
-
 }
 
 //-----------------------------------------------------------------------------
@@ -1656,6 +1655,9 @@ void
 StaWifiMacScanningTestCase::DoRun (void)
 {
   {
+    RngSeedManager::SetSeed (1);
+    RngSeedManager::SetRun (1);
+  
     NodeContainer nodes = Setup (false, false);
     Ptr<Node> nearestAp = nodes.Get (2);
     Mac48Address nearestApAddr = DynamicCast<WifiNetDevice> (nearestAp->GetDevice (0))->GetMac ()->GetAddress ();
@@ -1670,6 +1672,9 @@ StaWifiMacScanningTestCase::DoRun (void)
   }
   m_associatedApBssid = Mac48Address ();
   {
+    RngSeedManager::SetSeed (1);
+    RngSeedManager::SetRun (1);
+
     NodeContainer nodes = Setup (true, true);
     Ptr<Node> nearestAp = nodes.Get (2);
     Mac48Address nearestApAddr = DynamicCast<WifiNetDevice> (nearestAp->GetDevice (0))->GetMac ()->GetAddress ();
@@ -1682,6 +1687,9 @@ StaWifiMacScanningTestCase::DoRun (void)
   }
   m_associatedApBssid = Mac48Address ();
   {
+    RngSeedManager::SetSeed (1);
+    RngSeedManager::SetRun (1);
+
     NodeContainer nodes = Setup (true, false);
     Ptr<Node> nearestAp = nodes.Get (2);
     Mac48Address secondNearestApAddr = DynamicCast<WifiNetDevice> (nodes.Get (1)->GetDevice (0))->GetMac ()->GetAddress ();

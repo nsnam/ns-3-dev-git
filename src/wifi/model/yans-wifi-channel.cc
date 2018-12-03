@@ -132,7 +132,7 @@ YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPow
       NS_LOG_INFO ("Received signal too weak to process: " << rxPowerDbm << " dBm");
       return;
     }
-  phy->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
+  phy->StartReceivePreamble (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
 }
 
 std::size_t
