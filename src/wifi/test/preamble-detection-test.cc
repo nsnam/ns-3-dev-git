@@ -67,11 +67,11 @@ protected:
    * \param snr the SNR
    * \param txVector the transmit vector
    */
-  void SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
+  void RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
   /**
    * Spectrum wifi receive failure function
    */
-  void SpectrumWifiPhyRxFailure (void);
+  void RxFailure (void);
   uint32_t m_countRxSuccess; ///< count RX success
   uint32_t m_countRxFailure; ///< count RX failure
 
@@ -147,14 +147,14 @@ TestThresholdPreambleDetectionWithoutFrameCapture::CheckRxPacketCount (uint32_t 
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector)
+TestThresholdPreambleDetectionWithoutFrameCapture::RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector)
 {
   NS_LOG_FUNCTION (this << p << snr << txVector);
   m_countRxSuccess++;
 }
 
 void
-TestThresholdPreambleDetectionWithoutFrameCapture::SpectrumWifiPhyRxFailure (void)
+TestThresholdPreambleDetectionWithoutFrameCapture::RxFailure (void)
 {
   NS_LOG_FUNCTION (this);
   m_countRxFailure++;
@@ -173,8 +173,8 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup (void)
   m_phy->SetErrorRateModel (error);
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
   m_phy->SetFrequency (FREQUENCY);
-  m_phy->SetReceiveOkCallback (MakeCallback (&TestThresholdPreambleDetectionWithoutFrameCapture::SpectrumWifiPhyRxSuccess, this));
-  m_phy->SetReceiveErrorCallback (MakeCallback (&TestThresholdPreambleDetectionWithoutFrameCapture::SpectrumWifiPhyRxFailure, this));
+  m_phy->SetReceiveOkCallback (MakeCallback (&TestThresholdPreambleDetectionWithoutFrameCapture::RxSuccess, this));
+  m_phy->SetReceiveErrorCallback (MakeCallback (&TestThresholdPreambleDetectionWithoutFrameCapture::RxFailure, this));
 
   Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel = CreateObject<ThresholdPreambleDetectionModel> ();
   m_phy->SetPreambleDetectionModel (preambleDetectionModel);
