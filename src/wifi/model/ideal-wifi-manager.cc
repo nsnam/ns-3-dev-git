@@ -160,10 +160,17 @@ IdealWifiManager::DoInitialize ()
                                     " channel width " << j <<
                                     " nss " << +k <<
                                     " GI " << guardInterval);
-                      NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-                      txVector.SetNss (k);
-                      txVector.SetMode (mode);
-                      AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
+                      if (mode.IsAllowed (j, k))
+                        {
+                          NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
+                          txVector.SetNss (k);
+                          txVector.SetMode (mode);
+                          AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
+                        }
+                      else
+                        {
+                          NS_LOG_DEBUG ("In SetupPhy, mode = " << mode.GetUniqueName () << " disallowed");
+                        }
                     }
                 }
             }
