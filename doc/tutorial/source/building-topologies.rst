@@ -61,13 +61,13 @@ three "extra" nodes as seen below:
 
 ::
 
-// Default Network Topology
-//
-//       10.1.1.0
-// n0 -------------- n1   n2   n3   n4
-//    point-to-point  |    |    |    |
-//                    ================
-//                      LAN 10.1.2.0
+  // Default Network Topology
+  //
+  //       10.1.1.0
+  // n0 -------------- n1   n2   n3   n4
+  //    point-to-point  |    |    |    |
+  //                    ================
+  //                      LAN 10.1.2.0
 
 Then the ns-3 namespace is ``used`` and a logging component is defined.
 This is all just as it was in ``first.cc``, so there is nothing new yet.
@@ -812,14 +812,14 @@ to the wifi module and the mobility module which we will discuss below.
 
 ::
 
-#include "ns3/core-module.h"
-#include "ns3/point-to-point-module.h"
-#include "ns3/network-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/csma-module.h"
-#include "ns3/internet-module.h"
+  #include "ns3/core-module.h"
+  #include "ns3/point-to-point-module.h"
+  #include "ns3/network-module.h"
+  #include "ns3/applications-module.h"
+  #include "ns3/wifi-module.h"
+  #include "ns3/mobility-module.h"
+  #include "ns3/csma-module.h"
+  #include "ns3/internet-module.h"
 
 The network topology illustration follows:
 
@@ -1367,7 +1367,7 @@ case of the default number of CSMA and wireless nodes, this turns out to be
 node seven and the tracing namespace path to the mobility model would look
 like,
 
-::
+.. sourcecode:: text
 
   /NodeList/7/$ns3::MobilityModel/CourseChange
 
@@ -1513,39 +1513,32 @@ At the device layer, there are device specific queues:
 Changing from the defaults
 ++++++++++++++++++++++++++
 
-* The type of queue used by a NetDevice can be usually modified through the device helper:
+* The type of queue used by a NetDevice can be usually modified through the device helper::
 
-.. sourcecode:: cpp
+    NodeContainer nodes;
+    nodes.Create (2);
 
-  NodeContainer nodes;
-  nodes.Create (2);
+    PointToPointHelper p2p;
+    p2p.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("50p"));
 
-  PointToPointHelper p2p;
-  p2p.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("50p"));
-
-  NetDeviceContainer devices = p2p.Install (nodes);
+    NetDeviceContainer devices = p2p.Install (nodes);
 
 * The type of queue disc installed on a NetDevice can be modified through the
-  traffic control helper
+  traffic control helper::
 
-.. sourcecode:: cpp
+    InternetStackHelper stack;
+    stack.Install (nodes);
 
-  InternetStackHelper stack;
-  stack.Install (nodes);
+    TrafficControlHelper tch;
+    tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
+    tch.Install (devices);
 
-  TrafficControlHelper tch;
-  tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
-  tch.Install (devices);
+* BQL can be enabled on a device that supports it through the traffic control helper::
 
-* BQL can be enabled on a device that supports it through the traffic control helper
+    InternetStackHelper stack;
+    stack.Install (nodes);
 
-.. sourcecode:: cpp
-
-  InternetStackHelper stack;
-  stack.Install (nodes);
-
-  TrafficControlHelper tch;
-  tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
-  tch.SetQueueLimits ("ns3::DynamicQueueLimits", "HoldTime", StringValue ("4ms"));
-  tch.Install (devices);
-
+    TrafficControlHelper tch;
+    tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
+    tch.SetQueueLimits ("ns3::DynamicQueueLimits", "HoldTime", StringValue ("4ms"));
+    tch.Install (devices);

@@ -108,12 +108,14 @@ In summary, the application works as follows.
 4. The parsing takes a short time (randomly determined) to determine the
    number of *embedded objects* (also randomly determined) in the web page. 
    Number of embedded object is illustrated in :ref:`fig-http-num-of-embedded-objects`.
-    - If at least one embedded object is determined, the application requests
-      the first embedded object from the server. The request for the next
-      embedded object follows after the previous embedded object has been
-      completely received.
-    - If there is no more embedded object to request, the application enters
-      the *reading time*.
+   
+    * If at least one embedded object is determined, the application requests
+       the first embedded object from the server. The request for the next
+       embedded object follows after the previous embedded object has been
+       completely received.
+    * If there is no more embedded object to request, the application enters
+       the *reading time*.
+       
 5. Reading time is a long delay (again, randomly determined) where the
    application does not induce any network traffic, thus simulating the user
    reading the downloaded web page.

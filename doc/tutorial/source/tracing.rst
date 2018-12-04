@@ -672,7 +672,9 @@ interest was the code that provided the Config path.  Therefore, the
 be the only Callback called.
 
 The final piece of the puzzle is the "context".  Recall that we saw an
-output looking something like the following from ``third.cc``::
+output looking something like the following from ``third.cc``:
+
+.. sourcecode:: text
 
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.27897, y =
   2.22677
@@ -2739,11 +2741,11 @@ but to summarize ...
     helper.EnableAscii ("prefix", "client/eth0");
     helper.EnableAscii ("prefix", "server/eth0");
 
-    This would result in two files named ``prefix-client-eth0.tr`` and
-    ``prefix-server-eth0.tr`` with traces for each device in the
-    respective trace file.  Since all of the ``EnableAscii`` functions
-    are overloaded to take a stream wrapper, you can use that form as
-    well::
+  This would result in two files named ``prefix-client-eth0.tr`` and
+  ``prefix-server-eth0.tr`` with traces for each device in the
+  respective trace file.  Since all of the ``EnableAscii`` functions
+  are overloaded to take a stream wrapper, you can use that form as
+  well::
 
     Names::Add ("client" ...);
     Names::Add ("client/eth0" ...);
@@ -2773,10 +2775,10 @@ but to summarize ...
     ...
     helper.EnableAscii ("prefix", d);
 
-    This would result in a number of ASCII trace files being created,
-    each of which follows the ``<prefix>-<node id>-<device id>.tr``
-    convention.
-
+  This would result in a number of ASCII trace files being created,
+  each of which follows the ``<prefix>-<node id>-<device id>.tr``
+  convention.
+  
   Combining all of the traces into a single file is accomplished
   similarly to the examples above::
 

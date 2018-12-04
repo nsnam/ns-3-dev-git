@@ -37,9 +37,7 @@ Examples
 ========
 
 An example of how to configure PrioQueueDisc with custom child queue discs and priomap
-is provided by `queue-discs-benchmark.cc` located in ``examples/traffic-control``:
-
-.. sourcecode:: cpp
+is provided by `queue-discs-benchmark.cc` located in ``examples/traffic-control``::
 
   TrafficControlHelper tch;
   uint16_t handle = tch.SetRootQueueDisc ("ns3::PrioQueueDisc", "Priomap", StringValue ("0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1"));
@@ -63,7 +61,7 @@ ii) packets are dequeued in the correct order.
 
 The test suite can be run using the following commands:
 
-::
+.. sourcecode:: bash
 
   $ ./waf configure --enable-examples --enable-tests
   $ ./waf build
@@ -71,6 +69,6 @@ The test suite can be run using the following commands:
 
 or
 
-::
+.. sourcecode:: bash
 
   $ NS_LOG="PrioQueueDisc" ./waf --run "test-runner --suite=prio-queue-disc"
