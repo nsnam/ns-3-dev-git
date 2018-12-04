@@ -266,9 +266,9 @@ private:
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
    *
-   * \param signal
-   * \param noiseInterference
-   * \param channelWidth
+   * \param signal signal power, W
+   * \param noiseInterference noise and interference power, W
+   * \param channelWidth signal width in MHz
    *
    * \return SNR in linear ratio
    */
