@@ -1171,14 +1171,14 @@ Bug2222TestCase::DoRun (void)
  * to ensure that only 2 {starting frequency, channelWidth, Number of subbands
  * in SpectrumModel, modulation type} tuples are used.
  *
- * See \bugid{2483}
+ * See \bugid{2843}
  */
 
-class Bug2483TestCase : public TestCase
+class Bug2843TestCase : public TestCase
 {
 public:
-  Bug2483TestCase ();
-  virtual ~Bug2483TestCase ();
+  Bug2843TestCase ();
+  virtual ~Bug2843TestCase ();
   virtual void DoRun (void);
 
 private:
@@ -1204,17 +1204,17 @@ private:
   void SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination) const;
 };
 
-Bug2483TestCase::Bug2483TestCase ()
-  : TestCase ("Test case for Bug 2483")
+Bug2843TestCase::Bug2843TestCase ()
+  : TestCase ("Test case for Bug 2843")
 {
 }
 
-Bug2483TestCase::~Bug2483TestCase ()
+Bug2843TestCase::~Bug2843TestCase ()
 {
 }
 
 void
-Bug2483TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalParameters> txParams)
+Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalParameters> txParams)
 {
   // Extract starting frequency and number of subbands
   Ptr<const SpectrumModel> c = txParams->psd->GetSpectrumModel ();
@@ -1252,7 +1252,7 @@ Bug2483TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
 }
 
 void
-Bug2483TestCase::SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice,
+Bug2843TestCase::SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice,
                                   Address& destination) const
 {
   for (uint8_t i = 0; i < numPackets; i++)
@@ -1263,7 +1263,7 @@ Bug2483TestCase::SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevic
 }
 
 void
-Bug2483TestCase::DoRun (void)
+Bug2843TestCase::DoRun (void)
 {
   uint16_t channelWidth = 40; // at least 40 MHz expected here
 
@@ -1317,10 +1317,10 @@ Bug2483TestCase::DoRun (void)
   mobility.Install (wifiStaNode);
 
   // Send two 5 packet-bursts
-  Simulator::Schedule (Seconds (0.5), &Bug2483TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  Simulator::Schedule (Seconds (0.6), &Bug2483TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.5), &Bug2843TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.6), &Bug2843TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
 
-  Config::Connect ("/ChannelList/*/$ns3::MultiModelSpectrumChannel/TxSigParams", MakeCallback (&Bug2483TestCase::StoreDistinctTuple, this));
+  Config::Connect ("/ChannelList/*/$ns3::MultiModelSpectrumChannel/TxSigParams", MakeCallback (&Bug2843TestCase::StoreDistinctTuple, this));
 
   Simulator::Stop (Seconds (0.8));
   Simulator::Run ();
@@ -1947,7 +1947,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Bug730TestCase, TestCase::QUICK); //Bug 730
   AddTestCase (new SetChannelFrequencyTest, TestCase::QUICK);
   AddTestCase (new Bug2222TestCase, TestCase::QUICK); //Bug 2222
-  AddTestCase (new Bug2483TestCase, TestCase::QUICK); //Bug 2483
+  AddTestCase (new Bug2843TestCase, TestCase::QUICK); //Bug 2843
   AddTestCase (new Bug2831TestCase, TestCase::QUICK); //Bug 2831
   AddTestCase (new StaWifiMacScanningTestCase, TestCase::QUICK); //Bug 2399
   AddTestCase (new Bug2470TestCase, TestCase::QUICK); //Bug 2470
