@@ -271,7 +271,7 @@ private:
    * \param noiseInterference
    * \param channelWidth
    *
-   * \return SNR in liear ratio
+   * \return SNR in linear ratio
    */
   double CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth) const;
   /**
