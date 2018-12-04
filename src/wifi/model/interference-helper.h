@@ -265,7 +265,6 @@ private:
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
   /**
    * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
-   * (Mode is not currently used)
    *
    * \param signal
    * \param noiseInterference
