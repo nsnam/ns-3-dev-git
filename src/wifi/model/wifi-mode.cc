@@ -96,12 +96,6 @@ WifiMode::IsAllowed (uint16_t channelWidth, uint8_t nss) const
           return false;
         }
     }
-  else
-    {
-      //We should not go here!
-      NS_ASSERT (false);
-      return false;
-    }
   return true;
 }
 
