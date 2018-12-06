@@ -2496,6 +2496,7 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
   else
   {
     NS_LOG_DEBUG ("Packet reception could not be started because PHY preamble detection failed");
+    m_mpdusNum = 0;
     m_plcpSuccess = false;
     m_interference.NotifyRxEnd ();
   }
@@ -2526,8 +2527,6 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       NS_LOG_DEBUG ("Cannot start RX because device is OFF");
       return;
     }
-
-  NS_LOG_FUNCTION (this << packet << WToDbm (rxPowerW) << rxDuration);
 
   if (tag.GetFrameComplete () == 0)
     {
@@ -2735,9 +2734,10 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutyp
       m_state->SwitchFromRxEndError (packet, snrPer.snr);
     }
 
-  if (preamble == WIFI_PREAMBLE_NONE && mpdutype == LAST_MPDU_IN_AGGREGATE)
+  if ((mpdutype == NORMAL_MPDU) || (preamble == WIFI_PREAMBLE_NONE && mpdutype == LAST_MPDU_IN_AGGREGATE))
     {
       m_plcpSuccess = false;
+      m_mpdusNum = 0;
     }
 
 }
@@ -3793,8 +3793,8 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
     }
   else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
     {
-      //received the first MPDU in an MPDU
       m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
+      NS_LOG_DEBUG ("Received the first MPDU in an A-MPDU, remaining number of MPDUs to be received: " << m_mpdusNum);
       m_rxMpduReferenceNumber++;
     }
   else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
@@ -3826,9 +3826,10 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
   if (preamble == WIFI_PREAMBLE_NONE)
     {
+      NS_ASSERT (m_endPreambleDetectionEvent.IsExpired ());
+
       m_state->SwitchToRx (rxDuration);
       NotifyRxBegin (packet);
-      m_interference.NotifyRxStart ();
 
       NS_ASSERT (m_endRxEvent.IsExpired ());
       m_endRxEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndReceive, this,
