@@ -26,6 +26,10 @@ for dirname in os.listdir('contrib'):
         all_contrib_modules.append(dirname)
 all_contrib_modules.sort()
 
+def get_required_boost_libs(conf):
+    for module in all_contrib_modules:
+        conf.recurse (module, name="required_boost_libs", mandatory=False)
+
 def options(opt):
     for module in all_contrib_modules:
         opt.recurse(module, mandatory=False)

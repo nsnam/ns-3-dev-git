@@ -29,7 +29,9 @@ for dirname in os.listdir('src'):
         all_modules.append(dirname)
 all_modules.sort()
 
-
+def get_required_boost_libs(conf):
+    for module in all_modules:
+        conf.recurse (module, name="required_boost_libs", mandatory=False)
 
 def options(opt):
     opt.add_option('--enable-rpath',
@@ -49,18 +51,6 @@ def options(opt):
         opt.recurse(module, mandatory=False)
 
 def configure(conf):
-    conf.env['REQUIRED_BOOST_LIBS'] = []
-    for module in all_modules:
-        conf.recurse (module, name="required_boost_libs", mandatory=False)
-
-    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
-        conf.load('boost')
-        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False)
-        if not conf.env['LIB_BOOST']:
-            conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), libpath="/usr/lib64", mandatory=False)
-            if not conf.env['LIB_BOOST']:
-                conf.env['LIB_BOOST'] = []
-
     # Append blddir to the module path before recursing into modules
     blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
     conf.env.append_value('NS3_MODULE_PATH', blddir + "/lib")

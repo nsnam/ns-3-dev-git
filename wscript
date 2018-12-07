@@ -457,6 +457,19 @@ def configure(conf):
     else:
         Logs.warn("CXX Standard flag " + Options.options.cxx_standard + " was not recognized, using compiler's default")
 
+    # Find Boost libraries by modules
+    conf.env['REQUIRED_BOOST_LIBS'] = []
+    for modules_dir in ['src', 'contrib']:
+        conf.recurse (modules_dir, name="get_required_boost_libs", mandatory=False)
+
+    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
+        conf.load('boost')
+        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False)
+        if not conf.env['LIB_BOOST']:
+            conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), libpath="/usr/lib64", mandatory=False)
+            if not conf.env['LIB_BOOST']:
+                conf.env['LIB_BOOST'] = []
+
     # Set this so that the lists won't be printed at the end of this
     # configure command.
     conf.env['PRINT_BUILT_MODULES_AT_END'] = False
