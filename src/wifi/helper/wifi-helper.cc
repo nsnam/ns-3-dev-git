@@ -782,6 +782,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("SpectrumWifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("StaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
+  LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueueItem", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiNetDevice", LOG_LEVEL_ALL);
