@@ -245,7 +245,7 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni
         {
           continue;
         }
-      if (it->first > Simulator::Now ())
+      if (it->first >= Simulator::Now ())
         {
           break;
         }
@@ -259,6 +259,7 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni
       ni->insert (*it);
     }
   ni->emplace (event->GetEndTime (), NiChange (0, event));
+  NS_ASSERT_MSG (noiseInterferenceW >= 0, "CalculateNoiseInterferenceW returns negative value " << noiseInterferenceW);
   return noiseInterferenceW;
 }
 
