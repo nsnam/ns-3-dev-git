@@ -3075,37 +3075,40 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     }
                 }
             }
-          // VHT/HE single MPDU operation
-          WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
-          if (!isAmpdu
-              && hdr.IsQosData ()
-              && (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
-                  || dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE))
+          if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
             {
-              peekedHdr = hdr;
-              peekedHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
-
-              currentAggregatedPacket = Create<Packet> ();
-              edcaIt->second->GetMpduAggregator ()->AggregateSingleMpdu (packet, currentAggregatedPacket);
-              m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (packet, peekedHdr));
-              if (m_txParams.MustSendRts ())
+              // VHT/HE single MPDU operation
+              WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+              if (!isAmpdu
+                  && hdr.IsQosData ()
+                  && (dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
+                      || dataTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE))
                 {
-                  InsertInTxQueue (packet, peekedHdr, tstamp, tid);
-                }
-              if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
-                {
-                  edcaIt->second->CompleteAmpduTransfer (peekedHdr.GetAddr1 (), tid);
-                }
+                  peekedHdr = hdr;
+                  peekedHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
 
-              //Add packet tag
-              AmpduTag ampdutag;
-              newPacket = currentAggregatedPacket;
-              newPacket->AddHeader (peekedHdr);
-              AddWifiMacTrailer (newPacket);
-              newPacket->AddPacketTag (ampdutag);
+                  currentAggregatedPacket = Create<Packet> ();
+                  edcaIt->second->GetMpduAggregator ()->AggregateSingleMpdu (packet, currentAggregatedPacket);
+                  m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (packet, peekedHdr));
+                  if (m_txParams.MustSendRts ())
+                    {
+                      InsertInTxQueue (packet, peekedHdr, tstamp, tid);
+                    }
+                  if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
+                    {
+                      edcaIt->second->CompleteAmpduTransfer (peekedHdr.GetAddr1 (), tid);
+                    }
 
-              NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
-              edcaIt->second->SetAmpduExist (hdr.GetAddr1 (), true);
+                  //Add packet tag
+                  AmpduTag ampdutag;
+                  newPacket = currentAggregatedPacket;
+                  newPacket->AddHeader (peekedHdr);
+                  AddWifiMacTrailer (newPacket);
+                  newPacket->AddPacketTag (ampdutag);
+
+                  NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
+                  edcaIt->second->SetAmpduExist (hdr.GetAddr1 (), true);
+                }
             }
         }
     }
