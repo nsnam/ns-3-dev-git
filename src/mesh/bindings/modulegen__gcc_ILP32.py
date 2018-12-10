@@ -22,14 +22,14 @@ def register_types(module):
     
     ## qos-txop.h (module 'wifi'): ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA', 'MESH', 'HT_STA', 'HT_AP', 'HT_ADHOC_STA', 'OCB'], import_from_module='ns.wifi')
-    ## block-ack-type.h (module 'wifi'): ns3::BlockAckType [enumeration]
-    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacType [enumeration]
     module.add_enum('WifiMacType', ['WIFI_MAC_CTL_CTLWRAPPER', 'WIFI_MAC_CTL_RTS', 'WIFI_MAC_CTL_CTS', 'WIFI_MAC_CTL_ACK', 'WIFI_MAC_CTL_BACKREQ', 'WIFI_MAC_CTL_BACKRESP', 'WIFI_MAC_CTL_END', 'WIFI_MAC_CTL_END_ACK', 'WIFI_MAC_MGT_BEACON', 'WIFI_MAC_MGT_ASSOCIATION_REQUEST', 'WIFI_MAC_MGT_ASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_DISASSOCIATION', 'WIFI_MAC_MGT_REASSOCIATION_REQUEST', 'WIFI_MAC_MGT_REASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_PROBE_REQUEST', 'WIFI_MAC_MGT_PROBE_RESPONSE', 'WIFI_MAC_MGT_AUTHENTICATION', 'WIFI_MAC_MGT_DEAUTHENTICATION', 'WIFI_MAC_MGT_ACTION', 'WIFI_MAC_MGT_ACTION_NO_ACK', 'WIFI_MAC_MGT_MULTIHOP_ACTION', 'WIFI_MAC_DATA', 'WIFI_MAC_DATA_CFACK', 'WIFI_MAC_DATA_CFPOLL', 'WIFI_MAC_DATA_CFACK_CFPOLL', 'WIFI_MAC_DATA_NULL', 'WIFI_MAC_DATA_NULL_CFACK', 'WIFI_MAC_DATA_NULL_CFPOLL', 'WIFI_MAC_DATA_NULL_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA', 'WIFI_MAC_QOSDATA_CFACK', 'WIFI_MAC_QOSDATA_CFPOLL', 'WIFI_MAC_QOSDATA_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA_NULL', 'WIFI_MAC_QOSDATA_NULL_CFPOLL', 'WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL'], import_from_module='ns.wifi')
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'], import_from_module='ns.wifi')
     ## wifi-preamble.h (module 'wifi'): ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT', 'WIFI_PREAMBLE_HT_MF', 'WIFI_PREAMBLE_HT_GF', 'WIFI_PREAMBLE_VHT', 'WIFI_PREAMBLE_HE_SU', 'WIFI_PREAMBLE_HE_ER_SU', 'WIFI_PREAMBLE_HE_MU', 'WIFI_PREAMBLE_HE_TB', 'WIFI_PREAMBLE_NONE'], import_from_module='ns.wifi')
+    ## block-ack-type.h (module 'wifi'): ns3::BlockAckType [enumeration]
+    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'EXTENDED_COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiModulationClass [enumeration]
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_HR_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT', 'WIFI_MOD_CLASS_VHT', 'WIFI_MOD_CLASS_HE'], import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiCodeRate [enumeration]
@@ -191,7 +191,7 @@ def register_types(module):
     module.add_class('WifiModeFactory', import_from_module='ns.wifi')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStation [struct]
     module.add_class('WifiRemoteStation', import_from_module='ns.wifi')
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationInfo [class]
+    ## wifi-remote-station-info.h (module 'wifi'): ns3::WifiRemoteStationInfo [class]
     module.add_class('WifiRemoteStationInfo', import_from_module='ns.wifi')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState [struct]
     module.add_class('WifiRemoteStationState', import_from_module='ns.wifi')
@@ -317,6 +317,12 @@ def register_types(module):
     module.add_class('WifiRemoteStationManager', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode [enumeration]
     module.add_enum('ProtectionMode', ['RTS_CTS', 'CTS_TO_SELF'], outer_class=root_module['ns3::WifiRemoteStationManager'], import_from_module='ns.wifi')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStation * >', u'ns3::WifiRemoteStationManager::Stations')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStation * >*', u'ns3::WifiRemoteStationManager::Stations*')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStation * >&', u'ns3::WifiRemoteStationManager::Stations&')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStationState * >', u'ns3::WifiRemoteStationManager::StationStates')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStationState * >*', u'ns3::WifiRemoteStationManager::StationStates*')
+    typehandlers.add_type_alias(u'std::vector< ns3::WifiRemoteStationState * >&', u'ns3::WifiRemoteStationManager::StationStates&')
     typehandlers.add_type_alias(u'void ( * ) ( double, double, ns3::Mac48Address )', u'ns3::WifiRemoteStationManager::PowerChangeTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( double, double, ns3::Mac48Address )*', u'ns3::WifiRemoteStationManager::PowerChangeTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( double, double, ns3::Mac48Address )&', u'ns3::WifiRemoteStationManager::PowerChangeTracedCallback&')
@@ -543,6 +549,8 @@ def register_types(module):
     ## mesh-wifi-interface-mac.h (module 'mesh'): ns3::MeshWifiInterfaceMac [class]
     module.add_class('MeshWifiInterfaceMac', parent=root_module['ns3::RegularWifiMac'])
     module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type=u'vector')
+    module.add_container('std::vector< ns3::WifiRemoteStation * >', 'ns3::WifiRemoteStation *', container_type=u'vector')
+    module.add_container('std::vector< ns3::WifiRemoteStationState * >', 'ns3::WifiRemoteStationState *', container_type=u'vector')
     module.add_container('std::map< ns3::Mac48Address, bool >', ('ns3::Mac48Address', 'bool'), container_type=u'map')
     module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type=u'vector')
     typehandlers.add_type_alias(u'std::vector< ns3::WifiMode >', u'ns3::WifiModeList')
@@ -2524,6 +2532,10 @@ def register_Ns3MacLowTransmissionParameters_methods(root_module, cls):
     cls.add_method('EnableCompressedBlockAck', 
                    'void', 
                    [])
+    ## mac-low-transmission-parameters.h (module 'wifi'): void ns3::MacLowTransmissionParameters::EnableExtendedCompressedBlockAck() [member function]
+    cls.add_method('EnableExtendedCompressedBlockAck', 
+                   'void', 
+                   [])
     ## mac-low-transmission-parameters.h (module 'wifi'): void ns3::MacLowTransmissionParameters::EnableMultiTidBlockAck() [member function]
     cls.add_method('EnableMultiTidBlockAck', 
                    'void', 
@@ -2558,6 +2570,11 @@ def register_Ns3MacLowTransmissionParameters_methods(root_module, cls):
                    is_const=True)
     ## mac-low-transmission-parameters.h (module 'wifi'): bool ns3::MacLowTransmissionParameters::MustWaitCompressedBlockAck() const [member function]
     cls.add_method('MustWaitCompressedBlockAck', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## mac-low-transmission-parameters.h (module 'wifi'): bool ns3::MacLowTransmissionParameters::MustWaitExtendedCompressedBlockAck() const [member function]
+    cls.add_method('MustWaitExtendedCompressedBlockAck', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -3536,20 +3553,20 @@ def register_Ns3WifiRemoteStation_methods(root_module, cls):
     return
 
 def register_Ns3WifiRemoteStationInfo_methods(root_module, cls):
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationInfo::WifiRemoteStationInfo(ns3::WifiRemoteStationInfo const & arg0) [constructor]
+    ## wifi-remote-station-info.h (module 'wifi'): ns3::WifiRemoteStationInfo::WifiRemoteStationInfo(ns3::WifiRemoteStationInfo const & arg0) [constructor]
     cls.add_constructor([param('ns3::WifiRemoteStationInfo const &', 'arg0')])
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationInfo::WifiRemoteStationInfo() [constructor]
+    ## wifi-remote-station-info.h (module 'wifi'): ns3::WifiRemoteStationInfo::WifiRemoteStationInfo() [constructor]
     cls.add_constructor([])
-    ## wifi-remote-station-manager.h (module 'wifi'): double ns3::WifiRemoteStationInfo::GetFrameErrorRate() const [member function]
+    ## wifi-remote-station-info.h (module 'wifi'): double ns3::WifiRemoteStationInfo::GetFrameErrorRate() const [member function]
     cls.add_method('GetFrameErrorRate', 
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationInfo::NotifyTxFailed() [member function]
+    ## wifi-remote-station-info.h (module 'wifi'): void ns3::WifiRemoteStationInfo::NotifyTxFailed() [member function]
     cls.add_method('NotifyTxFailed', 
                    'void', 
                    [])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationInfo::NotifyTxSuccess(uint32_t retryCounter) [member function]
+    ## wifi-remote-station-info.h (module 'wifi'): void ns3::WifiRemoteStationInfo::NotifyTxSuccess(uint32_t retryCounter) [member function]
     cls.add_method('NotifyTxSuccess', 
                    'void', 
                    [param('uint32_t', 'retryCounter')])
@@ -5624,6 +5641,16 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HeConfiguration> ns3::WifiMac::GetHeConfiguration() const [member function]
+    cls.add_method('GetHeConfiguration', 
+                   'ns3::Ptr< ns3::HeConfiguration >', 
+                   [], 
+                   is_const=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HtConfiguration> ns3::WifiMac::GetHtConfiguration() const [member function]
+    cls.add_method('GetHtConfiguration', 
+                   'ns3::Ptr< ns3::HtConfiguration >', 
+                   [], 
+                   is_const=True)
     ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetPifs() const [member function]
     cls.add_method('GetPifs', 
                    'ns3::Time', 
@@ -5659,6 +5686,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::VhtConfiguration> ns3::WifiMac::GetVhtConfiguration() const [member function]
+    cls.add_method('GetVhtConfiguration', 
+                   'ns3::Ptr< ns3::VhtConfiguration >', 
+                   [], 
+                   is_const=True)
     ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::WifiMac::GetWifiPhy() const [member function]
     cls.add_method('GetWifiPhy', 
                    'ns3::Ptr< ns3::WifiPhy >', 
@@ -5802,16 +5834,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Txop >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('bool', 'isDsss'), param('ns3::AcIndex', 'ac')], 
                    visibility='protected')
-    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HeConfiguration> ns3::WifiMac::GetHeConfiguration() const [member function]
-    cls.add_method('GetHeConfiguration', 
-                   'ns3::Ptr< ns3::HeConfiguration >', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::HtConfiguration> ns3::WifiMac::GetHtConfiguration() const [member function]
-    cls.add_method('GetHtConfiguration', 
-                   'ns3::Ptr< ns3::HtConfiguration >', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -6610,18 +6632,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('IsLastFragment', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetCtsTxVector(ns3::Mac48Address address, ns3::WifiMode rtsMode) [member function]
-    cls.add_method('GetCtsTxVector', 
-                   'ns3::WifiTxVector', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'rtsMode')])
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetAckTxVector(ns3::Mac48Address address, ns3::WifiMode dataMode) [member function]
-    cls.add_method('GetAckTxVector', 
-                   'ns3::WifiTxVector', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'dataMode')])
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetBlockAckTxVector(ns3::Mac48Address address, ns3::WifiMode dataMode) [member function]
-    cls.add_method('GetBlockAckTxVector', 
-                   'ns3::WifiTxVector', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'dataMode')])
     ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetDefaultTxPowerLevel() const [member function]
     cls.add_method('GetDefaultTxPowerLevel', 
                    'uint8_t', 
@@ -6635,14 +6645,21 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('SetDefaultTxPowerLevel', 
                    'void', 
                    [param('uint8_t', 'txPower')])
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNumberOfAntennas() [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNumberOfAntennas() const [member function]
     cls.add_method('GetNumberOfAntennas', 
                    'uint8_t', 
-                   [])
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetMaxNumberOfTransmitStreams() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetMaxNumberOfTransmitStreams() const [member function]
     cls.add_method('GetMaxNumberOfTransmitStreams', 
                    'uint8_t', 
-                   [])
+                   [], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::UseGreenfieldForDestination(ns3::Mac48Address dest) const [member function]
+    cls.add_method('UseGreenfieldForDestination', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'dest')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::WifiRemoteStationManager(ns3::WifiRemoteStationManager const & arg0) [constructor]
     cls.add_constructor([param('ns3::WifiRemoteStationManager const &', 'arg0')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::DoDispose() [member function]
@@ -6740,16 +6757,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint8_t', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
                    is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiPreamble ns3::WifiRemoteStationManager::GetPreambleForTransmission(ns3::WifiMode mode, ns3::Mac48Address dest) [member function]
-    cls.add_method('GetPreambleForTransmission', 
-                   'ns3::WifiPreamble', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::Mac48Address', 'dest')], 
-                   visibility='protected')
-    ## wifi-remote-station-manager.h (module 'wifi'): static uint16_t ns3::WifiRemoteStationManager::GetChannelWidthForTransmission(ns3::WifiMode mode, uint16_t maxSupportedChannelWidth) [member function]
-    cls.add_method('GetChannelWidthForTransmission', 
-                   'uint16_t', 
-                   [param('ns3::WifiMode', 'mode'), param('uint16_t', 'maxSupportedChannelWidth')], 
-                   is_static=True, visibility='protected')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::WifiRemoteStationManager::GetPhy() const [member function]
     cls.add_method('GetPhy', 
                    'ns3::Ptr< ns3::WifiPhy >', 
@@ -6795,81 +6802,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::WifiTxVector', 
                    [param('ns3::WifiRemoteStation *', 'station')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetCtsTxPowerLevel(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxPowerLevel', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetAckTxPowerLevel(ns3::Mac48Address address, ns3::WifiMode ackMode) [member function]
-    cls.add_method('DoGetAckTxPowerLevel', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetBlockAckTxPowerLevel(ns3::Mac48Address address, ns3::WifiMode blockAckMode) [member function]
-    cls.add_method('DoGetBlockAckTxPowerLevel', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetCtsTxChannelWidth(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxChannelWidth', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetCtsTxGuardInterval(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxGuardInterval', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetCtsTxNss(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxNss', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetCtsTxNess(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxNess', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetAckTxChannelWidth(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetAckTxChannelWidth', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetAckTxGuardInterval(ns3::Mac48Address address, ns3::WifiMode ackMode) [member function]
-    cls.add_method('DoGetAckTxGuardInterval', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetAckTxNss(ns3::Mac48Address address, ns3::WifiMode ackMode) [member function]
-    cls.add_method('DoGetAckTxNss', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetAckTxNess(ns3::Mac48Address address, ns3::WifiMode ackMode) [member function]
-    cls.add_method('DoGetAckTxNess', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetBlockAckTxChannelWidth(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetBlockAckTxChannelWidth', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::DoGetBlockAckTxGuardInterval(ns3::Mac48Address address, ns3::WifiMode blockAckMode) [member function]
-    cls.add_method('DoGetBlockAckTxGuardInterval', 
-                   'uint16_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetBlockAckTxNss(ns3::Mac48Address address, ns3::WifiMode blockAckMode) [member function]
-    cls.add_method('DoGetBlockAckTxNss', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetBlockAckTxNess(ns3::Mac48Address address, ns3::WifiMode blockAckMode) [member function]
-    cls.add_method('DoGetBlockAckTxNess', 
-                   'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
-                   visibility='private', is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
     cls.add_method('DoReportRtsFailed', 
                    'void', 
@@ -7047,6 +6979,11 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('GetNextPacket', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [param('ns3::WifiMacHeader &', 'hdr'), param('bool', 'removePacket')])
+    ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetRecipientBufferSize(ns3::Mac48Address recipient, uint8_t tid) const [member function]
+    cls.add_method('GetRecipientBufferSize', 
+                   'uint16_t', 
+                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')], 
+                   is_const=True)
     ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetSeqNumOfNextRetryPacket(ns3::Mac48Address recipient, uint8_t tid) const [member function]
     cls.add_method('GetSeqNumOfNextRetryPacket', 
                    'uint16_t', 
@@ -9736,6 +9673,11 @@ def register_Ns3QosTxop_methods(root_module, cls):
     cls.add_method('CompleteAmpduTransfer', 
                    'void', 
                    [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
+    ## qos-txop.h (module 'wifi'): uint16_t ns3::QosTxop::GetBaBufferSize(ns3::Mac48Address address, uint8_t tid) const [member function]
+    cls.add_method('GetBaBufferSize', 
+                   'uint16_t', 
+                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
+                   is_const=True)
     ## qos-txop.h (module 'wifi'): void ns3::QosTxop::NotifyAccessGranted() [member function]
     cls.add_method('NotifyAccessGranted', 
                    'void', 
