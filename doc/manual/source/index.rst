@@ -17,6 +17,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    :maxdepth: 2
 
    organization
+   contributing-with-git
    random-variables
    hash-functions
    events
