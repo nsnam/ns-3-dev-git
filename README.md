@@ -108,16 +108,19 @@ This documentation includes:
 
 ## Working with the development version of ns-3
 
-If you want to download and use the development version 
-of ns-3, you need to use the tool `mercurial`. A quick and
-dirty cheat sheet is included in
-[doc/mercurial.txt](doc/mercurial.txt) but
-reading through the mercurial tutorials included on the
-mercurial website is usually a good idea if you are not
+If you want to download and use the development version of ns-3, you
+need to use the tool `git`. A quick and dirty cheat sheet is included
+in [doc/mercurial.txt](doc/git.txt) but reading through the git
+tutorials found in the Internet is usually a good idea if you are not
 familiar with it.
 
-If you have successfully installed mercurial, you can get
+If you have successfully installed git, you can get
 a copy of the development version with the following command:
 ```shell
-hg clone http://code.nsnam.org/ns-3-dev
+git clone https://gitlab.com/nsnam/ns-3-dev.git
 ```
+
+However, we recommend to follow the Gitlab guidelines for starters,
+that includes creating a Gitlab account, forking the ns-3-dev project
+under the new account's name, and then cloning the forked repository.
+You can find more information in the manual [link].
