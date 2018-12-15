@@ -653,7 +653,21 @@ WifiRemoteStationManager::GetRtsTxVector (Mac48Address address, const WifiMacHea
                                           Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (this << address << *header << packet);
-  NS_ASSERT (!address.IsGroup ());
+  if (address.IsGroup ())
+    {
+        WifiMode mode = GetNonUnicastMode ();
+        WifiTxVector v;
+        v.SetMode (mode);
+        v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+        v.SetTxPowerLevel (m_defaultTxPowerLevel);
+        v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
+        v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+        v.SetNTx (1);
+        v.SetNss (1);
+        v.SetNess (0);
+        v.SetStbc (0);
+        return v;
+    }
   if (!IsLowLatency ())
     {
       HighLatencyRtsTxVectorTag rtstag;

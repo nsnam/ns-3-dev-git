@@ -517,7 +517,14 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   CancelAllEvents ();
   m_currentTxop = txop;
   m_txParams = params;
-  m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+  if (m_currentHdr.IsCtl ())
+    {
+      m_currentTxVector = GetRtsTxVector  (m_currentPacket, &m_currentHdr);
+    }
+  else
+    {
+      m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
+    }
 
   if (NeedRts () && !IsCfPeriod ())
     {

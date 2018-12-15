@@ -159,8 +159,18 @@ int main (int argc, char *argv[])
               return 0;
             }
 
-          wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager","DataMode", StringValue (modes[i]),
-                                        "ControlMode", StringValue (modes[i]));
+          StringValue ctrlRate;
+          if (frequency == 2.4)
+            {
+                ctrlRate = StringValue ("ErpOfdmRate24Mbps");
+            }
+          else
+            {
+                ctrlRate = StringValue ("OfdmRate24Mbps");
+            }
+          wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                        "DataMode", StringValue (modes[i]),
+                                        "ControlMode", ctrlRate);
 
           Ssid ssid = Ssid ("ns3-80211n");
 
