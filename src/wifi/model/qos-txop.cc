@@ -21,6 +21,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "qos-txop.h"
@@ -68,6 +69,11 @@ QosTxop::GetTypeId (void)
                    MakeTimeAccessor (&QosTxop::SetFailedAddBaTimeout,
                                      &QosTxop::GetFailedAddBaTimeout),
                    MakeTimeChecker ())
+    .AddAttribute ("BlockAckManager",
+                   "The BlockAckManager object.",
+                   PointerValue (),
+                   MakePointerAccessor (&QosTxop::m_baManager),
+                   MakePointerChecker<BlockAckManager> ())
     .AddTraceSource ("BackoffTrace",
                      "Trace source for backoff values",
                      MakeTraceSourceAccessor (&QosTxop::m_backoffTrace),

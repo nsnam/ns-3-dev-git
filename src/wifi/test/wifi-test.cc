@@ -1736,6 +1736,15 @@ public:
 
 private:
   /**
+   * Callback when ADDBA state changed
+   * \param context node context
+   * \param t the time the state changed
+   * \param recipient the MAC address of the recipient
+   * \param tid the TID
+   * \param state the state
+   */
+  void AddbaStateChangedCallback (std::string context, Time t, Mac48Address recipient, uint8_t tid, OriginatorBlockAckAgreement::State state);
+  /**
    * Callback when packet is received
    * \param context node context
    * \param p the received packet
@@ -1768,18 +1777,56 @@ private:
   uint8_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
   uint8_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
   uint8_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
+  uint8_t m_addbaInactiveCount;      ///< Count number of times ADDBA state machine is in inactive state
+  uint8_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
+  uint8_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
+  uint8_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
+  uint8_t m_addbaNoReplyCount;       ///< Count number of times ADDBA state machine is in no_reply state
+  uint8_t m_addbaResetCount;         ///< Count number of times ADDBA state machine is in reset state
 };
 
 Bug2470TestCase::Bug2470TestCase ()
   : TestCase ("Test case for Bug 2470"),
     m_receivedNormalMpduCount (0),
     m_receivedAmpduCount (0),
-    m_droppedActionCount (0)
+    m_droppedActionCount (0),
+    m_addbaInactiveCount (0),
+    m_addbaEstablishedCount (0),
+    m_addbaPendingCount (0),
+    m_addbaRejectedCount (0),
+    m_addbaNoReplyCount (0),
+    m_addbaResetCount (0)
 {
 }
 
 Bug2470TestCase::~Bug2470TestCase ()
 {
+}
+
+void
+Bug2470TestCase::AddbaStateChangedCallback (std::string context, Time t, Mac48Address recipient, uint8_t tid, OriginatorBlockAckAgreement::State state)
+{
+  switch (state)
+    {
+      case OriginatorBlockAckAgreement::INACTIVE:
+        m_addbaInactiveCount++;
+        break;
+      case OriginatorBlockAckAgreement::ESTABLISHED:
+        m_addbaEstablishedCount++;
+        break;
+      case OriginatorBlockAckAgreement::PENDING:
+        m_addbaPendingCount++;
+        break;
+      case OriginatorBlockAckAgreement::REJECTED:
+        m_addbaRejectedCount++;
+        break;
+      case OriginatorBlockAckAgreement::NO_REPLY:
+        m_addbaNoReplyCount++;
+        break;
+      case OriginatorBlockAckAgreement::RESET:
+        m_addbaResetCount++;
+        break;
+    }
 }
 
 void
@@ -1867,6 +1914,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx", MakeCallback (&Bug2470TestCase::RxCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop", MakeCallback (&Bug2470TestCase::RxDropCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
   Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
   Simulator::Schedule (Seconds (0.8), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
@@ -1903,11 +1951,25 @@ Bug2470TestCase::DoRun (void)
     // 8 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 2, "Receiving incorrect number of normal MPDU packet on subtest 1");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 8, "Receiving incorrect number of A-MPDU packet on subtest 1");
+
+    NS_TEST_ASSERT_MSG_EQ (m_addbaInactiveCount, 0, "Incorrect number of times the ADDBA state machine was in inactive state on subtest 1");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaEstablishedCount, 1, "Incorrect number of times the ADDBA state machine was in established state on subtest 1");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 1, "Incorrect number of times the ADDBA state machine was in pending state on subtest 1");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaRejectedCount, 0, "Incorrect number of times the ADDBA state machine was in rejected state on subtest 1");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaNoReplyCount, 0, "Incorrect number of times the ADDBA state machine was in no_reply state on subtest 1");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaResetCount, 0, "Incorrect number of times the ADDBA state machine was in reset state on subtest 1");
   }
 
   m_receivedNormalMpduCount = 0;
   m_receivedAmpduCount = 0;
   m_droppedActionCount = 0;
+  m_addbaInactiveCount = 0;
+  m_addbaEstablishedCount = 0;
+  m_addbaPendingCount = 0;
+  m_addbaRejectedCount = 0;
+  m_addbaNoReplyCount = 0;
+  m_addbaResetCount = 0;
+
   Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel> ();
   blackList.clear ();
   // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the addba response timeout interval)
@@ -1922,6 +1984,13 @@ Bug2470TestCase::DoRun (void)
     // Similar to subtest 1, we also expect to receive 6 normal MPDU packets and 4 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 6, "Receiving incorrect number of normal MPDU packet on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 4, "Receiving incorrect number of A-MPDU packet on subtest 2");
+
+    NS_TEST_ASSERT_MSG_EQ (m_addbaInactiveCount, 0, "Incorrect number of times the ADDBA state machine was in inactive state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaEstablishedCount, 1, "Incorrect number of times the ADDBA state machine was in established state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 2, "Incorrect number of times the ADDBA state machine was in pending state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaRejectedCount, 0, "Incorrect number of times the ADDBA state machine was in rejected state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaNoReplyCount, 1, "Incorrect number of times the ADDBA state machine was in no_reply state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaResetCount, 1, "Incorrect number of times the ADDBA state machine was in reset state on subtest 2");
   }
 }
 

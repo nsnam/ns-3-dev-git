@@ -23,6 +23,7 @@
 
 #include <map>
 #include "ns3/nstime.h"
+#include "ns3/traced-callback.h"
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "block-ack-type.h"
@@ -408,6 +409,16 @@ public:
    */
   void SetTxFailedCallback (TxFailed callback);
 
+  /**
+   * TracedCallback signature for state changes.
+   *
+   * \param [in] now Time when the \p state changed.
+   * \param [in] recipient MAC address of the recipient.
+   * \param [in] tid the TID.
+   * \param [in] state The state.
+   */
+  typedef void (* AgreementStateTracedCallback)(Time now, Mac48Address recipient, uint8_t tid, OriginatorBlockAckAgreement::State state);
+
 
 private:
   /**
@@ -529,6 +540,11 @@ private:
   TxOk m_txOkCallback; ///< transmit ok callback
   TxFailed m_txFailedCallback; ///< transmit failed callback
   Ptr<WifiRemoteStationManager> m_stationManager; ///< the station manager
+
+  /**
+   * The trace source fired when a state transition occured.
+   */
+  TracedCallback<Time, Mac48Address, uint8_t, OriginatorBlockAckAgreement::State> m_agreementState;
 };
 
 } //namespace ns3
