@@ -13,11 +13,21 @@
 Working with git as a user
 --------------------------
 
-The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it used to maintain many open-source (and closed-source) project. While git and mercurial have a lot of common properties, if you are new to git you should read first an introduction to it. The most up-to-date guide is the [Git Book](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics Git Book).
+The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it used to maintain many open-source (and closed-source) project. While git and mercurial have a lot of common properties, if you are new to git you should read first an introduction to it. The most up-to-date guide is the Git Book, at https://git-scm.com/book/en/v2/Getting-Started-Git-Basics.
 
-The ns-3 project is officially hosted on GitLab.com at https://gitlab.com/nsnam/.
+The ns-3 project is officially hosted on GitLab.com at https://gitlab.com/nsnam/.  For convenience and historical reasons, ns-3-dev mirrors are currently posted on Bitbucket.com and GitHub.com, and kept in sync with the official repository periodically via cron jobs.  We recommend that users who have been working from one of these mirrors repoint their remotes so that they pull origin or upstream from GitLab.com (see below explanation about how to configure remotes).
 
-This section of the manual provides common tips for both users and maintainers. Since the first part is shared, in this manual section we will start a personal repository and then explain what to do in some typical cases.
+This section of the manual provides common tips for both users and maintainers. Since the first part is shared, in this manual section we will start a personal repository and then explain what to do in some typical cases. ns-3 users often combine ns-3-dev with other repositories (pybindgen, netanim, apps from the app store).  This manual chapter does not cover this use case; it only focuses on the single ns-3-dev repository.  See other project documentation such as the ns-3 tutorial for descriptions on bundled releases distributed as source archives, or on the bake build tool for managing multiple repositories.  The guidelines listed below also largely pertain to the user who is using (and cloning) bake from the GitLab.com repository.
+
+ns-3's Git workflow in a nutshell
+*********************************
+
+Experienced git users will not necessarily need instruction on how to set up personal repositories (below).  However, they should be aware of the project's workflow:
+
+* The main repository's master branch is the main development branch.
+* Releases are tagged changesets on the master branch.  If a hotfix release must be made from a changeset in the past, a new hotfix support branch will be created and maintained for any such releases.  Hotfix releases will be tagged from the hotfix support branch if it has diverged from master.
+* Maintainers can commit obvious non-critical fixes (documentation improvements, typos etc.) directly into the master branch.  Users who are not maintainers can create Merge Requests for small items such as these.
+* For each new major feature, create a feature branch in your own fork.  Create Merge Requests as needed to solicit review.  Merge feature branches into master after review.  Merged feature branches can then be deleted.
 
 Setup of a personal repository
 ******************************
@@ -44,7 +54,7 @@ Assume that you are the user *john* on GitLab.com and that you want to create a 
 #. Navigate to https://gitlab.com/nsnam/ns-3-dev
 #. In the top-right corner of the page, click ``Fork``.
 
-Note that you may only do this once; if you try to Fork again, Gitlab will take you to the page of the original fork.
+Note that you may only do this once; if you try to fork again, Gitlab will take you to the page of the original fork. So, if you are planning to maintain two or more separate forks (for example, one for your private work, another for maintenance, etc.), you are doing a mistake. Instead, you should add these forks as a remote of your existing directory (see below for adding remotes).
 
 For more information on forking with Gilab, there is plenty of visual documentation (https://docs.gitlab.com/ee/gitlab-basics/fork-project.html). To work with your forked repository, you have two way: one is a clean clone while the other is meant to re-use an existing ns-3 git repository.
 
@@ -60,12 +70,12 @@ To clone the newly created fork to your system go to the homepage of your fork (
    $ git clone https://gitlab.com/your-user-name/ns-3-dev
    $ cd ns-3-dev-git
 
-In this example we used the HTTPS address, but if you have a permissive setup, it is recommended to use the git + ssh address to avoid the username/password typing at each request.
+In this example we used the HTTPS address because in some place the git + ssh address is blocked by firewalls. If are not under this constraint, it is recommended to use the git + ssh address to avoid the username/password typing at each request.
 
 Naming conventions
 ==================
 
- Git is able to fetch and push changes to several repositories, each of them is called ``remote``. With time, you probably will have many remotes, each one with many branches. To avoid confusion, it is recommended to give meaningful names to the remotes; in the following, we will use ``origin`` to indicate the ns-3-dev repository in your personal namespace (your forked version, server-side) and ``nsnam`` to indicate the ns-3-dev repository in the nsnam namespace, server-side.
+Git is able to fetch and push changes to several repositories, each of them is called ``remote``. With time, you probably will have many remotes, each one with many branches. To avoid confusion, it is recommended to give meaningful names to the remotes; in the following, we will use ``origin`` to indicate the ns-3-dev repository in your personal namespace (your forked version, server-side) and ``nsnam`` to indicate the ns-3-dev repository in the nsnam namespace, server-side.
 
 Add the official ns-3 repository as remote upstream
 ***************************************************
@@ -135,7 +145,9 @@ you should see something like:
 
 The branch master is your local master branch; remotes/origin/master point at the master branch on your repository located in the Gitlab server, while remotes/upstream/master points to the official master branch.
 
-To create a new branch, starting from master, which hopefully will contains new feature or bug correction, the command is
+Before entering in details on how to create a new branch, we have to explain why it is recommended to do it. First of all, if you put all your work in a separate branch, you can easily see the diff between ns-3 mainline and your feature branch (with ``git diff master``). Also, you can integrate more easily the upstream advancements in your work, and when you wish, you can create a *conflict-free* merge request, that will ease the maintainer's job in reviewing your work.
+
+To create a new branch, starting from master, the command is:
 
 .. sourcecode:: bash
 
@@ -203,7 +215,25 @@ and then commit the result:
 
    $ git commit -m "My new TCP broken"
 
-You can see the history of the commits with git log. To show a particular commit, copy the sha-id and use ``git show <sha-id>``. Do this until you feature or bug is corrected; now, it is time to make a merge request.
+Of course, it would be better to have some rules for the commit message: they will be reported in the next subsection.
+
+Commit message guidelines
++++++++++++++++++++++++++
+
+The commit title should not go over the 80 char limit. It should be prefixed by the name of the module you are working on, and if it fixes a bug, it should reference it in the commit title. For instance, a good commit title would be:
+
+ tcp: My new TCP broken
+
+Another example is:
+
+ tcp: (fixes #2322) Corrected the uint32_t wraparound during recovery
+
+In the body message, try to explain what the problem was, and how you resolved that. If it is a new feature, try to describe it at a very high level, and highlight any modifications that changed the behaviour or the interface towards the users or other modules.
+
+Commit log
+++++++++++
+
+You can see the history of the commits with git log. To show a particular commit, copy the sha-id and use ``git show <sha-id>``. The ID is unique, so it can be referenced in emails or in issues. The next step is useful if you plan to contribute back your changes, but also to keep your feature branch updated with the latest changes from ns-3-dev.
 
 Rebase your branch on top of master
 ***********************************
@@ -229,6 +259,13 @@ After you have done some work on a branch, if you would like to share it with ot
 
 The ``git push`` command can be used every time you need to push something from your computer to a remote repository, except when you propose changes to the main ns-3-dev repository: your changes must pass a review stage.
 
+Please note that for older git version, the push command looks like:
+
+.. sourcecode:: bash
+
+    $ git push -u origin [name_of_your_new_branch]
+
+
 Submit work for review
 **********************
 
@@ -237,12 +274,12 @@ After you push your branch to origin, you can follow the instructions here https
 Porting patches from mercurial repositories to git
 **************************************************
 
-Section to write.
+  Placeholder section. Please improve it.
 
 Working with git as a maintainer
 --------------------------------
 
-As a maintainer, you are a person who has write access to the main nsnam repository. You could push your own work, without passing from code review (but that is not recommended), or push someone else's work. Let's investigate the two cases.
+As a maintainer, you are a person who has write access to the main nsnam repository. You could push your own work (without passing from code review) or push someone else's work. Let's investigate the two cases.
 
 Pushing your own work
 *********************
@@ -252,6 +289,7 @@ Since you have been added to the Developer list on Gitlab (if not, please open a
 .. sourcecode:: bash
 
     $ git checkout master
+    $ git pull nsnam master
     $ git merge [your_branch_name]
     $ git push nsnam master
 
@@ -261,3 +299,5 @@ Review and merge someone else's work
 ************************************
 
 Gitlab.com has a plenty of documentation on how to handle merge requests. Please take a look here: https://docs.gitlab.com/ee/user/project/merge_requests/index.html.
+
+If you are committing a patch from someone else, and it is not coming through a Merge Request process, you can use the --author='' argument to 'git commit' to assign authorship to another email address (such as we have done in the past with the Mercurial -u option).
