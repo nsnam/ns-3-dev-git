@@ -1,8 +1,6 @@
 # Contributing to ns-3
 
-[comment]: # (This file is heavily inspired by Atom's CONTRIBUTING.md file: https://raw.githubusercontent.com/atom/atom/master/CONTRIBUTING.md)
-
-:+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
+*This file is heavily inspired by Atom's [CONTRIBUTING.md file](https://raw.githubusercontent.com/atom/atom/master/CONTRIBUTING.md).*
 
 The following is a set of guidelines for contributing to ns-3, which are hosted in the [nsnam organization](https://gitlab.com/nsnam) on GitLab.com. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a merge request.
 
