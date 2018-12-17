@@ -63,8 +63,8 @@ The current codebase is expected to build and run on the
 set of platforms listed in the [release notes](RELEASE_NOTES)
 file.
 
-Other platforms may or may not work: we welcome patches to 
-improve the portability of the code to these other platforms. 
+Other platforms may or may not work: we welcome patches to
+improve the portability of the code to these other platforms.
 
 ## Running ns-3
 
@@ -86,7 +86,7 @@ The program source can be found in the examples/routing directory.
 Once you have verified that your build of ns-3 works by running
 the simple-point-to-point example as outlined in 3) above, it is
 quite likely that you will want to get started on reading
-some ns-3 documentation. 
+some ns-3 documentation.
 
 All of that documentation should always be available from
 the ns-3 website: http:://www.nsnam.org/documentation/.
@@ -94,7 +94,7 @@ the ns-3 website: http:://www.nsnam.org/documentation/.
 This documentation includes:
 
   - a tutorial
- 
+
   - a reference manual
 
   - models in the ns-3 model library
@@ -102,7 +102,7 @@ This documentation includes:
   - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
 
   - API documentation generated using doxygen: this is
-    a reference manual, most likely not very well suited 
+    a reference manual, most likely not very well suited
     as introductory text:
     http://www.nsnam.org/doxygen/index.html
 
@@ -110,7 +110,7 @@ This documentation includes:
 
 If you want to download and use the development version of ns-3, you
 need to use the tool `git`. A quick and dirty cheat sheet is included
-in [doc/mercurial.txt](doc/git.txt) but reading through the git
+in the manual, but reading through the git
 tutorials found in the Internet is usually a good idea if you are not
 familiar with it.
 
