@@ -13,7 +13,7 @@
 Working with git as a user
 --------------------------
 
-The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it used to maintain many open-source (and closed-source) project. While git and mercurial have a lot of common properties, if you are new to git you should read first an introduction to it. The most up-to-date guide is the Git Book, at https://git-scm.com/book/en/v2/Getting-Started-Git-Basics.
+The ns-3 project used Mercurial in the past as its source code control system, but it has moved to Git in December 2018. Git is a VCS like Mercurial, Subversion or CVS, and it is used to maintain many open-source (and closed-source) projects. While git and mercurial have a lot of common properties, if you are new to git you should read first an introduction to it. The most up-to-date guide is the Git Book, at https://git-scm.com/book/en/v2/Getting-Started-Git-Basics.
 
 The ns-3 project is officially hosted on GitLab.com at https://gitlab.com/nsnam/.  For convenience and historical reasons, ns-3-dev mirrors are currently posted on Bitbucket.com and GitHub.com, and kept in sync with the official repository periodically via cron jobs.  We recommend that users who have been working from one of these mirrors repoint their remotes so that they pull origin or upstream from GitLab.com (see below explanation about how to configure remotes).
 
@@ -70,7 +70,7 @@ To clone the newly created fork to your system go to the homepage of your fork (
    $ git clone https://gitlab.com/your-user-name/ns-3-dev
    $ cd ns-3-dev-git
 
-In this example we used the HTTPS address because in some place the git + ssh address is blocked by firewalls. If are not under this constraint, it is recommended to use the git + ssh address to avoid the username/password typing at each request.
+In this example we used the HTTPS address because in some place the git + ssh address is blocked by firewalls. If you are not under this constraint, it is recommended to use the git + ssh address to avoid the username/password typing at each request.
 
 Naming conventions
 ==================
@@ -103,7 +103,7 @@ Many options are available; please refer to the git manual for more.
 Add your forked repository as remote
 ************************************
 
-If you were an users of the old github mirror, you probably have an existing git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote.
+If you were a user of the old github mirror, you probably have an existing git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote.
 
 .. sourcecode:: bash
 
@@ -143,7 +143,7 @@ you should see something like:
      remotes/origin/master
      remotes/nsnam/master
 
-The branch master is your local master branch; remotes/origin/master point at the master branch on your repository located in the Gitlab server, while remotes/upstream/master points to the official master branch.
+The branch master is your local master branch; remotes/origin/master point at the master branch on your repository located in the Gitlab server, while remotes/nsnam/master points to the official master branch.
 
 Before entering in details on how to create a new branch, we have to explain why it is recommended to do it. First of all, if you put all your work in a separate branch, you can easily see the diff between ns-3 mainline and your feature branch (with ``git diff master``). Also, you can integrate more easily the upstream advancements in your work, and when you wish, you can create a *conflict-free* merge request, that will ease the maintainer's job in reviewing your work.
 
@@ -169,7 +169,7 @@ Edit and commit the modifications
 
 After you edit some file, you should commit the difference. As a policy, git users love small and incremental patches. So, commit early, and commit often: you could rewrite your history later.
 
-Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we can see the repostory status:
+Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we can see the repository status:
 
 .. sourcecode:: bash
 
