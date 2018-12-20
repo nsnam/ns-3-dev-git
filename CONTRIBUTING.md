@@ -20,9 +20,7 @@ The following is a set of guidelines for contributing to ns-3, which are hosted 
 
 [Styleguides](#styleguides)
   * [Git Commit Messages](#git-commit-messages)
-  * [JavaScript Styleguide](#javascript-styleguide)
-  * [CoffeeScript Styleguide](#coffeescript-styleguide)
-  * [Specs Styleguide](#specs-styleguide)
+  * [C++ Styleguide](#c-styleguide)
   * [Documentation Styleguide](#documentation-styleguide)
 
 [Additional Notes](#additional-notes)
@@ -167,7 +165,7 @@ While the prerequisites above must be satisfied prior to having your merge reque
 * Limit the first line to 72 characters or less
 * Reference issues in the first line, by prepending `[#issue]`
 
-### C++ guidelines
+### C++ Styleguide
 
 We maintain our code style through the webpage [Code Style](https://www.nsnam.org/develop/contributing-code/coding-style/) and as a `clang-format` configure [file](https://gitlab.com/nsnam/ns-3-dev/blob/master/.clang-format)
 
