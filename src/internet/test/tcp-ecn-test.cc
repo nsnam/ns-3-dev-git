@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpEcnTestSuite");
  *
  * \brief checks if ECT, CWR and ECE bits are set correctly in different scenarios
  *
- * This test suite will run four combinations of enabling ECN (sender off and receiver off; sender on and sender off;
+ * This test suite will run four combinations of enabling ECN (sender off and receiver off; sender on and receiver off;
  * sender off and receiver on; sender on and receiver on;) and checks that the TOS byte of eventual packets transmitted
  * or received have ECT, CWR, and ECE set correctly (or not). It also checks if congestion window is being reduced by half
  * only once per every window on receipt of ECE flags
