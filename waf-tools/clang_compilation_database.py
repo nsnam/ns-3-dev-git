@@ -15,8 +15,10 @@ Usage:
 """
 
 import sys, os, json, shlex, pipes
-from waflib import Logs, TaskGen
+from waflib import Logs, TaskGen, Task
 from waflib.Tools import c, cxx
+
+Task.TaskBase.keep_last_cmd = True
 
 if sys.hexversion >= 0x3030000:
 	quote = shlex.quote
