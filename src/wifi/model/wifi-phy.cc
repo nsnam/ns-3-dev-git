@@ -3791,7 +3791,7 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
       MaybeCcaBusyDuration ();
       return;
     }
-  else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0)
+  else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0 && !m_endPreambleDetectionEvent.IsRunning ())
     {
       m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
       NS_LOG_DEBUG ("Received the first MPDU in an A-MPDU, remaining number of MPDUs to be received: " << m_mpdusNum);
@@ -3811,10 +3811,12 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
         }
     }
   else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
-    {
-      NS_LOG_DEBUG ("New A-MPDU started while " << m_mpdusNum << " MPDUs from previous are lost");
-      m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
-    }
+  {
+    NS_LOG_DEBUG ("drop packet because PHY is still receiving another A-MPDU");
+    NotifyRxDrop (packet);
+    MaybeCcaBusyDuration ();
+    return;
+  }
   else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0 )
     {
       NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);

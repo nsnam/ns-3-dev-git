@@ -403,7 +403,7 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
         m_stateLogger (ccaStart, now - ccaStart, WifiPhyState::CCA_BUSY);
       } break;
     default:
-      NS_FATAL_ERROR ("Invalid WifiPhy state.");
+      NS_FATAL_ERROR ("Invalid WifiPhy state " << GetState ());
       break;
     }
   m_previousStateChangeTime = now;
