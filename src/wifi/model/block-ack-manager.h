@@ -194,6 +194,15 @@ public:
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
+   * \param recipient Sender of the expected block ack frame.
+   * \param tid Traffic ID.
+   *
+   * Invoked upon missed reception of a block ack frame. Typically, this function, is called
+   * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
+   * with ack policy set to Block Ack, should be placed in the retransmission queue.
+   */
+  void NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid);
+  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *

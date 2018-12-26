@@ -598,7 +598,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                           (*it).second.first.SetStartingSequence (sequenceFirstLost);
                         }
                       nFailedMpdus++;
-                      if (!AlreadyExists ((*queueIt).hdr.GetSequenceNumber (),recipient,tid))
+                      if (!AlreadyExists ((*queueIt).hdr.GetSequenceNumber (), recipient, tid))
                         {
                           InsertInRetryQueue (queueIt);
                         }
@@ -659,6 +659,27 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
     {
       //NOT SUPPORTED FOR NOW
       NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
+}
+  
+void
+BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+    {
+      AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+      PacketQueueI queueEnd = it->second.second.end ();
+      for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
+        {
+          //Queue previously transmitted packets that do not already exist in the retry queue.
+          //The first packet is not placed in the retry queue since it should be retransmitted by the invoker.
+          if ((queueIt != it->second.second.begin ()) && !AlreadyExists ((*queueIt).hdr.GetSequenceNumber (), recipient, tid))
+            {
+              InsertInRetryQueue (queueIt);
+            }
+          queueIt++;
+        }
     }
 }
 

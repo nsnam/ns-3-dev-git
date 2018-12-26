@@ -588,22 +588,23 @@ private:
   void DoDispose (void);
   void DoInitialize (void);
 
-  AcIndex m_ac;                                     //!< the access category
-  Ptr<MsduAggregator> m_msduAggregator;             //!< A-MSDU aggregator
-  Ptr<MpduAggregator> m_mpduAggregator;             //!< A-MPDU aggregator
-  TypeOfStation m_typeOfStation;                    //!< the type of station
+  AcIndex m_ac;                                         //!< the access category
+  Ptr<MsduAggregator> m_msduAggregator;                 //!< A-MSDU aggregator
+  Ptr<MpduAggregator> m_mpduAggregator;                 //!< A-MPDU aggregator
+  TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< QOS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the Block ACK manager
-  uint8_t m_blockAckThreshold;                      //!< the Block ACK threshold
-  BlockAckType m_blockAckType;                      //!< the Block ACK type
-  Time m_currentPacketTimestamp;                    //!< the current packet timestamp
-  uint16_t m_blockAckInactivityTimeout;             //!< the Block ACK inactivity timeout
-  Bar m_currentBar;                                 //!< the current BAR
-  Time m_startTxop;                                 //!< the start TXOP time
-  bool m_isAccessRequestedForRts;                   //!< flag whether access is requested to transmit a RTS frame
-  bool m_currentIsFragmented;                       //!< flag whether current packet is fragmented
-  Time m_addBaResponseTimeout;                      //!< timeout for ADDBA response
-  Time m_failedAddBaTimeout;                        //!< timeout after failed BA agreement
+  uint8_t m_blockAckThreshold;                          //!< the Block ACK threshold
+  BlockAckType m_blockAckType;                          //!< the Block ACK type
+  Time m_currentPacketTimestamp;                        //!< the current packet timestamp
+  uint16_t m_blockAckInactivityTimeout;                 //!< the Block ACK inactivity timeout
+  Bar m_currentBar;                                     //!< the current BAR
+  Time m_startTxop;                                     //!< the start TXOP time
+  bool m_isAccessRequestedForRts;                       //!< flag whether access is requested to transmit a RTS frame
+  bool m_currentIsFragmented;                           //!< flag whether current packet is fragmented
+  Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response
+  Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
+  bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit Block Ack Request should be sent upon missed Block Ack Response
 
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };
