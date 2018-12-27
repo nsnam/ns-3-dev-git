@@ -1716,7 +1716,7 @@ WifiPhy::ResumeFromOff (void)
     case WifiPhyState::OFF:
       {
         NS_LOG_DEBUG ("resuming from off mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaEdThreshold ()));
+        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW);
         m_state->SwitchFromOff (delayUntilCcaEnd);
         break;
       }
@@ -2636,7 +2636,7 @@ WifiPhy::MaybeCcaBusyDuration ()
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
 
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaEdThreshold ()));
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW);
   if (!delayUntilCcaEnd.IsZero ())
     {
       m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
@@ -3745,7 +3745,7 @@ WifiPhy::SwitchMaybeToCcaBusy (void)
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
 
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaEdThreshold ()));
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW);
   if (!delayUntilCcaEnd.IsZero ())
     {
       NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
