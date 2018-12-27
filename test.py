@@ -257,7 +257,7 @@ def read_test(test):
 # A simple example of writing a text file with a test result summary.  It is
 # expected that this output will be fine for developers looking for problems.
 #
-def node_to_text (test, f):
+def node_to_text(test, f):
     (result, name, reason, time_real) = read_test(test)
     if reason:
         reason = " (%s)" % reason
@@ -280,9 +280,9 @@ def translate_to_text(results_file, text_file):
     print('Writing results to text file \"%s\"...' % text_file, end='')
     f = open(text_file, 'w')
     import xml.etree.ElementTree as ET
-    et = ET.parse (results_file)
+    et = ET.parse(results_file)
     for test in et.findall('Test'):
-        node_to_text (test, f)
+        node_to_text(test, f)
 
     for example in et.findall('Example'):
         result = example.find('Result').text
@@ -325,7 +325,7 @@ def translate_to_html(results_file, html_file):
         #
         # For each test suite, get its name, result and execution time info
         #
-        (result, name, reason, time) = read_test (suite)
+        (result, name, reason, time) = read_test(suite)
 
         #
         # Print a level three header with the result, name and time.  If the
@@ -642,7 +642,7 @@ def make_paths():
         if key == "PYTHONPATH":
             have_PYTHONPATH = True
 
-    pypath = os.environ["PYTHONPATH"] = os.path.join (NS3_BUILDDIR, "bindings", "python")
+    pypath = os.environ["PYTHONPATH"] = os.path.join(NS3_BUILDDIR, "bindings", "python")
 
     if not have_PYTHONPATH:
         os.environ["PYTHONPATH"] = pypath
@@ -762,15 +762,15 @@ def make_paths():
 VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
 
 def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
-    suppressions_path = os.path.join (NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
+    suppressions_path = os.path.join(NS3_BASEDIR, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
-        path_cmd = PYTHON[0] + " " + os.path.join (NS3_BASEDIR, shell_command)
+        path_cmd = PYTHON[0] + " " + os.path.join(NS3_BASEDIR, shell_command)
     else:
         if len(build_path):
-            path_cmd = os.path.join (build_path, shell_command)
+            path_cmd = os.path.join(build_path, shell_command)
         else:
-            path_cmd = os.path.join (NS3_BUILDDIR, shell_command)
+            path_cmd = os.path.join(NS3_BUILDDIR, shell_command)
 
     if valgrind:
         cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
@@ -782,7 +782,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
         print("Synchronously execute %s" % cmd)
 
     start_time = time.time()
-    proc = subprocess.Popen(cmd, shell = True, cwd = directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, shell=True, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_results, stderr_results = proc.communicate()
     elapsed_time = time.time() - start_time
 
@@ -1110,7 +1110,7 @@ def run_tests():
     #
     # Get the information from the build status file.
     #
-    build_status_file = os.path.join (NS3_BUILDDIR, 'build-status.py')
+    build_status_file = os.path.join(NS3_BUILDDIR, 'build-status.py')
     if os.path.exists(build_status_file):
         ns3_runnable_programs = get_list_from_file(build_status_file, "ns3_runnable_programs")
         ns3_runnable_scripts = get_list_from_file(build_status_file, "ns3_runnable_scripts")
@@ -1375,7 +1375,7 @@ def run_tests():
         if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
             processors = os.sysconf('SC_NPROCESSORS_ONLN')
         else:
-            proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen("sysctl -n hw.ncpu", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout_results, stderr_results = proc.communicate()
             stdout_results = stdout_results.decode()
             stderr_results = stderr_results.decode()
@@ -1511,7 +1511,7 @@ def run_tests():
                             job.set_build_path(options.buildpath)
 
                             if options.valgrind and not eval(do_valgrind_run):
-                                job.set_is_skip (True)
+                                job.set_is_skip(True)
                                 job.set_skip_reason("skip in valgrind runs")
 
                             if options.verbose:
@@ -1604,7 +1604,7 @@ def run_tests():
                             # way through the output formatter.
                             #
                             if options.valgrind:
-                                job.set_is_skip (True)
+                                job.set_is_skip(True)
                                 job.set_skip_reason("skip in valgrind runs")
 
                             #
@@ -1613,7 +1613,7 @@ def run_tests():
                             # that we're not testing them
                             #
                             if not ENABLE_PYTHON_BINDINGS:
-                                job.set_is_skip (True)
+                                job.set_is_skip(True)
                                 job.set_skip_reason("requires Python bindings")
 
                             if options.verbose:
