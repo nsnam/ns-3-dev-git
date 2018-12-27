@@ -3824,7 +3824,6 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
     }
 
   NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
-  m_currentEvent = event;
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
   if (preamble == WIFI_PREAMBLE_NONE)
     {
@@ -3847,11 +3846,21 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
           m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
                                                              packet, txVector, mpdutype, event, remainingRxDuration);
         }
+      else if ((m_frameCaptureModel != 0) && (rxPowerW > m_currentEvent->GetRxPowerW ()))
+        {
+          NS_LOG_DEBUG ("Received a stronger signal during preamble detection: switch to new packet");
+          m_endPreambleDetectionEvent.Cancel ();
+          Time startOfPreambleDuration = GetPreambleDetectionDuration ();
+          Time remainingRxDuration = rxDuration - startOfPreambleDuration;
+          m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
+                                                             packet, txVector, mpdutype, event, remainingRxDuration);
+        }
       else
         {
           NS_LOG_DEBUG ("Ignore packet because RX is already decoding preamble");
         }
     }
+  m_currentEvent = event;
 }
 
 int64_t
