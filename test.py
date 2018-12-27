@@ -38,9 +38,9 @@ except ImportError:
 # XXX This should really be part of a waf command to list the configuration
 # items relative to optional ns-3 pieces.
 #
-# A list of interesting configuration items in the waf configuration 
+# A list of interesting configuration items in the waf configuration
 # cache which we may be interested in when deciding on which examples
-# to run and how to run them.  These are set by waf during the 
+# to run and how to run them.  These are set by waf during the
 # configuration phase and the corresponding assignments are usually
 # found in the associated subdirectory wscript files.
 #
@@ -114,7 +114,7 @@ core_valgrind_skip_tests = [
     "lte-pss-ff-mac-scheduler",
 ]
 
-# 
+#
 # There are some special cases for test suites that fail when NSC is
 # missing.
 #
@@ -189,7 +189,7 @@ def parse_examples_to_run_file(
                 # Add this example.
                 example_tests.append((example_name, example_path, do_run, do_valgrind_run))
                 example_names_original.append(example_name_original)
-    
+
         # Each tuple in the Python list of examples to run contains
         #
         #     (example_name, do_run)
@@ -231,7 +231,7 @@ def parse_examples_to_run_file(
 # concurrently.  This means that unless we are careful, the output of
 # the test suites will be interleaved.  Rather than introducing a lock
 # file that could unintentionally start serializing execution, we ask
-# the tests to write their output to a temporary directory and then 
+# the tests to write their output to a temporary directory and then
 # put together the final output file when we "join" the test tasks back
 # to the main thread.  In addition to this issue, the example programs
 # often write lots and lots of trace files which we will just ignore.
@@ -254,14 +254,14 @@ def read_test(test):
     return (result, name, reason, time_real)
 
 #
-# A simple example of writing a text file with a test result summary.  It is 
+# A simple example of writing a text file with a test result summary.  It is
 # expected that this output will be fine for developers looking for problems.
 #
 def node_to_text (test, f):
     (result, name, reason, time_real) = read_test(test)
     if reason:
         reason = " (%s)" % reason
-        
+
     output = "%s: Test Suite \"%s\" (%s)%s\n" % (result, name, time_real, reason)
     f.write(output)
     for details in test.findall('FailureDetails'):
@@ -296,9 +296,9 @@ def translate_to_text(results_file, text_file):
 
     f.close()
     print('done.')
-    
+
 #
-# A simple example of writing an HTML file with a test result summary.  It is 
+# A simple example of writing an HTML file with a test result summary.  It is
 # expected that this will eventually be made prettier as time progresses and
 # we have time to tweak it.  This may end up being moved to a separate module
 # since it will probably grow over time.
@@ -321,14 +321,14 @@ def translate_to_html(results_file, html_file):
     # Iterate through the test suites
     #
     f.write("<h2>Test Suites</h2>\n")
-    for suite in et.findall('Test'):     
+    for suite in et.findall('Test'):
         #
         # For each test suite, get its name, result and execution time info
         #
         (result, name, reason, time) = read_test (suite)
 
-        # 
-        # Print a level three header with the result, name and time.  If the 
+        #
+        # Print a level three header with the result, name and time.  If the
         # test suite passed, the header is printed in green. If the suite was
         # skipped, print it in orange, otherwise assume something bad happened
         # and print in red.
@@ -419,11 +419,11 @@ def translate_to_html(results_file, html_file):
                 #   +--------+----------------+------+-----------------+
                 #   | Result | Test Case Name | Time | Failure Details |
                 #   +--------+----------------+------+-----------------+
-                #   |  FAIL  | The name       | time | It's busted     |   
+                #   |  FAIL  | The name       | time | It's busted     |
                 #   +--------+----------------+------+-----------------+
-                #   |        |                |      | Really broken   |   
+                #   |        |                |      | Really broken   |
                 #   +--------+----------------+------+-----------------+
-                #   |        |                |      | Busted bad      |   
+                #   |        |                |      | Busted bad      |
                 #   +--------+----------------+------+-----------------+
                 #
 
@@ -453,7 +453,7 @@ def translate_to_html(results_file, html_file):
                     f.write("<b>File: </b>%s, " % details.find('File').text)
                     f.write("<b>Line: </b>%s" % details.find('Line').text)
                     f.write("</td>\n")
-                    
+
                     #
                     # End the table row
                     #
@@ -468,7 +468,7 @@ def translate_to_html(results_file, html_file):
                 #   +--------+----------------+------+---------+
                 #   | Result | Test Case Name | Time | Details |
                 #   +--------+----------------+------+---------+
-                #   |  PASS  | The name       | time |         |   
+                #   |  PASS  | The name       | time |         |
                 #   +--------+----------------+------+---------+
                 #
                 f.write("<tr>\n")
@@ -483,7 +483,7 @@ def translate_to_html(results_file, html_file):
         f.write("</table>\n")
 
     #
-    # That's it for all of the test suites.  Now we have to do something about 
+    # That's it for all of the test suites.  Now we have to do something about
     # our examples.
     #
     f.write("<h2>Examples</h2>\n")
@@ -499,8 +499,8 @@ def translate_to_html(results_file, html_file):
     #   +--------+--------------+--------------+---------+
     #   | Result | Example Name | Elapsed Time | Details |
     #   +--------+--------------+--------------+---------+
-    #                                           
-    f.write("<th> Result </th>\n")              
+    #
+    f.write("<th> Result </th>\n")
     f.write("<th>Example Name</th>\n")
     f.write("<th>Elapsed Time</th>\n")
     f.write("<th>Details</th>\n")
@@ -509,12 +509,12 @@ def translate_to_html(results_file, html_file):
     # Now iterate through all of the examples
     #
     for example in et.findall("Example"):
-        
+
         #
         # Start a new row for each example
         #
         f.write("<tr>\n")
-        
+
         #
         # Get the result and name of the example in question
         #
@@ -563,11 +563,11 @@ def translate_to_html(results_file, html_file):
     f.write("</html>\n")
     f.close()
     print('done.')
-    
+
 #
-# Python Control-C handling is broken in the presence of multiple threads.  
-# Signals get delivered to the runnable/running thread by default and if 
-# it is blocked, the signal is simply ignored.  So we hook sigint and set 
+# Python Control-C handling is broken in the presence of multiple threads.
+# Signals get delivered to the runnable/running thread by default and if
+# it is blocked, the signal is simply ignored.  So we hook sigint and set
 # a global variable telling the system to shut down gracefully.
 #
 thread_exit = False
@@ -582,13 +582,13 @@ def sigint_hook(signal, frame):
 # In general, the build process itself naturally takes care of figuring out
 # which tests are built into the test runner.  For example, if waf configure
 # determines that ENABLE_EMU is false due to some missing dependency,
-# the tests for the emu net device simply will not be built and will 
+# the tests for the emu net device simply will not be built and will
 # therefore not be included in the built test runner.
 #
 # Examples, however, are a different story.  In that case, we are just given
 # a list of examples that could be run.  Instead of just failing, for example,
 # nsc-tcp-zoo if NSC is not present, we look into the waf saved configuration
-# for relevant configuration items.  
+# for relevant configuration items.
 #
 # XXX This function pokes around in the waf internal state file.  To be a
 # little less hacky, we should add a command to waf to return this info
@@ -617,11 +617,11 @@ def read_waf_config():
 
 #
 # It seems pointless to fork a process to run waf to fork a process to run
-# the test runner, so we just run the test runner directly.  The main thing 
+# the test runner, so we just run the test runner directly.  The main thing
 # that waf would do for us would be to sort out the shared library path but
 # we can deal with that easily and do here.
 #
-# There can be many different ns-3 repositories on a system, and each has 
+# There can be many different ns-3 repositories on a system, and each has
 # its own shared libraries, so ns-3 doesn't hardcode a shared library search
 # path -- it is cooked up dynamically, so we do that too.
 #
@@ -685,43 +685,43 @@ def make_paths():
 # Short note on generating suppressions:
 #
 # See the valgrind documentation for a description of suppressions.  The easiest
-# way to generate a suppression expression is by using the valgrind 
-# --gen-suppressions option.  To do that you have to figure out how to run the 
+# way to generate a suppression expression is by using the valgrind
+# --gen-suppressions option.  To do that you have to figure out how to run the
 # test in question.
 #
 # If you do "test.py -v -g -s <suitename> then test.py will output most of what
 # you need.  For example, if you are getting a valgrind error in the
 # devices-mesh-dot11s-regression test suite, you can run:
 #
-#   ./test.py -v -g -s devices-mesh-dot11s-regression 
+#   ./test.py -v -g -s devices-mesh-dot11s-regression
 #
 # You should see in the verbose output something that looks like:
 #
 #   Synchronously execute valgrind --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
-#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
-#   --tempdir=testpy-output/2010-01-12-22-47-50-CUT 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug
+#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev
+#   --tempdir=testpy-output/2010-01-12-22-47-50-CUT
 #   --out=testpy-output/2010-01-12-22-47-50-CUT/devices-mesh-dot11s-regression.xml
 #
-# You need to pull out the useful pieces, and so could run the following to 
+# You need to pull out the useful pieces, and so could run the following to
 # reproduce your error:
 #
 #   valgrind --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
-#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
-#   --tempdir=testpy-output 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug
+#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev
+#   --tempdir=testpy-output
 #
-# Hint: Use the first part of the command as is, and point the "tempdir" to 
+# Hint: Use the first part of the command as is, and point the "tempdir" to
 # somewhere real.  You don't need to specify an "out" file.
 #
-# When you run the above command you should see your valgrind error.  The 
+# When you run the above command you should see your valgrind error.  The
 # suppression expression(s) can be generated by adding the --gen-suppressions=yes
 # option to valgrind.  Use something like:
 #
 #   valgrind --gen-suppressions=yes --suppressions=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/testpy.supp
-#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug 
-#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev 
-#   --tempdir=testpy-output 
+#   --leak-check=full --error-exitcode=2 /home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build/debug/utils/ns3-dev-test-runner-debug
+#   --suite=devices-mesh-dot11s-regression --basedir=/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev
+#   --tempdir=testpy-output
 #
 # Now when valgrind detects an error it will ask:
 #
@@ -742,9 +742,9 @@ def make_paths():
 #     ...
 #   }
 #
-# You need to add a supression name which will only be printed out by valgrind in 
+# You need to add a supression name which will only be printed out by valgrind in
 # verbose mode (but it needs to be there in any case).  The entire stack frame is
-# shown to completely characterize the error, but in most cases you won't need 
+# shown to completely characterize the error, but in most cases you won't need
 # all of that info.  For example, if you want to turn off all errors that happen
 # when the function (fun:) is called, you can just delete the rest of the stack
 # frame.  You can also use wildcards to make the mangled signatures more readable.
@@ -829,7 +829,7 @@ class Job:
 
     #
     # A job is either a standard job or a special job indicating that a worker
-    # thread should exist.  This special job is indicated by setting is_break 
+    # thread should exist.  This special job is indicated by setting is_break
     # to true.
     #
     def set_is_break(self, is_break):
@@ -850,7 +850,7 @@ class Job:
 
     #
     # Examples are treated differently than standard test suites.  This is
-    # mostly because they are completely unaware that they are being run as 
+    # mostly because they are completely unaware that they are being run as
     # tests.  So we have to do some special case processing to make them look
     # like tests.
     #
@@ -859,7 +859,7 @@ class Job:
 
     #
     # Examples are treated differently than standard test suites.  This is
-    # mostly because they are completely unaware that they are being run as 
+    # mostly because they are completely unaware that they are being run as
     # tests.  So we have to do some special case processing to make them look
     # like tests.
     #
@@ -883,7 +883,7 @@ class Job:
         self.build_path = build_path
 
     #
-    # This is the display name of the job, typically the test suite or example 
+    # This is the display name of the job, typically the test suite or example
     # name.  For example,
     #
     #  "some-test-suite" or "udp-echo"
@@ -894,7 +894,7 @@ class Job:
     #
     # This is the base directory of the repository out of which the tests are
     # being run.  It will be used deep down in the testing framework to determine
-    # where the source directory of the test was, and therefore where to find 
+    # where the source directory of the test was, and therefore where to find
     # provided test vectors.  For example,
     #
     #  "/home/user/repos/ns-3-dev"
@@ -903,7 +903,7 @@ class Job:
         self.basedir = basedir
 
     #
-    # This is the directory to which a running test suite should write any 
+    # This is the directory to which a running test suite should write any
     # temporary files.
     #
     def set_tempdir(self, tempdir):
@@ -921,10 +921,10 @@ class Job:
         self.cwd = cwd
 
     #
-    # This is the temporary results file name that will be given to an executing 
+    # This is the temporary results file name that will be given to an executing
     # test as it is being run.  We will be running all of our tests in parallel
     # so there must be multiple temporary output files.  These will be collected
-    # into a single XML file at the end and then be deleted.  
+    # into a single XML file at the end and then be deleted.
     #
     def set_tmp_file_name(self, tmp_file_name):
         self.tmp_file_name = tmp_file_name
@@ -991,10 +991,10 @@ class worker_thread(threading.Thread):
                 if job.is_example or job.is_pyexample:
                     #
                     # If we have an example, the shell command is all we need to
-                    # know.  It will be something like "examples/udp/udp-echo" or 
+                    # know.  It will be something like "examples/udp/udp-echo" or
                     # "examples/wireless/mixed-wireless.py"
                     #
-                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
+                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command,
                         job.cwd, options.valgrind, job.is_pyexample, job.build_path)
                 else:
                     #
@@ -1006,8 +1006,8 @@ class worker_thread(threading.Thread):
                         update_data = '--update-data'
                     else:
                         update_data = ''
-                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command + 
-                        " --xml --tempdir=%s --out=%s %s" % (job.tempdir, job.tmp_file_name, update_data), 
+                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command +
+                        " --xml --tempdir=%s --out=%s %s" % (job.tempdir, job.tmp_file_name, update_data),
                         job.cwd, options.valgrind, False)
 
                 job.set_elapsed_time(et)
@@ -1030,7 +1030,7 @@ def run_tests():
     #
     # Pull some interesting configuration information out of waf, primarily
     # so we can know where executables can be found, but also to tell us what
-    # pieces of the system have been built.  This will tell us what examples 
+    # pieces of the system have been built.  This will tell us what examples
     # are runnable.
     #
     read_waf_config()
@@ -1039,7 +1039,7 @@ def run_tests():
     # Set the proper suffix.
     #
     global BUILD_PROFILE_SUFFIX
-    if BUILD_PROFILE == 'release': 
+    if BUILD_PROFILE == 'release':
         BUILD_PROFILE_SUFFIX = ""
     else:
         BUILD_PROFILE_SUFFIX = "-" + BUILD_PROFILE
@@ -1059,7 +1059,7 @@ def run_tests():
     if not options.nowaf:
 
         #
-        # If the user is running the "kinds" or "list" options, there is an 
+        # If the user is running the "kinds" or "list" options, there is an
         # implied dependency on the test-runner since we call that program
         # if those options are selected.  We will exit after processing those
         # options, so if we see them, we can safely only build the test-runner.
@@ -1134,7 +1134,7 @@ def run_tests():
     example_names_original = []
     python_tests = []
     for directory in EXAMPLE_DIRECTORIES:
-        # Set the directories and paths for this example. 
+        # Set the directories and paths for this example.
         example_directory   = os.path.join("examples", directory)
         examples_to_run_path = os.path.join(example_directory, "examples-to-run.py")
         cpp_executable_dir   = os.path.join(NS3_BUILDDIR, example_directory)
@@ -1153,7 +1153,7 @@ def run_tests():
         # Remove the "ns3-" from the module name.
         module = module[len("ns3-"):]
 
-        # Set the directories and paths for this example. 
+        # Set the directories and paths for this example.
         module_directory     = os.path.join("src", module)
         example_directory    = os.path.join(module_directory, "examples")
         examples_to_run_path = os.path.join(module_directory, "test", "examples-to-run.py")
@@ -1168,12 +1168,12 @@ def run_tests():
             example_tests,
             example_names_original,
             python_tests)
-            
+
     for module in NS3_ENABLED_CONTRIBUTED_MODULES:
         # Remove the "ns3-" from the module name.
         module = module[len("ns3-"):]
 
-        # Set the directories and paths for this example. 
+        # Set the directories and paths for this example.
         module_directory     = os.path.join("contrib", module)
         example_directory    = os.path.join(module_directory, "examples")
         examples_to_run_path = os.path.join(module_directory, "test", "examples-to-run.py")
@@ -1190,7 +1190,7 @@ def run_tests():
             python_tests)
 
     #
-    # If lots of logging is enabled, we can crash Python when it tries to 
+    # If lots of logging is enabled, we can crash Python when it tries to
     # save all of the text.  We just don't allow logging to be turned on when
     # test.py runs.  If you want to see logging output from your tests, you
     # have to run them using the test-runner directly.
@@ -1199,7 +1199,7 @@ def run_tests():
 
     #
     # There are a couple of options that imply we can to exit before starting
-    # up a bunch of threads and running tests.  Let's detect these cases and 
+    # up a bunch of threads and running tests.  Let's detect these cases and
     # handle them without doing all of the hard work.
     #
     if options.kinds:
@@ -1236,10 +1236,10 @@ def run_tests():
         return
 
     #
-    # We communicate results in two ways.  First, a simple message relating 
-    # PASS, FAIL, CRASH or SKIP is always written to the standard output.  It 
+    # We communicate results in two ways.  First, a simple message relating
+    # PASS, FAIL, CRASH or SKIP is always written to the standard output.  It
     # is expected that this will be one of the main use cases.  A developer can
-    # just run test.py with no options and see that all of the tests still 
+    # just run test.py with no options and see that all of the tests still
     # pass.
     #
     # The second main use case is when detailed status is requested (with the
@@ -1267,7 +1267,7 @@ def run_tests():
         os.makedirs(testpy_output_dir)
 
     #
-    # Create the main output file and start filling it with XML.  We need to 
+    # Create the main output file and start filling it with XML.  We need to
     # do this since the tests will just append individual results to this file.
     #
     xml_results_file = os.path.join(testpy_output_dir, "results.xml")
@@ -1277,13 +1277,13 @@ def run_tests():
     f.close()
 
     #
-    # We need to figure out what test suites to execute.  We are either given one 
+    # We need to figure out what test suites to execute.  We are either given one
     # suite or example explicitly via the --suite or --example/--pyexample option,
     # or we need to call into the test runner and ask it to list all of the available
     # test suites.  Further, we need to provide the constraint information if it
     # has been given to us.
-    # 
-    # This translates into allowing the following options with respect to the 
+    #
+    # This translates into allowing the following options with respect to the
     # suites
     #
     #  ./test,py:                                           run all of the suites and examples
@@ -1294,13 +1294,13 @@ def run_tests():
     #  ./test.py --pyexample=examples/wireless/mixed-wireless.py:  run python example
     #  ./test.py --suite=some-suite --example=some-example: run the single suite
     #
-    # We can also use the --constrain option to provide an ordering of test 
+    # We can also use the --constrain option to provide an ordering of test
     # execution quite easily.
     #
 
     # Flag indicating a specific suite was explicitly requested
     single_suite = False
-    
+
     if len(options.suite):
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
@@ -1325,10 +1325,10 @@ def run_tests():
         suites = ""
 
     #
-    # suite_list will either a single test suite name that the user has 
+    # suite_list will either a single test suite name that the user has
     # indicated she wants to run or a list of test suites provided by
     # the test-runner possibly according to user provided constraints.
-    # We go through the trouble of setting up the parallel execution 
+    # We go through the trouble of setting up the parallel execution
     # even in the case of a single suite to avoid having to process the
     # results in two different places.
     #
@@ -1399,13 +1399,13 @@ def run_tests():
     skipped_testnames = []
 
     #
-    # We now have worker threads spun up, and a list of work to do.  So, run 
+    # We now have worker threads spun up, and a list of work to do.  So, run
     # through the list of test suites and dispatch a job to run each one.
-    # 
-    # Dispatching will run with unlimited speed and the worker threads will 
+    #
+    # Dispatching will run with unlimited speed and the worker threads will
     # execute as fast as possible from the queue.
     #
-    # Note that we actually dispatch tests to be skipped, so all of the 
+    # Note that we actually dispatch tests to be skipped, so all of the
     # PASS, FAIL, CRASH and SKIP processing is done in the same place.
     #
     for test in suite_list:
@@ -1448,7 +1448,7 @@ def run_tests():
             input_queue.put(job)
             jobs = jobs + 1
             total_tests = total_tests + 1
-    
+
     #
     # We've taken care of the discovered or specified test suites.  Now we
     # have to deal with examples run as smoke tests.  We have a list of all of
@@ -1464,7 +1464,7 @@ def run_tests():
     # In this case, the example "tcp-nsc-zoo" will only be run if we find the
     # waf configuration variable "NSC_ENABLED" to be True.
     #
-    # We don't care at all how the trace files come out, so we just write them 
+    # We don't care at all how the trace files come out, so we just write them
     # to a single temporary directory.
     #
     # XXX As it stands, all of the trace files have unique names, and so file
@@ -1472,12 +1472,12 @@ def run_tests():
     # two versions of the test.py process concurrently.  We may want to create
     # uniquely named temporary traces directories to avoid this problem.
     #
-    # We need to figure out what examples to execute.  We are either given one 
+    # We need to figure out what examples to execute.  We are either given one
     # suite or example explicitly via the --suite or --example option, or we
-    # need to walk the list of examples looking for available example 
+    # need to walk the list of examples looking for available example
     # conditions.
     #
-    # This translates into allowing the following options with respect to the 
+    # This translates into allowing the following options with respect to the
     # suites
     #
     #  ./test.py:                                           run all of the examples
@@ -1493,7 +1493,7 @@ def run_tests():
             if ENABLE_EXAMPLES:
                 for name, test, do_run, do_valgrind_run in example_tests:
                     # Remove any arguments and directory names from test.
-                    test_name = test.split(' ', 1)[0] 
+                    test_name = test.split(' ', 1)[0]
                     test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
@@ -1561,14 +1561,14 @@ def run_tests():
     # to try and execute it.  This is used to determine if the example has
     # a dependency that is not satisfied.
     #
-    # We don't care at all how the trace files come out, so we just write them 
+    # We don't care at all how the trace files come out, so we just write them
     # to a single temporary directory.
     #
-    # We need to figure out what python examples to execute.  We are either 
+    # We need to figure out what python examples to execute.  We are either
     # given one pyexample explicitly via the --pyexample option, or we
     # need to walk the list of python examples
     #
-    # This translates into allowing the following options with respect to the 
+    # This translates into allowing the following options with respect to the
     # suites
     #
     #  ./test.py --constrain=pyexample           run all of the python examples
@@ -1579,7 +1579,7 @@ def run_tests():
             if ENABLE_EXAMPLES:
                 for test, do_run in python_tests:
                     # Remove any arguments and directory names from test.
-                    test_name = test.split(' ', 1)[0] 
+                    test_name = test.split(' ', 1)[0]
                     test_name = os.path.basename(test_name)
 
                     # Don't try to run this example if it isn't runnable.
@@ -1665,7 +1665,7 @@ def run_tests():
     # handling is broken as mentioned above.  We use a signal handler to catch
     # sigint and set a global variable.  When the worker threads sense this
     # they stop doing real work and will just start throwing jobs back at us
-    # with is_break set to True.  In this case, there are no real results so we 
+    # with is_break set to True.  In this case, there are no real results so we
     # ignore them.  If there are real results, we always print PASS or FAIL to
     # standard out as a quick indication of what happened.
     #
@@ -1715,7 +1715,7 @@ def run_tests():
         if job.is_example or job.is_pyexample:
             #
             # Examples are the odd man out here.  They are written without any
-            # knowledge that they are going to be run as a test, so we need to 
+            # knowledge that they are going to be run as a test, so we need to
             # cook up some kind of output for them.  We're writing an xml file,
             # so we do some simple XML that says we ran the example.
             #
@@ -1749,15 +1749,15 @@ def run_tests():
             # that was written to a temporary file to avoid collisions.
             #
             # Now that we are executing sequentially in the main thread, we can
-            # concatenate the contents of the associated temp file to the main 
+            # concatenate the contents of the associated temp file to the main
             # results file and remove that temp file.
             #
             # One thing to consider is that a test suite can crash just as
-            # well as any other program, so we need to deal with that 
+            # well as any other program, so we need to deal with that
             # possibility as well.  If it ran correctly it will return 0
             # if it passed, or 1 if it failed.  In this case, we can count
-            # on the results file it saved being complete.  If it crashed, it 
-            # will return some other code, and the file should be considered 
+            # on the results file it saved being complete.  If it crashed, it
+            # will return some other code, and the file should be considered
             # corrupt and useless.  If the suite didn't create any XML, then
             # we're going to have to do it ourselves.
             #
@@ -1767,17 +1767,17 @@ def run_tests():
             # ran to completion.  If we get a return code of 1 under valgrind,
             # the test case failed, but valgrind did not find any problems so the
             # test case return code was passed through.  We will have a valid xml
-            # results file here as well since the test suite ran.  If we see a 
+            # results file here as well since the test suite ran.  If we see a
             # return code of 2, this means that valgrind found an error (we asked
             # it to return 2 if it found a problem in run_job_synchronously) but
             # the suite ran to completion so there is a valid xml results file.
-            # If the suite crashes under valgrind we will see some other error 
+            # If the suite crashes under valgrind we will see some other error
             # return code (like 139).  If valgrind finds an illegal instruction or
             # some other strange problem, it will die with its own strange return
             # code (like 132).  However, if the test crashes by itself, not under
             # valgrind we will also see some other return code.
             #
-            # If the return code is 0, 1, or 2, we have a valid xml file.  If we 
+            # If the return code is 0, 1, or 2, we have a valid xml file.  If we
             # get another return code, we have no xml and we can't really say what
             # happened -- maybe the TestSuite crashed, maybe valgrind crashed due
             # to an illegal instruction.  If we get something beside 0-2, we assume
@@ -1811,17 +1811,17 @@ def run_tests():
                     f.close()
 
     #
-    # We have all of the tests run and the results written out.  One final 
+    # We have all of the tests run and the results written out.  One final
     # bit of housekeeping is to wait for all of the threads to close down
     # so we can exit gracefully.
     #
     for thread in threads:
         thread.join()
-    
+
     #
     # Back at the beginning of time, we started the body of an XML document
-    # since the test suites and examples were going to just write their 
-    # individual pieces.  So, we need to finish off and close out the XML 
+    # since the test suites and examples were going to just write their
+    # individual pieces.  So, we need to finish off and close out the XML
     # document
     #
     f = open(xml_results_file, 'a')
@@ -1831,10 +1831,10 @@ def run_tests():
     #
     # Print a quick summary of events
     #
-    print("%d of %d tests passed (%d passed, %d skipped, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, 
+    print("%d of %d tests passed (%d passed, %d skipped, %d failed, %d crashed, %d valgrind errors)" % (passed_tests,
         total_tests, passed_tests, skipped_tests, failed_tests, crashed_tests, valgrind_errors))
     #
-    # Repeat summary of skipped, failed, crashed, valgrind events 
+    # Repeat summary of skipped, failed, crashed, valgrind events
     #
     if skipped_testnames:
         skipped_testnames.sort()
@@ -1854,7 +1854,7 @@ def run_tests():
     #
     if len(options.html) + len(options.text) + len(options.xml):
         print()
-        
+
     if len(options.html):
         translate_to_html(xml_results_file, options.html)
 
