@@ -69,7 +69,7 @@ Icmpv4L4Protocol::SetNode (Ptr<Node> node)
 }
 
 /*
- * This method is called by AddAgregate and completes the aggregation
+ * This method is called by AggregateObject and completes the aggregation
  * by setting the node in the ICMP stack and adding ICMP factory to
  * IPv4 stack connected to the node
  */

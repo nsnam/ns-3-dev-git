@@ -82,7 +82,7 @@ UdpL4Protocol::SetNode (Ptr<Node> node)
 }
 
 /*
- * This method is called by AddAgregate and completes the aggregation
+ * This method is called by AggregateObject and completes the aggregation
  * by setting the node in the udp stack and link it to the ipv4 object
  * present in the node along with the socket factory
  */

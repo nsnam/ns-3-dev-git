@@ -116,7 +116,7 @@ public:
   void SetNode (Ptr<Node> node);
 
   /**
-   * \brief This method is called by AddAgregate and completes the aggregation
+   * \brief This method is called by AggregateObject and completes the aggregation
    * by setting the node in the ICMPv6 stack and adding ICMPv6 factory to
    * IPv6 stack connected to the node.
    */
