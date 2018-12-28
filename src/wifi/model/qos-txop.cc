@@ -818,7 +818,7 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
         {
           NS_LOG_DEBUG ("Retransmit");
           m_baManager->NotifyMissedBlockAck (m_currentHdr.GetAddr1 (), tid);
-          m_currentHdr.SetRetry ();
+          m_currentPacket = 0;
           UpdateFailedCw ();
           m_cwTrace = GetCw ();
         }
