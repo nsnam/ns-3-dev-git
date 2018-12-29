@@ -18,6 +18,8 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/nstime.h"
+#include "ns3/simulator.h"
 #include "frame-capture-model.h"
 
 namespace ns3 {
@@ -29,8 +31,19 @@ TypeId FrameCaptureModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::FrameCaptureModel")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("CaptureWindow",
+                   "The duration of the capture window.",
+                   TimeValue (MicroSeconds (16)),
+                   MakeTimeAccessor (&FrameCaptureModel::m_captureWindow),
+                   MakeTimeChecker ())
   ;
   return tid;
+}
+
+bool
+FrameCaptureModel::IsInCaptureWindow (Time timePreambleDetected) const
+{
+  return (timePreambleDetected + m_captureWindow >= Simulator::Now ());
 }
 
 } //namespace ns3

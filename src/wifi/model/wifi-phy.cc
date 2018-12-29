@@ -396,7 +396,8 @@ WifiPhy::WifiPhy ()
     m_totalAmpduSize (0),
     m_totalAmpduNumSymbols (0),
     m_currentEvent (0),
-    m_wifiRadioEnergyModel (0)
+    m_wifiRadioEnergyModel (0),
+    m_timeLastPreambleDetected (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();
@@ -2485,6 +2486,8 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
     m_state->SwitchToRx (rxDuration);
     NotifyRxBegin (packet);
 
+    m_timeLastPreambleDetected = Simulator::Now ();
+    
     Time remainingPreambleHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector) - GetPreambleDetectionDuration ();
     m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::StartReceivePacket, this,
                                             packet, txVector, mpdutype, event);
@@ -2581,6 +2584,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
     case WifiPhyState::RX:
       NS_ASSERT (m_currentEvent != 0);
       if (m_frameCaptureModel != 0
+          && m_frameCaptureModel->IsInCaptureWindow (m_timeLastPreambleDetected)
           && m_frameCaptureModel->CaptureNewFrame (m_currentEvent, event))
         {
           AbortCurrentReception ();
