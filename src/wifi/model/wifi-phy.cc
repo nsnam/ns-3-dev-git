@@ -3853,7 +3853,10 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
       else if ((m_frameCaptureModel != 0) && (rxPowerW > m_currentEvent->GetRxPowerW ()))
         {
           NS_LOG_DEBUG ("Received a stronger signal during preamble detection: switch to new packet");
+          m_interference.NotifyRxEnd ();
           m_endPreambleDetectionEvent.Cancel ();
+          m_plcpSuccess = false;
+          m_interference.NotifyRxStart ();
           Time startOfPreambleDuration = GetPreambleDetectionDuration ();
           Time remainingRxDuration = rxDuration - startOfPreambleDuration;
           m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
