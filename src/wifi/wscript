@@ -114,7 +114,7 @@ def build(bld):
         'test/wifi-error-rate-models-test.cc',
         'test/wifi-transmit-mask-test.cc',
         'test/wifi-phy-thresholds-test.cc',
-        'test/preamble-detection-test.cc',
+        'test/wifi-phy-reception-test.cc',
         ]
 
     headers = bld(features='ns3header')

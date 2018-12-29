@@ -34,7 +34,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TestThresholdPreambleDetectionWithoutFrameCapture");
+NS_LOG_COMPONENT_DEFINE ("WifiPhyReceptionTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
 static const uint32_t FREQUENCY = 5180; // MHz
@@ -45,7 +45,7 @@ static const uint16_t GUARD_WIDTH = CHANNEL_WIDTH; // MHz (expanded to channel w
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief Wifi Preamble Detection Test
+ * \brief Preamble detection test w/o frame capture
  */
 class TestThresholdPreambleDetectionWithoutFrameCapture : public TestCase
 {
@@ -237,18 +237,18 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoRun (void)
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief Preamble Detection Test Suite
+ * \brief wifi PHY reception Test Suite
  */
-class PreambleDetectionTestSuite : public TestSuite
+class WifiPhyReceptionTestSuite : public TestSuite
 {
 public:
-  PreambleDetectionTestSuite ();
+  WifiPhyReceptionTestSuite ();
 };
 
-PreambleDetectionTestSuite::PreambleDetectionTestSuite ()
-  : TestSuite ("wifi-preamble-detection", UNIT)
+WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite ()
+  : TestSuite ("wifi-phy-reception", UNIT)
 {
   AddTestCase (new TestThresholdPreambleDetectionWithoutFrameCapture, TestCase::QUICK);
 }
 
-static PreambleDetectionTestSuite preambleDetectionTestSuite; ///< the test suite
+static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
