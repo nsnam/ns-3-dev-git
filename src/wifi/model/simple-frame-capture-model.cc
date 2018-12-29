@@ -41,7 +41,7 @@ SimpleFrameCaptureModel::GetTypeId (void)
     .AddAttribute ("Margin",
                    "Reception is switched if the newly arrived frame has a power higher than "
                    "this value above the frame currently being received (expressed in dB).",
-                   DoubleValue (10),
+                   DoubleValue (5),
                    MakeDoubleAccessor (&SimpleFrameCaptureModel::GetMargin,
                                        &SimpleFrameCaptureModel::SetMargin),
                    MakeDoubleChecker<double> ())
