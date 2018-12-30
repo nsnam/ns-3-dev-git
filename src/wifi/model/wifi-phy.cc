@@ -2498,7 +2498,8 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
   }
   else
   {
-    NS_LOG_DEBUG ("Packet reception could not be started because PHY preamble detection failed");
+    NS_LOG_DEBUG ("Drop packet because PHY preamble detection failed");
+    NotifyRxDrop (packet);
     m_mpdusNum = 0;
     m_plcpSuccess = false;
     m_interference.NotifyRxEnd ();
@@ -3795,43 +3796,26 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
       MaybeCcaBusyDuration ();
       return;
     }
-  else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum == 0 && !m_endPreambleDetectionEvent.IsRunning ())
-    {
-      m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
-      NS_LOG_DEBUG ("Received the first MPDU in an A-MPDU, remaining number of MPDUs to be received: " << m_mpdusNum);
-      m_rxMpduReferenceNumber++;
-    }
-  else if (preamble == WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
-    {
-      //received the other MPDUs that are part of the A-MPDU
-      if (ampduTag.GetRemainingNbOfMpdus () < (m_mpdusNum - 1))
-        {
-          NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetRemainingNbOfMpdus ());
-          m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
-        }
-      else
-        {
-          m_mpdusNum--;
-        }
-    }
-  else if (preamble != WIFI_PREAMBLE_NONE && packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
-  {
-    NS_LOG_DEBUG ("drop packet because PHY is still receiving another A-MPDU");
-    NotifyRxDrop (packet);
-    MaybeCcaBusyDuration ();
-    return;
-  }
-  else if (preamble != WIFI_PREAMBLE_NONE && m_mpdusNum > 0)
-    {
-      NS_LOG_DEBUG ("Didn't receive the last MPDUs from an A-MPDU " << m_mpdusNum);
-      m_mpdusNum = 0;
-    }
 
   NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
   if (preamble == WIFI_PREAMBLE_NONE)
     {
       NS_ASSERT (m_endPreambleDetectionEvent.IsExpired ());
+
+      if (packet->PeekPacketTag (ampduTag) && m_mpdusNum > 0)
+        {
+          //received the other MPDUs that are part of the A-MPDU
+          if (ampduTag.GetRemainingNbOfMpdus () < (m_mpdusNum - 1))
+            {
+              NS_LOG_DEBUG ("Missing MPDU from the A-MPDU " << m_mpdusNum - ampduTag.GetRemainingNbOfMpdus ());
+              m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
+            }
+          else
+            {
+              m_mpdusNum--;
+            }
+        }
 
       m_state->SwitchToRx (rxDuration);
       NotifyRxBegin (packet);
@@ -3845,6 +3829,13 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
       if (!m_endPreambleDetectionEvent.IsRunning ())
         {
           m_plcpSuccess = false;
+          m_mpdusNum = 0;
+          if (packet->PeekPacketTag (ampduTag))
+          {
+            m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
+            NS_LOG_DEBUG ("Received the first MPDU in an A-MPDU, remaining number of MPDUs to be received: " << m_mpdusNum);
+            m_rxMpduReferenceNumber++;
+          }
           Time startOfPreambleDuration = GetPreambleDetectionDuration ();
           Time remainingRxDuration = rxDuration - startOfPreambleDuration;
           m_endPreambleDetectionEvent = Simulator::Schedule (startOfPreambleDuration, &WifiPhy::StartReceiveHeader, this,
@@ -3852,10 +3843,18 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
         }
       else if ((m_frameCaptureModel != 0) && (rxPowerW > m_currentEvent->GetRxPowerW ()))
         {
-          NS_LOG_DEBUG ("Received a stronger signal during preamble detection: switch to new packet");
+          NS_LOG_DEBUG ("Received a stronger signal during preamble detection: drop current packet and switch to new packet");
+          NotifyRxDrop (m_currentEvent->GetPacket ());
           m_interference.NotifyRxEnd ();
           m_endPreambleDetectionEvent.Cancel ();
           m_plcpSuccess = false;
+          m_mpdusNum = 0;
+          if (packet->PeekPacketTag (ampduTag))
+            {
+              m_mpdusNum = ampduTag.GetRemainingNbOfMpdus ();
+              NS_LOG_DEBUG ("Received the first MPDU in an A-MPDU, remaining number of MPDUs to be received: " << m_mpdusNum);
+              m_rxMpduReferenceNumber++;
+            }
           m_interference.NotifyRxStart ();
           Time startOfPreambleDuration = GetPreambleDetectionDuration ();
           Time remainingRxDuration = rxDuration - startOfPreambleDuration;
@@ -3864,7 +3863,8 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
         }
       else
         {
-          NS_LOG_DEBUG ("Ignore packet because RX is already decoding preamble");
+          NS_LOG_DEBUG ("Drop packet because RX is already decoding preamble");
+          NotifyRxDrop (packet);
         }
     }
   m_currentEvent = event;
