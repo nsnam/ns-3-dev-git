@@ -433,6 +433,220 @@ TestThresholdPreambleDetectionWithFrameCapture::DoRun (void)
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Simple frame capture model test
+ */
+class TestSimpleFrameCaptureModel : public TestCase
+{
+public:
+  TestSimpleFrameCaptureModel ();
+  virtual ~TestSimpleFrameCaptureModel ();
+  
+protected:
+  virtual void DoSetup (void);
+  
+private:
+  virtual void DoRun (void);
+
+  /**
+   * Reset function
+   */
+  void Reset (void);
+  /**
+   * Send packet function
+   * \param txPowerDbm the transmit power in dBm
+   * \param packetSize the size of the packet in bytes
+   */
+  void SendPacket (double txPowerDbm, uint32_t packetSize);
+  /**
+   * Spectrum wifi receive success function
+   * \param p the packet
+   * \param snr the SNR
+   * \param rxPower the rx power (W)
+   * \param txVector the transmit vector
+   */
+  void RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
+  /**
+   * RX packet dropped function
+   * \param p the packet
+   */
+  void RxDropped (Ptr<const Packet> p);
+
+  void Expect1000BPacketReceived ();
+  void Expect1500BPacketReceived ();
+  void Expect1000BPacketDropped ();
+  void Expect1500BPacketDropped ();
+
+  Ptr<SpectrumWifiPhy> m_phy; ///< Phy
+
+  bool m_rxSuccess1000B; ///< count received packets with 1000B payload
+  bool m_rxSuccess1500B; ///< count received packets with 1500B payload
+  bool m_rxDropped1000B; ///< count dropped packets with 1000B payload
+  bool m_rxDropped1500B; ///< count dropped packets with 1500B payload
+};
+
+TestSimpleFrameCaptureModel::TestSimpleFrameCaptureModel ()
+: TestCase ("Simple frame capture model test"),
+  m_rxSuccess1000B (false),
+  m_rxSuccess1500B (false),
+  m_rxDropped1000B (false),
+  m_rxDropped1500B (false)
+{
+}
+
+void
+TestSimpleFrameCaptureModel::SendPacket (double txPowerDbm, uint32_t packetSize)
+{
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  MpduType mpdutype = NORMAL_MPDU;
+  
+  Ptr<Packet> pkt = Create<Packet> (packetSize);
+  WifiMacHeader hdr;
+  WifiMacTrailer trailer;
+  
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  hdr.SetQosTid (0);
+  uint32_t size = pkt->GetSize () + hdr.GetSize () + trailer.GetSerializedSize ();
+  Time txDuration = m_phy->CalculateTxDuration (size, txVector, m_phy->GetFrequency (), mpdutype, 0);
+  hdr.SetDuration (txDuration);
+  
+  pkt->AddHeader (hdr);
+  pkt->AddTrailer (trailer);
+  WifiPhyTag tag (txVector, mpdutype, 1);
+  pkt->AddPacketTag (tag);
+  Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (txPowerDbm), GUARD_WIDTH);
+  Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
+  txParams->psd = txPowerSpectrum;
+  txParams->txPhy = 0;
+  txParams->duration = txDuration;
+  txParams->packet = pkt;
+  
+  m_phy->StartRx (txParams);
+}
+
+void
+TestSimpleFrameCaptureModel::RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector)
+{
+  NS_LOG_FUNCTION (this << p << snr << txVector);
+  if (p->GetSize () == 1030)
+    {
+      m_rxSuccess1000B = true;
+    }
+  else if (p->GetSize () == 1530)
+    {
+      m_rxSuccess1500B = true;
+    }
+}
+
+void
+TestSimpleFrameCaptureModel::RxDropped (Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (this << p);
+  if (p->GetSize () == 1030)
+    {
+      m_rxDropped1000B = true;
+    }
+  else if (p->GetSize () == 1530)
+    {
+      m_rxDropped1500B = true;
+    }
+}
+
+void
+TestSimpleFrameCaptureModel::Reset ()
+{
+  m_rxSuccess1000B = false;
+  m_rxSuccess1500B = false;
+  m_rxDropped1000B = false;
+  m_rxDropped1500B = false;
+}
+
+void
+TestSimpleFrameCaptureModel::Expect1000BPacketReceived ()
+{
+  NS_TEST_ASSERT_MSG_EQ (m_rxSuccess1000B, true, "Didn't receive 1000B packet");
+}
+
+void
+TestSimpleFrameCaptureModel::Expect1500BPacketReceived ()
+{
+  NS_TEST_ASSERT_MSG_EQ (m_rxSuccess1500B, true, "Didn't receive 1500B packet");
+}
+void
+TestSimpleFrameCaptureModel::Expect1000BPacketDropped ()
+{
+  NS_TEST_ASSERT_MSG_EQ (m_rxDropped1000B, true, "Didn't drop 1000B packet");
+}
+
+void
+TestSimpleFrameCaptureModel::Expect1500BPacketDropped ()
+{
+  NS_TEST_ASSERT_MSG_EQ (m_rxDropped1500B, true, "Didn't drop 1500B packet");
+}
+
+TestSimpleFrameCaptureModel::~TestSimpleFrameCaptureModel ()
+{
+}
+
+void
+TestSimpleFrameCaptureModel::DoSetup (void)
+{
+  m_phy = CreateObject<SpectrumWifiPhy> ();
+  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
+  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
+  m_phy->SetErrorRateModel (error);
+  m_phy->SetChannelNumber (CHANNEL_NUMBER);
+  m_phy->SetFrequency (FREQUENCY);
+
+  m_phy->SetReceiveOkCallback (MakeCallback (&TestSimpleFrameCaptureModel::RxSuccess, this));
+  m_phy->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&TestSimpleFrameCaptureModel::RxDropped, this));
+
+  Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel = CreateObject<ThresholdPreambleDetectionModel> ();
+  m_phy->SetPreambleDetectionModel (preambleDetectionModel);
+  
+  Ptr<SimpleFrameCaptureModel> frameCaptureModel = CreateObject<SimpleFrameCaptureModel> ();
+  m_phy->SetFrameCaptureModel (frameCaptureModel);
+}
+
+// Test that the expected number of packet receptions occur.
+void
+TestSimpleFrameCaptureModel::DoRun (void)
+{
+  double txPowerDbm = -30;
+  
+  //CASE 1: send two packets with same power within the capture window: should not switch reception because they have same power
+  Simulator::Schedule (Seconds (1.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm, 1000);
+  Simulator::Schedule (Seconds (1.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm, 1500);
+  Simulator::Schedule (Seconds (1.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
+  Reset ();
+
+  //CASE 2: send two packets with second one 6 dB weaker within the capture window: should not switch reception because first one has higher power
+  Simulator::Schedule (Seconds (2.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm, 1000);
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm - 6, 1500);
+  Simulator::Schedule (Seconds (2.1), &TestSimpleFrameCaptureModel::Expect1000BPacketReceived, this);
+  Simulator::Schedule (Seconds (2.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
+  Reset ();
+
+  //CASE 3: send two packets with second one 6 dB higher within the capture window: should switch reception
+  Simulator::Schedule (Seconds (3.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm, 1000);
+  Simulator::Schedule (Seconds (3.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm + 6, 1500);
+  Simulator::Schedule (Seconds (3.1), &TestSimpleFrameCaptureModel::Expect1000BPacketDropped, this);
+  Simulator::Schedule (Seconds (3.1), &TestSimpleFrameCaptureModel::Expect1500BPacketReceived, this);
+  Reset ();
+
+  //CASE 4: send two packets with second one 6 dB higher after the capture window: should not switch reception because capture window duration has elapsed when the second packet arrives
+  Simulator::Schedule (Seconds (4.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm, 1000);
+  Simulator::Schedule (Seconds (4.0) + MicroSeconds (25.0), &TestSimpleFrameCaptureModel::SendPacket, this, txPowerDbm + 6, 1500);
+  Simulator::Schedule (Seconds (4.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
+  Reset ();
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -446,6 +660,7 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite ()
 {
   AddTestCase (new TestThresholdPreambleDetectionWithoutFrameCapture, TestCase::QUICK);
   AddTestCase (new TestThresholdPreambleDetectionWithFrameCapture, TestCase::QUICK);
+  AddTestCase (new TestSimpleFrameCaptureModel, TestCase::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
