@@ -805,6 +805,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RrpaaWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("SimpleFrameCaptureModel", LOG_LEVEL_ALL);
   LogComponentEnable ("SpectrumWifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("StaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
