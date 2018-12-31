@@ -46,8 +46,10 @@ class Packet;
 typedef Callback<void, Ptr<Packet>, double, WifiTxVector> RxOkCallback;
 /**
  * Callback if packet unsuccessfully received
+ *
+ * arg1: packet received unsuccessfully
  */
-typedef Callback<void> RxErrorCallback;
+typedef Callback<void, Ptr<Packet>> RxErrorCallback;
 
 /**
  * \ingroup wifi

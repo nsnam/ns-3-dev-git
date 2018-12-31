@@ -480,7 +480,7 @@ WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
   DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
     {
-      m_rxErrorCallback ();
+      m_rxErrorCallback (packet);
     }
 }
 

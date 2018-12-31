@@ -78,8 +78,9 @@ protected:
   virtual void RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
   /**
    * PHY receive failure callback function
+   * \param p the packet
    */
-  virtual void RxFailure (void);
+  virtual void RxFailure (Ptr<Packet> p);
   /**
    * PHY dropped packet callback function
    * \param p the packet
@@ -183,9 +184,9 @@ WifiPhyThresholdsTest::RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVect
 }
 
 void
-WifiPhyThresholdsTest::RxFailure (void)
+WifiPhyThresholdsTest::RxFailure (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p);
   m_rxFailure++;
 }
 

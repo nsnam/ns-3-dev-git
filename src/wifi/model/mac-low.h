@@ -334,10 +334,12 @@ public:
    */
   void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   /**
+   * \param packet packet received.
+   *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (void);
+  void ReceiveError (Ptr<Packet> packet);
   /**
    * \param duration switching delay duration.
    *

@@ -269,7 +269,7 @@ void
 MacLow::ResetPhy (void)
 {
   m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<Packet>, double, WifiTxVector> ());
-  m_phy->SetReceiveErrorCallback (MakeNullCallback<void> ());
+  m_phy->SetReceiveErrorCallback (MakeNullCallback<void, Ptr<Packet>> ());
   RemovePhyMacLowListener (m_phy);
   m_phy = 0;
 }
@@ -651,9 +651,9 @@ MacLow::NeedCtsToSelf (void) const
 }
 
 void
-MacLow::ReceiveError (void)
+MacLow::ReceiveError (Ptr<Packet> packet)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << packet);
   NS_LOG_DEBUG ("rx failed");
   if (IsCfPeriod () && m_currentHdr.IsCfPoll ())
     {

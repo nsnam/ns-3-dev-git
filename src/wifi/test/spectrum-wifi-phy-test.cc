@@ -79,8 +79,9 @@ protected:
   void SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector);
   /**
    * Spectrum wifi receive failure function
-   */
-  void SpectrumWifiPhyRxFailure (void);
+   * \param p the packet
+-   */
+  void SpectrumWifiPhyRxFailure (Ptr<Packet> p);
   uint32_t m_count; ///< count
 
 private:
@@ -144,9 +145,9 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, W
 }
 
 void
-SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (void)
+SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << p);
   m_count++;
 }
 
