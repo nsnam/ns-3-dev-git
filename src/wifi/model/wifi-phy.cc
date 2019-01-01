@@ -2477,7 +2477,7 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
   NS_ASSERT (!IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
 
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
+  InterferenceHelper::SnrPer snrPer = m_interference.CalculateLegacyPhyHeaderSnrPer (event);
   double snr = snrPer.snr;
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
 
@@ -2488,9 +2488,20 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
 
     m_timeLastPreambleDetected = Simulator::Now ();
     
-    Time remainingPreambleHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector) - GetPreambleDetectionDuration ();
-    m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::StartReceivePacket, this,
-                                            packet, txVector, mpdutype, event);
+    if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT) && (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF))
+      {
+        //No legacy PHY header for HT GF
+        Time remainingPreambleHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector) - GetPreambleDetectionDuration ();
+        m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::StartReceivePayload, this,
+                                                packet, txVector, mpdutype, event);
+      }
+    else
+      {
+        //Schedule end of legacy PHY header
+        Time remainingPreambleAndLegacyHeaderDuration = GetPlcpPreambleDuration (txVector) + GetPlcpHeaderDuration (txVector) - GetPreambleDetectionDuration ();
+        m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleAndLegacyHeaderDuration, &WifiPhy::ContinueReceiveHeader, this,
+                                                packet, txVector, mpdutype, event);
+      }
 
     NS_ASSERT (m_endRxEvent.IsExpired ());
     m_endRxEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndReceive, this,
@@ -2504,6 +2515,32 @@ WifiPhy::StartReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType
     m_plcpSuccess = false;
     m_interference.NotifyRxEnd ();
   }
+}
+
+void
+WifiPhy::ContinueReceiveHeader (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << +mpdutype);
+  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
+
+  InterferenceHelper::SnrPer snrPer;
+  snrPer = m_interference.CalculateLegacyPhyHeaderSnrPer (event);
+
+  if (m_random->GetValue () > snrPer.per) //legacy PHY header reception succeeded
+    {
+      NS_LOG_DEBUG ("Received legacy PHY header"); //endReceive is already scheduled
+      m_plcpSuccess = true;
+      Time remainingPreambleHeaderDuration = CalculatePlcpPreambleAndHeaderDuration (txVector) - GetPlcpPreambleDuration (txVector) - GetPlcpHeaderDuration (txVector);
+      m_endPlcpRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::StartReceivePayload, this,
+                                              packet, txVector, mpdutype, event);
+    }
+  else //legacy PHY header reception failed
+    {
+      NS_LOG_DEBUG ("Drop packet because legacy PHY header reception failed");
+      NotifyRxDrop (packet);
+      m_plcpSuccess = false;
+    }
 }
 
 void
@@ -2594,7 +2631,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         }
       else
         {
-          NS_LOG_DEBUG ("drop packet because already in Rx (power=" <<
+          NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                         rxPowerW << "W)");
           NotifyRxDrop (packet);
           if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
@@ -2607,7 +2644,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
         }
       break;
     case WifiPhyState::TX:
-      NS_LOG_DEBUG ("drop packet because already in Tx (power=" <<
+      NS_LOG_DEBUG ("Drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (packet);
       if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
@@ -2623,7 +2660,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       StartRx (packet, txVector, mpdutype, rxPowerW, rxDuration, event);
       break;
     case WifiPhyState::SLEEP:
-      NS_LOG_DEBUG ("drop packet because in sleep mode");
+      NS_LOG_DEBUG ("Drop packet because in sleep mode");
       NotifyRxDrop (packet);
       m_plcpSuccess = false;
       break;
@@ -2649,26 +2686,31 @@ WifiPhy::MaybeCcaBusyDuration ()
 }
 
 void
-WifiPhy::StartReceivePacket (Ptr<Packet> packet,
-                             WifiTxVector txVector,
-                             MpduType mpdutype,
-                             Ptr<Event> event)
+WifiPhy::StartReceivePayload (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << +mpdutype);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
   WifiMode txMode = txVector.GetMode ();
-
-  InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculatePlcpHeaderSnrPer (event);
-
-  if (m_random->GetValue () > snrPer.per) //plcp reception succeeded
+  bool canReceivePayload;
+  if ((txMode.GetModulationClass () == WIFI_MOD_CLASS_HT) || (txMode.GetModulationClass () == WIFI_MOD_CLASS_VHT) || (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+    {
+      InterferenceHelper::SnrPer snrPer;
+      snrPer = m_interference.CalculateNonLegacyPhyHeaderSnrPer (event);
+      canReceivePayload = (m_random->GetValue () > snrPer.per);
+    }
+  else
+    {
+      //If we are here, this means legacy PHY header was already successfully received
+      canReceivePayload = true;
+    }
+  if (canReceivePayload) //plcp reception succeeded
     {
       if (IsModeSupported (txMode) || IsMcsSupported (txMode))
         {
-          NS_LOG_DEBUG ("receiving plcp payload"); //endReceive is already scheduled
+          NS_LOG_DEBUG ("Receiving payload"); //endReceive is already scheduled
           m_plcpSuccess = true;
-          if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+          if (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
             {
               HePreambleParameters params;
               params.rssiW = event->GetRxPowerW ();
@@ -2678,16 +2720,14 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
         }
       else //mode is not allowed
         {
-          NS_LOG_DEBUG ("drop packet because it was sent using an unsupported mode (" << txMode << ")");
+          NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
           NotifyRxDrop (packet);
-          m_plcpSuccess = false;
         }
     }
   else //plcp reception failed
     {
-      NS_LOG_DEBUG ("drop packet because PHY header reception failed");
+      NS_LOG_DEBUG ("Drop packet because non-legacy PHY header reception failed");
       NotifyRxDrop (packet);
-      m_plcpSuccess = false;
     }
 }
 
@@ -2699,7 +2739,7 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutyp
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculatePlcpPayloadSnrPer (event);
+  snrPer = m_interference.CalculatePayloadSnrPer (event);
   m_interference.NotifyRxEnd ();
   m_currentEvent = 0;
 

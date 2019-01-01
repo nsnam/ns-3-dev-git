@@ -1240,10 +1240,10 @@ TestAmpduReception::DoRun (void)
   Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000000);
   Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
   
-  // All MPDUs of A-MPDU 2 should have been received with errors.
-  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
-  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu2, this, 0b00000111);
-  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu2, this, 0b00000111);
+  // MPDUs #1 and #2 of A-MPDU 2 should have been received with errors. M/PDU #3 should have been successfully received (it depends on random stream!)
+  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000100);
+  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu2, this, 0b00000011);
+  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu2, this, 0b00000011);
   
   Simulator::Schedule (Seconds (9.2), &TestAmpduReception::ResetBitmaps, this);
 
@@ -1289,9 +1289,9 @@ TestAmpduReception::DoRun (void)
   Simulator::Schedule (Seconds (11.0) + MicroSeconds (2) + NanoSeconds (1283343), &TestAmpduReception::ScheduleSendMpdu, this, txPowerDbm, 1400, WIFI_PREAMBLE_NONE, MPDU_IN_AGGREGATE, 1);
   Simulator::Schedule (Seconds (11.0) + MicroSeconds (2) + NanoSeconds (2613120), &TestAmpduReception::ScheduleSendMpdu, this, txPowerDbm, 1500, WIFI_PREAMBLE_NONE, LAST_MPDU_IN_AGGREGATE, 0);
   
-  // All MPDUs of A-MPDU 1 should have been dropped (PHY header reception failed).
+  // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
-  Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000001);
+  Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
   Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
   
   // All MPDUs of A-MPDU 2 should have been dropped.
@@ -1453,7 +1453,7 @@ TestAmpduReception::DoRun (void)
   
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (17.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
-  //Simulator::Schedule (Seconds (17.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111); //TODO: PHY should stay in RX if L-SIG was successfully decoded
+  Simulator::Schedule (Seconds (17.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
   Simulator::Schedule (Seconds (17.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
   
   // All MPDUs of A-MPDU 2 should have been dropped (no reception switch, MPDUs dropped because PHY is already in RX state).
@@ -1507,7 +1507,7 @@ TestAmpduReception::DoRun (void)
   
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (19.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
-  //Simulator::Schedule (Seconds (19.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111); //TODO: PHY should stay in RX if L-SIG was successfully decoded
+  Simulator::Schedule (Seconds (19.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
   Simulator::Schedule (Seconds (19.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
   
   // All MPDUs of A-MPDU 2 should have been dropped.
@@ -1601,7 +1601,7 @@ TestAmpduReception::DoRun (void)
   ///////////////////////////////////////////////////////////////////////////////
   // CASE 23: receive two A-MPDUs (containing each 3 MPDUs) with the same power.
   // The second A-MPDU is received during the payload of MPDU #2.
- ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
 
   // A-MPDU 1
   Simulator::Schedule (Seconds (23.0), &TestAmpduReception::ScheduleSendMpdu, this, txPowerDbm, 1000, WIFI_PREAMBLE_HE_SU, MPDU_IN_AGGREGATE, 2);
