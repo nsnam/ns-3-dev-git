@@ -239,16 +239,8 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni
 {
   double noiseInterferenceW = m_firstPower;
   auto it = m_niChanges.find (event->GetStartTime ());
-  for (; it != m_niChanges.end (); ++it)
+  for (; it != m_niChanges.end () && it->first < Simulator::Now (); ++it)
     {
-      if (it->second.GetEvent () == event)
-        {
-          continue;
-        }
-      if (it->first >= Simulator::Now ())
-        {
-          break;
-        }
       noiseInterferenceW = it->second.GetPower () - event->GetRxPowerW ();
     }
   it = m_niChanges.find (event->GetStartTime ());
