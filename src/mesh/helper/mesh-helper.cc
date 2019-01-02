@@ -179,6 +179,7 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
   mac->SetSsid (Ssid ());
+  mac->SetDevice (device);
   Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
   NS_ASSERT (manager != 0);
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
