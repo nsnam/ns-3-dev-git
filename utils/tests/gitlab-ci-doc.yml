@@ -33,6 +33,16 @@ manual:
 #    - mv build/html ../../public/manual
 #    - mv build/latex/ns-3-manual.pdf ../../public/
 
+tutorial:
+  extends: .doc
+  script:
+#    - mkdir -p public/manual
+    - cd doc/tutorial
+    - make html
+    - make latexpdf
+#    - mv build/html ../../public/manual
+#    - mv build/latex/ns-3-tutorial.pdf ../../public/
+
 models:
   extends: .doc
   script:
