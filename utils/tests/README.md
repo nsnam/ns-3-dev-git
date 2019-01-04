@@ -7,6 +7,7 @@
 1) [What is](#what-is)
 2) [Testing script](#testing-script)
 3) [Gitlab CI infrastructure](#gitlab-ci-infrastructure)
+4) [Test your changes](#test-your-changes)
 
 ## What is
 
@@ -33,4 +34,7 @@ Thanks to the "Schedule" feature of Gitlab, we setup pipelines that have to be r
 
 ### Weekly jobs description
 
-As weekly jobs, we perform the build, testing, and documentation stage in every platform we support (Ubuntu, Fedora, Arch Linux) with all the compilers we support (GCC and CLang). To add the support for your platform, please see how the jobs are constructed (for instance, the GCC jobs are in `gitlab-ci-gcc.yml`). We currently miss the jobs for OS X and Windows.
+As weekly jobs, we perform the build, testing, and documentation stage in every platform we support (Ubuntu, Fedora, Arch Linux) with all the compilers we support (GCC and CLang). Weekly pipelines should define a variable, named `RELEASE`, as `weekly`. To add the support for your platform, please see how the jobs are constructed (for instance, the GCC jobs are in `gitlab-ci-gcc.yml`). We currently miss the jobs for OS X and Windows.
+
+## Test your changes
+When you for ns-3-dev on Gitlab, you get access to 2000 free hours of execution time on the Gitlab CI infrastructure. You automatically inherit all the scripts as well, so you can test your changes before requesting a merge. The per-commit script will execute automatically, but to perform a deeper test, you can manually run the daily or the weekly test. Go to the Gitlab interface, then enter in the CI/CD menu and select Pipelines. On the top, you can manually run a pipeline: select the branch, and add a variable `RELEASE` set to `daily` or `weekly` following your need, and then run it.
