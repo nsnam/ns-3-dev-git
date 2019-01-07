@@ -152,7 +152,7 @@ elif [ $tag -eq 1 ]; then
     vers_href=
 
 else
-    version=`git describe HEAD --tags | cut -c 9- | cut -d '-' -f 2`
+    version=`git describe HEAD --tags | cut -c 9- | cut -d '-' -f 2 | cut -c 2-`
     # Check for uncommitted changes
     changes=0
     if [ "$(git status --porcelain)" ]; then
