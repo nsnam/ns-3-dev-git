@@ -181,7 +181,7 @@ Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we
 
 and we can see the edits with git diff:
 
-.. sourcecode:: bash
+.. sourcecode:: text
 
    $ git diff
 
