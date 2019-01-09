@@ -34,6 +34,7 @@ Bugs fixed
 - Bug 2860 - mobility: Set Z coordinate for position-allocation classes
 - Bug 2893 - lte: GetPgw in helper should be const
 - Bug 3027 - lte: S1 signalling is done before RRC connection establishment is finished
+- #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
 
 Known issues
 ------------

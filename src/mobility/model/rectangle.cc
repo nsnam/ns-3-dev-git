@@ -55,32 +55,120 @@ Rectangle::IsInside (const Vector &position) const
 Rectangle::Side
 Rectangle::GetClosestSide (const Vector &position) const
 {
-  double xMinDist = std::abs (position.x - this->xMin);
-  double xMaxDist = std::abs (this->xMax - position.x);
-  double yMinDist = std::abs (position.y - this->yMin);
-  double yMaxDist = std::abs (this->yMax - position.y);
-  double minX = std::min (xMinDist, xMaxDist);
-  double minY = std::min (yMinDist, yMaxDist);
-  if (minX < minY)
+  if (IsInside (position))
     {
-      if (xMinDist < xMaxDist)
+      double xMinDist = std::abs (position.x - this->xMin);
+      double xMaxDist = std::abs (this->xMax - position.x);
+      double yMinDist = std::abs (position.y - this->yMin);
+      double yMaxDist = std::abs (this->yMax - position.y);
+      double minX = std::min (xMinDist, xMaxDist);
+      double minY = std::min (yMinDist, yMaxDist);
+      if (minX < minY)
         {
-          return LEFT;
+          if (xMinDist < xMaxDist)
+            {
+              return LEFT;
+            }
+          else
+            {
+              return RIGHT;
+            }
         }
       else
         {
-          return RIGHT;
+          if (yMinDist < yMaxDist)
+            {
+              return BOTTOM;
+            }
+          else
+            {
+              return TOP;
+            }
         }
     }
   else
     {
-      if (yMinDist < yMaxDist)
+      if (position.x < this->xMin)
         {
-          return BOTTOM;
+          if (position.y < this->yMin)
+            {
+              double yDiff = this->yMin - position.y;
+              double xDiff = this->xMin - position.x;
+              if (yDiff > xDiff)
+                {
+                  return BOTTOM;
+                }
+              else
+                {
+                  return LEFT;
+                }
+            }
+          else if (position.y < this->yMax)
+            {
+              return LEFT;
+            }
+          else
+            {
+              double yDiff = position.y - this->yMax;
+              double xDiff = this->xMin - position.x;
+              if (yDiff > xDiff)
+                {
+                  return TOP;
+                }
+              else
+                {
+                  return LEFT;
+                }
+            }
+        }
+      else if (position.x < this->xMax)
+        {
+          if (position.y < this->yMin)
+            {
+              return BOTTOM;
+            }
+          else if (position.y < this->yMax)
+            {
+              NS_FATAL_ERROR ("This region should have been reached if the IsInside check was true");
+              return TOP; // silence compiler warning
+            }
+          else
+            {
+              return TOP;
+            }
         }
       else
         {
-          return TOP;
+          if (position.y < this->yMin)
+            {
+              double yDiff = this->yMin - position.y;
+              double xDiff = position.x - this->xMin;
+              if (yDiff > xDiff)
+                {
+                  return BOTTOM;
+                }
+              else
+                {
+                  return RIGHT;
+                }
+            }
+          else if (position.y < this->yMax)
+            {
+              return RIGHT;
+            }
+          else
+            {
+              double yDiff = position.y - this->yMax;
+              double xDiff = position.x - this->xMin;
+              if (yDiff > xDiff)
+                {
+                  return TOP;
+                }
+              else
+                {
+                  return RIGHT;
+                }
+            }
         }
     }
 }
