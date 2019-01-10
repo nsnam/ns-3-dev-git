@@ -869,7 +869,7 @@ Ns-3 Source Code
 Now that you have used some of the |ns3| helpers you may want to 
 have a look at some of the source code that implements that functionality.
 The most recent code can be browsed on our web server at the following link:
-https://gitlab.com/nsnam/ns-3-dev.git.  There, you will see the Mercurial
+https://gitlab.com/nsnam/ns-3-dev.git.  There, you will see the Git/GitLab
 summary page for our |ns3| development tree.
 
 At the top of the page, you will see a number of links,
