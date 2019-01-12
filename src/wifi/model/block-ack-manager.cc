@@ -142,9 +142,9 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
     {
       agreement.SetDelayedBlockAck ();
     }
-  agreement.SetState (OriginatorBlockAckAgreement::PENDING);
   uint8_t tid = reqHdr->GetTid ();
   m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::PENDING);
+  agreement.SetState (OriginatorBlockAckAgreement::PENDING);
   PacketQueue queue;
   std::pair<OriginatorBlockAckAgreement, PacketQueue> value (agreement, queue);
   if (ExistsAgreement (recipient, tid))
@@ -741,7 +741,10 @@ BlockAckManager::NotifyAgreementRejected (Mac48Address recipient, uint8_t tid)
   NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::REJECTED);
+  if (!it->second.first.IsRejected ())
+    {
+      m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::REJECTED);
+    }
   it->second.first.SetState (OriginatorBlockAckAgreement::REJECTED);
 }
 
@@ -751,7 +754,10 @@ BlockAckManager::NotifyAgreementNoReply (Mac48Address recipient, uint8_t tid)
   NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::NO_REPLY);
+  if (!it->second.first.IsNoReply ())
+    {
+      m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::NO_REPLY);
+    }
   it->second.first.SetState (OriginatorBlockAckAgreement::NO_REPLY);
   m_unblockPackets (recipient, tid);
 }
@@ -762,7 +768,10 @@ BlockAckManager::NotifyAgreementReset (Mac48Address recipient, uint8_t tid)
   NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::RESET);
+  if (!it->second.first.IsReset ())
+    {
+      m_agreementState (Simulator::Now (), recipient, tid, OriginatorBlockAckAgreement::RESET);
+    }
   it->second.first.SetState (OriginatorBlockAckAgreement::RESET);
 }
 

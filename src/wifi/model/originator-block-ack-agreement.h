@@ -31,31 +31,24 @@ namespace ns3 {
  * for an originator station. The state diagram is as follows:
  *
    \verbatim
-                                    --------------
-                                    |  REJECTED  |
-                                    --------------
-                                          ^
-                   receive ADDBAResponse  |
-                   status code = failure  |
-                                          |
-                                          |           receive ADDBAResponse
-   /------------\ send ADDBARequest ----------------  status code = success  ----------------
-   |   START    |------------------>|   PENDING    |------------------------>|  ESTABLISHED |-----
-   \------------/                   ----------------                         ----------------     |
-         ^                                |                                    /   ^    ^         |
-         |              no ADDBAResponse  |                receive BlockAck   /    |    |         | receive BlockAck
-         |                                v           retryPkts + queuePkts  /     |    |         | retryPkts + queuePkts
-         |                          ----------------            <           /      |    |         |           >=
-         |--------------------------|   NO_REPLY   |   blockAckThreshold   /       |    |         | blockAckThreshold
-            Reset after timeout     ----------------                      /        |    |         |
-                                                                         v         |    ----------|
-                                                            ---------------        |
-                                                            |  INACTIVE   |        |
-                                                            ---------------        |
-                                        send a MPDU (Normal Ack)   |               |
-                                        retryPkts + queuePkts      |               |
-                                                  >=               |               |
-                                         blockAckThreshold         |----------------
+                                                                                       --------------
+                                                                                       |  INACTIVE  |
+                                                                                       --------------
+    /------------\ send ADDBARequest ----------------                                    |        ^
+    |   START    |------------------>|   PENDING    |-------    send a MPDU (normal ACK) |        |   receive BlockAck
+    \------------/                   ----------------       \    retryPkts + queuePkts   |        | retryPkts + queuePkts
+          ^            receive     /        |                \             >=            |        |           <
+          |        ADDBAResponse  /         |                 \      blockAckThreshold   |        |    blockAckThreshold
+          |          (failure)   v          |                  \                         v        |
+          |        ---------------          |                   --------------------->  ----------------  -------    receive BlockAck
+          |        |  REJECTED   |          |          receive ADDBAResponse (success)  |  ESTABLISHED |         | retryPkts + queuePkts
+          |        ---------------          |      no            -------------------->  ---------------- <-------            >=
+          |           receive    ^          | ADDBAResponse     /                                                    blockAckThreshold
+          |        ADDBAResponse  \         |                  /
+          |          (failure)     \        v                 /
+          |                         ----------------         /
+          |-------------------------|   NO_REPLY   |---------
+            Reset after timeout     ----------------
    \endverbatim
  *
  * See also OriginatorBlockAckAgreement::State

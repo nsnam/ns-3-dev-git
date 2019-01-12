@@ -1876,6 +1876,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
 {
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
+  int64_t streamNumber = 200;
 
   NodeContainer wifiApNode, wifiStaNode;
   wifiApNode.Create (1);
@@ -1901,6 +1902,10 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   phy.Set ("PostReceptionErrorModel", staErrorModel);
   mac.SetType ("ns3::StaWifiMac");
   staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (apDevice, streamNumber);
+  wifi.AssignStreams (staDevice, streamNumber);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
@@ -1946,7 +1951,7 @@ Bug2470TestCase::DoRun (void)
     RunSubtest (PointerValue (), PointerValue (staPem));
     NS_TEST_ASSERT_MSG_EQ (m_droppedActionCount, 6, "ADDBA request packet is not dropped correctly");
     // There are two sets of 5 packets to be transmitted. The first 5 packets should be sent by normal
-    // MPDU because of failed ADDBA handshake. For the second set, the first packet should be sent by
+    // MPDU because of failed ADDBA handshake.For the second set, the first packet should be sent by
     // normal MPDU, and the rest with A-MPDU. In total we expect to receive 2 normal MPDU packets and
     // 8 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 2, "Receiving incorrect number of normal MPDU packet on subtest 1");
@@ -1987,11 +1992,14 @@ Bug2470TestCase::DoRun (void)
 
     NS_TEST_ASSERT_MSG_EQ (m_addbaInactiveCount, 0, "Incorrect number of times the ADDBA state machine was in inactive state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaEstablishedCount, 1, "Incorrect number of times the ADDBA state machine was in established state on subtest 2");
-    NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 2, "Incorrect number of times the ADDBA state machine was in pending state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 1, "Incorrect number of times the ADDBA state machine was in pending state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaRejectedCount, 0, "Incorrect number of times the ADDBA state machine was in rejected state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaNoReplyCount, 1, "Incorrect number of times the ADDBA state machine was in no_reply state on subtest 2");
-    NS_TEST_ASSERT_MSG_EQ (m_addbaResetCount, 1, "Incorrect number of times the ADDBA state machine was in reset state on subtest 2");
+    NS_TEST_ASSERT_MSG_EQ (m_addbaResetCount, 0, "Incorrect number of times the ADDBA state machine was in reset state on subtest 2");
   }
+
+  // TODO: In the second test set, it does not go to reset state since ADDBA response is received after timeout (NO_REPLY)
+  // but before it does not enter RESET state. More tests should be written to verify all possible scenarios.
 }
 
 /**

@@ -1364,20 +1364,16 @@ void
 QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient)
 {
   NS_LOG_FUNCTION (this << respHdr << recipient);
-  NS_LOG_DEBUG ("received ADDBA response from " << recipient);
   uint8_t tid = respHdr->GetTid ();
-  if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING))
+  if (respHdr->GetStatusCode ().IsSuccess ())
     {
-      if (respHdr->GetStatusCode ().IsSuccess ())
-        {
-          NS_LOG_DEBUG ("block ack agreement established with " << recipient);
-          m_baManager->UpdateAgreement (respHdr, recipient);
-        }
-      else
-        {
-          NS_LOG_DEBUG ("discard ADDBA response" << recipient);
-          m_baManager->NotifyAgreementRejected (recipient, tid);
-        }
+      NS_LOG_DEBUG ("block ack agreement established with " << recipient);
+      m_baManager->UpdateAgreement (respHdr, recipient);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("discard ADDBA response" << recipient);
+      m_baManager->NotifyAgreementRejected (recipient, tid);
     }
   RestartAccessIfNeeded ();
 }
@@ -1726,8 +1722,10 @@ void
 QosTxop::ResetBa (Mac48Address recipient, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
-  NS_ASSERT (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::NO_REPLY));
-  m_baManager->NotifyAgreementReset (recipient, tid);
+  if (!m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+    {
+      m_baManager->NotifyAgreementReset (recipient, tid);
+    }
 }
 
 void
