@@ -149,6 +149,8 @@ def register_types(module):
     module.add_class('EpcEnbS1SapUser', allow_subclassing=True)
     ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters [struct]
     module.add_class('DataRadioBearerSetupRequestParameters', outer_class=root_module['ns3::EpcEnbS1SapUser'])
+    ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters [struct]
+    module.add_class('InitialContextSetupRequestParameters', outer_class=root_module['ns3::EpcEnbS1SapUser'])
     ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters [struct]
     module.add_class('PathSwitchRequestAcknowledgeParameters', outer_class=root_module['ns3::EpcEnbS1SapUser'])
     ## epc-s11-sap.h (module 'lte'): ns3::EpcS11Sap [class]
@@ -335,6 +337,10 @@ def register_types(module):
     module.add_class('SchedUlConfigIndParameters', outer_class=root_module['ns3::FfMacSchedSapUser'])
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation [struct]
     module.add_class('GbrQosInformation')
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes [class]
+    module.add_class('GtpcIes')
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::Cause_t [enumeration]
+    module.add_enum('Cause_t', ['RESERVED', 'REQUEST_ACCEPTED'], outer_class=root_module['ns3::GtpcIes'])
     ## lte-harq-phy.h (module 'lte'): ns3::HarqProcessInfoElement_t [struct]
     module.add_class('HarqProcessInfoElement_t')
     ## hash.h (module 'core'): ns3::Hasher [class]
@@ -1117,7 +1123,7 @@ def register_types(module):
     ## lte-enb-rrc.h (module 'lte'): ns3::UeManager [class]
     module.add_class('UeManager', parent=root_module['ns3::Object'])
     ## lte-enb-rrc.h (module 'lte'): ns3::UeManager::State [enumeration]
-    module.add_enum('State', ['INITIAL_RANDOM_ACCESS', 'CONNECTION_SETUP', 'CONNECTION_REJECTED', 'CONNECTED_NORMALLY', 'CONNECTION_RECONFIGURATION', 'CONNECTION_REESTABLISHMENT', 'HANDOVER_PREPARATION', 'HANDOVER_JOINING', 'HANDOVER_PATH_SWITCH', 'HANDOVER_LEAVING', 'NUM_STATES'], outer_class=root_module['ns3::UeManager'])
+    module.add_enum('State', ['INITIAL_RANDOM_ACCESS', 'CONNECTION_SETUP', 'CONNECTION_REJECTED', 'ATTACH_REQUEST', 'CONNECTED_NORMALLY', 'CONNECTION_RECONFIGURATION', 'CONNECTION_REESTABLISHMENT', 'HANDOVER_PREPARATION', 'HANDOVER_JOINING', 'HANDOVER_PATH_SWITCH', 'HANDOVER_LEAVING', 'NUM_STATES'], outer_class=root_module['ns3::UeManager'])
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )', u'ns3::UeManager::StateTracedCallback')
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )*', u'ns3::UeManager::StateTracedCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )&', u'ns3::UeManager::StateTracedCallback&')
@@ -1210,6 +1216,15 @@ def register_types(module):
     module.add_class('EpcHelper', parent=root_module['ns3::Object'])
     ## epc-mme.h (module 'lte'): ns3::EpcMme [class]
     module.add_class('EpcMme', parent=root_module['ns3::Object'])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication [class]
+    module.add_class('EpcMmeApplication', parent=root_module['ns3::Application'])
+    ## epc-pgw-application.h (module 'lte'): ns3::EpcPgwApplication [class]
+    module.add_class('EpcPgwApplication', parent=root_module['ns3::Application'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )', u'ns3::EpcPgwApplication::RxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )*', u'ns3::EpcPgwApplication::RxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcPgwApplication::RxTracedCallback&')
+    ## epc-sgw-application.h (module 'lte'): ns3::EpcSgwApplication [class]
+    module.add_class('EpcSgwApplication', parent=root_module['ns3::Application'])
     ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication [class]
     module.add_class('EpcSgwPgwApplication', parent=root_module['ns3::Application'])
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )', u'ns3::EpcSgwPgwApplication::RxTracedCallback')
@@ -1268,6 +1283,20 @@ def register_types(module):
     module.add_class('FriisPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## random-variable-stream.h (module 'core'): ns3::GammaRandomVariable [class]
     module.add_class('GammaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader [class]
+    module.add_class('GtpcHeader', parent=root_module['ns3::Header'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::InterfaceType_t [enumeration]
+    module.add_enum('InterfaceType_t', ['S1U_ENB_GTPU', 'S5_SGW_GTPU', 'S5_PGW_GTPU', 'S5_SGW_GTPC', 'S5_PGW_GTPC', 'S11_MME_GTPC'], outer_class=root_module['ns3::GtpcHeader'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::MessageType_t [enumeration]
+    module.add_enum('MessageType_t', ['Reserved', 'CreateSessionRequest', 'CreateSessionResponse', 'ModifyBearerRequest', 'ModifyBearerResponse', 'DeleteSessionRequest', 'DeleteSessionResponse', 'DeleteBearerCommand', 'DeleteBearerRequest', 'DeleteBearerResponse'], outer_class=root_module['ns3::GtpcHeader'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t [struct]
+    module.add_class('Fteid_t', outer_class=root_module['ns3::GtpcHeader'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage [class]
+    module.add_class('GtpcModifyBearerRequestMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified [struct]
+    module.add_class('BearerContextToBeModified', outer_class=root_module['ns3::GtpcModifyBearerRequestMessage'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerResponseMessage [class]
+    module.add_class('GtpcModifyBearerResponseMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
     ## epc-gtpu-header.h (module 'lte'): ns3::GtpuHeader [class]
     module.add_class('GtpuHeader', parent=root_module['ns3::Header'])
     ## integer.h (module 'core'): ns3::IntegerValue [class]
@@ -1737,6 +1766,22 @@ def register_types(module):
     module.add_class('FdMtFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
     ## fdtbfq-ff-mac-scheduler.h (module 'lte'): ns3::FdTbfqFfMacScheduler [class]
     module.add_class('FdTbfqFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage [class]
+    module.add_class('GtpcCreateSessionRequestMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated [struct]
+    module.add_class('BearerContextToBeCreated', outer_class=root_module['ns3::GtpcCreateSessionRequestMessage'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage [class]
+    module.add_class('GtpcCreateSessionResponseMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated [struct]
+    module.add_class('BearerContextCreated', outer_class=root_module['ns3::GtpcCreateSessionResponseMessage'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage [class]
+    module.add_class('GtpcDeleteBearerCommandMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::BearerContext [struct]
+    module.add_class('BearerContext', outer_class=root_module['ns3::GtpcDeleteBearerCommandMessage'])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerRequestMessage [class]
+    module.add_class('GtpcDeleteBearerRequestMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerResponseMessage [class]
+    module.add_class('GtpcDeleteBearerResponseMessage', parent=[root_module['ns3::GtpcHeader'], root_module['ns3::GtpcIes']])
     ## lte-rrc-header.h (module 'lte'): ns3::HandoverPreparationInfoHeader [class]
     module.add_class('HandoverPreparationInfoHeader', parent=root_module['ns3::RrcAsn1Header'])
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo [class]
@@ -1818,6 +1863,7 @@ def register_types(module):
     module.add_container('std::vector< ns3::BuildBroadcastListElement_s >', 'ns3::BuildBroadcastListElement_s', container_type=u'vector')
     module.add_container('std::vector< ns3::UlDciListElement_s >', 'ns3::UlDciListElement_s', container_type=u'vector')
     module.add_container('std::vector< ns3::PhichListElement_s >', 'ns3::PhichListElement_s', container_type=u'vector')
+    module.add_container('std::list< ns3::EpcTft::PacketFilter >', 'ns3::EpcTft::PacketFilter', container_type=u'list')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type=u'map')
     module.add_container('std::vector< ns3::LteCcmRrcSapProvider::LcsConfig >', 'ns3::LteCcmRrcSapProvider::LcsConfig', container_type=u'vector')
     module.add_container('std::vector< ns3::LteRrcSap::LogicalChannelConfig >', 'ns3::LteRrcSap::LogicalChannelConfig', container_type=u'vector')
@@ -1847,9 +1893,13 @@ def register_types(module):
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
     module.add_container('std::map< unsigned char, ns3::ComponentCarrier >', ('unsigned char', 'ns3::ComponentCarrier'), container_type=u'map')
+    module.add_container('std::list< ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified >', 'ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified', container_type=u'list')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
+    module.add_container('std::list< ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated >', 'ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated', container_type=u'list')
+    module.add_container('std::list< ns3::GtpcCreateSessionResponseMessage::BearerContextCreated >', 'ns3::GtpcCreateSessionResponseMessage::BearerContextCreated', container_type=u'list')
+    module.add_container('std::list< ns3::GtpcDeleteBearerCommandMessage::BearerContext >', 'ns3::GtpcDeleteBearerCommandMessage::BearerContext', container_type=u'list')
     module.add_container('std::list< ns3::UlDciLteControlMessage >', 'ns3::UlDciLteControlMessage', container_type=u'list')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierUe > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierUe >'), container_type=u'map')
     typehandlers.add_type_alias(u'std::vector< unsigned char >', u'ns3::DlHarqProcessesStatus_t')
@@ -2132,6 +2182,7 @@ def register_methods(root_module):
     register_Ns3EpcEnbS1SapProviderPathSwitchRequestParameters_methods(root_module, root_module['ns3::EpcEnbS1SapProvider::PathSwitchRequestParameters'])
     register_Ns3EpcEnbS1SapUser_methods(root_module, root_module['ns3::EpcEnbS1SapUser'])
     register_Ns3EpcEnbS1SapUserDataRadioBearerSetupRequestParameters_methods(root_module, root_module['ns3::EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters'])
+    register_Ns3EpcEnbS1SapUserInitialContextSetupRequestParameters_methods(root_module, root_module['ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters'])
     register_Ns3EpcEnbS1SapUserPathSwitchRequestAcknowledgeParameters_methods(root_module, root_module['ns3::EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters'])
     register_Ns3EpcS11Sap_methods(root_module, root_module['ns3::EpcS11Sap'])
     register_Ns3EpcS11SapFteid_methods(root_module, root_module['ns3::EpcS11Sap::Fteid'])
@@ -2212,6 +2263,7 @@ def register_methods(root_module):
     register_Ns3FfMacSchedSapUserSchedDlConfigIndParameters_methods(root_module, root_module['ns3::FfMacSchedSapUser::SchedDlConfigIndParameters'])
     register_Ns3FfMacSchedSapUserSchedUlConfigIndParameters_methods(root_module, root_module['ns3::FfMacSchedSapUser::SchedUlConfigIndParameters'])
     register_Ns3GbrQosInformation_methods(root_module, root_module['ns3::GbrQosInformation'])
+    register_Ns3GtpcIes_methods(root_module, root_module['ns3::GtpcIes'])
     register_Ns3HarqProcessInfoElement_t_methods(root_module, root_module['ns3::HarqProcessInfoElement_t'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3HigherLayerSelected_s_methods(root_module, root_module['ns3::HigherLayerSelected_s'])
@@ -2548,6 +2600,9 @@ def register_methods(root_module):
     register_Ns3EpcEnbApplicationEpsFlowId_t_methods(root_module, root_module['ns3::EpcEnbApplication::EpsFlowId_t'])
     register_Ns3EpcHelper_methods(root_module, root_module['ns3::EpcHelper'])
     register_Ns3EpcMme_methods(root_module, root_module['ns3::EpcMme'])
+    register_Ns3EpcMmeApplication_methods(root_module, root_module['ns3::EpcMmeApplication'])
+    register_Ns3EpcPgwApplication_methods(root_module, root_module['ns3::EpcPgwApplication'])
+    register_Ns3EpcSgwApplication_methods(root_module, root_module['ns3::EpcSgwApplication'])
     register_Ns3EpcSgwPgwApplication_methods(root_module, root_module['ns3::EpcSgwPgwApplication'])
     register_Ns3EpcTft_methods(root_module, root_module['ns3::EpcTft'])
     register_Ns3EpcTftPacketFilter_methods(root_module, root_module['ns3::EpcTft::PacketFilter'])
@@ -2569,6 +2624,11 @@ def register_methods(root_module):
     register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
     register_Ns3FriisPropagationLossModel_methods(root_module, root_module['ns3::FriisPropagationLossModel'])
     register_Ns3GammaRandomVariable_methods(root_module, root_module['ns3::GammaRandomVariable'])
+    register_Ns3GtpcHeader_methods(root_module, root_module['ns3::GtpcHeader'])
+    register_Ns3GtpcHeaderFteid_t_methods(root_module, root_module['ns3::GtpcHeader::Fteid_t'])
+    register_Ns3GtpcModifyBearerRequestMessage_methods(root_module, root_module['ns3::GtpcModifyBearerRequestMessage'])
+    register_Ns3GtpcModifyBearerRequestMessageBearerContextToBeModified_methods(root_module, root_module['ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified'])
+    register_Ns3GtpcModifyBearerResponseMessage_methods(root_module, root_module['ns3::GtpcModifyBearerResponseMessage'])
     register_Ns3GtpuHeader_methods(root_module, root_module['ns3::GtpuHeader'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3Ipv4_methods(root_module, root_module['ns3::Ipv4'])
@@ -2744,6 +2804,14 @@ def register_methods(root_module):
     register_Ns3FdBetFfMacScheduler_methods(root_module, root_module['ns3::FdBetFfMacScheduler'])
     register_Ns3FdMtFfMacScheduler_methods(root_module, root_module['ns3::FdMtFfMacScheduler'])
     register_Ns3FdTbfqFfMacScheduler_methods(root_module, root_module['ns3::FdTbfqFfMacScheduler'])
+    register_Ns3GtpcCreateSessionRequestMessage_methods(root_module, root_module['ns3::GtpcCreateSessionRequestMessage'])
+    register_Ns3GtpcCreateSessionRequestMessageBearerContextToBeCreated_methods(root_module, root_module['ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated'])
+    register_Ns3GtpcCreateSessionResponseMessage_methods(root_module, root_module['ns3::GtpcCreateSessionResponseMessage'])
+    register_Ns3GtpcCreateSessionResponseMessageBearerContextCreated_methods(root_module, root_module['ns3::GtpcCreateSessionResponseMessage::BearerContextCreated'])
+    register_Ns3GtpcDeleteBearerCommandMessage_methods(root_module, root_module['ns3::GtpcDeleteBearerCommandMessage'])
+    register_Ns3GtpcDeleteBearerCommandMessageBearerContext_methods(root_module, root_module['ns3::GtpcDeleteBearerCommandMessage::BearerContext'])
+    register_Ns3GtpcDeleteBearerRequestMessage_methods(root_module, root_module['ns3::GtpcDeleteBearerRequestMessage'])
+    register_Ns3GtpcDeleteBearerResponseMessage_methods(root_module, root_module['ns3::GtpcDeleteBearerResponseMessage'])
     register_Ns3HandoverPreparationInfoHeader_methods(root_module, root_module['ns3::HandoverPreparationInfoHeader'])
     register_Ns3LteDataRadioBearerInfo_methods(root_module, root_module['ns3::LteDataRadioBearerInfo'])
     register_Ns3LteEnbPhy_methods(root_module, root_module['ns3::LteEnbPhy'])
@@ -3875,6 +3943,11 @@ def register_Ns3EpcEnbS1SapUser_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-enb-s1-sap.h (module 'lte'): void ns3::EpcEnbS1SapUser::InitialContextSetupRequest(ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters params) [member function]
+    cls.add_method('InitialContextSetupRequest', 
+                   'void', 
+                   [param('ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-enb-s1-sap.h (module 'lte'): void ns3::EpcEnbS1SapUser::PathSwitchRequestAcknowledge(ns3::EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params) [member function]
     cls.add_method('PathSwitchRequestAcknowledge', 
                    'void', 
@@ -3897,6 +3970,15 @@ def register_Ns3EpcEnbS1SapUserDataRadioBearerSetupRequestParameters_methods(roo
     cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
     ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters::transportLayerAddress [variable]
     cls.add_instance_attribute('transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    return
+
+def register_Ns3EpcEnbS1SapUserInitialContextSetupRequestParameters_methods(root_module, cls):
+    ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters::InitialContextSetupRequestParameters() [constructor]
+    cls.add_constructor([])
+    ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters::InitialContextSetupRequestParameters(ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters const &', 'arg0')])
+    ## epc-enb-s1-sap.h (module 'lte'): ns3::EpcEnbS1SapUser::InitialContextSetupRequestParameters::rnti [variable]
+    cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
     return
 
 def register_Ns3EpcEnbS1SapUserPathSwitchRequestAcknowledgeParameters_methods(root_module, cls):
@@ -5400,6 +5482,115 @@ def register_Ns3GbrQosInformation_methods(root_module, cls):
     cls.add_instance_attribute('mbrDl', 'uint64_t', is_const=False)
     ## eps-bearer.h (module 'lte'): ns3::GbrQosInformation::mbrUl [variable]
     cls.add_instance_attribute('mbrUl', 'uint64_t', is_const=False)
+    return
+
+def register_Ns3GtpcIes_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeImsi [variable]
+    cls.add_instance_attribute('serializedSizeImsi', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeCause [variable]
+    cls.add_instance_attribute('serializedSizeCause', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeEbi [variable]
+    cls.add_instance_attribute('serializedSizeEbi', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeBearerQos [variable]
+    cls.add_instance_attribute('serializedSizeBearerQos', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizePacketFilter [variable]
+    cls.add_instance_attribute('serializedSizePacketFilter', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::GetSerializedSizeBearerTft(std::list<ns3::EpcTft::PacketFilter, std::allocator<ns3::EpcTft::PacketFilter> > packetFilters) const [member function]
+    cls.add_method('GetSerializedSizeBearerTft', 
+                   'uint32_t', 
+                   [param('std::list< ns3::EpcTft::PacketFilter >', 'packetFilters')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeUliEcgi [variable]
+    cls.add_instance_attribute('serializedSizeUliEcgi', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeFteid [variable]
+    cls.add_instance_attribute('serializedSizeFteid', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::serializedSizeBearerContextHeader [variable]
+    cls.add_instance_attribute('serializedSizeBearerContextHeader', 'uint32_t const', is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeImsi(ns3::Buffer::Iterator & i, uint64_t imsi) const [member function]
+    cls.add_method('SerializeImsi', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint64_t', 'imsi')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeImsi(ns3::Buffer::Iterator & i, uint64_t & imsi) [member function]
+    cls.add_method('DeserializeImsi', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint64_t &', 'imsi')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeCause(ns3::Buffer::Iterator & i, ns3::GtpcIes::Cause_t cause) const [member function]
+    cls.add_method('SerializeCause', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::GtpcIes::Cause_t', 'cause')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeCause(ns3::Buffer::Iterator & i, ns3::GtpcIes::Cause_t & cause) [member function]
+    cls.add_method('DeserializeCause', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::GtpcIes::Cause_t &', 'cause')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeEbi(ns3::Buffer::Iterator & i, uint8_t epsBearerId) const [member function]
+    cls.add_method('SerializeEbi', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint8_t', 'epsBearerId')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeEbi(ns3::Buffer::Iterator & i, uint8_t & epsBearerId) [member function]
+    cls.add_method('DeserializeEbi', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint8_t &', 'epsBearerId')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::WriteHtonU40(ns3::Buffer::Iterator & i, uint64_t data) const [member function]
+    cls.add_method('WriteHtonU40', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint64_t', 'data')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint64_t ns3::GtpcIes::ReadNtohU40(ns3::Buffer::Iterator & i) [member function]
+    cls.add_method('ReadNtohU40', 
+                   'uint64_t', 
+                   [param('ns3::Buffer::Iterator &', 'i')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeBearerQos(ns3::Buffer::Iterator & i, ns3::EpsBearer bearerQos) const [member function]
+    cls.add_method('SerializeBearerQos', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::EpsBearer', 'bearerQos')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeBearerQos(ns3::Buffer::Iterator & i, ns3::EpsBearer & bearerQos) [member function]
+    cls.add_method('DeserializeBearerQos', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::EpsBearer &', 'bearerQos')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeBearerTft(ns3::Buffer::Iterator & i, std::list<ns3::EpcTft::PacketFilter, std::allocator<ns3::EpcTft::PacketFilter> > packetFilters) const [member function]
+    cls.add_method('SerializeBearerTft', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('std::list< ns3::EpcTft::PacketFilter >', 'packetFilters')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeBearerTft(ns3::Buffer::Iterator & i, ns3::Ptr<ns3::EpcTft> epcTft) [member function]
+    cls.add_method('DeserializeBearerTft', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::Ptr< ns3::EpcTft >', 'epcTft')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeUliEcgi(ns3::Buffer::Iterator & i, uint32_t uliEcgi) const [member function]
+    cls.add_method('SerializeUliEcgi', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint32_t', 'uliEcgi')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeUliEcgi(ns3::Buffer::Iterator & i, uint32_t & uliEcgi) [member function]
+    cls.add_method('DeserializeUliEcgi', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint32_t &', 'uliEcgi')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeFteid(ns3::Buffer::Iterator & i, ns3::GtpcHeader::Fteid_t fteid) const [member function]
+    cls.add_method('SerializeFteid', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::GtpcHeader::Fteid_t', 'fteid')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeFteid(ns3::Buffer::Iterator & i, ns3::GtpcHeader::Fteid_t & fteid) [member function]
+    cls.add_method('DeserializeFteid', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('ns3::GtpcHeader::Fteid_t &', 'fteid')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcIes::SerializeBearerContextHeader(ns3::Buffer::Iterator & i, uint16_t length) const [member function]
+    cls.add_method('SerializeBearerContextHeader', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint16_t', 'length')], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcIes::DeserializeBearerContextHeader(ns3::Buffer::Iterator & i, uint16_t & length) [member function]
+    cls.add_method('DeserializeBearerContextHeader', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i'), param('uint16_t &', 'length')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::GtpcIes(ns3::GtpcIes const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcIes const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::GtpcIes() [constructor]
+    cls.add_constructor([])
     return
 
 def register_Ns3HarqProcessInfoElement_t_methods(root_module, cls):
@@ -13585,6 +13776,10 @@ def register_Ns3UeManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::InitialContextSetupRequest() [member function]
+    cls.add_method('InitialContextSetupRequest', 
+                   'void', 
+                   [])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::PrepareHandover(uint16_t cellId) [member function]
     cls.add_method('PrepareHandover', 
                    'void', 
@@ -15471,6 +15666,125 @@ def register_Ns3EpcMme_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3EpcMmeApplication_methods(root_module, cls):
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication::EpcMmeApplication(ns3::EpcMmeApplication const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcMmeApplication const &', 'arg0')])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication::EpcMmeApplication() [constructor]
+    cls.add_constructor([])
+    ## epc-mme-application.h (module 'lte'): uint8_t ns3::EpcMmeApplication::AddBearer(uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('AddBearer', 
+                   'uint8_t', 
+                   [param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::AddEnb(uint16_t ecgi, ns3::Ipv4Address enbS1UAddr, ns3::EpcS1apSapEnb * enbS1apSap) [member function]
+    cls.add_method('AddEnb', 
+                   'void', 
+                   [param('uint16_t', 'ecgi'), param('ns3::Ipv4Address', 'enbS1UAddr'), param('ns3::EpcS1apSapEnb *', 'enbS1apSap')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::AddSgw(ns3::Ipv4Address sgwS11Addr, ns3::Ipv4Address mmeS11Addr, ns3::Ptr<ns3::Socket> mmeS11Socket) [member function]
+    cls.add_method('AddSgw', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'sgwS11Addr'), param('ns3::Ipv4Address', 'mmeS11Addr'), param('ns3::Ptr< ns3::Socket >', 'mmeS11Socket')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::AddUe(uint64_t imsi) [member function]
+    cls.add_method('AddUe', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## epc-mme-application.h (module 'lte'): ns3::EpcS1apSapMme * ns3::EpcMmeApplication::GetS1apSapMme() [member function]
+    cls.add_method('GetS1apSapMme', 
+                   'ns3::EpcS1apSapMme *', 
+                   [])
+    ## epc-mme-application.h (module 'lte'): static ns3::TypeId ns3::EpcMmeApplication::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3EpcPgwApplication_methods(root_module, cls):
+    ## epc-pgw-application.h (module 'lte'): ns3::EpcPgwApplication::EpcPgwApplication(ns3::EpcPgwApplication const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcPgwApplication const &', 'arg0')])
+    ## epc-pgw-application.h (module 'lte'): ns3::EpcPgwApplication::EpcPgwApplication(ns3::Ptr<ns3::VirtualNetDevice> const tunDevice, ns3::Ipv4Address s5Addr, ns3::Ptr<ns3::Socket> const s5uSocket, ns3::Ptr<ns3::Socket> const s5cSocket) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::VirtualNetDevice > const', 'tunDevice'), param('ns3::Ipv4Address', 's5Addr'), param('ns3::Ptr< ns3::Socket > const', 's5uSocket'), param('ns3::Ptr< ns3::Socket > const', 's5cSocket')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::AddSgw(ns3::Ipv4Address sgwS5Addr) [member function]
+    cls.add_method('AddSgw', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'sgwS5Addr')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::AddUe(uint64_t imsi) [member function]
+    cls.add_method('AddUe', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## epc-pgw-application.h (module 'lte'): static ns3::TypeId ns3::EpcPgwApplication::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::RecvFromS5cSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('RecvFromS5cSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::RecvFromS5uSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('RecvFromS5uSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## epc-pgw-application.h (module 'lte'): bool ns3::EpcPgwApplication::RecvFromTunDevice(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
+    cls.add_method('RecvFromTunDevice', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::SendToS5uSocket(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address sgwS5uAddress, uint32_t teid) [member function]
+    cls.add_method('SendToS5uSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'sgwS5uAddress'), param('uint32_t', 'teid')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::SendToTunDevice(ns3::Ptr<ns3::Packet> packet, uint32_t teid) [member function]
+    cls.add_method('SendToTunDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint32_t', 'teid')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::SetUeAddress(uint64_t imsi, ns3::Ipv4Address ueAddr) [member function]
+    cls.add_method('SetUeAddress', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('ns3::Ipv4Address', 'ueAddr')])
+    ## epc-pgw-application.h (module 'lte'): void ns3::EpcPgwApplication::SetUeAddress6(uint64_t imsi, ns3::Ipv6Address ueAddr) [member function]
+    cls.add_method('SetUeAddress6', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('ns3::Ipv6Address', 'ueAddr')])
+    return
+
+def register_Ns3EpcSgwApplication_methods(root_module, cls):
+    ## epc-sgw-application.h (module 'lte'): ns3::EpcSgwApplication::EpcSgwApplication(ns3::EpcSgwApplication const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcSgwApplication const &', 'arg0')])
+    ## epc-sgw-application.h (module 'lte'): ns3::EpcSgwApplication::EpcSgwApplication(ns3::Ptr<ns3::Socket> const s1uSocket, ns3::Ipv4Address s5Addr, ns3::Ptr<ns3::Socket> const s5uSocket, ns3::Ptr<ns3::Socket> const s5cSocket) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Socket > const', 's1uSocket'), param('ns3::Ipv4Address', 's5Addr'), param('ns3::Ptr< ns3::Socket > const', 's5uSocket'), param('ns3::Ptr< ns3::Socket > const', 's5cSocket')])
+    ## epc-sgw-application.h (module 'lte'): void ns3::EpcSgwApplication::AddEnb(uint16_t cellId, ns3::Ipv4Address enbAddr, ns3::Ipv4Address sgwAddr) [member function]
+    cls.add_method('AddEnb', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('ns3::Ipv4Address', 'enbAddr'), param('ns3::Ipv4Address', 'sgwAddr')])
+    ## epc-sgw-application.h (module 'lte'): void ns3::EpcSgwApplication::AddMme(ns3::Ipv4Address mmeS11Addr, ns3::Ptr<ns3::Socket> s11Socket) [member function]
+    cls.add_method('AddMme', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'mmeS11Addr'), param('ns3::Ptr< ns3::Socket >', 's11Socket')])
+    ## epc-sgw-application.h (module 'lte'): void ns3::EpcSgwApplication::AddPgw(ns3::Ipv4Address pgwAddr) [member function]
+    cls.add_method('AddPgw', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'pgwAddr')])
+    ## epc-sgw-application.h (module 'lte'): void ns3::EpcSgwApplication::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## epc-sgw-application.h (module 'lte'): static ns3::TypeId ns3::EpcSgwApplication::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
 def register_Ns3EpcSgwPgwApplication_methods(root_module, cls):
     ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication::EpcSgwPgwApplication(ns3::EpcSgwPgwApplication const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcSgwPgwApplication const &', 'arg0')])
@@ -15542,6 +15856,11 @@ def register_Ns3EpcTft_methods(root_module, cls):
                    'ns3::Ptr< ns3::EpcTft >', 
                    [], 
                    is_static=True)
+    ## epc-tft.h (module 'lte'): std::list<ns3::EpcTft::PacketFilter, std::allocator<ns3::EpcTft::PacketFilter> > ns3::EpcTft::GetPacketFilters() const [member function]
+    cls.add_method('GetPacketFilters', 
+                   'std::list< ns3::EpcTft::PacketFilter >', 
+                   [], 
+                   is_const=True)
     ## epc-tft.h (module 'lte'): bool ns3::EpcTft::Matches(ns3::EpcTft::Direction direction, ns3::Ipv4Address remoteAddress, ns3::Ipv4Address localAddress, uint16_t remotePort, uint16_t localPort, uint8_t typeOfService) [member function]
     cls.add_method('Matches', 
                    'bool', 
@@ -16623,6 +16942,246 @@ def register_Ns3GammaRandomVariable_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_virtual=True)
+    return
+
+def register_Ns3GtpcHeader_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::GtpcHeader(ns3::GtpcHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcHeader const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::GtpcHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::ComputeMessageLength() [member function]
+    cls.add_method('ComputeMessageLength', 
+                   'void', 
+                   [])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint16_t ns3::GtpcHeader::GetMessageLength() const [member function]
+    cls.add_method('GetMessageLength', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint8_t ns3::GtpcHeader::GetMessageType() const [member function]
+    cls.add_method('GetMessageType', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::GetSequenceNumber() const [member function]
+    cls.add_method('GetSequenceNumber', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::GetTeid() const [member function]
+    cls.add_method('GetTeid', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::SetIesLength(uint16_t iesLength) [member function]
+    cls.add_method('SetIesLength', 
+                   'void', 
+                   [param('uint16_t', 'iesLength')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::SetMessageLength(uint16_t messageLength) [member function]
+    cls.add_method('SetMessageLength', 
+                   'void', 
+                   [param('uint16_t', 'messageLength')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::SetMessageType(uint8_t messageType) [member function]
+    cls.add_method('SetMessageType', 
+                   'void', 
+                   [param('uint8_t', 'messageType')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::SetSequenceNumber(uint32_t sequenceNumber) [member function]
+    cls.add_method('SetSequenceNumber', 
+                   'void', 
+                   [param('uint32_t', 'sequenceNumber')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::SetTeid(uint32_t teid) [member function]
+    cls.add_method('SetTeid', 
+                   'void', 
+                   [param('uint32_t', 'teid')])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcHeader::PreDeserialize(ns3::Buffer::Iterator & i) [member function]
+    cls.add_method('PreDeserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator &', 'i')], 
+                   visibility='protected')
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcHeader::PreSerialize(ns3::Buffer::Iterator & i) const [member function]
+    cls.add_method('PreSerialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'i')], 
+                   is_const=True, visibility='protected')
+    return
+
+def register_Ns3GtpcHeaderFteid_t_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t::Fteid_t() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t::Fteid_t(ns3::GtpcHeader::Fteid_t const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcHeader::Fteid_t const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t::addr [variable]
+    cls.add_instance_attribute('addr', 'ns3::Ipv4Address', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t::interfaceType [variable]
+    cls.add_instance_attribute('interfaceType', 'ns3::GtpcHeader::InterfaceType_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t::teid [variable]
+    cls.add_instance_attribute('teid', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3GtpcModifyBearerRequestMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::GtpcModifyBearerRequestMessage(ns3::GtpcModifyBearerRequestMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcModifyBearerRequestMessage const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::GtpcModifyBearerRequestMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerRequestMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): std::list<ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified, std::allocator<ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified> > ns3::GtpcModifyBearerRequestMessage::GetBearerContextsToBeModified() const [member function]
+    cls.add_method('GetBearerContextsToBeModified', 
+                   'std::list< ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint8_t ns3::GtpcModifyBearerRequestMessage::GetImsi() const [member function]
+    cls.add_method('GetImsi', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcModifyBearerRequestMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerRequestMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerRequestMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcModifyBearerRequestMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerRequestMessage::GetUliEcgi() const [member function]
+    cls.add_method('GetUliEcgi', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetBearerContextsToBeModified(std::list<ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified, std::allocator<ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified> > bearerContexts) [member function]
+    cls.add_method('SetBearerContextsToBeModified', 
+                   'void', 
+                   [param('std::list< ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified >', 'bearerContexts')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetImsi(uint8_t imsi) [member function]
+    cls.add_method('SetImsi', 
+                   'void', 
+                   [param('uint8_t', 'imsi')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetUliEcgi(uint32_t uliEcgi) [member function]
+    cls.add_method('SetUliEcgi', 
+                   'void', 
+                   [param('uint32_t', 'uliEcgi')])
+    return
+
+def register_Ns3GtpcModifyBearerRequestMessageBearerContextToBeModified_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified::BearerContextToBeModified() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified::BearerContextToBeModified(ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified::epsBearerId [variable]
+    cls.add_instance_attribute('epsBearerId', 'uint8_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified::fteid [variable]
+    cls.add_instance_attribute('fteid', 'ns3::GtpcHeader::Fteid_t', is_const=False)
+    return
+
+def register_Ns3GtpcModifyBearerResponseMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerResponseMessage::GtpcModifyBearerResponseMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcModifyBearerResponseMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcModifyBearerResponseMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerResponseMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerResponseMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerResponseMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerResponseMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcModifyBearerResponseMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::Cause_t ns3::GtpcModifyBearerResponseMessage::GetCause() const [member function]
+    cls.add_method('GetCause', 
+                   'ns3::GtpcIes::Cause_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerResponseMessage::SetCause(ns3::GtpcIes::Cause_t cause) [member function]
+    cls.add_method('SetCause', 
+                   'void', 
+                   [param('ns3::GtpcIes::Cause_t', 'cause')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcModifyBearerResponseMessage::GtpcModifyBearerResponseMessage(ns3::GtpcModifyBearerResponseMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcModifyBearerResponseMessage const &', 'arg0')])
     return
 
 def register_Ns3GtpuHeader_methods(root_module, cls):
@@ -24961,6 +25520,356 @@ def register_Ns3FdTbfqFfMacScheduler_methods(root_module, cls):
     cls.add_method('TransmissionModeConfigurationUpdate', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'txMode')])
+    return
+
+def register_Ns3GtpcCreateSessionRequestMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::GtpcCreateSessionRequestMessage(ns3::GtpcCreateSessionRequestMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcCreateSessionRequestMessage const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::GtpcCreateSessionRequestMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionRequestMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): std::list<ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated, std::allocator<ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated> > ns3::GtpcCreateSessionRequestMessage::GetBearerContextsToBeCreated() const [member function]
+    cls.add_method('GetBearerContextsToBeCreated', 
+                   'std::list< ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint64_t ns3::GtpcCreateSessionRequestMessage::GetImsi() const [member function]
+    cls.add_method('GetImsi', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcCreateSessionRequestMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionRequestMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t ns3::GtpcCreateSessionRequestMessage::GetSenderCpFteid() const [member function]
+    cls.add_method('GetSenderCpFteid', 
+                   'ns3::GtpcHeader::Fteid_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionRequestMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcCreateSessionRequestMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionRequestMessage::GetUliEcgi() const [member function]
+    cls.add_method('GetUliEcgi', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::SetBearerContextsToBeCreated(std::list<ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated, std::allocator<ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated> > bearerContexts) [member function]
+    cls.add_method('SetBearerContextsToBeCreated', 
+                   'void', 
+                   [param('std::list< ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated >', 'bearerContexts')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::SetImsi(uint64_t imsi) [member function]
+    cls.add_method('SetImsi', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::SetSenderCpFteid(ns3::GtpcHeader::Fteid_t fteid) [member function]
+    cls.add_method('SetSenderCpFteid', 
+                   'void', 
+                   [param('ns3::GtpcHeader::Fteid_t', 'fteid')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionRequestMessage::SetUliEcgi(uint32_t uliEcgi) [member function]
+    cls.add_method('SetUliEcgi', 
+                   'void', 
+                   [param('uint32_t', 'uliEcgi')])
+    return
+
+def register_Ns3GtpcCreateSessionRequestMessageBearerContextToBeCreated_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::BearerContextToBeCreated() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::BearerContextToBeCreated(ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::bearerLevelQos [variable]
+    cls.add_instance_attribute('bearerLevelQos', 'ns3::EpsBearer', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::epsBearerId [variable]
+    cls.add_instance_attribute('epsBearerId', 'uint8_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::sgwS5uFteid [variable]
+    cls.add_instance_attribute('sgwS5uFteid', 'ns3::GtpcHeader::Fteid_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionRequestMessage::BearerContextToBeCreated::tft [variable]
+    cls.add_instance_attribute('tft', 'ns3::Ptr< ns3::EpcTft >', is_const=False)
+    return
+
+def register_Ns3GtpcCreateSessionResponseMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::GtpcCreateSessionResponseMessage(ns3::GtpcCreateSessionResponseMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcCreateSessionResponseMessage const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::GtpcCreateSessionResponseMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionResponseMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): std::list<ns3::GtpcCreateSessionResponseMessage::BearerContextCreated, std::allocator<ns3::GtpcCreateSessionResponseMessage::BearerContextCreated> > ns3::GtpcCreateSessionResponseMessage::GetBearerContextsCreated() const [member function]
+    cls.add_method('GetBearerContextsCreated', 
+                   'std::list< ns3::GtpcCreateSessionResponseMessage::BearerContextCreated >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::Cause_t ns3::GtpcCreateSessionResponseMessage::GetCause() const [member function]
+    cls.add_method('GetCause', 
+                   'ns3::GtpcIes::Cause_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcCreateSessionResponseMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionResponseMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcHeader::Fteid_t ns3::GtpcCreateSessionResponseMessage::GetSenderCpFteid() const [member function]
+    cls.add_method('GetSenderCpFteid', 
+                   'ns3::GtpcHeader::Fteid_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcCreateSessionResponseMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcCreateSessionResponseMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionResponseMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionResponseMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionResponseMessage::SetBearerContextsCreated(std::list<ns3::GtpcCreateSessionResponseMessage::BearerContextCreated, std::allocator<ns3::GtpcCreateSessionResponseMessage::BearerContextCreated> > bearerContexts) [member function]
+    cls.add_method('SetBearerContextsCreated', 
+                   'void', 
+                   [param('std::list< ns3::GtpcCreateSessionResponseMessage::BearerContextCreated >', 'bearerContexts')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionResponseMessage::SetCause(ns3::GtpcIes::Cause_t cause) [member function]
+    cls.add_method('SetCause', 
+                   'void', 
+                   [param('ns3::GtpcIes::Cause_t', 'cause')])
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcCreateSessionResponseMessage::SetSenderCpFteid(ns3::GtpcHeader::Fteid_t fteid) [member function]
+    cls.add_method('SetSenderCpFteid', 
+                   'void', 
+                   [param('ns3::GtpcHeader::Fteid_t', 'fteid')])
+    return
+
+def register_Ns3GtpcCreateSessionResponseMessageBearerContextCreated_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::BearerContextCreated() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::BearerContextCreated(ns3::GtpcCreateSessionResponseMessage::BearerContextCreated const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcCreateSessionResponseMessage::BearerContextCreated const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::bearerLevelQos [variable]
+    cls.add_instance_attribute('bearerLevelQos', 'ns3::EpsBearer', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::cause [variable]
+    cls.add_instance_attribute('cause', 'uint8_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::epsBearerId [variable]
+    cls.add_instance_attribute('epsBearerId', 'uint8_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::fteid [variable]
+    cls.add_instance_attribute('fteid', 'ns3::GtpcHeader::Fteid_t', is_const=False)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcCreateSessionResponseMessage::BearerContextCreated::tft [variable]
+    cls.add_instance_attribute('tft', 'ns3::Ptr< ns3::EpcTft >', is_const=False)
+    return
+
+def register_Ns3GtpcDeleteBearerCommandMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::GtpcDeleteBearerCommandMessage(ns3::GtpcDeleteBearerCommandMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcDeleteBearerCommandMessage const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::GtpcDeleteBearerCommandMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerCommandMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): std::list<ns3::GtpcDeleteBearerCommandMessage::BearerContext, std::allocator<ns3::GtpcDeleteBearerCommandMessage::BearerContext> > ns3::GtpcDeleteBearerCommandMessage::GetBearerContexts() const [member function]
+    cls.add_method('GetBearerContexts', 
+                   'std::list< ns3::GtpcDeleteBearerCommandMessage::BearerContext >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcDeleteBearerCommandMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerCommandMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerCommandMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcDeleteBearerCommandMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerCommandMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerCommandMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerCommandMessage::SetBearerContexts(std::list<ns3::GtpcDeleteBearerCommandMessage::BearerContext, std::allocator<ns3::GtpcDeleteBearerCommandMessage::BearerContext> > bearerContexts) [member function]
+    cls.add_method('SetBearerContexts', 
+                   'void', 
+                   [param('std::list< ns3::GtpcDeleteBearerCommandMessage::BearerContext >', 'bearerContexts')])
+    return
+
+def register_Ns3GtpcDeleteBearerCommandMessageBearerContext_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::BearerContext::BearerContext() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::BearerContext::BearerContext(ns3::GtpcDeleteBearerCommandMessage::BearerContext const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcDeleteBearerCommandMessage::BearerContext const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerCommandMessage::BearerContext::m_epsBearerId [variable]
+    cls.add_instance_attribute('m_epsBearerId', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3GtpcDeleteBearerRequestMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerRequestMessage::GtpcDeleteBearerRequestMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcDeleteBearerRequestMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcDeleteBearerRequestMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerRequestMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerRequestMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerRequestMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerRequestMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerRequestMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): std::list<unsigned char, std::allocator<unsigned char> > ns3::GtpcDeleteBearerRequestMessage::GetEpsBearerIds() const [member function]
+    cls.add_method('GetEpsBearerIds', 
+                   'std::list< unsigned char >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerRequestMessage::SetEpsBearerIds(std::list<unsigned char, std::allocator<unsigned char> > epsBearerIds) [member function]
+    cls.add_method('SetEpsBearerIds', 
+                   'void', 
+                   [param('std::list< unsigned char >', 'epsBearerIds')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerRequestMessage::GtpcDeleteBearerRequestMessage(ns3::GtpcDeleteBearerRequestMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcDeleteBearerRequestMessage const &', 'arg0')])
+    return
+
+def register_Ns3GtpcDeleteBearerResponseMessage_methods(root_module, cls):
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerResponseMessage::GtpcDeleteBearerResponseMessage() [constructor]
+    cls.add_constructor([])
+    ## epc-gtpc-header.h (module 'lte'): static ns3::TypeId ns3::GtpcDeleteBearerResponseMessage::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcDeleteBearerResponseMessage::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerResponseMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerResponseMessage::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerResponseMessage::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerResponseMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): uint32_t ns3::GtpcDeleteBearerResponseMessage::GetMessageSize() const [member function]
+    cls.add_method('GetMessageSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::Cause_t ns3::GtpcDeleteBearerResponseMessage::GetCause() const [member function]
+    cls.add_method('GetCause', 
+                   'ns3::GtpcIes::Cause_t', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerResponseMessage::SetCause(ns3::GtpcIes::Cause_t cause) [member function]
+    cls.add_method('SetCause', 
+                   'void', 
+                   [param('ns3::GtpcIes::Cause_t', 'cause')])
+    ## epc-gtpc-header.h (module 'lte'): std::list<unsigned char, std::allocator<unsigned char> > ns3::GtpcDeleteBearerResponseMessage::GetEpsBearerIds() const [member function]
+    cls.add_method('GetEpsBearerIds', 
+                   'std::list< unsigned char >', 
+                   [], 
+                   is_const=True)
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcDeleteBearerResponseMessage::SetEpsBearerIds(std::list<unsigned char, std::allocator<unsigned char> > epsBearerIds) [member function]
+    cls.add_method('SetEpsBearerIds', 
+                   'void', 
+                   [param('std::list< unsigned char >', 'epsBearerIds')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcDeleteBearerResponseMessage::GtpcDeleteBearerResponseMessage(ns3::GtpcDeleteBearerResponseMessage const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtpcDeleteBearerResponseMessage const &', 'arg0')])
     return
 
 def register_Ns3HandoverPreparationInfoHeader_methods(root_module, cls):
