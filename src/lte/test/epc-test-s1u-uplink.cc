@@ -378,6 +378,7 @@ EpcS1uUlTestCase::DoRun ()
     
   NodeContainer enbs;
   uint16_t cellIdCounter = 0;
+  uint64_t imsiCounter = 0;
 
   for (std::vector<EnbUlTestData>::iterator enbit = m_enbUlTestData.begin ();
        enbit < m_enbUlTestData.end ();
@@ -412,6 +413,7 @@ EpcS1uUlTestCase::DoRun ()
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
       Ptr<EpcTestRrc> rrc = CreateObject<EpcTestRrc> ();
+      enb->AggregateObject (rrc);
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
       enbApp->SetS1SapUser (rrc->GetS1SapUser ());
       
@@ -475,11 +477,12 @@ EpcS1uUlTestCase::DoRun ()
           clientApp.Stop (Seconds (10.0));   
           enbit->ues[u].clientApp = client;
 
-          uint64_t imsi = u+1;
+          uint64_t imsi = ++imsiCounter;
           epcHelper->AddUe (ueLteDevice, imsi);
           epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
-          enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
-          
+          Simulator::Schedule (MilliSeconds (10),
+                               &EpcEnbS1SapProvider::InitialUeMessage,
+                               enbApp->GetS1SapProvider (), imsi, enbit->ues[u].rnti);
           // need this since all sinks are installed in the same node
           ++udpSinkPort; 
         } 

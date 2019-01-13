@@ -725,6 +725,12 @@ EpcTestRrc::GetS1SapUser ()
   return m_s1SapUser;
 }
 
+void
+EpcTestRrc::DoInitialContextSetupRequest (EpcEnbS1SapUser::InitialContextSetupRequestParameters request)
+{
+
+}
+
 void 
 EpcTestRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {

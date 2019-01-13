@@ -636,7 +636,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
       newRar.m_grant.m_tpc = 0;
       newRar.m_grant.m_cqiRequest = false;
       newRar.m_grant.m_ulDelay = false;
-      NS_LOG_INFO (this << " UL grant allocated to RNTI " << (*itRach).m_rnti << " rbStart " << rbStart << " rbLen " << rbLen << " MCS " << m_ulGrantMcs << " tbSize " << newRar.m_grant.m_tbSize);
+      NS_LOG_INFO (this << " UL grant allocated to RNTI " << (*itRach).m_rnti << " rbStart " << rbStart << " rbLen " << rbLen << " MCS " << (uint16_t) m_ulGrantMcs << " tbSize " << newRar.m_grant.m_tbSize);
       for (uint16_t i = rbStart; i < rbStart + rbLen; i++)
         {
           m_rachAllocationMap.at (i) = (*itRach).m_rnti;
@@ -1385,7 +1385,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi.at (j)));
           int tbSize = (m_amc->GetDlTbSizeFromMcs (newDci.m_mcs.at (j), RgbPerRnti * rbgSize) / 8); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
           newDci.m_tbsSize.push_back (tbSize);
-          NS_LOG_INFO (this << " Layer " << (uint16_t)j << " MCS selected" << m_amc->GetMcsFromCqi (worstCqi.at (j)));
+          NS_LOG_INFO (this << " Layer " << (uint16_t)j << " MCS selected" << (uint16_t) m_amc->GetMcsFromCqi (worstCqi.at (j)));
           bytesTxed += tbSize;
         }
 

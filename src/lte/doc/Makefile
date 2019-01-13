@@ -13,9 +13,12 @@ FIGURES = $(SOURCE)/figures
 IMAGES_DIA = \
 	$(FIGURES)/epc-ctrl-arch.dia \
 	$(FIGURES)/epc-data-flow-dl.dia \
+	$(FIGURES)/epc-data-flow-dl-with-split.dia \
 	$(FIGURES)/epc-data-flow-ul.dia \
+	$(FIGURES)/epc-data-flow-ul-with-split.dia \
 	$(FIGURES)/epc-profiling-scenario.dia \
 	$(FIGURES)/epc-topology.dia \
+	$(FIGURES)/epc-topology-with-split.dia \
 	$(FIGURES)/epc-topology-x2-enhanced.dia \
 	$(FIGURES)/eutran-profiling-scenario.dia \
 	$(FIGURES)/ff-example.dia \
@@ -27,7 +30,8 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-enb-phy.dia \
 	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.dia \
-	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack-with-split.dia \
+	$(FIGURES)/lte-epc-e2e-control-protocol-stack-with-split.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
 	$(FIGURES)/lte-subframe-structure.dia \
 	$(FIGURES)/lte-epc-x2-interface.dia \

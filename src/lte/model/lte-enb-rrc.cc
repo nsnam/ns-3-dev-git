@@ -114,6 +114,7 @@ static const std::string g_ueManagerStateName[UeManager::NUM_STATES] =
   "INITIAL_RANDOM_ACCESS",
   "CONNECTION_SETUP",
   "CONNECTION_REJECTED",
+  "ATTACH_REQUEST",
   "CONNECTED_NORMALLY",
   "CONNECTION_RECONFIGURATION",
   "CONNECTION_REESTABLISHMENT",
@@ -363,6 +364,21 @@ UeManager::SetImsi (uint64_t imsi)
 }
 
 void
+UeManager::InitialContextSetupRequest ()
+{
+  NS_LOG_FUNCTION (this << m_rnti);
+
+  if (m_state == ATTACH_REQUEST)
+    {
+      SwitchToState (CONNECTED_NORMALLY);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
+    }
+}
+
+void
 UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gtpTeid, Ipv4Address transportLayerAddress)
 {
   NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
@@ -554,6 +570,7 @@ UeManager::ScheduleRrcConnectionReconfiguration ()
     {
     case INITIAL_RANDOM_ACCESS:
     case CONNECTION_SETUP:
+    case ATTACH_REQUEST:
     case CONNECTION_RECONFIGURATION:
     case CONNECTION_REESTABLISHMENT:
     case HANDOVER_PREPARATION:
@@ -878,10 +895,6 @@ UeManager::RecvRrcConnectionRequest (LteRrcSap::RrcConnectionRequest msg)
         if (m_rrc->m_admitRrcConnectionRequest == true)
           {
             m_imsi = msg.ueIdentity;
-            if (m_rrc->m_s1SapProvider != 0)
-              {
-                m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
-              }
 
             // send RRC CONNECTION SETUP to UE
             LteRrcSap::RrcConnectionSetup msg2;
@@ -931,12 +944,16 @@ UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupComplet
           m_pendingRrcConnectionReconfiguration = true; // Force Reconfiguration
           m_pendingStartDataRadioBearers = true;
         }
+
+      if (m_rrc->m_s1SapProvider != 0)
+        {
+          m_rrc->m_s1SapProvider->InitialUeMessage (m_imsi, m_rnti);
+          SwitchToState (ATTACH_REQUEST);
+        }
       else
         {
-          m_pendingStartDataRadioBearers = false;
-          StartDataRadioBearers ();
+          SwitchToState (CONNECTED_NORMALLY);
         }
-      SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_connectionEstablishedTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti);
       break;
 
@@ -1291,6 +1308,7 @@ UeManager::BuildRrcConnectionReconfiguration ()
 LteRrcSap::RadioResourceConfigDedicated
 UeManager::BuildRadioResourceConfigDedicated ()
 {
+  NS_LOG_FUNCTION (this);
   LteRrcSap::RadioResourceConfigDedicated rrcd;
 
   if (m_srb1 != 0)
@@ -1322,6 +1340,7 @@ UeManager::BuildRadioResourceConfigDedicated ()
 uint8_t 
 UeManager::GetNewRrcTransactionIdentifier ()
 {
+  NS_LOG_FUNCTION (this);
   ++m_lastRrcTransactionIdentifier;
   m_lastRrcTransactionIdentifier %= 4;
   return m_lastRrcTransactionIdentifier;
@@ -1383,6 +1402,9 @@ UeManager::SwitchToState (State newState)
       break;
 
     case CONNECTION_SETUP:
+      break;
+
+    case ATTACH_REQUEST:
       break;
 
     case CONNECTED_NORMALLY:
@@ -2272,9 +2294,18 @@ LteEnbRrc::DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport 
   GetUeManager (rnti)->RecvMeasurementReport (msg);
 }
 
+void
+LteEnbRrc::DoInitialContextSetupRequest (EpcEnbS1SapUser::InitialContextSetupRequestParameters msg)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<UeManager> ueManager = GetUeManager (msg.rnti);
+  ueManager->InitialContextSetupRequest ();
+}
+
 void 
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<UeManager> ueManager = GetUeManager (request.rnti);
   ueManager->SetupDataRadioBearer (request.bearer, request.bearerId, request.gtpTeid, request.transportLayerAddress);
 }
@@ -2282,6 +2313,7 @@ LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupR
 void 
 LteEnbRrc::DoPathSwitchRequestAcknowledge (EpcEnbS1SapUser::PathSwitchRequestAcknowledgeParameters params)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<UeManager> ueManager = GetUeManager (params.rnti);
   ueManager->SendUeContextRelease ();
 }

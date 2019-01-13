@@ -1801,12 +1801,12 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
   lteHelper->AddX2Interface (enbNodes);
 
   // Connect to trace sources in source eNodeB
-  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+  Config::Connect ("/NodeList/3/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeCallback (&LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback,
                                  this));
 
   // Connect to trace sources in target eNodeB
-  Config::Connect ("/NodeList/2/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+  Config::Connect ("/NodeList/4/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeCallback (&LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback,
                                  this));
 

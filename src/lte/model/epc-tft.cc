@@ -295,5 +295,11 @@ EpcTft::Matches (Direction direction,
   return false;
 }
 
+std::list<EpcTft::PacketFilter>
+EpcTft::GetPacketFilters () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_filters;
+};
 
 } // namespace ns3

@@ -130,9 +130,12 @@ SOURCEFIGS = \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
+	$(SRC)/lte/doc/source/figures/epc-data-flow-dl-with-split.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-ul.dia \
+	$(SRC)/lte/doc/source/figures/epc-data-flow-ul-with-split.dia \
 	$(SRC)/lte/doc/source/figures/epc-profiling-scenario.dia \
 	$(SRC)/lte/doc/source/figures/epc-topology.dia \
+	$(SRC)/lte/doc/source/figures/epc-topology-with-split.dia \
 	$(SRC)/lte/doc/source/figures/epc-topology-x2-enhanced.dia \
 	$(SRC)/lte/doc/source/figures/eutran-profiling-scenario.dia \
 	$(SRC)/lte/doc/source/figures/ff-example.dia \
@@ -144,7 +147,8 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-enb-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-ue-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.dia \
-	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack-with-split.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-e2e-control-protocol-stack-with-split.dia \
 	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \
 	$(SRC)/lte/doc/source/figures/lte-subframe-structure.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-interface.dia \
@@ -319,9 +323,12 @@ IMAGES_EPS = \
 	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
 	$(FIGURES)/epc-data-flow-dl.eps \
+	$(FIGURES)/epc-data-flow-dl-with-split.eps \
 	$(FIGURES)/epc-data-flow-ul.eps \
+	$(FIGURES)/epc-data-flow-ul-with-split.eps \
 	$(FIGURES)/epc-profiling-scenario.eps \
 	$(FIGURES)/epc-topology.eps \
+	$(FIGURES)/epc-topology-with-split.eps \
 	$(FIGURES)/epc-topology-x2-enhanced.eps \
 	$(FIGURES)/eutran-profiling-scenario.eps \
 	$(FIGURES)/ff-example.eps \
@@ -343,6 +350,8 @@ IMAGES_EPS = \
 	$(FIGURES)/lte-enb-phy.eps \
 	$(FIGURES)/lte-ue-phy.eps \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack.eps \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack-with-split.eps \
+	$(FIGURES)/lte-epc-e2e-control-protocol-stack-with-split.eps \
 	$(FIGURES)/lte-interference-test-scenario.eps \
 	$(FIGURES)/lte-subframe-structure.eps \
 	$(FIGURES)/lte-epc-x2-interface.eps \

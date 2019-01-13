@@ -206,18 +206,17 @@ void
 EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<EpcS1apSapEnb::ErabToBeSetupItem> erabToBeSetupList)
 {
   NS_LOG_FUNCTION (this);
-  
+
+  uint64_t imsi = mmeUeS1Id;
+  std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
+  NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
+  uint16_t rnti = imsiIt->second;
+
   for (std::list<EpcS1apSapEnb::ErabToBeSetupItem>::iterator erabIt = erabToBeSetupList.begin ();
        erabIt != erabToBeSetupList.end ();
        ++erabIt)
     {
       // request the RRC to setup a radio bearer
-
-      uint64_t imsi = mmeUeS1Id;
-      std::map<uint64_t, uint16_t>::iterator imsiIt = m_imsiRntiMap.find (imsi);
-      NS_ASSERT_MSG (imsiIt != m_imsiRntiMap.end (), "unknown IMSI");
-      uint16_t rnti = imsiIt->second;
-      
       struct EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters params;
       params.rnti = rnti;
       params.bearer = erabIt->erabLevelQosParameters;
@@ -229,8 +228,12 @@ EpcEnbApplication::DoInitialContextSetupRequest (uint64_t mmeUeS1Id, uint16_t en
       // side effect: create entries if not exist
       m_rbidTeidMap[rnti][erabIt->erabId] = params.gtpTeid;
       m_teidRbidMap[params.gtpTeid] = rbid;
-
     }
+
+  // Send Initial Context Setup Request to RRC
+  struct EpcEnbS1SapUser::InitialContextSetupRequestParameters params;
+  params.rnti = rnti;
+  m_s1SapUser->InitialContextSetupRequest (params);
 }
 
 void 

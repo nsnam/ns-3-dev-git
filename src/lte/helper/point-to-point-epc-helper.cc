@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011-2013 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2018 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -33,14 +33,16 @@
 #include <ns3/packet-socket-helper.h>
 #include <ns3/packet-socket-address.h>
 #include <ns3/epc-enb-application.h>
-#include <ns3/epc-sgw-pgw-application.h>
 #include "ns3/ipv6-static-routing.h"
 #include "ns3/ipv6-static-routing-helper.h"
+#include <ns3/epc-pgw-application.h>
+#include <ns3/epc-sgw-application.h>
+#include <ns3/epc-mme-application.h>
+
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/epc-x2.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
-#include <ns3/epc-mme.h>
 #include <ns3/epc-ue-nas.h>
 #include <ns3/ipv4-address-generator.h>
 #include <ns3/ipv6-address-generator.h>
@@ -54,18 +56,29 @@ NS_OBJECT_ENSURE_REGISTERED (PointToPointEpcHelper);
 
 
 PointToPointEpcHelper::PointToPointEpcHelper () 
-  : m_gtpuUdpPort (2152)  // fixed by the standard
+  : m_gtpuUdpPort (2152),  // fixed by the standard
+    m_s11LinkDataRate (DataRate ("10Gb/s")),
+    m_s11LinkDelay (Seconds (0)),
+    m_s11LinkMtu (3000),
+    m_gtpcUdpPort (2123),  // fixed by the standard
+    m_s5LinkDataRate (DataRate ("10Gb/s")),
+    m_s5LinkDelay (Seconds (0)),
+    m_s5LinkMtu (3000)
 {
   NS_LOG_FUNCTION (this);
   // To access the attribute value within the constructor
   ObjectBase::ConstructSelf (AttributeConstructionList ());
 
-  // since we use point-to-point links for all S1-U links, 
+  int retval;
+  // since we use point-to-point links for all links, 
   // we use a /30 subnet which can hold exactly two addresses 
   // (remember that net broadcast and null address are not valid)
   m_s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
 
+  m_s1apIpv4AddressHelper.SetBase ("11.0.0.0", "255.255.255.252");
   m_x2Ipv4AddressHelper.SetBase ("12.0.0.0", "255.255.255.252");
+  m_s11Ipv4AddressHelper.SetBase ("13.0.0.0", "255.255.255.252");
+  m_s5Ipv4AddressHelper.SetBase ("14.0.0.0", "255.255.255.252");
 
   // we use a /8 net for all UEs
   m_uePgwAddressHelper.SetBase ("7.0.0.0", "255.0.0.0");
@@ -73,24 +86,23 @@ PointToPointEpcHelper::PointToPointEpcHelper ()
   // we use a /64 IPv6 net all UEs
   m_uePgwAddressHelper6.SetBase ("7777:f00d::", Ipv6Prefix (64));
 
-  // create SgwPgwNode
-  m_sgwPgw = CreateObject<Node> ();
+  // Create PGW, SGW and MME nodes
+  m_pgw = CreateObject<Node> ();
+  m_sgw = CreateObject<Node> ();
+  m_mme = CreateObject<Node> ();
   InternetStackHelper internet;
-  internet.Install (m_sgwPgw);
+  internet.Install (m_pgw);
+  internet.Install (m_sgw);
+  internet.Install (m_mme);
 
   // The Tun device resides in different 64 bit subnet.
   // We must create an unique route to tun device for all the packets destined
   // to all 64 bit IPv6 prefixes of UEs, based by the unique 48 bit network prefix of this EPC network
   Ipv6StaticRoutingHelper ipv6RoutingHelper;
-  Ptr<Ipv6StaticRouting> pgwStaticRouting = ipv6RoutingHelper.GetStaticRouting (m_sgwPgw->GetObject<Ipv6> ());
+  Ptr<Ipv6StaticRouting> pgwStaticRouting = ipv6RoutingHelper.GetStaticRouting (m_pgw->GetObject<Ipv6> ());
   pgwStaticRouting->AddNetworkRouteTo ("7777:f00d::", Ipv6Prefix (64), Ipv6Address ("::"), 1, 0);
-  
-  // create S1-U socket
-  Ptr<Socket> sgwPgwS1uSocket = Socket::CreateSocket (m_sgwPgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  int retval = sgwPgwS1uSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_gtpuUdpPort));
-  NS_ASSERT (retval == 0);
 
-  // create TUN device implementing tunneling of user data over GTP-U/UDP/IP 
+  // create TUN device implementing tunneling of user data over GTP-U/UDP/IP in the PGW
   m_tunDevice = CreateObject<VirtualNetDevice> ();
 
   // allow jumbo packets
@@ -99,10 +111,9 @@ PointToPointEpcHelper::PointToPointEpcHelper ()
   // yes we need this
   m_tunDevice->SetAddress (Mac48Address::Allocate ());
 
-  m_sgwPgw->AddDevice (m_tunDevice);
+  m_pgw->AddDevice (m_tunDevice);
   NetDeviceContainer tunDeviceContainer;
   tunDeviceContainer.Add (m_tunDevice);
-  
   // the TUN device is on the same subnet as the UEs, so when a packet
   // addressed to an UE arrives at the intenet to the WAN interface of
   // the PGW it will be forwarded to the TUN device. 
@@ -119,18 +130,106 @@ PointToPointEpcHelper::PointToPointEpcHelper ()
   tunDeviceIpv6IfContainer.SetForwarding (0,true);
   tunDeviceIpv6IfContainer.SetDefaultRouteInAllNodes (0);
 
-  // create EpcSgwPgwApplication
-  m_sgwPgwApp = CreateObject<EpcSgwPgwApplication> (m_tunDevice, sgwPgwS1uSocket);
-  m_sgwPgw->AddApplication (m_sgwPgwApp);
-  
-  // connect SgwPgwApplication and virtual net device for tunneling
-  m_tunDevice->SetSendCallback (MakeCallback (&EpcSgwPgwApplication::RecvFromTunDevice, m_sgwPgwApp));
+  // Create S5 link between PGW and SGW
+  NodeContainer pgwSgwNodes;
+  pgwSgwNodes.Add (m_pgw);
+  pgwSgwNodes.Add (m_sgw);
+  PointToPointHelper p2ph;
+  p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_s5LinkDataRate));
+  p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_s5LinkMtu));
+  p2ph.SetChannelAttribute ("Delay", TimeValue (m_s5LinkDelay));
+  NetDeviceContainer pgwSgwDevices = p2ph.Install (m_pgw, m_sgw);
+  NS_LOG_LOGIC ("IPv4 ifaces of the PGW after installing p2p dev: " << m_pgw->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("IPv4 ifaces of the SGW after installing p2p dev: " << m_sgw->GetObject<Ipv4> ()->GetNInterfaces ());
+  Ptr<NetDevice> pgwDev = pgwSgwDevices.Get (0);
+  Ptr<NetDevice> sgwDev = pgwSgwDevices.Get (1);
+  m_s5Ipv4AddressHelper.NewNetwork ();
+  Ipv4InterfaceContainer pgwSgwIpIfaces = m_s5Ipv4AddressHelper.Assign (pgwSgwDevices);
+  NS_LOG_LOGIC ("IPv4 ifaces of the PGW after assigning Ipv4 addr to S5 dev: " << m_pgw->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("IPv4 ifaces of the SGW after assigning Ipv4 addr to S5 dev: " << m_sgw->GetObject<Ipv4> ()->GetNInterfaces ());
+
+  Ipv4Address pgwS5Address = pgwSgwIpIfaces.GetAddress (0);
+  Ipv4Address sgwS5Address = pgwSgwIpIfaces.GetAddress (1);
+
+  // Create S5-U socket in the PGW
+  Ptr<Socket> pgwS5uSocket = Socket::CreateSocket (m_pgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = pgwS5uSocket->Bind (InetSocketAddress (pgwS5Address, m_gtpuUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create S5-C socket in the PGW
+  Ptr<Socket> pgwS5cSocket = Socket::CreateSocket (m_pgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = pgwS5cSocket->Bind (InetSocketAddress (pgwS5Address, m_gtpcUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create EpcPgwApplication
+  m_pgwApp = CreateObject<EpcPgwApplication> (m_tunDevice, pgwS5Address, pgwS5uSocket, pgwS5cSocket);
+  m_pgw->AddApplication (m_pgwApp);
+
+  // Connect EpcPgwApplication and virtual net device for tunneling
+  m_tunDevice->SetSendCallback (MakeCallback (&EpcPgwApplication::RecvFromTunDevice, m_pgwApp));
 
 
-  // Create MME and connect with SGW via S11 interface
-  m_mme = CreateObject<EpcMme> ();
-  m_mme->SetS11SapSgw (m_sgwPgwApp->GetS11SapSgw ());
-  m_sgwPgwApp->SetS11SapMme (m_mme->GetS11SapMme ());
+  // Create S5-U socket in the SGW
+  Ptr<Socket> sgwS5uSocket = Socket::CreateSocket (m_sgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = sgwS5uSocket->Bind (InetSocketAddress (sgwS5Address, m_gtpuUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create S5-C socket in the SGW
+  Ptr<Socket> sgwS5cSocket = Socket::CreateSocket (m_sgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = sgwS5cSocket->Bind (InetSocketAddress (sgwS5Address, m_gtpcUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create S1-U socket in the SGW
+  Ptr<Socket> sgwS1uSocket = Socket::CreateSocket (m_sgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = sgwS1uSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_gtpuUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create EpcSgwApplication
+  m_sgwApp = CreateObject<EpcSgwApplication> (sgwS1uSocket, sgwS5Address, sgwS5uSocket, sgwS5cSocket);
+  m_sgw->AddApplication (m_sgwApp);
+  m_sgwApp->AddPgw (pgwS5Address);
+  m_pgwApp->AddSgw (sgwS5Address);
+
+
+  // Create S11 link between MME and SGW
+  NodeContainer mmeSgwNodes;
+  mmeSgwNodes.Add (m_mme);
+  mmeSgwNodes.Add (m_sgw);
+  PointToPointHelper s11P2ph;
+  s11P2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_s11LinkDataRate));
+  s11P2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_s11LinkMtu));
+  s11P2ph.SetChannelAttribute ("Delay", TimeValue (m_s11LinkDelay));
+  NetDeviceContainer mmeSgwDevices = s11P2ph.Install (m_mme, m_sgw);
+  NS_LOG_LOGIC ("MME's IPv4 ifaces after installing p2p dev: " << m_mme->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("SGW's IPv4 ifaces after installing p2p dev: " << m_sgw->GetObject<Ipv4> ()->GetNInterfaces ());
+  Ptr<NetDevice> mmeDev = mmeSgwDevices.Get (0);
+  Ptr<NetDevice> sgwS11Dev = mmeSgwDevices.Get (1);
+  m_s11Ipv4AddressHelper.NewNetwork ();
+  Ipv4InterfaceContainer mmeSgwIpIfaces = m_s11Ipv4AddressHelper.Assign (mmeSgwDevices);
+  NS_LOG_LOGIC ("MME's IPv4 ifaces after assigning Ipv4 addr to S11 dev: " << m_mme->GetObject<Ipv4> ()->GetNInterfaces ());
+  NS_LOG_LOGIC ("SGW's IPv4 ifaces after assigning Ipv4 addr to S11 dev: " << m_sgw->GetObject<Ipv4> ()->GetNInterfaces ());
+
+  Ipv4Address mmeS11Address = mmeSgwIpIfaces.GetAddress (0);
+  Ipv4Address sgwS11Address = mmeSgwIpIfaces.GetAddress (1);
+
+  // Create S11 socket in the MME
+  Ptr<Socket> mmeS11Socket = Socket::CreateSocket (m_mme, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = mmeS11Socket->Bind (InetSocketAddress (mmeS11Address, m_gtpcUdpPort));
+  NS_ASSERT (retval == 0);
+
+  // Create S11 socket in the SGW
+  Ptr<Socket> sgwS11Socket = Socket::CreateSocket (m_sgw, TypeId::LookupByName ("ns3::UdpSocketFactory"));
+  retval = sgwS11Socket->Bind (InetSocketAddress (sgwS11Address, m_gtpcUdpPort));
+  NS_ASSERT (retval == 0);
+
+
+  // Create MME Application and connect with SGW via S11 interface
+  m_mmeApp = CreateObject<EpcMmeApplication> ();
+  m_mme->AddApplication (m_mmeApp);
+// //   m_mmeApp->SetS11SapSgw (m_sgwApp->GetS11SapSgw ());
+// //   m_sgwApp->SetS11SapMme (m_mmeApp->GetS11SapMme ());
+  m_mmeApp->AddSgw (sgwS11Address, mmeS11Address, mmeS11Socket);
+  m_sgwApp->AddMme (mmeS11Address, sgwS11Socket);
 }
 
 PointToPointEpcHelper::~PointToPointEpcHelper ()
@@ -141,6 +240,7 @@ PointToPointEpcHelper::~PointToPointEpcHelper ()
 TypeId
 PointToPointEpcHelper::GetTypeId (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   static TypeId tid = TypeId ("ns3::PointToPointEpcHelper")
     .SetParent<EpcHelper> ()
     .SetGroupName("Lte")
@@ -159,6 +259,36 @@ PointToPointEpcHelper::GetTypeId (void)
                    "The MTU of the next S1-U link to be created. Note that, because of the additional GTP/UDP/IP tunneling overhead, you need a MTU larger than the end-to-end MTU that you want to support.",
                    UintegerValue (2000),
                    MakeUintegerAccessor (&PointToPointEpcHelper::m_s1uLinkMtu),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("S5LinkDataRate",
+                   "The data rate to be used for the next S5 link to be created",
+                   DataRateValue (DataRate ("10Gb/s")),
+                   MakeDataRateAccessor (&PointToPointEpcHelper::m_s5LinkDataRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("S5LinkDelay",
+                   "The delay to be used for the next S5 link to be created",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&PointToPointEpcHelper::m_s5LinkDelay),
+                   MakeTimeChecker ())
+    .AddAttribute ("S5LinkMtu",
+                   "The MTU of the next S5 link to be created",
+                   UintegerValue (2000),
+                   MakeUintegerAccessor (&PointToPointEpcHelper::m_s5LinkMtu),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("S11LinkDataRate", 
+                   "The data rate to be used for the next S11 link to be created",
+                   DataRateValue (DataRate ("10Gb/s")),
+                   MakeDataRateAccessor (&PointToPointEpcHelper::m_s11LinkDataRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("S11LinkDelay", 
+                   "The delay to be used for the next S11 link to be created",
+                   TimeValue (Seconds (0)),
+                   MakeTimeAccessor (&PointToPointEpcHelper::m_s11LinkDelay),
+                   MakeTimeChecker ())
+    .AddAttribute ("S11LinkMtu", 
+                   "The MTU of the next S11 link to be created.",
+                   UintegerValue (2000),
+                   MakeUintegerAccessor (&PointToPointEpcHelper::m_s11LinkMtu),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("X2LinkDataRate",
                    "The data rate to be used for the next X2 link to be created",
@@ -211,8 +341,12 @@ PointToPointEpcHelper::DoDispose ()
   NS_LOG_FUNCTION (this);
   m_tunDevice->SetSendCallback (MakeNullCallback<bool, Ptr<Packet>, const Address&, const Address&, uint16_t> ());
   m_tunDevice = 0;
-  m_sgwPgwApp = 0;  
-  m_sgwPgw->Dispose ();
+  m_sgwApp = 0;
+  m_sgw->Dispose ();
+  m_pgwApp = 0;
+  m_pgw->Dispose ();
+  m_mmeApp = 0;
+  m_mme->Dispose ();
 }
 
 
@@ -231,14 +365,14 @@ PointToPointEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, ui
   // create a point to point link between the new eNB and the SGW with
   // the corresponding new NetDevices on each side  
   NodeContainer enbSgwNodes;
-  enbSgwNodes.Add (m_sgwPgw);
+  enbSgwNodes.Add (m_sgw);
   enbSgwNodes.Add (enb);
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_s1uLinkDataRate));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_s1uLinkMtu));
   p2ph.SetChannelAttribute ("Delay", TimeValue (m_s1uLinkDelay));
-  NetDeviceContainer enbSgwDevices = p2ph.Install (enb, m_sgwPgw);
-  NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after installing p2p dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());  
+  NetDeviceContainer enbSgwDevices = p2ph.Install (enb, m_sgw);
+  NS_LOG_LOGIC ("Ipv4 ifaces of the eNB after installing p2p dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());
   Ptr<NetDevice> enbDev = enbSgwDevices.Get (0);
   Ptr<NetDevice> sgwDev = enbSgwDevices.Get (1);
 
@@ -251,21 +385,24 @@ PointToPointEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, ui
   Ipv4InterfaceContainer enbSgwIpIfaces = m_s1uIpv4AddressHelper.Assign (enbSgwDevices);
   NS_LOG_LOGIC ("number of Ipv4 ifaces of the eNB after assigning Ipv4 addr to S1 dev: " << enb->GetObject<Ipv4> ()->GetNInterfaces ());
   
-  Ipv4Address enbAddress = enbSgwIpIfaces.GetAddress (0);
-  Ipv4Address sgwAddress = enbSgwIpIfaces.GetAddress (1);
+  Ipv4Address enbS1uAddress = enbSgwIpIfaces.GetAddress (0);
+  Ipv4Address sgwS1uAddress = enbSgwIpIfaces.GetAddress (1);
 
   // create S1-U socket for the ENB
   Ptr<Socket> enbS1uSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::UdpSocketFactory"));
-  int retval = enbS1uSocket->Bind (InetSocketAddress (enbAddress, m_gtpuUdpPort));
+  int retval = enbS1uSocket->Bind (InetSocketAddress (enbS1uAddress, m_gtpuUdpPort));
   NS_ASSERT (retval == 0);
 
+  // give PacketSocket powers to the eNB
+  //PacketSocketHelper packetSocket;
+  //packetSocket.Install (enb); 
   // create LTE socket for the ENB 
   Ptr<Socket> enbLteSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::PacketSocketFactory"));
   PacketSocketAddress enbLteSocketBindAddress;
   enbLteSocketBindAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
   enbLteSocketBindAddress.SetProtocol (Ipv4L3Protocol::PROT_NUMBER);
   retval = enbLteSocket->Bind (enbLteSocketBindAddress);
-  NS_ASSERT (retval == 0);  
+  NS_ASSERT (retval == 0);
   PacketSocketAddress enbLteSocketConnectAddress;
   enbLteSocketConnectAddress.SetPhysicalAddress (Mac48Address::GetBroadcast ());
   enbLteSocketConnectAddress.SetSingleDevice (lteEnbNetDevice->GetIfIndex ());
@@ -287,22 +424,21 @@ PointToPointEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, ui
   retval = enbLteSocket6->Connect (enbLteSocketConnectAddress6);
   NS_ASSERT (retval == 0);  
 
-  NS_LOG_INFO ("create EpcEnbApplication");
-  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, enbS1uSocket, enbAddress, sgwAddress, cellId);
+  NS_LOG_INFO ("Create EpcEnbApplication");
+  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, enbS1uSocket, enbS1uAddress, sgwS1uAddress, cellId);
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
   NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
   NS_LOG_LOGIC ("enb: " << enb << ", enb->GetApplication (0): " << enb->GetApplication (0));
 
-  
   NS_LOG_INFO ("Create EpcX2 entity");
   Ptr<EpcX2> x2 = CreateObject<EpcX2> ();
   enb->AggregateObject (x2);
 
-  NS_LOG_INFO ("connect S1-AP interface");
-  m_mme->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
-  m_sgwPgwApp->AddEnb (cellId, enbAddress, sgwAddress);
-  enbApp->SetS1apSapMme (m_mme->GetS1apSapMme ());
+  NS_LOG_INFO ("Connect S1-AP interface");
+  m_mmeApp->AddEnb (cellId, enbS1uAddress, enbApp->GetS1apSapEnb ());
+  m_sgwApp->AddEnb (cellId, enbS1uAddress, sgwS1uAddress);
+  enbApp->SetS1apSapMme (m_mmeApp->GetS1apSapMme ());
 }
 
 
@@ -361,12 +497,10 @@ PointToPointEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 void 
 PointToPointEpcHelper::AddUe (Ptr<NetDevice> ueDevice, uint64_t imsi)
 {
-  NS_LOG_FUNCTION (this << imsi << ueDevice );
-  
-  m_mme->AddUe (imsi);
-  m_sgwPgwApp->AddUe (imsi);
-  
+  NS_LOG_FUNCTION (this << imsi << ueDevice);
 
+  m_mmeApp->AddUe (imsi);
+  m_pgwApp->AddUe (imsi);
 }
 
 uint8_t
@@ -389,7 +523,7 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
         {
           Ipv4Address ueAddr = ueIpv4->GetAddress (interface, 0).GetLocal ();
           NS_LOG_LOGIC (" UE IPv4 address: " << ueAddr);
-          m_sgwPgwApp->SetUeAddress (imsi, ueAddr);
+          m_pgwApp->SetUeAddress (imsi, ueAddr);
         }
     }
   if (ueIpv6)
@@ -399,10 +533,10 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
         {
           Ipv6Address ueAddr6 = ueIpv6->GetAddress (interface6, 1).GetAddress ();
           NS_LOG_LOGIC (" UE IPv6 address: " << ueAddr6);
-          m_sgwPgwApp->SetUeAddress6 (imsi, ueAddr6);
+          m_pgwApp->SetUeAddress6 (imsi, ueAddr6);
         }
     }
-  uint8_t bearerId = m_mme->AddBearer (imsi, tft, bearer);
+  uint8_t bearerId = m_mmeApp->AddBearer (imsi, tft, bearer);
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
   if (ueLteDevice)
     {
@@ -414,7 +548,7 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
 Ptr<Node>
 PointToPointEpcHelper::GetPgwNode ()
 {
-  return m_sgwPgw;
+  return m_pgw;
 }
 
 Ipv4InterfaceContainer 
@@ -440,14 +574,14 @@ Ipv4Address
 PointToPointEpcHelper::GetUeDefaultGatewayAddress ()
 {
   // return the address of the tun device
-  return m_sgwPgw->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
+  return m_pgw->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ();
 }
 
 Ipv6Address
 PointToPointEpcHelper::GetUeDefaultGatewayAddress6 ()
 {
   // return the address of the tun device
-  return m_sgwPgw->GetObject<Ipv6> ()->GetAddress (1, 1).GetAddress ();
+  return m_pgw->GetObject<Ipv6> ()->GetAddress (1, 1).GetAddress ();
 }
 
 } // namespace ns3

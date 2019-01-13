@@ -6,7 +6,7 @@ References
 
 .. [TS25814] 3GPP TS 25.814 "Physical layer aspect for evolved Universal Terrestrial Radio Access"
 
-.. [TS29274] 3GPP TS 29.274 "Tunnelling Protocol for Control plane (GTPv2-C)"
+.. [TS29274] 3GPP TS 29.274 "GPRS Tunnelling Protocol for Control plane (GTPv2-C)"
 
 .. [TS36101] 3GPP TS 36.101 "E-UTRA User Equipment (UE) radio transmission and reception"
 

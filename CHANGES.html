@@ -83,6 +83,21 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 <ul>
   <li>The wifi ADDBA handshake process is now protected with the use of two timeouts who makes sure we do not end up in a blocked situation. If the handshake process is not established, packets that are in the queue are sent as normal MPDUs. Once handshake is successfully established, A-MPDUs can be transmitted.</li>
+  <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:<li>
+    <ul>
+      <li>SGW, PGW and MME are full nodes.</li>
+      <li>There are P2P links between core network nodes.</li>
+      <li>New S5 interface between SGW and PGW nodes based on GTPv2-C protocol.</li>
+      <li>Allow simulations with multiple SGWs and PGWs.</li>
+    </ul>
+  </li>
+  <li>LTE eNB RRC is extended to support:</li>
+    <ul>
+      <li>S1 signalling with the core network is initiated after the RRC connection establishment procedure is finished.</li>
+      <li>New ATTACH_REQUEST state to wait for finalization of the S1 signalling with the core network.</li>
+      <li>New InitialContextSetupRequest primitive of the S1 SAP that is received by the eNB RRC when the S1 signalling from the core network is finished.</li>
+    </ul>
+  </li>
 </ul>
 
 <hr>
