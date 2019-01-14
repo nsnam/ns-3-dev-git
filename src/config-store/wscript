@@ -87,8 +87,8 @@ def build(bld):
             find_sdk_path = '/usr/bin/xcrun --show-sdk-path'.split()
             try:
                 p = subprocess.Popen(find_sdk_path, stdout=subprocess.PIPE)
-                xcrun_output = p.stdout.read().strip()
-                module.includes = xcrun_output + '/usr/include/libxml2'
+                xcrun_output = p.stdout.read().strip().decode("utf-8")
+                module.includes = str(xcrun_output + u'/usr/include/libxml2')
             except OSError:
                 pass
 
