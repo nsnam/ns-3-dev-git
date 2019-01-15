@@ -28,6 +28,9 @@
 #include "wifi-mode.h"
 #include "wifi-utils.h"
 #include "wifi-remote-station-info.h"
+#include "ht-capabilities.h"
+#include "vht-capabilities.h"
+#include "he-capabilities.h"
 
 namespace ns3 {
 
@@ -35,9 +38,6 @@ class WifiPhy;
 class WifiMac;
 class WifiMacHeader;
 class Packet;
-class HtCapabilities;
-class VhtCapabilities;
-class HeCapabilities;
 class WifiTxVector;
 
 struct WifiRemoteStationState;
@@ -91,22 +91,17 @@ struct WifiRemoteStationState
   WifiModeList m_operationalMcsSet; //!< operational MCS set
   Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info; //!< remote station info
+  Ptr<const HtCapabilities> m_htCapabilities;  //!< remote station HT capabilities
+  Ptr<const VhtCapabilities> m_vhtCapabilities;  //!< remote station VHT capabilities
+  Ptr<const HeCapabilities> m_heCapabilities;  //!< remote station HE capabilities
 
   uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
-  bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
-  uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint8_t m_ness;             //!< Number of streams in beamforming of the remote station
-  bool m_stbc;                //!< Flag if STBC is supported by the remote station
-  bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
-  bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
   bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
   bool m_qosSupported;        //!< Flag if HT is supported by the station
-  bool m_htSupported;         //!< Flag if HT is supported by the station
-  bool m_vhtSupported;        //!< Flag if VHT is supported by the station
-  bool m_heSupported;         //!< Flag if HE is supported by the station
 };
 
 /**
@@ -224,6 +219,27 @@ public:
    * \param hecapabilities the HE capabilities of the station
    */
   void AddStationHeCapabilities (Mac48Address from, HeCapabilities hecapabilities);
+  /**
+   * Return the HT capabilities sent by the remote station.
+   *
+   * \param from the address of the remote station
+   * \return the HT capabilities sent by the remote station
+   */
+  Ptr<const HtCapabilities> GetStationHtCapabilities (Mac48Address from);
+  /**
+   * Return the VHT capabilities sent by the remote station.
+   *
+   * \param from the address of the remote station
+   * \return the VHT capabilities sent by the remote station
+   */
+  Ptr<const VhtCapabilities> GetStationVhtCapabilities (Mac48Address from);
+  /**
+   * Return the HE capabilities sent by the remote station.
+   *
+   * \param from the address of the remote station
+   * \return the HE capabilities sent by the remote station
+   */
+  Ptr<const HeCapabilities> GetStationHeCapabilities (Mac48Address from);
   /**
    * Return whether the device has HT capability support enabled.
    *

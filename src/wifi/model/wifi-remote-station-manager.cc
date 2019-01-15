@@ -29,9 +29,6 @@
 #include "wifi-utils.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
-#include "ht-capabilities.h"
-#include "vht-capabilities.h"
-#include "he-capabilities.h"
 #include "ht-configuration.h"
 #include "vht-configuration.h"
 #include "he-configuration.h"
@@ -1107,19 +1104,14 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_address = address;
   state->m_operationalRateSet.push_back (GetDefaultMode ());
   state->m_operationalMcsSet.push_back (GetDefaultMcs ());
+  state->m_htCapabilities = 0;
+  state->m_vhtCapabilities = 0;
+  state->m_heCapabilities = 0;
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
-  state->m_shortGuardInterval = GetShortGuardIntervalSupported ();
   state->m_guardInterval = GetGuardInterval ();
-  state->m_greenfield = GetGreenfieldSupported ();
-  state->m_streams = 1;
   state->m_ness = 0;
   state->m_aggregation = false;
-  state->m_stbc = false;
-  state->m_ldpc = false;
   state->m_qosSupported = false;
-  state->m_htSupported = false;
-  state->m_vhtSupported = false;
-  state->m_heSupported = false;
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
   return state;
@@ -1179,7 +1171,6 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
   NS_LOG_FUNCTION (this << from << htCapabilities);
   WifiRemoteStationState *state;
   state = LookupState (from);
-  state->m_shortGuardInterval = htCapabilities.GetShortGuardInterval20 ();
   if (htCapabilities.GetSupportedChannelWidth () == 1)
     {
       state->m_channelWidth = 40;
@@ -1189,8 +1180,6 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
       state->m_channelWidth = 20;
     }
   SetQosSupport (from, true);
-  state->m_greenfield = htCapabilities.GetGreenfield ();
-  state->m_streams = htCapabilities.GetRxHighestSupportedAntennas ();
   for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
     {
       WifiMode mcs = m_wifiPhy->GetMcs (j);
@@ -1199,7 +1188,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
           AddSupportedMcs (from, mcs);
         }
     }
-  state->m_htSupported = true;
+  state->m_htCapabilities = Create<const HtCapabilities> (htCapabilities);
 }
 
 void
@@ -1223,8 +1212,6 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
     {
       state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
     }
-  state->m_ldpc = (vhtCapabilities.GetRxLdpc () != 0);
-  state->m_stbc = (vhtCapabilities.GetTxStbc () != 0 || vhtCapabilities.GetRxStbc () != 0);
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
     {
       for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
@@ -1236,7 +1223,7 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
             }
         }
     }
-  state->m_vhtSupported = true;
+  state->m_vhtCapabilities = Create<const VhtCapabilities> (vhtCapabilities);
 }
 
 void
@@ -1294,14 +1281,38 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
             }
         }
     }
-  state->m_heSupported = true;
+  state->m_heCapabilities = Create<const HeCapabilities> (heCapabilities);
   SetQosSupport (from, true);
+}
+
+Ptr<const HtCapabilities>
+WifiRemoteStationManager::GetStationHtCapabilities (Mac48Address from)
+{
+  return LookupState (from)->m_htCapabilities;
+}
+
+Ptr<const VhtCapabilities>
+WifiRemoteStationManager::GetStationVhtCapabilities (Mac48Address from)
+{
+  return LookupState (from)->m_vhtCapabilities;
+}
+
+Ptr<const HeCapabilities>
+WifiRemoteStationManager::GetStationHeCapabilities (Mac48Address from)
+{
+  return LookupState (from)->m_heCapabilities;
 }
 
 bool
 WifiRemoteStationManager::GetGreenfieldSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_greenfield;
+  Ptr<const HtCapabilities> htCapabilities = LookupState (address)->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return false;
+    }
+  return htCapabilities->GetGreenfield ();
 }
 
 WifiMode
@@ -1536,7 +1547,13 @@ WifiRemoteStationManager::GetChannelWidth (const WifiRemoteStation *station) con
 bool
 WifiRemoteStationManager::GetShortGuardIntervalSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_shortGuardInterval;
+  Ptr<const HtCapabilities> htCapabilities = station->m_state->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return false;
+    }
+  return htCapabilities->GetShortGuardInterval20 ();
 }
 
 uint16_t
@@ -1548,7 +1565,13 @@ WifiRemoteStationManager::GetGuardInterval (const WifiRemoteStation *station) co
 bool
 WifiRemoteStationManager::GetGreenfield (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_greenfield;
+  Ptr<const HtCapabilities> htCapabilities = station->m_state->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return false;
+    }
+  return htCapabilities->GetGreenfield ();
 }
 
 bool
@@ -1560,7 +1583,13 @@ WifiRemoteStationManager::GetAggregation (const WifiRemoteStation *station) cons
 uint8_t
 WifiRemoteStationManager::GetNumberOfSupportedStreams (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_streams;
+  Ptr<const HtCapabilities> htCapabilities = station->m_state->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return 1;
+    }
+  return htCapabilities->GetRxHighestSupportedAntennas ();
 }
 
 uint8_t
@@ -1596,19 +1625,19 @@ WifiRemoteStationManager::GetQosSupported (const WifiRemoteStation *station) con
 bool
 WifiRemoteStationManager::GetHtSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_htSupported;
+  return (station->m_state->m_htCapabilities != 0);
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_vhtSupported;
+  return (station->m_state->m_vhtCapabilities != 0);
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_heSupported;
+  return (station->m_state->m_heCapabilities != 0);
 }
 
 uint8_t
@@ -1641,13 +1670,25 @@ WifiRemoteStationManager::GetChannelWidthSupported (Mac48Address address) const
 bool
 WifiRemoteStationManager::GetShortGuardIntervalSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_shortGuardInterval;
+  Ptr<const HtCapabilities> htCapabilities = LookupState (address)->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return false;
+    }
+  return htCapabilities->GetShortGuardInterval20 ();
 }
 
 uint8_t
 WifiRemoteStationManager::GetNumberOfSupportedStreams (Mac48Address address) const
 {
-  return LookupState (address)->m_streams;
+  Ptr<const HtCapabilities> htCapabilities = LookupState (address)->m_htCapabilities;
+
+  if (!htCapabilities)
+    {
+      return 1;
+    }
+  return htCapabilities->GetRxHighestSupportedAntennas ();
 }
 
 uint8_t
@@ -1659,19 +1700,19 @@ WifiRemoteStationManager::GetNMcsSupported (Mac48Address address) const
 bool
 WifiRemoteStationManager::GetHtSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_htSupported;
+  return (LookupState (address)->m_htCapabilities != 0);
 }
 
 bool
 WifiRemoteStationManager::GetVhtSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_vhtSupported;
+  return (LookupState (address)->m_vhtCapabilities != 0);
 }
 
 bool
 WifiRemoteStationManager::GetHeSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_heSupported;
+  return (LookupState (address)->m_heCapabilities != 0);
 }
 
 void
