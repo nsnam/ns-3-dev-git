@@ -27,6 +27,9 @@ NS_LOG_COMPONENT_DEFINE ("GtpcHeader");
 
 NS_OBJECT_ENSURE_REGISTERED (GtpcHeader);
 
+/// GTPv2-C protocol version number
+static const uint8_t VERSION = 2;
+
 TypeId
 GtpcHeader::GetTypeId (void)
 {
@@ -71,7 +74,7 @@ GtpcHeader::Serialize (Buffer::Iterator start) const
 void
 GtpcHeader::PreSerialize (Buffer::Iterator &i) const
 {
-  i.WriteU8 ((2 << 5) | (1 << 3));
+  i.WriteU8 ((VERSION << 5) | (1 << 3));
   i.WriteU8 (m_messageType);
   i.WriteHtonU16 (m_messageLength);
   i.WriteHtonU32 (m_teid);

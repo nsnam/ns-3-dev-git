@@ -139,11 +139,6 @@ public:
 
 private:
   /**
-   * Version of the GTPv2-C protocol.
-   * The version number shall be set to 2.
-   */
-  uint8_t m_version;
-  /**
    * TEID flag.
    * This flag indicates if TEID field is present or not
    */
