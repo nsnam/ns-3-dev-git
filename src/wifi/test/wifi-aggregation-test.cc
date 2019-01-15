@@ -102,7 +102,7 @@ AmpduAggregationTest::DoRun (void)
   /*
    * Configure MPDU aggregation.
    */
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (65535));
+  m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
 
   /*
    * Create a dummy packet of 1500 bytes and fill mac header fields.
@@ -308,8 +308,8 @@ TwoLevelAggregationTest::DoRun (void)
   /*
    * Configure aggregation.
    */
-  htConfiguration->SetAttribute ("BeMaxAmsduSize", UintegerValue (4095));
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (65535));
+  m_mac->SetAttribute ("BE_MaxAmsduSize", UintegerValue (4095));
+  m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
 
   /*
    * Create dummy packets of 1500 bytes and fill mac header fields that will be used for the tests.
@@ -357,7 +357,7 @@ TwoLevelAggregationTest::DoRun (void)
    * It checks whether MSDU aggregation has been rejected because the maximum MPDU size is set to 0 (returned packet should be equal to 0).
    * This test is needed to ensure that no packets are removed from the queue in MacLow::PerformMsduAggregation, since aggregation will no occur in MacLow::AggregateToAmpdu.
    */
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (65535));
+  m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
   packet = m_mac->GetBEQueue ()->GetLow ()->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
@@ -372,7 +372,7 @@ TwoLevelAggregationTest::DoRun (void)
    * It checks whether MSDU aggregation has been rejected because there is no packets ready in the queue (returned packet should be equal to 0).
    * This test is needed to ensure that there is no issue when the queue is empty.
    */
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (4095));
+  m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (4095));
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Remove (pkt);
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Remove (pkt);

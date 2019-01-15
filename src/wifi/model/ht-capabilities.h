@@ -122,9 +122,9 @@ public:
   /**
    * Set the maximum AMSDU length.
    *
-   * \param maxamsdulength
+   * \param maxamsdulength Either 3839 or 7935
    */
-  void SetMaxAmsduLength (uint8_t maxamsdulength);
+  void SetMaxAmsduLength (uint16_t maxamsdulength);
   /**
    * Set the LSIG protection support.
    *
@@ -135,9 +135,9 @@ public:
   /**
    * Set the maximum AMPDU length.
    *
-   * \param maxampdulength
+   * \param maxampdulength 2^(13 + x) - 1, x in the range 0 to 3
    */
-  void SetMaxAmpduLength (uint8_t maxampdulength);
+  void SetMaxAmpduLength (uint32_t maxampdulength);
 
   /**
    * Set the receive MCS bitmask.
@@ -244,6 +244,18 @@ public:
    */
   uint8_t GetShortGuardInterval20 (void) const;
   /**
+   * Return the maximum A-MSDU length.
+   *
+   * \return the maximum A-MSDU length
+   */
+  uint16_t GetMaxAmsduLength (void) const;
+  /**
+   * Return the maximum A-MPDU length.
+   *
+   * \return the maximum A-MPDU length
+   */
+  uint32_t GetMaxAmpduLength (void) const;
+  /**
    * Return the is MCS supported flag.
    *
    * \param mcs is MCS supported flag
@@ -324,7 +336,7 @@ private:
   uint8_t m_lsigProtectionSupport; ///< LSIG protection support
 
   //A-MPDU Parameters field
-  uint8_t m_maxAmpduLength; ///< maximum AMPDU length
+  uint8_t m_maxAmpduLengthExponent; ///< maximum AMPDU length
   uint8_t m_minMpduStartSpace; ///< minimum MPDU start space
   uint8_t m_ampduReserved; ///< AMPDU reserved
 

@@ -159,11 +159,11 @@ public:
 
   // MAC Capabilities Info fields
   /**
-   * Set maximum AMPDU length exponent.
+   * Set the maximum AMPDU length.
    *
-   * \param exponent the maximum AMPDU length exponent
+   * \param maxampdulength 2^(20 + x) - 1, x in the range 0 to 3
    */
-  void SetMaxAmpduLengthExponent (uint8_t exponent);
+  void SetMaxAmpduLength (uint32_t maxampdulength);
 
   // MCS and NSS field information
   /**
@@ -193,6 +193,13 @@ public:
    * \returns true if MCS receive supported
    */
   bool IsSupportedRxMcs (uint8_t mcs) const;
+
+  /**
+   * Return the maximum A-MPDU length.
+   *
+   * \return the maximum A-MPDU length
+   */
+  uint32_t GetMaxAmpduLength (void) const;
 
   /*
    * This information element is a bit special in that it is only
@@ -237,7 +244,7 @@ private:
   uint8_t m_groupAddressedMultiStaBlockAckInDlMuSupport; //!< group addressed multi STA block ack in DL support
   uint8_t m_omiAcontrolSupport; //!< OMI A control support
   uint8_t m_ofdmaRaSupport; //!< OFDM RA support
-  uint8_t m_maximumAmpduLengthExponent; //!< maximum AMPDU length exponenet
+  uint8_t m_maxAmpduLengthExponent; //!< maximum AMPDU length exponenet
   uint8_t m_amsduFragmentationSupport; //!< AMSDU fragmentation support
   uint8_t m_flexibleTwtScheduleSupport; //!< flexible TWT schedule support
   uint8_t m_rxControlFrameToMultiBss; //!< receive control frame to multi bias

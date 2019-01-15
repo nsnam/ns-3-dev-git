@@ -40,9 +40,7 @@
 #include "wifi-phy.h"
 #include "wifi-net-device.h"
 #include "wifi-mac.h"
-#include "ht-configuration.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include <algorithm>
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -3249,76 +3247,36 @@ MacLow::GetMaxAmsduSize (AcIndex ac) const
 {
   UintegerValue size;
   WifiModulationClass modulation = GetDataTxVector (m_currentPacket, &m_currentHdr).GetMode ().GetModulationClass ();
+
+  switch (ac)
+    {
+      case AC_BE:
+        m_mac->GetAttribute ("BE_MaxAmsduSize", size);
+        break;
+      case AC_BK:
+        m_mac->GetAttribute ("BK_MaxAmsduSize", size);
+        break;
+      case AC_VI:
+        m_mac->GetAttribute ("VI_MaxAmsduSize", size);
+        break;
+      case AC_VO:
+        m_mac->GetAttribute ("VO_MaxAmsduSize", size);
+      break;
+        default:
+        NS_ASSERT (false);
+        return 0;
+    }
+
   if (modulation == WIFI_MOD_CLASS_HT)
     {
-      Ptr<HtConfiguration> htConfiguration = m_mac->GetHtConfiguration ();
-      NS_ASSERT (htConfiguration); //If modulation to transmit A-MSDU is HT, we should have a HT configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            htConfiguration->GetAttribute ("BeMaxAmsduSize", size);
-            break;
-          case AC_BK:
-            htConfiguration->GetAttribute ("BkMaxAmsduSize", size);
-            break;
-          case AC_VI:
-            htConfiguration->GetAttribute ("ViMaxAmsduSize", size);
-            break;
-          case AC_VO:
-            htConfiguration->GetAttribute ("VoMaxAmsduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
+      return std::min (size.Get (), static_cast<uint64_t> (7935));
     }
-  else if (modulation == WIFI_MOD_CLASS_VHT)
+  if (modulation == WIFI_MOD_CLASS_VHT || modulation == WIFI_MOD_CLASS_HE)
     {
-      Ptr<VhtConfiguration> vhtConfiguration = m_mac->GetVhtConfiguration ();
-      NS_ASSERT (vhtConfiguration); //If modulation to transmit A-MSDU is VHT, we should have a VHT configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            vhtConfiguration->GetAttribute ("BeMaxAmsduSize", size);
-            break;
-          case AC_BK:
-            vhtConfiguration->GetAttribute ("BkMaxAmsduSize", size);
-            break;
-          case AC_VI:
-            vhtConfiguration->GetAttribute ("ViMaxAmsduSize", size);
-            break;
-          case AC_VO:
-            vhtConfiguration->GetAttribute ("VoMaxAmsduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
+      return std::min (size.Get (), static_cast<uint64_t> (11398));
     }
-  else if (modulation == WIFI_MOD_CLASS_HE)
-    {
-      Ptr<HeConfiguration> heConfiguration = m_mac->GetHeConfiguration ();
-      NS_ASSERT (heConfiguration); //If modulation to transmit A-MSDU is HE, we should have a HE configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            heConfiguration->GetAttribute ("BeMaxAmsduSize", size);
-            break;
-          case AC_BK:
-            heConfiguration->GetAttribute ("BkMaxAmsduSize", size);
-            break;
-          case AC_VI:
-            heConfiguration->GetAttribute ("ViMaxAmsduSize", size);
-            break;
-          case AC_VO:
-            heConfiguration->GetAttribute ("VoMaxAmsduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
-    }
-  return size.Get ();
+
+  return 0;
 }
 
 uint32_t
@@ -3326,76 +3284,40 @@ MacLow::GetMaxAmpduSize (AcIndex ac) const
 {
   UintegerValue size;
   WifiModulationClass modulation = GetDataTxVector (m_currentPacket, &m_currentHdr).GetMode ().GetModulationClass ();
+
+  switch (ac)
+    {
+      case AC_BE:
+        m_mac->GetAttribute ("BE_MaxAmpduSize", size);
+        break;
+      case AC_BK:
+        m_mac->GetAttribute ("BK_MaxAmpduSize", size);
+        break;
+      case AC_VI:
+        m_mac->GetAttribute ("VI_MaxAmpduSize", size);
+        break;
+      case AC_VO:
+        m_mac->GetAttribute ("VO_MaxAmpduSize", size);
+      break;
+        default:
+        NS_ASSERT (false);
+        return 0;
+    }
+
   if (modulation == WIFI_MOD_CLASS_HT)
     {
-      Ptr<HtConfiguration> htConfiguration = m_mac->GetHtConfiguration ();
-      NS_ASSERT (htConfiguration); //If modulation to transmit A-MPDU is HT, we should have a HT configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            htConfiguration->GetAttribute ("BeMaxAmpduSize", size);
-            break;
-          case AC_BK:
-            htConfiguration->GetAttribute ("BkMaxAmpduSize", size);
-            break;
-          case AC_VI:
-            htConfiguration->GetAttribute ("ViMaxAmpduSize", size);
-            break;
-          case AC_VO:
-            htConfiguration->GetAttribute ("VoMaxAmpduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
+      return std::min (size.Get (), static_cast<uint64_t> (65535));
     }
-  else if (modulation == WIFI_MOD_CLASS_VHT)
+  if (modulation == WIFI_MOD_CLASS_VHT)
     {
-      Ptr<VhtConfiguration> vhtConfiguration = m_mac->GetVhtConfiguration ();
-      NS_ASSERT (vhtConfiguration); //If modulation to transmit A-MPDU is VHT, we should have a VHT configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            vhtConfiguration->GetAttribute ("BeMaxAmpduSize", size);
-            break;
-          case AC_BK:
-            vhtConfiguration->GetAttribute ("BkMaxAmpduSize", size);
-            break;
-          case AC_VI:
-            vhtConfiguration->GetAttribute ("ViMaxAmpduSize", size);
-            break;
-          case AC_VO:
-            vhtConfiguration->GetAttribute ("VoMaxAmpduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
+      return std::min (size.Get (), static_cast<uint64_t> (1048575));
     }
-  else if (modulation == WIFI_MOD_CLASS_HE)
+  if (modulation == WIFI_MOD_CLASS_HE)
     {
-      Ptr<HeConfiguration> heConfiguration = m_mac->GetHeConfiguration ();
-      NS_ASSERT (heConfiguration); //If modulation to transmit A-MPDU is HE, we should have a HE configuration attached
-      switch (ac)
-        {
-          case AC_BE:
-            heConfiguration->GetAttribute ("BeMaxAmpduSize", size);
-            break;
-          case AC_BK:
-            heConfiguration->GetAttribute ("BkMaxAmpduSize", size);
-            break;
-          case AC_VI:
-            heConfiguration->GetAttribute ("ViMaxAmpduSize", size);
-            break;
-          case AC_VO:
-            heConfiguration->GetAttribute ("VoMaxAmpduSize", size);
-            break;
-          default:
-            NS_ASSERT (false);
-            return 0;
-        }
+      return std::min (size.Get (), static_cast<uint64_t> (8388607));
     }
-  return size.Get ();
+
+  return 0;
 }
 
 } //namespace ns3

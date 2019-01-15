@@ -33,7 +33,7 @@
 #include "ns3/packet-sink-helper.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/ht-configuration.h"
+#include "ns3/wifi-mac.h"
 
 // This is an example that illustrates how 802.11n aggregation is configured.
 // It defines 4 independent Wi-Fi networks (working on different channels).
@@ -134,8 +134,7 @@ int main (int argc, char *argv[])
   // Disable A-MPDU
   Ptr<NetDevice> dev = wifiStaNodes.Get (1)->GetDevice (0);
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  Ptr<HtConfiguration> htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (0));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (0));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
@@ -145,8 +144,7 @@ int main (int argc, char *argv[])
   // Disable A-MPDU
   dev = wifiApNodes.Get (1)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (0));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (0));
 
   // Network C
   ssid = Ssid ("network-C");
@@ -159,9 +157,8 @@ int main (int argc, char *argv[])
   // Disable A-MPDU and enable A-MSDU with the highest maximum size allowed by the standard (7935 bytes)
   dev = wifiStaNodes.Get (2)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (0));
-  htConfiguration->SetAttribute ("BeMaxAmsduSize", UintegerValue (7935));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (0));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmsduSize", UintegerValue (7935));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
@@ -171,9 +168,8 @@ int main (int argc, char *argv[])
   // Disable A-MPDU and enable A-MSDU with the highest maximum size allowed by the standard (7935 bytes)
   dev = wifiApNodes.Get (2)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (0));
-  htConfiguration->SetAttribute ("BeMaxAmsduSize", UintegerValue (7935));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (0));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmsduSize", UintegerValue (7935));
 
   // Network D
   ssid = Ssid ("network-D");
@@ -187,9 +183,8 @@ int main (int argc, char *argv[])
   // enable A-MSDU with the smallest maximum size allowed by the standard (3839 bytes)
   dev = wifiStaNodes.Get (3)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (32768));
-  htConfiguration->SetAttribute ("BeMaxAmsduSize", UintegerValue (3839));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (32768));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmsduSize", UintegerValue (3839));
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
@@ -200,9 +195,8 @@ int main (int argc, char *argv[])
   // enable A-MSDU with the smallest maximum size allowed by the standard (3839 bytes)
   dev = wifiApNodes.Get (3)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
-  htConfiguration = wifi_dev->GetHtConfiguration ();
-  htConfiguration->SetAttribute ("BeMaxAmpduSize", UintegerValue (32768));
-  htConfiguration->SetAttribute ("BeMaxAmsduSize", UintegerValue (3839));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (32768));
+  wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmsduSize", UintegerValue (3839));
 
   // Setting mobility model
   MobilityHelper mobility;

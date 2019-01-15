@@ -515,7 +515,6 @@ protected:
    */
   bool GetHeSupported () const;
 
-
 private:
   /// type conversion operator
   RegularWifiMac (const RegularWifiMac &);
@@ -534,56 +533,6 @@ private:
    * \param ac the Access Category of the queue to initialise.
    */
   void SetupEdcaQueue (AcIndex ac);
-
-  /**
-   * Set the maximum A-MSDU size for AC_VO.
-   *
-   * \param size the maximum A-MSDU size for AC_VO.
-   */
-  void SetVoMaxAmsduSize (uint16_t size);
-  /**
-   * Set the maximum A-MSDU size for AC_VI.
-   *
-   * \param size the maximum A-MSDU size for AC_VI.
-   */
-  void SetViMaxAmsduSize (uint16_t size);
-  /**
-   * Set the maximum A-MSDU size for AC_BE.
-   *
-   * \param size the maximum A-MSDU size for AC_BE.
-   */
-  void SetBeMaxAmsduSize (uint16_t size);
-  /**
-   * Set the maximum A-MSDU size for AC_BK.
-   *
-   * \param size the maximum A-MSDU size for AC_BK.
-   */
-  void SetBkMaxAmsduSize (uint16_t size);
-
-  /**
-   * Set the maximum A-MPDU size for AC_VO.
-   *
-   * \param size the maximum A-MPDU size for AC_VO.
-   */
-  void SetVoMaxAmpduSize (uint32_t size);
-  /**
-   * Set the maximum A-MPDU size for AC_VI.
-   *
-   * \param size the maximum A-MPDU size for AC_VI.
-   */
-  void SetViMaxAmpduSize (uint32_t size);
-  /**
-   * Set the maximum A-MPDU size for AC_BE.
-   *
-   * \param size the maximum A-MPDU size for AC_BE.
-   */
-  void SetBeMaxAmpduSize (uint32_t size);
-  /**
-   * Set the maximum A-MPDU size for AC_BK.
-   *
-   * \param size the maximum A-MPDU size for AC_BK.
-   */
-  void SetBkMaxAmpduSize (uint32_t size);
 
   /**
    * Set the Block ACK threshold for AC_VO.
