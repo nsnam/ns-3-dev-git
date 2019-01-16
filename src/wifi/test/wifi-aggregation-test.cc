@@ -383,6 +383,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   Simulator::Destroy ();
 
+  m_device->Dispose ();
   m_device = 0;
   htConfiguration = 0;
 }
