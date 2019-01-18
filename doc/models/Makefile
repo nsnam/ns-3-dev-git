@@ -147,6 +147,7 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-enb-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-ue-phy.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-handover-seq-diagram.dia \
+	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-data-protocol-stack-with-split.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-e2e-control-protocol-stack-with-split.dia \
 	$(SRC)/lte/doc/source/figures/lte-interference-test-scenario.dia \

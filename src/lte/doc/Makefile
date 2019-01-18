@@ -30,6 +30,7 @@ IMAGES_DIA = \
 	$(FIGURES)/lte-enb-phy.dia \
 	$(FIGURES)/lte-ue-phy.dia \
 	$(FIGURES)/lte-epc-x2-handover-seq-diagram.dia \
+	$(FIGURES)/lte-epc-e2e-data-protocol-stack.dia \
 	$(FIGURES)/lte-epc-e2e-data-protocol-stack-with-split.dia \
 	$(FIGURES)/lte-epc-e2e-control-protocol-stack-with-split.dia \
 	$(FIGURES)/lte-interference-test-scenario.dia \
