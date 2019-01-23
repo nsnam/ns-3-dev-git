@@ -92,14 +92,14 @@ WifiMac::GetDefaultCtsAckTimeout (void)
 Time
 WifiMac::GetDefaultBasicBlockAckDelay (void)
 {
-  //This value must be rivisited
+  //This value must be revisited
   return MicroSeconds (250);
 }
 
 Time
 WifiMac::GetDefaultCompressedBlockAckDelay (void)
 {
-  //This value must be rivisited
+  //This value must be revisited
   //CompressedBlockAckSize 32 * 8 * time it takes to transfer at the lowest rate (at 6 Mbit/s) + aPhy-StartDelay (33)
   return MicroSeconds (76);
 }
