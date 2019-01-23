@@ -295,7 +295,7 @@ BlockAckManager::GetNextPacket (WifiMacHeader &hdr, bool removePacket)
           NS_ASSERT (agreement != m_agreements.end ());
           if (removePacket)
             {
-              if (QosUtilsIsOldPacket (agreement->second.first.GetStartingSequence (),(*it)->hdr.GetSequenceNumber ()))
+              if (QosUtilsIsOldPacket (agreement->second.first.GetStartingSequence (), (*it)->hdr.GetSequenceNumber ()))
                 {
                   //Standard says the originator should not send a packet with seqnum < winstart
                   NS_LOG_DEBUG ("The Retry packet have sequence number < WinStartO --> Discard " << (*it)->hdr.GetSequenceNumber () << " " << agreement->second.first.GetStartingSequence ());
@@ -303,7 +303,7 @@ BlockAckManager::GetNextPacket (WifiMacHeader &hdr, bool removePacket)
                   it = m_retryPackets.erase (it);
                   continue;
                 }
-              else if ((*it)->hdr.GetSequenceNumber () > (agreement->second.first.GetStartingSequence () + 63) % 4096)
+              else if (((((*it)->hdr.GetSequenceNumber () - agreement->second.first.GetStartingSequence ()) + 4096) % 4096) > (agreement->second.first.GetBufferSize () - 1))
                 {
                   agreement->second.first.SetStartingSequence ((*it)->hdr.GetSequenceNumber ());
                 }
@@ -372,7 +372,7 @@ BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, uint8_t tid,
         }
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
         {
-          if (QosUtilsIsOldPacket (agreement->second.first.GetStartingSequence (),(*it)->hdr.GetSequenceNumber ()))
+          if (QosUtilsIsOldPacket (agreement->second.first.GetStartingSequence (), (*it)->hdr.GetSequenceNumber ()))
             {
               //standard says the originator should not send a packet with seqnum < winstart
               NS_LOG_DEBUG ("The Retry packet have sequence number < WinStartO --> Discard " << (*it)->hdr.GetSequenceNumber () << " " << agreement->second.first.GetStartingSequence ());
@@ -381,7 +381,7 @@ BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, uint8_t tid,
               it--;
               continue;
             }
-          else if ((*it)->hdr.GetSequenceNumber () > (agreement->second.first.GetStartingSequence () + 63) % 4096)
+          else if (((((*it)->hdr.GetSequenceNumber () - agreement->second.first.GetStartingSequence ()) + 4096) % 4096) > (agreement->second.first.GetBufferSize () - 1))
             {
               agreement->second.first.SetStartingSequence ((*it)->hdr.GetSequenceNumber ());
             }
