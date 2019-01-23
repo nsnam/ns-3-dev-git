@@ -199,7 +199,11 @@ ApWifiMac::SetBeaconInterval (Time interval)
   NS_LOG_FUNCTION (this << interval);
   if ((interval.GetMicroSeconds () % 1024) != 0)
     {
-      NS_LOG_WARN ("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE Std. 802.11-2012");
+      NS_FATAL_ERROR ("beacon interval should be multiple of 1024us (802.11 time unit), see IEEE Std. 802.11-2012");
+    }
+  if (interval.GetMicroSeconds () > (1024 * 65535))
+    {
+      NS_FATAL_ERROR ("beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
     }
   m_low->SetBeaconInterval (interval);
 }
