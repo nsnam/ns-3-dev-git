@@ -118,6 +118,21 @@ WifiNetDevice::DoDispose (void)
       m_stationManager->Dispose ();
       m_stationManager = 0;
     }
+  if (m_htConfiguration)
+    {
+      m_htConfiguration->Dispose ();
+      m_htConfiguration = 0;
+    }
+  if (m_vhtConfiguration)
+    {
+      m_vhtConfiguration->Dispose ();
+      m_vhtConfiguration = 0;
+    }
+  if (m_heConfiguration)
+    {
+      m_heConfiguration->Dispose ();
+      m_heConfiguration = 0;
+    }
   NetDevice::DoDispose ();
 }
 
