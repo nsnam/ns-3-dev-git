@@ -665,6 +665,8 @@ QosTxop::MissedAck (void)
   else
     {
       NS_LOG_DEBUG ("Retransmit");
+      m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                          m_currentPacket->GetSize ());
       m_currentHdr.SetRetry ();
       UpdateFailedCw ();
       m_cwTrace = GetCw ();

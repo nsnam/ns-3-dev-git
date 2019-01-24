@@ -1726,8 +1726,6 @@ MacLow::NormalAckTimeout (void)
   /// \todo should check that there was no rx start before now.
   /// we should restart a new ack timeout now until the expected
   /// end of rx if there was a rx start before now.
-  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                      m_currentPacket->GetSize ());
   Ptr<Txop> txop = m_currentTxop;
   m_currentTxop = 0;
   m_ampdu = false;
