@@ -239,4 +239,29 @@ GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu)
   return size;
 }
 
+Time
+GetPpduMaxTime (WifiPreamble preamble)
+{
+  Time duration;
+
+  switch (preamble)
+    {
+    case WIFI_PREAMBLE_HT_GF:
+      duration = MicroSeconds (10000);
+      break;
+    case WIFI_PREAMBLE_HT_MF:
+    case WIFI_PREAMBLE_VHT:
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
+      duration = MicroSeconds (5484);
+      break;
+    default:
+      duration = MicroSeconds (0);
+      break;
+    }
+  return duration;
+}
+
 } //namespace ns3
