@@ -887,7 +887,7 @@ BlockAckManager::CleanupBuffers (void)
           continue;
         }
       Time now = Simulator::Now ();
-      for (PacketQueueI i = j->second.second.begin (); i != j->second.second.end (); i++)
+      for (PacketQueueI i = j->second.second.begin (); i != j->second.second.end (); )
         {
           if (i->timestamp + m_maxDelay > now)
             {
@@ -899,9 +899,11 @@ BlockAckManager::CleanupBuffers (void)
                                     j->second.first.GetTid (),
                                     i->hdr.GetSequenceNumber ());
               j->second.first.SetStartingSequence ((i->hdr.GetSequenceNumber () + 1)  % 4096);
-              j->second.second.erase (i);
+              i = j->second.second.erase (i);
               removed = true;
+              continue;
             }
+          i++;
         }
       if (removed)
         {
