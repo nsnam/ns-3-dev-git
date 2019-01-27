@@ -80,7 +80,7 @@ public:
   RxSpectrumModelInfo (Ptr<const SpectrumModel> rxSpectrumModel);
 
   Ptr<const SpectrumModel> m_rxSpectrumModel;  //!< Rx Spectrum model.
-  std::set<Ptr<SpectrumPhy> > m_rxPhySet;      //!< Container of the Rx Spectrum phy objects.
+  std::vector<Ptr<SpectrumPhy> > m_rxPhys;     //!< Container of the Rx Spectrum phy objects.
 };
 
 /**
