@@ -1318,18 +1318,15 @@ void
 RegularWifiMac::EnableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
-  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  if (m_low->GetMsduAggregator () == 0)
     {
-      if (i->second->GetMsduAggregator () == 0)
-        {
-          Ptr<MsduAggregator> msduAggregator = CreateObject<MsduAggregator> ();
-          i->second->SetMsduAggregator (msduAggregator);
-        }
-      if (i->second->GetMpduAggregator () == 0)
-        {
-          Ptr<MpduAggregator> mpduAggregator = CreateObject<MpduAggregator> ();
-          i->second->SetMpduAggregator (mpduAggregator);
-        }
+      Ptr<MsduAggregator> msduAggregator = CreateObject<MsduAggregator> ();
+      m_low->SetMsduAggregator (msduAggregator);
+    }
+  if (m_low->GetMpduAggregator () == 0)
+    {
+      Ptr<MpduAggregator> mpduAggregator = CreateObject<MpduAggregator> ();
+      m_low->SetMpduAggregator (mpduAggregator);
     }
 }
 
@@ -1337,11 +1334,8 @@ void
 RegularWifiMac::DisableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
-  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-    {
-      i->second->SetMsduAggregator (0);
-      i->second->SetMpduAggregator (0);
-    }
+  m_low->SetMsduAggregator (0);
+  m_low->SetMpduAggregator (0);
 }
 
 } //namespace ns3

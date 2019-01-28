@@ -52,6 +52,8 @@ class MgtAddBaResponseHeader;
 class WifiRemoteStationManager;
 class CtrlBAckRequestHeader;
 class CtrlBAckResponseHeader;
+class MsduAggregator;
+class MpduAggregator;
 
 /**
  * \ingroup wifi
@@ -461,6 +463,31 @@ public:
    */
   uint32_t GetMaxAmpduSize (AcIndex ac) const;
 
+  /**
+   * Returns the aggregator used to construct A-MSDU subframes.
+   *
+   * \return the aggregator used to construct A-MSDU subframes.
+   */
+  Ptr<MsduAggregator> GetMsduAggregator (void) const;
+  /**
+   * Returns the aggregator used to construct A-MPDU subframes.
+   *
+   * \return the aggregator used to construct A-MPDU subframes.
+   */
+  Ptr<MpduAggregator> GetMpduAggregator (void) const;
+
+  /**
+   * Set the aggregator used to construct A-MSDU subframes.
+   *
+   * \param aggr pointer to the MSDU aggregator.
+   */
+  void SetMsduAggregator (const Ptr<MsduAggregator> aggr);
+  /**
+   * Set the aggregator used to construct A-MPDU subframes.
+   *
+   * \param aggr pointer to the MPDU aggregator.
+   */
+  void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
 
 private:
   /**
@@ -923,6 +950,9 @@ private:
    */
   typedef std::vector<Ptr<ChannelAccessManager> > ChannelAccessManagers;
   ChannelAccessManagers m_channelAccessManagers; //!< List of ChannelAccessManager
+
+  Ptr<MsduAggregator> m_msduAggregator;             //!< A-MSDU aggregator
+  Ptr<MpduAggregator> m_mpduAggregator;             //!< A-MPDU aggregator
 
   EventId m_normalAckTimeoutEvent;      //!< Normal ACK timeout event
   EventId m_blockAckTimeoutEvent;       //!< Block ACK timeout event

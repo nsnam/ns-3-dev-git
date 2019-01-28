@@ -88,9 +88,7 @@ QosTxop::GetTypeId (void)
 }
 
 QosTxop::QosTxop ()
-  : m_msduAggregator (0),
-    m_mpduAggregator (0),
-    m_typeOfStation (STA),
+  : m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
     m_startTxop (Seconds (0)),
     m_isAccessRequestedForRts (false),
@@ -119,8 +117,6 @@ QosTxop::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_baManager = 0;
   m_qosBlockedDestinations = 0;
-  m_msduAggregator = 0;
-  m_mpduAggregator = 0;
   Txop::DoDispose ();
 }
 
@@ -298,16 +294,17 @@ QosTxop::NotifyAccessGranted (void)
           m_currentIsFragmented = false;
           WifiMacHeader peekedHdr;
           Ptr<const WifiMacQueueItem> item;
+          Ptr<MsduAggregator> msduAggregator = GetLow ()->GetMsduAggregator ();
           if (m_currentHdr.IsQosData ()
               && (item = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
                                                        m_currentHdr.GetAddr1 ()))
               && !m_currentHdr.GetAddr1 ().IsBroadcast ()
-              && m_msduAggregator != 0 && !m_currentHdr.IsRetry ())
+              && msduAggregator != 0 && !m_currentHdr.IsRetry ())
             {
               peekedHdr = item->GetHeader ();
               /* here is performed aggregation */
               Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
-              m_msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
+              msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
                                            MapSrcAddressForAggregation (peekedHdr),
                                            MapDestAddressForAggregation (peekedHdr),
                                            GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
@@ -318,7 +315,7 @@ QosTxop::NotifyAccessGranted (void)
               while (peekedItem != 0)
                 {
                   peekedHdr = peekedItem->GetHeader ();
-                  aggregated = m_msduAggregator->Aggregate (peekedItem->GetPacket (), currentAggregatedPacket,
+                  aggregated = msduAggregator->Aggregate (peekedItem->GetPacket (), currentAggregatedPacket,
                                                             MapSrcAddressForAggregation (peekedHdr),
                                                             MapDestAddressForAggregation (peekedHdr),
                                                             GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
@@ -829,18 +826,6 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
   RestartAccessIfNeeded ();
 }
 
-Ptr<MsduAggregator>
-QosTxop::GetMsduAggregator (void) const
-{
-  return m_msduAggregator;
-}
-
-Ptr<MpduAggregator>
-QosTxop::GetMpduAggregator (void) const
-{
-  return m_mpduAggregator;
-}
-
 void
 QosTxop::RestartAccessIfNeeded (void)
 {
@@ -1337,20 +1322,6 @@ QosTxop::MapDestAddressForAggregation (const WifiMacHeader &hdr)
 }
 
 void
-QosTxop::SetMsduAggregator (const Ptr<MsduAggregator> aggr)
-{
-  NS_LOG_FUNCTION (this << aggr);
-  m_msduAggregator = aggr;
-}
-
-void
-QosTxop::SetMpduAggregator (const Ptr<MpduAggregator> aggr)
-{
-  NS_LOG_FUNCTION (this << aggr);
-  m_mpduAggregator = aggr;
-}
-
-void
 QosTxop::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
@@ -1424,7 +1395,7 @@ QosTxop::VerifyBlockAck (void)
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
   if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
-      && (GetMpduAggregator () == 0 || GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) == 0))
+      && (GetLow ()->GetMpduAggregator () == 0 || GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) == 0))
     {
       m_currentHdr.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
     }
@@ -1481,7 +1452,7 @@ QosTxop::SetupBlockAckIfNeeded (void)
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
-      || (m_mpduAggregator != 0 && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) > 0 && packets > 1)
+      || (GetLow ()->GetMpduAggregator () != 0 && GetLow ()->GetMaxAmpduSize (QosUtilsMapTidToAc (tid)) > 0 && packets > 1)
       || m_stationManager->GetVhtSupported ()
       || m_stationManager->GetHeSupported ())
     {

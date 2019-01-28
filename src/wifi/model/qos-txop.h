@@ -34,8 +34,6 @@ class HeAggregationTest;
 namespace ns3 {
 
 class QosBlockedDestinations;
-class MsduAggregator;
-class MpduAggregator;
 class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
@@ -131,19 +129,6 @@ public:
    * \return type of station.
    */
   TypeOfStation GetTypeOfStation (void) const;
-
-  /**
-   * Returns the aggregator used to construct A-MSDU subframes.
-   *
-   * \return the aggregator used to construct A-MSDU subframes.
-   */
-  Ptr<MsduAggregator> GetMsduAggregator (void) const;
-  /**
-   * Returns the aggregator used to construct A-MPDU subframes.
-   *
-   * \return the aggregator used to construct A-MPDU subframes.
-   */
-  Ptr<MpduAggregator> GetMpduAggregator (void) const;
 
   /**
    * \param address recipient address of the peer station
@@ -280,19 +265,6 @@ public:
    * \param ac access category.
    */
   void SetAccessCategory (AcIndex ac);
-
-  /**
-   * Set the aggregator used to construct A-MSDU subframes.
-   *
-   * \param aggr pointer to the MSDU aggregator.
-   */
-  void SetMsduAggregator (const Ptr<MsduAggregator> aggr);
-  /**
-   * Set the aggregator used to construct A-MPDU subframes.
-   *
-   * \param aggr pointer to the MPDU aggregator.
-   */
-  void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
 
   /**
    * \param packet packet to send.
@@ -589,8 +561,6 @@ private:
   void DoInitialize (void);
 
   AcIndex m_ac;                                         //!< the access category
-  Ptr<MsduAggregator> m_msduAggregator;                 //!< A-MSDU aggregator
-  Ptr<MpduAggregator> m_mpduAggregator;                 //!< A-MPDU aggregator
   TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< QOS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the Block ACK manager

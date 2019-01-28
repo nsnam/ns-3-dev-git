@@ -107,7 +107,9 @@ private:
 
 
 MacLow::MacLow ()
-  : m_normalAckTimeoutEvent (),
+  : m_msduAggregator (0),
+    m_mpduAggregator (0),
+    m_normalAckTimeoutEvent (),
     m_blockAckTimeoutEvent (),
     m_ctsTimeoutEvent (),
     m_sendCtsEvent (),
@@ -182,6 +184,8 @@ MacLow::DoDispose (void)
   m_sendDataEvent.Cancel ();
   m_waitIfsEvent.Cancel ();
   m_endTxNoAckEvent.Cancel ();
+  m_msduAggregator = 0;
+  m_mpduAggregator = 0;
   m_phy = 0;
   m_stationManager = 0;
   if (m_phyMacLowListener != 0)
@@ -282,6 +286,32 @@ void
 MacLow::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
+}
+
+Ptr<MsduAggregator>
+MacLow::GetMsduAggregator (void) const
+{
+  return m_msduAggregator;
+}
+
+Ptr<MpduAggregator>
+MacLow::GetMpduAggregator (void) const
+{
+  return m_mpduAggregator;
+}
+
+void
+MacLow::SetMsduAggregator (const Ptr<MsduAggregator> aggr)
+{
+  NS_LOG_FUNCTION (this << aggr);
+  m_msduAggregator = aggr;
+}
+
+void
+MacLow::SetMpduAggregator (const Ptr<MpduAggregator> aggr)
+{
+  NS_LOG_FUNCTION (this << aggr);
+  m_mpduAggregator = aggr;
 }
 
 void
@@ -568,14 +598,13 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
           m_txParams.EnableAck ();
         }
       AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
-      std::map<AcIndex, Ptr<QosTxop> >::const_iterator edcaIt = m_edca.find (ac);
       Ptr<Packet> aggregatedPacket = Create<Packet> ();
       for (uint32_t i = 0; i < sentMpdus; i++)
         {
           Ptr<Packet> newPacket = (m_txPackets[GetTid (packet, *hdr)].at (i).packet)->Copy ();
           newPacket->AddHeader (m_txPackets[GetTid (packet, *hdr)].at (i).hdr);
           AddWifiMacTrailer (newPacket);
-          edcaIt->second->GetMpduAggregator ()->Aggregate (newPacket, aggregatedPacket, GetMaxAmpduSize (ac));
+          m_mpduAggregator->Aggregate (newPacket, aggregatedPacket, GetMaxAmpduSize (ac));
         }
       m_currentPacket = aggregatedPacket;
       m_currentHdr = (m_txPackets[GetTid (packet, *hdr)].at (0).hdr);
@@ -1600,10 +1629,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       bool last = false;
       MpduType mpdutype = NORMAL_MPDU;
 
-      uint8_t tid = GetTid (packet, *hdr);
-      AcIndex ac = QosUtilsMapTidToAc (tid);
-      std::map<AcIndex, Ptr<QosTxop> >::const_iterator edcaIt = m_edca.find (ac);
-
       if (queueSize == 1)
         {
           singleMpdu = true;
@@ -1631,7 +1656,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
               mpdutype = LAST_MPDU_IN_AGGREGATE;
             }
 
-          edcaIt->second->GetMpduAggregator ()->AddHeaderAndPad (newPacket, last, singleMpdu);
+          m_mpduAggregator->AddHeaderAndPad (newPacket, last, singleMpdu);
 
           if (delay.IsZero ())
             {
@@ -2788,7 +2813,6 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
   Time aPPDUMaxTime = MicroSeconds (5484);
   uint8_t tid = GetTid (peekedPacket, peekedHdr);
   AcIndex ac = QosUtilsMapTidToAc (tid);
-  std::map<AcIndex, Ptr<QosTxop> >::const_iterator edcaIt = m_edca.find (ac);
 
   if (m_stationManager->GetGreenfieldSupported ())
     {
@@ -2802,7 +2826,7 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
       return true;
     }
 
-  if (!edcaIt->second->GetMpduAggregator ()->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, blockAckSize, GetMaxAmpduSize (ac)))
+  if (!m_mpduAggregator->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, blockAckSize, GetMaxAmpduSize (ac)))
     {
       NS_LOG_DEBUG ("no more packets can be aggregated because the maximum A-MPDU size has been reached");
       return true;
@@ -2843,7 +2867,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       NS_ASSERT (edcaIt != m_edca.end ());
       queue = edcaIt->second->GetWifiMacQueue ();
 
-      if (!hdr.GetAddr1 ().IsBroadcast () && edcaIt->second->GetMpduAggregator () != 0)
+      if (!hdr.GetAddr1 ().IsBroadcast () && m_mpduAggregator != 0)
         {
           //Have to make sure that the block ACK agreement is established before sending an AMPDU
           if (edcaIt->second->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
@@ -2871,7 +2895,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   newPacket->AddHeader (peekedHdr);
                   AddWifiMacTrailer (newPacket);
 
-                  aggregated = edcaIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
+                  aggregated = m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
 
                   if (aggregated)
                     {
@@ -2904,7 +2928,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   currentSequenceNumber = edcaIt->second->PeekNextSequenceNumberFor (&peekedHdr);
 
                   /* here is performed MSDU aggregation (two-level aggregation) */
-                  if (peekedPacket != 0 && edcaIt->second->GetMsduAggregator () != 0)
+                  if (peekedPacket != 0 && m_msduAggregator != 0)
                     {
                       tempPacket = PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
                       if (tempPacket != 0)  //MSDU aggregation
@@ -2945,7 +2969,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
                   newPacket->AddHeader (peekedHdr);
                   AddWifiMacTrailer (newPacket);
-                  aggregated = edcaIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
+                  aggregated = m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
                   if (aggregated)
                     {
                       m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (aggPacket, peekedHdr));
@@ -3001,7 +3025,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                               tstamp = item->GetTimeStamp ();
                               currentSequenceNumber = edcaIt->second->PeekNextSequenceNumberFor (&peekedHdr);
 
-                              if (edcaIt->second->GetMsduAggregator () != 0)
+                              if (m_msduAggregator != 0)
                                 {
                                   tempPacket = PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
                                   if (tempPacket != 0) //MSDU aggregation
@@ -3027,7 +3051,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                           tstamp = item->GetTimeStamp ();
                           currentSequenceNumber = edcaIt->second->PeekNextSequenceNumberFor (&peekedHdr);
 
-                          if (edcaIt->second->GetMsduAggregator () != 0 && IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
+                          if (m_msduAggregator != 0 && IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
                             {
                               tempPacket = PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, blockAckSize);
                               if (tempPacket != 0) //MSDU aggregation
@@ -3053,7 +3077,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                       m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (aggPacket, peekedHdr));
                       newPacket->AddHeader (peekedHdr);
                       AddWifiMacTrailer (newPacket);
-                      edcaIt->second->GetMpduAggregator ()->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
+                      m_mpduAggregator->Aggregate (newPacket, currentAggregatedPacket, GetMaxAmpduSize (ac));
                       currentAggregatedPacket->AddHeader (blockAckReq);
                     }
 
@@ -3095,7 +3119,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   peekedHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
 
                   currentAggregatedPacket = Create<Packet> ();
-                  edcaIt->second->GetMpduAggregator ()->AggregateSingleMpdu (packet, currentAggregatedPacket);
+                  m_mpduAggregator->AggregateSingleMpdu (packet, currentAggregatedPacket);
                   m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (packet, peekedHdr));
                   if (m_txParams.MustSendRts ())
                     {
@@ -3166,7 +3190,7 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
       *hdr = peekedItem->GetHeader ();
     }
 
-  edcaIt->second->GetMsduAggregator ()->Aggregate (packet, currentAmsduPacket,
+  m_msduAggregator->Aggregate (packet, currentAmsduPacket,
                                                    edcaIt->second->MapSrcAddressForAggregation (*hdr),
                                                    edcaIt->second->MapDestAddressForAggregation (*hdr),
                                                    GetMaxAmsduSize (ac));
@@ -3178,7 +3202,7 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
       *tstamp = peekedItem->GetTimeStamp ();
       tempPacket = currentAmsduPacket;
 
-      msduAggregation = edcaIt->second->GetMsduAggregator ()->Aggregate (peekedItem->GetPacket (), tempPacket,
+      msduAggregation = m_msduAggregator->Aggregate (peekedItem->GetPacket (), tempPacket,
                                                                          edcaIt->second->MapSrcAddressForAggregation (*hdr),
                                                                          edcaIt->second->MapDestAddressForAggregation (*hdr),
                                                                          GetMaxAmsduSize (ac));
