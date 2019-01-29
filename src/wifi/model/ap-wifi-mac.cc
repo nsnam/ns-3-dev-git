@@ -1092,8 +1092,14 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (hdr->IsProbeReq ())
         {
           NS_ASSERT (hdr->GetAddr1 ().IsBroadcast ());
-          NS_LOG_DEBUG ("Probe request received from " << from << ": send probe response");
-          SendProbeResp (from);
+          MgtProbeRequestHeader probeRequestHeader;
+          packet->RemoveHeader (probeRequestHeader);
+          Ssid ssid = probeRequestHeader.GetSsid ();
+          if (ssid == GetSsid () || ssid.IsBroadcast ())
+            {
+              NS_LOG_DEBUG ("Probe request received from " << from << ": send probe response");
+              SendProbeResp (from);
+            }
           return;
         }
       else if (hdr->GetAddr1 () == GetAddress ())
