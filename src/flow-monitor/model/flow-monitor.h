@@ -151,9 +151,11 @@ public:
   void AddFlowClassifier (Ptr<FlowClassifier> classifier);
 
   /// Set the time, counting from the current time, from which to start monitoring flows.
+  /// This method overwrites any previous calls to Start()
   /// \param time delta time to start
   void Start (const Time &time);
   /// Set the time, counting from the current time, from which to stop monitoring flows.
+  /// This method overwrites any previous calls to Stop()
   /// \param time delta time to stop
   void Stop (const Time &time);
   /// Begin monitoring flows *right now*

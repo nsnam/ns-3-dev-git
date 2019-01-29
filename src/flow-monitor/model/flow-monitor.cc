@@ -82,12 +82,15 @@ FlowMonitor::GetInstanceTypeId (void) const
 FlowMonitor::FlowMonitor ()
   : m_enabled (false)
 {
-  // m_histogramBinWidth=DEFAULT_BIN_WIDTH;
+  NS_LOG_FUNCTION (this);
 }
 
 void
 FlowMonitor::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
+  Simulator::Cancel (m_startEvent);
+  Simulator::Cancel (m_stopEvent);
   for (std::list<Ptr<FlowClassifier> >::iterator iter = m_classifiers.begin ();
       iter != m_classifiers.end ();
       iter ++)
@@ -105,6 +108,7 @@ FlowMonitor::DoDispose (void)
 inline FlowMonitor::FlowStats&
 FlowMonitor::GetStatsForFlow (FlowId flowId)
 {
+  NS_LOG_FUNCTION (this);
   FlowStatsContainerI iter;
   iter = m_flowStats.find (flowId);
   if (iter == m_flowStats.end ())
@@ -135,8 +139,10 @@ FlowMonitor::GetStatsForFlow (FlowId flowId)
 void
 FlowMonitor::ReportFirstTx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packetId, uint32_t packetSize)
 {
+  NS_LOG_FUNCTION (this << probe << flowId << packetId << packetSize);
   if (!m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor not enabled; returning");
       return;
     }
   Time now = Simulator::Now ();
@@ -163,8 +169,10 @@ FlowMonitor::ReportFirstTx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t pack
 void
 FlowMonitor::ReportForwarding (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packetId, uint32_t packetSize)
 {
+  NS_LOG_FUNCTION (this << probe << flowId << packetId << packetSize);
   if (!m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor not enabled; returning");
       return;
     }
   std::pair<FlowId, FlowPacketId> key (flowId, packetId);
@@ -187,8 +195,10 @@ FlowMonitor::ReportForwarding (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t p
 void
 FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packetId, uint32_t packetSize)
 {
+  NS_LOG_FUNCTION (this << probe << flowId << packetId << packetSize);
   if (!m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor not enabled; returning");
       return;
     }
   TrackedPacketMap::iterator tracked = m_trackedPackets.find (std::make_pair (flowId, packetId));
@@ -251,8 +261,10 @@ void
 FlowMonitor::ReportDrop (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packetId, uint32_t packetSize,
                          uint32_t reasonCode)
 {
+  NS_LOG_FUNCTION (this << probe << flowId << packetId << packetSize << reasonCode);
   if (!m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor not enabled; returning");
       return;
     }
 
@@ -290,6 +302,7 @@ FlowMonitor::GetFlowStats () const
 void
 FlowMonitor::CheckForLostPackets (Time maxDelay)
 {
+  NS_LOG_FUNCTION (this << maxDelay.GetSeconds ());
   Time now = Simulator::Now ();
 
   for (TrackedPacketMap::iterator iter = m_trackedPackets.begin ();
@@ -349,18 +362,23 @@ FlowMonitor::GetAllProbes () const
 void
 FlowMonitor::Start (const Time &time)
 {
+  NS_LOG_FUNCTION (this << time.GetSeconds ());
   if (m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor already enabled; returning");
       return;
     }
   Simulator::Cancel (m_startEvent);
+  NS_LOG_DEBUG ("Scheduling start at " << time.GetSeconds ());
   m_startEvent = Simulator::Schedule (time, &FlowMonitor::StartRightNow, this);
 }
 
 void
 FlowMonitor::Stop (const Time &time)
 {
+  NS_LOG_FUNCTION (this << time.GetSeconds ());
   Simulator::Cancel (m_stopEvent);
+  NS_LOG_DEBUG ("Scheduling stop at " << time.GetSeconds ());
   m_stopEvent = Simulator::Schedule (time, &FlowMonitor::StopRightNow, this);
 }
 
@@ -368,8 +386,10 @@ FlowMonitor::Stop (const Time &time)
 void
 FlowMonitor::StartRightNow ()
 {
+  NS_LOG_FUNCTION (this);
   if (m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor already enabled; returning");
       return;
     }
   m_enabled = true;
@@ -379,8 +399,10 @@ FlowMonitor::StartRightNow ()
 void
 FlowMonitor::StopRightNow ()
 {
+  NS_LOG_FUNCTION (this);
   if (!m_enabled)
     {
+      NS_LOG_DEBUG ("FlowMonitor not enabled; returning");
       return;
     }
   m_enabled = false;
@@ -396,6 +418,7 @@ FlowMonitor::AddFlowClassifier (Ptr<FlowClassifier> classifier)
 void
 FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enableHistograms, bool enableProbes)
 {
+  NS_LOG_FUNCTION (this << indent << enableHistograms << enableProbes);
   CheckForLostPackets ();
 
   os << std::string ( indent, ' ' ) << "<FlowMonitor>\n";
@@ -480,6 +503,7 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, uint16_t indent, bool enabl
 std::string
 FlowMonitor::SerializeToXmlString (uint16_t indent, bool enableHistograms, bool enableProbes)
 {
+  NS_LOG_FUNCTION (this << indent << enableHistograms << enableProbes);
   std::ostringstream os;
   SerializeToXmlStream (os, indent, enableHistograms, enableProbes);
   return os.str ();
@@ -489,6 +513,7 @@ FlowMonitor::SerializeToXmlString (uint16_t indent, bool enableHistograms, bool 
 void
 FlowMonitor::SerializeToXmlFile (std::string fileName, bool enableHistograms, bool enableProbes)
 {
+  NS_LOG_FUNCTION (this << fileName << enableHistograms << enableProbes);
   std::ofstream os (fileName.c_str (), std::ios::out|std::ios::binary);
   os << "<?xml version=\"1.0\" ?>\n";
   SerializeToXmlStream (os, 0, enableHistograms, enableProbes);
