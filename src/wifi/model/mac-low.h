@@ -897,12 +897,10 @@ private:
    * Insert in a temporary queue.
    * It is only used with a RTS/CTS exchange for an A-MPDU transmission.
    *
-   * \param packet packet to be inserted in the A-MPDU tx queue
-   * \param hdr 802.11 header for the packet to be inserted in the A-MPDU tx queue
-   * \param tStamp timestamp of the packet to be inserted in the A-MPDU tx queue
-   * \param tid the Traffic ID of the packet to be inserted in the A-MPDU tx queue
+   * \param mpdu MPDU to be inserted in the A-MPDU tx queue
+   * \param tid the Traffic ID of the MPDU to be inserted in the A-MPDU tx queue
    */
-  void InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp, uint8_t tid);
+  void InsertInTxQueue (Ptr<const WifiMacQueueItem> mpdu, uint8_t tid);
   /**
    * Perform MSDU aggregation for a given MPDU in an A-MPDU
    *
@@ -920,16 +918,6 @@ private:
   Ptr<WifiMac> m_mac; //!< Pointer to WifiMac (to fetch configuration)
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Pointer to WifiRemoteStationManager (rate control)
   MacLowRxCallback m_rxCallback; //!< Callback to pass packet up
-
-  /**
-   * A struct for packet, Wifi header, and timestamp.
-   */
-  struct Item
-  {
-    Ptr<const Packet> packet; //!< the packet
-    WifiMacHeader hdr; //!< the header
-    Time timestamp; //!< the timestamp
-  }; //!< item structure
 
   /**
    * A struct that holds information about ACK piggybacking (CF-ACK).
@@ -1017,7 +1005,7 @@ private:
 
   bool m_ctsToSelfSupported;             //!< Flag whether CTS-to-self is supported
   Ptr<WifiMacQueue> m_aggregateQueue[8]; //!< Queues per TID used for MPDU aggregation
-  std::vector<Item> m_txPackets[8];      //!< Contain temporary items to be sent with the next A-MPDU transmission for a given TID, once RTS/CTS exchange has succeeded.
+  std::vector<Ptr<const WifiMacQueueItem>> m_txPackets[8];      //!< Contain temporary items to be sent with the next A-MPDU transmission for a given TID, once RTS/CTS exchange has succeeded.
   WifiTxVector m_currentTxVector;        //!< TXVECTOR used for the current packet transmission
 
   CfAckInfo m_cfAckInfo; //!< Info about piggyback ACKs used in PCF

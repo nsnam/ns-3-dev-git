@@ -147,14 +147,12 @@ public:
    */
   void UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
   /**
-   * \param packet Packet to store.
-   * \param hdr 802.11 header for packet.
-   * \param tStamp time stamp for packet
+   * \param mpdu MPDU to store.
    *
-   * Stores <i>packet</i> for a possible future retransmission. Retransmission occurs
+   * Stores <i>mpdu</i> for a possible future retransmission. Retransmission occurs
    * if the packet, in a block ack frame, is indicated by recipient as not received.
    */
-  void StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
+  void StorePacket (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * \param removePacket flag to indicate whether the packet should be removed from the queue.
    *

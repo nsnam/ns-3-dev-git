@@ -221,23 +221,22 @@ BlockAckManager::UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Ad
 }
 
 void
-BlockAckManager::StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp)
+BlockAckManager::StorePacket (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr << tStamp);
-  NS_ASSERT (hdr.IsQosData ());
+  NS_LOG_FUNCTION (this << mpdu);
+  NS_ASSERT (mpdu->GetHeader ().IsQosData ());
 
-  uint8_t tid = hdr.GetQosTid ();
-  Mac48Address recipient = hdr.GetAddr1 ();
+  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
 
-  WifiMacQueueItem item = WifiMacQueueItem (packet, hdr, tStamp);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
   PacketQueueI queueIt = it->second.second.begin ();
   for (; queueIt != it->second.second.end (); )
     {
-      if (((hdr.GetSequenceNumber () - queueIt->GetHeader ().GetSequenceNumber () + 4096) % 4096) > 2047)
+      if (((mpdu->GetHeader ().GetSequenceNumber () - queueIt->GetHeader ().GetSequenceNumber () + 4096) % 4096) > 2047)
         {
-          queueIt = it->second.second.insert (queueIt, item);
+          queueIt = it->second.second.insert (queueIt, *mpdu);
           break;
         }
       else
@@ -247,7 +246,7 @@ BlockAckManager::StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr
     }
   if (queueIt == it->second.second.end ())
     {
-      it->second.second.push_back (item);
+      it->second.second.push_back (*mpdu);
     }
 }
 

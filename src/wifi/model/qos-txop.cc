@@ -1463,7 +1463,8 @@ QosTxop::CompleteTx (void)
     {
       if (!m_currentHdr.IsRetry ())
         {
-          m_baManager->StorePacket (m_currentPacket, m_currentHdr, m_currentPacketTimestamp);
+          m_baManager->StorePacket (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                                    m_currentPacketTimestamp));
         }
       m_baManager->NotifyMpduTransmission (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (),
                                            m_txMiddle->GetNextSeqNumberByTidAndAddress (m_currentHdr.GetQosTid (),
@@ -1472,13 +1473,14 @@ QosTxop::CompleteTx (void)
 }
 
 void
-QosTxop::CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp)
+QosTxop::CompleteMpduTx (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_ASSERT (hdr.IsQosData ());
-  m_baManager->StorePacket (packet, hdr, tstamp);
-  m_baManager->NotifyMpduTransmission (hdr.GetAddr1 (), hdr.GetQosTid (),
-                                       m_txMiddle->GetNextSeqNumberByTidAndAddress (hdr.GetQosTid (),
-                                                                                    hdr.GetAddr1 ()), WifiMacHeader::NORMAL_ACK);
+  NS_ASSERT (mpdu->GetHeader ().IsQosData ());
+  m_baManager->StorePacket (mpdu);
+  m_baManager->NotifyMpduTransmission (mpdu->GetHeader ().GetAddr1 (), mpdu->GetHeader ().GetQosTid (),
+                                       m_txMiddle->GetNextSeqNumberByTidAndAddress (mpdu->GetHeader ().GetQosTid (),
+                                                                                    mpdu->GetHeader ().GetAddr1 ()),
+                                                                                    WifiMacHeader::NORMAL_ACK);
 }
 
 bool

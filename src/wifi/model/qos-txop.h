@@ -314,11 +314,9 @@ public:
    * for a blockack containing the sequence number of this MPDU).
    * It also calls NotifyMpdu transmission that updates the status of OriginatorBlockAckAgreement.
    *
-   * \param packet received packet.
-   * \param hdr received Wi-Fi header.
-   * \param tstamp timestamp.
+   * \param mpdu received MPDU.
    */
-  void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp);
+  void CompleteMpduTx (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * Return whether A-MPDU is used to transmit data to a peer station.
    *
