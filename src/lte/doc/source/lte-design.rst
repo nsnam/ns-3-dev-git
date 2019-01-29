@@ -613,10 +613,7 @@ The BLER performance of all MCS obtained with the link level simulator are plott
 .. _fig-mcs-1-4-ber:
 
 .. figure:: figures/MCS_1_4.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 1, 2, 3 and 4.
 
@@ -624,30 +621,23 @@ The BLER performance of all MCS obtained with the link level simulator are plott
 .. _fig-mcs-5-8-ber:
 
 .. figure:: figures/MCS_5_8.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 5, 6, 7 and 8.
+
 
 .. _fig-mcs-9-12-ber:
 
 .. figure:: figures/MCS_9_12.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 9, 10, 11 and 12.
+
 
 .. _fig-mcs-13-16-ber:
 
 .. figure:: figures/MCS_13_16.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 13, 14, 15 and 16.
 
@@ -655,20 +645,15 @@ The BLER performance of all MCS obtained with the link level simulator are plott
 .. _fig-mcs-17-20-ber:
 
 .. figure:: figures/MCS_17_20.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 17, 17, 19 and 20.
+
 
 .. _fig-mcs-21-24-ber:
 
 .. figure:: figures/MCS_21_24.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 21, 22, 23 and 24.
 
@@ -676,25 +661,17 @@ The BLER performance of all MCS obtained with the link level simulator are plott
 .. _fig-mcs-25-28-ber:
 
 .. figure:: figures/MCS_25_28.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 25, 26, 27 and 28.
+
 
 .. _fig-mcs-29-29-ber:
 
 .. figure:: figures/MCS_29_29.*
-   :width: 900px
    :align: center
-   :height: 700px
-
 
    BLER for MCS 29.
-
-
-
 
 
 
@@ -1476,7 +1453,6 @@ with all the other entities and services in the protocol stack.
 .. _fig-lte-rlc-implementation-model:
 
 .. figure:: figures/lte-rlc-implementation-model.*
-   :width: 800px
 
    Implementation Model of PDCP, RLC and MAC entities and SAPs
 
@@ -1591,7 +1567,7 @@ entities/services of the LTE protocol stack.
 .. _fig-lte-rlc-data-txon-dl:
    
 .. figure:: figures/lte-rlc-data-txon-dl.*
-   :width: 800px
+   :width: 550px
 
    Sequence diagram of data PDU transmission in downlink
 
@@ -1662,7 +1638,7 @@ are sent by the upper layers.
 .. _fig-lte-rlc-data-txon-ul:
    
 .. figure:: figures/lte-rlc-data-txon-ul.*
-   :width: 800px
+   :width: 550px
 
    Sequence diagram of data PDU transmission in uplink
 
@@ -2005,7 +1981,7 @@ as implemented in the RRC UE entity.
 .. _fig-lte-ue-rrc-states:
 
 .. figure:: figures/lte-ue-rrc-states.*
-   :scale: 70 %
+   :scale: 60 %
    :align: center
 
    UE RRC State Machine
@@ -3423,7 +3399,7 @@ Figure :ref:`fig-x2-entity-saps` shows the implementation model of the X2 entity
 .. _fig-x2-entity-saps:
 
 .. figure:: figures/lte-epc-x2-entity-saps.*
-    :width: 700px
+    :width: 550px
     :align: center
 
     Implementation Model of X2 entity and SAPs
