@@ -390,8 +390,18 @@ public:
    * \param tid traffic ID.
    * \param timestamp the timestamp.
    * \returns the packet.
+   *
+   * \todo TO BE REMOVED
    */
   Ptr<const Packet> PeekNextRetransmitPacket (WifiMacHeader &header, uint8_t tid, Time *timestamp);
+  /**
+   * Peek in retransmit queue and get the next packet without removing it from the queue.
+   *
+   * \param tid traffic ID.
+   * \param recipient the receiver station address.
+   * \returns the packet.
+   */
+  Ptr<const WifiMacQueueItem> PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient);
   /**
    * The packet we sent was successfully received by the receiver.
    *

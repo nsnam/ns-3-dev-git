@@ -27,6 +27,7 @@
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "block-ack-type.h"
+#include "wifi-mac-queue-item.h"
 
 namespace ns3 {
 
@@ -155,7 +156,6 @@ public:
    */
   void StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
   /**
-   * \param hdr 802.11 header of returned packet (if exists).
    * \param removePacket flag to indicate whether the packet should be removed from the queue.
    *
    * \return the packet
@@ -163,7 +163,7 @@ public:
    * This methods returns a packet (if exists) indicated as not received in
    * corresponding block ack bitmap.
    */
-  Ptr<const Packet> GetNextPacket (WifiMacHeader &hdr, bool removePacket);
+  Ptr<WifiMacQueueItem> GetNextPacket (bool removePacket);
   /**
    * Returns true if the BAR is scheduled. Returns false otherwise.
    *
@@ -373,9 +373,9 @@ public:
    * \param tid Traffic ID
    * \param timestamp timestamp
    *
-   * \returns Ptr<const Packet>
+   * \returns Ptr<const WifiMacQueueItem>
    */
-  Ptr<const Packet> PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, uint8_t tid, Time *timestamp);
+  Ptr<const WifiMacQueueItem> PeekNextPacketByTidAndAddress (uint8_t tid, Mac48Address recipient);
   /**
    * This function returns true if the lifetime of the packets a BAR refers to didn't expire yet else it returns false.
    * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
@@ -454,19 +454,18 @@ private:
    */
   void InactivityTimeout (Mac48Address recipient, uint8_t tid);
 
-  struct Item;
   /**
-   * typedef for a list of Item struct.
+   * typedef for a list of WifiMacQueueItem.
    */
-  typedef std::list<Item> PacketQueue;
+  typedef std::list<WifiMacQueueItem> PacketQueue;
   /**
    * typedef for an iterator for PacketQueue.
    */
-  typedef std::list<Item>::iterator PacketQueueI;
+  typedef std::list<WifiMacQueueItem>::iterator PacketQueueI;
   /**
    * typedef for a const iterator for PacketQueue.
    */
-  typedef std::list<Item>::const_iterator PacketQueueCI;
+  typedef std::list<WifiMacQueueItem>::const_iterator PacketQueueCI;
   /**
    * typedef for a map between MAC address and block ACK agreement.
    */
@@ -483,26 +482,6 @@ private:
   typedef std::map<std::pair<Mac48Address, uint8_t>,
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
-  /**
-   * A struct for packet, Wifi header, and timestamp.
-   * Used in queue by block ACK manager.
-   */
-  struct Item
-  {
-    /**
-     * Constructor
-     *
-     * \param packet packet
-     * \param hdr packet header
-     * \param tStamp timestamp
-     */
-    Item (Ptr<const Packet> packet,
-          const WifiMacHeader &hdr,
-          Time tStamp);
-    Ptr<const Packet> packet; ///< packet
-    WifiMacHeader hdr; ///< header
-    Time timestamp; ///< timestamp
-  };
   /**
    * \param item
    *

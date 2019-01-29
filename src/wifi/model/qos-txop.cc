@@ -174,7 +174,22 @@ QosTxop::PeekNextSequenceNumberFor (WifiMacHeader *hdr)
 Ptr<const Packet>
 QosTxop::PeekNextRetransmitPacket (WifiMacHeader &header, uint8_t tid, Time *timestamp)
 {
-  return m_baManager->PeekNextPacketByTidAndAddress (header, tid, timestamp);
+  Ptr<const WifiMacQueueItem> item = m_baManager->PeekNextPacketByTidAndAddress (tid, header.GetAddr1 ());
+
+  if (!item)
+    {
+      return 0;
+    }
+
+  header = item->GetHeader ();
+  *timestamp = item->GetTimeStamp ();
+  return item->GetPacket ();
+}
+
+Ptr<const WifiMacQueueItem>
+QosTxop::PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient)
+{
+  return m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
 }
 
 void
@@ -204,10 +219,16 @@ QosTxop::NotifyAccessGranted (void)
           return;
         }
       /* check if packets need retransmission are stored in BlockAckManager */
-      m_currentPacket = m_baManager->GetNextPacket (m_currentHdr, true);
-      if (m_currentPacket == 0)
+      Ptr<const WifiMacQueueItem> item = m_baManager->GetNextPacket (true);
+      if (item != 0)
         {
-          Ptr<const WifiMacQueueItem> item = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
+          m_currentPacket = item->GetPacket ();
+          m_currentHdr = item->GetHeader ();
+          m_currentPacketTimestamp = item->GetTimeStamp ();
+        }
+      else
+        {
+          item = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
           if (item == 0)
             {
               NS_LOG_DEBUG ("no available packets in the queue");
@@ -360,18 +381,19 @@ void QosTxop::NotifyInternalCollision (void)
   WifiMacHeader header;
   if (m_currentPacket == 0)
     {
+      Ptr<const WifiMacQueueItem> item;
       if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->GetNextPacket (header, false);
+          item = m_baManager->GetNextPacket (false);
         }
       else
         {
-          Ptr<const WifiMacQueueItem> item = m_queue->Peek ();
-          if (item)
-            {
-              packet = item->GetPacket ();
-              header = item->GetHeader ();
-            }
+          item = m_queue->Peek ();
+        }
+      if (item)
+        {
+          packet = item->GetPacket ();
+          header = item->GetHeader ();
         }
     }
   else
@@ -843,7 +865,12 @@ QosTxop::RestartAccessIfNeeded (void)
         }
       else if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->GetNextPacket (hdr, false);
+          Ptr<const WifiMacQueueItem> item = m_baManager->GetNextPacket (false);
+          if (item)
+            {
+              packet = item->GetPacket ();
+              hdr = item->GetHeader ();
+            }
         }
       else
         {
@@ -852,7 +879,6 @@ QosTxop::RestartAccessIfNeeded (void)
             {
               packet = item->GetPacket ();
               hdr = item->GetHeader ();
-              m_currentPacketTimestamp = item->GetTimeStamp ();
             }
         }
       if (packet != 0)
@@ -879,7 +905,13 @@ QosTxop::StartAccessIfNeeded (void)
       WifiMacHeader hdr;
       if (m_baManager->HasPackets ())
         {
-          packet = m_baManager->GetNextPacket (hdr, false);
+          Ptr<const WifiMacQueueItem> item = m_baManager->GetNextPacket (false);
+          if (item)
+            {
+              packet = item->GetPacket ();
+              hdr = item->GetHeader ();
+              m_currentPacketTimestamp = item->GetTimeStamp ();
+            }
         }
       else
         {
@@ -937,11 +969,16 @@ QosTxop::StartNextPacket (void)
   Time txopLimit = GetTxopLimit ();
   NS_ASSERT (txopLimit.IsZero () || Simulator::Now () - m_startTxop <= txopLimit);
   WifiMacHeader hdr = m_currentHdr;
-  Ptr<const Packet> peekedPacket = m_baManager->GetNextPacket (hdr, true);
-  if (peekedPacket == 0)
+  Ptr<const Packet> peekedPacket;
+  Ptr<const WifiMacQueueItem> peekedItem = m_baManager->GetNextPacket (true);
+  if (peekedItem)
     {
-      Ptr<const WifiMacQueueItem> peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
-                                                                             m_currentHdr.GetAddr1 ());
+      peekedPacket = peekedItem->GetPacket ();
+      hdr = peekedItem->GetHeader ();
+    }
+  else
+    {
+      peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (), m_currentHdr.GetAddr1 ());
       if (peekedItem)
         {
           peekedPacket = peekedItem->GetPacket ();
