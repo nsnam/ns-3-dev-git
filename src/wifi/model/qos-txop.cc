@@ -160,13 +160,13 @@ QosTxop::GetTypeOfStation (void) const
 }
 
 uint16_t
-QosTxop::GetNextSequenceNumberFor (WifiMacHeader *hdr)
+QosTxop::GetNextSequenceNumberFor (const WifiMacHeader *hdr)
 {
   return m_txMiddle->GetNextSequenceNumberFor (hdr);
 }
 
 uint16_t
-QosTxop::PeekNextSequenceNumberFor (WifiMacHeader *hdr)
+QosTxop::PeekNextSequenceNumberFor (const WifiMacHeader *hdr)
 {
   return m_txMiddle->PeekNextSequenceNumberFor (hdr);
 }

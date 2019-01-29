@@ -366,7 +366,7 @@ public:
    *
    * \return the next sequence number.
    */
-  uint16_t GetNextSequenceNumberFor (WifiMacHeader *hdr);
+  uint16_t GetNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
    * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged).
    *
@@ -374,7 +374,7 @@ public:
    *
    * \return the next sequence number.
    */
-  uint16_t PeekNextSequenceNumberFor (WifiMacHeader *hdr);
+  uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
    * Remove a packet after you peek in the retransmit queue and get it.
    *
