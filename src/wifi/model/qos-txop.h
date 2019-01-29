@@ -384,17 +384,6 @@ public:
   /**
    * Peek in retransmit queue and get the next packet without removing it from the queue.
    *
-   * \param header Wi-Fi header.
-   * \param tid traffic ID.
-   * \param timestamp the timestamp.
-   * \returns the packet.
-   *
-   * \todo TO BE REMOVED
-   */
-  Ptr<const Packet> PeekNextRetransmitPacket (WifiMacHeader &header, uint8_t tid, Time *timestamp);
-  /**
-   * Peek in retransmit queue and get the next packet without removing it from the queue.
-   *
    * \param tid traffic ID.
    * \param recipient the receiver station address.
    * \returns the packet.

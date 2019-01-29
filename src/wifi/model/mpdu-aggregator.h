@@ -74,28 +74,6 @@ public:
   static void Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, bool isSingle);
 
   /**
-   * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
-   * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible.
-   * \param maxAmpduSize the maximum A-MPDU size.
-   *
-   * \return true if <i>packet</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise.
-   *
-   * Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
-   * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>.
-   *
-   * \todo TO BE REMOVED
-   */
-  bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket, uint32_t maxAmpduSize) const;
-  /**
-   * \param packet the packet we want to insert into <i>aggregatedPacket</i>.
-   * \param aggregatedPacket packet that will contain the packet of size <i>packetSize</i>, if aggregation is possible.
-   *
-   * This method performs a VHT/HE single MPDU aggregation.
-   *
-   * \todo TO BE REMOVED
-   */
-  void AggregateSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const;
-  /**
    * \param mpdu the MPDU we want to insert into an A-MPDU subframe.
    * \param last true if it is the last MPDU.
    * \param isSingleMpdu true if it is a single MPDU
@@ -103,19 +81,6 @@ public:
    * Adds A-MPDU subframe header and padding to each MPDU that is part of an A-MPDU before it is sent.
    */
   void AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu) const;
-  /**
-   * \param packetSize size of the packet we want to insert into <i>aggregatedPacket</i>.
-   * \param aggregatedPacket packet that will contain the packet of size <i>packetSize</i>, if aggregation is possible.
-   * \param blockAckSize size of the piggybacked block ack request
-   * \param maxAmpduSize the maximum A-MPDU size.
-   *
-   * \return true if the packet of size <i>packetSize</i> can be aggregated to <i>aggregatedPacket</i>, false otherwise.
-   *
-   * This method is used to determine if a packet could be aggregated to an A-MPDU without exceeding the maximum packet size.
-   *
-   * \todo TO BE REMOVED
-   */
-  bool CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize, uint32_t maxAmpduSize) const;
 
   /**
    * Compute the size of the A-MPDU resulting from the aggregation of an MPDU of

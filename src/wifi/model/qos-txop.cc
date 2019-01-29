@@ -171,21 +171,6 @@ QosTxop::PeekNextSequenceNumberFor (const WifiMacHeader *hdr)
   return m_txMiddle->PeekNextSequenceNumberFor (hdr);
 }
 
-Ptr<const Packet>
-QosTxop::PeekNextRetransmitPacket (WifiMacHeader &header, uint8_t tid, Time *timestamp)
-{
-  Ptr<const WifiMacQueueItem> item = m_baManager->PeekNextPacketByTidAndAddress (tid, header.GetAddr1 ());
-
-  if (!item)
-    {
-      return 0;
-    }
-
-  header = item->GetHeader ();
-  *timestamp = item->GetTimeStamp ();
-  return item->GetPacket ();
-}
-
 Ptr<const WifiMacQueueItem>
 QosTxop::PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient)
 {

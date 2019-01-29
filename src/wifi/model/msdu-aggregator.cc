@@ -65,36 +65,6 @@ MsduAggregator::SetEdcaQueues (EdcaQueues map)
     m_edca = map;
 }
 
-bool
-MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
-                           Mac48Address src, Mac48Address dest, uint16_t maxAmsduSize) const
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<Packet> currentPacket;
-  AmsduSubframeHeader currentHdr;
-
-  uint32_t actualSize = aggregatedPacket->GetSize ();
-  uint8_t padding = CalculatePadding (actualSize);
-
-  if ((14 + packet->GetSize () + actualSize + padding) <= maxAmsduSize)
-    {
-      if (padding)
-        {
-          Ptr<Packet> pad = Create<Packet> (padding);
-          aggregatedPacket->AddAtEnd (pad);
-        }
-      currentHdr.SetDestinationAddr (dest);
-      currentHdr.SetSourceAddr (src);
-      currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
-      currentPacket = packet->Copy ();
-
-      currentPacket->AddHeader (currentHdr);
-      aggregatedPacket->AddAtEnd (currentPacket);
-      return true;
-    }
-  return false;
-}
-
 uint16_t
 MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
 {

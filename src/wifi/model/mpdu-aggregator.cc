@@ -105,55 +105,6 @@ MpduAggregator::Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, 
   ampdu->AddAtEnd (tmp);
 }
 
-bool
-MpduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket, uint32_t maxAmpduSize) const
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<Packet> currentPacket;
-  AmpduSubframeHeader currentHdr;
-
-  uint32_t actualSize = aggregatedPacket->GetSize ();
-  uint8_t padding = CalculatePadding (actualSize);
-
-  if ((4 + packet->GetSize () + actualSize + padding) <= maxAmpduSize)
-    {
-      if (padding)
-        {
-          Ptr<Packet> pad = Create<Packet> (padding);
-          aggregatedPacket->AddAtEnd (pad);
-        }
-      currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
-      currentPacket = packet->Copy ();
-
-      currentPacket->AddHeader (currentHdr);
-      aggregatedPacket->AddAtEnd (currentPacket);
-      return true;
-    }
-  return false;
-}
-
-void
-MpduAggregator::AggregateSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket) const
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<Packet> currentPacket;
-  AmpduSubframeHeader currentHdr;
-
-  uint8_t padding = CalculatePadding (aggregatedPacket->GetSize ());
-  if (padding)
-    {
-      Ptr<Packet> pad = Create<Packet> (padding);
-      aggregatedPacket->AddAtEnd (pad);
-    }
-
-  currentHdr.SetEof (1);
-  currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
-  currentPacket = packet->Copy ();
-
-  currentPacket->AddHeader (currentHdr);
-  aggregatedPacket->AddAtEnd (currentPacket);
-}
-
 void
 MpduAggregator::AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu) const
 {
@@ -175,25 +126,6 @@ MpduAggregator::AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu)
     {
       Ptr<Packet> pad = Create<Packet> (padding);
       mpdu->AddAtEnd (pad);
-    }
-}
-
-bool
-MpduAggregator::CanBeAggregated (uint32_t packetSize, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize, uint32_t maxAmpduSize) const
-{
-  uint32_t actualSize = aggregatedPacket->GetSize ();
-  uint8_t padding = CalculatePadding (actualSize);
-  if (blockAckSize > 0)
-    {
-      blockAckSize = blockAckSize + 4 + padding;
-    }
-  if ((4 + packetSize + actualSize + padding + blockAckSize) <= maxAmpduSize)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
     }
 }
 
