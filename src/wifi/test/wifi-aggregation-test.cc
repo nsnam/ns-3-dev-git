@@ -103,6 +103,10 @@ AmpduAggregationTest::DoRun (void)
    * Configure MPDU aggregation.
    */
   m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
+  HtCapabilities htCapabilities;
+  htCapabilities.SetMaxAmpduLength (65535);
+  m_manager->AddStationHtCapabilities (Mac48Address ("00:00:00:00:00:02"), htCapabilities);
+  m_manager->AddStationHtCapabilities (Mac48Address ("00:00:00:00:00:03"), htCapabilities);
 
   /*
    * Create a dummy packet of 1500 bytes and fill mac header fields.
@@ -141,8 +145,9 @@ AmpduAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = pkt->Copy ();
   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket, &m_mac->GetBEQueue ()->GetLow ()->m_currentHdr);
 
-  bool isAmpdu = m_mac->GetBEQueue ()->GetLow ()->IsAmpdu (pkt, hdr);
-  NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "a single packet should not result in an A-MPDU");
+  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
+                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet should not result in an A-MPDU");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
   //-----------------------------------------------------------------------------------------------------
@@ -167,9 +172,19 @@ AmpduAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt1, hdr1));
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt2, hdr2));
 
-  isAmpdu = m_mac->GetBEQueue ()->GetLow ()->IsAmpdu (pkt, hdr);
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
+                                                                                   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<Packet> ();
+  for (auto& mpdu : mpduList)
+    {
+      m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()->Aggregate (mpdu,
+                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentPacket,
+                                                                        false);
+      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Enqueue (Create<WifiMacQueueItem> (*mpdu));
+    }
+
   uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets ();
-  NS_TEST_EXPECT_MSG_EQ (isAmpdu, true, "MPDU aggregation failed");
+  NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), false, "MPDU aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetSize (), 4606, "A-MPDU size is not correct");
   NS_TEST_EXPECT_MSG_EQ (aggregationQueueSize, 3, "aggregation queue should not be empty");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetWifiMacQueue ()->GetNPackets (), 0, "queue should be empty");
@@ -201,7 +216,7 @@ AmpduAggregationTest::DoRun (void)
   hdr1.SetSequenceNumber (3);
   hdr2.SetAddr1 (Mac48Address ("00:00:00:00:00:03"));
   hdr2.SetAddr2 (Mac48Address ("00:00:00:00:00:01"));
-  hdr2.SetType (WIFI_MAC_DATA);
+  hdr2.SetType (WIFI_MAC_QOSDATA);
   hdr2.SetQosTid (0);
 
   Ptr<const Packet> pkt3 = Create<Packet> (1500);
@@ -209,19 +224,21 @@ AmpduAggregationTest::DoRun (void)
   hdr3.SetSequenceNumber (0);
   hdr3.SetAddr1 (Mac48Address ("00:00:00:00:00:03"));
   hdr3.SetAddr2 (Mac48Address ("00:00:00:00:00:01"));
-  hdr3.SetType (WIFI_MAC_DATA);
+  hdr3.SetType (WIFI_MAC_QOSDATA);
   hdr3.SetQosTid (0);
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt3, hdr3));
 
-  isAmpdu = m_mac->GetBEQueue ()->GetLow ()->IsAmpdu (pkt1, hdr1);
-  NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "a single packet for this destination should not result in an A-MPDU");
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt1, hdr1),
+                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet for this destination should not result in an A-MPDU");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
   m_mac->GetBEQueue ()->m_currentHdr = hdr2;
   m_mac->GetBEQueue ()->m_currentPacket = pkt2->Copy ();
-  isAmpdu = m_mac->GetBEQueue ()->GetLow ()->IsAmpdu (pkt2, hdr2);
-  NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "no MPDU aggregation should be performed if there is no agreement");
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt2, hdr2),
+                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "no MPDU aggregation should be performed if there is no agreement");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
   m_manager->SetMaxSsrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
@@ -310,6 +327,10 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_mac->SetAttribute ("BE_MaxAmsduSize", UintegerValue (4095));
   m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
+  HtCapabilities htCapabilities;
+  htCapabilities.SetMaxAmsduLength (7935);
+  htCapabilities.SetMaxAmpduLength (65535);
+  m_manager->AddStationHtCapabilities (Mac48Address ("00:00:00:00:00:01"), htCapabilities);
 
   /*
    * Create dummy packets of 1500 bytes and fill mac header fields that will be used for the tests.
@@ -326,7 +347,7 @@ TwoLevelAggregationTest::DoRun (void)
   //-----------------------------------------------------------------------------------------------------
 
   /*
-   * Test MSDU aggregation of two packets using MacLow::PerformMsduAggregation.
+   * Test MSDU aggregation of two packets using MsduAggregator::GetNextAmsdu.
    * It checks whether aggregation succeeded:
    *      - returned packet should be different from 0;
    *      - A-MSDU frame size should be 3030 bytes (= 2 packets + headers + padding);
@@ -343,11 +364,13 @@ TwoLevelAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetLow ()->m_currentHdr = peekedHdr;
   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket, &m_mac->GetBEQueue ()->GetLow ()->m_currentHdr);
 
-  Ptr<Packet> packet = m_mac->GetBEQueue ()->GetLow ()->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
-
-  bool result = (packet != 0);
+  Ptr<WifiMacQueueItem> item;
+  item = m_mac->GetBEQueue ()->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (hdr.GetAddr1 (), 0,
+                                                                              m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector,
+                                                                              currentAggregatedPacket->GetSize ());
+  bool result = (item != 0);
   NS_TEST_EXPECT_MSG_EQ (result, true, "aggregation failed");
-  NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 3030, "wrong packet size");
+  NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetSize (), 3030, "wrong packet size");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetWifiMacQueue ()->GetNPackets (), 0, "aggregated packets not removed from the queue");
 
   //-----------------------------------------------------------------------------------------------------
@@ -355,14 +378,17 @@ TwoLevelAggregationTest::DoRun (void)
   /*
    * Aggregation is refused when the maximum size is reached.
    * It checks whether MSDU aggregation has been rejected because the maximum MPDU size is set to 0 (returned packet should be equal to 0).
-   * This test is needed to ensure that no packets are removed from the queue in MacLow::PerformMsduAggregation, since aggregation will no occur in MacLow::AggregateToAmpdu.
+   * This test is needed to ensure that no packets are removed from the queue in
+   * MsduAggregator::GetNextAmsdu, since aggregation will no occur in MacLow::AggregateToAmpdu.
    */
   m_mac->SetAttribute ("BE_MaxAmpduSize", UintegerValue (65535));
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
-  packet = m_mac->GetBEQueue ()->GetLow ()->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
 
-  result = (packet != 0);
+  item = m_mac->GetBEQueue ()->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (hdr.GetAddr1 (), 0,
+                                                                              m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector,
+                                                                              currentAggregatedPacket->GetSize ());
+  result = (item != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "maximum aggregated frame size check failed");
 
   //-----------------------------------------------------------------------------------------------------
@@ -376,9 +402,12 @@ TwoLevelAggregationTest::DoRun (void)
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Remove (pkt);
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Remove (pkt);
-  packet = m_mac->GetBEQueue ()->GetLow ()->PerformMsduAggregation (peekedPacket, &peekedHdr, &tstamp, currentAggregatedPacket, 0);
 
-  result = (packet != 0);
+  item = m_mac->GetBEQueue ()->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (hdr.GetAddr1 (), 0,
+                                                                              m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector,
+                                                                              currentAggregatedPacket->GetSize ());
+
+  result = (item != 0);
   NS_TEST_EXPECT_MSG_EQ (result, false, "aggregation failed to stop as queue is empty");
 
   Simulator::Destroy ();
@@ -458,6 +487,12 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   m_device->SetMac (m_mac);
 
   /*
+   * Configure aggregation.
+   */
+  HeCapabilities heCapabilities;
+  m_manager->AddStationHeCapabilities (Mac48Address ("00:00:00:00:00:02"), heCapabilities);
+
+  /*
    * Create a dummy packet of 100 bytes and fill mac header fields.
    */
   Ptr<const Packet> pkt = Create<Packet> (100);
@@ -508,8 +543,14 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
       m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
   }
 
-  bool isAmpdu = m_mac->GetBEQueue ()->GetLow ()->IsAmpdu (pkt, hdr);
-  NS_TEST_EXPECT_MSG_EQ (isAmpdu, true, "MPDU aggregation failed");
+  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
+                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  for (auto& mpdu : mpduList)
+    {
+      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Enqueue (Create<WifiMacQueueItem> (*mpdu));
+    }
+
+  NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), false, "MPDU aggregation failed");
   uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets ();
   NS_TEST_EXPECT_MSG_EQ (aggregationQueueSize, bufferSize, "aggregation queue should countain " << bufferSize << " MPDUs");
   uint16_t expectedRemainingPacketsInQueue = 300 - bufferSize + 1;

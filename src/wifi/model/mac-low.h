@@ -404,6 +404,7 @@ public:
    *
    * This function adds the packets that will be added to an A-MPDU to an aggregate queue
    *
+   * \todo TO BE REMOVED
    */
   Ptr<Packet> AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr);
   /**
@@ -453,6 +454,8 @@ public:
    *
    * \param ac the AC index
    * \return the maximum A-MSDU size (in bytes)
+   *
+   * \todo TO BE REMOVED
    */
   uint16_t GetMaxAmsduSize (AcIndex ac) const;
   /**
@@ -460,6 +463,8 @@ public:
    *
    * \param ac the AC index
    * \return the maximum A-MPDU size (in bytes)
+   *
+   * \todo TO BE REMOVED
    */
   uint32_t GetMaxAmpduSize (AcIndex ac) const;
 
@@ -526,6 +531,7 @@ private:
    *
    * This function decides if a given packet can be added to an A-MPDU or not
    *
+   * \todo TO BE REMOVED
    */
   bool StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize) const;
   /**
@@ -891,6 +897,8 @@ private:
    * \param packet packet to check whether it can be aggregated in an A-MPDU
    * \param hdr 802.11 header for packet to check whether it can be aggregated in an A-MPDU
    * \returns true if is A-MPDU
+   *
+   * \todo TO BE REMOVED
    */
   bool IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr);
   /**
@@ -911,6 +919,8 @@ private:
    * \param blockAckSize size of the piggybacked block ack request
    *
    * \return the aggregate if MSDU aggregation succeeded, 0 otherwise
+   *
+   * \todo TO BE REMOVED
    */
   Ptr<Packet> PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Time *tstamp, Ptr<Packet> currentAmpduPacket, uint8_t blockAckSize);
 

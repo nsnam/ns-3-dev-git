@@ -563,10 +563,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
       m_txParams.DisableRts ();
     }
 
-  if (m_currentHdr.IsMgt ()
-      || (!m_currentHdr.IsQosData ()
-          && !m_currentHdr.IsBlockAck ()
-          && !m_currentHdr.IsBlockAckReq ()))
+  if (!m_currentHdr.IsQosData () || m_currentHdr.GetAddr1 ().IsBroadcast ())
     {
       //This is mainly encountered when a higher priority control or management frame is
       //sent between A-MPDU transmissions. It avoids to unexpectedly flush the aggregate
@@ -597,45 +594,106 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
           //VHT/HE single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();
         }
-      AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
       Ptr<Packet> aggregatedPacket = Create<Packet> ();
       for (uint32_t i = 0; i < sentMpdus; i++)
         {
-          Ptr<Packet> newPacket = (m_txPackets[GetTid (packet, *hdr)].at (i)->GetPacket ())->Copy ();
-          newPacket->AddHeader (m_txPackets[GetTid (packet, *hdr)].at (i)->GetHeader ());
-          AddWifiMacTrailer (newPacket);
-          m_mpduAggregator->Aggregate (newPacket, aggregatedPacket, GetMaxAmpduSize (ac));
+          Ptr<const WifiMacQueueItem> newPacket;
+          newPacket = Create<const WifiMacQueueItem> (m_txPackets[GetTid (packet, *hdr)].at (i)->GetPacket (),
+                                                      m_txPackets[GetTid (packet, *hdr)].at (i)->GetHeader ());
+          m_mpduAggregator->Aggregate (newPacket, aggregatedPacket, false);
         }
       m_currentPacket = aggregatedPacket;
       m_currentHdr = (m_txPackets[GetTid (packet, *hdr)].at (0)->GetHeader ());
       m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
     }
-  else
+  else if (m_mpduAggregator != 0)
     {
       //Perform MPDU aggregation if possible
-      m_ampdu = IsAmpdu (m_currentPacket, m_currentHdr);
-      if (m_ampdu)
+      uint8_t tid = GetTid (packet, *hdr);
+      Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
+      std::vector<Ptr<WifiMacQueueItem>> mpduList;
+
+      mpduList = m_mpduAggregator->GetNextAmpdu (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                                 m_currentTxVector);
+
+      if (mpduList.size () > 1)
         {
-          AmpduTag ampdu;
-          m_currentPacket->PeekPacketTag (ampdu);
-          if (ampdu.GetRemainingNbOfMpdus () > 0)
+          m_ampdu = true;
+          m_currentPacket = Create<Packet> ();
+
+          for (auto& mpdu : mpduList)
             {
-              AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
-              std::map<AcIndex, Ptr<QosTxop> >::const_iterator edcaIt = m_edca.find (ac);
-              if (edcaIt->second->GetBaBufferSize (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()) > 64)
+              // Aggregate the MPDU to the A-MPDU
+              m_mpduAggregator->Aggregate (mpdu, m_currentPacket, false);
+
+              // Store the MPDU in the aggregate queue
+              NS_LOG_DEBUG ("Adding packet with sequence number " << mpdu->GetHeader ().GetSequenceNumber ()
+                            << " to A-MPDU, packet size = " << mpdu->GetSize ()
+                            << ", A-MPDU size = " << m_currentPacket->GetSize ());
+              m_aggregateQueue[tid]->Enqueue (mpdu);
+
+              // Complete the processing of the MPDU
+              if (mpdu->GetHeader ().IsQosData ())
                 {
-                  m_txParams.EnableExtendedCompressedBlockAck ();
-                }
-              else 
-                {
-                  m_txParams.EnableCompressedBlockAck ();
+                  if (!m_txParams.MustSendRts ())
+                    {
+                      qosTxop->CompleteMpduTx (mpdu);
+                    }
+                  else
+                    {
+                      InsertInTxQueue (mpdu, tid);
+                    }
                 }
             }
-          else if (m_currentHdr.IsQosData ())
+
+          // assume implicit block ack for now
+          qosTxop->CompleteAmpduTransfer (hdr->GetAddr1 (), tid);
+
+          if (qosTxop->GetBaBufferSize (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()) > 64)
             {
-              //VHT/HE single MPDUs are followed by normal ACKs
-              m_txParams.EnableAck ();
+              m_txParams.EnableExtendedCompressedBlockAck ();
             }
+          else
+            {
+              m_txParams.EnableCompressedBlockAck ();
+            }
+
+          NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
+          qosTxop->SetAmpduExist (hdr->GetAddr1 (), true);
+        }
+      else if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
+               || m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+        {
+          // VHT/HE single MPDU
+          m_currentHdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
+
+          m_ampdu = true;
+          Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr);
+          m_currentPacket = Create<Packet> ();
+
+          m_mpduAggregator->Aggregate (mpdu, m_currentPacket, true);
+
+          // Store the MPDU in the aggregate queue
+          NS_LOG_DEBUG ("Adding packet with sequence number " << mpdu->GetHeader ().GetSequenceNumber ()
+                        << " to S-MPDU, packet size = " << mpdu->GetSize ()
+                        << ", S-MPDU size = " << m_currentPacket->GetSize ());
+          m_aggregateQueue[tid]->Enqueue (mpdu);
+
+          // Complete the processing of the MPDU
+          if (m_txParams.MustSendRts ())
+            {
+              InsertInTxQueue (mpdu, tid);
+            }
+
+          if (qosTxop->GetBaAgreementEstablished (hdr->GetAddr1 (), tid))
+            {
+              qosTxop->CompleteAmpduTransfer (hdr->GetAddr1 (), tid);
+            }
+
+          //VHT/HE single MPDUs are followed by normal ACKs
+          m_txParams.EnableAck ();
+          NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr->GetSequenceNumber ());
+          qosTxop->SetAmpduExist (hdr->GetAddr1 (), true);
         }
       else if (m_currentHdr.IsQosData () && !m_currentHdr.IsQosBlockAck () && !hdr->GetAddr1 ().IsGroup ())
         {

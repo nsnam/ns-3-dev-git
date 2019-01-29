@@ -235,6 +235,7 @@ QosTxop::NotifyAccessGranted (void)
               return;
             }
           m_currentHdr = item->GetHeader ();
+          m_currentPacket = item->GetPacket ();
           m_currentPacketTimestamp = item->GetTimeStamp ();
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
               && m_stationManager->GetQosSupported (m_currentHdr.GetAddr1 ())
@@ -244,7 +245,24 @@ QosTxop::NotifyAccessGranted (void)
             {
               return;
             }
-          item = m_queue->DequeueFirstAvailable (m_qosBlockedDestinations);
+          // Try A-MSDU aggregation
+          WifiTxVector txVector = m_low->GetDataTxVector (item->GetPacket (), &item->GetHeader ());
+          item = 0;
+          if (m_low->GetMsduAggregator () != 0 && m_currentHdr.IsQosData ()
+              && !m_currentHdr.GetAddr1 ().IsBroadcast () && !NeedFragmentation ())
+            {
+              item = m_low->GetMsduAggregator ()->GetNextAmsdu (m_currentHdr.GetAddr1 (),
+                                                                m_currentHdr.GetQosTid (), txVector);
+            }
+          if (item != 0)
+            {
+              NS_LOG_DEBUG ("tx unicast A-MSDU");
+            }
+          else // dequeue the packet if aggregation was not attempted or failed
+            {
+              item = m_queue->DequeueFirstAvailable (m_qosBlockedDestinations);
+            }
+          NS_ASSERT (item != 0);
           m_currentPacket = item->GetPacket ();
           m_currentHdr = item->GetHeader ();
           m_currentPacketTimestamp = item->GetTimeStamp ();
@@ -313,54 +331,6 @@ QosTxop::NotifyAccessGranted (void)
       else
         {
           m_currentIsFragmented = false;
-          WifiMacHeader peekedHdr;
-          Ptr<const WifiMacQueueItem> item;
-          Ptr<MsduAggregator> msduAggregator = GetLow ()->GetMsduAggregator ();
-          if (m_currentHdr.IsQosData ()
-              && (item = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
-                                                       m_currentHdr.GetAddr1 ()))
-              && !m_currentHdr.GetAddr1 ().IsBroadcast ()
-              && msduAggregator != 0 && !m_currentHdr.IsRetry ())
-            {
-              peekedHdr = item->GetHeader ();
-              /* here is performed aggregation */
-              Ptr<Packet> currentAggregatedPacket = Create<Packet> ();
-              msduAggregator->Aggregate (m_currentPacket, currentAggregatedPacket,
-                                           MapSrcAddressForAggregation (peekedHdr),
-                                           MapDestAddressForAggregation (peekedHdr),
-                                           GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
-              bool aggregated = false;
-              bool isAmsdu = false;
-              Ptr<const WifiMacQueueItem> peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
-                                                                                     m_currentHdr.GetAddr1 ());
-              while (peekedItem != 0)
-                {
-                  peekedHdr = peekedItem->GetHeader ();
-                  aggregated = msduAggregator->Aggregate (peekedItem->GetPacket (), currentAggregatedPacket,
-                                                            MapSrcAddressForAggregation (peekedHdr),
-                                                            MapDestAddressForAggregation (peekedHdr),
-                                                            GetLow ()->GetMaxAmsduSize (QosUtilsMapTidToAc (m_currentHdr.GetQosTid ())));
-                  if (aggregated)
-                    {
-                      isAmsdu = true;
-                      m_queue->Remove (peekedItem->GetPacket ());
-                    }
-                  else
-                    {
-                      break;
-                    }
-                  peekedItem = m_queue->PeekByTidAndAddress (m_currentHdr.GetQosTid (),
-                                                             m_currentHdr.GetAddr1 ());
-                }
-              if (isAmsdu)
-                {
-                  m_currentHdr.SetQosAmsdu ();
-                  m_currentHdr.SetAddr3 (m_low->GetBssid ());
-                  m_currentPacket = currentAggregatedPacket;
-                  currentAggregatedPacket = 0;
-                  NS_LOG_DEBUG ("tx unicast A-MSDU");
-                }
-            }
           m_currentParams.DisableNextData ();
           m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
           if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
