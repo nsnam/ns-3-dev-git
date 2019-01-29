@@ -360,10 +360,6 @@ FlowMonitor::Start (const Time &time)
 void
 FlowMonitor::Stop (const Time &time)
 {
-  if (!m_enabled)
-    {
-      return;
-    }
   Simulator::Cancel (m_stopEvent);
   m_stopEvent = Simulator::Schedule (time, &FlowMonitor::StopRightNow, this);
 }
