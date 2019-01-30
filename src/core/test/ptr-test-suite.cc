@@ -182,7 +182,18 @@ PtrTestCase::DoRun (void)
   {
     Ptr<NoCount> p;
     p = Create<NoCount> (this);
+#if defined(__clang__)
+  #if __has_warning("-Wself-assign-overloaded")
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wself-assign-overloaded"
+  #endif
+#endif
     p = p;
+#if defined(__clang__)
+  #if __has_warning("-Wself-assign-overloaded")
+    #pragma clang diagnostic pop
+  #endif
+#endif
   }
   NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "002");
 

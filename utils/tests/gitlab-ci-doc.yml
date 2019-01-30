@@ -1,0 +1,54 @@
+# NS3 CI script for the documentation
+# For the moment we do not install the generated documentation
+#
+.doc:
+  stage: documentation
+  before_script:
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+    - apt-get install -y doxygen graphviz make imagemagick dia texlive texlive-font-utils python3-sphinx latexmk texlive texlive-science texlive-formats-extra texlive-base python3-jinja2 python3-pygments texlive-fonts-extra
+    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-6/policy.xml
+    - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-6/policy.xml
+  image: ubuntu
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+doxygen:
+  extends: .doc
+  script:
+#    - mkdir -p public/doxygen
+    - doxygen doc/doxygen.conf
+#    - mv doc/html/ public/doxygen
+
+manual:
+  extends: .doc
+  script:
+#    - mkdir -p public/manual
+    - cd doc/manual
+    - make html
+    - make latexpdf
+#    - mv build/html ../../public/manual
+#    - mv build/latex/ns-3-manual.pdf ../../public/
+
+tutorial:
+  extends: .doc
+  script:
+#    - mkdir -p public/manual
+    - cd doc/tutorial
+    - make html
+    - make latexpdf
+#    - mv build/html ../../public/manual
+#    - mv build/latex/ns-3-tutorial.pdf ../../public/
+
+models:
+  extends: .doc
+  script:
+#    - mkdir -p public/models
+    - cd doc/models
+    - make html
+    - make latexpdf
+#    - mv build/html ../../public/models
+#    - mv build/latex/ns-3-model-library.pdf ../../public

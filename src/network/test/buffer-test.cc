@@ -189,7 +189,18 @@ BufferTest::DoRun (void)
   // test self-assignment
   {
     Buffer a = o;
+#if defined(__clang__)
+  #if __has_warning("-Wself-assign-overloaded")
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wself-assign-overloaded"
+  #endif
+#endif
     a = a;
+#if defined(__clang__)
+  #if __has_warning("-Wself-assign-overloaded")
+    #pragma clang diagnostic pop
+  #endif
+#endif
   }
 
   // test Remove start.

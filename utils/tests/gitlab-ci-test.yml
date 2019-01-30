@@ -1,0 +1,59 @@
+# NS3 CI script for testing
+
+# Defines the steps to run the tests
+# Inherit with "extends: .base-test" and remember to set
+# the following variables: COMPILER (g++, clang++, ...) and
+# MODE (debug, release, optimized)
+
+.base-test:
+  stage: test
+  script:
+    - mkdir -p $CCACHE_BASEDIR_VALUE
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
+    - ./test.py
+  cache:
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+
+# Run the test.py script with files compiled in debug mode
+daily-test-debug:
+  extends: .base-test
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: debug
+  only:
+    variables:
+      - $RELEASE == "daily"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+# Run the test.py script with files compiled in release mode
+daily-test-release:
+  extends: .base-test
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: release
+  only:
+    variables:
+      - $RELEASE == "daily"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+# Run the test.py script with files compiled in optimized mode
+daily-test-optimized:
+  extends: .base-test
+  image: base/archlinux
+  variables:
+    COMPILER: g++
+    MODE: optimized
+  only:
+    variables:
+      - $RELEASE == "daily"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
