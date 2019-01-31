@@ -1984,7 +1984,7 @@ MacLow::SendDataPacket (void)
           //the rate chosen to transmit the frame must be supported by both the addressed recipient STA and the STA to which the ACK is intended.
           //This ideally requires the rate manager to handle this case, but this requires to update all rate manager classes.
           //Instead, we simply fetch two TxVector and we select the one with the lowest datarate.
-          //This should be later changed, at the latest once HCCA is implemented for HT/VHT stations.
+          //This should be later changed, at the latest once HCCA is implemented for HT/VHT/HE stations.
           WifiMacHeader tmpHdr = m_currentHdr;
           tmpHdr.SetAddr1 (m_cfAckInfo.address);
           WifiTxVector tmpTxVector = GetDataTxVector (packet, &tmpHdr);
