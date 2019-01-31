@@ -3818,6 +3818,8 @@ WifiPhy::AbortCurrentReception ()
   m_interference.NotifyRxEnd ();
   m_state->SwitchFromRxAbort ();
   m_currentEvent = 0;
+  m_plcpSuccess = false;
+  m_mpdusNum = 0;
 }
 
 void
