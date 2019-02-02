@@ -605,8 +605,6 @@ private:
   Time m_addBaResponseTimeout;                      //!< timeout for ADDBA response
   Time m_failedAddBaTimeout;                        //!< timeout after failed BA agreement
 
-  TracedValue<uint32_t> m_backoffTrace;   //!< backoff trace value
-  TracedValue<uint32_t> m_cwTrace;        //!< CW trace value
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };
 

@@ -74,14 +74,6 @@ QosTxop::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&QosTxop::m_baManager),
                    MakePointerChecker<BlockAckManager> ())
-    .AddTraceSource ("BackoffTrace",
-                     "Trace source for backoff values",
-                     MakeTraceSourceAccessor (&QosTxop::m_backoffTrace),
-                     "ns3::TracedValueCallback::Uint32")
-    .AddTraceSource ("CwTrace",
-                     "Trace source for contention window values",
-                     MakeTraceSourceAccessor (&QosTxop::m_cwTrace),
-                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("TxopTrace",
                      "Trace source for txop start and duration times",
                      MakeTraceSourceAccessor (&QosTxop::m_txopTrace),
@@ -440,8 +432,9 @@ void QosTxop::NotifyInternalCollision (void)
           UpdateFailedCw ();
         }
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -449,8 +442,9 @@ void
 QosTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -512,8 +506,9 @@ QosTxop::MissedCts (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -571,8 +566,9 @@ QosTxop::GotAck (void)
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
             }
           m_cwTrace = GetCw ();
-          m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-          StartBackoffNow (m_backoffTrace);
+          m_backoff = m_rng->GetInteger (0, GetCw ());
+          m_backoffTrace (m_backoff);
+          StartBackoffNow (m_backoff);
           RestartAccessIfNeeded ();
         }
     }
@@ -585,8 +581,9 @@ QosTxop::GotAck (void)
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
               m_cwTrace = GetCw ();
-              m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-              StartBackoffNow (m_backoffTrace);
+              m_backoff = m_rng->GetInteger (0, GetCw ());
+              m_backoffTrace (m_backoff);
+              StartBackoffNow (m_backoff);
               m_fragmentNumber++;
               RestartAccessIfNeeded ();
             }
@@ -671,8 +668,9 @@ QosTxop::MissedAck (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -745,8 +743,9 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
       ResetCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -999,8 +998,9 @@ QosTxop::EndTxNoAck (void)
   m_currentPacket = 0;
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   StartAccessIfNeeded ();
 }
 
@@ -1329,8 +1329,9 @@ QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recip
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
         }
       m_cwTrace = GetCw ();
-      m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-      StartBackoffNow (m_backoffTrace);
+      m_backoff = m_rng->GetInteger (0, GetCw ());
+      m_backoffTrace (m_backoff);
+      StartBackoffNow (m_backoff);
       RestartAccessIfNeeded ();
     }
 }
@@ -1600,8 +1601,9 @@ QosTxop::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-  StartBackoffNow (m_backoffTrace);
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
 }
 
 void
@@ -1633,8 +1635,9 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
     {
       m_baManager->NotifyAgreementNoReply (recipient, tid);
       Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
-      m_backoffTrace = m_rng->GetInteger (0, GetCw ());
-      StartBackoffNow (m_backoffTrace);
+      m_backoff = m_rng->GetInteger (0, GetCw ());
+      m_backoffTrace (m_backoff);
+      StartBackoffNow (m_backoff);
       RestartAccessIfNeeded ();
     }
 }
@@ -1680,4 +1683,3 @@ QosTxop::IsQosTxop (void) const
 }
 
 } //namespace ns3
-
