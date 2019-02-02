@@ -295,7 +295,7 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   packet->RemoveHeader (gtpu);
   uint32_t teid = gtpu.GetTeid ();
   std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find (teid);
-  NS_ASSERT (it != m_teidRbidMap.end ());
+  NS_ASSERT_MSG (it != m_teidRbidMap.end (), "cell id = " << m_cellId);
 
   m_rxS1uSocketPktTrace (packet->Copy ());
   SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
