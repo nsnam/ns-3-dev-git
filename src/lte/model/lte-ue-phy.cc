@@ -1253,6 +1253,7 @@ LteUePhy::DoReset ()
   m_sendSrsEvent.Cancel ();
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
+  m_pssList.clear ();
 
 } // end of void LteUePhy::DoReset ()
 
