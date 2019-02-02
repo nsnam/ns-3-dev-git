@@ -1254,6 +1254,12 @@ LteUePhy::DoReset ()
   m_downlinkSpectrumPhy->Reset ();
   m_uplinkSpectrumPhy->Reset ();
   m_pssList.clear ();
+  /**
+   * Call the EndRx() method of the interference model for DL control and data
+   * to cancel any ongoing downlink reception of control and data info.
+   */
+  m_downlinkSpectrumPhy->m_interferenceCtrl->EndRx ();
+  m_downlinkSpectrumPhy->m_interferenceData->EndRx ();
 
 } // end of void LteUePhy::DoReset ()
 
