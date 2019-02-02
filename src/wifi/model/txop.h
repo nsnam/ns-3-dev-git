@@ -21,6 +21,7 @@
 #ifndef TXOP_H
 #define TXOP_H
 
+#include "ns3/traced-value.h"
 #include "mac-low-transmission-parameters.h"
 #include "wifi-mac-header.h"
 
@@ -506,6 +507,7 @@ protected:
   uint32_t m_cwMin;       //!< the CW minimum
   uint32_t m_cwMax;       //!< the CW maximum
   uint32_t m_cw;          //!< the current CW
+  uint32_t m_backoff;     //!< the current backoff
   bool m_accessRequested; //!< flag whether channel access is already requested
   uint32_t m_backoffSlots; //!< the backoff slots
   /**
@@ -522,6 +524,8 @@ protected:
   WifiMacHeader m_currentHdr; //!< the current header
   MacLowTransmissionParameters m_currentParams; ///< current transmission parameters
   uint8_t m_fragmentNumber; //!< the fragment number
+  TracedCallback<uint32_t> m_backoffTrace; //!< backoff trace value
+  TracedValue<uint32_t> m_cwTrace;         //!< CW trace value
 };
 
 } //namespace ns3

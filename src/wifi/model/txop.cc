@@ -69,6 +69,14 @@ Txop::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&Txop::GetWifiMacQueue),
                    MakePointerChecker<WifiMacQueue> ())
+    .AddTraceSource ("BackoffTrace",
+                     "Trace source for backoff values",
+                     MakeTraceSourceAccessor (&Txop::m_backoffTrace),
+                     "ns3::TracedCallback::Uint32Callback")
+    .AddTraceSource ("CwTrace",
+                     "Trace source for contention window values",
+                     MakeTraceSourceAccessor (&Txop::m_cwTrace),
+                     "ns3::TracedValueCallback::Uint32")
   ;
   return tid;
 }
@@ -78,6 +86,7 @@ Txop::Txop ()
     m_cwMin (0),
     m_cwMax (0),
     m_cw (0),
+    m_backoff (0),
     m_accessRequested (false),
     m_backoffSlots (0),
     m_backoffStart (Seconds (0.0)),
@@ -180,6 +189,7 @@ Txop::SetMinCw (uint32_t minCw)
   if (changed == true)
     {
       ResetCw ();
+      m_cwTrace = GetCw ();
     }
 }
 
@@ -192,6 +202,7 @@ Txop::SetMaxCw (uint32_t maxCw)
   if (changed == true)
     {
       ResetCw ();
+      m_cwTrace = GetCw ();
     }
 }
 
@@ -346,7 +357,10 @@ Txop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ResetCw ();
-  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+  m_cwTrace = GetCw ();
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
 }
 
 bool
@@ -519,7 +533,9 @@ void
 Txop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -580,12 +596,16 @@ Txop::MissedCts (void)
       //to reset the dcf.
       m_currentPacket = 0;
       ResetCw ();
+      m_cwTrace = GetCw ();
     }
   else
     {
       UpdateFailedCw ();
+      m_cwTrace = GetCw ();
     }
-  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -607,7 +627,10 @@ Txop::GotAck (void)
        */
       m_currentPacket = 0;
       ResetCw ();
-      StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+      m_cwTrace = GetCw ();
+      m_backoff = m_rng->GetInteger (0, GetCw ());
+      m_backoffTrace (m_backoff);
+      StartBackoffNow (m_backoff);
       RestartAccessIfNeeded ();
     }
   else
@@ -633,6 +656,7 @@ Txop::MissedAck (void)
       //to reset the dcf.
       m_currentPacket = 0;
       ResetCw ();
+      m_cwTrace = GetCw ();
     }
   else
     {
@@ -641,8 +665,11 @@ Txop::MissedAck (void)
                                           m_currentPacket->GetSize ());
       m_currentHdr.SetRetry ();
       UpdateFailedCw ();
+      m_cwTrace = GetCw ();
     }
-  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   RestartAccessIfNeeded ();
 }
 
@@ -722,7 +749,10 @@ Txop::EndTxNoAck (void)
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
   m_currentPacket = 0;
   ResetCw ();
-  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
+  m_cwTrace = GetCw ();
+  m_backoff = m_rng->GetInteger (0, GetCw ());
+  m_backoffTrace (m_backoff);
+  StartBackoffNow (m_backoff);
   if (!m_txOkCallback.IsNull ())
     {
       m_txOkCallback (m_currentHdr);
