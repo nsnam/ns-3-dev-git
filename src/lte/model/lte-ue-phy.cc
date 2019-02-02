@@ -1224,6 +1224,7 @@ LteUePhy::DoReset ()
   NS_LOG_FUNCTION (this);
 
   m_rnti = 0;
+  m_isConnected = false;
   m_transmissionMode = 0;
   m_srsPeriodicity = 0;
   m_srsConfigured = false;
