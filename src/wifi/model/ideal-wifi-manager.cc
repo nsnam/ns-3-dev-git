@@ -117,7 +117,7 @@ IdealWifiManager::DoInitialize ()
       NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName ());
       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
     }
-  // Add all Ht and Vht MCSes
+  // Add all HT, VHT and HE MCSes
   if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
       nModes = GetPhy ()->GetNMcs ();
@@ -427,7 +427,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                     {
                       continue;
                     }
-                  for (uint8_t nss = 1; nss <= GetNumberOfSupportedStreams (station); nss++)
+                  for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
                     {
                       txVector.SetNss (nss);
                       if (!txVector.IsValid ())
