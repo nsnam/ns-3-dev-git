@@ -1340,7 +1340,7 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
   NS_LOG_FUNCTION (this << mode);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT || mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
-      NS_FATAL_ERROR ("It is not allowed to add a (V)HT rate in the BSSBasicRateSet!");
+      NS_FATAL_ERROR ("It is not allowed to add a HT, VHT or HE rate in the BSSBasicRateSet!");
     }
   for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {

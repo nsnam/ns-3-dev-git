@@ -1092,11 +1092,15 @@ void
 WifiPhy::Configure80211ax (void)
 {
   NS_LOG_FUNCTION (this);
-  Configure80211n ();
   if (Is5Ghz (GetFrequency ()))
     {
       Configure80211ac ();
     }
+  else
+    {
+      Configure80211n ();
+    }
+  
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs1 ());
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs2 ());
@@ -1248,8 +1252,6 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
       ConfigureHolland ();
       break;
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-      Configure80211n ();
-      break;
     case WIFI_PHY_STANDARD_80211n_5GHZ:
       Configure80211n ();
       break;
@@ -1257,8 +1259,6 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
       Configure80211ac ();
       break;
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-      Configure80211ax ();
-      break;
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
       Configure80211ax ();
       break;
