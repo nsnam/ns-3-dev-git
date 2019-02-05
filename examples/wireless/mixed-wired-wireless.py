@@ -268,8 +268,7 @@ def main(argv):
         staDevices = wifiInfra.Install(wifiPhy, macInfra, stas)
         # setup ap.
         macInfra.SetType("ns3::ApWifiMac",
-                         "Ssid", ns.wifi.SsidValue(ssid),
-                         "BeaconInterval", ns.core.TimeValue(ns.core.Seconds(2.5)))
+                         "Ssid", ns.wifi.SsidValue(ssid))
         apDevices = wifiInfra.Install(wifiPhy, macInfra, backbone.Get(i))
         # Collect all of these new devices
         infraDevices = ns.network.NetDeviceContainer(apDevices, staDevices)
