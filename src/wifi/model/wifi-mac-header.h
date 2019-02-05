@@ -539,6 +539,12 @@ public:
    */
   uint8_t GetQosTid (void) const;
   /**
+   * Return the QoS ACK policy in the QoS control field.
+   *
+   * \return the QoS ACK policy in the QoS control field
+   */
+  QosAckPolicy GetQosAckPolicy (void) const;
+  /**
    * Return the size of the WifiMacHeader in octets.
    * GetSerializedSize calls this function.
    *

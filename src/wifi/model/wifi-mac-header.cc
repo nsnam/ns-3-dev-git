@@ -788,6 +788,32 @@ WifiMacHeader::IsQosEosp (void) const
   return (m_qosEosp == 1);
 }
 
+WifiMacHeader::QosAckPolicy
+WifiMacHeader::GetQosAckPolicy (void) const
+{
+  NS_ASSERT (IsQosData ());
+  QosAckPolicy policy;
+
+  switch (m_qosAckPolicy)
+    {
+    case 0:
+      policy = NORMAL_ACK;
+      break;
+    case 1:
+      policy = NO_ACK;
+      break;
+    case 2:
+      policy = NO_EXPLICIT_ACK;
+      break;
+    case 3:
+      policy = BLOCK_ACK;
+      break;
+    default:
+      NS_ABORT_MSG ("Unknown QoS Ack policy");
+    }
+  return policy;
+}
+
 bool
 WifiMacHeader::IsQosAmsdu (void) const
 {
