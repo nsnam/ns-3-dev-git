@@ -22,7 +22,6 @@
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/socket.h"
 #include "mac-low.h"
 #include "qos-txop.h"
 #include "snr-tag.h"
@@ -522,9 +521,6 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
    * one of the Edca of the QAP.
    */
   m_currentPacket = packet->Copy ();
-  // remove the priority tag attached, if any
-  SocketPriorityTag priorityTag;
-  m_currentPacket->RemovePacketTag (priorityTag);
   m_currentHdr = *hdr;
   CancelAllEvents ();
   m_currentTxop = txop;

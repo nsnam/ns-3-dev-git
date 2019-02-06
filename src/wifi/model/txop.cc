@@ -22,6 +22,7 @@
 #include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/socket.h"
 #include "txop.h"
 #include "channel-access-manager.h"
 #include "wifi-mac-queue.h"
@@ -307,8 +308,12 @@ void
 Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
-  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
+  Ptr<Packet> packetCopy = packet->Copy ();
+  // remove the priority tag attached, if any
+  SocketPriorityTag priorityTag;
+  packetCopy->RemovePacketTag (priorityTag);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
   StartAccessIfNeeded ();
 }
 
