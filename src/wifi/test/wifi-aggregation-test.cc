@@ -22,6 +22,7 @@
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/wifi-psdu.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mac-tx-middle.h"
@@ -141,12 +142,13 @@ AmpduAggregationTest::DoRun (void)
   /*
    * Test behavior when no other packets are in the queue
    */
-  m_mac->GetBEQueue ()->GetLow ()->m_currentHdr = hdr;
-  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = pkt->Copy ();
-  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket, &m_mac->GetBEQueue ()->GetLow ()->m_currentHdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (pkt, hdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
+    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
+     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
 
-  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
-                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu
+    (Create<const WifiMacQueueItem> (pkt, hdr), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet should not result in an A-MPDU");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
@@ -174,12 +176,9 @@ AmpduAggregationTest::DoRun (void)
 
   mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
                                                                                    m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
-  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<Packet> ();
+  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (mpduList);
   for (auto& mpdu : mpduList)
     {
-      m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()->Aggregate (mpdu,
-                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentPacket,
-                                                                        false);
       m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Enqueue (Create<WifiMacQueueItem> (*mpdu));
     }
 
@@ -236,8 +235,8 @@ AmpduAggregationTest::DoRun (void)
 
   m_mac->GetBEQueue ()->m_currentHdr = hdr2;
   m_mac->GetBEQueue ()->m_currentPacket = pkt2->Copy ();
-  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt2, hdr2),
-                                                                                        m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu
+    (Create<const WifiMacQueueItem> (pkt2, hdr2), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "no MPDU aggregation should be performed if there is no agreement");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
@@ -360,9 +359,10 @@ TwoLevelAggregationTest::DoRun (void)
   Ptr<const Packet> peekedPacket = peekedItem->GetPacket ();
   peekedHdr = peekedItem->GetHeader ();
   tstamp = peekedItem->GetTimeStamp ();
-  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = peekedPacket->Copy ();
-  m_mac->GetBEQueue ()->GetLow ()->m_currentHdr = peekedHdr;
-  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket, &m_mac->GetBEQueue ()->GetLow ()->m_currentHdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (peekedPacket, peekedHdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
+    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
+     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
 
   Ptr<WifiMacQueueItem> item;
   item = m_mac->GetBEQueue ()->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (hdr.GetAddr1 (), 0,
@@ -523,9 +523,10 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   /*
    * Prepare MacLow for transmission
    */
-  m_mac->GetBEQueue ()->GetLow ()->m_currentHdr = hdr;
-  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = pkt->Copy ();
-  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket, &m_mac->GetBEQueue ()->GetLow ()->m_currentHdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (pkt, hdr);
+  m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
+    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
+     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
 
   /*
    * Test behavior when 300 packets are ready for transmission but negociated buffer size is 64

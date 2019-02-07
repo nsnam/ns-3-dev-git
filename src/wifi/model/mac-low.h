@@ -47,6 +47,7 @@ class Txop;
 class QosTxop;
 class WifiMacQueueItem;
 class WifiMacQueue;
+class WifiPsdu;
 class BlockAckAgreement;
 class MgtAddBaResponseHeader;
 class WifiRemoteStationManager;
@@ -479,13 +480,12 @@ private:
    */
   uint32_t GetCfEndSize (void) const;
   /**
-   * Forward the packet down to WifiPhy for transmission. This is called for the entire A-MPDu when MPDU aggregation is used.
+   * Forward a PSDU down to WifiPhy for transmission.
    *
-   * \param packet the packet
-   * \param hdr the header
+   * \param psdu the PSDU
    * \param txVector the transmit vector
    */
-  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, WifiTxVector txVector);
+  void ForwardDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
   /**
    * Forward the MPDU down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
    *
@@ -898,8 +898,7 @@ private:
   EventId m_endTxNoAckEvent;            //!< Event for finishing transmission that does not require ACK
   EventId m_navCounterResetCtsMissed;   //!< Event to reset NAV when CTS is not received
 
-  Ptr<Packet> m_currentPacket;              //!< Current packet transmitted/to be transmitted
-  WifiMacHeader m_currentHdr;               //!< Header of the current transmitted packet
+  Ptr<WifiPsdu> m_currentPacket;            //!< Current packet transmitted/to be transmitted
   Ptr<Txop> m_currentTxop;                  //!< Current TXOP
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
