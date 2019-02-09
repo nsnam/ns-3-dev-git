@@ -22,7 +22,7 @@
 # Run the test.py script with files compiled in debug mode
 daily-test-debug:
   extends: .base-test
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: debug
@@ -35,7 +35,7 @@ daily-test-debug:
 # Run the test.py script with files compiled in release mode
 daily-test-release:
   extends: .base-test
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: release
@@ -48,7 +48,7 @@ daily-test-release:
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
   extends: .base-test
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: optimized

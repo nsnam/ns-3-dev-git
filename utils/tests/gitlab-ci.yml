@@ -48,7 +48,7 @@ stages:
 # Defines the per-commit jobs. They are executed for any branch
 per-commit-compile-debug:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: debug
@@ -57,7 +57,7 @@ per-commit-compile-debug:
 
 per-commit-compile-release:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: release
@@ -66,7 +66,7 @@ per-commit-compile-release:
 
 per-commit-compile-optimized:
   extends: .base-build
-  image: base/archlinux
+  image: archlinux/base
   variables:
     COMPILER: g++
     MODE: optimized
