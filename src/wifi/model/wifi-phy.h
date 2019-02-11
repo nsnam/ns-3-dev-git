@@ -446,7 +446,7 @@ public:
   * can support - a set of WifiMode objects which we call the
   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
   *
-  * \return the memebership selector whose index is specified.
+  * \return the membership selector whose index is specified.
   */
   uint8_t GetNBssMembershipSelectors (void) const;
   /**
