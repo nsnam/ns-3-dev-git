@@ -105,7 +105,6 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
 
-  m_eventCount = 0;
   m_stop = false;
   m_globalFinished = false;
   // uids are allocated from 4.
