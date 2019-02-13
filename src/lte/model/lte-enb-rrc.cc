@@ -545,7 +545,7 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
   msg.haveMobilityControlInfo = false;
   msg.radioResourceConfigDedicated = rrcd;
   msg.haveRadioResourceConfigDedicated = true;
-  // ToDo: Resend in eny case this configuration
+  // ToDo: Resend in any case this configuration
   // needs to be initialized
   msg.haveNonCriticalExtension = false;
   //RRC Connection Reconfiguration towards UE
@@ -1122,7 +1122,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
         {
           m_rrc->m_ffrRrcSapProvider.at (it->servFreqId)->ReportUeMeas (m_rnti, msg.measResults);
           /// ToDo: implement on Ffr algorithm the code to properly parsing the new measResults message format
-          /// alternatevely it is needed to 'repack' properly the measResults message before sending to Ffr 
+          /// alternatively it is needed to 'repack' properly the measResults message before sending to Ffr 
         }
     }
 

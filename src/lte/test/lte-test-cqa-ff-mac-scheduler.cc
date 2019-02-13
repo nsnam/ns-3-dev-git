@@ -17,7 +17,7 @@
  *
  * Author:  Biljana Bojovic<bbojovic@cttc.es>
  *          Dizhi Zhou <dizhi.zhou@gmail.com>
- * 			Marco Miozzo <marco.miozzo@cttc.es>,
+ *          Marco Miozzo <marco.miozzo@cttc.es>,
  *          Nicola Baldo <nbaldo@cttc.es>
  *
  */

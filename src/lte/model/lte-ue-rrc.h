@@ -688,7 +688,7 @@ private:
    * \param nonCec LteRrcSap::NonCriticalExtensionConfiguration
    */
   void ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriticalExtensionConfiguration nonCec);
-  /// Start connetion function
+  /// Start connection function
   void StartConnection ();
   /// Leave connected mode
   void LeaveConnectedMode ();

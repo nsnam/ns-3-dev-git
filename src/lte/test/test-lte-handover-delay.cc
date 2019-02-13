@@ -63,7 +63,7 @@ public:
   /**
    * Constructor
    *
-   *\param numberOfComponentCarriers number of component carriers
+   * \param numberOfComponentCarriers number of component carriers
    * \param useIdealRrc if true, use the ideal RRC
    * \param handoverTime the time of handover
    * \param delayThreshold the delay threshold

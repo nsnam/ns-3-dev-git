@@ -65,7 +65,7 @@ uint32_t
 EpcSgwPgwApplication::UeInfo::Classify (Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << p);
-  // we hardcode DOWNLINK direction since the PGW is espected to
+  // we hardcode DOWNLINK direction since the PGW is expected to
   // classify only downlink packets (uplink packets will go to the
   // internet without any classification). 
   return m_tftClassifier.Classify (p, EpcTft::DOWNLINK, protocolNumber);
