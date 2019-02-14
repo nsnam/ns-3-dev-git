@@ -12,12 +12,13 @@
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
-    - ./test.py
+    - ./test.py $VALGRIND
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+    VALGRIND: ""
 
 # Run the test.py script with files compiled in debug mode
 daily-test-debug:
@@ -57,3 +58,46 @@ daily-test-optimized:
       - $RELEASE == "daily"
   before_script:
     - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+### Valgrind tests
+# Run the test.py script with files compiled in debug mode
+weekly-test-debug:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: debug
+    VALGRIND: -g
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+# Run the test.py script with files compiled in release mode
+weekly-test-release:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: release
+    VALGRIND: -g
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+
+# Run the test.py script with files compiled in optimized mode
+weekly-test-optimized:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: optimized
+    VALGRIND: -g
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  before_script:
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
