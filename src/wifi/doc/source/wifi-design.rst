@@ -266,6 +266,11 @@ it from the MAC (the ``ns3::MacLow`` object) and sending them onto the
 to receive packets from that channel, and, if reception is deemed to have
 been successful, to pass them up to the MAC. 
 
+The energy of the signal intended to be received is 
+calculated from the transmission power and adjusted based on the Tx gain
+of the transmitter, Rx gain of the receiver, and any path loss propagation
+model in effect.
+
 Class ``ns3::WifiPhyStateHelper`` manages the state machine of the PHY 
 layer, and allows other objects to hook as *listeners* to monitor PHY
 state.  The main use of listeners is for the MAC layer to know when
@@ -282,41 +287,55 @@ The PHY layer can be in one of six states:
 #. SWITCHING: the PHY is switching channels.
 #. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
 
-Packet reception works as follows.  The ``YansWifiPhy`` attribute 
-CcaEdThreshold corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
-In section 16.4.8.5:  "CCA Mode 1: Energy above threshold. CCA shall report 
-a busy medium upon detection of any energy above the ED threshold."  
+Packet reception works as follows.  For ``YansWifiPhy``, most of the logic
+is implemented in the ``WifiPhy`` base class.  The ``YansWifiChannel`` calls
+``WifiPhy::StartReceivePreamble ()`` to start packet reception, but first
+there is a check of the packet's notional signal power level against a
+threshold value stored in the attribute ``WifiPhy::RxSensitivity``.  Any
+packet with a power lower than RxSensitivity will be dropped with no
+further processing.  The default value is -101 dBm, which is the thermal
+noise floor for 20 MHz signal at room temperature.  The purpose of this
+attribute is two-fold:  1) very weak signals that will not affect the
+outcome will otherwise consume simulation memory and event processing, so
+they are discarded, and 2) this value can be adjusted upwards to function as
+a basic carrier sense threshold limitation for experiments involving
+spatial reuse considerations.  Users are cautioned about the behavior of
+raising this threshold; namely, that all packets with power below this
+threshold will be discarded upon reception.
 
-There is a "noise ED threshold" in the standard for non-Wi-Fi signals, and 
-this is usually set to 20 dB greater than the "carrier sense ED threshold".  
-However, the model doesn't support this, because there are no 'foreign' 
-signals in the YansWifi model-- everything is a Wi-Fi signal.
+In ``StartReceivePreamble ()``, the packet is immediately added 
+to the interference helper for signal-to-noise
+tracking, and then further reception steps are decided upon the state of
+the PHY.  In the case that the PHY is transmitting, for instance, the
+packet will be dropped.  If the PHY is IDLE, or if the PHY is receiving and
+an optional FrameCaptureModel is being used (and the packet is within
+the capture window), then ``WifiPhy::StartRx ()`` is called next.
 
-In the standard, there is also what is called the "minimum modulation
-and coding rate sensitivity" in section 18.3.10.6 CCA requirements. 
-This is analogous to the RxSensitivity attribute in ``YansWifiPhy``.
-CCA busy state is not raised in this model when this threshold is exceeded
-but instead RX state is immediately reachedif PHY preamble detection is successful.
-Even if the PHY header reception fails, the channel state is still held
-in RX until YansWifiPhy::EndReceive().
+The ``WifiPhy::StartRx ()`` will typically schedule an event,
+``WifiPhy::StartReceiveHeader ()``, to occur at
+the notional end of the first OFDM symbol, to check whether the preamble
+has been detected.  As of revisions to the model in ns-3.30, any state
+machine transitions from IDLE state are suppressed until after the preamble
+detection event.
 
-In ns-3, the values of these attributes are -101 dBm for RxSensitivity
-and -62 dBm for CcaEdThreshold.  
-So, if a signal comes in at > -101 dBm and the state is IDLE or CCA BUSY, 
-this model will lock onto it for the signal duration and raise RX state.
+The ``StartReceiveHeader ()`` method will check, with a preamble detection
+model, whether the signal is strong enough to be received, and if so,
+an event ``WifiPhy::EndReceive ()`` is scheduled for the end of reception,
+and the PHY is put into the RX state.  Currently, there is only a 
+simple threshold-based preamble detection model in ns-3,
+called ``ThresholdPreambleDetectionModel``.  If there is no preamble detection
+model, the preamble is assumed to have been detected.  
 
-The energy of the signal intended to be received is 
-calculated from the transmission power and adjusted based on the Tx gain
-of the transmitter, Rx gain of the receiver, and any path loss propagation
-model in effect.
+In a real system, the ``EndReceive ()`` time would
+not be determined until later when the PHY headers are successfully decoded,
+but this ns-3 model has the available information at the start of the 
+packet to schedule this.  The second event to schedule is 
+``StartReceivePayload ()`` for the time at which the PHY headers
+have been received and the payload is about to start.
 
-The packet reception occurs in three stages. First, an event is scheduled
-for when PHY preamble has been detected. This decides whether the preamble
-can be detected, by calling a preamble detection model. In case there is no
-preamble detection model attached to the PHY, it assumes preamble is always detected.
-Currently, there is only a simple threshold-based preamble detection model in ns-3,
-called ``ThresholdPreambleDetectionModel``. If PHY preamble has been successfully detected,
-it schedules a second event for when PHY header has been received. PHY header is often transmitted
+The next event at ``StartReceivePayload ()`` checks, using the interference
+helper and error model, whether the header was successfully decoded. 
+The PHY header is often transmitted
 at a lower modulation rate than is the payload.  The portion of the packet
 corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
@@ -328,9 +347,37 @@ the payload has been received (possibly with a different error model
 applied for the different modulation).  If both the header and payload 
 are successfully received, the packet is passed up to the ``MacLow`` object.  
 
+If the header is determined to have errors, then a "PlcpSuccess" flag is
+set for future reference, but the ``EndReceive ()`` is not cancelled and
+the PHY stays in RX state; upon the ``EndReceive ()`` event, the packet
+will be considered errored in this case regardless of the payload reception,
+based on the PlcpSuccess flag.
+
 Even if packet objects received by the PHY are not part of the reception
-process, they are remembered by the InterferenceHelper object for purposes
+process, they are tracked by the InterferenceHelper object for purposes
 of SINR computation and making clear channel assessment decisions.
+If, in the course of reception, a packet is errored or dropped due to
+the PHY being in a state in which it cannot receive a packet, the packet
+is added to the interference helper, and the aggregate of the energy of
+all such signals is compared against an energy detection threshold to
+determine whether the PHY should enter a CCA_BUSY state. 
+The ``WifiPhy::CcaEdThreshold`` attribute 
+corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
+In section 16.4.8.5:  "CCA Mode 1: Energy above threshold. CCA shall report 
+a busy medium upon detection of any energy above the ED threshold."
+By default, this value is set to the -62 dBm level specified in the standard
+for 20 MHz channels.  When using ``YansWifiPhy``, there are no non-Wi-Fi
+signals, so it is unlikely that this attribute would play much of a role
+in Yans wifi models if left at the default value, but if there is a strong
+Wi-Fi signal that is not otherwise being received by the model, it has
+the possibility to raise the CCA_BUSY while the overall energy exceeds
+this threshold.
+
+The above describes the case in which the packet is a single MPDU.  For
+more recent Wi-Fi standards using MPDU aggregation, each individual MPDU
+in the aggregate is sent as a single ``ns3::Packet``, and the logic in
+the ``WifiPhy`` is a bit different than the above for handling such 
+MPDUs (MPDUs after the first arrive without a preamble and header).
 
 InterferenceHelper
 ##################
@@ -442,7 +489,10 @@ late from a hidden node) are added to the noise.
 
 Unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
 will be raised for foreign signals that are higher than CcaEdThreshold
-(see section 16.4.8.5 in the 802.11-2012 standard for definition of CCA Mode 1).  
+(see section 16.4.8.5 in the 802.11-2012 standard for definition of
+CCA Mode 1).  The attribute ``WifiPhy::CcaEdThreshold`` therefore
+potentially plays a larger role in this model than in the ``YansWifiPhy``
+model.
 
 To support the Spectrum channel, the ``YansWifiPhy`` transmit and receive methods
 were adapted to use the Spectrum channel API.  This required developing
@@ -462,7 +512,15 @@ adapted to provide equivalent SpectrumWifi helper classes.
 Finally, for reasons related to avoiding C++ multiple inheritance
 issues, a small forwarding class called ``WifiSpectrumPhyInterface``
 was inserted as a shim between the ``SpectrumWifiPhy`` and the
-Spectrum channel.
+Spectrum channel.  The ``WifiSpectrumPhyInterface`` calls a different
+``SpectrumWifiPhy::StartRx ()`` method to start the reception process.
+This method performs the check of the signal power against the
+``WifiPhy::RxSensitivity`` attribute and discards weak signals, and
+also checks if the signal is a Wi-Fi signal; non-Wi-Fi signals are added
+to the InterferenceHelper and can raise CCA_BUSY but are not further processed
+in the reception chain.   After this point, valid Wi-Fi signals cause
+``WifiPhy::StartReceivePreamble`` to be called, and the processing continues
+as described above.
 
 The MAC model
 =============
