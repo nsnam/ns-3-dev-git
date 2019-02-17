@@ -30,7 +30,7 @@ daily-test-debug:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 # Run the test.py script with files compiled in release mode
 daily-test-release:
@@ -43,7 +43,7 @@ daily-test-release:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
@@ -56,4 +56,4 @@ daily-test-optimized:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
