@@ -53,7 +53,8 @@ per-commit-compile-debug:
     COMPILER: g++
     MODE: debug
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
@@ -62,7 +63,8 @@ per-commit-compile-release:
     COMPILER: g++
     MODE: release
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -71,7 +73,8 @@ per-commit-compile-optimized:
     COMPILER: g++
     MODE: optimized
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 # Weekly jobs for other distribution and compilers
 include:

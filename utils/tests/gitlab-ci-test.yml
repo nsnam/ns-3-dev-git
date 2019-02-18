@@ -31,7 +31,8 @@ daily-test-debug:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in release mode
 daily-test-release:
@@ -44,7 +45,8 @@ daily-test-release:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
@@ -57,7 +59,8 @@ daily-test-optimized:
     variables:
       - $RELEASE == "daily"
   before_script:
-    - pacman -S base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 ### Valgrind tests
 # Run the test.py script with files compiled in debug mode
@@ -72,7 +75,8 @@ weekly-test-debug:
     variables:
       - $RELEASE == "weekly"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in release mode
 weekly-test-release:
@@ -86,7 +90,8 @@ weekly-test-release:
     variables:
       - $RELEASE == "weekly"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 weekly-test-optimized:
@@ -100,4 +105,5 @@ weekly-test-optimized:
     variables:
       - $RELEASE == "weekly"
   before_script:
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
