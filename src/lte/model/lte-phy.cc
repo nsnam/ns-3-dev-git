@@ -48,6 +48,8 @@ LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_ulBandwidth (0),
     m_dlBandwidth (0),
     m_rbgSize (0),
+    m_dlEarfcn (0),
+    m_ulEarfcn (0),
     m_macChTtiDelay (0),
     m_cellId (0),
     m_componentCarrierId(0)
