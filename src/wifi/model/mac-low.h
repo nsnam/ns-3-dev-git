@@ -919,7 +919,6 @@ private:
   Time m_cfpForeshortening; //!< The delay the current CF period should be foreshortened
 
   bool m_promisc;  //!< Flag if the device is operating in promiscuous mode
-  bool m_ampdu;    //!< Flag if the current transmission involves an A-MPDU
 
   class PhyMacLowListener * m_phyMacLowListener; //!< Listener needed to monitor when a channel switching occurs.
 
