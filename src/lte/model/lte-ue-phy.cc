@@ -311,25 +311,17 @@ void
 LteUePhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  bool haveNodeId = false;
-  uint32_t nodeId = 0;
-  if (m_netDevice != 0)
-    {
-      Ptr<Node> node = m_netDevice->GetNode ();
-      if (node != 0)
-        {
-          nodeId = node->GetId ();
-          haveNodeId = true;
-        }
-    }
-  if (haveNodeId)
-    {
-      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteUePhy::SubframeIndication, this, 1, 1);
-    }
-  else
-    {
-      Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
-    }  
+
+  NS_ABORT_MSG_IF (m_netDevice == nullptr, "LteNetDevice is not available in LteUePhy");
+  Ptr<Node> node = m_netDevice->GetNode ();
+  NS_ABORT_MSG_IF (node == nullptr, "Node is not available in the LteNetDevice of LteUePhy");
+  uint32_t nodeId = node->GetId ();
+
+  //ScheduleWithContext() is needed here to set context for logs,
+  //because Initialize() is called outside of Node::AddDevice().
+
+  Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteUePhy::SubframeIndication, this, 1, 1);
+
   LtePhy::DoInitialize ();
 }
 

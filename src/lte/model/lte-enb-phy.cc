@@ -265,25 +265,17 @@ void
 LteEnbPhy::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  bool haveNodeId = false;
-  uint32_t nodeId = 0;
-  if (m_netDevice != 0)
-    {
-      Ptr<Node> node = m_netDevice->GetNode ();
-      if (node != 0)
-        {
-          nodeId = node->GetId ();
-          haveNodeId = true;
-        }
-    }
-  if (haveNodeId)
-    {
-      Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
-    }
-  else
-    {
-      Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
-    }
+
+  NS_ABORT_MSG_IF (m_netDevice == nullptr, "LteEnbDevice is not available in LteEnbPhy");
+  Ptr<Node> node = m_netDevice->GetNode ();
+  NS_ABORT_MSG_IF (node == nullptr, "Node is not available in the LteNetDevice of LteEnbPhy");
+  uint32_t nodeId = node->GetId ();
+
+  //ScheduleWithContext() is needed here to set context for logs,
+  //because Initialize() is called outside of Node::AddDevice().
+
+  Simulator::ScheduleWithContext (nodeId, Seconds (0), &LteEnbPhy::StartFrame, this);
+
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_noiseFigure);
   m_uplinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
   LtePhy::DoInitialize ();
