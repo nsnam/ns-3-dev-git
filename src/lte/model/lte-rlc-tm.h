@@ -31,6 +31,10 @@ namespace ns3 {
 
 /**
  * LTE RLC Transparent Mode (TM), see 3GPP TS 36.322
+ *
+ * Please note that, as in TM it is not possible to add any header, the delay
+ * measurements gathered from the trace source "RxPDU" of LteRlc are invalid
+ * (they will be always 0)
  */
 class LteRlcTm : public LteRlc
 {
@@ -70,12 +74,33 @@ private:
   void DoReportBufferStatus ();
 
 private:
+  /**
+   * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+   */
+  struct TxPdu
+  {
+    /**
+     * \brief TxPdu default constructor
+     * \param pdu the PDU
+     * \param time the arrival time
+     */
+    TxPdu (const Ptr<Packet> &pdu, const Time &time) :
+      m_pdu (pdu),
+      m_waitingSince (time)
+    { }
+
+    TxPdu () = delete;
+
+    Ptr<Packet> m_pdu;           ///< PDU
+    Time        m_waitingSince;  ///< Layer arrival time
+  };
+
+  std::vector < TxPdu > m_txBuffer; ///< Transmission buffer
+
   uint32_t m_maxTxBufferSize; ///< maximum transmit buffer size
   uint32_t m_txBufferSize; ///< transmit buffer size
-  std::vector < Ptr<Packet> > m_txBuffer; ///< Transmission buffer
 
   EventId m_rbsTimer; ///< RBS timer
-
 };
 
 
