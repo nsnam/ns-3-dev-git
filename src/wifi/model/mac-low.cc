@@ -1452,15 +1452,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
                                 const MacLowTransmissionParameters& params,
                                 uint32_t fragmentSize) const
 {
-  Time txTime = Seconds (0);
-  if (params.MustSendRts ())
-    {
-      WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
-      txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
-      txTime += GetCtsDuration (hdr->GetAddr1 (), rtsTxVector);
-      txTime += Time (GetSifs () * 2);
-    }
-  WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
+  Time txTime = CalculateOverheadTxTime (packet, hdr, params);
   uint32_t dataSize;
   if (fragmentSize > 0)
     {
@@ -1471,11 +1463,27 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       dataSize = GetSize (packet, hdr, m_ampdu);
     }
-  txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, m_phy->GetFrequency ());
-  txTime += GetSifs ();
+  txTime += m_phy->CalculateTxDuration (dataSize, GetDataTxVector (packet, hdr), m_phy->GetFrequency ());
+  return txTime;
+}
+
+Time
+MacLow::CalculateOverheadTxTime (Ptr<const Packet> packet,
+                                 const WifiMacHeader* hdr,
+                                 const MacLowTransmissionParameters& params) const
+{
+  Time txTime = Seconds (0);
+  if (params.MustSendRts ())
+    {
+      WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
+      txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
+      txTime += GetCtsDuration (hdr->GetAddr1 (), rtsTxVector);
+      txTime += Time (GetSifs () * 2);
+    }
   if (params.MustWaitNormalAck ())
     {
-      txTime += GetAckDuration (hdr->GetAddr1 (), dataTxVector);
+      txTime += GetSifs ();
+      txTime += GetAckDuration (hdr->GetAddr1 (), GetDataTxVector (packet, hdr));
     }
   return txTime;
 }

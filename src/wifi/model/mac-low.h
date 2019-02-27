@@ -304,13 +304,26 @@ public:
    * \param fragmentSize the packet fragment size (if fragmentation is used)
    * \return the transmission time that includes the time for the next packet transmission
    *
-   * This transmission time includes the time required for
+   * This transmission time does not include the time required for
    * the next packet transmission if one was selected.
    */
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
                                const WifiMacHeader* hdr,
                                const MacLowTransmissionParameters& params,
                                uint32_t fragmentSize = 0) const;
+
+  /**
+   * \param packet to send (does not include the 802.11 MAC header and checksum)
+   * \param hdr header associated to the packet to send.
+   * \param params transmission parameters of packet.
+   *
+   * This transmission time does not include the time required to transmit the frame.
+   * It only includes the time for the RTS/CTS exchange (if any) and for the Ack
+   * frame (if any).
+   */
+  Time CalculateOverheadTxTime (Ptr<const Packet> packet,
+                               const WifiMacHeader* hdr,
+                               const MacLowTransmissionParameters& params) const;
 
   /**
    * \param packet packet to send
