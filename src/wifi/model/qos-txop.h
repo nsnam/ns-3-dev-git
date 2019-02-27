@@ -37,6 +37,7 @@ class QosBlockedDestinations;
 class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
+class WifiTxVector;
 
 /**
  * Enumeration for type of station
@@ -389,6 +390,84 @@ public:
    * \returns the packet.
    */
   Ptr<const WifiMacQueueItem> PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient);
+  /**
+   * Peek the next frame to transmit from the Block Ack manager retransmit
+   * queue first and, if not found, from the EDCA queue.
+   * Note that A-MSDU aggregation is never attempted (this is relevant if the
+   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
+   * queue, it is assigned a sequence number peeked from MacTxMiddle.
+   *
+   * \returns the peeked frame.
+   */
+  Ptr<const WifiMacQueueItem> PeekNextFrame (void);
+  /**
+   * Peek the next frame to transmit to the given receiver and of the given
+   * TID from the Block Ack manager retransmit queue first and, if not found, from
+   * the EDCA queue.
+   * Note that A-MSDU aggregation is never attempted (this is relevant if the
+   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
+   * queue, it is assigned a sequence number peeked from MacTxMiddle.
+   *
+   * \param tid traffic ID.
+   * \param recipient the receiver station address.
+   * \returns the peeked frame.
+   */
+  Ptr<const WifiMacQueueItem> PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient);
+  /**
+   * Dequeue the frame that has been previously peeked by calling PeekNextFrame
+   * or PeekNextFrameByTidAndAddress. If the peeked frame is a QoS Data frame,
+   * it is actually dequeued if it meets the constraint on the maximum A-MPDU
+   * size (by assuming that the frame has to be aggregated to an existing A-MPDU
+   * of the given size) and its transmission time does not exceed the given
+   * PPDU duration limit (if strictly positive). If the peeked frame is a unicast
+   * QoS Data frame stored in the EDCA queue, attempt to perform A-MSDU aggregation
+   * (while meeting the constraints mentioned above) if <i>aggregate</i> is true
+   * and assign a sequence number to the dequeued frame.
+   *
+   * \param peekedItem the peeked frame.
+   * \param txVector the TX vector used to transmit the peeked frame
+   * \param ampduSize the size of the existing A-MPDU, if any
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \returns the dequeued frame.
+   */
+  Ptr<WifiMacQueueItem> DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
+                                            bool aggregate = true, uint32_t ampduSize = 0,
+                                            Time ppduDurationLimit = Seconds (0));
+  /**
+   * Check whether the given MPDU, if transmitted according to the given TX vector,
+   * meets the constraint on the maximum A-MPDU size (by assuming that the frame
+   * has to be aggregated to an existing A-MPDU of the given size) and its
+   * transmission time exceeds neither the max PPDU duration (depending on the
+   * PPDU format) nor the given PPDU duration limit (if strictly positive).
+   * The given MPDU needs to be a QoS Data frame.
+   *
+   * \param mpdu the MPDU.
+   * \param txVector the TX vector used to transmit the MPDU
+   * \param ampduSize the size of the existing A-MPDU, if any
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \returns true if constraints on size and duration limit are met.
+   */
+  bool IsWithinSizeAndTimeLimits (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
+                                  uint32_t ampduSize, Time ppduDurationLimit);
+  /**
+   * Check whether an MPDU of the given size, destined to the given receiver and
+   * belonging to the given TID, if transmitted according to the given TX vector,
+   * meets the constraint on the maximum A-MPDU size (by assuming that the frame
+   * has to be aggregated to an existing A-MPDU of the given size) and its
+   * transmission time exceeds neither the max PPDU duration (depending on the
+   * PPDU format) nor the given PPDU duration limit (if strictly positive).
+   *
+   * \param mpduSize the MPDU size.
+   * \param receiver the receiver
+   * \param tid the TID
+   * \param txVector the TX vector used to transmit the MPDU
+   * \param ampduSize the size of the existing A-MPDU, if any
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \returns true if constraints on size and duration limit are met.
+   */
+  bool IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uint8_t tid,
+                                  WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit);
+
   /**
    * The packet we sent was successfully received by the receiver.
    *

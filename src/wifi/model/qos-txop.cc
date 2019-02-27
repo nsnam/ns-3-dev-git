@@ -36,6 +36,7 @@
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
 #include "ctrl-headers.h"
+#include "wifi-phy.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -181,6 +182,217 @@ void
 QosTxop::RemoveRetransmitPacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber)
 {
   m_baManager->RemovePacket (tid, recipient, seqnumber);
+}
+
+Ptr<const WifiMacQueueItem>
+QosTxop::PeekNextFrame (void)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<const WifiMacQueueItem> item;
+
+  // check if there is a packet in the BlockAckManager retransmit queue
+  item = m_baManager->GetNextPacket (false);
+
+  if (item != 0)
+    {
+      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << *item);
+      return item;
+    }
+
+  // otherwise, check if there is a packet in the EDCA queue
+  item = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
+
+  if (item != 0)
+    {
+      // set the sequence number by just peeking the next value
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
+      WifiMacHeader hdr = item->GetHeader ();
+      hdr.SetSequenceNumber (sequence);
+      hdr.SetFragmentNumber (0);
+      hdr.SetNoMoreFragments ();
+      hdr.SetNoRetry ();
+      item = Create<const WifiMacQueueItem> (item->GetPacket (), hdr, item->GetTimeStamp ());
+      NS_LOG_DEBUG ("packet peeked from EDCA queue: " << *item);
+    }
+
+  return item;
+}
+
+Ptr<const WifiMacQueueItem>
+QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
+{
+  NS_LOG_FUNCTION (this << +tid << recipient);
+  Ptr<const WifiMacQueueItem> item;
+
+  // check if there is a packet in the BlockAckManager retransmit queue
+  item = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
+
+  if (item != 0)
+    {
+      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << *item);
+      return item;
+    }
+
+  // otherwise, check if there is a packet in the EDCA queue
+  item = m_queue->PeekByTidAndAddress (tid, recipient);
+
+  if (item != 0)
+    {
+      // set the sequence number by just peeking the next value
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
+      WifiMacHeader hdr = item->GetHeader ();
+      hdr.SetSequenceNumber (sequence);
+      hdr.SetFragmentNumber (0);
+      hdr.SetNoMoreFragments ();
+      hdr.SetNoRetry ();
+      item = Create<const WifiMacQueueItem> (item->GetPacket (), hdr, item->GetTimeStamp ());
+      NS_LOG_DEBUG ("packet peeked from EDCA queue: " << *item);
+    }
+
+  return item;
+}
+
+bool
+QosTxop::IsWithinSizeAndTimeLimits (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
+                                    uint32_t ampduSize, Time ppduDurationLimit)
+{
+  NS_ASSERT (mpdu != 0 && mpdu->GetHeader ().IsQosData ());
+
+  return IsWithinSizeAndTimeLimits (mpdu->GetSize (), mpdu->GetHeader ().GetAddr1 (),
+                                    mpdu->GetHeader ().GetQosTid (), txVector,
+                                    ampduSize, ppduDurationLimit);
+}
+
+bool
+QosTxop::IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uint8_t tid,
+                                    WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit)
+{
+  NS_LOG_FUNCTION (this << mpduSize << receiver << +tid << txVector << ampduSize << ppduDurationLimit);
+
+  WifiModulationClass modulation = txVector.GetMode ().GetModulationClass ();
+
+  uint32_t maxAmpduSize = 0;
+  if (m_low->GetMpduAggregator ())
+    {
+      maxAmpduSize = m_low->GetMpduAggregator ()->GetMaxAmpduSize (receiver, tid, modulation);
+    }
+
+  // If maxAmpduSize is null, then ampduSize must be null as well
+  NS_ASSERT (maxAmpduSize || ampduSize == 0);
+
+  uint32_t ppduPayloadSize = mpduSize;
+
+  // compute the correct size for A-MPDUs and S-MPDUs
+  if (ampduSize > 0 || modulation == WIFI_MOD_CLASS_HE || modulation == WIFI_MOD_CLASS_VHT)
+    {
+      ppduPayloadSize = m_low->GetMpduAggregator ()->GetSizeIfAggregated (mpduSize, ampduSize);
+    }
+
+  if (maxAmpduSize > 0 && ppduPayloadSize > maxAmpduSize)
+    {
+      NS_LOG_DEBUG ("the frame does not meet the constraint on max A-MPDU size");
+      return false;
+    }
+
+  // Get the maximum PPDU Duration based on the preamble type
+  Time maxPpduDuration = GetPpduMaxTime (txVector.GetPreambleType ());
+
+  Time txTime = m_low->GetPhy ()->CalculateTxDuration (ppduPayloadSize, txVector,
+                                                       m_low->GetPhy ()->GetFrequency ());
+
+  if ((ppduDurationLimit.IsStrictlyPositive () && txTime > ppduDurationLimit)
+      || (maxPpduDuration.IsStrictlyPositive () && txTime > maxPpduDuration))
+    {
+      NS_LOG_DEBUG ("the frame does not meet the constraint on max PPDU duration");
+      return false;
+    }
+
+  return true;
+}
+
+Ptr<WifiMacQueueItem>
+QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
+                             bool aggregate, uint32_t ampduSize, Time ppduDurationLimit)
+{
+  NS_LOG_FUNCTION (this << peekedItem << txVector << ampduSize << ppduDurationLimit);
+  NS_ASSERT (peekedItem != 0);
+
+  // do not dequeue the frame if it is a QoS data frame that does not meet the
+  // max A-MPDU size limit (if applicable) or the duration limit (if applicable)
+  if (peekedItem->GetHeader ().IsQosData () &&
+      !IsWithinSizeAndTimeLimits (peekedItem, txVector, ampduSize, ppduDurationLimit))
+    {
+      return 0;
+    }
+
+  Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
+  Ptr<WifiMacQueueItem> item;
+  Ptr<const WifiMacQueueItem> testItem;
+
+  // the packet can only have been peeked from the Block Ack manager retransmit
+  // queue if:
+  // - the peeked packet is a QoS Data frame AND
+  // - the peeked packet is not a broadcast frame AND
+  // - an agreement has been established
+  if (peekedItem->GetHeader ().IsQosData () && !recipient.IsBroadcast ()
+      && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
+    {
+      uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+      testItem = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
+
+      if (testItem)
+        {
+          // if not null, the test packet must equal the peeked packet
+          NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
+          item = Create<WifiMacQueueItem> (*peekedItem);
+          m_baManager->RemovePacket (tid, recipient, testItem->GetHeader ().GetSequenceNumber ());
+          NS_LOG_DEBUG ("dequeued from BA manager queue: " << *item);
+          return item;
+        }
+    }
+
+  // the packet has been peeked from the EDCA queue. If it is a QoS Data frame and
+  // it is not a broadcast frame, attempt A-MSDU aggregation if aggregate is true
+  if (peekedItem->GetHeader ().IsQosData ())
+    {
+      uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+      testItem = m_queue->PeekByTidAndAddress (tid, recipient);
+
+      NS_ASSERT (testItem != 0 && testItem->GetPacket () == peekedItem->GetPacket ());
+
+      // try A-MSDU aggregation
+      if (m_low->GetMsduAggregator () != 0 && !recipient.IsBroadcast () && aggregate)
+        {
+          item = m_low->GetMsduAggregator ()->GetNextAmsdu (recipient, tid, txVector, ampduSize, ppduDurationLimit);
+        }
+
+      if (item != 0)
+        {
+          NS_LOG_DEBUG ("tx unicast A-MSDU");
+        }
+      else  // aggregation was not attempted or failed
+        {
+          item = m_queue->DequeueByTidAndAddress (tid, recipient);
+        }
+    }
+  else
+    {
+      // the peeked packet is a non-QoS Data frame (e.g., a DELBA Request), hence
+      // it was not peeked by TID, hence it must be the head of the queue
+      item = m_queue->DequeueFirstAvailable (m_qosBlockedDestinations);
+      NS_ASSERT (item != 0 && item->GetPacket () == peekedItem->GetPacket ());
+    }
+
+  // Assign a sequence number to the MSDU or A-MSDU dequeued from the EDCA queue
+  NS_ASSERT (item != 0);
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&item->GetHeader ());
+  item->GetHeader ().SetSequenceNumber (sequence);
+  item->GetHeader ().SetFragmentNumber (0);
+  item->GetHeader ().SetNoMoreFragments ();
+  item->GetHeader ().SetNoRetry ();
+  NS_LOG_DEBUG ("dequeued from EDCA queue: " << *item);
+
+  return item;
 }
 
 void
