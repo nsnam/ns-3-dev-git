@@ -464,6 +464,11 @@ private:
    * \param raRnti the rnti
    */
   virtual void DoSendRachPreamble (uint32_t prachId, uint32_t raRnti);
+  /**
+   * \brief Notify PHY about the successful RRC connection
+   * establishment.
+   */
+  virtual void DoNotifyConnectionSuccessful ();
 
   /// A list of sub channels to use in TX.
   std::vector <int> m_subChannelsForTransmission;
@@ -615,7 +620,9 @@ private:
 
   
   Ptr<SpectrumValue> m_noisePsd; ///< Noise power spectral density for
-                                 ///the configured bandwidth 
+                                 ///the configured bandwidth
+
+  bool m_isConnected; ///< set when UE RRC is in CONNECTED_NORMALLY state
 
 }; // end of `class LteUePhy`
 

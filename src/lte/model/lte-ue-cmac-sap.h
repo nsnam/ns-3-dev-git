@@ -112,6 +112,12 @@ public:
    */
   virtual void SetRnti (uint16_t rnti) = 0;
 
+  /**
+   * \brief Notify MAC about the successful RRC connection
+   * establishment.
+   */
+  virtual void NotifyConnectionSuccessful () = 0;
+
 };
 
 

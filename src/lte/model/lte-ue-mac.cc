@@ -67,6 +67,7 @@ public:
   virtual void AddLc (uint8_t lcId, LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   virtual void RemoveLc (uint8_t lcId);
   virtual void Reset ();
+  virtual void NotifyConnectionSuccessful ();
 
 private:
   LteUeMac* m_mac; ///< the UE MAC
@@ -119,6 +120,13 @@ UeMemberLteUeCmacSapProvider::Reset ()
 {
   m_mac->DoReset ();
 }
+
+void
+UeMemberLteUeCmacSapProvider::NotifyConnectionSuccessful ()
+{
+  m_mac->DoNotifyConnectionSuccessful ();
+}
+
 
 /// UeMemberLteMacSapProvider class
 class UeMemberLteMacSapProvider : public LteMacSapProvider
@@ -584,6 +592,13 @@ LteUeMac::DoReset ()
   m_rachConfigured = false;
   m_freshUlBsr = false;
   m_ulBsrReceived.clear ();
+}
+
+void
+LteUeMac::DoNotifyConnectionSuccessful ()
+{
+  NS_LOG_FUNCTION (this);
+  m_uePhySapProvider->NotifyConnectionSuccessful ();
 }
 
 void

@@ -637,6 +637,7 @@ LteUeRrc::DoNotifyRandomAccessSuccessful ()
           }
 
         SwitchToState (CONNECTED_NORMALLY);
+        m_cmacSapProvider.at (0)->NotifyConnectionSuccessful (); //RA successful during handover
         m_handoverEndOkTrace (m_imsi, m_cellId, m_rnti);
       }
       break;
@@ -975,6 +976,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
         msg2.rrcTransactionIdentifier = msg.rrcTransactionIdentifier;
         m_rrcSapUser->SendRrcConnectionSetupCompleted (msg2);
         m_asSapUser->NotifyConnectionSuccessful ();
+        m_cmacSapProvider.at (0)->NotifyConnectionSuccessful ();
         m_connectionEstablishedTrace (m_imsi, m_cellId, m_rnti);
       }
       break;

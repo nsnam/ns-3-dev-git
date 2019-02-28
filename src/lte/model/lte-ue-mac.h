@@ -166,8 +166,15 @@ private:
   * \param lcId the LCID
   */
   void DoRemoveLc (uint8_t lcId);
-  /// Reset function
+  /**
+   * \brief Reset function
+   */
   void DoReset ();
+  /**
+   * \brief Notify MAC about the successful RRC connection
+   * establishment.
+   */
+  void DoNotifyConnectionSuccessful ();
 
   // forwarded from PHY SAP
  /**
@@ -184,7 +191,7 @@ private:
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
   
   // internal methods
-  /// Randomly sleect and send RA preamble function
+  /// Randomly select and send RA preamble function
   void RandomlySelectAndSendRaPreamble ();
  /**
   * Send RA preamble function
