@@ -770,7 +770,7 @@ private:
   /// Factory of fading model object for both the downlink and uplink channels.
   ObjectFactory m_fadingModelFactory;
   /// The fading model used in both the downlink and uplink channels.
-  Ptr<SpectrumPropagationLossModel> m_fadingModule;
+  Ptr<SpectrumPropagationLossModel> m_fadingModel;
   /**
    * True if a random variable stream number has been assigned for the fading
    * model. Used to prevent such assignment to be done more than once.

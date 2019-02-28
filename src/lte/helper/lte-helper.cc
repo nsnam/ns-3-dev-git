@@ -261,10 +261,10 @@ LteHelper::ChannelModelInitialization (void)
     }
   if (!m_fadingModelType.empty ())
     {
-      m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
-      m_fadingModule->Initialize ();
-      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
-      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_fadingModel = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_fadingModel->Initialize ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModel);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModel);
     }
 }
 
@@ -1443,9 +1443,9 @@ int64_t
 LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 {
   int64_t currentStream = stream;
-  if ((m_fadingModule != 0) && (m_fadingStreamsAssigned == false))
+  if ((m_fadingModel != 0) && (m_fadingStreamsAssigned == false))
     {
-      Ptr<TraceFadingLossModel> tflm = m_fadingModule->GetObject<TraceFadingLossModel> ();
+      Ptr<TraceFadingLossModel> tflm = m_fadingModel->GetObject<TraceFadingLossModel> ();
       if (tflm != 0)
         {
           currentStream += tflm->AssignStreams (currentStream);
