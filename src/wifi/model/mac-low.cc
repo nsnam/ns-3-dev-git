@@ -527,11 +527,11 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   m_txParams = params;
   if (hdr->IsCtl ())
     {
-      m_currentTxVector = GetRtsTxVector  (packet, hdr);
+      m_currentTxVector = GetRtsTxVector  (*m_currentPacket->begin ());
     }
   else
     {
-      m_currentTxVector = GetDataTxVector (packet, hdr);
+      m_currentTxVector = GetDataTxVector (*m_currentPacket->begin ());   // TODO
     }
 
   if (NeedRts () && !IsCfPeriod ())
@@ -583,7 +583,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
           mpduList.push_back (newPacket);
         }
       m_currentPacket = Create<WifiPsdu> (mpduList);
-      m_currentTxVector = GetDataTxVector (packet, hdr);
+      m_currentTxVector = GetDataTxVector (*m_currentPacket->begin ());
     }
   else if (m_mpduAggregator != 0)
     {
@@ -701,7 +701,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
 bool
 MacLow::NeedRts (void) const
 {
-  WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket->GetPayload (0), &m_currentPacket->GetHeader (0));
+  WifiTxVector dataTxVector = GetDataTxVector (*m_currentPacket->begin ());
   return m_stationManager->NeedRts (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
                                     m_currentPacket->GetPayload (0), dataTxVector);
 }
@@ -709,7 +709,7 @@ MacLow::NeedRts (void) const
 bool
 MacLow::NeedCtsToSelf (void) const
 {
-  WifiTxVector dataTxVector = GetDataTxVector (m_currentPacket->GetPayload (0), &m_currentPacket->GetHeader (0));
+  WifiTxVector dataTxVector = GetDataTxVector (*m_currentPacket->begin ());
   return m_stationManager->NeedCtsToSelf (dataTxVector);
 }
 
@@ -1231,17 +1231,17 @@ MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
 }
 
 WifiTxVector
-MacLow::GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
+MacLow::GetRtsTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = hdr->GetAddr1 ();
-  return m_stationManager->GetRtsTxVector (to, hdr, packet);
+  Mac48Address to = item->GetHeader ().GetAddr1 ();
+  return m_stationManager->GetRtsTxVector (to, &item->GetHeader (), item->GetPacket ());
 }
 
 WifiTxVector
-MacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
+MacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = hdr->GetAddr1 ();
-  return m_stationManager->GetDataTxVector (to, hdr, packet);
+  Mac48Address to = item->GetHeader ().GetAddr1 ();
+  return m_stationManager->GetDataTxVector (to, &item->GetHeader (), item->GetPacket ());
 }
 
 WifiMode
@@ -1452,7 +1452,8 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
                                 const MacLowTransmissionParameters& params,
                                 uint32_t fragmentSize) const
 {
-  Time txTime = CalculateOverheadTxTime (packet, hdr, params);
+  Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> (packet, *hdr);
+  Time txTime = CalculateOverheadTxTime (item, params);
   uint32_t dataSize;
   if (fragmentSize > 0)
     {
@@ -1463,27 +1464,26 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       dataSize = GetSize (packet, hdr, m_ampdu);
     }
-  txTime += m_phy->CalculateTxDuration (dataSize, GetDataTxVector (packet, hdr), m_phy->GetFrequency ());
+  txTime += m_phy->CalculateTxDuration (dataSize, GetDataTxVector (item), m_phy->GetFrequency ());
   return txTime;
 }
 
 Time
-MacLow::CalculateOverheadTxTime (Ptr<const Packet> packet,
-                                 const WifiMacHeader* hdr,
+MacLow::CalculateOverheadTxTime (Ptr<const WifiMacQueueItem> item,
                                  const MacLowTransmissionParameters& params) const
 {
   Time txTime = Seconds (0);
   if (params.MustSendRts ())
     {
-      WifiTxVector rtsTxVector = GetRtsTxVector (packet, hdr);
+      WifiTxVector rtsTxVector = GetRtsTxVector (item);
       txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
-      txTime += GetCtsDuration (hdr->GetAddr1 (), rtsTxVector);
+      txTime += GetCtsDuration (item->GetHeader ().GetAddr1 (), rtsTxVector);
       txTime += Time (GetSifs () * 2);
     }
   if (params.MustWaitNormalAck ())
     {
       txTime += GetSifs ();
-      txTime += GetAckDuration (hdr->GetAddr1 (), GetDataTxVector (packet, hdr));
+      txTime += GetAckDuration (item->GetHeader ().GetAddr1 (), GetDataTxVector (item));
     }
   return txTime;
 }
@@ -1496,7 +1496,7 @@ MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
   Time txTime = CalculateOverallTxTime (packet, hdr, params);
   if (params.HasNextPacket ())
     {
-      WifiTxVector dataTxVector = GetDataTxVector (packet, hdr);
+      WifiTxVector dataTxVector = GetDataTxVector (Create<const WifiMacQueueItem> (packet, *hdr));
       txTime += GetSifs ();
       txTime += m_phy->CalculateTxDuration (params.GetNextPacketSize (), dataTxVector, m_phy->GetFrequency ());
     }
@@ -1536,7 +1536,7 @@ MacLow::NotifyNav (Ptr<const Packet> packet, const WifiMacHeader &hdr)
            */
           WifiMacHeader cts;
           cts.SetType (WIFI_MAC_CTL_CTS);
-          WifiTxVector txVector = GetRtsTxVector (packet, &hdr);
+          WifiTxVector txVector = GetRtsTxVector (Create<const WifiMacQueueItem> (packet, hdr));
           Time navCounterResetCtsMissedDelay =
             m_phy->CalculateTxDuration (cts.GetSerializedSize (), txVector, m_phy->GetFrequency ()) +
             Time (2 * GetSifs ()) + Time (2 * GetSlotTime ());
@@ -1757,7 +1757,7 @@ MacLow::SendRtsForPacket (void)
   rts.SetNoMoreFragments ();
   rts.SetAddr1 (m_currentPacket->GetAddr1 ());
   rts.SetAddr2 (m_self);
-  WifiTxVector rtsTxVector = GetRtsTxVector (m_currentPacket->GetPayload (0), &m_currentPacket->GetHeader (0));
+  WifiTxVector rtsTxVector = GetRtsTxVector (*m_currentPacket->begin ());
   Time duration = Seconds (0);
 
   duration += GetSifs ();
@@ -1974,7 +1974,7 @@ MacLow::SendDataPacket (void)
           //This should be later changed, at the latest once HCCA is implemented for HT/VHT/HE stations.
           WifiMacHeader tmpHdr = m_currentPacket->GetHeader (0);
           tmpHdr.SetAddr1 (m_cfAckInfo.address);
-          WifiTxVector tmpTxVector = GetDataTxVector (m_currentPacket->GetPayload (0), &tmpHdr);
+          WifiTxVector tmpTxVector = GetDataTxVector (Create<const WifiMacQueueItem> (m_currentPacket->GetPayload (0), tmpHdr));
           if (tmpTxVector.GetMode ().GetDataRate (tmpTxVector) < m_currentTxVector.GetMode ().GetDataRate (m_currentTxVector))
             {
               m_currentTxVector = tmpTxVector;
@@ -2003,7 +2003,7 @@ MacLow::SendCtsToSelf (void)
   cts.SetNoRetry ();
   cts.SetAddr1 (m_self);
 
-  WifiTxVector ctsTxVector = GetRtsTxVector (m_currentPacket->GetPayload (0), &m_currentPacket->GetHeader (0));
+  WifiTxVector ctsTxVector = GetRtsTxVector (*m_currentPacket->begin ());
   Time duration = Seconds (0);
 
   duration += GetSifs ();

@@ -144,8 +144,7 @@ AmpduAggregationTest::DoRun (void)
    */
   m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (pkt, hdr);
   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
-    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
-     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
+    (*m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->begin ());
 
   auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu
     (Create<const WifiMacQueueItem> (pkt, hdr), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
@@ -361,8 +360,7 @@ TwoLevelAggregationTest::DoRun (void)
   tstamp = peekedItem->GetTimeStamp ();
   m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (peekedPacket, peekedHdr);
   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
-    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
-     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
+    (*m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->begin ());
 
   Ptr<WifiMacQueueItem> item;
   item = m_mac->GetBEQueue ()->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (hdr.GetAddr1 (), 0,
@@ -525,8 +523,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
    */
   m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (pkt, hdr);
   m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector = m_mac->GetBEQueue ()->GetLow ()->GetDataTxVector
-    (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetPayload (0),
-     &m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetHeader (0));
+    (*m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->begin ());
 
   /*
    * Test behavior when 300 packets are ready for transmission but negociated buffer size is 64

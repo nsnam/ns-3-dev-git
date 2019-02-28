@@ -29,6 +29,7 @@
 
 namespace ns3 {
 class WaveNetDevice;
+class WifiMacQueueItem;
 
 /**
  * \ingroup wave
@@ -80,11 +81,10 @@ private:
    * The function consults WifiRemoteStationManager, which controls the rate
    * to different destinations.
    *
-   * \param packet the packet being asked for TXVECTOR
-   * \param hdr the WifiMacHeader
-   * \return TXVECTOR for the given packet
+   * \param item the item being asked for TXVECTOR
+   * \return TXVECTOR for the given item
    */
-  virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  virtual WifiTxVector GetDataTxVector (Ptr<const WifiMacQueueItem> item) const;
 
   Ptr<ChannelScheduler> m_scheduler; ///< the channel scheduler
   Ptr<ChannelCoordinator> m_coordinator; ///< the channel coordinator

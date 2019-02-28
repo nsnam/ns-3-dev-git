@@ -60,17 +60,17 @@ WaveMacLow::SetWaveNetDevice (Ptr<WaveNetDevice> device)
 }
 
 WifiTxVector
-WaveMacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
+WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *item);
   HigherLayerTxVectorTag datatag;
   bool found;
-  found = ConstCast<Packet> (packet)->PeekPacketTag (datatag);
+  found = ConstCast<Packet> (item->GetPacket ())->PeekPacketTag (datatag);
   // if high layer has not controlled transmit parameters, the real transmit parameters
   // will be determined by MAC layer itself.
   if (!found)
     {
-      return MacLow::GetDataTxVector (packet, hdr);
+      return MacLow::GetDataTxVector (item);
     }
 
   // if high layer has set the transmit parameters with non-adaption mode,
@@ -83,7 +83,7 @@ WaveMacLow::GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr)
   // if high layer has set the transmit parameters with non-adaption mode,
   // the real transmit parameters are determined by both high layer and MAC layer.
   WifiTxVector txHigher = datatag.GetTxVector ();
-  WifiTxVector txMac = MacLow::GetDataTxVector (packet, hdr);
+  WifiTxVector txMac = MacLow::GetDataTxVector (item);
   WifiTxVector txAdapter;
   txAdapter.SetChannelWidth (10);
   // the DataRate set by higher layer is the minimum data rate

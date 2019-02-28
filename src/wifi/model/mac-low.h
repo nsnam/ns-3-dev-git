@@ -313,16 +313,14 @@ public:
                                uint32_t fragmentSize = 0) const;
 
   /**
-   * \param packet to send (does not include the 802.11 MAC header and checksum)
-   * \param hdr header associated to the packet to send.
+   * \param item packet to send (does not include the 802.11 MAC header and checksum)
    * \param params transmission parameters of packet.
    *
    * This transmission time does not include the time required to transmit the frame.
    * It only includes the time for the RTS/CTS exchange (if any) and for the Ack
    * frame (if any).
    */
-  Time CalculateOverheadTxTime (Ptr<const Packet> packet,
-                               const WifiMacHeader* hdr,
+  Time CalculateOverheadTxTime (Ptr<const WifiMacQueueItem> item,
                                const MacLowTransmissionParameters& params) const;
 
   /**
@@ -435,11 +433,10 @@ public:
    * The function consults WifiRemoteStationManager, which controls the rate
    * to different destinations.
    *
-   * \param packet the packet being asked for TXVECTOR
-   * \param hdr the WifiMacHeader
-   * \return TXVECTOR for the given packet
+   * \param item the item being asked for TXVECTOR
+   * \return TXVECTOR for the given item
    */
-  virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  virtual WifiTxVector GetDataTxVector (Ptr<const WifiMacQueueItem> item) const;
   /**
    * Start NAV with the given duration.
    *
@@ -506,11 +503,10 @@ private:
    * The function consults WifiRemoteStationManager, which controls the rate
    * to different destinations.
    *
-   * \param packet the packet being asked for RTS TXVECTOR
-   * \param hdr the WifiMacHeader
-   * \return TXVECTOR for the RTS of the given packet
+   * \param item the item being asked for RTS TXVECTOR
+   * \return TXVECTOR for the RTS of the given item
    */
-  WifiTxVector GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  WifiTxVector GetRtsTxVector (Ptr<const WifiMacQueueItem> item) const;
   /**
    * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
    * used by the sender.

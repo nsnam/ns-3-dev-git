@@ -431,7 +431,7 @@ QosTxop::NotifyAccessGranted (void)
       m_stationManager->UpdateFragmentationThreshold ();
       // dequeue the peeked item. Disable aggregation if fragmentation is needed
       Ptr<WifiMacQueueItem> item = DequeuePeekedFrame (peekedItem,
-                                                       m_low->GetDataTxVector (peekedItem->GetPacket (), &peekedItem->GetHeader ()),
+                                                       m_low->GetDataTxVector (peekedItem),
                                                        !NeedFragmentation ());
 
       NS_ASSERT (item != 0);
@@ -998,7 +998,8 @@ QosTxop::RestartAccessIfNeeded (void)
         }
       if (packet != 0)
         {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet, m_low->GetDataTxVector (packet, &hdr));
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet,
+                                                                 m_low->GetDataTxVector (Create<const WifiMacQueueItem> (packet, hdr)));
         }
       else
         {
@@ -1026,7 +1027,8 @@ QosTxop::StartAccessIfNeeded (void)
         }
       if (packet != 0)
         {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet, m_low->GetDataTxVector (packet, &hdr));
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet,
+                                                                 m_low->GetDataTxVector (Create<const WifiMacQueueItem> (packet, hdr)));
         }
       else
         {
@@ -1100,7 +1102,7 @@ QosTxop::StartNextPacket (void)
     {
       m_currentParams.EnableAck ();
     }
-  if (m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, peekedPacket, m_low->GetDataTxVector (peekedPacket, &hdr)))
+  if (m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, peekedPacket, m_low->GetDataTxVector (peekedItem)))
     {
       m_currentParams.EnableRts ();
     }
@@ -1113,9 +1115,9 @@ QosTxop::StartNextPacket (void)
       // when dequeuing the peeked packet, A-MSDU aggregation is attempted if the
       // packet has been peeked from the EDCA queue. Thus, compute the max available
       // time for the transmission of the PPDU
-      Time maxPpduDuration = GetTxopRemaining () - m_low->CalculateOverheadTxTime (peekedPacket, &hdr, m_currentParams);
+      Time maxPpduDuration = GetTxopRemaining () - m_low->CalculateOverheadTxTime (peekedItem, m_currentParams);
 
-      Ptr<WifiMacQueueItem> item = DequeuePeekedFrame (peekedItem, m_low->GetDataTxVector (peekedPacket, &hdr),
+      Ptr<WifiMacQueueItem> item = DequeuePeekedFrame (peekedItem, m_low->GetDataTxVector (peekedItem),
                                                        true, 0, maxPpduDuration);
       if (item == 0)
         {
@@ -1537,7 +1539,8 @@ QosTxop::VerifyBlockAck (void)
     {
       m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
     }
-  WifiModulationClass modulation = m_low->GetDataTxVector (m_currentPacket, &m_currentHdr).GetMode ().GetModulationClass ();
+  Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr);
+  WifiModulationClass modulation = m_low->GetDataTxVector (item).GetMode ().GetModulationClass ();
   if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
       && (GetLow ()->GetMpduAggregator () == 0 ||
           GetLow ()->GetMpduAggregator ()->GetMaxAmpduSize (m_currentHdr.GetAddr1 (), tid, modulation) == 0))
