@@ -37,7 +37,7 @@ class MobilityModel;
 
 
 /**
- * \ingroup lte
+ * \ingroup spectrum
  *
  * \brief fading loss model based on precalculated fading traces
  */
