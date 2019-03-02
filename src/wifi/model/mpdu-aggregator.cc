@@ -317,6 +317,7 @@ std::vector<Ptr<WifiMacQueueItem>>
 MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
                               Time ppduDurationLimit) const
 {
+  NS_LOG_FUNCTION (this << *mpdu << ppduDurationLimit);
   std::vector<Ptr<WifiMacQueueItem>> mpduList;
   Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
 
@@ -339,167 +340,58 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
   if (edcaIt->second->GetBaAgreementEstablished (recipient, tid))
     {
       /* here is performed mpdu aggregation */
-      uint16_t startingSequenceNumber = 0;
-      uint16_t currentSequenceNumber = 0;
-      uint8_t qosPolicy = 0;
-      bool retry = false;
-      Ptr<const WifiMacQueueItem> nextMpdu = mpdu;
-      uint16_t nMpdus = 0;   // number of aggregated MPDUs
+      uint16_t startingSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
+      Ptr<WifiMacQueueItem> nextMpdu;
       uint16_t maxMpdus = edcaIt->second->GetBaBufferSize (recipient, tid);
       uint32_t currentAmpduSize = 0;
-      Ptr<WifiMacQueue> queue = edcaIt->second->GetWifiMacQueue ();
-      Ptr<WifiPhy> phy = edcaIt->second->GetLow ()->GetPhy ();
 
-      // Get the maximum PPDU Duration based on the preamble type. It must be a
-      // non null value because aggregation is available for HT, VHT and HE, which
-      // also provide a limit on the maximum PPDU duration
-      Time maxPpduDuration = GetPpduMaxTime (txVector.GetPreambleType ());
-      NS_ASSERT (maxPpduDuration.IsStrictlyPositive ());
-
-      // the limit on the PPDU duration is the minimum between the maximum PPDU
-      // duration (depending on the PPDU format) and the additional limit provided
-      // by the caller (if non-zero)
-      if (ppduDurationLimit.IsStrictlyPositive ())
+      // check if the received MPDU meets the size and duration constraints
+      if (edcaIt->second->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
         {
-          maxPpduDuration = std::min (maxPpduDuration, ppduDurationLimit);
+          // mpdu can be aggregated
+          nextMpdu = Copy (mpdu);
         }
 
       while (nextMpdu != 0)
         {
-          /* nextMpdu may be any of the following:
-            * (a) an A-MSDU (with all the constituent MSDUs dequeued from
-            *     the EDCA queue)
-            * (b) an MSDU dequeued (1st iteration) or peeked (other iterations)
-            *     from the EDCA queue
-            * (c) a retransmitted MSDU or A-MSDU dequeued (1st iteration) or
-            *     peeked (other iterations) from the BA Manager queue
-            * (d) a control or management frame (only 1st iteration, for now)
-            */
+          /* if we are here, nextMpdu can be aggregated to the A-MPDU.
+           * nextMpdu may be any of the following:
+           * (a) an A-MSDU (with all the constituent MSDUs dequeued from
+           *     the EDCA queue)
+           * (b) an MSDU dequeued from the EDCA queue
+           * (c) a retransmitted MSDU or A-MSDU dequeued from the BA Manager queue
+           * (d) an MPDU that was aggregated in an A-MPDU which was not
+           *     transmitted (e.g., because the RTS/CTS exchange failed)
+           */
 
-          // Check if aggregating nextMpdu violates the constraints on the
-          // maximum A-MPDU size or on the maximum PPDU duration. This is
-          // guaranteed by MsduAggregator::Aggregate in the case of (a)
+          currentAmpduSize = GetSizeIfAggregated (nextMpdu->GetSize (), currentAmpduSize);
 
-          uint32_t ampduSize = GetSizeIfAggregated (nextMpdu->GetSize (), currentAmpduSize);
+          NS_LOG_DEBUG ("Adding packet with sequence number " << nextMpdu->GetHeader ().GetSequenceNumber ()
+                        << " to A-MPDU, packet size = " << nextMpdu->GetSize ()
+                        << ", A-MPDU size = " << currentAmpduSize);
 
-          if (ampduSize > maxAmpduSize ||
-              phy->CalculateTxDuration (ampduSize, txVector, phy->GetFrequency ()) > maxPpduDuration)
-            {
-              NS_LOG_DEBUG ("No other MPDU can be aggregated: " << (ampduSize == 0 ? "size" : "time")
-                            << " limit exceeded");
-              break;
-            }
+          // Always use the Normal Ack policy (Implicit Block Ack), for now
+          nextMpdu->GetHeader ().SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
 
-          // nextMpdu can be aggregated
-          nMpdus++;
-          currentAmpduSize = ampduSize;
-
-          // Update the header of nextMpdu in case it is not a retransmitted packet
-          WifiMacHeader nextHeader = nextMpdu->GetHeader ();
-
-          if (nMpdus == 1)   // first MPDU
-            {
-              if (!mpdu->GetHeader ().IsBlockAckReq ())
-                {
-                  if (!mpdu->GetHeader ().IsBlockAck ())
-                    {
-                      startingSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
-                      nextHeader.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
-                    }
-                  else
-                    {
-                      NS_FATAL_ERROR ("BlockAck is not handled");
-                    }
-
-                  currentSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
-                }
-              else
-                {
-                  qosPolicy = 3; //if the last subframe is block ack req then set ack policy of all frames to blockack
-                  CtrlBAckRequestHeader blockAckReq;
-                  mpdu->GetPacket ()->PeekHeader (blockAckReq);
-                  startingSequenceNumber = blockAckReq.GetStartingSequence ();
-                }
-              /// \todo We should also handle Ack and BlockAck
-            }
-          else if (retry == false)
-            {
-              currentSequenceNumber = edcaIt->second->GetNextSequenceNumberFor (&nextHeader);
-              nextHeader.SetSequenceNumber (currentSequenceNumber);
-              nextHeader.SetFragmentNumber (0);
-              nextHeader.SetNoMoreFragments ();
-              nextHeader.SetNoRetry ();
-            }
-
-          if (qosPolicy == 0)
-            {
-              nextHeader.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
-            }
-          else
-            {
-              nextHeader.SetQosAckPolicy (WifiMacHeader::BLOCK_ACK);
-            }
-
-          mpduList.push_back (Create<WifiMacQueueItem> (nextMpdu->GetPacket (), nextHeader,
-                                                        nextMpdu->GetTimeStamp ()));
-
-          // Except for the first iteration, complete the processing of the
-          // current MPDU, which includes removal from the respective queue
-          // (needed for cases (b) and (c) because the packet was just peeked)
-          if (nMpdus >= 2 && nextHeader.IsQosData ())
-            {
-              if (retry)
-                {
-                  edcaIt->second->RemoveRetransmitPacket (tid, recipient,
-                                                          nextHeader.GetSequenceNumber ());
-                }
-              else if (nextHeader.IsQosData () && !nextHeader.IsQosAmsdu ())
-                {
-                  queue->Remove (nextMpdu->GetPacket ());
-                }
-            }
+          mpduList.push_back (nextMpdu);
 
           // If allowed by the BA agreement, get the next MPDU
           nextMpdu = 0;
 
-          if ((nMpdus == 1 || retry)   // check retransmit in the 1st iteration or if retry is true
-              && (nextMpdu = edcaIt->second->PeekNextRetransmitPacket (tid, recipient)) != 0)
+          Ptr<const WifiMacQueueItem> peekedMpdu;
+          peekedMpdu = edcaIt->second->PeekNextFrameByTidAndAddress (tid, recipient);
+          if (peekedMpdu != 0)
             {
-              retry = true;
-              currentSequenceNumber = nextMpdu->GetHeader ().GetSequenceNumber ();
+              uint16_t currentSequenceNumber = peekedMpdu->GetHeader ().GetSequenceNumber ();
 
-              if (!IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
+              if (IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
                 {
-                  break;
-                }
-            }
-          else
-            {
-              retry = false;
-              nextMpdu = queue->PeekByTidAndAddress (tid, recipient);
-
-              if (nextMpdu)
-                {
-                  currentSequenceNumber = edcaIt->second->PeekNextSequenceNumberFor (&nextMpdu->GetHeader ());
-
-                  if (!IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
-                    {
-                      break;
-                    }
-
-                  // Attempt A-MSDU aggregation
-                  Ptr<const WifiMacQueueItem> amsdu;
-                  if (edcaIt->second->GetLow ()->GetMsduAggregator () != 0)
-                    {
-                      amsdu = edcaIt->second->GetLow ()->GetMsduAggregator ()->GetNextAmsdu (recipient, tid,
-                                                                                              txVector,
-                                                                                              currentAmpduSize,
-                                                                                              maxPpduDuration);
-                      if (amsdu)
-                        {
-                          nextMpdu = amsdu;
-                        }
-                    }
+                  // dequeue the frame if constraints on size and duration limit are met.
+                  // Note that the dequeued MPDU differs from the peeked MPDU if A-MSDU
+                  // aggregation is performed during the dequeue
+                  NS_LOG_DEBUG ("Trying to aggregate another MPDU");
+                  nextMpdu = edcaIt->second->DequeuePeekedFrame (peekedMpdu, txVector, true,
+                                                                 currentAmpduSize, ppduDurationLimit);
                 }
             }
         }
@@ -509,7 +401,6 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
           mpduList.clear ();
         }
     }
-
   return mpduList;
 }
 

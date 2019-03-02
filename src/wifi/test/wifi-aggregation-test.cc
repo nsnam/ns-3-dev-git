@@ -147,9 +147,9 @@ AmpduAggregationTest::DoRun (void)
     (*m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->begin ());
 
   auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu
-    (Create<const WifiMacQueueItem> (pkt, hdr), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+    (Create<WifiMacQueueItem> (pkt, hdr), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet should not result in an A-MPDU");
-  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
+  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->GetNPackets (), 0, "aggregation queue is not flushed");
 
   //-----------------------------------------------------------------------------------------------------
 
@@ -173,15 +173,15 @@ AmpduAggregationTest::DoRun (void)
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt1, hdr1));
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt2, hdr2));
 
-  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<WifiMacQueueItem> (pkt, hdr),
                                                                                    m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   m_mac->GetBEQueue ()->GetLow ()->m_currentPacket = Create<WifiPsdu> (mpduList);
   for (auto& mpdu : mpduList)
     {
-      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Enqueue (Create<WifiMacQueueItem> (*mpdu));
+      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->Enqueue (Create<WifiMacQueueItem> (*mpdu));
     }
 
-  uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets ();
+  uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->GetNPackets ();
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), false, "MPDU aggregation failed");
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_currentPacket->GetSize (), 4606, "A-MPDU size is not correct");
   NS_TEST_EXPECT_MSG_EQ (aggregationQueueSize, 3, "aggregation queue should not be empty");
@@ -192,7 +192,7 @@ AmpduAggregationTest::DoRun (void)
   uint32_t i = 0;
   for (; aggregationQueueSize > 0; aggregationQueueSize--, i++)
     {
-      dequeuedItem = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Dequeue ();
+      dequeuedItem = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->Dequeue ();
       dequeuedHdr = dequeuedItem->GetHeader ();
       NS_TEST_EXPECT_MSG_EQ (dequeuedHdr.GetSequenceNumber (), i, "wrong sequence number");
     }
@@ -227,17 +227,17 @@ AmpduAggregationTest::DoRun (void)
 
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt3, hdr3));
 
-  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt1, hdr1),
+  mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<WifiMacQueueItem> (pkt1, hdr1),
                                                                                         m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "a single packet for this destination should not result in an A-MPDU");
-  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
+  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->GetNPackets (), 0, "aggregation queue is not flushed");
 
   m_mac->GetBEQueue ()->m_currentHdr = hdr2;
   m_mac->GetBEQueue ()->m_currentPacket = pkt2->Copy ();
   mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu
-    (Create<const WifiMacQueueItem> (pkt2, hdr2), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
+    (Create<WifiMacQueueItem> (pkt2, hdr2), m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "no MPDU aggregation should be performed if there is no agreement");
-  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
+  NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->GetNPackets (), 0, "aggregation queue is not flushed");
 
   m_manager->SetMaxSsrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
   m_mac->GetBEQueue ()->MissedAck ();
@@ -541,15 +541,15 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
       m_mac->GetBEQueue ()->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
   }
 
-  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<const WifiMacQueueItem> (pkt, hdr),
+  auto mpduList = m_mac->GetBEQueue ()->GetLow ()->GetMpduAggregator ()-> GetNextAmpdu (Create<WifiMacQueueItem> (pkt, hdr),
                                                                                         m_mac->GetBEQueue ()->GetLow ()->m_currentTxVector);
   for (auto& mpdu : mpduList)
     {
-      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->Enqueue (Create<WifiMacQueueItem> (*mpdu));
+      m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->Enqueue (Create<WifiMacQueueItem> (*mpdu));
     }
 
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), false, "MPDU aggregation failed");
-  uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue[0]->GetNPackets ();
+  uint32_t aggregationQueueSize = m_mac->GetBEQueue ()->GetLow ()->m_aggregateQueue->GetNPackets ();
   NS_TEST_EXPECT_MSG_EQ (aggregationQueueSize, bufferSize, "aggregation queue should countain " << bufferSize << " MPDUs");
   uint16_t expectedRemainingPacketsInQueue = 300 - bufferSize + 1;
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetWifiMacQueue ()->GetNPackets (), expectedRemainingPacketsInQueue, "queue should contain 300 - "<< bufferSize - 1 << " = "<< expectedRemainingPacketsInQueue << " packets");

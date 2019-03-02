@@ -190,7 +190,26 @@ QosTxop::PeekNextFrame (void)
   NS_LOG_FUNCTION (this);
   Ptr<const WifiMacQueueItem> item;
 
-  // check if there is a packet in the BlockAckManager retransmit queue
+  // check if there is a packet in the MacLow aggregation queue
+  for (uint8_t tid = 0; tid < 8; tid++)
+    {
+      if (QosUtilsMapTidToAc (tid) == m_ac)
+        {
+          item = m_low->GetAggregateQueue ()->PeekByTid (tid);
+          if (item != 0)
+            {
+              break;
+            }
+        }
+    }
+
+  if (item != 0)
+    {
+      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue, " << *item);
+      return item;
+    }
+
+  // otherwise, check if there is a packet in the BlockAckManager retransmit queue
   item = m_baManager->GetNextPacket (false);
 
   if (item != 0)
@@ -224,7 +243,16 @@ QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
   NS_LOG_FUNCTION (this << +tid << recipient);
   Ptr<const WifiMacQueueItem> item;
 
-  // check if there is a packet in the BlockAckManager retransmit queue
+  // check if there is a packet in the MacLow aggregation queue
+  item = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+
+  if (item != 0)
+    {
+      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue, " << *item);
+      return item;
+    }
+
+  // otherwise, check if there is a packet in the BlockAckManager retransmit queue
   item = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
 
   if (item != 0)
@@ -330,7 +358,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   Ptr<const WifiMacQueueItem> testItem;
 
   // the packet can only have been peeked from the Block Ack manager retransmit
-  // queue if:
+  // queue or the MacLow aggregation queue if:
   // - the peeked packet is a QoS Data frame AND
   // - the peeked packet is not a broadcast frame AND
   // - an agreement has been established
@@ -338,6 +366,17 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+      testItem = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+
+      if (testItem)
+        {
+          // if not null, the test packet must equal the peeked packet
+          NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
+          item = m_low->GetAggregateQueue ()->DequeueByTidAndAddress (tid, recipient);
+          NS_LOG_DEBUG ("dequeued from aggregation queue: " << *item);
+          return item;
+        }
+
       testItem = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
 
       if (testItem)
@@ -350,6 +389,9 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
           return item;
         }
     }
+
+  // NOTE if frames other than QoS Data frame can be aggregated into A-MPDUs and hence
+  // potentially stored in the MacLow aggregation queue, then handle them here
 
   // the packet has been peeked from the EDCA queue. If it is a QoS Data frame and
   // it is not a broadcast frame, attempt A-MSDU aggregation if aggregate is true
@@ -403,6 +445,13 @@ QosTxop::NotifyAccessGranted (void)
   m_accessRequested = false;
   m_isAccessRequestedForRts = false;
   m_startTxop = Simulator::Now ();
+  // discard the current packet if it is a QoS Data frame with expired lifetime
+  if (m_currentPacket != 0 && m_currentHdr.IsQosData ()
+      && (m_currentPacketTimestamp + m_queue->GetMaxDelay () < Simulator::Now ()))
+    {
+      NS_LOG_DEBUG ("the lifetime of current packet expired");
+      m_currentPacket = 0;
+    }
   if (m_currentPacket == 0)
     {
       if (m_baManager->HasBar (m_currentBar))
@@ -613,7 +662,6 @@ QosTxop::MissedCts (void)
       if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
         {
           uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
-          m_low->FlushAggregateQueue (tid);
 
           if (GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), tid))
             {
@@ -653,6 +701,13 @@ QosTxop::MissedCts (void)
     {
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
+      // if a BA agreement is established, packets have been stored in MacLow
+      // aggregation queue for retransmission
+      if (m_currentHdr.IsQosData () && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (),
+                                                                  m_currentHdr.GetQosTid ()))
+        {
+          m_currentPacket = 0;
+        }
     }
   m_backoff = m_rng->GetInteger (0, GetCw ());
   m_backoffTrace (m_backoff);

@@ -420,13 +420,6 @@ public:
    */
   void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector,
                                    std::vector<bool> statusPerMpdu);
-  /**
-   *
-   * This function is called to flush the aggregate queue, which is used for A-MPDU
-   * \param tid the Traffic ID
-   *
-   */
-  void FlushAggregateQueue (uint8_t tid);
 
   /**
    * Return a TXVECTOR for the DATA frame given the destination.
@@ -478,6 +471,14 @@ public:
    * \param aggr pointer to the MPDU aggregator.
    */
   void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
+
+  /**
+   * Get the aggregate queue, which stores the MPDUs that were part of an A-MPDU
+   * that could not be transmitted because the RTS/CTS exchange failed
+   *
+   * \return the aggregate queue
+   */
+  Ptr<WifiMacQueue> GetAggregateQueue (void) const;
 
 private:
   /**
@@ -854,14 +855,6 @@ private:
    * \param phy the WifiPhy this MacLow is connected to
    */
   void RemovePhyMacLowListener (Ptr<WifiPhy> phy);
-  /**
-   * Insert in a temporary queue.
-   * It is only used with a RTS/CTS exchange for an A-MPDU transmission.
-   *
-   * \param mpdu MPDU to be inserted in the A-MPDU tx queue
-   * \param tid the Traffic ID of the MPDU to be inserted in the A-MPDU tx queue
-   */
-  void InsertInTxQueue (Ptr<const WifiMacQueueItem> mpdu, uint8_t tid);
 
   Ptr<WifiPhy> m_phy; //!< Pointer to WifiPhy (actually send/receives frames)
   Ptr<WifiMac> m_mac; //!< Pointer to WifiMac (to fetch configuration)
@@ -952,8 +945,7 @@ private:
   QueueEdcas m_edca; //!< EDCA queues
 
   bool m_ctsToSelfSupported;             //!< Flag whether CTS-to-self is supported
-  Ptr<WifiMacQueue> m_aggregateQueue[8]; //!< Queues per TID used for MPDU aggregation
-  std::vector<Ptr<const WifiMacQueueItem>> m_txPackets[8];      //!< Contain temporary items to be sent with the next A-MPDU transmission for a given TID, once RTS/CTS exchange has succeeded.
+  Ptr<WifiMacQueue> m_aggregateQueue;    //!< Queue storing MPDUs after RTS/CTS exchange failure
   WifiTxVector m_currentTxVector;        //!< TXVECTOR used for the current packet transmission
 
   CfAckInfo m_cfAckInfo; //!< Info about piggyback ACKs used in PCF
