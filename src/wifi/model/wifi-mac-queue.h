@@ -130,6 +130,16 @@ public:
   Ptr<WifiMacQueueItem> DequeueByAddress (Mac48Address dest);
   /**
    * Search and return, if present in the queue, the first packet having the
+   * tid equal to <i>tid</i>.
+   * This method removes the packet from the queue.
+   *
+   * \param tid the given tid
+   *
+   * \return the packet
+   */
+  Ptr<WifiMacQueueItem> DequeueByTid (uint8_t tid);
+  /**
+   * Search and return, if present in the queue, the first packet having the
    * address indicated by <i>type</i> equal to <i>addr</i>, and tid
    * equal to <i>tid</i>. This method removes the packet from the queue.
    * It is typically used by ns3::QosTxop in order to perform correct MSDU
@@ -160,6 +170,15 @@ public:
    * \return the packet
    */
   Ptr<const WifiMacQueueItem> Peek (void) const;
+  /**
+   * Search and return, if present in the queue, the first packet having the
+   * tid equal to <i>tid</i>. This method does not remove the packet from the queue.
+   *
+   * \param tid the given TID
+   *
+   * \return packet
+   */
+  Ptr<const WifiMacQueueItem> PeekByTid (uint8_t tid);
   /**
    * Search and return, if present in the queue, the first packet having the
    * address indicated by <i>type</i> equal to <i>addr</i>, and tid

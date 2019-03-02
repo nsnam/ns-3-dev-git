@@ -204,6 +204,26 @@ WifiMacQueue::DequeueByAddress (Mac48Address dest)
 }
 
 Ptr<WifiMacQueueItem>
+WifiMacQueue::DequeueByTid (uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << +tid);
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetHeader ().GetQosTid () == tid)
+            {
+              return DoDequeue (it);
+            }
+
+          it++;
+        }
+    }
+  NS_LOG_DEBUG ("The queue is empty");
+  return 0;
+}
+
+Ptr<WifiMacQueueItem>
 WifiMacQueue::DequeueByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
@@ -256,6 +276,26 @@ WifiMacQueue::Peek (void) const
       if (Simulator::Now () <= (*it)->GetTimeStamp () + m_maxDelay)
         {
           return DoPeek (it);
+        }
+    }
+  NS_LOG_DEBUG ("The queue is empty");
+  return 0;
+}
+
+Ptr<const WifiMacQueueItem>
+WifiMacQueue::PeekByTid (uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << +tid);
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetHeader ().GetQosTid () == tid)
+            {
+              return DoPeek (it);
+            }
+
+          it++;
         }
     }
   NS_LOG_DEBUG ("The queue is empty");
