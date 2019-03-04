@@ -324,16 +324,14 @@ public:
                                const MacLowTransmissionParameters& params) const;
 
   /**
-   * \param packet packet to send
-   * \param hdr 802.11 header for packet to send
+   * \param mpdu packet to send
    * \param parameters the transmission parameters to use for this packet.
    * \param txop pointer to the calling Txop.
    *
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  virtual void StartTransmission (Ptr<const Packet> packet,
-                                  const WifiMacHeader* hdr,
+  virtual void StartTransmission (Ptr<WifiMacQueueItem> mpdu,
                                   MacLowTransmissionParameters parameters,
                                   Ptr<Txop> txop);
 

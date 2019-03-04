@@ -487,12 +487,11 @@ MacLow::RegisterDcf (Ptr<ChannelAccessManager> dcf)
 }
 
 void
-MacLow::StartTransmission (Ptr<const Packet> packet,
-                           const WifiMacHeader* hdr,
+MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
                            MacLowTransmissionParameters params,
                            Ptr<Txop> txop)
 {
-  NS_LOG_FUNCTION (this << packet << hdr << params << txop);
+  NS_LOG_FUNCTION (this << *mpdu << params << txop);
   NS_ASSERT (!m_cfAckInfo.expectCfAck);
   if (m_phy->IsStateOff ())
     {
@@ -513,17 +512,18 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
    * QapScheduler has taken access to the channel from
    * one of the Edca of the QAP.
    */
-  m_currentPacket = Create<WifiPsdu> (packet, *hdr);
+  m_currentPacket = Create<WifiPsdu> (mpdu, false);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
   CancelAllEvents ();
   m_currentTxop = txop;
   m_txParams = params;
-  if (hdr->IsCtl ())
+  if (hdr.IsCtl ())
     {
-      m_currentTxVector = GetRtsTxVector  (*m_currentPacket->begin ());
+      m_currentTxVector = GetRtsTxVector  (mpdu);
     }
   else
     {
-      m_currentTxVector = GetDataTxVector (*m_currentPacket->begin ());   // TODO
+      m_currentTxVector = GetDataTxVector (mpdu);
     }
 
   if (NeedRts () && !IsCfPeriod ())
@@ -541,27 +541,27 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
    * (c) a QoS data or DELBA Request frame dequeued from a QosTxop
    * (d) a BlockAckReq or ADDBA Request frame
    */
-  if (hdr->IsQosData () && !hdr->GetAddr1 ().IsBroadcast () && m_mpduAggregator != 0)
+  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast () && m_mpduAggregator != 0)
     {
       /* We get here if the received packet is any of the following:
        * (a) a QoS data frame
        * (b) a BlockAckRequest
        */
-      uint8_t tid = GetTid (packet, *hdr);
+      uint8_t tid = GetTid (mpdu->GetPacket (), hdr);
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
       std::vector<Ptr<WifiMacQueueItem>> mpduList;
 
       //Perform MPDU aggregation if possible
-      mpduList = m_mpduAggregator->GetNextAmpdu (*m_currentPacket->begin (), m_currentTxVector);
+      mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector);
 
       if (mpduList.size () > 1)
         {
           m_currentPacket = Create<WifiPsdu> (mpduList);
 
           // assume implicit block ack for now
-          qosTxop->CompleteAmpduTransfer (hdr->GetAddr1 (), tid);
+          qosTxop->CompleteAmpduTransfer (hdr.GetAddr1 (), tid);
 
-          if (qosTxop->GetBaBufferSize (hdr->GetAddr1 (), tid) > 64)
+          if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
             {
               m_txParams.EnableExtendedCompressedBlockAck ();
             }
@@ -571,27 +571,26 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
             }
 
           NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
-          qosTxop->SetAmpduExist (hdr->GetAddr1 (), true);
+          qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
         }
       else if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT
                || m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
         {
           // VHT/HE single MPDU
-          Ptr<WifiMacQueueItem> mpdu = *m_currentPacket->begin ();
-          mpdu->GetHeader ().SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
           m_currentPacket = Create<WifiPsdu> (mpdu, true);
+          m_currentPacket->SetAckPolicyForTid (tid, WifiMacHeader::NORMAL_ACK);
 
-          if (qosTxop->GetBaAgreementEstablished (hdr->GetAddr1 (), tid))
+          if (qosTxop->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
             {
-              qosTxop->CompleteAmpduTransfer (hdr->GetAddr1 (), tid);
+              qosTxop->CompleteAmpduTransfer (hdr.GetAddr1 (), tid);
             }
 
           //VHT/HE single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();
-          NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr->GetSequenceNumber ());
-          qosTxop->SetAmpduExist (hdr->GetAddr1 (), true);
+          NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
+          qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
         }
-      else if (hdr->IsQosData () && !hdr->IsQosBlockAck () && !hdr->GetAddr1 ().IsGroup ())
+      else if (hdr.IsQosData () && !hdr.IsQosBlockAck () && !hdr.GetAddr1 ().IsGroup ())
         {
           m_txParams.EnableAck ();
         }

@@ -495,13 +495,15 @@ QosTxop::NotifyAccessGranted (void)
           VerifyBlockAck ();
         }
     }
+  Ptr<WifiMacQueueItem> mpdu = Create <WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                          m_currentPacketTimestamp);
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
       m_currentParams.DisableRts ();
       m_currentParams.DisableAck ();
       m_currentParams.DisableNextData ();
       NS_LOG_DEBUG ("tx broadcast");
-      m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+      m_low->StartTransmission (mpdu, m_currentParams, this);
     }
   else if (m_currentHdr.GetType () == WIFI_MAC_CTL_BACKREQ)
     {
@@ -537,13 +539,14 @@ QosTxop::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
               m_currentParams.EnableNextData (GetNextFragmentSize ());
             }
-          m_low->StartTransmission (fragment, &hdr, m_currentParams, this);
+          m_low->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr),
+                                    m_currentParams, this);
         }
       else
         {
           m_currentIsFragmented = false;
           m_currentParams.DisableNextData ();
-          m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+          m_low->StartTransmission (mpdu, m_currentParams, this);
           if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
             {
               CompleteTx ();
@@ -1186,7 +1189,7 @@ QosTxop::StartNextPacket (void)
       m_stationManager->UpdateFragmentationThreshold ();
       m_fragmentNumber = 0;
       VerifyBlockAck ();
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+      GetLow ()->StartTransmission (item, m_currentParams, this);
       if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
           CompleteTx ();
@@ -1715,7 +1718,7 @@ QosTxop::SendBlockAckRequest (const Bar &bar)
       //Delayed block ack
       m_currentParams.EnableAck ();
     }
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+  m_low->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr), m_currentParams, this);
 }
 
 void
@@ -1807,7 +1810,7 @@ QosTxop::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   m_currentParams.DisableRts ();
   m_currentParams.DisableNextData ();
 
-  m_low->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+  m_low->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr), m_currentParams, this);
 }
 
 void

@@ -106,22 +106,21 @@ WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 }
 
 void
-WaveMacLow::StartTransmission (Ptr<const Packet> packet,
-                               const WifiMacHeader* hdr,
+WaveMacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
                                MacLowTransmissionParameters params,
                                Ptr<Txop> dca)
 {
-  NS_LOG_FUNCTION (this << packet << hdr << params << dca);
+  NS_LOG_FUNCTION (this << *mpdu << params << dca);
   Ptr<WifiPhy> phy = MacLow::GetPhy ();
   uint32_t curChannel = phy->GetChannelNumber ();
   // if current channel access is not AlternatingAccess, just do as MacLow.
   if (!m_scheduler->IsAlternatingAccessAssigned (curChannel))
     {
-      MacLow::StartTransmission (packet, hdr, params, dca);
+      MacLow::StartTransmission (mpdu, params, dca);
       return;
     }
 
-  Time transmissionTime = MacLow::CalculateTransmissionTime (packet, hdr, params);
+  Time transmissionTime = MacLow::CalculateTransmissionTime (mpdu->GetPacket (), &mpdu->GetHeader (), params);
   Time remainingTime = m_coordinator->NeedTimeToGuardInterval ();
 
   if (transmissionTime > remainingTime)
@@ -134,7 +133,7 @@ WaveMacLow::StartTransmission (Ptr<const Packet> packet,
     }
   else
     {
-      MacLow::StartTransmission (packet, hdr, params, dca);
+      MacLow::StartTransmission (mpdu, params, dca);
     }
 }
 

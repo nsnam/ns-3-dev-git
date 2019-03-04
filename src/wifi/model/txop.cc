@@ -498,7 +498,8 @@ Txop::NotifyAccessGranted (void)
       m_currentParams.DisableAck ();
       m_currentParams.DisableNextData ();
       NS_LOG_DEBUG ("tx broadcast");
-      GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+      GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                    m_currentParams, this);
     }
   else
     {
@@ -517,12 +518,14 @@ Txop::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
               m_currentParams.EnableNextData (GetNextFragmentSize ());
             }
-          GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
+          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr),
+                                        m_currentParams, this);
         }
       else
         {
           m_currentParams.DisableNextData ();
-          GetLow ()->StartTransmission (m_currentPacket, &m_currentHdr, m_currentParams, this);
+          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
+                                        m_currentParams, this);
         }
     }
 }
@@ -737,7 +740,7 @@ Txop::StartNextFragment (void)
     {
       m_currentParams.EnableNextData (GetNextFragmentSize ());
     }
-  GetLow ()->StartTransmission (fragment, &hdr, m_currentParams, this);
+  GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr), m_currentParams, this);
 }
 
 void
