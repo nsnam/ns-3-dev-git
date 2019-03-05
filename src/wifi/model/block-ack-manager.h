@@ -166,10 +166,11 @@ public:
    * Returns true if the BAR is scheduled. Returns false otherwise.
    *
    * \param bar
+   * \param remove true if the BAR has to be removed from the queue
    *
    * \return true if a BAR is scheduled, false otherwise
    */
-  bool HasBar (Bar &bar);
+  bool HasBar (Bar &bar, bool remove = true);
   /**
    * Returns true if there are packets that need of retransmission or at least a
    * BAR is scheduled. Returns false otherwise.

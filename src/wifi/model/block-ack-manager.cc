@@ -432,13 +432,16 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
 }
 
 bool
-BlockAckManager::HasBar (Bar &bar)
+BlockAckManager::HasBar (Bar &bar, bool remove)
 {
   CleanupBuffers ();
   if (m_bars.size () > 0)
     {
       bar = m_bars.front ();
-      m_bars.pop_front ();
+      if (remove)
+        {
+          m_bars.pop_front ();
+        }
       return true;
     }
   return false;
