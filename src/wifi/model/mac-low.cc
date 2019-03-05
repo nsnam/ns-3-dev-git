@@ -830,7 +830,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         }
     }
   else if (hdr.IsBlockAck () && hdr.GetAddr1 () == m_self
-           && (m_txParams.MustWaitBasicBlockAck () || m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
+           && m_txParams.MustWaitBlockAck ()
            && m_blockAckTimeoutEvent.IsRunning ())
     {
       NS_LOG_DEBUG ("got block ack from " << hdr.GetAddr2 ());
@@ -1703,22 +1703,10 @@ MacLow::SendRtsForPacket (void)
   duration += m_phy->CalculateTxDuration (m_currentPacket->GetSize (),
                                           m_currentTxVector, m_phy->GetFrequency ());
   duration += GetSifs ();
-  if (m_txParams.MustWaitBasicBlockAck ())
+  if (m_txParams.MustWaitBlockAck ())
     {
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
-      duration += GetBlockAckDuration (blockAckReqTxVector, BASIC_BLOCK_ACK);
-    }
-  else if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
-    {
-      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
-        if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-          {
-            duration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-          }
-        else
-          {
-            duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-          }
+      duration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
     }
   else if (m_txParams.MustWaitNormalAck ())
     {
@@ -1757,14 +1745,16 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
       NotifyAckTimeoutStartNow (timerDelay);
       m_normalAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::NormalAckTimeout, this);
     }
-  else if (m_txParams.MustWaitBasicBlockAck ())
+  else if (m_txParams.MustWaitBlockAck () && m_txParams.GetBlockAckType () == BlockAckType::BASIC_BLOCK_ACK)
     {
       Time timerDelay = txDuration + GetBasicBlockAckTimeout ();
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (timerDelay);
       m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
     }
-  else if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
+  else if (m_txParams.MustWaitBlockAck () &&
+           (m_txParams.GetBlockAckType () == BlockAckType::COMPRESSED_BLOCK_ACK
+            || m_txParams.GetBlockAckType () == BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK))
     {
       Time timerDelay = txDuration + GetCompressedBlockAckTimeout ();
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
@@ -1816,26 +1806,12 @@ MacLow::SendDataPacket (void)
   if (!IsCfPeriod ())
     {
       Time duration = Seconds (0);
-      if (m_txParams.MustWaitBasicBlockAck ())
+      if (m_txParams.MustWaitBlockAck ())
         {
           duration += GetSifs ();
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (),
                                                                   m_currentTxVector.GetMode ());
-          duration += GetBlockAckDuration (blockAckReqTxVector, BASIC_BLOCK_ACK);
-        }
-      else if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
-        {
-          duration += GetSifs ();
-          WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (),
-                                                                  m_currentTxVector.GetMode ());
-          if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-            {
-              duration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-            }
-          else
-            {
-              duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-            }
+          duration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
         }
       else if (m_txParams.MustWaitNormalAck ())
         {
@@ -1942,26 +1918,12 @@ MacLow::SendCtsToSelf (void)
   duration += GetSifs ();
   duration += m_phy->CalculateTxDuration (m_currentPacket->GetSize (),
                                           m_currentTxVector, m_phy->GetFrequency ());
-  if (m_txParams.MustWaitBasicBlockAck ())
+  if (m_txParams.MustWaitBlockAck ())
     {
       duration += GetSifs ();
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (),
                                                               m_currentTxVector.GetMode ());
-      duration += GetBlockAckDuration (blockAckReqTxVector, BASIC_BLOCK_ACK);
-    }
-  else if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
-    {
-      duration += GetSifs ();
-      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (),
-                                                              m_currentTxVector.GetMode ());
-      if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-        {
-          duration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-        }
-      else
-        {
-          duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-        }
+      duration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
     }
   else if (m_txParams.MustWaitNormalAck ())
     {
@@ -1973,19 +1935,12 @@ MacLow::SendCtsToSelf (void)
       duration += GetSifs ();
       duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
                                               m_currentTxVector, m_phy->GetFrequency ());
-      if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
+      if (m_txParams.MustWaitBlockAck ())
         {
           duration += GetSifs ();
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (),
                                                                   m_currentTxVector.GetMode ());
-          if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-            {
-              duration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-            }
-          else
-            {
-              duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-            }
+          duration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
         }
       else if (m_txParams.MustWaitNormalAck ())
         {
@@ -2048,24 +2003,11 @@ MacLow::SendDataAfterCts (Time duration)
 
   StartDataTxTimers (m_currentTxVector);
   Time newDuration = Seconds (0);
-  if (m_txParams.MustWaitBasicBlockAck ())
+  if (m_txParams.MustWaitBlockAck ())
     {
       newDuration += GetSifs ();
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
-      newDuration += GetBlockAckDuration (blockAckReqTxVector, BASIC_BLOCK_ACK);
-    }
-  else if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
-    {
-      newDuration += GetSifs ();
-      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
-      if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-        {
-          newDuration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-        }
-      else
-        {
-          newDuration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-        }
+      newDuration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
     }
   else if (m_txParams.MustWaitNormalAck ())
     {
@@ -2083,18 +2025,11 @@ MacLow::SendDataAfterCts (Time duration)
           newDuration += GetSifs ();
         }
       newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
-      if (m_txParams.MustWaitCompressedBlockAck () || m_txParams.MustWaitExtendedCompressedBlockAck ())
+      if (m_txParams.MustWaitBlockAck ())
         {
           newDuration += GetSifs ();
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr2 (), m_currentTxVector.GetMode ());
-          if (m_txParams.MustWaitExtendedCompressedBlockAck ())
-            {
-              newDuration += GetBlockAckDuration (blockAckReqTxVector, EXTENDED_COMPRESSED_BLOCK_ACK);
-            }
-          else
-            {
-              newDuration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
-            }
+          newDuration += GetBlockAckDuration (blockAckReqTxVector, m_txParams.GetBlockAckType ());
         }
       else if (m_txParams.MustWaitNormalAck ())
         {
