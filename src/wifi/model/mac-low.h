@@ -611,13 +611,6 @@ private:
    */
   Time GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
   /**
-   * Check if the current packet should be sent with a RTS protection.
-   *
-   * \return true if RTS protection should be used,
-   *         false otherwise
-   */
-  bool NeedRts (void) const;
-  /**
    * Check if CTS-to-self mechanism should be used for the current packet.
    *
    * \return true if CTS-to-self mechanism should be used for the current packet,

@@ -506,6 +506,7 @@ Txop::NotifyAccessGranted (void)
       m_currentParams.EnableAck ();
       if (NeedFragmentation ())
         {
+          m_currentParams.DisableRts ();
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
           if (IsLastFragment ())
@@ -523,6 +524,19 @@ Txop::NotifyAccessGranted (void)
         }
       else
         {
+          WifiTxVector dataTxVector = m_stationManager->GetDataTxVector (m_currentHdr.GetAddr1 (),
+                                                                         &m_currentHdr, m_currentPacket);
+
+          if (m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                         m_currentPacket, dataTxVector)
+              && !m_low->IsCfPeriod ())
+            {
+              m_currentParams.EnableRts ();
+            }
+          else
+            {
+              m_currentParams.DisableRts ();
+            }
           m_currentParams.DisableNextData ();
           GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
                                         m_currentParams, this);

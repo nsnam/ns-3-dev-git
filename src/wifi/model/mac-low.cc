@@ -526,15 +526,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
       m_currentTxVector = GetDataTxVector (mpdu);
     }
 
-  if (NeedRts () && !IsCfPeriod ())
-    {
-      m_txParams.EnableRts ();
-    }
-  else
-    {
-      m_txParams.DisableRts ();
-    }
-
   /* The packet received by this function can be any of the following:
    * (a) a management frame dequeued from the Txop
    * (b) a non-QoS data frame dequeued from the Txop
@@ -617,14 +608,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
 
   /* When this method completes, either we have taken ownership of the medium or the device switched off in the meantime. */
   NS_ASSERT (m_phy->IsStateTx () || m_phy->IsStateOff ());
-}
-
-bool
-MacLow::NeedRts (void) const
-{
-  WifiTxVector dataTxVector = GetDataTxVector (*m_currentPacket->begin ());
-  return m_stationManager->NeedRts (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
-                                    m_currentPacket->GetPayload (0), dataTxVector);
 }
 
 bool

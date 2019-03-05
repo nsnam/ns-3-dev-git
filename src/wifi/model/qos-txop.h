@@ -467,6 +467,15 @@ public:
    */
   bool IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uint8_t tid,
                                   WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit);
+  /**
+   * Compute the MacLow transmission parameters for the given frame. Allowed frames
+   * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA
+   * Request/Response, DELBA Request).
+   *
+   * \param frame the given frame
+   * \return the MacLow transmission parameters.
+   */
+  MacLowTransmissionParameters GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const;
 
   /**
    * The packet we sent was successfully received by the receiver.

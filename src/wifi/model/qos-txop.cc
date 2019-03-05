@@ -437,6 +437,100 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   return item;
 }
 
+MacLowTransmissionParameters
+QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
+{
+  NS_LOG_FUNCTION (this << *frame);
+
+  MacLowTransmissionParameters params;
+  Mac48Address recipient = frame->GetHeader ().GetAddr1 ();
+
+  params.DisableNextData ();
+
+  // broadcast frames
+  if (recipient.IsBroadcast ())
+    {
+      params.DisableRts ();
+      params.DisableAck ();
+      return params;
+    }
+  if (frame->GetHeader ().IsMgt ())
+    {
+      params.DisableRts ();
+      params.EnableAck ();
+      return params;
+    }
+
+  // Enable/disable RTS
+  if (!frame->GetHeader ().IsBlockAckReq ()
+      && m_stationManager->NeedRts (recipient, &frame->GetHeader (),
+                                    frame->GetPacket (), m_low->GetDataTxVector (frame))
+      && !m_low->IsCfPeriod ())
+    {
+      params.EnableRts ();
+    }
+  else
+    {
+      params.DisableRts ();
+    }
+
+  uint8_t tid;
+  CtrlBAckRequestHeader baReqHdr;
+  if (frame->GetHeader ().IsBlockAckReq ())
+    {
+      frame->GetPacket ()->PeekHeader (baReqHdr);
+      tid = baReqHdr.GetTidInfo ();
+    }
+  else if (frame->GetHeader ().IsQosData ())
+    {
+      tid = frame->GetHeader ().GetQosTid ();
+    }
+  else
+    {
+      NS_ABORT_MSG ("Unexpected type of frame");
+    }
+
+  // Select ack technique.
+  if (frame->GetHeader ().IsQosData () && !GetBaAgreementEstablished (recipient, tid))
+    {
+      // normal ack in case of QoS data frame with no agreement established
+      // TODO We should also arrive here in case of block ack request with delayed
+      // block ack, which is currently unsupported
+      params.EnableAck ();
+    }
+  else if (frame->GetHeader ().IsQosData () && frame->GetHeader ().IsQosBlockAck ())
+    {
+      // no ack after a QoS data frame with explicit block ack policy
+      params.DisableAck ();
+    }
+  else
+    {
+      // assume a block ack variant. Later, if this frame is not aggregated,
+      // the acknowledgment type will be switched to normal ack
+      if (m_blockAckType == BASIC_BLOCK_ACK)
+        {
+          params.EnableBasicBlockAck ();
+        }
+      else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
+        {
+          if (GetBaBufferSize (recipient, tid) > 64)
+            {
+              params.EnableExtendedCompressedBlockAck ();
+            }
+          else
+            {
+              params.EnableCompressedBlockAck ();
+            }
+        }
+      else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
+        {
+          NS_FATAL_ERROR ("Multi-tid block ack is not supported");
+        }
+    }
+
+  return params;
+}
+
 void
 QosTxop::NotifyAccessGranted (void)
 {
@@ -511,14 +605,8 @@ QosTxop::NotifyAccessGranted (void)
     }
   else
     {
-      if (m_currentHdr.IsQosData () && m_currentHdr.IsQosBlockAck ())
-        {
-          m_currentParams.DisableAck ();
-        }
-      else
-        {
-          m_currentParams.EnableAck ();
-        }
+      m_currentParams = GetTransmissionParameters (mpdu);
+
       //With COMPRESSED_BLOCK_ACK fragmentation must be avoided.
       if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
            || (m_currentHdr.IsData () && !m_currentHdr.IsQosData ()))
@@ -545,7 +633,6 @@ QosTxop::NotifyAccessGranted (void)
       else
         {
           m_currentIsFragmented = false;
-          m_currentParams.DisableNextData ();
           m_low->StartTransmission (mpdu, m_currentParams, this);
           if (!GetAmpduExist (m_currentHdr.GetAddr1 ()))
             {
@@ -1689,36 +1776,10 @@ QosTxop::SendBlockAckRequest (const Bar &bar)
   m_currentPacket = bar.bar;
   m_currentHdr = hdr;
 
-  m_currentParams.DisableRts ();
-  m_currentParams.DisableNextData ();
-  if (bar.immediate)
-    {
-      if (m_blockAckType == BASIC_BLOCK_ACK)
-        {
-          m_currentParams.EnableBasicBlockAck ();
-        }
-      else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
-        {
-          if (GetBaBufferSize (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr)) > 64)
-            {
-              m_currentParams.EnableExtendedCompressedBlockAck ();
-            }
-          else
-            {
-              m_currentParams.EnableCompressedBlockAck ();
-            }
-        }
-      else if (m_blockAckType == MULTI_TID_BLOCK_ACK)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported");
-        }
-    }
-  else
-    {
-      //Delayed block ack
-      m_currentParams.EnableAck ();
-    }
-  m_low->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr), m_currentParams, this);
+  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr);
+  m_currentParams = GetTransmissionParameters (mpdu);
+
+  m_low->StartTransmission (mpdu, m_currentParams, this);
 }
 
 void
