@@ -54,6 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.29 to ns-3.30</h1>
 <h2>New API:</h2>
 <ul>
+<li>Added the attribute <b>Release</b> to the class <b>EpsBearer</b>, to select the release (e.g., release 15)</li>
 <li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Intead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
 <li>A new attribute <b>WifiPhy::PostReceptionErrorModel</b> has been added to force specific packet drops.</li>
 <li>A new attribute <b>WifiPhy::PreambleDetectionModel</b> has been added to decide whether PHY preambles are successfully detected.</li>
@@ -74,6 +75,10 @@ us a note on ns-developers mailing list.</p>
   <li>
     The WifiPhy attribute "CcaMode1Threshold" has been renamed to "CcaEdThreshold", 
     and the WifiPhy attribute "EnergyDetectionThreshold" has been replaced by a new attribute called "RxSensitivity"
+  </li>
+  <li>
+    It is now possible to know the size of the SpectrumValue underlying std::vector, as well as
+    accessing read-only every element of it.
   </li>
 </ul>
 <h2>Changes to build system:</h2>

@@ -87,7 +87,7 @@ protected:
    * \brief Report buffer status function
    * \param params LteMacSapProvider::ReportBufferStatusParameters
    */
-  void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
+  virtual void DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params);
   /// Notify HARQ deliver failure
   void DoNotifyHarqDeliveryFailure ();
   // forwarded from LteMacSapUser
@@ -111,7 +111,7 @@ protected:
    * \param msu the MSU
    * \returns updated LC config list
    */
-  std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   /**
    * \brief Remove LC function
    * \param lcid the LCID
@@ -125,14 +125,14 @@ protected:
    * \param msu the MSU
    * \returns LteMacSapUser *
    */
-  LteMacSapUser* DoConfigureSignalBearer (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  virtual LteMacSapUser* DoConfigureSignalBearer (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   /**
    * \brief Reset LC map
    *
    */
   void DoReset ();
   
-private:
+protected:
   
   LteMacSapUser* m_ccmMacSapUser;//!< Interface to the UE RLC instance.
   LteMacSapProvider* m_ccmMacSapProvider; //!< Receive API calls from the UE RLC instance

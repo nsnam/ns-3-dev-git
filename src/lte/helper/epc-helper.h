@@ -120,7 +120,7 @@ public:
    * intended for this method is to allow the user to configure the Gi
    * interface of the PGW, i.e., to connect the PGW to the internet.
    */
-  virtual Ptr<Node> GetPgwNode () = 0;
+  virtual Ptr<Node> GetPgwNode () const = 0;
 
   /** 
    * Assign IPv4 addresses to UE devices

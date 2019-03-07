@@ -102,6 +102,30 @@ public:
    */
   struct TxOpportunityParameters
   {
+    /**
+     * \brief TxOpportunityParameters constructor
+     * \param bytes Bytes
+     * \param layer Layer
+     * \param harqId HarqID
+     * \param ccId Component carrier ID
+     * \param rnti RNTI
+     * \param lcId Logical Channel ID
+     */
+    TxOpportunityParameters (uint32_t bytes, uint8_t layer, uint8_t harqId,
+                             uint8_t ccId, uint16_t rnti, uint8_t lcId)
+    {
+      this->bytes = bytes;
+      this->layer = layer;
+      this->harqId = harqId;
+      this->componentCarrierId = ccId;
+      this->rnti = rnti;
+      this->lcid = lcId;
+    }
+    /**
+     * \brief TxOpportunityParameters default constructor (DEPRECATED)
+     */
+    TxOpportunityParameters () { }
+
     uint32_t bytes;  /**< the number of bytes to transmit */
     uint8_t layer; /**<  the layer of transmission (MIMO) */
     uint8_t harqId; /**< the HARQ ID */
@@ -131,6 +155,23 @@ public:
    */
   struct ReceivePduParameters
   {
+    /**
+     * \brief ReceivePduParameters default constructor (DEPRECATED)
+     */
+    ReceivePduParameters () { }
+
+    /**
+     * \brief ReceivePduParameters constructor
+     * \param p Packet
+     * \param rnti RNTI
+     * \param lcid Logical Channel ID
+     */
+    ReceivePduParameters (const Ptr<Packet> &p, uint16_t rnti, uint8_t lcid)
+    {
+      this->p = p;
+      this->rnti = rnti;
+      this->lcid = lcid;
+    }
     Ptr<Packet> p;  /**< the RLC PDU to be received */
     uint16_t rnti; /**< the C-RNTI identifying the UE */
     uint8_t lcid; /**< the logical channel id */

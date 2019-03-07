@@ -116,12 +116,6 @@ ComponentCarrierEnb::DoInitialize (void)
 
 }
 
-uint16_t
-ComponentCarrierEnb::GetCellId ()
-{
-  return m_cellId;
-}
-
 Ptr<LteEnbPhy>
 ComponentCarrierEnb::GetPhy ()
 {
@@ -129,12 +123,6 @@ ComponentCarrierEnb::GetPhy ()
   return m_phy;
 }
 
-void
-ComponentCarrierEnb::SetCellId (uint16_t cellId)
-{
-  NS_LOG_FUNCTION (this << cellId);
-  m_cellId = cellId;
-}
 
 void 
 ComponentCarrierEnb::SetPhy (Ptr<LteEnbPhy> s)
@@ -183,6 +171,40 @@ ComponentCarrierEnb::SetFfMacScheduler (Ptr<FfMacScheduler> s)
   NS_LOG_FUNCTION (this);
   m_scheduler = s;
 } 
+
+TypeId ComponentCarrierBaseStation::GetTypeId (void)
+{
+  static TypeId
+    tid =
+    TypeId ("ns3::ComponentCarrierBaseStation")
+    .SetParent<ComponentCarrier> ()
+    .AddConstructor<ComponentCarrierBaseStation> ()
+  ;
+  return tid;
+}
+
+ComponentCarrierBaseStation::ComponentCarrierBaseStation ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+ComponentCarrierBaseStation::~ComponentCarrierBaseStation (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+uint16_t
+ComponentCarrierBaseStation::GetCellId ()
+{
+  return m_cellId;
+}
+
+void
+ComponentCarrierBaseStation::SetCellId (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << cellId);
+  m_cellId = cellId;
+}
 
 } // namespace ns3
 

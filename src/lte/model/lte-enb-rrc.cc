@@ -1108,7 +1108,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
       m_rrc->m_anrSapProvider->ReportUeMeas (msg.measResults);
     }
 
-  if ((m_rrc->m_ffrRrcSapProvider.at (0) != 0)
+  if ((m_rrc->m_ffrRrcSapProvider.size () > 0)
       && (m_rrc->m_ffrMeasIds.find (measId) != m_rrc->m_ffrMeasIds.end ()))
     {
       // this measurement was requested by the FFR function
@@ -1460,7 +1460,7 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
           ccId++;
         }
 
-      Ptr<ComponentCarrierEnb> eNbCcm = it.second;
+      Ptr<ComponentCarrierBaseStation> eNbCcm = it.second;
       LteRrcSap::SCellToAddMod component;
       component.sCellIndex = ccId;
       component.cellIdentification.physCellId = eNbCcm->GetCellId ();
@@ -1545,13 +1545,10 @@ LteEnbRrc::LteEnbRrc ()
   m_s1SapUser = new MemberEpcEnbS1SapUser<LteEnbRrc> (this);
   m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
   m_ccmRrcSapUser = new MemberLteCcmRrcSapUser <LteEnbRrc>(this);
-  m_cphySapProvider.push_back (0);
-  m_cmacSapProvider.push_back (0);
-  m_ffrRrcSapProvider.push_back (0);
 }
 
 void
-LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
+LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccPhyConf)
 {
   NS_ASSERT_MSG (!m_carriersConfigured, "Secondary carriers can be configured only once.");
   m_componentCarrierPhyConf = ccPhyConf;
@@ -1563,9 +1560,6 @@ LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyC
       m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
       m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this, i));
       m_ffrRrcSapUser.push_back (new MemberLteFfrRrcSapUser<LteEnbRrc> (this));
-      m_cphySapProvider.push_back (0);
-      m_cmacSapProvider.push_back (0);
-      m_ffrRrcSapProvider.push_back (0);
     }
   m_carriersConfigured = true;
   Object::DoInitialize ();
@@ -1790,7 +1784,15 @@ void
 LteEnbRrc::SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s, uint8_t pos)
 {
   NS_LOG_FUNCTION (this << s);
-  m_cmacSapProvider.at (pos) = s;
+  if (m_cmacSapProvider.size () > pos)
+    {
+      m_cmacSapProvider.at (pos) = s;
+    }
+  else
+    {
+      m_cmacSapProvider.push_back (s);
+      NS_ABORT_IF (m_cmacSapProvider.size () - 1 != pos);
+    }
 }
 
 LteEnbCmacSapUser*
@@ -1853,14 +1855,33 @@ void
 LteEnbRrc::SetLteFfrRrcSapProvider (LteFfrRrcSapProvider * s)
 {
   NS_LOG_FUNCTION (this << s);
-  m_ffrRrcSapProvider.at (0) = s;
+  if (m_ffrRrcSapProvider.size () > 0)
+    {
+      m_ffrRrcSapProvider.at (0) = s;
+    }
+  else
+    {
+      m_ffrRrcSapProvider.push_back (s);
+    }
+
 }
 
 void
 LteEnbRrc::SetLteFfrRrcSapProvider (LteFfrRrcSapProvider * s, uint8_t index)
 {
   NS_LOG_FUNCTION (this << s);
-  m_ffrRrcSapProvider.at (index) = s;
+  if (m_ffrRrcSapProvider.size () > index)
+    {
+      m_ffrRrcSapProvider.at (index) = s;
+    }
+  else
+    {
+      m_ffrRrcSapProvider.push_back (s);
+      NS_ABORT_MSG_IF (m_ffrRrcSapProvider.size () - 1 != index,
+                       "You meant to store the pointer at position " <<
+                       static_cast<uint32_t> (index) <<
+                       " but it went to " << m_ffrRrcSapProvider.size () - 1);
+    }
 }
 
 LteFfrRrcSapUser*
@@ -1916,7 +1937,14 @@ void
 LteEnbRrc::SetLteEnbCphySapProvider (LteEnbCphySapProvider * s)
 {
   NS_LOG_FUNCTION (this << s);
-  m_cphySapProvider.at(0) = s;
+  if (m_cphySapProvider.size () > 0)
+    {
+      m_cphySapProvider.at (0) = s;
+    }
+  else
+    {
+      m_cphySapProvider.push_back (s);
+    }
 }
 
 LteEnbCphySapUser*
@@ -1930,7 +1958,15 @@ void
 LteEnbRrc::SetLteEnbCphySapProvider (LteEnbCphySapProvider * s, uint8_t pos)
 {
   NS_LOG_FUNCTION (this << s);
-  m_cphySapProvider.at(pos) = s;
+  if (m_cphySapProvider.size () > pos)
+    {
+      m_cphySapProvider.at(pos) = s;
+    }
+  else
+    {
+      m_cphySapProvider.push_back (s);
+      NS_ABORT_IF (m_cphySapProvider.size () - 1 != pos);
+    }
 }
 
 LteEnbCphySapUser*
@@ -2047,7 +2083,7 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 }
 
 void
-LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
+LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> ccPhyConf)
 {
   auto it = ccPhyConf.begin ();
   NS_ASSERT (it != ccPhyConf.end ());
@@ -2065,8 +2101,11 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
       m_cphySapProvider.at (it.first)->SetEarfcn (it.second->GetUlEarfcn (), it.second->GetDlEarfcn ());
       m_cphySapProvider.at (it.first)->SetCellId (it.second->GetCellId ());
       m_cmacSapProvider.at (it.first)->ConfigureMac (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
-      m_ffrRrcSapProvider.at (it.first)->SetCellId (it.second->GetCellId ());
-      m_ffrRrcSapProvider.at (it.first)->SetBandwidth (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
+      if (m_ffrRrcSapProvider.size () > it.first)
+        {
+          m_ffrRrcSapProvider.at (it.first)->SetCellId (it.second->GetCellId ());
+          m_ffrRrcSapProvider.at (it.first)->SetBandwidth (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
+        }
     }
 
   m_dlEarfcn = dlEarfcn;
@@ -2481,6 +2520,7 @@ LteEnbRrc::DoRecvLoadInformation (EpcX2SapUser::LoadInformationParams params)
 
   NS_LOG_LOGIC ("Number of cellInformationItems = " << params.cellInformationList.size ());
 
+  NS_ABORT_IF (m_ffrRrcSapProvider.size () == 0);
   m_ffrRrcSapProvider.at (0)->RecvLoadInformation (params);
 }
 

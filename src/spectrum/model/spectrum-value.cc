@@ -692,8 +692,17 @@ SpectrumValue::operator>> (int n) const
   return res;
 }
 
+uint32_t
+SpectrumValue::GetValuesN () const
+{
+  return m_values.size ();
+}
 
-
+const double &
+SpectrumValue::ValuesAt (uint32_t pos) const
+{
+  return m_values.at (pos);
+}
 
 } // namespace ns3
 

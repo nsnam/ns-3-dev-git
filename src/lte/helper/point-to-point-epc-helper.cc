@@ -546,7 +546,7 @@ PointToPointEpcHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, uint64_t imsi
 }
 
 Ptr<Node>
-PointToPointEpcHelper::GetPgwNode ()
+PointToPointEpcHelper::GetPgwNode () const
 {
   return m_pgw;
 }
