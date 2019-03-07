@@ -12,13 +12,14 @@
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
-    - ./test.py $VALGRIND
+    - ./test.py $VALGRIND $FULLNESS
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
     VALGRIND: ""
+    FULLNESS: ""
 
 # Run the test.py script with files compiled in debug mode
 daily-test-debug:
@@ -74,6 +75,8 @@ weekly-test-debug:
   only:
     variables:
       - $RELEASE == "weekly"
+  tags:
+    - nsnam
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -89,6 +92,8 @@ weekly-test-release:
   only:
     variables:
       - $RELEASE == "weekly"
+  tags:
+    - nsnam
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -104,6 +109,25 @@ weekly-test-optimized:
   only:
     variables:
       - $RELEASE == "weekly"
+  tags:
+    - nsnam
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+
+# Do a check for the TAKES_FOREVER jobs, only in optimized mode
+weekly-test-takes-forever-optimized:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: optimized
+    FULLNESS: "-f TAKES_FOREVER"
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  tags:
+    - nsnam
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
