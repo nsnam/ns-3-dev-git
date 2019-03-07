@@ -561,12 +561,9 @@ private:
    */
   Time GetTxopRemaining (void) const;
   /**
-   * Check if the station has TXOP granted for the next MPDU.
-   *
-   * \return true if the station has TXOP granted for the next MPDU,
-   *         false otherwise.
+   * Update backoff and restart access if needed.
    */
-  bool HasTxop (void) const;
+  void TerminateTxop (void);
 
   /**
    * Calculate the size of the next fragment.

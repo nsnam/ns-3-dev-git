@@ -884,10 +884,17 @@ Txop::MissedBlockAck (uint8_t nMpdus)
   NS_LOG_WARN ("MissedBlockAck should not be called for non QoS!");
 }
 
-bool
-Txop::HasTxop (void) const
+Time
+Txop::GetTxopRemaining (void) const
 {
-  return false;
+  NS_LOG_WARN ("GetTxopRemaining should not be called for non QoS!");
+  return Seconds (0);
+}
+
+void
+Txop::TerminateTxop (void)
+{
+  NS_LOG_WARN ("TerminateTxop should not be called for non QoS!");
 }
 
 } //namespace ns3

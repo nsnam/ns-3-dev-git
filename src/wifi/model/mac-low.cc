@@ -18,6 +18,7 @@
  *
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *          Mirko Banchi <mk.banchi@gmail.com>
+ *          Stefano Avallone <stavallo@unina.it>
  */
 
 #include "ns3/simulator.h"
@@ -542,8 +543,16 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
       std::vector<Ptr<WifiMacQueueItem>> mpduList;
 
+      // if a TXOP limit exists, compute the remaining TXOP duration
+      Time txopLimit = Seconds (0);
+      if (m_currentTxop->GetTxopLimit ().IsStrictlyPositive ())
+        {
+          txopLimit = m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (mpdu, m_txParams);
+          NS_ASSERT (txopLimit.IsPositive ());
+        }
+
       //Perform MPDU aggregation if possible
-      mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector);
+      mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector, txopLimit);
 
       if (mpduList.size () > 1)
         {
@@ -788,8 +797,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
         {
           m_currentTxop->GotAck ();
         }
-      if (m_txParams.HasNextPacket () && (!m_currentPacket->GetHeader (0).IsQosData () ||
-                                          m_currentTxop->GetTxopLimit ().IsZero () || m_currentTxop->HasTxop ()))
+      if (m_txParams.HasNextPacket ())
         {
           if (m_stationManager->GetRifsPermitted ())
             {
@@ -800,7 +808,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
               m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
             }
         }
-      else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->HasTxop ())
+      else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->IsQosTxop () &&
+               m_currentTxop->GetTxopLimit ().IsStrictlyPositive () && m_currentTxop->GetTxopRemaining () > GetSifs ())
         {
           if (m_stationManager->GetRifsPermitted ())
             {
@@ -810,6 +819,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
             {
               m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
             }
+        }
+      else if (m_currentTxop->IsQosTxop ())
+        {
+          m_currentTxop->TerminateTxop ();
         }
     }
   else if (hdr.IsBlockAck () && hdr.GetAddr1 () == m_self
@@ -824,7 +837,9 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       m_blockAckTimeoutEvent.Cancel ();
       NotifyAckTimeoutResetNow ();
       m_currentTxop->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, txVector.GetMode (), tag.Get ());
-      if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->HasTxop ())
+      // start next packet if TXOP remains, otherwise contend for accessing the channel again
+      if (m_currentTxop->IsQosTxop () && m_currentTxop->GetTxopLimit ().IsStrictlyPositive ()
+          && m_currentTxop->GetTxopRemaining () > GetSifs ())
         {
           if (m_stationManager->GetRifsPermitted ())
             {
@@ -834,6 +849,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
             {
               m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
             }
+        }
+      else if (m_currentTxop->IsQosTxop ())
+        {
+          m_currentTxop->TerminateTxop ();
         }
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
@@ -1388,6 +1407,14 @@ MacLow::CalculateOverheadTxTime (Ptr<const WifiMacQueueItem> item,
       txTime += GetSifs ();
       txTime += GetAckDuration (item->GetHeader ().GetAddr1 (), GetDataTxVector (item));
     }
+  else if (params.MustWaitBlockAck ())
+    {
+      txTime += GetSifs ();
+      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (item->GetHeader ().GetAddr2 (),
+                                                              GetDataTxVector (item).GetMode ());
+      txTime += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckType ());
+    }
+
   return txTime;
 }
 
@@ -1758,9 +1785,9 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
         }
       m_waitIfsEvent = Simulator::Schedule (delay, &MacLow::WaitIfsAfterEndTxFragment, this);
     }
-  else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentPacket->GetHeader (0).IsQosBlockAck ()
-           && m_currentTxop->HasTxop ())
-    {
+  else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->IsQosTxop () &&
+           m_currentTxop->GetTxopLimit ().IsStrictlyPositive () && m_currentTxop->GetTxopRemaining () > GetSifs ())
+   {
       Time delay = txDuration;
       if (m_stationManager->GetRifsPermitted ())
         {

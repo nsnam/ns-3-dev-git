@@ -306,12 +306,15 @@ public:
   virtual void EndTxNoAck (void);
 
   /**
-   * Check if the station has TXOP granted for the next MPDU.
+   * Return the remaining duration in the current TXOP.
    *
-   * \return true if the station has TXOP granted for the next MPDU,
-   *         false otherwise
+   * \return the remaining duration in the current TXOP.
    */
-  virtual bool HasTxop (void) const;
+  virtual Time GetTxopRemaining (void) const;
+  /**
+   * Update backoff and restart access if needed.
+   */
+  virtual void TerminateTxop (void);
 
   /**
    * Check if the next PCF transmission can fit in the remaining CFP duration.
