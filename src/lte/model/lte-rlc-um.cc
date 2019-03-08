@@ -485,10 +485,10 @@ LteRlcUm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
     {
       NS_LOG_LOGIC ("SN is outside the reordering window");
 
-      ReassembleOutsideWindow ();
-
       m_vrUh = seqNumber + 1;
       NS_LOG_LOGIC ("New VR(UH) = " << m_vrUh);
+
+      ReassembleOutsideWindow ();
 
       if ( ! IsInsideReorderingWindow (m_vrUr) )
         {
