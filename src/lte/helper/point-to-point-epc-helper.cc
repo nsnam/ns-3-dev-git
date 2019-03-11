@@ -479,8 +479,8 @@ PointToPointEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
   Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
 
-  Ptr<NetDevice> enb1LteDev = enb1->GetDevice (0); // What if at position 0 we have another device than LTE?
-  Ptr<NetDevice> enb2LteDev = enb2->GetDevice (0); // What if at position 0 we have another device than LTE?
+  Ptr<NetDevice> enb1LteDev = enb1->GetDevice (0);
+  Ptr<NetDevice> enb2LteDev = enb2->GetDevice (0);
 
   DoAddX2Interface (enb1X2, enb1LteDev, enb1X2Address, enb2X2, enb2LteDev, enb2X2Address);
 }
@@ -495,6 +495,10 @@ PointToPointEpcHelper::DoAddX2Interface (const Ptr<EpcX2> &enb1X2, const Ptr<Net
 
   Ptr<LteEnbNetDevice> enb1LteDevice = enb1LteDev->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbNetDevice> enb2LteDevice = enb2LteDev->GetObject<LteEnbNetDevice> ();
+
+  NS_ABORT_MSG_IF (enb1LteDevice == nullptr , "Unable to find LteEnbNetDevice for the first eNB");
+  NS_ABORT_MSG_IF (enb2LteDevice == nullptr , "Unable to find LteEnbNetDevice for the second eNB");
+
   uint16_t enb1CellId = enb1LteDevice->GetCellId ();
   uint16_t enb2CellId = enb2LteDevice->GetCellId ();
 
@@ -566,10 +570,9 @@ PointToPointEpcHelper::DoActivateEpsBearerForUe (const Ptr<NetDevice> &ueDevice,
 {
   NS_LOG_FUNCTION (this);
   Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  if (ueLteDevice)
-    {
-      Simulator::ScheduleNow (&EpcUeNas::ActivateEpsBearer, ueLteDevice->GetNas (), bearer, tft);
-    }
+  NS_ABORT_MSG_IF (ueLteDevice == nullptr , "Unable to find LteUeNetDevice while activating the EPS bearer");
+
+  Simulator::ScheduleNow (&EpcUeNas::ActivateEpsBearer, ueLteDevice->GetNas (), bearer, tft);
 }
 
 Ptr<Node>
