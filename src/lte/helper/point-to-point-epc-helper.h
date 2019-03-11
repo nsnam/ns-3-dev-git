@@ -83,6 +83,31 @@ public:
   virtual Ipv4Address GetUeDefaultGatewayAddress ();
   virtual Ipv6Address GetUeDefaultGatewayAddress6 ();
 
+protected:
+  /**
+   * \brief DoAddX2Interface: Call AddX2Interface on top of the Enb device pointers
+   *
+   * \param enb1X2 EPCX2 of ENB1
+   * \param enb1LteDev LTE device of ENB1
+   * \param enb1X2Address Address for ENB1
+   * \param enb2X2 EPCX2 of ENB2
+   * \param enb2LteDev LTE device of ENB2
+   * \param enb2X2Address Address for ENB2
+   */
+  virtual void DoAddX2Interface(const Ptr<EpcX2> &enb1X2, const Ptr<NetDevice> &enb1LteDev,
+                                const Ipv4Address &enb1X2Address,
+                                const Ptr<EpcX2> &enb2X2, const Ptr<NetDevice> &enb2LteDev,
+                                const Ipv4Address &enb2X2Address) const;
+
+  /**
+   * \brief DoActivateEpsBearerForUe: Schedule ActivateEpsBearer on the UE
+   * \param ueDevice LTE device for the UE
+   * \param tft TFT
+   * \param bearer Bearer
+   */
+  virtual void DoActivateEpsBearerForUe (const Ptr<NetDevice> &ueDevice,
+                                         const Ptr<EpcTft> &tft,
+                                         const EpsBearer &bearer) const;
 
 private:
 
