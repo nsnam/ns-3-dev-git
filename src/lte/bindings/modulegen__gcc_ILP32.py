@@ -1107,11 +1107,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )&', u'ns3::Time::TracedCallback&')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
-    ## trace-fading-loss-model.h (module 'lte'): ns3::TraceFadingLossModel [class]
-    module.add_class('TraceFadingLossModel', parent=root_module['ns3::SpectrumPropagationLossModel'])
-    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >', u'ns3::TraceFadingLossModel::ChannelRealizationId_t')
-    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >*', u'ns3::TraceFadingLossModel::ChannelRealizationId_t*')
-    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >&', u'ns3::TraceFadingLossModel::ChannelRealizationId_t&')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
@@ -2556,7 +2551,6 @@ def register_methods(root_module):
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
-    register_Ns3TraceFadingLossModel_methods(root_module, root_module['ns3::TraceFadingLossModel'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TriangularRandomVariable_methods(root_module, root_module['ns3::TriangularRandomVariable'])
@@ -13576,32 +13570,6 @@ def register_Ns3Time_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3TraceFadingLossModel_methods(root_module, cls):
-    ## trace-fading-loss-model.h (module 'lte'): ns3::TraceFadingLossModel::TraceFadingLossModel(ns3::TraceFadingLossModel const & arg0) [constructor]
-    cls.add_constructor([param('ns3::TraceFadingLossModel const &', 'arg0')])
-    ## trace-fading-loss-model.h (module 'lte'): ns3::TraceFadingLossModel::TraceFadingLossModel() [constructor]
-    cls.add_constructor([])
-    ## trace-fading-loss-model.h (module 'lte'): int64_t ns3::TraceFadingLossModel::AssignStreams(int64_t stream) [member function]
-    cls.add_method('AssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')])
-    ## trace-fading-loss-model.h (module 'lte'): void ns3::TraceFadingLossModel::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## trace-fading-loss-model.h (module 'lte'): static ns3::TypeId ns3::TraceFadingLossModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## trace-fading-loss-model.h (module 'lte'): ns3::Ptr<ns3::SpectrumValue> ns3::TraceFadingLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<const ns3::SpectrumValue> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
-    cls.add_method('DoCalcRxPowerSpectralDensity', 
-                   'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [constructor]
     cls.add_constructor([param('ns3::TraceSourceAccessor const &', 'arg0')])
@@ -22681,6 +22649,16 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [], 
                    is_virtual=True)
+    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::DoActivateEpsBearerForUe(ns3::Ptr<ns3::NetDevice> const & ueDevice, ns3::Ptr<ns3::EpcTft> const & tft, ns3::EpsBearer const & bearer) const [member function]
+    cls.add_method('DoActivateEpsBearerForUe', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice > const &', 'ueDevice'), param('ns3::Ptr< ns3::EpcTft > const &', 'tft'), param('ns3::EpsBearer const &', 'bearer')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::DoAddX2Interface(ns3::Ptr<ns3::EpcX2> const & enb1X2, ns3::Ptr<ns3::NetDevice> const & enb1LteDev, ns3::Ipv4Address const & enb1X2Address, ns3::Ptr<ns3::EpcX2> const & enb2X2, ns3::Ptr<ns3::NetDevice> const & enb2LteDev, ns3::Ipv4Address const & enb2X2Address) const [member function]
+    cls.add_method('DoAddX2Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EpcX2 > const &', 'enb1X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb1LteDev'), param('ns3::Ipv4Address const &', 'enb1X2Address'), param('ns3::Ptr< ns3::EpcX2 > const &', 'enb2X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb2LteDev'), param('ns3::Ipv4Address const &', 'enb2X2Address')], 
+                   is_const=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3PointerChecker_methods(root_module, cls):
