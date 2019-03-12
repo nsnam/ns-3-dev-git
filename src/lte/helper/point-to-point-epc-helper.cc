@@ -569,10 +569,17 @@ PointToPointEpcHelper::DoActivateEpsBearerForUe (const Ptr<NetDevice> &ueDevice,
                                                  const EpsBearer &bearer) const
 {
   NS_LOG_FUNCTION (this);
-  Ptr<LteUeNetDevice> ueLteDevice = ueDevice->GetObject<LteUeNetDevice> ();
-  NS_ABORT_MSG_IF (ueLteDevice == nullptr , "Unable to find LteUeNetDevice while activating the EPS bearer");
-
-  Simulator::ScheduleNow (&EpcUeNas::ActivateEpsBearer, ueLteDevice->GetNas (), bearer, tft);
+  Ptr<LteUeNetDevice> ueLteDevice = DynamicCast<LteUeNetDevice> (ueDevice);
+  if (ueLteDevice == nullptr)
+    {
+      // You may wonder why this is not an assert. Well, take a look in epc-test-s1u-downlink
+      // and -uplink: we are using CSMA to simulate UEs.
+      NS_LOG_WARN ("Unable to find LteUeNetDevice while activating the EPS bearer");
+    }
+  else
+    {
+      Simulator::ScheduleNow (&EpcUeNas::ActivateEpsBearer, ueLteDevice->GetNas (), bearer, tft);
+    }
 }
 
 Ptr<Node>
