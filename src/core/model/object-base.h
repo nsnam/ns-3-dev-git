@@ -204,7 +204,7 @@ public:
    * \param [in] name The name of the target trace source.
    * \param [in] context The trace context associated to the callback.
    * \param [in] cb The callback to connect to the trace source.
-   * \returns \c true.
+   * \returns \c true on success, \c false if TraceSource was not found.
    */
   bool TraceConnect (std::string name, std::string context, const CallbackBase &cb);
   /**
@@ -214,7 +214,7 @@ public:
    *
    * \param [in] name The name of the target trace source.
    * \param [in] cb The callback to connect to the trace source.
-   * \returns \c true.
+   * \returns \c true on success, \c false if TraceSource was not found.
    */
   bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
   /**
@@ -226,7 +226,7 @@ public:
    * \param [in] name The name of the target trace source.
    * \param [in] context The trace context associated to the callback.
    * \param [in] cb The callback to disconnect from the trace source.
-   * \returns \c true.
+   * \returns \c true on success, \c false if TraceSource was not found.
    */
   bool TraceDisconnect (std::string name, std::string context, const CallbackBase &cb);
   /**
@@ -237,7 +237,7 @@ public:
    *
    * \param [in] name The name of the target trace source.
    * \param [in] cb The callback to disconnect from the trace source.
-   * \returns \c true.
+   * \returns \c true on success, \c false if TraceSource was not found.
    */
   bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
 
