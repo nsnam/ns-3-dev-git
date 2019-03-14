@@ -56,7 +56,7 @@ AthstatsHelper::EnableAthstats (std::string filename,  uint32_t nodeid, uint32_t
   Config::Connect (devicepath + "/Mac/MacTx", MakeCallback (&AthstatsWifiTraceSink::DevTxTrace, athstats));
   Config::Connect (devicepath + "/Mac/MacRx", MakeCallback (&AthstatsWifiTraceSink::DevRxTrace, athstats));
 
-  Config::Connect (devicepath + "/RemoteStationManager/TxRtsFailed", MakeCallback (&AthstatsWifiTraceSink::TxRtsFailedTrace, athstats));
+  Config::Connect (devicepath + "/RemoteStationManager/MacTxRtsFailed", MakeCallback (&AthstatsWifiTraceSink::TxRtsFailedTrace, athstats));
   Config::Connect (devicepath + "/RemoteStationManager/MacTxDataFailed", MakeCallback (&AthstatsWifiTraceSink::TxDataFailedTrace, athstats));
   Config::Connect (devicepath + "/RemoteStationManager/MacTxFinalRtsFailed", MakeCallback (&AthstatsWifiTraceSink::TxFinalRtsFailedTrace, athstats));
   Config::Connect (devicepath + "/RemoteStationManager/MacTxFinalDataFailed", MakeCallback (&AthstatsWifiTraceSink::TxFinalDataFailedTrace, athstats));
