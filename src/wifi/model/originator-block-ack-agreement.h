@@ -163,14 +163,6 @@ public:
    * \param nextSeqNumber
    */
   void NotifyMpduTransmission (uint16_t nextSeqNumber);
-  /**
-   * Returns true if all packets for which a block ack was negotiated have been transmitted so
-   * a block ack request is needed in order to acknowledge them.
-   *
-   * \return  true if all packets for which a block ack was negotiated have been transmitted,
-   * false otherwise
-   */
-  bool IsBlockAckRequestNeeded (void) const;
   /// Complete exchange function
   void CompleteExchange (void);
 

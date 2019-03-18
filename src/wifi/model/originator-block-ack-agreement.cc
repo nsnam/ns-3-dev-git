@@ -94,12 +94,6 @@ OriginatorBlockAckAgreement::NotifyMpduTransmission (uint16_t nextSeqNumber)
     }
 }
 
-bool
-OriginatorBlockAckAgreement::IsBlockAckRequestNeeded (void) const
-{
-  return m_needBlockAckReq;
-}
-
 void
 OriginatorBlockAckAgreement::CompleteExchange (void)
 {
