@@ -250,15 +250,6 @@ BlockAckManager::StorePacket (Ptr<const WifiMacQueueItem> mpdu)
     }
 }
 
-void
-BlockAckManager::CompleteAmpduExchange (Mac48Address recipient, uint8_t tid)
-{
-  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-  NS_ASSERT (it != m_agreements.end ());
-  OriginatorBlockAckAgreement &agreement = (*it).second.first;
-  agreement.CompleteExchange ();
-}
-
 Ptr<WifiMacQueueItem>
 BlockAckManager::GetNextPacket (bool removePacket)
 {
@@ -644,12 +635,6 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                 }
             }
           m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
-          uint16_t newSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
-          if ((foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, sequenceFirstLost))
-              || (!foundFirstLost && !SwitchToBlockAckIfNeeded (recipient, tid, newSeq)))
-            {
-              it->second.first.CompleteExchange ();
-            }
         }
     }
   else
@@ -699,7 +684,6 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
   NS_ASSERT (it != m_agreements.end ());
 
   OriginatorBlockAckAgreement &agreement = (*it).second.first;
-  agreement.CompleteExchange ();
 
   CtrlBAckRequestHeader reqHdr;
   reqHdr.SetType (m_blockAckType);
@@ -778,16 +762,6 @@ BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, ui
   NS_LOG_FUNCTION (this << recipient << +tid << nextSeqNumber);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  uint16_t nextSeq;
-  if (GetNRetryNeededPackets (recipient, tid) > 0)
-    {
-      nextSeq = GetSeqNumOfNextRetryPacket (recipient, tid);
-    }
-  else
-    {
-      nextSeq = nextSeqNumber;
-    }
-  it->second.first.NotifyMpduTransmission (nextSeq);
   if (policy == WifiMacHeader::BLOCK_ACK)
     {
       Ptr<Packet> bar = ScheduleBlockAckReqIfNeeded (recipient, tid);

@@ -558,9 +558,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         {
           m_currentPacket = Create<WifiPsdu> (mpduList);
 
-          // assume implicit block ack for now
-          qosTxop->CompleteAmpduTransfer (hdr.GetAddr1 (), tid);
-
           if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
             {
               m_txParams.EnableExtendedCompressedBlockAck ();
@@ -579,11 +576,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
           // VHT/HE single MPDU
           m_currentPacket = Create<WifiPsdu> (mpdu, true);
           m_currentPacket->SetAckPolicyForTid (tid, WifiMacHeader::NORMAL_ACK);
-
-          if (qosTxop->GetBaAgreementEstablished (hdr.GetAddr1 (), tid))
-            {
-              qosTxop->CompleteAmpduTransfer (hdr.GetAddr1 (), tid);
-            }
 
           //VHT/HE single MPDUs are followed by normal ACKs
           m_txParams.EnableAck ();

@@ -157,20 +157,9 @@ public:
    *         false otherwise
    */
   bool IsRejected (void) const;
-  /**
-   * Notifies a packet's transmission with ack policy Block Ack.
-   *
-   * \param nextSeqNumber
-   */
-  void NotifyMpduTransmission (uint16_t nextSeqNumber);
-  /// Complete exchange function
-  void CompleteExchange (void);
-
 
 private:
   State m_state; ///< state
-  uint16_t m_sentMpdus; ///< sent MPDUs
-  bool m_needBlockAckReq; ///< flag whether it needs a Block ACK request
 };
 
 } //namespace ns3

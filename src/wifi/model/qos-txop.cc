@@ -128,12 +128,6 @@ QosTxop::GetBaAgreementEstablished (Mac48Address address, uint8_t tid) const
   return m_baManager->ExistsAgreementInState (address, tid, OriginatorBlockAckAgreement::ESTABLISHED);
 }
 
-void
-QosTxop::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
-{
-  m_baManager->CompleteAmpduExchange (recipient, tid);
-}
-
 uint16_t
 QosTxop::GetBaBufferSize (Mac48Address address, uint8_t tid) const
 {

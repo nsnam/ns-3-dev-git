@@ -144,14 +144,6 @@ public:
    */
   bool GetBaAgreementEstablished (Mac48Address address, uint8_t tid) const;
   /**
-   * \param recipient address of peer station involved in block ack mechanism.
-   * \param tid Ttraffic ID of transmitted packet.
-   *
-   * This function resets the status of OriginatorBlockAckAgreement after the transfer
-   * of an A-MPDU with ImmediateBlockAck policy (i.e. no BAR is scheduled).
-   */
-  void CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid);
-  /**
    * \param address recipient address of the peer station
    * \param tid traffic ID.
    *

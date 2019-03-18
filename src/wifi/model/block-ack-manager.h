@@ -267,13 +267,6 @@ public:
    */
   void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy);
   /**
-   * \param recipient Address of peer station involved in block ack mechanism.
-   * \param tid Traffic ID of transmitted packet.
-   *
-   * This method to set the number of packets waiting for blockAck = 0 since the receiver will send the blockAck right away
-   */
-  void CompleteAmpduExchange (Mac48Address recipient, uint8_t tid);
-  /**
    * \param nPackets Minimum number of packets for use of block ack.
    *
    * Upon receipt of a block ack frame, if total number of packets (packets in WifiMacQueue
