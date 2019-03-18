@@ -187,8 +187,31 @@ public:
    */
   virtual void SetIsMulticast (bool multicast);
 
+  /**
+   * Write packet data to device.
+   * \param buffer The data.
+   * \param length The data length.
+   * \return The size of data written.
+   */
+  virtual ssize_t Write (uint8_t *buffer, size_t length);
+
 protected:
   virtual void DoDispose (void);
+
+  /**
+   * Allocate packet buffer.
+   */
+  virtual uint8_t* AllocateBuffer(size_t len);
+
+  /**
+   * Free the given packet buffer.
+   */
+  virtual void FreeBuffer (uint8_t* buf);
+
+  /**
+   * Callback to invoke when a new frame is received
+   */
+  void ReceiveCallback (uint8_t *buf, ssize_t len);
 
 private:
   /**
@@ -208,11 +231,6 @@ private:
    * Tear down the device
    */
   void StopDevice (void);
-
-  /**
-   * Callback to invoke when a new frame is received
-   */
-  void ReceiveCallback (uint8_t *buf, ssize_t len);
 
   /**
    * Forward the frame to the appropriate callback for processing

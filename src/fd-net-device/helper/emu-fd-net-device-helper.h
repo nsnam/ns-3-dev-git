@@ -62,8 +62,15 @@ public:
    */
   void SetDeviceName (std::string deviceName);
 
-protected:
+  /**
+   * Set the device in Dpdk mode.
+   *
+   * \param argc Dpdk EAL args count.
+   * \param argv Dpdk EAL args list.
+   */
+  void SetDpdkMode (int argc, char **argv);
 
+protected:
   /**
    * This method creates an ns3::FdNetDevice attached to a physical network
    * interface
@@ -89,6 +96,21 @@ protected:
    * The unix/linux name of the underlying device (e.g., eth0)
    */
   std::string m_deviceName;
+
+  /**
+   * The dpdk mode of the device.
+   */
+  bool m_dpdkMode;
+
+  /**
+   * Dpdk EAL arguements count.
+   */
+  int m_ealArgc;
+
+  /**
+   * Dpdk EAL arguements list.
+   */
+  char **m_ealArgv;
 };
 
 } // namespace ns3

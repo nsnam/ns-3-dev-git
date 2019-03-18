@@ -50,6 +50,12 @@ FdNetDeviceHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void
+FdNetDeviceHelper::SetTypeId (std::string type)
+{
+  m_deviceFactory.SetTypeId (type);
+}
+
+void
 FdNetDeviceHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   //

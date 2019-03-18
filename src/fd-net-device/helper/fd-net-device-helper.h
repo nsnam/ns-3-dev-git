@@ -55,6 +55,13 @@ public:
   }
 
   /**
+   * Set the TypeId of the Objects to be created by this helper.
+   *
+   * \param [in] tid The TypeId of the object to instantiate.
+   */
+  void SetTypeId (std::string type);
+
+  /**
    * \param n1 the name of the attribute to set
    * \param v1 the value of the attribute to set
    *

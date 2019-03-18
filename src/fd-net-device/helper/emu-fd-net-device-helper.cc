@@ -29,6 +29,10 @@
 #include "ns3/simulator.h"
 #include "ns3/trace-helper.h"
 
+#ifdef NS3_DPDK
+#include "ns3/dpdk-net-device.h"
+#endif
+
 #include <arpa/inet.h>
 #include <errno.h>
 #include <iostream>
@@ -62,12 +66,30 @@ NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceHelper");
 EmuFdNetDeviceHelper::EmuFdNetDeviceHelper ()
 {
   m_deviceName = "undefined";
+  m_dpdkMode = false;
 }
 
 void
 EmuFdNetDeviceHelper::SetDeviceName (std::string deviceName)
 {
   m_deviceName = deviceName;
+}
+
+void
+EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
+{
+  NS_LOG_FUNCTION (this);
+
+#ifdef NS3_DPDK
+  FdNetDeviceHelper::SetTypeId ("ns3::DpdkNetDevice");
+  m_dpdkMode = true;
+  m_ealArgc = argc;
+  m_ealArgv = argv;
+
+  NS_LOG_LOGIC ("Set DPDK Mode");
+#else
+  NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetDpdkMode (): Attempted to set DPDK Mode without DPDK support enabled");
+#endif
 }
 
 std::string
@@ -94,6 +116,16 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
     {
       NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): m_deviceName is not set");
     }
+
+#ifdef NS3_DPDK
+  if (m_dpdkMode)
+    {
+      Ptr<DpdkNetDevice> dpdkDevice = StaticCast<DpdkNetDevice> (device);
+      dpdkDevice->SetDeviceName (m_deviceName);
+      dpdkDevice->InitDpdk (m_ealArgc, m_ealArgv);
+      return;
+    }
+#endif
 
   //
   // Call out to a separate process running as suid root in order to get a raw
@@ -173,7 +205,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
 
   // Set the MTU of the device to the mtu of the associated network interface
   struct ifreq ifr2;
-  
+
   bzero (&ifr2, sizeof (ifr2));
   strcpy (ifr2.ifr_name, m_deviceName.c_str ());
 
@@ -184,7 +216,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
     {
       NS_FATAL_ERROR ("FdNetDevice::SetFileDescriptor (): Can't ioctl SIOCGIFMTU");
     }
- 
+
   close (mtufd);
   device->SetMtu (ifr2.ifr_mtu);
 }
