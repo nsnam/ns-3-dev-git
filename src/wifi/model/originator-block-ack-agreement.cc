@@ -52,12 +52,6 @@ OriginatorBlockAckAgreement::IsEstablished (void) const
 }
 
 bool
-OriginatorBlockAckAgreement::IsInactive (void) const
-{
-  return (m_state == INACTIVE) ? true : false;
-}
-
-bool
 OriginatorBlockAckAgreement::IsRejected (void) const
 {
   return (m_state == REJECTED) ? true : false;

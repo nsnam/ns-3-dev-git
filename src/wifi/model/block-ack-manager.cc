@@ -93,8 +93,6 @@ BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
     {
       switch (state)
         {
-        case OriginatorBlockAckAgreement::INACTIVE:
-          return it->second.first.IsInactive ();
         case OriginatorBlockAckAgreement::ESTABLISHED:
           return it->second.first.IsEstablished ();
         case OriginatorBlockAckAgreement::PENDING:

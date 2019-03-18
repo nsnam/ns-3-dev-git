@@ -1941,7 +1941,6 @@ private:
   uint8_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
   uint8_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
   uint8_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
-  uint8_t m_addbaInactiveCount;      ///< Count number of times ADDBA state machine is in inactive state
   uint8_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
   uint8_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
   uint8_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
@@ -1954,7 +1953,6 @@ Bug2470TestCase::Bug2470TestCase ()
     m_receivedNormalMpduCount (0),
     m_receivedAmpduCount (0),
     m_droppedActionCount (0),
-    m_addbaInactiveCount (0),
     m_addbaEstablishedCount (0),
     m_addbaPendingCount (0),
     m_addbaRejectedCount (0),
@@ -1972,9 +1970,6 @@ Bug2470TestCase::AddbaStateChangedCallback (std::string context, Time t, Mac48Ad
 {
   switch (state)
     {
-    case OriginatorBlockAckAgreement::INACTIVE:
-      m_addbaInactiveCount++;
-      break;
     case OriginatorBlockAckAgreement::ESTABLISHED:
       m_addbaEstablishedCount++;
       break;
@@ -2121,7 +2116,6 @@ Bug2470TestCase::DoRun (void)
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 2, "Receiving incorrect number of normal MPDU packet on subtest 1");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 8, "Receiving incorrect number of A-MPDU packet on subtest 1");
 
-    NS_TEST_ASSERT_MSG_EQ (m_addbaInactiveCount, 0, "Incorrect number of times the ADDBA state machine was in inactive state on subtest 1");
     NS_TEST_ASSERT_MSG_EQ (m_addbaEstablishedCount, 1, "Incorrect number of times the ADDBA state machine was in established state on subtest 1");
     NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 1, "Incorrect number of times the ADDBA state machine was in pending state on subtest 1");
     NS_TEST_ASSERT_MSG_EQ (m_addbaRejectedCount, 0, "Incorrect number of times the ADDBA state machine was in rejected state on subtest 1");
@@ -2132,7 +2126,6 @@ Bug2470TestCase::DoRun (void)
   m_receivedNormalMpduCount = 0;
   m_receivedAmpduCount = 0;
   m_droppedActionCount = 0;
-  m_addbaInactiveCount = 0;
   m_addbaEstablishedCount = 0;
   m_addbaPendingCount = 0;
   m_addbaRejectedCount = 0;
@@ -2154,7 +2147,6 @@ Bug2470TestCase::DoRun (void)
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 6, "Receiving incorrect number of normal MPDU packet on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 4, "Receiving incorrect number of A-MPDU packet on subtest 2");
 
-    NS_TEST_ASSERT_MSG_EQ (m_addbaInactiveCount, 0, "Incorrect number of times the ADDBA state machine was in inactive state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaEstablishedCount, 1, "Incorrect number of times the ADDBA state machine was in established state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaPendingCount, 1, "Incorrect number of times the ADDBA state machine was in pending state on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_addbaRejectedCount, 0, "Incorrect number of times the ADDBA state machine was in rejected state on subtest 2");

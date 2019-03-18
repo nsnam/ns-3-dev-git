@@ -1633,11 +1633,6 @@ QosTxop::VerifyBlockAck (void)
   NS_LOG_FUNCTION (this);
   uint8_t tid = m_currentHdr.GetQosTid ();
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
-  uint16_t sequence = m_currentHdr.GetSequenceNumber ();
-  if (m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::INACTIVE))
-    {
-      m_baManager->SwitchToBlockAckIfNeeded (recipient, tid, sequence);
-    }
   Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr);
   WifiModulationClass modulation = m_low->GetDataTxVector (item).GetMode ().GetModulationClass ();
   if ((m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
