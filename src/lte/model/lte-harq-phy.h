@@ -137,6 +137,13 @@ public:
   */
   void ResetUlHarqProcessStatus(uint16_t rnti, uint8_t id);
   
+  /**
+   * \brief Clear the downlink HARQ buffer
+   *
+   * \param rnti the RNTI of the UE
+   */
+  void ClearDlHarqBuffer (uint16_t rnti);
+
   
   
 

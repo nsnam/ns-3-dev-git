@@ -216,6 +216,22 @@ LteHarqPhy::ResetUlHarqProcessStatus (uint16_t rnti, uint8_t id)
     }
 }
 
+void
+LteHarqPhy::ClearDlHarqBuffer (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  // flush the DL harq buffers
+  m_miDlHarqProcessesInfoMap.clear ();
+  // Recreate DL Decodification HARQ buffers
+  std::vector<HarqProcessInfoList_t> dlHarqLayer0;
+  dlHarqLayer0.resize (8);
+  std::vector<HarqProcessInfoList_t> dlHarqLayer1;
+  dlHarqLayer1.resize (8);
+  m_miDlHarqProcessesInfoMap.push_back (dlHarqLayer0);
+  m_miDlHarqProcessesInfoMap.push_back (dlHarqLayer1);
+}
+
+
 
 
 
