@@ -391,7 +391,7 @@ EpcPgwApplication::DoRecvDeleteBearerCommand (Ptr<Packet> packet)
   std::list<uint8_t> epsBearerIds;
   for (auto &bearerContext : msg.GetBearerContexts ())
     {
-      NS_LOG_DEBUG ("ebid " << bearerContext.m_epsBearerId);
+      NS_LOG_DEBUG ("ebid " << (uint16_t) bearerContext.m_epsBearerId);
       epsBearerIds.push_back (bearerContext.m_epsBearerId);
     }
 

@@ -1451,8 +1451,9 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
 
          for (itLcOnCcMapping = lcOnCcMapping.begin (); itLcOnCcMapping != lcOnCcMapping.end (); ++itLcOnCcMapping)
            {
-             NS_LOG_DEBUG ("RNTI " << m_rnti <<" LCG id " << (uint16_t) itLcOnCcMapping->lcConfig.logicalChannelGroup
-                                                       <<" ComponentCarrierId " << itLcOnCcMapping->componentCarrierId);
+             NS_LOG_DEBUG ("RNTI " << m_rnti
+                           << " LCG id " << (uint16_t) itLcOnCcMapping->lcConfig.logicalChannelGroup
+                           << " ComponentCarrierId " << (uint16_t) itLcOnCcMapping->componentCarrierId);
              uint8_t index = itLcOnCcMapping->componentCarrierId;
              LteUeCmacSapProvider::LogicalChannelConfig lcConfigFromCcm = itLcOnCcMapping->lcConfig;
              LteMacSapUser *msu = itLcOnCcMapping->msu;
@@ -1475,7 +1476,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
        ++dtdmIt)
     {
       uint8_t drbid = *dtdmIt;
-      NS_LOG_INFO (this << " IMSI " << m_imsi << " releasing DRB " << (uint32_t) drbid << drbid);
+      NS_LOG_INFO (this << " IMSI " << m_imsi << " releasing DRB " << (uint32_t) drbid);
       std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it =   m_drbMap.find (drbid);
       NS_ASSERT_MSG (it != m_drbMap.end (), "could not find bearer with given lcid");
       m_drbMap.erase (it);      
