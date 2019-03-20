@@ -24,6 +24,12 @@ def build(bld):
         obj = bld.create_ns3_program('fd-emu-onoff', ['fd-net-device', 'internet', 'applications'])
         obj.source = 'fd-emu-onoff.cc'
 
+    if bld.env['ENABLE_DPDKNETDEV']:
+        obj = bld.create_ns3_program('fd-dpdk-emu-ping', ['fd-net-device', 'internet', 'internet-apps', 'applications'])
+        obj.source = 'fd-dpdk-emu-ping.cc'
+        obj = bld.create_ns3_program('fd-dpdk-emu-onoff', ['fd-net-device', 'internet', 'internet-apps', 'applications'])
+        obj.source = 'fd-dpdk-emu-onoff.cc'
+
     if bld.env['ENABLE_TAP']:
         obj = bld.create_ns3_program('fd-tap-ping', ['fd-net-device', 'internet', 'internet-apps'])
         obj.source = 'fd-tap-ping.cc'
