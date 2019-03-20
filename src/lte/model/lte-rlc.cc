@@ -32,6 +32,80 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("LteRlc");
 
+/**
+ * Tag to calculate the per-PDU delay from eNb RLC to UE RLC
+ */
+
+class RlcSmHeader : public Header
+{
+public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId  GetTypeId (void);
+  virtual TypeId  GetInstanceTypeId (void) const;
+
+  /**
+   * Create an empty RLC tag
+   */
+  RlcSmHeader ();
+
+  virtual void  Serialize (Buffer::Iterator i) const;
+  virtual uint32_t  Deserialize (Buffer::Iterator i);
+  virtual uint32_t  GetSerializedSize () const;
+  virtual void Print (std::ostream &os) const;
+};
+
+RlcSmHeader::RlcSmHeader () : Header ()
+{
+  // Nothing to do here
+}
+
+
+TypeId
+RlcSmHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::RlcSmTag")
+    .SetParent<Header> ()
+    .SetGroupName("Lte")
+    .AddConstructor<RlcSmHeader> ();
+  return tid;
+}
+
+TypeId
+RlcSmHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+RlcSmHeader::GetSerializedSize (void) const
+{
+  return 1;
+}
+
+void
+RlcSmHeader::Serialize (Buffer::Iterator i) const
+{
+  // Arbitrary value. It is not used anywhere.
+  i.WriteU8 (8U);
+}
+
+uint32_t
+RlcSmHeader::Deserialize (Buffer::Iterator i)
+{
+  uint8_t v = i.ReadU8 ();
+  NS_UNUSED (v);
+  return 1;
+}
+
+void
+RlcSmHeader::Print (std::ostream &os) const
+{
+  os << "RlcSmTag";
+}
+
 
 /// LteRlcSpecificLteMacSapUser class
 class LteRlcSpecificLteMacSapUser : public LteMacSapUser
@@ -223,8 +297,8 @@ LteRlcSm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
   // RLC Performance evaluation
   RlcTag rlcTag;
   Time delay;
-  NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
-  rxPduParams.p->RemovePacketTag (rlcTag);
+  bool ret = rxPduParams.p->FindFirstMatchingByteTag (rlcTag);
+  NS_ASSERT_MSG (ret, "RlcTag is missing");
   delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
   NS_LOG_LOGIC (" RNTI=" << m_rnti 
                 << " LCID=" << (uint32_t) m_lcid 
@@ -238,7 +312,13 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 {
   NS_LOG_FUNCTION (this << txOpParams.bytes);
   LteMacSapProvider::TransmitPduParameters params;
-  params.pdu = Create<Packet> (txOpParams.bytes);
+  RlcSmHeader header;
+  RlcTag tag (Simulator::Now ());
+
+  params.pdu = Create<Packet> (txOpParams.bytes - header.GetSerializedSize ());
+  params.pdu->AddHeader (header);
+  params.pdu->AddByteTag (tag, 1, header.GetSerializedSize ());
+
   params.rnti = m_rnti;
   params.lcid = m_lcid;
   params.layer = txOpParams.layer;
@@ -246,8 +326,6 @@ LteRlcSm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
   params.componentCarrierId = txOpParams.componentCarrierId;
 
   // RLC Performance evaluation
-  RlcTag tag (Simulator::Now());
-  params.pdu->AddPacketTag (tag);
   NS_LOG_LOGIC (" RNTI=" << m_rnti 
                 << " LCID=" << (uint32_t) m_lcid 
                 << " size=" << txOpParams.bytes);
