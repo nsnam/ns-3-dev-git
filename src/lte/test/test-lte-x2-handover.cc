@@ -92,6 +92,19 @@ private:
    */
   void CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
 
+  /**
+   * Teleport UE between both eNBs of the test
+   * \param ueNode the UE node
+   */
+  void TeleportUeToMiddle (Ptr<Node> ueNode);
+
+  /**
+   * Teleport UE near the target eNB of the handover
+   * \param ueNode the UE node
+   * \param enbNode the target eNB node
+   */
+  void TeleportUeNearTargetEnb (Ptr<Node> ueNode, Ptr<Node> enbNode);
+
   uint32_t m_nUes; ///< number of UEs in the test
   uint32_t m_nDedicatedBearers; ///< number of UEs in the test
   std::list<HandoverEvent> m_handoverEventList; ///< handover event list
@@ -229,7 +242,7 @@ LteX2HandoverTestCase::DoRun ()
   positionAlloc->Add (Vector ( 3000, 0, 0)); // enb1
   for (uint16_t i = 0; i < m_nUes; i++)
     {
-      positionAlloc->Add (Vector (0, 0, 0));
+      positionAlloc->Add (Vector (-3000, 100, 0));
     }
   MobilityHelper mobility;
   mobility.SetPositionAllocator (positionAlloc);
@@ -447,15 +460,31 @@ LteX2HandoverTestCase::DoRun ()
        hoEventIt != m_handoverEventList.end ();
        ++hoEventIt)
     {
+      // Teleport the UE between both eNBs just before the handover starts
+      Simulator::Schedule (hoEventIt->startTime - MilliSeconds (10),
+                           &LteX2HandoverTestCase::TeleportUeToMiddle,
+                           this,
+                           ueNodes.Get (hoEventIt->ueDeviceIndex));
+
       Simulator::Schedule (hoEventIt->startTime, 
                            &LteX2HandoverTestCase::CheckConnected, 
                            this, 
                            ueDevices.Get (hoEventIt->ueDeviceIndex), 
                            enbDevices.Get (hoEventIt->sourceEnbDeviceIndex));
+
       m_lteHelper->HandoverRequest (hoEventIt->startTime, 
                                     ueDevices.Get (hoEventIt->ueDeviceIndex),
                                     enbDevices.Get (hoEventIt->sourceEnbDeviceIndex),
                                     enbDevices.Get (hoEventIt->targetEnbDeviceIndex));
+
+      // Once the handover is finished, teleport the UE near the target eNB
+      Simulator::Schedule (hoEventIt->startTime + MilliSeconds (40),
+                           &LteX2HandoverTestCase::TeleportUeNearTargetEnb,
+                           this,
+                           ueNodes.Get (hoEventIt->ueDeviceIndex),
+                           enbNodes.Get (m_admitHo ? hoEventIt->targetEnbDeviceIndex
+                                                   : hoEventIt->sourceEnbDeviceIndex));
+
       Time hoEndTime = hoEventIt->startTime + m_maxHoDuration;
       Simulator::Schedule (hoEndTime, 
                            &LteX2HandoverTestCase::CheckConnected, 
@@ -553,6 +582,23 @@ LteX2HandoverTestCase::CheckConnected (Ptr<NetDevice> ueDevice, Ptr<NetDevice> e
   NS_ASSERT_MSG (ueBearerIt == ueDataRadioBearerMapValue.End (), "too many bearers at UE");  
 }
 
+void
+LteX2HandoverTestCase::TeleportUeToMiddle (Ptr<Node> ueNode)
+{
+  Ptr<MobilityModel> ueMobility = ueNode->GetObject<MobilityModel> ();
+  ueMobility->SetPosition (Vector (0.0, 0.0, 0.0));
+}
+
+void
+LteX2HandoverTestCase::TeleportUeNearTargetEnb (Ptr<Node> ueNode, Ptr<Node> enbNode)
+{
+  Ptr<MobilityModel> enbMobility = enbNode->GetObject<MobilityModel> ();
+  Vector pos = enbMobility->GetPosition ();
+
+  Ptr<MobilityModel> ueMobility = ueNode->GetObject<MobilityModel> ();
+  ueMobility->SetPosition (pos + Vector (0.0, 100.0, 0.0));
+}
+
 void 
 LteX2HandoverTestCase::SaveStatsAfterHandover (uint32_t ueIndex)
 {
@@ -576,9 +622,10 @@ LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
       uint32_t dlRx = it->dlSink->GetTotalRx () - it->dlOldTotalRx;
       uint32_t ulRx = it->ulSink->GetTotalRx () - it->ulOldTotalRx;                       
       uint32_t expectedBytes = m_udpClientPktSize * (m_statsDuration.GetSeconds () / m_udpClientInterval.GetSeconds ());
-      //                           tolerance
-      NS_TEST_ASSERT_MSG_GT (dlRx,   0.500 * expectedBytes, "too few RX bytes in DL, ue=" << ueIndex << ", b=" << b);
-      NS_TEST_ASSERT_MSG_GT (ulRx,   0.500 * expectedBytes, "too few RX bytes in UL, ue=" << ueIndex << ", b=" << b);
+
+      float tolerance = 0.5;
+      NS_TEST_ASSERT_MSG_GT (dlRx, tolerance * expectedBytes, "too few RX bytes in DL, ue=" << ueIndex << ", b=" << b);
+      NS_TEST_ASSERT_MSG_GT (ulRx, tolerance * expectedBytes, "too few RX bytes in UL, ue=" << ueIndex << ", b=" << b);
       ++b;
     }
 }
@@ -605,19 +652,19 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   // bwd means handover from enb 1 to enb 0
 
   HandoverEvent ue1fwd;
-  ue1fwd.startTime = MilliSeconds (100); 
+  ue1fwd.startTime = MilliSeconds (100);
   ue1fwd.ueDeviceIndex = 0;
   ue1fwd.sourceEnbDeviceIndex = 0;
   ue1fwd.targetEnbDeviceIndex = 1;
 
   HandoverEvent ue1bwd;
-  ue1bwd.startTime = MilliSeconds (300); 
+  ue1bwd.startTime = MilliSeconds (400); 
   ue1bwd.ueDeviceIndex = 0;
   ue1bwd.sourceEnbDeviceIndex = 1;
   ue1bwd.targetEnbDeviceIndex = 0;
 
   HandoverEvent ue1fwdagain;
-  ue1fwdagain.startTime = MilliSeconds (500); 
+  ue1fwdagain.startTime = MilliSeconds (700); 
   ue1fwdagain.ueDeviceIndex = 0;
   ue1fwdagain.sourceEnbDeviceIndex = 0;
   ue1fwdagain.targetEnbDeviceIndex = 1;
@@ -629,7 +676,7 @@ LteX2HandoverTestSuite::LteX2HandoverTestSuite ()
   ue2fwd.targetEnbDeviceIndex = 1;
 
   HandoverEvent ue2bwd;
-  ue2bwd.startTime = MilliSeconds (250); 
+  ue2bwd.startTime = MilliSeconds (350); 
   ue2bwd.ueDeviceIndex = 1;
   ue2bwd.sourceEnbDeviceIndex = 1;
   ue2bwd.targetEnbDeviceIndex = 0;
