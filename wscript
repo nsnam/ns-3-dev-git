@@ -200,6 +200,10 @@ def options(opt):
                          ' argument is the path to the python program, optionally followed'
                          ' by command-line options that are passed to the program.'),
                    type="string", default='', dest='pyrun_no_build')
+    opt.add_option('--gdb',
+                   help=('Change the default command template to run programs and unit tests with gdb'),
+                   action="store_true", default=False,
+                   dest='gdb')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
