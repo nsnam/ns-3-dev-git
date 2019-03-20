@@ -110,9 +110,11 @@ def get_proc_env(os_env=None):
 
 def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
     proc_env = get_proc_env(os_env)
+
+    if Options.options.valgrind and Options.options.command_template:
+        raise WafError("Options --command-template and --valgrind are conflicting")
+
     if Options.options.valgrind and not force_no_valgrind:
-        if Options.options.command_template:
-            raise WafError("Options --command-template and --valgrind are conflicting")
         if not env['VALGRIND']:
             raise WafError("valgrind is not installed")
         # Use the first program found in the env['VALGRIND'] list
