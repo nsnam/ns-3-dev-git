@@ -555,6 +555,7 @@ UeManager::ReleaseDataRadioBearer (uint8_t drbid)
 void
 LteEnbRrc::DoSendReleaseDataRadioBearer (uint64_t imsi, uint16_t rnti, uint8_t bearerId)
 {
+  NS_LOG_FUNCTION (this << imsi << rnti << (uint16_t) bearerId);
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   // Bearer de-activation towards UE
   ueManager->ReleaseDataRadioBearer (bearerId);
@@ -725,6 +726,28 @@ UeManager::GetRrcConnectionReconfigurationForHandover ()
 }
 
 void
+UeManager::SendPacket (uint8_t bid, Ptr<Packet> p)
+{
+  NS_LOG_FUNCTION (this << p << (uint16_t) bid);
+  LtePdcpSapProvider::TransmitPdcpSduParameters params;
+  params.pdcpSdu = p;
+  params.rnti = m_rnti;
+  params.lcid = Bid2Lcid (bid);
+  uint8_t drbid = Bid2Drbid (bid);
+  // Transmit PDCP sdu only if DRB ID found in drbMap
+  std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.find (drbid);
+  if (it != m_drbMap.end ())
+    {
+      Ptr<LteDataRadioBearerInfo> bearerInfo = GetDataRadioBearerInfo (drbid);
+      if (bearerInfo != NULL)
+        {
+          LtePdcpSapProvider* pdcpSapProvider = bearerInfo->m_pdcp->GetLtePdcpSapProvider ();
+          pdcpSapProvider->TransmitPdcpSdu (params);
+        }
+    }
+}
+
+void
 UeManager::SendData (uint8_t bid, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p << (uint16_t) bid);
@@ -740,26 +763,18 @@ UeManager::SendData (uint8_t bid, Ptr<Packet> p)
     case CONNECTION_RECONFIGURATION:
     case CONNECTION_REESTABLISHMENT:
     case HANDOVER_PREPARATION:
-    case HANDOVER_JOINING:
     case HANDOVER_PATH_SWITCH:
       {
         NS_LOG_LOGIC ("queueing data on PDCP for transmission over the air");
-        LtePdcpSapProvider::TransmitPdcpSduParameters params;
-        params.pdcpSdu = p;
-        params.rnti = m_rnti;
-        params.lcid = Bid2Lcid (bid);
-        uint8_t drbid = Bid2Drbid (bid);
-        //Transmit PDCP sdu only if DRB ID found in drbMap
-        std::map<uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it = m_drbMap.find (drbid);
-        if (it != m_drbMap.end ())
-          {
-            Ptr<LteDataRadioBearerInfo> bearerInfo = GetDataRadioBearerInfo (drbid);
-            if (bearerInfo != NULL)
-              {
-                LtePdcpSapProvider* pdcpSapProvider = bearerInfo->m_pdcp->GetLtePdcpSapProvider ();
-                pdcpSapProvider->TransmitPdcpSdu (params);
-              }
-          }
+        SendPacket (bid, p);
+      }
+      break;
+
+    case HANDOVER_JOINING:
+      {
+        // Buffer data until RRC Connection Reconfiguration Complete message is received
+        NS_LOG_LOGIC ("buffering data");
+        m_packetBuffer.push_back (std::make_pair (bid, p));
       }
       break;
 
@@ -1005,6 +1020,20 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
     case HANDOVER_JOINING:
       {
         m_handoverJoiningTimeout.Cancel ();
+
+        while (!m_packetBuffer.empty ())
+          {
+            NS_LOG_LOGIC ("dequeueing data from buffer");
+            std::pair <uint8_t, Ptr<Packet> > bidPacket = m_packetBuffer.front ();
+            uint8_t bid = bidPacket.first;
+            Ptr<Packet> p = bidPacket.second;
+
+            NS_LOG_LOGIC ("queueing data on PDCP for transmission over the air");
+            SendPacket (bid, p);
+
+            m_packetBuffer.pop_front ();
+          }
+
         NS_LOG_INFO ("Send PATH SWITCH REQUEST to the MME");
         EpcEnbS1SapProvider::PathSwitchRequestParameters params;
         params.rnti = m_rnti;
