@@ -35,7 +35,7 @@ closely, try running it under the `gdb debugger
 
 .. sourcecode:: bash
 
-    $ ./waf --run tcp-point-to-point --command-template="gdb %s"
+    $ ./waf --run tcp-point-to-point --gdb
     Entering directory '/home/tomh/ns-3-nsc/build'
     Compilation finished successfully 
     GNU gdb Red Hat Linux (6.3.0.0-1.134.fc5rh)
@@ -84,4 +84,4 @@ Sometimes you may need to use the `valgrind memory checker
 <http://valgrind.org>`_ for more subtle errors. Again, you invoke the use of
 valgrind similarly::
 
-    $ ./waf --run tcp-point-to-point --command-template="valgrind %s"
+    $ ./waf --run tcp-point-to-point --valgrind
