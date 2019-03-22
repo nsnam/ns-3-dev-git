@@ -623,9 +623,8 @@ LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
       uint32_t ulRx = it->ulSink->GetTotalRx () - it->ulOldTotalRx;                       
       uint32_t expectedBytes = m_udpClientPktSize * (m_statsDuration.GetSeconds () / m_udpClientInterval.GetSeconds ());
 
-      float tolerance = 0.5;
-      NS_TEST_ASSERT_MSG_GT (dlRx, tolerance * expectedBytes, "too few RX bytes in DL, ue=" << ueIndex << ", b=" << b);
-      NS_TEST_ASSERT_MSG_GT (ulRx, tolerance * expectedBytes, "too few RX bytes in UL, ue=" << ueIndex << ", b=" << b);
+      NS_TEST_ASSERT_MSG_EQ (dlRx, expectedBytes, "too few RX bytes in DL, ue=" << ueIndex << ", b=" << b);
+      NS_TEST_ASSERT_MSG_EQ (ulRx, expectedBytes, "too few RX bytes in UL, ue=" << ueIndex << ", b=" << b);
       ++b;
     }
 }
