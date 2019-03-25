@@ -82,9 +82,10 @@ public:
   void SetNumberOfIes (uint32_t numberOfIes);
 
 
-  /// Procedure code enumeration
+  /// Procedure code enumeration 9.3.7
   enum ProcedureCode_t {
     HandoverPreparation     = 0,
+    HandoverCancel          = 1,
     LoadIndication          = 2,
     SnStatusTransfer        = 4,
     UeContextRelease        = 5,
@@ -651,6 +652,79 @@ private:
   uint16_t          m_enb1MeasurementId; ///< ENB1 measurement
   uint16_t          m_enb2MeasurementId; ///< ENB2 measurement
   std::vector <EpcX2Sap::CellMeasurementResultItem> m_cellMeasurementResultList; ///< cell measurement result list
+};
+
+/**
+ * EpcX2HandoverCancelHeader
+ */
+class EpcX2HandoverCancelHeader : public Header
+{
+public:
+  EpcX2HandoverCancelHeader ();
+  virtual ~EpcX2HandoverCancelHeader ();
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+
+  /**
+   * \brief Get old ENB UE X2 AP ID function
+   * \returns the old ENB UE X2 AP ID
+   */
+  uint16_t GetOldEnbUeX2apId () const;
+  /**
+   * \brief Set old ENB UE X2 AP ID function
+   * \param x2apId the old ENB UE X2 AP ID
+   */
+  void SetOldEnbUeX2apId (uint16_t x2apId);
+
+  /**
+   * \brief Get new ENB UE X2 AP ID function
+   * \returns the new ENB UE X2 AP ID
+   */
+  uint16_t GetNewEnbUeX2apId () const;
+  /**
+   * \brief Set new ENB UE X2 AP ID function
+   * \param x2apId the new ENB UE X2 AP ID
+   */
+  void SetNewEnbUeX2apId (uint16_t x2apId);
+
+  /**
+   * \brief Get cause function
+   * \returns the cause
+   */
+  uint16_t GetCause () const;
+  /**
+   * \brief Set cause function
+   * \param cause
+   */
+  void SetCause (uint16_t cause);
+
+  /**
+   * \brief Get length of IEs function
+   * \returns the length of IEs
+   */
+  uint32_t GetLengthOfIes () const;
+  /**
+   * \brief Get number of IEs function
+   * \returns the number of IEs
+   */
+  uint32_t GetNumberOfIes () const;
+
+private:
+  uint32_t          m_numberOfIes; ///< number of IEs
+  uint32_t          m_headerLength; ///< header length
+
+  uint16_t          m_oldEnbUeX2apId; ///< old ENB UE X2 AP ID
+  uint16_t          m_newEnbUeX2apId; ///< new ENB UE X2 AP ID
+  uint16_t          m_cause; ///< cause
 };
 
 
