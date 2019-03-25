@@ -173,13 +173,25 @@ public:
   void AddForeignSignal (Time duration, double rxPower);
   /**
    * Calculate the SNIR at the start of the payload and accumulate
-   * all SNIR changes in the snir vector.
+   * all SNIR changes in the snir vector for each MPDU of an A-MPDU.
+   * This workaround is required in order to provide one PER per MPDU, for
+   * reception success/failure evaluation, while hiding aggregation details from
+   * this class.
+   *
+   * \param event the event corresponding to the first time the corresponding packet arrives
+   * \param relativeMpduStartStop the time window (pair of start and end times) of PLCP payload to focus on
+   *
+   * \return struct of SNR and PER (with PER being evaluated over the provided time window)
+   */
+  struct InterferenceHelper::SnrPer CalculatePayloadSnrPer (Ptr<Event> event, std::pair<Time, Time> relativeMpduStartStop) const;
+  /**
+   * Calculate the SNIR for the event (starting from now until the event end).
    *
    * \param event the event corresponding to the first time the corresponding packet arrives
    *
-   * \return struct of SNR and PER
+   * \return the SNR for the packet
    */
-  struct InterferenceHelper::SnrPer CalculatePayloadSnrPer (Ptr<Event> event) const;
+  double CalculateSnr (Ptr<Event> event) const;
   /**
    * Calculate the SNIR at the start of the legacy PHY header and accumulate
    * all SNIR changes in the snir vector.
@@ -295,15 +307,17 @@ private:
    */
   double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
   /**
-   * Calculate the error rate of the given payload. The payload can be divided into
+   * Calculate the error rate of the given PLCP payload only in the provided time
+   * window (thus enabling per MPDU PER information). The PLCP payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event
    * \param ni
+   * \param window time window (pair of start and end times) of PLCP payload to focus on
    *
    * \return the error rate of the payload
    */
-  double CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni) const;
+  double CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, std::pair<Time, Time> window) const;
   /**
    * Calculate the error rate of the legacy PHY header. The legacy PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).

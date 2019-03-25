@@ -2739,7 +2739,7 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutyp
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   InterferenceHelper::SnrPer snrPer;
-  snrPer = m_interference.CalculatePayloadSnrPer (event);
+  snrPer = m_interference.CalculatePayloadSnrPer (event, std::make_pair (NanoSeconds (0), Simulator::Now () - event->GetStartTime ())); //TODO update with correct MPDU relative start and stop times
   m_interference.NotifyRxEnd ();
   m_currentEvent = 0;
 
