@@ -333,6 +333,21 @@ public:
     Ptr<Packet> ueData; ///< UE data
   };
 
+  /**
+   * \brief Parameters of the HANDOVER CANCEL message.
+   *
+   * See section 9.1.1.6 for further info about the parameters
+   *
+   */
+  struct HandoverCancelParams
+  {
+    uint16_t            oldEnbUeX2apId; ///< old ENB UE X2 AP ID
+    uint16_t            newEnbUeX2apId; ///< new ENB UE X2 AP ID
+    uint16_t            sourceCellId; ///< source cell ID
+    uint16_t            targetCellId; ///< target cell ID
+    uint16_t            cause; ///< cause
+  };
+
 };
 
 
@@ -396,6 +411,12 @@ public:
    * \param params the UE data parameters
    */
   virtual void SendUeData (UeDataParams params) = 0;
+
+  /**
+   * \brief Send handover Cancel to the target eNB
+   * \param params the handover cancel parameters
+   */
+  virtual void SendHandoverCancel (HandoverCancelParams params) = 0;
 };
 
 
@@ -529,6 +550,12 @@ public:
    */
   virtual void SendUeData (UeDataParams params);
 
+  /**
+   * \brief Send handover Cancel to the target eNB
+   * \param params the handover cancel parameters
+   */
+  virtual void SendHandoverCancel (HandoverCancelParams params);
+
 private:
   EpcX2SpecificEpcX2SapProvider ();
   C* m_x2; ///< owner class
@@ -599,6 +626,13 @@ void
 EpcX2SpecificEpcX2SapProvider<C>::SendUeData (UeDataParams params)
 {
   m_x2->DoSendUeData (params);
+}
+
+template <class C>
+void
+EpcX2SpecificEpcX2SapProvider<C>::SendHandoverCancel (HandoverCancelParams params)
+{
+  m_x2->DoSendHandoverCancel (params);
 }
 
 /**

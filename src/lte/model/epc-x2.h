@@ -202,6 +202,12 @@ protected:
    * \param params EpcX2SapProvider::UeDataParams
    */
   virtual void DoSendUeData (EpcX2SapProvider::UeDataParams params);
+  /**
+   * \brief Send Handover Cancel function
+   * \param params the handover cancel parameters
+   *
+   */
+  virtual void DoSendHandoverCancel (EpcX2SapProvider::HandoverCancelParams params);
 
   EpcX2SapUser* m_x2SapUser; ///< X2 SAP user
   EpcX2SapProvider* m_x2SapProvider; ///< X2 SAP provider
