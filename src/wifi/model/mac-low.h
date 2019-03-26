@@ -402,11 +402,13 @@ public:
    * \param aggregatedPacket which is the current A-MPDU
    * \param rxSnr snr of packet received
    * \param txVector TXVECTOR of packet received
+   * \param statusPerMpdu reception status per MPDU
    *
    * This function de-aggregates an A-MPDU and decide if each MPDU is received correctly or not
    *
    */
-  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector);
+  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector,
+                                   std::vector<bool> statusPerMpdu);
   /**
    *
    * This function is called to flush the aggregate queue, which is used for A-MPDU

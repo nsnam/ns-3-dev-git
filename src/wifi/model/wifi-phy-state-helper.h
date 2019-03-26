@@ -36,14 +36,16 @@ class WifiMode;
 class Packet;
 
 /**
- * Callback if packet successfully received
+ * Callback if packet successfully received (i.e. if aggregate,
+ * it means that at least one MPDU of the A-MPDU was received,
+ * considering that the per-MPDU reception status is also provided).
  *
  * arg1: packet received successfully
- * arg2: snr of packet
+ * arg2: SNR of packet
  * arg3: TXVECTOR of packet
- * arg4: type of preamble used for packet.
+ * arg4: vector of per-MPDU status of reception.
  */
-typedef Callback<void, Ptr<Packet>, double, WifiTxVector> RxOkCallback;
+typedef Callback<void, Ptr<Packet>, double, WifiTxVector, std::vector<bool>> RxOkCallback;
 /**
  * Callback if packet unsuccessfully received
  *
@@ -179,8 +181,9 @@ public:
    * \param packet the successfully received packet
    * \param snr the SNR of the received packet
    * \param txVector TXVECTOR of the packet
+   * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector);
+  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Switch from RX after the reception failed.
    *
