@@ -1158,12 +1158,14 @@ public:
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm (noise power includes the noise figure)
+   * \param statusPerMpdu reception status per MPDU
    */
   void NotifyMonitorSniffRx (Ptr<const Packet> packet,
                              uint16_t channelFreqMhz,
                              WifiTxVector txVector,
                              MpduInfo aMpdu,
-                             SignalNoiseDbm signalNoise);
+                             SignalNoiseDbm signalNoise,
+                             std::vector<bool> statusPerMpdu);
 
   /**
    * TracedCallback signature for monitor mode receive events.

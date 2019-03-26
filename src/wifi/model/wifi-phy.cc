@@ -2374,7 +2374,8 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise)
+WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVector txVector,
+                               MpduInfo aMpdu, SignalNoiseDbm signalNoise, std::vector<bool> statusPerMpdu)
 {
   m_phyMonitorSniffRxTrace (packet, channelFreqMhz, txVector, aMpdu, signalNoise);
 }
@@ -2765,7 +2766,7 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutyp
           aMpdu.type = mpdutype;
           aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
           std::vector<bool> statusPerMpdu {true}; //TODO update when A-MPDUs are handled as single packet
-          NotifyMonitorSniffRx (packet, GetFrequency (), event->GetTxVector (), aMpdu, signalNoise);
+          NotifyMonitorSniffRx (packet, GetFrequency (), event->GetTxVector (), aMpdu, signalNoise, statusPerMpdu);
           m_state->SwitchFromRxEndOk (packet, snrPer.snr, event->GetTxVector (), statusPerMpdu);
         }
       else
