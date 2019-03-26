@@ -731,6 +731,16 @@ LteUeRrc::DoNotifyRandomAccessFailed ()
            *       send an RRC Connection Re-establishment and switch to
            *       CONNECTED_REESTABLISHING state.
            */
+        if (!m_leaveConnectedMode)
+          {
+            m_leaveConnectedMode = true;
+            SwitchToState (CONNECTED_PHY_PROBLEM);
+            m_rrcSapUser->SendIdealUeContextRemoveRequest (m_rnti);
+            //we should have called NotifyConnectionFailed
+            //but that method would immediately ask you UE to
+            //connect rather than doing cell selection again.
+            m_asSapUser->NotifyConnectionReleased ();
+          }
         }
         break;
 

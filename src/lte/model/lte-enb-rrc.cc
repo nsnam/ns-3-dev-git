@@ -2635,14 +2635,23 @@ void
 LteEnbRrc::DoRecvIdealUeContextRemoveRequest (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
-  // TODO: remove after merge of ho_failure branch
-  // check if the RNTI to be removed is not stale
-  if (HasUeManager (rnti))
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+
+  if (ueManager->GetState () == UeManager::HANDOVER_JOINING)
     {
-      GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
-      // delete the UE context at the eNB
-      RemoveUe (rnti);
+      /**
+       * During the HO, when the RACH failure due to the maximum number of
+       * re-attempts is reached the UE request the target eNB to deletes its
+       * context. Upon which, the target eNB sends handover preparation
+       * failure to the source eNB.
+       */
+      EpcX2Sap::HandoverPreparationFailureParams msg = ueManager->BuildHoPrepFailMsg ();
+      m_x2SapProvider->SendHandoverPreparationFailure (msg);
     }
+
+  GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
+  //delete the UE context at the eNB
+  RemoveUe (rnti);
 }
 
 void
