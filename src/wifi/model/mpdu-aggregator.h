@@ -144,6 +144,30 @@ public:
   static DeaggregatedMpdus Deaggregate (Ptr<Packet> aggregatedPacket);
 
   /**
+   * Peeks the A-MPDU subframes of the provided A-MPDU.
+   *
+   * \param aggregatedPacket the aggregated packet
+   * \return list of A-MPDU subframes (i.e. A-MPDU subframe header + MPDU + eventual padding)
+   */
+  static std::list<Ptr<const Packet>> PeekAmpduSubframes (Ptr<const Packet> aggregatedPacket);
+
+  /**
+   * Peeks the MPDUs of the provided A-MPDU.
+   *
+   * \param aggregatedPacket the aggregated packet
+   * \return list of MPDUs
+   */
+  static std::list<Ptr<const Packet>> PeekMpdus (Ptr<const Packet> aggregatedPacket);
+
+  /**
+   * Peeks the MPDU contained in the A-MPDU subframe.
+   *
+   * \param ampduSubframe the A-MPDU subframe
+   * \return the MPDU contained in the A-MPDU subframe
+   */
+  static Ptr<const Packet> PeekMpduInAmpduSubframe (Ptr<const Packet> ampduSubframe);
+
+  /**
    * Set the map of EDCA queues.
    *
    * \param edcaQueues the map of EDCA queues.

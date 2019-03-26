@@ -257,6 +257,62 @@ MpduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
   return set;
 }
 
+std::list<Ptr<const Packet>>
+MpduAggregator::PeekAmpduSubframes (Ptr<const Packet> aggregatedPacket)
+{
+  NS_LOG_FUNCTION (aggregatedPacket);
+  std::list<Ptr<const Packet> > ampduSubframes;
+
+  AmpduSubframeHeader hdr;
+  uint32_t maxSize = aggregatedPacket->GetSize ();
+  uint16_t bytesToExtract;
+  uint32_t padding;
+  uint32_t deserialized = 0;
+
+  Ptr<Packet> tempPacket = Create<Packet> ();
+  while (deserialized < maxSize)
+    {
+      tempPacket = aggregatedPacket->CreateFragment (deserialized, hdr.GetSerializedSize ());
+      bytesToExtract = tempPacket->PeekHeader (hdr);
+      bytesToExtract += hdr.GetLength ();
+
+      padding = (4 - (hdr.GetLength () % 4 )) % 4;
+      if (padding > 0 && (deserialized + bytesToExtract) < maxSize)
+        {
+          bytesToExtract += padding;
+        }
+
+      ampduSubframes.push_back (aggregatedPacket->CreateFragment (deserialized , bytesToExtract));
+      deserialized += bytesToExtract;
+    }
+  NS_LOG_INFO ("Peek A-MPDU subframes of A-MPDU: peeked " << ampduSubframes.size () << " A-MPDU subrames");
+  return ampduSubframes;
+}
+
+std::list<Ptr<const Packet>>
+MpduAggregator::PeekMpdus (Ptr<const Packet> aggregatedPacket)
+{
+  NS_LOG_FUNCTION (aggregatedPacket);
+  std::list<Ptr<const Packet> > ampduSubframes = PeekAmpduSubframes (aggregatedPacket);
+  std::list<Ptr<const Packet> > mpdus;
+
+  for (const auto& subframe : ampduSubframes)
+    {
+      mpdus.push_back (PeekMpduInAmpduSubframe (subframe));
+    }
+  NS_LOG_INFO ("Peek MPDUs of A-MPDU: peeked " << mpdus.size () << " MPDUs");
+  return mpdus;
+}
+
+Ptr<const Packet>
+MpduAggregator::PeekMpduInAmpduSubframe (Ptr<const Packet> ampduSubframe)
+{
+  NS_LOG_FUNCTION (ampduSubframe);
+  AmpduSubframeHeader hdr;
+  uint32_t headerSize = ampduSubframe->PeekHeader (hdr);
+  return ampduSubframe->CreateFragment (headerSize , hdr.GetLength ());
+}
+
 std::vector<Ptr<WifiMacQueueItem>>
 MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
                               Time ppduDurationLimit) const
