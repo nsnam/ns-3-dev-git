@@ -106,9 +106,9 @@ MpduAggregator::Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, 
 }
 
 void
-MpduAggregator::AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu) const
+MpduAggregator::AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (mpdu << last << isSingleMpdu);
   AmpduSubframeHeader currentHdr;
 
   //This is called to prepare packets from the aggregate queue to be sent so no need to check total size since it has already been

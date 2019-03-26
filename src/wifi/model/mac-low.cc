@@ -1682,7 +1682,7 @@ MacLow::ForwardDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
               mpdutype = LAST_MPDU_IN_AGGREGATE;
             }
 
-          m_mpduAggregator->AddHeaderAndPad (packet, last, psdu->IsSingle ());
+          MpduAggregator::AddHeaderAndPad (packet, last, psdu->IsSingle ());
 
           if (delay.IsZero ())
             {

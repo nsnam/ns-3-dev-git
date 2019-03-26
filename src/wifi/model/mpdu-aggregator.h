@@ -80,7 +80,7 @@ public:
    *
    * Adds A-MPDU subframe header and padding to each MPDU that is part of an A-MPDU before it is sent.
    */
-  void AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu) const;
+  static void AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu);
 
   /**
    * Compute the size of the A-MPDU resulting from the aggregation of an MPDU of
