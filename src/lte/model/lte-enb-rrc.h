@@ -381,6 +381,13 @@ public:
   void CancelPendingEvents ();
 
   /**
+   *  \brief This function acts as an interface to trigger the connection
+   *  release towards eNB, EPC and UE.
+   *
+   */
+  void SendRrcConnectionRelease ();
+
+  /**
    * \brief build handover preparation failure message
    */
   EpcX2Sap::HandoverPreparationFailureParams BuildHoPrepFailMsg ();
@@ -1047,6 +1054,14 @@ public:
    *  \param bearerId Bearer Identity which is to be de-activated
    */
   void DoSendReleaseDataRadioBearer (uint64_t imsi, uint16_t rnti, uint8_t bearerId);
+
+  /**
+   *  \brief Send RRC connection release function
+   *
+   *  This function acts as an interface to trigger the connection
+   *  release towards eNB, EPC and UE.
+   */
+  void SendRrcConnectionRelease ();
 
   /**
    * Identifies how EPS Bearer parameters are mapped to different RLC types

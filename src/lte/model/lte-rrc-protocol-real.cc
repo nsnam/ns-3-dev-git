@@ -657,6 +657,8 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionReestablishmentReject (uint16_t rnti, 
 void
 LteEnbRrcProtocolReal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::RrcConnectionRelease msg)
 {
+  //The code below is commented so RRC connection release can be sent in an ideal way
+  /*
   Ptr<Packet> packet = Create<Packet> ();
 
   RrcConnectionReleaseHeader rrcConnectionReleaseHeader;
@@ -670,6 +672,18 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionRelease (uint16_t rnti, LteRrcSap::Rrc
   transmitPdcpSduParameters.lcid = 1;
 
   m_setupUeParametersMap[rnti].srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
+  */
+  /**
+   * Send RRC connection release in an idle way to ensure UE goes
+   * to idle mode during handover failure and connection setup timeout.
+   * Implemented to avoid unnecessary triggering of assert msgs due to reception of
+   * msgs (SRS CQI reports) from UE after UE context is deleted at eNodeB.
+   * TODO: Detection of handover failure and connection setup timeout at UE,
+   * so that the RRC connection release can be sent through the physical channel again.
+   */
+  NS_LOG_FUNCTION(this<<rnti);
+  Simulator::Schedule (RRC_REAL_MSG_DELAY, &LteUeRrcSapProvider::RecvRrcConnectionRelease,
+                       GetUeRrcSapProvider (rnti), msg);
 }
 
 void

@@ -996,6 +996,12 @@ UeManager::RecvHandoverPreparationFailure (uint16_t cellId)
       NS_LOG_INFO ("target eNB sent HO preparation failure, aborting HO");
       SwitchToState (CONNECTED_NORMALLY);
       break;
+    case HANDOVER_LEAVING: //case added to tackle HO joining timer expiration
+      NS_ASSERT (cellId == m_targetCellId);
+      NS_LOG_INFO ("target eNB sent HO preparation failure, aborting HO");
+      m_handoverLeavingTimeout.Cancel ();
+      SendRrcConnectionRelease ();
+      break;
 
     default:
       NS_FATAL_ERROR ("method unexpected in state " << ToString (m_state));
@@ -1028,6 +1034,24 @@ UeManager::RecvUeContextRelease (EpcX2SapUser::UeContextReleaseParams params)
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_state == HANDOVER_LEAVING, "method unexpected in state " << ToString (m_state));
   m_handoverLeavingTimeout.Cancel ();
+}
+
+void
+UeManager::SendRrcConnectionRelease ()
+{
+  // TODO implement in the 3gpp way, see Section 5.3.8 of 3GPP TS 36.331.
+  NS_LOG_FUNCTION (this << (uint32_t) m_rnti);
+  // De-activation towards UE, it will deactivate all bearers
+  LteRrcSap::RrcConnectionRelease msg;
+  msg.rrcTransactionIdentifier = this->GetNewRrcTransactionIdentifier ();
+  m_rrc->m_rrcSapUser->SendRrcConnectionRelease (m_rnti, msg);
+
+  /**
+   * Bearer de-activation indication towards epc-enb application
+   * and removal of UE context at the eNodeB
+   *
+   */
+  m_rrc->DoRecvIdealUeContextRemoveRequest (m_rnti);
 }
 
 
@@ -2505,6 +2529,17 @@ LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
                  "HandoverJoiningTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
   m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
                      ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverJoiningTimeout");
+
+  /**
+   * When the handover joining timer expires at the target cell,
+   * then notify the source cell to release the RRC connection and
+   * delete the UE context at eNodeB and SGW/PGW. The
+   * HandoverPreparationFailure message is reused to notify the source cell
+   * through the X2 interface instead of creating a new message.
+   */
+  Ptr<UeManager> ueManger = GetUeManager (rnti);
+  EpcX2Sap::HandoverPreparationFailureParams msg = ueManger->BuildHoPrepFailMsg ();
+  m_x2SapProvider->SendHandoverPreparationFailure (msg);
   RemoveUe (rnti);
 }
 
