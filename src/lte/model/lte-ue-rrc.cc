@@ -1199,9 +1199,9 @@ LteUeRrc::DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg)
 
   m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
   //release resources at UE
-  if (!m_rlfDetected)
+  if (!m_leaveConnectedMode)
     {
-      m_rlfDetected = true;
+      m_leaveConnectedMode = true;
       SwitchToState (CONNECTED_PHY_PROBLEM);
       m_rrcSapUser->SendIdealUeContextRemoveRequest (m_rnti);
       m_asSapUser->NotifyConnectionReleased ();

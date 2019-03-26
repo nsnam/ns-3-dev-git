@@ -2551,7 +2551,15 @@ LteEnbRrc::HandoverLeavingTimeout (uint16_t rnti)
                  "HandoverLeavingTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
   m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
                      ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverLeavingTimeout");
-  RemoveUe (rnti);
+  /**
+   * Send HO cancel msg to the target eNB and release the RRC connection
+   * with the UE and also delete UE context at the source eNB and bearer
+   * info at SGW and PGW.
+   */
+  Ptr<UeManager> ueManger = GetUeManager (rnti);
+  EpcX2Sap::HandoverCancelParams msg = ueManger->BuildHoCancelMsg ();
+  m_x2SapProvider->SendHandoverCancel (msg);
+  ueManger->SendRrcConnectionRelease ();
 }
 
 void
