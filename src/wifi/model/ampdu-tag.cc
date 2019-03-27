@@ -64,7 +64,7 @@ AmpduTag::SetRemainingAmpduDuration (Time duration)
 uint32_t
 AmpduTag::GetSerializedSize (void) const
 {
-  return (2 + sizeof (Time));
+  return (1 + sizeof (Time));
 }
 
 void
@@ -80,7 +80,7 @@ AmpduTag::Deserialize (TagBuffer i)
 {
   m_nbOfMpdus = i.ReadU8 ();
   int64_t duration;
-  i.Read ((uint8_t *)&duration, 8);
+  i.Read ((uint8_t *)&duration, sizeof(int64_t));
   m_duration = Time (duration);
 }
 
