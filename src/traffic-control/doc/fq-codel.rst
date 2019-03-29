@@ -17,6 +17,9 @@ FqCoDel distinguishes between "new" queues (which don't build up a standing
 queue) and "old" queues, that have queued enough data to be around for more
 than one iteration of the round-robin scheduler.
 
+FqCoDel is installed by default on single-queue NetDevices (such as PointToPoint,
+Csma and Simple). Also, on multi-queue devices (such as Wifi), the default root
+qdisc is Mq with as many FqCoDel child queue discs as the number of device queues.
 
 Model Description
 *****************

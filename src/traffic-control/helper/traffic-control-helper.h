@@ -128,10 +128,11 @@ public:
   /**
    * \returns a new TrafficControlHelper with a default configuration
    *
-   * The default configuration is a PfifoFastQueueDisc with three internal queues
-   * of type DropTailQueue and size 1000 packets.
+   * The default configuration is an FqCoDelQueueDisc, if the device has a single
+   * queue, or an MqQueueDisc with as many FqCoDelQueueDiscs as the number of
+   * device queues, otherwise.
    */
-  static TrafficControlHelper Default (void);
+  static TrafficControlHelper Default (std::size_t nTxQueues = 1);
 
   /**
    * Helper function used to set a root queue disc of the given type and with the

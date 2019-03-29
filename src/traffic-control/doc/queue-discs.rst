@@ -171,8 +171,12 @@ Usage
 
 By default, the InternetStackHelper aggregates a TrafficControlLayer object to every
 node. When invoked to assign an IPv{4,6} address to a device, the Ipv{4,6}AddressHelper,
-besides creating a Ipv{4,6}Interface, also installs the default qdisc, PfifoFastQueueDisc,
-on the device, unless a queue disc has been already installed. Thus, devices get the default
+besides creating an Ipv{4,6}Interface, also installs the default qdisc
+on the device, unless a queue disc has been already installed.
+For single-queue NetDevices (such as PointToPoint, Csma and Simple), the default root
+qdisc is FqCoDel. For multi-queue NetDevices (such as Wifi), the default root qdisc is
+Mq with as many FqCoDel child qdiscs as the number of device queues.
+Thus, devices get the default
 queue disc installed even if they are added to the node after the Internet stack has been
 installed on the node.
 
@@ -187,7 +191,7 @@ Helpers
 
 A typical usage pattern is to create a traffic control helper and to configure type
 and attributes of queue discs, queues, classes and filters from the helper, For example,
-the default pfifo_fast can be configured as follows:
+the pfifo_fast can be configured as follows:
 
 .. sourcecode:: cpp
 
@@ -196,7 +200,7 @@ the default pfifo_fast can be configured as follows:
   tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue ("1000p"));
   QueueDiscContainer qdiscs = tch.Install (devices);
 
-The above code adds three internal queues and a packet filter to the root queue disc of type PfifoFast.
+The above code adds three internal queues to the root queue disc of type PfifoFast.
 With the above configuration, the config path of the root queue disc installed on the j-th
 device of the i-th node (the index of a device is the same as in DeviceList) is:
 

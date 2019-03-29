@@ -678,7 +678,7 @@ priority to the user priority, thus overwriting the value determined by the
 socket priority (users can read :ref:`Socket-options` for details on how to
 set the packet priority). Also, given that the Traffic Control layer calls
 :cpp:func:`ns3::WifiNetDevice::SelectQueue()` before enqueuing the packet
-into a queue disc, it turns out that queuing disciplines (such as the default
+into a queue disc, it turns out that queuing disciplines (such as
 PfifoFastQueueDisc) that classifies packets based on their priority will
 use the user priority instead of the socket priority.
 

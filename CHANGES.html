@@ -56,7 +56,7 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>Added the attribute <b>Release</b> to the class <b>EpsBearer</b>, to select the release (e.g., release 15)</li>
 <li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Instead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
-<li>The attributes <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmsduSize</b> and <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmpduSize</b> have been deprecated. Instead, it is advised to use <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmsduSize</b> and <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmpduSize</b>.</li>
+<li>The attributes <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmsduSize</b> and <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmpduSize</b> have been removed. Instead, it is necessary to use <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmsduSize</b> and <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmpduSize</b>.</li>
 <li>A new attribute <b>WifiPhy::PostReceptionErrorModel</b> has been added to force specific packet drops.</li>
 <li>A new attribute <b>WifiPhy::PreambleDetectionModel</b> has been added to decide whether PHY preambles are successfully detected.</li>
 <li>New attributes <b>QosTxop::AddBaResponseTimeout</b> and <b>QosTxop::FailedAddBaTimeout</b> have been added to set the timeout to wait for an ADDBA response after the ACK to the ADDBA request is received and to set the timeout after a failed BA agreement, respectively.</li>
@@ -92,8 +92,8 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 <ul>
   <li>The wifi ADDBA handshake process is now protected with the use of two timeouts who makes sure we do not end up in a blocked situation. If the handshake process is not established, packets that are in the queue are sent as normal MPDUs. Once handshake is successfully established, A-MPDUs can be transmitted.</li>
-  <li> The default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.
-  <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:<li>
+  <li> The default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.</li>
+  <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:</li>
     <ul>
       <li>SGW, PGW and MME are full nodes.</li>
       <li>There are P2P links between core network nodes.</li>
@@ -108,6 +108,7 @@ us a note on ns-developers mailing list.</p>
       <li>New InitialContextSetupRequest primitive of the S1 SAP that is received by the eNB RRC when the S1 signalling from the core network is finished.</li>
     </ul>
   </li>
+  <li> The default qdisc installed on single-queue devices (such as PointToPoint, Csma and Simple) is now FqCodel (instead of PfifoFast). On multi-queue devices (such as Wifi), the default root qdisc is now Mq with as many FqCoDel child qdiscs as the number of device queues. The new defaults are motivated by the willingness to align with the behavior of major Linux distributions and by the need to preserve the effectiveness of Wifi EDCA Functions in differentiating Access Categories (see issue #35).</li>
 </ul>
 
 <hr>

@@ -12,6 +12,9 @@ traffic control API in Linux. The mq scheduler presents device transmission queu
 classes, allowing to attach different queue discs to them, which are grafted to the
 device transmission queues.
 
+Mq is installed by default on multi-queue devices (such as Wifi) with as many FqCodel
+child queue discs as the number of device queues.
+
 Model Description
 *****************
 

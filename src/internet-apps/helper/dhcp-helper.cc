@@ -31,6 +31,7 @@
 #include "ns3/loopback-net-device.h"
 #include "ns3/traffic-control-layer.h"
 #include "ns3/traffic-control-helper.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -98,9 +99,19 @@ Ptr<Application> DhcpHelper::InstallDhcpClientPriv (Ptr<NetDevice> netDevice) co
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
   if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
     {
-      NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration");
-      TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
-      tcHelper.Install (netDevice);
+      Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
+      // It is useless to install a queue disc if the device has no
+      // NetDeviceQueueInterface attached: the device queue is never
+      // stopped and every packet enqueued in the queue disc is
+      // immediately dequeued, hence there will never be backlog
+      if (ndqi)
+        {
+          std::size_t nTxQueues = ndqi->GetNTxQueues ();
+          NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration ("
+                        << nTxQueues << " device queue(s))");
+          TrafficControlHelper tcHelper = TrafficControlHelper::Default (nTxQueues);
+          tcHelper.Install (netDevice);
+        }
     }
 
   Ptr<DhcpClient> app = DynamicCast <DhcpClient> (m_clientFactory.Create<DhcpClient> ());
@@ -147,9 +158,19 @@ ApplicationContainer DhcpHelper::InstallDhcpServer (Ptr<NetDevice> netDevice, Ip
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
   if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
     {
-      NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration");
-      TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
-      tcHelper.Install (netDevice);
+      Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
+      // It is useless to install a queue disc if the device has no
+      // NetDeviceQueueInterface attached: the device queue is never
+      // stopped and every packet enqueued in the queue disc is
+      // immediately dequeued, hence there will never be backlog
+      if (ndqi)
+        {
+          std::size_t nTxQueues = ndqi->GetNTxQueues ();
+          NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration ("
+                        << nTxQueues << " device queue(s))");
+          TrafficControlHelper tcHelper = TrafficControlHelper::Default (nTxQueues);
+          tcHelper.Install (netDevice);
+        }
     }
 
   // check that the already fixed addresses are not in conflict with the pool
@@ -199,9 +220,19 @@ Ipv4InterfaceContainer DhcpHelper::InstallFixedAddress (Ptr<NetDevice> netDevice
   Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
   if (tc && DynamicCast<LoopbackNetDevice> (netDevice) == 0 && tc->GetRootQueueDiscOnDevice (netDevice) == 0)
     {
-      NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration");
-      TrafficControlHelper tcHelper = TrafficControlHelper::Default ();
-      tcHelper.Install (netDevice);
+      Ptr<NetDeviceQueueInterface> ndqi = netDevice->GetObject<NetDeviceQueueInterface> ();
+      // It is useless to install a queue disc if the device has no
+      // NetDeviceQueueInterface attached: the device queue is never
+      // stopped and every packet enqueued in the queue disc is
+      // immediately dequeued, hence there will never be backlog
+      if (ndqi)
+        {
+          std::size_t nTxQueues = ndqi->GetNTxQueues ();
+          NS_LOG_LOGIC ("DhcpHelper - Installing default traffic control configuration ("
+                        << nTxQueues << " device queue(s))");
+          TrafficControlHelper tcHelper = TrafficControlHelper::Default (nTxQueues);
+          tcHelper.Install (netDevice);
+        }
     }
 
   // check that the already fixed addresses are not in conflict with the pool

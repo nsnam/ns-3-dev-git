@@ -31,6 +31,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/traffic-control-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/packet-sink-helper.h"
@@ -341,6 +342,12 @@ Ns3TcpStateTestCase::DoRun (void)
   p2p.SetChannelAttribute ("Delay", TimeValue (Seconds (0.0001)));
   NetDeviceContainer dev0 = p2p.Install (n0n1);
   NetDeviceContainer dev1 = p2p.Install (n1n2);
+
+  // Use PfifoFast queue disc
+  TrafficControlHelper tch;
+  tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
+  tch.Install (dev0);
+  tch.Install (dev1);
 
   // Add IP addresses to each network interfaces
   Ipv4AddressHelper ipv4;
