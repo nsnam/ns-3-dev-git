@@ -248,7 +248,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
           if (originator->IsNextFragment (hdr->GetSequenceControl ()))
             {
               NS_LOG_DEBUG ("accumulate fragment seq=" << hdr->GetSequenceNumber () <<
-                            ", frag=" << hdr->GetFragmentNumber () <<
+                            ", frag=" << +hdr->GetFragmentNumber () <<
                             ", size=" << packet->GetSize ());
               originator->AccumulateFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
@@ -264,7 +264,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
           if (originator->IsNextFragment (hdr->GetSequenceControl ()))
             {
               NS_LOG_DEBUG ("accumulate last fragment seq=" << hdr->GetSequenceNumber () <<
-                            ", frag=" << hdr->GetFragmentNumber () <<
+                            ", frag=" << +hdr->GetFragmentNumber () <<
                             ", size=" << hdr->GetSize ());
               Ptr<Packet> p = originator->AccumulateLastFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
@@ -282,7 +282,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
       if (hdr->IsMoreFragments ())
         {
           NS_LOG_DEBUG ("accumulate first fragment seq=" << hdr->GetSequenceNumber () <<
-                        ", frag=" << hdr->GetFragmentNumber () <<
+                        ", frag=" << +hdr->GetFragmentNumber () <<
                         ", size=" << packet->GetSize ());
           originator->AccumulateFirstFragment (packet);
           originator->SetSequenceControl (hdr->GetSequenceControl ());
@@ -324,7 +324,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     {
       NS_LOG_DEBUG ("duplicate from=" << hdr->GetAddr2 () <<
                     ", seq=" << hdr->GetSequenceNumber () <<
-                    ", frag=" << hdr->GetFragmentNumber ());
+                    ", frag=" << +hdr->GetFragmentNumber ());
       return;
     }
   Ptr<Packet> aggregate = HandleFragments (packet, hdr, originator);
@@ -334,7 +334,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     }
   NS_LOG_DEBUG ("forwarding data from=" << hdr->GetAddr2 () <<
                 ", seq=" << hdr->GetSequenceNumber () <<
-                ", frag=" << hdr->GetFragmentNumber ());
+                ", frag=" << +hdr->GetFragmentNumber ());
   if (!hdr->GetAddr1 ().IsGroup ())
     {
       originator->SetSequenceControl (hdr->GetSequenceControl ());
