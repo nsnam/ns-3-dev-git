@@ -40,7 +40,7 @@ class Packet;
  *
  * This class records the packet lost in a client/server transmission
  * leveraging a sequence number. All the packets outside a given window
- * (i.e., too old wit respect to the last sequence number seen) are considered lost,
+ * (i.e., too old with respect to the last sequence number seen) are considered lost,
  */
 class PacketLossCounter
 {

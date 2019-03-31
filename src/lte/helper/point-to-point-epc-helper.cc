@@ -449,9 +449,6 @@ PointToPointEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
 
   // Create a point to point link between the two eNBs with
   // the corresponding new NetDevices on each side
-  NodeContainer enbNodes;
-  enbNodes.Add (enb1);
-  enbNodes.Add (enb2);
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (m_x2LinkDataRate));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (m_x2LinkMtu));

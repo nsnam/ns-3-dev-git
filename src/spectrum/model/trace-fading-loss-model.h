@@ -56,7 +56,7 @@ public:
   virtual void DoInitialize (void);
 
   /**
-   * \brief The couple of mobility mnode that form a fading channel realization
+   * \brief The couple of mobility node that form a fading channel realization
    */
   typedef std::pair<Ptr<const MobilityModel>, Ptr<const MobilityModel> > ChannelRealizationId_t;
 

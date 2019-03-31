@@ -399,7 +399,7 @@ public:
   virtual ~RoutingHelper ();
 
   /**
-   * \brief Installs routing funcationality on nodes and their
+   * \brief Installs routing functionality on nodes and their
    * devices and interfaces.
    * \param c node container
    * \param d net device container

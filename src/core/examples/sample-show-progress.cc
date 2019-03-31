@@ -141,7 +141,7 @@ main (int argc, char ** argv)
             << "verbose progress message:  " << (verbose ? "on\n" : "off\n")
             << "target reporting interval: " << interval.As (Time::S) << "\n"
             << "average event sleep time:  " << wait.As (Time::MS)    << "\n"
-            << "total simulatino run time: " << stop.As (Time::S)
+            << "total simulation run time: " << stop.As (Time::S)
             << std::endl;
   
   Ptr<Hold> h = Create<Hold> (wait, interval);
