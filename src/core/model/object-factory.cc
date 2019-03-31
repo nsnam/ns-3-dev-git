@@ -60,6 +60,15 @@ ObjectFactory::SetTypeId (const char *tid)
   NS_LOG_FUNCTION (this << tid);
   m_tid = TypeId::LookupByName (tid);
 }
+bool
+ObjectFactory::IsTypeIdSet (void) const
+{
+  if (m_tid.GetUid () != 0)
+    {
+      return true;
+    }
+  return false;
+}
 void
 ObjectFactory::Set (std::string name, const AttributeValue &value)
 {
