@@ -991,4 +991,16 @@ BlockAckManager::GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) co
   return size;
 }
 
+uint16_t
+BlockAckManager::GetOriginatorStartingSequence (Mac48Address recipient, uint8_t tid) const
+{
+  uint16_t seqNum = 0;
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  if (it != m_agreements.end ())
+    {
+      seqNum = it->second.first.GetStartingSequence ();
+    }
+  return seqNum;
+}
+
 } //namespace ns3

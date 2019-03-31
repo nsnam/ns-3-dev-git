@@ -134,6 +134,12 @@ QosTxop::GetBaBufferSize (Mac48Address address, uint8_t tid) const
   return m_baManager->GetRecipientBufferSize (address, tid);
 }
 
+uint16_t
+QosTxop::GetBaStartingSequence (Mac48Address address, uint8_t tid) const
+{
+  return m_baManager->GetOriginatorStartingSequence (address, tid);
+}
+
 void
 QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {

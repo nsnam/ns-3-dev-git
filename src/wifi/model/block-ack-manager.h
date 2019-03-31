@@ -388,6 +388,15 @@ public:
    * \returns the buffer size negociated with the recipient
    */
   uint16_t GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) const;
+  /**
+   * This function returns the starting sequence number of the transmit window.
+   *
+   * \param tid Traffic ID
+   * \param recipient MAC address
+   *
+   * \returns the starting sequence number of the transmit window (WinStartO)
+   */
+  uint16_t GetOriginatorStartingSequence (Mac48Address recipient, uint8_t tid) const;
 
   /**
    * typedef for a callback to invoke when a
