@@ -489,14 +489,6 @@ private:
    */
   void ForwardDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
   /**
-   * Forward the MPDU down to WifiPhy for transmission. This is called for each MPDU when MPDU aggregation is used.
-   *
-   * \param packet the packet
-   * \param txVector the transmit vector
-   * \param mpdutype the MPDU type
-   */
-  void SendMpdu (Ptr<const Packet> packet, WifiTxVector txVector, MpduType mpdutype);
-  /**
    * Return a TXVECTOR for the RTS frame given the destination.
    * The function consults WifiRemoteStationManager, which controls the rate
    * to different destinations.

@@ -50,20 +50,14 @@ public:
   /**
    * Constructor
    * \param txVector the WifiTxVector
-   * \param mpdutype the mpduType
    * \param frameComplete the frameComplete
    */
-  WifiPhyTag (WifiTxVector txVector, MpduType mpdutype, uint8_t frameComplete);
+  WifiPhyTag (WifiTxVector txVector, uint8_t frameComplete);
   /**
    * Getter for WifiTxVector parameter
    * \return the WifiTxVector
    */
   WifiTxVector GetWifiTxVector (void) const;
-  /**
-   * Getter for mpduType parameter
-   * \return mpduType the mpduType
-   */
-  MpduType GetMpduType (void) const;
   /**
    * Getter for frameComplete parameter
    * \return the frameComplete parameter, i.e. 0 if the frame is not complete, 1 otherwise.
@@ -79,7 +73,6 @@ public:
 
 private:
   WifiTxVector m_wifiTxVector; ///< wifi transmit vector
-  MpduType m_mpduType; ///< MPDU type
   uint8_t m_frameComplete; ///< Used to indicate that TX stopped sending before the end of the frame
 };
 
