@@ -175,6 +175,13 @@ void AddWifiMacTrailer (Ptr<Packet> packet);
  * \return the total packet size
  */
 uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
+/**
+ * \param packet the packet to check
+ * \returns true if packet is an A-MPDU
+ *
+ * This method checks if the packet is an A-MPDU by looking for A-MPDU subframe headers.
+ */
+bool IsAmpdu (Ptr<const Packet> packet);
 
   /**
    * Get the maximum PPDU duration (see Section 10.14 of 802.11-2016) for
