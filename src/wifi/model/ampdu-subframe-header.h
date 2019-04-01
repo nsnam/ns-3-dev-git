@@ -70,10 +70,19 @@ public:
    * \return the EOF field
    */
   bool GetEof (void) const;
+  /**
+   * Return whether the pattern stored in the delimiter
+   * signature field is correct, i.e. corresponds to the
+   * unique pattern 0x4E.
+   *
+   * \return true if the signature is valid, false otherwise
+   */
+  bool IsSignatureValid (void) const;
 
 private:
-  uint16_t m_length; //!< length field
-  bool m_eof;        //!< EOF field
+  uint16_t m_length;   //!< length field
+  bool m_eof;          //!< EOF field
+  uint8_t m_signature; //!< delimiter signature (should correspond to pattern 0x4E in order to be assumed valid)
 };
 
 } //namespace ns3
