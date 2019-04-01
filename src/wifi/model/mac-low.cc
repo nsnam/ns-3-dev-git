@@ -2660,7 +2660,6 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
   NS_LOG_FUNCTION (this);
   bool normalAck = false;
   bool ampduSubframe = false; //flag indicating the packet belongs to an A-MPDU and is not a VHT/HE single MPDU
-  NS_ASSERT (txVector.GetPreambleType () != WIFI_PREAMBLE_NONE);
   if (txVector.IsAggregation ())
     {
       ampduSubframe = true;

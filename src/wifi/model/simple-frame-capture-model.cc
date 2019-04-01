@@ -76,8 +76,7 @@ bool
 SimpleFrameCaptureModel::CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
   NS_LOG_FUNCTION (this);
-  if (newEvent->GetTxVector ().GetPreambleType () != WIFI_PREAMBLE_NONE
-      && (WToDbm (currentEvent->GetRxPowerW ()) + GetMargin ()) < WToDbm (newEvent->GetRxPowerW ())
+  if ((WToDbm (currentEvent->GetRxPowerW ()) + GetMargin ()) < WToDbm (newEvent->GetRxPowerW ())
       && (IsInCaptureWindow (currentEvent->GetStartTime ())))
     {
       return true;

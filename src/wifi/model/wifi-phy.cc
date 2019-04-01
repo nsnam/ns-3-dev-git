@@ -1912,10 +1912,6 @@ Time
 WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector)
 {
   WifiPreamble preamble = txVector.GetPreambleType ();
-  if (preamble == WIFI_PREAMBLE_NONE)
-    {
-      return MicroSeconds (0);
-    }
   switch (txVector.GetMode ().GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
@@ -1981,10 +1977,6 @@ Time
 WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
 {
   WifiPreamble preamble = txVector.GetPreambleType ();
-  if (preamble == WIFI_PREAMBLE_NONE)
-    {
-      return MicroSeconds (0);
-    }
   switch (txVector.GetMode ().GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
@@ -2038,10 +2030,10 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, uint8_t incFlag)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
+                             MpduType mpdutype, uint8_t incFlag)
 {
   WifiMode payloadMode = txVector.GetMode ();
-  WifiPreamble preamble = txVector.GetPreambleType ();
   NS_LOG_FUNCTION (size << payloadMode);
 
   double stbc = 1;
@@ -2213,7 +2205,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
 
   double numSymbols = 0;
-  if (mpdutype == MPDU_IN_AGGREGATE && preamble != WIFI_PREAMBLE_NONE)
+  if (mpdutype == FIRST_MPDU_IN_AGGREGATE)
     {
       //First packet in an A-MPDU
       numSymbols = (stbc * (16 + size * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol));
@@ -2223,7 +2215,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
           m_totalAmpduNumSymbols += numSymbols;
         }
     }
-  else if (mpdutype == MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
+  else if (mpdutype == MIDDLE_MPDU_IN_AGGREGATE)
     {
       //consecutive packets in an A-MPDU
       numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
@@ -2233,7 +2225,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
           m_totalAmpduNumSymbols += numSymbols;
         }
     }
-  else if (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE)
+  else if (mpdutype == LAST_MPDU_IN_AGGREGATE)
     {
       //last packet in an A-MPDU
       uint32_t totalAmpduSize = m_totalAmpduSize + size;
@@ -2246,16 +2238,16 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
           m_totalAmpduNumSymbols = 0;
         }
     }
-  else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
+  else if (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU)
     {
-      //Not an A-MPDU
+      //Not an A-MPDU or single MPDU (i.e. the current payload contains both service and padding)
       // The number of OFDM symbols in the data field when BCC encoding 
       // is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
       numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (stbc * numDataBitsPerSymbol)));
     }
   else
     {
-      NS_FATAL_ERROR ("Wrong combination of preamble and packet type");
+      NS_FATAL_ERROR ("Unknown MPDU type");
     }
 
   switch (payloadMode.GetModulationClass ())
@@ -2277,8 +2269,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_VHT:
       {
         if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && Is2_4Ghz (frequency)
-            && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
-                || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
+            && (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU || mpdutype == LAST_MPDU_IN_AGGREGATE)) //at 2.4 GHz
           {
             return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ())) + MicroSeconds (6);
           }
@@ -2290,8 +2281,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_HE:
       {
         if (Is2_4Ghz (frequency)
-            && ((mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
-                || (mpdutype == LAST_MPDU_IN_AGGREGATE && preamble == WIFI_PREAMBLE_NONE))) //at 2.4 GHz
+            && ((mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU || mpdutype == LAST_MPDU_IN_AGGREGATE))) //at 2.4 GHz
           {
             return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ())) + MicroSeconds (6);
           }
@@ -2324,7 +2314,8 @@ WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector)
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, uint8_t incFlag)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
+                              MpduType mpdutype, uint8_t incFlag)
 {
   Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector)
     + GetPayloadDuration (size, txVector, frequency, mpdutype, incFlag);
@@ -2452,22 +2443,15 @@ WifiPhy::NotifyMonitorSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz
       size_t numberOfMpdus = ampduSubframes.size ();
       NS_ABORT_MSG_IF (statusPerMpdu.size () != numberOfMpdus, "Should have one reception status per MPDU");
       size_t i = 0;
+      aMpdu.type = (numberOfMpdus == 1) ? SINGLE_MPDU: FIRST_MPDU_IN_AGGREGATE;
       for (const auto & subframe : ampduSubframes)
         {
-          if (!statusPerMpdu.at (i)) //packet received with error, do not hand over to sniffer
+          if (statusPerMpdu.at (i)) //packet received without error, hand over to sniffer
             {
-              continue;
+              m_phyMonitorSniffRxTrace (subframe, channelFreqMhz, txVector, aMpdu, signalNoise);
             }
-          if (i == (numberOfMpdus - 1)) //single MPDU or last MPDU. TODO: see if still compatible with EOF padding
-            {
-              aMpdu.type = LAST_MPDU_IN_AGGREGATE;
-            }
-          else
-            {
-              aMpdu.type = MPDU_IN_AGGREGATE;
-            }
-          m_phyMonitorSniffRxTrace (subframe, channelFreqMhz, txVector, aMpdu, signalNoise);
           ++i;
+          aMpdu.type = (i == (numberOfMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
         }
     }
   else
@@ -2489,18 +2473,12 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz
       std::list<Ptr<const Packet>> ampduSubframes = MpduAggregator::PeekAmpduSubframes (packet);
       size_t numberOfMpdus = ampduSubframes.size ();
       size_t i = 0;
+      aMpdu.type = (numberOfMpdus == 1) ? SINGLE_MPDU: FIRST_MPDU_IN_AGGREGATE;
       for (const auto & subframe : ampduSubframes)
         {
-          if (i == (numberOfMpdus - 1)) //single MPDU or last MPDU. TODO: see if still compatible with EOF padding
-            {
-              aMpdu.type = LAST_MPDU_IN_AGGREGATE;
-            }
-          else
-            {
-              aMpdu.type = MPDU_IN_AGGREGATE;
-            }
           m_phyMonitorSniffTxTrace (subframe, channelFreqMhz, txVector, aMpdu);
           ++i;
+          aMpdu.type = (i == (numberOfMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
         }
     }
   else
@@ -2865,12 +2843,10 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiTxVector txVector, Time psduDuratio
           size_t nbOfRemainingMpdus = ampduSubframes.size ();
           Time remainingAmpduDuration = psduDuration;
 
-          MpduType mpdutype = (nbOfRemainingMpdus == 1) ? NORMAL_MPDU : MPDU_IN_AGGREGATE;
-          WifiTxVector tempTxVector = txVector; //transient solution (to remove once WIFI_PREAMBLE_NONE has been cleaned up)
-
+          MpduType mpdutype = (nbOfRemainingMpdus == 1) ? SINGLE_MPDU : FIRST_MPDU_IN_AGGREGATE;
           for (const auto & subframe : ampduSubframes)
             {
-              Time mpduDuration = GetPayloadDuration (subframe->GetSize (), tempTxVector, GetFrequency (), mpdutype, 1);
+              Time mpduDuration = GetPayloadDuration (subframe->GetSize (), txVector, GetFrequency (), mpdutype, 1);
               remainingAmpduDuration -= mpduDuration;
               --nbOfRemainingMpdus;
               if (nbOfRemainingMpdus == 0 && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
@@ -2886,7 +2862,7 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiTxVector txVector, Time psduDuratio
               receptionOkAtLeastForOneMpdu |= rxInfo.first;
 
               relativeStart += mpduDuration;
-              tempTxVector.SetPreambleType (WIFI_PREAMBLE_NONE);
+              mpdutype = (nbOfRemainingMpdus == 1) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
             }
         }
       else
@@ -3993,7 +3969,6 @@ void
 WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, double rxPowerW, Time rxDuration, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << txVector << rxPowerW << rxDuration);
-  NS_ABORT_MSG_IF (txVector.GetPreambleType () == WIFI_PREAMBLE_NONE, "Packet should have PLCP preamble");
 
   NS_LOG_DEBUG ("sync to signal (power=" << rxPowerW << "W)");
   m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events

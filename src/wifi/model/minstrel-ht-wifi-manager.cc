@@ -241,8 +241,8 @@ MinstrelHtWifiManager::DoInitialize ()
                         {
                           uint16_t deviceIndex = i + (m_minstrelGroups[groupId].streams - 1) * 8;
                           WifiMode mode =  htMcsList[deviceIndex];
-                          AddFirstMpduTxTime (groupId, mode, CalculateFirstMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
-                          AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
+                          AddFirstMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode, FIRST_MPDU_IN_AGGREGATE));
+                          AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode, MIDDLE_MPDU_IN_AGGREGATE));
                         }
                       NS_LOG_DEBUG ("Initialized group " << +groupId << ": (" << +streams << "," << +sgi << "," << chWidth << ")");
                     }
@@ -282,8 +282,8 @@ MinstrelHtWifiManager::DoInitialize ()
                               // Check for invalid VHT MCSs and do not add time to array.
                               if (IsValidMcs (GetPhy (), streams, chWidth, mode))
                                 {
-                                  AddFirstMpduTxTime (groupId, mode, CalculateFirstMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
-                                  AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode));
+                                  AddFirstMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode, FIRST_MPDU_IN_AGGREGATE));
+                                  AddMpduTxTime (groupId, mode, CalculateMpduTxDuration (GetPhy (), streams, sgi, chWidth, mode, MIDDLE_MPDU_IN_AGGREGATE));
                                 }
                             }
                           NS_LOG_DEBUG ("Initialized group " << +groupId << ": (" << +streams << "," << +sgi << "," << chWidth << ")");
@@ -307,9 +307,10 @@ MinstrelHtWifiManager::IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint16_t c
 }
 
 Time
-MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint16_t chWidth, WifiMode mode)
+MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi,
+                                                uint16_t chWidth, WifiMode mode, MpduType mpduType)
 {
-  NS_LOG_FUNCTION (this << phy << +streams << +sgi << chWidth << mode);
+  NS_LOG_FUNCTION (this << phy << +streams << +sgi << chWidth << mode << mpduType);
   WifiTxVector txvector;
   txvector.SetNss (streams);
   txvector.SetGuardInterval (sgi ? 400 : 800);
@@ -318,22 +319,7 @@ MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t s
   txvector.SetStbc (0);
   txvector.SetMode (mode);
   txvector.SetPreambleType (WIFI_PREAMBLE_HT_MF);
-  return phy->CalculateTxDuration (m_frameLength, txvector, phy->GetFrequency (), MPDU_IN_AGGREGATE, 0);
-}
-
-Time
-MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint16_t chWidth, WifiMode mode)
-{
-  NS_LOG_FUNCTION (this << phy << +streams << +sgi << chWidth << mode);
-  WifiTxVector txvector;
-  txvector.SetNss (streams);
-  txvector.SetGuardInterval (sgi ? 400 : 800);
-  txvector.SetChannelWidth (chWidth);
-  txvector.SetNess (0);
-  txvector.SetStbc (0);
-  txvector.SetMode (mode);
-  txvector.SetPreambleType (WIFI_PREAMBLE_NONE);
-  return phy->CalculateTxDuration (m_frameLength, txvector, phy->GetFrequency (), MPDU_IN_AGGREGATE, 0);
+  return phy->CalculateTxDuration (m_frameLength, txvector, phy->GetFrequency (), mpduType, 0);
 }
 
 Time
