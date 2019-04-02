@@ -250,6 +250,13 @@ public:
   void StartAccessIfNeeded (void);
 
   /**
+   * Return the remaining duration in the current TXOP.
+   *
+   * \return the remaining duration in the current TXOP.
+   */
+  Time GetTxopRemaining (void) const;
+
+  /**
    * Check if Block ACK Request should be re-transmitted.
    *
    * \return true if BAR should be re-transmitted,
@@ -519,12 +526,6 @@ private:
    * if an established block ack agreement exists with the receiver.
    */
   void VerifyBlockAck (void);
-  /**
-   * Return the remaining duration in the current TXOP.
-   *
-   * \return the remaining duration in the current TXOP.
-   */
-  Time GetTxopRemaining (void) const;
   /**
    * Update backoff and restart access if needed.
    */

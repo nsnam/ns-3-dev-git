@@ -173,6 +173,19 @@ public:
   void SetAckPolicyForTid (uint8_t tid, WifiMacHeader::QosAckPolicy policy);
 
   /**
+   * Get the maximum distance between the sequence number of any QoS Data frame
+   * included in the given PSDU that is not an old frame and the given starting
+   * sequence number. If the given PSDU does not contain any QoS Data frame that
+   * is not an old frame, an invalid distance (4096) is returned.
+   *
+   * \param psdu the given PSDU.
+   * \param startingSeq the given starting sequence number.
+   * \return the maximum distance between the sequence numbers included in the
+   *         PSDU and the given starting sequence number
+   */
+  uint16_t GetMaxDistFromStartingSeq (uint16_t startingSeq) const;
+
+  /**
    * \brief Return the size of the PSDU
    *
    * \return the size of the PSDU.
