@@ -128,56 +128,37 @@ public:
    * \param rxPowerW the receive power in W
    * \param rxDuration the duration needed for the reception of the packet
    */
-  void StartReceivePreamble (Ptr<Packet> packet,
-                             double rxPowerW,
-                             Time rxDuration);
+  void StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDuration);
 
   /**
    * Start receiving the PHY header of a packet (i.e. after the end of receiving the preamble).
    *
-   * \param packet the arriving packet
-   * \param txVector the TXVECTOR of the arriving packet
-   * \param event the corresponding event of the first time the packet arrives
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param rxDuration the duration needed for the reception of the header and payload of the packet
    */
-  void StartReceiveHeader (Ptr<Packet> packet,
-                           WifiTxVector txVector,
-                           Ptr<Event> event,
-                           Time rxDuration);
+  void StartReceiveHeader (Ptr<Event> event, Time rxDuration);
 
   /**
    * Continue receiving the PHY header of a packet (i.e. after the end of receiving the legacy header part).
    *
-   * \param packet the arriving packet
-   * \param txVector the TXVECTOR of the arriving packet
-   * \param event the corresponding event of the first time the packet arrives
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    */
-  void ContinueReceiveHeader (Ptr<Packet> packet,
-                              WifiTxVector txVector,
-                              Ptr<Event> event);
+  void ContinueReceiveHeader (Ptr<Event> event);
 
   /**
    * Start receiving the payload of a packet (i.e. the first bit of the packet has arrived).
    *
-   * \param packet the arriving packet
-   * \param txVector the TXVECTOR of the arriving packet
-   * \param event the corresponding event of the first time the packet arrives
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    */
-  void StartReceivePayload (Ptr<Packet> packet,
-                            WifiTxVector txVector,
-                            Ptr<Event> event);
+  void StartReceivePayload (Ptr<Event> event);
 
   /**
    * The last bit of the packet has arrived.
    *
-   * \param packet the packet that the last bit has arrived
-   * \param txVector the TXVECTOR of the arriving packet
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    * \param psduDuration the duration of the PSDU
-   * \param event the corresponding event of the first time the packet arrives
    */
-  void EndReceive (Ptr<Packet> packet,
-                   WifiTxVector txVector,
-                   Time psduDuration,
-                   Ptr<Event> event);
+  void EndReceive (Ptr<Event> event, Time psduDuration);
 
   /**
    * \param packet the packet to send
@@ -1698,33 +1679,25 @@ private:
   /**
    * Starting receiving the packet after having detected the medium is idle or after a reception switch.
    *
-   * \param packet the arriving packet
-   * \param txVector the TXVECTOR of the arriving packet
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    * \param rxPowerW the receive power in W
    * \param rxDuration the duration needed for the reception of the packet
-   * \param event the corresponding event of the first time the packet arrives
    */
-  void StartRx (Ptr<Packet> packet,
-                WifiTxVector txVector,
-                double rxPowerW,
-                Time rxDuration,
-                Ptr<Event> event);
+  void StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration);
   /**
    * Get the reception status for the provided MPDU and notify.
    *
    * \param mpdu the arriving MPDU
-   * \param txVector the TXVECTOR of the arriving packet
+   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU. 0 for normal MPDUs
    * \param mpduDuration the duration of the MPDU
-   * \param event the corresponding event of the first time the packet arrives
    *
    * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
    */
   std::pair<bool, SignalNoiseDbm> GetReceptionStatus (Ptr<const Packet> mpdu,
-                                                      WifiTxVector txVector,
+                                                      Ptr<Event> event,
                                                       Time relativeMpduStart,
-                                                      Time mpduDuration,
-                                                      Ptr<Event> event);
+                                                      Time mpduDuration);
 
   /**
    * The trace source fired when a packet begins the transmission process on
