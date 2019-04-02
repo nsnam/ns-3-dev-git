@@ -39,6 +39,7 @@ class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
 class WifiTxVector;
+class WifiAckPolicySelector;
 
 /**
  * Enumeration for type of station
@@ -120,6 +121,18 @@ public:
    * \param remoteManager WifiRemoteStationManager.
    */
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
+  /**
+   * Set the ack policy selector.
+   *
+   * \param ackSelector the ack policy selector.
+   */
+  void SetAckPolicySelector (Ptr<WifiAckPolicySelector> ackSelector);
+  /**
+   * Return the ack policy selector.
+   *
+   * \return the ack policy selector.
+   */
+  Ptr<WifiAckPolicySelector> GetAckPolicySelector (void) const;
   /**
    * Set type of station with the given type.
    *
@@ -610,6 +623,7 @@ private:
 
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station
+  Ptr<WifiAckPolicySelector> m_ackPolicySelector;       //!< Ack policy selector
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< QOS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the Block ACK manager
   uint8_t m_blockAckThreshold;                          //!< the Block ACK threshold

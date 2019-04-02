@@ -38,6 +38,8 @@
 #include "mpdu-aggregator.h"
 #include "ctrl-headers.h"
 #include "wifi-phy.h"
+#include "wifi-ack-policy-selector.h"
+#include "wifi-psdu.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -116,6 +118,7 @@ void
 QosTxop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_ackPolicySelector = 0;
   m_baManager = 0;
   m_qosBlockedDestinations = 0;
   Txop::DoDispose ();
@@ -151,6 +154,19 @@ QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remote
   Txop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
   m_baManager->SetWifiRemoteStationManager (m_stationManager);
+}
+
+void
+QosTxop::SetAckPolicySelector (Ptr<WifiAckPolicySelector> ackSelector)
+{
+  NS_LOG_FUNCTION (this << ackSelector);
+  m_ackPolicySelector = ackSelector;
+}
+
+Ptr<WifiAckPolicySelector>
+QosTxop::GetAckPolicySelector (void) const
+{
+  return m_ackPolicySelector;
 }
 
 void
