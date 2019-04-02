@@ -73,6 +73,13 @@ public:
   /**@}*/
   
   /**
+   * Check if the ObjectFactory has been configured with a TypeId 
+   *
+   * \return true if a TypeId has been configured to the ObjectFactory
+   */
+  bool IsTypeIdSet (void) const;
+
+  /**
    * Set an attribute to be set during construction.
    *
    * \param [in] name The name of the attribute to set.
