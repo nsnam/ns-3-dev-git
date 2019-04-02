@@ -264,17 +264,6 @@ public:
    */
   void NotifyAgreementReset (Mac48Address recipient, uint8_t tid);
   /**
-   * \param recipient Address of peer station involved in block ack mechanism.
-   * \param tid Traffic ID of transmitted packet.
-   * \param nextSeqNumber Sequence number of the next packet that would be trasmitted by QosTxop.
-   * \param policy ack policy of the transmitted packet.
-   *
-   * This method is typically invoked by ns3::QosTxop object every time that a MPDU
-   * with ack policy subfield in Qos Control field set to Block Ack is transmitted.
-   * The <i>nextSeqNumber</i> parameter is used to block transmission of packets that are out of bitmap.
-   */
-  void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy);
-  /**
    * \param nPackets Minimum number of packets for use of block ack.
    *
    * Upon receipt of a block ack frame, if total number of packets (packets in WifiMacQueue

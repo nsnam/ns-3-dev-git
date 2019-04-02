@@ -673,18 +673,6 @@ BlockAckManager::NotifyAgreementReset (Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy)
-{
-  NS_LOG_FUNCTION (this << recipient << +tid << nextSeqNumber);
-  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-  NS_ASSERT (it != m_agreements.end ());
-  if (policy == WifiMacHeader::BLOCK_ACK)
-    {
-      ScheduleBlockAckReq (recipient, tid);
-    }
-}
-
-void
 BlockAckManager::SetQueue (const Ptr<WifiMacQueue> queue)
 {
   NS_LOG_FUNCTION (this << queue);

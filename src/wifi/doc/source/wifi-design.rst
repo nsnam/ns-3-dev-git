@@ -709,6 +709,39 @@ The goal of the lookaround rate is to force minstrel to try higher rate than the
 
 For a more detailed information about minstrel, see [linuxminstrel]_.
 
+Ack policy selection
+####################
+
+Since the introduction of the IEEE 802.11e amendment, multiple acknowledgment policies
+are available, which are coded in the Ack Policy subfield in the QoS Control field of
+QoS Data frames (see Section 9.2.4.5.4 of the IEEE 802.11-2016 standard). For instance,
+an A-MPDU can be sent with the *Normal Ack or Implicit Block Ack Request* policy, in which
+case the receiver replies with a Normal Ack or a Block Ack depending on whether the A-MPDU
+contains a single MPDU or multiple MPDUs, or with the *Block Ack* policy, in which case
+the receiver waits to receive a Block Ack Request in the future to which it replies with
+a Block Ack.
+
+``WifiAckPolicySelector`` is the abstract base class introduced to provide an interface
+for multiple ack policy selectors. Currently, the default ack policy selector is
+the ``ConstantWifiAckPolicySelector``.
+
+ConstantWifiAckPolicySelector
+#############################
+
+The ``ConstantWifiAckPolicySelector`` allows to determine which acknowledgment policy
+to use depending on the value of its attributes:
+
+* UseExplicitBar: used to determine the ack policy to use when a response is needed from
+  the recipient and the current transmission includes multiple frames (A-MPDU) or there are
+  frames transmitted previously for which an acknowledgment is needed. If this attribute is
+  true, the *Block Ack* policy is used. Otherwise, the *Implicit Block Ack Request* policy is used.
+* BaThreshold: used to determine when the originator of a Block Ack agreement needs to
+  request a response from the recipient. A value of zero means that a response is requested
+  at every frame transmission. Otherwise, a non-zero value (less than or equal to 1) means
+  that a response is requested upon transmission of a frame whose sequence number is distant
+  at least BaThreshold multiplied by the transmit window size from the starting sequence
+  number of the transmit window.
+
 802.11ax OBSS PD spatial reuse
 ##############################
 

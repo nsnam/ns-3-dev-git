@@ -42,6 +42,7 @@
 #include "wifi-net-device.h"
 #include "wifi-mac.h"
 #include <algorithm>
+#include "wifi-ack-policy-selector.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -531,12 +532,9 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
    * (c) a QoS data or DELBA Request frame dequeued from a QosTxop
    * (d) a BlockAckReq or ADDBA Request frame
    */
-  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast () && m_mpduAggregator != 0)
+  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast ())
     {
-      /* We get here if the received packet is any of the following:
-       * (a) a QoS data frame
-       * (b) a BlockAckRequest
-       */
+      // We get here if the received packet is a non-broadcast QoS data frame
       uint8_t tid = GetTid (mpdu->GetPacket (), hdr);
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
       std::vector<Ptr<WifiMacQueueItem>> mpduList;
@@ -550,20 +548,14 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         }
 
       //Perform MPDU aggregation if possible
-      mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector, txopLimit);
+      if (m_mpduAggregator != 0)
+        {
+          mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector, txopLimit);
+        }
 
       if (mpduList.size () > 1)
         {
           m_currentPacket = Create<WifiPsdu> (mpduList);
-
-          if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
-            {
-              m_txParams.EnableBlockAck (BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK);
-            }
-          else
-            {
-              m_txParams.EnableBlockAck (BlockAckType::COMPRESSED_BLOCK_ACK);
-            }
 
           NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
           qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
@@ -573,17 +565,15 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         {
           // VHT/HE single MPDU
           m_currentPacket = Create<WifiPsdu> (mpdu, true);
-          m_currentPacket->SetAckPolicyForTid (tid, WifiMacHeader::NORMAL_ACK);
 
-          //VHT/HE single MPDUs are followed by normal ACKs
-          m_txParams.EnableAck ();
           NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
           qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
         }
-      else if (hdr.IsQosData () && !hdr.IsQosBlockAck () && !hdr.GetAddr1 ().IsGroup ())
-        {
-          m_txParams.EnableAck ();
-        }
+
+      // A QoS Txop must have an installed ack policy selector
+      NS_ASSERT (qosTxop->GetAckPolicySelector () != 0);
+      qosTxop->GetAckPolicySelector ()->UpdateTxParams (m_currentPacket, m_txParams);
+      qosTxop->GetAckPolicySelector ()->SetAckPolicy (m_currentPacket, m_txParams);
     }
 
   NS_LOG_DEBUG ("startTx size=" << m_currentPacket->GetSize () <<
@@ -1632,57 +1622,54 @@ MacLow::ForwardDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
                 ", duration=" << hdr.GetDuration () <<
                 ", seq=0x" << std::hex << hdr.GetSequenceControl () << std::dec);
 
-  if (!psdu->IsAggregate ())
+  if (hdr.IsCfPoll () && m_stationManager->GetPcfSupported ())
     {
-      if (hdr.IsCfPoll () && m_stationManager->GetPcfSupported ())
-        {
-          Simulator::Schedule (GetPifs () + m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ()), &MacLow::CfPollTimeout, this);
-        }
-      if (hdr.IsBeacon () && m_stationManager->GetPcfSupported ())
-        {
-          if (Simulator::Now () > m_lastBeacon + m_beaconInterval)
-            {
-              m_cfpForeshortening = (Simulator::Now () - m_lastBeacon - m_beaconInterval);
-            }
-          m_lastBeacon = Simulator::Now ();
-        }
-      else if (hdr.IsCfEnd () && m_stationManager->GetPcfSupported ())
-        {
-          m_cfpStart = NanoSeconds (0);
-          m_cfpForeshortening = NanoSeconds (0);
-          m_cfAckInfo.appendCfAck = false;
-          m_cfAckInfo.expectCfAck = false;
-        }
-      else if (IsCfPeriod () && hdr.HasData ())
-        {
-          m_cfAckInfo.expectCfAck = true;
-        }
-      NS_LOG_DEBUG ("Sending non aggregate MPDU");
+      Simulator::Schedule (GetPifs () + m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ()), &MacLow::CfPollTimeout, this);
     }
-  else   // S-MPDU or A-MPDU
+  if (hdr.IsBeacon () && m_stationManager->GetPcfSupported ())
+    {
+      if (Simulator::Now () > m_lastBeacon + m_beaconInterval)
+        {
+          m_cfpForeshortening = (Simulator::Now () - m_lastBeacon - m_beaconInterval);
+        }
+      m_lastBeacon = Simulator::Now ();
+    }
+  else if (hdr.IsCfEnd () && m_stationManager->GetPcfSupported ())
+    {
+      m_cfpStart = NanoSeconds (0);
+      m_cfpForeshortening = NanoSeconds (0);
+      m_cfAckInfo.appendCfAck = false;
+      m_cfAckInfo.expectCfAck = false;
+    }
+  else if (IsCfPeriod () && hdr.HasData ())
+    {
+      m_cfAckInfo.expectCfAck = true;
+    }
+
+  if (psdu->IsSingle ())
     {
       txVector.SetAggregation (true);
-      if (psdu->IsSingle ())
-        {
-          NS_LOG_DEBUG ("Sending S-MPDU");
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Sending A-MPDU");
-        }
+      NS_LOG_DEBUG ("Sending S-MPDU");
+    }
+  else if (psdu->IsAggregate ())
+    {
+      txVector.SetAggregation (true);
+      NS_LOG_DEBUG ("Sending A-MPDU");
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Sending non aggregate MPDU");
+    }
 
-      if (psdu->GetNMpdus () > 1)
+  for (auto& mpdu : *PeekPointer (psdu))
+    {
+      if (mpdu->GetHeader ().IsQosData ())
         {
-          for (auto& mpdu : *PeekPointer (psdu))
-            {
-              if (mpdu->GetHeader ().IsQosData ())
-                {
-                  auto edcaIt = m_edca.find (QosUtilsMapTidToAc (mpdu->GetHeader ().GetQosTid ()));
-                  edcaIt->second->CompleteMpduTx (mpdu);
-                }
-            }
+          auto edcaIt = m_edca.find (QosUtilsMapTidToAc (mpdu->GetHeader ().GetQosTid ()));
+          edcaIt->second->CompleteMpduTx (mpdu);
         }
     }
+
   m_phy->SendPacket (psdu->GetPacket (), txVector);
 }
 
@@ -2555,7 +2542,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
                       NS_LOG_DEBUG ("Receive S-MPDU");
                       ampduSubframe = false;
                     }
-                  else if (!m_sendAckEvent.IsRunning ())
+                  else if (!m_sendAckEvent.IsRunning () && firsthdr.IsQosAck ()) // Implicit BAR Ack Policy
                     {
                       m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                             &MacLow::SendBlockAckAfterAmpdu, this,

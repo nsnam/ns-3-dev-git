@@ -736,6 +736,16 @@ In order to change parameters that are overwritten by ``WifiHelper::SetStandard`
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BasicBlockAckTimeout", TimeValue (MicroSeconds (basicBlockAckTimeout)));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CompressedBlockAckTimeout", TimeValue (MicroSeconds (compressedBlockAckTimeout)));
 
+The WifiHelper can be used to set the attributes of the default ack policy selector
+(``ConstantWifiAckPolicySelector``) or to select a different (user provided) ack
+policy selector, for each of the available Access Categories. As an example, the
+following code can be used to set the BaThreshold attribute of the default ack
+policy selector associated with BE AC to 0.5::
+
+  WifiHelper wifi;
+  wifi.SetAckPolicySelectorForAc (AC_BE, "ns3::ConstantWifiAckPolicySelector",
+                                  "BaThreshold", DoubleValue (0.5));
+
 The WifiHelper is also used to configure OBSS PD spatial reuse for 802.11ax.
 The following line configure a WifiHelper to support OBSS PD spatial reuse 
 using the ``ConstantObssPdAlgorithm`` with a threshold set to -72 dBm::

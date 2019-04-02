@@ -348,7 +348,6 @@ public:
   /**
    * Stores an MPDU (part of an A-MPDU) in blockackagreement (i.e. the sender is waiting
    * for a blockack containing the sequence number of this MPDU).
-   * It also calls NotifyMpdu transmission that updates the status of OriginatorBlockAckAgreement.
    *
    * \param mpdu received MPDU.
    */
@@ -529,16 +528,6 @@ private:
    * \return true if the MPDU is to be considered old, false otherwise
    */
   bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
-  /**
-   * For now is typically invoked to complete transmission of a packets sent with ack policy
-   * Block Ack: the packet is buffered and dcf is reset.
-   */
-  void CompleteTx (void);
-  /**
-   * Verifies if dequeued packet has to be transmitted with ack policy Block Ack. This happens
-   * if an established block ack agreement exists with the receiver.
-   */
-  void VerifyBlockAck (void);
   /**
    * Update backoff and restart access if needed.
    */
