@@ -460,6 +460,15 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 }
 
 void
+QosTxop::UpdateCurrentPacket (Ptr<WifiMacQueueItem> mpdu)
+{
+  NS_LOG_FUNCTION (this << *mpdu);
+  m_currentPacket = mpdu->GetPacket ();
+  m_currentHdr = mpdu->GetHeader ();
+  m_currentPacketTimestamp = mpdu->GetTimeStamp ();
+}
+
+void
 QosTxop::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
@@ -506,18 +515,31 @@ QosTxop::NotifyAccessGranted (void)
         }
 
       m_stationManager->UpdateFragmentationThreshold ();
-      Time ppduDurationLimit = Seconds (0);
-
-      // compute the limit on the PPDU duration due to the TXOP duration, if any
-      if (peekedItem->GetHeader ().IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
+      Ptr<WifiMacQueueItem> item;
+      // non-broadcast QoS data frames may be sent in MU PPDUs. Given that at this stage
+      // we do not know the bandwidth it would be given nor the selected acknowledgment
+      // sequence, we cannot determine the constraints on size and duration limit. Hence,
+      // we only peek the non-broadcast QoS data frame. MacLow will be in charge of
+      // computing the correct limits and dequeue the frame.
+      if (peekedItem->GetHeader ().IsQosData () && !peekedItem->GetHeader ().GetAddr1 ().IsBroadcast ()
+          && !NeedFragmentation ())
         {
-          MacLowTransmissionParameters params = GetTransmissionParameters (peekedItem);
-          ppduDurationLimit = GetTxopRemaining () - m_low->CalculateOverheadTxTime (peekedItem, params);
+          item = Copy (peekedItem);
         }
+      else
+        {
+          // compute the limit on the PPDU duration due to the TXOP duration, if any
+          Time ppduDurationLimit = Seconds (0);
+          if (peekedItem->GetHeader ().IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
+            {
+              MacLowTransmissionParameters params = GetTransmissionParameters (peekedItem);
+              ppduDurationLimit = GetTxopRemaining () - m_low->CalculateOverheadTxTime (peekedItem, params);
+            }
 
-      // dequeue the peeked item if it fits within the TXOP duration, if any
-      Ptr<WifiMacQueueItem> item = DequeuePeekedFrame (peekedItem, m_low->GetDataTxVector (peekedItem),
-                                                       !NeedFragmentation (), 0, ppduDurationLimit);
+            // dequeue the peeked item if it fits within the TXOP duration, if any
+            item = DequeuePeekedFrame (peekedItem, m_low->GetDataTxVector (peekedItem),
+                                       !NeedFragmentation (), 0, ppduDurationLimit);
+        }
 
       if (item == 0)
         {
@@ -548,15 +570,6 @@ QosTxop::NotifyAccessGranted (void)
   else
     {
       m_currentParams = GetTransmissionParameters (mpdu);
-
-      // check if the current frame meets the QoS TXOP Limit, if any
-      if (mpdu->GetHeader ().IsQosData () && GetTxopLimit ().IsStrictlyPositive () &&
-          m_low->CalculateOverallTxTime (mpdu->GetPacket (), &mpdu->GetHeader (),
-                                         m_currentParams) > GetTxopRemaining ())
-        {
-          NS_LOG_DEBUG ("Not enough time in the current TXOP");
-          return;
-        }
 
       //With COMPRESSED_BLOCK_ACK fragmentation must be avoided.
       if (((m_currentHdr.IsQosData () && !m_currentHdr.IsQosAmsdu ())
@@ -1080,14 +1093,22 @@ QosTxop::StartNextPacket (void)
               return;
             }
 
-          // when dequeuing the peeked packet, A-MSDU aggregation is attempted if the
-          // packet has been peeked from the EDCA queue. Thus, compute the max available
-          // time for the transmission of the PPDU
-          Time maxPpduDuration = GetTxopRemaining () - m_low->CalculateOverheadTxTime (nextFrame, params);
-          NS_ASSERT (maxPpduDuration.IsPositive ());
+          Ptr<WifiMacQueueItem> item;
+          // non-broadcast QoS data frames may be sent in MU PPDUs. Given that at this stage
+          // we do not know the bandwidth it would be given nor the selected acknowledgment
+          // sequence, we cannot determine the constraints on size and duration limit. Hence,
+          // we only peek the non-broadcast QoS data frame. MacLow will be in charge of
+          // computing the correct limits and dequeue the frame.
+          if (nextFrame->GetHeader ().IsQosData () && !nextFrame->GetHeader ().GetAddr1 ().IsBroadcast ())
+            {
+              item = Create<WifiMacQueueItem> (*nextFrame);
+            }
+          else
+            {
+              // dequeue the peeked frame
+              item = DequeuePeekedFrame (nextFrame, m_low->GetDataTxVector (nextFrame));
+            }
 
-          Ptr<WifiMacQueueItem> item = DequeuePeekedFrame (nextFrame, m_low->GetDataTxVector (nextFrame),
-                                                          true, 0, maxPpduDuration);
           NS_ASSERT (item != 0);
           NS_LOG_DEBUG ("start next packet " << *item << " within the current TXOP");
           m_currentPacket = item->GetPacket ();

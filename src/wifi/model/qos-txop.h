@@ -423,15 +423,15 @@ public:
    */
   Ptr<const WifiMacQueueItem> PeekNextFrame (uint8_t tid = 8, Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
-   * Dequeue the frame that has been previously peeked by calling PeekNextFrame
-   * or PeekNextFrameByTidAndAddress. If the peeked frame is a QoS Data frame,
-   * it is actually dequeued if it meets the constraint on the maximum A-MPDU
-   * size (by assuming that the frame has to be aggregated to an existing A-MPDU
-   * of the given size) and its transmission time does not exceed the given
-   * PPDU duration limit (if strictly positive). If the peeked frame is a unicast
-   * QoS Data frame stored in the EDCA queue, attempt to perform A-MSDU aggregation
-   * (while meeting the constraints mentioned above) if <i>aggregate</i> is true
-   * and assign a sequence number to the dequeued frame.
+   * Dequeue the frame that has been previously peeked by calling PeekNextFrame.
+   * If the peeked frame is a QoS Data frame, it is actually dequeued if it meets
+   * the constraint on the maximum A-MPDU size (by assuming that the frame has to
+   * be aggregated to an existing A-MPDU of the given size) and its transmission
+   * time does not exceed the given PPDU duration limit (if strictly positive).
+   * If the peeked frame is a unicast QoS Data frame stored in the EDCA queue,
+   * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
+   * above) if <i>aggregate</i> is true and assign a sequence number to the
+   * dequeued frame.
    *
    * \param peekedItem the peeked frame.
    * \param txVector the TX vector used to transmit the peeked frame
@@ -452,6 +452,14 @@ public:
    */
   MacLowTransmissionParameters GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const;
 
+  /**
+   * Update the current packet this QosTxop is trying to transmit. This method
+   * is typically called by MacLow when it changes (i.e., by performing A-MSDU
+   * aggregation) the packet received from this QosTxop.
+   *
+   * \param mpdu the MPDU that MacLow is forwarding down to the PHY.
+   */
+  void UpdateCurrentPacket (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver.
    *

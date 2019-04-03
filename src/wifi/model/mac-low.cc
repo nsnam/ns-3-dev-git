@@ -529,15 +529,17 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
   /* The packet received by this function can be any of the following:
    * (a) a management frame dequeued from the Txop
    * (b) a non-QoS data frame dequeued from the Txop
-   * (c) a QoS data or DELBA Request frame dequeued from a QosTxop
-   * (d) a BlockAckReq or ADDBA Request frame
+   * (c) a non-broadcast QoS Data frame peeked or dequeued from a QosTxop
+   * (d) a broadcast QoS data or DELBA Request frame dequeued from a QosTxop
+   * (e) a BlockAckReq or ADDBA Request frame
+   * (f) a fragment of non-QoS/QoS Data frame dequeued from the Txop/QosTxop
    */
-  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast ())
+  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast ()
+      && !hdr.IsMoreFragments () && hdr.GetFragmentNumber () == 0)
     {
       // We get here if the received packet is a non-broadcast QoS data frame
-      uint8_t tid = GetTid (mpdu->GetPacket (), hdr);
+      uint8_t tid = hdr.GetQosTid ();
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
-      std::vector<Ptr<WifiMacQueueItem>> mpduList;
 
       // if a TXOP limit exists, compute the remaining TXOP duration
       Time txopLimit = Seconds (0);
@@ -547,10 +549,43 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
           NS_ASSERT (txopLimit.IsPositive ());
         }
 
+      // QosTxop may send us a peeked frame
+      Ptr<const WifiMacQueueItem> tmp = qosTxop->PeekNextFrame ();
+      bool isPeeked = (tmp != 0 && tmp->GetPacket () == mpdu->GetPacket ());
+
+      Ptr<WifiMacQueueItem> newMpdu;
+      // If the frame has been peeked, dequeue it if it meets the size and duration constraints
+      if (isPeeked)
+        {
+          newMpdu = qosTxop->DequeuePeekedFrame (mpdu, m_currentTxVector, true, 0, txopLimit);
+        }
+      else if (IsWithinSizeAndTimeLimits (mpdu, m_currentTxVector, 0, txopLimit))
+        {
+          newMpdu = mpdu;
+        }
+
+      if (newMpdu == 0)
+        {
+          // if the frame has been dequeued, then there is no BA agreement with the
+          // receiver (otherwise the frame would have been peeked). Hence, the frame
+          // has been sent under Normal Ack policy, not acknowledged and now retransmitted.
+          // If we cannot send it now, let the QosTxop retransmit it again.
+          // If the frame has been just peeked, reset the current packet at QosTxop.
+          if (isPeeked)
+            {
+              qosTxop->UpdateCurrentPacket (Create<WifiMacQueueItem> (nullptr, WifiMacHeader ()));
+            }
+          return;
+        }
+      // Update the current packet at QosTxop, given that A-MSDU aggregation may have
+      // been performed on the peeked frame
+      qosTxop->UpdateCurrentPacket (newMpdu);
+
       //Perform MPDU aggregation if possible
+      std::vector<Ptr<WifiMacQueueItem>> mpduList;
       if (m_mpduAggregator != 0)
         {
-          mpduList = m_mpduAggregator->GetNextAmpdu (mpdu, m_currentTxVector, txopLimit);
+          mpduList = m_mpduAggregator->GetNextAmpdu (newMpdu, m_currentTxVector, txopLimit);
         }
 
       if (mpduList.size () > 1)
@@ -564,10 +599,14 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
                || m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
         {
           // VHT/HE single MPDU
-          m_currentPacket = Create<WifiPsdu> (mpdu, true);
+          m_currentPacket = Create<WifiPsdu> (newMpdu, true);
 
           NS_LOG_DEBUG ("tx unicast S-MPDU with sequence number " << hdr.GetSequenceNumber ());
           qosTxop->SetAmpduExist (hdr.GetAddr1 (), true);
+        }
+      else  // HT
+        {
+          m_currentPacket = Create<WifiPsdu> (newMpdu, false);
         }
 
       // A QoS Txop must have an installed ack policy selector
