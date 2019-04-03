@@ -1136,3 +1136,17 @@ program.
 
 We mention this ``--cwd`` command for completeness; most users will simply
 run Waf from the top-level directory and generate the output data files there.
+
+Running without Building
+++++++++++++++++++++++++
+
+As of the ns-3.30 release, a new Waf option was introduced to allow the
+running of programs while skipping the build step.  This can reduce the time
+to run programs when, for example, running the same program repeatedly
+through a shell script, or when demonstrating program execution. 
+This option, ``--run-no-build``, behaves the same as the ``-run`` option, 
+except that the program and ns-3 libraries will not be rebuilt.
+
+.. sourcecode:: bash
+
+  $ ./waf --run-no-build '<ns3-program> --arg1=value1 --arg2=value2 ...'

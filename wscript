@@ -177,6 +177,10 @@ def options(opt):
                    help=('Run a locally built program; argument can be a program name,'
                          ' or a command starting with the program name.'),
                    type="string", default='', dest='run')
+    opt.add_option('--run-no-build',
+                   help=('Run a locally built program without rebuilding the project; argument can be a program name,'
+                         ' or a command starting with the program name.'),
+                   type="string", default='', dest='run_no_build')
     opt.add_option('--visualize',
                    help=('Modify --run arguments to enable the visualizer'),
                    action="store_true", default=False, dest='visualize')
@@ -190,6 +194,11 @@ def options(opt):
                          ' argument is the path to the python program, optionally followed'
                          ' by command-line options that are passed to the program.'),
                    type="string", default='', dest='pyrun')
+    opt.add_option('--pyrun-no-build',
+                   help=('Run a python program using locally built ns3 python module without rebuilding the project;'
+                         ' argument is the path to the python program, optionally followed'
+                         ' by command-line options that are passed to the program.'),
+                   type="string", default='', dest='pyrun_no_build')
     opt.add_option('--valgrind',
                    help=('Change the default command template to run programs and unit tests with valgrind'),
                    action="store_true", default=False,
@@ -1047,6 +1056,18 @@ def build(bld):
 
     if Options.options.doxygen_no_build:
         _doxygen(bld)
+        raise SystemExit(0)
+
+    if Options.options.run_no_build:
+        # Check that the requested program name is valid
+        program_name, dummy_program_argv = wutils.get_run_program(Options.options.run_no_build, wutils.get_command_template(bld.env))
+        # Run the program
+        wutils.run_program(Options.options.run_no_build, bld.env, wutils.get_command_template(bld.env), visualize=Options.options.visualize)
+        raise SystemExit(0)
+
+    if Options.options.pyrun_no_build:
+        wutils.run_python_program(Options.options.pyrun_no_build, bld.env,
+                                  visualize=Options.options.visualize)
         raise SystemExit(0)
 
 def _cleandir(name):

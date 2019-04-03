@@ -109,6 +109,16 @@ and the other is to use the --pyrun option to waf:
 
   $ ./waf --pyrun examples/wireless/mixed-wireless.py
 
+As of ns-3.30, a --pyrun-no-build option was added to allow the running of
+a program without invoking a project rebuild.  This option may be useful
+to improve execution time when running the same program repeatedly but with
+different arguments, such as from scripts. It can be used in place of
+--pyrun such as:
+
+.. sourcecode:: bash
+
+  $ ./waf --pyrun-no-build examples/wireless/mixed-wireless.py
+
 To run a python script under the C debugger:
 
 .. sourcecode:: bash
