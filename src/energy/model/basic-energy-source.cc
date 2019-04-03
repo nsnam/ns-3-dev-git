@@ -154,8 +154,6 @@ BasicEnergySource::UpdateEnergySource (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BasicEnergySource:Updating remaining energy.");
 
-  m_energyUpdateEvent.Cancel ();
-
   double remainingEnergy = m_remainingEnergyJ;
   CalculateRemainingEnergy ();
 
@@ -176,9 +174,12 @@ BasicEnergySource::UpdateEnergySource (void)
       NotifyEnergyChanged ();
     }
 
-  m_energyUpdateEvent = Simulator::Schedule (m_energyUpdateInterval,
-                                             &BasicEnergySource::UpdateEnergySource,
-                                             this);
+  if (m_energyUpdateEvent.IsExpired ())
+    {
+      m_energyUpdateEvent = Simulator::Schedule (m_energyUpdateInterval,
+                                                 &BasicEnergySource::UpdateEnergySource,
+                                                 this);
+    }
 }
 
 /*
