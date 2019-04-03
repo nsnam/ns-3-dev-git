@@ -199,7 +199,7 @@ AcousticModemEnergyTestCase::DoRun ()
   Ptr<EnergySource> src1 = m_gateway->GetObject<EnergySourceContainer> ()->Get (0);
   double consumed1 = src1->GetInitialEnergy () - src1->GetRemainingEnergy ();
   double computed1 = cont2.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetRxPowerW () * packetDuration * receivedPackets +
-    cont2.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetIdlePowerW () * (m_simTime - (double) 2.0 / 3.0 - packetDuration * receivedPackets);
+    cont2.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetIdlePowerW () * (m_simTime - packetDuration * receivedPackets);
 
   NS_TEST_ASSERT_MSG_EQ_TOL (consumed1, computed1, 1.0e-5,
                              "Incorrect gateway consumed energy!");
@@ -207,7 +207,7 @@ AcousticModemEnergyTestCase::DoRun ()
   Ptr<EnergySource> src2 = m_node->GetObject<EnergySourceContainer> ()->Get (0);
   double consumed2 = src2->GetInitialEnergy () - src2->GetRemainingEnergy ();
   double computed2 = cont.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetTxPowerW () * packetDuration * m_sentPackets +
-    cont.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetIdlePowerW () * (m_simTime - 1 - packetDuration * m_sentPackets);
+    cont.Get (0)->GetObject<AcousticModemEnergyModel> ()->GetIdlePowerW () * (m_simTime - packetDuration * m_sentPackets);
 
   NS_TEST_ASSERT_MSG_EQ_TOL (consumed2, computed2, 1.0e-5,
                              "Incorrect node consumed energy!");
