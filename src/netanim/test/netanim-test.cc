@@ -238,7 +238,7 @@ AnimationRemainingEnergyTestCase::PrepareNetwork (void)
   // aggregate energy source to node
   m_nodes.Get (0)->AggregateObject (m_energySource);
   // once node's energy will be depleted according to the model
-  Simulator::Stop (Seconds (2));
+  Simulator::Stop (Seconds (1));
 }
 
 void
