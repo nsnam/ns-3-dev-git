@@ -42,7 +42,7 @@ HeCapabilities::HeCapabilities ()
     m_groupAddressedMultiStaBlockAckInDlMuSupport (0),
     m_omiAcontrolSupport (0),
     m_ofdmaRaSupport (0),
-    m_maximumAmpduLengthExponent (0),
+    m_maxAmpduLengthExponent (0),
     m_amsduFragmentationSupport (0),
     m_flexibleTwtScheduleSupport (0),
     m_rxControlFrameToMultiBss (0),
@@ -191,7 +191,7 @@ HeCapabilities::SetHeMacCapabilitiesInfo (uint32_t ctrl1, uint8_t ctrl2)
   m_groupAddressedMultiStaBlockAckInDlMuSupport = (ctrl1 >> 24) & 0x01;
   m_omiAcontrolSupport = (ctrl1 >> 25) & 0x03;
   m_ofdmaRaSupport = (ctrl1 >> 26) & 0x01;
-  m_maximumAmpduLengthExponent = (ctrl1 >> 27) & 0x03;
+  m_maxAmpduLengthExponent = (ctrl1 >> 27) & 0x03;
   m_amsduFragmentationSupport = (ctrl1 >> 29) & 0x01;
   m_flexibleTwtScheduleSupport = (ctrl1 >> 30) & 0x01;
   m_rxControlFrameToMultiBss = (ctrl1 >> 31) & 0x01;
@@ -223,7 +223,7 @@ HeCapabilities::GetHeMacCapabilitiesInfo1 () const
   val |= (m_groupAddressedMultiStaBlockAckInDlMuSupport & 0x01) << 24;
   val |= (m_omiAcontrolSupport & 0x03) << 25;
   val |= (m_ofdmaRaSupport & 0x01) << 26;
-  val |= (m_maximumAmpduLengthExponent & 0x03) << 27;
+  val |= (m_maxAmpduLengthExponent & 0x03) << 27;
   val |= (m_amsduFragmentationSupport & 0x01) << 29;
   val |= (m_flexibleTwtScheduleSupport & 0x01) << 30;
   val |= (m_rxControlFrameToMultiBss & 0x01) << 31;
@@ -433,10 +433,17 @@ HeCapabilities::SetHeLtfAndGiForHePpdus (uint8_t heLtfAndGiForHePpdus)
 }
 
 void
-HeCapabilities::SetMaxAmpduLengthExponent (uint8_t exponent)
+HeCapabilities::SetMaxAmpduLength (uint32_t maxampdulength)
 {
-  NS_ASSERT (exponent <= 7);
-  m_maximumAmpduLengthExponent = exponent;
+  for (uint8_t i = 0; i <= 3; i++)
+    {
+      if ((1ul << (20 + i)) - 1 == maxampdulength)
+        {
+          m_maxAmpduLengthExponent = i;
+          return;
+        }
+    }
+  NS_ABORT_MSG ("Invalid A-MPDU Max Length value");
 }
 
 void
@@ -475,6 +482,12 @@ uint8_t
 HeCapabilities::GetHighestNssSupported (void) const
 {
   return m_highestNssSupportedM1 + 1;
+}
+
+uint32_t
+HeCapabilities::GetMaxAmpduLength (void) const
+{
+  return (1ul << (20 + m_maxAmpduLengthExponent)) - 1;
 }
 
 /**

@@ -34,8 +34,6 @@ class HeAggregationTest;
 namespace ns3 {
 
 class QosBlockedDestinations;
-class MsduAggregator;
-class MpduAggregator;
 class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
@@ -131,19 +129,6 @@ public:
    * \return type of station.
    */
   TypeOfStation GetTypeOfStation (void) const;
-
-  /**
-   * Returns the aggregator used to construct A-MSDU subframes.
-   *
-   * \return the aggregator used to construct A-MSDU subframes.
-   */
-  Ptr<MsduAggregator> GetMsduAggregator (void) const;
-  /**
-   * Returns the aggregator used to construct A-MPDU subframes.
-   *
-   * \return the aggregator used to construct A-MPDU subframes.
-   */
-  Ptr<MpduAggregator> GetMpduAggregator (void) const;
 
   /**
    * \param address recipient address of the peer station
@@ -282,19 +267,6 @@ public:
   void SetAccessCategory (AcIndex ac);
 
   /**
-   * Set the aggregator used to construct A-MSDU subframes.
-   *
-   * \param aggr pointer to the MSDU aggregator.
-   */
-  void SetMsduAggregator (const Ptr<MsduAggregator> aggr);
-  /**
-   * Set the aggregator used to construct A-MPDU subframes.
-   *
-   * \param aggr pointer to the MPDU aggregator.
-   */
-  void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
-
-  /**
    * \param packet packet to send.
    * \param hdr header of packet to send.
    *
@@ -342,11 +314,9 @@ public:
    * for a blockack containing the sequence number of this MPDU).
    * It also calls NotifyMpdu transmission that updates the status of OriginatorBlockAckAgreement.
    *
-   * \param packet received packet.
-   * \param hdr received Wi-Fi header.
-   * \param tstamp timestamp.
+   * \param mpdu received MPDU.
    */
-  void CompleteMpduTx (Ptr<const Packet> packet, WifiMacHeader hdr, Time tstamp);
+  void CompleteMpduTx (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * Return whether A-MPDU is used to transmit data to a peer station.
    *
@@ -394,7 +364,7 @@ public:
    *
    * \return the next sequence number.
    */
-  uint16_t GetNextSequenceNumberFor (WifiMacHeader *hdr);
+  uint16_t GetNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
    * Return the next sequence number for the Traffic ID and destination, but do not pick it (i.e. the current sequence number remains unchanged).
    *
@@ -402,7 +372,7 @@ public:
    *
    * \return the next sequence number.
    */
-  uint16_t PeekNextSequenceNumberFor (WifiMacHeader *hdr);
+  uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
    * Remove a packet after you peek in the retransmit queue and get it.
    *
@@ -414,12 +384,11 @@ public:
   /**
    * Peek in retransmit queue and get the next packet without removing it from the queue.
    *
-   * \param header Wi-Fi header.
    * \param tid traffic ID.
-   * \param timestamp the timestamp.
+   * \param recipient the receiver station address.
    * \returns the packet.
    */
-  Ptr<const Packet> PeekNextRetransmitPacket (WifiMacHeader &header, uint8_t tid, Time *timestamp);
+  Ptr<const WifiMacQueueItem> PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient);
   /**
    * The packet we sent was successfully received by the receiver.
    *
@@ -589,8 +558,6 @@ private:
   void DoInitialize (void);
 
   AcIndex m_ac;                                         //!< the access category
-  Ptr<MsduAggregator> m_msduAggregator;                 //!< A-MSDU aggregator
-  Ptr<MpduAggregator> m_mpduAggregator;                 //!< A-MPDU aggregator
   TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< QOS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the Block ACK manager

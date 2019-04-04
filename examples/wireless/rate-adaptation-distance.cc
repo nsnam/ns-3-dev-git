@@ -262,7 +262,7 @@ int main (int argc, char *argv[])
                        "Ssid", SsidValue (ssid));
       wifiApDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiApNodes.Get (0)));
 
-      Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/BeMaxAmpduSize", UintegerValue (BeMaxAmpduSize));
+      Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize", UintegerValue (BeMaxAmpduSize));
     }
   else if (standard == "802.11ac")
     {
@@ -285,7 +285,7 @@ int main (int argc, char *argv[])
                        "Ssid", SsidValue (ssid));
       wifiApDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiApNodes.Get (0)));
 
-      Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/VhtConfiguration/BeMaxAmpduSize", UintegerValue (BeMaxAmpduSize));
+      Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize", UintegerValue (BeMaxAmpduSize));
     }
 
   wifiDevices.Add (wifiStaDevices);

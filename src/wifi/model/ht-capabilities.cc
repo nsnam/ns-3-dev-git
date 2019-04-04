@@ -38,7 +38,7 @@ HtCapabilities::HtCapabilities ()
     m_psmpSupport (0),
     m_fortyMhzIntolerant (0),
     m_lsigProtectionSupport (0),
-    m_maxAmpduLength (0),
+    m_maxAmpduLengthExponent (0),
     m_minMpduStartSpace (0),
     m_ampduReserved (0),
     m_reservedMcsSet1 (0),
@@ -135,9 +135,11 @@ HtCapabilities::SetShortGuardInterval40 (uint8_t shortguardinterval)
 }
 
 void
-HtCapabilities::SetMaxAmsduLength (uint8_t maxamsdulength)
+HtCapabilities::SetMaxAmsduLength (uint16_t maxamsdulength)
 {
-  m_maxAmsduLength = maxamsdulength;
+  NS_ABORT_MSG_IF (maxamsdulength != 3839 && maxamsdulength != 7935,
+                   "Invalid A-MSDU Max Length value");
+  m_maxAmsduLength = (maxamsdulength == 3839 ? 0 : 1);
 }
 
 void
@@ -147,9 +149,17 @@ HtCapabilities::SetLSigProtectionSupport (uint8_t lsigprotection)
 }
 
 void
-HtCapabilities::SetMaxAmpduLength (uint8_t maxampdulength)
+HtCapabilities::SetMaxAmpduLength (uint32_t maxampdulength)
 {
-  m_maxAmpduLength = maxampdulength;
+  for (uint8_t i = 0; i <= 3; i++)
+    {
+      if ((1ul << (13 + i)) - 1 == maxampdulength)
+        {
+          m_maxAmpduLengthExponent = i;
+          return;
+        }
+    }
+  NS_ABORT_MSG ("Invalid A-MPDU Max Length value");
 }
 
 void
@@ -210,6 +220,22 @@ uint8_t
 HtCapabilities::GetShortGuardInterval20 (void) const
 {
   return m_shortGuardInterval20;
+}
+
+uint16_t
+HtCapabilities::GetMaxAmsduLength (void) const
+{
+  if (m_maxAmsduLength == 0)
+    {
+      return 3839;
+    }
+  return 7935;
+}
+
+uint32_t
+HtCapabilities::GetMaxAmpduLength (void) const
+{
+  return (1ul << (13 + m_maxAmpduLengthExponent)) - 1;
 }
 
 bool
@@ -309,7 +335,7 @@ HtCapabilities::SetHtCapabilitiesInfo (uint16_t ctrl)
 void
 HtCapabilities::SetAmpduParameters (uint8_t ctrl)
 {
-  m_maxAmpduLength = ctrl & 0x03;
+  m_maxAmpduLengthExponent = ctrl & 0x03;
   m_minMpduStartSpace = (ctrl >> 2) & 0x1b;
   m_ampduReserved = (ctrl >> 5) & 0xe0;
 }
@@ -318,7 +344,7 @@ uint8_t
 HtCapabilities::GetAmpduParameters (void) const
 {
   uint8_t val = 0;
-  val |=  m_maxAmpduLength & 0x03;
+  val |=  m_maxAmpduLengthExponent & 0x03;
   val |= (m_minMpduStartSpace & 0x1b) << 2;
   val |= (m_ampduReserved & 0xe0) << 5;
   return val;

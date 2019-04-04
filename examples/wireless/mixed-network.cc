@@ -250,7 +250,7 @@ Experiment::Run (Parameters params)
       edca->SetTxopLimit (MicroSeconds (3008));
     }
 
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/BeMaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize", UintegerValue (0)); //Disable A-MPDU
 
   // Define mobility model
   MobilityHelper mobility;

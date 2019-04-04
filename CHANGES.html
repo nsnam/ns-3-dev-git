@@ -55,7 +55,8 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
 <li>Added the attribute <b>Release</b> to the class <b>EpsBearer</b>, to select the release (e.g., release 15)</li>
-<li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Intead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
+<li>The attributes <b>RegularWifiMac::HtSupported</b>, <b>RegularWifiMac::VhtSupported</b>, <b>RegularWifiMac::HeSupported</b>, <b>RegularWifiMac::RifsSupported</b>, <b>WifiPhy::ShortGuardEnabled</b>, <b>WifiPhy::GuardInterval</b> and <b>WifiPhy::GreenfieldEnabled</b> have been deprecated. Instead, it is advised to use <b>WifiNetDevice::HtConfiguration</b>, <b>WifiNetDevice::VhtConfiguration</b> and <b>WifiNetDevice::HeConfiguration</b>.</li>
+<li>The attributes <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmsduSize</b> and <b>{Ht,Vht,He}Configuration::{Vo,Vi,Be,Bk}MaxAmpduSize</b> have been deprecated. Instead, it is advised to use <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmsduSize</b> and <b>RegularWifiMac::{VO, VI, BE, BK}_MaxAmpduSize</b>.</li>
 <li>A new attribute <b>WifiPhy::PostReceptionErrorModel</b> has been added to force specific packet drops.</li>
 <li>A new attribute <b>WifiPhy::PreambleDetectionModel</b> has been added to decide whether PHY preambles are successfully detected.</li>
 <li>New attributes <b>QosTxop::AddBaResponseTimeout</b> and <b>QosTxop::FailedAddBaTimeout</b> have been added to set the timeout to wait for an ADDBA response after the ACK to the ADDBA request is received and to set the timeout after a failed BA agreement, respectively.</li>

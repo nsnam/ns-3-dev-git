@@ -22,6 +22,7 @@
 #define CHANNEL_ACCESS_MANAGER_H
 
 #include <vector>
+#include <algorithm>
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 
@@ -233,39 +234,11 @@ private:
   /**
    * Return the most recent time.
    *
-   * \param a
-   * \param b
+   * \param list the initializer list including the times to compare
    *
    * \return the most recent time
    */
-  Time MostRecent (Time a, Time b) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   * \param e
-   * \param f
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   * \param e
-   * \param f
-   * \param g
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const;
+  Time MostRecent (std::initializer_list<Time> list) const;
   /**
    * Access will never be granted to the medium _before_
    * the time returned by this method.

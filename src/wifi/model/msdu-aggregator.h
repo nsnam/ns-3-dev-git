@@ -22,12 +22,17 @@
 #define MSDU_AGGREGATOR_H
 
 #include "ns3/object.h"
+#include "ns3/nstime.h"
+#include "wifi-mode.h"
+#include "qos-utils.h"
 
 namespace ns3 {
 
 class AmsduSubframeHeader;
-class WifiMacHeader;
 class Packet;
+class QosTxop;
+class WifiMacQueueItem;
+class WifiTxVector;
 
 /**
  * \brief Aggregator used to construct A-MSDUs
@@ -40,6 +45,8 @@ public:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   /// DeaggregatedMsdusCI typedef
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
+  /// EDCA queues typedef
+  typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
 
   /**
    * \brief Get the type ID.
@@ -51,19 +58,70 @@ public:
   virtual ~MsduAggregator ();
 
   /**
-   * Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is
-   * specified how and if <i>packet</i> can be added to <i>aggregatedPacket</i>. If <i>packet</i>
-   * can be added returns true, false otherwise.
+   * Aggregate an MSDU to an A-MSDU.
    *
-   * \param packet the packet.
-   * \param aggregatedPacket the aggregated packet.
+   * \param msdu the MSDU.
+   * \param amsdu the A-MSDU.
    * \param src the source address.
    * \param dest the destination address
-   * \param maxAmsduSize the maximum A-MSDU size.
-   * \return true if successful.
    */
-  bool Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
-                  Mac48Address src, Mac48Address dest, uint16_t maxAmsduSize) const;
+  void Aggregate (Ptr<const Packet> msdu, Ptr<Packet> amsdu,
+                  Mac48Address src, Mac48Address dest) const;
+
+  /**
+   * Compute the size of the A-MSDU resulting from the aggregation of an MSDU of
+   * size <i>msduSize</i> and an A-MSDU of size <i>amsduSize</i>.
+   * Note that only the basic A-MSDU subframe format (section 9.3.2.2.2 of IEEE
+   * 802.11-2016) is supported.
+   *
+   * \param msduSize the MSDU size.
+   * \param amsduSize the A-MSDU size.
+   * \return the size of the resulting A-MSDU.
+   */
+  static uint16_t GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize);
+
+  /**
+   * Dequeue MSDUs to be transmitted to a given station and belonging to a
+   * given TID from the corresponding EDCA queue and aggregate them to form
+   * an A-MSDU that meets the following constraints:
+   *
+   * - the A-MSDU size does not exceed the maximum A-MSDU size as determined for
+   * the modulation class indicated by the given TxVector
+   *
+   * - the size of the A-MPDU resulting from the aggregation of the MPDU in which
+   * the A-MSDU will be embedded and an existing A-MPDU of the given size
+   * (possibly null) does not exceed the maximum A-MPDU size as determined for
+   * the modulation class indicated by the given TxVector
+   *
+   * - the time to transmit the resulting PPDU, according to the given TxVector,
+   * does not exceed both the maximum PPDU duration allowed by the corresponding
+   * modulation class (if any) and the given PPDU duration limit (if non null)
+   *
+   * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
+   * from the EDCA queue and a null pointer is returned.
+   *
+   * \param recipient the receiver station address.
+   * \param tid the TID.
+   * \param txVector the TxVector used to transmit the frame
+   * \param ampduSize the size of the existing A-MPDU
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \return the resulting A-MSDU, if aggregation is possible, 0 otherwise.
+   */
+  Ptr<WifiMacQueueItem> GetNextAmsdu (Mac48Address recipient, uint8_t tid,
+                                      WifiTxVector txVector, uint32_t ampduSize = 0,
+                                      Time ppduDurationLimit = Seconds (0)) const;
+
+  /**
+   * Determine the maximum size for an A-MSDU of the given TID that can be sent
+   * to the given receiver when using the given modulation class.
+   *
+   * \param recipient the receiver station address.
+   * \param tid the TID.
+   * \param modulation the modulation class.
+   * \return the maximum A-MSDU size.
+   */
+  uint16_t GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
+                            WifiModulationClass modulation) const;
 
   /**
    *
@@ -72,18 +130,26 @@ public:
    */
   static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 
+  /**
+   * Set the map of EDCA queues.
+   *
+   * \param map the map of EDCA queues.
+   */
+  void SetEdcaQueues (EdcaQueues map);
 
 private:
   /**
-   * Calculates how much padding must be added to the end of aggregated packet,
-   * after that a new packet is added.
+   * Calculate how much padding must be added to the end of an A-MSDU of the
+   * given size if a new MSDU is added.
    * Each A-MSDU subframe is padded so that its length is multiple of 4 octets.
    *
-   * \param packet
+   * \param amsduSize the size of the A-MSDU
    *
    * \return the number of octets required for padding
    */
-  uint8_t CalculatePadding (Ptr<const Packet> packet) const;
+  static uint8_t CalculatePadding (uint16_t amsduSize);
+
+  EdcaQueues m_edca;   //!< the map of EDCA queues
 };
 
 } //namespace ns3
