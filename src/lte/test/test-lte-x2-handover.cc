@@ -599,8 +599,17 @@ LteX2HandoverTestCase::CheckStatsAWhileAfterHandover (uint32_t ueIndex)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Lte X2 Handover Test Suite
- */ 
+ * \brief LTE X2 Handover Test Suite.
+ *
+ * In this test suite, we use NoOpHandoverAlgorithm, i.e. "handover algorithm which does nothing"
+ * is used and handover is triggered manually. The automatic handover algorithms (A2A4, A3Rsrp)
+ * are not tested.
+ *
+ * The tests are designed to check that eNB-buffered data received while a handover is in progress
+ * is not lost but successfully forwarded. But the test suite doesn't test for possible loss of
+ * RLC-buffered data because "lossless" handover is not implemented, and there are other application
+ * send patterns (outside of the range tested here) that may incur losses.
+ */
 class LteX2HandoverTestSuite : public TestSuite
 {
 public:
