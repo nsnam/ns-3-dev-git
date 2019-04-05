@@ -22,6 +22,8 @@
 #define WAVE_MAC_LOW_H
 
 #include "ns3/mac-low.h"
+#include "ns3/msdu-aggregator.h"
+#include "ns3/mpdu-aggregator.h"
 #include "wave-net-device.h"
 
 namespace ns3 {
