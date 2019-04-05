@@ -350,6 +350,11 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
                       startingSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
                       nextHeader.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
                     }
+                  else
+                    {
+                      NS_FATAL_ERROR ("BlockAck is not handled");
+                    }
+
                   currentSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
                 }
               else
