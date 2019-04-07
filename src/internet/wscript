@@ -255,6 +255,7 @@ def build(bld):
         'test/tcp-option-test.cc',
         'test/tcp-header-test.cc',
         'test/tcp-ecn-test.cc',
+        'test/tcp-ecnptry-test.cc',
         'test/tcp-general-test.cc',
         'test/tcp-error-model.cc',
         'test/tcp-slow-start-test.cc',
@@ -293,6 +294,7 @@ def build(bld):
         'test/tcp-datasentcb-test.cc',
         'test/ipv4-rip-test.cc',
         'test/tcp-close-test.cc',
+        
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
@@ -425,4 +427,3 @@ def build(bld):
         bld.recurse('examples')
 
     bld.ns3_python_bindings()
-
