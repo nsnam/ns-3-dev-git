@@ -370,8 +370,6 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ptr<NetDevice> device = cache->GetDevice ();
   NS_ASSERT (device != 0);
-  Ipv4Header header;
-  header.SetDestination (to);
   Ptr<Packet> packet = Create<Packet> ();
   Ipv4Address source = ipv4->SelectSourceAddress (device,  to, Ipv4InterfaceAddress::GLOBAL);
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
