@@ -807,6 +807,7 @@ The following ECN states are declared in ``src/internet/model/tcp-socket.h``
     } EcnStates_t;
 
 Current implementation of ECN is based on RFC 3168 and is referred as Classic ECN.
+Implementation of ECN+/TryOnce is added based on RFC 5562 and is referred as EcnpTry.
 
 The following enum represents the mode of ECN:
 
@@ -816,6 +817,7 @@ The following enum represents the mode of ECN:
     {
       NoEcn = 0,   //!< ECN is not enabled.
       ClassicEcn   //!< ECN functionality as described in RFC 3168.
+      EcnpTry      //!< ECN functionality added for SYN/ACK packet marking ECT bits as described in RFC 5562.
     } EcnMode_t;
 
 The following are some important ECN parameters
@@ -935,6 +937,136 @@ The following issues are yet to be addressed:
    outgoing TCP sessions (e.g. a TCP may perform ECN echoing but not set the
    ECT codepoints on its outbound data segments).
 
+ECN+/TryOnce: Adding Explicit Congestion Notification (ECN) to TCP Control Packets
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Classic ECN (RFC 3168) specifies ECN support solely for TCP data packets. ECN+/TryOnce
+extends the ECN support for SYN/ACK packets also.
+
+More information about ECN+/TryOnce is available in the Internet draft:
+https://tools.ietf.org/html/rfc5562
+
+Current implementation of ECN+/TryOnce is based on this Internet draft and is referred
+as ``EcnpTry``.
+
+Enabling ECN+/TryOnce
+^^^^^^^^^^^^^^^^^^^^^
+
+By default, support for ECN+/TryOnce is disabled in TCP sockets. To enable, change the
+value of the attribute ``ns3::TcpSocketBase::EcnMode`` from NoEcn to EcnpTry.
+
+::
+
+  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("EcnpTry"))
+
+
+ECN Support for SYN/ACK packets
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. The responder of the connection request sends SYN/ACK packet with ECT(0) in IP header if the initiator of the connection is ECN enabled.
+
+2. If the responder gets congestion feedback,i.e., if it receives ACK+ECE packet, it reduces the initial congestion window to 1 segment and sends out another SYN/ACK packet with not-ect to test the congestion in the network.
+
+3. The initiator responds to the SYN/ACK packet with an ACK packet, thus establishing the connection.
+ 
+4. If the SYN/ACK packet doesn't experience congestion, then the connection is established and the initiator sends an ACK packet. 
+
+
+ECN negotiation with ECN capability for SYN+ACK Packets (RFC 5562)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ECN capability is negotiated during the three-way TCP handshake:
+
+1. Sender sends SYN + CWR + ECE
+
+::
+
+    if (m_ecnMode == EcnMode_t::EcnpTry)
+      {
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR,false);
+        m_ecnState = ECN_IDLE;
+      }
+    else if (m_ecnMode == EcnMode_t::ClassicEcn)
+      {
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR,false);
+        m_ecnState = ECN_DISABLED;
+      }
+    else
+      {
+        SendEmptyPacket (TcpHeader::SYN,false);
+        m_ecnState = ECN_DISABLED;
+      }
+    
+2. Receiver sends SYN + ACK + ECE
+
+::
+
+      if (m_ecnMode == EcnMode_t::EcnpTry && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE)) //ECN mode is EcnpTry, send SYN+ACK with ect(0)
+        {
+          m_tcb->m_ecnState = TcpSocketState::ECN_IDLE;
+          SendEmptyPacket ((TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE),true);
+        }
+
+      else if (m_ecnMode == EcnMode_t::ClassicEcn  && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))  //In classic ECN, Ect bits are not enabled in control packets
+        {
+          SendEmptyPacket ((TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE),false);
+          m_tcb->m_ecnState = TcpSocketState::ECN_IDLE;
+        }
+      else
+        {
+          m_tcb->m_ecnState = TcpSocketState::ECN_DISABLED;
+          SendEmptyPacket ((TcpHeader::SYN | TcpHeader::ACK),false);
+        }
+
+3. Sender sends ACK+ECE if it receives SYN+ACK with CE
+
+::
+
+ if(tcpflags & (TcpHeader::SYN | TcpHeader::ACK )) 
+       {
+         
+        if(m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD)
+         { 
+          if( m_ecnMode == EcnMode_t::EcnpTry && (tcpflags & (TcpHeader::ECE)))
+          {
+           SendEmptyPacket ((TcpHeader::ACK | TcpHeader::ECE),false);
+           
+           m_tcb->m_ecnState = TcpSocketState::ECN_SENDING_ECE;
+          }
+         }
+
+3. Sender sends ACK if it receives SYN+ACK without CE
+
+::
+
+ 
+ if(tcpflags & (TcpHeader::SYN | TcpHeader::ACK ))
+        {     
+           if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpflags & (TcpHeader::ECE)))
+            {
+             m_tcb->m_ecnState = TcpSocketState::ECN_IDLE;
+            }
+           else
+            {
+            m_tcb->m_ecnState = TcpSocketState::ECN_DISABLED;
+            }
+          m_state = ESTABLISHED;
+          SendEmptyPacket ((TcpHeader::ACK),false);
+          SendPendingData (m_connected);
+         }
+
+
+ECN State Transitions during negotiation as defined in RFC 5562
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Initially both sender and receiver have their m_ecnState set as ECN_DISABLED
+2. The initiator sends SYN+ECE+CWR packet and moves to ECN_IDLE state 
+3. Once the responder receives SYN+ACK+ECE+CWR indicating that the initiator is ECN capable, the responder's state is set to ECN_IDLE and it sends a SYN+ACK+ECE packet with ECT(0) in IP header 
+4. The initiator's state changes to ECN_CE_RCVD when it receives the SYN+ACK packet with
+   CE bit set. The state then moves to ECN_SENDING_ECE when the receiver sends
+   an ACK with ECE set. This state is retained until another SYN+ACK with not-ect in IP header is received
+   , following which, the state changes to ECN_IDLE.
+
 Validation
 ++++++++++
 
@@ -972,6 +1104,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
 * **tcp-close-test:** Unit test on the socket closing: both receiver and sender have to close their socket when all bytes are transferred
 * **tcp-ecn-test:** Unit tests on explicit congestion notification
+* **tcp-ecnptry-test:** Unit tests on explicit congestion notification as defined in RFC 5562
 
 Several tests have dependencies outside of the ``internet`` module, so they
 are located in a system test directory called ``src/test/ns3tcp``.  Three
