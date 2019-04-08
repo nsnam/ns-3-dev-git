@@ -86,11 +86,15 @@ us a note on ns-developers mailing list.</p>
   <li>
     The GetClosestSide method of the Rectangle class returns the correct closest side also for positions outside the rectangle.
   </li>
+  <li> The trace sources BackoffTrace and CwTrace were moved from class QosTxop to base class Txop, allowing these values to be traced for DCF operation.  In addition, the trace signature for BackoffTrace was changed from TracedValue to TracedCallback (callback taking one argument instead of two).  Most users of CwTrace for QosTxop configurations will not need to change existing programs, but users of BackoffTrace will need to adjust the callback signature to match.
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-<li> The trace sources BackoffTrace and CwTrace were moved from class QosTxop to base class Txop, allowing these values to be traced for DCF operation.  In addition, the trace signature for BackoffTrace was changed from TracedValue to TracedCallback (callback taking one argument instead of two).  Most users of CwTrace for QosTxop configurations will not need to change existing programs, but users of BackoffTrace will need to adjust the callback signature to match.</li>
-<li> Options to run a program through Waf without invoking a project rebuild have been added.  The command './waf --run-no-build <program-name>' parallels the behavior of './waf --run <program-name>' and, likewise, the command './waf --pyrun-no-build' parallels the behavior of './waf --pyrun <program-name>'.</li>
+  <li>Waf upgraded from 2.0.9 to 2.0.15.
+  </li>
+  <li> Options to run a program through Waf without invoking a project rebuild have been added.  The command './waf --run-no-build <program-name>' parallels the behavior of './waf --run <program-name>' and, likewise, the command './waf --pyrun-no-build' parallels the behavior of './waf --pyrun <program-name>'.
+  </li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
