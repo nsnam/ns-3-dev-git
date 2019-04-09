@@ -503,6 +503,76 @@ BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uin
 }
 
 void
+BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
+{
+  NS_LOG_FUNCTION (this << *mpdu);
+  NS_ASSERT (mpdu->GetHeader ().IsQosData ());
+
+  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
+  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+  NS_ASSERT (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED));
+
+  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (it != m_agreements.end ());
+
+  // remove the acknowledged frame from the queue of outstanding packets
+  PacketQueueI queueIt = it->second.second.begin ();
+  while (queueIt != it->second.second.end ())
+    {
+      if ((*queueIt)->GetHeader ().GetSequenceNumber () == mpdu->GetHeader ().GetSequenceNumber ())
+        {
+          queueIt = it->second.second.erase (queueIt);
+        }
+      else
+      {
+        queueIt++;
+      }
+    }
+
+  uint16_t startingSeq = it->second.first.GetStartingSequence ();
+  if (mpdu->GetHeader ().GetSequenceNumber () == startingSeq)
+    {
+      // make the transmit window advance
+      it->second.first.SetStartingSequence ((startingSeq + 1) % 4096);
+    }
+}
+
+void
+BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
+{
+  NS_LOG_FUNCTION (this << *mpdu);
+  NS_ASSERT (mpdu->GetHeader ().IsQosData ());
+
+  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
+  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+  NS_ASSERT (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED));
+
+  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (it != m_agreements.end ());
+
+  // remove the frame from the queue of outstanding packets (it will be re-inserted
+  // if retransmitted)
+  PacketQueueI queueIt = it->second.second.begin ();
+  while (queueIt != it->second.second.end ())
+    {
+      if ((*queueIt)->GetHeader ().GetSequenceNumber () == mpdu->GetHeader ().GetSequenceNumber ())
+        {
+          queueIt = it->second.second.erase (queueIt);
+        }
+      else
+      {
+        queueIt++;
+      }
+    }
+
+  // insert in the retransmission queue
+  if (!AlreadyExists (mpdu->GetHeader ().GetSequenceNumber (), recipient, tid))
+    {
+      InsertInRetryQueue (mpdu);
+    }
+}
+
+void
 BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);

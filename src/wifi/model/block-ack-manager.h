@@ -180,6 +180,24 @@ public:
    */
   bool HasPackets (void) const;
   /**
+   * Invoked upon receipt of an ack frame after the transmission of a QoS data frame
+   * sent under an established Block Ack agreement. Remove the acknowledged frame
+   * from the outstanding packets and update the starting sequence number of the
+   * transmit window, if needed.
+   *
+   * \param mpdu The acknowledged MPDU.
+   */
+  void NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu);
+  /**
+   * Invoked upon missed reception of an ack frame after the transmission of a
+   * QoS data frame sent under an established Block Ack agreement. Remove the
+   * acknowledged frame from the outstanding packets and insert it in the
+   * retransmission queue.
+   *
+   * \param mpdu The unacknowledged MPDU.
+   */
+  void NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu);
+  /**
    * \param blockAck The received block ack frame.
    * \param recipient Sender of block ack frame.
    * \param rxSnr received SNR of the block ack frame itself

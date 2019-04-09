@@ -872,6 +872,12 @@ QosTxop::GotAck (void)
                 }
             }
         }
+      if (m_currentHdr.IsQosData () && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
+        {
+          // notify the BA manager that the current packet was acknowledged
+          m_baManager->NotifyGotAck (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                                     m_currentPacketTimestamp));
+        }
       m_currentPacket = 0;
       ResetCw ();
     }
@@ -955,6 +961,14 @@ QosTxop::MissedAck (void)
       m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
                                           m_currentPacket->GetSize ());
       m_currentHdr.SetRetry ();
+      if (m_currentHdr.IsQosData () && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()))
+        {
+          // notify the BA manager that the current packet was not acknowledged
+          m_baManager->NotifyMissedAck (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                                  m_currentPacketTimestamp));
+          // let the BA manager handle its retransmission
+          m_currentPacket = 0;
+        }
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
