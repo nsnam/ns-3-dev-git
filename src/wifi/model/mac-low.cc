@@ -2174,13 +2174,11 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
               if (!IsInWindow (hdr.GetSequenceNumber (), (*it).second.first.GetStartingSequence (), (*it).second.first.GetBufferSize ()))
                 {
                   uint16_t delta = (seqNumber - (*it).second.first.GetWinEnd () + 4096) % 4096;
-                  if (delta > 1)
-                    {
-                      uint16_t bufferSize = (*it).second.first.GetBufferSize ();
-                      uint16_t startingSeq = (seqNumber - bufferSize + 1 + 4096) % 4096;
-                      (*it).second.first.SetStartingSequence (startingSeq);
-                      RxCompleteBufferedPacketsWithSmallerSequence ((*it).second.first.GetStartingSequenceControl (), originator, tid);
-                    }
+                  NS_ASSERT (delta > 0);
+                  uint16_t bufferSize = (*it).second.first.GetBufferSize ();
+                  uint16_t startingSeq = (seqNumber - bufferSize + 1 + 4096) % 4096;
+                  (*it).second.first.SetStartingSequence (startingSeq);
+                  RxCompleteBufferedPacketsWithSmallerSequence ((*it).second.first.GetStartingSequenceControl (), originator, tid);
                 }
               RxCompleteBufferedPacketsUntilFirstLost (originator, tid); //forwards up packets starting from winstart and set winstart to last +1
             }
