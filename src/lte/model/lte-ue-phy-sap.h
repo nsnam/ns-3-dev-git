@@ -29,32 +29,34 @@ namespace ns3 {
 
 class LteControlMessage;
 
-/**
-* Service Access Point (SAP) offered by the UE-PHY to the UE-MAC
-*
-* This is the PHY SAP Provider, i.e., the part of the SAP that contains
-* the PHY methods called by the MAC
-*/
+ /**
+  * Service Access Point (SAP) offered by the UE-PHY to the UE-MAC
+  *
+  * This is the PHY SAP Provider, i.e., the part of the SAP that contains
+  * the PHY methods called by the MAC
+  */
 class LteUePhySapProvider
 {
 public:
   virtual ~LteUePhySapProvider ();
 
   /**
-  * \brief Send the MAC PDU to the channel
-  * \param p the MAC PDU to send
-  * \return true if
-  */
+   * \brief Send the MAC PDU to the channel
+   *
+   * \param p the MAC PDU to send
+   * \return true if
+   */
   virtual void SendMacPdu (Ptr<Packet> p) = 0;
 
   /**
-  * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-  * \param msg the Ideal Control Message to send
-  */
+   * \brief Send SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   *
+   * \param msg the Ideal Control Message to send
+   */
   virtual void SendLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
   /** 
-   * send a preamble on the PRACH
+   * \brief Send a preamble on the PRACH
    * 
    * \param prachId the ID of the preamble
    * \param raRnti the RA RNTI
@@ -70,12 +72,12 @@ public:
 };
 
 
-/**
-* Service Access Point (SAP) offered by the PHY to the MAC
-*
-* This is the PHY SAP User, i.e., the part of the SAP that contains the MAC
-* methods called by the PHY
-*/
+ /**
+  * Service Access Point (SAP) offered by the PHY to the MAC
+  *
+  * This is the PHY SAP User, i.e., the part of the SAP that contains the MAC
+  * methods called by the PHY
+  */
 class LteUePhySapUser
 {
 public:
@@ -83,23 +85,27 @@ public:
 
 
   /**
-  * Called by the Phy to notify the MAC of the reception of a new PHY-PDU
-  *
-  * \param p
-  */
+   * \brief Receive Phy Pdu funtion.
+   *
+   * It is called by the Phy to notify the MAC of the reception of a new PHY-PDU
+   *
+   * \param p
+   */
   virtual void ReceivePhyPdu (Ptr<Packet> p) = 0;
 
   /**
-  * \brief Trigger the start from a new frame (input from Phy layer)
-  * \param frameNo frame number
-  * \param subframeNo subframe number
-  */
+   * \brief Trigger the start from a new frame (input from Phy layer)
+   *
+   * \param frameNo frame number
+   * \param subframeNo subframe number
+   */
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo) = 0;
 
   /**
-  * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
-  * \param msg the Ideal Control Message to receive
-  */
+   * \brief Receive SendLteControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
+   *
+   * \param msg the Ideal Control Message to receive
+   */
   virtual void ReceiveLteControlMessage (Ptr<LteControlMessage> msg) = 0;
 
 };

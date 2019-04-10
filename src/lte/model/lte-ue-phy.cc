@@ -310,6 +310,32 @@ LteUePhy::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&LteUePhy::m_enableUplinkPowerControl),
                    MakeBooleanChecker ())
+    .AddAttribute ("Qout",
+                   "corresponds to 10% block error rate of a hypothetical PDCCH transmission"
+                   "taking into account the PCFICH errors with transmission parameters."
+                   "see 3GPP TS 36.213 4.2.1 and TS 36.133 7.6",
+                   DoubleValue (-5),
+                   MakeDoubleAccessor (&LteUePhy::m_qOut),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Qin",
+                   "corresponds to 2% block error rate of a hypothetical PDCCH transmission"
+                   "taking into account the PCFICH errors with transmission parameters."
+                   "see 3GPP TS 36.213 4.2.1 and TS 36.133 7.6",
+                   DoubleValue (-3.9),
+                   MakeDoubleAccessor (&LteUePhy::m_qIn),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("NumQoutEvalSf",
+                   "This specifies the total number of consecutive subframes"
+                   "which corresponds to the Qout evaluation period",
+                   UintegerValue (200), //see 3GPP 3GPP TS 36.133 7.6.2.1
+                   MakeUintegerAccessor (&LteUePhy::m_numOfQoutEvalSf),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("NumQinEvalSf",
+                   "This specifies the total number of consecutive subframes"
+                   "which corresponds to the Qin evaluation period",
+                   UintegerValue (100), //see 3GPP 3GPP TS 36.133 7.6.2.1
+                   MakeUintegerAccessor (&LteUePhy::m_numOfQinEvalSf),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }
@@ -551,6 +577,10 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
         }
       double avSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
       NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr << " ComponentCarrierId " << (uint16_t) m_componentCarrierId);
+      if (m_isConnected) //trigger RLF detection only when UE has an active RRC connection
+        {
+          RlfDetection (10 * log10 (avSinr));
+        }
 
       m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr, (uint16_t) m_componentCarrierId);
       m_rsrpSinrSampleCounter = 0;
@@ -882,9 +912,16 @@ LteUePhy::DoSendRachPreamble (uint32_t raPreambleId, uint32_t raRnti)
 void
 LteUePhy::DoNotifyConnectionSuccessful ()
 {
+  /**
+   * Radio link failure detection should take place only on the
+   * primary carrier to avoid errors due to multiple calls to the
+   * same methods at the RRC layer
+   */
   if (m_componentCarrierId == 0)
     {
       m_isConnected = true;
+      // Initialize the parameters for radio link failure detection
+      InitializeRlfParams ();
     }
 }
 
@@ -1394,6 +1431,128 @@ LteUePhy::DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
   NS_LOG_FUNCTION (this << (uint16_t) (rsrpFilterCoefficient));
   m_powerControl->SetRsrpFilterCoefficient (rsrpFilterCoefficient);
 }
+
+void
+LteUePhy::DoResetPhyAfterRlf ()
+{
+  NS_LOG_FUNCTION (this);
+  m_downlinkSpectrumPhy->m_harqPhyModule->ClearDlHarqBuffer (m_rnti); //flush HARQ buffers
+  m_dataInterferencePowerUpdated = false;
+  m_rsInterferencePowerUpdated = false;
+  DoReset ();
+}
+
+void
+LteUePhy::DoResetRlfParams ()
+{
+  NS_LOG_FUNCTION (this);
+
+  InitializeRlfParams ();
+}
+
+void
+LteUePhy::DoStartInSnycDetection ()
+{
+  NS_LOG_FUNCTION (this);
+  // indicates that the downlink radio link quality has to be monitored for in-sync indications
+  m_downlinkInSync = false;
+}
+
+void
+LteUePhy::InitializeRlfParams ()
+{
+  NS_LOG_FUNCTION (this);
+  m_numOfSubframes = 0;
+  m_sinrDbFrame = 0;
+  m_numOfFrames = 0;
+  m_downlinkInSync = true;
+}
+
+void
+LteUePhy::RlfDetection (double sinrDb)
+{
+  NS_LOG_FUNCTION (this << sinrDb);
+  m_sinrDbFrame += sinrDb;
+  m_numOfSubframes++;
+  NS_LOG_LOGIC ("No of Subframes: " << m_numOfSubframes << " UE synchronized: " << m_downlinkInSync);
+  //check for out_of_snyc indications first when UE is both DL and UL synchronized
+  //m_downlinkInSync=true indicates that the evaluation is for out-of-sync indications
+  if (m_downlinkInSync && m_numOfSubframes == 10)
+    {
+      /**
+       * For every frame, if the downlink radio link quality(avg SINR)
+       * is less than the threshold Qout, then the frame cannot be decoded
+       */
+      if ((m_sinrDbFrame / m_numOfSubframes) < m_qOut)
+        {
+          m_numOfFrames++; //increment the counter if a frame cannot be decoded
+          NS_LOG_LOGIC ("No of Frames which cannot be decoded: " << m_numOfFrames);
+        }
+      else
+        {
+          /**
+           * If the downlink radio link quality(avg SINR) is greater
+           * than the threshold Qout, then the frame counter is reset
+           * since only consecutive frames should be considered.
+           */
+          NS_LOG_INFO ("Reseting frame counter at phy. Current value = " << m_numOfFrames);
+          m_numOfFrames = 0;
+          // Also reset the sync indicator counter at RRC
+          m_ueCphySapUser->ResetSyncIndicationCounter ();
+        }
+      m_numOfSubframes = 0;
+      m_sinrDbFrame = 0;
+    }
+  /**
+   * Once the number of consecutive frames which cannot be decoded equals the Qout evaluation period (i.e 200ms),
+   * then an out-of-sync indication is sent to the RRC layer
+   */
+  if (m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQoutEvalSf)
+    {
+      NS_LOG_LOGIC ("Notify out of snyc indication to RRC layer");
+      m_ueCphySapUser->NotifyOutOfSync ();
+      m_numOfFrames = 0;
+    }
+  //check for in_snyc indications when T310 timer is started
+  //m_downlinkInSync=false indicates that the evaluation is for in-sync indications
+  if (!m_downlinkInSync && m_numOfSubframes == 10)
+    {
+      /**
+       * For every frame, if the downlink radio link quality(avg SINR)
+       * is greater than the threshold Qin, then the frame can be
+       * successfully decoded.
+       */
+      if ((m_sinrDbFrame / m_numOfSubframes) > m_qIn)
+        {
+          m_numOfFrames++; //increment the counter if a frame can be decoded
+          NS_LOG_LOGIC ("No of Frames successfully decoded: " << m_numOfFrames);
+        }
+      else
+        {
+          /**
+           * If the downlink radio link quality(avg SINR) is less
+           * than the threshold Qin, then the frame counter is reset
+           * since only consecutive frames should be considered
+           */
+          m_numOfFrames = 0;
+          // Also reset the sync indicator counter at RRC
+          m_ueCphySapUser->ResetSyncIndicationCounter ();
+        }
+      m_numOfSubframes = 0;
+      m_sinrDbFrame = 0;
+    }
+  /**
+   * Once the number of consecutive frames which can be decoded equals the Qin evaluation period (i.e 100ms),
+   * then an in-sync indication is sent to the RRC layer
+   */
+  if (!m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQinEvalSf)
+    {
+      NS_LOG_LOGIC ("Notify in snyc indication to RRC layer");
+      m_ueCphySapUser->NotifyInSync ();
+      m_numOfFrames = 0;
+    }
+}
+
 
 void
 LteUePhy::SetTxMode1Gain (double gain)
