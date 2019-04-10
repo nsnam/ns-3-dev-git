@@ -198,6 +198,7 @@ EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
       btba.bearer = bearer;
       btba.tft = tft;
       m_bearersToBeActivatedList.push_back (btba);
+      m_bearersToBeActivatedListForReconnection.push_back (btba);
       break;
     }
 }
