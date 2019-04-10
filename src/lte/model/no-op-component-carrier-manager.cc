@@ -210,6 +210,18 @@ NoOpComponentCarrierManager::DoRemoveUe (uint16_t rnti)
   NS_ASSERT_MSG (stateIt != m_ueState.end (), "request to remove UE info with unknown rnti ");
   NS_ASSERT_MSG (eccIt != m_enabledComponentCarrier.end (), "request to remove UE info with unknown rnti ");
 
+  //std::map <uint16_t, std::map<uint8_t, LteEnbCmacSapProvider::LcInfo> >::iterator lcsIt;
+  auto rlcLcIt = m_rlcLcInstantiated.find (rnti);
+  NS_ASSERT_MSG (rlcLcIt != m_rlcLcInstantiated.end (), "request to Release Data Radio Bearer on UE without Logical Channels enabled");
+
+  auto rntiIt = m_ueAttached.find (rnti);
+
+  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "request to Release Data Radio Bearer on unattached UE");
+
+  m_ueState.erase (rnti);
+  m_enabledComponentCarrier.erase (rnti);
+  m_rlcLcInstantiated.erase (rnti);
+  m_ueAttached.erase (rnti);
 }
 
 std::vector<LteCcmRrcSapProvider::LcsConfig>
