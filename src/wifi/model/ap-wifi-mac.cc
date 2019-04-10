@@ -1456,6 +1456,25 @@ ApWifiMac::GetNextAssociationId (void)
   return 0;
 }
 
+const std::map<uint16_t, Mac48Address>&
+ApWifiMac::GetStaList (void) const
+{
+  return m_staList;
+}
+
+uint16_t
+ApWifiMac::GetAssociationId (Mac48Address addr) const
+{
+  for (auto & it : m_staList)
+    {
+      if (it.second == addr)
+        {
+          return it.first;
+        }
+    }
+  return SU_STA_ID;
+}
+
 uint8_t
 ApWifiMac::GetBufferStatus (uint8_t tid, Mac48Address address) const
 {

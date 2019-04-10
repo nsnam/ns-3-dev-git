@@ -109,6 +109,20 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
+   * Get a const reference to the map of associated stations. Each station is
+   * specified by an (association ID, MAC address) pair. Make sure not to use
+   * the returned reference after that this object has been deallocated.
+   *
+   * \return a const reference to the map of associated stations
+   */
+  const std::map<uint16_t, Mac48Address>& GetStaList (void) const;
+  /**
+   * \param addr the address of the associated station
+   * \return the Association ID allocated by the AP to the station, SU_STA_ID if unallocated
+   */
+  uint16_t GetAssociationId (Mac48Address addr) const;
+
+  /**
    * Return the value of the Queue Size subfield of the last QoS Data or QoS Null
    * frame received from the station with the given MAC address and belonging to
    * the given TID.
