@@ -400,7 +400,18 @@ public:
   * \param downlink true when the TB is for DL
   */
   void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, uint8_t rv, bool downlink);
-
+  /**
+   * \brief Remove expected transport block.
+   *
+   * When UE context at eNodeB is removed and if UL TB is expected to be received
+   * but not transmitted due to break in radio link. The TB with different rnti or lcid
+   * remains during the transmission of a new TB and causes problems with
+   * m_ulPhyReception trace, since the UE context was already removed. TB has to be
+   * removed when ue context at eNodeB is removed
+   *
+   * \param rnti The RNTI of the UE
+   */
+  void RemoveExpectedTb (uint16_t  rnti);
 
   /** 
   * 

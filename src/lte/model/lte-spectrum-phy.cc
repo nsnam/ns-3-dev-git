@@ -950,6 +950,27 @@ LteSpectrumPhy::AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8
   m_expectedTbs.insert (std::pair<TbId_t, tbInfo_t> (tbId,tbInfo));
 }
 
+void
+LteSpectrumPhy::RemoveExpectedTb (uint16_t  rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  TbId_t tbId;
+  tbId.m_rnti = rnti;
+  //Remove TB of both the layers
+  for (uint8_t i = 0; i < 2; i++)
+    {
+      tbId.m_layer = i;
+      expectedTbs_t::iterator it;
+      it = m_expectedTbs.find (tbId);
+      if (it != m_expectedTbs.end ())
+        {
+          m_expectedTbs.erase (it);
+        }
+    }
+}
+
+
+
 
 void
 LteSpectrumPhy::EndRxData ()
