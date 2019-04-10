@@ -1190,6 +1190,7 @@ LteUeRrc::SynchronizeToStrongestCell ()
 
   uint16_t maxRsrpCellId = 0;
   double maxRsrp = -std::numeric_limits<double>::infinity ();
+  double minRsrp = -140.0; // Minimum RSRP in dBm a UE can report
 
   std::map<uint16_t, MeasValues>::iterator it;
   for (it = m_storedMeasValues.begin (); it != m_storedMeasValues.end (); it++)
@@ -1198,7 +1199,7 @@ LteUeRrc::SynchronizeToStrongestCell ()
        * This block attempts to find a cell with strongest RSRP and has not
        * yet been identified as "acceptable cell".
        */
-      if (maxRsrp < it->second.rsrp)
+      if (maxRsrp < it->second.rsrp && it->second.rsrp > minRsrp)
         {
           std::set<uint16_t>::const_iterator itCell;
           itCell = m_acceptableCell.find (it->first);
