@@ -824,7 +824,7 @@ bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Ma
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
   CleanupBuffers ();
-  if ((seqNumber + 63) < it->second.first.GetStartingSequence ())
+  if (QosUtilsIsOldPacket (it->second.first.GetStartingSequence (), seqNumber))
     {
       return false;
     }
