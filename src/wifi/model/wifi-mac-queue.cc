@@ -122,8 +122,8 @@ WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
   // starting from the head of the queue, in order to make room for the new packet.
   if (QueueBase::GetNPackets () == GetMaxSize ().GetValue ())
     {
-      auto it = Head ();
-      while (it != Tail () && !TtlExceeded (it))
+      ConstIterator it = begin ();
+      while (it != end () && !TtlExceeded (it))
         {
           it++;
         }
@@ -132,10 +132,10 @@ WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
   if (QueueBase::GetNPackets () == GetMaxSize ().GetValue () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
-      DoRemove (Head ());
+      DoRemove (begin ());
     }
 
-  return DoEnqueue (Tail (), item);
+  return DoEnqueue (end (), item);
 }
 
 bool
@@ -151,8 +151,8 @@ WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
   // starting from the head of the queue, in order to make room for the new packet.
   if (QueueBase::GetNPackets () == GetMaxSize ().GetValue ())
     {
-      auto it = Head ();
-      while (it != Tail () && !TtlExceeded (it))
+      ConstIterator it = begin ();
+      while (it != end () && !TtlExceeded (it))
         {
           it++;
         }
@@ -161,17 +161,17 @@ WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
   if (QueueBase::GetNPackets () == GetMaxSize ().GetValue () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
-      DoRemove (Head ());
+      DoRemove (begin ());
     }
 
-  return DoEnqueue (Head (), item);
+  return DoEnqueue (begin (), item);
 }
 
 Ptr<WifiMacQueueItem>
 WifiMacQueue::Dequeue (void)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -187,7 +187,7 @@ WifiMacQueue::DequeueByAddress (Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
 
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -207,7 +207,7 @@ Ptr<WifiMacQueueItem>
 WifiMacQueue::DequeueByTid (uint8_t tid)
 {
   NS_LOG_FUNCTION (this << +tid);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -227,7 +227,7 @@ Ptr<WifiMacQueueItem>
 WifiMacQueue::DequeueByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -248,7 +248,7 @@ Ptr<WifiMacQueueItem>
 WifiMacQueue::DequeueFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -269,7 +269,7 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::Peek (void) const
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = Head (); it != Tail (); it++)
+  for (auto it = begin (); it != end (); it++)
     {
       // skip packets that stayed in the queue for too long. They will be
       // actually removed from the queue by the next call to a non-const method
@@ -286,7 +286,7 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekByTid (uint8_t tid)
 {
   NS_LOG_FUNCTION (this << +tid);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -306,7 +306,7 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -327,7 +327,7 @@ Ptr<const WifiMacQueueItem>
 WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -349,7 +349,7 @@ WifiMacQueue::Remove (void)
 {
   NS_LOG_FUNCTION (this);
 
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -364,7 +364,7 @@ bool
 WifiMacQueue::Remove (Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -388,7 +388,7 @@ WifiMacQueue::GetNPacketsByAddress (Mac48Address dest)
 
   uint32_t nPackets = 0;
 
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -409,7 +409,7 @@ WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
   uint32_t nPackets = 0;
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -430,7 +430,7 @@ bool
 WifiMacQueue::IsEmpty (void)
 {
   NS_LOG_FUNCTION (this);
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -447,7 +447,7 @@ WifiMacQueue::GetNPackets (void)
 {
   NS_LOG_FUNCTION (this);
   // remove packets that stayed in the queue for too long
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
@@ -462,7 +462,7 @@ WifiMacQueue::GetNBytes (void)
 {
   NS_LOG_FUNCTION (this);
   // remove packets that stayed in the queue for too long
-  for (auto it = Head (); it != Tail (); )
+  for (ConstIterator it = begin (); it != end (); )
     {
       if (!TtlExceeded (it))
         {
