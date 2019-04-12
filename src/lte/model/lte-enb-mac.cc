@@ -843,6 +843,39 @@ LteEnbMac::DoRemoveUe (uint16_t rnti)
   m_cschedSapProvider->CschedUeReleaseReq (params);
   m_rlcAttached.erase (rnti);
   m_miDlHarqProcessesPackets.erase (rnti);
+
+  NS_LOG_DEBUG ("start checking for unprocessed preamble for rnti: " << rnti);
+  //remove unprocessed preamble received for RACH during handover
+  std::map<uint8_t, NcRaPreambleInfo>::iterator jt = m_allocatedNcRaPreambleMap.begin ();
+  while (jt != m_allocatedNcRaPreambleMap.end ())
+    {
+      if (jt->second.rnti == rnti)
+        {
+          std::map<uint8_t, uint32_t>::const_iterator it = m_receivedRachPreambleCount.find (jt->first);
+          if (it != m_receivedRachPreambleCount.end ())
+            {
+              m_receivedRachPreambleCount.erase (it->first);
+            }
+          jt = m_allocatedNcRaPreambleMap.erase (jt);
+        }
+      else
+        {
+          ++jt;
+        }
+    }
+
+  std::vector<MacCeListElement_s>::iterator itCeRxd = m_ulCeReceived.begin ();
+  while (itCeRxd != m_ulCeReceived.end ())
+    {
+      if (itCeRxd->m_rnti == rnti)
+        {
+          itCeRxd = m_ulCeReceived.erase (itCeRxd);
+        }
+      else
+        {
+          itCeRxd++;
+        }
+    }
 }
 
 void
