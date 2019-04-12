@@ -713,6 +713,10 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   NS_ASSERT (handoverCommand.haveMobilityControlInfo);
   m_rrc->m_handoverStartTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
 
+  //Set the target cell ID and the RNTI so that handover cancel message can be sent if required
+  m_targetX2apId = params.newEnbUeX2apId;
+  m_targetCellId = params.targetCellId;
+
   EpcX2SapProvider::SnStatusTransferParams sst;
   sst.oldEnbUeX2apId = params.oldEnbUeX2apId;
   sst.newEnbUeX2apId = params.newEnbUeX2apId;
@@ -1285,6 +1289,17 @@ UeManager::SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigD
 
   // reconfigure the UE RRC
   ScheduleRrcConnectionReconfiguration ();
+}
+
+void
+UeManager::CancelPendingEvents ()
+{
+  NS_LOG_FUNCTION (this);
+  m_connectionRequestTimeout.Cancel ();
+  m_connectionRejectedTimeout.Cancel ();
+  m_connectionSetupTimeout.Cancel ();
+  m_handoverJoiningTimeout.Cancel ();
+  m_handoverLeavingTimeout.Cancel ();
 }
 
 uint8_t
@@ -2782,6 +2797,8 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
   std::map <uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);
   NS_ASSERT_MSG (it != m_ueMap.end (), "request to remove UE info with unknown rnti " << rnti);
   uint16_t srsCi = (*it).second->GetSrsConfigurationIndex ();
+  //cancel pending events
+  it->second->CancelPendingEvents ();
   m_ueMap.erase (it);
   for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {

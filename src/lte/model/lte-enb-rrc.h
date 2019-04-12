@@ -374,6 +374,12 @@ public:
   void SetPdschConfigDedicated (LteRrcSap::PdschConfigDedicated pdschConfigDedicated);
 
   /**
+   * Cancel all timers which are running for the UE
+   *
+   */
+  void CancelPendingEvents ();
+
+  /**
    * TracedCallback signature for state transition events.
    *
    * \param [in] imsi
@@ -556,6 +562,7 @@ private:
   TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
 
   uint16_t m_sourceX2apId; ///< source X2 ap ID
+  uint16_t m_targetX2apId; ///< target X2 ap ID
   uint16_t m_sourceCellId; ///< source cell ID
   uint16_t m_targetCellId; ///< target cell ID
   std::list<uint8_t> m_drbsToBeStarted; ///< DRBS to be started
