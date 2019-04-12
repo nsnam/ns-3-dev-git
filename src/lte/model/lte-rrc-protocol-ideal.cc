@@ -173,16 +173,31 @@ LteUeRrcProtocolIdeal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg
 void
 LteUeRrcProtocolIdeal::DoSendIdealUeContextRemoveRequest (uint16_t rnti)
 {
-  SetEnbRrcSapProvider (); //the provider has to be reset since the cell might have changed due to handover
-  //ideally informing eNB
-  Simulator::Schedule (RRC_IDEAL_MSG_DELAY, &LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest,
-                       m_enbRrcSapProvider, rnti);
+  NS_LOG_FUNCTION (this);
+
+   uint16_t cellId = m_rrc->GetCellId ();
+   // re-initialize the RNTI and get the EnbLteRrcSapProvider for the
+   // eNB we are currently attached to or attempting random access to
+   // a target eNB
+   m_rnti = m_rrc->GetRnti ();
+
+   NS_LOG_DEBUG ("RNTI " << rnti
+                 << " sending UE context remove request to cell id " << cellId);
+   NS_ABORT_MSG_IF (m_rnti != rnti, "RNTI mismatch");
+
+   SetEnbRrcSapProvider (); //the provider has to be reset since the cell might have changed due to handover
+   //ideally informing eNB
+   Simulator::Schedule (RRC_IDEAL_MSG_DELAY, &LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest,
+                        m_enbRrcSapProvider, m_rnti);
 }
 
 void 
 LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 {
+  NS_LOG_FUNCTION (this);
+
   uint16_t cellId = m_rrc->GetCellId ();
+  NS_LOG_DEBUG ("RNTI " << m_rnti << " connected to cell " << cellId);
 
   // walk list of all nodes to get the peer eNB
   Ptr<LteEnbNetDevice> enbDev;
@@ -284,7 +299,8 @@ LteEnbRrcProtocolIdeal::SetUeRrcSapProvider (uint16_t rnti, LteUeRrcSapProvider*
 {
   std::map<uint16_t, LteUeRrcSapProvider*>::iterator it;
   it = m_enbRrcSapProviderMap.find (rnti);
-  NS_ASSERT_MSG (it != m_enbRrcSapProviderMap.end (), "could not find RNTI = " << rnti);
+  NS_ASSERT_MSG (it != m_enbRrcSapProviderMap.end (), "Cell id " << m_cellId
+                                         << " could not find RNTI = " << rnti);
   it->second = p;
 }
 
