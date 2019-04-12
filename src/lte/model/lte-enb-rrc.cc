@@ -2794,7 +2794,12 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
     }
   m_ccmRrcSapProvider-> RemoveUe (rnti);
   // need to do this after UeManager has been deleted
-  RemoveSrsConfigurationIndex (srsCi);
+  if (srsCi != 0)
+    {
+      RemoveSrsConfigurationIndex (srsCi);
+    }
+
+  m_rrcSapUser->RemoveUe (rnti); // Remove UE context at RRC protocol
 }
 
 TypeId
