@@ -1509,7 +1509,8 @@ LteUePhy::RlfDetection (double sinrDb)
    */
   if (m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQoutEvalSf)
     {
-      NS_LOG_LOGIC ("Notify out of snyc indication to RRC layer");
+      NS_LOG_LOGIC ("At " << Simulator::Now ().GetMilliSeconds()
+               << " ms UE PHY sending out of snyc indication to UE RRC layer");
       m_ueCphySapUser->NotifyOutOfSync ();
       m_numOfFrames = 0;
     }
@@ -1547,7 +1548,8 @@ LteUePhy::RlfDetection (double sinrDb)
    */
   if (!m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQinEvalSf)
     {
-      NS_LOG_LOGIC ("Notify in snyc indication to RRC layer");
+      NS_LOG_LOGIC ("At " << Simulator::Now ().GetMilliSeconds()
+                   << " ms UE PHY sending in snyc indication to UE RRC layer");
       m_ueCphySapUser->NotifyInSync ();
       m_numOfFrames = 0;
     }
