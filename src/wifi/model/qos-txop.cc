@@ -190,15 +190,17 @@ QosTxop::PeekNextFrame (void)
 {
   NS_LOG_FUNCTION (this);
   Ptr<const WifiMacQueueItem> item;
+  WifiMacQueue::ConstIterator it;
 
   // check if there is a packet in the MacLow aggregation queue
   for (uint8_t tid = 0; tid < 8; tid++)
     {
       if (QosUtilsMapTidToAc (tid) == m_ac)
         {
-          item = m_low->GetAggregateQueue ()->PeekByTid (tid);
-          if (item != 0)
+          it = m_low->GetAggregateQueue ()->PeekByTid (tid);
+          if (it != m_low->GetAggregateQueue ()->end ())
             {
+              item = *it;
               break;
             }
         }
@@ -220,10 +222,11 @@ QosTxop::PeekNextFrame (void)
     }
 
   // otherwise, check if there is a packet in the EDCA queue
-  item = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
+  it = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
 
-  if (item != 0)
+  if (it != m_queue->end ())
     {
+      item = *it;
       // set the sequence number by just peeking the next value
       uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
       WifiMacHeader hdr = item->GetHeader ();
@@ -245,10 +248,11 @@ QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
   Ptr<const WifiMacQueueItem> item;
 
   // check if there is a packet in the MacLow aggregation queue
-  item = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+  WifiMacQueue::ConstIterator it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
 
-  if (item != 0)
+  if (it != m_low->GetAggregateQueue ()->end ())
     {
+      item = *it;
       NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue, " << *item);
       return item;
     }
@@ -263,10 +267,11 @@ QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
     }
 
   // otherwise, check if there is a packet in the EDCA queue
-  item = m_queue->PeekByTidAndAddress (tid, recipient);
+  it = m_queue->PeekByTidAndAddress (tid, recipient);
 
-  if (item != 0)
+  if (it != m_queue->end ())
     {
+      item = *it;
       // set the sequence number by just peeking the next value
       uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
       WifiMacHeader hdr = item->GetHeader ();
@@ -367,10 +372,11 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
-      testItem = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+      WifiMacQueue::ConstIterator testIt = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
 
-      if (testItem)
+      if (testIt != m_low->GetAggregateQueue ()->end ())
         {
+          testItem = *testIt;
           // if not null, the test packet must equal the peeked packet
           NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
           item = m_low->GetAggregateQueue ()->DequeueByTidAndAddress (tid, recipient);
@@ -399,9 +405,9 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   if (peekedItem->GetHeader ().IsQosData ())
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
-      testItem = m_queue->PeekByTidAndAddress (tid, recipient);
+      WifiMacQueue::ConstIterator testIt = m_queue->PeekByTidAndAddress (tid, recipient);
 
-      NS_ASSERT (testItem != 0 && testItem->GetPacket () == peekedItem->GetPacket ());
+      NS_ASSERT (testIt != m_queue->end () && (*testIt)->GetPacket () == peekedItem->GetPacket ());
 
       // try A-MSDU aggregation
       if (m_low->GetMsduAggregator () != 0 && !recipient.IsBroadcast () && aggregate)
