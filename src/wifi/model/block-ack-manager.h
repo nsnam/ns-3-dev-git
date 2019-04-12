@@ -152,7 +152,7 @@ public:
    * Stores <i>mpdu</i> for a possible future retransmission. Retransmission occurs
    * if the packet, in a block ack frame, is indicated by recipient as not received.
    */
-  void StorePacket (Ptr<const WifiMacQueueItem> mpdu);
+  void StorePacket (Ptr<WifiMacQueueItem> mpdu);
   /**
    * \param removePacket flag to indicate whether the packet should be removed from the queue.
    *
@@ -211,16 +211,6 @@ public:
    * number of buffered MPDUs but number of buffered MSDUs.
    */
   uint32_t GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const;
-  /**
-   * \param recipient Address of peer station involved in block ack mechanism.
-   * \param tid Traffic ID.
-   *
-   * \return the number of packets for a specific agreement that need retransmission
-   *
-   * Returns number of packets for a specific agreement that need retransmission.
-   * This method doesn't return number of MPDUs that need retransmission but number of MSDUs.
-   */
-  uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
@@ -328,17 +318,6 @@ public:
    * the value of BufferSize in the corresponding OriginatorBlockAckAgreement object.
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
-  /**
-   * \param recipient the destination address
-   * \param tid the Traffic ID
-   *
-   * \return the sequence number of the next retry packet for a specific agreement
-   *
-   * Returns the sequence number of the next retry packet for a specific agreement.
-   * If there are no packets that need retransmission for the specified agreement or
-   * the agreement doesn't exist the function returns 4096;
-   */
-  uint16_t GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const;
   /**
    * Checks if the packet already exists in the retransmit queue or not if it does then it doesn't add it again
    *
@@ -458,15 +437,15 @@ private:
   /**
    * typedef for a list of WifiMacQueueItem.
    */
-  typedef std::list<WifiMacQueueItem> PacketQueue;
+  typedef std::list<Ptr<WifiMacQueueItem>> PacketQueue;
   /**
    * typedef for an iterator for PacketQueue.
    */
-  typedef std::list<WifiMacQueueItem>::iterator PacketQueueI;
+  typedef std::list<Ptr<WifiMacQueueItem>>::iterator PacketQueueI;
   /**
    * typedef for a const iterator for PacketQueue.
    */
-  typedef std::list<WifiMacQueueItem>::const_iterator PacketQueueCI;
+  typedef std::list<Ptr<WifiMacQueueItem>>::const_iterator PacketQueueCI;
   /**
    * typedef for a map between MAC address and block ACK agreement.
    */
@@ -484,12 +463,12 @@ private:
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
   /**
-   * \param item
+   * \param item the packet to insert in the retransmission queue
    *
    * Insert item in retransmission queue.
    * This method ensures packets are retransmitted in the correct order.
    */
-  void InsertInRetryQueue (PacketQueueI item);
+  void InsertInRetryQueue (Ptr<WifiMacQueueItem> item);
 
   /**
    * Remove items from retransmission queue.
@@ -514,7 +493,7 @@ private:
    * A packet needs retransmission if it's indicated as not correctly received in a block ack
    * frame.
    */
-  std::list<PacketQueueI> m_retryPackets;
+  Ptr<WifiMacQueue> m_retryPackets;
   std::list<Bar> m_bars; ///< list of BARs
 
   uint8_t m_blockAckThreshold; ///< block ack threshold

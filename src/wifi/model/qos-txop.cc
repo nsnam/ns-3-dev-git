@@ -179,12 +179,6 @@ QosTxop::PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient)
   return m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
 }
 
-void
-QosTxop::RemoveRetransmitPacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber)
-{
-  m_baManager->RemovePacket (tid, recipient, seqnumber);
-}
-
 Ptr<const WifiMacQueueItem>
 QosTxop::PeekNextFrame (void)
 {
@@ -1680,8 +1674,8 @@ QosTxop::CompleteTx (void)
     {
       if (!m_currentHdr.IsRetry ())
         {
-          m_baManager->StorePacket (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr,
-                                                                    m_currentPacketTimestamp));
+          m_baManager->StorePacket (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                              m_currentPacketTimestamp));
         }
       m_baManager->NotifyMpduTransmission (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (),
                                            m_txMiddle->GetNextSeqNumberByTidAndAddress (m_currentHdr.GetQosTid (),
@@ -1690,7 +1684,7 @@ QosTxop::CompleteTx (void)
 }
 
 void
-QosTxop::CompleteMpduTx (Ptr<const WifiMacQueueItem> mpdu)
+QosTxop::CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu)
 {
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
   m_baManager->StorePacket (mpdu);

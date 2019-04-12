@@ -322,7 +322,7 @@ public:
    *
    * \param mpdu received MPDU.
    */
-  void CompleteMpduTx (Ptr<const WifiMacQueueItem> mpdu);
+  void CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu);
   /**
    * Return whether A-MPDU is used to transmit data to a peer station.
    *
@@ -379,14 +379,6 @@ public:
    * \return the next sequence number.
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
-  /**
-   * Remove a packet after you peek in the retransmit queue and get it.
-   *
-   * \param tid traffic ID of the packet to be removed.
-   * \param recipient address of the recipient the packet was intended for.
-   * \param seqnumber sequence number of the packet to be removed.
-   */
-  void RemoveRetransmitPacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
   /**
    * Peek in retransmit queue and get the next packet without removing it from the queue.
    *
