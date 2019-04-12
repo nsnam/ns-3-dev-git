@@ -219,6 +219,20 @@ public:
    * \param params 
    */
   virtual void RrcConfigurationUpdateInd (UeConfig params) = 0;
+
+  /**
+   * \brief Is random access completed function
+   *
+   * This method is executed to decide if the non contention based
+   * preamble has to reused or not upon preamble expiry. If the random access
+   * in connected mode is completed, then the preamble can be reused by other UEs.
+   * If not, the same UE retains the preamble and other available preambles is
+   * assigned to the required UEs.
+   *
+   * \param rnti the C-RNTI identifying the user
+   * \return true if the random access in connected mode is completed
+   */
+  virtual bool IsRandomAccessCompleted (uint16_t rnti) = 0;
 };
 
 

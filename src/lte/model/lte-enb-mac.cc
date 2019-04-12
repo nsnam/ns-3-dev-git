@@ -977,6 +977,26 @@ LteEnbMac::DoAllocateNcRaPreamble (uint16_t rnti)
   for (preambleId = m_numberOfRaPreambles; preambleId < 64; ++preambleId)
     {
       std::map<uint8_t, NcRaPreambleInfo>::iterator it = m_allocatedNcRaPreambleMap.find (preambleId);
+      /**
+       * Allocate preamble only if its free. The non-contention preamble
+       * assigned to UE during handover or PDCCH order is valid only until the
+       * time duration of the “expiryTime” of the preamble is reached. This
+       * timer value is only maintained at the eNodeB and the UE has no way of
+       * knowing if this timer has expired. If the UE tries to send the preamble
+       * again after the expiryTime and the preamble is re-assigned to another
+       * UE, it results in errors. This has been solved by re-assigning the
+       * preamble to another UE only if it is not being used (An UE can be using
+       * the preamble even after the expiryTime duration).
+       */
+      if ((it != m_allocatedNcRaPreambleMap.end ()) && (it->second.expiryTime < Simulator::Now ()))
+        {
+          if (!m_cmacSapUser->IsRandomAccessCompleted (rnti))
+            {
+              //random access of the UE is not completed,
+              //check other preambles
+              continue;
+            }
+        }
       if ((it ==  m_allocatedNcRaPreambleMap.end ())
           || (it->second.expiryTime < Simulator::Now ()))
         {
