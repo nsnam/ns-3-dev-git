@@ -1085,6 +1085,19 @@ public:
     (const uint64_t imsi, const uint16_t cellId, const uint16_t rnti,
      const LteRrcSap::MeasurementReport report);
 
+  /**
+   * TracedCallback signature for timer expiry events
+   *
+   * \param [in] imsi
+   * \param [in] rnti
+   * \param [in] cellId
+   * \param [in] cause
+   */
+  typedef void (*TimerExpiryTracedCallback)
+      (const uint64_t imsi, const uint16_t rnti, const uint16_t cellId,
+       const std::string cause);
+
+
 private:
 
 
@@ -1665,6 +1678,12 @@ private:
    *
    */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReleaseTrace;
+  /**
+   * The 'TimerExpiry' Trace source. Fired when any of the RRC timers maintained
+   * at eNB expires. Exporting IMSI, cell ID, and RNTI and name of timer
+   * which expired.
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_rrcTimeoutTrace;
 
   uint16_t m_numberOfComponentCarriers; ///< number of component carriers
 

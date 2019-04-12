@@ -1835,6 +1835,10 @@ LteEnbRrc::GetTypeId (void)
                      "trace fired when an UE is released",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReleaseTrace),
                      "ns3::LteEnbRrc::ConnectionHandoverTracedCallback")
+    .AddTraceSource ("RrcTimeout",
+                     "trace fired when a timer expires",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_rrcTimeoutTrace),
+                     "ns3::LteEnbRrc::TimerExpiryTracedCallback")
   ;
   return tid;
 }
@@ -2313,6 +2317,8 @@ LteEnbRrc::ConnectionRequestTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::INITIAL_RANDOM_ACCESS,
                  "ConnectionRequestTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "ConnectionRequestTimeout");
   RemoveUe (rnti);
 }
 
@@ -2322,6 +2328,8 @@ LteEnbRrc::ConnectionSetupTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::CONNECTION_SETUP,
                  "ConnectionSetupTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "ConnectionSetupTimeout");
   RemoveUe (rnti);
 }
 
@@ -2331,6 +2339,8 @@ LteEnbRrc::ConnectionRejectedTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::CONNECTION_REJECTED,
                  "ConnectionRejectedTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "ConnectionRejectedTimeout");
   RemoveUe (rnti);
 }
 
@@ -2340,6 +2350,8 @@ LteEnbRrc::HandoverJoiningTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_JOINING,
                  "HandoverJoiningTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverJoiningTimeout");
   RemoveUe (rnti);
 }
 
@@ -2349,6 +2361,8 @@ LteEnbRrc::HandoverLeavingTimeout (uint16_t rnti)
   NS_LOG_FUNCTION (this << rnti);
   NS_ASSERT_MSG (GetUeManager (rnti)->GetState () == UeManager::HANDOVER_LEAVING,
                  "HandoverLeavingTimeout in unexpected state " << ToString (GetUeManager (rnti)->GetState ()));
+  m_rrcTimeoutTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                     ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()), "HandoverLeavingTimeout");
   RemoveUe (rnti);
 }
 
