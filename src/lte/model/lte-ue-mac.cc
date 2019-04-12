@@ -532,10 +532,11 @@ LteUeMac::DoSetRnti (uint16_t rnti)
 void 
 LteUeMac::DoStartNonContentionBasedRandomAccessProcedure (uint16_t rnti, uint8_t preambleId, uint8_t prachMask)
 {
-  NS_LOG_FUNCTION (this << " rnti" << rnti);
+  NS_LOG_FUNCTION (this << rnti << (uint16_t) preambleId << (uint16_t) prachMask);
   NS_ASSERT_MSG (prachMask == 0, "requested PRACH MASK = " << (uint32_t) prachMask << ", but only PRACH MASK = 0 is supported");
   m_rnti = rnti;
   m_raPreambleId = preambleId;
+  m_preambleTransmissionCounter = 0;
   bool contention = false;
   SendRaPreamble (contention);
 }
