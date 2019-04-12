@@ -369,7 +369,7 @@ EpcSgwApplication::DoRecvDeleteBearerCommand (Ptr<Packet> packet)
   Ptr<Packet> packetOut = Create <Packet> ();
   packetOut->AddHeader (msgOut);
   NS_LOG_DEBUG ("Send DeleteBearerCommand to PGW " << m_pgwAddr);
-  m_s11Socket->SendTo (packetOut, 0, InetSocketAddress (m_pgwAddr, m_gtpcUdpPort));
+  m_s5cSocket->SendTo (packetOut, 0, InetSocketAddress (m_pgwAddr, m_gtpcUdpPort));
 }
 
 void

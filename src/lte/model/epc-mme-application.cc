@@ -236,6 +236,7 @@ EpcMmeApplication::RemoveBearer (Ptr<UeInfo> ueInfo, uint8_t epsBearerId)
       if (bit->bearerId == epsBearerId)
         {
           ueInfo->bearersToBeActivated.erase (bit);
+          ueInfo->bearerCounter = ueInfo->bearerCounter - 1;
           break;
         }
       ++bit;
@@ -352,7 +353,18 @@ EpcMmeApplication::DoRecvDeleteBearerRequest (GtpcHeader &header, Ptr<Packet> pa
   for (auto &ebid : msg.GetEpsBearerIds ())
     {
       epsBearerIds.push_back (ebid);
-      RemoveBearer (it->second, ebid); //schedules function to erase, context of de-activated bearer
+      /*
+       * This condition is added to not remove bearer info at MME
+       * when UE gets disconnected since the bearers are only added
+       * at beginning of simulation at MME and if it is removed the
+       * bearers cannot be activated again unless scheduled for
+       * addition of the bearer during simulation
+       *
+       */
+      if (it->second->cellId == 0)
+        {
+          RemoveBearer (it->second, ebid); //schedules function to erase, context of de-activated bearer
+        }
     }
   msgOut.SetEpsBearerIds (epsBearerIds);
   msgOut.SetTeid (imsi);
