@@ -175,7 +175,7 @@ public:
    * A \c const dereference.
    * \returns A pointer to the underlying object.
    */
-  const T &operator * () const;
+  T &operator * () const;
   /**
    * A  dereference.
    * \returns A pointer to the underlying object.
@@ -791,7 +791,7 @@ Ptr<T>::operator -> () const
 }
 
 template <typename T>
-const T &
+T &
 Ptr<T>::operator * () const
 {
   return *m_ptr;
