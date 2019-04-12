@@ -3238,6 +3238,7 @@ LteUeRrc::RadioLinkFailureDetected ()
   NS_LOG_FUNCTION (this << m_imsi << m_rnti);
   m_radioLinkFailureTrace (m_imsi, m_cellId, m_rnti);
   SwitchToState (CONNECTED_PHY_PROBLEM);
+  m_rrcSapUser->SendIdealUeContextRemoveRequest (m_rnti);
   m_asSapUser->NotifyConnectionReleased ();
 }
 
