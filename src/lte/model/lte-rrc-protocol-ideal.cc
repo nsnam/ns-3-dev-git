@@ -170,10 +170,19 @@ LteUeRrcProtocolIdeal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg
                         msg);
 }
 
+void
+LteUeRrcProtocolIdeal::DoSendIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  SetEnbRrcSapProvider (); //the provider has to be reset since the cell might have changed due to handover
+  //ideally informing eNB
+  Simulator::Schedule (RRC_IDEAL_MSG_DELAY, &LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest,
+                       m_enbRrcSapProvider, rnti);
+}
+
 void 
 LteUeRrcProtocolIdeal::SetEnbRrcSapProvider ()
 {
-  uint16_t cellId = m_rrc->GetCellId ();  
+  uint16_t cellId = m_rrc->GetCellId ();
 
   // walk list of all nodes to get the peer eNB
   Ptr<LteEnbNetDevice> enbDev;

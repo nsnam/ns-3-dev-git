@@ -970,6 +970,17 @@ public:
    */
   virtual void SendMeasurementReport (MeasurementReport msg) = 0;
 
+  /**
+   * \brief Send UE context remove request function
+   *
+   * Request eNodeB to remove UE context once radio link failure or
+   * random access failure is detected. It is needed since no RLF
+   * detection mechanism at eNodeB is implemented.
+   *
+   * \param rnti the C-RNTI of the UE
+   */
+   virtual void SendIdealUeContextRemoveRequest (uint16_t rnti) = 0;
+
 };
 
 
@@ -1255,6 +1266,17 @@ public:
    */
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) = 0;
 
+  /**
+   * \brief Receive ideal UE context remove request from the UE RRC.
+   *
+   * Receive the notification from UE to remove the UE context
+   * once radio link failure or random access failure is detected.
+   * It is needed since no RLF detection mechanism at eNodeB is implemented.
+   *
+   * \param rnti the C-RNTI of the UE
+   */
+  virtual void RecvIdealUeContextRemoveRequest (uint16_t rnti) = 0;
+
 };
 
 
@@ -1291,6 +1313,7 @@ public:
   virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg);
   virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg);
   virtual void SendMeasurementReport (MeasurementReport msg);
+  virtual void SendIdealUeContextRemoveRequest (uint16_t rnti);
 
 private:
   MemberLteUeRrcSapUser ();
@@ -1355,6 +1378,13 @@ void
 MemberLteUeRrcSapUser<C>::SendMeasurementReport (MeasurementReport msg)
 {
   m_owner->DoSendMeasurementReport (msg);
+}
+
+template <class C>
+void
+MemberLteUeRrcSapUser<C>::SendIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  m_owner->DoSendIdealUeContextRemoveRequest (rnti);
 }
 
 /**
@@ -1621,6 +1651,7 @@ public:
   virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg);
   virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg);
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg);
+  virtual void RecvIdealUeContextRemoveRequest (uint16_t rnti);
 
 private:
   MemberLteEnbRrcSapProvider ();
@@ -1685,6 +1716,12 @@ void
 MemberLteEnbRrcSapProvider<C>::RecvMeasurementReport (uint16_t rnti, MeasurementReport msg)
 {
   Simulator::ScheduleNow (&C::DoRecvMeasurementReport, m_owner, rnti, msg);
+}
+
+template <class C>
+void MemberLteEnbRrcSapProvider<C>::RecvIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  Simulator::ScheduleNow (&C::DoRecvIdealUeContextRemoveRequest, m_owner, rnti);
 }
 
 

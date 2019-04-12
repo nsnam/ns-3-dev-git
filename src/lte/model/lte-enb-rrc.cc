@@ -569,6 +569,25 @@ LteEnbRrc::DoSendReleaseDataRadioBearer (uint64_t imsi, uint16_t rnti, uint8_t b
   m_s1SapProvider->DoSendReleaseIndication (imsi,rnti,bearerId);
 }
 
+void
+UeManager::RecvIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << m_rnti);
+
+  //release the bearer info for the UE at SGW/PGW
+  if (m_rrc->m_s1SapProvider != 0) //if EPC is enabled
+    {
+      for (const auto &it:m_drbMap)
+        {
+          NS_LOG_DEBUG ("Sending release of bearer id : " << (uint16_t) (it.first)
+                        << "LCID : "
+                        << (uint16_t) (it.second->m_logicalChannelIdentity));
+          // Bearer de-activation indication towards epc-enb application
+          m_rrc->m_s1SapProvider->DoSendReleaseIndication (GetImsi (), rnti, it.first);
+        }
+    }
+}
+
 void 
 UeManager::ScheduleRrcConnectionReconfiguration ()
 {
@@ -2377,6 +2396,15 @@ LteEnbRrc::DoInitialContextSetupRequest (EpcEnbS1SapUser::InitialContextSetupReq
 }
 
 void 
+LteEnbRrc::DoRecvIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  NS_LOG_FUNCTION (this << rnti);
+  GetUeManager (rnti)->RecvIdealUeContextRemoveRequest (rnti);
+  //delete the UE context at the eNB
+  RemoveUe (rnti);
+}
+
+void
 LteEnbRrc::DoDataRadioBearerSetupRequest (EpcEnbS1SapUser::DataRadioBearerSetupRequestParameters request)
 {
   NS_LOG_FUNCTION (this);
@@ -2766,7 +2794,7 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
     }
   m_ccmRrcSapProvider-> RemoveUe (rnti);
   // need to do this after UeManager has been deleted
-  RemoveSrsConfigurationIndex (srsCi); 
+  RemoveSrsConfigurationIndex (srsCi);
 }
 
 TypeId

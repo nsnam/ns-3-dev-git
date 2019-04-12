@@ -193,6 +193,17 @@ LteUeRrcProtocolReal::DoSendMeasurementReport (LteRrcSap::MeasurementReport msg)
   m_setupParameters.srb1SapProvider->TransmitPdcpSdu (transmitPdcpSduParameters);
 }
 
+void
+LteUeRrcProtocolReal::DoSendIdealUeContextRemoveRequest (uint16_t rnti)
+{
+  NS_LOG_FUNCTION(this<<rnti);
+  m_rnti = m_rrc->GetRnti ();
+  SetEnbRrcSapProvider (); //the provider has to be reset since the cell might have changed due to handover
+  //ideally informing eNB
+  Simulator::Schedule (RRC_REAL_MSG_DELAY, &LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest,
+                       m_enbRrcSapProvider, rnti);
+}
+
 void 
 LteUeRrcProtocolReal::DoSendRrcConnectionReestablishmentRequest (LteRrcSap::RrcConnectionReestablishmentRequest msg)
 {

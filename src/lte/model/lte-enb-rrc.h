@@ -303,6 +303,12 @@ public:
    * \param msg the measrurement report
    */
   void RecvMeasurementReport (LteRrcSap::MeasurementReport msg);
+  /**
+   * Implement the LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface.
+   *
+   * \param rnti the C-RNTI identifying the user
+   */
+  void RecvIdealUeContextRemoveRequest (uint16_t rnti);
 
 
   // METHODS FORWARDED FROM ENB CMAC SAP //////////////////////////////////////
@@ -1125,6 +1131,17 @@ private:
    * \param msg the LteRrcSap::MeasurementReport
    */
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
+  /**
+   * \brief Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvIdealUeContextRemoveRequest interface to UeManager::RecvIdealUeContextRemoveRequest.
+   *
+   * Remove the UE context at eNodeB and also remove the bearers established
+   * at SGW/PGW node. Bearer info at MME is not deleted since they are added at
+   * MME only at the beginning of simulation and if they are removed,
+   * the bearers cannot be activated again.
+   *
+   * \param rnti the C-RNTI identifying the user
+   */
+  void DoRecvIdealUeContextRemoveRequest (uint16_t rnti);
 
   // S1 SAP methods
 
