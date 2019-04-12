@@ -33,7 +33,7 @@ callback_classes = [
     ['bool', 'ns3::Ptr<const ns3::Packet>', 'const ns3::Address &', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Address', 'ns3::Address', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
-    ['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::WifiTxVector', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
+    ['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::WifiTxVector', 'std::vector<bool, std::allocator<bool> >', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Time', 'ns3::Time', 'WifiPhyState', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::WifiMode', 'ns3::WifiPreamble', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
