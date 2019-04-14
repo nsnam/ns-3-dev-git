@@ -231,31 +231,46 @@ BlockAckManager::GetRetransmitQueue (void)
 void
 BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << mpdu);
+  NS_LOG_FUNCTION (this << *mpdu);
   NS_ASSERT (mpdu->GetHeader ().IsQosData ());
 
   uint8_t tid = mpdu->GetHeader ().GetQosTid ();
   Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
 
-  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-  NS_ASSERT (it != m_agreements.end ());
-  PacketQueueI queueIt = it->second.second.begin ();
-  for (; queueIt != it->second.second.end (); )
+  AgreementsI agreementIt = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (agreementIt != m_agreements.end ());
+
+  uint16_t startingSeq = agreementIt->second.first.GetStartingSequence ();
+  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+
+  if (mpduDist >= 2048)
     {
-      if (((mpdu->GetHeader ().GetSequenceNumber () - (*queueIt)->GetHeader ().GetSequenceNumber () + 4096) % 4096) > 2047)
+      NS_LOG_DEBUG ("Got an old packet. Do nothing");
+      return;
+    }
+
+  // store the packet and keep the list sorted in increasing order of sequence number
+  // with respect to the starting sequence number
+  PacketQueueI it = agreementIt->second.second.begin ();
+  while (it != agreementIt->second.second.end ())
+    {
+      if (mpdu->GetHeader ().GetSequenceControl () == (*it)->GetHeader ().GetSequenceControl ())
         {
-          queueIt = it->second.second.insert (queueIt, mpdu);
+          NS_LOG_DEBUG ("Packet already in the queue of the BA agreement");
+          return;
+        }
+
+      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+
+      if (mpduDist < dist ||
+          (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () < (*it)->GetHeader ().GetFragmentNumber ()))
+        {
           break;
         }
-      else
-        {
-          queueIt++;
-        }
+
+      it++;
     }
-  if (queueIt == it->second.second.end ())
-    {
-      it->second.second.push_back (mpdu);
-    }
+  agreementIt->second.second.insert (it, mpdu);
 }
 
 bool
@@ -317,26 +332,6 @@ BlockAckManager::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager
 {
   NS_LOG_FUNCTION (this << manager);
   m_stationManager = manager;
-}
-
-bool
-BlockAckManager::AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid) const
-{
-  WifiMacQueue::ConstIterator it = m_retryPackets->begin ();
-  while (it != m_retryPackets->end ())
-    {
-      if (!(*it)->GetHeader ().IsQosData ())
-        {
-          NS_FATAL_ERROR ("Packet in blockAck manager retry queue is not Qos Data");
-        }
-      if ((*it)->GetHeader ().GetAddr1 () == recipient && (*it)->GetHeader ().GetQosTid () == tid
-          && currentSeq == (*it)->GetHeader ().GetSequenceNumber ())
-        {
-          return true;
-        }
-      it++;
-    }
-  return false;
 }
 
 void
@@ -403,10 +398,7 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
     }
 
   // insert in the retransmission queue
-  if (!AlreadyExists (mpdu->GetHeader ().GetSequenceNumber (), recipient, tid))
-    {
-      InsertInRetryQueue (mpdu);
-    }
+  InsertInRetryQueue (mpdu);
 }
 
 void
@@ -458,10 +450,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                           SetStartingSequence (recipient, tid, currentSeq);
                         }
                       nFailedMpdus++;
-                      if (!AlreadyExists (currentSeq, recipient, tid))
-                        {
-                          InsertInRetryQueue (*queueIt);
-                        }
+                      InsertInRetryQueue (*queueIt);
                     }
                   // in any case, this packet is no longer outstanding
                   queueIt = it->second.second.erase (queueIt);
@@ -497,10 +486,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                         {
                           m_txFailedCallback ((*queueIt)->GetHeader ());
                         }
-                      if (!AlreadyExists (currentSeq, recipient, tid))
-                        {
-                          InsertInRetryQueue (*queueIt);
-                        }
+                      InsertInRetryQueue (*queueIt);
                     }
                   // in any case, this packet is no longer outstanding
                   queueIt = it->second.second.erase (queueIt);
@@ -531,10 +517,7 @@ BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
       for (auto& item : it->second.second)
         {
           // Queue previously transmitted packets that do not already exist in the retry queue.
-          if (!AlreadyExists (item->GetHeader ().GetSequenceNumber (), recipient, tid))
-            {
-              InsertInRetryQueue (item);
-            }
+          InsertInRetryQueue (item);
         }
       // remove all packets from the queue of outstanding packets (they will be
       // re-inserted if retransmitted)
@@ -917,32 +900,47 @@ BlockAckManager::SetTxFailedCallback (TxFailed callback)
 }
 
 void
-BlockAckManager::InsertInRetryQueue (Ptr<WifiMacQueueItem> item)
+BlockAckManager::InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_INFO ("Adding to retry queue " << *item);
-  if (m_retryPackets->GetNPackets () == 0)
+  NS_LOG_INFO ("Adding to retry queue " << *mpdu);
+  NS_ASSERT (mpdu->GetHeader ().IsQosData ());
+
+  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
+
+  AgreementsI agreementIt = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (agreementIt != m_agreements.end ());
+
+  uint16_t startingSeq = agreementIt->second.first.GetStartingSequence ();
+  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+
+  if (mpduDist >= 2048)
     {
-      m_retryPackets->Enqueue (item);
+      NS_LOG_DEBUG ("Got an old packet. Do nothing");
+      return;
     }
-  else
+
+  WifiMacQueue::ConstIterator it = m_retryPackets->PeekByTidAndAddress (tid, recipient);
+
+  while (it != m_retryPackets->end ())
     {
-      for (WifiMacQueue::ConstIterator it = m_retryPackets->begin (); it != m_retryPackets->end (); )
+      if (mpdu->GetHeader ().GetSequenceControl () == (*it)->GetHeader ().GetSequenceControl ())
         {
-          if (((item->GetHeader ().GetSequenceNumber () - (*it)->GetHeader ().GetSequenceNumber () + 4096) % 4096) > 2047)
-            {
-              m_retryPackets->Insert (it, item);
-              break;
-            }
-          else
-            {
-              it++;
-              if (it == m_retryPackets->end ())
-                {
-                  m_retryPackets->Enqueue (item);
-                }
-            }
+          NS_LOG_DEBUG ("Packet already in the retransmit queue");
+          return;
         }
+
+      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+
+      if (mpduDist < dist ||
+          (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () < (*it)->GetHeader ().GetFragmentNumber ()))
+        {
+          break;
+        }
+
+      it = m_retryPackets->PeekByTidAndAddress (tid, recipient, ++it);
     }
+  m_retryPackets->Insert (it, mpdu);
 }
 
 uint16_t

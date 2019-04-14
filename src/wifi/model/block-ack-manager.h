@@ -343,15 +343,6 @@ public:
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
   /**
-   * Checks if the packet already exists in the retransmit queue or not if it does then it doesn't add it again
-   *
-   * \param currentSeq the current sequence
-   * \param recipient the destination address
-   * \param tid the Traffic ID
-   * \returns true if the packet already exists
-   */
-  bool AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid) const;
-  /**
    * This function returns true if the lifetime of the packets a BAR refers to didn't
    * expire yet otherwise it returns false.
    * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
@@ -490,12 +481,12 @@ private:
                    std::pair<OriginatorBlockAckAgreement, PacketQueue> >::const_iterator AgreementsCI;
 
   /**
-   * \param item the packet to insert in the retransmission queue
+   * \param mpdu the packet to insert in the retransmission queue
    *
-   * Insert item in retransmission queue.
+   * Insert mpdu in retransmission queue.
    * This method ensures packets are retransmitted in the correct order.
    */
-  void InsertInRetryQueue (Ptr<WifiMacQueueItem> item);
+  void InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu);
 
   /**
    * Remove an item from retransmission queue.
