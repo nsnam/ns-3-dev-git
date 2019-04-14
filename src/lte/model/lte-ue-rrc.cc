@@ -3047,8 +3047,6 @@ LteUeRrc::LeaveConnectedMode ()
        measIdIt != m_varMeasConfig.measIdList.end (); ++measIdIt)
     {
       VarMeasReportListClear (measIdIt->second.measId);
-      CancelEnteringTrigger (measIdIt->second.measId, measIdIt->first);
-
     }
   m_varMeasConfig.measIdList.clear ();
 
