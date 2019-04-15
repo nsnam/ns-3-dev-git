@@ -1,5 +1,5 @@
 import math
-from . import core
+from .base import PIXELS_PER_METER
 from gi.repository import Pango
 from gi.repository import Gtk
 from gi.repository import GooCanvas
@@ -147,20 +147,20 @@ class Axes(object):
         self.hlines.set_property("line-width", line_width)
         yc = y2 - line_width/2
 
-        sim_x1 = x1/core.PIXELS_PER_METER
-        sim_x2 = x2/core.PIXELS_PER_METER
+        sim_x1 = x1/PIXELS_PER_METER
+        sim_x2 = x2/PIXELS_PER_METER
         x0, xdiv = self._compute_divisions(sim_x1, sim_x2)
         path = ["M %r %r L %r %r" % (x1, yc, x2, yc)]
         x = x0
         while x < sim_x2:
-            path.append("M %r %r L %r %r" % (core.PIXELS_PER_METER*x, yc - offset, core.PIXELS_PER_METER*x, yc))
+            path.append("M %r %r L %r %r" % (PIXELS_PER_METER*x, yc - offset, PIXELS_PER_METER*x, yc))
             label = get_label()
             label.set_properties(font=("Sans Serif %f" % int(12/zoom)),
                                  text=("%G" % x),
                                  fill_color_rgba=self.color,
                                  alignment=Pango.Alignment.CENTER,
                                  # anchor=Gtk.Widget.ANCHOR_S,
-                                 x=core.PIXELS_PER_METER*x,
+                                 x=PIXELS_PER_METER*x,
                                  y=(yc - offset))
             x += xdiv
         del x
@@ -171,15 +171,15 @@ class Axes(object):
         self.vlines.set_property("line-width", line_width)
         xc = x1 + line_width/2
 
-        sim_y1 = y1/core.PIXELS_PER_METER
-        sim_y2 = y2/core.PIXELS_PER_METER
+        sim_y1 = y1/PIXELS_PER_METER
+        sim_y2 = y2/PIXELS_PER_METER
 
 
         y0, ydiv = self._compute_divisions(sim_y1, sim_y2)
         path = ["M %r %r L %r %r" % (xc, y1, xc, y2)]
         y = y0
         while y < sim_y2:
-            path.append("M %r %r L %r %r" % (xc, core.PIXELS_PER_METER*y, xc + offset, core.PIXELS_PER_METER*y))
+            path.append("M %r %r L %r %r" % (xc, PIXELS_PER_METER*y, xc + offset, PIXELS_PER_METER*y))
             label = get_label()
             label.set_properties(font=("Sans Serif %f" % int(12/zoom)),
                                  text=("%G" % y),
@@ -187,7 +187,7 @@ class Axes(object):
                                  alignment=Pango.Alignment.LEFT,
                                  # anchor=Gtk.ANCHOR_W,
                                  x=xc + offset,
-                                 y=core.PIXELS_PER_METER*y)
+                                 y=PIXELS_PER_METER*y)
             y += ydiv
 
         self.vlines.set_property("data", " ".join(path))
