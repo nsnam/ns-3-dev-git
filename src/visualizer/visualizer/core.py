@@ -38,6 +38,7 @@ try:
     import gi
     gi.require_version('GooCanvas', '2.0')
     gi.require_version('Gtk', '3.0')
+    gi.require_version('Gdk', '3.0')
     from gi.repository import GObject
     from gi.repository import GLib
     import cairo
@@ -1097,9 +1098,15 @@ class Visualizer(GObject.GObject):
         vbox.pack_start(self._create_advanced_controls(), False, False, 4)
 
         display = Gdk.Display.get_default()
-        monitor = display.get_primary_monitor()
-        geometry = monitor.get_geometry()
-        scale_factor = monitor.get_scale_factor()
+        try:
+            monitor = display.get_primary_monitor()
+            geometry = monitor.get_geometry()
+            scale_factor = monitor.get_scale_factor()
+        except AttributeError:
+            screen = display.get_default_screen()
+            monitor_id = screen.get_primary_monitor()
+            geometry = screen.get_monitor_geometry(monitor_id)
+            scale_factor = screen.get_monitor_scale_factor(monitor_id)
         width = scale_factor * geometry.width
         height = scale_factor * geometry.height
         self.window.set_default_size(width * 2 / 3, height * 2 / 3)
