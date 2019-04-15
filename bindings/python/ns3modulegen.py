@@ -81,7 +81,7 @@ class MyMultiSectionFactory(MultiSectionFactory):
     def close(self):
         self.header_sink.file.close()
         self.main_sink.file.close()
-        for sink in self.section_sinks.itervalues():
+        for sink in self.section_sinks.values():
             sink.file.close()
 
 

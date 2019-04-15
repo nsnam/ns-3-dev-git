@@ -1,5 +1,5 @@
-import core
 import math
+from . import core
 from gi.repository import Pango
 from gi.repository import Gtk
 from gi.repository import GooCanvas

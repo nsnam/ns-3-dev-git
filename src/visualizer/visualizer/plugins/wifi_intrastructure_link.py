@@ -131,7 +131,7 @@ class WifiLinkMonitor(object):
         self.access_points = {}
         self.stations = []
 
-        for node in viz.nodes.itervalues():
+        for node in viz.nodes.values():
             ns3_node = ns.network.NodeList.GetNode(node.node_index)
             for devI in range(ns3_node.GetNDevices()):
                 dev = ns3_node.GetDevice(devI)

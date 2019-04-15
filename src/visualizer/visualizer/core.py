@@ -31,6 +31,9 @@ import math
 import os
 import sys
 
+if sys.version_info > (3,):
+    long = int
+
 try:
     import gi
     gi.require_version('GooCanvas', '2.0')
@@ -45,13 +48,14 @@ try:
     from gi.repository import Pango
     from gi.repository import GooCanvas
     import threading
-    import hud
+    from . import hud
     #import time
     try:
         import svgitem
     except ImportError:
         svgitem = None
-except ImportError as _import_error:
+except ImportError as e:
+    _import_error = e
     import dummy_threading as threading
 else:
     _import_error = None
@@ -61,10 +65,10 @@ try:
 except ImportError:
     ipython_view = None
 
-from base import InformationWindow, PyVizObject, Link, lookup_netdevice_traits, PIXELS_PER_METER
-from base import transform_distance_simulation_to_canvas, transform_point_simulation_to_canvas
-from base import transform_distance_canvas_to_simulation, transform_point_canvas_to_simulation
-from base import load_plugins, register_plugin, plugins
+from .base import InformationWindow, PyVizObject, Link, lookup_netdevice_traits, PIXELS_PER_METER
+from .base import transform_distance_simulation_to_canvas, transform_point_simulation_to_canvas
+from .base import transform_distance_canvas_to_simulation, transform_point_canvas_to_simulation
+from .base import load_plugins, register_plugin, plugins
 
 PI_OVER_2 = math.pi/2
 PI_TIMES_2 = math.pi*2
@@ -773,7 +777,7 @@ class Visualizer(GObject.GObject):
         assert isinstance(mode, ShowTransmissionsMode)
         self._show_transmissions_mode = mode
         if self._show_transmissions_mode == ShowTransmissionsMode.ALL:
-            self.simulation.set_nodes_of_interest(range(ns.network.NodeList.GetNNodes()))
+            self.simulation.set_nodes_of_interest(list(range(ns.network.NodeList.GetNNodes())))
         elif self._show_transmissions_mode == ShowTransmissionsMode.NONE:
             self.simulation.set_nodes_of_interest([])
         elif self._show_transmissions_mode == ShowTransmissionsMode.SELECTED:
@@ -854,7 +858,7 @@ class Visualizer(GObject.GObject):
         settings_hbox.pack_start(vbox, False, False, 6)
         self.node_size_adjustment = scale.get_adjustment()
         def node_size_changed(adj):
-            for node in self.nodes.itervalues():
+            for node in self.nodes.values():
                 node.set_size(adj.get_value())
         self.node_size_adjustment.connect("value-changed", node_size_changed)
         self.node_size_adjustment.set_lower(0.01)
@@ -1218,7 +1222,7 @@ class Visualizer(GObject.GObject):
         self.emit("update-view")
 
     def _update_node_positions(self):
-        for node in self.nodes.itervalues():
+        for node in self.nodes.values():
             if node.has_mobility:
                 ns3_node = ns.network.NodeList.GetNode(node.node_index)
                 mobility = ns3_node.GetObject(ns.mobility.MobilityModel.GetTypeId())
@@ -1300,7 +1304,7 @@ class Visualizer(GObject.GObject):
 
         k = self.node_size_adjustment.get_value()/5
 
-        for (transmitter_id, receiver_id), (rx_bytes, rx_count) in transmissions_average.iteritems():
+        for (transmitter_id, receiver_id), (rx_bytes, rx_count) in transmissions_average.items():
             transmitter = self.get_node(transmitter_id)
             receiver = self.get_node(receiver_id)
             try:
@@ -1381,7 +1385,7 @@ class Visualizer(GObject.GObject):
 
         k = self.node_size_adjustment.get_value()/5
 
-        for transmitter_id, (drop_bytes, drop_count) in drops_average.iteritems():
+        for transmitter_id, (drop_bytes, drop_count) in drops_average.items():
             transmitter = self.get_node(transmitter_id)
             try:
                 arrow, label = old_arrows.pop()
@@ -1497,7 +1501,7 @@ class Visualizer(GObject.GObject):
         if not self.nodes:
             return
         self._update_node_positions()
-        positions = [node.get_position() for node in self.nodes.itervalues()]
+        positions = [node.get_position() for node in self.nodes.values()]
         min_x, min_y = min(x for (x,y) in positions), min(y for (x,y) in positions)
         max_x, max_y = max(x for (x,y) in positions), max(y for (x,y) in positions)
         min_x_px, min_y_px = self.canvas.convert_to_pixels(min_x, min_y)

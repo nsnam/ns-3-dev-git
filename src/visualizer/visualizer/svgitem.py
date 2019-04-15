@@ -120,7 +120,7 @@ class SvgItem(GooCanvas.ItemSimple):
             self.changed(True)
 
         else:
-            raise AttributeError, 'unknown property %s' % pspec.name
+            raise AttributeError('unknown property %s' % pspec.name)
 
     def _size_changed(self):
         """!
@@ -172,7 +172,7 @@ class SvgItem(GooCanvas.ItemSimple):
             return self.height
 
         else:
-            raise AttributeError, 'unknown property %s' % pspec.name
+            raise AttributeError('unknown property %s' % pspec.name)
 
     def do_simple_paint(self, cr, bounds):
         """!
