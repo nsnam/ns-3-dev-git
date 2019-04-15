@@ -430,10 +430,6 @@ public:
 
 private:
   /**
-   * This method removes packets whose lifetime was exceeded.
-   */
-  void CleanupBuffers (void);
-  /**
    * Inactivity timeout function
    * \param recipient the recipient MAC address
    * \param tid Traffic ID

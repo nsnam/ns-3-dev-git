@@ -67,6 +67,7 @@ BlockAckManager::BlockAckManager ()
 {
   NS_LOG_FUNCTION (this);
   m_retryPackets = CreateObject<WifiMacQueue> ();
+  m_retryPackets->TraceConnectWithoutContext ("Expired", MakeCallback (&BlockAckManager::NotifyDiscardedMpdu, this));
 }
 
 BlockAckManager::~BlockAckManager ()
@@ -276,7 +277,6 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 bool
 BlockAckManager::HasBar (Bar &bar, bool remove)
 {
-  CleanupBuffers ();
   if (m_bars.size () > 0)
     {
       bar = m_bars.front ();
@@ -712,7 +712,6 @@ bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Ma
   //The standard says the BAR gets discarded when all MSDUs lifetime expires
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  CleanupBuffers ();
   if (QosUtilsIsOldPacket (it->second.first.GetStartingSequence (), seqNumber))
     {
       return false;
@@ -813,43 +812,6 @@ BlockAckManager::SetStartingSequence (Mac48Address recipient, uint8_t tid, uint1
 
   // update the starting sequence number
   agreementIt->second.first.SetStartingSequence (startingSeq);
-}
-
-void
-BlockAckManager::CleanupBuffers (void)
-{
-  NS_LOG_FUNCTION (this);
-  for (AgreementsI j = m_agreements.begin (); j != m_agreements.end (); j++)
-    {
-      bool removed = false;
-      if (j->second.second.empty ())
-        {
-          continue;
-        }
-      Time now = Simulator::Now ();
-      for (PacketQueueI i = j->second.second.begin (); i != j->second.second.end (); )
-        {
-          if ((*i)->GetTimeStamp () + m_maxDelay > now)
-            {
-              break;
-            }
-          else
-            {
-              RemoveFromRetryQueue (j->second.first.GetPeer (),
-                                    j->second.first.GetTid (),
-                                    (*i)->GetHeader ().GetSequenceNumber ());
-              j->second.first.SetStartingSequence (((*i)->GetHeader ().GetSequenceNumber () + 1)  % 4096);
-              i = j->second.second.erase (i);
-              removed = true;
-              continue;
-            }
-          i++;
-        }
-      if (removed)
-        {
-          ScheduleBlockAckReq (j->second.first.GetPeer (), j->second.first.GetTid ());
-        }
-    }
 }
 
 void
