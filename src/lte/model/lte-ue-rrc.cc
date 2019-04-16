@@ -148,6 +148,7 @@ LteUeRrc::LteUeRrc ()
     m_csgWhiteList (0),
     m_noOfSyncIndications (0),
     m_leaveConnectedMode (false),
+    m_previousCellId (0),
     m_numberOfComponentCarriers (MIN_NO_CC)
 {
   NS_LOG_FUNCTION (this);
@@ -433,6 +434,13 @@ LteUeRrc::SetImsi (uint64_t imsi)
   m_imsi = imsi;
 }
 
+void
+LteUeRrc::StorePreviousCellId (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << cellId);
+  m_previousCellId = cellId;
+}
+
 uint64_t
 LteUeRrc::GetImsi (void) const
 {
@@ -486,6 +494,13 @@ LteUeRrc::GetState (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_state;
+}
+
+uint16_t
+LteUeRrc::GetPreviousCellId () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_previousCellId;
 }
 
 void
@@ -1040,6 +1055,7 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
               m_cphySapProvider.at(i)->Reset ();
             }
           m_ccmRrcSapProvider->Reset();
+          StorePreviousCellId (m_cellId);
           m_cellId = mci.targetPhysCellId;
           NS_ASSERT (mci.haveCarrierFreq);
           NS_ASSERT (mci.haveCarrierBandwidth);
@@ -3070,7 +3086,8 @@ LteUeRrc::LeaveConnectedMode ()
     }
   SwitchToState (IDLE_START);
   DoStartCellSelection (m_dlEarfcn);
-
+  //Save the cell id UE was attached to
+  StorePreviousCellId (m_cellId);
   DoSetTemporaryCellRnti (0);  // discard temporary cell RNTI
 }
 

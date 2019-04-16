@@ -258,6 +258,13 @@ public:
   void SetImsi (uint64_t imsi);
 
   /**
+   * \brief Store the previous cell id
+   *
+   * \param The cell id of the previous cell the UE was attached to
+   */
+  void StorePreviousCellId (uint16_t cellId);
+
+  /**
    *
    * \return imsi the unique UE identifier
    */
@@ -300,6 +307,13 @@ public:
    * \return the current state
    */
   State GetState () const;
+
+  /**
+   * \brief Get the previous cell id
+   *
+   * \return The cell Id of the previous cell the UE was attached to.
+   */
+  uint16_t GetPreviousCellId () const;
 
   /** 
    * 
@@ -1248,6 +1262,8 @@ private:
   uint8_t m_noOfSyncIndications; ///< number of in-sync or out-of-sync indications coming from PHY layer
 
   bool m_leaveConnectedMode; ///< true if UE NAS ask UE RRC to leave connected mode, e.g., after RLF, i.e. T310 has expired
+
+  uint16_t m_previousCellId; ///< the cell id of the previous cell UE was attached to
 
   /**
    * \brief Radio link failure detected function
