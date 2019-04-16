@@ -44,7 +44,11 @@ cpp_examples = [
     ("lena-simple-epc --simTime=1.1 --ns3::LteHelper::Scheduler=ns3::FdBetFfMacScheduler", "options.valgrind", "True"),
     ("lena-ipv6-addr-conf", "True", "True"), 
     ("lena-ipv6-ue-rh", "True", "True"), 
-    ("lena-ipv6-ue-ue", "True", "True"), 
+    ("lena-ipv6-ue-ue", "True", "True"),
+    ("lena-radio-link-failure --numberOfEnbs=1 --simTime=17", "True", "True"),
+    ("lena-radio-link-failure --numberOfEnbs=2 --interSiteDistance=700 --simTime=17", "True", "True"),
+    ("lena-radio-link-failure --numberOfEnbs=1 --useIdealRrc=0 --simTime=17", "True", "True"),
+    ("lena-radio-link-failure --numberOfEnbs=2 --useIdealRrc=0 --interSiteDistance=700 --simTime=17", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

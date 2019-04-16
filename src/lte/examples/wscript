@@ -61,6 +61,10 @@ def build(bld):
     obj = bld.create_ns3_program('lena-uplink-power-control',
                                  ['lte'])
     obj.source = 'lena-uplink-power-control.cc'
+
+    obj = bld.create_ns3_program('lena-radio-link-failure',
+                                 ['lte'])
+    obj.source = 'lena-radio-link-failure.cc'
     
     if bld.env['ENABLE_EMU']:
         obj = bld.create_ns3_program('lena-simple-epc-emu',
