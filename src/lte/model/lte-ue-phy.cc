@@ -506,6 +506,19 @@ void
 LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
+  /**
+   * We do not generate the CQI report
+   * when the UE is not synchronized to any cell.
+   *
+   * Also, the RLF is detected after the DL CTRL
+   * is received by the UE,therefore, we do not need
+   * to generate the CQI reports and the UE measurements
+   * for a CTRL for which the RLF has been detected.
+   */
+  if (m_cellId == 0)
+    {
+      return;
+    }
   
   GenerateCqiRsrpRsrq (sinr);
 }
@@ -652,8 +665,21 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
+  /**
+   * We do not generate the CQI report
+   * when the UE is not synchronized to any cell.
+   *
+   * Also, the RLF is detected after the DL CTRL
+   * is received by the UE,therefore, we do not need
+   * to generate the CQI reports and the UE measurements
+   * for a CTRL for which the RLF has been detected.
+   */
+  if (m_cellId == 0)
+    {
+      return;
+    }
+
   NS_ASSERT (m_state != CELL_SEARCH);
-  NS_ASSERT (m_cellId > 0);
 
   SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
   if (m_dataInterferencePowerUpdated)
