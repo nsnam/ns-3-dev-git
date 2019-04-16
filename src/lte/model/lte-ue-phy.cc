@@ -1439,6 +1439,7 @@ LteUePhy::DoResetPhyAfterRlf ()
   m_downlinkSpectrumPhy->m_harqPhyModule->ClearDlHarqBuffer (m_rnti); //flush HARQ buffers
   m_dataInterferencePowerUpdated = false;
   m_rsInterferencePowerUpdated = false;
+  m_pssReceived = false;
   DoReset ();
 }
 
