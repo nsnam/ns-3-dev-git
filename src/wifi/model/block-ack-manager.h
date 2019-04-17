@@ -426,21 +426,31 @@ public:
    */
   typedef void (* AgreementStateTracedCallback)(Time now, Mac48Address recipient, uint8_t tid, OriginatorBlockAckAgreement::State state);
 
+  /**
+   * \param mpdu the discarded frame
+   *
+   * Notify the block ack manager that an MPDU has been discarded, e.g., because
+   * the MSDU lifetime expired. If there is an established block ack agreement,
+   * make the transmit window advance beyond the discarded frame. This also
+   * involves (i) the removal of frames that consequently become old from the
+   * retransmit queue and from the queue of the block ack agreement, and (ii) the
+   * scheduling of a block ack request.
+   */
+  void NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+
+  /**
+   * \param recipient the recipient
+   * \param tid the TID
+   *
+   * Enqueue a block ack request for the established BA agreement
+   * (<i>recipient</i>,<i>tid</i>) into the queue storing the next
+   * BAR frames to transmit. If a BAR for the given agreement is
+   * already present in the queue, it is replaced by the new one.
+   */
+  void ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid);
+
 
 private:
-  /**
-   * \param recipient
-   * \param tid
-   *
-   * \return a packet
-   *
-   * Checks if all packets, for which a block ack agreement was established or refreshed,
-   * have been transmitted. If yes, adds a pair in m_bAckReqs to indicate that
-   * at next channel access a block ack request (for established agreement
-   * <i>recipient</i>,<i>tid</i>) is needed.
-   */
-  Ptr<Packet> ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t tid);
-
   /**
    * This method removes packets whose lifetime was exceeded.
    */
@@ -451,6 +461,18 @@ private:
    * \param tid Traffic ID
    */
   void InactivityTimeout (Mac48Address recipient, uint8_t tid);
+
+  /**
+   * Set the starting sequence number for the agreement with recipient equal to
+   * <i>recipient</i> and TID equal to <i>tid</i> to the given <i>startingSeq</i>.
+   * Also, remove packets that became old from the retransmit queue and from the
+   * queue of outstanding packets.
+   *
+   * \param recipient the recipient MAC address
+   * \param tid Traffic ID
+   * \param startingSeq the new starting sequence number
+   */
+  void SetStartingSequence (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
 
   /**
    * typedef for a list of WifiMacQueueItem.
@@ -489,7 +511,7 @@ private:
   void InsertInRetryQueue (Ptr<WifiMacQueueItem> item);
 
   /**
-   * Remove items from retransmission queue.
+   * Remove an item from retransmission queue.
    * This method should be called when packets are acknowledged.
    *
    * \param address recipient mac address of the packet to be removed
@@ -497,6 +519,17 @@ private:
    * \param seq sequence number of the packet to be removed
    */
   void RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t seq);
+
+  /**
+   * Remove a range of items from retransmission queue.
+   * This method should be called when packets are acknowledged.
+   *
+   * \param address recipient mac address of the packet to be removed
+   * \param tid Traffic ID of the packet to be removed
+   * \param startSeq sequence number of the first packet to be removed
+   * \param endSeq sequence number of the last packet to be removed
+   */
+  void RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16_t startSeq, uint16_t endSeq);
 
   /**
    * This data structure contains, for each block ack agreement (recipient, tid), a set of packets
