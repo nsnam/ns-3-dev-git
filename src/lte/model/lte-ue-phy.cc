@@ -519,7 +519,7 @@ LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
     {
       return;
     }
-  
+  m_ctrlSinrForRlf = sinr;
   GenerateCqiRsrpRsrq (sinr);
 }
 
@@ -581,18 +581,13 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
         }
       double rsrp = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
       // averaged SINR among RBs
-      sum = 0.0;
-      rbNum = 0;
-      for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
-        {
-          sum += (*it);
-          rbNum++;
-        }
-      double avSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
+      double avSinr = ComputeAvrgSinr (sinr);
+
       NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr << " ComponentCarrierId " << (uint16_t) m_componentCarrierId);
       if (m_isConnected) //trigger RLF detection only when UE has an active RRC connection
         {
-          RlfDetection (10 * log10 (avSinr));
+          double avrgSinrForRlf = ComputeAvrgSinr (m_ctrlSinrForRlf);
+          RlfDetection (10 * log10 (avrgSinrForRlf));
         }
 
       m_reportCurrentCellRsrpSinrTrace (m_cellId, m_rnti, rsrp, avSinr, (uint16_t) m_componentCarrierId);
@@ -654,6 +649,27 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
 
 } // end of void LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 
+double
+LteUePhy::ComputeAvrgSinr (const SpectrumValue& sinr)
+{
+  NS_LOG_FUNCTION (this);
+
+  // averaged SINR among RBs
+  double sum = 0.0;
+  uint8_t rbNum = 0;
+  Values::const_iterator it;
+
+  for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
+    {
+      sum += (*it);
+      rbNum++;
+    }
+
+  double avrgSinr = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
+
+  return avrgSinr;
+}
+
 void
 LteUePhy::GenerateDataCqiReport (const SpectrumValue& sinr)
 {
@@ -680,6 +696,11 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
     }
 
   NS_ASSERT (m_state != CELL_SEARCH);
+  //NOTE: The SINR received by this method is
+  //based on CTRL, which is not used to compute
+  //PDSCH (i.e., data) based SINR. Luckily, we can use
+  //it for RLF detection.
+  m_ctrlSinrForRlf = sinr;
 
   SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
   if (m_dataInterferencePowerUpdated)

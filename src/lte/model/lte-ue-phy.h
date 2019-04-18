@@ -554,6 +554,13 @@ private:
    * If equals to 0, no layer 3 filtering is applicable.
    */
   void DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient);
+  /**
+   * \brief Compute average SINR among the RBs
+   *
+   * \param sinr
+   * \return the average SINR value
+   */
+  double ComputeAvrgSinr (const SpectrumValue& sinr);
 
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);
@@ -750,6 +757,7 @@ private:
   uint16_t m_numOfSubframes; ///< count the number of subframes for which the downlink radio link quality is estimated
   uint16_t m_numOfFrames; ///< count the number of frames for which the downlink radio link quality is estimated
   double m_sinrDbFrame; ///< the average SINR per radio frame
+  SpectrumValue m_ctrlSinrForRlf; ///< the CTRL SINR used for RLF detection
 
 }; // end of `class LteUePhy`
 
