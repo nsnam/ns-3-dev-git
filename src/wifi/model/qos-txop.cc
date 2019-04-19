@@ -173,17 +173,36 @@ QosTxop::PeekNextSequenceNumberFor (const WifiMacHeader *hdr)
   return m_txMiddle->PeekNextSequenceNumberFor (hdr);
 }
 
-Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient)
+bool
+QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
 {
-  return m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
+  NS_LOG_FUNCTION (this << *mpdu);
+
+  if (!mpdu->GetHeader ().IsQosData ())
+    {
+      return false;
+    }
+
+  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
+  uint8_t tid = mpdu->GetHeader ().GetQosTid ();
+
+  if (!GetBaAgreementEstablished (recipient, tid))
+    {
+      return false;
+    }
+
+  if (QosUtilsIsOldPacket (GetBaStartingSequence (recipient, tid),
+                           mpdu->GetHeader ().GetSequenceNumber ()))
+    {
+      return true;
+    }
+  return false;
 }
 
 Ptr<const WifiMacQueueItem>
 QosTxop::PeekNextFrame (void)
 {
   NS_LOG_FUNCTION (this);
-  Ptr<const WifiMacQueueItem> item;
   WifiMacQueue::ConstIterator it;
 
   // check if there is a packet in the MacLow aggregation queue
@@ -192,92 +211,131 @@ QosTxop::PeekNextFrame (void)
       if (QosUtilsMapTidToAc (tid) == m_ac)
         {
           it = m_low->GetAggregateQueue ()->PeekByTid (tid);
+          // remove old packets
+          while (it != m_low->GetAggregateQueue ()->end () && IsQosOldPacket (*it))
+            {
+              NS_LOG_DEBUG ("removing an old packet from MacLow aggregation queue: " << **it);
+              it = m_low->GetAggregateQueue ()->Remove (it);
+              it = m_low->GetAggregateQueue ()->PeekByTid (tid, it);
+            }
           if (it != m_low->GetAggregateQueue ()->end ())
             {
-              item = *it;
-              break;
+              NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue: " << **it);
+              return *it;
             }
         }
     }
 
-  if (item != 0)
-    {
-      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue, " << *item);
-      return item;
-    }
-
   // otherwise, check if there is a packet in the BlockAckManager retransmit queue
-  item = m_baManager->GetNextPacket (false);
-
-  if (item != 0)
+  it = m_baManager->GetRetransmitQueue ()->PeekFirstAvailable ();
+  // remove old packets
+  while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
     {
-      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << *item);
-      return item;
+      NS_LOG_DEBUG ("removing an old packet from BlockAckManager retransmit queue: " << **it);
+      it = m_baManager->GetRetransmitQueue ()->Remove (it);
+      it = m_baManager->GetRetransmitQueue ()->PeekFirstAvailable (nullptr, it);
+    }
+  if (it != m_baManager->GetRetransmitQueue ()->end ())
+    {
+      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << **it);
+      return *it;
     }
 
   // otherwise, check if there is a packet in the EDCA queue
   it = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
-
   if (it != m_queue->end ())
     {
-      item = *it;
-      // set the sequence number by just peeking the next value
-      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
-      WifiMacHeader hdr = item->GetHeader ();
+      // peek the next sequence number and check if it is within the transmit window
+      // in case of QoS data frame
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&(*it)->GetHeader ());
+      if ((*it)->GetHeader ().IsQosData ())
+        {
+          Mac48Address recipient = (*it)->GetHeader ().GetAddr1 ();
+          uint8_t tid = (*it)->GetHeader ().GetQosTid ();
+
+          if (GetBaAgreementEstablished (recipient, tid)
+              && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
+            {
+              NS_LOG_DEBUG ("packet beyond the end of the current transmit window");
+              return 0;
+            }
+        }
+
+      WifiMacHeader hdr = (*it)->GetHeader ();
       hdr.SetSequenceNumber (sequence);
       hdr.SetFragmentNumber (0);
       hdr.SetNoMoreFragments ();
       hdr.SetNoRetry ();
-      item = Create<const WifiMacQueueItem> (item->GetPacket (), hdr, item->GetTimeStamp ());
+      Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> ((*it)->GetPacket (), hdr, (*it)->GetTimeStamp ());
       NS_LOG_DEBUG ("packet peeked from EDCA queue: " << *item);
+      return item;
     }
 
-  return item;
+  return 0;
 }
 
 Ptr<const WifiMacQueueItem>
 QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
 {
   NS_LOG_FUNCTION (this << +tid << recipient);
-  Ptr<const WifiMacQueueItem> item;
+  WifiMacQueue::ConstIterator it;
 
   // check if there is a packet in the MacLow aggregation queue
-  WifiMacQueue::ConstIterator it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
-
+  it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+  // remove old packets
+  while (it != m_low->GetAggregateQueue ()->end () && IsQosOldPacket (*it))
+    {
+      NS_LOG_DEBUG ("removing an old packet from MacLow aggregation queue: " << **it);
+      it = m_low->GetAggregateQueue ()->Remove (it);
+      it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient, it);
+    }
   if (it != m_low->GetAggregateQueue ()->end ())
     {
-      item = *it;
-      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue, " << *item);
-      return item;
+      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue: " << **it);
+      return *it;
     }
 
   // otherwise, check if there is a packet in the BlockAckManager retransmit queue
-  item = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
-
-  if (item != 0)
+  it = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient);
+  // remove old packets
+  while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
     {
-      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << *item);
-      return item;
+      NS_LOG_DEBUG ("removing an old packet from BlockAckManager retransmit queue: " << **it);
+      it = m_baManager->GetRetransmitQueue ()->Remove (it);
+      it = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient, it);
+    }
+  if (it != m_baManager->GetRetransmitQueue ()->end ())
+    {
+      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << **it);
+      return *it;
     }
 
   // otherwise, check if there is a packet in the EDCA queue
   it = m_queue->PeekByTidAndAddress (tid, recipient);
-
   if (it != m_queue->end ())
     {
-      item = *it;
-      // set the sequence number by just peeking the next value
-      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&item->GetHeader ());
-      WifiMacHeader hdr = item->GetHeader ();
+      // peek the next sequence number and check if it is within the transmit window
+      // in case of QoS data frame
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&(*it)->GetHeader ());
+      if ((*it)->GetHeader ().IsQosData ()
+          && GetBaAgreementEstablished (recipient, tid)
+          && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
+        {
+          NS_LOG_DEBUG ("packet beyond the end of the current transmit window");
+          return 0;
+        }
+
+      WifiMacHeader hdr = (*it)->GetHeader ();
       hdr.SetSequenceNumber (sequence);
       hdr.SetFragmentNumber (0);
       hdr.SetNoMoreFragments ();
       hdr.SetNoRetry ();
-      item = Create<const WifiMacQueueItem> (item->GetPacket (), hdr, item->GetTimeStamp ());
+      Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> ((*it)->GetPacket (), hdr, (*it)->GetTimeStamp ());
       NS_LOG_DEBUG ("packet peeked from EDCA queue: " << *item);
+      return item;
     }
 
-  return item;
+  return 0;
 }
 
 bool
@@ -356,6 +414,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
   Ptr<WifiMacQueueItem> item;
   Ptr<const WifiMacQueueItem> testItem;
+  WifiMacQueue::ConstIterator testIt;
 
   // the packet can only have been peeked from the Block Ack manager retransmit
   // queue or the MacLow aggregation queue if:
@@ -366,26 +425,32 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
-      WifiMacQueue::ConstIterator testIt = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
+      testIt = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
 
       if (testIt != m_low->GetAggregateQueue ()->end ())
         {
           testItem = *testIt;
           // if not null, the test packet must equal the peeked packet
           NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
-          item = m_low->GetAggregateQueue ()->DequeueByTidAndAddress (tid, recipient);
+          // we should not be asked to dequeue an old packet
+          NS_ASSERT (!QosUtilsIsOldPacket (GetBaStartingSequence (recipient, tid),
+                                           testItem->GetHeader ().GetSequenceNumber ()));
+          item = m_low->GetAggregateQueue ()->Dequeue (testIt);
           NS_LOG_DEBUG ("dequeued from aggregation queue: " << *item);
           return item;
         }
 
-      testItem = m_baManager->PeekNextPacketByTidAndAddress (tid, recipient);
+      testIt = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient);
 
-      if (testItem)
+      if (testIt != m_baManager->GetRetransmitQueue ()->end ())
         {
+          testItem = *testIt;
           // if not null, the test packet must equal the peeked packet
           NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
-          item = Create<WifiMacQueueItem> (*peekedItem);
-          m_baManager->RemovePacket (tid, recipient, testItem->GetHeader ().GetSequenceNumber ());
+          // we should not be asked to dequeue an old packet
+          NS_ASSERT (!QosUtilsIsOldPacket (GetBaStartingSequence (recipient, tid),
+                                           testItem->GetHeader ().GetSequenceNumber ()));
+          item = m_baManager->GetRetransmitQueue ()->Dequeue (testIt);
           NS_LOG_DEBUG ("dequeued from BA manager queue: " << *item);
           return item;
         }
@@ -394,14 +459,25 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   // NOTE if frames other than QoS Data frame can be aggregated into A-MPDUs and hence
   // potentially stored in the MacLow aggregation queue, then handle them here
 
-  // the packet has been peeked from the EDCA queue. If it is a QoS Data frame and
-  // it is not a broadcast frame, attempt A-MSDU aggregation if aggregate is true
+  // the packet has been peeked from the EDCA queue.
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&peekedItem->GetHeader ());
+
+  // If it is a QoS Data frame and it is not a broadcast frame, attempt A-MSDU
+  // aggregation if aggregate is true
   if (peekedItem->GetHeader ().IsQosData ())
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
-      WifiMacQueue::ConstIterator testIt = m_queue->PeekByTidAndAddress (tid, recipient);
+      testIt = m_queue->PeekByTidAndAddress (tid, recipient);
 
       NS_ASSERT (testIt != m_queue->end () && (*testIt)->GetPacket () == peekedItem->GetPacket ());
+
+      // check if the peeked packet is within the transmit window
+      if (GetBaAgreementEstablished (recipient, tid)
+          && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
+        {
+          NS_LOG_DEBUG ("packet beyond the end of the current transmit window");
+          return 0;
+        }
 
       // try A-MSDU aggregation
       if (m_low->GetMsduAggregator () != 0 && !recipient.IsBroadcast () && aggregate)
@@ -415,7 +491,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
         }
       else  // aggregation was not attempted or failed
         {
-          item = m_queue->DequeueByTidAndAddress (tid, recipient);
+          item = m_queue->Dequeue (testIt);
         }
     }
   else
@@ -428,7 +504,6 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
 
   // Assign a sequence number to the MSDU or A-MSDU dequeued from the EDCA queue
   NS_ASSERT (item != 0);
-  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&item->GetHeader ());
   item->GetHeader ().SetSequenceNumber (sequence);
   item->GetHeader ().SetFragmentNumber (0);
   item->GetHeader ().SetNoMoreFragments ();

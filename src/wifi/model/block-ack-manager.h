@@ -154,15 +154,6 @@ public:
    */
   void StorePacket (Ptr<WifiMacQueueItem> mpdu);
   /**
-   * \param removePacket flag to indicate whether the packet should be removed from the queue.
-   *
-   * \return the packet
-   *
-   * This methods returns a packet (if exists) indicated as not received in
-   * corresponding block ack bitmap.
-   */
-  Ptr<WifiMacQueueItem> GetNextPacket (bool removePacket);
-  /**
    * Returns true if the BAR is scheduled. Returns false otherwise.
    *
    * \param bar
@@ -290,6 +281,12 @@ public:
    * and buffered packets) is greater of <i>nPackets</i>, they are transmitted using block ack mechanism.
    */
   void SetBlockAckThreshold (uint8_t nPackets);
+  /**
+   * \return the retransmit queue.
+   *
+   * Return the retransmit queue.
+   */
+  Ptr<WifiMacQueue> GetRetransmitQueue (void);
 
   /**
    * \param queue The WifiMacQueue object.
@@ -355,27 +352,8 @@ public:
    */
   bool AlreadyExists (uint16_t currentSeq, Mac48Address recipient, uint8_t tid) const;
   /**
-   * Remove a packet after you peek in the queue and get it
-   * \param tid the Traffic ID
-   * \param recipient the destination address
-   * \param seqnumber sequence number
-   * \returns true if a packet was removed
-   */
-  bool RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seqnumber);
-  /**
-   * Peek in retransmit queue and get the next packet having address indicated
-   * by <i>type</i> equals to <i>addr</i>, and tid equals to <i>tid</i>.
-   * This method doesn't remove the packet from this queue.
-   *
-   * \param hdr wifi mac header
-   * \param tid Traffic ID
-   * \param timestamp timestamp
-   *
-   * \returns Ptr<const WifiMacQueueItem>
-   */
-  Ptr<const WifiMacQueueItem> PeekNextPacketByTidAndAddress (uint8_t tid, Mac48Address recipient);
-  /**
-   * This function returns true if the lifetime of the packets a BAR refers to didn't expire yet else it returns false.
+   * This function returns true if the lifetime of the packets a BAR refers to didn't
+   * expire yet otherwise it returns false.
    * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
    *
    * \param tid Traffic ID

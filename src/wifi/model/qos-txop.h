@@ -380,14 +380,6 @@ public:
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
-   * Peek in retransmit queue and get the next packet without removing it from the queue.
-   *
-   * \param tid traffic ID.
-   * \param recipient the receiver station address.
-   * \returns the packet.
-   */
-  Ptr<const WifiMacQueueItem> PeekNextRetransmitPacket (uint8_t tid, Mac48Address recipient);
-  /**
    * Peek the next frame to transmit from the Block Ack manager retransmit
    * queue first and, if not found, from the EDCA queue.
    * Note that A-MSDU aggregation is never attempted (this is relevant if the
@@ -541,6 +533,15 @@ private:
    * \param bar the block ack request.
    */
   void SendBlockAckRequest (const Bar &bar);
+  /**
+   * Check if the given MPDU is to be considered old according to the current
+   * starting sequence number of the transmit window, provided that a block ack
+   * agreement has been established with the recipient for the given TID.
+   *
+   * \param mpdu the given MPDU
+   * \return true if the MPDU is to be considered old, false otherwise
+   */
+  bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * For now is typically invoked to complete transmission of a packets sent with ack policy
    * Block Ack: the packet is buffered and dcf is reset.
