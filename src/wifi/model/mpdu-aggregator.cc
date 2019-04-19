@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Ghada Badawy <gbadawy@gmail.com>
+ *         Stefano Avallone <stavallo@unina.it>
  */
 
 #include "ns3/log.h"
@@ -340,7 +341,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
   if (edcaIt->second->GetBaAgreementEstablished (recipient, tid))
     {
       /* here is performed mpdu aggregation */
-      uint16_t startingSequenceNumber = mpdu->GetHeader ().GetSequenceNumber ();
+      uint16_t startingSequenceNumber = edcaIt->second->GetBaStartingSequence (recipient, tid);
       Ptr<WifiMacQueueItem> nextMpdu;
       uint16_t maxMpdus = edcaIt->second->GetBaBufferSize (recipient, tid);
       uint32_t currentAmpduSize = 0;

@@ -194,6 +194,9 @@ BlockAckManager::UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Ad
       agreement.SetBufferSize (respHdr->GetBufferSize () + 1);
       agreement.SetTimeout (respHdr->GetTimeout ());
       agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
+      // update the starting sequence number because some frames may have been sent
+      // under Normal Ack policy after the transmission of the ADDBA Request frame
+      agreement.SetStartingSequence (m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient));
       if (respHdr->IsImmediateBlockAck ())
         {
           agreement.SetImmediateBlockAck ();
@@ -576,7 +579,6 @@ void
 BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);
-  uint16_t sequenceFirstLost = 0;
   if (!blockAck->IsMultiTid ())
     {
       uint8_t tid = blockAck->GetTidInfo ();
@@ -600,72 +602,79 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                                                                         this,
                                                                         recipient, tid);
             }
+
+          uint16_t currentStartingSeq = it->second.first.GetStartingSequence ();
+          uint16_t currentSeq = 4096;   // invalid value
+
           if (blockAck->IsBasic ())
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
-                  if (blockAck->IsFragmentReceived ((*queueIt)->GetHeader ().GetSequenceNumber (),
+                  currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
+                  if (blockAck->IsFragmentReceived (currentSeq,
                                                     (*queueIt)->GetHeader ().GetFragmentNumber ()))
                     {
                       nSuccessfulMpdus++;
-                      RemoveFromRetryQueue (recipient, tid, (*queueIt)->GetHeader ().GetSequenceNumber ());
-                      queueIt = it->second.second.erase (queueIt);
                     }
-                  else
+                  else if (!QosUtilsIsOldPacket (currentStartingSeq, currentSeq))
                     {
                       if (!foundFirstLost)
                         {
                           foundFirstLost = true;
-                          sequenceFirstLost = (*queueIt)->GetHeader ().GetSequenceNumber ();
-                          (*it).second.first.SetStartingSequence (sequenceFirstLost);
+                          SetStartingSequence (recipient, tid, currentSeq);
                         }
                       nFailedMpdus++;
-                      if (!AlreadyExists ((*queueIt)->GetHeader ().GetSequenceNumber (), recipient, tid))
+                      if (!AlreadyExists (currentSeq, recipient, tid))
                         {
                           InsertInRetryQueue (*queueIt);
                         }
-                      queueIt++;
                     }
+                  // in any case, this packet is no longer outstanding
+                  queueIt = it->second.second.erase (queueIt);
+                }
+              // If all frames were acknowledged, move the transmit window past the last one
+              if (!foundFirstLost && currentSeq != 4096)
+                {
+                  SetStartingSequence (recipient, tid, (currentSeq + 1) % 4096);
                 }
             }
           else if (blockAck->IsCompressed () || blockAck->IsExtendedCompressed ())
             {
               for (PacketQueueI queueIt = it->second.second.begin (); queueIt != queueEnd; )
                 {
-                  uint16_t currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
+                  currentSeq = (*queueIt)->GetHeader ().GetSequenceNumber ();
                   if (blockAck->IsPacketReceived (currentSeq))
                     {
-                      while (queueIt != queueEnd
-                             && (*queueIt)->GetHeader ().GetSequenceNumber () == currentSeq)
+                      nSuccessfulMpdus++;
+                      if (!m_txOkCallback.IsNull ())
                         {
-                          nSuccessfulMpdus++;
-                          if (!m_txOkCallback.IsNull ())
-                            {
-                              m_txOkCallback ((*queueIt)->GetHeader ());
-                            }
-                          RemoveFromRetryQueue (recipient, tid, currentSeq);
-                          queueIt = it->second.second.erase (queueIt);
+                          m_txOkCallback ((*queueIt)->GetHeader ());
                         }
                     }
-                  else
+                  else if (!QosUtilsIsOldPacket (currentStartingSeq, currentSeq))
                     {
                       if (!foundFirstLost)
                         {
                           foundFirstLost = true;
-                          sequenceFirstLost = (*queueIt)->GetHeader ().GetSequenceNumber ();
-                          (*it).second.first.SetStartingSequence (sequenceFirstLost);
+                          SetStartingSequence (recipient, tid, currentSeq);
                         }
                       nFailedMpdus++;
                       if (!m_txFailedCallback.IsNull ())
                         {
                           m_txFailedCallback ((*queueIt)->GetHeader ());
                         }
-                      if (!AlreadyExists ((*queueIt)->GetHeader ().GetSequenceNumber (), recipient, tid))
+                      if (!AlreadyExists (currentSeq, recipient, tid))
                         {
                           InsertInRetryQueue (*queueIt);
                         }
-                      queueIt++;
                     }
+                  // in any case, this packet is no longer outstanding
+                  queueIt = it->second.second.erase (queueIt);
+                }
+              // If all frames were acknowledged, move the transmit window past the last one
+              if (!foundFirstLost && currentSeq != 4096)
+                {
+                  SetStartingSequence (recipient, tid, (currentSeq + 1) % 4096);
                 }
             }
           m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
@@ -687,13 +696,26 @@ BlockAckManager::NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid)
       AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
       for (auto& item : it->second.second)
         {
-          //Queue previously transmitted packets that do not already exist in the retry queue.
-          //The first packet is not placed in the retry queue since it should be retransmitted by the invoker.
+          // Queue previously transmitted packets that do not already exist in the retry queue.
           if (!AlreadyExists (item->GetHeader ().GetSequenceNumber (), recipient, tid))
             {
               InsertInRetryQueue (item);
             }
         }
+      // remove all packets from the queue of outstanding packets (they will be
+      // re-inserted if retransmitted)
+      it->second.second.clear ();
+    }
+}
+
+void
+BlockAckManager::DiscardOutstandingMpdus (Mac48Address recipient, uint8_t tid)
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+    {
+      AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+      it->second.second.clear ();
     }
 }
 

@@ -220,13 +220,22 @@ public:
    */
   void NotifyMissedBlockAck (Mac48Address recipient, uint8_t tid);
   /**
+   * \param recipient outstanding frames' receiver.
+   * \param tid Traffic ID.
+   *
+   * Discard all the outstanding MPDUs destined to the given receiver and belonging
+   * to the given TID. Typically, this function is called by ns3::QosTxop object
+   * when it gives up retransmitting either a Block Ack Request or the data frames.
+   */
+  void DiscardOutstandingMpdus (Mac48Address recipient, uint8_t tid);
+  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
    * \return the number of packets buffered for a specified agreement
    *
-   * Returns number of packets buffered for a specified agreement. This methods doesn't return
-   * number of buffered MPDUs but number of buffered MSDUs.
+   * Returns the number of packets buffered for a specified agreement. This methods doesn't return
+   * the number of buffered MPDUs but the number of buffered MSDUs.
    */
   uint32_t GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const;
   /**
