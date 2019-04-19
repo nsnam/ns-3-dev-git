@@ -138,6 +138,7 @@ def maybe_decode(input):
 
 def options(opt):
     # options provided by the modules
+    opt.load('md5_tstamp')
     opt.load('compiler_c')
     opt.load('compiler_cxx')
     opt.load('cflags')
