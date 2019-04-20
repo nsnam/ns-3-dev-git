@@ -205,28 +205,7 @@ QosTxop::PeekNextFrame (void)
   NS_LOG_FUNCTION (this);
   WifiMacQueue::ConstIterator it;
 
-  // check if there is a packet in the MacLow aggregation queue
-  for (uint8_t tid = 0; tid < 8; tid++)
-    {
-      if (QosUtilsMapTidToAc (tid) == m_ac)
-        {
-          it = m_low->GetAggregateQueue ()->PeekByTid (tid);
-          // remove old packets
-          while (it != m_low->GetAggregateQueue ()->end () && IsQosOldPacket (*it))
-            {
-              NS_LOG_DEBUG ("removing an old packet from MacLow aggregation queue: " << **it);
-              it = m_low->GetAggregateQueue ()->Remove (it);
-              it = m_low->GetAggregateQueue ()->PeekByTid (tid, it);
-            }
-          if (it != m_low->GetAggregateQueue ()->end ())
-            {
-              NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue: " << **it);
-              return *it;
-            }
-        }
-    }
-
-  // otherwise, check if there is a packet in the BlockAckManager retransmit queue
+  // check if there is a packet in the BlockAckManager retransmit queue
   it = m_baManager->GetRetransmitQueue ()->PeekFirstAvailable ();
   // remove old packets
   while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
@@ -280,22 +259,7 @@ QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
   NS_LOG_FUNCTION (this << +tid << recipient);
   WifiMacQueue::ConstIterator it;
 
-  // check if there is a packet in the MacLow aggregation queue
-  it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
-  // remove old packets
-  while (it != m_low->GetAggregateQueue ()->end () && IsQosOldPacket (*it))
-    {
-      NS_LOG_DEBUG ("removing an old packet from MacLow aggregation queue: " << **it);
-      it = m_low->GetAggregateQueue ()->Remove (it);
-      it = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient, it);
-    }
-  if (it != m_low->GetAggregateQueue ()->end ())
-    {
-      NS_LOG_DEBUG ("packet peeked from MacLow aggregation queue: " << **it);
-      return *it;
-    }
-
-  // otherwise, check if there is a packet in the BlockAckManager retransmit queue
+  // check if there is a packet in the BlockAckManager retransmit queue
   it = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient);
   // remove old packets
   while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
@@ -417,7 +381,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   WifiMacQueue::ConstIterator testIt;
 
   // the packet can only have been peeked from the Block Ack manager retransmit
-  // queue or the MacLow aggregation queue if:
+  // queue if:
   // - the peeked packet is a QoS Data frame AND
   // - the peeked packet is not a broadcast frame AND
   // - an agreement has been established
@@ -425,21 +389,6 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
-      testIt = m_low->GetAggregateQueue ()->PeekByTidAndAddress (tid, recipient);
-
-      if (testIt != m_low->GetAggregateQueue ()->end ())
-        {
-          testItem = *testIt;
-          // if not null, the test packet must equal the peeked packet
-          NS_ASSERT (testItem->GetPacket () == peekedItem->GetPacket ());
-          // we should not be asked to dequeue an old packet
-          NS_ASSERT (!QosUtilsIsOldPacket (GetBaStartingSequence (recipient, tid),
-                                           testItem->GetHeader ().GetSequenceNumber ()));
-          item = m_low->GetAggregateQueue ()->Dequeue (testIt);
-          NS_LOG_DEBUG ("dequeued from aggregation queue: " << *item);
-          return item;
-        }
-
       testIt = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient);
 
       if (testIt != m_baManager->GetRetransmitQueue ()->end ())
@@ -455,9 +404,6 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
           return item;
         }
     }
-
-  // NOTE if frames other than QoS Data frame can be aggregated into A-MPDUs and hence
-  // potentially stored in the MacLow aggregation queue, then handle them here
 
   // the packet has been peeked from the EDCA queue.
   uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&peekedItem->GetHeader ());
@@ -833,10 +779,11 @@ QosTxop::NotifyCollision (void)
 }
 
 void
-QosTxop::MissedCts (void)
+QosTxop::NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("missed cts");
+  NS_ASSERT (!mpduList.empty ());
   if (!NeedRtsRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Cts Fail");
@@ -845,9 +792,9 @@ QosTxop::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      if (GetAmpduExist (m_currentHdr.GetAddr1 ()) || m_currentHdr.IsQosData ())
+      for (auto& mpdu : mpduList)
         {
-          m_baManager->NotifyDiscardedMpdu (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr));
+          m_baManager->NotifyDiscardedMpdu (mpdu);
         }
       //to reset the dcf.
       m_currentPacket = 0;
@@ -858,11 +805,18 @@ QosTxop::MissedCts (void)
     {
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
-      // if a BA agreement is established, packets have been stored in MacLow
-      // aggregation queue for retransmission
-      if (m_currentHdr.IsQosData () && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (),
-                                                                  m_currentHdr.GetQosTid ()))
+      // if a BA agreement is established, store the MPDUs in the block ack manager
+      // retransmission queue. Otherwise, this QosTxop will handle the retransmission
+      // of the (single) frame
+      if (mpduList.size () > 1 ||
+          (mpduList.front ()->GetHeader ().IsQosData ()
+           && GetBaAgreementEstablished (mpduList.front ()->GetHeader ().GetAddr1 (),
+                                         mpduList.front ()->GetHeader ().GetQosTid ())))
         {
+          for (auto it = mpduList.rbegin (); it != mpduList.rend (); it++)
+            {
+              m_baManager->GetRetransmitQueue ()->PushFront (*it);
+            }
           m_currentPacket = 0;
         }
     }

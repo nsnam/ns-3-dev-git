@@ -462,14 +462,6 @@ public:
    */
   void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
 
-  /**
-   * Get the aggregate queue, which stores the MPDUs that were part of an A-MPDU
-   * that could not be transmitted because the RTS/CTS exchange failed
-   *
-   * \return the aggregate queue
-   */
-  Ptr<WifiMacQueue> GetAggregateQueue (void) const;
-
 private:
   /**
    * Cancel all scheduled events. Called before beginning a transmission
@@ -927,7 +919,6 @@ private:
   QueueEdcas m_edca; //!< EDCA queues
 
   bool m_ctsToSelfSupported;             //!< Flag whether CTS-to-self is supported
-  Ptr<WifiMacQueue> m_aggregateQueue;    //!< Queue storing MPDUs after RTS/CTS exchange failure
   WifiTxVector m_currentTxVector;        //!< TXVECTOR used for the current packet transmission
 
   CfAckInfo m_cfAckInfo; //!< Info about piggyback ACKs used in PCF

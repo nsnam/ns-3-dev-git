@@ -182,8 +182,10 @@ public:
   /* Event handlers */
   /**
    * Event handler when a CTS timeout has occurred.
+   *
+   * \param mpduList the list of MPDUs that were not transmitted
    */
-  void MissedCts (void);
+  void NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList);
   /**
    * Event handler when an ACK is received.
    */

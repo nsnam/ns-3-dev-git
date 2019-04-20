@@ -131,7 +131,6 @@ MacLow::MacLow ()
     m_cfAckInfo ()
 {
   NS_LOG_FUNCTION (this);
-  m_aggregateQueue = CreateObject<WifiMacQueue> ();
 }
 
 MacLow::~MacLow ()
@@ -190,7 +189,6 @@ MacLow::DoDispose (void)
       delete m_phyMacLowListener;
       m_phyMacLowListener = 0;
     }
-  m_aggregateQueue = 0;
 }
 
 void
@@ -1085,12 +1083,6 @@ rxPacket:
   return;
 }
 
-Ptr<WifiMacQueue>
-MacLow::GetAggregateQueue (void) const
-{
-  return m_aggregateQueue;
-}
-
 uint32_t
 MacLow::GetCfEndSize (void) const
 {
@@ -1641,23 +1633,17 @@ MacLow::CtsTimeout (void)
   /// we should restart a new cts timeout now until the expected
   /// end of rx if there was a rx start before now.
   m_stationManager->ReportRtsFailed (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0));
-  // if the current packet is being sent under block ack agreement, store the MPDUs
-  // in the aggregation queue. If not, the retransmission is handled by the QosTxop
-  if (m_currentPacket->GetNMpdus () > 1 ||
-      (m_currentPacket->GetHeader (0).IsQosData ()
-       && DynamicCast<QosTxop> (m_currentTxop)->GetBaAgreementEstablished (m_currentPacket->GetAddr1 (),
-                                                                           m_currentPacket->GetHeader (0).GetQosTid ())))
+
+  Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
+  if (qosTxop != 0)
     {
-      for (auto& mpdu : *PeekPointer (m_currentPacket))
-        {
-          NS_LOG_DEBUG ("Storing packet with sequence number " << mpdu->GetHeader ().GetSequenceNumber ()
-                        << " in the aggregation queue");
-          m_aggregateQueue->Enqueue (mpdu);
-        }
+      qosTxop->NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> (m_currentPacket->begin (), m_currentPacket->end ()));
     }
-  Ptr<Txop> txop = m_currentTxop;
+  else
+    {
+      m_currentTxop->MissedCts ();
+    }
   m_currentTxop = 0;
-  txop->MissedCts ();
 }
 
 void
