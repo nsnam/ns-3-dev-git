@@ -252,8 +252,6 @@ def ns3_python_bindings(bld):
     bindgen = bld(features='command', source=source, target=target, command=argv)
     bindgen.env['FEATURES'] = ','.join(features)
     bindgen.dep_vars = ['FEATURES', "GCC_RTTI_ABI_COMPLETE"]
-    bindgen.before = 'cxx'
-    bindgen.after = 'gen_ns3_module_header'
     bindgen.name = "pybindgen(ns3 module %s)" % module
     bindgen.install_path = None
 
@@ -321,7 +319,7 @@ def build(bld):
         modheader.module = module.split('/')[-1]
 
 class ns3pcfile(Task.Task):
-    after = 'cxx'
+    after = ['cxxprogram', 'cxxshlib', 'cxxstlib']
 
     def __str__(self):
         "string to display to the user"
@@ -461,7 +459,7 @@ def apply_ns3header(self):
 
 
 class ns3header(Task.Task):
-    before = 'cxx gen_ns3_module_header'
+    before = ['cxxprogram', 'cxxshlib', 'cxxstlib', 'gen_ns3_module_header']
     color = 'BLUE'
 
     def __str__(self):
@@ -552,7 +550,7 @@ def apply_ns3privateheader(self):
     self.source = '' # tell WAF not to process these files further
 
 class ns3privateheader(Task.Task):
-    before = 'cxx gen_ns3_module_header'
+    before = ['cxxprogram', 'cxxshlib', 'cxxstlib', 'gen_ns3_module_header']
     after = 'ns3header'
     color = 'BLUE'
 
@@ -622,7 +620,7 @@ class ns3privateheader(Task.Task):
 
 
 class gen_ns3_module_header(Task.Task):
-    before = 'cxx'
+    before = ['cxxprogram', 'cxxshlib', 'cxxstlib']
     after = 'ns3header'
     color = 'BLUE'
 

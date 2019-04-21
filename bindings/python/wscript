@@ -354,8 +354,8 @@ def get_module_path(bld, module):
 class apiscan_task(Task.Task):
     """Uses castxml to scan the file 'everything.h' and extract API definitions.
     """
-    after = 'gen_ns3_module_header ns3header'
-    before = 'cxx command'
+    before = ['cxxprogram', 'cxxshlib', 'cxxstlib', 'command']
+    after = ['gen_ns3_module_header', 'ns3header']
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
         self.bld = bld
@@ -460,7 +460,7 @@ def get_modules_and_headers(bld):
 
 class gen_ns3_compat_pymod_task(Task.Task):
     """Generates a 'ns3.py' compatibility module."""
-    before = 'cxx'
+    before = ['cxxprogram', 'cxxshlib', 'cxxstlib']
     color = 'BLUE'
 
     def run(self):
