@@ -355,6 +355,11 @@ LteEnbMac::GetTypeId (void)
                    UintegerValue (3),
                    MakeUintegerAccessor (&LteEnbMac::m_raResponseWindowSize),
                    MakeUintegerChecker<uint8_t> (2, 10))
+    .AddAttribute ("ConnEstFailCount",
+                   "how many time T300 timer can expire on the same cell",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&LteEnbMac::m_connEstFailCount),
+                   MakeUintegerChecker<uint8_t> (1, 4))
     .AddTraceSource ("DlScheduling",
                      "Information regarding DL scheduling.",
                      MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling),
@@ -966,6 +971,7 @@ LteEnbMac::DoGetRachConfig ()
   rc.numberOfRaPreambles = m_numberOfRaPreambles;
   rc.preambleTransMax = m_preambleTransMax;
   rc.raResponseWindowSize = m_raResponseWindowSize;
+  rc.connEstFailCount = m_connEstFailCount;
   return rc;
 }
  

@@ -441,6 +441,7 @@ private:
   uint8_t m_numberOfRaPreambles; ///< number of RA preambles
   uint8_t m_preambleTransMax; ///< preamble transmit maximum
   uint8_t m_raResponseWindowSize; ///< RA response window size
+  uint8_t m_connEstFailCount; ///< the counter value for T300 timer expiration
 
   /**
    * info associated with a preamble allocated for non-contention based RA

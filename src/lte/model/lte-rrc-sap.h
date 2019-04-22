@@ -254,11 +254,18 @@ public:
     uint8_t raResponseWindowSize; ///< RA response window size
   };
 
+  ///TxFailParams structure
+  struct TxFailParam
+  {
+    uint8_t connEstFailCount; ///< Number of times that the UE detects T300 expiry on the same cell
+  };
+
   /// RachConfigCommon structure
   struct RachConfigCommon
   {
     PreambleInfo preambleInfo; ///< preamble info
     RaSupervisionInfo raSupervisionInfo; ///< RA supervision info
+    TxFailParam txFailParam; ///< txFailParams
   };
 
   /// RadioResourceConfigCommon structure

@@ -48,6 +48,7 @@ public:
     uint8_t numberOfRaPreambles; ///< number of RA preambles
     uint8_t preambleTransMax; ///< preamble transmit maximum
     uint8_t raResponseWindowSize; ///< RA response window size
+    uint8_t connEstFailCount; ///< the counter value for T300 timer expiration
   };
   
   /** 

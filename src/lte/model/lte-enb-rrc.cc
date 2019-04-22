@@ -663,6 +663,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
         hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulCarrierFreq = m_rrc->m_ulEarfcn;
         hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulBandwidth = m_rrc->m_ulBandwidth;
         params.rrcContext = m_rrc->m_rrcSapUser->EncodeHandoverPreparationInformation (hpi);
@@ -1720,10 +1721,11 @@ LteEnbRrc::GetTypeId (void)
                    "After a RA attempt, if no RRC CONNECTION REQUEST is "
                    "received before this time, the UE context is destroyed. "
                    "Must account for reception of RAR and transmission of "
-                   "RRC CONNECTION REQUEST over UL GRANT.",
+                   "RRC CONNECTION REQUEST over UL GRANT. The value of this"
+                   "timer should not be greater than T300 timer at UE RRC",
                    TimeValue (MilliSeconds (15)),
                    MakeTimeAccessor (&LteEnbRrc::m_connectionRequestTimeoutDuration),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (MilliSeconds (1), MilliSeconds (15)))
     .AddAttribute ("ConnectionSetupTimeoutDuration",
                    "After accepting connection request, if no RRC CONNECTION "
                    "SETUP COMPLETE is received before this time, the UE "
@@ -2533,6 +2535,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+  handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
 
   Ptr<Packet> encodedHandoverCommand = m_rrcSapUser->EncodeHandoverCommand (handoverCommand);
 
@@ -3059,6 +3062,7 @@ LteEnbRrc::SendSystemInformation ()
       rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
       rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
       rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+      rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
       si.sib2.radioResourceConfigCommon.rachConfigCommon = rachConfigCommon;
 
       m_rrcSapUser->SendSystemInformation (it.second->GetCellId (), si);

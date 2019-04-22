@@ -149,6 +149,8 @@ LteUeRrc::LteUeRrc ()
     m_noOfSyncIndications (0),
     m_leaveConnectedMode (false),
     m_previousCellId (0),
+    m_connEstFailCountLimit (0),
+    m_connEstFailCount (0),
     m_numberOfComponentCarriers (MIN_NO_CC)
 {
   NS_LOG_FUNCTION (this);
@@ -282,7 +284,7 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("ConnectionTimeout",
                      "trace fired upon timeout RRC connection establishment because of T300",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionTimeoutTrace),
-                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
+                     "ns3::LteUeRrc::ImsiCidRntiCountTracedCallback")
     .AddTraceSource ("ConnectionReconfiguration",
                      "trace fired upon RRC connection reconfiguration",
                      MakeTraceSourceAccessor (&LteUeRrc::m_connectionReconfigurationTrace),
@@ -986,6 +988,11 @@ LteUeRrc::DoRecvSystemInformation (LteRrcSap::SystemInformation msg)
           rc.numberOfRaPreambles = msg.sib2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles;
           rc.preambleTransMax = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax;
           rc.raResponseWindowSize = msg.sib2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize;
+          rc.connEstFailCount = msg.sib2.radioResourceConfigCommon.rachConfigCommon.txFailParam.connEstFailCount;
+          m_connEstFailCountLimit = rc.connEstFailCount;
+          NS_ASSERT_MSG (m_connEstFailCountLimit > 0 && m_connEstFailCountLimit < 5,
+                         "SIB2 msg contains wrong value "
+                         << m_connEstFailCountLimit << "of connEstFailCount");
           m_cmacSapProvider.at (0)->ConfigureRach (rc);
           m_cphySapProvider.at (0)->ConfigureUplink (m_ulEarfcn, m_ulBandwidth);
           m_cphySapProvider.at (0)->ConfigureReferenceSignalPower (msg.sib2.radioResourceConfigCommon.pdschConfigCommon.referenceSignalPower);
@@ -1014,6 +1021,7 @@ LteUeRrc::DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg)
     case IDLE_CONNECTING:
       {
         ApplyRadioResourceConfigDedicated (msg.radioResourceConfigDedicated);
+        m_connEstFailCount = 0;
         m_connectionTimeout.Cancel ();
         SwitchToState (CONNECTED_NORMALLY);
         m_leaveConnectedMode = false;
@@ -3096,14 +3104,31 @@ void
 LteUeRrc::ConnectionTimeout ()
 {
   NS_LOG_FUNCTION (this << m_imsi);
-  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+  ++m_connEstFailCount;
+  if (m_connEstFailCount >= m_connEstFailCountLimit)
     {
-      m_cmacSapProvider.at(i)->Reset (); // reset the MAC
+      m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti, m_connEstFailCount);
+      SwitchToState (CONNECTED_PHY_PROBLEM);
+      //Assumption: The eNB connection request timer would expire
+      //before the expiration of T300 at UE. Upon which, the eNB deletes
+      //the UE context. Therefore, here we don't need to send the UE context
+      //deletion request to the eNB.
+      m_asSapUser->NotifyConnectionReleased ();
+      m_connEstFailCount = 0;
     }
-  m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
-  SwitchToState (IDLE_CAMPED_NORMALLY);
-  m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti);
-  m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
+  else
+    {
+      for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+          {
+            m_cmacSapProvider.at(i)->Reset (); // reset the MAC
+          }
+        m_hasReceivedSib2 = false;         // invalidate the previously received SIB2
+        SwitchToState (IDLE_CAMPED_NORMALLY);
+        m_connectionTimeoutTrace (m_imsi, m_cellId, m_rnti, m_connEstFailCount);
+        //Following call to UE NAS will force the UE to immediately
+        //perform the random access to the same cell again.
+        m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
+    }
 }
 
 void

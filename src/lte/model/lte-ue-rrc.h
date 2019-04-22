@@ -388,6 +388,18 @@ public:
   typedef void (*PhySyncDetectionTracedCallback)
       (uint64_t imsi, uint16_t rnti, uint16_t cellId, std::string type, uint16_t count);
 
+  /**
+   * TracedCallback signature for imsi, cellId, rnti and counter for
+   * random access events.
+   *
+   * \param [in] imsi
+   * \param [in] cellId
+   * \param [in] rnti
+   * \param [in] count
+   */
+  typedef void (* ImsiCidRntiCountTracedCallback)
+  (uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t count);
+
 
 private:
 
@@ -867,7 +879,7 @@ private:
    * The `ConnectionTimeout` trace source. Fired upon timeout RRC connection
    * establishment because of T300. Exporting IMSI, cell ID, and RNTI.
    */
-  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionTimeoutTrace;
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_connectionTimeoutTrace;
   /**
    * The `ConnectionReconfiguration` trace source. Fired upon RRC connection
    * reconfiguration. Exporting IMSI, cell ID, and RNTI.
@@ -1265,6 +1277,9 @@ private:
 
   uint16_t m_previousCellId; ///< the cell id of the previous cell UE was attached to
 
+  uint8_t m_connEstFailCountLimit; ///< the counter value for T300 timer expiration received from the eNB
+
+  uint8_t m_connEstFailCount; ///< the counter to count T300 timer expiration
   /**
    * \brief Radio link failure detected function
    *
