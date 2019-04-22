@@ -121,9 +121,11 @@ protected:
    * \param imsi the IMSI
    * \param cellId the cell ID
    * \param rnti the RNTI
+   * \param connEstFailCount the T300 timer expiration counter value
    */
   void ConnectionTimeoutCallback (std::string context, uint64_t imsi,
-                                  uint16_t cellId, uint16_t rnti);
+                                  uint16_t cellId, uint16_t rnti,
+                                  uint8_t connEstFailCount);
 
   uint32_t m_nBearers; ///< number of bearers to be setup in each connection
   uint32_t m_tConnBase;  ///< connection time base value for all UEs in ms
@@ -534,7 +536,8 @@ LteRrcConnectionEstablishmentTestCase::ConnectionEstablishedCallback (
 
 void
 LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback (
-    std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
+    std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
+    uint8_t connEstFailCount)
 {
   NS_LOG_FUNCTION (this << imsi << cellId);
 }
@@ -673,8 +676,6 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun ()
       //Simulator::Schedule (MilliSeconds (tc), overloadedAttachFunctionPointer, lteHelper, *it, enbDevice);
       Simulator::Schedule (MilliSeconds (tc), &LteRrcConnectionEstablishmentErrorTestCase::Connect, this, ueDevice, enbDevice);
 
-      Simulator::Schedule (MilliSeconds (tcc), &LteRrcConnectionEstablishmentErrorTestCase::CheckConnected, this, *it, enbDevice);
-
       // disconnection not supported yet
 
       uint64_t imsi = ueLteDevice->GetImsi ();
@@ -798,13 +799,13 @@ LteRrcTestSuite::LteRrcTestSuite ()
                    "failure at RRC Connection Setup"),
                TestCase::QUICK);
   /*
-   * The following test case is related to the Idle mode, which is an
-   * unsupported feature at the moment. See also Bug 1762 Comment #25.
+   * With RLF implementation we now do support the Idle mode,
+   * thus it solve Bug 1762 Comment #25.
    */
-  // AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
-  //                  Seconds (0.030),
-  //                  "failure at RRC Connection Setup Complete"),
-  //              TestCase::QUICK);
+   AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
+                    Seconds (0.030),
+                    "failure at RRC Connection Setup Complete"),
+                TestCase::QUICK);
 
 }
 
