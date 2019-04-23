@@ -140,6 +140,12 @@ QosTxop::GetBaStartingSequence (Mac48Address address, uint8_t tid) const
 }
 
 void
+QosTxop::ScheduleBlockAckReq (Mac48Address address, uint8_t tid)
+{
+  m_baManager->ScheduleBlockAckReq (address, tid);
+}
+
+void
 QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {
   Txop::SetWifiRemoteStationManager (remoteManager);
@@ -434,17 +440,17 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
       // the acknowledgment type will be switched to normal ack
       if (m_blockAckType == BASIC_BLOCK_ACK)
         {
-          params.EnableBasicBlockAck ();
+          params.EnableBlockAck (BlockAckType::BASIC_BLOCK_ACK);
         }
       else if (m_blockAckType == COMPRESSED_BLOCK_ACK)
         {
           if (GetBaBufferSize (recipient, tid) > 64)
             {
-              params.EnableExtendedCompressedBlockAck ();
+              params.EnableBlockAck (BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK);
             }
           else
             {
-              params.EnableCompressedBlockAck ();
+              params.EnableBlockAck (BlockAckType::COMPRESSED_BLOCK_ACK);
             }
         }
       else if (m_blockAckType == MULTI_TID_BLOCK_ACK)

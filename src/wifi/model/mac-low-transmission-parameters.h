@@ -48,21 +48,17 @@ public:
    */
   void EnableAck (void);
   /**
-   * Wait BASICBLOCKACKTimeout for a Basic Block Ack Response frame.
+   * Wait the timeout corresponding to the given Block Ack Response type.
+   *
+   * \param type the Block Ack Response type
    */
-  void EnableBasicBlockAck (void);
+  void EnableBlockAck (BlockAckType type);
   /**
-   * Wait COMPRESSEDBLOCKACKTimeout for a Compressed Block Ack Response frame.
+   * Schedule the transmission of a Block Ack Request of the given type.
+   *
+   * \param type the Block Ack Request type
    */
-  void EnableCompressedBlockAck (void);
-  /**
-   * Wait COMPRESSEDBLOCKACKTimeout for an Extended Compressed Block Ack Response frame.
-   */
-  void EnableExtendedCompressedBlockAck (void);
-  /**
-   * NOT IMPLEMENTED FOR NOW
-   */
-  void EnableMultiTidBlockAck (void);
+  void EnableBlockAckRequest (BlockAckType type);
   /**
    * Send a RTS, and wait CTSTimeout for a CTS. If we get a
    * CTS on time, call MacLowTransmissionListener::GotCts
@@ -85,6 +81,10 @@ public:
    * used for Broadcast and multicast frames.
    */
   void DisableAck (void);
+  /**
+   * Do not send Block Ack Request after data transmission
+   */
+  void DisableBlockAckRequest (void);
   /**
    * Do not send rts and wait for cts before sending data.
    */
@@ -113,6 +113,18 @@ public:
    */
   BlockAckType GetBlockAckType (void) const;
   /**
+   * \returns true if a block ack request must be sent, false otherwise.
+   *
+   * Return true if a block ack request must be sent, false otherwise.
+   */
+  bool MustSendBlockAckRequest (void) const;
+  /**
+   * \returns the selected block ack request variant.
+   *
+   * Only call this method if a block ack request must be sent.
+   */
+  BlockAckType GetBlockAckRequestType (void) const;
+  /**
    * \returns true if RTS should be sent and CTS waited for before
    *          sending data, false otherwise.
    */
@@ -139,6 +151,15 @@ private:
     BLOCK_ACK_EXTENDED_COMPRESSED,
     BLOCK_ACK_MULTI_TID
   } m_waitAck; //!< wait ack
+  /// send bar enumerated type
+  enum
+  {
+    BLOCK_ACK_REQUEST_NONE,
+    BLOCK_ACK_REQUEST_BASIC,
+    BLOCK_ACK_REQUEST_COMPRESSED,
+    BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED,
+    BLOCK_ACK_REQUEST_MULTI_TID
+  } m_sendBar; //!< send bar
   bool m_sendRts; //!< send an RTS?
 };
 

@@ -629,6 +629,15 @@ private:
    */
   Time GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
   /**
+   * Return the time required to transmit the Block Ack Request to the specified address
+   * given the TXVECTOR (including preamble and FCS).
+   *
+   * \param blockAckReqTxVector the TX vector used to transmit the BAR
+   * \param type the Block Ack Request type
+   * \return the time required to transmit the Block Ack Request (including preamble and FCS)
+   */
+  Time GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
+  /**
    * Return the time required to transmit the response frames (ACK or BAR+BA
    * following the policy configured in the transmit parameters).
    *

@@ -558,11 +558,11 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
 
           if (qosTxop->GetBaBufferSize (hdr.GetAddr1 (), tid) > 64)
             {
-              m_txParams.EnableExtendedCompressedBlockAck ();
+              m_txParams.EnableBlockAck (BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK);
             }
           else
             {
-              m_txParams.EnableCompressedBlockAck ();
+              m_txParams.EnableBlockAck (BlockAckType::COMPRESSED_BLOCK_ACK);
             }
 
           NS_LOG_DEBUG ("tx unicast A-MPDU containing " << mpduList.size () << " MPDUs");
@@ -1180,6 +1180,12 @@ MacLow::GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type
 }
 
 Time
+MacLow::GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const
+{
+  return m_phy->CalculateTxDuration (GetBlockAckRequestSize (type), blockAckReqTxVector, m_phy->GetFrequency ());
+}
+
+Time
 MacLow::GetCtsDuration (Mac48Address to, WifiTxVector rtsTxVector) const
 {
   WifiTxVector ctsTxVector = GetCtsTxVectorForRts (to, rtsTxVector.GetMode ());
@@ -1224,6 +1230,13 @@ MacLow::GetResponseDuration (const MacLowTransmissionParameters& params, WifiTxV
       duration += GetSifs ();
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
       duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckType ());
+    }
+  else if (params.MustSendBlockAckRequest ())
+    {
+      duration += 2 * GetSifs ();
+      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
+      duration += GetBlockAckRequestDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
+      duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
     }
   return duration;
 }
@@ -1918,6 +1931,12 @@ MacLow::SendDataPacket (void)
           m_cfAckInfo.address = Mac48Address ();
         }
     }
+  if (m_txParams.MustSendBlockAckRequest ())
+    {
+      Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
+      NS_ASSERT (qosTxop != 0);
+      qosTxop->ScheduleBlockAckReq (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+    }
   ForwardDown (m_currentPacket, m_currentTxVector);
 }
 
@@ -2028,6 +2047,12 @@ MacLow::SendDataAfterCts (Time duration)
   duration = std::max (duration, newDuration);
   NS_ASSERT (duration.IsPositive ());
   m_currentPacket->SetDuration (duration);
+  if (m_txParams.MustSendBlockAckRequest ())
+    {
+      Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
+      NS_ASSERT (qosTxop != 0);
+      qosTxop->ScheduleBlockAckReq (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+    }
   ForwardDown (m_currentPacket, m_currentTxVector);
 }
 
