@@ -197,8 +197,10 @@ EpcEnbApplication::DoUeContextRelease (uint16_t rnti)
         {
           uint32_t teid = bidIt->second;
           m_teidRbidMap.erase (teid);
+          NS_LOG_INFO ("TEID: " << teid << " erased");
         }
       m_rbidTeidMap.erase (rntiIt);
+      NS_LOG_INFO ("RNTI: " << rntiIt->first << " erased");
     }
 }
 
@@ -295,10 +297,15 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   packet->RemoveHeader (gtpu);
   uint32_t teid = gtpu.GetTeid ();
   std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find (teid);
-  NS_ASSERT_MSG (it != m_teidRbidMap.end (), "cell id = " << m_cellId);
-
-  m_rxS1uSocketPktTrace (packet->Copy ());
-  SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
+  if (it == m_teidRbidMap.end ())
+    {
+      NS_LOG_WARN ("UE context at cell id " << m_cellId << " not found, discarding packet");
+    }
+  else
+    {
+      m_rxS1uSocketPktTrace (packet->Copy ());
+      SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
+    }
 }
 
 void 

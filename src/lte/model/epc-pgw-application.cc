@@ -423,6 +423,7 @@ EpcPgwApplication::DoRecvDeleteBearerResponse (Ptr<Packet> packet)
   for (auto &epsBearerId : msg.GetEpsBearerIds ())
     {
       // Remove de-activated bearer contexts from PGW side
+      NS_LOG_INFO ("PGW removing bearer " << (uint16_t) epsBearerId << " of IMSI " << imsi);
       ueit->second->RemoveBearer (epsBearerId);
     }
 }
