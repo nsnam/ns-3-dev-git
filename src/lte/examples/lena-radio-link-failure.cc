@@ -38,6 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("LenaRadioLinkFailure");
 //behavior during and after the simulation.
 uint16_t counterN310FirsteNB = 0;
 Time t310StartTimeFirstEnb = Seconds (0);
+uint32_t ByteCounter = 0;
+uint32_t oldByteCounter = 0;
 
 
 void
@@ -56,7 +58,7 @@ PrintUePosition (uint64_t imsi)
               if (imsi == uedev->GetImsi ())
                 {
                   Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
-                  std::cout << "RLF for IMSI : " << uedev->GetImsi () << " at " << pos.x << "," << pos.y << std::endl;
+                  std::cout << "IMSI : " << uedev->GetImsi () << " at " << pos.x << "," << pos.y << std::endl;
                 }
             }
         }
@@ -171,7 +173,7 @@ void PhySyncDetection (uint16_t n310, uint64_t imsi, uint16_t rnti, uint16_t cel
 
 void RadioLinkFailure (Time t310, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+  std::cout << Simulator::Now ()
             << " IMSI " << imsi << ", RNTI " << rnti
             << ", Cell id " << cellId << ", radio link failure detected"
             << std::endl << std::endl;
@@ -192,6 +194,58 @@ NotifyRandomAccessErrorUe (uint64_t imsi, uint16_t cellId, uint16_t rnti)
             << ", UE RRC Random access Failed" << std::endl;
 }
 
+void
+NotifyConnectionTimeoutUe (uint64_t imsi, uint16_t cellId, uint16_t rnti,
+                           uint8_t connEstFailCount)
+{
+  std::cout << Simulator::Now ().GetSeconds ()
+            << " IMSI " << imsi << ", RNTI " << rnti
+            << ", Cell id " << cellId
+            << ", T300 expiration counter " << (uint16_t) connEstFailCount
+            << ", UE RRC Connection timeout" << std::endl;
+}
+
+void
+NotifyRaResponseTimeoutUe (uint64_t imsi, bool contention,
+                           uint8_t preambleTxCounter,
+                           uint8_t maxPreambleTxLimit)
+{
+  std::cout << Simulator::Now ().GetSeconds ()
+            << " IMSI " << imsi << ", Contention flag " << contention
+            << ", preamble Tx Counter " << (uint16_t) preambleTxCounter
+            << ", Max Preamble Tx Limit " << (uint16_t) maxPreambleTxLimit
+            << ", UE RA response timeout" << std::endl;
+  NS_FATAL_ERROR ("NotifyRaResponseTimeoutUe");
+}
+
+void
+ReceivePacket (Ptr<const Packet> packet, const Address &)
+{
+  ByteCounter += packet->GetSize ();
+}
+
+void
+Throughput(bool firstWrite, Time binSize, std::string fileName)
+{
+  std::ofstream output;
+
+  if (firstWrite == true)
+    {
+      output.open (fileName.c_str (), std::_S_out);
+      firstWrite = false;
+    }
+  else
+    {
+      output.open (fileName.c_str (), std::_S_app);
+    }
+
+  //Instantaneous throughput every 200 ms
+  double  throughput = (ByteCounter - oldByteCounter)*8/binSize.GetSeconds ()/1024/1024;
+  output << Simulator::Now().GetSeconds() << " " << throughput << std::endl;
+  oldByteCounter = ByteCounter;
+  Simulator::Schedule (binSize, &Throughput, firstWrite, binSize, fileName);
+}
+
 /**
  * Sample simulation script for radio link failure.
  * By default, only one eNodeB and one UE is considered for verifying
@@ -205,15 +259,15 @@ NotifyRandomAccessErrorUe (uint64_t imsi, uint16_t cellId, uint16_t rnti)
  *
  * The example can be run as follows:
  *
- * ./waf --run "lena-radio-link-failure --numberOfEnbs=1 --simTime=17"
+ * ./waf --run "lena-radio-link-failure --numberOfEnbs=1 --simTime=25"
  */
 int
 main (int argc, char *argv[])
 {
   // Configurable parameters
-  Time simTime = Seconds (17);
+  Time simTime = Seconds (25);
   uint16_t numberOfEnbs = 1;
-  double interSiteDistance = 700;
+  double interSiteDistance = 1200;
   uint16_t n311 = 1;
   uint16_t n310 = 1;
   Time t310 = Seconds (1);
@@ -256,6 +310,8 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (useIdealRrc));
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (enableCtrlErrorModel));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (enableDataErrorModel));
+
+  Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (60 * 1024));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
@@ -446,6 +502,10 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Enable Lte traces and connect custom trace sinks");
 
   lteHelper->EnableTraces ();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats ();
+  rlcStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.05)));
+  Ptr<RadioBearerStatsCalculator> pdcpStats = lteHelper->GetPdcpStats ();
+  pdcpStats->SetAttribute ("EpochDuration", TimeValue (Seconds (0.05)));
 
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/ConnectionEstablished",
                    MakeCallback (&NotifyConnectionEstablishedEnb));
@@ -463,6 +523,21 @@ main (int argc, char *argv[])
                                  MakeCallback (&EnbRrcTimeout));
   Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/LteUeRrc/RandomAccessError",
                                  MakeCallback (&NotifyRandomAccessErrorUe));
+  Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionTimeout",
+                                   MakeCallback (&NotifyConnectionTimeoutUe));
+  Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/LteUeMac/RaResponseTimeout",
+                                   MakeCallback (&NotifyRaResponseTimeoutUe));
+
+  //Trace sink for the packet sink of UE
+  std::ostringstream oss;
+  oss << "/NodeList/" << ueNodes.Get (0)->GetId () << "/ApplicationList/0/$ns3::PacketSink/Rx";
+  Config::ConnectWithoutContext (oss.str (), MakeCallback (&ReceivePacket));
+
+  bool firstWrite = true;
+  std::string rrcType = useIdealRrc == 1 ? "ideal_rrc":"real_rrc";
+  std::string fileName = "rlf_dl_thrput_" + std::to_string (enbNodes.GetN ()) + "_eNB_" + rrcType;
+  Time binSize = Seconds (0.2);
+  Simulator::Schedule (Seconds(0.47), &Throughput, firstWrite, binSize, fileName);
 
   NS_LOG_INFO ("Starting simulation...");
 
