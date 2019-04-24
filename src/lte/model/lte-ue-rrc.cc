@@ -3097,7 +3097,8 @@ LteUeRrc::LeaveConnectedMode ()
   //Save the cell id UE was attached to
   StorePreviousCellId (m_cellId);
   m_cellId = 0;
-  DoSetTemporaryCellRnti (0);  // discard temporary cell RNTI
+  m_rnti = 0;
+  m_srb0->m_rlc->SetRnti (m_rnti);
 }
 
 void
