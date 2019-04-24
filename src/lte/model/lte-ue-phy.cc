@@ -337,6 +337,11 @@ LteUePhy::GetTypeId (void)
                    UintegerValue (100), //see 3GPP 3GPP TS 36.133 7.6.2.1
                    MakeUintegerAccessor (&LteUePhy::m_numOfQinEvalSf),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("EnableRlfDetection",
+                   "If true, RLF detection will be enabled.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&LteUePhy::m_enableRlfDetection),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -585,7 +590,9 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       double avSinr = ComputeAvrgSinr (sinr);
 
       NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr << " ComponentCarrierId " << (uint16_t) m_componentCarrierId);
-      if (m_isConnected) //trigger RLF detection only when UE has an active RRC connection
+      //trigger RLF detection only when UE has an active RRC connection
+      //and RLF detection attribute is set to true
+      if (m_isConnected && m_enableRlfDetection)
         {
           double avrgSinrForRlf = ComputeAvrgSinr (m_ctrlSinrForRlf);
           RlfDetection (10 * log10 (avrgSinrForRlf));

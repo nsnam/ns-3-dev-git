@@ -765,6 +765,7 @@ private:
   double m_sinrDbFrame; ///< the average SINR per radio frame
   SpectrumValue m_ctrlSinrForRlf; ///< the CTRL SINR used for RLF detection
   uint64_t m_imsi;
+  bool m_enableRlfDetection;
 
 }; // end of `class LteUePhy`
 
