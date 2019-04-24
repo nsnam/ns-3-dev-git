@@ -16,6 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Vignesh Babu <ns3-dev@esk.fraunhofer.de>
+ *
+ * Modified by:
+ *          Zoraze Ali <zoraze.ali@cttc.es> (included both RRC protocol, two
+ *                                           eNB scenario and UE jump away
+ *                                           logic)
  */
 
 #include "lte-test-radio-link-failure.h"
