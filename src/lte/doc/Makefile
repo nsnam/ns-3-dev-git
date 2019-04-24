@@ -70,7 +70,10 @@ IMAGES_DIA = \
 	$(FIGURES)/ca-ue-ctrl-plane.dia \
 	$(FIGURES)/ca-rrc-reconf.dia \
 	$(FIGURES)/ca-lte-enb-net-device-changes.dia \
-	$(FIGURES)/ca-lte-ue-net-device-changes.dia
+	$(FIGURES)/ca-lte-ue-net-device-changes.dia \
+	$(FIGURES)/lte-test-rlf-one-enb.dia \
+	$(FIGURES)/lena-radio-link-failure-one-enb.dia \
+	$(FIGURES)/lena-radio-link-failure-two-enb.dia	
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -123,6 +126,9 @@ IMAGES_SEQDIAG = \
 	$(FIGURES)/ca-downlink-bsr.seqdiag \
 	$(FIGURES)/ca-setup-radio-bearer.seqdiag \
 	$(FIGURES)/ca-uplink-bsr.seqdiag \
+	$(FIGURES)/lte-ue-context-removal-from-epc.seqdiag \
+	$(FIGURES)/lte-ue-context-removal-from-enb-stack.seqdiag \
+	$(FIGURES)/lte-ue-procedures-after-rlf.seqdiag
 
 IMAGES_DOT = \
 	$(FIGURES)/lte-enb-rrc-states.dot \
@@ -179,6 +185,8 @@ IMAGES_NOBUILD = $(FIGURES)/fading_pedestrian.png \
 	$(FIGURES)/carrier-aggregation-mac-impact.png \
 	$(FIGURES)/ca-test-example-ul.png \
 	$(FIGURES)/ca-test-example-dl.png \
+	$(FIGURES)/lena-radio-link-failure-one-enb-thrput.png \
+	$(FIGURES)/lena-radio-link-failure-two-enb-thrput.png \
 	${IMAGES_SEQDIAG:.seqdiag=.png} \
 	${IMAGES_SEQDIAG:.seqdiag=.pdf} \
 	${IMAGES_DOT:.dot=.png} \

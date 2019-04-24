@@ -492,6 +492,7 @@ MAC to Channel delay
 
 To model the latency of real MAC and PHY implementations, the PHY model simulates a MAC-to-channel delay in multiples of TTIs (1ms). The transmission of both data and control packets are delayed by this amount.
 
+.. _sec-cqi-feedback:
 
 CQI feedback
 ++++++++++++
@@ -682,7 +683,9 @@ The model implemented uses the curves for the LSM of the recently LTE PHY Error 
 
 The model can be disabled for working with a zero-losses channel by setting the ``PemEnabled`` attribute of the ``LteSpectrumPhy`` class (by default is active). This can be done according to the standard ns3 attribute system procedure, that is::
 
-  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));  
+  Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
+
+.. _sec-control-channles-phy-error-model:
 
 Control Channels PHY Error Model
 ++++++++++++++++++++++++++++++++
@@ -1986,27 +1989,11 @@ as implemented in the RRC UE entity.
 
    UE RRC State Machine
 
-It is to be noted that most of the states are transient, i.e., once
-the UE goes into one of the CONNECTED states it will never switch back
-to any of the IDLE states. This choice is done for the following reasons:
-
- - as discussed in the section :ref:`sec-design-criteria`, the focus
-   of the LTE-EPC simulation model is on CONNECTED mode
- - radio link failure is not currently modeled, as discussed in the
-   section :ref:`sec-radio-link-failure`, so an UE cannot go IDLE
-   because of radio link failure
- - RRC connection release is currently never triggered neither by the EPC
-   nor by the NAS
-
-Still, we chose to model explicitly the IDLE states, because:
-
- - a realistic UE RRC configuration is needed for handover, which is a
-   required feature, and in order to have a cleaner implementation it makes sense to
-   use the same UE RRC configuration also for the initial connection
-   establishment
- - it makes easier to implement idle mode cell selection in the
-   future, which is a highly desirable feature 
- 
+All the states are transient, however, the UE in "CONNECTED_NORMALLY" state will
+only switch to the IDLE state if the downlink SINR is below a defined threshold,
+which would lead to radio link failure :ref:`sec-radio-link-failure`.
+One the other hand, the UE would not be able switch to IDLE mode due to a handover
+failure, as mentioned in :ref:`sec-x2`.
 
 ENB RRC State Machine
 +++++++++++++++++++++
@@ -2068,7 +2055,7 @@ assumptions:
  
  - marking a cell as barred or reserved is not supported;
 
- - cell reselection is not supported, hence it is not possible for UE to camp to
+ - Idle cell reselection is not supported, hence it is not possible for UE to camp to
    a different cell after the initial camp has been placed; and
  
  - UE's Closed Subscriber Group (CSG) white list contains only one CSG identity.
@@ -2139,6 +2126,8 @@ lifecycle. MIB enables the UE to increase the initial DL bandwidth of 6 RBs to
 the actual operating bandwidth of the network. SIB1 provides information
 necessary for cell selection evaluation (explained in the next section). And
 finally SIB2 is required before the UE is allowed to switch to CONNECTED state.
+
+.. _sec-cell-selection-evaluation:
 
 Cell Selection Evaluation
 -------------------------
@@ -2217,20 +2206,148 @@ Some implementation choices have been made in the RRC regarding the setup of rad
 
 Radio Link Failure
 ++++++++++++++++++
+In real LTE networks, Radio link failure (RLF) can happen due to several reasons.
+It can be triggered if a UE is unable to decode PDCCH due to poor signal quality,
+upon maximum RLC retransmissions, RACH problems and other reasons. 3GPP only
+specifies guidelines to detect RLF at the UE side, in [TS36331]_ and [TS36133]_.
+On the other hand, the eNB implementation is expected to be vendor specific.
+To implement the RLF functionality in ns-3, we have assumed the following
+simplifications:
 
-Since at this stage the RRC supports the CONNECTED mode only, Radio Link
-Failure (RLF) is not handled. The reason is that one of the possible
-outcomes of RLF (when RRC re-establishment is unsuccessful) is to
-leave RRC CONNECTED notifying the NAS of the RRC connection
-failure. In order to model RLF properly, RRC IDLE mode should be
-supported, including in particular idle mode cell (re-)selection.
+ * The RLF detection procedure at eNodeB is not implemented. **Instead, a direct
+   function call by using the SAP between UE and eNB RRC (for both ideal and real
+   RRC) is used to notify the eNB about the RLF**.
+ * No RRC connection re-establishment procedure is implemented, thus, the UE
+   directly goes to the IDLE state upon RLF. This is in fact as per the standard
+   [TS36331]_ sec 5.3.11.3, since, at this stage the LTE module does not support
+   the Access Stratum (AS) security.
 
-With the current model, an UE that experiences bad link quality and
-that does not perform handover (because of, e.g., no neighbor cells,
-handover disabled, handover thresholds misconfigured) will 
-just stay associated with the same eNB, and the scheduler will stop
-allocating resources to it for communications. 
+The above mentioned RLF specifications can be divided into the following two
+categories:
 
+ #. RLF detection
+ #. Actions upon RLF detection
+
+In the following, we will explain the RLF implementation in context of these
+two categories.
+
+RLF detection implementation
+----------------------------
+
+The RLF detection at the UE is implemented as per [TS36133]_, i.e., by monitoring
+the radio link quality based on the reference signals (which in the simulation
+is equivalent to the PDCCH) in the downlink. Thus, it is independent of the method
+used for the downlink CQI computation, i.e., *Ctrl* method and *Mixed method*.
+Moreover, when using FFR, especially for hard-FFR, and CQIs based on *Mixed method*,
+UEs might experience relatively good performance and RLF simultaneously. This is
+due to the fact that the interference in PDSCH is affected by the actual data
+transmissions on the specific RBs and the power control. Therefore, UEs might
+experience good SINR in PDSCH, while bad SINR in PDCCH channel. For more details
+about these methods please refer to :ref:`sec-cqi-feedback`. Also, it does not
+matter if the DL control error model is disabled, a UE can still detect the RLF
+since the SINR based on the control channel is reported to the LteUePhy class,
+using a callback hooked in LteHelper while installing a UE device.
+
+The RLF detection starts once the RRC connection is established between UE and 
+eNodeB, i.e., UE is in "CONNECTED_NORMALLY" state; upon which the RLF parameters
+are configured (see ``LteUePhy::DoConfigureRadioLinkFailureDetection``). In real
+networks, these parameters are transmitted by the eNB using IE UE-TimersAndConstants or
+RLF-TimersAndConstants. However, for the sake of simplification, in the simulator
+they are presented as the attributes of the LteUePhy and LteUeRrc classes. In
+LteUePhy class, CQI calculation is triggered for every downlink subframe received,
+and the average SINR value is measured across all resource blocks. For the RLF
+detection, these SINR values are averaged over a downlink frame and if the result
+is less than a defined threshold Qout (default: -5dB), the frame cannot be decoded
+(see``LteUePhy::RadioLinkFailureDetection``). The Qout threshold corresponds to 10%
+block error rate (BLER) of a hypothetical PDCCH transmission taking into account
+the PCFICH errors [R4-081920]_ (also refer to
+:ref:`sec-control-channles-phy-error-model`). Once, the UE is unable to decode
+20 consecutive frames, i.e., the Qout evaluation period (200ms) is reached, an
+out-of-sync indication is sent to the UE RRC layer (see ``LteUeRrc::DoNotifyOutOfSync``).
+Else, the counter for the unsuccessfully decoded frames is reset to zero. At the
+LteUeRrc, when the number of consecutive out-of-sync indications matches with the
+value of N310 parameter, the T310 timer is started and LteUePhy is notified to start
+measuring for in-sync indications (see ``LteUePhy::DoStartInSnycDetection``). We note
+that, the UE RRC state is not changed till the expiration of T310 timer. If the 
+resultant SINR values averaged over a downlink frame is greater than a defined
+threshold Qin (default: -3.8dB), the frame is considered to be successfully
+decoded. Qin corresponds to 2% BLER [R4-081920]_ of a hypothetical PDCCH transmission
+taking into account the PCFICH errors. Once the UE is able to decode 10
+consecutive frames, an in-sync indication is sent to the UE RRC layer
+(see ``LteUeRrc::DoNotifyInSync``). Else, the counter for the successfully decoded 
+frames is reset to zero. If prior to the T310 timer expiry, the number of
+consecutive in-sync indications matches with N311 parameter of LteUeRRC, the UE
+is considered back in-sync. At this stage, the related parameters are reset to
+initiate the radio link failure detection from the beginning
+(see ``LteUePhy::DoConfigureRadioLinkFailureDetection``). On the other hand, If the
+T310 timer expires, the UE considers that a RLF has occurred
+(see ``LteUeRrc::RadioLinkFailureDetected``).
+
+Actions upon RLF
+----------------
+
+Once the T310 timer is expired, a UE is considered to be in RLF; upon which the
+UE RRC:
+
+ * Sends a request to the eNB RRC to remove the UE context
+ * Moves to "CONNECTED_PHY_PROBLEM" state
+ * Notifies the UE NAS layer about the release of RRC connection.
+
+Then, after getting the notification from the UE RRC the NAS does the following:
+
+ * Delete all the TFTs
+ * Reset the bearer counter
+ * Restore the bearer list, which is used to activate the bearers for the next
+   RRC connection. This restoration of the bearers is achieved by maintaining an
+   additional list, i.e., m_bearersToBeActivatedListForReconnection in EpcUeNas
+   class
+ * Switch the NAS state to OFF by calling EpcUeNas::Disconnect
+ * Tells the UE RRC to disconnect
+
+The UE RRC, upon receiving the call to disconnect from the EpcUeNas class,
+performs the action as specified by [TS36331]_ 5.3.11.3, and finally leaves the
+connected state, i.e., its RRC state is changed from "CONNECTED_PHY_PROBLEM" to
+"IDLE_START" to perform cell selection as shown in figures :ref:`fig-lte-ue-rrc-states`
+and :ref:`fig-lte-ue-procedures-after-rlf`.
+
+At this stage, the LTE module does not support the paging functionality, therefore,
+to allow a UE to read SIB2 message after camping on a suitable cell after RLF, a
+work around is used in ``LteUeRrc::EvaluateCellForSelection`` method. As per this
+workaround, the UE RRC invokes the call to ``LteUeRrc::DoConnect`` method, which
+enables the UE to switch its state from "IDLE_CAMPED_NORMALLY" to "IDLE_WAIT_SIB2",
+thus, allowing it to perform the random access.
+
+.. _fig-lte-ue-procedures-after-rlf:
+
+.. figure:: figures/lte-ue-procedures-after-rlf.*
+   :scale: 95 %
+   :align: center
+
+   UE procedures after radio link failure
+
+The eNB RRC, after receiving the notification from the UE RRC starts the procedure
+of UE context deletion, which also involves the deletion of the UE context removal
+from the EPC :ref:`fig-lte-ue-context-removal-from-epc` and the eNB stack
+:ref:`fig-lte-ue-context-removal-from-enb-stack`. We note that, the UE context
+at the MME is not removed since, bearers are only added at the start of a
+simulation in MME, and cannot be added again unless scheduled for addition
+during a simulation.
+
+.. _fig-lte-ue-context-removal-from-epc:
+
+.. figure:: figures/lte-ue-context-removal-from-epc.*
+   :scale: 80 %
+   :align: center
+
+   UE context removal from EPC
+
+.. _fig-lte-ue-context-removal-from-enb-stack:
+
+.. figure:: figures/lte-ue-context-removal-from-enb-stack.*
+   :scale: 80 %
+   :align: center
+
+   UE context removal from eNB stack
 
 .. _sec-ue-measurements:
 
@@ -2743,8 +2860,9 @@ interaction with the other layers.
 There are several timeouts related to this procedure, which are listed in the
 following Table :ref:`tab-rrc-connection_establishment_timer`. If any of these
 timers expired, the RRC connection establishment procedure is terminated in
-failure. In this case, the upper layer (UE NAS) will immediately attempt to
-retry the procedure until it completes successfully.
+failure. At the UE side, if T300 timer has expired a consecutive
+*connEstFailCount* times on the same cell it performs the cell selection again.
+Else, the upper layer (UE NAS) will immediately attempt to retry the procedure.
 
 .. _tab-rrc-connection_establishment_timer:
 
@@ -2755,7 +2873,7 @@ retry the procedure until it completes successfully.
    |            |          | starts     | stops       | duration | expired    |
    +============+==========+============+=============+==========+============+
    | Connection | eNodeB   | New UE     | Receive RRC | 15 ms    | Remove UE  |
-   | request    | RRC      | context    | CONNECTION  |          | context    |
+   | request    | RRC      | context    | CONNECTION  | (Max)    | context    |
    | timeout    |          | added      | REQUEST     |          |            |
    +------------+----------+------------+-------------+----------+------------+
    | Connection | UE RRC   | Send RRC   | Receive RRC | 100 ms   | Reset UE   |
@@ -2773,6 +2891,27 @@ retry the procedure until it completes successfully.
    | timeout    |          | REJECT     |             |          |            |
    +------------+----------+------------+-------------+----------+------------+
 
+
+**Note:** The value of connection request timeout timer at the eNB RRC should 
+not be higher than the T300 timer at UE RRC. It is to make sure that the UE 
+context is already removed at the eNB, once the UE will perform cell selection
+upon reaching the *connEstFailCount* count. Moreover, at the time of writing
+this document the :ref:`sec-cell-selection-evaluation` does not include
+the :math:`Qoffset_{temp}` parameter.
+
+.. _tab-rrc-connection_establishment_counter:
+
+.. table:: Counters in RRC connection establishment procedure
+
+   +------------------+----------+------------------+-----------+------------------------------+---------------------+
+   | Name             | Location | Msg              | Monitored | limit not reached            | Limit reached       |
+   |                  |          |                  | by        |                              |                     |
+   +------------------+----------+------------------+-----------+------------------------------+---------------------+
+   | ConnEstFailCount | eNB MAC  | RachConfigCommon | UE RRC    | Increment the local counter. |                     |
+   |                  |          | in SIB2, HO REQ  |           | Invalided the prev SIB2 msg, | Reset the local     |
+   |                  |          | and HO Ack       |           | and try random access        | counter and Perform |
+   |                  |          |                  |           | with the same cell.          | cell selection.     |
+   +------------------+----------+------------------+-----------+------------------------------+---------------------+
 
 
 .. _sec-rrc-connection-reconfiguration:

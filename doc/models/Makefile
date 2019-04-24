@@ -178,6 +178,10 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-dl.dia \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-txon-ul.dia \
 	$(SRC)/lte/doc/source/figures/lte-rlc-data-retx-ul.dia \
+	$(SRC)/lte/doc/source/figures/lte-test-rlf-one-enb.dia \
+	$(SRC)/lte/doc/source/figures/lte-test-rlf-two-enb.dia \
+	$(SRC)/lte/doc/source/figures/lena-radio-link-failure-one-enb.dia \
+	$(SRC)/lte/doc/source/figures/lena-radio-link-failure-two-enb.dia \
 	$(SRC)/lte/doc/source/figures/lte-epc-x2-entity-saps.dia \
 	$(SRC)/lte/doc/source/figures/ca-rrc-reconf.dia \
 	$(SRC)/lte/doc/source/figures/ca-lte-enb-net-device-changes.dia \
@@ -269,12 +273,20 @@ SOURCEFIGS = \
 	$(SRC)/lte/doc/source/figures/ca-test-example-ul.png \
 	$(SRC)/lte/doc/source/figures/ca-test-example-dl.pdf \
 	$(SRC)/lte/doc/source/figures/ca-test-example-dl.png \
+	$(SRC)/lte/doc/source/figures/lena-radio-link-failure-one-enb-thrput.png \
+	$(SRC)/lte/doc/source/figures/lena-radio-link-failure-two-enb-thrput.png \
 	$(SRC)/lte/doc/source/figures/lte-dl-power-control.dia \
 	$(SRC)/lte/doc/source/figures/lte-ffr-scheduling.dia \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.pdf \
 	$(SRC)/lte/doc/source/figures/lte-handover-campaign-rem.png \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.pdf \
 	$(SRC)/lte/doc/source/figures/lte-legacy-handover-algorithm.png \
+	$(SRC)/lte/doc/source/figures/lte-ue-context-removal-from-epc.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ue-context-removal-from-epc.png \
+	$(SRC)/lte/doc/source/figures/lte-ue-context-removal-from-enb-stack.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ue-context-removal-from-enb-stack.png \
+	$(SRC)/lte/doc/source/figures/lte-ue-procedures-after-rlf.pdf \
+	$(SRC)/lte/doc/source/figures/lte-ue-procedures-after-rlf.png \
 	$(SRC)/uan/doc/auvmobility-classes.dia \
 	$(SRC)/netanim/doc/figures/PacketStatistics.png \
 	$(SRC)/netanim/doc/figures/PacketStatistics.pdf \
@@ -407,6 +419,10 @@ IMAGES_EPS = \
 	$(FIGURES)/ca-enb-ctrl-plane.eps \
 	$(FIGURES)/ca-ue-data-plane.eps \
 	$(FIGURES)/ca-ue-ctrl-plane.eps \
+	$(FIGURES)/lte-test-rlf-one-enb.eps \
+	$(FIGURES)/lte-test-rlf-two-enb.eps \
+	$(FIGURES)/lena-radio-link-failure-one-enb.eps \
+	$(FIGURES)/lena-radio-link-failure-two-enb.eps \
 
 # rescale pdf figures as necessary
 $(FIGURES)/testbed.pdf_width = 5in
@@ -425,6 +441,7 @@ $(FIGURES)/lte-interference-test-scenario.pdf_width = 3in
 $(FIGURES)/epc-ctrl-arch.pdf_width = 8cm
 $(FIGURES)/epc-topology.pdf_width = 4in
 $(FIGURES)/epc-topology-x2-enhanced.pdf_width = 14cm
+$(FIGURES)/lena-radio-link-failure-one-enb.pdf_width = 10cm
 $(FIGURES)/lte-arch-data-rrc-pdcp-rlc.pdf_width = 3in
 $(FIGURES)/lte-epc-e2e-data-protocol-stack.pdf_width = 15cm
 $(FIGURES)/ff-mac-saps.pdf_width = 5in
