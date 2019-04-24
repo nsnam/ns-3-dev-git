@@ -68,6 +68,7 @@ public:
   virtual void RemoveLc (uint8_t lcId);
   virtual void Reset ();
   virtual void NotifyConnectionSuccessful ();
+  virtual void SetImsi (uint64_t imsi);
 
 private:
   LteUeMac* m_mac; ///< the UE MAC
@@ -126,6 +127,12 @@ UeMemberLteUeCmacSapProvider::NotifyConnectionSuccessful ()
 {
   m_mac->DoNotifyConnectionSuccessful ();
 }
+
+void
+ UeMemberLteUeCmacSapProvider::SetImsi (uint64_t imsi)
+ {
+   m_mac->DoSetImsi (imsi);
+ }
 
 
 /// UeMemberLteMacSapProvider class
@@ -239,6 +246,7 @@ LteUeMac::LteUeMac ()
      m_freshUlBsr (false),
      m_harqProcessId (0),
      m_rnti (0),
+     m_imsi (0),
      m_rachConfigured (false),
      m_waitingForRaResponse (false)
   
@@ -534,6 +542,13 @@ LteUeMac::DoSetRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this);
   m_rnti = rnti;
+}
+
+void
+LteUeMac::DoSetImsi (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this);
+  m_imsi = imsi;
 }
 
 

@@ -175,6 +175,12 @@ private:
    * establishment.
    */
   void DoNotifyConnectionSuccessful ();
+  /**
+   * Set IMSI
+   *
+   * \param imsi the IMSI of the UE
+   */
+  void DoSetImsi (uint64_t imsi);
 
   // forwarded from PHY SAP
  /**
@@ -253,6 +259,7 @@ private:
   std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; ///< timer for packet life in the buffer
 
   uint16_t m_rnti; ///< RNTI
+  uint16_t m_imsi; ///< IMSI
 
   bool m_rachConfigured; ///< is RACH configured?
   LteUeCmacSapProvider::RachConfig m_rachConfig; ///< RACH configuration

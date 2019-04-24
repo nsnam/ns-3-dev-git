@@ -434,6 +434,13 @@ LteUeRrc::SetImsi (uint64_t imsi)
 {
   NS_LOG_FUNCTION (this << imsi);
   m_imsi = imsi;
+
+  //Communicate the IMSI to MACs and PHYs for all the component carriers
+  for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+    {
+      m_cmacSapProvider.at(i)->SetImsi (m_imsi);
+      m_cphySapProvider.at(i)->SetImsi (m_imsi);
+    }
 }
 
 void

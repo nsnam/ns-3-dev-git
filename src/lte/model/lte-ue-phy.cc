@@ -163,7 +163,8 @@ LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
     m_pssReceived (false),
     m_ueMeasurementsFilterPeriod (MilliSeconds (200)),
     m_ueMeasurementsFilterLast (MilliSeconds (0)),
-    m_rsrpSinrSampleCounter (0)
+    m_rsrpSinrSampleCounter (0),
+    m_imsi (0)
 {
   m_amc = CreateObject <LteAmc> ();
   m_powerControl = CreateObject <LteUePowerControl> ();
@@ -1505,6 +1506,13 @@ LteUePhy::DoStartInSnycDetection ()
   NS_LOG_FUNCTION (this);
   // indicates that the downlink radio link quality has to be monitored for in-sync indications
   m_downlinkInSync = false;
+}
+
+void
+LteUePhy::DoSetImsi (uint64_t imsi)
+{
+  NS_LOG_FUNCTION (this);
+  m_imsi = imsi;
 }
 
 void

@@ -546,6 +546,12 @@ private:
    */
   void InitializeRlfParams ();
   /**
+   * Set IMSI
+   *
+   * \param imsi the IMSI of the UE
+   */
+  void DoSetImsi (uint64_t imsi);
+  /**
    * \brief Do set RSRP filter coefficient
    *
    * \param rsrpFilterCoefficient value. Determines the strength of
@@ -758,6 +764,7 @@ private:
   uint16_t m_numOfFrames; ///< count the number of frames for which the downlink radio link quality is estimated
   double m_sinrDbFrame; ///< the average SINR per radio frame
   SpectrumValue m_ctrlSinrForRlf; ///< the CTRL SINR used for RLF detection
+  uint64_t m_imsi;
 
 }; // end of `class LteUePhy`
 

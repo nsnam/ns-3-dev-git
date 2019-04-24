@@ -119,6 +119,12 @@ public:
    */
   virtual void NotifyConnectionSuccessful () = 0;
 
+  /**
+   * \brief A method call by UE RRC to communicate the IMSI to the UE MAC
+   * \param imsi the IMSI of the UE
+   */
+  virtual void SetImsi (uint64_t imsi) = 0;
+
 };
 
 

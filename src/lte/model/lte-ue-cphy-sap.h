@@ -190,6 +190,12 @@ public:
    */
   virtual void StartInSnycDetection () = 0;
 
+  /**
+   * \brief A method call by UE RRC to communicate the IMSI to the UE PHY
+   * \param imsi the IMSI of the UE
+   */
+  virtual void SetImsi (uint64_t imsi) = 0;
+
 };
 
 
@@ -321,6 +327,7 @@ public:
   virtual void ResetPhyAfterRlf ();
   virtual void ResetRlfParams ();
   virtual void StartInSnycDetection ();
+  virtual void SetImsi (uint64_t imsi);
 
 private:
   MemberLteUeCphySapProvider ();
@@ -439,6 +446,12 @@ template <class C>
 void MemberLteUeCphySapProvider<C>::StartInSnycDetection ()
 {
   m_owner->DoStartInSnycDetection ();
+}
+
+template <class C>
+void MemberLteUeCphySapProvider<C>::SetImsi (uint64_t imsi)
+{
+  m_owner->DoSetImsi (imsi);
 }
 
 
