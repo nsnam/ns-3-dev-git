@@ -34,6 +34,7 @@
 #include <vector>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
+#include <ns3/traced-callback.h>
 
 
 namespace ns3 {
@@ -59,6 +60,19 @@ public:
   LteUeMac ();
   virtual ~LteUeMac ();
   virtual void DoDispose (void);
+
+  /**
+   * \brief TracedCallback signature for RA response timeout events
+   * exporting IMSI, contention flag, preamble transmission counter
+   * and the max limit of preamble transmission
+   *
+   * \param [in] imsi
+   * \param [in] contention
+   * \param [in] preambleTxCounter
+   * \param [in] maxPreambleTxLimit
+   */
+  typedef void (* RaResponseTimeoutTracedCallback)
+    (uint64_t imsi, bool contention, uint8_t preambleTxCounter, uint8_t maxPreambleTxLimit);
 
   /**
   * \brief Get the LTE MAC SAP provider
@@ -273,6 +287,13 @@ private:
   uint32_t m_subframeNo; ///< subframe number
   uint8_t m_raRnti; ///< RA RNTI
   bool m_waitingForRaResponse; ///< waiting for RA response
+
+  /**
+   * \brief The `RaResponseTimeout` trace source. Fired RA response timeout.
+   * Exporting IMSI, contention flag, preamble transmission counter
+   * and the max limit of preamble transmission.
+   */
+  TracedCallback<uint64_t, bool, uint8_t, uint8_t> m_raResponseTimeoutTrace;
 };
 
 } // namespace ns3

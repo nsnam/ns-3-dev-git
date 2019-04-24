@@ -235,7 +235,13 @@ LteUeMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteUeMac")
     .SetParent<Object> ()
     .SetGroupName("Lte")
-    .AddConstructor<LteUeMac> ();
+    .AddConstructor<LteUeMac> ()
+    .AddTraceSource ("RaResponseTimeout",
+                     "trace fired upon RA response timeout",
+                     MakeTraceSourceAccessor (&LteUeMac::m_raResponseTimeoutTrace),
+                     "ns3::LteUeMac::RaResponseTimeoutTracedCallback")
+
+    ;
   return tid;
 }
 
@@ -498,6 +504,9 @@ LteUeMac::RaResponseTimeout (bool contention)
   m_waitingForRaResponse = false;
   // 3GPP 36.321 5.1.4
   ++m_preambleTransmissionCounter;
+  //fire RA response timeout trace
+  m_raResponseTimeoutTrace (m_imsi, contention, m_preambleTransmissionCounter,
+                            m_rachConfig.preambleTransMax + 1);
   if (m_preambleTransmissionCounter == m_rachConfig.preambleTransMax + 1)
     {
       NS_LOG_INFO ("RAR timeout, preambleTransMax reached => giving up");
