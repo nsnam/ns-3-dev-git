@@ -587,7 +587,8 @@ LteUeMac::DoReset ()
           m_lcInfoMap.erase (it++);
         }
     }
-
+  // note: rnti will be assigned by the eNB using RA response message
+  m_rnti = 0;
   m_noRaResponseReceivedEvent.Cancel ();
   m_rachConfigured = false;
   m_freshUlBsr = false;
