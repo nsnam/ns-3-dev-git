@@ -157,11 +157,6 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
-  /** Store arrival time */
-  Time now = Simulator::Now ();
-  RlcTag timeTag (now);
-  p->AddPacketTag (timeTag);
-
   /** Store PDCP PDU */
 
   LteRlcSduStatusTag tag;
@@ -169,7 +164,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
   p->AddPacketTag (tag);
 
   NS_LOG_LOGIC ("Txon Buffer: New packet added");
-  m_txonBuffer.push_back (p);
+  m_txonBuffer.push_back (TxPdu (p, Simulator::Now ()));
   m_txonBufferSize += p->GetSize ();
   NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size() );
   NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
@@ -258,8 +253,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
       // Sender timestamp
       RlcTag rlcTag (Simulator::Now ());
-      NS_ASSERT_MSG (!packet->PeekPacketTag (rlcTag), "RlcTag is already present");
-      packet->AddPacketTag (rlcTag);
+      packet->AddByteTag (rlcTag, 1, rlcAmHeader.GetSerializedSize ());
       m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
       // Send RLC PDU to MAC layer
@@ -292,8 +286,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("SN = " << seqNumberValue << " m_pdu " << m_retxBuffer.at (seqNumberValue).m_pdu);
 
           if (m_retxBuffer.at (seqNumberValue).m_pdu != 0)
-            {            
-
+            {
               Ptr<Packet> packet = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
               
               if (( packet->GetSize () <= txOpParams.bytes )
@@ -340,12 +333,14 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                     }
 
                   packet->AddHeader (rlcAmHeader);
+
+                  RlcTag rlcTag;
+                  rlcTag.SetSenderTimestamp (Simulator::Now ());
+
+                  packet->AddByteTag (rlcTag, 1, rlcAmHeader.GetSerializedSize ());
+
                   NS_LOG_LOGIC ("new AM RLC header: " << rlcAmHeader);
 
-                  // Sender timestamp
-                  RlcTag rlcTag (Simulator::Now ());
-                  NS_ASSERT_MSG (packet->PeekPacketTag (rlcTag), "RlcTag is missing");
-                  packet->ReplacePacketTag (rlcTag);
                   m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
                   // Send RLC PDU to MAC layer
@@ -360,6 +355,7 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   m_macSapProvider->TransmitPdu (params);
 
                   m_retxBuffer.at (seqNumberValue).m_retxCount++;
+                  m_retxBuffer.at (seqNumberValue).m_waitingSince = Simulator::Now ();
                   NS_LOG_INFO ("Incr RETX_COUNT for SN = " << seqNumberValue);
                   if (m_retxBuffer.at (seqNumberValue).m_retxCount >= m_maxRetxThreshold)
                     {
@@ -369,11 +365,13 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
                   NS_LOG_INFO ("Move SN = " << seqNumberValue << " back to txedBuffer");
                   m_txedBuffer.at (seqNumberValue).m_pdu = m_retxBuffer.at (seqNumberValue).m_pdu->Copy ();
                   m_txedBuffer.at (seqNumberValue).m_retxCount = m_retxBuffer.at (seqNumberValue).m_retxCount;
+                  m_txedBuffer.at (seqNumberValue).m_waitingSince = m_retxBuffer.at (seqNumberValue).m_waitingSince;
                   m_txedBufferSize += m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
                   m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_retxBuffer.at (seqNumberValue).m_pdu = 0;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+                  m_retxBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                   
                   NS_LOG_LOGIC ("retxBufferSize = " << m_retxBufferSize);
 
@@ -441,12 +439,13 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
     }
 
   NS_LOG_LOGIC ("SDUs in TxonBuffer  = " << m_txonBuffer.size ());
-  NS_LOG_LOGIC ("First SDU buffer  = " << *(m_txonBuffer.begin()));
-  NS_LOG_LOGIC ("First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+  NS_LOG_LOGIC ("First SDU buffer  = " << m_txonBuffer.begin ()->m_pdu);
+  NS_LOG_LOGIC ("First SDU size    = " << m_txonBuffer.begin ()->m_pdu->GetSize ());
   NS_LOG_LOGIC ("Next segment size = " << nextSegmentSize);
   NS_LOG_LOGIC ("Remove SDU from TxBuffer");
-  Ptr<Packet> firstSegment = (*(m_txonBuffer.begin ()))->Copy ();
-  m_txonBufferSize -= (*(m_txonBuffer.begin()))->GetSize ();
+  Time firstSegmentTime = m_txonBuffer.begin ()->m_waitingSince;
+  Ptr<Packet> firstSegment = m_txonBuffer.begin ()->m_pdu->Copy ();
+  m_txonBufferSize -= m_txonBuffer.begin ()->m_pdu->GetSize ();
   NS_LOG_LOGIC ("txBufferSize      = " << m_txonBufferSize );
   m_txonBuffer.erase (m_txonBuffer.begin ());
 
@@ -496,12 +495,12 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
             {
               firstSegment->AddPacketTag (oldTag);
 
-              m_txonBuffer.insert (m_txonBuffer.begin (), firstSegment);
-              m_txonBufferSize += (*(m_txonBuffer.begin()))->GetSize ();
+              m_txonBuffer.insert (m_txonBuffer.begin (), TxPdu (firstSegment, firstSegmentTime));
+              m_txonBufferSize += m_txonBuffer.begin ()->m_pdu->GetSize ();
 
               NS_LOG_LOGIC ("    Txon buffer: Give back the remaining segment");
               NS_LOG_LOGIC ("    Txon buffers = " << m_txonBuffer.size ());
-              NS_LOG_LOGIC ("    Front buffer size = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("    Front buffer size = " << m_txonBuffer.begin ()->m_pdu->GetSize ());
               NS_LOG_LOGIC ("    txonBufferSize = " << m_txonBufferSize );
             }
           else
@@ -563,8 +562,8 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("        SDUs in TxBuffer  = " << m_txonBuffer.size ());
           if (m_txonBuffer.size () > 0)
             {
-              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin()));
-              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("        First SDU buffer  = " << m_txonBuffer.begin ()->m_pdu);
+              NS_LOG_LOGIC ("        First SDU size    = " << m_txonBuffer.begin ()->m_pdu->GetSize ());
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
 
@@ -593,15 +592,16 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
           NS_LOG_LOGIC ("        SDUs in TxBuffer  = " << m_txonBuffer.size ());
           if (m_txonBuffer.size () > 0)
             {
-              NS_LOG_LOGIC ("        First SDU buffer  = " << *(m_txonBuffer.begin()));
-              NS_LOG_LOGIC ("        First SDU size    = " << (*(m_txonBuffer.begin()))->GetSize ());
+              NS_LOG_LOGIC ("        First SDU buffer  = " << m_txonBuffer.begin ()->m_pdu);
+              NS_LOG_LOGIC ("        First SDU size    = " << m_txonBuffer.begin ()->m_pdu->GetSize ());
             }
           NS_LOG_LOGIC ("        Next segment size = " << nextSegmentSize);
           NS_LOG_LOGIC ("        Remove SDU from TxBuffer");
 
           // (more segments)
-          firstSegment = (*(m_txonBuffer.begin ()))->Copy ();
-          m_txonBufferSize -= (*(m_txonBuffer.begin()))->GetSize ();
+          firstSegment = m_txonBuffer.begin ()->m_pdu->Copy ();
+          firstSegmentTime = m_txonBuffer.begin ()->m_waitingSince;
+          m_txonBufferSize -= m_txonBuffer.begin ()->m_pdu->GetSize ();
           m_txonBuffer.erase (m_txonBuffer.begin ());
           NS_LOG_LOGIC ("        txBufferSize = " << m_txonBufferSize );
         }
@@ -716,17 +716,20 @@ LteRlcAm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 
   // Build RLC PDU with DataField and Header
   NS_LOG_LOGIC ("AM RLC header: " << rlcAmHeader);
+
+  RlcTag rlcTag;
+  rlcTag.SetSenderTimestamp (Simulator::Now ());
+
   packet->AddHeader (rlcAmHeader);
+  packet->AddByteTag (rlcTag, 1, rlcAmHeader.GetSerializedSize ());
 
   // Store new PDU into the Transmitted PDU Buffer
   NS_LOG_LOGIC ("Put transmitted PDU in the txedBuffer");
   m_txedBufferSize += packet->GetSize ();
   m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ).m_pdu = packet->Copy ();
   m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ).m_retxCount = 0;
+  m_txedBuffer.at ( rlcAmHeader.GetSequenceNumber ().GetValue () ).m_waitingSince = Simulator::Now ();
 
-  // Sender timestamp
-  RlcTag rlcTag (Simulator::Now ());
-  packet->ReplacePacketTag (rlcTag);
   m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
   // Send RLC PDU to MAC layer
@@ -753,18 +756,21 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << rxPduParams.p->GetSize ());
 
-  // Receiver timestamp
-  RlcTag rlcTag;
-  Time delay;
-  NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
-  rxPduParams.p->RemovePacketTag (rlcTag);
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
-  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
-
   // Get RLC header parameters
   LteRlcAmHeader rlcAmHeader;
   rxPduParams.p->PeekHeader (rlcAmHeader);
   NS_LOG_LOGIC ("RLC header: " << rlcAmHeader);
+
+  // Receiver timestamp
+  Time delay;
+  RlcTag rlcTag;
+
+  bool ret = rxPduParams.p->FindFirstMatchingByteTag (rlcTag);
+  NS_ASSERT_MSG(ret, "RlcTag not found in RLC Header. The packet went into a real network?");
+
+  delay = Simulator::Now () - rlcTag.GetSenderTimestamp ();
+
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
 
   if ( rlcAmHeader.IsDataPdu () )
     {
@@ -1050,11 +1056,13 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   NS_LOG_INFO ("Move SN = " << seqNumberValue << " to retxBuffer");
                   m_retxBuffer.at (seqNumberValue).m_pdu = m_txedBuffer.at (seqNumberValue).m_pdu->Copy ();
                   m_retxBuffer.at (seqNumberValue).m_retxCount = m_txedBuffer.at (seqNumberValue).m_retxCount;
+                  m_retxBuffer.at (seqNumberValue).m_waitingSince = m_txedBuffer.at (seqNumberValue).m_waitingSince;
                   m_retxBufferSize += m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
 
                   m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_txedBuffer.at (seqNumberValue).m_pdu = 0;
                   m_txedBuffer.at (seqNumberValue).m_retxCount = 0;
+                  m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                 }
 
               NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu != 0);
@@ -1070,6 +1078,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   //               NS_LOG_INFO ("m_txedBuffer( " << m_vtA << " )->GetSize = " << m_txedBuffer.at (m_vtA.GetValue ())->GetSize ());
                   m_txedBufferSize -= m_txedBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_txedBuffer.at (seqNumberValue).m_pdu = 0;
+                  m_txedBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                   NS_ASSERT (m_retxBuffer.at (seqNumberValue).m_pdu == 0);
                 }
 
@@ -1079,6 +1088,7 @@ LteRlcAm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
                   m_retxBufferSize -= m_retxBuffer.at (seqNumberValue).m_pdu->GetSize ();
                   m_retxBuffer.at (seqNumberValue).m_pdu = 0;
                   m_retxBuffer.at (seqNumberValue).m_retxCount = 0;
+                  m_retxBuffer.at (seqNumberValue).m_waitingSince = MilliSeconds (0);
                 }
 
             }
@@ -1140,7 +1150,12 @@ void
 LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
 {
   LteRlcAmHeader rlcAmHeader;
+  RlcTag rlcTag;
+  bool ret = packet->FindFirstMatchingByteTag (rlcTag);
+  NS_ASSERT(ret);
   packet->RemoveHeader (rlcAmHeader);
+  ret = packet->FindFirstMatchingByteTag (rlcTag);
+  NS_ASSERT(!ret);
   uint8_t framingInfo = rlcAmHeader.GetFramingInfo ();
   SequenceNumber10 currSeqNumber = rlcAmHeader.GetSequenceNumber ();
   bool expectedSnLost;
@@ -1572,25 +1587,23 @@ LteRlcAm::DoReportBufferStatus (void)
   Time txonQueueHolDelay (0);
   if ( m_txonBufferSize > 0 )
     {
-      RlcTag txonQueueHolTimeTag;
-      m_txonBuffer.front ()->PeekPacketTag (txonQueueHolTimeTag);
-      txonQueueHolDelay = now - txonQueueHolTimeTag.GetSenderTimestamp ();
+      txonQueueHolDelay = now - m_txonBuffer.front ().m_waitingSince;
     }
 
   // Retransmission Queue HOL time
   Time retxQueueHolDelay;
-  RlcTag retxQueueHolTimeTag;
   if ( m_retxBufferSize > 0 )
     {
+      Time senderTimestamp;
       if (m_retxBuffer.at (m_vtA.GetValue ()).m_pdu != 0)
         {
-          m_retxBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
+          senderTimestamp = m_retxBuffer.at (m_vtA.GetValue ()).m_waitingSince;
         }
       else
         {
-          m_txedBuffer.at (m_vtA.GetValue ()).m_pdu->PeekPacketTag (retxQueueHolTimeTag);
-        }      
-      retxQueueHolDelay = now - retxQueueHolTimeTag.GetSenderTimestamp ();
+          senderTimestamp = m_txedBuffer.at (m_vtA.GetValue ()).m_waitingSince;
+        }
+      retxQueueHolDelay = now - senderTimestamp;
     }
   else 
     {      
@@ -1700,11 +1713,13 @@ LteRlcAm::ExpirePollRetransmitTimer (void)
                NS_LOG_INFO ("Move PDU " << sn << " from txedBuffer to retxBuffer");
                m_retxBuffer.at (snValue).m_pdu = m_txedBuffer.at (snValue).m_pdu->Copy ();
                m_retxBuffer.at (snValue).m_retxCount = m_txedBuffer.at (snValue).m_retxCount;
+               m_retxBuffer.at (snValue).m_waitingSince = m_txedBuffer.at (snValue).m_waitingSince;
                m_retxBufferSize += m_retxBuffer.at (snValue).m_pdu->GetSize ();
 
                m_txedBufferSize -= m_txedBuffer.at (snValue).m_pdu->GetSize ();
                m_txedBuffer.at (snValue).m_pdu = 0;
                m_txedBuffer.at (snValue).m_retxCount = 0;
+               m_txedBuffer.at (snValue).m_waitingSince = MilliSeconds (0);
              }
         }
     }

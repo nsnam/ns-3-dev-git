@@ -97,7 +97,28 @@ private:
 private:
   uint32_t m_maxTxBufferSize; ///< maximum transmit buffer status
   uint32_t m_txBufferSize; ///< transmit buffer size
-  std::vector < Ptr<Packet> > m_txBuffer;       ///< Transmission buffer
+  /**
+   * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+   */
+  struct TxPdu
+  {
+    /**
+     * \brief TxPdu default constructor
+     * \param pdu the PDU
+     * \param time the arrival time
+     */
+    TxPdu (const Ptr<Packet> &pdu, const Time &time) :
+      m_pdu (pdu),
+      m_waitingSince (time)
+    { }
+
+    TxPdu () = delete;
+
+    Ptr<Packet> m_pdu;           ///< PDU
+    Time        m_waitingSince;  ///< Layer arrival time
+  };
+
+  std::vector < TxPdu > m_txBuffer; ///< Transmission buffer
   std::map <uint16_t, Ptr<Packet> > m_rxBuffer; ///< Reception buffer
   std::vector < Ptr<Packet> > m_reasBuffer;     ///< Reassembling buffer
 

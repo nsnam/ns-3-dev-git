@@ -23,7 +23,6 @@
 #include "ns3/log.h"
 
 #include "ns3/lte-rlc-tm.h"
-#include "ns3/lte-rlc-tag.h"
 
 namespace ns3 {
 
@@ -81,12 +80,8 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
 
   if (m_txBufferSize + p->GetSize () <= m_maxTxBufferSize)
     {
-      /** Store arrival time */
-      RlcTag timeTag (Simulator::Now ());
-      p->AddPacketTag (timeTag);
-
       NS_LOG_LOGIC ("Tx Buffer: New packet added");
-      m_txBuffer.push_back (p);
+      m_txBuffer.push_back (TxPdu (p, Simulator::Now ()));
       m_txBufferSize += p->GetSize ();
       NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
       NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
@@ -127,20 +122,18 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       return;
     }
 
-  Ptr<Packet> packet = (*(m_txBuffer.begin ()))->Copy ();
+  Ptr<Packet> packet = m_txBuffer.begin ()->m_pdu->Copy ();
 
   if (txOpParams.bytes < packet->GetSize ())
     {
-      NS_LOG_WARN ("TX opportunity too small = " << txOpParams.bytes << " (PDU size: " << packet->GetSize () << ")");
+      NS_LOG_WARN ("TX opportunity too small = " << txOpParams.bytes <<
+                   " (PDU size: " << packet->GetSize () << ")");
       return;
     }
 
-  m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
+  m_txBufferSize -= packet->GetSize ();
   m_txBuffer.erase (m_txBuffer.begin ());
- 
-  // Sender timestamp
-  RlcTag rlcTag (Simulator::Now ());
-  packet->ReplacePacketTag (rlcTag);
+
   m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
   // Send RLC PDU to MAC layer
@@ -172,13 +165,7 @@ LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << rxPduParams.p->GetSize ());
 
-  // Receiver timestamp
-  RlcTag rlcTag;
-  Time delay;
-  NS_ASSERT_MSG (rxPduParams.p->PeekPacketTag (rlcTag), "RlcTag is missing");
-  rxPduParams.p->RemovePacketTag (rlcTag);
-  delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
-  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), 0);
 
   // 5.1.1.2 Receive operations 
   // 5.1.1.2.1  General
@@ -197,10 +184,7 @@ LteRlcTm::DoReportBufferStatus (void)
 
   if (! m_txBuffer.empty ())
     {
-      RlcTag holTimeTag;
-      NS_ASSERT_MSG (m_txBuffer.front ()->PeekPacketTag (holTimeTag), "RlcTag is missing");
-      m_txBuffer.front ()->PeekPacketTag (holTimeTag);
-      holDelay = Simulator::Now () - holTimeTag.GetSenderTimestamp ();
+      holDelay = Simulator::Now () - m_txBuffer.front ().m_waitingSince;
 
       queueSize = m_txBufferSize; // just data in tx queue (no header overhead for RLC TM)
     }

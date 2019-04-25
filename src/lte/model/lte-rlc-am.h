@@ -107,14 +107,36 @@ private:
   void DoReportBufferStatus ();
 
 private:
-    std::vector < Ptr<Packet> > m_txonBuffer; ///< Transmission buffer
+  /**
+   * \brief Store an incoming (from layer above us) PDU, waiting to transmit it
+   */
+  struct TxPdu
+  {
+    /**
+     * \brief TxPdu default constructor
+     * \param pdu the PDU
+     * \param time the arrival time
+     */
+    TxPdu (const Ptr<Packet> &pdu, const Time &time) :
+      m_pdu (pdu),
+      m_waitingSince (time)
+    { }
 
-    /// RetxPdu structure
-    struct RetxPdu
-    {
-      Ptr<Packet> m_pdu; ///< PDU
-      uint16_t    m_retxCount; ///< retransmit count
-    };
+    TxPdu () = delete;
+
+    Ptr<Packet> m_pdu;           ///< PDU
+    Time        m_waitingSince;  ///< Layer arrival time
+  };
+
+  std::vector < TxPdu > m_txonBuffer; ///< Transmission buffer
+
+  /// RetxPdu structure
+  struct RetxPdu
+  {
+    Ptr<Packet> m_pdu; ///< PDU
+    uint16_t    m_retxCount; ///< retransmit count
+    Time        m_waitingSince; ///!< Layer arrival time
+  };
 
   std::vector <RetxPdu> m_txedBuffer;  ///< Buffer for transmitted and retransmitted PDUs 
                                        ///< that have not been acked but are not considered 

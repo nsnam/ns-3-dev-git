@@ -820,9 +820,20 @@ Packet::AddByteTag (const Tag &tag) const
 {
   NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
   ByteTagList *list = const_cast<ByteTagList *> (&m_byteTagList);
-  TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (), 
+  TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (),
                                 0,
                                 GetSize ());
+  tag.Serialize (buffer);
+}
+void
+Packet::AddByteTag (const Tag &tag, uint32_t start, uint32_t end) const
+{
+  NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ().GetName () << tag.GetSerializedSize ());
+  NS_ABORT_MSG_IF (end < start, "Invalid byte range");
+  ByteTagList *list = const_cast<ByteTagList *> (&m_byteTagList);
+  TagBuffer buffer = list->Add (tag.GetInstanceTypeId (), tag.GetSerializedSize (),
+                                static_cast<int32_t> (start),
+                                static_cast<int32_t> (end));
   tag.Serialize (buffer);
 }
 ByteTagIterator 

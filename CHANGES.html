@@ -116,6 +116,7 @@ us a note on ns-developers mailing list.</p>
     </ul>
   </li>
   <li> The default qdisc installed on single-queue devices (such as PointToPoint, Csma and Simple) is now FqCodel (instead of PfifoFast). On multi-queue devices (such as Wifi), the default root qdisc is now Mq with as many FqCoDel child qdiscs as the number of device queues. The new defaults are motivated by the willingness to align with the behavior of major Linux distributions and by the need to preserve the effectiveness of Wifi EDCA Functions in differentiating Access Categories (see issue #35).</li>
+  <li>LTE RLC TM mode does not report anymore the layer-to-layer delay, as it misses (by standard) an header to which attach the timestamp tag. Users can switch to the PDCP layer delay measurements, which must be the same.</li>
 </ul>
 
 <hr>
