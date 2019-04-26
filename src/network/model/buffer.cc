@@ -400,8 +400,9 @@ void
 Buffer::AddAtEnd (const Buffer &o)
 {
   NS_LOG_FUNCTION (this << &o);
+
   if (m_data->m_count == 1 &&
-      m_end == m_zeroAreaEnd &&
+      (m_end == m_zeroAreaEnd || m_zeroAreaStart == m_zeroAreaEnd) &&
       m_end == m_data->m_dirtyEnd &&
       o.m_start == o.m_zeroAreaStart &&
       o.m_zeroAreaEnd - o.m_zeroAreaStart > 0)
@@ -411,8 +412,12 @@ Buffer::AddAtEnd (const Buffer &o)
        * we attempt to aggregate two buffers which contain
        * adjacent zero areas.
        */
+      if (m_zeroAreaStart == m_zeroAreaEnd)
+        {
+          m_zeroAreaStart = m_end;
+        }
       uint32_t zeroSize = o.m_zeroAreaEnd - o.m_zeroAreaStart;
-      m_zeroAreaEnd += zeroSize;
+      m_zeroAreaEnd = m_end + zeroSize;
       m_end = m_zeroAreaEnd;
       m_data->m_dirtyEnd = m_zeroAreaEnd;
       uint32_t endData = o.m_end - o.m_zeroAreaEnd;
