@@ -73,7 +73,7 @@ IMAGES_DIA = \
 	$(FIGURES)/ca-lte-ue-net-device-changes.dia \
 	$(FIGURES)/lte-test-rlf-one-enb.dia \
 	$(FIGURES)/lena-radio-link-failure-one-enb.dia \
-	$(FIGURES)/lena-radio-link-failure-two-enb.dia	
+	$(FIGURES)/lena-radio-link-failure-two-enb.dia
 
 # specify eps figures from which .png and .pdf figures need to be built
 

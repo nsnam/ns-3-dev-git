@@ -2248,7 +2248,7 @@ matter if the DL control error model is disabled, a UE can still detect the RLF
 since the SINR based on the control channel is reported to the LteUePhy class,
 using a callback hooked in LteHelper while installing a UE device.
 
-The RLF detection starts once the RRC connection is established between UE and 
+The RLF detection starts once the RRC connection is established between UE and
 eNodeB, i.e., UE is in "CONNECTED_NORMALLY" state; upon which the RLF parameters
 are configured (see ``LteUePhy::DoConfigureRadioLinkFailureDetection``). In real
 networks, these parameters are transmitted by the eNB using IE UE-TimersAndConstants or
@@ -2272,13 +2272,13 @@ Else, the counter for the unsuccessfully decoded frames is reset to zero. At the
 LteUeRrc, when the number of consecutive out-of-sync indications matches with the
 value of N310 parameter, the T310 timer is started and LteUePhy is notified to start
 measuring for in-sync indications (see ``LteUePhy::DoStartInSnycDetection``). We note
-that, the UE RRC state is not changed till the expiration of T310 timer. If the 
+that, the UE RRC state is not changed till the expiration of T310 timer. If the
 resultant SINR values averaged over a downlink frame is greater than a defined
 threshold Qin (default: -3.8dB), the frame is considered to be successfully
 decoded. Qin corresponds to 2% BLER [R4-081920]_ of a hypothetical PDCCH transmission
 taking into account the PCFICH errors. Once the UE is able to decode 10
 consecutive frames, an in-sync indication is sent to the UE RRC layer
-(see ``LteUeRrc::DoNotifyInSync``). Else, the counter for the successfully decoded 
+(see ``LteUeRrc::DoNotifyInSync``). Else, the counter for the successfully decoded
 frames is reset to zero. If prior to the T310 timer expiry, the number of
 consecutive in-sync indications matches with N311 parameter of LteUeRRC, the UE
 is considered back in-sync. At this stage, the related parameters are reset to
@@ -2896,8 +2896,8 @@ Else, the upper layer (UE NAS) will immediately attempt to retry the procedure.
    +------------+----------+------------+-------------+----------+------------+
 
 
-**Note:** The value of connection request timeout timer at the eNB RRC should 
-not be higher than the T300 timer at UE RRC. It is to make sure that the UE 
+**Note:** The value of connection request timeout timer at the eNB RRC should
+not be higher than the T300 timer at UE RRC. It is to make sure that the UE
 context is already removed at the eNB, once the UE will perform cell selection
 upon reaching the *connEstFailCount* count. Moreover, at the time of writing
 this document the :ref:`sec-cell-selection-evaluation` does not include

@@ -3,7 +3,6 @@ diagram {
 
          EpcUeNas; LteUeRrc; "LteUeMac (all MACs)"; "LteUePhy (All Phys)"; LteUeComponentCarrierManager; LteEnbRrc;
 
-         
          LteUeRrc ->> LteUeRrc [label="SwitchToState (CONNECTED_PHY_PROBLEM)"];
          EpcUeNas <<- LteUeRrc [label="NotifyConnectionReleased ()"];
          LteUeRrc ->> LteEnbRrc [label="SendIdealUeContext\nRemoveRequest(rnti)"];

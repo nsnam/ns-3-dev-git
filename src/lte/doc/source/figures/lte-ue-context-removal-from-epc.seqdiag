@@ -2,7 +2,7 @@
 diagram {
 
           LteEnbRrc; UeManager; EpcEnbApplication; EpcMmeApplication; EpcSgwApplication; EpcPgwApplication; UeInfo;
-         
+
           LteEnbRrc ->> UeManager [label="RecvIdealUeContext\nRemoveRequest (rnti)"];
           UeManager ->> EpcEnbApplication [label="DoSendReleaseIndication\n(Imsi, rnti, bearerId)"];
           EpcEnbApplication ->> EpcMmeApplication [label="ErabReleaseIndication\n(imsi, rnti, erabToBeReleaseIndication)"];

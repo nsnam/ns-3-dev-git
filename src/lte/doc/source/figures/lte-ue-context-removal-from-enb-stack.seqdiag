@@ -2,7 +2,7 @@
 diagram {
 
 LteEnbRrc;UeManager;EpcEnbApplication;"LteUeMac (All MACs)";Scheduler;"LteUePhy (All Phys)";LteSpectrumPhy;LteEnbComponentCarrierManager;RrcProtocol
-         
+
 LteEnbRrc ->> UeManager [label="CancelPendingEvents ()"];
 LteEnbRrc ->> "LteUeMac (All MACs)" [label="RemoveUe (rnti)"];
 "LteUeMac (All MACs)" ->> Scheduler [label="CschedUeReleaseReq (params)"];
