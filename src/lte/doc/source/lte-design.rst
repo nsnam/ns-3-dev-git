@@ -2253,8 +2253,12 @@ eNodeB, i.e., UE is in "CONNECTED_NORMALLY" state; upon which the RLF parameters
 are configured (see ``LteUePhy::DoConfigureRadioLinkFailureDetection``). In real
 networks, these parameters are transmitted by the eNB using IE UE-TimersAndConstants or
 RLF-TimersAndConstants. However, for the sake of simplification, in the simulator
-they are presented as the attributes of the LteUePhy and LteUeRrc classes. In
-LteUePhy class, CQI calculation is triggered for every downlink subframe received,
+they are presented as the attributes of the LteUePhy and LteUeRrc classes.
+Moreover, what concerns the carrier aggregation, i.e., when a UE is configured
+with multiple component carriers, the RLF detection is only performed by the
+primary component carrier, i.e. component carrier id 0
+(see ``LteUePhy::DoNotifyConnectionSuccessful``). In LteUePhy class, CQI
+calculation is triggered for every downlink subframe received,
 and the average SINR value is measured across all resource blocks. For the RLF
 detection, these SINR values are averaged over a downlink frame and if the result
 is less than a defined threshold Qout (default: -5dB), the frame cannot be decoded
