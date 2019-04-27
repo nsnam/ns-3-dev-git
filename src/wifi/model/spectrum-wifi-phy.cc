@@ -313,8 +313,9 @@ SpectrumWifiPhy::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
 void
 SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration)
 {
-  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
-  double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain ());
+  double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
+  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
+  double txPowerWatts = DbmToW (txPowerDbm);
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, txVector.GetMode ().GetModulationClass ());
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = txDuration;

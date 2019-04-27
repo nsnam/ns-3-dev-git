@@ -867,7 +867,7 @@ AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 }
 
 void 
-AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p)
+AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p, double txPowerW)
 {
   NS_LOG_FUNCTION (this);
   return GenericWirelessTxTrace (context, p, AnimationInterface::WIFI);

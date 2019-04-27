@@ -1100,7 +1100,7 @@ WifiPhy::Configure80211ax (void)
     {
       Configure80211n ();
     }
-  
+
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs0 ());
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs1 ());
   m_deviceMcsSet.push_back (WifiPhy::GetHeMcs2 ());
@@ -1513,6 +1513,8 @@ WifiPhy::GetChannelNumber (void) const
 bool
 WifiPhy::DoChannelSwitch (uint8_t nch)
 {
+  m_powerRestricted = false;
+  m_channelAccessRequested = false;
   if (!IsInitialized ())
     {
       //this is not channel switch, this is initialization
@@ -1537,10 +1539,10 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
       if (m_endPreambleDetectionEvent.IsRunning ())
-      {
-        m_endPreambleDetectionEvent.Cancel ();
-        m_endRxEvent.Cancel ();
-      }
+        {
+          m_endPreambleDetectionEvent.Cancel ();
+          m_endRxEvent.Cancel ();
+        }
       goto switchChannel;
       break;
     case WifiPhyState::SLEEP:
@@ -1571,6 +1573,8 @@ switchChannel:
 bool
 WifiPhy::DoFrequencySwitch (uint16_t frequency)
 {
+  m_powerRestricted = false;
+  m_channelAccessRequested = false;
   if (!IsInitialized ())
     {
       //this is not channel switch, this is initialization
@@ -1595,10 +1599,10 @@ WifiPhy::DoFrequencySwitch (uint16_t frequency)
     case WifiPhyState::CCA_BUSY:
     case WifiPhyState::IDLE:
       if (m_endPreambleDetectionEvent.IsRunning ())
-      {
-        m_endPreambleDetectionEvent.Cancel ();
-        m_endRxEvent.Cancel ();
-      }
+        {
+          m_endPreambleDetectionEvent.Cancel ();
+          m_endRxEvent.Cancel ();
+        }
       goto switchFrequency;
       break;
     case WifiPhyState::SLEEP:
@@ -1630,6 +1634,8 @@ void
 WifiPhy::SetSleepMode (void)
 {
   NS_LOG_FUNCTION (this);
+  m_powerRestricted = false;
+  m_channelAccessRequested = false;
   switch (m_state->GetState ())
     {
     case WifiPhyState::TX:
@@ -1662,6 +1668,8 @@ void
 WifiPhy::SetOffMode (void)
 {
   NS_LOG_FUNCTION (this);
+  m_powerRestricted = false;
+  m_channelAccessRequested = false;
   m_endPlcpRxEvent.Cancel ();
   m_endRxEvent.Cancel ();
   m_endPreambleDetectionEvent.Cancel ();
@@ -2047,7 +2055,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   double Nes = 1;
   //todo: improve logic to reduce the number of if cases
   //todo: extend to NSS > 4 for VHT rates
-  if (payloadMode == GetHtMcs21()
+  if (payloadMode == GetHtMcs21 ()
       || payloadMode == GetHtMcs22 ()
       || payloadMode == GetHtMcs23 ()
       || payloadMode == GetHtMcs28 ()
@@ -2241,8 +2249,8 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   else if (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU)
     {
       //Not an A-MPDU or single MPDU (i.e. the current payload contains both service and padding)
-      // The number of OFDM symbols in the data field when BCC encoding 
-      // is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
+      //The number of OFDM symbols in the data field when BCC encoding
+      //is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
       numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (stbc * numDataBitsPerSymbol)));
     }
   else
@@ -2329,19 +2337,19 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t fre
 }
 
 void
-WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
+WifiPhy::NotifyTxBegin (Ptr<const Packet> packet, double txPowerW)
 {
   if (IsAmpdu (packet))
     {
       std::list<Ptr<const Packet>> mpdus = MpduAggregator::PeekMpdus (packet);
       for (auto & mpdu : mpdus)
         {
-          m_phyTxBeginTrace (mpdu);
+          m_phyTxBeginTrace (mpdu, txPowerW);
         }
     }
   else
     {
-      m_phyTxBeginTrace (packet);
+      m_phyTxBeginTrace (packet, txPowerW);
     }
 }
 
@@ -2538,7 +2546,16 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       m_interference.NotifyRxEnd ();
     }
 
-  NotifyTxBegin (packet);
+  if (m_powerRestricted)
+    {
+      NS_LOG_DEBUG ("Transmitting with power restriction");
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Transmitting without power restriction");
+    }
+
+  NotifyTxBegin (packet, DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ()));
   NotifyMonitorSniffTx (packet, GetFrequency (), txVector);
   m_state->SwitchToTx (txDuration, packet, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
@@ -2559,6 +2576,9 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
   newPacket->AddPacketTag (tag);
 
   StartTx (newPacket, txVector, txDuration);
+
+  m_channelAccessRequested = false;
+  m_powerRestricted = false;
 }
 
 void
@@ -2908,19 +2928,17 @@ WifiPhy::GetReceptionStatus (Ptr<const Packet> mpdu, Ptr<Event> event, Time rela
                 ", snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per << ", size=" << mpdu->GetSize () <<
                 ", relativeStart = " << relativeMpduStart.GetNanoSeconds () << "ns, duration = " << mpduDuration.GetNanoSeconds () << "ns");
 
-  //
   // There are two error checks: PER and receive error model check.
   // PER check models is typical for Wi-Fi and is based on signal modulation;
   // Receive error model is optional, if we have an error model and
   // it indicates that the packet is corrupt, drop the packet.
-  //
   SignalNoiseDbm signalNoise;
   signalNoise.signal = WToDbm (event->GetRxPowerW ());
   signalNoise.noise = WToDbm (event->GetRxPowerW () / snrPer.snr);
   if (m_random->GetValue () > snrPer.per &&
       !(m_postReceptionErrorModel && m_postReceptionErrorModel->IsCorrupt (mpdu->Copy ())))
     {
-      NS_LOG_DEBUG ("Reception OK: " << mpdu->ToString ());
+      NS_LOG_DEBUG ("Reception succeeded: " << mpdu->ToString ());
       NotifyRxEnd (mpdu);
       return std::make_pair (true, signalNoise);
     }
@@ -2932,6 +2950,22 @@ WifiPhy::GetReceptionStatus (Ptr<const Packet> mpdu, Ptr<Event> event, Time rela
     }
 }
 
+void
+WifiPhy::EndReceiveInterBss (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (!m_channelAccessRequested)
+    {
+      m_powerRestricted = false;
+    }
+}
+
+void
+WifiPhy::NotifyChannelAccessRequested (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_channelAccessRequested = true;
+}
 
 // Clause 15 rates (DSSS)
 
@@ -3964,6 +3998,39 @@ WifiPhy::AbortCurrentReception ()
   m_state->SwitchFromRxAbort ();
   m_currentEvent = 0;
   m_plcpSuccess = false;
+}
+
+void
+WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMaxMimo)
+{
+  NS_LOG_FUNCTION (this << powerRestricted << txPowerMaxSiso << txPowerMaxMimo);
+  m_powerRestricted = powerRestricted;
+  m_txPowerMaxSiso = txPowerMaxSiso;
+  m_txPowerMaxMimo = txPowerMaxMimo;
+  NS_ASSERT ((m_currentEvent->GetEndTime () - Simulator::Now ()).IsPositive ());
+  Simulator::Schedule (m_currentEvent->GetEndTime () - Simulator::Now (), &WifiPhy::EndReceiveInterBss, this);
+  AbortCurrentReception ();
+}
+
+double
+WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector) const
+{
+  NS_LOG_FUNCTION (this << m_powerRestricted);
+  if (!m_powerRestricted)
+    {
+      return GetPowerDbm (txVector.GetTxPowerLevel ());
+    }
+  else
+    {
+      if (txVector.GetNss () > 1)
+        {
+          return std::min (m_txPowerMaxMimo, GetPowerDbm (txVector.GetTxPowerLevel ()));
+        }
+      else
+        {
+          return std::min (m_txPowerMaxSiso, GetPowerDbm (txVector.GetTxPowerLevel ()));
+        }
+    }
 }
 
 void

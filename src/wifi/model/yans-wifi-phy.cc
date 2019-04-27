@@ -78,7 +78,7 @@ void
 YansWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration)
 {
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
-  m_channel->Send (this, packet, GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain (), txDuration);
+  m_channel->Send (this, packet, GetTxPowerForTransmission (txVector) + GetTxGain (), txDuration);
 }
 
 } //namespace ns3

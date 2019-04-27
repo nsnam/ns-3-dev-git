@@ -21,6 +21,7 @@
 #define HE_CONFIGURATION_H
 
 #include "ns3/object.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 

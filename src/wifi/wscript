@@ -95,6 +95,8 @@ def build(bld):
         'model/wifi-psdu.cc',
         'model/ht-configuration.cc',
         'model/vht-configuration.cc',
+        'model/obss-pd-algorithm.cc',
+        'model/constant-obss-pd-algorithm.cc',
         'helper/wifi-radio-energy-model-helper.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
@@ -116,6 +118,7 @@ def build(bld):
         'test/wifi-transmit-mask-test.cc',
         'test/wifi-phy-thresholds-test.cc',
         'test/wifi-phy-reception-test.cc',
+        'test/inter-bss-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -219,6 +222,8 @@ def build(bld):
         'model/wifi-mpdu-type.h',
         'model/ht-configuration.h',
         'model/vht-configuration.h',
+        'model/obss-pd-algorithm.h',
+        'model/constant-obss-pd-algorithm.h',
         'helper/wifi-radio-energy-model-helper.h',
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',

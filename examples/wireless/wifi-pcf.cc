@@ -72,7 +72,7 @@ uint64_t m_countCfEndAck;
 uint64_t m_countDataNull;
 uint64_t m_countData;
 
-void TxCallback (std::string context, Ptr<const Packet> p)
+void TxCallback (std::string context, Ptr<const Packet> p, double txPowerW)
 {
   WifiMacHeader hdr;
   p->PeekHeader (hdr);

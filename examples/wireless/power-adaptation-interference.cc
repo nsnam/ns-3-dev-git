@@ -90,7 +90,7 @@ public:
 
   void CheckStatistics (double time);
 
-  void PhyCallback (std::string path, Ptr<const Packet> packet);
+  void PhyCallback (std::string path, Ptr<const Packet> packet, double powerW);
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
   void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest);
   void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
@@ -202,7 +202,7 @@ NodeStatistics::GetCalcTxTime (DataRate rate)
 }
 
 void
-NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet)
+NodeStatistics::PhyCallback (std::string path, Ptr<const Packet> packet, double powerW)
 {
   WifiMacHeader head;
   packet->PeekHeader (head);

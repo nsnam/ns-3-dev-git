@@ -33,8 +33,7 @@ WifiTxVector::WifiTxVector ()
     m_aggregation (false),
     m_stbc (false),
     m_bssColor (0),
-    m_modeInitialized (false),
-    m_txPowerLevelInitialized (false)
+    m_modeInitialized (false)
 {
 }
 
@@ -60,8 +59,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_aggregation (aggregation),
     m_stbc (stbc),
     m_bssColor (bssColor),
-    m_modeInitialized (true),
-    m_txPowerLevelInitialized (true)
+    m_modeInitialized (true)
 {
 }
 
@@ -78,10 +76,6 @@ WifiTxVector::GetMode (void) const
 uint8_t
 WifiTxVector::GetTxPowerLevel (void) const
 {
-  if (!m_txPowerLevelInitialized)
-    {
-      NS_FATAL_ERROR ("WifiTxVector txPowerLevel must be set before using");
-    }
   return m_txPowerLevel;
 }
 
@@ -144,7 +138,6 @@ void
 WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
   m_txPowerLevel = powerlevel;
-  m_txPowerLevelInitialized = true;
 }
 
 void

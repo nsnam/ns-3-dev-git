@@ -20,7 +20,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** Draft 1.0 (both 2.4 and 5 GHz bands) physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** (both 2.4 and 5 GHz bands) physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
@@ -164,10 +164,7 @@ combines the effect of thermal noise and of interference from other Wi-Fi
 packets.  Moreover, interference from other technologies is not modeled.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ax is still in draft phase, not all functionalities are implemented yet
-* 802.11ax does not contain any of the high-density improvement
 * 802.11ax MU-OFDMA is not supported
-* 802.11ax can only be used with Constant rate control algorithm
 * 802.11ax only supports SU PPDU format
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
@@ -703,6 +700,40 @@ In minstrel, roughly 10 percent of transmissions are sent at the so-called looka
 The goal of the lookaround rate is to force minstrel to try higher rate than the currently used rate.
 
 For a more detailed information about minstrel, see [linuxminstrel]_.
+
+802.11ax OBSS PD spatial reuse
+##############################
+
+802.11ax mode supports OBSS PD spatial reuse feature.
+OBSS PD stands for Overlapping Basic Service Set Preamble-Detection.
+OBSS PD is an 802.11ax specific feature that allows a STA, under specific conditions,
+to ignore an inter-BSS PPDU.
+
+OBSS PD Algorithm
+#################
+
+``ObssPdAlgorithm`` is the base class of OBSS PD algorithms.
+It implements the common functionalities. First, it makes sure the necessary callbacks are setup.
+Second, when a PHY reset is requested by the algorithm, it performs the computation to determine the TX power
+restrictions and informs the PHY object.
+
+The PHY keeps tracks of incoming requests from the MAC to get access to the channel.
+If a request is received and if PHY reset(s) indicating TX power limitations occured
+before a packet was transmitted, the next packet to be transmitted will be sent with
+a reduced power. Otherwise, no TX power restrictions will be applied.
+
+Constant OBSS PD Algorithm
+##########################
+
+Constant OBSS PD algorithm is a simple OBSS PD algorithm implemmented in the ``ConstantObssPdAlgorithm`` class.
+
+Once a HE preamble and its header have been received by the PHY, ``ConstantObssPdAlgorithm::
+ReceiveHeSig`` is triggered.
+The algorithm then checks whether this is an OBSS frame by comparing its own BSS color with the BSS color of the received preamble.
+If this is an OBSS frame, it compare the received RSSI with its configured OBSS PD level value. The PHY then gets reset to IDLE
+state in case the received RSSI is lower than that constant OBSS PD level value, and is informed about a TX power restrictions.
+
+Note: since our model is based on a single threshold, the PHY only supports one restricted power level.
 
 Modifying Wifi model
 ####################

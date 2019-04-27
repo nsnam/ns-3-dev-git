@@ -37,6 +37,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/obss-pd-algorithm.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -673,6 +674,29 @@ WifiHelper::SetRemoteStationManager (std::string type,
 }
 
 void
+WifiHelper::SetObssPdAlgorithm (std::string type,
+                                std::string n0, const AttributeValue &v0,
+                                std::string n1, const AttributeValue &v1,
+                                std::string n2, const AttributeValue &v2,
+                                std::string n3, const AttributeValue &v3,
+                                std::string n4, const AttributeValue &v4,
+                                std::string n5, const AttributeValue &v5,
+                                std::string n6, const AttributeValue &v6,
+                                std::string n7, const AttributeValue &v7)
+{
+  m_obssPdAlgorithm = ObjectFactory ();
+  m_obssPdAlgorithm.SetTypeId (type);
+  m_obssPdAlgorithm.Set (n0, v0);
+  m_obssPdAlgorithm.Set (n1, v1);
+  m_obssPdAlgorithm.Set (n2, v2);
+  m_obssPdAlgorithm.Set (n3, v3);
+  m_obssPdAlgorithm.Set (n4, v4);
+  m_obssPdAlgorithm.Set (n5, v5);
+  m_obssPdAlgorithm.Set (n6, v6);
+  m_obssPdAlgorithm.Set (n7, v7);
+}
+
+void
 WifiHelper::SetStandard (WifiPhyStandard standard)
 {
   m_standard = standard;
@@ -720,6 +744,13 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       device->SetPhy (phy);
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
+      if ((m_standard >= WIFI_PHY_STANDARD_80211ax_2_4GHZ) && (m_obssPdAlgorithm.IsTypeIdSet ()))
+
+        {
+          Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();
+          device->AggregateObject (obssPdAlgorithm);
+          obssPdAlgorithm->ConnectWifiNetDevice (device);
+        }
       devices.Add (device);
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
       // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
@@ -807,6 +838,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("BlockAckCache", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("CaraWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("ConstantObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("ConstantRateWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("Txop", LOG_LEVEL_ALL);
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
@@ -823,6 +855,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("MpduAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("MsduAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("NistErrorRateModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("ObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("OnoeWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ParfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
