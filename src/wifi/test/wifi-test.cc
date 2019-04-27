@@ -444,8 +444,9 @@ private:
   /**
    * Notify Phy transmit begin
    * \param p the packet
+   * \param txPowerW the tx power
    */
-  void NotifyPhyTxBegin (Ptr<const Packet> p);
+  void NotifyPhyTxBegin (Ptr<const Packet> p, double txPowerW);
 };
 
 DcfImmediateAccessBroadcastTestCase::DcfImmediateAccessBroadcastTestCase ()
@@ -454,7 +455,7 @@ DcfImmediateAccessBroadcastTestCase::DcfImmediateAccessBroadcastTestCase ()
 }
 
 void
-DcfImmediateAccessBroadcastTestCase::NotifyPhyTxBegin (Ptr<const Packet> p)
+DcfImmediateAccessBroadcastTestCase::NotifyPhyTxBegin (Ptr<const Packet> p, double txPowerW)
 {
   if (m_numSentPackets == 0)
     {
@@ -1598,7 +1599,7 @@ StaWifiMacScanningTestCase::TurnApOff (Ptr<Node> apNode)
 {
   Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (apNode->GetDevice (0));
   Ptr<WifiPhy> phy = netDevice->GetPhy ();
-  phy->SetOffMode();
+  phy->SetOffMode ();
 }
 
 NodeContainer
@@ -1657,7 +1658,7 @@ StaWifiMacScanningTestCase::DoRun (void)
   {
     RngSeedManager::SetSeed (1);
     RngSeedManager::SetRun (1);
-  
+
     NodeContainer nodes = Setup (false, false);
     Ptr<Node> nearestAp = nodes.Get (2);
     Mac48Address nearestApAddr = DynamicCast<WifiNetDevice> (nearestAp->GetDevice (0))->GetMac ()->GetAddress ();
@@ -1808,24 +1809,24 @@ Bug2470TestCase::AddbaStateChangedCallback (std::string context, Time t, Mac48Ad
 {
   switch (state)
     {
-      case OriginatorBlockAckAgreement::INACTIVE:
-        m_addbaInactiveCount++;
-        break;
-      case OriginatorBlockAckAgreement::ESTABLISHED:
-        m_addbaEstablishedCount++;
-        break;
-      case OriginatorBlockAckAgreement::PENDING:
-        m_addbaPendingCount++;
-        break;
-      case OriginatorBlockAckAgreement::REJECTED:
-        m_addbaRejectedCount++;
-        break;
-      case OriginatorBlockAckAgreement::NO_REPLY:
-        m_addbaNoReplyCount++;
-        break;
-      case OriginatorBlockAckAgreement::RESET:
-        m_addbaResetCount++;
-        break;
+    case OriginatorBlockAckAgreement::INACTIVE:
+      m_addbaInactiveCount++;
+      break;
+    case OriginatorBlockAckAgreement::ESTABLISHED:
+      m_addbaEstablishedCount++;
+      break;
+    case OriginatorBlockAckAgreement::PENDING:
+      m_addbaPendingCount++;
+      break;
+    case OriginatorBlockAckAgreement::REJECTED:
+      m_addbaRejectedCount++;
+      break;
+    case OriginatorBlockAckAgreement::NO_REPLY:
+      m_addbaNoReplyCount++;
+      break;
+    case OriginatorBlockAckAgreement::RESET:
+      m_addbaResetCount++;
+      break;
     }
 }
 

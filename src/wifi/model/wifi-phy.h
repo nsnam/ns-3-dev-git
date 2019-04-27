@@ -82,7 +82,7 @@ public:
 
   WifiPhy ();
   virtual ~WifiPhy ();
-  
+
   /**
    * Return the WifiPhyStateHelper of this PHY
    *
@@ -159,6 +159,12 @@ public:
    * \param psduDuration the duration of the PSDU
    */
   void EndReceive (Ptr<Event> event, Time psduDuration);
+
+  /**
+   * For HE receptions only, check and possibly modify the transmit power restriction state at
+   * the end of PPDU reception.
+   */
+  void EndReceiveInterBss (void);
 
   /**
    * \param packet the packet to send
@@ -1083,8 +1089,9 @@ public:
    * Implemented for encapsulation purposes.
    *
    * \param packet the packet being transmitted
+   * \param txPowerW the transmit power in Watts
    */
-  void NotifyTxBegin (Ptr<const Packet> packet);
+  void NotifyTxBegin (Ptr<const Packet> packet, double txPowerW);
   /**
    * Public method used to fire a PhyTxEnd trace.
    * Implemented for encapsulation purposes.
@@ -1523,6 +1530,30 @@ public:
    */
   double GetPowerDbm (uint8_t power) const;
 
+  /**
+   * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.
+   *
+   * \param powerRestricted flag whether the transmit power is restricted for the next transmission
+   * \param txPowerMaxSiso the SISO transmit power retriction for the next transmission
+   * \param txPowerMaxMimo the MIMO transmit power retriction for the next transmission
+   */
+  void ResetCca (bool powerRestricted, double txPowerMaxSiso = 0, double txPowerMaxMimo = 0);
+  /**
+   * Compute the transmit power (in dBm) for the next transmission.
+   *
+   * \param txVector the TXVECTOR
+   * \return the transmit power in dBm for the next transmission
+   */
+  double GetTxPowerForTransmission (WifiTxVector txVector) const;
+  /**
+   * Notify the PHY that an access to the channel was requested.
+   * This is typically called by the channel access manager to
+   * to notify the PHY about an ongoing transmission.
+   * The PHY will use this information to determine whether
+   * it should use power restriction as imposed by OBSS_PD SR.
+   */
+  void NotifyChannelAccessRequested (void);
+
 
 protected:
   // Inherited
@@ -1705,7 +1736,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyTxBeginTrace;
+  TracedCallback<Ptr<const Packet>, double > m_phyTxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -1836,6 +1867,11 @@ private:
   double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
+
+  bool m_powerRestricted;  //!< Flag whether transmit power is retricted by OBSS PD SR
+  double m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
+  double m_txPowerMaxMimo; //!< MIMO maximum transmit power due to OBSS PD SR power restriction
+  bool m_channelAccessRequested;
 
   bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
   bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)

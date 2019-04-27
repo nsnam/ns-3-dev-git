@@ -736,7 +736,15 @@ In order to change parameters that are overwritten by ``WifiHelper::SetStandard`
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BasicBlockAckTimeout", TimeValue (MicroSeconds (basicBlockAckTimeout)));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/CompressedBlockAckTimeout", TimeValue (MicroSeconds (compressedBlockAckTimeout)));
 
-There are many |ns3| attributes that can be set on the above helpers to
+The WifiHelper is also used to configure OBSS PD spatial reuse for 802.11ax.
+The following line configure a WifiHelper to support OBSS PD spatial reuse 
+using the ``ConstantObssPdAlgorithm`` with a threshold set to -72 dBm::
+
+  WifiHelper wifi;
+  wifi.SetObssPdAlgorithm ("ns3::ConstantObssPdAlgorithm",
+                           "ObssPdLevel", DoubleValue (-72.0));
+
+There are many other |ns3| attributes that can be set on the above helpers to
 deviate from the default behavior; the example scripts show how to do some of
 this reconfiguration.
 

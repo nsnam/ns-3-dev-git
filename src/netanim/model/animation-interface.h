@@ -1047,8 +1047,9 @@ private:
    * wifi Phy transmit begin trace function
    * \param context the context
    * \param p the packet
+   * \param txPowerW the tx power
    */
-  void WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p);
+  void WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p, double txPowerW);
   /**
    * wifi Phy receive begin trace function
    *

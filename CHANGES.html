@@ -62,9 +62,10 @@ us a note on ns-developers mailing list.</p>
 <li>New attributes <b>QosTxop::AddBaResponseTimeout</b> and <b>QosTxop::FailedAddBaTimeout</b> have been added to set the timeout to wait for an ADDBA response after the ACK to the ADDBA request is received and to set the timeout after a failed BA agreement, respectively.</li>
 <li>A new attribute <b>QosTxop::UseExpliciteBarAfterMissedBlockAck</b> has been added to specify whether explicit Block Ack Request should be sent upon missed Block Ack Response.</li>
 <li>Added a new trace source <b>EndOfHePreamble</b> in WifiPhy for tracing end of preamble (after training fields) for received 802.11ax packets.</li>
-<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the frame capture model</li>
-<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the preamble detection model</li>
-<li>Added a method to ObjectFactory to check whether a TypeId has been configured on the factory</li>
+<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the frame capture model.</li>
+<li>Added a new helper method to SpectrumWifiPhyHelper and YansWifiPhyHelper to set the preamble detection model.</li>
+<li>Added a method to ObjectFactory to check whether a TypeId has been configured on the factory.</li>
+<li>Added a new helper method to WifiHelper to set the 802.11ax OBSS PD spatial reuse algorithm.</li>
 </ul>
 </ul>
 <h2>Changes to existing API:</h2>

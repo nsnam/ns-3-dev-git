@@ -576,6 +576,7 @@ WifiPhyStateHelper::SwitchFromRxAbort (void)
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_rxing);
   m_endRx = Simulator::Now ();
+  NotifyRxEndError ();
   DoSwitchFromRx ();
   NS_ASSERT (!IsStateRx ());
 }

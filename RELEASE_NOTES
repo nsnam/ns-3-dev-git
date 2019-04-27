@@ -23,7 +23,8 @@ requirements (Note:  not all features available on all platforms):
 
 New user-visible features
 -------------------------
-- (wifi) Preamble detection can now be modelled
+- (wifi) Preamble detection can now be modelled.
+- (wifi) 802.11ax spatial reuse is now supported.
 
 Bugs fixed
 ----------

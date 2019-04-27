@@ -143,6 +143,13 @@ public:
    */
   void SetWifiPhy (const Ptr<WifiPhy> phy);
 
+  /**
+   * Return whether we are associated with an AP.
+   *
+   * \return true if we are associated with an AP, false otherwise
+   */
+  bool IsAssociated (void) const;
+
 
 private:
   /**
@@ -250,12 +257,6 @@ private:
    * gathered while scanning.
    */
   void ScanningTimeout (void);
-  /**
-   * Return whether we are associated with an AP.
-   *
-   * \return true if we are associated with an AP, false otherwise
-   */
-  bool IsAssociated (void) const;
   /**
    * Return whether we are waiting for an association response from an AP.
    *

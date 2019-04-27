@@ -319,6 +319,7 @@ private:
   Time m_slot;                  //!< the slot time
   Time m_sifs;                  //!< the SIFS time
   PhyListener* m_phyListener;   //!< the phy listener
+  Ptr<WifiPhy> m_phy;           //!< Ptr to the PHY
 };
 
 } //namespace ns3

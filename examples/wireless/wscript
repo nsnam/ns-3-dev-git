@@ -115,3 +115,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-pcf', ['wifi', 'applications'])
     obj.source = 'wifi-pcf.cc'
+
+    obj = bld.create_ns3_program('wifi-spatial-reuse', ['wifi', 'applications'])
+    obj.source = 'wifi-spatial-reuse.cc'
