@@ -38,10 +38,10 @@
  * - (if logging is enabled) the changes of rate to standard output.
  *
  * Example usage:
- * ./waf --run "rate-adaptation-distance --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel"
+ * ./waf --run "rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel"
  *
  * Another example (moving towards the AP):
- * ./waf --run "rate-adaptation-distance --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel --stepsSize=1 --STA1_x=-200"
+ * ./waf --run "rate-adaptation-distance --standard=802.11a --staManager=ns3::MinstrelWifiManager --apManager=ns3::MinstrelWifiManager --outputFileName=minstrel --stepsSize=1 --STA1_x=-200"
  *
  * Example for HT rates with SGI and channel width of 40MHz:
  * ./waf --run "rate-adaptation-distance --staManager=ns3::MinstrelHtWifiManager --apManager=ns3::MinstrelHtWifiManager --outputFileName=minstrelHt --shortGuardInterval=true --channelWidth=40"
@@ -190,7 +190,6 @@ int main (int argc, char *argv[])
   //Define the STAs
   NodeContainer wifiStaNodes;
   wifiStaNodes.Create (1);
-
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
