@@ -1634,6 +1634,7 @@ TestAmpduReception::DoSetup (void)
 void
 TestAmpduReception::DoRun (void)
 {
+  WifiHelper::EnableLogComponents ();
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
   int64_t streamNumber = 3;

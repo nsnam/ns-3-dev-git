@@ -267,8 +267,6 @@ WifiPhyThresholdsWeakWifiSignalTest::~WifiPhyThresholdsWeakWifiSignalTest ()
 void
 WifiPhyThresholdsWeakWifiSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-110);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsWeakWifiSignalTest::SendSignal, this, txPowerWatts, true);
@@ -309,8 +307,6 @@ WifiPhyThresholdsWeakForeignSignalTest::~WifiPhyThresholdsWeakForeignSignalTest 
 void
 WifiPhyThresholdsWeakForeignSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-90);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsWeakForeignSignalTest::SendSignal, this, txPowerWatts, false);
@@ -351,8 +347,6 @@ WifiPhyThresholdsStrongWifiSignalTest::~WifiPhyThresholdsStrongWifiSignalTest ()
 void
 WifiPhyThresholdsStrongWifiSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-60);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsStrongWifiSignalTest::SendSignal, this, txPowerWatts, true);
@@ -396,8 +390,6 @@ WifiPhyThresholdsStrongForeignSignalTest::~WifiPhyThresholdsStrongForeignSignalT
 void
 WifiPhyThresholdsStrongForeignSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-60);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsStrongForeignSignalTest::SendSignal, this, txPowerWatts, false);
