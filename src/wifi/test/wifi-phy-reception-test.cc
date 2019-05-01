@@ -38,6 +38,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-mac-queue-item.h"
 #include "ns3/mpdu-aggregator.h"
+#include "ns3/wifi-phy-header.h"
 
 using namespace ns3;
 
@@ -124,8 +125,20 @@ TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket (double txPowerDbm
 
   pkt->AddHeader (hdr);
   pkt->AddTrailer (trailer);
-  WifiPhyTag tag (txVector, 1);
+
+  HeSigHeader heSig;
+  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+  heSig.SetBssColor (txVector.GetBssColor ());
+  heSig.SetChannelWidth (txVector.GetChannelWidth ());
+  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
+  pkt->AddHeader (heSig);
+
+  LSigHeader sig;
+  pkt->AddHeader (sig);
+
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (txPowerDbm), GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
@@ -309,29 +322,41 @@ m_countRxFailure (0)
 void
 TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double txPowerDbm)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs11 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, 20, false, false);
   
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
   WifiMacTrailer trailer;
-  
+
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
   uint32_t size = pkt->GetSize () + hdr.GetSize () + trailer.GetSerializedSize ();
   Time txDuration = m_phy->CalculateTxDuration (size, txVector, m_phy->GetFrequency ());
   hdr.SetDuration (txDuration);
-  
+
   pkt->AddHeader (hdr);
   pkt->AddTrailer (trailer);
-  WifiPhyTag tag (txVector, 1);
+
+  HeSigHeader heSig;
+  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+  heSig.SetBssColor (txVector.GetBssColor ());
+  heSig.SetChannelWidth (txVector.GetChannelWidth ());
+  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
+  pkt->AddHeader (heSig);
+
+  LSigHeader sig;
+  pkt->AddHeader (sig);
+
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (txPowerDbm), GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
   txParams->txPhy = 0;
   txParams->duration = txDuration;
   txParams->packet = pkt;
-  
+
   m_phy->StartRx (txParams);
 }
 
@@ -343,6 +368,7 @@ TestThresholdPreambleDetectionWithFrameCapture::CheckPhyState (WifiPhyState expe
   m_phy->GetAttribute ("State", ptr);
   Ptr <WifiPhyStateHelper> state = DynamicCast <WifiPhyStateHelper> (ptr.Get<WifiPhyStateHelper> ());
   currentState = state->GetState ();
+  NS_LOG_FUNCTION (this << currentState);
   NS_TEST_ASSERT_MSG_EQ (currentState, expectedState, "PHY State " << currentState << " does not match expected state " << expectedState << " at " << Simulator::Now ());
 }
 
@@ -532,8 +558,20 @@ TestSimpleFrameCaptureModel::SendPacket (double txPowerDbm, uint32_t packetSize)
   
   pkt->AddHeader (hdr);
   pkt->AddTrailer (trailer);
-  WifiPhyTag tag (txVector, 1);
+
+  HeSigHeader heSig;
+  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+  heSig.SetBssColor (txVector.GetBssColor ());
+  heSig.SetChannelWidth (txVector.GetChannelWidth ());
+  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
+  pkt->AddHeader (heSig);
+  
+  LSigHeader sig;
+  pkt->AddHeader (sig);
+  
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (txPowerDbm), GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
@@ -1009,15 +1047,28 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double txPowerDbm, uint32_t referen
   psdu->SetDuration (txDuration);
   Ptr<Packet> pkt = psdu->GetPacket ()->Copy ();
 
-  WifiPhyTag tag (txVector, 1);
+  HeSigHeader heSig;
+  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+  heSig.SetBssColor (txVector.GetBssColor ());
+  heSig.SetChannelWidth (txVector.GetChannelWidth ());
+  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
+  pkt->AddHeader (heSig);
+  
+  LSigHeader sig;
+  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3 - 1);
+  sig.SetLength (length);
+  pkt->AddHeader (sig);
+
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (txPowerDbm), GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
   txParams->txPhy = 0;
   txParams->duration = txDuration;
   txParams->packet = pkt;
-  
+
   m_phy->StartRx (txParams);
 }
 

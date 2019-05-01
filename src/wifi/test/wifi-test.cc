@@ -45,6 +45,7 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/ht-configuration.h"
+#include "ns3/wifi-phy-header.h"
 
 using namespace ns3;
 
@@ -1366,10 +1367,13 @@ private:
    * \param destination address of the destination device
    */
   void SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination) const;
+
+  uint16_t m_channelWidth;
 };
 
 Bug2843TestCase::Bug2843TestCase ()
-  : TestCase ("Test case for Bug 2843")
+  : TestCase ("Test case for Bug 2843"),
+    m_channelWidth (20)
 {
 }
 
@@ -1394,13 +1398,24 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
       NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
       return;
     }
-  WifiTxVector txVector = tag.GetWifiTxVector ();
-  uint16_t channelWidth = txVector.GetChannelWidth ();
-  WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
+
+  WifiModulationClass modulationClass = tag.GetModulation ();
+  WifiPreamble preamble = tag.GetPreambleType ();
+  if ((modulationClass != WIFI_MOD_CLASS_HT) || (preamble != WIFI_PREAMBLE_HT_GF))
+    {
+      LSigHeader sig;
+      packet->RemoveHeader (sig);
+      m_channelWidth = 20;
+    }
+  if (modulationClass == WIFI_MOD_CLASS_VHT)
+    {
+      VhtSigHeader vhtSig;
+      packet->RemoveHeader (vhtSig);
+      m_channelWidth = vhtSig.GetChannelWidth ();
+    }
 
   // Build a tuple and check if seen before (if so store it)
-  FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, channelWidth,
-                                                                       numBands, modulationClass);
+  FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, m_channelWidth, numBands, modulationClass);
   bool found = false;
   for (std::vector<FreqWidthSubbandModulationTuple>::const_iterator it = m_distinctTuples.begin (); it != m_distinctTuples.end (); it++)
     {

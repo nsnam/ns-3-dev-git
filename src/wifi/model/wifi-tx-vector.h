@@ -89,6 +89,10 @@ public:
                 bool stbc,
                 uint8_t bssColor = 0);
   /**
+   * \returns whether mode has been initialized
+   */
+  bool GetModeInitialized (void) const;
+  /**
    * \returns the selected payload transmission mode
    */
   WifiMode GetMode (void) const;

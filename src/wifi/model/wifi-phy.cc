@@ -37,6 +37,7 @@
 #include "ht-configuration.h"
 #include "he-configuration.h"
 #include "mpdu-aggregator.h"
+#include "wifi-phy-header.h"
 
 namespace ns3 {
 
@@ -2570,12 +2571,80 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       NS_LOG_DEBUG ("Transmission canceled because device is OFF");
       return;
     }
+
+  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      HtSigHeader htSig;
+      htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+      htSig.SetChannelWidth (txVector.GetChannelWidth ());
+      htSig.SetLength (packet->GetSize ());
+      htSig.SetAggregation (txVector.IsAggregation ());
+      htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
+      newPacket->AddHeader (htSig);
+    }
+  else if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
+    {
+      VhtSigHeader vhtSig;
+      vhtSig.SetMuFlag (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU);
+      vhtSig.SetChannelWidth (txVector.GetChannelWidth ());
+      vhtSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
+      uint32_t nSymbols = (static_cast<double> ((txDuration - CalculatePlcpPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
+      vhtSig.SetShortGuardIntervalDisambiguation ((nSymbols % 10) == 9);
+      vhtSig.SetSuMcs (txVector.GetMode ().GetMcsValue ());
+      vhtSig.SetNStreams (txVector.GetNss ());
+      newPacket->AddHeader (vhtSig);
+    }
+  else if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+    {
+      HeSigHeader heSig;
+      heSig.SetMuFlag (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU);
+      heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+      heSig.SetBssColor (txVector.GetBssColor ());
+      heSig.SetChannelWidth (txVector.GetChannelWidth ());
+      heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
+      heSig.SetNStreams (txVector.GetNss ());
+      newPacket->AddHeader (heSig);
+    }
+  uint8_t sigExtention = 0;
+  if (Is2_4Ghz (GetFrequency ()))
+    {
+      sigExtention = 6;
+    }
+  uint8_t m = 0;
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
+    {
+      m = 1;
+    }
+  else
+    {
+      m = 2;
+    }
+      
+  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
+  if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
+    {
+      DsssSigHeader sig;
+      sig.SetRate (txVector.GetMode ().GetDataRate (22));
+      sig.SetLength (length);
+      newPacket->AddHeader (sig);
+    }
+  else if ((txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT) || (txVector.GetPreambleType () != WIFI_PREAMBLE_HT_GF))
+    {
+      LSigHeader sig;
+      if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_OFDM) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM))
+        {
+          sig.SetRate (txVector.GetMode ().GetDataRate (20));
+        }
+      sig.SetLength (length);
+      newPacket->AddHeader (sig);
+    }
+
   uint8_t isFrameComplete = 1;
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
       isFrameComplete = 0;
     }
-  WifiPhyTag tag (txVector, isFrameComplete);
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), isFrameComplete);
   newPacket->AddPacketTag (tag);
 
   StartTx (newPacket, txVector, txDuration);
@@ -2665,7 +2734,129 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       return;
     }
 
-  WifiTxVector txVector = tag.GetWifiTxVector ();
+  WifiPreamble preamble = tag.GetPreambleType ();
+  WifiModulationClass modulation = tag.GetModulation ();
+  WifiTxVector txVector;
+  txVector.SetPreambleType (preamble);
+  if ((modulation == WIFI_MOD_CLASS_DSSS) || (modulation == WIFI_MOD_CLASS_HR_DSSS))
+    {
+      DsssSigHeader dsssSigHdr;
+      found = packet->RemoveHeader (dsssSigHdr);
+      if (!found)
+        {
+          NS_FATAL_ERROR ("Received 802.11b signal with no SIG field");
+          return;
+        }
+      txVector.SetChannelWidth (22);
+      for (uint8_t i = 0; i < GetNModes (); i++)
+        {
+          WifiMode mode = GetMode (i);
+          if (mode.GetDataRate (22) == dsssSigHdr.GetRate ())
+            {
+              txVector.SetMode (mode);
+              break;
+            }
+        }
+    }
+  else if ((modulation != WIFI_MOD_CLASS_HT) || (preamble != WIFI_PREAMBLE_HT_GF))
+    {
+      LSigHeader lSigHdr;
+      found = packet->RemoveHeader (lSigHdr);
+      if (!found)
+        {
+          NS_FATAL_ERROR ("Received 802.11 signal with no SIG field");
+          return;
+        }
+      txVector.SetChannelWidth (20);
+      for (uint8_t i = 0; i < GetNModes (); i++)
+        {
+          WifiMode mode = GetMode (i);
+          if (mode.GetDataRate (20) == lSigHdr.GetRate ())
+            {
+              txVector.SetMode (mode);
+              break;
+            }
+        }
+    }
+  if (modulation == WIFI_MOD_CLASS_HT)
+    {
+      HtSigHeader htSigHdr;
+      found = packet->RemoveHeader (htSigHdr);
+      if (!found)
+        {
+          NS_FATAL_ERROR ("Received 802.11n signal with no HT-SIG field");
+          return;
+        }
+      txVector.SetChannelWidth (htSigHdr.GetChannelWidth ());
+      for (uint8_t i = 0; i < GetNMcs (); i++)
+        {
+          WifiMode mode = GetMcs (i);
+          if (mode.GetMcsValue () == htSigHdr.GetMcs () && mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+            {
+              txVector.SetMode (mode);
+              txVector.SetNss (1 + (txVector.GetMode ().GetMcsValue () / 8));
+              break;
+            }
+        }
+      txVector.SetGuardInterval(htSigHdr.GetShortGuardInterval () ? 400 : 800);
+      txVector.SetAggregation (htSigHdr.GetAggregation ());
+    }
+  else if (modulation == WIFI_MOD_CLASS_VHT)
+    {
+      VhtSigHeader vhtSigHdr;
+      vhtSigHdr.SetMuFlag (preamble == WIFI_PREAMBLE_VHT_MU);
+      found = packet->RemoveHeader (vhtSigHdr);
+      if (!found)
+        {
+          NS_FATAL_ERROR ("Received 802.11ac signal with no VHT-SIG field");
+          return;
+        }
+      txVector.SetChannelWidth (vhtSigHdr.GetChannelWidth ());
+      txVector.SetNss (vhtSigHdr.GetNStreams ());
+      for (uint8_t i = 0; i < GetNMcs (); i++)
+        {
+          WifiMode mode = GetMcs (i);
+          if ((mode.GetMcsValue () == vhtSigHdr.GetSuMcs ()) && (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+            {
+              txVector.SetMode (mode);
+              break;
+            }
+        }
+      txVector.SetGuardInterval (vhtSigHdr.GetShortGuardInterval () ? 400 : 800);
+      if (IsAmpdu (packet))
+        {
+          txVector.SetAggregation (true);
+        }
+    }
+  else if (modulation == WIFI_MOD_CLASS_HE)
+    {
+      HeSigHeader heSigHdr;
+      heSigHdr.SetMuFlag (preamble == WIFI_PREAMBLE_HE_MU);
+      found = packet->RemoveHeader (heSigHdr);
+      if (!found)
+        {
+          NS_FATAL_ERROR ("Received 802.11ax signal with no HE-SIG field");
+          return;
+        }
+      txVector.SetChannelWidth (heSigHdr.GetChannelWidth ());
+      txVector.SetNss (heSigHdr.GetNStreams ());
+      for (uint8_t i = 0; i < GetNMcs (); i++)
+        {
+          WifiMode mode = GetMcs (i);
+          if ((mode.GetMcsValue () == heSigHdr.GetMcs ()) && (mode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+            {
+              txVector.SetMode (mode);
+              break;
+            }
+        }
+      txVector.SetGuardInterval (heSigHdr.GetGuardInterval ());
+      txVector.SetBssColor (heSigHdr.GetBssColor ());
+      if (IsAmpdu (packet))
+        {
+          txVector.SetAggregation (true);
+        }
+    }
+
   Ptr<Event> event;
   event = m_interference.Add (packet,
                               txVector,
@@ -2687,10 +2878,12 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       return;
     }
 
-  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
-      && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
+  if (!txVector.GetModeInitialized ())
     {
-      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << +txVector.GetMode ().GetMcsValue () << ", NSS = " << +txVector.GetNss ());
+      //If SetRate method was not called above when filling in txVector, this means the PHY does support the rate indicated in PHY SIG headers
+      NS_LOG_DEBUG ("drop packet because of unsupported RX mode");
+      NotifyRxDrop (packet);
+      return;
     }
 
   Time endRx = Simulator::Now () + rxDuration;
