@@ -185,13 +185,13 @@ SpectrumWifiPhyBasicTest::DoRun (void)
   Simulator::Schedule (Seconds (1), &SpectrumWifiPhyBasicTest::SendSignal, this, txPowerWatts);
   Simulator::Schedule (Seconds (2), &SpectrumWifiPhyBasicTest::SendSignal, this, txPowerWatts);
   Simulator::Schedule (Seconds (3), &SpectrumWifiPhyBasicTest::SendSignal, this, txPowerWatts);
-  // Send packets spaced 1 microsecond second apart; only one should be received
+  // Send packets spaced 1 microsecond second apart; none should be received (PHY header reception failure)
   Simulator::Schedule (MicroSeconds (4000000), &SpectrumWifiPhyBasicTest::SendSignal, this, txPowerWatts);
   Simulator::Schedule (MicroSeconds (4000001), &SpectrumWifiPhyBasicTest::SendSignal, this, txPowerWatts);
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_ASSERT_MSG_EQ (m_count, 4, "Didn't receive right number of packets");
+  NS_TEST_ASSERT_MSG_EQ (m_count, 3, "Didn't receive right number of packets");
 }
 
 /**

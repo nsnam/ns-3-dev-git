@@ -311,7 +311,6 @@ private:
   Time m_lastBusyDuration;      //!< the last busy duration time
   Time m_lastSwitchingStart;    //!< the last switching start time
   Time m_lastSwitchingDuration; //!< the last switching duration time
-  bool m_rxing;                 //!< flag whether it is in receiving state
   bool m_sleeping;              //!< flag whether it is in sleeping state
   bool m_off;                   //!< flag whether it is in off state
   Time m_eifsNoDifs;            //!< EIFS no DIFS time

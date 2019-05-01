@@ -41,7 +41,7 @@ class Packet;
  * considering that the per-MPDU reception status is also provided).
  *
  * arg1: packet received successfully
- * arg2: SNR of packet
+ * arg2: snr of packet
  * arg3: TXVECTOR of packet
  * arg4: vector of per-MPDU status of reception.
  */
@@ -209,8 +209,10 @@ public:
   void SwitchFromSleep (Time duration);
   /**
    * Abort current reception
+   *
+   * \param failure flag to indicate whether RX abortion is due to a failure
    */
-  void SwitchFromRxAbort (void);
+  void SwitchFromRxAbort (bool failure);
   /**
    * Switch to off mode.
    */
@@ -337,7 +339,6 @@ private:
    */
   TracedCallback<Time, Time, WifiPhyState> m_stateLogger;
 
-  bool m_rxing; ///< receiving
   bool m_sleeping; ///< sleeping
   bool m_isOff; ///< switched off
   Time m_endTx; ///< end transmit

@@ -1937,8 +1937,9 @@ private:
    * Callback when packet is dropped
    * \param context node context
    * \param p the received packet
+   * \param reason the reason
    */
-  void RxDropCallback (std::string context, Ptr<const Packet> p);
+  void RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
   /**
    * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
    * \param numPackets number of packets in burst
@@ -2023,7 +2024,7 @@ Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t 
 }
 
 void
-Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p)
+Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;

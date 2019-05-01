@@ -86,8 +86,9 @@ protected:
   /**
    * PHY dropped packet callback function
    * \param p the packet
+   * \param reason the reason
    */
-  virtual void RxDropped (Ptr<const Packet> p);
+  void RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason);
   /**
    * PHY state changed callback function
    * \param start the start time of the new state
@@ -197,9 +198,9 @@ WifiPhyThresholdsTest::RxFailure (Ptr<Packet> p)
 }
 
 void
-WifiPhyThresholdsTest::RxDropped (Ptr<const Packet> p)
+WifiPhyThresholdsTest::RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << p << reason);
   m_rxDropped++;
 }
 

@@ -105,8 +105,9 @@ private:
   /**
    * Function triggered when a packet is dropped
    * \param packet the packet that was dropped
+   * \param reason the reason why it was dropped
    */
-  void PacketDropped (Ptr<const Packet> packet);
+  void PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
   /// Send A function
   void SendA (void) const;
   /// Send B function
@@ -141,7 +142,7 @@ InterferenceExperiment::SendB (void) const
 }
 
 void
-InterferenceExperiment::PacketDropped (Ptr<const Packet> packet)
+InterferenceExperiment::PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason)
 {
   if (packet->GetUid () == 0)
     {

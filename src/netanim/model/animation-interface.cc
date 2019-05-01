@@ -662,7 +662,7 @@ AnimationInterface::WifiPhyTxDropTrace (std::string context, Ptr<const Packet> p
 }
 
 void
-AnimationInterface::WifiPhyRxDropTrace (std::string context, Ptr<const Packet> p)
+AnimationInterface::WifiPhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
   const Ptr <const Node> node = GetNodeFromContext (context);
   ++m_nodeWifiPhyRxDrop[node->GetId ()];

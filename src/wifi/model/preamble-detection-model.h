@@ -43,13 +43,14 @@ public:
    * A pure virtual method that must be implemented in the subclass.
    * This method returns whether the preamble detection was successful.
    *
+   * \param rssi the RSSI of the received signal (in Watts).
    * \param snr the SNR of the received signal.
    * \param channelWidth the channel width of the received signal in MHz.
    *
    * \return true if the preamble has been detected,
    *         false otherwise
    */
-  virtual bool IsPreambleDetected (double snr, double channelWidth) const = 0;
+  virtual bool IsPreambleDetected (double rssi, double snr, double channelWidth) const = 0;
 };
 
 } //namespace ns3

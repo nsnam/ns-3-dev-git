@@ -45,6 +45,21 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 
+typedef enum
+{
+  UNKNOWN = 0,
+  UNSUPPORTED_SETTINGS,
+  NOT_ALLOWED,
+  ERRONEOUS_FRAME,
+  MPDU_WITHOUT_PHY_HEADER,
+  PREAMBLE_DETECT_FAILURE,
+  L_SIG_FAILURE,
+  SIG_A_FAILURE,
+  PREAMBLE_DETECTION_PACKET_SWITCH,
+  FRAME_CAPTURE_PACKET_SWITCH,
+  OBSS_PD_CCA_RESET
+} WifiPhyRxfailureReason;
+
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm
 {
@@ -156,9 +171,8 @@ public:
    * The last bit of the packet has arrived.
    *
    * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
-   * \param psduDuration the duration of the PSDU
    */
-  void EndReceive (Ptr<Event> event, Time psduDuration);
+  void EndReceive (Ptr<Event> event);
 
   /**
    * For HE receptions only, check and possibly modify the transmit power restriction state at
@@ -270,13 +284,11 @@ public:
    * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
    */
   static Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector);
-
   /**
    *
    * \return the preamble detection duration, which is the time correletion needs to detect the start of an incoming frame.
    */
-  Time GetPreambleDetectionDuration (void);
-
+  static Time GetPreambleDetectionDuration (void);
   /**
    * \param txVector the transmission parameters used for this packet
    *
@@ -355,8 +367,13 @@ public:
    *
    * \return the duration of the payload
    */
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
-                           MpduType mpdutype, uint8_t incFlag);
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, uint8_t incFlag);
+  /**
+   * \param txVector the transmission parameters used for this packet
+   *
+   * \return the duration until the start of the packet
+   */
+  static Time GetStartOfPacketDuration (WifiTxVector txVector);
 
   /**
    * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
@@ -1125,8 +1142,9 @@ public:
    * Implemented for encapsulation purposes.
    *
    * \param packet the packet that was not successfully received
+   * \param reason the reason the packet was not successfully received
    */
-  void NotifyRxDrop (Ptr<const Packet> packet);
+  void NotifyRxDrop (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
 
   /**
    * Public method used to fire a MonitorSniffer trace for a wifi packet being received.
@@ -1698,9 +1716,10 @@ private:
 
   /**
    * Due to newly arrived signal, the current reception cannot be continued and has to be aborted
+   * \param reason the reason the reception is aborted
    *
    */
-  void AbortCurrentReception (void);
+  void AbortCurrentReception (WifiPhyRxfailureReason reason);
 
   /**
    * Eventually switch to CCA busy
@@ -1775,7 +1794,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
+  TracedCallback<Ptr<const Packet>, WifiPhyRxfailureReason > m_phyRxDropTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
