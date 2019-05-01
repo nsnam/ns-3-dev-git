@@ -133,7 +133,7 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     }
   else if (modulation == WIFI_MOD_CLASS_VHT)
     {
-      return WIFI_PREAMBLE_VHT;
+      return WIFI_PREAMBLE_VHT_SU;
     }
   else if (modulation == WIFI_MOD_CLASS_HT && useGreenfield)
     {
@@ -251,7 +251,8 @@ GetPpduMaxTime (WifiPreamble preamble)
       duration = MicroSeconds (10000);
       break;
     case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_VHT:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
     case WIFI_PREAMBLE_HE_SU:
     case WIFI_PREAMBLE_HE_ER_SU:
     case WIFI_PREAMBLE_HE_MU:

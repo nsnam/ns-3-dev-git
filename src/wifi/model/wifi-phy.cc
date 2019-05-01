@@ -1799,9 +1799,11 @@ WifiPhy::GetPlcpTrainingSymbolDuration (WifiTxVector txVector)
       return MicroSeconds (4 + (4 * Ndltf) + (4 * Neltf));
     case WIFI_PREAMBLE_HT_GF:
       return MicroSeconds ((4 * Ndltf) + (4 * Neltf));
-    case WIFI_PREAMBLE_VHT:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
       return MicroSeconds (4 + (4 * Ndltf));
     case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_MU:
       return MicroSeconds (4 + (8 * Ndltf));
     default:
       return MicroSeconds (0);
@@ -1828,8 +1830,10 @@ WifiPhy::GetPlcpSigA1Duration (WifiPreamble preamble)
 {
   switch (preamble)
     {
-    case WIFI_PREAMBLE_VHT:
+    case WIFI_PREAMBLE_VHT_SU:
     case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_MU:
       //VHT-SIG-A1 and HE-SIG-A1
       return MicroSeconds (4);
     default:
@@ -1843,8 +1847,10 @@ WifiPhy::GetPlcpSigA2Duration (WifiPreamble preamble)
 {
   switch (preamble)
     {
-    case WIFI_PREAMBLE_VHT:
+    case WIFI_PREAMBLE_VHT_SU:
     case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_MU:
       //VHT-SIG-A2 and HE-SIG-A2
       return MicroSeconds (4);
     default:
@@ -1858,12 +1864,9 @@ WifiPhy::GetPlcpSigBDuration (WifiPreamble preamble)
 {
   switch (preamble)
     {
-    case WIFI_PREAMBLE_VHT:
-      //VHT-SIG-B
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_MU:
       return MicroSeconds (4);
-    case WIFI_PREAMBLE_HE_SU:
-      //HE-SIG-B: MU not supported so HE-SIG-B not used
-      return MicroSeconds (0);
     default:
       // no SIG-B
       return MicroSeconds (0);
