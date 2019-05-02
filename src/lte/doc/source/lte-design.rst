@@ -2865,8 +2865,9 @@ There are several timeouts related to this procedure, which are listed in the
 following Table :ref:`tab-rrc-connection_establishment_timer`. If any of these
 timers expired, the RRC connection establishment procedure is terminated in
 failure. At the UE side, if T300 timer has expired a consecutive
-*connEstFailCount* times on the same cell it performs the cell selection again.
-Else, the upper layer (UE NAS) will immediately attempt to retry the procedure.
+*connEstFailCount* times on the same cell it performs the cell selection again
+[TS36331]_. Else, the upper layer (UE NAS) will immediately attempt to retry
+the procedure.
 
 .. _tab-rrc-connection_establishment_timer:
 
@@ -2901,21 +2902,22 @@ not be higher than the T300 timer at UE RRC. It is to make sure that the UE
 context is already removed at the eNB, once the UE will perform cell selection
 upon reaching the *connEstFailCount* count. Moreover, at the time of writing
 this document the :ref:`sec-cell-selection-evaluation` does not include
-the :math:`Qoffset_{temp}` parameter.
+the :math:`Qoffset_{temp}` parameter, thus, it is not applied while selecting
+the same cell again.
 
 .. _tab-rrc-connection_establishment_counter:
 
 .. table:: Counters in RRC connection establishment procedure
 
-   +------------------+----------+------------------+-----------+------------------------------+---------------------+
-   | Name             | Location | Msg              | Monitored | limit not reached            | Limit reached       |
-   |                  |          |                  | by        |                              |                     |
-   +------------------+----------+------------------+-----------+------------------------------+---------------------+
-   | ConnEstFailCount | eNB MAC  | RachConfigCommon | UE RRC    | Increment the local counter. |                     |
-   |                  |          | in SIB2, HO REQ  |           | Invalided the prev SIB2 msg, | Reset the local     |
-   |                  |          | and HO Ack       |           | and try random access        | counter and Perform |
-   |                  |          |                  |           | with the same cell.          | cell selection.     |
-   +------------------+----------+------------------+-----------+------------------------------+---------------------+
+   +------------------+----------+------------------+-----------+---------+------------------------------+---------------------+
+   | Name             | Location | Msg              | Monitored | Default | Limit not reached            | Limit reached       |
+   |                  |          |                  | by        | value   |                              |                     |
+   +==================+==========+==================+===========+=========+==============================+=====================+
+   | ConnEstFailCount | eNB MAC  | RachConfigCommon | UE RRC    | 1       | Increment the local counter. | Reset the local     |
+   |                  |          | in SIB2, HO REQ  |           |         | Invalided the prev SIB2 msg, | counter and perform |
+   |                  |          | and HO Ack       |           |         | and try random access        | cell selection.     |
+   |                  |          |                  |           |         | with the same cell.          |                     |
+   +------------------+----------+------------------+-----------+---------+------------------------------+---------------------+
 
 
 .. _sec-rrc-connection-reconfiguration:
