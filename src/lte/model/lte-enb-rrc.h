@@ -218,9 +218,14 @@ public:
    */
   LteRrcSap::RrcConnectionReconfiguration GetRrcConnectionReconfigurationForHandover ();
 
-  /** 
-   * Send a data packet over the appropriate Data Radio Bearer
-   * 
+  /**
+   * Send a data packet over the appropriate Data Radio Bearer.
+   * If state is HANDOVER_JOINING (i.e. target eNB has received the
+   * Handover Request), the packet is buffered.
+   * If state is HANDOVER_LEAVING (i.e. source eNB has received the
+   * RRC Connection Reconfiguration, the packet is sent through the
+   * X2 interface.
+   *
    * \param bid the corresponding EPS Bearer ID
    * \param p the packet
    */
@@ -469,6 +474,17 @@ private:
    */
   uint8_t Bid2Drbid (uint8_t bid);
 
+  /**
+   * Send a data packet over the appropriate Data Radio Bearer.
+   * It is called by SendData if the UE is in a connected state
+   * or when the RRC Connection Reconfiguration Complete message
+   * is received and the packets are debuffered.
+   *
+   * \param bid the corresponding EPS Bearer ID
+   * \param p the packet
+   */
+  void SendPacket (uint8_t bid, Ptr<Packet> p);
+
   /** 
    * Switch the UeManager to the given state
    * 
@@ -571,6 +587,18 @@ private:
 
   /// Pending start data radio bearers
   bool m_pendingStartDataRadioBearers;
+
+
+  /**
+   * Packet buffer for when UE is doing the handover.
+   * The packets are stored with the bid (bearer ID).
+   *
+   * Source eNB starts forwarding data to target eNB through the X2 interface
+   * when it sends RRC Connection Reconfiguration to the UE.
+   * Target eNB buffers data until it receives RRC Connection Reconfiguration
+   * Complete from the UE.
+   */
+  std::list<std::pair<uint8_t, Ptr<Packet> > > m_packetBuffer;
 
 }; // end of `class UeManager`
 
