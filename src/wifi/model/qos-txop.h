@@ -382,19 +382,10 @@ public:
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
   /**
-   * Peek the next frame to transmit from the Block Ack manager retransmit
-   * queue first and, if not found, from the EDCA queue.
-   * Note that A-MSDU aggregation is never attempted (this is relevant if the
-   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
-   * queue, it is assigned a sequence number peeked from MacTxMiddle.
-   *
-   * \returns the peeked frame.
-   */
-  Ptr<const WifiMacQueueItem> PeekNextFrame (void);
-  /**
    * Peek the next frame to transmit to the given receiver and of the given
    * TID from the Block Ack manager retransmit queue first and, if not found, from
-   * the EDCA queue.
+   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
+   * is the broadcast address, the first available frame is returned.
    * Note that A-MSDU aggregation is never attempted (this is relevant if the
    * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
    * queue, it is assigned a sequence number peeked from MacTxMiddle.
@@ -403,7 +394,7 @@ public:
    * \param recipient the receiver station address.
    * \returns the peeked frame.
    */
-  Ptr<const WifiMacQueueItem> PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient);
+  Ptr<const WifiMacQueueItem> PeekNextFrame (uint8_t tid = 8, Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
    * Dequeue the frame that has been previously peeked by calling PeekNextFrame
    * or PeekNextFrameByTidAndAddress. If the peeked frame is a QoS Data frame,

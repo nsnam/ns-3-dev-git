@@ -380,7 +380,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
           nextMpdu = 0;
 
           Ptr<const WifiMacQueueItem> peekedMpdu;
-          peekedMpdu = edcaIt->second->PeekNextFrameByTidAndAddress (tid, recipient);
+          peekedMpdu = edcaIt->second->PeekNextFrame (tid, recipient);
           if (peekedMpdu != 0)
             {
               uint16_t currentSequenceNumber = peekedMpdu->GetHeader ().GetSequenceNumber ();

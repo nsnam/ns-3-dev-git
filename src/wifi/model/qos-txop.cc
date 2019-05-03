@@ -200,19 +200,29 @@ QosTxop::IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu)
 }
 
 Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextFrame (void)
+QosTxop::PeekNextFrame (uint8_t tid, Mac48Address recipient)
 {
   NS_LOG_FUNCTION (this);
-  WifiMacQueue::ConstIterator it;
+  WifiMacQueue::ConstIterator it = WifiMacQueue::EMPTY;
+
+  // lambda to peek the next frame
+  auto peek = [this, &tid, &recipient, &it] (Ptr<WifiMacQueue> queue)
+    {
+      if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
+        {
+          return queue->PeekFirstAvailable (m_qosBlockedDestinations, it);
+        }
+      return queue->PeekByTidAndAddress (tid, recipient, it);
+    };
 
   // check if there is a packet in the BlockAckManager retransmit queue
-  it = m_baManager->GetRetransmitQueue ()->PeekFirstAvailable ();
+  it = peek (m_baManager->GetRetransmitQueue ());
   // remove old packets
   while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
     {
       NS_LOG_DEBUG ("removing an old packet from BlockAckManager retransmit queue: " << **it);
       it = m_baManager->GetRetransmitQueue ()->Remove (it);
-      it = m_baManager->GetRetransmitQueue ()->PeekFirstAvailable (nullptr, it);
+      it = peek (m_baManager->GetRetransmitQueue ());
     }
   if (it != m_baManager->GetRetransmitQueue ()->end ())
     {
@@ -221,7 +231,8 @@ QosTxop::PeekNextFrame (void)
     }
 
   // otherwise, check if there is a packet in the EDCA queue
-  it = m_queue->PeekFirstAvailable (m_qosBlockedDestinations);
+  it = WifiMacQueue::EMPTY;
+  it = peek (m_queue);
   if (it != m_queue->end ())
     {
       // peek the next sequence number and check if it is within the transmit window
@@ -238,55 +249,6 @@ QosTxop::PeekNextFrame (void)
               NS_LOG_DEBUG ("packet beyond the end of the current transmit window");
               return 0;
             }
-        }
-
-      WifiMacHeader hdr = (*it)->GetHeader ();
-      hdr.SetSequenceNumber (sequence);
-      hdr.SetFragmentNumber (0);
-      hdr.SetNoMoreFragments ();
-      hdr.SetNoRetry ();
-      Ptr<const WifiMacQueueItem> item = Create<const WifiMacQueueItem> ((*it)->GetPacket (), hdr, (*it)->GetTimeStamp ());
-      NS_LOG_DEBUG ("packet peeked from EDCA queue: " << *item);
-      return item;
-    }
-
-  return 0;
-}
-
-Ptr<const WifiMacQueueItem>
-QosTxop::PeekNextFrameByTidAndAddress (uint8_t tid, Mac48Address recipient)
-{
-  NS_LOG_FUNCTION (this << +tid << recipient);
-  WifiMacQueue::ConstIterator it;
-
-  // check if there is a packet in the BlockAckManager retransmit queue
-  it = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient);
-  // remove old packets
-  while (it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*it))
-    {
-      NS_LOG_DEBUG ("removing an old packet from BlockAckManager retransmit queue: " << **it);
-      it = m_baManager->GetRetransmitQueue ()->Remove (it);
-      it = m_baManager->GetRetransmitQueue ()->PeekByTidAndAddress (tid, recipient, it);
-    }
-  if (it != m_baManager->GetRetransmitQueue ()->end ())
-    {
-      NS_LOG_DEBUG ("packet peeked from BlockAckManager retransmit queue: " << **it);
-      return *it;
-    }
-
-  // otherwise, check if there is a packet in the EDCA queue
-  it = m_queue->PeekByTidAndAddress (tid, recipient);
-  if (it != m_queue->end ())
-    {
-      // peek the next sequence number and check if it is within the transmit window
-      // in case of QoS data frame
-      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&(*it)->GetHeader ());
-      if ((*it)->GetHeader ().IsQosData ()
-          && GetBaAgreementEstablished (recipient, tid)
-          && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
-        {
-          NS_LOG_DEBUG ("packet beyond the end of the current transmit window");
-          return 0;
         }
 
       WifiMacHeader hdr = (*it)->GetHeader ();

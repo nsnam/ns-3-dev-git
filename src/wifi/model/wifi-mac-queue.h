@@ -311,6 +311,8 @@ public:
    */
   uint32_t GetNBytes (void);
 
+  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
+
 private:
   /**
    * Remove the item pointed to by the iterator <i>it</i> if it has been in the
@@ -326,7 +328,6 @@ private:
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
   mutable bool m_expiredPacketsPresent;     //!> True if expired packets are in the queue
-  static const ConstIterator EMPTY;         //!< Invalid iterator to signal an empty queue
 
   /// Traced callback: fired when a packet is dropped due to lifetime expiration
   TracedCallback<Ptr<const WifiMacQueueItem> > m_traceExpired;
