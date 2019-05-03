@@ -500,7 +500,7 @@ private:
   /**
    * \brief Reset radio link failure parameters
    *
-   * Upon receiving N311 in-sync indications from the UE
+   * Upon receiving N311 in Sync indications from the UE
    * PHY, the UE RRC instructs the UE PHY to reset the
    * RLF parameters so, it can start RLF detection again.
    *
@@ -567,7 +567,7 @@ private:
    * \param sinr
    * \return the average SINR value
    */
-  double ComputeAvrgSinr (const SpectrumValue& sinr);
+  double ComputeAvgSinr (const SpectrumValue& sinr);
 
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);

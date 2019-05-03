@@ -588,14 +588,14 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
         }
       double rsrp = (rbNum > 0) ? (sum / rbNum) : DBL_MAX;
       // averaged SINR among RBs
-      double avSinr = ComputeAvrgSinr (sinr);
+      double avSinr = ComputeAvgSinr (sinr);
 
       NS_LOG_INFO (this << " cellId " << m_cellId << " rnti " << m_rnti << " RSRP " << rsrp << " SINR " << avSinr << " ComponentCarrierId " << (uint16_t) m_componentCarrierId);
       //trigger RLF detection only when UE has an active RRC connection
       //and RLF detection attribute is set to true
       if (m_isConnected && m_enableRlfDetection)
         {
-          double avrgSinrForRlf = ComputeAvrgSinr (m_ctrlSinrForRlf);
+          double avrgSinrForRlf = ComputeAvgSinr (m_ctrlSinrForRlf);
           RlfDetection (10 * log10 (avrgSinrForRlf));
         }
 
@@ -659,7 +659,7 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
 } // end of void LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 
 double
-LteUePhy::ComputeAvrgSinr (const SpectrumValue& sinr)
+LteUePhy::ComputeAvgSinr (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
@@ -707,8 +707,8 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
   NS_ASSERT (m_state != CELL_SEARCH);
   //NOTE: The SINR received by this method is
   //based on CTRL, which is not used to compute
-  //PDSCH (i.e., data) based SINR. Luckily, we can use
-  //it for RLF detection.
+  //PDSCH (i.e., data) based SINR. It is used
+  //for RLF detection.
   m_ctrlSinrForRlf = sinr;
 
   SpectrumValue mixedSinr = (m_rsReceivedPower * m_paLinear);
@@ -1560,7 +1560,7 @@ LteUePhy::RlfDetection (double sinrDb)
            * than the threshold Qout, then the frame counter is reset
            * since only consecutive frames should be considered.
            */
-          NS_LOG_INFO ("Reseting frame counter at phy. Current value = " << m_numOfFrames);
+          NS_LOG_INFO ("Resetting frame counter at phy. Current value = " << m_numOfFrames);
           m_numOfFrames = 0;
           // Also reset the sync indicator counter at RRC
           m_ueCphySapUser->ResetSyncIndicationCounter ();
@@ -1569,8 +1569,9 @@ LteUePhy::RlfDetection (double sinrDb)
       m_sinrDbFrame = 0;
     }
   /**
-   * Once the number of consecutive frames which cannot be decoded equals the Qout evaluation period (i.e 200ms),
-   * then an out-of-sync indication is sent to the RRC layer
+   * Once the number of consecutive frames which cannot be decoded equals
+   * the Qout evaluation period (i.e 200ms), then an out-of-sync indication
+   * is sent to the RRC layer
    */
   if (m_downlinkInSync && (m_numOfFrames * 10) == m_numOfQoutEvalSf)
     {

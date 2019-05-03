@@ -225,9 +225,9 @@ public:
    * \brief Is random access completed function
    *
    * This method is executed to decide if the non contention based
-   * preamble has to reused or not upon preamble expiry. If the random access
+   * preamble has to be reused or not upon preamble expiry. If the random access
    * in connected mode is completed, then the preamble can be reused by other UEs.
-   * If not, the same UE retains the preamble and other available preambles is
+   * If not, the same UE retains the preamble and other available preambles are
    * assigned to the required UEs.
    *
    * \param rnti the C-RNTI identifying the user

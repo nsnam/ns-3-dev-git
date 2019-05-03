@@ -319,7 +319,7 @@ LteUeRrc::GetTypeId (void)
                     MakeTraceSourceAccessor (&LteUeRrc::m_radioLinkFailureTrace),
                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
    .AddTraceSource ("PhySyncDetection",
-                    "trace fired upon failure of radio link",
+                    "trace fired upon receiving in Sync or out of Sync indications from UE PHY",
                     MakeTraceSourceAccessor (&LteUeRrc::m_phySyncDetectionTrace),
                     "ns3::LteUeRrc::PhySyncDetectionTracedCallback")
   ;
