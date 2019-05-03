@@ -122,7 +122,7 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   /* For now we assume that originator doesn't use this field. Use of this field
      is mandatory only for recipient */
   agreement.SetBufferSize (reqHdr->GetBufferSize());
-  agreement.SetWinEnd ((agreement.GetStartingSequence () + agreement.GetBufferSize () - 1) % 4096);
+  agreement.SetWinEnd ((agreement.GetStartingSequence () + agreement.GetBufferSize () - 1) % SEQNO_SPACE_SIZE);
   agreement.SetTimeout (reqHdr->GetTimeout ());
   agreement.SetAmsduSupport (reqHdr->IsAmsduSupported ());
   agreement.SetHtSupported (m_stationManager->GetHtSupported ());
@@ -242,9 +242,9 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
   NS_ASSERT (agreementIt != m_agreements.end ());
 
   uint16_t startingSeq = agreementIt->second.first.GetStartingSequence ();
-  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
 
-  if (mpduDist >= 2048)
+  if (mpduDist >= SEQNO_SPACE_HALF_SIZE)
     {
       NS_LOG_DEBUG ("Got an old packet. Do nothing");
       return;
@@ -261,7 +261,7 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
           return;
         }
 
-      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
 
       if (mpduDist < dist ||
           (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () < (*it)->GetHeader ().GetFragmentNumber ()))
@@ -365,7 +365,7 @@ BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
   if (mpdu->GetHeader ().GetSequenceNumber () == startingSeq)
     {
       // make the transmit window advance
-      it->second.first.SetStartingSequence ((startingSeq + 1) % 4096);
+      it->second.first.SetStartingSequence ((startingSeq + 1) % SEQNO_SPACE_SIZE);
     }
 }
 
@@ -430,7 +430,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
             }
 
           uint16_t currentStartingSeq = it->second.first.GetStartingSequence ();
-          uint16_t currentSeq = 4096;   // invalid value
+          uint16_t currentSeq = SEQNO_SPACE_SIZE;   // invalid value
 
           if (blockAck->IsBasic ())
             {
@@ -456,9 +456,9 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   queueIt = it->second.second.erase (queueIt);
                 }
               // If all frames were acknowledged, move the transmit window past the last one
-              if (!foundFirstLost && currentSeq != 4096)
+              if (!foundFirstLost && currentSeq != SEQNO_SPACE_SIZE)
                 {
-                  SetStartingSequence (recipient, tid, (currentSeq + 1) % 4096);
+                  SetStartingSequence (recipient, tid, (currentSeq + 1) % SEQNO_SPACE_SIZE);
                 }
             }
           else if (blockAck->IsCompressed () || blockAck->IsExtendedCompressed ())
@@ -492,9 +492,9 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   queueIt = it->second.second.erase (queueIt);
                 }
               // If all frames were acknowledged, move the transmit window past the last one
-              if (!foundFirstLost && currentSeq != 4096)
+              if (!foundFirstLost && currentSeq != SEQNO_SPACE_SIZE)
                 {
-                  SetStartingSequence (recipient, tid, (currentSeq + 1) % 4096);
+                  SetStartingSequence (recipient, tid, (currentSeq + 1) % SEQNO_SPACE_SIZE);
                 }
             }
           m_stationManager->ReportAmpduTxStatus (recipient, tid, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
@@ -571,7 +571,7 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
     }
 
   // advance the transmit window past the discarded mpdu
-  SetStartingSequence (recipient, tid, (mpdu->GetHeader ().GetSequenceNumber () + 1) % 4096);
+  SetStartingSequence (recipient, tid, (mpdu->GetHeader ().GetSequenceNumber () + 1) % SEQNO_SPACE_SIZE);
 
   // schedule a block ack request
   NS_LOG_DEBUG ("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid << ")");
@@ -758,8 +758,10 @@ BlockAckManager::RemoveFromRetryQueue (Mac48Address address, uint8_t tid, uint16
     {
       uint16_t itSeq = (*it)->GetHeader ().GetSequenceNumber ();
 
-      if ((itSeq - startingSeq + 4096) % 4096 >= (startSeq - startingSeq + 4096) % 4096
-          && (itSeq - startingSeq + 4096) % 4096 <= (endSeq - startingSeq + 4096) % 4096)
+      if ((itSeq - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE
+           >= (startSeq - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE
+          && (itSeq - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE
+              <= (endSeq - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE)
         {
           NS_LOG_DEBUG ("Removing frame with seqnum = " << itSeq);
           it = m_retryPackets->Remove (it);
@@ -781,7 +783,7 @@ BlockAckManager::SetStartingSequence (Mac48Address recipient, uint8_t tid, uint1
   NS_ASSERT (agreementIt != m_agreements.end ());
   uint16_t currStartingSeq = agreementIt->second.first.GetStartingSequence ();
 
-  NS_ABORT_MSG_IF ((startingSeq - currStartingSeq + 4096) % 4096 > 2047,
+  NS_ABORT_MSG_IF ((startingSeq - currStartingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE >= SEQNO_SPACE_HALF_SIZE,
                    "The new starting sequence number is an old sequence number");
 
   if (startingSeq == currStartingSeq)
@@ -790,7 +792,7 @@ BlockAckManager::SetStartingSequence (Mac48Address recipient, uint8_t tid, uint1
     }
 
   // remove packets that will become old from the retransmission queue
-  uint16_t lastRemovedSeq = (startingSeq - 1 + 4096) % 4096;
+  uint16_t lastRemovedSeq = (startingSeq - 1 + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
   RemoveFromRetryQueue (recipient, tid, currStartingSeq, lastRemovedSeq);
 
   // remove packets that will become old from the queue of outstanding packets
@@ -799,7 +801,8 @@ BlockAckManager::SetStartingSequence (Mac48Address recipient, uint8_t tid, uint1
     {
       uint16_t itSeq = (*it)->GetHeader ().GetSequenceNumber ();
 
-      if ((itSeq - currStartingSeq + 4096) % 4096 <= (lastRemovedSeq - currStartingSeq + 4096) % 4096)
+      if ((itSeq - currStartingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE
+           <= (lastRemovedSeq - currStartingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE)
         {
           NS_LOG_DEBUG ("Removing frame with seqnum = " << itSeq);
           it = agreementIt->second.second.erase (it);
@@ -874,9 +877,9 @@ BlockAckManager::InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu)
   NS_ASSERT (agreementIt != m_agreements.end ());
 
   uint16_t startingSeq = agreementIt->second.first.GetStartingSequence ();
-  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+  uint16_t mpduDist = (mpdu->GetHeader ().GetSequenceNumber () - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
 
-  if (mpduDist >= 2048)
+  if (mpduDist >= SEQNO_SPACE_HALF_SIZE)
     {
       NS_LOG_DEBUG ("Got an old packet. Do nothing");
       return;
@@ -892,7 +895,7 @@ BlockAckManager::InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu)
           return;
         }
 
-      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + 4096) % 4096;
+      uint16_t dist = ((*it)->GetHeader ().GetSequenceNumber () - startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
 
       if (mpduDist < dist ||
           (mpduDist == dist && mpdu->GetHeader ().GetFragmentNumber () < (*it)->GetHeader ().GetFragmentNumber ()))
