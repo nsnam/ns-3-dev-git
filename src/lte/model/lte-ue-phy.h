@@ -421,6 +421,46 @@ private:
    * \param s the destination state
    */
   void SwitchToState (State s);
+  /**
+   * \brief Set number of Qout evaluation subframes
+   *
+   * The number passed to this method should be multiple
+   * of 10. This number specifies the total number of consecutive
+   * subframes, which corresponds to the Qout evaluation period.
+   *
+   * \param numSubframes the number of subframes
+   */
+  void SetNumQoutEvalSf (uint16_t numSubframes);
+  /**
+   * \brief Set number of Qin evaluation subframes
+   *
+   * The number passed to this method should be multiple
+   * of 10. This number specifies the total number of consecutive
+   * subframes, which corresponds to the Qin evaluation period.
+   *
+   * \param numSubframes the number of subframes
+   */
+  void SetNumQinEvalSf (uint16_t numSubframes);
+  /**
+   * \brief Get number of Qout evaluation subframes
+   *
+   * The number returned by this method specifies the
+   * total number of consecutive subframes, which corresponds
+   * to the Qout evaluation period.
+   *
+   * \return the number of consecutive subframes used for Qout evaluation
+   */
+  uint16_t GetNumQoutEvalSf () const;
+  /**
+   * \brief Get number of Qin evaluation subframes
+   *
+   * The number returned by this method specifies the
+   * total number of consecutive subframes, which corresponds
+   * to the Qin evaluation period.
+   *
+   * \return the number of consecutive subframes used for Qin evaluation
+   */
+  uint16_t GetNumQinEvalSf () const;
 
   // UE CPHY SAP methods
   /**

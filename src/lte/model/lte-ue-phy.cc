@@ -330,13 +330,15 @@ LteUePhy::GetTypeId (void)
                    "This specifies the total number of consecutive subframes"
                    "which corresponds to the Qout evaluation period",
                    UintegerValue (200), //see 3GPP 3GPP TS 36.133 7.6.2.1
-                   MakeUintegerAccessor (&LteUePhy::m_numOfQoutEvalSf),
+                   MakeUintegerAccessor (&LteUePhy::SetNumQoutEvalSf,
+                                         &LteUePhy::GetNumQoutEvalSf),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("NumQinEvalSf",
                    "This specifies the total number of consecutive subframes"
                    "which corresponds to the Qin evaluation period",
                    UintegerValue (100), //see 3GPP 3GPP TS 36.133 7.6.2.1
-                   MakeUintegerAccessor (&LteUePhy::m_numOfQinEvalSf),
+                   MakeUintegerAccessor (&LteUePhy::SetNumQinEvalSf,
+                                         &LteUePhy::GetNumQinEvalSf),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("EnableRlfDetection",
                    "If true, RLF detection will be enabled.",
@@ -446,6 +448,38 @@ Ptr<LteSpectrumPhy>
 LteUePhy::GetUlSpectrumPhy () const
 {
   return m_uplinkSpectrumPhy;
+}
+
+void
+LteUePhy::SetNumQoutEvalSf (uint16_t numSubframes)
+{
+  NS_LOG_FUNCTION (this << numSubframes);
+  NS_ABORT_MSG_IF (numSubframes % 10 != 0, "Number of subframes used for Qout "
+                                           "evaluation must be multiple of 10");
+  m_numOfQoutEvalSf = numSubframes;
+}
+
+void
+LteUePhy::SetNumQinEvalSf (uint16_t numSubframes)
+{
+  NS_LOG_FUNCTION (this << numSubframes);
+  NS_ABORT_MSG_IF (numSubframes % 10 != 0, "Number of subframes used for Qin "
+                                           "evaluation must be multiple of 10");
+  m_numOfQinEvalSf = numSubframes;
+}
+
+uint16_t
+LteUePhy::GetNumQoutEvalSf (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_numOfQoutEvalSf;
+}
+
+uint16_t
+LteUePhy::GetNumQinEvalSf (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_numOfQinEvalSf;
 }
 
 void
