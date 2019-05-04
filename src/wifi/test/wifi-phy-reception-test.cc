@@ -1590,7 +1590,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
   pkt->AddHeader (heSig);
   
   LSigHeader sig;
-  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3 - 1);
+  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3 - 2);
   sig.SetLength (length);
   pkt->AddHeader (sig);
 

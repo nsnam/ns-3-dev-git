@@ -2583,7 +2583,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       HtSigHeader htSig;
       htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
       htSig.SetChannelWidth (txVector.GetChannelWidth ());
-      htSig.SetLength (packet->GetSize ());
+      htSig.SetHtLength (packet->GetSize ());
       htSig.SetAggregation (txVector.IsAggregation ());
       htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
       newPacket->AddHeader (htSig);
@@ -2619,13 +2619,13 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
   uint8_t m = 0;
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
     {
-      m = 1;
-    }
-  else
-    {
       m = 2;
     }
-      
+  else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      m = 1;
+    }
+  //Equation 27-11 of IEEE P802.11/D4.0
   uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
     {
@@ -2639,7 +2639,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       LSigHeader sig;
       if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_OFDM) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM))
         {
-          sig.SetRate (txVector.GetMode ().GetDataRate (20));
+          sig.SetRate (txVector.GetMode ().GetDataRate (GetChannelWidth ()), GetChannelWidth ());
         }
       sig.SetLength (length);
       newPacket->AddHeader (sig);
@@ -2764,7 +2764,8 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       for (uint8_t i = 0; i < GetNModes (); i++)
         {
           WifiMode mode = GetMode (i);
-          if (mode.GetDataRate (22) == dsssSigHdr.GetRate ())
+          if (((mode.GetModulationClass() == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass() == WIFI_MOD_CLASS_HR_DSSS))
+              && (mode.GetDataRate (22) == dsssSigHdr.GetRate ()))
             {
               txVector.SetMode (mode);
               break;
@@ -2777,14 +2778,14 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       found = packet->RemoveHeader (lSigHdr);
       if (!found)
         {
-          NS_FATAL_ERROR ("Received 802.11 signal with no SIG field");
+          NS_FATAL_ERROR ("Received OFDM 802.11 signal with no SIG field");
           return;
         }
-      txVector.SetChannelWidth (20);
+      txVector.SetChannelWidth (GetChannelWidth ());
       for (uint8_t i = 0; i < GetNModes (); i++)
         {
           WifiMode mode = GetMode (i);
-          if (mode.GetDataRate (20) == lSigHdr.GetRate ())
+          if (mode.GetDataRate (GetChannelWidth ()) == lSigHdr.GetRate (GetChannelWidth ()))
             {
               txVector.SetMode (mode);
               break;
@@ -2804,7 +2805,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       for (uint8_t i = 0; i < GetNMcs (); i++)
         {
           WifiMode mode = GetMcs (i);
-          if (mode.GetMcsValue () == htSigHdr.GetMcs () && mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+          if ((mode.GetModulationClass () == WIFI_MOD_CLASS_HT) && (mode.GetMcsValue () == htSigHdr.GetMcs ()))
             {
               txVector.SetMode (mode);
               txVector.SetNss (1 + (txVector.GetMode ().GetMcsValue () / 8));
@@ -2829,7 +2830,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       for (uint8_t i = 0; i < GetNMcs (); i++)
         {
           WifiMode mode = GetMcs (i);
-          if ((mode.GetMcsValue () == vhtSigHdr.GetSuMcs ()) && (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+          if ((mode.GetModulationClass () == WIFI_MOD_CLASS_VHT) && (mode.GetMcsValue () == vhtSigHdr.GetSuMcs ()))
             {
               txVector.SetMode (mode);
               break;
@@ -2856,7 +2857,7 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
       for (uint8_t i = 0; i < GetNMcs (); i++)
         {
           WifiMode mode = GetMcs (i);
-          if ((mode.GetMcsValue () == heSigHdr.GetMcs ()) && (mode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+          if ((mode.GetModulationClass () == WIFI_MOD_CLASS_HE) && (mode.GetMcsValue () == heSigHdr.GetMcs ()))
             {
               txVector.SetMode (mode);
               break;

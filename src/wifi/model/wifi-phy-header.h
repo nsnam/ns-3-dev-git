@@ -28,7 +28,8 @@ namespace ns3 {
 /**
  * \ingroup wifi
  *
- * Implements the IEEE 802.11 DSSS SIG PHY header
+ * Implements the IEEE 802.11 DSSS SIG PHY header.
+ * See section 16.2.2 in IEEE 802.11-2016.
  */
 class DsssSigHeader : public Header
 {
@@ -82,7 +83,8 @@ private:
 /**
  * \ingroup wifi
  *
- * Implements the IEEE 802.11 OFDM L-SIG PHY header
+ * Implements the IEEE 802.11 OFDM and ERP OFDM L-SIG PHY header.
+ * See section 17.3.4 in IEEE 802.11-2016.
  */
 class LSigHeader : public Header
 {
@@ -106,13 +108,13 @@ public:
    *
    * \param rate the RATE field of L-SIG expressed in bit/s
    */
-  void SetRate (uint64_t rate);
+  void SetRate (uint64_t rate, uint16_t channelWidth = 20);
   /**
    * Return the RATE field of L-SIG (in bit/s).
    *
    * \return the RATE field of L-SIG expressed in bit/s
    */
-  uint64_t GetRate (void) const;
+  uint64_t GetRate (uint16_t channelWidth = 20) const;
   /**
    * Fill the LENGTH field of L-SIG (in bytes).
    *
@@ -136,7 +138,8 @@ private:
 /**
  * \ingroup wifi
  *
- * Implements the IEEE 802.11n HT-SIG PHY header
+ * Implements the IEEE 802.11n PHY header (HT-SIG1/2).
+  * See section 19.3.9 in IEEE 802.11-2016.
  */
 class HtSigHeader : public Header
 {
@@ -158,7 +161,7 @@ public:
   /**
    * Fill the MCS field of HT-SIG.
    *
-   * \param length the MCS field of HT-SIG
+   * \param mcs the MCS field of HT-SIG
    */
   void SetMcs (uint8_t mcs);
   /**
@@ -170,9 +173,9 @@ public:
   /**
    * Fill the channel width field of HT-SIG (in MHz).
    *
-   * \param width the channel width (in MHz)
+   * \param channelWidth the channel width (in MHz)
    */
-  void SetChannelWidth (uint16_t width);
+  void SetChannelWidth (uint16_t channelWidth);
   /**
    * Return the channel width (in MHz).
    *
@@ -180,7 +183,7 @@ public:
    */
   uint16_t GetChannelWidth (void) const;
   /**
-   * Fill the aggregation field of HT-SIG .
+   * Fill the aggregation field of HT-SIG.
    *
    * \param aggregation whether the PSDU contains A-MPDU or not
    */
@@ -208,19 +211,19 @@ public:
    *
    * \param length the HT length field of HT-SIG (in bytes)
    */
-  void SetLength (uint16_t length);
+  void SetHtLength (uint16_t length);
   /**
    * Return the HT length field of HT-SIG (in bytes).
    *
    * \return the HT length field of HT-SIG (in bytes)
    */
-  uint16_t GetLength (void) const;
+  uint16_t GetHtLength (void) const;
 
 
 private:
   uint8_t m_mcs;         ///< Modulation and Coding Scheme index
   uint8_t m_cbw20_40;    ///< CBW 20/40
-  uint16_t m_length;     ///< HT length
+  uint16_t m_htLength;   ///< HT length
   uint8_t m_aggregation; ///< Aggregation
   uint8_t m_sgi;         ///< Short Guard Interval
 };
@@ -228,7 +231,8 @@ private:
 /**
  * \ingroup wifi
  *
- * Implements the IEEE 802.11ac PHY header (VHT-SIG-A1/A2/B)
+ * Implements the IEEE 802.11ac PHY header (VHT-SIG-A1/A2/B).
+ * See section 21.3.8 in IEEE 802.11-2016.
  */
 class VhtSigHeader : public Header
 {
@@ -257,9 +261,9 @@ public:
   /**
    * Fill the channel width field of VHT-SIG-A1 (in MHz).
    *
-   * \param width the channel width (in MHz)
+   * \param channelWidth the channel width (in MHz)
    */
-  void SetChannelWidth (uint16_t width);
+  void SetChannelWidth (uint16_t channelWidth);
   /**
    * Return the channel width (in MHz).
    *
@@ -306,7 +310,7 @@ public:
   /**
    * Fill the SU VHT MCS field of VHT-SIG-A2.
    *
-   * \param length the SU VHT MCS field of VHT-SIG-A2
+   * \param mcs the SU VHT MCS field of VHT-SIG-A2
    */
   void SetSuMcs (uint8_t mcs);
   /**
@@ -364,7 +368,7 @@ public:
   /**
    * Fill the MCS field of HE-SIG-A1.
    *
-   * \param length the MCS field of HE-SIG-A1
+   * \param mcs the MCS field of HE-SIG-A1
    */
   void SetMcs (uint8_t mcs);
   /**
@@ -388,9 +392,9 @@ public:
   /**
    * Fill the channel width field of HE-SIG-A1 (in MHz).
    *
-   * \param width the channel width (in MHz)
+   * \param channelWidth the channel width (in MHz)
    */
-  void SetChannelWidth (uint16_t width);
+  void SetChannelWidth (uint16_t channelWidth);
   /**
    * Return the channel width (in MHz).
    *

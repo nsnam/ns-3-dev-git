@@ -1936,7 +1936,7 @@ private:
   /**
    * Callback when packet is dropped
    * \param context node context
-   * \param p the received packet
+   * \param p the dropped packet
    * \param reason the reason
    */
   void RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
@@ -2113,7 +2113,7 @@ Bug2470TestCase::DoRun (void)
   // much as possible (i.e., removing beacon jitter).
   Ptr<ReceiveListErrorModel> staPem = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> blackList;
-  // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the addba response timeout interval)
+  // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (8);
   blackList.push_back (9);
   blackList.push_back (10);
@@ -2150,7 +2150,7 @@ Bug2470TestCase::DoRun (void)
 
   Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel> ();
   blackList.clear ();
-  // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the addba response timeout interval)
+  // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
   blackList.push_back (6);

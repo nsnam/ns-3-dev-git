@@ -1141,8 +1141,8 @@ public:
    * Public method used to fire a PhyRxDrop trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet that was not successfully received
-   * \param reason the reason the packet was not successfully received
+   * \param packet the packet that was dropped
+   * \param reason the reason the packet was dropped
    */
   void NotifyRxDrop (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
 

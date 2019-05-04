@@ -41,7 +41,7 @@ class Packet;
  * considering that the per-MPDU reception status is also provided).
  *
  * arg1: packet received successfully
- * arg2: snr of packet
+ * arg2: SNR of packet
  * arg3: TXVECTOR of packet
  * arg4: vector of per-MPDU status of reception.
  */

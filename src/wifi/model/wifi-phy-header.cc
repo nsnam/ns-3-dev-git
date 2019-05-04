@@ -54,8 +54,8 @@ DsssSigHeader::GetInstanceTypeId (void) const
 void
 DsssSigHeader::Print (std::ostream &os) const
 {
-  os << "SIGNAL=" << m_rate
-     << "LENGTH=" << m_length;
+  os << "SIGNAL=" << GetRate ()
+     << " LENGTH=" << m_length;
 }
 
 uint32_t
@@ -76,7 +76,6 @@ DsssSigHeader::SetRate (uint64_t rate)
   switch (rate)
     {
       case 1000000:
-      default:
         m_rate = 0b00001010;
         break;
       case 2000000:
@@ -88,6 +87,9 @@ DsssSigHeader::SetRate (uint64_t rate)
       case 11000000:
         m_rate = 0b01101110;
         break;
+      default:
+        NS_ASSERT_MSG (false, "Invalid rate");
+        break;
     }
 }
 
@@ -98,7 +100,6 @@ DsssSigHeader::GetRate (void) const
   switch (m_rate)
     {
       case 0b00001010:
-      default:
         rate = 1000000;
         break;
       case 0b00010100:
@@ -109,6 +110,9 @@ DsssSigHeader::GetRate (void) const
         break;
       case 0b01101110:
         rate = 11000000;
+        break;
+      default:
+        NS_ASSERT_MSG (false, "Invalid rate");
         break;
     }
   return rate;
@@ -178,8 +182,8 @@ LSigHeader::GetInstanceTypeId (void) const
 void
 LSigHeader::Print (std::ostream &os) const
 {
-  os << "RATE=" << m_rate
-     << "LENGTH=" << m_length;
+  os << "SIGNAL=" << GetRate ()
+     << " LENGTH=" << m_length;
 }
 
 uint32_t
@@ -189,8 +193,16 @@ LSigHeader::GetSerializedSize (void) const
 }
 
 void
-LSigHeader::SetRate (uint64_t rate)
+LSigHeader::SetRate (uint64_t rate, uint16_t channelWidth)
 {
+  if (channelWidth == 5)
+    {
+      rate *= 4; //corresponding 20 MHz rate if 5 MHz is used
+    }
+  else if (channelWidth == 10)
+    {
+      rate *= 2; //corresponding 20 MHz rate if 10 MHz is used
+    }
   /* Here is the binary representation for a given rate:
    * 6 Mbit/s: 1101
    * 9 Mbit/s: 1111
@@ -204,7 +216,6 @@ LSigHeader::SetRate (uint64_t rate)
   switch (rate)
     {
       case 6000000:
-      default:
         m_rate = 0b1101;
         break;
       case 9000000:
@@ -228,18 +239,19 @@ LSigHeader::SetRate (uint64_t rate)
       case 54000000:
         m_rate = 0b0011;
         break;
+      default:
+        NS_ASSERT_MSG (false, "Invalid rate");
+        break;
     }
-  //TODO: handle cases for 5 MHz and 10 MHz
 }
 
 uint64_t
-LSigHeader::GetRate (void) const
+LSigHeader::GetRate (uint16_t channelWidth) const
 {
   uint64_t rate = 0;
   switch (m_rate)
     {
       case 0b1101:
-      default:
         rate = 6000000;
         break;
       case 0b1111:
@@ -263,6 +275,17 @@ LSigHeader::GetRate (void) const
       case 0b0011:
         rate = 54000000;
         break;
+      default:
+        NS_ASSERT_MSG (false, "Invalid rate");
+        break;
+    }
+  if (channelWidth == 5)
+    {
+      rate /= 4; //compute corresponding 5 MHz rate
+    }
+  else if (channelWidth == 10)
+    {
+      rate /= 2; //compute corresponding 10 MHz rate
     }
   return rate;
 }
@@ -313,7 +336,7 @@ NS_OBJECT_ENSURE_REGISTERED (HtSigHeader);
 HtSigHeader::HtSigHeader ()
   : m_mcs (0),
     m_cbw20_40 (0),
-    m_length (0),
+    m_htLength (0),
     m_aggregation (0),
     m_sgi (0)
 {
@@ -343,6 +366,11 @@ HtSigHeader::GetInstanceTypeId (void) const
 void
 HtSigHeader::Print (std::ostream &os) const
 {
+  os << "MCS=" << +m_mcs
+     << " HT_LENGTH=" << m_htLength
+     << " CHANNEL_WIDTH=" << GetChannelWidth ()
+     << " SGI=" << +m_sgi
+     << " AGGREGATION=" << +m_aggregation;
 }
 
 uint32_t
@@ -354,6 +382,7 @@ HtSigHeader::GetSerializedSize (void) const
 void
 HtSigHeader::SetMcs (uint8_t mcs)
 {
+  NS_ASSERT (mcs <= 31);
   m_mcs = mcs;
 }
 
@@ -376,15 +405,15 @@ HtSigHeader::GetChannelWidth (void) const
 }
 
 void
-HtSigHeader::SetLength (uint16_t length)
+HtSigHeader::SetHtLength (uint16_t length)
 {
-  m_length = length;
+  m_htLength = length;
 }
 
 uint16_t
-HtSigHeader::GetLength (void) const
+HtSigHeader::GetHtLength (void) const
 {
-  return m_length;
+  return m_htLength;
 }
 
 void
@@ -417,8 +446,9 @@ HtSigHeader::Serialize (Buffer::Iterator start) const
   uint8_t byte = m_mcs;
   byte |= ((m_cbw20_40 & 0x01) << 7);
   start.WriteU8 (byte);
-  start.WriteU16 (m_length);
-  byte = ((m_aggregation & 0x01) << 3);
+  start.WriteU16 (m_htLength);
+  byte = (0x01 << 2); //Set Reserved bit #2 to 1
+  byte |= ((m_aggregation & 0x01) << 3);
   byte |= ((m_sgi & 0x01) << 7);
   start.WriteU8 (byte);
   start.WriteU16 (0);
@@ -431,7 +461,7 @@ HtSigHeader::Deserialize (Buffer::Iterator start)
   uint8_t byte = i.ReadU8 ();
   m_mcs = byte & 0x7f;
   m_cbw20_40 = ((byte >> 7) & 0x01);
-  m_length = i.ReadU16 ();
+  m_htLength = i.ReadU16 ();
   byte = i.ReadU8 ();
   m_aggregation = ((byte >> 3) & 0x01);
   m_sgi = ((byte >> 7) & 0x01);
@@ -475,6 +505,11 @@ VhtSigHeader::GetInstanceTypeId (void) const
 void
 VhtSigHeader::Print (std::ostream &os) const
 {
+  os << "SU_MCS=" << +m_suMcs
+     << " CHANNEL_WIDTH=" << GetChannelWidth ()
+     << " SGI=" << +m_sgi
+     << " NSTS=" << +m_nsts
+     << " MU=" << +m_mu;
 }
 
 uint32_t
@@ -578,6 +613,7 @@ VhtSigHeader::GetShortGuardIntervalDisambiguation (void) const
 void
 VhtSigHeader::SetSuMcs (uint8_t mcs)
 {
+  NS_ASSERT (mcs <= 9);
   m_suMcs = mcs;
 }
 
@@ -599,7 +635,7 @@ VhtSigHeader::Serialize (Buffer::Iterator start) const
   start.WriteU16 (bytes);
 
   //VHT-SIG-A2
-  byte = m_sgi;
+  byte = m_sgi & 0x01;
   byte |= ((m_sgi_disambiguation & 0x01) << 1);
   byte |= ((m_suMcs & 0x0f) << 4);
   start.WriteU8 (byte);
@@ -680,7 +716,12 @@ HeSigHeader::GetInstanceTypeId (void) const
 void
 HeSigHeader::Print (std::ostream &os) const
 {
-  os << "BSSColor=" << m_bssColor;
+  os << "MCS=" << +m_mcs
+     << " CHANNEL_WIDTH=" << GetChannelWidth ()
+     << " GI=" << GetGuardInterval ()
+     << " NSTS=" << +m_nsts
+     << " BSSColor=" << +m_bssColor
+     << " MU=" << +m_mu;
 }
 
 uint32_t
@@ -705,6 +746,7 @@ HeSigHeader::SetMuFlag (bool mu)
 void
 HeSigHeader::SetMcs (uint8_t mcs)
 {
+  NS_ASSERT (mcs <= 11);
   m_mcs = mcs;
 }
 
@@ -717,6 +759,7 @@ HeSigHeader::GetMcs (void) const
 void
 HeSigHeader::SetBssColor (uint8_t bssColor)
 {
+  NS_ASSERT (bssColor < 64);
   m_bssColor = bssColor;
 }
 
@@ -824,7 +867,7 @@ void
 HeSigHeader::Serialize (Buffer::Iterator start) const
 {
   //HE-SIG-A1
-  uint8_t byte = m_format;
+  uint8_t byte = m_format & 0x01;
   byte |= ((m_ul_dl & 0x01) << 2);
   byte |= ((m_mcs & 0x0f) << 3);
   start.WriteU8 (byte);
@@ -838,7 +881,9 @@ HeSigHeader::Serialize (Buffer::Iterator start) const
   start.WriteU8 ((m_nsts >> 1) & 0x03);
 
   //HE-SIG-A2
-  start.WriteU32 (0);
+  uint32_t sigA2 = 0;
+  sigA2 |= (0x01 << 14); //Set Reserved bit #14 to 1
+  start.WriteU32 (sigA2);
 
   if (m_mu)
     {
