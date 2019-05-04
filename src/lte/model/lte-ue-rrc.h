@@ -261,7 +261,7 @@ public:
   /**
    * \brief Store the previous cell id
    *
-   * \param The cell id of the previous cell the UE was attached to
+   * \param cellId The cell id of the previous cell the UE was attached to
    */
   void StorePreviousCellId (uint16_t cellId);
 

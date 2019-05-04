@@ -805,8 +805,8 @@ private:
   uint16_t m_numOfFrames; ///< count the number of frames for which the downlink radio link quality is estimated
   double m_sinrDbFrame; ///< the average SINR per radio frame
   SpectrumValue m_ctrlSinrForRlf; ///< the CTRL SINR used for RLF detection
-  uint64_t m_imsi;
-  bool m_enableRlfDetection;
+  uint64_t m_imsi; ///< the IMSI of the UE
+  bool m_enableRlfDetection; ///< Flag to enable/disable RLF detection
 
 }; // end of `class LteUePhy`
 

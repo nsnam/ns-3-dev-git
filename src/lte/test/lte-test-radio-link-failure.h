@@ -61,13 +61,15 @@ class LteRadioLinkFailureTestCase : public TestCase
 public:
   /**
    * \brief Creates an instance of the radio link failure test case.
-   * \param name name of this test
+   *
    * \param numEnbs number of eNodeBs
    * \param numUes number of UEs
+   * \param simTime the simulation time
    * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
    *                   simulation uses Real RRC protocol
    * \param uePositionList Position of the UEs
    * \param enbPositionList Position of the eNodeBs
+   * \param ueJumpAwayPosition Vector holding the UE jump away coordinates
    * \param checkConnectedList the time at which UEs should have an active RRC connection
    */
   LteRadioLinkFailureTestCase (uint32_t numEnbs, uint32_t numUes, Time simTime, bool isIdealRrc,
