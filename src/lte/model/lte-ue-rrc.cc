@@ -223,29 +223,30 @@ LteUeRrc::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("T300",
                    "Timer for the RRC Connection Establishment procedure "
-                   "(i.e., the procedure is deemed as failed if it takes longer than this)",
-                   TimeValue (MilliSeconds (100)),
+                   "(i.e., the procedure is deemed as failed if it takes longer than this). "
+                   "Standard values: 100ms, 200ms, 300ms, 400ms, 600ms, 1000ms, 1500ms, 2000ms",
+                   TimeValue (MilliSeconds (100)), //see 3GPP 36.331 UE-TimersAndConstants & RLF-TimersAndConstants
                    MakeTimeAccessor (&LteUeRrc::m_t300),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (MilliSeconds (100), MilliSeconds (2000)))
     .AddAttribute ("T310",
                    "Timer for detecting the Radio link failure "
-                   "(i.e., the radio link is deemed as failed if this timer expires)"
-                   "Valid values: 0ms 50ms, 100ms, 200ms, 500ms, 1000ms, 2000ms",
+                   "(i.e., the radio link is deemed as failed if this timer expires). "
+                   "Standard values: 0ms 50ms, 100ms, 200ms, 500ms, 1000ms, 2000ms",
                    TimeValue (MilliSeconds (1000)), //see 3GPP 36.331 UE-TimersAndConstants & RLF-TimersAndConstants
                    MakeTimeAccessor (&LteUeRrc::m_t310),
-                   MakeTimeChecker ())
+                   MakeTimeChecker (MilliSeconds (0), MilliSeconds (2000)))
     .AddAttribute ("N310",
-                   "This specifies the maximum number of out-of-sync indications"
-                   "Valid values: 1, 2, 3, 4, 6, 8, 10, 20",
+                   "This specifies the maximum number of out-of-sync indications. "
+                   "Standard values: 1, 2, 3, 4, 6, 8, 10, 20",
                    UintegerValue (6), //see 3GPP 36.331 UE-TimersAndConstants & RLF-TimersAndConstants
                    MakeUintegerAccessor (&LteUeRrc::m_n310),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (1, 20))
     .AddAttribute ("N311",
-                   "This specifies the maximum number of in-sync indications"
-                   "Valid values: 1, 2, 3, 4, 5, 6, 8, 10",
+                   "This specifies the maximum number of in-sync indications. "
+                   "Standard values: 1, 2, 3, 4, 5, 6, 8, 10",
                    UintegerValue (2), //see 3GPP 36.331 UE-TimersAndConstants & RLF-TimersAndConstants
                    MakeUintegerAccessor (&LteUeRrc::m_n311),
-                   MakeUintegerChecker<uint8_t> ())
+                   MakeUintegerChecker<uint8_t> (1, 10))
     .AddTraceSource ("MibReceived",
                      "trace fired upon reception of Master Information Block",
                      MakeTraceSourceAccessor (&LteUeRrc::m_mibReceivedTrace),
