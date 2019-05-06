@@ -35,10 +35,6 @@
 #include "block-ack-type.h"
 #include "wifi-mpdu-type.h"
 
-class TwoLevelAggregationTest;
-class AmpduAggregationTest;
-class HeAggregationTest;
-
 namespace ns3 {
 
 class WifiMac;
@@ -63,10 +59,6 @@ class MpduAggregator;
 class MacLow : public Object
 {
 public:
-  /// Allow test cases to access private members
-  friend class ::TwoLevelAggregationTest;
-  friend class ::AmpduAggregationTest;
-  friend class ::HeAggregationTest;
 
   /**
    * typedef for a callback for MacLowRx

@@ -29,6 +29,7 @@
 #include "qos-utils.h"
 
 class AmpduAggregationTest;
+class TwoLevelAggregationTest;
 class HeAggregationTest;
 
 namespace ns3 {
@@ -92,6 +93,7 @@ class QosTxop : public Txop
 public:
   /// Allow test cases to access private members
   friend class ::AmpduAggregationTest;
+  friend class ::TwoLevelAggregationTest;
   friend class ::HeAggregationTest;
 
   std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
