@@ -2781,7 +2781,8 @@ WifiPhy::StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDurat
           NS_FATAL_ERROR ("Received OFDM 802.11 signal with no SIG field");
           return;
         }
-      txVector.SetChannelWidth (GetChannelWidth ());
+      uint16_t channelWidth = GetChannelWidth ();
+      txVector.SetChannelWidth (channelWidth > 20 ? 20 : channelWidth);
       for (uint8_t i = 0; i < GetNModes (); i++)
         {
           WifiMode mode = GetMode (i);
