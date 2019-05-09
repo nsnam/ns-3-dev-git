@@ -234,6 +234,7 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
         {
           uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;   // byte/s
           uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;   // byte/s
+          NS_LOG_DEBUG ("mbrDlInBytes: " << mbrDlInBytes << " mbrUlInBytes: " << mbrUlInBytes);
 
           fdtbfqsFlowPerf_t flowStatsDl;
           flowStatsDl.flowStart = Simulator::Now ();
@@ -263,6 +264,7 @@ FdTbfqFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::
           // update MBR and GBR from UeManager::SetupDataRadioBearer ()
           uint64_t mbrDlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateDl / 8;   // byte/s
           uint64_t mbrUlInBytes = params.m_logicalChannelConfigList.at (i).m_eRabMaximulBitrateUl / 8;   // byte/s
+          NS_LOG_DEBUG ("mbrDlInBytes: " << mbrDlInBytes << " mbrUlInBytes: " << mbrUlInBytes);
           m_flowStatsDl[(*it).first].tokenGenerationRate =  mbrDlInBytes;
           m_flowStatsUl[(*it).first].tokenGenerationRate =  mbrUlInBytes;
 
@@ -1106,9 +1108,14 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           LteFlowId_t flow ((*itMax).first, lcid);
           itRlcBuf = m_rlcBufferReq.find (flow);
           if (itRlcBuf!=m_rlcBufferReq.end ())
-            rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
-          if ( budget > rlcBufSize )
-            budget = rlcBufSize;
+            {
+              rlcBufSize = (*itRlcBuf).second.m_rlcTransmissionQueueSize + (*itRlcBuf).second.m_rlcRetransmissionQueueSize + (*itRlcBuf).second.m_rlcStatusPduSize;
+            }
+          if (budget > rlcBufSize)
+            {
+              budget = rlcBufSize;
+              NS_LOG_DEBUG ("budget > rlcBufSize. budget: " << budget << " RLC buffer size: " << rlcBufSize);
+            }
         }
 
       // assign RBGs to this UE 
@@ -1280,6 +1287,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
         // remove and unmark last RBG assigned to UE
       if ( bytesTxed > budget )
         {
+          NS_LOG_DEBUG ("budget: " << budget << " bytesTxed: " << bytesTxed << " at " << Simulator::Now().GetMilliSeconds () << " ms");
           std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
           itMap = allocationMap.find ((*itMax).first);
           (*itMap).second.pop_back ();
@@ -1287,21 +1295,31 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           bytesTxed = bytesTxedTmp;  // recovery bytesTxed
           totalRbg--;
           rbgMap.at (rbgIndex) = false;  // unmark this RBG
+          //If all the RBGs are removed from the allocation
+          //of this RNTI, we remove the UE from the allocation map
+          if ((*itMap).second.size () == 0)
+            {
+              itMap = allocationMap.erase (itMap);
+            }
         }
 
-        // update UE stats
-      if ( bytesTxed <= (*itMax).second.tokenPoolSize )
+      //only update the UE stats if it exists in the allocation map
+      if (allocationMap.find ((*itMax).first) != allocationMap.end ())
         {
-          (*itMax).second.tokenPoolSize -= bytesTxed;
-        }
-      else
-        {
-          (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
-          (*itMax).second.tokenPoolSize = 0;
-          if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
-            bankSize = 0;
-          else 
-            bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+          // update UE stats
+          if ( bytesTxed <= (*itMax).second.tokenPoolSize )
+            {
+              (*itMax).second.tokenPoolSize -= bytesTxed;
+            }
+          else
+            {
+              (*itMax).second.counter = (*itMax).second.counter - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+              (*itMax).second.tokenPoolSize = 0;
+              if (bankSize <= ( bytesTxed -  (*itMax).second.tokenPoolSize ))
+                bankSize = 0;
+              else
+                bankSize = bankSize - ( bytesTxed -  (*itMax).second.tokenPoolSize );
+            }
         }
     } // end of RBGs
 
@@ -1310,6 +1328,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap = allocationMap.begin ();
   while (itMap != allocationMap.end ())
     {
+      NS_LOG_DEBUG ("Preparing DCI for RNTI " << (*itMap).first);
       // create new BuildDataListElement_s for this LC
       BuildDataListElement_s newEl;
       newEl.m_rnti = (*itMap).first;
