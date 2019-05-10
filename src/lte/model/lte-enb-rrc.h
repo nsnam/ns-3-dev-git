@@ -22,6 +22,7 @@
  * Modified by:
  *          Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
  *          Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
+ *          Vignesh Babu <ns3-dev@esk.fraunhofer.de> (RLF extensions)
  */
 
 #ifndef LTE_ENB_RRC_H

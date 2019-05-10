@@ -18,6 +18,8 @@
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  * Author: Marco Miozzo <mmiozzo@cttc.es>
+ * Modified by:
+ *          Vignesh Babu <ns3-dev@esk.fraunhofer.de> (RLF extensions)
  */
 
 #ifndef LTE_UE_PHY_H
