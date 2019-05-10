@@ -346,6 +346,10 @@ TypeId UeManager::GetTypeId (void)
                      "UeManager at the eNB RRC",
                      MakeTraceSourceAccessor (&UeManager::m_stateTransitionTrace),
                      "ns3::UeManager::StateTracedCallback")
+    .AddTraceSource ("DrbCreated",
+                     "trace fired after DRB is created",
+                     MakeTraceSourceAccessor (&UeManager::m_drbCreatedTrace),
+                     "ns3::UeManager::ImsiCidRntiLcIdTracedCallback")
   ;
   return tid;
 }
@@ -430,6 +434,8 @@ UeManager::SetupDataRadioBearer (EpsBearer bearer, uint8_t bearerId, uint32_t gt
       rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
       drbInfo->m_pdcp = pdcp;
     }
+
+  m_drbCreatedTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, lcid);
 
   std::vector<LteCcmRrcSapProvider::LcsConfig> lcOnCcMapping = m_rrc->m_ccmRrcSapProvider->SetupDataRadioBearer (bearer, bearerId, m_rnti, lcid, m_rrc->GetLogicalChannelGroup (bearer), rlc->GetLteMacSapUser ());
   // LteEnbCmacSapProvider::LcInfo lcinfo;

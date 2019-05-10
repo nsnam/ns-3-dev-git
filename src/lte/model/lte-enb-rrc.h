@@ -542,6 +542,13 @@ private:
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, State, State> m_stateTransitionTrace;
 
+  /**
+   * The `DrbCreated` trace source. Fired when DRB is created, i.e.
+   * the RLC and PDCP entities are created for one logical channel.
+   * Exporting IMSI, cell ID, RNTI, and LCID
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
+
   uint16_t m_sourceX2apId; ///< source X2 ap ID
   uint16_t m_sourceCellId; ///< source cell ID
   uint16_t m_targetCellId; ///< target cell ID

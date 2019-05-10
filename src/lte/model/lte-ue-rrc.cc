@@ -281,6 +281,14 @@ LteUeRrc::GetTypeId (void)
                      "trace fired after configuring secondary carriers",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sCarrierConfiguredTrace),
                      "ns3::LteUeRrc::SCarrierConfiguredTracedCallback")
+    .AddTraceSource ("Srb1Created",
+                     "trace fired after SRB1 is created",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_srb1CreatedTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
+    .AddTraceSource ("DrbCreated",
+                     "trace fired after DRB is created",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_drbCreatedTrace),
+                     "ns3::LteUeRrc::ImsiCidRntiLcIdTracedCallback")
   ;
   return tid;
 }
@@ -1339,7 +1347,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           m_srb1->m_rlc = rlc;
           m_srb1->m_pdcp = pdcp;
           m_srb1->m_srbIdentity = 1;
-          
+          m_srb1CreatedTrace (m_imsi, m_cellId, m_rnti);
+
           m_srb1->m_logicalChannelConfig.priority = stamIt->logicalChannelConfig.priority;
           m_srb1->m_logicalChannelConfig.prioritizedBitRateKbps = stamIt->logicalChannelConfig.prioritizedBitRateKbps;
           m_srb1->m_logicalChannelConfig.bucketSizeDurationMs = stamIt->logicalChannelConfig.bucketSizeDurationMs;
@@ -1433,7 +1442,9 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           m_bid2DrbidMap[dtamIt->epsBearerIdentity] = dtamIt->drbIdentity;
   
           m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, drbInfo));
-  
+
+          m_drbCreatedTrace (m_imsi, m_cellId, m_rnti, dtamIt->drbIdentity);
+
 
           struct LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
           lcConfig.priority = dtamIt->logicalChannelConfig.priority;

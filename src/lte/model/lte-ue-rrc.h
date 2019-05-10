@@ -858,6 +858,18 @@ private:
    * message.
    */
   TracedCallback<Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod> > m_sCarrierConfiguredTrace;
+  /**
+   * The `Srb1Created` trace source. Fired when SRB1 is created, i.e.
+   * the RLC and PDCP entities are created for logical channel = 1.
+   * Exporting IMSI, cell ID, and RNTI
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_srb1CreatedTrace;
+  /**
+   * The `DrbCreated` trace source. Fired when DRB is created, i.e.
+   * the RLC and PDCP entities are created for one logical channel.
+   * Exporting IMSI, cell ID, RNTI, and LCID
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
 
   /// True if a connection request by upper layers is pending.
   bool m_connectionPending;
