@@ -25,6 +25,7 @@ New user-visible features
 -------------------------
 - (wifi) Preamble detection can now be modelled.
 - (wifi) 802.11ax spatial reuse is now supported.
+- (lte) Radio Link Failure (RLF) functionality is now supported.
 
 Bugs fixed
 ----------

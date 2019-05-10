@@ -124,6 +124,16 @@ us a note on ns-developers mailing list.</p>
   <li>LTE RLC TM mode does not report anymore the layer-to-layer delay, as it misses (by standard) an header to which attach the timestamp tag. Users can switch to the PDCP layer delay measurements, which must be the same.</li>
   <li> Token Bank Fair Queue Scheduler (ns3::FdTbfqFfMacScheduler) will not anymore schedule a UE, which does not have any RBG left after removng the RBG from its allocation map if the computed TB size is greater than the "budget" computed in the scheduler.
   </li>
+  <li> LTE module now supports the Radio Link Failure (RLF) functionality. This implementation introduced following key behavioral changes:
+    <ul>
+      <li> The UE RRC state will not remain in "CONNECTED_NORMALLY" state if the DL control channel SINR is below a set threshold.</li>
+      <li> The LTE RRC protocol APIs of UE i.e., LteUeRrcProtocolIdeal, LteUeRrcProtocolReal have been extended to send an ideal (i.e., using SAPs instead to transmitting over the air) UE context remove request to the eNB. Similarly, the eNB RRC protocol APIs, i.e, LteEnbRrcProtocolIdeal and LteEnbRrcProtocolReal have been extended to receive this ideal UE context remove request.</li>
+      <li> The UE will not synchronize to a cell whose RSRP is less than -140 dBm.</li>
+      <li> The non-contention based preambles during a handover are re-assigning to an UE only if it has not been assign to another UE (An UE can be using the preamble even after the expiryTime duration).</li>
+      <li> The RachConfigCommon structure in LteRrcSap API has been extended to include "TxFailParam". This new field would enable an eNB to indicate how many times T300 timer can expire at the UE. Upon reaching this count, the UE aborts the connection establishment, and performs the cell selection again. See TS 36.331 5.3.3.6. </li>
+      <li> The timer T300 in LteUeRrc class is now bounded by the standard min and max values defined in 3GPP TS 36.331.</li>
+    </ul>
+  </li>
 </ul>
 
 <hr>
