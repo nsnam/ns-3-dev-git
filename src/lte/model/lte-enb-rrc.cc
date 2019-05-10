@@ -1831,6 +1831,10 @@ LteEnbRrc::GetTypeId (void)
                      "trace fired when measurement report is received",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_recvMeasurementReportTrace),
                      "ns3::LteEnbRrc::ReceiveReportTracedCallback")
+    .AddTraceSource ("NotifyConnectionRelease",
+                     "trace fired when an UE is released",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_connectionReleaseTrace),
+                     "ns3::LteEnbRrc::ConnectionHandoverTracedCallback")
   ;
   return tid;
 }
@@ -2803,9 +2807,12 @@ LteEnbRrc::RemoveUe (uint16_t rnti)
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   std::map <uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);
   NS_ASSERT_MSG (it != m_ueMap.end (), "request to remove UE info with unknown rnti " << rnti);
+  uint64_t imsi = it->second->GetImsi ();
   uint16_t srsCi = (*it).second->GetSrsConfigurationIndex ();
   //cancel pending events
   it->second->CancelPendingEvents ();
+  // fire trace upon connection release
+  m_connectionReleaseTrace (imsi, ComponentCarrierToCellId (it->second->GetComponentCarrierId ()), rnti);
   m_ueMap.erase (it);
   for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {

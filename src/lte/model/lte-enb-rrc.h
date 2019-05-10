@@ -1659,6 +1659,12 @@ private:
    * received. Exporting IMSI, cell ID, and RNTI.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, LteRrcSap::MeasurementReport> m_recvMeasurementReportTrace;
+  /**
+   * The `NotifyConnectionRelease` trace source. Fired when an UE leaves the eNB.
+   * Exporting IMSI, cell ID, RNTI.
+   *
+   */
+  TracedCallback<uint64_t, uint16_t, uint16_t> m_connectionReleaseTrace;
 
   uint16_t m_numberOfComponentCarriers; ///< number of component carriers
 
