@@ -231,12 +231,12 @@ Throughput(bool firstWrite, Time binSize, std::string fileName)
 
   if (firstWrite == true)
     {
-      output.open (fileName.c_str (), std::_S_out);
+      output.open (fileName.c_str (), std::ofstream::out);
       firstWrite = false;
     }
   else
     {
-      output.open (fileName.c_str (), std::_S_app);
+      output.open (fileName.c_str (), std::ofstream::app);
     }
 
   //Instantaneous throughput every 200 ms
