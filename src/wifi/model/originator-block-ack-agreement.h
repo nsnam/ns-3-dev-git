@@ -31,19 +31,16 @@ namespace ns3 {
  * for an originator station. The state diagram is as follows:
  *
    \verbatim
-                                                                                       --------------
-                                                                                       |  INACTIVE  |
-                                                                                       --------------
-    /------------\ send ADDBARequest ----------------                                    |        ^
-    |   START    |------------------>|   PENDING    |-------    send a MPDU (normal ACK) |        |   receive BlockAck
-    \------------/                   ----------------       \    retryPkts + queuePkts   |        | retryPkts + queuePkts
-          ^            receive     /        |                \             >=            |        |           <
-          |        ADDBAResponse  /         |                 \      blockAckThreshold   |        |    blockAckThreshold
-          |          (failure)   v          |                  \                         v        |
-          |        ---------------          |                   --------------------->  ----------------  -------    receive BlockAck
-          |        |  REJECTED   |          |          receive ADDBAResponse (success)  |  ESTABLISHED |         | retryPkts + queuePkts
-          |        ---------------          |      no            -------------------->  ---------------- <-------            >=
-          |           receive    ^          | ADDBAResponse     /                                                    blockAckThreshold
+    /------------\ send ADDBARequest ----------------
+    |   START    |------------------>|   PENDING    |-------
+    \------------/                   ----------------       \
+          ^            receive     /        |                \
+          |        ADDBAResponse  /         |                 \
+          |          (failure)   v          |                  \
+          |        ---------------          |                   --------------------->  ----------------
+          |        |  REJECTED   |          |          receive ADDBAResponse (success)  |  ESTABLISHED |
+          |        ---------------          |      no            -------------------->  ----------------
+          |           receive    ^          | ADDBAResponse     /
           |        ADDBAResponse  \         |                  /
           |          (failure)     \        v                 /
           |                         ----------------         /
@@ -80,12 +77,6 @@ public:
   *    The block ack is active and all packets relative to this agreement are transmitted
   *    with ack policy set to block ack.
   *
-  *  INACTIVE:
-  *    In our implementation, block ack tear-down happens only if an inactivity timeout occurs
-  *    so we could have an active block ack but a number of packets that doesn't reach the value of
-  *    m_blockAckThreshold (see ns3::BlockAckManager). In these conditions the agreement becomes
-  *    INACTIVE until that the number of packets reaches the value of m_blockAckThreshold again.
-  *
   *  NO_REPLY
   *    No reply after an ADDBA request. In this state the originator will send the rest of packets
   *    in queue using normal MPDU.
@@ -104,7 +95,6 @@ public:
   {
     PENDING,
     ESTABLISHED,
-    INACTIVE,
     NO_REPLY,
     RESET,
     REJECTED
@@ -130,13 +120,6 @@ public:
    */
   bool IsEstablished (void) const;
   /**
-   * Check if the current state of this agreement is INACTIVE.
-   *
-   * \return true if the current state of this agreement is INACTIVE,
-   *         false otherwise
-   */
-  bool IsInactive (void) const;
-  /**
    * Check if the current state of this agreement is NO_REPLY.
    *
    * \return true if the current state of this agreement is NO_REPLY,
@@ -157,28 +140,9 @@ public:
    *         false otherwise
    */
   bool IsRejected (void) const;
-  /**
-   * Notifies a packet's transmission with ack policy Block Ack.
-   *
-   * \param nextSeqNumber
-   */
-  void NotifyMpduTransmission (uint16_t nextSeqNumber);
-  /**
-   * Returns true if all packets for which a block ack was negotiated have been transmitted so
-   * a block ack request is needed in order to acknowledge them.
-   *
-   * \return  true if all packets for which a block ack was negotiated have been transmitted,
-   * false otherwise
-   */
-  bool IsBlockAckRequestNeeded (void) const;
-  /// Complete exchange function
-  void CompleteExchange (void);
-
 
 private:
   State m_state; ///< state
-  uint16_t m_sentMpdus; ///< sent MPDUs
-  bool m_needBlockAckReq; ///< flag whether it needs a Block ACK request
 };
 
 } //namespace ns3

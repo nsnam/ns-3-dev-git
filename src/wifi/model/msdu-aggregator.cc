@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
+ *         Stefano Avallone <stavallo@unina.it>
  */
 
 #include "ns3/log.h"
@@ -119,9 +120,9 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
 
   Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
   Ptr<WifiMacQueue> queue = qosTxop->GetWifiMacQueue ();
-  Ptr<const WifiMacQueueItem> peekedItem = queue->PeekByTidAndAddress (tid, recipient);
+  WifiMacQueue::ConstIterator peekedIt = queue->PeekByTidAndAddress (tid, recipient);
 
-  if (!peekedItem)
+  if (peekedIt == queue->end ())
     {
       NS_LOG_DEBUG ("No packet with the given TID and address in the queue");
       return 0;
@@ -144,49 +145,21 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
       return 0;
     }
 
-  // Get the maximum size of the A-MPDU we can send to the recipient
-  uint32_t maxAmpduSize = 0;
-  Ptr<MpduAggregator> mpduAggregator = qosTxop->GetLow ()->GetMpduAggregator ();
-
-  if (mpduAggregator)
-    {
-      maxAmpduSize = mpduAggregator->GetMaxAmpduSize (recipient, tid, modulation);
-    }
-
-  // If maxAmpduSize is 0, then the ampdu must be empty
-  NS_ASSERT (maxAmpduSize > 0 || ampduSize == 0);
-
-  // Get the maximum PPDU Duration based on the preamble type. It must be a
-  // non null value because aggregation is available for HT, VHT and HE, which
-  // also provide a limit on the maximum PPDU duration
-  Time maxPpduDuration = GetPpduMaxTime (txVector.GetPreambleType ());
-  NS_ASSERT (maxPpduDuration.IsStrictlyPositive ());
-
-  // the limit on the PPDU duration is the minimum between the maximum PPDU
-  // duration (depending on the PPDU format) and the additional limit provided
-  // by the caller (if non-zero)
-  if (ppduDurationLimit.IsStrictlyPositive ())
-    {
-      maxPpduDuration = std::min (maxPpduDuration, ppduDurationLimit);
-    }
-
-  Ptr<WifiPhy> phy = qosTxop->GetLow ()->GetPhy ();
-  NS_ASSERT (phy);
   Ptr<Packet> amsdu = Create<Packet> ();
   uint8_t nMsdu = 0;
-  WifiMacHeader header = peekedItem->GetHeader ();
-  Time tstamp = peekedItem->GetTimeStamp ();
-  // We need to keep track of the first MSDU. If it is dequeued but aggregation
-  // fails, we need to re-insert it in the queue
-  Ptr<const WifiMacQueueItem> first = peekedItem;
+  WifiMacHeader header = (*peekedIt)->GetHeader ();
+  Time tstamp = (*peekedIt)->GetTimeStamp ();
+  // We need to keep track of the first MSDU. When it is processed, it is not known
+  // if aggregation will succeed or not.
+  WifiMacQueue::ConstIterator first = peekedIt;
 
   // TODO Add support for the Max Number Of MSDUs In A-MSDU field in the Extended
   // Capabilities element sent by the recipient
 
-  while (peekedItem != 0)  // && nMsdu < maxNMsdus
+  while (peekedIt != queue->end ())
     {
       // check if aggregating the peeked MSDU violates the A-MSDU size limit
-      uint16_t newAmsduSize = GetSizeIfAggregated (peekedItem->GetPacket ()->GetSize (),
+      uint16_t newAmsduSize = GetSizeIfAggregated ((*peekedIt)->GetPacket ()->GetSize (),
                                                    amsdu->GetSize ());
 
       if (newAmsduSize > maxAmsduSize)
@@ -196,67 +169,50 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
         }
 
       // check if the A-MSDU obtained by aggregating the peeked MSDU violates
-      // the A-MPDU size limit and compute the PPDU payload size
-      uint32_t ppduPayloadSize;
-
-      if (maxAmpduSize > 0)   // A-MPDU aggregation enabled
+      // the A-MPDU size limit or the PPDU duration limit
+      if (!qosTxop->IsWithinSizeAndTimeLimits (header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH,
+                                               recipient, tid, txVector, ampduSize, ppduDurationLimit))
         {
-          ppduPayloadSize = mpduAggregator->GetSizeIfAggregated (header.GetSize () + newAmsduSize
-                                                                 + WIFI_MAC_FCS_LENGTH, ampduSize);
-
-          if (ppduPayloadSize > maxAmpduSize)
-            {
-              NS_LOG_DEBUG ("No other MSDU can be aggregated: maximum A-MPDU size exceeded");
-              break;
-            }
-        }
-      else if (modulation == WIFI_MOD_CLASS_HE || modulation == WIFI_MOD_CLASS_VHT)
-        {
-          // VHT and HE frames always use A-MPDU structure, thus take the size
-          // of the MPDU Delimiter (4 bytes) into account
-          ppduPayloadSize = 4 + header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH;
-        }
-      else
-        {
-          ppduPayloadSize = header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH;
-        }
-
-      // check if the PPDU duration limit is exceeded
-      if (phy->CalculateTxDuration (ppduPayloadSize, txVector, phy->GetFrequency ()) > maxPpduDuration)
-        {
-          NS_LOG_DEBUG ("No other MSDU can be aggregated: maximum duration reached");
+          NS_LOG_DEBUG ("No other MSDU can be aggregated");
           break;
         }
 
-      // We can now safely aggregate the MSDU to the A-MSDU and remove it from the queue
-      Aggregate (peekedItem->GetPacket (), amsdu,
+      // We can now safely aggregate the MSDU to the A-MSDU
+      Aggregate ((*peekedIt)->GetPacket (), amsdu,
                  qosTxop->MapSrcAddressForAggregation (header),
                  qosTxop->MapDestAddressForAggregation (header));
-      queue->Remove (peekedItem->GetPacket ());
-
-      nMsdu++;
 
       /* "The expiration of the A-MSDU lifetime timer occurs only when the lifetime
        * timer of all of the constituent MSDUs of the A-MSDU have expired" (Section
        * 10.12 of 802.11-2016)
        */
       // The timestamp of the A-MSDU is the most recent among those of the MSDUs
-      tstamp = Max (tstamp, peekedItem->GetTimeStamp ());
+      tstamp = Max (tstamp, (*peekedIt)->GetTimeStamp ());
 
-      peekedItem = queue->PeekByTidAndAddress (tid, recipient);
+      // If it is the first MSDU, move to the next one
+      if (nMsdu == 0)
+        {
+          peekedIt++;
+        }
+      // otherwise, remove it from the queue
+      else
+        {
+          peekedIt = queue->Remove (peekedIt);
+        }
+
+      nMsdu++;
+
+      peekedIt = queue->PeekByTidAndAddress (tid, recipient, peekedIt);
     }
 
   if (nMsdu < 2)
     {
       NS_LOG_DEBUG ("Aggregation failed (could not aggregate at least two MSDUs)");
-
-      // re-insert the first MSDU in the queue if it was removed
-      if (nMsdu == 1)
-        {
-          queue->PushFront (Create<WifiMacQueueItem> (*first));
-        }
       return 0;
     }
+
+  // Aggregation succeeded, we have to remove the first MSDU
+  queue->Remove (first);
 
   header.SetQosAmsdu ();
   header.SetAddr3 (qosTxop->GetLow ()->GetBssid ());

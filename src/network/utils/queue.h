@@ -302,38 +302,72 @@ protected:
 
   /// Const iterator.
   typedef typename std::list<Ptr<Item> >::const_iterator ConstIterator;
+  /// Iterator.
+  typedef typename std::list<Ptr<Item> >::iterator Iterator;
 
   /**
    * \brief Get a const iterator which refers to the first item in the queue.
    *
-   * Subclasses can browse the items in the queue by using an iterator
+   * Subclasses can browse the items in the queue by using a const iterator
    *
    * \code
-   *   for (auto i = Head (); i != Tail (); ++i)
+   *   for (auto i = begin (); i != end (); ++i)
    *     {
-   *       (*i)->method ();  // some method of the Item class
+   *       (*i)->method ();  // some const method of the Item class
    *     }
    * \endcode
    *
    * \returns a const iterator which refers to the first item in the queue.
    */
-  ConstIterator Head (void) const;
+  ConstIterator begin (void) const;
 
   /**
-   * \brief Get a const iterator which indicates past-the-last item in the queue.
+   * \brief Get an iterator which refers to the first item in the queue.
    *
    * Subclasses can browse the items in the queue by using an iterator
    *
    * \code
-   *   for (auto i = Head (); i != Tail (); ++i)
+   *   for (auto i = begin (); i != end (); ++i)
    *     {
    *       (*i)->method ();  // some method of the Item class
    *     }
    * \endcode
    *
+   * \returns an iterator which refers to the first item in the queue.
+   */
+  Iterator begin (void);
+
+  /**
+   * \brief Get a const iterator which indicates past-the-last item in the queue.
+   *
+   * Subclasses can browse the items in the queue by using a const iterator
+   *
+   * \code
+   *   for (auto i = begin (); i != end (); ++i)
+   *     {
+   *       (*i)->method ();  // some const method of the Item class
+   *     }
+   * \endcode
+   *
    * \returns a const iterator which indicates past-the-last item in the queue.
    */
-  ConstIterator Tail (void) const;
+  ConstIterator end (void) const;
+
+  /**
+   * \brief Get an iterator which indicates past-the-last item in the queue.
+   *
+   * Subclasses can browse the items in the queue by using an iterator
+   *
+   * \code
+   *   for (auto i = begin (); i != end (); ++i)
+   *     {
+   *       (*i)->method ();  // some method of the Item class
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which indicates past-the-last item in the queue.
+   */
+  Iterator end (void);
 
   /**
    * Push an item in the queue
@@ -559,15 +593,27 @@ Queue<Item>::DoPeek (ConstIterator pos) const
 }
 
 template <typename Item>
-typename Queue<Item>::ConstIterator Queue<Item>::Head (void) const
+typename Queue<Item>::ConstIterator Queue<Item>::begin (void) const
 {
   return m_packets.cbegin ();
 }
 
 template <typename Item>
-typename Queue<Item>::ConstIterator Queue<Item>::Tail (void) const
+typename Queue<Item>::Iterator Queue<Item>::begin (void)
+{
+  return m_packets.begin ();
+}
+
+template <typename Item>
+typename Queue<Item>::ConstIterator Queue<Item>::end (void) const
 {
   return m_packets.cend ();
+}
+
+template <typename Item>
+typename Queue<Item>::Iterator Queue<Item>::end (void)
+{
+  return m_packets.end ();
 }
 
 template <typename Item>

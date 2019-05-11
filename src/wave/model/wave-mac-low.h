@@ -29,6 +29,7 @@
 
 namespace ns3 {
 class WaveNetDevice;
+class WifiMacQueueItem;
 
 /**
  * \ingroup wave
@@ -62,16 +63,14 @@ public:
   void SetWaveNetDevice (Ptr<WaveNetDevice> device);
 
   /**
-   * \param packet packet to send
-   * \param hdr 802.11 header for packet to send
+   * \param mpdu packet to send
    * \param parameters the transmission parameters to use for this packet.
    * \param txop pointer to the calling Txop.
    *
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  virtual void StartTransmission (Ptr<const Packet> packet,
-                                  const WifiMacHeader* hdr,
+  virtual void StartTransmission (Ptr<WifiMacQueueItem> mpdu,
                                   MacLowTransmissionParameters parameters,
                                   Ptr<Txop> txop);
 private:
@@ -80,11 +79,10 @@ private:
    * The function consults WifiRemoteStationManager, which controls the rate
    * to different destinations.
    *
-   * \param packet the packet being asked for TXVECTOR
-   * \param hdr the WifiMacHeader
-   * \return TXVECTOR for the given packet
+   * \param item the item being asked for TXVECTOR
+   * \return TXVECTOR for the given item
    */
-  virtual WifiTxVector GetDataTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  virtual WifiTxVector GetDataTxVector (Ptr<const WifiMacQueueItem> item) const;
 
   Ptr<ChannelScheduler> m_scheduler; ///< the channel scheduler
   Ptr<ChannelCoordinator> m_coordinator; ///< the channel coordinator

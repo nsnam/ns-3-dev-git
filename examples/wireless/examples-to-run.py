@@ -52,6 +52,7 @@ cpp_examples = [
     ("simple-ht-hidden-stations --simulationTime=1 --enableRts=1 --nMpdus=32 --minExpectedThroughput=57 --maxExpectedThroughput=58", "True", "True"),
     ("mixed-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1 --verifyResults=1", "True", "True"),
+    ("wifi-txop-aggregation --simulationTime=1 --verifyResults=1", "True", "True"),
     ("80211e-txop --simulationTime=1 --verifyResults=1", "True", "True"),
     ("wifi-multi-tos --simulationTime=1 --nWifi=16 --useRts=1 --useShortGuardInterval=1", "True", "True"),
     ("wifi-tcp", "True", "True"),
