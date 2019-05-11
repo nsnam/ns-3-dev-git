@@ -37,6 +37,10 @@ Bugs fixed
 - Bug 2893 - lte: GetPgw in helper should be const
 - Bug 3027 - lte: S1 signalling is done before RRC connection establishment is finished
 - #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
+- #27 - wifi: Re-compute the A-MPDU after an RTS/CTS exchange fails
+- #33 - wifi: Issues with QosTxop::StartNextPacket
+- #35 - Unexpected EDCA performance under virtual collisions for 802.11n
+- #45 - Wi-Fi transmits frames outside BlockAck window
 - #53 - Token Bank Fair Queue Scheduler is creating a transmit opportunity of 0 bytes
 - #54 - RadioBearerStats are not correctly connected
 
