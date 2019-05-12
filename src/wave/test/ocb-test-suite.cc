@@ -387,6 +387,7 @@ OcbWifiMacTestCase::DoRun ()
   Simulator::Destroy ();
   NS_TEST_ASSERT_MSG_LT (phyrx_time, macassoc_time, "In Sta mode with AP, you cannot associate until receive beacon or AssocResponse frame" );
   NS_TEST_ASSERT_MSG_LT (macassoc_time, phytx_time, "In Sta mode with AP,  you cannot send data packet until associate" );
+  //Are these position tests redundant with time check tests?
   //NS_TEST_ASSERT_MSG_GT ((phyrx_pos.x - macassoc_pos.x), 0.0, "");
   //actually macassoc_pos.x - phytx_pos.x is greater than 0
   //however associate switch to send is so fast with less than 100ms

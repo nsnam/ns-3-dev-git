@@ -2611,27 +2611,12 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       heSig.SetNStreams (txVector.GetNss ());
       newPacket->AddHeader (heSig);
     }
-  uint8_t sigExtention = 0;
-  if (Is2_4Ghz (GetFrequency ()))
-    {
-      sigExtention = 6;
-    }
-  uint8_t m = 0;
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
-    {
-      m = 2;
-    }
-  else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
-    {
-      m = 1;
-    }
-  //Equation 27-11 of IEEE P802.11/D4.0
-  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
   if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
     {
       DsssSigHeader sig;
       sig.SetRate (txVector.GetMode ().GetDataRate (22));
-      sig.SetLength (length);
+      Time psduDuration = txDuration - CalculatePlcpPreambleAndHeaderDuration (txVector);
+      sig.SetLength (psduDuration.GetMicroSeconds ());
       newPacket->AddHeader (sig);
     }
   else if ((txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT) || (txVector.GetPreambleType () != WIFI_PREAMBLE_HT_GF))
@@ -2641,6 +2626,22 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
         {
           sig.SetRate (txVector.GetMode ().GetDataRate (GetChannelWidth ()), GetChannelWidth ());
         }
+      uint8_t sigExtention = 0;
+      if (Is2_4Ghz (GetFrequency ()))
+        {
+          sigExtention = 6;
+        }
+      uint8_t m = 0;
+      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
+        {
+          m = 2;
+        }
+      else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+        {
+          m = 1;
+        }
+      //Equation 27-11 of IEEE P802.11/D4.0
+      uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
       sig.SetLength (length);
       newPacket->AddHeader (sig);
     }
