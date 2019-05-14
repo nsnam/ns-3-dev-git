@@ -162,6 +162,11 @@ public:
                                   std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
+   * Disable the preamble detection model.
+   */
+  void DisablePreambleDetectionModel ();
+
+  /**
    * An enumeration of the pcap data link types (DLTs) which this helper
    * supports.  See http://wiki.wireshark.org/Development/LibpcapFileFormat
    * for more information on these formats.

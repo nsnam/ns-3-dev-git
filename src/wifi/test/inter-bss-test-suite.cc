@@ -416,6 +416,7 @@ TestInterBssConstantObssPdAlgo::RunOne (void)
   lossModel->SetDefaultLoss (m_txPowerDbm - m_obssRxPowerDbm); //Force received RSSI to be equal to m_obssRxPowerDbm
 
   SpectrumWifiPhyHelper phy = SpectrumWifiPhyHelper::Default ();
+  phy.DisablePreambleDetectionModel ();
   Ptr<MultiModelSpectrumChannel> channel = CreateObject<MultiModelSpectrumChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   channel->AddPropagationLossModel (lossModel);
