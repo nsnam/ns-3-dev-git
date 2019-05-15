@@ -2624,25 +2624,29 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
       LSigHeader sig;
       if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_OFDM) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM))
         {
-          sig.SetRate (txVector.GetMode ().GetDataRate (GetChannelWidth ()), GetChannelWidth ());
+          sig.SetRate (txVector.GetMode ().GetDataRate (txVector), GetChannelWidth ());
+          sig.SetLength (packet->GetSize ());
         }
-      uint8_t sigExtention = 0;
-      if (Is2_4Ghz (GetFrequency ()))
-        {
-          sigExtention = 6;
-        }
-      uint8_t m = 0;
-      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
-        {
-          m = 2;
-        }
-      else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
-        {
-          m = 1;
-        }
-      //Equation 27-11 of IEEE P802.11/D4.0
-      uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
-      sig.SetLength (length);
+      else //HT, VHT or HE
+      {
+          uint8_t sigExtention = 0;
+          if (Is2_4Ghz (GetFrequency ()))
+            {
+              sigExtention = 6;
+            }
+          uint8_t m = 0;
+          if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
+            {
+              m = 2;
+            }
+          else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+            {
+              m = 1;
+            }
+          //Equation 27-11 of IEEE P802.11/D4.0
+          uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
+          sig.SetLength (length);
+      }
       newPacket->AddHeader (sig);
     }
 

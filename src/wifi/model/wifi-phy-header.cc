@@ -293,6 +293,7 @@ LSigHeader::GetRate (uint16_t channelWidth) const
 void
 LSigHeader::SetLength (uint16_t length)
 {
+  NS_ASSERT_MSG (length < 4096, "Invalid length");
   m_length = length;
 }
 

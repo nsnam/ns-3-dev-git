@@ -284,7 +284,7 @@ InterferenceHelperSequenceTest::InterferenceHelperSequenceTest ()
 void
 InterferenceHelperSequenceTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 {
-  Ptr<Packet> p = Create<Packet> (9999);
+  Ptr<Packet> p = Create<Packet> (1000);
   dev->Send (p, dev->GetBroadcast (), 1);
 }
 
