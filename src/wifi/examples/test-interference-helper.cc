@@ -105,8 +105,9 @@ private:
   /**
    * Function triggered when a packet is dropped
    * \param packet the packet that was dropped
+   * \param reason the reason why it was dropped
    */
-  void PacketDropped (Ptr<const Packet> packet);
+  void PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
   /// Send A function
   void SendA (void) const;
   /// Send B function
@@ -141,7 +142,7 @@ InterferenceExperiment::SendB (void) const
 }
 
 void
-InterferenceExperiment::PacketDropped (Ptr<const Packet> packet)
+InterferenceExperiment::PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason)
 {
   if (packet->GetUid () == 0)
     {
@@ -323,9 +324,9 @@ int main (int argc, char *argv[])
     {
       input.preamble = WIFI_PREAMBLE_HT_GF;
     }
-  else if (str_preamble == "WIFI_PREAMBLE_VHT" && input.standard == WIFI_PHY_STANDARD_80211ac)
+  else if (str_preamble == "WIFI_PREAMBLE_VHT_SU" && input.standard == WIFI_PHY_STANDARD_80211ac)
     {
-      input.preamble = WIFI_PREAMBLE_VHT;
+      input.preamble = WIFI_PREAMBLE_VHT_SU;
     }
   else
     {

@@ -622,7 +622,7 @@ WifiRemoteStationManager::DoGetCtsToSelfTxVector (void)
     }
   else if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
     {
-      defaultPreamble = WIFI_PREAMBLE_VHT;
+      defaultPreamble = WIFI_PREAMBLE_VHT_SU;
     }
   else if (defaultMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
     {

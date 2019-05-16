@@ -63,6 +63,12 @@ WifiTxVector::WifiTxVector (WifiMode mode,
 {
 }
 
+bool
+WifiTxVector::GetModeInitialized (void) const
+{
+  return m_modeInitialized;
+}
+
 WifiMode
 WifiTxVector::GetMode (void) const
 {

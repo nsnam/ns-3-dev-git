@@ -23,7 +23,7 @@ requirements (Note:  not all features available on all platforms):
 
 New user-visible features
 -------------------------
-- (wifi) Preamble detection can now be modelled.
+- (wifi) Preamble detection can now be modelled and is enabled by default.
 - (wifi) 802.11ax spatial reuse is now supported.
 - (lte) Radio Link Failure (RLF) functionality is now supported.
 

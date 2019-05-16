@@ -45,6 +45,7 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/ht-configuration.h"
+#include "ns3/wifi-phy-header.h"
 
 using namespace ns3;
 
@@ -283,7 +284,7 @@ InterferenceHelperSequenceTest::InterferenceHelperSequenceTest ()
 void
 InterferenceHelperSequenceTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 {
-  Ptr<Packet> p = Create<Packet> (9999);
+  Ptr<Packet> p = Create<Packet> (1000);
   dev->Send (p, dev->GetBroadcast (), 1);
 }
 
@@ -1366,10 +1367,13 @@ private:
    * \param destination address of the destination device
    */
   void SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination) const;
+
+  uint16_t m_channelWidth;
 };
 
 Bug2843TestCase::Bug2843TestCase ()
-  : TestCase ("Test case for Bug 2843")
+  : TestCase ("Test case for Bug 2843"),
+    m_channelWidth (20)
 {
 }
 
@@ -1394,13 +1398,24 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
       NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
       return;
     }
-  WifiTxVector txVector = tag.GetWifiTxVector ();
-  uint16_t channelWidth = txVector.GetChannelWidth ();
-  WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
+
+  WifiModulationClass modulationClass = tag.GetModulation ();
+  WifiPreamble preamble = tag.GetPreambleType ();
+  if ((modulationClass != WIFI_MOD_CLASS_HT) || (preamble != WIFI_PREAMBLE_HT_GF))
+    {
+      LSigHeader sig;
+      packet->RemoveHeader (sig);
+      m_channelWidth = 20;
+    }
+  if (modulationClass == WIFI_MOD_CLASS_VHT)
+    {
+      VhtSigHeader vhtSig;
+      packet->RemoveHeader (vhtSig);
+      m_channelWidth = vhtSig.GetChannelWidth ();
+    }
 
   // Build a tuple and check if seen before (if so store it)
-  FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, channelWidth,
-                                                                       numBands, modulationClass);
+  FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, m_channelWidth, numBands, modulationClass);
   bool found = false;
   for (std::vector<FreqWidthSubbandModulationTuple>::const_iterator it = m_distinctTuples.begin (); it != m_distinctTuples.end (); it++)
     {
@@ -1921,9 +1936,10 @@ private:
   /**
    * Callback when packet is dropped
    * \param context node context
-   * \param p the received packet
+   * \param p the dropped packet
+   * \param reason the reason
    */
-  void RxDropCallback (std::string context, Ptr<const Packet> p);
+  void RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
   /**
    * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
    * \param numPackets number of packets in burst
@@ -2008,7 +2024,7 @@ Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t 
 }
 
 void
-Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p)
+Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;
@@ -2097,7 +2113,7 @@ Bug2470TestCase::DoRun (void)
   // much as possible (i.e., removing beacon jitter).
   Ptr<ReceiveListErrorModel> staPem = CreateObject<ReceiveListErrorModel> ();
   std::list<uint32_t> blackList;
-  // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the addba response timeout interval)
+  // Block ADDBA request 6 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (8);
   blackList.push_back (9);
   blackList.push_back (10);
@@ -2134,7 +2150,7 @@ Bug2470TestCase::DoRun (void)
 
   Ptr<ReceiveListErrorModel> apPem = CreateObject<ReceiveListErrorModel> ();
   blackList.clear ();
-  // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the addba response timeout interval)
+  // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
   blackList.push_back (6);

@@ -131,6 +131,7 @@ AsciiPhyReceiveSinkWithoutContext (
 WifiPhyHelper::WifiPhyHelper ()
   : m_pcapDlt (PcapHelper::DLT_IEEE802_11)
 {
+  SetPreambleDetectionModel ("ns3::ThresholdPreambleDetectionModel");
 }
 
 WifiPhyHelper::~WifiPhyHelper ()
@@ -210,6 +211,12 @@ WifiPhyHelper::SetPreambleDetectionModel (std::string name,
   m_preambleDetectionModel.Set (n5, v5);
   m_preambleDetectionModel.Set (n6, v6);
   m_preambleDetectionModel.Set (n7, v7);
+}
+
+void
+WifiPhyHelper::DisablePreambleDetectionModel ()
+{
+    m_preambleDetectionModel.SetTypeId (TypeId ());
 }
 
 void
@@ -745,7 +752,6 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
       if ((m_standard >= WIFI_PHY_STANDARD_80211ax_2_4GHZ) && (m_obssPdAlgorithm.IsTypeIdSet ()))
-
         {
           Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();
           device->AggregateObject (obssPdAlgorithm);

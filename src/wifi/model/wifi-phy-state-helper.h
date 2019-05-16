@@ -209,8 +209,10 @@ public:
   void SwitchFromSleep (Time duration);
   /**
    * Abort current reception
+   *
+   * \param failure flag to indicate whether RX abortion is due to a failure
    */
-  void SwitchFromRxAbort (void);
+  void SwitchFromRxAbort (bool failure);
   /**
    * Switch to off mode.
    */
@@ -337,7 +339,6 @@ private:
    */
   TracedCallback<Time, Time, WifiPhyState> m_stateLogger;
 
-  bool m_rxing; ///< receiving
   bool m_sleeping; ///< sleeping
   bool m_isOff; ///< switched off
   Time m_endTx; ///< end transmit

@@ -29,6 +29,7 @@
 #include "ns3/wifi-phy-tag.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-utils.h"
+#include "ns3/wifi-phy-header.h"
 
 using namespace ns3;
 
@@ -85,8 +86,9 @@ protected:
   /**
    * PHY dropped packet callback function
    * \param p the packet
+   * \param reason the reason
    */
-  virtual void RxDropped (Ptr<const Packet> p);
+  void RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason);
   /**
    * PHY state changed callback function
    * \param start the start time of the new state
@@ -141,8 +143,13 @@ WifiPhyThresholdsTest::MakeWifiSignal (double txPowerWatts)
 
   pkt->AddHeader (hdr);
   pkt->AddTrailer (trailer);
-  WifiPhyTag tag (txVector, 1);
+
+  LSigHeader sig;
+  pkt->AddHeader (sig);
+
+  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, CHANNEL_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
@@ -191,9 +198,9 @@ WifiPhyThresholdsTest::RxFailure (Ptr<Packet> p)
 }
 
 void
-WifiPhyThresholdsTest::RxDropped (Ptr<const Packet> p)
+WifiPhyThresholdsTest::RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << p << reason);
   m_rxDropped++;
 }
 
@@ -260,8 +267,6 @@ WifiPhyThresholdsWeakWifiSignalTest::~WifiPhyThresholdsWeakWifiSignalTest ()
 void
 WifiPhyThresholdsWeakWifiSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-110);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsWeakWifiSignalTest::SendSignal, this, txPowerWatts, true);
@@ -302,8 +307,6 @@ WifiPhyThresholdsWeakForeignSignalTest::~WifiPhyThresholdsWeakForeignSignalTest 
 void
 WifiPhyThresholdsWeakForeignSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-90);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsWeakForeignSignalTest::SendSignal, this, txPowerWatts, false);
@@ -344,8 +347,6 @@ WifiPhyThresholdsStrongWifiSignalTest::~WifiPhyThresholdsStrongWifiSignalTest ()
 void
 WifiPhyThresholdsStrongWifiSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-60);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsStrongWifiSignalTest::SendSignal, this, txPowerWatts, true);
@@ -389,8 +390,6 @@ WifiPhyThresholdsStrongForeignSignalTest::~WifiPhyThresholdsStrongForeignSignalT
 void
 WifiPhyThresholdsStrongForeignSignalTest::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
-
   double txPowerWatts = DbmToW (-60);
 
   Simulator::Schedule (Seconds (1), &WifiPhyThresholdsStrongForeignSignalTest::SendSignal, this, txPowerWatts, false);

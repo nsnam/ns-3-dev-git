@@ -59,8 +59,7 @@ WifiPhyStateHelper::GetTypeId (void)
 }
 
 WifiPhyStateHelper::WifiPhyStateHelper ()
-  : m_rxing (false),
-    m_sleeping (false),
+  : m_sleeping (false),
     m_isOff (false),
     m_endTx (Seconds (0)),
     m_endRx (Seconds (0)),
@@ -206,7 +205,7 @@ WifiPhyStateHelper::GetState (void) const
     {
       return WifiPhyState::TX;
     }
-  else if (m_rxing)
+  else if (m_endRx > Simulator::Now ())
     {
       return WifiPhyState::RX;
     }
@@ -358,7 +357,6 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, doubl
       /* The packet which is being received as well
        * as its endRx event are cancelled by the caller.
        */
-      m_rxing = false;
       m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX);
       m_endRx = now;
       break;
@@ -388,7 +386,6 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
 {
   NS_LOG_FUNCTION (this << rxDuration);
   NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
-  NS_ASSERT (!m_rxing);
   Time now = Simulator::Now ();
   switch (GetState ())
     {
@@ -407,7 +404,6 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
       break;
     }
   m_previousStateChangeTime = now;
-  m_rxing = true;
   m_startRx = now;
   m_endRx = now + rxDuration;
   NotifyRxStart (rxDuration);
@@ -425,7 +421,6 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
       /* The packet which is being received as well
        * as its endRx event are cancelled by the caller.
        */
-      m_rxing = false;
       m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX);
       m_endRx = now;
       break;
@@ -463,6 +458,7 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVec
   NS_LOG_FUNCTION (this << packet << snr << txVector << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
   NS_ASSERT (statusPerMpdu.size () != 0);
+  NS_ASSERT (m_endRx == Simulator::Now ());
   m_rxOkTrace (packet, snr, txVector.GetMode (), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
@@ -477,6 +473,7 @@ void
 WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
 {
   NS_LOG_FUNCTION (this << packet << snr);
+  NS_ASSERT (m_endRx == Simulator::Now ());
   m_rxErrorTrace (packet, snr);
   NotifyRxEndError ();
   DoSwitchFromRx ();
@@ -490,14 +487,10 @@ void
 WifiPhyStateHelper::DoSwitchFromRx (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (IsStateRx ());
-  NS_ASSERT (m_rxing);
-
   Time now = Simulator::Now ();
   m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX);
   m_previousStateChangeTime = now;
-  m_rxing = false;
-
+  m_endRx = Simulator::Now ();
   NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
 }
 
@@ -505,13 +498,19 @@ void
 WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  NotifyMaybeCcaBusyStart (duration);
+  if (GetState () != WifiPhyState::RX)
+    {
+      NotifyMaybeCcaBusyStart (duration);
+    }
   Time now = Simulator::Now ();
+  m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
   switch (GetState ())
     {
     case WifiPhyState::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
       break;
+    case WifiPhyState::RX:
+      return;
     default:
       break;
     }
@@ -520,7 +519,6 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
       m_startCcaBusy = now;
     }
   m_stateLogger (now, duration, WifiPhyState::CCA_BUSY);
-  m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
 }
 
 void
@@ -570,13 +568,18 @@ WifiPhyStateHelper::SwitchFromSleep (Time duration)
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxAbort (void)
+WifiPhyStateHelper::SwitchFromRxAbort (bool failure)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (IsStateRx ());
-  NS_ASSERT (m_rxing);
-  m_endRx = Simulator::Now ();
-  NotifyRxEndError ();
+  if (failure)
+    {
+      NotifyRxEndError ();
+    }
+  else
+    {
+      NotifyRxEndOk ();
+    }
   DoSwitchFromRx ();
   NS_ASSERT (!IsStateRx ());
 }
@@ -592,7 +595,6 @@ WifiPhyStateHelper::SwitchToOff (void)
       /* The packet which is being received as well
        * as its endRx event are cancelled by the caller.
        */
-      m_rxing = false;
       m_stateLogger (m_startRx, now - m_startRx, WifiPhyState::RX);
       m_endRx = now;
       break;
