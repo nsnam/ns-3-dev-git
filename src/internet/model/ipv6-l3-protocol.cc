@@ -894,8 +894,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   /* 2) */
   if (route && route->GetGateway () == Ipv6Address::GetZero ())
     {
-      NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 1: probably sent to machine on same IPv6 network");
-      /* NS_FATAL_ERROR ("This case is not yet implemented"); */
+      NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 2: probably sent to machine on same IPv6 network");
       hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, tclass);
       int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
       m_sendOutgoingTrace (hdr, packet, interface);
