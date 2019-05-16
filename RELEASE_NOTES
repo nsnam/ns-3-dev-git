@@ -30,19 +30,22 @@ New user-visible features
 Bugs fixed
 ----------
 
+- Bug 2460 - wifi: Refactor detection thresholds in WifiPhy and add a new sensitivity threshold to throw away weak signals
 - Bug 2470 - wifi: Handshake to setup the Block Ack Agreement is not protected
 - Bug 2992 - lte: Send method of the LteUeNetDevice doesn't use protocolNumber parameter
 - Bug 2997 - lte: EpcTft::PacketFilter::Matches does not use ipv6 address to match an IP packet
 - Bug 2860 - mobility: Set Z coordinate for position-allocation classes
 - Bug 2893 - lte: GetPgw in helper should be const
 - Bug 3027 - lte: S1 signalling is done before RRC connection establishment is finished
-- #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
-- #27 - wifi: Re-compute the A-MPDU after an RTS/CTS exchange fails
-- #33 - wifi: Issues with QosTxop::StartNextPacket
-- #35 - Unexpected EDCA performance under virtual collisions for 802.11n
-- #45 - Wi-Fi transmits frames outside BlockAck window
-- #53 - Token Bank Fair Queue Scheduler is creating a transmit opportunity of 0 bytes
-- #54 - RadioBearerStats are not correctly connected
+- Issue #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
+- Issue #27 - wifi: Re-compute the A-MPDU after an RTS/CTS exchange fails
+- Issue #32 - wifi: Example "rate-adaptation-distance.cc" fails.
+- Issue #33 - wifi: Issues with QosTxop::StartNextPacket
+- Issue #35 - wifi: Unexpected EDCA performance under virtual collisions for 802.11n
+- Issue #45 - wifi: Wi-Fi transmits frames outside BlockAck window
+- Issue #48 - wifi: Incorrect sequence comparison in BlockAckManager::NeedBarRetransmission
+- Issue #53 - Token Bank Fair Queue Scheduler is creating a transmit opportunity of 0 bytes
+- Issue #54 - RadioBearerStats are not correctly connected
 
 Known issues
 ------------
