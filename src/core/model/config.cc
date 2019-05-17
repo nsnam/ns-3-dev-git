@@ -653,6 +653,13 @@ ConfigImpl::ConnectWithoutContext (std::string path, const CallbackBase &cb)
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
+  if (container.GetN () == 0)
+    {
+      std::size_t lastFwdSlash = root.rfind ("/");
+      NS_LOG_WARN ("Failed to connect " << leaf
+                   << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                   << " does not exits on path " << root.substr (0, lastFwdSlash));
+    }
   container.ConnectWithoutContext (leaf, cb);
 }
 void 
@@ -662,6 +669,13 @@ ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
+  if (container.GetN () == 0)
+    {
+      std::size_t lastFwdSlash = root.rfind ("/");
+      NS_LOG_WARN ("Failed to disconnect " << leaf
+                   << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                   << " does not exits on path " << root.substr (0, lastFwdSlash));
+    }
   container.DisconnectWithoutContext (leaf, cb);
 }
 void 
@@ -672,6 +686,13 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
+  if (container.GetN () == 0)
+    {
+      std::size_t lastFwdSlash = root.rfind ("/");
+      NS_LOG_WARN ("Failed to connect " << leaf
+                   << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                   << " does not exits on path " << root.substr (0, lastFwdSlash));
+    }
   container.Connect (leaf, cb);
 }
 void 
@@ -682,6 +703,13 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
+  if (container.GetN () == 0)
+    {
+      std::size_t lastFwdSlash = root.rfind ("/");
+      NS_LOG_WARN ("Failed to disconnect " << leaf
+                   << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                   << " does not exits on path " << root.substr (0, lastFwdSlash));
+    }
   container.Disconnect (leaf, cb);
 }
 
