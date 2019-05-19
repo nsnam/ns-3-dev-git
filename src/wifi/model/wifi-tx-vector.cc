@@ -209,6 +209,10 @@ WifiTxVector::GetBssColor (void) const
 bool
 WifiTxVector::IsValid (void) const
 {
+  if (!GetModeInitialized ())
+    {
+      return false;
+    }
   std::string modeName = m_mode.GetUniqueName ();
   if (m_channelWidth == 20)
     {

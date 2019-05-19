@@ -33,10 +33,10 @@ class WifiPsdu;
 /**
  * \ingroup wifi
  *
- * WifiPpdu stores TXVECTOR, PHY headers and a PSDU.
+ * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
  * This class should be improved later on to:
- * - remove TXVECTOR and duration fields
- * - handle MU PPDUs by holding a vector of PSDUs
+ * - remove duration and calculate it from PHY headers
+ * - handle MU PPDUs by holding a vector of PSDUs and a vector of wifimode
  */
 class WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
@@ -55,9 +55,10 @@ public:
 
   /**
    * Get the TXVECTOR used to send the PPDU.
+   * \param channelWidth the maximum channel width supported by the PHY.
    * \return the TXVECTOR of the PPDU.
    */
-  WifiTxVector GetTxVector (void) const;
+  WifiTxVector GetTxVector (uint16_t channelWidth) const;
   /**
    * Get the payload of the PPDU.
    * \return the PSDU
@@ -85,15 +86,16 @@ public:
   void Print (std::ostream &os) const;
 
 private:
-  WifiTxVector m_txVector;    //!< TXVECTOR
-  Ptr<const WifiPsdu> m_psdu; //!< the PSDU contained in the PPDU
-  DsssSigHeader m_dsssSig;    //!< the DSSS SIG PHY header
-  LSigHeader m_lSig;          //!< the L-SIG PHY header
-  HtSigHeader m_htSig;        //!< the HT-SIG PHY header
-  VhtSigHeader m_vhtSig;      //!< the VHT-SIG PHY header
-  HeSigHeader m_heSig;        //!< the HE-SIG PHY header
-  Time m_txDuration;          //!< the total transmission duration of the PPDU
-  bool m_truncatedTx;         //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
+  DsssSigHeader m_dsssSig;          //!< the DSSS SIG PHY header
+  LSigHeader m_lSig;                //!< the L-SIG PHY header
+  HtSigHeader m_htSig;              //!< the HT-SIG PHY header
+  VhtSigHeader m_vhtSig;            //!< the VHT-SIG PHY header
+  HeSigHeader m_heSig;              //!< the HE-SIG PHY header
+  WifiPreamble m_preamble;          //!< the PHY preamble
+  WifiMode m_mode;                  //!< the wifimode used for the transmission of this PPDU
+  Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
+  Time m_txDuration;                //!< the total transmission duration of this PPDU
+  bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
 };
 
 /**

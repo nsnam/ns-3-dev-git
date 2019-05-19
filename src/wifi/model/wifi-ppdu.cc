@@ -29,11 +29,16 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 
 WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint16_t frequency)
-  : m_txVector (txVector),
+  : m_preamble (txVector.GetPreambleType ()),
+    m_mode (txVector.IsValid () ? txVector.GetMode () : WifiMode ()),
     m_psdu (psdu),
     m_txDuration (ppduDuration),
     m_truncatedTx (false)
 {
+  if (!txVector.IsValid ())
+    {
+      return;
+    }
   if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
     {
       m_htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
@@ -102,9 +107,47 @@ WifiPpdu::~WifiPpdu ()
 }
 
 WifiTxVector
-WifiPpdu::GetTxVector (void) const
+WifiPpdu::GetTxVector (uint16_t channelWidth) const
 {
-  return m_txVector;
+  WifiTxVector txVector;
+  txVector.SetPreambleType (m_preamble);
+  txVector.SetMode (m_mode);
+  WifiModulationClass modulation = m_mode.GetModulationClass ();
+  switch (modulation)
+    {
+      case WIFI_MOD_CLASS_DSSS:
+      case WIFI_MOD_CLASS_HR_DSSS:
+        txVector.SetChannelWidth (22);
+        break;
+      case WIFI_MOD_CLASS_OFDM:
+      case WIFI_MOD_CLASS_ERP_OFDM:
+        //OFDM and ERP-OFDM use 20 MHz, unless PHY channel width is 5 MHz or 10 Mhz
+        txVector.SetChannelWidth (channelWidth < 20 ? channelWidth : 20);
+        break;
+      case WIFI_MOD_CLASS_HT:
+        txVector.SetChannelWidth (m_htSig.GetChannelWidth ());
+        txVector.SetNss (1 + (txVector.GetMode ().GetMcsValue () / 8));
+        txVector.SetGuardInterval(m_htSig.GetShortGuardInterval () ? 400 : 800);
+        txVector.SetAggregation (m_htSig.GetAggregation ());
+        break;
+      case WIFI_MOD_CLASS_VHT:
+        txVector.SetChannelWidth (m_vhtSig.GetChannelWidth ());
+        txVector.SetNss (m_vhtSig.GetNStreams ());
+        txVector.SetGuardInterval (m_vhtSig.GetShortGuardInterval () ? 400 : 800);
+        txVector.SetAggregation (m_psdu->IsAggregate ());
+        break;
+      case WIFI_MOD_CLASS_HE:
+        txVector.SetChannelWidth (m_heSig.GetChannelWidth ());
+        txVector.SetNss (m_heSig.GetNStreams ());
+        txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
+        txVector.SetBssColor (m_heSig.GetBssColor ());
+        txVector.SetAggregation (m_psdu->IsAggregate ());
+        break;
+      default:
+        NS_FATAL_ERROR ("unsupported modulation class");
+        break;
+    }
+  return txVector;
 }
 
 Ptr<const WifiPsdu>
@@ -135,7 +178,8 @@ WifiPpdu::GetTxDuration (void) const
 void
 WifiPpdu::Print (std::ostream& os) const
 {
-  os << "txVector=" << m_txVector
+  os << "preamble=" << m_preamble
+     << ", mode=" << m_mode
      << ", duration=" << m_txDuration.GetMicroSeconds () << "us"
      << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N")
      << ", PSDU=" << m_psdu;

@@ -37,8 +37,9 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       Phy event class
  ****************************************************************/
 
-Event::Event (Ptr<const WifiPpdu> ppdu, double rxPower)
+Event::Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPower)
   : m_ppdu (ppdu),
+    m_txVector (txVector),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + ppdu->GetTxDuration ()),
     m_rxPowerW (rxPower)
@@ -88,12 +89,13 @@ Event::GetRxPowerW (void) const
 WifiTxVector
 Event::GetTxVector (void) const
 {
-  return m_ppdu->GetTxVector ();
+  return m_txVector;
 }
 
 std::ostream & operator << (std::ostream &os, const Event &event)
 {
   os << "start=" << event.GetStartTime () << ", end=" << event.GetEndTime ()
+     << ", TXVECTOR=" << event.GetTxVector ()
      << ", power=" << event.GetRxPowerW () << "W"
      << ", PPDU=" << event.GetPpdu ();
   return os;
@@ -150,9 +152,9 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<Event>
-InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, double rxPowerW)
+InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPowerW)
 {
-  Ptr<Event> event = Create<Event> (ppdu, rxPowerW);
+  Ptr<Event> event = Create<Event> (ppdu, txVector, rxPowerW);
   AppendEvent (event);
   return event;
 }
@@ -165,7 +167,7 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
   Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0),
                                                                WifiMacHeader ()),
                                              WifiTxVector (), duration, 0);
-  Add (fakePpdu, rxPowerW);
+  Add (fakePpdu, WifiTxVector (), rxPowerW);
 }
 
 void

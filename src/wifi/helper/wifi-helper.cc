@@ -918,6 +918,8 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("WifiNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiPpdu", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiPsdu", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiRadioEnergyModel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiRemoteStationManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiSpectrumPhyInterface", LOG_LEVEL_ALL);

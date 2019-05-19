@@ -43,9 +43,10 @@ public:
    * Create an Event with the given parameters.
    *
    * \param ppdu the PPDU
+   * \param txVector the TXVECTOR
    * \param rxPower the receive power (w)
    */
-  Event (Ptr<const WifiPpdu> ppdu, double rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPower);
   ~Event ();
 
   /**
@@ -91,8 +92,10 @@ public:
    */
   WifiTxVector GetTxVector (void) const;
 
+
 private:
   Ptr<const WifiPpdu> m_ppdu; ///< PPDU
+  WifiTxVector m_txVector; ///< TXVECTOR
   Time m_startTime; ///< start time
   Time m_endTime; ///< end time
   double m_rxPowerW; ///< receive power in watts
@@ -106,6 +109,7 @@ private:
  * \returns a reference to the stream
  */
 std::ostream& operator<< (std::ostream& os, const Event &event);
+
 
 /**
  * \ingroup wifi
@@ -170,11 +174,12 @@ public:
    * Add the PPDU-related signal to interference helper.
    *
    * \param ppdu the PPDU
+   * \param txVector the TXVECTOR
    * \param rxPower receive power (W)
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, double rxPower);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.
