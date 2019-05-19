@@ -19,6 +19,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "wifi-ppdu.h"
 #include "wifi-psdu.h"
 #include "wifi-phy.h"
@@ -32,9 +33,9 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
   : m_preamble (txVector.GetPreambleType ()),
     m_mode (txVector.IsValid () ? txVector.GetMode () : WifiMode ()),
     m_psdu (psdu),
-    m_txDuration (ppduDuration),
     m_truncatedTx (false)
 {
+  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
   if (!txVector.IsValid ())
     {
       return;
@@ -53,7 +54,10 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       m_vhtSig.SetChannelWidth (txVector.GetChannelWidth ());
       m_vhtSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
       uint32_t nSymbols = (static_cast<double> ((ppduDuration - WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
-      m_vhtSig.SetShortGuardIntervalDisambiguation ((nSymbols % 10) == 9);
+      if (txVector.GetGuardInterval () == 400)
+        {
+          m_vhtSig.SetShortGuardIntervalDisambiguation ((nSymbols % 10) == 9);
+        }
       m_vhtSig.SetSuMcs (txVector.GetMode ().GetMcsValue ());
       m_vhtSig.SetNStreams (txVector.GetNss ());
     }
@@ -170,9 +174,65 @@ WifiPpdu::SetTruncatedTx (void)
 }
 
 Time
-WifiPpdu::GetTxDuration (void) const
+WifiPpdu::GetTxDuration (uint16_t frequency, uint16_t channelWidth) const
 {
-  return m_txDuration;
+  Time ppduDuration = Seconds (0);
+  WifiModulationClass modulation = m_mode.GetModulationClass ();
+  WifiTxVector txVector = GetTxVector (channelWidth);
+  switch (modulation)
+    {
+      case WIFI_MOD_CLASS_DSSS:
+      case WIFI_MOD_CLASS_HR_DSSS:
+          ppduDuration = MicroSeconds (m_dsssSig.GetLength ()) + WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          break;
+      case WIFI_MOD_CLASS_OFDM:
+      case WIFI_MOD_CLASS_ERP_OFDM:
+          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, frequency);
+          break;
+      case WIFI_MOD_CLASS_HT:
+          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, frequency);
+          break;
+      case WIFI_MOD_CLASS_VHT:
+        {
+          Time tSymbol = NanoSeconds (3200 + txVector.GetGuardInterval ());
+          Time preambleDuration = WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (m_lSig.GetLength () + 3) / 3)) * 4) + 20);
+          uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds ()) / tSymbol.GetNanoSeconds ());
+          if (m_vhtSig.GetShortGuardInterval () && m_vhtSig.GetShortGuardIntervalDisambiguation ())
+            {
+              nSymbols--;
+            }
+          ppduDuration = preambleDuration + (nSymbols * tSymbol);
+          break;
+        }
+      case WIFI_MOD_CLASS_HE:
+        {
+          Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
+          Time preambleDuration = WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          uint8_t sigExtension = 0;
+          if (Is2_4Ghz (frequency))
+            {
+              sigExtension = 6;
+            }
+          uint8_t m = 0;
+          if (m_preamble == WIFI_PREAMBLE_HE_SU)
+            {
+              m = 2;
+            }
+          else if (m_preamble == WIFI_PREAMBLE_HE_MU)
+            {
+              m = 1;
+            }
+          Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (m_lSig.GetLength () + 3 + m) / 3)) * 4) + 20 + sigExtension);
+          uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
+          ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
+          break;
+        }
+      default:
+        NS_FATAL_ERROR ("unsupported modulation class");
+        break;
+    }
+  return ppduDuration;
 }
 
 void
@@ -180,7 +240,6 @@ WifiPpdu::Print (std::ostream& os) const
 {
   os << "preamble=" << m_preamble
      << ", mode=" << m_mode
-     << ", duration=" << m_txDuration.GetMicroSeconds () << "us"
      << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N")
      << ", PSDU=" << m_psdu;
 }

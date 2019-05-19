@@ -567,7 +567,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       NS_ASSERT (found);
       return datatag.GetDataTxVector ();
     }
-  WifiTxVector txVector = DoGetDataTxVector (Lookup (address, header));
+  WifiTxVector txVector;
   if (header->IsMgt ())
     {
       //Use the lowest basic rate for management frames
@@ -584,6 +584,10 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
+    }
+  else
+    {
+      txVector = DoGetDataTxVector (Lookup (address, header));
     }
   Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
   Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();

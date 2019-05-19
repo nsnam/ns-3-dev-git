@@ -2049,12 +2049,14 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
 Time
 WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency)
 {
-  return GetPayloadDuration (size, txVector, frequency, NORMAL_MPDU, 0);
+  uint32_t totalAmpduSize;
+  double totalAmpduNumSymbols;
+  return GetPayloadDuration (size, txVector, frequency, NORMAL_MPDU, false, totalAmpduSize, totalAmpduNumSymbols);
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
-                             MpduType mpdutype, uint8_t incFlag)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype,
+                             bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols)
 {
   WifiMode payloadMode = txVector.GetMode ();
   NS_LOG_FUNCTION (size << payloadMode);
@@ -2234,8 +2236,8 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       numSymbols = (stbc * (16 + size * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol));
       if (incFlag == 1)
         {
-          m_totalAmpduSize += size;
-          m_totalAmpduNumSymbols += numSymbols;
+          totalAmpduSize += size;
+          totalAmpduNumSymbols += numSymbols;
         }
     }
   else if (mpdutype == MIDDLE_MPDU_IN_AGGREGATE)
@@ -2244,21 +2246,21 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
       if (incFlag == 1)
         {
-          m_totalAmpduSize += size;
-          m_totalAmpduNumSymbols += numSymbols;
+          totalAmpduSize += size;
+          totalAmpduNumSymbols += numSymbols;
         }
     }
   else if (mpdutype == LAST_MPDU_IN_AGGREGATE)
     {
       //last packet in an A-MPDU
-      uint32_t totalAmpduSize = m_totalAmpduSize + size;
-      numSymbols = lrint (stbc * ceil ((16 + totalAmpduSize * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol)));
-      NS_ASSERT (m_totalAmpduNumSymbols <= numSymbols);
-      numSymbols -= m_totalAmpduNumSymbols;
+      uint32_t totalSize = totalAmpduSize + size;
+      numSymbols = lrint (stbc * ceil ((16 + totalSize * 8.0 + 6 * Nes) / (stbc * numDataBitsPerSymbol)));
+      NS_ASSERT (totalAmpduNumSymbols <= numSymbols);
+      numSymbols -= totalAmpduNumSymbols;
       if (incFlag == 1)
         {
-          m_totalAmpduSize = 0;
-          m_totalAmpduNumSymbols = 0;
+          totalAmpduSize = 0;
+          totalAmpduNumSymbols = 0;
         }
     }
   else if (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU)
@@ -2338,17 +2340,19 @@ WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector)
 
 Time
 WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
-                              MpduType mpdutype, uint8_t incFlag)
+                              MpduType mpdutype, bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols)
 {
   Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector)
-    + GetPayloadDuration (size, txVector, frequency, mpdutype, incFlag);
+    + GetPayloadDuration (size, txVector, frequency, mpdutype, incFlag, totalAmpduSize, totalAmpduNumSymbols);
   return duration;
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype)
 {
-  return CalculateTxDuration (size, txVector, frequency, NORMAL_MPDU, 0);
+  uint32_t totalAmpduSize;
+  double totalAmpduNumSymbols;
+  return CalculateTxDuration (size, txVector, frequency, mpdutype, false, totalAmpduSize, totalAmpduNumSymbols);
 }
 
 void
@@ -2356,8 +2360,7 @@ WifiPhy::NotifyTxBegin (Ptr<const WifiPsdu> psdu, double txPowerW)
 {
   for (auto& mpdu : *PeekPointer (psdu))
     {
-      Ptr<Packet> pdu = mpdu->GetProtocolDataUnit ();
-      m_phyTxBeginTrace (pdu, txPowerW);
+      m_phyTxBeginTrace (mpdu->GetProtocolDataUnit (), txPowerW);
     }
 }
 
@@ -2624,9 +2627,9 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
 {
   NS_LOG_FUNCTION (this << *ppdu << rxPowerW);
   WifiTxVector txVector = ppdu->GetTxVector (GetChannelWidth ());
-  Time rxDuration = ppdu->GetTxDuration ();
+  Time rxDuration = ppdu->GetTxDuration (GetFrequency (), txVector.GetChannelWidth ());
   Ptr<const WifiPsdu> psdu = ppdu->GetPsdu ();
-  Ptr<Event> event = m_interference.Add (ppdu, txVector, rxPowerW);
+  Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW);
 
   if (m_state->GetState () == WifiPhyState::OFF)
     {
@@ -2822,7 +2825,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
       for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
         {
           Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
-                                                  GetFrequency (), mpdutype, 1);
+                                                  GetFrequency (), mpdutype, true, m_totalAmpduSize, m_totalAmpduNumSymbols);
           remainingAmpduDuration -= mpduDuration;
           if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
             {

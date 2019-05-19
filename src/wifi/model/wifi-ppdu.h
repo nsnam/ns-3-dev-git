@@ -33,10 +33,9 @@ class WifiPsdu;
 /**
  * \ingroup wifi
  *
- * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
- * This class should be improved later on to:
- * - remove duration and calculate it from PHY headers
- * - handle MU PPDUs by holding a vector of PSDUs and a vector of wifimode
+ * WifiPpdu stores a preamble, a wifimode, PHY headers and a PSDU.
+ * This class should be improved later on to handle MU PPDUs by
+ * holding a vector of PSDUs and a vector of wifimode.
  */
 class WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
@@ -75,9 +74,11 @@ public:
   void SetTruncatedTx (void);
   /**
    * Get the total transmission duration of the PPDU.
+   * \param frequency the frequency used by the PHY.
+   * \param channelWidth the maximum channel width supported by the PHY.
    * \return the transmission duration of the PPDU
    */
-  Time GetTxDuration (void) const;
+  Time GetTxDuration (uint16_t frequency, uint16_t channelWidth) const;
 
   /**
    * \brief Print the PPDU contents.
@@ -94,7 +95,6 @@ private:
   WifiPreamble m_preamble;          //!< the PHY preamble
   WifiMode m_mode;                  //!< the wifimode used for the transmission of this PPDU
   Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
-  Time m_txDuration;                //!< the total transmission duration of this PPDU
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
 };
 

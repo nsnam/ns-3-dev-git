@@ -118,7 +118,12 @@ WifiTxVector
 ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (st))), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)), 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st), false);
+  uint8_t nss = Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st));
+  if (m_dataMode.GetModulationClass () == WIFI_MOD_CLASS_HT)
+    {
+      nss = 1 + (m_dataMode.GetMcsValue () / 8);
+    }
+  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (st))), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st), false);
 }
 
 WifiTxVector

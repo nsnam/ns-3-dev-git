@@ -44,9 +44,10 @@ public:
    *
    * \param ppdu the PPDU
    * \param txVector the TXVECTOR
-   * \param rxPower the receive power (w)
+   * \param duration duration of the PPDU
+   * \param rxPower the received power (w)
    */
-  Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, double rxPower);
   ~Event ();
 
   /**
@@ -80,9 +81,9 @@ public:
    */
   Time GetDuration (void) const;
   /**
-   * Return the receive power (w).
+   * Return the received power (w).
    *
-   * \return the receive power (w)
+   * \return the received power (w)
    */
   double GetRxPowerW (void) const;
   /**
@@ -98,7 +99,7 @@ private:
   WifiTxVector m_txVector; ///< TXVECTOR
   Time m_startTime; ///< start time
   Time m_endTime; ///< end time
-  double m_rxPowerW; ///< receive power in watts
+  double m_rxPowerW; ///< received power in watts
 };
 
 /**
@@ -175,16 +176,16 @@ public:
    *
    * \param ppdu the PPDU
    * \param txVector the TXVECTOR
-   * \param rxPower receive power (W)
+   * \param rxPower received power (W)
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, double rxPower);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.
    * \param duration the duration of the signal
-   * \param rxPower receive power (W)
+   * \param rxPower received power (W)
    */
   void AddForeignSignal (Time duration, double rxPower);
   /**
