@@ -37,7 +37,6 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-mac-queue-item.h"
 #include "ns3/mpdu-aggregator.h"
-#include "ns3/wifi-phy-header.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-ppdu.h"
 
@@ -126,25 +125,10 @@ TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket (double rxPowerDbm
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-#if 0
-  HeSigHeader heSig;
-  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-  heSig.SetBssColor (txVector.GetBssColor ());
-  heSig.SetChannelWidth (txVector.GetChannelWidth ());
-  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
-  pkt->AddHeader (heSig);
-
-  LSigHeader sig;
-  pkt->AddHeader (sig);
-
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -479,25 +463,10 @@ TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-#if 0
-  HeSigHeader heSig;
-  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-  heSig.SetBssColor (txVector.GetBssColor ());
-  heSig.SetChannelWidth (txVector.GetChannelWidth ());
-  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
-  pkt->AddHeader (heSig);
-
-  LSigHeader sig;
-  pkt->AddHeader (sig);
-
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -976,25 +945,10 @@ TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-#if 0
-  HeSigHeader heSig;
-  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-  heSig.SetBssColor (txVector.GetBssColor ());
-  heSig.SetChannelWidth (txVector.GetChannelWidth ());
-  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
-  pkt->AddHeader (heSig);
-  
-  LSigHeader sig;
-  pkt->AddHeader (sig);
-  
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -1196,25 +1150,10 @@ TestPhyHeadersReception::SendPacket (double rxPowerDbm)
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-#if 0
-  HeSigHeader heSig;
-  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-  heSig.SetBssColor (txVector.GetBssColor ());
-  heSig.SetChannelWidth (txVector.GetChannelWidth ());
-  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
-  pkt->AddHeader (heSig);
-
-  LSigHeader sig;
-  pkt->AddHeader (sig);
-
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -1705,24 +1644,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
   
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-#if 0
-  HeSigHeader heSig;
-  heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-  heSig.SetBssColor (txVector.GetBssColor ());
-  heSig.SetChannelWidth (txVector.GetChannelWidth ());
-  heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2);
-  pkt->AddHeader (heSig);
-  
-  LSigHeader sig;
-  uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3 - 2);
-  sig.SetLength (length);
-  pkt->AddHeader (sig);
-
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 

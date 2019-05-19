@@ -164,7 +164,7 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
   // of signal, so we provide dummy versions
   Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0),
                                                                WifiMacHeader ()),
-                                             WifiTxVector (), duration);
+                                             WifiTxVector (), duration, 0);
   Add (fakePpdu, rxPowerW);
 }
 

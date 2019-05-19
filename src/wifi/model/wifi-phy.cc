@@ -36,7 +36,6 @@
 #include "ht-configuration.h"
 #include "he-configuration.h"
 #include "mpdu-aggregator.h"
-#include "wifi-phy-header.h"
 #include "wifi-psdu.h"
 #include "wifi-ppdu.h"
 
@@ -2539,85 +2538,7 @@ WifiPhy::SendPacket (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
       return;
     }
 
-#if 0
-  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT)
-    {
-      HtSigHeader htSig;
-      htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-      htSig.SetChannelWidth (txVector.GetChannelWidth ());
-      htSig.SetHtLength (packet->GetSize ());
-      htSig.SetAggregation (txVector.IsAggregation ());
-      htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
-      newPacket->AddHeader (htSig);
-    }
-  else if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
-    {
-      VhtSigHeader vhtSig;
-      vhtSig.SetMuFlag (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU);
-      vhtSig.SetChannelWidth (txVector.GetChannelWidth ());
-      vhtSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
-      uint32_t nSymbols = (static_cast<double> ((txDuration - CalculatePlcpPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
-      vhtSig.SetShortGuardIntervalDisambiguation ((nSymbols % 10) == 9);
-      vhtSig.SetSuMcs (txVector.GetMode ().GetMcsValue ());
-      vhtSig.SetNStreams (txVector.GetNss ());
-      newPacket->AddHeader (vhtSig);
-    }
-  else if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
-    {
-      HeSigHeader heSig;
-      heSig.SetMuFlag (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU);
-      heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-      heSig.SetBssColor (txVector.GetBssColor ());
-      heSig.SetChannelWidth (txVector.GetChannelWidth ());
-      heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
-      heSig.SetNStreams (txVector.GetNss ());
-      newPacket->AddHeader (heSig);
-    }
-  if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
-    {
-      DsssSigHeader sig;
-      sig.SetRate (txVector.GetMode ().GetDataRate (22));
-      Time psduDuration = txDuration - CalculatePlcpPreambleAndHeaderDuration (txVector);
-      sig.SetLength (psduDuration.GetMicroSeconds ());
-      newPacket->AddHeader (sig);
-    }
-  else if ((txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT) || (txVector.GetPreambleType () != WIFI_PREAMBLE_HT_GF))
-    {
-      LSigHeader sig;
-      if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_OFDM) || (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM))
-        {
-          sig.SetRate (txVector.GetMode ().GetDataRate (txVector), GetChannelWidth ());
-          sig.SetLength (packet->GetSize ());
-        }
-      else //HT, VHT or HE
-      {
-          uint8_t sigExtention = 0;
-          if (Is2_4Ghz (GetFrequency ()))
-            {
-              sigExtention = 6;
-            }
-          uint8_t m = 0;
-          if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_SU)
-            {
-              m = 2;
-            }
-          else if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
-            {
-              m = 1;
-            }
-          //Equation 27-11 of IEEE P802.11/D4.0
-          uint16_t length = ((ceil ((static_cast<double> (txDuration.GetNanoSeconds () - (20 * 1000) - (sigExtention * 1000)) / 1000) / 4.0) * 3) - 3 - m);
-          sig.SetLength (length);
-      }
-      newPacket->AddHeader (sig);
-    }
-
-  uint8_t isFrameComplete = 1;
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), isFrameComplete);
-  newPacket->AddPacketTag (tag);
-#endif
-
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, GetFrequency ());
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {

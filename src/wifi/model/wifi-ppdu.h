@@ -24,7 +24,7 @@
 #include <list>
 #include "ns3/nstime.h"
 #include "wifi-tx-vector.h"
-
+#include "wifi-phy-header.h"
 
 namespace ns3 {
 
@@ -33,10 +33,10 @@ class WifiPsdu;
 /**
  * \ingroup wifi
  *
- * WifiPpdu stores TXVECTOR and a PSDU.
+ * WifiPpdu stores TXVECTOR, PHY headers and a PSDU.
  * This class should be improved later on to:
- * - take PHY headers instead of TXVECTOR
- * - handle MU PPDUs
+ * - remove TXVECTOR and duration fields
+ * - handle MU PPDUs by holding a vector of PSDUs
  */
 class WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
@@ -46,9 +46,10 @@ public:
    *
    * \param psdu the PHY payload (PSDU)
    * \param txVector the TXVECTOR that was used for this PPDU
-   * \param ppduDuration the transmission duration of the PPDU
+   * \param ppduDuration the transmission duration of this PPDU
+   * \param frequency the frequency used for the transmission of this PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration);
+  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint16_t frequency);
 
   virtual ~WifiPpdu ();
 
@@ -86,11 +87,14 @@ public:
 private:
   WifiTxVector m_txVector;    //!< TXVECTOR
   Ptr<const WifiPsdu> m_psdu; //!< the PSDU contained in the PPDU
+  DsssSigHeader m_dsssSig;    //!< the DSSS SIG PHY header
+  LSigHeader m_lSig;          //!< the L-SIG PHY header
+  HtSigHeader m_htSig;        //!< the HT-SIG PHY header
+  VhtSigHeader m_vhtSig;      //!< the VHT-SIG PHY header
+  HeSigHeader m_heSig;        //!< the HE-SIG PHY header
   Time m_txDuration;          //!< the total transmission duration of the PPDU
   bool m_truncatedTx;         //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
-
 };
-
 
 /**
  * \brief Stream insertion operator.

@@ -27,7 +27,6 @@
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-phy-listener.h"
 #include "ns3/log.h"
-#include "ns3/wifi-phy-header.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-ppdu.h"
 
@@ -116,18 +115,10 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
 
-#if 0
-  LSigHeader sig;
-  pkt->AddHeader (sig);
-
-  WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
-  pkt->AddPacketTag (tag);
-#endif
-
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, FREQUENCY);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
