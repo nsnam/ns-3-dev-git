@@ -150,6 +150,12 @@ public:
    */
   bool IsAssociated (void) const;
 
+  /**
+   * Return the association ID.
+   *
+   * \return the association ID
+   */
+  uint16_t GetAssociationId (void) const;
 
 private:
   /**
@@ -311,6 +317,7 @@ private:
   void DoInitialize (void);
 
   MacState m_state;            ///< MAC state
+  uint16_t m_aid;              ///< Association AID
   Time m_waitBeaconTimeout;    ///< wait beacon timeout
   Time m_probeRequestTimeout;  ///< probe request timeout
   Time m_assocRequestTimeout;  ///< assoc request timeout

@@ -49,12 +49,6 @@ MgtProbeRequestHeader::GetSsid (void) const
 }
 
 void
-MgtAssocResponseHeader::SetAssociationId (uint16_t aid)
-{
-  m_aid = aid;
-}
-
-void
 MgtProbeRequestHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
@@ -1034,6 +1028,18 @@ HeOperation
 MgtAssocResponseHeader::GetHeOperation (void) const
 {
   return m_heOperation;
+}
+
+void
+MgtAssocResponseHeader::SetAssociationId (uint16_t aid)
+{
+  m_aid = aid;
+}
+
+uint16_t
+MgtAssocResponseHeader::GetAssociationId (void) const
+{
+  return m_aid;
 }
 
 void

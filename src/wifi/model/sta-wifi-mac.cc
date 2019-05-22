@@ -88,6 +88,7 @@ StaWifiMac::GetTypeId (void)
 
 StaWifiMac::StaWifiMac ()
   : m_state (UNASSOCIATED),
+    m_aid (0),
     m_waitBeaconEvent (),
     m_probeRequestEvent (),
     m_assocRequestEvent (),
@@ -110,6 +111,13 @@ StaWifiMac::DoInitialize (void)
 StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+uint16_t
+StaWifiMac::GetAssociationId (void) const
+{
+  NS_ASSERT_MSG (IsAssociated (), "This station is not associated to any AP");
+  return m_aid;
 }
 
 void
@@ -670,6 +678,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           if (assocResp.GetStatusCode ().IsSuccess ())
             {
               SetState (ASSOCIATED);
+              m_aid = assocResp.GetAssociationId ();
               if (hdr->IsReassocResp ())
                 {
                   NS_LOG_DEBUG ("reassociation done");

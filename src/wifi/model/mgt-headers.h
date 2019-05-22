@@ -382,6 +382,12 @@ public:
    */
   HeOperation GetHeOperation (void) const;
   /**
+   * Return the association ID.
+   *
+   * \return the association ID
+   */
+  uint16_t GetAssociationId (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
