@@ -1634,10 +1634,9 @@ TestAmpduReception::DoSetup (void)
 void
 TestAmpduReception::DoRun (void)
 {
-  WifiHelper::EnableLogComponents ();
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (1);
-  int64_t streamNumber = 3;
+  int64_t streamNumber = 1;
   double rxPowerDbm = -30;
   m_phy->AssignStreams (streamNumber);
 
@@ -1663,7 +1662,7 @@ TestAmpduReception::DoRun (void)
   Simulator::Schedule (Seconds (1.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu2, this, 0b00000000);
 
   Simulator::Schedule (Seconds (1.2), &TestAmpduReception::ResetBitmaps, this);
- 
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // CASE 2: receive two A-MPDUs (containing each 3 MPDUs) where the second A-MPDU is received with power under RX sensitivity.
   // The second A-MPDU is received 2 microseconds after the first A-MPDU (i.e. during preamble detection).

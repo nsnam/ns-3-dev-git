@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 3027 - lte: S1 signalling is done before RRC connection establishment is finished
 - Issue #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
 - Issue #27 - wifi: Re-compute the A-MPDU after an RTS/CTS exchange fails
+- Issue #28 - wifi: wifi error model: coded bits vs. data bits
 - Issue #32 - wifi: Example "rate-adaptation-distance.cc" fails.
 - Issue #33 - wifi: Issues with QosTxop::StartNextPacket
 - Issue #35 - wifi: Unexpected EDCA performance under virtual collisions for 802.11n
