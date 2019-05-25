@@ -1882,45 +1882,63 @@ WifiPhy::GetPlcpSigBDuration (WifiPreamble preamble)
 WifiMode
 WifiPhy::GetPlcpHeaderMode (WifiTxVector txVector)
 {
-  switch (txVector.GetMode ().GetModulationClass ())
+  WifiPreamble preamble = txVector.GetPreambleType ();
+  switch (preamble)
     {
-    case WIFI_MOD_CLASS_OFDM:
-    case WIFI_MOD_CLASS_HT:
-    case WIFI_MOD_CLASS_VHT:
-    case WIFI_MOD_CLASS_HE:
-      switch (txVector.GetChannelWidth ())
-        {
-        case 5:
-          return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
-        case 10:
-          return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
-        case 20:
-        case 40:
-        case 80:
-        case 160:
-        default:
-          //(Section 18.3.2 "PLCP frame format"; IEEE Std 802.11-2012)
-          //actually this is only the first part of the PlcpHeader,
-          //because the last 16 bits of the PlcpHeader are using the
-          //same mode of the payload
-          return WifiPhy::GetOfdmRate6Mbps ();
-        }
-    case WIFI_MOD_CLASS_ERP_OFDM:
-      return WifiPhy::GetErpOfdmRate6Mbps ();
-    case WIFI_MOD_CLASS_DSSS:
-    case WIFI_MOD_CLASS_HR_DSSS:
-      if (txVector.GetPreambleType () == WIFI_PREAMBLE_LONG || txVector.GetMode () == WifiPhy::GetDsssRate1Mbps ())
-        {
-          //(Section 16.2.3 "PLCP field definitions" and Section 17.2.2.2 "Long PPDU format"; IEEE Std 802.11-2012)
-          return WifiPhy::GetDsssRate1Mbps ();
-        }
-      else //WIFI_PREAMBLE_SHORT
-        {
-          //(Section 17.2.2.3 "Short PPDU format"; IEEE Std 802.11-2012)
-          return WifiPhy::GetDsssRate2Mbps ();
-        }
+    case WIFI_PREAMBLE_LONG:
+    case WIFI_PREAMBLE_SHORT:
+      {
+        switch (txVector.GetMode ().GetModulationClass ())
+          {
+            case WIFI_MOD_CLASS_OFDM:
+              {
+                switch (txVector.GetChannelWidth ())
+                  {
+                    case 5:
+                      return WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
+                    case 10:
+                      return WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+                    case 20:
+                    default:
+                      //(Section 18.3.2 "PLCP frame format"; IEEE Std 802.11-2012)
+                      //actually this is only the first part of the PlcpHeader,
+                      //because the last 16 bits of the PlcpHeader are using the
+                      //same mode of the payload
+                      return WifiPhy::GetOfdmRate6Mbps ();
+                  }
+              }
+            case WIFI_MOD_CLASS_ERP_OFDM:
+              return WifiPhy::GetErpOfdmRate6Mbps ();
+            case WIFI_MOD_CLASS_DSSS:
+            case WIFI_MOD_CLASS_HR_DSSS:
+              {
+                if (preamble == WIFI_PREAMBLE_LONG || txVector.GetMode () == WifiPhy::GetDsssRate1Mbps ())
+                  {
+                    //(Section 16.2.3 "PLCP field definitions" and Section 17.2.2.2 "Long PPDU format"; IEEE Std 802.11-2012)
+                    return WifiPhy::GetDsssRate1Mbps ();
+                  }
+                else
+                  {
+                    //(Section 17.2.2.3 "Short PPDU format"; IEEE Std 802.11-2012)
+                    return WifiPhy::GetDsssRate2Mbps ();
+                  }
+              }
+            default:
+              NS_FATAL_ERROR ("unsupported modulation class");
+              return WifiMode ();
+          }
+      }
+    case WIFI_PREAMBLE_HT_MF:
+    case WIFI_PREAMBLE_HT_GF:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
+      return WifiPhy::GetOfdmRate6Mbps ();
     default:
-      NS_FATAL_ERROR ("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported preamble type");
       return WifiMode ();
     }
 }
@@ -1929,63 +1947,70 @@ Time
 WifiPhy::GetPlcpHeaderDuration (WifiTxVector txVector)
 {
   WifiPreamble preamble = txVector.GetPreambleType ();
-  switch (txVector.GetMode ().GetModulationClass ())
+  switch (txVector.GetPreambleType ())
     {
-    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_PREAMBLE_LONG:
+    case WIFI_PREAMBLE_SHORT:
       {
-        switch (txVector.GetChannelWidth ())
+        switch (txVector.GetMode ().GetModulationClass ())
           {
-          case 20:
-          default:
-            //(Section 18.3.3 "PLCP preamble (SYNC))" and Figure 18-4 "OFDM training structure"; IEEE Std 802.11-2012)
-            //also (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
-            //We return the duration of the SIGNAL field only, since the
-            //SERVICE field (which strictly speaking belongs to the PLCP
-            //header, see Section 18.3.2 and Figure 18-1) is sent using the
-            //payload mode.
+          case WIFI_MOD_CLASS_OFDM:
+            {
+              switch (txVector.GetChannelWidth ())
+                {
+                case 20:
+                default:
+                  //(Section 18.3.3 "PLCP preamble (SYNC))" and Figure 18-4 "OFDM training structure"; IEEE Std 802.11-2012)
+                  //also (Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
+                  //We return the duration of the SIGNAL field only, since the
+                  //SERVICE field (which strictly speaking belongs to the PLCP
+                  //header, see Section 18.3.2 and Figure 18-1) is sent using the
+                  //payload mode.
+                  return MicroSeconds (4);
+                case 10:
+                  //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
+                  return MicroSeconds (8);
+                case 5:
+                  //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
+                  return MicroSeconds (16);
+                }
+            }
+          case WIFI_MOD_CLASS_ERP_OFDM:
             return MicroSeconds (4);
-          case 10:
-            //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
-            return MicroSeconds (8);
-          case 5:
-            //(Section 18.3.2.4 "Timing related parameters" Table 18-5 "Timing-related parameters"; IEEE Std 802.11-2012)
-            return MicroSeconds (16);
-          }
-      }
-    case WIFI_MOD_CLASS_HT:
-      {
-        //L-SIG
-        //IEEE 802.11n Figure 20.1
-        switch (preamble)
-          {
-          case WIFI_PREAMBLE_HT_MF:
+          case WIFI_MOD_CLASS_DSSS:
+          case WIFI_MOD_CLASS_HR_DSSS:
+            {
+              if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
+                {
+                  //(Section 17.2.2.3 "Short PPDU format" and Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
+                  return MicroSeconds (24);
+                }
+              else
+                {
+                  //(Section 17.2.2.2 "Long PPDU format" and Figure 17-1 "Short PPDU format"; IEEE Std 802.11-2012)
+                  return MicroSeconds (48);
+                }
+            }
           default:
-            return MicroSeconds (4);
-          case WIFI_PREAMBLE_HT_GF:
+            NS_FATAL_ERROR ("modulation class is not matching the preamble type");
             return MicroSeconds (0);
           }
       }
-    case WIFI_MOD_CLASS_ERP_OFDM:
-    case WIFI_MOD_CLASS_VHT:
+    case WIFI_PREAMBLE_HT_MF:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
       //L-SIG
       return MicroSeconds (4);
-    case WIFI_MOD_CLASS_HE:
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
       //LSIG + R-LSIG
       return MicroSeconds (8);
-    case WIFI_MOD_CLASS_DSSS:
-    case WIFI_MOD_CLASS_HR_DSSS:
-      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
-        {
-          //(Section 17.2.2.3 "Short PPDU format" and Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
-          return MicroSeconds (24);
-        }
-      else //WIFI_PREAMBLE_LONG
-        {
-          //(Section 17.2.2.2 "Long PPDU format" and Figure 17-1 "Short PPDU format"; IEEE Std 802.11-2012)
-          return MicroSeconds (48);
-        }
+    case WIFI_PREAMBLE_HT_GF:
+      return MicroSeconds (0);
     default:
-      NS_FATAL_ERROR ("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported preamble type");
       return MicroSeconds (0);
     }
 }
@@ -2000,48 +2025,67 @@ Time
 WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
 {
   WifiPreamble preamble = txVector.GetPreambleType ();
-  switch (txVector.GetMode ().GetModulationClass ())
+  switch (txVector.GetPreambleType ())
     {
-    case WIFI_MOD_CLASS_OFDM:
+    case WIFI_PREAMBLE_LONG:
+    case WIFI_PREAMBLE_SHORT:
       {
-        switch (txVector.GetChannelWidth ())
+        switch (txVector.GetMode ().GetModulationClass ())
           {
-          case 20:
-          default:
-            //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
-            //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
-            return MicroSeconds (16);
-          case 10:
-            //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
-            //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
-            return MicroSeconds (32);
-          case 5:
-            //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
-            //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
-            return MicroSeconds (64);
+            case WIFI_MOD_CLASS_OFDM:
+              {
+                switch (txVector.GetChannelWidth ())
+                  {
+                    case 20:
+                    default:
+                      //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+                      //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
+                      return MicroSeconds (16);
+                    case 10:
+                      //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+                      //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
+                      return MicroSeconds (32);
+                    case 5:
+                      //(Section 18.3.3 "PLCP preamble (SYNC))" Figure 18-4 "OFDM training structure"
+                      //also Section 18.3.2.3 "Modulation-dependent parameters" Table 18-4 "Modulation-dependent parameters"; IEEE Std 802.11-2012)
+                      return MicroSeconds (64);
+                  }
+              }
+            case WIFI_MOD_CLASS_ERP_OFDM:
+              return MicroSeconds (16);
+            case WIFI_MOD_CLASS_DSSS:
+            case WIFI_MOD_CLASS_HR_DSSS:
+              {
+                if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
+                  {
+                    //(Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
+                    return MicroSeconds (72);
+                  }
+                else
+                  {
+                    //(Section 17.2.2.2 "Long PPDU format)" Figure 17-1 "Long PPDU format"; IEEE Std 802.11-2012)
+                    return MicroSeconds (144);
+                  }
+              }
+            default:
+              NS_FATAL_ERROR ("modulation class is not matching the preamble type");
+              return MicroSeconds (0);
           }
       }
-    case WIFI_MOD_CLASS_HT:
-    case WIFI_MOD_CLASS_VHT:
-    case WIFI_MOD_CLASS_HE:
+    case WIFI_PREAMBLE_HT_MF:
+    case WIFI_PREAMBLE_VHT_SU:
+    case WIFI_PREAMBLE_VHT_MU:
+    case WIFI_PREAMBLE_HE_SU:
+    case WIFI_PREAMBLE_HE_ER_SU:
+    case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
       //L-STF + L-LTF
       return MicroSeconds (16);
-    case WIFI_MOD_CLASS_ERP_OFDM:
+    case WIFI_PREAMBLE_HT_GF:
+      //HT-GF-STF + HT-LTF1
       return MicroSeconds (16);
-    case WIFI_MOD_CLASS_DSSS:
-    case WIFI_MOD_CLASS_HR_DSSS:
-      if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
-        {
-          //(Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
-          return MicroSeconds (72);
-        }
-      else //WIFI_PREAMBLE_LONG
-        {
-          //(Section 17.2.2.2 "Long PPDU format)" Figure 17-1 "Long PPDU format"; IEEE Std 802.11-2012)
-          return MicroSeconds (144);
-        }
     default:
-      NS_FATAL_ERROR ("unsupported modulation class");
+      NS_FATAL_ERROR ("unsupported preamble type");
       return MicroSeconds (0);
     }
 }
