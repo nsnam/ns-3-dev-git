@@ -128,7 +128,7 @@ public:
   /**
    * \return the width of each band (Hz)
    */
-  double GetBandBandwidth (void) const;
+  uint32_t GetBandBandwidth (void) const;
 
   /**
    * \param currentChannelWidth channel width of the current transmission (MHz)

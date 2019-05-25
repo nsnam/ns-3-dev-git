@@ -329,10 +329,10 @@ SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDura
   m_channel->StartTx (txParams);
 }
 
-double
+uint32_t
 SpectrumWifiPhy::GetBandBandwidth (void) const
 {
-  double bandBandwidth = 0;
+  uint32_t bandBandwidth = 0;
   switch (GetStandard ())
     {
     case WIFI_PHY_STANDARD_80211a:
