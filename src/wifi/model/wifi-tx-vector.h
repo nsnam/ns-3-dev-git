@@ -22,11 +22,20 @@
 #ifndef WIFI_TX_VECTOR_H
 #define WIFI_TX_VECTOR_H
 
+#include <list>
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "he-ru.h"
 
 namespace ns3 {
 
+/// HE MU specific user transmission parameters.
+struct HeMuUserInfo
+{
+  HeRu::RuSpec ru; ///< RU specification
+  WifiMode mcs;    ///< MCS
+  uint8_t nss;     ///< number of spatial streams
+};
 
 /**
  * This class mimics the TXVECTOR which is to be
@@ -61,7 +70,11 @@ namespace ns3 {
 class WifiTxVector
 {
 public:
+  /// map of HE MU specific user info paramters indexed by STA-ID
+  typedef std::map <uint16_t /* staId */, HeMuUserInfo /* HE MU specific user info */> HeMuUserInfoMap;
+
   WifiTxVector ();
+  ~WifiTxVector ();
   /**
    * Create a TXVECTOR with the given parameters.
    *
@@ -89,13 +102,25 @@ public:
                 bool stbc,
                 uint8_t bssColor = 0);
   /**
+   * Copy constructor
+   * \param txVector the TXVECTOR to copy
+   */
+  WifiTxVector (const WifiTxVector& txVector);
+
+  /**
    * \returns whether mode has been initialized
    */
   bool GetModeInitialized (void) const;
   /**
+   * If this TX vector is associated with an SU PPDU, return the selected
+   * payload transmission mode. If this TX vector is associated with an
+   * MU PPDU, return the transmission mode (MCS) selected for the transmission
+   * to the station identified by the given STA-ID.
+   *
+   * \param staId the station ID for HE MU
    * \returns the selected payload transmission mode
    */
-  WifiMode GetMode (void) const;
+  WifiMode GetMode (uint16_t staId = SU_STA_ID) const;
   /**
   * Sets the selected payload transmission mode
   *
@@ -153,9 +178,19 @@ public:
    */
   void SetNTx (uint8_t nTx);
   /**
+   * If this TX vector is associated with an SU PPDU, return the number of
+   * spatial streams. If this TX vector is associated with an MU PPDU,
+   * return the number of spatial streams for the transmission to the station
+   * identified by the given STA-ID.
+   *
+   * \param staId the station ID for HE MU
    * \returns the number of spatial streams
    */
-  uint8_t GetNss (void) const;
+  uint8_t GetNss (uint16_t staId = SU_STA_ID) const;
+  /**
+   * \returns the maximum number of Nss (namely if HE MU)
+   */
+  uint8_t GetNssMax (void) const;
   /**
    * Sets the number of Nss refer to IEEE 802.11n Table 20-28 for explanation and range
    *
@@ -215,6 +250,45 @@ public:
    * \return true if the WifiTxVector parameters are allowed by the standard
    */
   bool IsValid (void) const;
+   /**
+    * Get the RU specification for the STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \param staId the station ID
+    * \return the RU specification for the STA-ID
+    */
+   HeRu::RuSpec GetRu (uint16_t staId) const;
+   /**
+    * Set the RU specification for the STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \param ru the RU specification
+    * \param staId the station ID
+    */
+   void SetRu (HeRu::RuSpec ru, uint16_t staId);
+   /**
+    * Get the HE MU user-specific transmission information for the given STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \param staId the station ID
+    * \return the HE MU user-specific transmission information for the given STA-ID
+    */
+   HeMuUserInfo GetHeMuUserInfo (uint16_t staId) const;
+   /**
+    * Set the HE MU user-specific transmission information for the given STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \param staId the station ID
+    * \param userInfo the HE MU user-specific transmission information
+    */
+   void SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo);
+   /**
+    * Get the map HE MU user-specific transmission information indexed by STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \return the map of HE MU user-specific information indexed by STA-ID
+    */
+   const HeMuUserInfoMap& GetHeMuUserInfoMap (void) const;
 
 
 private:
@@ -235,6 +309,12 @@ private:
   uint8_t  m_bssColor;           /**< BSS color */
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
+
+  //MU information
+  HeMuUserInfoMap m_muUserInfos; /**< HE MU specific per-user information
+                                      indexed by station ID (STA-ID) corresponding
+                                      to the 11 LSBs of the AID of the recipient STA
+                                      This list shall be used only for HE MU */
 };
 
 /**

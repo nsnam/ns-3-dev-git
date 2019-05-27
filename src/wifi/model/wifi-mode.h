@@ -27,6 +27,8 @@
 
 namespace ns3 {
 
+#define SU_STA_ID 65535
+
 class WifiTxVector;
 
 /**

@@ -20,6 +20,7 @@
  */
 
 #include "wifi-tx-vector.h"
+#include "ns3/abort.h"
 
 namespace ns3 {
 
@@ -63,6 +64,35 @@ WifiTxVector::WifiTxVector (WifiMode mode,
 {
 }
 
+WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
+  : m_mode (txVector.m_mode),
+    m_txPowerLevel (txVector.m_txPowerLevel),
+    m_preamble (txVector.m_preamble),
+    m_channelWidth (txVector.m_channelWidth),
+    m_guardInterval (txVector.m_guardInterval),
+    m_nTx (txVector.m_nTx),
+    m_nss (txVector.m_nss),
+    m_ness (txVector.m_ness),
+    m_aggregation (txVector.m_aggregation),
+    m_stbc (txVector.m_stbc),
+    m_bssColor (txVector.m_bssColor),
+    m_modeInitialized (txVector.m_modeInitialized)
+{
+  m_muUserInfos.clear ();
+  if (!txVector.m_muUserInfos.empty ()) //avoids crashing for loop
+    {
+      for (auto & info : txVector.m_muUserInfos)
+        {
+          m_muUserInfos.insert (std::make_pair (info.first, info.second));
+        }
+    }
+}
+
+WifiTxVector::~WifiTxVector ()
+{
+  m_muUserInfos.clear ();
+}
+
 bool
 WifiTxVector::GetModeInitialized (void) const
 {
@@ -70,11 +100,17 @@ WifiTxVector::GetModeInitialized (void) const
 }
 
 WifiMode
-WifiTxVector::GetMode (void) const
+WifiTxVector::GetMode (uint16_t staId) const
 {
   if (!m_modeInitialized)
     {
       NS_FATAL_ERROR ("WifiTxVector mode must be set before using");
+    }
+  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+    {
+      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
+      NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
+      return m_muUserInfos.at (staId).mcs;
     }
   return m_mode;
 }
@@ -110,9 +146,33 @@ WifiTxVector::GetNTx (void) const
 }
 
 uint8_t
-WifiTxVector::GetNss (void) const
+WifiTxVector::GetNss (uint16_t staId) const
 {
+  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+    {
+      NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
+      NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
+      return m_muUserInfos.at (staId).nss;
+    }
   return m_nss;
+}
+
+uint8_t
+WifiTxVector::GetNssMax (void) const
+{
+  uint8_t nss = 0;
+  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+    {
+      for (const auto & info : m_muUserInfos)
+        {
+          nss = (nss < info.second.nss) ? info.second.nss : nss;
+        }
+    }
+  else
+    {
+      nss = m_nss;
+    }
+  return nss;
 }
 
 uint8_t
@@ -242,18 +302,70 @@ WifiTxVector::IsValid (void) const
   return true;
 }
 
+HeRu::RuSpec
+WifiTxVector::GetRu (uint16_t staId) const
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "RU only available for MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  return m_muUserInfos.at (staId).ru;
+}
+
+void
+WifiTxVector::SetRu (HeRu::RuSpec ru, uint16_t staId)
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "RU only available for MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  m_muUserInfos[staId].ru = ru;
+}
+
+HeMuUserInfo
+WifiTxVector::GetHeMuUserInfo (uint16_t staId) const
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info only available for MU");
+  return m_muUserInfos.at (staId);
+}
+
+void
+WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info only available for MU");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  NS_ABORT_MSG_IF (userInfo.mcs.GetModulationClass () != WIFI_MOD_CLASS_HE, "Only HE modes authorized for HE MU");
+  m_muUserInfos[staId] = userInfo;
+  m_modeInitialized = true;
+}
+
+const WifiTxVector::HeMuUserInfoMap&
+WifiTxVector::GetHeMuUserInfoMap (void) const
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info map only available for MU");
+  return m_muUserInfos;
+}
+
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
-  os << "mode: " << v.GetMode () <<
-    " txpwrlvl: " << +v.GetTxPowerLevel () <<
-    " preamble: " << v.GetPreambleType () <<
-    " channel width: " << v.GetChannelWidth () <<
-    " GI: " << v.GetGuardInterval () <<
-    " NTx: " << +v.GetNTx () <<
-    " Nss: " << +v.GetNss () <<
-    " Ness: " << +v.GetNess () <<
-    " MPDU aggregation: " << v.IsAggregation () <<
-    " STBC: " << v.IsStbc ();
+  os << "mode: " << v.GetMode ()
+     << " txpwrlvl: " << +v.GetTxPowerLevel ()
+     << " preamble: " << v.GetPreambleType ()
+     << " channel width: " << v.GetChannelWidth ()
+     << " GI: " << v.GetGuardInterval ()
+     << " NTx: " << +v.GetNTx ()
+     << " Nss: " << +v.GetNss ()
+     << " Ness: " << +v.GetNess ()
+     << " MPDU aggregation: " << v.IsAggregation ()
+     << " STBC: " << v.IsStbc ();
+  if (v.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      WifiTxVector::HeMuUserInfoMap userInfoMap = v.GetHeMuUserInfoMap ();
+      os << " num User Infos: " << userInfoMap.size ();
+      for (auto & ui : userInfoMap)
+        {
+          os << ", {STA-ID: " << ui.first
+             << ", " << ui.second.ru
+             << ", MCS: " << ui.second.mcs
+             << ", Nss: " << +ui.second.nss << "}";
+        }
+    }
   return os;
 }
 

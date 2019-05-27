@@ -21,6 +21,7 @@
  */
 #include "higher-tx-tag.h"
 #include "ns3/log.h"
+#include "ns3/abort.h"
 
 namespace ns3 {
 
@@ -57,6 +58,7 @@ HigherLayerTxVectorTag::HigherLayerTxVectorTag (WifiTxVector txVector, bool adap
     m_adaptable (adaptable)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU, "HE MU is not compatible with this tag");
 }
 
 WifiTxVector
