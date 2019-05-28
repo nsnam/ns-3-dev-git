@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011-2013 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2011-2019 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -23,22 +23,9 @@
 #ifndef EMU_EPC_HELPER_H
 #define EMU_EPC_HELPER_H
 
-#include <ns3/object.h>
-#include <ns3/ipv4-address-helper.h>
-#include <ns3/ipv6-address-helper.h>
-#include <ns3/data-rate.h>
-#include <ns3/epc-tft.h>
-#include <ns3/eps-bearer.h>
-#include <ns3/epc-helper.h>
+#include "ns3/no-backhaul-epc-helper.h"
 
 namespace ns3 {
-
-class Node;
-class NetDevice;
-class VirtualNetDevice;
-class EpcSgwPgwApplication;
-class EpcX2;
-class EpcMme;
 
 /**
  * \ingroup lte
@@ -51,20 +38,19 @@ class EpcMme;
  * EmuFdNetDevice; in particular, one device is used to send all the
  * traffic related to these interfaces. 
  */
-class EmuEpcHelper : public EpcHelper
+class EmuEpcHelper : public NoBackhaulEpcHelper
 {
 public:
-  
-  /** 
+  /**
    * Constructor
    */
   EmuEpcHelper ();
 
-  /** 
+  /**
    * Destructor
-   */  
+   */
   virtual ~EmuEpcHelper ();
-  
+
   // inherited from Object
   /**
    *  Register this type.
@@ -72,71 +58,21 @@ public:
    */
   static TypeId GetTypeId (void);
   TypeId GetInstanceTypeId () const;
-  virtual void DoInitialize ();
   virtual void DoDispose ();
 
   // inherited from EpcHelper
   virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId);
-  virtual void AddUe (Ptr<NetDevice> ueLteDevice, uint64_t imsi);
   virtual void AddX2Interface (Ptr<Node> enbNode1, Ptr<Node> enbNode2);
-  virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
-  virtual Ptr<Node> GetPgwNode () const;
-  virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
-  virtual Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices);
-  virtual Ipv4Address GetUeDefaultGatewayAddress ();
-  virtual Ipv6Address GetUeDefaultGatewayAddress6 ();
-
 
 private:
 
-  /** 
-   * helper to assign IPv4 addresses to UE devices as well as to the TUN device of the SGW/PGW
+  /**
+   * helper to assign addresses to S1-U NetDevices
    */
-  Ipv4AddressHelper m_uePgwAddressHelper; 
-
-  /** 
-   * helper to assign IPv6 addresses to UE devices as well as to the TUN device of the SGW/PGW
-   */
-  Ipv6AddressHelper m_uePgwAddressHelper6; 
+  Ipv4AddressHelper m_epcIpv4AddressHelper;
 
   /**
-   * SGW-PGW network element
-   */  
-  Ptr<Node> m_sgwPgw; 
-
-  /**
-   * SGW-PGW application
-   */
-  Ptr<EpcSgwPgwApplication> m_sgwPgwApp;
-
-  /**
-   * TUN device containing IPv4 address and implementing tunneling of user data over GTP-U/UDP/IP
-   */
-  Ptr<VirtualNetDevice> m_tunDevice;
-
-  /**
-   * MME network element
-   */
-  Ptr<EpcMme> m_mme;
-
-  /** 
-   * helper to assign addresses to S1-U NetDevices 
-   */
-  Ipv4AddressHelper m_epcIpv4AddressHelper; 
-
-  /**
-   * UDP port where the GTP-U Socket is bound, fixed by the standard as 2152
-   */
-  uint16_t m_gtpuUdpPort;
-
-  /**
-   * Map storing for each IMSI the corresponding eNB NetDevice
-   * 
-   */
-  std::map<uint64_t, Ptr<NetDevice> > m_imsiEnbDeviceMap;
-
-  /**
-   * Container for Ipv4Interfaces of the SGW/PGW
+   * Container for Ipv4Interfaces of the SGW
    */
   Ipv4InterfaceContainer m_sgwIpIfaces; 
 
@@ -159,11 +95,7 @@ private:
    * First 5 bytes of the Enb MAC address base
    */
   std::string m_enbMacAddressBase;
-  
 };
-
-
-
 
 } // namespace ns3
 

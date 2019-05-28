@@ -87,23 +87,32 @@ EpcEnbApplication::DoDispose (void)
   delete m_s1apSapEnb;
 }
 
-EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId)
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, uint16_t cellId)
   : m_lteSocket (lteSocket),
     m_lteSocket6 (lteSocket6),
-    m_s1uSocket (s1uSocket),    
-    m_enbS1uAddress (enbS1uAddress),
-    m_sgwS1uAddress (sgwS1uAddress),
     m_gtpuUdpPort (2152), // fixed by the standard
     m_s1SapUser (0),
     m_s1apSapMme (0),
     m_cellId (cellId)
 {
-  NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwS1uAddress);
-  m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
+  NS_LOG_FUNCTION (this << lteSocket << lteSocket6 << cellId);
+
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_lteSocket6->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
   m_s1apSapEnb = new MemberEpcS1apSapEnb<EpcEnbApplication> (this);
+}
+
+
+void
+EpcEnbApplication::AddS1Interface (Ptr<Socket> s1uSocket, Ipv4Address enbAddress, Ipv4Address sgwAddress)
+{
+  NS_LOG_FUNCTION (this << s1uSocket << enbAddress << sgwAddress);
+
+  m_s1uSocket = s1uSocket;
+  m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
+  m_enbS1uAddress = enbAddress;
+  m_sgwS1uAddress = sgwAddress;
 }
 
 

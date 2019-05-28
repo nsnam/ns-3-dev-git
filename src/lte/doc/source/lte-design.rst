@@ -4299,6 +4299,9 @@ sequence diagram of Distributed Fractional Frequency Reuse Scheme.
       
         \clearpage
 
+
+.. _sec-carrier-aggregation:
+
 --------------------
 Carrier Aggregation
 --------------------
@@ -4703,7 +4706,6 @@ Helpers
 Two helper objects are used to setup simulations and configure the 
 various components. These objects are:
 
-
  * ``LteHelper``, which takes care of the configuration of the LTE radio access network, 
    as well as of coordinating the setup and release of EPS bearers. The ``LteHelper`` class 
    provides both the API definition and its implementation.  
@@ -4711,6 +4713,9 @@ various components. These objects are:
    ``EpcHelper`` class is an abstract base class, which only provides the API definition; 
    the implementation is delegated to the child classes in order to allow for different 
    EPC network models.
+
+A third helper object is used to configure the :ref:`_sec-carrier-aggregation` functionality:
+
  * ``CcHelper``, which takes care of the configuration of the ``LteEnbComponentCarrierMap``, 
    basically, it creates a user specified number of ``LteEnbComponentCarrier``. 
    ``LteUeComponentCarrierMap`` is currently created starting from the 

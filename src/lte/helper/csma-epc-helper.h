@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2011-2019 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2019 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,14 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Jaume Nin <jnin@cttc.es>
- *         Nicola Baldo <nbaldo@cttc.es>
- *         Manuel Requena <manuel.requena@cttc.es>
- *         (most of the code refactored to no-backhaul-epc-helper.h)
+ * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#ifndef POINT_TO_POINT_EPC_HELPER_H
-#define POINT_TO_POINT_EPC_HELPER_H
+#ifndef CSMA_EPC_HELPER_H
+#define CSMA_EPC_HELPER_H
+
+#include "ns3/csma-helper.h"
 
 #include "ns3/no-backhaul-epc-helper.h"
 
@@ -30,23 +29,23 @@ namespace ns3 {
 
 /**
  * \ingroup lte
- * \brief Create an EPC network with PointToPoint links in the backhaul network.
+ * \brief Create an EPC network with a CSMA network in the backhaul.
  *
- * This Helper extends NoBackhaulEpcHelper creating PointToPoint links in the
+ * This Helper extends NoBackhaulEpcHelper creating a CSMA network in the
  * backhaul network (i.e. in the S1-U and S1-MME interfaces)
  */
-class PointToPointEpcHelper : public NoBackhaulEpcHelper
+class CsmaEpcHelper : public NoBackhaulEpcHelper
 {
 public:
   /**
    * Constructor
    */
-  PointToPointEpcHelper ();
+  CsmaEpcHelper ();
 
   /**
    * Destructor
    */
-  virtual ~PointToPointEpcHelper ();
+  virtual ~CsmaEpcHelper ();
 
   // inherited from Object
   /**
@@ -68,22 +67,32 @@ private:
    */
 
   /**
-   * Helper to assign addresses to S1-U NetDevices 
+   * CSMA channel to build the CSMA network
+   */
+  Ptr<CsmaChannel> m_s1uCsmaChannel;
+
+  /**
+   * Helper to assign addresses to S1-U NetDevices
    */
   Ipv4AddressHelper m_s1uIpv4AddressHelper; 
 
   /**
-   * The data rate to be used for the next S1-U link to be created
+   * Address of the SGW S1-U interface
+   */
+  Ipv4Address m_sgwS1uAddress;
+
+  /**
+   * The data rate to be used for the S1-U link
    */
   DataRate m_s1uLinkDataRate;
 
   /**
-   * The delay to be used for the next S1-U link to be created
+   * The delay to be used for the S1-U link
    */
   Time     m_s1uLinkDelay;
 
   /**
-   * The MTU of the next S1-U link to be created. Note that,
+   * The MTU of the S1-U link to be created. Note that,
    * because of the additional GTP/UDP/IP tunneling overhead,
    * you need a MTU larger than the end-to-end MTU that you
    * want to support.
@@ -108,4 +117,4 @@ private:
 
 } // namespace ns3
 
-#endif // POINT_TO_POINT_EPC_HELPER_H
+#endif // CSMA_EPC_HELPER_H
