@@ -361,10 +361,11 @@ public:
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param frequency the channel center frequency (MHz)
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    *
    * \return the duration of the payload
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype = NORMAL_MPDU);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -1938,8 +1939,6 @@ private:
   uint8_t               m_initialChannelNumber;     //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
-  uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
-  double m_totalAmpduNumSymbols; //!< Number of symbols previously transmitted for the MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU
 
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model

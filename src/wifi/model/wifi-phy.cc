@@ -399,8 +399,6 @@ WifiPhy::WifiPhy ()
     m_rxSpatialStreams (0),
     m_channelNumber (0),
     m_initialChannelNumber (0),
-    m_totalAmpduSize (0),
-    m_totalAmpduNumSymbols (0),
     m_currentEvent (0),
     m_wifiRadioEnergyModel (0),
     m_timeLastPreambleDetected (Seconds (0))
@@ -2091,11 +2089,11 @@ WifiPhy::GetPlcpPreambleDuration (WifiTxVector txVector)
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype)
 {
   uint32_t totalAmpduSize;
   double totalAmpduNumSymbols;
-  return GetPayloadDuration (size, txVector, frequency, NORMAL_MPDU, false, totalAmpduSize, totalAmpduNumSymbols);
+  return GetPayloadDuration (size, txVector, frequency, mpdutype, false, totalAmpduSize, totalAmpduNumSymbols);
 }
 
 Time
@@ -2383,20 +2381,11 @@ WifiPhy::CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector)
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency,
-                              MpduType mpdutype, bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols)
-{
-  Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector)
-    + GetPayloadDuration (size, txVector, frequency, mpdutype, incFlag, totalAmpduSize, totalAmpduNumSymbols);
-  return duration;
-}
-
-Time
 WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype)
 {
-  uint32_t totalAmpduSize;
-  double totalAmpduNumSymbols;
-  return CalculateTxDuration (size, txVector, frequency, mpdutype, false, totalAmpduSize, totalAmpduNumSymbols);
+  Time duration = CalculatePlcpPreambleAndHeaderDuration (txVector)
+    + GetPayloadDuration (size, txVector, frequency, mpdutype);
+  return duration;
 }
 
 void
@@ -2866,10 +2855,12 @@ WifiPhy::EndReceive (Ptr<Event> event)
       Time remainingAmpduDuration = psduDuration;
       MpduType mpdutype = FIRST_MPDU_IN_AGGREGATE;
       auto mpdu = psdu->begin ();
+      uint32_t totalAmpduSize = 0;
+      double totalAmpduNumSymbols = 0.0;
       for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
         {
           Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
-                                                  GetFrequency (), mpdutype, true, m_totalAmpduSize, m_totalAmpduNumSymbols);
+                                                  GetFrequency (), mpdutype, true, totalAmpduSize, totalAmpduNumSymbols);
           remainingAmpduDuration -= mpduDuration;
           if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
             {
