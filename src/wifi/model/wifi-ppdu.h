@@ -33,9 +33,8 @@ class WifiPsdu;
 /**
  * \ingroup wifi
  *
- * WifiPpdu stores a preamble, a wifimode, PHY headers and a PSDU.
- * This class should be improved later on to handle MU PPDUs by
- * holding a vector of PSDUs and a vector of wifimode.
+ * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
+ * This class should be extended later on to handle MU PPDUs.
  */
 class WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
@@ -93,7 +92,7 @@ private:
   VhtSigHeader m_vhtSig;            //!< the VHT-SIG PHY header
   HeSigHeader m_heSig;              //!< the HE-SIG PHY header
   WifiPreamble m_preamble;          //!< the PHY preamble
-  WifiMode m_mode;                  //!< the wifimode used for the transmission of this PPDU
+  WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
   Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
 };
