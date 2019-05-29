@@ -146,13 +146,13 @@ private:
 
   /**
    * \brief Set the initial Congestion Window.
-   * \param cwnd the initial congestion window (in bytes)
+   * \param cwnd the initial congestion window (in segments)
    */
   virtual void SetInitialCwnd (uint32_t cwnd) = 0;
 
   /**
    * \brief Get the initial Congestion Window.
-   * \returns the initial congestion window (in bytes)
+   * \returns the initial congestion window (in segments)
    */
   virtual uint32_t GetInitialCwnd (void) const = 0;
 
