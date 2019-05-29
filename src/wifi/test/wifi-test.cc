@@ -369,7 +369,6 @@ InterferenceHelperSequenceTest::DoRun (void)
   Simulator::Destroy ();
 }
 
-
 //-----------------------------------------------------------------------------
 /**
  * Make sure that when multiple broadcast packets are queued on the same
@@ -551,7 +550,6 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (m_secondTransmissionTime, expectedSecondTransmissionTime, "The second transmission time not correct!");
 }
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -2205,7 +2203,6 @@ Bug2470TestCase::DoRun (void)
   // but before it does not enter RESET state. More tests should be written to verify all possible scenarios.
 }
 
-
 //-----------------------------------------------------------------------------
 /**
  * Make sure that Ideal rate manager recovers when the station is moving away from the access point.
@@ -2967,6 +2964,92 @@ IdealRateManagerMimoTest::DoRun (void)
   Simulator::Destroy ();
 }
 
+//-----------------------------------------------------------------------------
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Data rate verification test for MCSs of different RU sizes
+ */
+class HeRuMcsDataRateTestCase : public TestCase
+{
+public:
+  HeRuMcsDataRateTestCase ();
+
+private:
+  /**
+   * Compare the data rate computed for the provided combination with standard defined one.
+   * \param ruType the RU type
+   * \param mcs the modulation and coding scheme (as a string, e.g. HeMcs0)
+   * \param nss the number of spatial streams
+   * \param guardInterval the guard interval to use
+   * \param expectedDataRate the expected data rate in 100 kbps units (minimum granularity in standard tables)
+   * \returns true if data rates are the same, false otherwise
+   */
+  bool CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate);
+  virtual void DoRun (void);
+};
+
+HeRuMcsDataRateTestCase::HeRuMcsDataRateTestCase ()
+  : TestCase ("Check data rates for different RU types.")
+{
+}
+
+bool
+HeRuMcsDataRateTestCase::CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate)
+{
+  uint16_t approxWidth = HeRu::GetBandwidth (ruType);
+  WifiMode mode (mcs);
+  uint64_t dataRate = round (mode.GetDataRate (approxWidth, guardInterval, nss) / 100000.0);
+  NS_ABORT_MSG_IF (dataRate > 65535, "Rate is way too high");
+  if (static_cast<uint16_t> (dataRate) != expectedDataRate)
+    {
+      std::cerr << "RU=" << ruType
+                << " mode=" << mode
+                << " Nss=" << +nss
+                << " guardInterval=" << guardInterval
+                << " expected=" << expectedDataRate << " x100kbps"
+                << " computed=" << static_cast<uint16_t> (dataRate) << " x100kbps"
+                << std::endl;
+      return false;
+    }
+  return true;
+}
+
+void
+HeRuMcsDataRateTestCase::DoRun (void)
+{
+  bool retval = true;
+
+  //26-tone RU, browse over all MCSs, GIs and Nss's (up to 4, current max)
+  retval = retval
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs0", 1,  800,   9)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs1", 1, 1600,  17)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs2", 1, 3200,  23)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs3", 1, 3200,  30)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs4", 2, 1600, 100)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs5", 3, 1600, 200)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs6", 4, 1600, 300)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs7", 4, 3200, 300)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs8", 4, 1600, 400)
+      && CheckDataRate (HeRu::RU_26_TONE,  "HeMcs9", 4, 3200, 400)
+      && CheckDataRate (HeRu::RU_26_TONE, "HeMcs10", 4, 1600, 500)
+      && CheckDataRate (HeRu::RU_26_TONE, "HeMcs11", 4, 3200, 500);
+
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "26-tone RU  data rate verification for different MCSs, GIs, and Nss's failed");
+
+  //Check other RU sizes
+  retval = retval
+      && CheckDataRate (   HeRu::RU_52_TONE, "HeMcs2", 1, 1600,   50)
+      && CheckDataRate (  HeRu::RU_106_TONE, "HeMcs9", 1,  800,  500)
+      && CheckDataRate (  HeRu::RU_242_TONE, "HeMcs5", 1, 1600,  650)
+      && CheckDataRate (  HeRu::RU_484_TONE, "HeMcs3", 1, 1600,  650)
+      && CheckDataRate (  HeRu::RU_996_TONE, "HeMcs5", 1, 3200, 2450)
+      && CheckDataRate (HeRu::RU_2x996_TONE, "HeMcs3", 1, 3200, 2450);
+
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "Data rate verification for RUs above 52-tone RU (included) failed");
+}
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -2998,6 +3081,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Issue169TestCase, TestCase::QUICK); //Issue #169
   AddTestCase (new IdealRateManagerChannelWidthTest, TestCase::QUICK);
   AddTestCase (new IdealRateManagerMimoTest, TestCase::QUICK);
+  AddTestCase (new HeRuMcsDataRateTestCase, TestCase::QUICK);
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite

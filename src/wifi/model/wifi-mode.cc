@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "wifi-mode.h"
 #include "wifi-tx-vector.h"
+#include "he-ru.h"
 
 namespace ns3 {
 
@@ -110,9 +111,16 @@ WifiMode::GetDataRate (uint16_t channelWidth) const
 }
 
 uint64_t
-WifiMode::GetDataRate (WifiTxVector txVector) const
+WifiMode::GetDataRate (WifiTxVector txVector, uint16_t staId) const
 {
-  return GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
+  uint16_t bw = txVector.GetChannelWidth ();
+  uint8_t nss = txVector.GetNss (staId);
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU
+      || txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      bw = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+    }
+  return GetDataRate (bw, txVector.GetGuardInterval (), nss);
 }
 
 uint64_t
@@ -244,6 +252,15 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
 
       switch (channelWidth)
         {
+        case 2: //26-tone RU
+          usableSubCarriers = 24;
+          break;
+        case 4: //52-tone RU
+          usableSubCarriers = 48;
+          break;
+        case 8: //106-tone RU
+          usableSubCarriers = 102;
+          break;
         case 20:
         default:
           usableSubCarriers = 234;

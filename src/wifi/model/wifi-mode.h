@@ -138,10 +138,11 @@ public:
   uint64_t GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
+   * \param staId the station ID for MU (unused if SU)
    *
    * \returns the data bit rate of this signal.
    */
-  uint64_t GetDataRate (WifiTxVector txVector) const;
+  uint64_t GetDataRate (WifiTxVector txVector, uint16_t staId = SU_STA_ID) const;
   /**
    * \param channelWidth the considered channel width in MHz
    *
