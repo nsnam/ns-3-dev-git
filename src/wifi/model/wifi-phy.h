@@ -190,7 +190,7 @@ public:
    *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  void SendPacket (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
+  void Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
 
   /**
    * \param ppdu the PPDU to send

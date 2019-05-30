@@ -2532,7 +2532,7 @@ WifiPhy::NotifyEndOfHePreamble (HePreambleParameters params)
 }
 
 void
-WifiPhy::SendPacket (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
+WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
   /* Transmission can happen if:
