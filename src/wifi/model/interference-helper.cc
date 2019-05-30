@@ -50,12 +50,6 @@ Event::~Event ()
 {
 }
 
-Ptr<const WifiPsdu>
-Event::GetPsdu (void) const
-{
-  return m_ppdu->GetPsdu ();
-}
-
 Ptr<const WifiPpdu>
 Event::GetPpdu (void) const
 {

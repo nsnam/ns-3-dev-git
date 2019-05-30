@@ -51,12 +51,6 @@ public:
   ~Event ();
 
   /**
-   * Return the PSDU in the PPDU.
-   *
-   * \return the PSDU in the PPDU
-   */
-  Ptr<const WifiPsdu> GetPsdu (void) const;
-  /**
    * Return the PPDU.
    *
    * \return the PPDU
