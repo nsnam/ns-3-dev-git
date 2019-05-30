@@ -70,6 +70,7 @@ public:
    * \return the TXVECTOR of the PPDU.
    */
   WifiTxVector GetTxVector (void) const;
+
   /**
    * Get the payload of the PPDU.
    * \param bssColor the BSS color of the PHY calling this function.
@@ -77,20 +78,29 @@ public:
    * \return the PSDU
    */
   Ptr<const WifiPsdu> GetPsdu (uint8_t bssColor = 64, uint16_t staId = SU_STA_ID) const;
+
   /**
    * Return true if the PPDU's transmission was aborted due to transmitter switch off
    * \return true if the PPDU's transmission was aborted due to transmitter switch off
    */
   bool IsTruncatedTx (void) const;
+
   /**
    * Indicate that the PPDU's transmission was aborted due to transmitter switch off.
    */
   void SetTruncatedTx (void);
+
   /**
    * Get the total transmission duration of the PPDU.
    * \return the transmission duration of the PPDU
    */
   Time GetTxDuration () const;
+
+  /**
+   * Return true if the PPDU is a MU PPDU
+   * \return true if the PPDU is a MU PPDU
+   */
+  bool IsMu (void) const;
 
   /**
    * \brief Print the PPDU contents.
