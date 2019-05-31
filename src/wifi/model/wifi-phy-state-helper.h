@@ -27,6 +27,7 @@
 #include "ns3/nstime.h"
 #include "wifi-phy-state.h"
 #include "wifi-preamble.h"
+#include "wifi-ppdu.h"
 
 namespace ns3 {
 
@@ -164,12 +165,12 @@ public:
   /**
    * Switch state to TX for the given duration.
    *
-   * \param txDuration the duration of the TX
-   * \param packet the packet
+   * \param txDuration the duration of the PPDU to transmit
+   * \param psdus the PSDUs in the transmitted PPDU (only one unless it is a MU PPDU)
    * \param txPowerDbm the nominal TX power in dBm
-   * \param txVector the TX vector of the packet
+   * \param txVector the TX vector for the transmission
    */
-  void SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm, WifiTxVector txVector);
+  void SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, WifiTxVector txVector);
   /**
    * Switch state to RX for the given duration.
    *

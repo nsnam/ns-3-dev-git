@@ -244,6 +244,13 @@ public:
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
   void Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
+  /**
+   * \param psdus the PSDUs to send
+   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
+   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   */
+  void Send (WifiConstPsduMap psdus, WifiTxVector txVector);
 
   /**
    * \param ppdu the PPDU to send
@@ -1288,17 +1295,17 @@ public:
    * Public method used to fire a PhyTxBegin trace.
    * Implemented for encapsulation purposes.
    *
-   * \param psdu the PSDU being transmitted
+   * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
    * \param txPowerW the transmit power in Watts
    */
-  void NotifyTxBegin (Ptr<const WifiPsdu> psdu, double txPowerW);
+  void NotifyTxBegin (WifiConstPsduMap psdus, double txPowerW);
   /**
    * Public method used to fire a PhyTxEnd trace.
    * Implemented for encapsulation purposes.
    *
-   * \param psdu the PSDU being transmitted
+   * \param psdus the PSDUs being transmitted (only one unless DL MU transmission)
    */
-  void NotifyTxEnd (Ptr<const WifiPsdu> psdu);
+  void NotifyTxEnd (WifiConstPsduMap psdus);
   /**
    * Public method used to fire a PhyTxDrop trace.
    * Implemented for encapsulation purposes.

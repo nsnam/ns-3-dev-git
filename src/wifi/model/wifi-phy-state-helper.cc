@@ -354,11 +354,13 @@ WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 }
 
 void
-WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, double txPowerDbm,
-                                WifiTxVector txVector)
+WifiPhyStateHelper::SwitchToTx (Time txDuration, WifiConstPsduMap psdus, double txPowerDbm, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << txDuration << packet << txPowerDbm << txVector);
-  m_txTrace (packet, txVector.GetMode (), txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
+  NS_LOG_FUNCTION (this << txDuration << psdus << txPowerDbm << txVector);
+  for (auto const& psdu : psdus)
+    {
+      m_txTrace (psdu.second->GetPacket (), txVector.GetMode (), txVector.GetPreambleType (), txVector.GetTxPowerLevel ());
+    }
   Time now = Simulator::Now ();
   switch (GetState ())
     {

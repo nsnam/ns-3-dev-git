@@ -37,6 +37,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
     m_channelWidth (txVector.GetChannelWidth ()),
     m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
+  NS_LOG_FUNCTION (this << *psdu << txVector << ppduDuration << band);
   m_psdus.insert (std::make_pair (SU_STA_ID, psdu));
   SetPhyHeaders (txVector, ppduDuration, band);
 }
@@ -49,6 +50,7 @@ WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time 
     m_band (band),
     m_channelWidth (txVector.GetChannelWidth ())
 {
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band);
   SetPhyHeaders (txVector, ppduDuration, band);
 }
 
@@ -473,15 +475,22 @@ WifiPpdu::Print (std::ostream& os) const
   os << "preamble=" << m_preamble
      << ", modulation=" << m_modulation
      << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N");
-  for (auto const& psdu : m_psdus)
-    {
-      os << ", PSDU=" << psdu.second;
-    }
+  IsMu () ? (os << ", " << m_psdus) : (os << ", PSDU=" << m_psdus.at (SU_STA_ID));
 }
 
 std::ostream & operator << (std::ostream &os, const WifiPpdu &ppdu)
 {
   ppdu.Print (os);
+  return os;
+}
+
+std::ostream & operator << (std::ostream &os, const WifiConstPsduMap &psdus)
+{
+  for (auto const& psdu : psdus)
+    {
+      os << "PSDU for STA_ID=" << psdu.first
+         << " (" << *psdu.second << ") ";
+    }
   return os;
 }
 

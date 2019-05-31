@@ -148,6 +148,15 @@ private:
  */
 std::ostream& operator<< (std::ostream& os, const WifiPpdu &ppdu);
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param psdus the PSDUs
+ * \returns a reference to the stream
+ */
+std::ostream & operator << (std::ostream &os, const WifiConstPsduMap &psdus);
+
 } //namespace ns3
 
 #endif /* WIFI_PPDU_H */
