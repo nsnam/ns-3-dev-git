@@ -23,7 +23,6 @@
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-mac-trailer.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-phy-listener.h"
 #include "ns3/log.h"
@@ -110,7 +109,6 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
-  WifiMacTrailer trailer;
 
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
