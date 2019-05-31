@@ -1916,6 +1916,14 @@ private:
   void ScheduleEndOfMpdus (Ptr<Event> event);
 
   /**
+   * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
+   *
+   * \param ppdu the PPDU to extract the PSDU from
+   * \return the PSDU addressed to that PHY
+   */
+  Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const;
+
+  /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
