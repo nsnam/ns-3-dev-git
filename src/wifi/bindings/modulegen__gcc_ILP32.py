@@ -2621,7 +2621,7 @@ def register_Ns3DataRate_methods(root_module, cls):
     cls.add_method('CalculateTxTime', 
                    'double', 
                    [param('uint32_t', 'bytes')], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
                    'uint64_t', 
@@ -3513,7 +3513,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -5043,7 +5043,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -17048,6 +17049,14 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## mac-low.h (module 'wifi'): bool ns3::MacLow::IsWithinSizeAndTimeLimits(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector txVector, uint32_t ampduSize, ns3::Time ppduDurationLimit) [member function]
+    cls.add_method('IsWithinSizeAndTimeLimits', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('ns3::WifiTxVector', 'txVector'), param('uint32_t', 'ampduSize'), param('ns3::Time', 'ppduDurationLimit')])
+    ## mac-low.h (module 'wifi'): bool ns3::MacLow::IsWithinSizeAndTimeLimits(uint32_t mpduSize, ns3::Mac48Address receiver, uint8_t tid, ns3::WifiTxVector txVector, uint32_t ampduSize, ns3::Time ppduDurationLimit) [member function]
+    cls.add_method('IsWithinSizeAndTimeLimits', 
+                   'bool', 
+                   [param('uint32_t', 'mpduSize'), param('ns3::Mac48Address', 'receiver'), param('uint8_t', 'tid'), param('ns3::WifiTxVector', 'txVector'), param('uint32_t', 'ampduSize'), param('ns3::Time', 'ppduDurationLimit')])
     ## mac-low.h (module 'wifi'): void ns3::MacLow::NotifyOffNow() [member function]
     cls.add_method('NotifyOffNow', 
                    'void', 
@@ -18352,7 +18361,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -18597,14 +18606,6 @@ def register_Ns3QosTxop_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## qos-txop.h (module 'wifi'): bool ns3::QosTxop::IsWithinSizeAndTimeLimits(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, ns3::WifiTxVector txVector, uint32_t ampduSize, ns3::Time ppduDurationLimit) [member function]
-    cls.add_method('IsWithinSizeAndTimeLimits', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('ns3::WifiTxVector', 'txVector'), param('uint32_t', 'ampduSize'), param('ns3::Time', 'ppduDurationLimit')])
-    ## qos-txop.h (module 'wifi'): bool ns3::QosTxop::IsWithinSizeAndTimeLimits(uint32_t mpduSize, ns3::Mac48Address receiver, uint8_t tid, ns3::WifiTxVector txVector, uint32_t ampduSize, ns3::Time ppduDurationLimit) [member function]
-    cls.add_method('IsWithinSizeAndTimeLimits', 
-                   'bool', 
-                   [param('uint32_t', 'mpduSize'), param('ns3::Mac48Address', 'receiver'), param('uint8_t', 'tid'), param('ns3::WifiTxVector', 'txVector'), param('uint32_t', 'ampduSize'), param('ns3::Time', 'ppduDurationLimit')])
     ## qos-txop.h (module 'wifi'): ns3::Mac48Address ns3::QosTxop::MapDestAddressForAggregation(ns3::WifiMacHeader const & hdr) [member function]
     cls.add_method('MapDestAddressForAggregation', 
                    'ns3::Mac48Address', 
