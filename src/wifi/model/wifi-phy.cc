@@ -29,6 +29,7 @@
 #include "wifi-phy.h"
 #include "ampdu-tag.h"
 #include "wifi-utils.h"
+#include "sta-wifi-mac.h"
 #include "frame-capture-model.h"
 #include "preamble-detection-model.h"
 #include "wifi-radio-energy-model.h"
@@ -4592,6 +4593,21 @@ WifiPhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
       psdu = ppdu->GetPsdu (bssColor, staId);
     }
     return psdu;
+}
+
+uint16_t
+WifiPhy::GetStaId (void) const
+{
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
+  if (device)
+    {
+      Ptr<StaWifiMac> mac = DynamicCast<StaWifiMac> (device->GetMac ());
+      if (mac && mac->IsAssociated ())
+        {
+          return mac->GetAssociationId ();
+        }
+    }
+  return SU_STA_ID;
 }
 
 int64_t
