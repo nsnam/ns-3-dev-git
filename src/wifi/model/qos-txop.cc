@@ -264,64 +264,6 @@ QosTxop::PeekNextFrame (uint8_t tid, Mac48Address recipient)
   return 0;
 }
 
-bool
-QosTxop::IsWithinSizeAndTimeLimits (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
-                                    uint32_t ampduSize, Time ppduDurationLimit)
-{
-  NS_ASSERT (mpdu != 0 && mpdu->GetHeader ().IsQosData ());
-
-  return IsWithinSizeAndTimeLimits (mpdu->GetSize (), mpdu->GetHeader ().GetAddr1 (),
-                                    mpdu->GetHeader ().GetQosTid (), txVector,
-                                    ampduSize, ppduDurationLimit);
-}
-
-bool
-QosTxop::IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uint8_t tid,
-                                    WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit)
-{
-  NS_LOG_FUNCTION (this << mpduSize << receiver << +tid << txVector << ampduSize << ppduDurationLimit);
-
-  WifiModulationClass modulation = txVector.GetMode ().GetModulationClass ();
-
-  uint32_t maxAmpduSize = 0;
-  if (m_low->GetMpduAggregator ())
-    {
-      maxAmpduSize = m_low->GetMpduAggregator ()->GetMaxAmpduSize (receiver, tid, modulation);
-    }
-
-  // If maxAmpduSize is null, then ampduSize must be null as well
-  NS_ASSERT (maxAmpduSize || ampduSize == 0);
-
-  uint32_t ppduPayloadSize = mpduSize;
-
-  // compute the correct size for A-MPDUs and S-MPDUs
-  if (ampduSize > 0 || modulation == WIFI_MOD_CLASS_HE || modulation == WIFI_MOD_CLASS_VHT)
-    {
-      ppduPayloadSize = m_low->GetMpduAggregator ()->GetSizeIfAggregated (mpduSize, ampduSize);
-    }
-
-  if (maxAmpduSize > 0 && ppduPayloadSize > maxAmpduSize)
-    {
-      NS_LOG_DEBUG ("the frame does not meet the constraint on max A-MPDU size");
-      return false;
-    }
-
-  // Get the maximum PPDU Duration based on the preamble type
-  Time maxPpduDuration = GetPpduMaxTime (txVector.GetPreambleType ());
-
-  Time txTime = m_low->GetPhy ()->CalculateTxDuration (ppduPayloadSize, txVector,
-                                                       m_low->GetPhy ()->GetFrequency ());
-
-  if ((ppduDurationLimit.IsStrictlyPositive () && txTime > ppduDurationLimit)
-      || (maxPpduDuration.IsStrictlyPositive () && txTime > maxPpduDuration))
-    {
-      NS_LOG_DEBUG ("the frame does not meet the constraint on max PPDU duration");
-      return false;
-    }
-
-  return true;
-}
-
 Ptr<WifiMacQueueItem>
 QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
                              bool aggregate, uint32_t ampduSize, Time ppduDurationLimit)
@@ -332,7 +274,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   // do not dequeue the frame if it is a QoS data frame that does not meet the
   // max A-MPDU size limit (if applicable) or the duration limit (if applicable)
   if (peekedItem->GetHeader ().IsQosData () &&
-      !IsWithinSizeAndTimeLimits (peekedItem, txVector, ampduSize, ppduDurationLimit))
+      !m_low->IsWithinSizeAndTimeLimits (peekedItem, txVector, ampduSize, ppduDurationLimit))
     {
       return 0;
     }

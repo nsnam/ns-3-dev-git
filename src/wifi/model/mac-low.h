@@ -277,6 +277,40 @@ public:
   void RegisterDcf (Ptr<ChannelAccessManager> dcf);
 
   /**
+   * Check whether the given MPDU, if transmitted according to the given TX vector,
+   * meets the constraint on the maximum A-MPDU size (by assuming that the frame
+   * has to be aggregated to an existing A-MPDU of the given size) and its
+   * transmission time exceeds neither the max PPDU duration (depending on the
+   * PPDU format) nor the given PPDU duration limit (if strictly positive).
+   * The given MPDU needs to be a QoS Data frame.
+   *
+   * \param mpdu the MPDU.
+   * \param txVector the TX vector used to transmit the MPDU
+   * \param ampduSize the size of the existing A-MPDU, if any
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \returns true if constraints on size and duration limit are met.
+   */
+  bool IsWithinSizeAndTimeLimits (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
+                                  uint32_t ampduSize, Time ppduDurationLimit);
+  /**
+   * Check whether an MPDU of the given size, destined to the given receiver and
+   * belonging to the given TID, if transmitted according to the given TX vector,
+   * meets the constraint on the maximum A-MPDU size (by assuming that the frame
+   * has to be aggregated to an existing A-MPDU of the given size) and its
+   * transmission time exceeds neither the max PPDU duration (depending on the
+   * PPDU format) nor the given PPDU duration limit (if strictly positive).
+   *
+   * \param mpduSize the MPDU size.
+   * \param receiver the receiver
+   * \param tid the TID
+   * \param txVector the TX vector used to transmit the MPDU
+   * \param ampduSize the size of the existing A-MPDU, if any
+   * \param ppduDurationLimit the limit on the PPDU duration
+   * \returns true if constraints on size and duration limit are met.
+   */
+  bool IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uint8_t tid,
+                                  WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit);
+  /**
    * \param packet to send (does not include the 802.11 MAC header and checksum)
    * \param hdr header associated to the packet to send.
    * \param parameters transmission parameters of packet.

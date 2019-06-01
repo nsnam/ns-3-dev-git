@@ -347,7 +347,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
       uint32_t currentAmpduSize = 0;
 
       // check if the received MPDU meets the size and duration constraints
-      if (edcaIt->second->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
+      if (edcaIt->second->GetLow ()->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
         {
           // mpdu can be aggregated
           nextMpdu = Copy (mpdu);

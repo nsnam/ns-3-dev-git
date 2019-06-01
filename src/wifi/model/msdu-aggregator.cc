@@ -170,8 +170,8 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
 
       // check if the A-MSDU obtained by aggregating the peeked MSDU violates
       // the A-MPDU size limit or the PPDU duration limit
-      if (!qosTxop->IsWithinSizeAndTimeLimits (header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH,
-                                               recipient, tid, txVector, ampduSize, ppduDurationLimit))
+      if (!qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH,
+                                                          recipient, tid, txVector, ampduSize, ppduDurationLimit))
         {
           NS_LOG_DEBUG ("No other MSDU can be aggregated");
           break;
