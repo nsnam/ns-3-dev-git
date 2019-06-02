@@ -2659,8 +2659,8 @@ void
 WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
 {
   NS_LOG_FUNCTION (this << *ppdu << rxPowerW);
-  WifiTxVector txVector = ppdu->GetTxVector (GetChannelWidth ());
-  Time rxDuration = ppdu->GetTxDuration (GetFrequency (), txVector.GetChannelWidth ());
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  Time rxDuration = ppdu->GetTxDuration ();
   Ptr<const WifiPsdu> psdu = ppdu->GetPsdu ();
   Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW);
 

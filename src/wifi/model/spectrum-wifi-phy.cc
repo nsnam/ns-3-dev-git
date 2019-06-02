@@ -316,13 +316,13 @@ void
 SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
-  WifiTxVector txVector = ppdu->GetTxVector (GetChannelWidth ());
+  WifiTxVector txVector = ppdu->GetTxVector ();
   double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
   double txPowerWatts = DbmToW (txPowerDbm);
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, txVector.GetMode ().GetModulationClass ());
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
-  txParams->duration = ppdu->GetTxDuration (GetFrequency (), GetChannelWidth ());
+  txParams->duration = ppdu->GetTxDuration ();
   txParams->psd = txPowerSpectrum;
   NS_ASSERT_MSG (m_wifiSpectrumPhyInterface, "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();

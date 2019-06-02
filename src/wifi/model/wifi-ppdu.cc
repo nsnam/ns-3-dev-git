@@ -33,7 +33,9 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_psdu (psdu),
-    m_truncatedTx (false)
+    m_truncatedTx (false),
+    m_frequency (frequency),
+    m_channelWidth (txVector.GetChannelWidth ())
 {
   NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
   if (!txVector.IsValid ())
@@ -53,7 +55,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
         {
-          m_lSig.SetRate (txVector.GetMode ().GetDataRate (txVector), txVector.GetChannelWidth ());
+          m_lSig.SetRate (txVector.GetMode ().GetDataRate (txVector), m_channelWidth);
           m_lSig.SetLength (psdu->GetSize ());
           break;
         }
@@ -67,7 +69,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
           uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3);
           m_lSig.SetLength (length);
           m_htSig.SetMcs (txVector.GetMode ().GetMcsValue ());
-          m_htSig.SetChannelWidth (txVector.GetChannelWidth ());
+          m_htSig.SetChannelWidth (m_channelWidth);
           m_htSig.SetHtLength (psdu->GetSize ());
           m_htSig.SetAggregation (txVector.IsAggregation ());
           m_htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
@@ -78,7 +80,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
           uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000)) / 1000) / 4.0) * 3) - 3);
           m_lSig.SetLength (length);
           m_vhtSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_VHT_MU);
-          m_vhtSig.SetChannelWidth (txVector.GetChannelWidth ());
+          m_vhtSig.SetChannelWidth (m_channelWidth);
           m_vhtSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
           uint32_t nSymbols = (static_cast<double> ((ppduDuration - WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
           if (txVector.GetGuardInterval () == 400)
@@ -110,7 +112,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
           m_heSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_HE_MU);
           m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
           m_heSig.SetBssColor (txVector.GetBssColor ());
-          m_heSig.SetChannelWidth (txVector.GetChannelWidth ());
+          m_heSig.SetChannelWidth (m_channelWidth);
           m_heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
           m_heSig.SetNStreams (txVector.GetNss ());
           break;
@@ -126,7 +128,7 @@ WifiPpdu::~WifiPpdu ()
 }
 
 WifiTxVector
-WifiPpdu::GetTxVector (uint16_t channelWidth) const
+WifiPpdu::GetTxVector (void) const
 {
   WifiTxVector txVector;
   txVector.SetPreambleType (m_preamble);
@@ -161,7 +163,7 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
       case WIFI_MOD_CLASS_OFDM:
         {
           WifiMode mode;
-          switch (m_lSig.GetRate (channelWidth))
+          switch (m_lSig.GetRate (m_channelWidth))
             {
               case 1500000:
                 mode = WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
@@ -170,17 +172,17 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
                 mode = WifiPhy::GetOfdmRate2_25MbpsBW5MHz ();
                 break;
               case 3000000:
-                mode = (channelWidth == 5) ? WifiPhy::GetOfdmRate3MbpsBW5MHz () : WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+                mode = (m_channelWidth == 5) ? WifiPhy::GetOfdmRate3MbpsBW5MHz () : WifiPhy::GetOfdmRate3MbpsBW10MHz ();
                 break;
               case 4500000:
-                mode = (channelWidth == 5) ? WifiPhy::GetOfdmRate4_5MbpsBW5MHz () : WifiPhy::GetOfdmRate4_5MbpsBW10MHz ();
+                mode = (m_channelWidth == 5) ? WifiPhy::GetOfdmRate4_5MbpsBW5MHz () : WifiPhy::GetOfdmRate4_5MbpsBW10MHz ();
                 break;
               case 6000000:
-                if (channelWidth == 5)
+                if (m_channelWidth == 5)
                   {
                     mode = WifiPhy::GetOfdmRate6MbpsBW5MHz ();
                   }
-                else if (channelWidth == 10)
+                else if (m_channelWidth == 10)
                   {
                     mode = WifiPhy::GetOfdmRate6MbpsBW10MHz ();
                   }
@@ -190,11 +192,11 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
                   }
                 break;
               case 9000000:
-                if (channelWidth == 5)
+                if (m_channelWidth == 5)
                   {
                     mode = WifiPhy::GetOfdmRate9MbpsBW5MHz ();
                   }
-                else if (channelWidth == 10)
+                else if (m_channelWidth == 10)
                   {
                     mode = WifiPhy::GetOfdmRate9MbpsBW10MHz ();
                   }
@@ -204,11 +206,11 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
                   }
                 break;
               case 12000000:
-                if (channelWidth == 5)
+                if (m_channelWidth == 5)
                   {
                     mode = WifiPhy::GetOfdmRate12MbpsBW5MHz ();
                   }
-                else if (channelWidth == 10)
+                else if (m_channelWidth == 10)
                   {
                     mode = WifiPhy::GetOfdmRate12MbpsBW10MHz ();
                   }
@@ -221,10 +223,10 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
                 mode = WifiPhy::GetOfdmRate13_5MbpsBW5MHz ();
                 break;
               case 18000000:
-                mode = (channelWidth == 10) ? WifiPhy::GetOfdmRate18MbpsBW10MHz () : WifiPhy::GetOfdmRate18Mbps ();
+                mode = (m_channelWidth == 10) ? WifiPhy::GetOfdmRate18MbpsBW10MHz () : WifiPhy::GetOfdmRate18Mbps ();
                 break;
               case 24000000:
-                mode = (channelWidth == 10) ? WifiPhy::GetOfdmRate24MbpsBW10MHz () : WifiPhy::GetOfdmRate24Mbps ();
+                mode = (m_channelWidth == 10) ? WifiPhy::GetOfdmRate24MbpsBW10MHz () : WifiPhy::GetOfdmRate24Mbps ();
                 break;
               case 27000000:
                 mode = WifiPhy::GetOfdmRate27MbpsBW10MHz ();
@@ -244,7 +246,7 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
             }
           txVector.SetMode (mode);
           //OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 Mhz
-          txVector.SetChannelWidth (channelWidth < 20 ? channelWidth : 20);
+          txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
           break;
         }
       case WIFI_MOD_CLASS_ERP_OFDM:
@@ -282,7 +284,7 @@ WifiPpdu::GetTxVector (uint16_t channelWidth) const
             }
           txVector.SetMode (mode);
           //ERP-OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 Mhz
-          txVector.SetChannelWidth (channelWidth < 20 ? channelWidth : 20);
+          txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
           break;
         }
       case WIFI_MOD_CLASS_HT:
@@ -523,10 +525,10 @@ WifiPpdu::SetTruncatedTx (void)
 }
 
 Time
-WifiPpdu::GetTxDuration (uint16_t frequency, uint16_t channelWidth) const
+WifiPpdu::GetTxDuration (void) const
 {
   Time ppduDuration = Seconds (0);
-  WifiTxVector txVector = GetTxVector (channelWidth);
+  WifiTxVector txVector = GetTxVector ();
   switch (m_modulation)
     {
       case WIFI_MOD_CLASS_DSSS:
@@ -535,10 +537,10 @@ WifiPpdu::GetTxDuration (uint16_t frequency, uint16_t channelWidth) const
           break;
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, m_frequency);
           break;
       case WIFI_MOD_CLASS_HT:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_frequency);
           break;
       case WIFI_MOD_CLASS_VHT:
         {
@@ -558,7 +560,7 @@ WifiPpdu::GetTxDuration (uint16_t frequency, uint16_t channelWidth) const
           Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
           Time preambleDuration = WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (frequency))
+          if (Is2_4Ghz (m_frequency))
             {
               sigExtension = 6;
             }

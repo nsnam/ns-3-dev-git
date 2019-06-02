@@ -53,10 +53,9 @@ public:
 
   /**
    * Get the TXVECTOR used to send the PPDU.
-   * \param channelWidth the maximum channel width supported by the PHY.
    * \return the TXVECTOR of the PPDU.
    */
-  WifiTxVector GetTxVector (uint16_t channelWidth) const;
+  WifiTxVector GetTxVector (void) const;
   /**
    * Get the payload of the PPDU.
    * \return the PSDU
@@ -73,11 +72,9 @@ public:
   void SetTruncatedTx (void);
   /**
    * Get the total transmission duration of the PPDU.
-   * \param frequency the frequency used by the PHY.
-   * \param channelWidth the maximum channel width supported by the PHY.
    * \return the transmission duration of the PPDU
    */
-  Time GetTxDuration (uint16_t frequency, uint16_t channelWidth) const;
+  Time GetTxDuration () const;
 
   /**
    * \brief Print the PPDU contents.
@@ -95,6 +92,8 @@ private:
   WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
   Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
+  uint16_t m_frequency;             //!< the frequency used to transmit that PPDU
+  uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU
 };
 
 /**
