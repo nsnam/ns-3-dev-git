@@ -262,28 +262,10 @@ public:
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param frequency the channel center frequency (MHz)
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype = NORMAL_MPDU);
-  /**
-   * \param size the number of bytes in the packet to send
-   * \param txVector the TXVECTOR used for the transmission of this packet
-   * \param frequency the channel center frequency (MHz)
-   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
-   * \param incFlag this flag is used to indicate that the variables need to be update or not
-   * This function is called a couple of times for the same packet so variables should not be increased each time.
-   * \param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned A-MPDU.
-   * If incFlag is set, this parameter will be updated.
-   * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the concerned A-MPDU,
-   * used for the computation of the number of symbols needed for the last MPDU.
-   * If incFlag is set, this parameter will be updated.
-   *
-   * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
-   */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype,
-                                   bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols);
+  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency);
 
   /**
    * \param txVector the transmission parameters used for this packet
