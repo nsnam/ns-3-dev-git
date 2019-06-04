@@ -21,7 +21,6 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
@@ -58,7 +57,6 @@ main (int argc, char *argv[])
   Time interPacketInterval = MilliSeconds (100);
   bool disableDl = false;
   bool disableUl = false;
-  std::string backhaulType = "p2p";
   bool useHelper = false;
 
   // Command line arguments
@@ -69,7 +67,6 @@ main (int argc, char *argv[])
   cmd.AddValue ("interPacketInterval", "Inter packet interval", interPacketInterval);
   cmd.AddValue ("disableDl", "Disable downlink data flows", disableDl);
   cmd.AddValue ("disableUl", "Disable uplink data flows", disableUl);
-  cmd.AddValue ("backhaulType", "Type of backhaul network", backhaulType);
   cmd.AddValue ("useHelper", "Build the backhaul network using the helper or "
                              "it is built in the example", useHelper);
   cmd.Parse (argc, argv);
@@ -80,11 +77,6 @@ main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse(argc, argv);
 
-  if (backhaulType != "p2p" && backhaulType != "csma")
-    {
-      NS_FATAL_ERROR ("Unknown type of backhaul network: " << backhaulType);
-    }
-
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<EpcHelper> epcHelper;
   if (!useHelper)
@@ -93,14 +85,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      if (backhaulType == "p2p")
-        {
-          epcHelper = CreateObject<PointToPointEpcHelper> ();
-        }
-      else if (backhaulType == "csma")
-        {
-          epcHelper = CreateObject<CsmaEpcHelper> ();
-        }
+      epcHelper = CreateObject<PointToPointEpcHelper> ();
     }
   lteHelper->SetEpcHelper (epcHelper);
 
@@ -165,60 +150,32 @@ main (int argc, char *argv[])
     {
       Ipv4AddressHelper s1uIpv4AddressHelper;
 
-      if (backhaulType == "p2p")
+      // Create networks of the S1 interfaces
+      s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
+
+      for (uint16_t i = 0; i < numNodePairs; ++i)
         {
-          // Create networks of the S1 interfaces
-          s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
+          Ptr<Node> enb = enbNodes.Get (i);
 
-          for (uint16_t i = 0; i < numNodePairs; ++i)
-            {
-              Ptr<Node> enb = enbNodes.Get (i);
-
-              // Create a point to point link between the eNB and the SGW with
-              // the corresponding new NetDevices on each side
-              PointToPointHelper p2ph;
-              DataRate s1uLinkDataRate = DataRate ("10Gb/s");
-              uint16_t s1uLinkMtu = 2000;
-              Time s1uLinkDelay = Time (0);
-              p2ph.SetDeviceAttribute ("DataRate", DataRateValue (s1uLinkDataRate));
-              p2ph.SetDeviceAttribute ("Mtu", UintegerValue (s1uLinkMtu));
-              p2ph.SetChannelAttribute ("Delay", TimeValue (s1uLinkDelay));
-              NetDeviceContainer sgwEnbDevices = p2ph.Install (sgw, enb);
-
-              Ipv4InterfaceContainer sgwEnbIpIfaces = s1uIpv4AddressHelper.Assign (sgwEnbDevices);
-              s1uIpv4AddressHelper.NewNetwork ();
-
-              Ipv4Address sgwS1uAddress = sgwEnbIpIfaces.GetAddress (0);
-              Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (1);
-
-              // Create S1 interface between the SGW and the eNB
-              epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
-            }
-        }
-      else if (backhaulType == "csma")
-        {
-          // Create networks of the S1 interfaces
-          s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.0");
-
-          NodeContainer sgwEnbNodes;
-          sgwEnbNodes.Add (sgw);
-          sgwEnbNodes.Add (enbNodes);
-
-          CsmaHelper csmah;
-          NetDeviceContainer sgwEnbDevices = csmah.Install (sgwEnbNodes);
-          Ptr<NetDevice> sgwDev = sgwEnbDevices.Get (0);
+          // Create a point to point link between the eNB and the SGW with
+          // the corresponding new NetDevices on each side
+          PointToPointHelper p2ph;
+          DataRate s1uLinkDataRate = DataRate ("10Gb/s");
+          uint16_t s1uLinkMtu = 2000;
+          Time s1uLinkDelay = Time (0);
+          p2ph.SetDeviceAttribute ("DataRate", DataRateValue (s1uLinkDataRate));
+          p2ph.SetDeviceAttribute ("Mtu", UintegerValue (s1uLinkMtu));
+          p2ph.SetChannelAttribute ("Delay", TimeValue (s1uLinkDelay));
+          NetDeviceContainer sgwEnbDevices = p2ph.Install (sgw, enb);
 
           Ipv4InterfaceContainer sgwEnbIpIfaces = s1uIpv4AddressHelper.Assign (sgwEnbDevices);
+          s1uIpv4AddressHelper.NewNetwork ();
+
           Ipv4Address sgwS1uAddress = sgwEnbIpIfaces.GetAddress (0);
+          Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (1);
 
-          for (uint16_t i = 0; i < numNodePairs; ++i)
-            {
-              Ptr<Node> enb = enbNodes.Get (i);
-              Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (i + 1);
-
-              // Create S1 interface between the SGW and the eNB
-              epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
-            }
+          // Create S1 interface between the SGW and the eNB
+          epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
         }
     }
 
