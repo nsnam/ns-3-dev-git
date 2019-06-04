@@ -445,6 +445,16 @@ public:
    *         false otherwise
    */
   bool IsMcsSupported (WifiMode mcs) const;
+  /**
+   * Check if the given MCS of the given modulation class is supported by the PHY.
+   *
+   * \param mc the modulation class
+   * \param mcs the MCS value
+   *
+   * \return true if the given mode is supported,
+   *         false otherwise
+   */
+  bool IsMcsSupported (WifiModulationClass mc, uint8_t mcs) const;
 
   /**
    * \param txVector the transmission vector
@@ -499,6 +509,47 @@ public:
    * \return the MCS index whose index is specified.
    */
   WifiMode GetMcs (uint8_t mcs) const;
+  /**
+   * Get the WifiMode object corresponding to the given MCS of the given
+   * modulation class.
+   *
+   * \param modulation the modulation class
+   * \param mcs the MCS value
+   *
+   * \return the WifiMode object corresponding to the given MCS of the given
+   *         modulation class
+   */
+  WifiMode GetMcs (WifiModulationClass modulation, uint8_t mcs) const;
+  /**
+   * Get the WifiMode object corresponding to the given MCS of the
+   * HT modulation class.
+   *
+   * \param mcs the MCS value
+   *
+   * \return the WifiMode object corresponding to the given MCS of the
+   *         HT modulation class
+   */
+  WifiMode GetHtMcs (uint8_t mcs) const;
+  /**
+   * Get the WifiMode object corresponding to the given MCS of the
+   * VHT modulation class.
+   *
+   * \param mcs the MCS value
+   *
+   * \return the WifiMode object corresponding to the given MCS of the
+   *         VHT modulation class
+   */
+  WifiMode GetVhtMcs (uint8_t mcs) const;
+  /**
+   * Get the WifiMode object corresponding to the given MCS of the
+   * HE modulation class.
+   *
+   * \param mcs the MCS value
+   *
+   * \return the WifiMode object corresponding to the given MCS of the
+   *         HE modulation class
+   */
+  WifiMode GetHeMcs (uint8_t mcs) const;
 
   /**
    * \brief Set channel number.
@@ -1705,6 +1756,16 @@ private:
    */
   void ConfigureHtDeviceMcsSet (void);
   /**
+   * Add the given MCS to the device MCS set.
+   *
+   * \param mode the MCS to add to the device MCS set
+   */
+  void PushMcs (WifiMode mode);
+  /**
+   * Rebuild the mapping of MCS values to indices in the device MCS set.
+   */
+  void RebuildMcsMap (void);
+  /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
    * This method is called when defaults for each standard must be
    * selected.
@@ -1898,6 +1959,8 @@ private:
    */
   WifiModeList m_deviceRateSet;
   WifiModeList m_deviceMcsSet; //!< the device MCS set
+  /// Maps MCS values to indices in m_deviceMcsSet, for HT, VHT and HE modulation classes
+  std::map<WifiModulationClass, std::map<uint8_t /* MCS value */, uint8_t /* index */>> m_mcsIndexMap;
 
   std::vector<uint8_t> m_bssMembershipSelectorSet; //!< the BSS membership selector set
 
