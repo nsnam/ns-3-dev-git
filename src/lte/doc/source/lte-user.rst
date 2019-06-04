@@ -178,13 +178,17 @@ Supposing your simulation program is called
 ``src/lte/examples/lte-sim-with-input``, you can now pass these
 settings to the simulation program in the following way::
 
-   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Load --ns3::ConfigStore::FileFormat=RawText" --run src/lte/examples/lte-sim-with-input
+   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
+   --ns3::ConfigStore::Mode=Load --ns3::ConfigStore::FileFormat=RawText"
+   --run src/lte/examples/lte-sim-with-input
 
 
 Furthermore, you can generate a template input file with the following
 command::
 
-   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText" --run src/lte/examples/lte-sim-with-input
+   ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt
+   --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=RawText"
+   --run src/lte/examples/lte-sim-with-input
 
 note that the above will put in the file ``input-defaults.txt`` *all*
 the default values that are registered in your particular build of the
@@ -830,7 +834,7 @@ to the PGW via a point-to-point link::
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
-   // Create a single RemoteHost
+  // Create a single RemoteHost
   NodeContainer remoteHostContainer;
   remoteHostContainer.Create (1);
   Ptr<Node> remoteHost = remoteHostContainer.Get (0);
@@ -841,8 +845,8 @@ to the PGW via a point-to-point link::
   PointToPointHelper p2ph;
   p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
   p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
-  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));  
-  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);  
+  p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
+  NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
   Ipv4AddressHelper ipv4h;
   ipv4h.SetBase ("1.0.0.0", "255.0.0.0");
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
@@ -851,8 +855,10 @@ to the PGW via a point-to-point link::
 
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
-  Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
-  remoteHostStaticRouting->AddNetworkRouteTo (epcHelper->GetEpcIpv4NetworkAddress (), Ipv4Mask ("255.255.0.0"), 1);
+  Ptr<Ipv4StaticRouting> remoteHostStaticRouting;
+  remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
+  remoteHostStaticRouting->AddNetworkRouteTo (epcHelper->GetEpcIpv4NetworkAddress (),
+                                              Ipv4Mask ("255.255.0.0"), 1);
 
 Now, you should go on and create LTE eNBs and UEs as explained in the
 previous sections. You can of course configure other LTE aspects such
@@ -860,52 +866,55 @@ as pathloss and fading models. Right after you created the UEs, you
 should also configure them for IP networking. This is done as
 follows. We assume you have a container for UE and eNodeB nodes like this::
 
-      NodeContainer ueNodes;
-      NodeContainer enbNodes;
-      
+  NodeContainer ueNodes;
+  NodeContainer enbNodes;
 
 to configure an LTE-only simulation, you would then normally do
 something like this::
 
-      NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
-      lteHelper->Attach (ueLteDevs, enbLteDevs.Get (0));        
+  NetDeviceContainer ueLteDevs = lteHelper->InstallUeDevice (ueNodes);
+  lteHelper->Attach (ueLteDevs, enbLteDevs.Get (0));
 
 in order to configure the UEs for IP networking, you just need to
 additionally do like this::
 
-      // we install the IP stack on the UEs 
-      InternetStackHelper internet;
-      internet.Install (ueNodes);
+  // we install the IP stack on the UEs
+  InternetStackHelper internet;
+  internet.Install (ueNodes);
 
-      // assign IP address to UEs
-      for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
-        {
-          Ptr<Node> ue = ueNodes.Get (u);          
-          Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
-          Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
-          // set the default gateway for the UE
-          Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());          
-          ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
-        }
+  // assign IP address to UEs
+  for (uint32_t u = 0; u < ueNodes.GetN (); ++u)
+    {
+      Ptr<Node> ue = ueNodes.Get (u);
+      Ptr<NetDevice> ueLteDevice = ueLteDevs.Get (u);
+      Ipv4InterfaceContainer ueIpIface;
+      ueIpIface = epcHelper->AssignUeIpv4Address (NetDeviceContainer (ueLteDevice));
+      // set the default gateway for the UE
+      Ptr<Ipv4StaticRouting> ueStaticRouting;
+      ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ue->GetObject<Ipv4> ());
+      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
+    }
 
 The activation of bearers is done in a slightly different way with
 respect to what done for an LTE-only simulation. First, the method
 ActivateDataRadioBearer is not to be used when the EPC is
 used. Second, when EPC is used, the default EPS bearer will be
-activated automatically when you call LteHelper::Attach (). Third, if
+activated automatically when you call ``LteHelper::Attach ()``. Third, if
 you want to setup dedicated EPS bearer, you can do so using the method
-LteHelper::ActivateDedicatedEpsBearer (). This method takes as a
+``LteHelper::ActivateDedicatedEpsBearer ()``. This method takes as a
 parameter the Traffic Flow Template (TFT), which is a struct that
 identifies the type of traffic that will be mapped to the dedicated
 EPS bearer. Here is an example for how to setup a dedicated bearer
 for an application at the UE communicating on port 1234::
 
-      Ptr<EpcTft> tft = Create<EpcTft> ();
-      EpcTft::PacketFilter pf;
-      pf.localPortStart = 1234;
-      pf.localPortEnd = 1234;
-      tft->Add (pf);  
-      lteHelper->ActivateDedicatedEpsBearer (ueLteDevs, EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT), tft);
+  Ptr<EpcTft> tft = Create<EpcTft> ();
+  EpcTft::PacketFilter pf;
+  pf.localPortStart = 1234;
+  pf.localPortEnd = 1234;
+  tft->Add (pf);
+  lteHelper->ActivateDedicatedEpsBearer (ueLteDevs,
+                                         EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT),
+                                         tft);
 
 you can of course use custom EpsBearer and EpcTft configurations,
 please refer to the doxygen documentation for how to do it.
@@ -918,18 +927,18 @@ remoteHost, here is how to setup downlink communication, with an
 UdpClient application on the remote host, and a PacketSink on the LTE UE
 (using the same variable names of the previous code snippets) ::
 
-       uint16_t dlPort = 1234;
-       PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", 
-                                          InetSocketAddress (Ipv4Address::GetAny (), dlPort));
-       ApplicationContainer serverApps = packetSinkHelper.Install (ue);
-       serverApps.Start (Seconds (0.01));
-       UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
-       ApplicationContainer clientApps = client.Install (remoteHost);
-       clientApps.Start (Seconds (0.01));
+  uint16_t dlPort = 1234;
+  PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory",
+                                     InetSocketAddress (Ipv4Address::GetAny (), dlPort));
+  ApplicationContainer serverApps = packetSinkHelper.Install (ue);
+  serverApps.Start (Seconds (0.01));
+  UdpClientHelper client (ueIpIface.GetAddress (0), dlPort);
+  ApplicationContainer clientApps = client.Install (remoteHost);
+  clientApps.Start (Seconds (0.01));
 
 That's all! You can now start your simulation as usual::
 
-  Simulator::Stop (Seconds (10.0));  
+  Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
 
 
@@ -951,8 +960,8 @@ First of all we build ns-3 appropriately::
 
   # configure
   ./waf configure --enable-sudo --enable-modules=lte,fd-net-device --enable-examples 
-  
-  # build 
+
+  # build
   ./waf
 
 
@@ -960,26 +969,27 @@ Then we setup two virtual ethernet interfaces, and start wireshark to look at th
 
 
   # note: you need to be root
-  
+
   # create two paired veth devices
   ip link add name veth0 type veth peer name veth1
   ip link show
-  
+
   # enable promiscuous mode
   ip link set veth0 promisc on
   ip link set veth1 promisc on
-  
+
   # bring interfaces up
   ip link set veth0 up
   ip link set veth1 up
-  
+
   # start wireshark and capture on veth0 
   wireshark &
-  
+
 
 We can now run the example program with the simulated clock::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1"
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  --ns3::EmuEpcHelper::enbDeviceName=veth1"
 
 
 Using wireshark, you should see ARP resolution first, then some GTP
@@ -987,7 +997,8 @@ packets exchanged both in uplink and downlink.
 
 The default setting of the example program is 1 eNB and 1UE. You can change this via command line parameters, e.g.::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1 --nEnbs=2 --nUesPerEnb=2"
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  --ns3::EmuEpcHelper::enbDeviceName=veth1 --nEnbs=2 --nUesPerEnb=2"
 
 
 To get a list of the available parameters::
@@ -1003,12 +1014,16 @@ with the BestEffort mode is not a good idea: something can go wrong
 So you need a decent hardware and the optimized build with statically  
 linked modules::
 
-  ./waf configure -d optimized --enable-static --enable-modules=lte --enable-examples --enable-sudo
+  ./waf configure -d optimized --enable-static --enable-modules=lte --enable-examples
+  --enable-sudo
 
 
 Then run the example program like this::
 
-  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0 --ns3::EmuEpcHelper::enbDeviceName=veth1 --simulatorImplementationType=ns3::RealtimeSimulatorImpl --ns3::RealtimeSimulatorImpl::SynchronizationMode=HardLimit"
+  ./waf --run lena-simple-epc-emu --command="%s --ns3::EmuEpcHelper::sgwDeviceName=veth0
+  --ns3::EmuEpcHelper::enbDeviceName=veth1
+  --SimulatorImplementationType=ns3::RealtimeSimulatorImpl
+  --ns3::RealtimeSimulatorImpl::SynchronizationMode=HardLimit"
 
 
 note the HardLimit setting, which will cause the program to terminate
@@ -1019,6 +1034,111 @@ net device. For instance, [Baldo2014]_ describes how it was used to
 run an emulated LTE-EPC network over a real multi-layer packet-optical
 transport network.
 
+
+
+.. _sec-custom-backhaul:
+
+Custom Backhaul
+---------------
+
+In the previous sections, :ref:`sec-evolved-packet-core`, we explained how to write a simulation
+program using EPC with a predefined backhaul network between the RAN and the EPC. We used the
+``PointToPointEpcHelper``. This ``EpcHelper`` creates point-to-point links between the eNBs and the SGW.
+
+We now explain how to write a simulation program that allows the simulator user to create any kind
+of backhaul network in the simulation program.
+
+First of all, in addition to ``LteHelper``, you need to use the ``NoBackhaulEpcHelper`` class, which
+implements an EPC but without connecting the eNBs with the core network. It just creates the network
+elements of the core network::
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  Ptr<NoBackhaulEpcHelper> epcHelper = CreateObject<NoBackhaulEpcHelper> ();
+
+
+Then, as usual, you need to tell the LTE helper that the EPC will be used::
+
+  lteHelper->SetEpcHelper (epcHelper);
+
+
+Now, you should create the backhaul network. Here we create point-to-point links as it is done
+by the ``PointToPointEpcHelper``. We assume you have a container for eNB nodes like this::
+
+  NodeContainer enbNodes;
+
+We get the SGW node::
+
+  Ptr<Node> sgw = epcHelper->GetSgwNode ();
+
+And we connect every eNB from the container with the SGW with a point-to-point link. We also assign
+IPv4 addresses to the interfaces of eNB and SGW with ``s1uIpv4AddressHelper.Assign (sgwEnbDevices)``
+and finally we tell the EpcHelper that this ``enb`` has a new S1 interface with
+``epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress)``, where ``enbS1uAddress`` and
+``sgwS1uAddress`` are the IPv4 addresses of the eNB and the SGW, respectively::
+
+  Ipv4AddressHelper s1uIpv4AddressHelper;
+
+  // Create networks of the S1 interfaces
+  s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
+
+  for (uint16_t i = 0; i < enbNodes.GetN (); ++i)
+    {
+      Ptr<Node> enb = enbNodes.Get (i);
+
+      // Create a point to point link between the eNB and the SGW with
+      // the corresponding new NetDevices on each side
+      PointToPointHelper p2ph;
+      DataRate s1uLinkDataRate = DataRate ("10Gb/s");
+      uint16_t s1uLinkMtu = 2000;
+      Time s1uLinkDelay = Time (0);
+      p2ph.SetDeviceAttribute ("DataRate", DataRateValue (s1uLinkDataRate));
+      p2ph.SetDeviceAttribute ("Mtu", UintegerValue (s1uLinkMtu));
+      p2ph.SetChannelAttribute ("Delay", TimeValue (s1uLinkDelay));
+      NetDeviceContainer sgwEnbDevices = p2ph.Install (sgw, enb);
+
+      Ipv4InterfaceContainer sgwEnbIpIfaces = s1uIpv4AddressHelper.Assign (sgwEnbDevices);
+      s1uIpv4AddressHelper.NewNetwork ();
+
+      Ipv4Address sgwS1uAddress = sgwEnbIpIfaces.GetAddress (0);
+      Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (1);
+
+      // Create S1 interface between the SGW and the eNB
+      epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
+    }
+
+This is just an example how to create a custom backhaul network. In this other example, we connect
+all eNBs and the SGW to the same CSMA network::
+
+    // Create networks of the S1 interfaces
+    s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.0");
+
+    NodeContainer sgwEnbNodes;
+    sgwEnbNodes.Add (sgw);
+    sgwEnbNodes.Add (enbNodes);
+
+    CsmaHelper csmah;
+    NetDeviceContainer sgwEnbDevices = csmah.Install (sgwEnbNodes);
+    Ptr<NetDevice> sgwDev = sgwEnbDevices.Get (0);
+
+    Ipv4InterfaceContainer sgwEnbIpIfaces = s1uIpv4AddressHelper.Assign (sgwEnbDevices);
+    Ipv4Address sgwS1uAddress = sgwEnbIpIfaces.GetAddress (0);
+
+    for (uint16_t i = 0; i < enbNodes.GetN (); ++i)
+      {
+        Ptr<Node> enb = enbNodes.Get (i);
+        Ipv4Address enbS1uAddress = sgwEnbIpIfaces.GetAddress (i + 1);
+
+        // Create S1 interface between the SGW and the eNB
+        epcHelper->AddS1Interface (enb, enbS1uAddress, sgwS1uAddress);
+      }
+
+As you can see, apart from how you create the backhaul network, i.e. the point-to-point links or
+the CSMA network, the important point is to tell the ``EpcHelper`` that an ``eNB`` has a new S1 interface.
+
+Now, you should continue configuring your simulation program as it is explained in
+:ref:`sec-evolved-packet-core` subsection. This configuration includes: the internet, installing the LTE eNBs
+and possibly configuring other LTE aspects, installing the LTE UEs and configuring them as IP nodes,
+activation of the dedicated EPS bearers and installing applications on the LTE UEs and on the remote hosts.
 
 
 
