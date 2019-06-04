@@ -32,10 +32,19 @@
 using namespace ns3;
 
 /**
- * Sample simulation script for LTE+EPC with different backhauls (p2p and csma) using
- * the predefined EpcHelpers or configuring them manually.
- * It instantiates several eNodeBs,
- * attaches one UE per eNodeB starts a flow for each UE to and from a remote host.
+ * Sample simulation script for LTE+EPC with different backhauls.
+ *
+ * The purpose of this example is to compare:
+ *
+ *  (1) how the simulation user can use a pre-existing EpcHelper that builds
+ *      a predefined backhaul network (e.g. the PointToPointEpcHelper) and
+ *
+ *  (2) how the simulation user can build its custom backhaul network in
+ *      the simulation program (i.e. the point-to-point links are created
+ *      in the simulation program instead of the pre-existing PointToPointEpcHelper)
+ *
+ * The pre-existing PointToPointEpcHelper is used with option --useHelper=1 and
+ * the custom backhaul is built with option --useHelper=0
  */
 
 NS_LOG_COMPONENT_DEFINE ("LenaSimpleEpcBackhaul");
