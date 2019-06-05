@@ -28,6 +28,7 @@
 #include "wifi-standards.h"
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
+#include "wifi-ppdu.h"
 
 namespace ns3 {
 
@@ -44,7 +45,6 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 class WifiPsdu;
-class WifiPpdu;
 
 /**
  * Enumeration of the possible reception failure reasons.
@@ -327,6 +327,14 @@ public:
    */
   static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band,
                                    uint16_t staId = SU_STA_ID);
+  /**
+   * \param psduMap the PSDU(s) to transmit indexed by STA-ID
+   * \param txVector the TXVECTOR used for the transmission of the PPDU
+   * \param band the frequency band being used
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
+   */
+  static Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band);
 
   /**
    * \param txVector the transmission parameters used for this packet

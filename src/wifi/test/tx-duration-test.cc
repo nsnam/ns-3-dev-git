@@ -23,6 +23,8 @@
 #include "ns3/test.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/he-ru.h"
+#include "ns3/wifi-psdu.h"
+#include "ns3/packet.h"
 #include <numeric>
 
 using namespace ns3;
@@ -90,6 +92,22 @@ private:
                                    uint16_t channelWidth, uint16_t guardInterval,
                                    Time knownDuration);
 
+  /**
+   * Calculate the overall Tx duration returned by WifiPhy for list of sizes.
+   * A map of WifiPsdu indexed by STA-ID is built using the provided lists
+   * and handed over to the corresponding SU/MU WifiPhy Tx duration computing
+   * method.
+   * Note that provided lists should be of same size.
+   *
+   * @param sizes the list of PSDU sizes for each station in octets
+   * @param staIds the list of STA-IDs of each station
+   * @param txVector the TXVECTOR used for the transmission of the PPDU
+   * @param band the selected wifi PHY band
+   *
+   * @return the overall Tx duration for the list of sizes (SU or MU PPDU)
+   */
+  static Time CalculateTxDurationUsingList (std::list<uint32_t> sizes, std::list<uint16_t> staIds,
+                                            WifiTxVector txVector, WifiPhyBand band);
 };
 
 TxDurationTest::TxDurationTest ()
@@ -177,7 +195,9 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
       band = WIFI_PHY_BAND_5GHZ;
     }
   Time calculatedDuration = phy->CalculateTxDuration (size, txVector, band);
-  if (calculatedDuration != knownDuration)
+  Time calculatedDurationUsingList = CalculateTxDurationUsingList (std::list<uint32_t> {size}, std::list<uint16_t> {SU_STA_ID},
+                                                                   txVector, band);
+  if (calculatedDuration != knownDuration || calculatedDuration != calculatedDurationUsingList)
     {
       std::cerr << "size=" << size
                 << " mode=" << payloadMode
@@ -187,6 +207,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
                 << " preamble=" << preamble
                 << " known=" << knownDuration
                 << " calculated=" << calculatedDuration
+                << " calculatedUsingList=" << calculatedDurationUsingList
                 << std::endl;
       return false;
     }
@@ -195,8 +216,10 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
       //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
       band = WIFI_PHY_BAND_2_4GHZ;
       calculatedDuration = phy->CalculateTxDuration (size, txVector, band);
+      calculatedDurationUsingList = CalculateTxDurationUsingList (std::list<uint32_t> {size}, std::list<uint16_t> {SU_STA_ID},
+                                                                  txVector, band);
       knownDuration += MicroSeconds (6);
-      if (calculatedDuration != knownDuration)
+      if (calculatedDuration != knownDuration || calculatedDuration != calculatedDurationUsingList)
         {
           std::cerr << "size=" << size
                     << " mode=" << payloadMode
@@ -206,6 +229,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
                     << " preamble=" << preamble
                     << " known=" << knownDuration
                     << " calculated=" << calculatedDuration
+                    << " calculatedUsingList=" << calculatedDurationUsingList
                     << std::endl;
           return false;
         }
@@ -258,7 +282,8 @@ TxDurationTest::CheckHeMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUs
             }
           ++iterStaId;
         }
-      if (calculatedDuration != knownDuration)
+      Time calculatedDurationUsingList = CalculateTxDurationUsingList (sizes, staIds, txVector, testedBand);
+      if (calculatedDuration != knownDuration || calculatedDuration != calculatedDurationUsingList)
         {
           std::cerr << "size=" << longuestSize
                     << " band=" << testedBand
@@ -270,11 +295,29 @@ TxDurationTest::CheckHeMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUs
                     << " datarate=" << txVector.GetMode (staId).GetDataRate (channelWidth, guardInterval, txVector.GetNss (staId))
                     << " known=" << knownDuration
                     << " calculated=" << calculatedDuration
+                    << " calculatedUsingList=" << calculatedDurationUsingList
                     << std::endl;
           return false;
         }
     }
   return true;
+}
+
+Time
+TxDurationTest::CalculateTxDurationUsingList (std::list<uint32_t> sizes, std::list<uint16_t> staIds,
+                                              WifiTxVector txVector, WifiPhyBand band)
+{
+  NS_ASSERT (sizes.size () == staIds.size ());
+  WifiConstPsduMap psduMap;
+  auto itStaId = staIds.begin ();
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_ACK); //so that size may not be empty while being as short as possible
+  for (auto & size : sizes)
+    {
+      // MAC header and FCS are to deduce from size
+      psduMap[*itStaId++] = Create<WifiPsdu> (Create<Packet> (size - hdr.GetSerializedSize () - 4), hdr);
+    }
+  return WifiPhy::CalculateTxDuration (psduMap, txVector, band);
 }
 
 void

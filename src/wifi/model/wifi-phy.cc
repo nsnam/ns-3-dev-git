@@ -38,7 +38,6 @@
 #include "he-configuration.h"
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
-#include "wifi-ppdu.h"
 
 namespace ns3 {
 
@@ -2543,6 +2542,27 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
   Time duration = CalculatePhyPreambleAndHeaderDuration (txVector)
     + GetPayloadDuration (size, txVector, band, NORMAL_MPDU, staId);
   return duration;
+}
+
+Time
+WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band)
+{
+  Time maxDuration = Seconds (0);
+  for (auto & staIdPsdu : psduMap)
+    {
+      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+        {
+          WifiTxVector::HeMuUserInfoMap userInfoMap = txVector.GetHeMuUserInfoMap ();
+          NS_ABORT_MSG_IF (userInfoMap.find (staIdPsdu.first) == userInfoMap.end (), "STA-ID in psduMap (" << staIdPsdu.first << ") should be referenced in txVector");
+        }
+      Time current = CalculateTxDuration (staIdPsdu.second->GetSize (), txVector, band, staIdPsdu.first);
+      if (current > maxDuration)
+        {
+          maxDuration = current;
+        }
+    }
+  NS_ASSERT (maxDuration.IsStrictlyPositive ());
+  return maxDuration;
 }
 
 void
