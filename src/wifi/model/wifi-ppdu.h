@@ -103,6 +103,12 @@ public:
   bool IsMu (void) const;
 
   /**
+   * Get the modulation used for the PPDU.
+   * \return the modulation used for the PPDU
+   */
+  WifiModulationClass GetModulation (void) const;
+
+  /**
    * \brief Print the PPDU contents.
    * \param os output stream in which the data should be printed.
    */

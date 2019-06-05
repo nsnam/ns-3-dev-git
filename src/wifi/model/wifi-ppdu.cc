@@ -449,6 +449,12 @@ WifiPpdu::IsMu (void) const
   return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU));
 }
 
+WifiModulationClass
+WifiPpdu::GetModulation (void) const
+{
+  return m_modulation;
+}
+
 void
 WifiPpdu::Print (std::ostream& os) const
 {
