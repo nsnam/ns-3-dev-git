@@ -196,11 +196,13 @@ public:
    * this class.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
+   * \param staId the station ID of the PSDU (only used for MU)
    * \param relativeMpduStartStop the time window (pair of start and end times) of PHY payload to focus on
    *
    * \return struct of SNR and PER (with PER being evaluated over the provided time window)
    */
-  struct InterferenceHelper::SnrPer CalculatePayloadSnrPer (Ptr<Event> event, std::pair<Time, Time> relativeMpduStartStop) const;
+  struct InterferenceHelper::SnrPer CalculatePayloadSnrPer (Ptr<Event> event, uint16_t staId,
+                                                            std::pair<Time, Time> relativeMpduStartStop) const;
   /**
    * Calculate the SNIR for the event (starting from now until the event end).
    *
@@ -333,22 +335,25 @@ private:
    * \param snir the SINR
    * \param duration the duration of the chunk
    * \param txVector the TXVECTOR
+   * \param staId the station ID of the PSDU (only used for MU)
    *
    * \return the success rate
    */
-  double CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector) const;
+  double CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector, uint16_t staId) const;
   /**
    * Calculate the error rate of the given PHY payload only in the provided time
    * window (thus enabling per MPDU PER information). The PHY payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event the event
+   * \param staId the station ID of the PSDU (only used for MU)
    * \param ni the NiChanges
    * \param window time window (pair of start and end times) of PHY payload to focus on
    *
    * \return the error rate of the payload
    */
-  double CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, std::pair<Time, Time> window) const;
+  double CalculatePayloadPer (Ptr<const Event> event, uint16_t staId,
+                              NiChanges *ni, std::pair<Time, Time> window) const;
   /**
    * Calculate the error rate of the non-HT PHY header. The non-HT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).

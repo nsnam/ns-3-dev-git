@@ -22,6 +22,8 @@
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/yans-wifi-phy.h"
+#include "ns3/he-ru.h"
+#include <numeric>
 
 using namespace ns3;
 
@@ -71,6 +73,22 @@ private:
    * @return true if values correspond, false otherwise
    */
   bool CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
+
+  /**
+   * Check if the overall Tx duration returned by WifiPhy for a HE MU PPDU
+   * corresponds to a known value
+   *
+   * @param sizes the list of PSDU sizes for each station in octets
+   * @param userInfos the list of HE MU specific user transmission parameters
+   * @param channelWidth the channel width used for the transmission (in MHz)
+   * @param guardInterval the guard interval duration used for the transmission (in nanoseconds)
+   * @param knownDuration the known duration value of the transmission
+   *
+   * @return true if values correspond, false otherwise
+   */
+  static bool CheckHeMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUserInfo> userInfos,
+                                   uint16_t channelWidth, uint16_t guardInterval,
+                                   Time knownDuration);
 
 };
 
@@ -186,6 +204,70 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
                     << " guardInterval=" << guardInterval
                     << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
                     << " preamble=" << preamble
+                    << " known=" << knownDuration
+                    << " calculated=" << calculatedDuration
+                    << std::endl;
+          return false;
+        }
+    }
+  return true;
+}
+
+bool
+TxDurationTest::CheckHeMuTxDuration (std::list<uint32_t> sizes, std::list<HeMuUserInfo> userInfos,
+                                     uint16_t channelWidth, uint16_t guardInterval,
+                                     Time knownDuration)
+{
+  NS_ASSERT (sizes.size () == userInfos.size () && sizes.size () > 1);
+  NS_ABORT_MSG_IF (channelWidth < std::accumulate (std::begin (userInfos), std::end (userInfos), 0,
+                                                   [](const uint16_t prevBw, const HeMuUserInfo &info)
+                                                   { return prevBw + HeRu::GetBandwidth (info.ru.ruType); }),
+                   "Cannot accommodate all the RUs in the provided band"); //MU-MIMO (for which allocations use the same RU) is not supported
+  WifiTxVector txVector;
+  txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
+  txVector.SetChannelWidth (channelWidth);
+  txVector.SetGuardInterval (guardInterval);
+  txVector.SetStbc (0);
+  txVector.SetNess (0);
+  std::list<uint16_t> staIds;
+  uint16_t staId = 1;
+  for (const auto & userInfo : userInfos)
+    {
+      txVector.SetHeMuUserInfo (staId, userInfo);
+      staIds.push_back (staId++);
+    }
+  Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  std::list<WifiPhyBand> testedBands {WIFI_PHY_BAND_5GHZ, WIFI_PHY_BAND_2_4GHZ}; //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
+  for (auto & testedBand : testedBands)
+    {
+      if (testedBand == WIFI_PHY_BAND_2_4GHZ)
+        {
+          knownDuration += MicroSeconds (6);
+        }
+      Time calculatedDuration = NanoSeconds (0);
+      uint32_t longuestSize = 0;
+      auto iterStaId = staIds.begin ();
+      for (auto & size : sizes)
+        {
+          Time ppduDurationForSta = phy->CalculateTxDuration (size, txVector, testedBand, *iterStaId);
+          if (ppduDurationForSta > calculatedDuration)
+            {
+              calculatedDuration = ppduDurationForSta;
+              staId = *iterStaId;
+              longuestSize = size;
+            }
+          ++iterStaId;
+        }
+      if (calculatedDuration != knownDuration)
+        {
+          std::cerr << "size=" << longuestSize
+                    << " band=" << testedBand
+                    << " staId=" << staId
+                    << " nss=" << +txVector.GetNss (staId)
+                    << " mode=" << txVector.GetMode (staId)
+                    << " channelWidth=" << channelWidth
+                    << " guardInterval=" << guardInterval
+                    << " datarate=" << txVector.GetMode (staId).GetDataRate (channelWidth, guardInterval, txVector.GetNss (staId))
                     << " known=" << knownDuration
                     << " calculated=" << calculatedDuration
                     << std::endl;
@@ -345,7 +427,7 @@ TxDurationTest::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ac duration failed");
 
-  //802.11ax durations
+  //802.11ax SU durations
   retval = retval
     && CheckTxDuration (1536, WifiPhy::GetHeMcs0 (), 20, 800, WIFI_PREAMBLE_HE_SU, NanoSeconds (1485600))
     && CheckTxDuration (76, WifiPhy::GetHeMcs0 (), 20, 800, WIFI_PREAMBLE_HE_SU, NanoSeconds (125600))
@@ -420,7 +502,27 @@ TxDurationTest::DoRun (void)
     && CheckTxDuration (76, WifiPhy::GetHeMcs11 (), 160, 3200, WIFI_PREAMBLE_HE_SU, MicroSeconds (60))
     && CheckTxDuration (14, WifiPhy::GetHeMcs11 (), 160, 3200, WIFI_PREAMBLE_HE_SU, MicroSeconds (60));
 
-  NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ax duration failed");
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ax SU duration failed");
+
+  //802.11ax MU durations
+  retval = retval
+    && CheckHeMuTxDuration (std::list<uint32_t> {1536,
+                                                 1536},
+                            std::list<HeMuUserInfo> { {{true, HeRu::RU_242_TONE, 1}, WifiPhy::GetHeMcs0 (), 1},
+                                                      {{true, HeRu::RU_242_TONE, 2}, WifiPhy::GetHeMcs0 (), 1} },
+                            40, 800, NanoSeconds (1489600)) //equivalent to HE_SU for 20 MHz with extra HE-SIG-B (i.e. 4 us)
+  && CheckHeMuTxDuration (std::list<uint32_t> {1536,
+                                               1536},
+                          std::list<HeMuUserInfo> { {{true, HeRu::RU_242_TONE, 1}, WifiPhy::GetHeMcs1 (), 1},
+                                                    {{true, HeRu::RU_242_TONE, 2}, WifiPhy::GetHeMcs0 (), 1} },
+                          40, 800, NanoSeconds (1489600)) //shouldn't change if first PSDU is shorter
+  && CheckHeMuTxDuration (std::list<uint32_t> {1536,
+                                               76},
+                          std::list<HeMuUserInfo> { {{true, HeRu::RU_242_TONE, 1}, WifiPhy::GetHeMcs0 (), 1},
+                                                    {{true, HeRu::RU_242_TONE, 2}, WifiPhy::GetHeMcs0 (), 1} },
+                          40, 800, NanoSeconds (1489600));
+
+  NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ax MU duration failed");
 }
 
 /**

@@ -295,29 +295,30 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
 }
 
 double
-InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector) const
+InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector, uint16_t staId) const
 {
   if (duration.IsZero ())
     {
       return 1.0;
     }
-  WifiMode mode = txVector.GetMode ();
-  uint64_t rate = mode.GetDataRate (txVector);
+  WifiMode mode = txVector.GetMode (staId);
+  uint64_t rate = mode.GetDataRate (txVector, staId);
   uint64_t nbits = static_cast<uint64_t> (rate * duration.GetSeconds ());
-  nbits /= txVector.GetNss (); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
+  nbits /= txVector.GetNss (staId); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
   double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, nbits);
   return csr;
 }
 
 double
-InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, std::pair<Time, Time> window) const
+InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t staId,
+                                         NiChanges *ni, std::pair<Time, Time> window) const
 {
-  NS_LOG_FUNCTION (this << window.first << window.second);
+  NS_LOG_FUNCTION (this << staId << window.first << window.second);
   const WifiTxVector txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
   auto j = ni->begin ();
   Time previous = j->first;
-  WifiMode payloadMode = event->GetTxVector ().GetMode ();
+  WifiMode payloadMode = txVector.GetMode (staId);
   WifiPreamble preamble = txVector.GetPreambleType ();
   Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
   Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
@@ -336,13 +337,13 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
       //Case 1: Both previous and current point to the windowed payload
       if (previous >= windowStart)
         {
-          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - previous, txVector);
+          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - previous, txVector, staId);
           NS_LOG_DEBUG ("Both previous and current point to the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       //Case 2: previous is before windowed payload and current is in the windowed payload
       else if (current >= windowStart)
         {
-          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - windowStart, txVector);
+          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - windowStart, txVector, staId);
           NS_LOG_DEBUG ("previous is before windowed payload and current is in the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       noiseInterferenceW = j->second.GetPower () - powerW;
@@ -737,7 +738,8 @@ InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChanges *
 }
 
 struct InterferenceHelper::SnrPer
-InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, std::pair<Time, Time> relativeMpduStartStop) const
+InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, uint16_t staId,
+                                            std::pair<Time, Time> relativeMpduStartStop) const
 {
   NiChanges ni;
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
@@ -748,7 +750,7 @@ InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, std::pair<Time, Ti
   /* calculate the SNIR at the start of the MPDU (located through windowing) and accumulate
    * all SNIR changes in the SNIR vector.
    */
-  double per = CalculatePayloadPer (event, &ni, relativeMpduStartStop);
+  double per = CalculatePayloadPer (event, staId, &ni, relativeMpduStartStop);
 
   struct SnrPer snrPer;
   snrPer.snr = snr;
