@@ -1213,8 +1213,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcEnbApplication::RxTracedCallback&')
     ## epc-helper.h (module 'lte'): ns3::EpcHelper [class]
     module.add_class('EpcHelper', parent=root_module['ns3::Object'])
-    ## epc-mme.h (module 'lte'): ns3::EpcMme [class]
-    module.add_class('EpcMme', parent=root_module['ns3::Object'])
     ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication [class]
     module.add_class('EpcMmeApplication', parent=root_module['ns3::Application'])
     ## epc-pgw-application.h (module 'lte'): ns3::EpcPgwApplication [class]
@@ -1224,11 +1222,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcPgwApplication::RxTracedCallback&')
     ## epc-sgw-application.h (module 'lte'): ns3::EpcSgwApplication [class]
     module.add_class('EpcSgwApplication', parent=root_module['ns3::Application'])
-    ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication [class]
-    module.add_class('EpcSgwPgwApplication', parent=root_module['ns3::Application'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )', u'ns3::EpcSgwPgwApplication::RxTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )*', u'ns3::EpcSgwPgwApplication::RxTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcSgwPgwApplication::RxTracedCallback&')
     ## epc-tft.h (module 'lte'): ns3::EpcTft [class]
     module.add_class('EpcTft', parent=root_module['ns3::SimpleRefCount< ns3::EpcTft, ns3::empty, ns3::DefaultDeleter<ns3::EpcTft> >'])
     ## epc-tft.h (module 'lte'): ns3::EpcTft::Direction [enumeration]
@@ -1539,6 +1532,8 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::NoBackhaulEpcHelper [class]
+    module.add_class('NoBackhaulEpcHelper', parent=root_module['ns3::EpcHelper'])
     ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager [class]
     module.add_class('NoOpComponentCarrierManager', parent=root_module['ns3::LteEnbComponentCarrierManager'])
     ## no-op-handover-algorithm.h (module 'lte'): ns3::NoOpHandoverAlgorithm [class]
@@ -1588,7 +1583,7 @@ def register_types(module):
     ## phy-tx-stats-calculator.h (module 'lte'): ns3::PhyTxStatsCalculator [class]
     module.add_class('PhyTxStatsCalculator', parent=root_module['ns3::LteStatsCalculator'])
     ## point-to-point-epc-helper.h (module 'lte'): ns3::PointToPointEpcHelper [class]
-    module.add_class('PointToPointEpcHelper', parent=root_module['ns3::EpcHelper'])
+    module.add_class('PointToPointEpcHelper', parent=root_module['ns3::NoBackhaulEpcHelper'])
     ## pointer.h (module 'core'): ns3::PointerChecker [class]
     module.add_class('PointerChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## pointer.h (module 'core'): ns3::PointerValue [class]
@@ -1778,7 +1773,7 @@ def register_types(module):
     ## lte-control-messages.h (module 'lte'): ns3::DlHarqFeedbackLteControlMessage [class]
     module.add_class('DlHarqFeedbackLteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper [class]
-    module.add_class('EmuEpcHelper', parent=root_module['ns3::EpcHelper'])
+    module.add_class('EmuEpcHelper', parent=root_module['ns3::NoBackhaulEpcHelper'])
     ## fdbet-ff-mac-scheduler.h (module 'lte'): ns3::FdBetFfMacScheduler [class]
     module.add_class('FdBetFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
     ## fdmt-ff-mac-scheduler.h (module 'lte'): ns3::FdMtFfMacScheduler [class]
@@ -2619,11 +2614,9 @@ def register_methods(root_module):
     register_Ns3EpcEnbApplication_methods(root_module, root_module['ns3::EpcEnbApplication'])
     register_Ns3EpcEnbApplicationEpsFlowId_t_methods(root_module, root_module['ns3::EpcEnbApplication::EpsFlowId_t'])
     register_Ns3EpcHelper_methods(root_module, root_module['ns3::EpcHelper'])
-    register_Ns3EpcMme_methods(root_module, root_module['ns3::EpcMme'])
     register_Ns3EpcMmeApplication_methods(root_module, root_module['ns3::EpcMmeApplication'])
     register_Ns3EpcPgwApplication_methods(root_module, root_module['ns3::EpcPgwApplication'])
     register_Ns3EpcSgwApplication_methods(root_module, root_module['ns3::EpcSgwApplication'])
-    register_Ns3EpcSgwPgwApplication_methods(root_module, root_module['ns3::EpcSgwPgwApplication'])
     register_Ns3EpcTft_methods(root_module, root_module['ns3::EpcTft'])
     register_Ns3EpcTftPacketFilter_methods(root_module, root_module['ns3::EpcTft::PacketFilter'])
     register_Ns3EpcTftClassifier_methods(root_module, root_module['ns3::EpcTftClassifier'])
@@ -2723,6 +2716,7 @@ def register_methods(root_module):
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
+    register_Ns3NoBackhaulEpcHelper_methods(root_module, root_module['ns3::NoBackhaulEpcHelper'])
     register_Ns3NoOpComponentCarrierManager_methods(root_module, root_module['ns3::NoOpComponentCarrierManager'])
     register_Ns3NoOpHandoverAlgorithm_methods(root_module, root_module['ns3::NoOpHandoverAlgorithm'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
@@ -3554,7 +3548,7 @@ def register_Ns3DataRate_methods(root_module, cls):
     cls.add_method('CalculateTxTime', 
                    'double', 
                    [param('uint32_t', 'bytes')], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
                    'uint64_t', 
@@ -5574,10 +5568,10 @@ def register_Ns3GtpcIes_methods(root_module, cls):
     cls.add_method('DeserializeBearerContextHeader', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator &', 'i'), param('uint16_t &', 'length')])
-    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::GtpcIes() [constructor]
-    cls.add_constructor([])
     ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::GtpcIes(ns3::GtpcIes const & arg0) [constructor]
     cls.add_constructor([param('ns3::GtpcIes const &', 'arg0')])
+    ## epc-gtpc-header.h (module 'lte'): ns3::GtpcIes::GtpcIes() [constructor]
+    cls.add_constructor([])
     return
 
 def register_Ns3HarqProcessInfoElement_t_methods(root_module, cls):
@@ -6142,7 +6136,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -10376,7 +10370,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -15650,8 +15645,12 @@ def register_Ns3EnumValue_methods(root_module, cls):
 def register_Ns3EpcEnbApplication_methods(root_module, cls):
     ## epc-enb-application.h (module 'lte'): ns3::EpcEnbApplication::EpcEnbApplication(ns3::EpcEnbApplication const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcEnbApplication const &', 'arg0')])
-    ## epc-enb-application.h (module 'lte'): ns3::EpcEnbApplication::EpcEnbApplication(ns3::Ptr<ns3::Socket> lteSocket, ns3::Ptr<ns3::Socket> lteSocket6, ns3::Ptr<ns3::Socket> s1uSocket, ns3::Ipv4Address enbS1uAddress, ns3::Ipv4Address sgwS1uAddress, uint16_t cellId) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Socket >', 'lteSocket'), param('ns3::Ptr< ns3::Socket >', 'lteSocket6'), param('ns3::Ptr< ns3::Socket >', 's1uSocket'), param('ns3::Ipv4Address', 'enbS1uAddress'), param('ns3::Ipv4Address', 'sgwS1uAddress'), param('uint16_t', 'cellId')])
+    ## epc-enb-application.h (module 'lte'): ns3::EpcEnbApplication::EpcEnbApplication(ns3::Ptr<ns3::Socket> lteSocket, ns3::Ptr<ns3::Socket> lteSocket6, uint16_t cellId) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Socket >', 'lteSocket'), param('ns3::Ptr< ns3::Socket >', 'lteSocket6'), param('uint16_t', 'cellId')])
+    ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::AddS1Interface(ns3::Ptr<ns3::Socket> s1uSocket, ns3::Ipv4Address enbAddress, ns3::Ipv4Address sgwAddress) [member function]
+    cls.add_method('AddS1Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 's1uSocket'), param('ns3::Ipv4Address', 'enbAddress'), param('ns3::Ipv4Address', 'sgwAddress')])
     ## epc-enb-application.h (module 'lte'): ns3::EpcEnbS1SapProvider * ns3::EpcEnbApplication::GetS1SapProvider() [member function]
     cls.add_method('GetS1SapProvider', 
                    'ns3::EpcEnbS1SapProvider *', 
@@ -15718,6 +15717,11 @@ def register_Ns3EpcHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'enbNode'), param('ns3::Ptr< ns3::NetDevice >', 'lteEnbNetDevice'), param('uint16_t', 'cellId')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-helper.h (module 'lte'): void ns3::EpcHelper::AddS1Interface(ns3::Ptr<ns3::Node> enb, ns3::Ipv4Address enbAddress, ns3::Ipv4Address sgwAddress, uint16_t cellId=0) [member function]
+    cls.add_method('AddS1Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enb'), param('ns3::Ipv4Address', 'enbAddress'), param('ns3::Ipv4Address', 'sgwAddress'), param('uint16_t', 'cellId', default_value='0')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-helper.h (module 'lte'): void ns3::EpcHelper::AddUe(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi) [member function]
     cls.add_method('AddUe', 
                    'void', 
@@ -15748,6 +15752,11 @@ def register_Ns3EpcHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::EpcHelper::GetSgwNode() const [member function]
+    cls.add_method('GetSgwNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## epc-helper.h (module 'lte'): static ns3::TypeId ns3::EpcHelper::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -15763,47 +15772,6 @@ def register_Ns3EpcHelper_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    return
-
-def register_Ns3EpcMme_methods(root_module, cls):
-    ## epc-mme.h (module 'lte'): ns3::EpcMme::EpcMme(ns3::EpcMme const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcMme const &', 'arg0')])
-    ## epc-mme.h (module 'lte'): ns3::EpcMme::EpcMme() [constructor]
-    cls.add_constructor([])
-    ## epc-mme.h (module 'lte'): uint8_t ns3::EpcMme::AddBearer(uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
-    cls.add_method('AddBearer', 
-                   'uint8_t', 
-                   [param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')])
-    ## epc-mme.h (module 'lte'): void ns3::EpcMme::AddEnb(uint16_t ecgi, ns3::Ipv4Address enbS1UAddr, ns3::EpcS1apSapEnb * enbS1apSap) [member function]
-    cls.add_method('AddEnb', 
-                   'void', 
-                   [param('uint16_t', 'ecgi'), param('ns3::Ipv4Address', 'enbS1UAddr'), param('ns3::EpcS1apSapEnb *', 'enbS1apSap')])
-    ## epc-mme.h (module 'lte'): void ns3::EpcMme::AddUe(uint64_t imsi) [member function]
-    cls.add_method('AddUe', 
-                   'void', 
-                   [param('uint64_t', 'imsi')])
-    ## epc-mme.h (module 'lte'): ns3::EpcS11SapMme * ns3::EpcMme::GetS11SapMme() [member function]
-    cls.add_method('GetS11SapMme', 
-                   'ns3::EpcS11SapMme *', 
-                   [])
-    ## epc-mme.h (module 'lte'): ns3::EpcS1apSapMme * ns3::EpcMme::GetS1apSapMme() [member function]
-    cls.add_method('GetS1apSapMme', 
-                   'ns3::EpcS1apSapMme *', 
-                   [])
-    ## epc-mme.h (module 'lte'): static ns3::TypeId ns3::EpcMme::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## epc-mme.h (module 'lte'): void ns3::EpcMme::SetS11SapSgw(ns3::EpcS11SapSgw * s) [member function]
-    cls.add_method('SetS11SapSgw', 
-                   'void', 
-                   [param('ns3::EpcS11SapSgw *', 's')])
-    ## epc-mme.h (module 'lte'): void ns3::EpcMme::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3EpcMmeApplication_methods(root_module, cls):
@@ -15923,63 +15891,6 @@ def register_Ns3EpcSgwApplication_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    return
-
-def register_Ns3EpcSgwPgwApplication_methods(root_module, cls):
-    ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication::EpcSgwPgwApplication(ns3::EpcSgwPgwApplication const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcSgwPgwApplication const &', 'arg0')])
-    ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication::EpcSgwPgwApplication(ns3::Ptr<ns3::VirtualNetDevice> const tunDevice, ns3::Ptr<ns3::Socket> const s1uSocket) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::VirtualNetDevice > const', 'tunDevice'), param('ns3::Ptr< ns3::Socket > const', 's1uSocket')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::AddEnb(uint16_t cellId, ns3::Ipv4Address enbAddr, ns3::Ipv4Address sgwAddr) [member function]
-    cls.add_method('AddEnb', 
-                   'void', 
-                   [param('uint16_t', 'cellId'), param('ns3::Ipv4Address', 'enbAddr'), param('ns3::Ipv4Address', 'sgwAddr')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::AddUe(uint64_t imsi) [member function]
-    cls.add_method('AddUe', 
-                   'void', 
-                   [param('uint64_t', 'imsi')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcS11SapSgw * ns3::EpcSgwPgwApplication::GetS11SapSgw() [member function]
-    cls.add_method('GetS11SapSgw', 
-                   'ns3::EpcS11SapSgw *', 
-                   [])
-    ## epc-sgw-pgw-application.h (module 'lte'): static ns3::TypeId ns3::EpcSgwPgwApplication::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::RecvFromS1uSocket(ns3::Ptr<ns3::Socket> socket) [member function]
-    cls.add_method('RecvFromS1uSocket', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
-    ## epc-sgw-pgw-application.h (module 'lte'): bool ns3::EpcSgwPgwApplication::RecvFromTunDevice(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
-    cls.add_method('RecvFromTunDevice', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::SendToS1uSocket(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address enbS1uAddress, uint32_t teid) [member function]
-    cls.add_method('SendToS1uSocket', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'enbS1uAddress'), param('uint32_t', 'teid')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::SendToTunDevice(ns3::Ptr<ns3::Packet> packet, uint32_t teid) [member function]
-    cls.add_method('SendToTunDevice', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint32_t', 'teid')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::SetS11SapMme(ns3::EpcS11SapMme * s) [member function]
-    cls.add_method('SetS11SapMme', 
-                   'void', 
-                   [param('ns3::EpcS11SapMme *', 's')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::SetUeAddress(uint64_t imsi, ns3::Ipv4Address ueAddr) [member function]
-    cls.add_method('SetUeAddress', 
-                   'void', 
-                   [param('uint64_t', 'imsi'), param('ns3::Ipv4Address', 'ueAddr')])
-    ## epc-sgw-pgw-application.h (module 'lte'): void ns3::EpcSgwPgwApplication::SetUeAddress6(uint64_t imsi, ns3::Ipv6Address ueAddr) [member function]
-    cls.add_method('SetUeAddress6', 
-                   'void', 
-                   [param('uint64_t', 'imsi'), param('ns3::Ipv6Address', 'ueAddr')])
     return
 
 def register_Ns3EpcTft_methods(root_module, cls):
@@ -21963,6 +21874,93 @@ def register_Ns3NixVector_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3NoBackhaulEpcHelper_methods(root_module, cls):
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::NoBackhaulEpcHelper::NoBackhaulEpcHelper(ns3::NoBackhaulEpcHelper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::NoBackhaulEpcHelper const &', 'arg0')])
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::NoBackhaulEpcHelper::NoBackhaulEpcHelper() [constructor]
+    cls.add_constructor([])
+    ## no-backhaul-epc-helper.h (module 'lte'): uint8_t ns3::NoBackhaulEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('ActivateEpsBearer', 
+                   'uint8_t', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
+    cls.add_method('AddEnb', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enbNode'), param('ns3::Ptr< ns3::NetDevice >', 'lteEnbNetDevice'), param('uint16_t', 'cellId')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::AddS1Interface(ns3::Ptr<ns3::Node> enb, ns3::Ipv4Address enbAddress, ns3::Ipv4Address sgwAddress, uint16_t cellId=0) [member function]
+    cls.add_method('AddS1Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enb'), param('ns3::Ipv4Address', 'enbAddress'), param('ns3::Ipv4Address', 'sgwAddress'), param('uint16_t', 'cellId', default_value='0')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::AddUe(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi) [member function]
+    cls.add_method('AddUe', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::AddX2Interface(ns3::Ptr<ns3::Node> enbNode1, ns3::Ptr<ns3::Node> enbNode2) [member function]
+    cls.add_method('AddX2Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'enbNode1'), param('ns3::Ptr< ns3::Node >', 'enbNode2')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ipv4InterfaceContainer ns3::NoBackhaulEpcHelper::AssignUeIpv4Address(ns3::NetDeviceContainer ueDevices) [member function]
+    cls.add_method('AssignUeIpv4Address', 
+                   'ns3::Ipv4InterfaceContainer', 
+                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ipv6InterfaceContainer ns3::NoBackhaulEpcHelper::AssignUeIpv6Address(ns3::NetDeviceContainer ueDevices) [member function]
+    cls.add_method('AssignUeIpv6Address', 
+                   'ns3::Ipv6InterfaceContainer', 
+                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::TypeId ns3::NoBackhaulEpcHelper::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::NoBackhaulEpcHelper::GetPgwNode() const [member function]
+    cls.add_method('GetPgwNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::NoBackhaulEpcHelper::GetSgwNode() const [member function]
+    cls.add_method('GetSgwNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): static ns3::TypeId ns3::NoBackhaulEpcHelper::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ipv4Address ns3::NoBackhaulEpcHelper::GetUeDefaultGatewayAddress() [member function]
+    cls.add_method('GetUeDefaultGatewayAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): ns3::Ipv6Address ns3::NoBackhaulEpcHelper::GetUeDefaultGatewayAddress6() [member function]
+    cls.add_method('GetUeDefaultGatewayAddress6', 
+                   'ns3::Ipv6Address', 
+                   [], 
+                   is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::DoActivateEpsBearerForUe(ns3::Ptr<ns3::NetDevice> const & ueDevice, ns3::Ptr<ns3::EpcTft> const & tft, ns3::EpsBearer const & bearer) const [member function]
+    cls.add_method('DoActivateEpsBearerForUe', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice > const &', 'ueDevice'), param('ns3::Ptr< ns3::EpcTft > const &', 'tft'), param('ns3::EpsBearer const &', 'bearer')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## no-backhaul-epc-helper.h (module 'lte'): void ns3::NoBackhaulEpcHelper::DoAddX2Interface(ns3::Ptr<ns3::EpcX2> const & enb1X2, ns3::Ptr<ns3::NetDevice> const & enb1LteDev, ns3::Ipv4Address const & enb1X2Address, ns3::Ptr<ns3::EpcX2> const & enb2X2, ns3::Ptr<ns3::NetDevice> const & enb2LteDev, ns3::Ipv4Address const & enb2X2Address) const [member function]
+    cls.add_method('DoAddX2Interface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::EpcX2 > const &', 'enb1X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb1LteDev'), param('ns3::Ipv4Address const &', 'enb1X2Address'), param('ns3::Ptr< ns3::EpcX2 > const &', 'enb2X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb2LteDev'), param('ns3::Ipv4Address const &', 'enb2X2Address')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3NoOpComponentCarrierManager_methods(root_module, cls):
     ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager::NoOpComponentCarrierManager(ns3::NoOpComponentCarrierManager const & arg0) [constructor]
     cls.add_constructor([param('ns3::NoOpComponentCarrierManager const &', 'arg0')])
@@ -22481,7 +22479,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -22728,35 +22726,10 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::PointToPointEpcHelper const &', 'arg0')])
     ## point-to-point-epc-helper.h (module 'lte'): ns3::PointToPointEpcHelper::PointToPointEpcHelper() [constructor]
     cls.add_constructor([])
-    ## point-to-point-epc-helper.h (module 'lte'): uint8_t ns3::PointToPointEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
-    cls.add_method('ActivateEpsBearer', 
-                   'uint8_t', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
-                   is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
     cls.add_method('AddEnb', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'enbNode'), param('ns3::Ptr< ns3::NetDevice >', 'lteEnbNetDevice'), param('uint16_t', 'cellId')], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::AddUe(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi) [member function]
-    cls.add_method('AddUe', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi')], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::AddX2Interface(ns3::Ptr<ns3::Node> enbNode1, ns3::Ptr<ns3::Node> enbNode2) [member function]
-    cls.add_method('AddX2Interface', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'enbNode1'), param('ns3::Ptr< ns3::Node >', 'enbNode2')], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ipv4InterfaceContainer ns3::PointToPointEpcHelper::AssignUeIpv4Address(ns3::NetDeviceContainer ueDevices) [member function]
-    cls.add_method('AssignUeIpv4Address', 
-                   'ns3::Ipv4InterfaceContainer', 
-                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ipv6InterfaceContainer ns3::PointToPointEpcHelper::AssignUeIpv6Address(ns3::NetDeviceContainer ueDevices) [member function]
-    cls.add_method('AssignUeIpv6Address', 
-                   'ns3::Ipv6InterfaceContainer', 
-                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
                    is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -22768,36 +22741,11 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::PointToPointEpcHelper::GetPgwNode() const [member function]
-    cls.add_method('GetPgwNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): static ns3::TypeId ns3::PointToPointEpcHelper::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ipv4Address ns3::PointToPointEpcHelper::GetUeDefaultGatewayAddress() [member function]
-    cls.add_method('GetUeDefaultGatewayAddress', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ipv6Address ns3::PointToPointEpcHelper::GetUeDefaultGatewayAddress6() [member function]
-    cls.add_method('GetUeDefaultGatewayAddress6', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::DoActivateEpsBearerForUe(ns3::Ptr<ns3::NetDevice> const & ueDevice, ns3::Ptr<ns3::EpcTft> const & tft, ns3::EpsBearer const & bearer) const [member function]
-    cls.add_method('DoActivateEpsBearerForUe', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice > const &', 'ueDevice'), param('ns3::Ptr< ns3::EpcTft > const &', 'tft'), param('ns3::EpsBearer const &', 'bearer')], 
-                   is_const=True, visibility='protected', is_virtual=True)
-    ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::DoAddX2Interface(ns3::Ptr<ns3::EpcX2> const & enb1X2, ns3::Ptr<ns3::NetDevice> const & enb1LteDev, ns3::Ipv4Address const & enb1X2Address, ns3::Ptr<ns3::EpcX2> const & enb2X2, ns3::Ptr<ns3::NetDevice> const & enb2LteDev, ns3::Ipv4Address const & enb2X2Address) const [member function]
-    cls.add_method('DoAddX2Interface', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::EpcX2 > const &', 'enb1X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb1LteDev'), param('ns3::Ipv4Address const &', 'enb1X2Address'), param('ns3::Ptr< ns3::EpcX2 > const &', 'enb2X2'), param('ns3::Ptr< ns3::NetDevice > const &', 'enb2LteDev'), param('ns3::Ipv4Address const &', 'enb2X2Address')], 
-                   is_const=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3PointerChecker_methods(root_module, cls):
@@ -25577,43 +25525,18 @@ def register_Ns3EmuEpcHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::EmuEpcHelper const &', 'arg0')])
     ## emu-epc-helper.h (module 'lte'): ns3::EmuEpcHelper::EmuEpcHelper() [constructor]
     cls.add_constructor([])
-    ## emu-epc-helper.h (module 'lte'): uint8_t ns3::EmuEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
-    cls.add_method('ActivateEpsBearer', 
-                   'uint8_t', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
-                   is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
     cls.add_method('AddEnb', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'enbNode'), param('ns3::Ptr< ns3::NetDevice >', 'lteEnbNetDevice'), param('uint16_t', 'cellId')], 
-                   is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddUe(ns3::Ptr<ns3::NetDevice> ueLteDevice, uint64_t imsi) [member function]
-    cls.add_method('AddUe', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi')], 
                    is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddX2Interface(ns3::Ptr<ns3::Node> enbNode1, ns3::Ptr<ns3::Node> enbNode2) [member function]
     cls.add_method('AddX2Interface', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'enbNode1'), param('ns3::Ptr< ns3::Node >', 'enbNode2')], 
                    is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): ns3::Ipv4InterfaceContainer ns3::EmuEpcHelper::AssignUeIpv4Address(ns3::NetDeviceContainer ueDevices) [member function]
-    cls.add_method('AssignUeIpv4Address', 
-                   'ns3::Ipv4InterfaceContainer', 
-                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
-                   is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): ns3::Ipv6InterfaceContainer ns3::EmuEpcHelper::AssignUeIpv6Address(ns3::NetDeviceContainer ueDevices) [member function]
-    cls.add_method('AssignUeIpv6Address', 
-                   'ns3::Ipv6InterfaceContainer', 
-                   [param('ns3::NetDeviceContainer', 'ueDevices')], 
-                   is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::DoDispose() [member function]
     cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
                    'void', 
                    [], 
                    is_virtual=True)
@@ -25622,26 +25545,11 @@ def register_Ns3EmuEpcHelper_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::EmuEpcHelper::GetPgwNode() const [member function]
-    cls.add_method('GetPgwNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): static ns3::TypeId ns3::EmuEpcHelper::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## emu-epc-helper.h (module 'lte'): ns3::Ipv4Address ns3::EmuEpcHelper::GetUeDefaultGatewayAddress() [member function]
-    cls.add_method('GetUeDefaultGatewayAddress', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_virtual=True)
-    ## emu-epc-helper.h (module 'lte'): ns3::Ipv6Address ns3::EmuEpcHelper::GetUeDefaultGatewayAddress6() [member function]
-    cls.add_method('GetUeDefaultGatewayAddress6', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_virtual=True)
     return
 
 def register_Ns3FdBetFfMacScheduler_methods(root_module, cls):
