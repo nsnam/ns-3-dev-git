@@ -445,7 +445,6 @@ RedQueueDisc::InitializeParams (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Initializing RED params.");
 
-  m_cautious = 0;
   m_ptc = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
 
   if (m_isARED)
@@ -645,44 +644,8 @@ RedQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 
   double prob1 = CalculatePNew ();
   m_vProb = ModifyP (prob1, item->GetSize ());
-
-  // Drop probability is computed, pick random number and act
-  if (m_cautious == 1)
-    {
-      /*
-       * Don't drop/mark if the instantaneous queue is much below the average.
-       * For experimental purposes only.
-       * pkts: the number of packets arriving in 50 ms
-       */
-      double pkts = m_ptc * 0.05;
-      double fraction = std::pow ((1 - m_qW), pkts);
-
-      if ((double) qSize < fraction * m_qAvg)
-        {
-          // Queue could have been empty for 0.05 seconds
-          return 0;
-        }
-    }
-
   double u = m_uv->GetValue ();
 
-  if (m_cautious == 2)
-    {
-      /*
-       * Decrease the drop probability if the instantaneous
-       * queue is much below the average.
-       * For experimental purposes only.
-       * pkts: the number of packets arriving in 50 ms
-       */
-      double pkts = m_ptc * 0.05;
-      double fraction = std::pow ((1 - m_qW), pkts);
-      double ratio = qSize / (fraction * m_qAvg);
-
-      if (ratio < 1.0)
-        {
-          u *= 1.0 / ratio;
-        }
-    }
 
   if (u <= m_vProb)
     {

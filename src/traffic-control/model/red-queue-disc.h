@@ -308,7 +308,6 @@ private:
    * 2 experimental (see red-queue-disc.cc)
    * 3 use Idle packet size in the ptc
    */
-  uint32_t m_cautious;
   Time m_idleTime;          //!< Start of current idle period
 
   Ptr<UniformRandomVariable> m_uv;  //!< rng stream
