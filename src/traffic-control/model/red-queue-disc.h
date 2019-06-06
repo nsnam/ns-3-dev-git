@@ -298,7 +298,7 @@ private:
   uint32_t m_countBytes;    //!< Number of bytes since last drop
   uint32_t m_old;           //!< 0 when average queue first exceeds threshold
   uint32_t m_idle;          //!< 0/1 idle status
-  double m_ptc;             //!< packet time constant in packets/second
+  double m_pktTimeConst;             //!< packet time constant in packets/second
   double m_qAvg;            //!< Average queue length
   uint32_t m_count;         //!< Number of packets since last random number generation
   FengStatus m_fengStatus;  //!< For use in Feng's Adaptive RED

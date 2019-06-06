@@ -350,7 +350,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     {
       NS_LOG_DEBUG ("RED Queue Disc is idle.");
       Time now = Simulator::Now ();
-      m = uint32_t (m_ptc * (now - m_idleTime).GetSeconds ());
+      m = uint32_t (m_pktTimeConst * (now - m_idleTime).GetSeconds ());
       m_idle = 0;
     }
 
@@ -445,7 +445,7 @@ RedQueueDisc::InitializeParams (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Initializing RED params.");
 
-  m_ptc = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
+  m_pktTimeConst = m_linkBandwidth.GetBitRate () / (8.0 * m_meanPktSize);
 
   if (m_isARED)
     {
@@ -469,7 +469,7 @@ RedQueueDisc::InitializeParams (void)
       m_minTh = 5.0;
 
       // set m_minTh to max(m_minTh, targetqueue/2.0) [Ref: http://www.icir.org/floyd/papers/adaptiveRed.pdf]
-      double targetqueue = m_targetDelay.GetSeconds() * m_ptc;
+      double targetqueue = m_targetDelay.GetSeconds() * m_pktTimeConst;
 
       if (m_minTh < targetqueue / 2.0 )
         {
@@ -523,21 +523,21 @@ RedQueueDisc::InitializeParams (void)
  */
   if (m_qW == 0.0)
     {
-      m_qW = 1.0 - std::exp (-1.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-1.0 / m_pktTimeConst);
     }
   else if (m_qW == -1.0)
     {
-      double rtt = 3.0 * (m_linkDelay.GetSeconds () + 1.0 / m_ptc);
+      double rtt = 3.0 * (m_linkDelay.GetSeconds () + 1.0 / m_pktTimeConst);
 
       if (rtt < 0.1)
         {
           rtt = 0.1;
         }
-      m_qW = 1.0 - std::exp (-1.0 / (10 * rtt * m_ptc));
+      m_qW = 1.0 - std::exp (-1.0 / (10 * rtt * m_pktTimeConst));
     }
   else if (m_qW == -2.0)
     {
-      m_qW = 1.0 - std::exp (-10.0 / m_ptc);
+      m_qW = 1.0 - std::exp (-10.0 / m_pktTimeConst);
     }
 
   if (m_bottom == 0)
@@ -554,7 +554,7 @@ RedQueueDisc::InitializeParams (void)
     }
 
   NS_LOG_DEBUG ("\tm_delay " << m_linkDelay.GetSeconds () << "; m_isWait " 
-                             << m_isWait << "; m_qW " << m_qW << "; m_ptc " << m_ptc
+                             << m_isWait << "; m_qW " << m_qW << "; m_pktTimeConst " << m_pktTimeConst
                              << "; m_minTh " << m_minTh << "; m_maxTh " << m_maxTh
                              << "; m_isGentle " << m_isGentle << "; th_diff " << th_diff
                              << "; lInterm " << m_lInterm << "; va " << m_vA <<  "; cur_max_p "
