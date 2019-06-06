@@ -682,39 +682,27 @@ double
 RedQueueDisc::ModifyP (double p, uint32_t size)
 {
   NS_LOG_FUNCTION (this << p << size);
-  double count1 = (double) m_count;
+  double count = (double) m_count;
 
   if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
     {
-      count1 = (double) (m_countBytes / m_meanPktSize);
+      count = (double) (m_countBytes / m_meanPktSize);
     }
 
-  if (m_isWait)
-    {
-      if (count1 * p < 1.0)
-        {
-          p = 0.0;
-        }
-      else if (count1 * p < 2.0)
-        {
-          p /= (2.0 - count1 * p);
-        }
-      else
-        {
-          p = 1.0;
-        }
-    }
-  else
-    {
-      if (count1 * p < 1.0)
-        {
-          p /= (1.0 - count1 * p);
-        }
-      else
-        {
-          p = 1.0;
-        }
-    }
+
+    if (count * p < 1.0)
+      {
+        p = 0.0;
+      }
+    else if (count * p < 2.0)
+      {
+        p /= (2.0 - count * p);
+      }
+    else
+      {
+        p = 1.0;
+      }
+
 
   if ((GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES) && (p < 1.0))
     {
