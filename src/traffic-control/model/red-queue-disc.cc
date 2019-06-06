@@ -717,28 +717,41 @@ RedQueueDisc::ModifyP (double p, uint32_t size)
   return p;
 }
 
+int RedQueueDisc::IsQueueEmpty()
+{
+    if (GetInternalQueue (0)->IsEmpty ())
+    {
+      NS_LOG_LOGIC ("Queue empty");
+      m_idle = true;
+      m_idleTime = Simulator::Now ();
+
+      return 1;
+    }
+    return 0;
+}
+
 Ptr<QueueDiscItem>
 RedQueueDisc::DoDequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (GetInternalQueue (0)->IsEmpty ())
+  
+    if (GetInternalQueue (0)->IsEmpty ())
     {
-      NS_LOG_LOGIC ("Queue empty");
-      m_idle = 1;
-      m_idleTime = Simulator::Now ();
-
       return 0;
     }
-  else
+
+    else
     {
-      m_idle = 0;
       Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
 
       NS_LOG_LOGIC ("Popped " << item);
 
       NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
       NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
+
+      //checking if queue becomes empty after dequeue
+      IsQueueEmpty();
 
       return item;
     }
