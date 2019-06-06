@@ -508,37 +508,6 @@ RedQueueDisc::InitializeParams (void)
     }
   m_idleTime = NanoSeconds (0);
 
-/*
- * If m_qW=0, set it to a reasonable value of 1-exp(-1/C)
- * This corresponds to choosing m_qW to be of that value for
- * which the packet time constant -1/ln(1-m)qW) per default RTT 
- * of 100ms is an order of magnitude more than the link capacity, C.
- *
- * If m_qW=-1, then the queue weight is set to be a function of
- * the bandwidth and the link propagation delay.  In particular, 
- * the default RTT is assumed to be three times the link delay and 
- * transmission delay, if this gives a default RTT greater than 100 ms. 
- *
- * If m_qW=-2, set it to a reasonable value of 1-exp(-10/C).
- */
-  if (m_qW == 0.0)
-    {
-      m_qW = 1.0 - std::exp (-1.0 / m_pktTimeConst);
-    }
-  else if (m_qW == -1.0)
-    {
-      double rtt = 3.0 * (m_linkDelay.GetSeconds () + 1.0 / m_pktTimeConst);
-
-      if (rtt < 0.1)
-        {
-          rtt = 0.1;
-        }
-      m_qW = 1.0 - std::exp (-1.0 / (10 * rtt * m_pktTimeConst));
-    }
-  else if (m_qW == -2.0)
-    {
-      m_qW = 1.0 - std::exp (-10.0 / m_pktTimeConst);
-    }
 
   if (m_bottom == 0)
     {
