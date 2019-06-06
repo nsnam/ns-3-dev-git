@@ -350,17 +350,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     {
       NS_LOG_DEBUG ("RED Queue Disc is idle.");
       Time now = Simulator::Now ();
-
-      if (m_cautious == 3)
-        {
-          double ptc = m_ptc * m_meanPktSize / m_idlePktSize;
-          m = uint32_t (ptc * (now - m_idleTime).GetSeconds ());
-        }
-      else
-        {
-          m = uint32_t (m_ptc * (now - m_idleTime).GetSeconds ());
-        }
-
+      m = uint32_t (m_ptc * (now - m_idleTime).GetSeconds ());
       m_idle = 0;
     }
 
