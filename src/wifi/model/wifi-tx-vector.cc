@@ -201,6 +201,15 @@ WifiTxVector::SetMode (WifiMode mode)
 }
 
 void
+WifiTxVector::SetMode (WifiMode mode, uint16_t staId)
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "Not an HE MU transmission");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  m_muUserInfos[staId].mcs = mode;
+  m_modeInitialized = true;
+}
+
+void
 WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
   m_txPowerLevel = powerlevel;

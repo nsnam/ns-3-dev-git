@@ -128,6 +128,14 @@ public:
   */
   void SetMode (WifiMode mode);
   /**
+  * Sets the selected payload transmission mode for a given STA ID (for HE MU only)
+  *
+  * \param mode
+   * \param staId the station ID for HE MU
+  */
+  void SetMode (WifiMode mode, uint16_t staId);
+
+  /**
    * \returns the transmission power level
    */
   uint8_t GetTxPowerLevel (void) const;
