@@ -407,6 +407,34 @@ SpectrumWifiPhyFilterTest::RxCallback (Ptr<const Packet> p, RxPowerWattPerChanne
   expectedNumBands += (m_rxChannelWidth / 40);
   expectedNumBands += (m_rxChannelWidth / 80);
   expectedNumBands += (m_rxChannelWidth / 160);
+  if (m_rxChannelWidth == 20)
+    {
+      expectedNumBands += 9; /* RU_26_TONE */
+      expectedNumBands += 4; /* RU_52_TONE */
+      expectedNumBands += 2; /* RU_106_TONE */
+      expectedNumBands += 1; /* RU_242_TONE */
+    }
+  else if (m_rxChannelWidth == 40)
+    {
+      expectedNumBands += 18; /* RU_26_TONE */
+      expectedNumBands += 8; /* RU_52_TONE */
+      expectedNumBands += 4; /* RU_106_TONE */
+      expectedNumBands += 2; /* RU_242_TONE */
+      expectedNumBands += 1; /* RU_484_TONE */
+    }
+  else if (m_rxChannelWidth >= 80)
+    {
+      expectedNumBands += 37 * (m_rxChannelWidth / 80); /* RU_26_TONE */
+      expectedNumBands += 16 * (m_rxChannelWidth / 80); /* RU_52_TONE */
+      expectedNumBands += 8 * (m_rxChannelWidth / 80); /* RU_106_TONE */
+      expectedNumBands += 4 * (m_rxChannelWidth / 80); /* RU_242_TONE */
+      expectedNumBands += 2 * (m_rxChannelWidth / 80); /* RU_484_TONE */
+      expectedNumBands += 1 * (m_rxChannelWidth / 80); /* RU_996_TONE */
+      if (m_rxChannelWidth == 160)
+        {
+          ++expectedNumBands; /* RU_2x996_TONE */
+        }
+    }
   NS_TEST_ASSERT_MSG_EQ (numBands, expectedNumBands, "Total number of bands handled by the receiver is incorrect");
 
   uint16_t channelWidth = std::min (m_txChannelWidth, m_rxChannelWidth);
@@ -441,6 +469,9 @@ SpectrumWifiPhyFilterTest::RxCallback (Ptr<const Packet> p, RxPowerWattPerChanne
 void
 SpectrumWifiPhyFilterTest::DoSetup (void)
 {
+  //WifiHelper::EnableLogComponents ();
+  //LogComponentEnable ("SpectrumWifiPhyBasicTest", LOG_LEVEL_ALL);
+
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
   lossModel->SetFrequency (5.180e9);

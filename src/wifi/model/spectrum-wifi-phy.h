@@ -192,11 +192,11 @@ private:
   /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
    * \param range the subcarrier range of the HE RU
-   * \return the converted indices
+   * \return the converted subcarriers
    *
-   * This is a helper function to convert HE RU indices, which are relative to the center frequency subcarrier, to the indices used by the Spectrum model.
+   * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
    */
-  WifiSpectrumBand ConvertHeRuIndices (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
+  WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
 
   /**
    * Perform run-time spectrum model change
