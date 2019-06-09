@@ -72,6 +72,12 @@ The key attributes that the FqCoDelQueue class holds include the following:
 * ``DropBatchSize:`` The maximum number of packets dropped from the fat flow.
 * ``Perturbation:`` The salt used as an additional input to the hash function used to classify packets.
 
+Perturbation is an optional configuration attribute and can be used to generate
+different hash outcomes for different inputs.  For instance, the tuples
+used as input to the hash may cause hash collisions (mapping to the same
+bucket) for a given set of inputs, but by changing the perturbation value,
+the same hash inputs now map to distinct buckets.
+
 Note that the quantum, i.e., the number of bytes each queue gets to dequeue on
 each round of the scheduling algorithm, is set by default to the MTU size of the
 device (at initialisation time). The ``FqCoDelQueueDisc::SetQuantum ()`` method
