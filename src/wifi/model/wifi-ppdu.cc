@@ -44,7 +44,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
 
 WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
   : m_preamble (txVector.GetPreambleType ()),
-    m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
+    m_modulation (txVector.IsValid () ? txVector.GetMode (psdus.begin()->first).GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_psdus (psdus),
     m_truncatedTx (false),
     m_band (band),
@@ -153,11 +153,11 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
           else if (m_preamble != WIFI_PREAMBLE_HE_TB)
             {
               m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+              m_heSig.SetNStreams (txVector.GetNss ());
             }
           m_heSig.SetBssColor (txVector.GetBssColor ());
           m_heSig.SetChannelWidth (m_channelWidth);
           m_heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
-          m_heSig.SetNStreams (txVector.GetNss ());
           m_heSig.SetCoding (txVector.IsLdpc ());
           break;
         }
@@ -363,7 +363,7 @@ WifiPpdu::GetTxVector (void) const
   txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
   for (auto const& muUserInfo : m_muUserInfos)
     {
-      txVector.SetMode (muUserInfo.second.mcs, muUserInfo.first);
+      txVector.SetHeMuUserInfo (muUserInfo.first, muUserInfo.second);
     }
   return txVector;
 }
