@@ -3050,7 +3050,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
       if (psdu)
         {
-          WifiMode txMode = txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU ? txVector.GetMode (GetStaId ()) : txVector.GetMode ();
+          WifiMode txMode = txVector.GetMode (GetStaId ());
           uint8_t nss = txVector.GetNssMax();
           if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
             {
@@ -3205,7 +3205,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
       //At least one MPDU has been successfully received
       WifiTxVector txVector = event->GetTxVector ();
       NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, m_signalNoise, m_statusPerMpdu);
-      m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, m_statusPerMpdu);
+      m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, staId, m_statusPerMpdu);
     }
   else
     {

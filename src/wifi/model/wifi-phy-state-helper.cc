@@ -475,13 +475,13 @@ WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, double snr, WifiTxVe
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << snr << txVector << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
   NS_ASSERT (statusPerMpdu.size () != 0);
   NS_ASSERT (m_endRx == Simulator::Now ());
-  m_rxOkTrace (psdu->GetPacket (), snr, txVector.GetMode (), txVector.GetPreambleType ());
+  m_rxOkTrace (psdu->GetPacket (), snr, txVector.GetMode (staId), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())

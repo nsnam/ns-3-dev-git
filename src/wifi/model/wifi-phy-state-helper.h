@@ -197,9 +197,10 @@ public:
    * \param psdu the successfully received PSDU
    * \param snr the SNR of the received PSDU in linear scale
    * \param txVector TXVECTOR of the PSDU
+   * \param staId the station ID of the PSDU (only used for MU)
    * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu);
   /**
    * Switch from RX after the reception failed.
    *

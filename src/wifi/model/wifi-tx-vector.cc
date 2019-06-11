@@ -377,13 +377,11 @@ WifiTxVector::GetHeMuUserInfoMap (void) const
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
-  os << "mode: " << v.GetMode ()
-     << " txpwrlvl: " << +v.GetTxPowerLevel ()
+  os << "txpwrlvl: " << +v.GetTxPowerLevel ()
      << " preamble: " << v.GetPreambleType ()
      << " channel width: " << v.GetChannelWidth ()
      << " GI: " << v.GetGuardInterval ()
      << " NTx: " << +v.GetNTx ()
-     << " Nss: " << +v.GetNss ()
      << " Ness: " << +v.GetNess ()
      << " MPDU aggregation: " << v.IsAggregation ()
      << " STBC: " << v.IsStbc ()
@@ -399,6 +397,11 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
              << ", MCS: " << ui.second.mcs
              << ", Nss: " << +ui.second.nss << "}";
         }
+    }
+  else
+    {
+      os << " mode: " << v.GetMode ()
+         << " Nss: " << +v.GetNss ();
     }
   return os;
 }
