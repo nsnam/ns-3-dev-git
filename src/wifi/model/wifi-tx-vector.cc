@@ -256,6 +256,14 @@ WifiTxVector::SetNss (uint8_t nss)
 }
 
 void
+WifiTxVector::SetNss (uint8_t nss, uint16_t staId)
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "Not an HE MU transmission");
+  NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
+  m_muUserInfos[staId].nss = nss;
+}
+
+void
 WifiTxVector::SetNess (uint8_t ness)
 {
   m_ness = ness;
