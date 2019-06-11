@@ -2545,6 +2545,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
 {
   Time duration = CalculatePhyPreambleAndHeaderDuration (txVector)
     + GetPayloadDuration (size, txVector, band, NORMAL_MPDU, staId);
+  NS_ASSERT (duration.IsStrictlyPositive ());
   return duration;
 }
 
@@ -2737,8 +2738,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
       return;
     }
 
-  Time txDuration = CalculateTxDuration (psdus.at (SU_STA_ID)->GetSize (), txVector, GetPhyBand ()); //TODO: extend CalculateTxDuration for MU
-  NS_ASSERT (txDuration.IsStrictlyPositive ());
+  Time txDuration = CalculateTxDuration (psdus, txVector, GetPhyBand ());
 
   if ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ())))
     {
