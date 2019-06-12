@@ -2723,7 +2723,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
   NS_ASSERT (m_endTxEvent.IsExpired ());
 
-  if (txVector.GetNss () > GetMaxSupportedTxSpatialStreams ())
+  if (txVector.GetNssMax () > GetMaxSupportedTxSpatialStreams ())
     {
       NS_FATAL_ERROR ("Unsupported number of spatial streams!");
     }
@@ -2768,8 +2768,8 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
 
   double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
   NotifyTxBegin (psdus, txPowerW);
-  m_phyTxPsduBeginTrace (psdus.at (SU_STA_ID), txVector, txPowerW); // TODO: fix for MU
-  NotifyMonitorSniffTx (psdus.at (SU_STA_ID), GetFrequency (), txVector); //TODO: fix for MU
+  m_phyTxPsduBeginTrace (psdus.begin()->second, txVector, txPowerW); // TODO: fix for MU
+  NotifyMonitorSniffTx (psdus.begin()->second, GetFrequency (), txVector); //TODO: fix for MU
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
   Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, txDuration, GetPhyBand ());
@@ -4567,7 +4567,7 @@ WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector) const
     }
   else
     {
-      if (txVector.GetNss () > 1)
+      if (txVector.GetNssMax () > 1)
         {
           return std::min (m_txPowerMaxMimo, GetPowerDbm (txVector.GetTxPowerLevel ()));
         }
