@@ -110,7 +110,7 @@ WifiTxVector::GetMode (uint16_t staId) const
     {
       NS_FATAL_ERROR ("WifiTxVector mode must be set before using");
     }
-  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+  if (IsMu ())
     {
       NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
       NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
@@ -169,7 +169,7 @@ WifiTxVector::GetNTx (void) const
 uint8_t
 WifiTxVector::GetNss (uint16_t staId) const
 {
-  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+  if (IsMu ())
     {
       NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU (" << staId << ")");
       NS_ASSERT (m_muUserInfos.find (staId) != m_muUserInfos.end ());
@@ -182,7 +182,7 @@ uint8_t
 WifiTxVector::GetNssMax (void) const
 {
   uint8_t nss = 0;
-  if (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB)
+  if (IsMu ())
     {
       for (const auto & info : m_muUserInfos)
         {
@@ -230,7 +230,7 @@ WifiTxVector::SetMode (WifiMode mode)
 void
 WifiTxVector::SetMode (WifiMode mode, uint16_t staId)
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "Not an HE MU transmission");
+  NS_ABORT_MSG_IF (!IsMu (), "Not an HE MU transmission");
   NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
   m_muUserInfos[staId].mcs = mode;
   m_modeInitialized = true;
@@ -275,7 +275,7 @@ WifiTxVector::SetNss (uint8_t nss)
 void
 WifiTxVector::SetNss (uint8_t nss, uint16_t staId)
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "Not an HE MU transmission");
+  NS_ABORT_MSG_IF (!IsMu (), "Not an HE MU transmission");
   NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
   m_muUserInfos[staId].nss = nss;
 }
@@ -352,10 +352,16 @@ WifiTxVector::IsValid (void) const
   return true;
 }
 
+bool
+WifiTxVector::IsMu (void) const
+{
+  return (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB);
+}
+
 HeRu::RuSpec
 WifiTxVector::GetRu (uint16_t staId) const
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "RU only available for MU");
+  NS_ABORT_MSG_IF (!IsMu (), "RU only available for MU");
   NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
   return m_muUserInfos.at (staId).ru;
 }
@@ -363,7 +369,7 @@ WifiTxVector::GetRu (uint16_t staId) const
 void
 WifiTxVector::SetRu (HeRu::RuSpec ru, uint16_t staId)
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "RU only available for MU");
+  NS_ABORT_MSG_IF (!IsMu (), "RU only available for MU");
   NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
   m_muUserInfos[staId].ru = ru;
 }
@@ -371,14 +377,14 @@ WifiTxVector::SetRu (HeRu::RuSpec ru, uint16_t staId)
 HeMuUserInfo
 WifiTxVector::GetHeMuUserInfo (uint16_t staId) const
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info only available for MU");
+  NS_ABORT_MSG_IF (!IsMu (), "HE MU user info only available for MU");
   return m_muUserInfos.at (staId);
 }
 
 void
 WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info only available for MU");
+  NS_ABORT_MSG_IF (!IsMu (), "HE MU user info only available for MU");
   NS_ABORT_MSG_IF (staId > 2048, "STA-ID should be correctly set for HE MU");
   NS_ABORT_MSG_IF (userInfo.mcs.GetModulationClass () != WIFI_MOD_CLASS_HE, "Only HE modes authorized for HE MU");
   m_muUserInfos[staId] = userInfo;
@@ -388,7 +394,7 @@ WifiTxVector::SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo)
 const WifiTxVector::HeMuUserInfoMap&
 WifiTxVector::GetHeMuUserInfoMap (void) const
 {
-  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE MU user info map only available for MU");
+  NS_ABORT_MSG_IF (!IsMu (), "HE MU user info map only available for MU");
   return m_muUserInfos;
 }
 
@@ -408,7 +414,7 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
      << " MPDU aggregation: " << v.IsAggregation ()
      << " STBC: " << v.IsStbc ()
      << " FEC coding: " << (v.IsLdpc () ? "LDPC" : "BCC");
-  if (v.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+  if (v.IsMu ())
     {
       WifiTxVector::HeMuUserInfoMap userInfoMap = v.GetHeMuUserInfoMap ();
       os << " num User Infos: " << userInfoMap.size ();

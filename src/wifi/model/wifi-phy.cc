@@ -3243,7 +3243,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
   WifiTxVector txVector = event->GetTxVector ();
   uint16_t channelWidth = std::min (GetChannelWidth (), txVector.GetChannelWidth ());
   WifiSpectrumBand band;
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+  if (txVector.IsMu ())
     {
       band = GetRuBand (txVector, staId);
       channelWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
@@ -3278,7 +3278,7 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
   uint16_t channelWidth = std::min (GetChannelWidth (), event->GetTxVector ().GetChannelWidth ());
   WifiTxVector txVector = event->GetTxVector ();
   WifiSpectrumBand band;
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+  if (txVector.IsMu ())
     {
       band = GetRuBand (txVector, staId);
       channelWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
@@ -3317,7 +3317,7 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
 WifiSpectrumBand
 WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId)
 {
-  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU);
+  NS_ASSERT (txVector.IsMu ());
   WifiSpectrumBand band;
   HeRu::RuSpec ru = txVector.GetRu (staId);
   uint16_t channelWidth = txVector.GetChannelWidth ();

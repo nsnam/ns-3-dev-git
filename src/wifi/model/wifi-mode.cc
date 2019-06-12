@@ -115,8 +115,7 @@ WifiMode::GetDataRate (WifiTxVector txVector, uint16_t staId) const
 {
   uint16_t bw = txVector.GetChannelWidth ();
   uint8_t nss = txVector.GetNss (staId);
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU
-      || txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+  if (txVector.IsMu ())
     {
       bw = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
     }

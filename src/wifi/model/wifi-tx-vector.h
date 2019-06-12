@@ -288,6 +288,12 @@ public:
    */
   bool IsValid (void) const;
    /**
+   * Return true if this TX vector is used for a multi-user transmission.
+   *
+   * \return true if this TX vector is used for a multi-user transmission
+   */
+  bool IsMu (void) const;
+  /**
     * Get the RU specification for the STA-ID.
     * This is applicable only for HE MU.
     *
