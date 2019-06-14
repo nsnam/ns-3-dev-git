@@ -818,13 +818,6 @@ BlockAckManager::SetStartingSequence (Mac48Address recipient, uint8_t tid, uint1
 }
 
 void
-BlockAckManager::SetMaxPacketDelay (Time maxDelay)
-{
-  NS_LOG_FUNCTION (this << maxDelay);
-  m_maxDelay = maxDelay;
-}
-
-void
 BlockAckManager::SetBlockAckInactivityCallback (Callback<void, Mac48Address, uint8_t, bool> callback)
 {
   NS_LOG_FUNCTION (this << &callback);

@@ -304,13 +304,6 @@ public:
    * See ctrl-headers.h for more details.
    */
   void SetBlockAckType (BlockAckType bAckType);
-  /**
-   * \param maxDelay Max delay for a buffered packet.
-   *
-   * This method is always called by ns3::WifiMacQueue object and sets max delay equals
-   * to ns3:WifiMacQueue delay value.
-   */
-  void SetMaxPacketDelay (Time maxDelay);
 
   /**
    * Set block ack inactivity callback
@@ -523,7 +516,6 @@ private:
 
   uint8_t m_blockAckThreshold; ///< block ack threshold
   BlockAckType m_blockAckType; ///< block ack type
-  Time m_maxDelay; ///< maximum delay
   Ptr<MacTxMiddle> m_txMiddle; ///< the MacTxMiddle
   Mac48Address m_address; ///< address
   Ptr<WifiMacQueue> m_queue; ///< queue

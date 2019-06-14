@@ -103,7 +103,6 @@ QosTxop::QosTxop ()
   m_baManager->SetBlockAckType (m_blockAckType);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
   m_baManager->SetUnblockDestinationCallback (MakeCallback (&QosBlockedDestinations::Unblock, m_qosBlockedDestinations));
-  m_baManager->SetMaxPacketDelay (m_queue->GetMaxDelay ());
   m_baManager->SetTxOkCallback (MakeCallback (&QosTxop::BaTxOk, this));
   m_baManager->SetTxFailedCallback (MakeCallback (&QosTxop::BaTxFailed, this));
 }
