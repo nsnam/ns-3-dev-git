@@ -13003,10 +13003,6 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('SetBlockAckType', 
                    'void', 
                    [param('ns3::BlockAckType', 'bAckType')])
-    ## block-ack-manager.h (module 'wifi'): void ns3::BlockAckManager::SetMaxPacketDelay(ns3::Time maxDelay) [member function]
-    cls.add_method('SetMaxPacketDelay', 
-                   'void', 
-                   [param('ns3::Time', 'maxDelay')])
     ## block-ack-manager.h (module 'wifi'): void ns3::BlockAckManager::SetBlockAckInactivityCallback(ns3::Callback<void, ns3::Mac48Address, unsigned char, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetBlockAckInactivityCallback', 
                    'void', 
