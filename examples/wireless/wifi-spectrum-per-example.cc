@@ -461,7 +461,7 @@ int main (int argc, char *argv[])
 
           UdpClientHelper client (staNodeInterface.GetAddress (0), port);
           client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-          client.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
+          client.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
           client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
           ApplicationContainer clientApp = client.Install (wifiApNode.Get (0));
           clientApp.Start (Seconds (1.0));

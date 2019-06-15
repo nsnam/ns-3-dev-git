@@ -159,7 +159,7 @@ int main (int argc, char *argv[])
 
   UdpClientHelper client (ApInterface.GetAddress (0), port);
   client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  client.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  client.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   // Saturated UDP traffic from stations to AP

@@ -257,7 +257,7 @@ int main (int argc, char *argv[])
 
   UdpClientHelper clientA (StaInterfaceA.GetAddress (0), port);
   clientA.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  clientA.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientA.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientA.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppA = clientA.Install (wifiApNodes.Get (0));
@@ -271,7 +271,7 @@ int main (int argc, char *argv[])
 
   UdpClientHelper clientB (StaInterfaceB.GetAddress (0), port);
   clientB.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  clientB.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientB.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientB.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppB = clientB.Install (wifiApNodes.Get (1));
@@ -285,7 +285,7 @@ int main (int argc, char *argv[])
 
   UdpClientHelper clientC (StaInterfaceC.GetAddress (0), port);
   clientC.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  clientC.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientC.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientC.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppC = clientC.Install (wifiApNodes.Get (2));
@@ -299,7 +299,7 @@ int main (int argc, char *argv[])
 
   UdpClientHelper clientD (StaInterfaceD.GetAddress (0), port);
   clientD.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-  clientD.SetAttribute ("Interval", TimeValue (Time ("0.00002"))); //packets/s
+  clientD.SetAttribute ("Interval", TimeValue (Time ("0.0001"))); //packets/s
   clientD.SetAttribute ("PacketSize", UintegerValue (payloadSize));
 
   ApplicationContainer clientAppD = clientD.Install (wifiApNodes.Get (3));
@@ -331,7 +331,7 @@ int main (int argc, char *argv[])
 
   double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 59 || throughput > 60))
+  if (verifyResults && (throughput < 58.5 || throughput > 59.5))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -339,7 +339,7 @@ int main (int argc, char *argv[])
 
   throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 30 || throughput > 30.5))
+  if (verifyResults && (throughput < 30 || throughput > 31))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
