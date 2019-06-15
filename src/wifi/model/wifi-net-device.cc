@@ -140,9 +140,18 @@ void
 WifiNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  m_phy->Initialize ();
-  m_mac->Initialize ();
-  m_stationManager->Initialize ();
+  if (m_phy)
+    {
+      m_phy->Initialize ();
+    }
+  if (m_mac)
+    {
+      m_mac->Initialize ();
+    }
+  if (m_stationManager)
+    {
+      m_stationManager->Initialize ();
+    }
   NetDevice::DoInitialize ();
 }
 
