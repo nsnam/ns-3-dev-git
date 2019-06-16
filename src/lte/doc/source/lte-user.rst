@@ -649,7 +649,7 @@ antenna module. The configuration of the eNB is to be done via the
   
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (60);
+  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (60));
   lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
 
 the above code will generate an antenna model with a 60 degrees
