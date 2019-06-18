@@ -408,11 +408,11 @@ public:
    */
   static Time GetPhySigA2Duration (WifiPreamble preamble);
   /**
-   * \param preamble the type of preamble
+   * \param txVector the transmission parameters used for this packet
    *
    * \return the duration of the SIG-B in PHY header
    */
-  static Time GetPhySigBDuration (WifiPreamble preamble);
+  static Time GetPhySigBDuration (WifiTxVector txVector);
   /**
    * \param txVector the transmission parameters used for this packet
    *

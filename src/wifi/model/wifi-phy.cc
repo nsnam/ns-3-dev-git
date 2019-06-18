@@ -2025,9 +2025,9 @@ WifiPhy::GetPhySigA2Duration (WifiPreamble preamble)
 }
 
 Time
-WifiPhy::GetPhySigBDuration (WifiPreamble preamble)
+WifiPhy::GetPhySigBDuration (WifiTxVector txVector)
 {
-  switch (preamble)
+  switch (txVector.GetPreambleType ())
     {
     case WIFI_PREAMBLE_VHT_MU:
     case WIFI_PREAMBLE_HE_MU:
@@ -2538,7 +2538,7 @@ WifiPhy::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector)
     + GetPhySigA1Duration (preamble)
     + GetPhySigA2Duration (preamble)
     + GetPhyTrainingSymbolDuration (txVector)
-    + GetPhySigBDuration (preamble);
+    + GetPhySigBDuration (txVector);
   return duration;
 }
 
