@@ -207,9 +207,6 @@ HeRu::GetSubcarrierGroup (uint8_t bw, RuType ruType, std::size_t index)
   return group;
 }
 
-#ifdef NOTYET
-// Currently unused methods planned for ns-3.34; causing
-// problems with API scanning (see issue #308)
 bool
 HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v)
 {
@@ -256,7 +253,6 @@ HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const SubcarrierGroup &toneRanges)
     }
   return false;
 }
-#endif
 
 std::ostream& operator<< (std::ostream& os, const HeRu::RuType &ruType)
 {

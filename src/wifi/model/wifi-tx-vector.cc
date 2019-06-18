@@ -398,6 +398,68 @@ WifiTxVector::GetHeMuUserInfoMap (void) const
   return m_muUserInfos;
 }
 
+std::pair<std::size_t, std::size_t>
+WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
+{
+  NS_ABORT_MSG_IF (m_preamble != WIFI_PREAMBLE_HE_MU, "HE-SIG-B content channels only available for HE MU");
+  //MU-MIMO is not handled for now, i.e. one station per RU
+
+  if (m_channelWidth == 20)
+    {
+      return std::make_pair (m_muUserInfos.size (), 0); //all RUs are in HE-SIG-B content channel 1
+    }
+
+  HeRu::SubcarrierGroup toneRangesContentChannel1, toneRangesContentChannel2;
+  // See section 27.3.10.8.3 of IEEE 802.11ax draft 4.0 for tone ranges per HE-SIG-B content channel
+  switch (m_channelWidth)
+    {
+      case 40:
+        toneRangesContentChannel1.push_back (std::make_pair (-244, -3));
+        toneRangesContentChannel2.push_back (std::make_pair (3, 244));
+        break;
+      case 80:
+        toneRangesContentChannel1.push_back (std::make_pair (-500, -259));
+        toneRangesContentChannel2.push_back (std::make_pair (-258, -17));
+        toneRangesContentChannel1.push_back (std::make_pair (-16, -4)); //first part of center carrier (in HE-SIG-B content channel 1)
+        toneRangesContentChannel1.push_back (std::make_pair (4, 16)); //second part of center carrier (in HE-SIG-B content channel 1)
+        toneRangesContentChannel1.push_back (std::make_pair (17, 258));
+        toneRangesContentChannel2.push_back (std::make_pair (259, 500));
+        break;
+      case 160:
+        toneRangesContentChannel1.push_back (std::make_pair (-1012, -771));
+        toneRangesContentChannel2.push_back (std::make_pair (-770, -529));
+        toneRangesContentChannel1.push_back (std::make_pair (-528, -516)); //first part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
+        toneRangesContentChannel1.push_back (std::make_pair (-508, -496)); //second part of center carrier of lower 80 MHz band (in HE-SIG-B content channel 1)
+        toneRangesContentChannel1.push_back (std::make_pair (-495, -254));
+        toneRangesContentChannel2.push_back (std::make_pair (-253, -12));
+        toneRangesContentChannel1.push_back (std::make_pair (12, 253));
+        toneRangesContentChannel2.push_back (std::make_pair (254, 495));
+        toneRangesContentChannel2.push_back (std::make_pair (496, 508)); //first part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
+        toneRangesContentChannel2.push_back (std::make_pair (516, 528)); //second part of center carrier of upper 80 MHz band (in HE-SIG-B content channel 2)
+        toneRangesContentChannel1.push_back (std::make_pair (529, 770));
+        toneRangesContentChannel2.push_back (std::make_pair (771, 1012));
+        break;
+      default:
+        NS_ABORT_MSG ("Unknown channel width: " << m_channelWidth);
+    }
+
+  std::size_t numRusContentChannel1 = 0;
+  std::size_t numRusContentChannel2 = 0;
+  for (auto & userInfo : m_muUserInfos)
+    {
+      HeRu::RuSpec ru = userInfo.second.ru;
+      if (HeRu::DoesOverlap (m_channelWidth, ru, toneRangesContentChannel1))
+        {
+          numRusContentChannel1++;
+        }
+      if (HeRu::DoesOverlap (m_channelWidth, ru, toneRangesContentChannel2))
+        {
+          numRusContentChannel2++;
+        }
+    }
+  return std::make_pair (numRusContentChannel1, numRusContentChannel2);
+}
+
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   if (!v.IsValid ())
