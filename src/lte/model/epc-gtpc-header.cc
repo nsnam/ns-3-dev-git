@@ -394,7 +394,7 @@ GtpcIes::DeserializeBearerTft (Buffer::Iterator &i, Ptr<EpcTft> epcTft)
   return GetSerializedSizeBearerTft (epcTft->GetPacketFilters ());
 }
 
-inline uint32_t
+uint32_t
 GtpcIes::GetSerializedSizeBearerTft (std::list<EpcTft::PacketFilter> packetFilters) const
 {
   return (5 + packetFilters.size () * serializedSizePacketFilter);
