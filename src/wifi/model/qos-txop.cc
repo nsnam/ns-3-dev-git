@@ -474,6 +474,12 @@ QosTxop::NotifyAccessGranted (void)
       NS_LOG_DEBUG ("the lifetime of current packet expired");
       m_currentPacket = 0;
     }
+  // If the current packet is a QoS Data frame, then there must be no block ack agreement
+  // established with the receiver for the TID of the packet. Indeed, retransmission
+  // of MPDUs sent under a block ack agreement is handled through the retransmit queue.
+  NS_ASSERT (m_currentPacket == 0 || !m_currentHdr.IsQosData ()
+             || !GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ()));
+
   if (m_currentPacket == 0)
     {
       if (m_baManager->HasBar (m_currentBar))
@@ -1412,6 +1418,22 @@ QosTxop::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address r
   if (respHdr->GetStatusCode ().IsSuccess ())
     {
       NS_LOG_DEBUG ("block ack agreement established with " << recipient);
+      // Even though a (destination, TID) pair is "blocked" (i.e., no more packets
+      // are sent) when an Add BA Request is sent to the destination,
+      // the current packet may still be non-null when the Add BA Response is received.
+      // In fact, if the Add BA Request timer expires, the (destination, TID) pair is
+      // "unblocked" and packets to the destination are sent again (under normal
+      // ack policy). Thus, there may be a packet needing to be retransmitted
+      // when the Add BA Response is received. If this is the case, let the Block
+      // Ack manager handle its retransmission.
+      if (m_currentPacket != 0 && m_currentHdr.IsQosData ()
+          && m_currentHdr.GetAddr1 () == recipient && m_currentHdr.GetQosTid () == tid)
+        {
+          Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr,
+                                                                 m_currentPacketTimestamp);
+          m_baManager->GetRetransmitQueue ()->Enqueue (mpdu);
+          m_currentPacket = 0;
+        }
       m_baManager->UpdateAgreement (respHdr, recipient);
     }
   else

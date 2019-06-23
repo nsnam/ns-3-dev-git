@@ -195,9 +195,22 @@ BlockAckManager::UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Ad
       agreement.SetBufferSize (respHdr->GetBufferSize () + 1);
       agreement.SetTimeout (respHdr->GetTimeout ());
       agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
-      // update the starting sequence number because some frames may have been sent
-      // under Normal Ack policy after the transmission of the ADDBA Request frame
-      agreement.SetStartingSequence (m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient));
+      // When the Add BA Response is received, there may be a packet transmitted
+      // under the normal ack policy that needs to be retransmitted. If so, such
+      // packet is placed in the retransmit queue. If this is the case, the starting
+      // sequence number is the sequence number of such packet. Otherwise, it is
+      // the sequence number that will be assigned to the next packet to be transmitted.
+      uint16_t startSeq;
+      WifiMacQueue::ConstIterator mpduIt = m_retryPackets->PeekByTidAndAddress (tid, recipient);
+      if (mpduIt != m_retryPackets->end ())
+        {
+          startSeq = (*mpduIt)->GetHeader ().GetSequenceNumber ();
+        }
+      else
+        {
+          startSeq = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
+        }
+      agreement.SetStartingSequence (startSeq);
       agreement.InitTxWindow ();
       if (respHdr->IsImmediateBlockAck ())
         {
