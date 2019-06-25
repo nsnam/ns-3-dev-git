@@ -2054,12 +2054,59 @@ WifiPhy::GetPhySigA2Duration (WifiPreamble preamble)
 Time
 WifiPhy::GetPhySigBDuration (WifiTxVector txVector)
 {
-  switch (txVector.GetPreambleType ())
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
     {
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_MU:
+      /*
+       * Compute the number of bits used by common field.
+       * Assume that compression bit in HE-SIG-A is not set (i.e. not
+       * full band MU-MIMO); the field is present.
+       */
+      uint16_t bw = txVector.GetChannelWidth ();
+      std::size_t commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+      if (bw <= 40)
+        {
+          commonFieldSize += 8; //only one allocation subfield
+        }
+      else
+        {
+          commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+        }
+
+      /*
+       * Compute the number of bits used by user-specific field.
+       * MU-MIMO is not supported; only one station per RU.
+       * The user-specific field is composed of N user block fields
+       * spread over each corresponding HE-SIG-B content channel.
+       * Each user block field contains either two or one users' data
+       * (the latter being for odd number of stations per content channel).
+       * Padding will be handled further down in the code.
+       */
+      std::pair<std::size_t, std::size_t> numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel ();
+      std::size_t maxNumStaPerContentChannel = std::max (numStaPerContentChannel.first, numStaPerContentChannel.second);
+      std::size_t maxNumUserBlockFields = maxNumStaPerContentChannel / 2; //handle last user block with single user, if any, further down
+      std::size_t userSpecificFieldSize = maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
+      if (maxNumStaPerContentChannel % 2 != 0)
+        {
+          userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
+        }
+
+      /*
+       * Compute duration of HE-SIG-B considering that padding
+       * is added up to the next OFDM symbol.
+       * Nss = 1 and GI = 800 ns for HE-SIG-B.
+       */
+      Time symbolDuration = MicroSeconds (4);
+      double numDataBitsPerSymbol = GetHeSigBMode (txVector).GetDataRate (20, 800, 1) * symbolDuration.GetNanoSeconds () / 1e9;
+      double numSymbols = ceil ((commonFieldSize + userSpecificFieldSize) / numDataBitsPerSymbol);
+
+      return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
+    }
+  else if (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU)
+    {
       return MicroSeconds (4);
-    default:
+    }
+  else
+    {
       // no SIG-B
       return MicroSeconds (0);
     }
