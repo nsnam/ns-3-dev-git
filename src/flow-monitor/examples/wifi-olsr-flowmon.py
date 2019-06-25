@@ -32,7 +32,7 @@ try:
 except ImportError:
     pass
 
-DISTANCE = 100 # (m)
+DISTANCE = 20 # (m)
 NUM_NODES_SIDE = 3
 
 def main(argv):
