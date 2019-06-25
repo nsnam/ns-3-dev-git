@@ -45,3 +45,4 @@ References
 
 .. [baldo2010] \ N. Baldo et al., "Validation of the ns-3 IEEE 802.11 model using the EXTREME testbed", Proceedings of SIMUTools Conference, March 2010.
 
+.. [lanante2019] \ L. Lanante Jr. et al., "Improved Abstraction for Clear Channel Assessment in ns-3 802.11 WLAN Model", Proceedings of the 2019 Workshop on ns-3, June 2019.

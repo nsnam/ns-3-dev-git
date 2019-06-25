@@ -322,6 +322,14 @@ and the PHY is put into the RX state.  Currently, there is only a
 simple threshold-based preamble detection model in ns-3,
 called ``ThresholdPreambleDetectionModel``.  If there is no preamble detection
 model, the preamble is assumed to have been detected.  
+It is important to note that, starting with the ns-3.30 release, the default
+in the WifiPhyHelper is to add the ``ThresholdPreambleDetectionModel`` with
+a threshold RSSI of -82 dBm, and a threshold SNR of 4 dB.  Both the RSSI
+and SNR must be above these respective values for the preamble to be
+successfully detected.  The default sensitivity has been reduced in ns-3.30
+compared with that of previous releases, so some packet receptions that were 
+previously successful will now fail on this check.  More details on the
+modeling behind this change are provided in [lanante2019]_.
 
 In a real system, the ``EndReceive ()`` time would
 not be determined until later when the PHY headers are successfully decoded,

@@ -106,7 +106,8 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 <ul>
   <li>The wifi ADDBA handshake process is now protected with the use of two timeouts who makes sure we do not end up in a blocked situation. If the handshake process is not established, packets that are in the queue are sent as normal MPDUs. Once handshake is successfully established, A-MPDUs can be transmitted.</li>
-  <li> The default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.</li>
+  <li> In the wifi module, the default value of the <b>Margin</b> attribute in SimpleFrameCaptureModel was changed from 10 to 5.</li>
+  <li> A ThresholdPreambleDetectionModel is added by default to the WifiPhy.  Using default values, this model will discard frames that fall below either -82 dBm RSSI or below 4 dB SNR.  Users may notice that weak wifi signals that were successfully received based on the error model alone (in previous ns-3 releases) are no longer received.  Previous behavior can be obtained by lowering both threshold values or by removing the preamble detection model (via WifiPhyHelper::DisablePreambleDetectionModel()).</li>
   <li>LTE/EPC model has been enhanced with the new features. These new features allow the simulation user to test more realistic simulations related to the core network. These features are:</li>
     <ul>
       <li>SGW, PGW and MME are full nodes.</li>
