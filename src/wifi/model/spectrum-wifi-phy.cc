@@ -482,4 +482,33 @@ SpectrumWifiPhy::GetBand (uint16_t bandWidth, uint8_t bandIndex)
   return band;
 }
 
+WifiSpectrumBand
+SpectrumWifiPhy::ConvertHeRuIndices (uint16_t channelWidth, HeRu::SubcarrierRange range) const
+{
+  WifiSpectrumBand convertedIndices;
+  uint32_t nGuardBands = static_cast<uint32_t> (((2 * GetGuardBandwidth (channelWidth) * 1e6) / GetBandBandwidth ()) + 0.5);
+  uint32_t centerFrequencyIndex = 0;
+  switch (channelWidth)
+    {
+    case 20:
+      centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;
+      break;
+    case 40:
+      centerFrequencyIndex = (nGuardBands / 2) + 12 + 244;
+      break;
+    case 80:
+      centerFrequencyIndex = (nGuardBands / 2) + 12 + 500;
+      break;
+    case 160:
+      centerFrequencyIndex = (nGuardBands / 2) + 12 + 1012;
+      break;
+    default:
+      NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
+      break;
+    }
+  convertedIndices.first = centerFrequencyIndex + range.first;
+  convertedIndices.second = centerFrequencyIndex + range.second;
+  return convertedIndices;
+}
+
 } //namespace ns3

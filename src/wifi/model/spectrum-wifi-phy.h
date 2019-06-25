@@ -29,6 +29,7 @@
 #include "ns3/antenna-model.h"
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-model.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 #include "wifi-phy.h"
 
 namespace ns3 {
@@ -187,6 +188,15 @@ private:
    * to the standard in use.
    */
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const;
+
+  /**
+   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
+   * \param range the subcarrier range of the HE RU
+   * \return the converted indices
+   *
+   * This is a helper function to convert HE RU indices, which are relative to the center frequency subcarrier, to the indices used by the Spectrum model.
+   */
+  WifiSpectrumBand ConvertHeRuIndices (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
 
   /**
    * Perform run-time spectrum model change
