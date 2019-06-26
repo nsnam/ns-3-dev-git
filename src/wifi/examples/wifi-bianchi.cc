@@ -480,7 +480,7 @@ BackoffTrace (std::string context, uint32_t newVal)
 }
 
 void
-PhyRxTrace (std::string context, Ptr<const Packet> p)
+PhyRxTrace (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand power)
 {
   NS_LOG_INFO ("PHY-RX-START time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " size=" << p->GetSize ());
 }

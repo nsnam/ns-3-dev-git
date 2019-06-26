@@ -1573,8 +1573,9 @@ private:
    * Callback triggered when a packet is received by the PHYs
    * \param context the context
    * \param p the received packet
+   * \param rxPowersW the received power per channel band in watts
    */
-  void RxCallback (std::string context, Ptr<const Packet> p);
+  void RxCallback (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW);
 
   Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
   Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
@@ -1608,7 +1609,7 @@ Bug2831TestCase::ChangeSupportedChannelWidth ()
 }
 
 void
-Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p)
+Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;

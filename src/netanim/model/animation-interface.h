@@ -44,6 +44,7 @@
 #include "ns3/rectangle.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-l3-protocol.h"
+#include "ns3/wifi-phy.h"
 
 namespace ns3 {
 
@@ -1057,8 +1058,9 @@ private:
    *
    * \param context the context
    * \param p the packet
+   * \param rxPowersW the receive power per channel band in Watts
    */
-  void WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> p);
+  void WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> p, RxPowerWattPerChannelBand rxPowersW);
   /**
    * WAVE Phy transmit begin trace function
    * \param context the context
