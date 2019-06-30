@@ -124,7 +124,7 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
               sigExtension = 6;
             }
           uint8_t m = 0;
-          if (m_preamble == WIFI_PREAMBLE_HE_SU)
+          if ((m_preamble == WIFI_PREAMBLE_HE_SU) || (m_preamble == WIFI_PREAMBLE_HE_TB))
             {
               m = 2;
             }
@@ -138,8 +138,14 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
             }
           uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
           m_lSig.SetLength (length);
-          m_heSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_HE_MU);
-          m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+          if (m_preamble == WIFI_PREAMBLE_HE_MU)
+            {
+              m_heSig.SetMuFlag (true);
+            }
+          else if (m_preamble != WIFI_PREAMBLE_HE_TB)
+            {
+              m_heSig.SetMcs (txVector.GetMode ().GetMcsValue ());
+            }
           m_heSig.SetBssColor (txVector.GetBssColor ());
           m_heSig.SetChannelWidth (m_channelWidth);
           m_heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
@@ -422,7 +428,7 @@ WifiPpdu::GetTxDuration (void) const
               sigExtension = 6;
             }
           uint8_t m = 0;
-          if (m_preamble == WIFI_PREAMBLE_HE_SU)
+          if ((m_preamble == WIFI_PREAMBLE_HE_SU) || (m_preamble == WIFI_PREAMBLE_HE_TB))
             {
               m = 2;
             }
@@ -446,7 +452,7 @@ WifiPpdu::GetTxDuration (void) const
 bool
 WifiPpdu::IsMu (void) const
 {
-  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU));
+  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU) || (m_preamble == WIFI_PREAMBLE_HE_TB));
 }
 
 WifiModulationClass

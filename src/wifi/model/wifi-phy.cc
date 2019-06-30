@@ -1963,6 +1963,7 @@ WifiPhy::GetPhyTrainingSymbolDuration (WifiTxVector txVector)
       return MicroSeconds (4 + (4 * Ndltf));
     case WIFI_PREAMBLE_HE_SU:
     case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
       return MicroSeconds (4 + (8 * Ndltf));
     default:
       return MicroSeconds (0);
@@ -1993,6 +1994,7 @@ WifiPhy::GetPhySigA1Duration (WifiPreamble preamble)
     case WIFI_PREAMBLE_HE_SU:
     case WIFI_PREAMBLE_VHT_MU:
     case WIFI_PREAMBLE_HE_MU:
+    case WIFI_PREAMBLE_HE_TB:
       //VHT-SIG-A1 and HE-SIG-A1
       return MicroSeconds (4);
     default:
