@@ -29,29 +29,31 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 
-WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
+WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_truncatedTx (false),
     m_band (band),
     m_channelWidth (txVector.GetChannelWidth ()),
-    m_txPowerLevel (txVector.GetTxPowerLevel ())
+    m_txPowerLevel (txVector.GetTxPowerLevel ()),
+    m_uid (uid)
 {
-  NS_LOG_FUNCTION (this << *psdu << txVector << ppduDuration << band);
+  NS_LOG_FUNCTION (this << *psdu << txVector << ppduDuration << band << uid);
   m_psdus.insert (std::make_pair (SU_STA_ID, psdu));
   SetPhyHeaders (txVector, ppduDuration, band);
 }
 
-WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
+WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode (psdus.begin()->first).GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_psdus (psdus),
     m_truncatedTx (false),
     m_band (band),
     m_channelWidth (txVector.GetChannelWidth ()),
-    m_txPowerLevel (txVector.GetTxPowerLevel ())
+    m_txPowerLevel (txVector.GetTxPowerLevel ()),
+    m_uid (uid)
 {
-  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band << uid);
   if (txVector.IsMu ())
     {
       m_muUserInfos = txVector.GetHeMuUserInfoMap ();
@@ -502,12 +504,19 @@ WifiPpdu::GetModulation (void) const
   return m_modulation;
 }
 
+uint64_t
+WifiPpdu::GetUid (void) const
+{
+  return m_uid;
+}
+
 void
 WifiPpdu::Print (std::ostream& os) const
 {
   os << "preamble=" << m_preamble
      << ", modulation=" << m_modulation
-     << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N");
+     << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N")
+     << ", uid=" << m_uid;
   IsMu () ? (os << ", " << m_psdus) : (os << ", PSDU=" << m_psdus.at (SU_STA_ID));
 }
 

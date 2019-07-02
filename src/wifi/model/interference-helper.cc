@@ -180,7 +180,7 @@ InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand r
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);
   Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0), hdr),
-                                             WifiTxVector (), duration, WIFI_PHY_BAND_UNSPECIFIED);
+                                             WifiTxVector (), duration, WIFI_PHY_BAND_UNSPECIFIED, UINT64_MAX);
   Add (fakePpdu, WifiTxVector (), duration, rxPowerW);
 }
 

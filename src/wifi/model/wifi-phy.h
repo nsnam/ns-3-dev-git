@@ -1840,8 +1840,10 @@ protected:
   EventId m_endRxEvent;                //!< the end of receive event
   EventId m_endPhyRxEvent;             //!< the end of PHY receive event
   EventId m_endPreambleDetectionEvent; //!< the end of preamble detection event
-
   EventId m_endTxEvent;                //!< the end of transmit event
+
+  static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
+
 
 private:
   /**

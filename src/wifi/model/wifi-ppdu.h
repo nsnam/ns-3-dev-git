@@ -50,8 +50,9 @@ public:
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    * \param band the WifiPhyBand used for the transmission of this PPDU
+   * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band);
+  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid);
 
   /**
    * Create a MU PPDU storing a vector of PSDUs.
@@ -60,8 +61,9 @@ public:
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    * \param band the WifiPhyBand used for the transmission of this PPDU
+   * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
    */
-  WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band);
+  WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid = 0);
 
   virtual ~WifiPpdu ();
 
@@ -125,6 +127,12 @@ public:
   uint16_t GetStaId (void) const;
 
   /**
+   * Get the UID of the PPDU.
+   * \return the UID of the PPDU
+   */
+  uint64_t GetUid (void) const;
+
+  /**
    * \brief Print the PPDU contents.
    * \param os output stream in which the data should be printed.
    */
@@ -154,6 +162,7 @@ private:
   uint16_t m_channelWidth;                     //!< the channel width used to transmit that PPDU in MHz
   uint8_t m_txPowerLevel;                      //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
   WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
+  uint64_t m_uid;                              //!< the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
 };
 
 /**

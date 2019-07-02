@@ -50,6 +50,8 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 
+uint64_t WifiPhy::m_globalPpduUid = 0;
+
 /**
  * This table maintains the mapping of valid ChannelNumber to
  * Frequency/ChannelWidth pairs.  If you want to make a channel applicable
@@ -2867,7 +2869,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
     }
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, txDuration, GetPhyBand ());
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, txDuration, GetPhyBand (), m_globalPpduUid++);
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
