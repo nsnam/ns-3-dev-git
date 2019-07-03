@@ -131,6 +131,20 @@ public:
                                                                 double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
 
   /**
+   * Create a transmit power spectral density corresponding to the OFDMA part
+   * of HE TB PPDUs for a given RU.
+   * An ideal (i.e. rectangular) spectral mask is considered for the time being.
+   *
+   * \param centerFrequency center frequency (MHz)
+   * \param channelWidth channel width (MHz)
+   * \param txPowerW  transmit power (W) to allocate
+   * \param guardBandwidth width of the guard band (MHz)
+   * \param ru the RU band used by the STA
+   * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power Spectral Density on the RU used by the STA in W/Hz for each Band
+   */
+  static Ptr<SpectrumValue> CreateHeMuOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth, WifiSpectrumBand ru);
+
+  /**
    * Create a power spectral density corresponding to the noise
    *
    * \param centerFrequency center frequency (MHz)

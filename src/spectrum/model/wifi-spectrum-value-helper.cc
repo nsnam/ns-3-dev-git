@@ -422,6 +422,33 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
+WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth, WifiSpectrumBand ru)
+{
+  NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW << guardBandwidth << ru.first << ru.second);
+  uint32_t bandBandwidth = 78125;
+  Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
+
+  //Build spectrum mask
+  Values::iterator vit = c->ValuesBegin ();
+  Bands::const_iterator bit = c->ConstBandsBegin ();
+  double txPowerPerBandW = (txPowerW / (ru.second - ru.first + 1)); //FIXME: null subcarriers
+  uint32_t numBands = c->GetSpectrumModel ()->GetNumBands ();
+  for (size_t i = 0; i < numBands; i++, vit++, bit++)
+    {
+      if (i < ru.first || i > ru.second) //outside the spectrum mask
+        {
+          *vit = 0.0;
+        }
+      else
+        {
+          *vit = (txPowerPerBandW / (bit->fh - bit->fl));
+        }
+    }
+  
+  return c;
+}
+
+Ptr<SpectrumValue>
 WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, uint32_t bandBandwidth, double noiseFigure, uint16_t guardBandwidth)
 {
   Ptr<SpectrumModel> model = GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth);

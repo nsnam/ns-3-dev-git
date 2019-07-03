@@ -383,11 +383,14 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 }
 
 Ptr<SpectrumValue>
-SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const
+SpectrumWifiPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu)
 {
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (centerFrequency << channelWidth << txPowerW);
   Ptr<SpectrumValue> v;
-  switch (modulationClass)
+  switch (ppdu->GetModulation ())
     {
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_ERP_OFDM:
@@ -405,11 +408,19 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t c
                                                                        m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
       break;
     case WIFI_MOD_CLASS_HE:
-      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
-                                                                       m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
+      if (ppdu->IsUlMu ())
+        {
+          WifiSpectrumBand band = GetRuBand (txVector, GetStaId (ppdu));
+          v = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth), band);
+        }
+      else
+        {
+          v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
+                                                                           m_txMaskInnerBandMinimumRejection, m_txMaskOuterBandMinimumRejection, m_txMaskOuterBandMaximumRejection);
+        }
       break;
     default:
-      NS_FATAL_ERROR ("modulation class unknown: " << modulationClass);
+      NS_FATAL_ERROR ("modulation class unknown");
       break;
     }
   return v;
@@ -438,7 +449,7 @@ SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
   double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
   double txPowerWatts = DbmToW (txPowerDbm);
-  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, ppdu->GetModulation ());
+  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = ppdu->GetTxDuration ();
   txParams->psd = txPowerSpectrum;

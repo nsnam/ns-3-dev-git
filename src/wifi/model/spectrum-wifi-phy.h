@@ -178,16 +178,14 @@ protected:
 
 private:
   /**
-   * \param centerFrequency center frequency (MHz)
-   * \param channelWidth channel width (MHz) of the channel for the current transmission
    * \param txPowerW power in W to spread across the bands
-   * \param modulationClass the modulation class
+   * \param ppdu the PPDU that will be transmitted
    * \return Pointer to SpectrumValue
    *
    * This is a helper function to create the right TX PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu);
 
   /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
