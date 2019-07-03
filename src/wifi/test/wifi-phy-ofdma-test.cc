@@ -56,13 +56,8 @@ public:
   virtual ~OfdmaSpectrumWifiPhy ();
 
 private:
-  /**
-   * Return the STA ID that has been assigned to the station this PHY belongs to.
-   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
-   *
-   * \return the STA ID
-   */
-  uint16_t GetStaId (void) const override;
+  // Inherited
+  uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
 
   uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
 };
@@ -78,9 +73,13 @@ OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
 }
 
 uint16_t
-OfdmaSpectrumWifiPhy::GetStaId (void) const
+OfdmaSpectrumWifiPhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
 {
-  return m_staId;
+  if (ppdu->IsDlMu ())
+    {
+      return m_staId;
+    }
+  return SpectrumWifiPhy::GetStaId (ppdu);
 }
 
 /**

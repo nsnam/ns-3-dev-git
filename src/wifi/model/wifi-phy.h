@@ -1789,9 +1789,10 @@ protected:
    * Return the STA ID that has been assigned to the station this PHY belongs to.
    * This is typically called for MU PPDUs, in order to pick the correct PSDU.
    *
+   * \param ppdu the PPDU for which the STA ID is requested
    * \return the STA ID
    */
-  virtual uint16_t GetStaId (void) const;
+  virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
 
   /**
    * Get the start band index and the stop band index for a given band

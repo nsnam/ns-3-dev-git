@@ -377,6 +377,11 @@ WifiPpdu::GetPsdu (uint8_t bssColor, uint16_t staId) const
       NS_ASSERT (m_psdus.size () == 1);
       return m_psdus.at (SU_STA_ID);
     }
+  else if (IsUlMu ())
+    {
+      NS_ASSERT (m_psdus.size () == 1);
+      return m_psdus.begin ()->second;
+    }
   else
     {
       if (bssColor == m_heSig.GetBssColor ())
@@ -389,6 +394,13 @@ WifiPpdu::GetPsdu (uint8_t bssColor, uint16_t staId) const
         }
     }
   return nullptr;
+}
+
+uint16_t
+WifiPpdu::GetStaId (void) const
+{
+  NS_ASSERT (IsUlMu ());
+  return m_psdus.begin ()->first;
 }
 
 bool
@@ -469,7 +481,19 @@ WifiPpdu::GetTxDuration (void) const
 bool
 WifiPpdu::IsMu (void) const
 {
-  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU) || (m_preamble == WIFI_PREAMBLE_HE_TB));
+  return (IsDlMu () || IsUlMu ());
+}
+
+bool
+WifiPpdu::IsDlMu (void) const
+{
+  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU));
+}
+
+bool
+WifiPpdu::IsUlMu (void) const
+{
+  return (m_preamble == WIFI_PREAMBLE_HE_TB);
 }
 
 WifiModulationClass

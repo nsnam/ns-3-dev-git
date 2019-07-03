@@ -101,12 +101,28 @@ public:
    * \return true if the PPDU is a MU PPDU
    */
   bool IsMu (void) const;
+  /**
+   * Return true if the PPDU is a DL MU PPDU
+   * \return true if the PPDU is a DL MU PPDU
+   */
+  bool IsDlMu (void) const;
+  /**
+   * Return true if the PPDU is an UL MU PPDU
+   * \return true if the PPDU is an UL MU PPDU
+   */
+  bool IsUlMu (void) const;
 
   /**
    * Get the modulation used for the PPDU.
    * \return the modulation used for the PPDU
    */
   WifiModulationClass GetModulation (void) const;
+
+  /**
+   * Get the ID of the STA that transmitted the PPDU (for HE TB PPDU).
+   * \return the ID of the STA that transmitted the PPDU
+   */
+  uint16_t GetStaId (void) const;
 
   /**
    * \brief Print the PPDU contents.
