@@ -48,6 +48,11 @@ class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 {
 public:
   /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+  /**
    * Constructor
    *
    * \param staId the ID of the STA to which this PHY belongs to
@@ -55,12 +60,44 @@ public:
   OfdmaSpectrumWifiPhy (uint16_t staId);
   virtual ~OfdmaSpectrumWifiPhy ();
 
+  /**
+   * TracedCallback signature for UID of transmitted PPDU.
+   *
+   * \param uid the UID of the transmitted PPDU
+   */
+  typedef void (*TxPpduUidCallback)(uint64_t uid);
+
+  /**
+   * \param ppdu the PPDU to send
+   */
+  void StartTx (Ptr<WifiPpdu> ppdu) override;
+
+  /**
+   * Reset the global PPDU UID counter.
+   */
+  void ResetPpduUid (void);
+
 private:
   // Inherited
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
 
   uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
+  TracedCallback<uint64_t> m_phyTxPpduUidTrace; //!< Callback providing UID of the PPDU that is about to be transmitted
 };
+
+TypeId
+OfdmaSpectrumWifiPhy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::OfdmaSpectrumWifiPhy")
+    .SetParent<SpectrumWifiPhy> ()
+    .SetGroupName ("Wifi")
+    .AddTraceSource ("TxPpduUid",
+                     "UID of the PPDU to be transmitted",
+                     MakeTraceSourceAccessor (&OfdmaSpectrumWifiPhy::m_phyTxPpduUidTrace),
+                     "ns3::OfdmaSpectrumWifiPhy::TxPpduUidCallback")
+  ;
+  return tid;
+}
 
 OfdmaSpectrumWifiPhy::OfdmaSpectrumWifiPhy (uint16_t staId)
   : SpectrumWifiPhy (),
@@ -81,6 +118,20 @@ OfdmaSpectrumWifiPhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
     }
   return SpectrumWifiPhy::GetStaId (ppdu);
 }
+
+void
+OfdmaSpectrumWifiPhy::ResetPpduUid (void)
+{
+  m_globalPpduUid = 0;
+}
+
+void
+OfdmaSpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
+{
+  m_phyTxPpduUidTrace (ppdu->GetUid ());
+  SpectrumWifiPhy::StartTx (ppdu);
+}
+
 
 /**
  * \ingroup wifi-test
@@ -721,6 +772,379 @@ TestDlOfdmaPhyTransmission::DoRun (void)
   Simulator::Destroy ();
 }
 
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief UL-OFDMA PPDU UID attribution test
+ */
+class TestUlOfdmaPpduUid : public TestCase
+{
+public:
+  TestUlOfdmaPpduUid ();
+  virtual ~TestUlOfdmaPpduUid ();
+
+private:
+  virtual void DoSetup (void);
+  virtual void DoRun (void);
+
+  /**
+   * Transmitted PPDU information function for AP
+   * \param uid the UID of the transmitted PPDU
+   */
+  void TxPpduAp (uint64_t uid);
+  /**
+   * Transmitted PPDU information function for STA 1
+   * \param uid the UID of the transmitted PPDU
+   */
+  void TxPpduSta1 (uint64_t uid);
+  /**
+   * Transmitted PPDU information function for STA 2
+   * \param uid the UID of the transmitted PPDU
+   */
+  void TxPpduSta2 (uint64_t uid);
+  /**
+   * Reset the global PPDU UID counter in WifiPhy
+   */
+  void ResetPpduUid (void);
+
+  /**
+   * Send MU-PPDU toward both STAs.
+   */
+  void SendMuPpdu (void);
+  /**
+   * Send TB-PPDU from both STAs.
+   */
+  void SendTbPpdu (void);
+  /**
+   * Send SU-PPDU function
+   * \param txStaId the ID of the sending STA
+   */
+  void SendSuPpdu (uint16_t txStaId);
+
+  /**
+   * Check the UID of the transmitted PPDU
+   * \param staId the STA-ID of the PHY (0 for AP)
+   * \param expectedUid the expected UID
+   */
+  void CheckUid (uint16_t staId, uint64_t expectedUid);
+
+  Ptr<OfdmaSpectrumWifiPhy> m_phyAp;   ///< PHY of AP
+  Ptr<OfdmaSpectrumWifiPhy> m_phySta1; ///< PHY of STA 1
+  Ptr<OfdmaSpectrumWifiPhy> m_phySta2; ///< PHY of STA 2
+
+  uint64_t m_ppduUidAp; ///< UID of PPDU transmitted by AP
+  uint64_t m_ppduUidSta1; ///< UID of PPDU transmitted by STA1
+  uint64_t m_ppduUidSta2; ///< UID of PPDU transmitted by STA2
+};
+
+TestUlOfdmaPpduUid::TestUlOfdmaPpduUid ()
+  : TestCase ("UL-OFDMA PPDU UID attribution test"),
+    m_ppduUidAp (UINT64_MAX),
+    m_ppduUidSta1 (UINT64_MAX),
+    m_ppduUidSta2 (UINT64_MAX)
+{
+}
+
+TestUlOfdmaPpduUid::~TestUlOfdmaPpduUid ()
+{
+  m_phyAp = 0;
+  m_phySta1 = 0;
+  m_phySta2 = 0;
+}
+
+void
+TestUlOfdmaPpduUid::DoSetup (void)
+{
+  Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+  Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
+  lossModel->SetFrequency (DEFAULT_FREQUENCY);
+  spectrumChannel->AddPropagationLossModel (lossModel);
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  spectrumChannel->SetPropagationDelayModel (delayModel);
+
+  Ptr<Node> apNode = CreateObject<Node> ();
+  Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
+  m_phyAp = CreateObject<OfdmaSpectrumWifiPhy> (0);
+  m_phyAp->CreateWifiSpectrumPhyInterface (apDev);
+  m_phyAp->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
+  m_phyAp->SetErrorRateModel (error);
+  m_phyAp->SetFrequency (DEFAULT_FREQUENCY);
+  m_phyAp->SetChannelWidth (DEFAULT_CHANNEL_WIDTH);
+  m_phyAp->SetDevice (apDev);
+  m_phyAp->SetChannel (spectrumChannel);
+  m_phyAp->TraceConnectWithoutContext ("TxPpduUid", MakeCallback (&TestUlOfdmaPpduUid::TxPpduAp, this));
+  Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
+  m_phyAp->SetMobility (apMobility);
+  apDev->SetPhy (m_phyAp);
+  apNode->AggregateObject (apMobility);
+  apNode->AddDevice (apDev);
+
+  Ptr<Node> sta1Node = CreateObject<Node> ();
+  Ptr<WifiNetDevice> sta1Dev = CreateObject<WifiNetDevice> ();
+  m_phySta1 = CreateObject<OfdmaSpectrumWifiPhy> (1);
+  m_phySta1->CreateWifiSpectrumPhyInterface (sta1Dev);
+  m_phySta1->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  m_phySta1->SetErrorRateModel (error);
+  m_phySta1->SetFrequency (DEFAULT_FREQUENCY);
+  m_phySta1->SetChannelWidth (DEFAULT_CHANNEL_WIDTH);
+  m_phySta1->SetDevice (sta1Dev);
+  m_phySta1->SetChannel (spectrumChannel);
+  m_phySta1->TraceConnectWithoutContext ("TxPpduUid", MakeCallback (&TestUlOfdmaPpduUid::TxPpduSta1, this));
+  Ptr<ConstantPositionMobilityModel> sta1Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  m_phySta1->SetMobility (sta1Mobility);
+  sta1Dev->SetPhy (m_phySta1);
+  sta1Node->AggregateObject (sta1Mobility);
+  sta1Node->AddDevice (sta1Dev);
+
+  Ptr<Node> sta2Node = CreateObject<Node> ();
+  Ptr<WifiNetDevice> sta2Dev = CreateObject<WifiNetDevice> ();
+  m_phySta2 = CreateObject<OfdmaSpectrumWifiPhy> (2);
+  m_phySta2->CreateWifiSpectrumPhyInterface (sta2Dev);
+  m_phySta2->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  m_phySta2->SetErrorRateModel (error);
+  m_phySta2->SetFrequency (DEFAULT_FREQUENCY);
+  m_phySta2->SetChannelWidth (DEFAULT_CHANNEL_WIDTH);
+  m_phySta2->SetDevice (sta2Dev);
+  m_phySta2->SetChannel (spectrumChannel);
+  m_phySta2->TraceConnectWithoutContext ("TxPpduUid", MakeCallback (&TestUlOfdmaPpduUid::TxPpduSta2, this));
+  Ptr<ConstantPositionMobilityModel> sta2Mobility = CreateObject<ConstantPositionMobilityModel> ();
+  m_phySta2->SetMobility (sta2Mobility);
+  sta2Dev->SetPhy (m_phySta2);
+  sta2Node->AggregateObject (sta2Mobility);
+  sta2Node->AddDevice (sta2Dev);
+}
+
+void
+TestUlOfdmaPpduUid::CheckUid (uint16_t staId, uint64_t expectedUid)
+{
+  uint64_t uid;
+  std::string device;
+  switch (staId)
+    {
+      case 0:
+        uid = m_ppduUidAp;
+        device = "AP";
+        break;
+      case 1:
+        uid = m_ppduUidSta1;
+        device = "STA1";
+        break;
+      case 2:
+        uid = m_ppduUidSta2;
+        device = "STA2";
+        break;
+      default:
+        NS_ABORT_MSG ("Unexpected STA-ID");
+    }
+  NS_TEST_ASSERT_MSG_EQ (uid, expectedUid, "UID " << uid << " does not match expected one " << expectedUid << " for " << device << " at " << Simulator::Now ());
+}
+
+void
+TestUlOfdmaPpduUid::TxPpduAp (uint64_t uid)
+{
+  NS_LOG_FUNCTION (this << uid);
+  m_ppduUidAp = uid;
+}
+
+void
+TestUlOfdmaPpduUid::TxPpduSta1 (uint64_t uid)
+{
+  NS_LOG_FUNCTION (this << uid);
+  m_ppduUidSta1 = uid;
+}
+
+void
+TestUlOfdmaPpduUid::TxPpduSta2 (uint64_t uid)
+{
+  NS_LOG_FUNCTION (this << uid);
+  m_ppduUidSta2 = uid;
+}
+
+void
+TestUlOfdmaPpduUid::ResetPpduUid (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_phyAp->ResetPpduUid (); //one is enough since it's a global attribute
+  return;
+}
+
+void
+TestUlOfdmaPpduUid::SendMuPpdu (void)
+{
+  WifiConstPsduMap psdus;
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_MU, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
+
+  uint16_t rxStaId1 = 1;
+  HeRu::RuSpec ru1;
+  ru1.primary80MHz = false;
+  ru1.ruType = HeRu::RU_106_TONE;
+  ru1.index = 1;
+  txVector.SetRu (ru1, rxStaId1);
+  txVector.SetMode (WifiPhy::GetHeMcs7 (), rxStaId1);
+  txVector.SetNss (1, rxStaId1);
+
+  uint16_t rxStaId2 = 2;
+  HeRu::RuSpec ru2;
+  ru2.primary80MHz = false;
+  ru2.ruType = HeRu::RU_106_TONE;
+  ru2.index = 2;
+  txVector.SetRu (ru2, rxStaId2);
+  txVector.SetMode (WifiPhy::GetHeMcs9 (), rxStaId2);
+  txVector.SetNss (1, rxStaId2);
+
+  Ptr<Packet> pkt1 = Create<Packet> (1000);
+  WifiMacHeader hdr1;
+  hdr1.SetType (WIFI_MAC_QOSDATA);
+  hdr1.SetQosTid (0);
+  hdr1.SetAddr1 (Mac48Address ("00:00:00:00:00:01"));
+  hdr1.SetSequenceNumber (1);
+  Ptr<WifiPsdu> psdu1 = Create<WifiPsdu> (pkt1, hdr1);
+  psdus.insert (std::make_pair (rxStaId1, psdu1));
+
+  Ptr<Packet> pkt2 = Create<Packet> (1500);
+  WifiMacHeader hdr2;
+  hdr2.SetType (WIFI_MAC_QOSDATA);
+  hdr2.SetQosTid (0);
+  hdr2.SetAddr1 (Mac48Address ("00:00:00:00:00:02"));
+  hdr2.SetSequenceNumber (2);
+  Ptr<WifiPsdu> psdu2 = Create<WifiPsdu> (pkt2, hdr2);
+  psdus.insert (std::make_pair (rxStaId2, psdu2));
+
+  m_phyAp->Send (psdus, txVector);
+}
+
+void
+TestUlOfdmaPpduUid::SendTbPpdu (void)
+{
+  WifiConstPsduMap psdus1;
+  WifiConstPsduMap psdus2;
+  WifiTxVector txVector1 = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
+  WifiTxVector txVector2 = txVector1;
+
+  uint16_t rxStaId1 = 1;
+  HeRu::RuSpec ru1;
+  ru1.primary80MHz = false;
+  ru1.ruType = HeRu::RU_106_TONE;
+  ru1.index = 1;
+  txVector1.SetRu (ru1, rxStaId1);
+  txVector1.SetMode (WifiPhy::GetHeMcs7 (), rxStaId1);
+  txVector1.SetNss (1, rxStaId1);
+
+  Ptr<Packet> pkt1 = Create<Packet> (1000);
+  WifiMacHeader hdr1;
+  hdr1.SetType (WIFI_MAC_QOSDATA);
+  hdr1.SetQosTid (0);
+  hdr1.SetAddr1 (Mac48Address ("00:00:00:00:00:00"));
+  hdr1.SetSequenceNumber (1);
+  Ptr<WifiPsdu> psdu1 = Create<WifiPsdu> (pkt1, hdr1);
+  psdus1.insert (std::make_pair (rxStaId1, psdu1));
+
+  uint16_t rxStaId2 = 2;
+  HeRu::RuSpec ru2;
+  ru2.primary80MHz = false;
+  ru2.ruType = HeRu::RU_106_TONE;
+  ru2.index = 2;
+  txVector2.SetRu (ru2, rxStaId2);
+  txVector2.SetMode (WifiPhy::GetHeMcs9 (), rxStaId2);
+  txVector2.SetNss (1, rxStaId2);
+
+  Ptr<Packet> pkt2 = Create<Packet> (1500);
+  WifiMacHeader hdr2;
+  hdr2.SetType (WIFI_MAC_QOSDATA);
+  hdr2.SetQosTid (0);
+  hdr2.SetAddr1 (Mac48Address ("00:00:00:00:00:00"));
+  hdr2.SetSequenceNumber (2);
+  Ptr<WifiPsdu> psdu2 = Create<WifiPsdu> (pkt2, hdr2);
+  psdus2.insert (std::make_pair (rxStaId2, psdu2));
+
+  Time txDuration1 = m_phySta1->CalculateTxDuration (psdu1->GetSize (), txVector1,
+                                                     m_phySta1->GetPhyBand (), rxStaId1);
+  Time txDuration2 = m_phySta2->CalculateTxDuration (psdu2->GetSize (), txVector2,
+                                                     m_phySta1->GetPhyBand (), rxStaId2);
+  Time txDuration = std::max (txDuration1, txDuration2);
+
+  txVector1.SetLength (m_phySta1->ConvertHeTbPpduDurationToLSigLength (txDuration, m_phySta1->GetPhyBand ()));
+  txVector2.SetLength (m_phySta2->ConvertHeTbPpduDurationToLSigLength (txDuration, m_phySta2->GetPhyBand ()));
+
+  m_phySta1->Send (psdus1, txVector1);
+  m_phySta2->Send (psdus2, txVector2);
+}
+
+void
+TestUlOfdmaPpduUid::SendSuPpdu (uint16_t txStaId)
+{
+  WifiConstPsduMap psdus;
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
+
+  Ptr<Packet> pkt = Create<Packet> (1000);
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  hdr.SetQosTid (0);
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetSequenceNumber (1);
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
+  psdus.insert (std::make_pair (SU_STA_ID, psdu));
+
+  switch (txStaId)
+    {
+      case 0:
+        m_phyAp->Send (psdus, txVector);
+        break;
+      case 1:
+        m_phySta1->Send (psdus, txVector);
+        break;
+      case 2:
+        m_phySta2->Send (psdus, txVector);
+        break;
+      default:
+        NS_ABORT_MSG ("Unexpected STA-ID");
+    }
+}
+
+void
+TestUlOfdmaPpduUid::DoRun (void)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 0;
+  m_phyAp->AssignStreams (streamNumber);
+  m_phySta1->AssignStreams (streamNumber);
+  m_phySta2->AssignStreams (streamNumber);
+
+  //Reset PPDU UID so as not to be dependent on previously executed test cases,
+  //since global attribute will be changed).
+  ResetPpduUid ();
+
+  //Send HE MU PPDU with two PSDUs addressed to STA 1 and STA 2.
+  //PPDU UID should be equal to 0 (the first counter value).
+  Simulator::Schedule (Seconds (1.0), &TestUlOfdmaPpduUid::SendMuPpdu, this);
+  Simulator::Schedule (Seconds (1.0), &TestUlOfdmaPpduUid::CheckUid, this, 0, 0);
+
+  //Send HE SU PPDU from AP.
+  //PPDU UID should be incremented since this is a new PPDU.
+  Simulator::Schedule (Seconds (1.1), &TestUlOfdmaPpduUid::SendSuPpdu, this, 0);
+  Simulator::Schedule (Seconds (1.1), &TestUlOfdmaPpduUid::CheckUid, this, 0, 1);
+
+  //Send HE TB PPDU from STAs to AP.
+  //PPDU UID should NOT be incremented since HE TB PPDUs reuse the UID of the immediately
+  //preceding correctly received PPDU (which normally contains the trigger frame).
+  Simulator::Schedule (Seconds (1.15), &TestUlOfdmaPpduUid::SendTbPpdu, this);
+  Simulator::Schedule (Seconds (1.15), &TestUlOfdmaPpduUid::CheckUid, this, 1, 1);
+  Simulator::Schedule (Seconds (1.15), &TestUlOfdmaPpduUid::CheckUid, this, 2, 1);
+
+  //Send HE SU PPDU from STA1.
+  //PPDU UID should be incremented since this is a new PPDU.
+  Simulator::Schedule (Seconds (1.2), &TestUlOfdmaPpduUid::SendSuPpdu, this, 1);
+  Simulator::Schedule (Seconds (1.2), &TestUlOfdmaPpduUid::CheckUid, this, 1, 2);
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -737,6 +1161,7 @@ WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite ()
   : TestSuite ("wifi-phy-ofdma", UNIT)
 {
   AddTestCase (new TestDlOfdmaPhyTransmission, TestCase::QUICK);
+  AddTestCase (new TestUlOfdmaPpduUid, TestCase::QUICK);
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite
