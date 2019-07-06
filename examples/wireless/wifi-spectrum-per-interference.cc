@@ -75,7 +75,7 @@
 //    --wifiType:        select ns3::SpectrumWifiPhy or ns3::YansWifiPhy [ns3::SpectrumWifiPhy]
 //    --errorModelType:  select ns3::NistErrorRateModel or ns3::YansErrorRateModel [ns3::NistErrorRateModel]
 //    --enablePcap:      enable pcap output [false]
-//    --waveformPower:   Waveform power [0]
+//    --waveformPower:   Waveform power (linear W) [0]
 //
 // By default, the program will step through 32 index values, corresponding
 // to the following MCS, channel width, and guard interval combinations:
@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("wifiType", "select ns3::SpectrumWifiPhy or ns3::YansWifiPhy", wifiType);
   cmd.AddValue ("errorModelType", "select ns3::NistErrorRateModel or ns3::YansErrorRateModel", errorModelType);
   cmd.AddValue ("enablePcap", "enable pcap output", enablePcap);
-  cmd.AddValue ("waveformPower", "Waveform power", waveformPower);
+  cmd.AddValue ("waveformPower", "Waveform power (linear W)", waveformPower);
   cmd.Parse (argc,argv);
 
   uint16_t startIndex = 0;
@@ -519,7 +519,7 @@ int main (int argc, char *argv[])
 
       // Configure waveform generator
       Ptr<SpectrumValue> wgPsd = Create<SpectrumValue> (SpectrumModelWifi5180MHz);
-      *wgPsd = waveformPower / (100 * 180000);
+      *wgPsd = waveformPower / 20e6;  // PSD spread across 20 MHz
       NS_LOG_INFO ("wgPsd : " << *wgPsd << " integrated power: " << Integral (*(GetPointer (wgPsd))));
 
       if (wifiType == "ns3::SpectrumWifiPhy")
