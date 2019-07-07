@@ -2185,7 +2185,7 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
                       (*it).second.first.SetWinEnd (seqNumber);
                       int16_t winEnd = (*it).second.first.GetWinEnd ();
                       int16_t bufferSize = (*it).second.first.GetBufferSize ();
-                      uint16_t sum = (static_cast<uint16_t> (std::abs (winEnd - bufferSize + 1))) % 4096;
+                      uint16_t sum = (static_cast<uint16_t> (winEnd - bufferSize + 1 + 4096)) % 4096;
                       (*it).second.first.SetStartingSequence (sum);
                       RxCompleteBufferedPacketsWithSmallerSequence ((*it).second.first.GetStartingSequenceControl (), originator, tid);
                     }
