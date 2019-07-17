@@ -41,12 +41,12 @@
  *
  * Example usage:
  * \code{.sh}
- *   ./waf --run "power-adaptation-interference --manager=ns3::AparfWifiManager --outputFileName=aparf"
+ *   ./waf --run "wifi-power-adaptation-interference --manager=ns3::AparfWifiManager --outputFileName=aparf"
  * \endcode
  *
  * Another example (changing STAs position):
  * \code{.sh}
- *   ./waf --run "power-adaptation-interference --manager=ns3::AparfWifiManager --outputFileName=aparf --STA1_x=5 --STA2_x=205"
+ *   ./waf --run "wifi-power-adaptation-interference --manager=ns3::AparfWifiManager --outputFileName=aparf --STA1_x=5 --STA2_x=205"
  * \endcode
  *
  * To enable the log of rate and power changes:

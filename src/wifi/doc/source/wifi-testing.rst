@@ -41,7 +41,7 @@ Figure :ref:`fig-clear-channel-80211b`.
 
 Validation results for the 802.11a/g OFDM error model are available in this
 `technical report <https://www.nsnam.org/~pei/80211ofdm.pdf>`__.  The curves
-can be reproduced by running the ``ofdm-validation.cc`` example program
+can be reproduced by running the ``wifi-ofdm-validation.cc`` example program
 in the ``examples/wireless`` directory, and the figure is reproduced below
 in Figure :ref:`fig-nist-frame-success-rate`.
 
@@ -52,8 +52,8 @@ in Figure :ref:`fig-nist-frame-success-rate`.
 
    Frame error rate (NIST model) for 802.11a/g (OFDM) Wi-Fi
 
-Similar curves for 802.11n/ac/ax can be obtained by running the ``ofdm-ht-validation.cc``,
-``ofdm-vht-validation.cc`` and ``ofdm-he-validation.cc`` example programs
+Similar curves for 802.11n/ac/ax can be obtained by running the ``wifi-ofdm-ht-validation.cc``,
+``wifi-ofdm-vht-validation.cc`` and ``wifi-ofdm-he-validation.cc`` example programs
 in the ``examples/wireless`` directory, and the figures are reproduced below
 in Figure :ref:`fig-nist-frame-success-rate-n`, Figure :ref:`fig-nist-frame-success-rate-ac`
 and Figure :ref:`fig-nist-frame-success-rate-ax`, respectively.

@@ -47,13 +47,13 @@
 // the default of 500m.
 // To see this effect, try running:
 //
-// ./waf --run "wifi-simple-adhoc --distance=500"
-// ./waf --run "wifi-simple-adhoc --distance=1000"
-// ./waf --run "wifi-simple-adhoc --distance=1500"
+// ./waf --run "wifi-simple-adhoc-grid --distance=500"
+// ./waf --run "wifi-simple-adhoc-grid --distance=1000"
+// ./waf --run "wifi-simple-adhoc-grid --distance=1500"
 //
 // The source node and sink node can be changed like this:
 //
-// ./waf --run "wifi-simple-adhoc --sourceNode=20 --sinkNode=10"
+// ./waf --run "wifi-simple-adhoc-grid --sourceNode=20 --sinkNode=10"
 //
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:

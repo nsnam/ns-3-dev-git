@@ -677,7 +677,7 @@ To debug test crashes, such as
 
 .. sourcecode:: text
 
-  CRASH: TestSuite ns3-wifi-interference
+  CRASH: TestSuite wifi-interference
 
 You can access the underlying test-runner program via gdb as follows, and
 then pass the "--basedir=`pwd`" argument to run (you can also pass other
@@ -695,7 +695,7 @@ arguments as needed, but basedir is the minimum needed)::
   and "show warranty" for details.
   This GDB was configured as "x86_64-linux-gnu"...
   (gdb) r --suite=
-  Starting program: <..>/build/utils/ns3-dev-test-runner-debug --suite=ns3-wifi-interference
+  Starting program: <..>/build/utils/ns3-dev-test-runner-debug --suite=wifi-interference
   [Thread debugging using libthread_db enabled]
   assert failed. file=../src/core/model/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
   ...

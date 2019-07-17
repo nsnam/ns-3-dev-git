@@ -27,10 +27,10 @@
  * ./waf
  *
  * To compile:
- * ./waf --run multirate
+ * ./waf --run wifi-multirate
  *
  * To compile with command line(useful for varying parameters):
- * ./waf --run "multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager"
+ * ./waf --run "wifi-multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager"
  *
  * To turn on NS_LOG:
  * export NS_LOG=multirate=level_all
@@ -38,7 +38,7 @@
  *
  * To debug:
  * ./waf --shell
- * gdb ./build/debug/examples/wireless/multirate
+ * gdb ./build/debug/examples/wireless/wifi-multirate
  *
  * To view pcap files:
  * tcpdump -nn -tt -r filename.pcap

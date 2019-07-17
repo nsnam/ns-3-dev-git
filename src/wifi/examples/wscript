@@ -8,9 +8,9 @@ def build(bld):
         ['wifi'])
     obj.source = 'wifi-phy-test.cc'
 
-    obj = bld.create_ns3_program('test-interference-helper',
+    obj = bld.create_ns3_program('wifi-test-interference-helper',
         ['wifi'])
-    obj.source = 'test-interference-helper.cc'
+    obj.source = 'wifi-test-interference-helper.cc'
 
     obj = bld.create_ns3_program('wifi-manager-example',
         ['wifi'])

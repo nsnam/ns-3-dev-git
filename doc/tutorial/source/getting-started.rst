@@ -965,7 +965,7 @@ executing each test, which will actually look something like::
   topology-read             uan                       virtual-net-device
   visualizer                wifi                      wimax
 
-  PASS: TestSuite ns3-wifi-interference
+  PASS: TestSuite wifi-interference
   PASS: TestSuite histogram
 
   ...

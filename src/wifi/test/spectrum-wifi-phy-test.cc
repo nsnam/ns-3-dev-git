@@ -326,7 +326,7 @@ public:
 };
 
 SpectrumWifiPhyTestSuite::SpectrumWifiPhyTestSuite ()
-  : TestSuite ("spectrum-wifi-phy", UNIT)
+  : TestSuite ("wifi-spectrum-wifi-phy", UNIT)
 {
   AddTestCase (new SpectrumWifiPhyBasicTest, TestCase::QUICK);
   AddTestCase (new SpectrumWifiPhyListenerTest, TestCase::QUICK);

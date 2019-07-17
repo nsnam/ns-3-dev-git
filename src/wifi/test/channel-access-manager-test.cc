@@ -938,7 +938,7 @@ public:
 };
 
 DcfTestSuite::DcfTestSuite ()
-  : TestSuite ("devices-wifi-dcf", UNIT)
+  : TestSuite ("wifi-devices-dcf", UNIT)
 {
   AddTestCase (new ChannelAccessManagerTest, TestCase::QUICK);
 }

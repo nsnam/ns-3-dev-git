@@ -20,7 +20,7 @@
  *          Sebastien Deronne <sebastien.deronne@gmail.com>
  *          Tom Henderson <tomhend@u.washington.edu>
  *
- * Adapted from ht-wifi-network.cc example
+ * Adapted from wifi-ht-network.cc example
  */
 
 #include <iomanip>

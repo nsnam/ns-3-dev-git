@@ -63,7 +63,7 @@
 // Block ACK together with a TXOP duration of 3008 microseconds have been set.
 //
 // The user can also select the payload size and can choose either an UDP or a TCP connection.
-// Example: ./waf --run "mixed-network --isUdp=1"
+// Example: ./waf --run "wifi-mixed-network --isUdp=1"
 
 using namespace ns3;
 

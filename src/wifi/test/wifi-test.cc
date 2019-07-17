@@ -2187,7 +2187,7 @@ public:
 };
 
 WifiTestSuite::WifiTestSuite ()
-  : TestSuite ("devices-wifi", UNIT)
+  : TestSuite ("wifi-devices", UNIT)
 {
   AddTestCase (new WifiTest, TestCase::QUICK);
   AddTestCase (new QosUtilsIsOldPacketTest, TestCase::QUICK);
