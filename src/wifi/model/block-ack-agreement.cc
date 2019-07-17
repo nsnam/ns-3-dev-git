@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "block-ack-agreement.h"
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -148,13 +149,7 @@ BlockAckAgreement::IsAmsduSupported (void) const
 uint16_t
 BlockAckAgreement::GetWinEnd (void) const
 {
-  return m_winEnd;
-}
-
-void
-BlockAckAgreement::SetWinEnd (uint16_t seq)
-{
-  m_winEnd = seq;
+  return (GetStartingSequence () + GetBufferSize () - 1) % SEQNO_SPACE_SIZE;
 }
 
 void

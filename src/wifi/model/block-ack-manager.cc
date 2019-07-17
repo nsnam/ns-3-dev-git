@@ -122,7 +122,6 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   /* For now we assume that originator doesn't use this field. Use of this field
      is mandatory only for recipient */
   agreement.SetBufferSize (reqHdr->GetBufferSize());
-  agreement.SetWinEnd ((agreement.GetStartingSequence () + agreement.GetBufferSize () - 1) % SEQNO_SPACE_SIZE);
   agreement.SetTimeout (reqHdr->GetTimeout ());
   agreement.SetAmsduSupport (reqHdr->IsAmsduSupported ());
   agreement.SetHtSupported (m_stationManager->GetHtSupported ());

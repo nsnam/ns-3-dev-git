@@ -83,12 +83,6 @@ public:
    */
   void SetAmsduSupport (bool supported);
   /**
-   * Set ending sequence number.
-   *
-   * \param seq the ending sequence number
-   */
-  void SetWinEnd (uint16_t seq);
-  /**
    * Return the Traffic ID (TID).
    *
    * \return TID
