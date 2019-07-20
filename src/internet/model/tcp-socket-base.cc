@@ -1723,6 +1723,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           m_tcb->m_ecnState = TcpSocketState::ECN_ECE_RCVD;
         }
     }
+  else if (m_tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD && !(tcpHeader.GetFlags () & TcpHeader::ECE))
+    {
+      m_tcb->m_ecnState = TcpSocketState::ECN_IDLE;
+    }
 
   // Update bytes in flight before processing the ACK for proper calculation of congestion window
   NS_LOG_INFO ("Update bytes in flight before processing the ACK.");
@@ -2968,12 +2972,6 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_CWR_SENT");
       m_tcb->m_ecnState = TcpSocketState::ECN_CWR_SENT;
       NS_LOG_INFO ("CWR flags set");
-      NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_CWR");
-      if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
-        {
-          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_CWR);
-          m_tcb->m_congState = TcpSocketState::CA_CWR;
-        }
     }
 
   AddSocketTags (p);
