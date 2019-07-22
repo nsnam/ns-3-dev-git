@@ -55,16 +55,13 @@ struct Bar
    * \param packet
    * \param recipient
    * \param tid
-   * \param immediate
    */
   Bar (Ptr<const Packet> packet,
        Mac48Address recipient,
-       uint8_t tid,
-       bool immediate);
+       uint8_t tid);
   Ptr<const Packet> bar; ///< block ack request
   Mac48Address recipient; ///< recipient
   uint8_t tid; ///< TID
-  bool immediate; ///< immediate
 };
 
 

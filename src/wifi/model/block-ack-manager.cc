@@ -37,13 +37,12 @@ Bar::Bar ()
   NS_LOG_FUNCTION (this);
 }
 
-Bar::Bar (Ptr<const Packet> bar, Mac48Address recipient, uint8_t tid, bool immediate)
+Bar::Bar (Ptr<const Packet> bar, Mac48Address recipient, uint8_t tid)
   : bar (bar),
     recipient (recipient),
-    tid (tid),
-    immediate (immediate)
+    tid (tid)
 {
-  NS_LOG_FUNCTION (this << bar << recipient << +tid << immediate);
+  NS_LOG_FUNCTION (this << bar << recipient << +tid);
 }
 
 NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
@@ -608,7 +607,7 @@ BlockAckManager::ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid)
 
   Ptr<Packet> bar = Create<Packet> ();
   bar->AddHeader (reqHdr);
-  Bar request (bar, recipient, tid, it->second.first.IsImmediateBlockAck ());
+  Bar request (bar, recipient, tid);
 
   // if a BAR for the given agreement is present, replace it with the new one
   for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); i++)
