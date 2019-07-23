@@ -35,6 +35,7 @@ class WifiRemoteStationManager;
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
+class CtrlBAckRequestHeader;
 class MacTxMiddle;
 class WifiMacQueue;
 class WifiMode;
@@ -387,6 +388,15 @@ public:
    * scheduling of a block ack request.
    */
   void NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu);
+
+  /**
+   * \param recipient the recipient
+   * \param tid the TID
+   *
+   * Get the block ack request header for the established BA agreement
+   * (<i>recipient</i>,<i>tid</i>).
+   */
+  CtrlBAckRequestHeader GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) const;
 
   /**
    * \param recipient the recipient

@@ -268,6 +268,14 @@ MacLow::ResetPhy (void)
   m_phy = 0;
 }
 
+Ptr<QosTxop>
+MacLow::GetEdca (uint8_t tid) const
+{
+  auto it = m_edca.find (QosUtilsMapTidToAc (tid));
+  NS_ASSERT (it != m_edca.end ());
+  return it->second;
+}
+
 void
 MacLow::SetMac (const Ptr<WifiMac> mac)
 {

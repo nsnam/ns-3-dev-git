@@ -89,6 +89,11 @@ public:
    */
   void ResetPhy (void);
   /**
+   * \param tid the Traffic ID
+   * \return the QosTxop corresponding to the given TID
+   */
+  Ptr<QosTxop> GetEdca (uint8_t tid) const;
+  /**
    * Set up WifiMac associated with this MacLow.
    *
    * \param mac WifiMac associated with this MacLow

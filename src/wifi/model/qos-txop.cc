@@ -142,6 +142,27 @@ QosTxop::GetBaStartingSequence (Mac48Address address, uint8_t tid) const
   return m_baManager->GetOriginatorStartingSequence (address, tid);
 }
 
+Ptr<const WifiMacQueueItem>
+QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+
+  CtrlBAckRequestHeader reqHdr = m_low->GetEdca (tid)->m_baManager->GetBlockAckReqHeader (recipient, tid);
+  Ptr<Packet> bar = Create<Packet> ();
+  bar->AddHeader (reqHdr);
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+  hdr.SetAddr1 (recipient);
+  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+  hdr.SetNoRetry ();
+  hdr.SetNoMoreFragments ();
+
+  return Create<const WifiMacQueueItem> (bar, hdr);
+}
+
 void
 QosTxop::ScheduleBlockAckReq (Mac48Address address, uint8_t tid)
 {

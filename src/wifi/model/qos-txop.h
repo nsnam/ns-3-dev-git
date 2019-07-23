@@ -186,6 +186,16 @@ public:
    */
   uint16_t GetBaStartingSequence (Mac48Address address, uint8_t tid) const;
   /**
+   * \param recipient Address of recipient.
+   * \param tid Traffic ID.
+   *
+   * Prepare a Block Ack Request to be sent to <i>recipient</i> for Traffic ID
+   * <i>tid</i>. The header for the Block Ack Request is requested to the QosTxop
+   * corresponding to the given TID. A block ack agreement with the given recipient
+   * for the given TID must have been established by such QosTxop.
+   */
+  Ptr<const WifiMacQueueItem> PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const;
+  /**
    * \param address recipient address
    * \param tid traffic ID
    *

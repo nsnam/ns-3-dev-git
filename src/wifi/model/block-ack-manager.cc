@@ -590,22 +590,27 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
   ScheduleBlockAckReq (recipient, tid);
 }
 
+CtrlBAckRequestHeader
+BlockAckManager::GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) const
+{
+  NS_LOG_FUNCTION (this << recipient << +tid);
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ASSERT (it != m_agreements.end ());
+
+  CtrlBAckRequestHeader reqHdr;
+  reqHdr.SetType (m_blockAckType);
+  reqHdr.SetTidInfo (tid);
+  reqHdr.SetStartingSequence ((*it).second.first.GetStartingSequence ());
+  return reqHdr;
+}
+
 void
 BlockAckManager::ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
-  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-  NS_ASSERT (it != m_agreements.end ());
-
-  OriginatorBlockAckAgreement &agreement = (*it).second.first;
-
-  CtrlBAckRequestHeader reqHdr;
-  reqHdr.SetType (m_blockAckType);
-  reqHdr.SetTidInfo (agreement.GetTid ());
-  reqHdr.SetStartingSequence (agreement.GetStartingSequence ());
 
   Ptr<Packet> bar = Create<Packet> ();
-  bar->AddHeader (reqHdr);
+  bar->AddHeader (GetBlockAckReqHeader (recipient, tid));
   WifiMacHeader hdr;
   hdr.SetAddr1 (recipient);
   hdr.SetType (WIFI_MAC_CTL_BACKREQ);
