@@ -49,19 +49,14 @@ struct Bar
 {
   Bar ();
   /**
-   * Construct Block ACK request for a given packet,
-   * receiver address, Traffic ID, and ACK policy.
+   * Store a Block Ack Request along with the corresponding TID.
    *
-   * \param packet
-   * \param recipient
-   * \param tid
+   * \param bar the BAR
+   * \param tid the Traffic ID
    */
-  Bar (Ptr<const Packet> packet,
-       Mac48Address recipient,
-       uint8_t tid);
-  Ptr<const Packet> bar; ///< block ack request
-  Mac48Address recipient; ///< recipient
-  uint8_t tid; ///< TID
+  Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid);
+  Ptr<const WifiMacQueueItem> bar;  ///< block ack request
+  uint8_t tid;                      ///< TID
 };
 
 
@@ -151,14 +146,13 @@ public:
    */
   void StorePacket (Ptr<WifiMacQueueItem> mpdu);
   /**
-   * Returns true if the BAR is scheduled. Returns false otherwise.
+   * Returns the next Block Ack Request to send, if any.
    *
-   * \param bar
    * \param remove true if the BAR has to be removed from the queue
    *
-   * \return true if a BAR is scheduled, false otherwise
+   * \return the next BAR to be sent, if any
    */
-  bool HasBar (Bar &bar, bool remove = true);
+  Ptr<const WifiMacQueueItem> GetBar (bool remove = true);
   /**
    * Returns true if there are packets that need of retransmission or at least a
    * BAR is scheduled. Returns false otherwise.

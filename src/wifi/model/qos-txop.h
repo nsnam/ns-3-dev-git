@@ -531,7 +531,7 @@ private:
    *
    * \param bar the block ack request.
    */
-  void SendBlockAckRequest (const Bar &bar);
+  void SendBlockAckRequest (Ptr<WifiMacQueueItem> bar);
   /**
    * Check if the given MPDU is to be considered old according to the current
    * starting sequence number of the transmit window, provided that a block ack
@@ -632,7 +632,6 @@ private:
   BlockAckType m_blockAckType;                          //!< the Block ACK type
   Time m_currentPacketTimestamp;                        //!< the current packet timestamp
   uint16_t m_blockAckInactivityTimeout;                 //!< the Block ACK inactivity timeout
-  Bar m_currentBar;                                     //!< the current BAR
   Time m_startTxop;                                     //!< the start TXOP time
   bool m_isAccessRequestedForRts;                       //!< flag whether access is requested to transmit a RTS frame
   bool m_currentIsFragmented;                           //!< flag whether current packet is fragmented

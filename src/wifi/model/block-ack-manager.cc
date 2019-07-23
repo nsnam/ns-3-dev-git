@@ -37,12 +37,11 @@ Bar::Bar ()
   NS_LOG_FUNCTION (this);
 }
 
-Bar::Bar (Ptr<const Packet> bar, Mac48Address recipient, uint8_t tid)
+Bar::Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid)
   : bar (bar),
-    recipient (recipient),
     tid (tid)
 {
-  NS_LOG_FUNCTION (this << bar << recipient << +tid);
+  NS_LOG_FUNCTION (this << *bar << +tid);
 }
 
 NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
@@ -169,7 +168,7 @@ BlockAckManager::DestroyAgreement (Mac48Address recipient, uint8_t tid)
       //remove scheduled bar
       for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); )
         {
-          if (i->recipient == recipient && i->tid == tid)
+          if (i->bar->GetHeader ().GetAddr1 () == recipient && i->tid == tid)
             {
               i = m_bars.erase (i);
             }
@@ -286,19 +285,19 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
   agreementIt->second.first.NotifyTransmittedMpdu (mpdu);
 }
 
-bool
-BlockAckManager::HasBar (Bar &bar, bool remove)
+Ptr<const WifiMacQueueItem>
+BlockAckManager::GetBar (bool remove)
 {
+  Ptr<const WifiMacQueueItem> bar;
   if (m_bars.size () > 0)
     {
-      bar = m_bars.front ();
+      bar = m_bars.front ().bar;
       if (remove)
         {
           m_bars.pop_front ();
         }
-      return true;
     }
-  return false;
+  return bar;
 }
 
 bool
@@ -607,12 +606,15 @@ BlockAckManager::ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid)
 
   Ptr<Packet> bar = Create<Packet> ();
   bar->AddHeader (reqHdr);
-  Bar request (bar, recipient, tid);
+  WifiMacHeader hdr;
+  hdr.SetAddr1 (recipient);
+  hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+  Bar request (Create<const WifiMacQueueItem> (bar, hdr), tid);
 
   // if a BAR for the given agreement is present, replace it with the new one
   for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); i++)
     {
-      if (i->recipient == recipient && i->tid == tid)
+      if (i->bar->GetHeader ().GetAddr1 () == recipient && i->tid == tid)
         {
           i = m_bars.erase (i);
           m_bars.insert (i, request);
