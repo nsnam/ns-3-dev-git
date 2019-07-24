@@ -535,13 +535,6 @@ private:
   void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startSeq,
                          uint16_t timeout, bool immediateBAck);
   /**
-   * After that all packets, for which a block ack agreement was established, have been
-   * transmitted, we have to send a block ack request.
-   *
-   * \param bar the block ack request.
-   */
-  void SendBlockAckRequest (Ptr<WifiMacQueueItem> bar);
-  /**
    * Check if the given MPDU is to be considered old according to the current
    * starting sequence number of the transmit window, provided that a block ack
    * agreement has been established with the recipient for the given TID.
