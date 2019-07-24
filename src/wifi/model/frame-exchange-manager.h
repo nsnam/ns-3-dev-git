@@ -73,11 +73,11 @@ public:
    * when receiving the individual MPDUs.
    *
    * \param psdu the received PSDU
-   * \param rxSnr snr of MPDU received in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  void Receive (Ptr<WifiPsdu> psdu, double rxSnr,
+  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                 WifiTxVector txVector, std::vector<bool> perMpduStatus);
 
   /**

@@ -66,11 +66,12 @@ private:
   /**
    * Send receive function
    * \param psdu the PSDU
-   * \param snr the SNR
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_tx; ///< transmit
   struct Input m_input; ///< input
   struct Output m_output; ///< output
@@ -89,7 +90,8 @@ PsrExperiment::Send (void)
 }
 
 void
-PsrExperiment::Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+PsrExperiment::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                        WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   m_output.received++;
 }
@@ -188,11 +190,12 @@ private:
   /**
    * Receive function
    * \param psdu the PSDU
-   * \param snr the SNR
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_txA; ///< transmit A
   Ptr<WifiPhy> m_txB; ///< transmit B
   uint32_t m_flowIdA; ///< flow ID A
@@ -226,7 +229,8 @@ CollisionExperiment::SendB (void) const
 }
 
 void
-CollisionExperiment::Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+CollisionExperiment::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                              WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   FlowIdTag tag;
   if ((*psdu->begin ())->GetPacket ()->FindFirstMatchingByteTag (tag))

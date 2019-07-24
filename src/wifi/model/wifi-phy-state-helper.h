@@ -36,6 +36,7 @@ class WifiTxVector;
 class WifiMode;
 class Packet;
 class WifiPsdu;
+struct RxSignalInfo;
 
 /**
  * Callback if PSDU successfully received (i.e. if aggregate,
@@ -43,11 +44,12 @@ class WifiPsdu;
  * considering that the per-MPDU reception status is also provided).
  *
  * arg1: PSDU received successfully
- * arg2: SNR of PSDU in linear scale
+ * arg2: info on the received signal (\see RxSignalInfo)
  * arg3: TXVECTOR of PSDU
  * arg4: vector of per-MPDU status of reception.
  */
-typedef Callback<void, Ptr<WifiPsdu>, double, WifiTxVector, std::vector<bool>> RxOkCallback;
+typedef Callback<void, Ptr<WifiPsdu>, RxSignalInfo,
+                       WifiTxVector, std::vector<bool>> RxOkCallback;
 /**
  * Callback if PSDU unsuccessfully received
  *
@@ -187,20 +189,21 @@ public:
    * Continue RX after the reception of an MPDU in an A-MPDU was successful.
    *
    * \param psdu the successfully received PSDU
-   * \param snr the SNR of the received PSDU in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TXVECTOR of the PSDU
    */
-  void ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector);
+  void ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector);
   /**
    * Switch from RX after the reception was successful.
    *
    * \param psdu the successfully received PSDU
-   * \param snr the SNR of the received PSDU in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TXVECTOR of the PSDU
    * \param staId the station ID of the PSDU (only used for MU)
    * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu);
+  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector,
+                          uint16_t staId, std::vector<bool> statusPerMpdu);
   /**
    * Switch from RX after the reception failed.
    *

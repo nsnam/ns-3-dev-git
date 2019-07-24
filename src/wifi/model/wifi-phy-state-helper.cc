@@ -26,6 +26,7 @@
 #include "wifi-tx-vector.h"
 #include "wifi-phy-listener.h"
 #include "wifi-psdu.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
 
@@ -464,30 +465,30 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector)
+WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << *psdu << snr << txVector);
+  NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector);
   std::vector<bool> statusPerMpdu;
   if (!m_rxOkCallback.IsNull ())
     {
-      m_rxOkCallback (psdu, snr, txVector, statusPerMpdu);
+      m_rxOkCallback (psdu, rxSignalInfo, txVector, statusPerMpdu);
     }
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo, WifiTxVector txVector, uint16_t staId, std::vector<bool> statusPerMpdu)
 {
-  NS_LOG_FUNCTION (this << *psdu << snr << txVector << staId << statusPerMpdu.size () <<
+  NS_LOG_FUNCTION (this << *psdu << rxSignalInfo << txVector << staId << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
   NS_ASSERT (statusPerMpdu.size () != 0);
   NS_ASSERT (Abs (m_endRx - Simulator::Now ()) < MicroSeconds (1)); //1us corresponds to the maximum propagation delay (delay spread)
   //TODO: a better fix would be to call the function once all HE TB PPDUs are received
-  m_rxOkTrace (psdu->GetPacket (), snr, txVector.GetMode (staId), txVector.GetPreambleType ());
+  m_rxOkTrace (psdu->GetPacket (), rxSignalInfo.snr, txVector.GetMode (staId), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())
     {
-      m_rxOkCallback (psdu, snr, txVector, statusPerMpdu);
+      m_rxOkCallback (psdu, rxSignalInfo, txVector, statusPerMpdu);
     }
 }
 

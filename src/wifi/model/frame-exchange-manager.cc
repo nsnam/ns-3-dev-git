@@ -172,7 +172,7 @@ FrameExchangeManager::ResetPhy (void)
 {
   m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
                                         MakeCallback (&FrameExchangeManager::RxStartIndication, this));
-  m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, double, WifiTxVector, std::vector<bool>> ());
+  m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>> ());
   m_phy = 0;
 }
 
@@ -847,10 +847,10 @@ FrameExchangeManager::NotifyOffNow (void)
 }
 
 void
-FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, double rxSnr,
+FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
                                WifiTxVector txVector, std::vector<bool> perMpduStatus)
 {
-  NS_LOG_FUNCTION (this << psdu << rxSnr << txVector << perMpduStatus.size ()
+  NS_LOG_FUNCTION (this << psdu << rxSignalInfo << txVector << perMpduStatus.size ()
                    << std::all_of (perMpduStatus.begin(), perMpduStatus.end(), [](bool v) { return v; }));
 
   if (!perMpduStatus.empty ())
@@ -870,6 +870,7 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, double rxSnr,
       return;
     }
 
+  double rxSnr = rxSignalInfo.snr;
   if (psdu->GetNMpdus () == 1)
     {
       // if perMpduStatus is not empty (i.e., this MPDU is not included in an A-MPDU)

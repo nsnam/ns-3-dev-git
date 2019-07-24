@@ -3701,6 +3701,10 @@ WifiPhy::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex
   NS_ASSERT (signalNoiseIt != m_signalNoiseMap.end ());
   signalNoiseIt->second = rxInfo.second;
 
+  RxSignalInfo rxSignalInfo;
+  rxSignalInfo.snr = snr;
+  rxSignalInfo.rssi = rxInfo.second.signal;
+
   auto statusPerMpduIt = m_statusPerMpduMap.find (std::make_pair (ppdu->GetUid (), staId));
   NS_ASSERT (statusPerMpduIt != m_statusPerMpduMap.end ());
   statusPerMpduIt->second.push_back (rxInfo.first);
@@ -3708,7 +3712,7 @@ WifiPhy::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex
   if (rxInfo.first && GetAddressedPsduInPpdu (ppdu)->GetNMpdus () > 1)
     {
       //only done for correct MPDU that is part of an A-MPDU
-      m_state->ContinueRxNextMpdu (Copy (psdu), snr, txVector);
+      m_state->ContinueRxNextMpdu (Copy (psdu), rxSignalInfo, txVector);
     }
 }
 
@@ -3751,7 +3755,10 @@ WifiPhy::EndReceive (Ptr<Event> event)
    {
       //At least one MPDU has been successfully received
       NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, signalNoiseIt->second, statusPerMpduIt->second, staId);
-      m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, staId, statusPerMpduIt->second);
+      RxSignalInfo rxSignalInfo;
+      rxSignalInfo.snr = snr;
+      rxSignalInfo.rssi = signalNoiseIt->second.signal; //same information for all MPDUs
+      m_state->SwitchFromRxEndOk (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpduIt->second);
       m_previouslyRxPpduUid = event->GetPpdu ()->GetUid (); //store UID only if reception is successful (because otherwise trigger won't be read by MAC layer)
     }
   else
@@ -5409,6 +5416,13 @@ WifiPhy::AssignStreams (int64_t stream)
   NS_LOG_FUNCTION (this << stream);
   m_random->SetStream (stream);
   return 1;
+}
+
+std::ostream& operator<< (std::ostream& os, RxSignalInfo rxSignalInfo)
+{
+  os << "SNR:" << RatioToDb (rxSignalInfo.snr) << " dB"
+     << ", RSSI:" << rxSignalInfo.rssi << " dBm";
+  return os;
 }
 
 } //namespace ns3
