@@ -393,22 +393,20 @@ public:
    * \param recipient the recipient
    * \param tid the TID
    *
-   * Get the block ack request header for the established BA agreement
+   * Get the Block Ack Request header for the established BA agreement
    * (<i>recipient</i>,<i>tid</i>).
    */
   CtrlBAckRequestHeader GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) const;
 
   /**
-   * \param recipient the recipient
-   * \param tid the TID
+   * \param bar the Block Ack Request to enqueue
    *
-   * Enqueue a block ack request for the established BA agreement
-   * (<i>recipient</i>,<i>tid</i>) into the queue storing the next
-   * BAR frames to transmit. If a BAR for the given agreement is
-   * already present in the queue, it is replaced by the new one.
+   * Enqueue the given Block Ack Request into the queue storing the next BAR
+   * frames to transmit. If a BAR for the same recipient and TID is already present
+   * in the queue, it is replaced by the new one. If the given BAR is retransmitted,
+   * it is placed at the head of the queue, otherwise at the tail.
    */
-  void ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid);
-
+  void ScheduleBar (Ptr<const WifiMacQueueItem> bar);
 
 private:
   /**

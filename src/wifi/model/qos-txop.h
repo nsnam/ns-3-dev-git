@@ -196,13 +196,12 @@ public:
    */
   Ptr<const WifiMacQueueItem> PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const;
   /**
-   * \param address recipient address
-   * \param tid traffic ID
+   * \param bar the Block Ack Request to schedule
    *
-   * Request the Block Ack manager to schedule the transmission of a
-   * block ack request for the established BA agreement (<i>address</i>,<i>tid</i>).
+   * Request the Block Ack manager to schedule the transmission of the given
+   * Block Ack Request.
    */
-  void ScheduleBlockAckReq (Mac48Address address, uint8_t tid);
+  void ScheduleBar (Ptr<const WifiMacQueueItem> bar);
 
   /* dcf notifications forwarded here */
   /**

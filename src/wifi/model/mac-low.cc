@@ -1973,7 +1973,8 @@ MacLow::SendDataPacket (void)
     {
       Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
       NS_ASSERT (qosTxop != 0);
-      qosTxop->ScheduleBlockAckReq (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+      auto bar = qosTxop->PrepareBlockAckRequest (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+      qosTxop->ScheduleBar (bar);
     }
   ForwardDown (m_currentPacket, m_currentTxVector);
 }
@@ -2089,7 +2090,8 @@ MacLow::SendDataAfterCts (Time duration)
     {
       Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
       NS_ASSERT (qosTxop != 0);
-      qosTxop->ScheduleBlockAckReq (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+      auto bar = qosTxop->PrepareBlockAckRequest (m_currentPacket->GetAddr1 (), *m_currentPacket->GetTids ().begin ());
+      qosTxop->ScheduleBar (bar);
     }
   ForwardDown (m_currentPacket, m_currentTxVector);
 }

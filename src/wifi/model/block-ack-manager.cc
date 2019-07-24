@@ -587,7 +587,20 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
 
   // schedule a block ack request
   NS_LOG_DEBUG ("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid << ")");
-  ScheduleBlockAckReq (recipient, tid);
+  Ptr<Packet> bar = Create<Packet> ();
+  bar->AddHeader (GetBlockAckReqHeader (recipient, tid));
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKREQ);
+  hdr.SetAddr1 (recipient);
+  hdr.SetAddr2 (mpdu->GetHeader ().GetAddr2 ());
+  hdr.SetAddr3 (mpdu->GetHeader ().GetAddr3 ());
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+  hdr.SetNoRetry ();
+  hdr.SetNoMoreFragments ();
+
+  ScheduleBar (Create<const WifiMacQueueItem> (bar, hdr));
 }
 
 CtrlBAckRequestHeader
@@ -605,28 +618,35 @@ BlockAckManager::GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) cons
 }
 
 void
-BlockAckManager::ScheduleBlockAckReq (Mac48Address recipient, uint8_t tid)
+BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar)
 {
-  NS_LOG_FUNCTION (this << recipient << +tid);
+  NS_LOG_FUNCTION (this << *bar);
+  NS_ASSERT (bar->GetHeader ().IsBlockAckReq ());
 
-  Ptr<Packet> bar = Create<Packet> ();
-  bar->AddHeader (GetBlockAckReqHeader (recipient, tid));
-  WifiMacHeader hdr;
-  hdr.SetAddr1 (recipient);
-  hdr.SetType (WIFI_MAC_CTL_BACKREQ);
-  Bar request (Create<const WifiMacQueueItem> (bar, hdr), tid);
+  CtrlBAckRequestHeader reqHdr;
+  bar->GetPacket ()->PeekHeader (reqHdr);
+  uint8_t tid = reqHdr.GetTidInfo ();
+  Bar request (bar, tid);
 
   // if a BAR for the given agreement is present, replace it with the new one
   for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); i++)
     {
-      if (i->bar->GetHeader ().GetAddr1 () == recipient && i->tid == tid)
+      if (i->bar->GetHeader ().GetAddr1 () == bar->GetHeader ().GetAddr1 () && i->tid == tid)
         {
           i = m_bars.erase (i);
           m_bars.insert (i, request);
           return;
         }
     }
-  m_bars.push_back (request);
+
+  if (bar->GetHeader ().IsRetry ())
+    {
+      m_bars.push_front (request);
+    }
+  else
+    {
+      m_bars.push_back (request);
+    }
 }
 
 void

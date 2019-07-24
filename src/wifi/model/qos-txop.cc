@@ -164,9 +164,9 @@ QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
 }
 
 void
-QosTxop::ScheduleBlockAckReq (Mac48Address address, uint8_t tid)
+QosTxop::ScheduleBar (Ptr<const WifiMacQueueItem> bar)
 {
-  m_baManager->ScheduleBlockAckReq (address, tid);
+  m_baManager->ScheduleBar (bar);
 }
 
 void
@@ -900,7 +900,8 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
             }
           else // missed block ack after data frame with Implicit BAR Ack policy
             {
-              m_baManager->ScheduleBlockAckReq (m_currentHdr.GetAddr1 (), tid);
+              Ptr<const WifiMacQueueItem> bar = PrepareBlockAckRequest (m_currentHdr.GetAddr1 (), tid);
+              ScheduleBar (bar);
               m_currentPacket = 0;
             }
         }
