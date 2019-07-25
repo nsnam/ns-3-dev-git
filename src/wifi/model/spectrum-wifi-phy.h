@@ -181,12 +181,13 @@ private:
   /**
    * \param txPowerW power in W to spread across the bands
    * \param ppdu the PPDU that will be transmitted
+   * \param isOfdma flag whether the constructed Tx PSD is for the OFDMA part of an HE TB PPDU
    * \return Pointer to SpectrumValue
    *
    * This is a helper function to create the right TX PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu);
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu, bool isOfdma = false);
 
   /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
@@ -196,6 +197,21 @@ private:
    * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
    */
   WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
+
+  /**
+   * This function is called to send the OFDMA part of a PPDU.
+   *
+   * \param ppdu the PPDU to send
+   * \param txPowerWatts the transmit power in watts
+   */
+  void StartOfdmaTx (Ptr<WifiPpdu> ppdu, double txPowerWatts);
+
+  /**
+   * This function is sending the signal to the Spectrum channel
+   *
+   * \param txParams the parameters to be provided to the Spectrum channel
+   */
+  void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
   /**
    * Perform run-time spectrum model change

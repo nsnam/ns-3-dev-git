@@ -512,6 +512,7 @@ WifiPhy::WifiPhy ()
     m_endPhyRxEvent (),
     m_endTxEvent (),
     m_previouslyRxPpduUid (UINT64_MAX),
+    m_currentHeTbPpduUid (UINT64_MAX),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
     m_isConstructed (false),
@@ -2988,7 +2989,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event)
   double snr = snrPer.snr;
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr));
 
-  Time headerPayloadDuration = m_currentEvent->GetDuration () - (Simulator::Now () - m_currentEvent->GetStartTime ()); //startOfPreambleDuration;
+  Time headerPayloadDuration = m_currentEvent->GetStartTime () + m_currentEvent->GetPpdu ()->GetTxDuration () - Simulator::Now ();
 
   if (!m_preambleDetectionModel || (m_preambleDetectionModel->IsPreambleDetected (m_currentEvent->GetRxPowerW (band), snr, m_channelWidth)))
     {
@@ -3150,7 +3151,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxP
       else
         {
           NS_LOG_DEBUG ("Received a new HE TB PPDU for UID " << ppdu->GetUid () << " from STA-ID " << ppdu->GetStaId () << " and BSS color " << +txVector.GetBssColor ());
-          event = m_interference.Add (ppdu, txVector, rxDuration, rxPowersW);
+          event = m_interference.Add (ppdu, txVector, CalculatePhyPreambleAndHeaderDuration (txVector), rxPowersW); //the OFDMA part of the transmission will be added later on
           m_currentPreambleEvents.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ()), event});
         }
     }
@@ -3294,6 +3295,24 @@ WifiPhy::MaybeCcaBusyDuration ()
 }
 
 void
+WifiPhy::StartReceiveOfdmaPayload (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW)
+{
+  //The total RX power corresponds to the maximum over all the bands
+  auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
+    [] (const std::pair<WifiSpectrumBand, double>& p1, const std::pair<WifiSpectrumBand, double>& p2) {
+      return p1.second < p2.second;
+    });
+  NS_LOG_FUNCTION (this << *ppdu << it->second);
+
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  Time payloadDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  Ptr<Event> event = m_interference.Add (ppdu, txVector, payloadDuration, rxPowersW);
+
+  NS_ASSERT (m_endRxEvent.IsExpired ());
+  m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
+}
+
+void
 WifiPhy::StartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
@@ -3317,7 +3336,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       canReceivePayload = true;
     }
   WifiTxVector txVector = event->GetTxVector ();
-  Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  Time payloadDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
   bool success = false;
   if (canReceivePayload) //PHY reception succeeded
     {
@@ -3357,9 +3376,17 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
                 }
               m_state->SwitchToRx (payloadDuration);
               m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been correctly decoded and that the mode within is supported
-              m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
               success = true;
               NS_LOG_DEBUG ("Receiving PSDU");
+              if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+                {
+                  m_currentHeTbPpduUid = ppdu->GetUid ();
+                  //EndReceive is scheduled by StartReceiveOfdmaPayload
+                }
+              else
+                {
+                  m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
+                }
             }
           else //mode is not allowed
             {
