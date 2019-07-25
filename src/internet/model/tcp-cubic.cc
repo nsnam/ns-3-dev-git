@@ -96,6 +96,8 @@ TcpCubic::TcpCubic ()
   : TcpCongestionOps (),
     m_cWndCnt (0),
     m_lastMaxCwnd (0),
+    m_bicOriginPoint (0),
+    m_bicK (0.0),
     m_delayMin (Time::Min ()),
     m_epochStart (Time::Min ()),
     m_found (false),
@@ -111,8 +113,22 @@ TcpCubic::TcpCubic ()
 
 TcpCubic::TcpCubic (const TcpCubic &sock)
   : TcpCongestionOps (sock),
+    m_fastConvergence (sock.m_fastConvergence),
+    m_beta (sock.m_beta),
+    m_hystart (sock.m_hystart),
+    m_hystartDetect (sock.m_hystartDetect),
+    m_hystartLowWindow (sock.m_hystartLowWindow),
+    m_hystartAckDelta (sock.m_hystartAckDelta),
+    m_hystartDelayMin (sock.m_hystartDelayMin),
+    m_hystartDelayMax (sock.m_hystartDelayMax),
+    m_hystartMinSamples (sock.m_hystartMinSamples),
+    m_initialCwnd (sock.m_initialCwnd),
+    m_cntClamp (sock.m_cntClamp),
+    m_c (sock.m_c),
     m_cWndCnt (sock.m_cWndCnt),
     m_lastMaxCwnd (sock.m_lastMaxCwnd),
+    m_bicOriginPoint (sock.m_bicOriginPoint),
+    m_bicK (sock.m_bicK),
     m_delayMin (sock.m_delayMin),
     m_epochStart (sock.m_epochStart),
     m_found (sock.m_found),
@@ -173,16 +189,16 @@ TcpCubic::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
        * the last cwnd update. If not enough ACKs have been received then cwnd
        * cannot be updated.
        */
-      if (m_cWndCnt > cnt)
+      if (m_cWndCnt >= cnt)
         {
           tcb->m_cWnd += tcb->m_segmentSize;
-          m_cWndCnt = 0;
+          m_cWndCnt -= cnt;
           NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd);
         }
       else
         {
           NS_LOG_INFO ("Not enough segments have been ACKed to increment cwnd."
-                       "Until now " << m_cWndCnt);
+                       "Until now " << m_cWndCnt << " cnd " << cnt);
         }
     }
 }
@@ -193,7 +209,7 @@ TcpCubic::Update (Ptr<TcpSocketState> tcb)
   NS_LOG_FUNCTION (this);
   Time t;
   uint32_t delta, bicTarget, cnt = 0;
-  uint64_t offs;
+  double offs;
   uint32_t segCwnd = tcb->GetCwndInSegments ();
 
   if (m_epochStart == Time::Min ())
@@ -203,12 +219,12 @@ TcpCubic::Update (Ptr<TcpSocketState> tcb)
       if (m_lastMaxCwnd <= segCwnd)
         {
           NS_LOG_DEBUG ("lastMaxCwnd <= m_cWnd. K=0 and origin=" << segCwnd);
-          m_bicK = 0;
+          m_bicK = 0.0;
           m_bicOriginPoint = segCwnd;
         }
       else
         {
-          m_bicK = std::pow (2.5 * (m_lastMaxCwnd - segCwnd), 1 / 3.);
+          m_bicK = std::pow ((m_lastMaxCwnd - segCwnd) / m_c, 1 / 3.);
           m_bicOriginPoint = m_lastMaxCwnd;
           NS_LOG_DEBUG ("lastMaxCwnd > m_cWnd. K=" << m_bicK <<
                         " and origin=" << m_lastMaxCwnd);
@@ -373,14 +389,10 @@ TcpCubic::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 {
   NS_LOG_FUNCTION (this << tcb << bytesInFlight);
 
+  // Without inflation and deflation, these two are the same
+  uint32_t segInFlight = bytesInFlight / tcb->m_segmentSize;
   uint32_t segCwnd = tcb->GetCwndInSegments ();
-  NS_LOG_DEBUG ("Loss at cWnd=" << segCwnd);
-
-  HystartReset (tcb);
-
-  m_epochStart = Time::Min ();    // end of epoch
-  m_delayMin = Time::Min ();
-  m_found = false;
+  NS_LOG_DEBUG ("Loss at cWnd=" << segCwnd << " in flight=" << segInFlight);
 
   /* Wmax and fast convergence */
   if (segCwnd < m_lastMaxCwnd && m_fastConvergence)
@@ -392,12 +404,38 @@ TcpCubic::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
       m_lastMaxCwnd = segCwnd;
     }
 
+  m_epochStart = Time::Min ();    // end of epoch
+
   /* Formula taken from the Linux kernel */
-  uint32_t ssThresh = std::max (static_cast<uint32_t> (segCwnd * m_beta ), 2U) * tcb->m_segmentSize;
+  uint32_t ssThresh = std::max (static_cast<uint32_t> (segInFlight * m_beta ), 2U) * tcb->m_segmentSize;
 
   NS_LOG_DEBUG ("SsThresh = " << ssThresh);
 
   return ssThresh;
+}
+
+void
+TcpCubic::CongestionStateSet (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCongState_t newState)
+{
+  NS_LOG_FUNCTION (this << tcb << newState);
+
+  if (newState == TcpSocketState::CA_LOSS)
+    {
+      CubicReset (tcb);
+      HystartReset (tcb);
+    }
+}
+
+void
+TcpCubic::CubicReset (Ptr<const TcpSocketState> tcb)
+{
+  NS_LOG_FUNCTION (this << tcb);
+
+  m_lastMaxCwnd = 0;
+  m_bicOriginPoint = 0;
+  m_bicK = 0;
+  m_delayMin = Time::Min ();
+  m_found = false;
 }
 
 Ptr<TcpCongestionOps>

@@ -83,6 +83,8 @@ public:
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt);
   virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
+  virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
+                                   const TcpSocketState::TcpCongState_t newState);
 
   virtual Ptr<TcpCongestionOps> Fork ();
 
@@ -116,7 +118,8 @@ private:
   uint32_t     m_cWndCnt;         //!<  cWnd integer-to-float counter
   uint32_t     m_lastMaxCwnd;     //!<  Last maximum cWnd
   uint32_t     m_bicOriginPoint;  //!<  Origin point of bic function
-  uint32_t     m_bicK;            //!<  Time to origin point from the beginning of the current epoch
+  double       m_bicK;            //!<  Time to origin point from the beginning
+                                  //    of the current epoch (in s)
   Time         m_delayMin;        //!<  Min delay
   Time         m_epochStart;      //!<  Beginning of an epoch
   bool         m_found;           //!<  The exit point is found?
@@ -132,6 +135,8 @@ private:
    * \brief Reset HyStart parameters
    */
   void HystartReset (Ptr<const TcpSocketState> tcb);
+
+  void CubicReset (Ptr<const TcpSocketState> tcb);
 
   /**
    * \brief Cubic window update after a new ack received
