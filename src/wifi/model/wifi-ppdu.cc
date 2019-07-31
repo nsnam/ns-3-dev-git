@@ -510,6 +510,12 @@ WifiPpdu::GetUid (void) const
   return m_uid;
 }
 
+WifiPreamble
+WifiPpdu::GetPreamble (void) const
+{
+  return m_preamble;
+}
+
 void
 WifiPpdu::Print (std::ostream& os) const
 {

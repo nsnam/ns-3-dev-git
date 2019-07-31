@@ -97,6 +97,8 @@ protected:
 
 private:
   virtual void DoRun (void);
+
+  uint64_t m_uid;
 };
 
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest ()
@@ -107,7 +109,8 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest ()
 
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest (std::string name)
   : TestCase (name),
-    m_count (0)
+    m_count (0),
+    m_uid (0)
 {
 }
 
@@ -126,7 +129,7 @@ SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, 0);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, GUARD_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();

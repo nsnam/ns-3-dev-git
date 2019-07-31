@@ -133,6 +133,12 @@ public:
   uint64_t GetUid (void) const;
 
   /**
+   * Get the preamble of the PPDU.
+   * \return the preamble of the PPDU
+   */
+  WifiPreamble GetPreamble (void) const;
+
+  /**
    * \brief Print the PPDU contents.
    * \param os output stream in which the data should be printed.
    */

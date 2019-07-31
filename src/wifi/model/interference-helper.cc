@@ -108,6 +108,22 @@ Event::GetTxVector (void) const
   return m_txVector;
 }
 
+void
+Event::UpdateRxPowerW (RxPowerWattPerChannelBand rxPower)
+{
+  NS_ASSERT (rxPower.size () == m_rxPowerW.size ());
+  //Update power band per band
+  for (auto & currentRxPowerW : m_rxPowerW)
+    {
+      auto band = currentRxPowerW.first;
+      auto it = rxPower.find (band);
+      if (it != rxPower.end ())
+        {
+          currentRxPowerW.second += it->second;
+        }
+    }
+}
+
 std::ostream & operator << (std::ostream &os, const Event &event)
 {
   os << "start=" << event.GetStartTime () << ", end=" << event.GetEndTime ()
@@ -229,7 +245,7 @@ InterferenceHelper::SetNumberOfReceiveAntennas (uint8_t rx)
 }
 
 Time
-InterferenceHelper::GetEnergyDuration (double energyW, WifiSpectrumBand band) const
+InterferenceHelper::GetEnergyDuration (double energyW, WifiSpectrumBand band)
 {
   Time now = Simulator::Now ();
   auto i = GetPreviousPosition (now, band);
@@ -251,7 +267,7 @@ InterferenceHelper::GetEnergyDuration (double energyW, WifiSpectrumBand band) co
 void
 InterferenceHelper::AppendEvent (Ptr<Event> event)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << event);
   RxPowerWattPerChannelBand rxPowerWattPerChannelBand = event->GetRxPowerWPerBand ();
   for (auto const& it : rxPowerWattPerChannelBand)
     {
@@ -275,6 +291,26 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
           i->second.AddPower (it.second);
         }
     }
+}
+
+void
+InterferenceHelper::UpdateEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower)
+{
+  NS_LOG_FUNCTION (this << event);
+  //This is called for UL MU events, in order to scale power as long as UL MU PPDUs arrive
+  for (auto const& it : rxPower)
+    {
+      WifiSpectrumBand band = it.first;
+      auto ni_it = m_niChangesPerBand.find (band);
+      NS_ASSERT (ni_it != m_niChangesPerBand.end ());
+      auto first = GetPreviousPosition (event->GetStartTime (), band);
+      auto last = GetPreviousPosition (event->GetEndTime (), band);
+      for (auto i = first; i != last; ++i)
+        {
+          i->second.AddPower (it.second);
+        }
+    }
+    event->UpdateRxPowerW (rxPower);
 }
 
 double
@@ -901,16 +937,16 @@ InterferenceHelper::EraseEvents (void)
   m_rxing = false;
 }
 
-InterferenceHelper::NiChanges::const_iterator
-InterferenceHelper::GetNextPosition (Time moment, WifiSpectrumBand band) const
+InterferenceHelper::NiChanges::iterator
+InterferenceHelper::GetNextPosition (Time moment, WifiSpectrumBand band)
 {
   auto it = m_niChangesPerBand.find (band);
   NS_ASSERT (it != m_niChangesPerBand.end ());
   return it->second.upper_bound (moment);
 }
 
-InterferenceHelper::NiChanges::const_iterator
-InterferenceHelper::GetPreviousPosition (Time moment, WifiSpectrumBand band) const
+InterferenceHelper::NiChanges::iterator
+InterferenceHelper::GetPreviousPosition (Time moment, WifiSpectrumBand band)
 {
   auto it = GetNextPosition (moment, band);
   // This is safe since there is always an NiChange at time 0,
@@ -935,15 +971,15 @@ InterferenceHelper::NotifyRxStart ()
 }
 
 void
-InterferenceHelper::NotifyRxEnd ()
+InterferenceHelper::NotifyRxEnd (Time endTime)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << endTime);
   m_rxing = false;
-  //Update m_firstPower for frame capture
+  //Update m_firstPowerPerBand for frame capture
   for (auto ni : m_niChangesPerBand)
     {
       NS_ASSERT (ni.second.size () > 1);
-      auto it = GetPreviousPosition (Simulator::Now (), ni.first);
+      auto it = GetPreviousPosition (endTime, ni.first);
       it--;
       m_firstPowerPerBand.find (ni.first)->second = it->second.GetPower ();
     }

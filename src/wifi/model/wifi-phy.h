@@ -65,7 +65,8 @@ enum WifiPhyRxfailureReason
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET,
-  FILTERED
+  FILTERED,
+  HE_TB_PPDU_TOO_LATE
 };
 
 /**
@@ -107,6 +108,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason
       return (os << "OBSS_PD_CCA_RESET");
     case FILTERED:
       return (os << "FILTERED");
+    case HE_TB_PPDU_TOO_LATE:
+      return (os << "HE_TB_PPDU_TOO_LATE");
     case UNKNOWN:
     default:
       NS_FATAL_ERROR ("Unknown reason");
@@ -1773,6 +1776,11 @@ protected:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
+  /*
+   * Reset data upon end of TX or RX
+   */
+  void Reset (void);
+
   /**
    * The default implementation does nothing and returns true.  This method
    * is typically called internally by SetChannelNumber ().
@@ -1839,8 +1847,10 @@ protected:
 
   EventId m_endRxEvent;                //!< the end of receive event
   EventId m_endPhyRxEvent;             //!< the end of PHY receive event
-  EventId m_endPreambleDetectionEvent; //!< the end of preamble detection event
   EventId m_endTxEvent;                //!< the end of transmit event
+
+  std::vector <EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
+  std::map <std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event> > m_currentPreambleEvents; //!< store event associated to a PPDU (that has a unique ID and preamble combination) whose preamble is being received
 
   static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
 

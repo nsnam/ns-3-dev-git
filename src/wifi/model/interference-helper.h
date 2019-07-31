@@ -105,6 +105,13 @@ public:
    * \return the TXVECTOR of the PPDU
    */
   WifiTxVector GetTxVector (void) const;
+  /**
+   * Update the received power (W) for all bands, i.e. add up the received power
+   * to the current received power, for each band.
+   *
+   * \param the received power (W) for all bands.
+   */
+  void UpdateRxPowerW (RxPowerWattPerChannelBand rxPower);
 
 
 private:
@@ -195,7 +202,7 @@ public:
    *          energy on the medium for a given band will
    *          be higher than the requested threshold.
    */
-  Time GetEnergyDuration (double energyW, WifiSpectrumBand band) const;
+  Time GetEnergyDuration (double energyW, WifiSpectrumBand band);
 
   /**
    * Add the PPDU-related signal to interference helper.
@@ -270,12 +277,22 @@ public:
   void NotifyRxStart ();
   /**
    * Notify that RX has ended.
+   * 
+   * \param endTime the end time of the signal
    */
-  void NotifyRxEnd ();
+  void NotifyRxEnd (Time endTime);
   /**
    * Erase all events.
    */
   void EraseEvents (void);
+
+  /**
+   * Update event to scale its received power (W) per band.
+   *
+   * \param event the event to be updated
+   * \param rxPower the received power (W) per band to be added to the current event
+   */
+  void UpdateEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
 
 
 protected:
@@ -359,6 +376,7 @@ private:
    * \param event
    */
   void AppendEvent (Ptr<Event> event);
+
   /**
    * Calculate noise and interference power in W.
    *
@@ -434,7 +452,7 @@ private:
    * \param band identify the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::const_iterator GetNextPosition (Time moment, WifiSpectrumBand band) const;
+  NiChanges::iterator GetNextPosition (Time moment, WifiSpectrumBand band);
   /**
    * Returns an iterator to the last NiChange that is before than moment
    *
@@ -442,7 +460,7 @@ private:
    * \param band identify the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::const_iterator GetPreviousPosition (Time moment, WifiSpectrumBand band) const;
+  NiChanges::iterator GetPreviousPosition (Time moment, WifiSpectrumBand band);
 
   /**
    * Add NiChange to the list at the appropriate position and
