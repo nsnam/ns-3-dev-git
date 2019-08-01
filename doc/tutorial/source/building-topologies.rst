@@ -952,7 +952,7 @@ methods. Once these objects are created, we create a channel object
 and associate it to our PHY layer object manager to make sure
 that all the PHY layer objects created by the ``YansWifiPhyHelper``
 share the same underlying channel, that is, they share the same
-wireless medium and can communication and interfere:
+wireless medium and can communicate and interfere:
 
 ::
 
