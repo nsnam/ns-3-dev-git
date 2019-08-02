@@ -76,6 +76,7 @@ def build(bld):
         'model/block-ack-manager.cc',
         'model/block-ack-cache.cc',
         'model/block-ack-window.cc',
+        'model/block-ack-type.cc',
         'model/snr-tag.cc',
         'model/ht-capabilities.cc',
         'model/wifi-tx-vector.cc',

@@ -140,27 +140,23 @@ public:
 
 private:
   friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
-  uint32_t m_nextSize; //!< the next size
-  /// wait Ack enumerated type
-  enum
+  /// Struct storing the type of Ack to wait for
+  struct WaitAckType
   {
-    ACK_NONE,
-    ACK_NORMAL,
-    BLOCK_ACK_BASIC,
-    BLOCK_ACK_COMPRESSED,
-    BLOCK_ACK_EXTENDED_COMPRESSED,
-    BLOCK_ACK_MULTI_TID
-  } m_waitAck; //!< wait Ack
-  /// send BAR enumerated type
-  enum
+    enum {NONE, NORMAL, BLOCK_ACK} m_type;
+    BlockAckType m_baType;
+  };
+  /// Struct storing the type of BAR to send
+  struct SendBarType
   {
-    BLOCK_ACK_REQUEST_NONE,
-    BLOCK_ACK_REQUEST_BASIC,
-    BLOCK_ACK_REQUEST_COMPRESSED,
-    BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED,
-    BLOCK_ACK_REQUEST_MULTI_TID
-  } m_sendBar; //!< send BAR
-  bool m_sendRts; //!< send an RTS?
+    enum {NONE, BLOCK_ACK_REQ} m_type;
+    BlockAckType m_barType;
+  };
+
+  uint32_t m_nextSize;                              //!< the next size
+  WaitAckType m_waitAck;                            //!< type of Ack to wait for
+  SendBarType m_sendBar;                            //!< type of BAR to send
+  bool m_sendRts;                                   //!< whether to send an RTS or not
 };
 
 /**

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2018
+ * Copyright (c) 2019 Universita' di Napoli
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,37 +15,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
+ * Author: Stefano Avallone <stavallo@unina.it>
  */
 
-#ifndef BLOCK_ACK_TYPE_H
-#define BLOCK_ACK_TYPE_H
-
-#include <ostream>
+#include "block-ack-type.h"
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
-/**
- * \ingroup wifi
- * The different block ack policies.
- */
-enum BlockAckType
+std::ostream &operator << (std::ostream &os, const BlockAckType &type)
 {
-  BASIC_BLOCK_ACK,
-  COMPRESSED_BLOCK_ACK,
-  EXTENDED_COMPRESSED_BLOCK_ACK,
-  MULTI_TID_BLOCK_ACK,
-};
-
-/**
- * Serialize BlockAckType to ostream in a human-readable form.
- *
- * \param os std::ostream
- * \param type block ack type
- * \return std::ostream
- */
-std::ostream &operator << (std::ostream &os, const BlockAckType &type);
+  switch (type)
+    {
+    case BlockAckType::BASIC_BLOCK_ACK:
+      os << "basic-block-ack";
+      break;
+    case BlockAckType::COMPRESSED_BLOCK_ACK:
+      os << "compressed-block-ack";
+      break;
+    case BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK:
+      os << "extended-compressed-block-ack";
+      break;
+    case BlockAckType::MULTI_TID_BLOCK_ACK:
+      os << "multi-tid-block-ack";
+      break;
+    default:
+      NS_FATAL_ERROR ("Unknown block ack type");
+    }
+  return os;
+}
 
 } //namespace ns3
-
-#endif /* BLOCK_ACK_TYPE_H */

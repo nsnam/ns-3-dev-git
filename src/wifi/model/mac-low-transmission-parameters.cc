@@ -26,8 +26,8 @@ namespace ns3 {
 
 MacLowTransmissionParameters::MacLowTransmissionParameters ()
   : m_nextSize (0),
-    m_waitAck (ACK_NONE),
-    m_sendBar (BLOCK_ACK_REQUEST_NONE),
+    m_waitAck ({WaitAckType::NONE}),
+    m_sendBar ({SendBarType::NONE}),
     m_sendRts (false)
 {
 }
@@ -47,73 +47,40 @@ MacLowTransmissionParameters::DisableNextData (void)
 void
 MacLowTransmissionParameters::EnableBlockAck (BlockAckType type)
 {
-  switch (type)
-    {
-    case BlockAckType::BASIC_BLOCK_ACK:
-      m_waitAck = BLOCK_ACK_BASIC;
-      break;
-    case BlockAckType::COMPRESSED_BLOCK_ACK:
-      m_waitAck = BLOCK_ACK_COMPRESSED;
-      break;
-    case BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK:
-      m_waitAck = BLOCK_ACK_EXTENDED_COMPRESSED;
-      break;
-    case BlockAckType::MULTI_TID_BLOCK_ACK:
-      m_waitAck = BLOCK_ACK_MULTI_TID;
-      break;
-    default:
-      NS_FATAL_ERROR ("Unknown Block ack type");
-      break;
-    }
+  m_waitAck = {WaitAckType::BLOCK_ACK, type};
 
   // Reset m_sendBar
-  m_sendBar = BLOCK_ACK_REQUEST_NONE;
+  m_sendBar = {SendBarType::NONE};
 }
 
 void
 MacLowTransmissionParameters::EnableBlockAckRequest (BlockAckType type)
 {
-  switch (type)
-    {
-    case BlockAckType::BASIC_BLOCK_ACK:
-      m_sendBar = BLOCK_ACK_REQUEST_BASIC;
-      break;
-    case BlockAckType::COMPRESSED_BLOCK_ACK:
-      m_sendBar = BLOCK_ACK_REQUEST_COMPRESSED;
-      break;
-    case BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK:
-      m_sendBar = BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED;
-      break;
-    case BlockAckType::MULTI_TID_BLOCK_ACK:
-      m_sendBar = BLOCK_ACK_REQUEST_MULTI_TID;
-      break;
-    default:
-      NS_FATAL_ERROR ("Unknown Block Ack Request type");
-      break;
-    }
+  m_sendBar = {SendBarType::BLOCK_ACK_REQ, type};
 
   // Reset m_waitAck
-  m_waitAck = ACK_NONE;
+  m_waitAck = {WaitAckType::NONE};
 }
 
 void
 MacLowTransmissionParameters::EnableAck (void)
 {
-  m_waitAck = ACK_NORMAL;
+  m_waitAck = {WaitAckType::NORMAL};
+
   // Reset m_sendBar
-  m_sendBar = BLOCK_ACK_REQUEST_NONE;
+  m_sendBar = {SendBarType::NONE};
 }
 
 void
 MacLowTransmissionParameters::DisableAck (void)
 {
-  m_waitAck = ACK_NONE;
+  m_waitAck = {WaitAckType::NONE};
 }
 
 void
 MacLowTransmissionParameters::DisableBlockAckRequest (void)
 {
-  m_sendBar = BLOCK_ACK_REQUEST_NONE;
+  m_sendBar = {SendBarType::NONE};
 }
 
 void
@@ -131,95 +98,33 @@ MacLowTransmissionParameters::DisableRts (void)
 bool
 MacLowTransmissionParameters::MustWaitNormalAck (void) const
 {
-  return (m_waitAck == ACK_NORMAL);
+  return (m_waitAck.m_type == WaitAckType::NORMAL);
 }
 
 bool
 MacLowTransmissionParameters::MustWaitBlockAck (void) const
 {
-  bool ret;
-  switch (m_waitAck)
-    {
-    case BLOCK_ACK_BASIC:
-    case BLOCK_ACK_COMPRESSED:
-    case BLOCK_ACK_EXTENDED_COMPRESSED:
-    case BLOCK_ACK_MULTI_TID:
-      ret = true;
-      break;
-    default:
-      ret = false;
-      break;
-    }
-  return ret;
+  return (m_waitAck.m_type == WaitAckType::BLOCK_ACK);
 }
 
 BlockAckType
 MacLowTransmissionParameters::GetBlockAckType (void) const
 {
-  BlockAckType type;
-  switch (m_waitAck)
-    {
-    case BLOCK_ACK_BASIC:
-      type = BlockAckType::BASIC_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_COMPRESSED:
-      type = BlockAckType::COMPRESSED_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_EXTENDED_COMPRESSED:
-      type = BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_MULTI_TID:
-      type = BlockAckType::MULTI_TID_BLOCK_ACK;
-      break;
-    default:
-      NS_FATAL_ERROR ("Block ack is not used");
-      break;
-    }
-  return type;
+  NS_ABORT_MSG_IF (m_waitAck.m_type != WaitAckType::BLOCK_ACK, "Block ack is not used");
+  return m_waitAck.m_baType;
 }
 
 bool
 MacLowTransmissionParameters::MustSendBlockAckRequest (void) const
 {
-  bool ret;
-  switch (m_sendBar)
-    {
-    case BLOCK_ACK_REQUEST_BASIC:
-    case BLOCK_ACK_REQUEST_COMPRESSED:
-    case BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED:
-    case BLOCK_ACK_REQUEST_MULTI_TID:
-      ret = true;
-      break;
-    default:
-      ret = false;
-      break;
-    }
-  return ret;
+  return (m_sendBar.m_type == SendBarType::BLOCK_ACK_REQ);
 }
 
 BlockAckType
 MacLowTransmissionParameters::GetBlockAckRequestType (void) const
 {
-  BlockAckType type;
-  switch (m_sendBar)
-    {
-    case BLOCK_ACK_REQUEST_BASIC:
-      type = BlockAckType::BASIC_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_REQUEST_COMPRESSED:
-      type = BlockAckType::COMPRESSED_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED:
-      type = BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK;
-      break;
-    case BLOCK_ACK_REQUEST_MULTI_TID:
-      type = BlockAckType::MULTI_TID_BLOCK_ACK;
-      break;
-    default:
-      NS_FATAL_ERROR ("Block ack request must not be sent");
-      break;
-    }
-  return type;
+  NS_ABORT_MSG_IF (m_sendBar.m_type != SendBarType::BLOCK_ACK_REQ, "Block ack request must not be sent");
+  return m_sendBar.m_barType;
 }
 
 bool
@@ -245,48 +150,25 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 {
   os << "["
      << "send rts=" << params.m_sendRts << ", "
-     << "next size=" << params.m_nextSize << ", "
-     << "ack=";
-  switch (params.m_waitAck)
+     << "next size=" << params.m_nextSize << ", ";
+
+  if (params.m_waitAck.m_type == MacLowTransmissionParameters::WaitAckType::NORMAL)
     {
-    case MacLowTransmissionParameters::ACK_NONE:
-      os << "none, ";
-      break;
-    case MacLowTransmissionParameters::ACK_NORMAL:
-      os << "normal, ";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_BASIC:
-      os << "basic-block-ack, ";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_COMPRESSED:
-      os << "compressed-block-ack, ";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_EXTENDED_COMPRESSED:
-      os << "extended-compressed-block-ack, ";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_MULTI_TID:
-      os << "multi-tid-block-ack, ";
-      break;
+      os << "ack=normal";
     }
-  os << "bar=";
-  switch (params.m_sendBar)
+  else if (params.m_waitAck.m_type == MacLowTransmissionParameters::WaitAckType::BLOCK_ACK)
     {
-    case MacLowTransmissionParameters::BLOCK_ACK_REQUEST_NONE:
-      os << "none";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_REQUEST_BASIC:
-      os << "basic";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_REQUEST_COMPRESSED:
-      os << "compressed";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_REQUEST_EXTENDED_COMPRESSED:
-      os << "extended-compressed";
-      break;
-    case MacLowTransmissionParameters::BLOCK_ACK_REQUEST_MULTI_TID:
-      os << "multi-tid";
-      break;
+      os << "ack=" << params.m_waitAck.m_baType;
     }
+  else if (params.m_sendBar.m_type == MacLowTransmissionParameters::SendBarType::BLOCK_ACK_REQ)
+    {
+      os << "bar=" << params.m_sendBar.m_barType;
+    }
+  else
+    {
+      os << "ack=none";
+    }
+
   os << "]";
   return os;
 }
