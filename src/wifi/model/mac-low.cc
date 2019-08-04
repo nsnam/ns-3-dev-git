@@ -2171,11 +2171,11 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
       immediate = (*it).second.first.IsImmediateBlockAck ();
       if ((*it).second.first.GetBufferSize () > 64)
         {
-          blockAck.SetType (EXTENDED_COMPRESSED_BLOCK_ACK);
+          blockAck.SetType (BlockAckType::EXTENDED_COMPRESSED);
         }
       else
         {
-          blockAck.SetType (COMPRESSED_BLOCK_ACK);
+          blockAck.SetType (BlockAckType::COMPRESSED);
         }
       NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
       (*i).second.FillBlockAckBitmap (&blockAck);
@@ -2209,15 +2209,15 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
           immediate = (*it).second.first.IsImmediateBlockAck ();
           if (reqHdr.IsBasic ())
             {
-              blockAck.SetType (BASIC_BLOCK_ACK);
+              blockAck.SetType (BlockAckType::BASIC);
             }
           else if (reqHdr.IsCompressed ())
             {
-              blockAck.SetType (COMPRESSED_BLOCK_ACK);
+              blockAck.SetType (BlockAckType::COMPRESSED);
             }
           else if (reqHdr.IsExtendedCompressed ())
             {
-              blockAck.SetType (EXTENDED_COMPRESSED_BLOCK_ACK);
+              blockAck.SetType (BlockAckType::EXTENDED_COMPRESSED);
             }
           BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
           NS_ASSERT (i != m_bAckCaches.end ());

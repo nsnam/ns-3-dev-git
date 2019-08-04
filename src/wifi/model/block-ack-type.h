@@ -22,19 +22,61 @@
 #define BLOCK_ACK_TYPE_H
 
 #include <ostream>
+#include <vector>
 
 namespace ns3 {
 
 /**
  * \ingroup wifi
- * The different block ack policies.
+ * The different BlockAck variants.
  */
-enum BlockAckType
+struct BlockAckType
 {
-  BASIC_BLOCK_ACK,
-  COMPRESSED_BLOCK_ACK,
-  EXTENDED_COMPRESSED_BLOCK_ACK,
-  MULTI_TID_BLOCK_ACK,
+  /**
+   * \enum Variant
+   * \brief The BlockAck variants
+   */
+  enum Variant
+  {
+    BASIC,
+    COMPRESSED,
+    EXTENDED_COMPRESSED,
+    MULTI_TID
+  };
+  enum Variant m_variant;           //!< Block Ack variant
+  std::vector<uint8_t> m_bitmapLen; //!< Length (bytes) of included bitmaps
+
+  /// Constructors
+  BlockAckType ();
+  BlockAckType (Variant v);
+  BlockAckType (Variant v, std::vector<uint8_t> l);
+};
+
+/**
+ * \ingroup wifi
+ * The different BlockAckRequest variants.
+ */
+struct BlockAckReqType
+{
+  /**
+   * \enum Variant
+   * \brief The BlockAckReq variants
+   */
+  enum Variant
+  {
+    BASIC,
+    COMPRESSED,
+    EXTENDED_COMPRESSED,
+    MULTI_TID
+  };
+  enum Variant m_variant;           //!< Block Ack Request variant
+  uint8_t m_nSeqControls;           //!< Number of included Starting Sequence Control fields.
+                                    //!< This member is added for future support of Multi-TID BARs
+
+  /// Constructors
+  BlockAckReqType ();
+  BlockAckReqType (Variant v);
+  BlockAckReqType (Variant v, uint8_t nSeqControls);
 };
 
 /**
@@ -45,6 +87,15 @@ enum BlockAckType
  * \return std::ostream
  */
 std::ostream &operator << (std::ostream &os, const BlockAckType &type);
+
+/**
+ * Serialize BlockAckReqType to ostream in a human-readable form.
+ *
+ * \param os std::ostream
+ * \param type block ack request type
+ * \return std::ostream
+ */
+std::ostream &operator << (std::ostream &os, const BlockAckReqType &type);
 
 } //namespace ns3
 

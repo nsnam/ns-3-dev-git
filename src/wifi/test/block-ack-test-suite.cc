@@ -569,7 +569,7 @@ CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
 void
 CtrlBAckResponseHeaderTest::DoRun (void)
 {
-  m_blockAckHdr.SetType (COMPRESSED_BLOCK_ACK);
+  m_blockAckHdr.SetType (BlockAckType::COMPRESSED);
 
   //Case 1: startSeq < endSeq
   //          179        242
