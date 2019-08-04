@@ -23,6 +23,7 @@
 
 #include "ns3/mac48-address.h"
 #include "ns3/event-id.h"
+#include "block-ack-type.h"
 
 namespace ns3 {
 /**
@@ -151,6 +152,18 @@ public:
    *         false otherwise
    */
   bool IsHtSupported (void) const;
+  /**
+   * Get the type of the Block Acks sent by the recipient of this agreement.
+   *
+   * \return the type of the Block Acks sent by the recipient of this agreement
+   */
+  BlockAckType GetBlockAckType (void) const;
+  /**
+   * Get the type of the Block Ack Requests sent by the originator of this agreement.
+   *
+   * \return the type of the Block Ack Requests sent by the originator of this agreement
+   */
+  BlockAckReqType GetBlockAckReqType (void) const;
 
 
 protected:

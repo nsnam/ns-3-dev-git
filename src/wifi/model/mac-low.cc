@@ -1971,6 +1971,7 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
   agreement.SetBufferSize (respHdr->GetBufferSize () + 1);
   agreement.SetTimeout (respHdr->GetTimeout ());
   agreement.SetStartingSequence (startingSeq);
+  agreement.SetHtSupported (m_stationManager->GetHtSupported () && m_stationManager->GetHtSupported (originator));
 
   std::list<Ptr<WifiMacQueueItem>> buffer (0);
   AgreementKey key (originator, respHdr->GetTid ());
