@@ -620,7 +620,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         HT modulation class
    */
-  WifiMode GetHtMcs (uint8_t mcs) const;
+  static WifiMode GetHtMcs (uint8_t mcs);
   /**
    * Get the WifiMode object corresponding to the given MCS of the
    * VHT modulation class.
@@ -630,7 +630,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         VHT modulation class
    */
-  WifiMode GetVhtMcs (uint8_t mcs) const;
+  static WifiMode GetVhtMcs (uint8_t mcs);
   /**
    * Get the WifiMode object corresponding to the given MCS of the
    * HE modulation class.
@@ -640,7 +640,7 @@ public:
    * \return the WifiMode object corresponding to the given MCS of the
    *         HE modulation class
    */
-  WifiMode GetHeMcs (uint8_t mcs) const;
+  static WifiMode GetHeMcs (uint8_t mcs);
 
   /**
    * \brief Set channel number.
