@@ -592,6 +592,14 @@ protected:
   void SetInitialCwnd (SocketWho who, uint32_t initialCwnd);
 
   /**
+   * \brief Forcefully set the delayed acknowledgement count
+   *
+   * \param who socket to force
+   * \param count value of delayed ACKs
+   */
+  void SetDelAckMaxCount (SocketWho who, uint32_t count);
+
+  /**
    * \brief Forcefully set the ECN mode of use
    *
    * \param who socket to force

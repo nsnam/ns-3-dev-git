@@ -227,7 +227,7 @@ int main (int argc, char *argv[])
 
 
   CommandLine cmd (__FILE__);
-  cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
+  cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, TcpLinuxReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "
 		"TcpLp, TcpDctcp", transport_prot);

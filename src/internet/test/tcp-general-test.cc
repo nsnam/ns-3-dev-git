@@ -952,6 +952,22 @@ TcpGeneralTest::SetInitialCwnd (SocketWho who, uint32_t initialCwnd)
     }
 }
 void
+TcpGeneralTest::SetDelAckMaxCount (SocketWho who, uint32_t count)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetDelAckMaxCount (count);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetDelAckMaxCount (count);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+void
 TcpGeneralTest::SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn)
 {
   if (who == SENDER)

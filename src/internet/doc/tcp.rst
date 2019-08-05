@@ -391,8 +391,79 @@ During congestion avoidance, cwnd is incremented by roughly 1 full-sized
 segment per round-trip time (RTT), and for each congestion event, the slow
 start threshold is halved.
 
-HighSpeed
+Linux Reno
 ^^^^^^^^^^
+TCP Linux Reno is designed to provide users Linux like implementation of
+TCP New Reno. The current implementation of TCP New Reno in ns-3 follows
+RFC standards which increases cwnd more conservatively than Linux Reno.
+Linux Reno modifies slow start and congestion avoidance algorithms to 
+increase cwnd based on the number of bytes being acknowledged by each 
+arriving ACK, rather than by the number of ACKs that arrive.
+
+In slow start phase, on each incoming ACK at the TCP sender side cwnd 
+is increased by the number of previously unacknowledged bytes ACKed by the
+incoming acknowledgment. Whereas in default ns-3 New Reno, cwnd is increased
+one segment.
+
+.. math:: cwnd += segAcked * segmentSize
+   :label: linuxrenoslowstart
+
+.. math:: cwnd += segmentSize
+   :label: newrenoslowstart
+
+In congestion avoidance phase, the number of bytes that have been ACKed at
+the TCP sender side are stored in a 'bytes_acked' variable in the TCP control
+block. When 'bytes_acked' becomes greater than or equal to the value of the
+cwnd, 'bytes_acked' is reduced by the value of cwnd. Next, cwnd is incremented
+by a full-sized segment (SMSS). Whereas in ns-3 New Reno, cwnd is increased
+by (1/cwnd) with a rounding off due to type casting into int.
+
+.. code-block:: c++
+
+   if (m_cWndCnt >= w)
+    {
+      uint32_t delta = m_cWndCnt / w;
+
+      m_cWndCnt -= delta * w;
+      tcb->m_cWnd += delta * tcb->m_segmentSize;
+      NS_LOG_DEBUG ("Subtracting delta * w from m_cWndCnt " << delta * w);
+    }
+
+   :label: linuxrenocongavoid
+
+.. code-block:: c++
+
+   if (segmentsAcked > 0)
+    {
+      double adder = static_cast<double> (tcb->m_segmentSize * tcb->m_segmentSize) / tcb->m_cWnd.Get ();
+      adder = std::max (1.0, adder);
+      tcb->m_cWnd += static_cast<uint32_t> (adder);
+      NS_LOG_INFO ("In CongAvoid, updated to cwnd " << tcb->m_cWnd <<
+                   " ssthresh " << tcb->m_ssThresh);
+    }
+
+   :label: newrenocongavoid
+
+So, there are two main difference between the TCP Linux Reno and TCP New Reno
+in ns-3:
+1) In TCP Linux Reno absence or presence of delayed acknowledgement make no
+difference whereas in TCP New Reno it makes a difference.
+2) In congestion avoidance phase, the arithmetic for counting the number of 
+segments acked and deciding when to increment the cwnd is different for TCP
+Linux Reno and TCP New Reno.
+
+Following graphs shows the behavior of window growth in TCP Linux Reno and
+TCP New Reno with delayed acknowledgement of 2 segments:
+
+.. _fig-ns3-new-reno-vs-ns3-linux-reno:
+
+.. figure:: figures/ns3-new-reno-vs-ns3-linux-reno.*
+   :align: center
+
+   ns-3 TCP New Reno v/s ns-3 TCP Linux Reno
+
+HighSpeed
+^^^^^^^^^
 TCP HighSpeed is designed for high-capacity channels or, in general, for
 TCP connections with large congestion windows.
 Conceptually, with respect to the standard TCP, HighSpeed makes the
@@ -1127,6 +1198,37 @@ disabled if NSC is not enabled in the build.
 Several TCP validation test results can also be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
+
+The ns-3 implementation of TCP Linux Reno was validated against the New Reno
+implementation of Linux kernel 4.4.0 using ns-3 Direct Code Execution (DCE).
+DCE is a framework which allows the users to run kernel space protocol inside
+ns-3 without changing the source code.
+
+In this validation, cwnd traces of DCE Linux Reno was compared to ns-3 Linux Reno
+and New Reno for delayed acknowledgement of 1 segment. And it was observed that
+cwnd traces for ns-3 Linux Reno was closely overlapping with DCE Linux Reno whereas
+for ns-3 New Reno there was deviation in congestion avoidance phase.
+
+.. _fig-dce-Linux-reno-vs-ns3-linux-reno:
+
+.. figure:: figures/dce-linux-reno-vs-ns3-linux-reno.*
+   :align: center
+
+   DCE Linux Reno v/s ns-3 Linux Reno
+
+.. _fig-dce-Linux-reno-vs-ns3-new-reno:
+
+.. figure:: figures/dce-linux-reno-vs-ns3-new-reno.*
+   :align: center
+
+   DCE Linux Reno v/s ns-3 Linux Reno
+
+The difference in the cwnd at very early stage of this flow is because of the
+way cwnd are plotted. As n-3 provides a trace source for cwnd, for ns-3 Linux
+Reno cwnd is obtained everytime cwnd value changes whereas for DCE Linux Reno
+we donot have trace source. So we use "ss" command of Linux kernel to obtain
+cwnd values. The "ss" runs at a interval of 0.5 seconds, so cwnd is obtained after
+every 0.5 seconds.
 
 TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
 module documentation.
