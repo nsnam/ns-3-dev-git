@@ -137,29 +137,14 @@ ConstantWifiAckPolicySelector::UpdateTxParams (Ptr<WifiPsdu> psdu, MacLowTransmi
       // in case of single MPDU, there are previous unacknowledged frames, thus
       // we cannot use Implicit Block Ack Request policy, otherwise we get a
       // normal ack as response
-      if (m_qosTxop->GetBaBufferSize (receiver, tid) > 64)
-        {
-          NS_LOG_DEBUG ("Scheduling an Extended Compressed block ack request");
-          params.EnableBlockAckRequest ({BlockAckType::COMPRESSED, {32}});
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Scheduling a Compressed block ack request");
-          params.EnableBlockAckRequest (BlockAckType::COMPRESSED);
-        }
+      NS_LOG_DEBUG ("Scheduling a Block Ack Request");
+      params.EnableBlockAckRequest (m_qosTxop->GetBlockAckReqType (receiver, tid),
+                                    m_qosTxop->GetBlockAckType (receiver,tid));
       return;
     }
   // Implicit Block Ack Request policy
-  if (m_qosTxop->GetBaBufferSize (receiver, tid) > 64)
-    {
-      NS_LOG_DEBUG ("Implicitly requesting an Extended Compressed block ack");
-      params.EnableBlockAck ({BlockAckType::COMPRESSED, {32}});
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Implicitly requesting a Compressed block ack");
-      params.EnableBlockAck (BlockAckType::COMPRESSED);
-    }
+  NS_LOG_DEBUG ("Implicitly requesting a Block Ack");
+  params.EnableBlockAck (m_qosTxop->GetBlockAckType (receiver, tid));
 }
 
 } //namespace ns3

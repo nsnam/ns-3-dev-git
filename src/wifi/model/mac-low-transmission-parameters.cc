@@ -54,9 +54,9 @@ MacLowTransmissionParameters::EnableBlockAck (BlockAckType type)
 }
 
 void
-MacLowTransmissionParameters::EnableBlockAckRequest (BlockAckType type)
+MacLowTransmissionParameters::EnableBlockAckRequest (BlockAckReqType barType, BlockAckType baType)
 {
-  m_sendBar = {SendBarType::BLOCK_ACK_REQ, type};
+  m_sendBar = {SendBarType::BLOCK_ACK_REQ, barType, baType};
 
   // Reset m_waitAck
   m_waitAck = {WaitAckType::NONE};
@@ -110,8 +110,13 @@ MacLowTransmissionParameters::MustWaitBlockAck (void) const
 BlockAckType
 MacLowTransmissionParameters::GetBlockAckType (void) const
 {
-  NS_ABORT_MSG_IF (m_waitAck.m_type != WaitAckType::BLOCK_ACK, "Block ack is not used");
-  return m_waitAck.m_baType;
+  if (m_waitAck.m_type == WaitAckType::BLOCK_ACK)
+    {
+      return m_waitAck.m_baType;
+    }
+
+  NS_ABORT_MSG_IF (m_sendBar.m_type != SendBarType::BLOCK_ACK_REQ, "Block ack is not used");
+  return m_sendBar.m_baType;
 }
 
 bool
@@ -120,7 +125,7 @@ MacLowTransmissionParameters::MustSendBlockAckRequest (void) const
   return (m_sendBar.m_type == SendBarType::BLOCK_ACK_REQ);
 }
 
-BlockAckType
+BlockAckReqType
 MacLowTransmissionParameters::GetBlockAckRequestType (void) const
 {
   NS_ABORT_MSG_IF (m_sendBar.m_type != SendBarType::BLOCK_ACK_REQ, "Block ack request must not be sent");

@@ -1171,7 +1171,7 @@ MacLow::GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type
 }
 
 Time
-MacLow::GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const
+MacLow::GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckReqType type) const
 {
   return m_phy->CalculateTxDuration (GetBlockAckRequestSize (type), blockAckReqTxVector, m_phy->GetPhyBand ());
 }
@@ -1225,7 +1225,7 @@ MacLow::GetResponseDuration (const MacLowTransmissionParameters& params, WifiTxV
       duration += 2 * GetSifs ();
       WifiTxVector blockAckReqTxVector = m_stationManager->GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
       duration += GetBlockAckRequestDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
-      duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
+      duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckType ());
     }
   return duration;
 }
@@ -2170,14 +2170,7 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
       blockAck.SetStartingSequence (seqNumber);
       blockAck.SetTidInfo (tid);
       immediate = (*it).second.first.IsImmediateBlockAck ();
-      if ((*it).second.first.GetBufferSize () > 64)
-        {
-          blockAck.SetType ({BlockAckType::COMPRESSED, {32}});
-        }
-      else
-        {
-          blockAck.SetType (BlockAckType::COMPRESSED);
-        }
+      blockAck.SetType ((*it).second.first.GetBlockAckType ());
       NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
       (*i).second.FillBlockAckBitmap (&blockAck);
 
@@ -2208,18 +2201,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
           blockAck.SetStartingSequence (reqHdr.GetStartingSequence ());
           blockAck.SetTidInfo (tid);
           immediate = (*it).second.first.IsImmediateBlockAck ();
-          if (reqHdr.IsBasic ())
-            {
-              blockAck.SetType (BlockAckType::BASIC);
-            }
-          else if (reqHdr.IsCompressed ())
-            {
-              blockAck.SetType (BlockAckType::COMPRESSED);
-            }
-          else if (reqHdr.IsExtendedCompressed ())
-            {
-              blockAck.SetType ({BlockAckType::COMPRESSED, {32}});
-            }
+          blockAck.SetType ((*it).second.first.GetBlockAckType ());
           BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
           NS_ASSERT (i != m_bAckCaches.end ());
           (*i).second.FillBlockAckBitmap (&blockAck);

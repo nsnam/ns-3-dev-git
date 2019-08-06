@@ -599,13 +599,6 @@ BlockAckManager::DiscardOutstandingMpdus (Mac48Address recipient, uint8_t tid)
 }
 
 void
-BlockAckManager::SetBlockAckType (BlockAckType bAckType)
-{
-  NS_LOG_FUNCTION (this << bAckType);
-  m_blockAckType = bAckType;
-}
-
-void
 BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
@@ -664,7 +657,7 @@ BlockAckManager::GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) cons
   NS_ASSERT (it != m_agreements.end ());
 
   CtrlBAckRequestHeader reqHdr;
-  reqHdr.SetType (m_blockAckType);
+  reqHdr.SetType ((*it).second.first.GetBlockAckReqType ());
   reqHdr.SetTidInfo (tid);
   reqHdr.SetStartingSequence ((*it).second.first.GetStartingSequence ());
   return reqHdr;
@@ -978,6 +971,22 @@ BlockAckManager::GetRecipientBufferSize (Mac48Address recipient, uint8_t tid) co
       size = it->second.first.GetBufferSize ();
     }
   return size;
+}
+
+BlockAckReqType
+BlockAckManager::GetBlockAckReqType (Mac48Address recipient, uint8_t tid) const
+{
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ABORT_MSG_IF (it == m_agreements.end (), "No established Block Ack agreement");
+  return it->second.first.GetBlockAckReqType ();
+}
+
+BlockAckType
+BlockAckManager::GetBlockAckType (Mac48Address recipient, uint8_t tid) const
+{
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  NS_ABORT_MSG_IF (it == m_agreements.end (), "No established Block Ack agreement");
+  return it->second.first.GetBlockAckType ();
 }
 
 uint16_t

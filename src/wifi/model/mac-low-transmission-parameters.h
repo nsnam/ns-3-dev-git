@@ -54,11 +54,13 @@ public:
    */
   void EnableBlockAck (BlockAckType type);
   /**
-   * Schedule the transmission of a BlockAckRequest of the given type.
+   * A BlockAckRequest of the given type will be transmitted, followed by a
+   * BlockAck of the given type.
    *
-   * \param type the BlockAckRequest type
+   * \param barType the Block Ack Request type
+   * \param baType the type of the Block Ack solicited by the Block Ack Request
    */
-  void EnableBlockAckRequest (BlockAckType type);
+  void EnableBlockAckRequest (BlockAckReqType barType, BlockAckType baType);
   /**
    * Send a RTS, and wait CTSTimeout for a CTS. If we get a
    * CTS on time, call MacLowTransmissionListener::GotCts
@@ -123,7 +125,7 @@ public:
    *
    * Only call this method if a BlockAckRequest must be sent.
    */
-  BlockAckType GetBlockAckRequestType (void) const;
+  BlockAckReqType GetBlockAckRequestType (void) const;
   /**
    * \returns true if RTS should be sent and CTS waited for before
    *          sending data, false otherwise.
@@ -150,7 +152,8 @@ private:
   struct SendBarType
   {
     enum {NONE, BLOCK_ACK_REQ} m_type;
-    BlockAckType m_barType;
+    BlockAckReqType m_barType;
+    BlockAckType m_baType;
   };
 
   uint32_t m_nextSize;                              //!< the next size

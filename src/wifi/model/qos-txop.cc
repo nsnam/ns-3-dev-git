@@ -105,7 +105,6 @@ QosTxop::QosTxop ()
   m_qosBlockedDestinations = Create<QosBlockedDestinations> ();
   m_baManager = CreateObject<BlockAckManager> ();
   m_baManager->SetQueue (m_queue);
-  m_baManager->SetBlockAckType (m_blockAckType);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
   m_baManager->SetUnblockDestinationCallback (MakeCallback (&QosBlockedDestinations::Unblock, m_qosBlockedDestinations));
   m_baManager->SetTxOkCallback (MakeCallback (&QosTxop::BaTxOk, this));
@@ -633,34 +632,25 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
     }
   else if (frame->GetHeader ().IsBlockAckReq ())
     {
-      // assume a BlockAck variant. Later, if this frame is not aggregated,
-      // the acknowledgment type will be switched to Normal Ack
-      if (m_blockAckType.m_variant == BlockAckType::BASIC)
-        {
-          params.EnableBlockAck (BlockAckType::BASIC);
-        }
-      else if (m_blockAckType.m_variant == BlockAckType::COMPRESSED)
-        {
-          CtrlBAckRequestHeader baReqHdr;
-          frame->GetPacket ()->PeekHeader (baReqHdr);
-          uint8_t tid = baReqHdr.GetTidInfo ();
-
-          if (GetBaBufferSize (recipient, tid) > 64)
-            {
-              params.EnableBlockAck ({BlockAckType::COMPRESSED, {32}});
-            }
-          else
-            {
-              params.EnableBlockAck (BlockAckType::COMPRESSED);
-            }
-        }
-      else if (m_blockAckType.m_variant == BlockAckType::MULTI_TID)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported");
-        }
+      CtrlBAckRequestHeader baReqHdr;
+      frame->GetPacket ()->PeekHeader (baReqHdr);
+      uint8_t tid = baReqHdr.GetTidInfo ();
+      params.EnableBlockAck (m_baManager->GetBlockAckType (recipient, tid));
     }
 
   return params;
+}
+
+BlockAckReqType
+QosTxop::GetBlockAckReqType (Mac48Address recipient, uint8_t tid) const
+{
+  return m_baManager->GetBlockAckReqType (recipient, tid);
+}
+
+BlockAckType
+QosTxop::GetBlockAckType (Mac48Address recipient, uint8_t tid) const
+{
+  return m_baManager->GetBlockAckType (recipient, tid);
 }
 
 void

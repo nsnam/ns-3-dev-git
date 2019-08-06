@@ -184,7 +184,7 @@ GetBlockAckSize (BlockAckType type)
 }
 
 uint32_t
-GetBlockAckRequestSize (BlockAckType type)
+GetBlockAckRequestSize (BlockAckReqType type)
 {
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_BACKREQ);

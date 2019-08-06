@@ -62,11 +62,11 @@ public:
    */
   void SetHtImmediateAck (bool immediateAck);
   /**
-   * Set the block ack type.
+   * Set the BlockAckRequest type.
    *
-   * \param type the BA type
+   * \param type the BlockAckRequest type
    */
-  void SetType (BlockAckType type);
+  void SetType (BlockAckReqType type);
   /**
    * Set Traffic ID (TID).
    *
@@ -89,11 +89,11 @@ public:
    */
   bool MustSendHtImmediateAck (void) const;
   /**
-   * Return the Block Ack type ID.
+   * Return the BlockAckRequest type.
    *
-   * \return the BA type
+   * \return the type of the BlockAckRequest
    */
-  BlockAckType GetType (void) const;
+  BlockAckReqType GetType (void) const;
   /**
    * Return the Traffic ID (TID).
    *
@@ -172,10 +172,10 @@ private:
    * For now only non HT immediate BlockAck is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_barAckPolicy;    ///< BAR Ack Policy
-  BlockAckType m_baType;  ///< BA type
-  uint16_t m_tidInfo;     ///< TID info
-  uint16_t m_startingSeq; ///< starting sequence number
+  bool m_barAckPolicy;       ///< bar ack policy
+  BlockAckReqType m_barType; ///< BAR type
+  uint16_t m_tidInfo;        ///< TID info
+  uint16_t m_startingSeq;    ///< starting seq
 };
 
 

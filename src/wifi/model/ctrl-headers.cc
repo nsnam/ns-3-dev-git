@@ -32,7 +32,7 @@ NS_OBJECT_ENSURE_REGISTERED (CtrlBAckRequestHeader);
 
 CtrlBAckRequestHeader::CtrlBAckRequestHeader ()
   : m_barAckPolicy (false),
-    m_baType (BlockAckType::BASIC)
+    m_barType (BlockAckReqType::BASIC)
 {
 }
 
@@ -68,14 +68,14 @@ CtrlBAckRequestHeader::GetSerializedSize () const
 {
   uint32_t size = 0;
   size += 2; //Bar control
-  switch (m_baType.m_variant)
+  switch (m_barType.m_variant)
     {
-      case BlockAckType::BASIC:
-      case BlockAckType::COMPRESSED:
-      case BlockAckType::EXTENDED_COMPRESSED:
+      case BlockAckReqType::BASIC:
+      case BlockAckReqType::COMPRESSED:
+      case BlockAckReqType::EXTENDED_COMPRESSED:
         size += 2;
         break;
-      case BlockAckType::MULTI_TID:
+      case BlockAckReqType::MULTI_TID:
         size += (2 + 2) * (m_tidInfo + 1);
         break;
       default:
@@ -90,14 +90,14 @@ CtrlBAckRequestHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteHtolsbU16 (GetBarControl ());
-  switch (m_baType.m_variant)
+  switch (m_barType.m_variant)
     {
-      case BlockAckType::BASIC:
-      case BlockAckType::COMPRESSED:
-      case BlockAckType::EXTENDED_COMPRESSED:
+      case BlockAckReqType::BASIC:
+      case BlockAckReqType::COMPRESSED:
+      case BlockAckReqType::EXTENDED_COMPRESSED:
         i.WriteHtolsbU16 (GetStartingSequenceControl ());
         break;
-      case BlockAckType::MULTI_TID:
+      case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
         break;
       default:
@@ -111,14 +111,14 @@ CtrlBAckRequestHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   SetBarControl (i.ReadLsbtohU16 ());
-  switch (m_baType.m_variant)
+  switch (m_barType.m_variant)
     {
-      case BlockAckType::BASIC:
-      case BlockAckType::COMPRESSED:
-      case BlockAckType::EXTENDED_COMPRESSED:
+      case BlockAckReqType::BASIC:
+      case BlockAckReqType::COMPRESSED:
+      case BlockAckReqType::EXTENDED_COMPRESSED:
         SetStartingSequenceControl (i.ReadLsbtohU16 ());
         break;
-      case BlockAckType::MULTI_TID:
+      case BlockAckReqType::MULTI_TID:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
         break;
       default:
@@ -132,17 +132,17 @@ uint16_t
 CtrlBAckRequestHeader::GetBarControl (void) const
 {
   uint16_t res = 0;
-  switch (m_baType.m_variant)
+  switch (m_barType.m_variant)
     {
-      case BlockAckType::BASIC:
+      case BlockAckReqType::BASIC:
         break;
-      case BlockAckType::COMPRESSED:
+      case BlockAckReqType::COMPRESSED:
         res |= (0x02 << 1);
         break;
-      case BlockAckType::EXTENDED_COMPRESSED:
+      case BlockAckReqType::EXTENDED_COMPRESSED:
         res |= (0x01 << 1);
         break;
-      case BlockAckType::MULTI_TID:
+      case BlockAckReqType::MULTI_TID:
         res |= (0x03 << 1);
         break;
       default:
@@ -159,19 +159,19 @@ CtrlBAckRequestHeader::SetBarControl (uint16_t bar)
   m_barAckPolicy = ((bar & 0x01) == 1) ? true : false;
   if (((bar >> 1) & 0x0f) == 0x03)
     {
-      m_baType.m_variant = BlockAckType::MULTI_TID;
+      m_barType.m_variant = BlockAckReqType::MULTI_TID;
     }
   else if (((bar >> 1) & 0x0f) == 0x01)
     {
-      m_baType.m_variant = BlockAckType::EXTENDED_COMPRESSED;
+      m_barType.m_variant = BlockAckReqType::EXTENDED_COMPRESSED;
     }
   else if (((bar >> 1) & 0x0f) == 0x02)
     {
-      m_baType.m_variant = BlockAckType::COMPRESSED;
+      m_barType.m_variant = BlockAckReqType::COMPRESSED;
     }
   else
     {
-      m_baType.m_variant = BlockAckType::BASIC;
+      m_barType.m_variant = BlockAckReqType::BASIC;
     }
   m_tidInfo = (bar >> 12) & 0x0f;
 }
@@ -195,15 +195,15 @@ CtrlBAckRequestHeader::SetHtImmediateAck (bool immediateAck)
 }
 
 void
-CtrlBAckRequestHeader::SetType (BlockAckType type)
+CtrlBAckRequestHeader::SetType (BlockAckReqType type)
 {
-  m_baType = type;
+  m_barType = type;
 }
 
-BlockAckType
+BlockAckReqType
 CtrlBAckRequestHeader::GetType (void) const
 {
-  return m_baType;
+  return m_barType;
 }
 
 void
@@ -240,25 +240,25 @@ CtrlBAckRequestHeader::GetStartingSequence (void) const
 bool
 CtrlBAckRequestHeader::IsBasic (void) const
 {
-  return (m_baType.m_variant == BlockAckType::BASIC) ? true : false;
+  return (m_barType.m_variant == BlockAckReqType::BASIC) ? true : false;
 }
 
 bool
 CtrlBAckRequestHeader::IsCompressed (void) const
 {
-  return (m_baType.m_variant == BlockAckType::COMPRESSED) ? true : false;
+  return (m_barType.m_variant == BlockAckReqType::COMPRESSED) ? true : false;
 }
 
 bool
 CtrlBAckRequestHeader::IsExtendedCompressed (void) const
 {
-  return (m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED) ? true : false;
+  return (m_barType.m_variant == BlockAckReqType::EXTENDED_COMPRESSED) ? true : false;
 }
 
 bool
 CtrlBAckRequestHeader::IsMultiTid (void) const
 {
-  return (m_baType.m_variant == BlockAckType::MULTI_TID) ? true : false;
+  return (m_barType.m_variant == BlockAckReqType::MULTI_TID) ? true : false;
 }
 
 

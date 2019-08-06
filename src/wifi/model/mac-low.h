@@ -543,7 +543,7 @@ private:
    * \param type the BlockAckRequest type
    * \return the time required to transmit the BlockAckRequest (including preamble and FCS)
    */
-  Time GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
+  Time GetBlockAckRequestDuration (WifiTxVector blockAckReqTxVector, BlockAckReqType type) const;
   /**
    * Return the time required to transmit the response frames (Ack or BAR+BA
    * following the policy configured in the transmit parameters).
