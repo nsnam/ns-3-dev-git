@@ -19,6 +19,7 @@
  */
 
 #include "ctrl-headers.h"
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -269,9 +270,10 @@ NS_OBJECT_ENSURE_REGISTERED (CtrlBAckResponseHeader);
 
 CtrlBAckResponseHeader::CtrlBAckResponseHeader ()
   : m_baAckPolicy (false),
-    m_baType (BlockAckType::BASIC)
+    m_tidInfo (0),
+    m_startingSeq (0)
 {
-  memset (&bitmap, 0, sizeof (bitmap));
+  SetType (BlockAckType::BASIC);
 }
 
 CtrlBAckResponseHeader::~CtrlBAckResponseHeader ()
@@ -309,13 +311,9 @@ CtrlBAckResponseHeader::GetSerializedSize (void) const
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        size += (2 + 128);
-        break;
       case BlockAckType::COMPRESSED:
-        size += (2 + 8);
-        break;
       case BlockAckType::EXTENDED_COMPRESSED:
-        size += (2 + 32);
+        size += (2 + m_baType.m_bitmapLen[0]);
         break;
       case BlockAckType::MULTI_TID:
         size += (2 + 2 + 8) * (m_tidInfo + 1); //Multi-TID block ack
@@ -382,6 +380,8 @@ void
 CtrlBAckResponseHeader::SetType (BlockAckType type)
 {
   m_baType = type;
+  m_bitmap.resize (m_baType.m_bitmapLen[0]);
+  m_bitmap.assign (m_baType.m_bitmapLen[0], 0);
 }
 
 BlockAckType
@@ -480,19 +480,23 @@ CtrlBAckResponseHeader::SetBaControl (uint16_t ba)
   m_baAckPolicy = ((ba & 0x01) == 1) ? true : false;
   if (((ba >> 1) & 0x0f) == 0x03)
     {
-      m_baType.m_variant = BlockAckType::MULTI_TID;
+      SetType (BlockAckType::MULTI_TID);
     }
   else if (((ba >> 1) & 0x0f) == 0x01)
     {
-      m_baType.m_variant = BlockAckType::EXTENDED_COMPRESSED;
+      SetType (BlockAckType::EXTENDED_COMPRESSED);
     }
   else if (((ba >> 1) & 0x0f) == 0x02)
     {
-      m_baType.m_variant = BlockAckType::COMPRESSED;
+      SetType (BlockAckType::COMPRESSED);
+    }
+  else if (((ba >> 1) & 0x0f) == 0)
+    {
+      SetType (BlockAckType::BASIC);
     }
   else
     {
-      m_baType.m_variant = BlockAckType::BASIC;
+      NS_FATAL_ERROR ("Invalid BA type");
     }
   m_tidInfo = (ba >> 12) & 0x0f;
 }
@@ -500,12 +504,38 @@ CtrlBAckResponseHeader::SetBaControl (uint16_t ba)
 uint16_t
 CtrlBAckResponseHeader::GetStartingSequenceControl (void) const
 {
-  return (m_startingSeq << 4) & 0xfff0;
+  uint16_t ret = (m_startingSeq << 4) & 0xfff0;
+
+  if (m_baType.m_variant == BlockAckType::COMPRESSED
+      && m_baType.m_bitmapLen[0] == 32)
+    {
+      ret |= 0x0004;
+    }
+  return ret;
 }
 
 void
 CtrlBAckResponseHeader::SetStartingSequenceControl (uint16_t seqControl)
 {
+  if (m_baType.m_variant == BlockAckType::COMPRESSED)
+    {
+      if ((seqControl & 0x0001) == 1)
+        {
+          NS_FATAL_ERROR ("Fragmentation Level 3 unsupported");
+        }
+      if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 0)
+        {
+          SetType ({BlockAckType::COMPRESSED, {8}});
+        }
+      else if (((seqControl >> 3) & 0x0001) == 0 && ((seqControl >> 1) & 0x0003) == 2)
+        {
+          SetType ({BlockAckType::COMPRESSED, {32}});
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Reserved configurations");
+        }
+    }
   m_startingSeq = (seqControl >> 4) & 0x0fff;
 }
 
@@ -516,19 +546,12 @@ CtrlBAckResponseHeader::SerializeBitmap (Buffer::Iterator start) const
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-          for (uint8_t j = 0; j < 64; j++)
-            {
-              i.WriteHtolsbU16 (bitmap.m_bitmap[j]);
-            }
-          break;
       case BlockAckType::COMPRESSED:
-          i.WriteHtolsbU64 (bitmap.m_compressedBitmap);
-          break;
       case BlockAckType::EXTENDED_COMPRESSED:
-          i.WriteHtolsbU64 (bitmap.m_extendedCompressedBitmap[0]);
-          i.WriteHtolsbU64 (bitmap.m_extendedCompressedBitmap[1]);
-          i.WriteHtolsbU64 (bitmap.m_extendedCompressedBitmap[2]);
-          i.WriteHtolsbU64 (bitmap.m_extendedCompressedBitmap[3]);
+          for (auto& byte : m_bitmap)
+            {
+              i.WriteU8 (byte);
+            }
           break;
       case BlockAckType::MULTI_TID:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
@@ -547,19 +570,12 @@ CtrlBAckResponseHeader::DeserializeBitmap (Buffer::Iterator start)
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-          for (uint8_t j = 0; j < 64; j++)
-            {
-              bitmap.m_bitmap[j] = i.ReadLsbtohU16 ();
-            }
-          break;
       case BlockAckType::COMPRESSED:
-          bitmap.m_compressedBitmap = i.ReadLsbtohU64 ();
-          break;
       case BlockAckType::EXTENDED_COMPRESSED:
-          bitmap.m_extendedCompressedBitmap[0] = i.ReadLsbtohU64 ();
-          bitmap.m_extendedCompressedBitmap[1] = i.ReadLsbtohU64 ();
-          bitmap.m_extendedCompressedBitmap[2] = i.ReadLsbtohU64 ();
-          bitmap.m_extendedCompressedBitmap[3] = i.ReadLsbtohU64 ();
+          for (uint8_t j = 0; j < m_baType.m_bitmapLen[0]; j++)
+            {
+              m_bitmap[j] = i.ReadU8 ();
+            }
           break;
       case BlockAckType::MULTI_TID:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
@@ -581,33 +597,23 @@ CtrlBAckResponseHeader::SetReceivedPacket (uint16_t seq)
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        {
-          /* To set correctly basic block ack bitmap we need fragment number too.
-             So if it's not specified, we consider packet not fragmented. */
-          bitmap.m_bitmap[IndexInBitmap (seq)] |= 0x0001;
-          break;
-        }
+        /* To set correctly basic block ack bitmap we need fragment number too.
+            So if it's not specified, we consider packet not fragmented. */
+        m_bitmap[IndexInBitmap (seq) * 2] |= 0x01;
+        break;
       case BlockAckType::COMPRESSED:
-        {
-          bitmap.m_compressedBitmap |= (uint64_t (0x0000000000000001) << IndexInBitmap (seq));
-          break;
-        }
       case BlockAckType::EXTENDED_COMPRESSED:
         {
           uint16_t index = IndexInBitmap (seq);
-          bitmap.m_extendedCompressedBitmap[index/64] |= (uint64_t (0x0000000000000001) << index);
+          m_bitmap[index / 8] |= (uint8_t (0x01) << (index % 8));
           break;
         }
       case BlockAckType::MULTI_TID:
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-          break;
-        }
+        NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+        break;
       default:
-        {
-          NS_FATAL_ERROR ("Invalid BA type");
-          break;
-        }
+        NS_FATAL_ERROR ("Invalid BA type");
+        break;
     }
 }
 
@@ -622,7 +628,7 @@ CtrlBAckResponseHeader::SetReceivedFragment (uint16_t seq, uint8_t frag)
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        bitmap.m_bitmap[IndexInBitmap (seq)] |= (0x0001 << frag);
+        m_bitmap[IndexInBitmap (seq) * 2 + frag / 8] |= (0x01 << (frag % 8));
         break;
       case BlockAckType::COMPRESSED:
       case BlockAckType::EXTENDED_COMPRESSED:
@@ -648,34 +654,21 @@ CtrlBAckResponseHeader::IsPacketReceived (uint16_t seq) const
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        {
-          /*It's impossible to say if an entire packet was correctly received. */
-          return false;
-        }
+        /*It's impossible to say if an entire packet was correctly received. */
+        return false;
       case BlockAckType::COMPRESSED:
-        {
-          /* Although this could make no sense, if packet with sequence number
-             equal to <i>seq</i> was correctly received, also all of its fragments
-             were correctly received. */
-          uint64_t mask = uint64_t (0x0000000000000001);
-          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1) ? true : false;
-        }
       case BlockAckType::EXTENDED_COMPRESSED:
         {
-          uint64_t mask = uint64_t (0x0000000000000001);
           uint16_t index = IndexInBitmap (seq);
-          return (((bitmap.m_extendedCompressedBitmap[index/64] >> index) & mask) == 1) ? true : false;
+          uint8_t mask = uint8_t (0x01) << (index % 8) ;
+          return ((m_bitmap[index / 8] & mask) != 0) ? true : false;
         }
       case BlockAckType::MULTI_TID:
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-          break;
-        }
+        NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+        break;
       default:
-        {
-          NS_FATAL_ERROR ("Invalid BA type");
-          break;
-        }
+        NS_FATAL_ERROR ("Invalid BA type");
+        break;
     }
   return false;
 }
@@ -691,23 +684,12 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
   switch (m_baType.m_variant)
     {
       case BlockAckType::BASIC:
-        {
-          return ((bitmap.m_bitmap[IndexInBitmap (seq)] & (0x0001 << frag)) != 0x0000) ? true : false;
-        }
+        return ((m_bitmap[IndexInBitmap (seq) * 2 + frag / 8] & (0x01 << (frag % 8))) != 0) ? true : false;
       case BlockAckType::COMPRESSED:
-        {
-          /* Although this could make no sense, if packet with sequence number
-             equal to <i>seq</i> was correctly received, also all of its fragments
-             were correctly received. */
-          uint64_t mask = uint64_t (0x0000000000000001);
-          return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1) ? true : false;
-        }
       case BlockAckType::EXTENDED_COMPRESSED:
-        {
-          uint64_t mask = uint64_t (0x0000000000000001);
-          uint16_t index = IndexInBitmap (seq);
-          return (((bitmap.m_extendedCompressedBitmap[index/64] >> index) & mask) == 1) ? true : false;
-        }
+        /* We can ignore this...compressed block ack doesn't support
+           acknowledgement of single fragments */
+        return false;
       case BlockAckType::MULTI_TID:
         {
           NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
@@ -732,9 +714,9 @@ CtrlBAckResponseHeader::IndexInBitmap (uint16_t seq) const
     }
   else
     {
-      index = 4096 - m_startingSeq + seq;
+      index = SEQNO_SPACE_SIZE - m_startingSeq + seq;
     }
-  if (m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED)
+  if (m_baType.m_variant == BlockAckType::COMPRESSED && m_baType.m_bitmapLen[0] == 32)
     {
       NS_ASSERT (index <= 255);
     }
@@ -748,38 +730,26 @@ CtrlBAckResponseHeader::IndexInBitmap (uint16_t seq) const
 bool
 CtrlBAckResponseHeader::IsInBitmap (uint16_t seq) const
 {
-  if (m_baType.m_variant == BlockAckType::EXTENDED_COMPRESSED)
+  if (m_baType.m_variant == BlockAckType::COMPRESSED && m_baType.m_bitmapLen[0] == 32)
     {
-      return (seq - m_startingSeq + 4096) % 4096 < 256;
+      return (seq - m_startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE < 256;
     }
   else
     {
-      return (seq - m_startingSeq + 4096) % 4096 < 64;
+      return (seq - m_startingSeq + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE < 64;
     }
 }
 
-const uint16_t*
+const std::vector<uint8_t>&
 CtrlBAckResponseHeader::GetBitmap (void) const
 {
-  return bitmap.m_bitmap;
-}
-
-uint64_t
-CtrlBAckResponseHeader::GetCompressedBitmap (void) const
-{
-  return bitmap.m_compressedBitmap;
-}
-
-const uint64_t*
-CtrlBAckResponseHeader::GetExtendedCompressedBitmap (void) const
-{
-  return bitmap.m_extendedCompressedBitmap;
+  return m_bitmap;
 }
 
 void
 CtrlBAckResponseHeader::ResetBitmap (void)
 {
-  memset (&bitmap, 0, sizeof (bitmap));
+  m_bitmap.assign (m_baType.m_bitmapLen[0], 0);
 }
 
 }  //namespace ns3

@@ -582,9 +582,23 @@ CtrlBAckResponseHeaderTest::DoRun (void)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }
-  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0xffffc1ffffffffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[0], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[1], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[2], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[3], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[4], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[5], 0xc1, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[6], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[7], 0xff, "error in compressed bitmap");
   m_blockAckHdr.SetReceivedPacket (1500);
-  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0xffffc1ffffffffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[0], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[1], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[2], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[3], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[4], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[5], 0xc1, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[6], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[7], 0xff, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (220), false, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (225), true, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (1500), false, "error in compressed bitmap");
@@ -602,9 +616,23 @@ CtrlBAckResponseHeaderTest::DoRun (void)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }
-  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0x00000000007000ffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[0], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[1], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[2], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[3], 0x70, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[4], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[5], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[6], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[7], 0x00, "error in compressed bitmap");
   m_blockAckHdr.SetReceivedPacket (80);
-  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0x00000000007000ffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[0], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[1], 0xff, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[2], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[3], 0x70, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[4], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[5], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[6], 0x00, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetBitmap ()[7], 0x00, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (4090), true, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (4095), true, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (10), false, "error in compressed bitmap");

@@ -647,7 +647,7 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 
           if (GetBaBufferSize (recipient, tid) > 64)
             {
-              params.EnableBlockAck (BlockAckType::EXTENDED_COMPRESSED);
+              params.EnableBlockAck ({BlockAckType::COMPRESSED, {32}});
             }
           else
             {

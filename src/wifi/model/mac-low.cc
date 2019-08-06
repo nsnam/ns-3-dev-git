@@ -2172,7 +2172,7 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
       immediate = (*it).second.first.IsImmediateBlockAck ();
       if ((*it).second.first.GetBufferSize () > 64)
         {
-          blockAck.SetType (BlockAckType::EXTENDED_COMPRESSED);
+          blockAck.SetType ({BlockAckType::COMPRESSED, {32}});
         }
       else
         {
@@ -2218,7 +2218,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
             }
           else if (reqHdr.IsExtendedCompressed ())
             {
-              blockAck.SetType (BlockAckType::EXTENDED_COMPRESSED);
+              blockAck.SetType ({BlockAckType::COMPRESSED, {32}});
             }
           BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
           NS_ASSERT (i != m_bAckCaches.end ());
