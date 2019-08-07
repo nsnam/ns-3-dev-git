@@ -62,8 +62,6 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  /** The MAC address. */
-  Mac8Address m_address;
   /** PHY layer attached to this MAC. */
   Ptr<UanPhy> m_phy;
   /** Forwarding up callback. */

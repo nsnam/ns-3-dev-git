@@ -137,7 +137,7 @@ UanMacCw::Enqueue (Ptr<Packet> packet, uint16_t protocolNumber, const Address &d
 
         UanHeaderCommon header;
         header.SetDest (Mac8Address::ConvertFrom (dest));
-        header.SetSrc (m_address);
+        header.SetSrc (Mac8Address::ConvertFrom (GetAddress ()));
         header.SetType (0);
         header.SetProtocolNumber (0);
         packet->AddHeader (header);
@@ -329,7 +329,7 @@ UanMacCw::PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode)
   UanHeaderCommon header;
   packet->RemoveHeader (header);
 
-  if (header.GetDest () == m_address || header.GetDest () == Mac8Address::GetBroadcast ())
+  if (header.GetDest () == Mac8Address::ConvertFrom (GetAddress ()) || header.GetDest () == Mac8Address::GetBroadcast ())
     {
       m_forwardUpCb (packet, header.GetProtocolNumber (), header.GetSrc ());
     }

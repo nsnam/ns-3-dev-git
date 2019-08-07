@@ -206,7 +206,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
   UanHeaderCommon ch;
   pkt->PeekHeader (ch);
 
-  if (ch.GetDest () == m_address || ch.GetDest () == Mac8Address::GetBroadcast ())
+  if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()) || ch.GetDest () == Mac8Address::GetBroadcast ())
     {
       m_rxLogger (pkt, mode);
     }
@@ -374,7 +374,12 @@ UanMacRcGw::StartCycle (void)
       ctsg.SetRetryRate (m_currentRetryRate);
       ctsg.SetTxTimeStamp (Simulator::Now ());
 
-      UanHeaderCommon ch (m_address, Mac8Address::GetBroadcast (), UanMacRc::TYPE_CTS, 0);
+      UanHeaderCommon ch;
+      ch.SetSrc (Mac8Address::ConvertFrom (GetAddress ()));
+      ch.SetDest (Mac8Address::GetBroadcast ());
+      ch.SetType (UanMacRc::TYPE_CTS);
+      ch.SetProtocolNumber (0);
+
       Ptr<Packet> p = Create<Packet> ();
       p->AddHeader (ctsg);
       p->AddHeader (ch);
@@ -432,7 +437,7 @@ UanMacRcGw::StartCycle (void)
   ctsg.SetTxTimeStamp (Simulator::Now ());
   UanHeaderCommon ch;
   ch.SetDest (Mac8Address::GetBroadcast ());
-  ch.SetSrc (m_address);
+  ch.SetSrc (Mac8Address::ConvertFrom (GetAddress ()));
   ch.SetType (UanMacRc::TYPE_CTS);
   cts->AddHeader (ctsg);
   cts->AddHeader (ch);
@@ -477,7 +482,7 @@ UanMacRcGw::EndCycle ()
         }
       UanHeaderCommon ch;
       ch.SetDest (dest);
-      ch.SetSrc (m_address);
+      ch.SetSrc (Mac8Address::ConvertFrom (GetAddress ()));
       ch.SetType (UanMacRc::TYPE_ACK);
       UanHeaderRcAck ah;
       ah.SetFrameNo (data.frameNo);

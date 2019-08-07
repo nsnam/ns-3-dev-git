@@ -117,8 +117,6 @@ private:
 
   /** Forwarding up callback. */
   Callback <void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;
-  /** The MAC address. */
-  Mac8Address m_address;
   /** PHY layer attached to this MAC. */
   Ptr<UanPhy> m_phy;
   /** A packet destined for this MAC was received. */

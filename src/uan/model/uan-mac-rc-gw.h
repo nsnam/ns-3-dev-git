@@ -126,7 +126,6 @@ private:
   Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;
   
   Ptr<UanPhy> m_phy;            //!< PHY layer attached to this MAC.
-  Mac8Address m_address;         //!< The MAC address.
   Time m_maxDelta;              //!< Maximum propagation delay between gateway and non-gateway nodes .
   Time m_sifs;                  //!< Spacing between frames to account for timing error and processing delay.
   uint32_t m_maxRes;            //!< Maximum number of reservations to accept per cycle.

@@ -212,7 +212,6 @@ private:
   bool m_rtsBlocked;       //!< RTS blocked while processing ACK.
 
   EventId m_startAgain;    //!< (Unused).
-  Mac8Address m_address;    //!< My addrese.s
   double m_retryRate;      //!< Number of retry attempts per second (of RTS/GWPING.
   Mac8Address m_assocAddr;  //!< Next hop address.
   Ptr<UanPhy> m_phy;       //!< PHY layer attached to this MAC.

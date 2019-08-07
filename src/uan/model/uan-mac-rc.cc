@@ -331,7 +331,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
   NS_UNUSED (sinr);
   UanHeaderCommon ch;
   pkt->RemoveHeader (ch);
-  if (ch.GetDest () == m_address || ch.GetDest () == Mac8Address::GetBroadcast ())
+  if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()) || ch.GetDest () == Mac8Address::GetBroadcast ())
     {
       m_rxLogger (pkt, mode);
     }
@@ -340,9 +340,10 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
     {
     case TYPE_DATA:
 
-      if (ch.GetDest () == m_address)
+      if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()))
         {
-          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " UanMacRc Receiving DATA packet from PHY");
+          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+                        " UanMacRc Receiving DATA packet from PHY");
           UanHeaderRcData dh;
           pkt->RemoveHeader (dh);
           m_forwardUpCb (pkt, ch.GetProtocolNumber (), ch.GetSrc ());
@@ -372,7 +373,8 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
           }
         else
           {
-            NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << m_address << " Received window period < 0");
+            NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << 
+                            Mac8Address::ConvertFrom (GetAddress ()) << " Received window period < 0");
           }
 
         UanHeaderRcCts ctsh;
@@ -380,7 +382,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
         while (pkt->GetSize () > 0)
           {
             pkt->RemoveHeader (ctsh);
-            if (ctsh.GetAddress () == m_address)
+            if (ctsh.GetAddress () == Mac8Address::ConvertFrom (GetAddress ()))
               {
                 if (m_state == GWPSENT)
                   {
@@ -393,7 +395,9 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
                   }
                 else
                   {
-                    NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " received CTS while state != RTSSENT or GWPING");
+                    NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+                                  Mac8Address::ConvertFrom (GetAddress ()) << 
+                                  " received CTS while state != RTSSENT or GWPING");
                   }
               }
           }
@@ -404,7 +408,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
       break;
     case TYPE_ACK:
       m_rtsBlocked = true;
-      if (ch.GetDest () != m_address)
+      if (ch.GetDest () != Mac8Address::ConvertFrom (GetAddress ()))
         {
           return;
         }
@@ -433,10 +437,14 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
     }
   if (it == m_resList.end ())
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " received CTS packet with no corresponding reservation!");
+      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+                    Mac8Address::ConvertFrom (GetAddress ()) << 
+                    " received CTS packet with no corresponding reservation!");
       return;
     }
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " received CTS packet.  Scheduling data");
+  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+                " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+                " received CTS packet.  Scheduling data");
   it->SetTransmitted ();
 
   double currentBps = m_phy->GetMode (m_currentRate).GetDataRateBps ();
@@ -469,7 +477,7 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
       UanHeaderCommon ch;
       ch.SetType (TYPE_DATA);
       ch.SetDest (m_assocAddr);
-      ch.SetSrc (m_address);
+      ch.SetSrc (Mac8Address::ConvertFrom (GetAddress ()));
 
       pkt->AddHeader (ch);
       Time eventTime = startDelay + frameDelay;
@@ -484,7 +492,12 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
               NS_FATAL_ERROR ("Scheduling error resulted in very negative data transmission time! eventTime = " << eventTime.GetSeconds ());
             }
         }
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " scheduling with delay " << eventTime.GetSeconds () << " propDelay " << m_learnedProp.GetSeconds () << " start delay " << startDelay.GetSeconds () << " arrival time " << arrTime.GetSeconds ());
+      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+                    " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+                    " scheduling with delay " << eventTime.GetSeconds () << 
+                    " propDelay " << m_learnedProp.GetSeconds () << 
+                    " start delay " << startDelay.GetSeconds () << 
+                    " arrival time " << arrTime.GetSeconds ());
       Simulator::Schedule (eventTime, &UanMacRc::SendPacket, this, pkt, m_currentRate);
       frameDelay = frameDelay + m_sifs + Seconds (pkt->GetSize () / currentBps);
     }
@@ -532,7 +545,11 @@ UanMacRc::SendPacket (Ptr<Packet> pkt, uint32_t rate)
       type = "UNKNOWN";
       break;
     }
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " transmitting " << pkt->GetSize () << " byte packet of type " << type << " with rate " << rate << "(" << m_phy->GetMode (rate).GetDataRateBps () << ") to " << ch.GetDest ());
+  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+                " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+                " transmitting " << pkt->GetSize () << 
+                " byte packet of type " << type << " with rate " << rate << 
+                "(" << m_phy->GetMode (rate).GetDataRateBps () << ") to " << ch.GetDest ());
   m_dequeueLogger (pkt, rate);
   m_phy->SendPacket (pkt, rate);
 }
@@ -571,7 +588,9 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
       uint8_t pnum = 0;
       for (; nit != nacks.end (); nit++)
         {
-          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " Received NACK for " << (uint32_t) *nit);
+          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+                        Mac8Address::ConvertFrom (GetAddress ()) << 
+                        " Received NACK for " << (uint32_t) *nit);
           while (pnum < *nit)
             {
               pit++;
@@ -584,7 +603,9 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
     }
   else
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << m_address << " received ACK for all frames");
+      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+                    Mac8Address::ConvertFrom (GetAddress ()) << 
+                    " received ACK for all frames");
     }
   m_resList.erase (it);
 }
@@ -617,7 +638,7 @@ UanMacRc::Associate (void)
     {
       Ptr<Packet> pkt = Create<Packet> (0);
       pkt->AddHeader (CreateRtsHeader (res));
-      pkt->AddHeader (UanHeaderCommon (m_address, Mac8Address::GetBroadcast (), static_cast<uint8_t>(TYPE_GWPING), 0));
+      pkt->AddHeader (UanHeaderCommon (Mac8Address::ConvertFrom (GetAddress ()), Mac8Address::GetBroadcast (), static_cast<uint8_t>(TYPE_GWPING), 0));
       NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Sending first GWPING " << *pkt);
       SendPacket (pkt,m_currentRate + m_numRates);
     }
@@ -648,7 +669,7 @@ UanMacRc::AssociateTimeout ()
       res.IncrementRetry ();
 
       pkt->AddHeader (CreateRtsHeader (res));
-      pkt->AddHeader (UanHeaderCommon (m_address, Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_GWPING), 0));
+      pkt->AddHeader (UanHeaderCommon (Mac8Address::ConvertFrom (GetAddress ()), Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_GWPING), 0));
 
       SendPacket (pkt,m_currentRate + m_numRates);
       m_resList.push_back (res);
@@ -681,7 +702,7 @@ UanMacRc::SendRts (void)
     {
       Ptr<Packet> pkt = Create<Packet> (0);
       pkt->AddHeader (CreateRtsHeader (res));
-      pkt->AddHeader (UanHeaderCommon (m_address, Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_RTS), 0));
+      pkt->AddHeader (UanHeaderCommon (Mac8Address::ConvertFrom (GetAddress ()), Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_RTS), 0));
       SendPacket (pkt,m_currentRate + m_numRates);
     }
   m_state = RTSSENT;
@@ -708,7 +729,7 @@ UanMacRc::IsPhy1Ok ()
         {
           phy1ok = false;
         }
-      else if (ch.GetDest () == m_address)
+      else if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()))
         {
           phy1ok = false;
         }
@@ -733,7 +754,9 @@ UanMacRc::RtsTimeout (void)
 
       if (m_resList.empty ())
         {
-          NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << m_address << " tried to retry RTS with empty reservation list");
+          NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << 
+                          Mac8Address::ConvertFrom (GetAddress ()) << 
+                          " tried to retry RTS with empty reservation list");
         }
       Ptr<Packet> pkt = Create<Packet> (0);
 
@@ -744,7 +767,7 @@ UanMacRc::RtsTimeout (void)
       res.IncrementRetry ();
       m_resList.push_back (res);
       pkt->AddHeader (CreateRtsHeader (res));
-      pkt->AddHeader (UanHeaderCommon (m_address, Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_RTS), 0));
+      pkt->AddHeader (UanHeaderCommon (Mac8Address::ConvertFrom (GetAddress ()), Mac8Address::GetBroadcast (), static_cast<uint8_t> (TYPE_RTS), 0));
       SendPacket (pkt,m_currentRate + m_numRates);
 
     }
