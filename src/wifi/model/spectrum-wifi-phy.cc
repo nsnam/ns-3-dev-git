@@ -34,8 +34,6 @@
 #include "wifi-utils.h"
 #include "wifi-ppdu.h"
 #include "wifi-psdu.h"
-#include "ap-wifi-mac.h"
-#include "wifi-net-device.h"
 
 namespace ns3 {
 
@@ -360,19 +358,33 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<WifiPpdu> ppdu = Copy (wifiRxParams->ppdu);
   if (ppdu->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HE_TB
-      && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION
-      && m_currentHeTbPpduUid == ppdu->GetUid ())
+      && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION)
+    {
+      if (m_currentHeTbPpduUid == ppdu->GetUid () && m_currentEvent != 0)
         {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-      bool isAp = (DynamicCast<ApWifiMac> (device->GetMac ()) != 0);
-      if (isAp)
-        {
+          //AP and STA already received non-OFDMA part, handle OFDMA payload reception
           StartReceiveOfdmaPayload (ppdu, rxPowerW);
         }
       else
         {
-          NS_LOG_INFO ("Ignore UL-OFDMA since device is not AP");
-          m_currentPreambleEvents.clear ();
+          //PHY receives the OFDMA payload while having dropped the preamble
+          NS_LOG_INFO ("Consider UL-OFDMA part of the HE TB PPDU as interference since device dropped the preamble");
+          m_interference.Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowerW);
+          auto it = m_currentPreambleEvents.find (std::make_pair(ppdu->GetUid (), ppdu->GetPreamble ()));
+          if (it != m_currentPreambleEvents.end ())
+            {
+              m_currentPreambleEvents.erase (it);
+            }
+          if (m_currentPreambleEvents.empty ())
+            {
+              Reset ();
+            }
+
+          if (rxDuration > m_state->GetDelayUntilIdle ())
+            {
+              //that packet will be noise _after_ the completion of the OFDMA part of the HE TB PPDUs
+              SwitchMaybeToCcaBusy ();
+            }
         }
     }
   else

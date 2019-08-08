@@ -382,11 +382,14 @@ WifiPpdu::GetPsdu (uint8_t bssColor, uint16_t staId) const
   else if (IsUlMu ())
     {
       NS_ASSERT (m_psdus.size () == 1);
-      return m_psdus.begin ()->second;
+      if (bssColor == 0 || (bssColor == m_heSig.GetBssColor ()))
+        {
+          return m_psdus.begin ()->second;
+        }
     }
   else
     {
-      if (bssColor == m_heSig.GetBssColor ())
+      if (bssColor == 0 || (bssColor == m_heSig.GetBssColor ()))
         {
           auto it = m_psdus.find (staId);
           if (it != m_psdus.end ())

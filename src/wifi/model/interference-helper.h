@@ -211,10 +211,11 @@ public:
    * \param txVector the TXVECTOR
    * \param duration the PPDU duration
    * \param rxPower received power per band (W)
+   * \param isStartOfdmaRxing flag whether the event corresponds to the start of the OFDMA payload reception (only used for UL-OFDMA)
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
 
   /**
    * Add a non-Wifi signal to interference helper.
@@ -373,9 +374,10 @@ private:
   /**
    * Append the given Event.
    *
-   * \param event
+   * \param event the event to be appended
+   * \param isStartOfdmaRxing flag whether event corresponds to the start of the OFDMA payload reception (only used for UL-OFDMA)
    */
-  void AppendEvent (Ptr<Event> event);
+  void AppendEvent (Ptr<Event> event, bool isStartOfdmaRxing);
 
   /**
    * Calculate noise and interference power in W.

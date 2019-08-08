@@ -1864,11 +1864,12 @@ protected:
   uint32_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
   uint32_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
 
-  EventId m_endRxEvent;                //!< the end of receive event
   EventId m_endPhyRxEvent;             //!< the end of PHY receive event
   EventId m_endTxEvent;                //!< the end of transmit event
 
+  std::vector <EventId> m_endRxEvents; //!< the end of receive events (only one unless UL MU reception)
   std::vector <EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
+  Ptr<Event> m_currentEvent; //!< Hold the current event
   std::map <std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event> > m_currentPreambleEvents; //!< store event associated to a PPDU (that has a unique ID and preamble combination) whose preamble is being received
 
   uint64_t m_previouslyRxPpduUid;      //!< UID of the previously received PPDU (reused by HE TB PPDUs), reset to UINT64_MAX upon transmission
@@ -2236,17 +2237,25 @@ private:
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 
-  Ptr<Event> m_currentEvent;                            //!< Hold the current event
   Ptr<FrameCaptureModel> m_frameCaptureModel;           //!< Frame capture model
   Ptr<PreambleDetectionModel> m_preambleDetectionModel; //!< Preamble detection model
   Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel;     //!< Wifi radio energy model
   Ptr<ErrorModel> m_postReceptionErrorModel;            //!< Error model for receive packet events
   Time m_timeLastPreambleDetected;                      //!< Record the time the last preamble was detected
 
-  std::vector<bool> m_statusPerMpdu; //!<  current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
-  SignalNoiseDbm m_signalNoise;      //!< latest signal power and noise power in dBm (noise power includes the noise figure)
+  std::vector <EventId> m_endOfMpduEvents; //!< the end of MPDU events (only used for A-MPDUs)
 
-  Callback<void> m_capabilitiesChangedCallback;         //!< Callback when PHY capabilities changed
+  /**
+   * A pair of a UID and STA_ID
+   */
+  typedef std::pair <uint64_t /* uid */, uint16_t /* staId */> UidStaIdPair;
+
+  std::map<UidStaIdPair, std::vector<bool> > m_statusPerMpduMap; //!< Map of the current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
+  std::map<UidStaIdPair, SignalNoiseDbm> m_signalNoiseMap; //!< Map of the latest signal power and noise power in dBm (noise power includes the noise figure)
+
+  bool m_ofdmaStarted; //!< Flag whether the reception of the OFDMA part has started (only used for UL-OFDMA)
+
+  Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };
 
 } //namespace ns3
