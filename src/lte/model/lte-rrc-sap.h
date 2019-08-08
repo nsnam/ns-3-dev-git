@@ -257,7 +257,7 @@ public:
   ///TxFailParams structure
   struct TxFailParam
   {
-    uint8_t connEstFailCount; ///< Number of times that the UE detects T300 expiry on the same cell
+    uint8_t connEstFailCount {0}; ///< Number of times that the UE detects T300 expiry on the same cell
   };
 
   /// RachConfigCommon structure
