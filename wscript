@@ -640,7 +640,7 @@ def configure(conf):
                                  conf.env['ENABLE_GSL'],
                                  "GSL not found")
 
-    conf.find_program('libgcrypt-config', var='LIBGCRYPT_CONFIG', msg="python-config", mandatory=False)
+    conf.find_program('libgcrypt-config', var='LIBGCRYPT_CONFIG', msg="libgcrypt-config", mandatory=False)
     if env.LIBGCRYPT_CONFIG:
         conf.check_cfg(path=env.LIBGCRYPT_CONFIG, msg="Checking for libgcrypt", args='--cflags --libs', package='',
                                      define_name="HAVE_GCRYPT", global_define=True, uselib_store='GCRYPT', mandatory=False)
