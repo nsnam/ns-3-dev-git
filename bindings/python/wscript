@@ -377,7 +377,7 @@ class apiscan_task(Task.Task):
             up = m.update
             up(self.__class__.__name__.encode())
             up(self.curdirnode.abspath().encode())
-            up(self.target)
+            up(self.target.encode())
             self.uid_ = m.digest()
             return self.uid_
 

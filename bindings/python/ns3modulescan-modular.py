@@ -273,12 +273,12 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
     module_parser.parse_finalize()
 
     output_file.close()
-    os.chmod(output_file_name, 0400)
+    os.chmod(output_file_name, 0o400)
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 6:
-        print "ns3modulescan-modular.py top_builddir module_path module_headers output_file_name cflags"
+        print("ns3modulescan-modular.py top_builddir module_path module_headers output_file_name cflags")
         sys.exit(1)
     ns3_module_scan(sys.argv[1], sys.argv[2], eval(sys.argv[3]), sys.argv[4], sys.argv[5])
     sys.exit(0)
