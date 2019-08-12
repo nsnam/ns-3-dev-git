@@ -368,6 +368,15 @@ def configure(conf):
 
     env = conf.env
 
+    # ns-3 now only supports Python3 but Waf is based on Python2
+    # This can be removed once Waf moves to Python3
+    if Options.options.with_python is None:
+        if sys.version_info < (3,):
+            # Forcing otherwise unused Options.options.python to select python3
+            # This option is checked later by waflib
+            Options.options.python = 'python3'
+            conf.msg('Configuring Waf to use python3: ', Options.options.python, 'GREEN')
+
     if Options.options.enable_gcov:
         env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
@@ -1128,7 +1137,7 @@ def shutdown(ctx):
     # Write the build status file.
     build_status_file = os.path.join(bld.out_dir, 'build-status.py')
     out = open(build_status_file, 'w')
-    out.write('#! /usr/bin/env python\n')
+    out.write('#! /usr/bin/env python3\n')
     out.write('\n')
     out.write('# Programs that are runnable.\n')
     out.write('ns3_runnable_programs = ' + str(env['NS3_RUNNABLE_PROGRAMS']) + '\n')
