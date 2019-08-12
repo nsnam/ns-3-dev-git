@@ -21,6 +21,9 @@ Supported platforms
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
 
+Starting with ns-3.30, Python 3 will be the only supported Python version,
+and scripts will default to Python 3 usage.
+
 New user-visible features
 -------------------------
 - (wifi) Preamble detection can now be modelled and is enabled by default.

@@ -98,7 +98,9 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-  <li>Waf upgraded from 2.0.9 to 2.0.15.
+  <li>ns-3 now only supports Python 3.  Use of Python 2 can be forced using the --with-python option provided to './waf configure', and may still work for many cases, but is no longer supported.  Waf does not default to Python 3 but the ns-3 wscript will default the build to Python 3.
+  </li>
+  <li>Waf upgraded from 2.0.9 to 2.0.18.
   </li>
   <li> Options to run a program through Waf without invoking a project rebuild have been added.  The command './waf --run-no-build <program-name>' parallels the behavior of './waf --run <program-name>' and, likewise, the command './waf --pyrun-no-build' parallels the behavior of './waf --pyrun <program-name>'.
   </li>
