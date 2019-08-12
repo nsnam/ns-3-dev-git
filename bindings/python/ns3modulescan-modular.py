@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 import sys
 import os.path
@@ -110,7 +110,7 @@ class PreScanHook:
 
         ## classes
         if isinstance(pygccxml_definition, class_t):
-            print >> sys.stderr, pygccxml_definition
+            print(pygccxml_definition, file=sys.stderr)
             # no need for helper classes to allow subclassing in Python, I think...
             #if pygccxml_definition.name.endswith('Helper'):
             #    global_annotations['allow_subclassing'] = 'false'
@@ -199,7 +199,7 @@ class PreScanHook:
             except KeyError:
                 pass
             else:
-                for key,value in annotations.items():
+                for key,value in list(annotations.items()):
                     if key == 'params':
                         parameter_annotations.update (value)
                         del annotations['params']

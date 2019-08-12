@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 #
 # Copyright (c) 2009 University of Washington
@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-from __future__ import print_function
 import os
 import sys
 import time
@@ -595,7 +594,18 @@ def sigint_hook(signal, frame):
 # and use that result.
 #
 def read_waf_config():
-    for line in open(".lock-waf_" + sys.platform + "_build", "rt"):
+    f = None
+    try:
+        # sys.platform reports linux2 for python2 and linux for python3
+        f = open(".lock-waf_" + sys.platform + "_build", "rt")
+    except FileNotFoundError:
+        try:
+            f = open(".lock-waf_linux2_build", "rt")
+        except FileNotFoundError:
+            print('The .lock-waf ... directory was not found.  You must do waf build before running test.py.', file=sys.stderr)
+            sys.exit(2)
+     
+    for line in f:
         if line.startswith("top_dir ="):
             key, val = line.split('=')
             top_dir = eval(val.strip())
@@ -1077,20 +1087,20 @@ def run_tests():
         #
         if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
             if sys.platform == "win32":
-                waf_cmd = sys.executable + " waf --target=test-runner"
+                waf_cmd = "./waf --target=test-runner"
             else:
-                waf_cmd = sys.executable + " waf --target=test-runner"
+                waf_cmd = "./waf --target=test-runner"
         elif len(options.example):
             if sys.platform == "win32": #Modify for windows
-                waf_cmd = sys.executable + " waf --target=%s" % os.path.basename(options.example)
+                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
             else:
-                waf_cmd = sys.executable + " waf --target=%s" % os.path.basename(options.example)
+                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
 
         else:
             if sys.platform == "win32": #Modify for windows
-                waf_cmd = sys.executable + " waf"
+                waf_cmd = "./waf"
             else:
-                waf_cmd = sys.executable + " waf"
+                waf_cmd = "./waf"
 
         if options.verbose:
             print("Building: %s" % waf_cmd)
