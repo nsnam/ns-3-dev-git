@@ -9,47 +9,123 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.30
+============
 
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.30.tar.bz2
 
 Supported platforms
 -------------------
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+- g++-4.9 or later
+- Xcode 10.1 or later
+- Python 3.5 or later
 
 Starting with ns-3.30, Python 3 will be the only supported Python version,
-and scripts will default to Python 3 usage.
+and scripts will default to Python 3 usage.  Python 2.7 may continue to work
+in the near term.
+
+This release has been tested on the following systems:
+- Fedora 30 with g++-9.1.1
+- Ubuntu 19.04 with g++-8.3.0
+- Ubuntu 18.04 with g++-7.4.0
+- Ubuntu 16.04.6 with g++-5.4.0
+- Linux Mint 19 Tara with g++-7.3.0
+- macOS 10.14.6 (Mojave) with Xcode 10.3
+- macOS 10.13.6 (High Sierra) with Xcode 10.1
 
 New user-visible features
 -------------------------
+- (core) ShowProgress object can be used to report on simulation execution
 - (wifi) Preamble detection can now be modelled and is enabled by default.
 - (wifi) 802.11ax spatial reuse is now supported.
 - (lte) Radio Link Failure (RLF) functionality is now supported.
+- (lte) LTE/EPC model enhanced with new features: SGW, PGW, MME are full nodes; new S5 interface between SGW and PGW, allows simulations with multiple SGW/PGW
+- (lte) LTE eNB RRC extended to support improved S1 signalling model
+- (lte) Backhaul links can now use any link technology, not just point-to-point
+- (traffic-control) Cobalt queue disc model has been added.
 
 Bugs fixed
 ----------
+During this release cycle, the project transitioned from a Bugzilla issue
+tracker to a GitLab.com issue tracker.  Bugs fixed from the Bugzilla tracker
+include:
 
+- Bug 2339 - lte: Use only the active RBs for uplink PSD computation
 - Bug 2460 - wifi: Refactor detection thresholds in WifiPhy and add a new sensitivity threshold to throw away weak signals
 - Bug 2470 - wifi: Handshake to setup the Block Ack Agreement is not protected
-- Bug 2992 - lte: Send method of the LteUeNetDevice doesn't use protocolNumber parameter
-- Bug 2997 - lte: EpcTft::PacketFilter::Matches does not use ipv6 address to match an IP packet
+- Bug 2637 - build: macOS SDK headers in non-standard place
 - Bug 2860 - mobility: Set Z coordinate for position-allocation classes
+- Bug 2861 - lte: Forward TXOPs to the RLCs of SCCs
 - Bug 2893 - lte: GetPgw in helper should be const
+- Bug 2979 - lte: Remove unused code from UE RRC and UE CCM
+- Bug 2980 - lte: Reset MAC and PHY of secondary carriers upon handover
+- Bug 2982 - lte: Configure UE MAC SAP LteMacSapUser properly
+- Bug 2988 - lte:  Correction in L3 filtering formula used for UL power control
+- Bug 2990 - internet: IPv6 packet shouldn't be marked with SocketIpTtlTag
+- Bug 2992 - lte: Send method of the LteUeNetDevice doesn't use protocolNumber parameter
+- Bug 2993 - build: Waf --enable-sudo option broken
+- Bug 2997 - lte: EpcTft::PacketFilter::Matches does not use ipv6 address to match an IP packet
+- Bug 3007 - build: Boost library configuration in contrib
 - Bug 3027 - lte: S1 signalling is done before RRC connection establishment is finished
+
+Bugs fixed from the GitLab.com issue tracker include:
+
 - Issue #11 - mobility: Rectangle::GetClosestSide returns the correct side also for positions outside the rectangle
+- Issue #14 - build: Check file timestamps instead of hashes for changes
+- Issue #15 - build: Fix build erroneous order constraint warnings
 - Issue #27 - wifi: Re-compute the A-MPDU after an RTS/CTS exchange fails
 - Issue #28 - wifi: wifi error model: coded bits vs. data bits
+- Issue #30 - wifi: Sequence number wrap around in MacLow::ReceiveMpdu
 - Issue #32 - wifi: Example "rate-adaptation-distance.cc" fails.
 - Issue #33 - wifi: Issues with QosTxop::StartNextPacket
 - Issue #35 - wifi: Unexpected EDCA performance under virtual collisions for 802.11n
+- Issue #42 - wifi: Check configured capture window for capture
+- Issue #43 - core: Check if ObjectFactory has been configured
 - Issue #45 - wifi: Wi-Fi transmits frames outside BlockAck window
+- Issue #46 - internet: Export headers for transport protocol modularity
+- Issue #47 - core: Return non-const reference when a const Ptr is dereferenced
 - Issue #48 - wifi: Incorrect sequence comparison in BlockAckManager::NeedBarRetransmission
-- Issue #53 - Token Bank Fair Queue Scheduler is creating a transmit opportunity of 0 bytes
-- Issue #54 - RadioBearerStats are not correctly connected
+- Issue #53 - lte: Token Bank Fair Queue Scheduler is creating a transmit opportunity of 0 bytes
+- Issue #54 - lte: RadioBearerStats are not correctly connected
+- Issue #70 - visualizer: Update configuration of GooCanvas.CanvasEllipse
+- Merge request !19 - wifi: Rework MSDU and MPDU aggregation code
+- Merge request !22 - spectrum: Fix order of PHYs stored in MultiModelSpectrumChannel
+- Merge request !30 - lte: Fix PDU delivering at the edge of reordering window
+- Merge request !43 - traffic-control: Install FqCoDelQueueDisc by default
+- Merge request !55 - lte: Reset preamble transmission count before starting NC based RACH
+- Merge request !65 - tcp: Call BytesInFlight method before processing ack
+- Merge request !67 - wifi: Pass numbe of data bits instead of coded bits to error models
+- Merge request !85 - uan: Fix MAC address variable shadowing in subclasses
+
+Other issues fixed:
+- core: Replace int64_t operator/(Time,Time) with exact int64x64_t version, add int64x64_t scaling.
+- core: Refactor LogTimePrinter, LogNodePrinter
+- energy: Update remaining energy even if simulation has finished
+- flow-monitor:  Fix FlowMonitor::Stop () method
+- mobility: Allow AssignStreams after construction for SteadyStateRandomWaypointMobilityModel
+- lte: Add attribute to configure the periodicity of DL CQI reports
+- lte: Fix type of them_rapIdRntiMap key
+- lte: Various updates of the ComponentCarrier subclasses to accommodate NR
+- lte: Fix issue with use of packet tag in LTE PDCP and RLC by using byte tag
+- visualizer:  Fix various issues with Python 3 and X server compatibility
+- wifi: Fix A-MPDU reception logic
+- wifi: Fix noise interference calculation
+- wifi: Do not allow S-MPDU transmission as long as ADDBA handshake not established
+- wifi: Fix frequencies for channels 54 and 126
+- wifi: Fix rate used to send Block Ack Request frames
+- wifi: Check that SSID in probe requests is either broadcast or corresponds to AP SSID
+- wifi: Do not call ReportDataFailed if retransmission not needed
+- wifi: Fix duplicate MPDUs sent in an A-MPDU when explicit BARs are disabled
+- wifi: Fix issues when MSDU lifetime is expired
+- wifi: Enforce capture window duration in frame capture model, and fix capture model for A-MPDU
+- wifi: Correct handling of timeout situations during block ack agreement setup
+- wifi: Return correct serialized size for AmpduTag
+- wifi: Fix incorrect channel width when HT, VHT, or HE STA received legacy PPDU
 
 Known issues
 ------------
