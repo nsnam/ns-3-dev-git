@@ -35,10 +35,12 @@ and/or the buildbots have been testing
    - required versions for related libraries (nsc, netanim, pybindgen)
      are correct
    - confirm that Doxygen builds cleanly (./waf doxygen), 
+   - confirm that the new bake configurations for the release work correctly
    - confirm all documents build:  './waf docs' and check outputs
 
 Check out a clean ns-3-dev somewhere using ns-3-allinone 
-   - hg clone http://code.nsnam.org/ns-3-allinone
+   - git clone https://gitlab.com/nsnam/ns-3-allinone.git
+   - cd ns-3-allinone
    - ./download.py
    - cd ns-3-dev
    - edit VERSION such as "ns-3.14.rc1" (DO NOT commit this change to ns-3-dev)
@@ -55,10 +57,7 @@ https://www.nsnam.org/release/ns-allinone-3.14.rc1.tar.bz2
 Iterate the above as needed during the release testing phase.
 
 Note, in the past we have added mercurial tags to ns-3-dev to denote
-release candidates, but lately we have not been bothering with this.
-If you would like to tag a release candidate, follow these steps
-     -- hg tag "ns-3.X.rcX" (for the appropriate version numbers)
-     -- hg push ssh://code@code.nsnam.org/repos/ns-3-dev
+release candidates, but lately we have not been tagging release candidates.
 
 3) making the release
 ---------------------
@@ -68,55 +67,20 @@ we will work off of a release repository.
 
 At this point, you are ready for final packaging and repository/site work
 
-tagging ns-3-dev and creating ns-3.X repositories
--------------------------------------------------
-
-We'll refer to the release number as "X" or "x" below.  The steps here 
-involve tagging ns-3-dev, copying over ns-3-dev to ns-3.X on code.nsnam.org, 
-cloning it locally, making changes from "3-dev" to "3.X" in various places, 
-and checking in those changes to the new ns-3.X repository.
-
-1. once you are happy with the most recent release candidate tarball and
-do not plan to further touch ns-3-dev, tag ns-3-dev
-   - cd into ns-3-dev
-     -- hg tag "ns-3.x"
-     -- hg push ssh://code@code.nsnam.org//home/code/repos/ns-3-dev
-
-2. copy the tagged ns-3-dev and place it on the repository
-   - ssh code.nsnam.org; sudo bash; su code;
-     -- cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.x
-     -- cd /home/code/repos/ns-3.x/.hg and edit the hgrc appropriately:
-       [paths]
-       default = /home/code/repos/ns-3.x
-       [web]
-       description = ns-3.x release
-       name = ns-3.x
-       contact = <ns-developers@isi.edu>
-
-3. check out a clean version of the new release (ns-3.x) 
-   to a scratch directory on your local machine 
-   - hg clone http://code.nsnam.org/ns-3.x
-
-5. Update the VERSION for this new release, in the ns-3.x directory (i.e.
-   NOT in ns-3-dev)
-   - change the string 3-dev in the VERSION file to the real version 
-     (e.g. 3.14)  This must agree with the version name you chose in the clone.
-   - change the version and release string for the documentation in 
-     doc/manual/source, doc/tutorial/source, doc/tutorial-pt-br/source, 
-     and doc/models/source conf.py files
-     This should hopefully be updated in the future to simply pull from the
-     VERSION file.
-   - hg commit -m "update VERSION to ns-3.x"
-   - hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x
+We'll refer to the release number as "X" or "x" below.  
 
 creating the distribution tarball
 ---------------------------------
 
 1. Create final tarballs
-    You need to work with a clean ns-3-allinone-3.x directory
-   - hg clone http://code.nsnam.org/ns-3-allinone
+    You need to work with a clean ns-3-allinone-3.x directory, assuming that
+    ns-3-dev is ready for inclusion as is, just with a modified VERSION file
+   - git clone https://gitlab.com/nsnam/ns-3-allinone.git
    - cd ns-3-allinone
-   - ./download.py -n ns-3.x
+   - ./download.py
+   - cd ns-3-dev
+   - edit VERSION to the proper '3.x' string  (but do not commit this change)
+   - cd ../
    - ./dist.py (notice we did not build here)
    - this will create an ns-allinone-3.x.tar.bz2 tarball
    - sanity check this tarball just to make sure everything went ok
@@ -138,6 +102,8 @@ creating the distribution tarball
 preparing the documentation
 ----------------------------
 
+Note:  The below scripts currently presume mercurial and must be updated
+
 1. If final release, build release documentation
    - sudo bash; su nsnam; cd /home/nsnam/bin 
    ./update-docs -r http://code.nsnam.org/ns-3.x -R
@@ -147,14 +113,11 @@ preparing the documentation
 3. In ns-3-dev, edit the tutorial "Getting Started" page to 
    update the release version numbers.
 
-preparing the Wordpress-based main website
-------------------------------------------
+preparing the Jekyll-based main website
+---------------------------------------
 
 1. create a new ns-3.x page which should be visible from
-http://www.nsnam.org/ns-3.x
-- Download
-- Documentation
-- Authors
+https://www.nsnam.org/releases/ns-3-x.
 
 2. Repoint http://www.nsnam.org/releases/latest to the new page
    Repoint http://www.nsnam.org/documentation/latest to the new page
@@ -164,13 +127,12 @@ http://www.nsnam.org/ns-3.x
 release (there are two such pages, one under Releases and one under
 Documentation)
 
-4. The main page http://www.nsnam.org should point to
-ns-3.x in the "Download" and "Documentation" boxes
+4. Create a blog entry to announce release 
 
-5. The releases page http://www.nsnam.org must be updated (including
-source tarball link)
-
-6. Create a blog entry to announce release 
+patch for upgrade
+-----------------
+Prepare a patch for upgrading from ns-3.(x-1) to ns-3.x, and upload to
+the releases directory on the web server.
 
 ns-3 wiki edits
 ---------------
@@ -179,11 +141,6 @@ ns-3 wiki edits
 
 2. edit front page and Roadmap
 
-Bugzilla
---------
-
-1. Add a product version "ns-3.x" to the available versions.
-
 Announcing
 ----------
 
@@ -191,7 +148,7 @@ Announcing
    - check manual, tutorial, model, and doxygen documentation links
    - download tarball from web, build and run tests for as many
      targets as you can
-   - download release from mercurial, build and run tests for as
+   - download release from GitLab.com and build and run tests for as
      many targets as you can
    - test and verify until you're confident the release is solid.
 
