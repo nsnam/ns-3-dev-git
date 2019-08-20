@@ -462,6 +462,17 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
+WifiPhyStateHelper::ContinueRxNextMpdu (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector)
+{
+  NS_LOG_FUNCTION (this << *psdu << snr << txVector);
+  std::vector<bool> statusPerMpdu;
+  if (!m_rxOkCallback.IsNull ())
+    {
+      m_rxOkCallback (psdu, snr, txVector, statusPerMpdu);
+    }
+}
+
+void
 WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << snr << txVector << statusPerMpdu.size () <<
@@ -475,7 +486,6 @@ WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVec
     {
       m_rxOkCallback (psdu, snr, txVector, statusPerMpdu);
     }
-
 }
 
 void

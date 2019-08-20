@@ -3152,6 +3152,11 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
         }
       else
         {
+          m_statusPerMpdu.clear();
+          if (event->GetPsdu ()->GetNMpdus () > 1)
+            {
+              ScheduleEndOfMpdus (event);
+            }
           m_state->SwitchToRx (payloadDuration);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
           NS_LOG_DEBUG ("Receiving PSDU");
@@ -3175,6 +3180,62 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
 }
 
 void
+WifiPhy::ScheduleEndOfMpdus (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  WifiTxVector txVector = event->GetTxVector ();
+  Time endOfMpduDuration = NanoSeconds (0);
+  Time relativeStart = NanoSeconds (0);
+  Time psduDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  Time remainingAmpduDuration = psduDuration;
+  MpduType mpdutype = FIRST_MPDU_IN_AGGREGATE;
+  uint32_t totalAmpduSize = 0;
+  double totalAmpduNumSymbols = 0.0;
+  Ptr<const WifiPsdu> psdu = event->GetPsdu ();
+  size_t nMpdus = psdu->GetNMpdus ();
+  auto mpdu = psdu->begin ();
+  for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
+    {
+      Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
+                                              GetPhyBand (), mpdutype, true, totalAmpduSize, totalAmpduNumSymbols);
+
+      remainingAmpduDuration -= mpduDuration;
+      if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
+        {
+          mpduDuration += remainingAmpduDuration; //apply a correction just in case rounding had induced slight shift
+        }
+
+      endOfMpduDuration += mpduDuration;
+      m_endOfMpduEvents.push_back (Simulator::Schedule (endOfMpduDuration, &WifiPhy::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration));
+
+      //Prepare next iteration
+      ++i;
+      relativeStart += mpduDuration;
+      mpdutype = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
+    }
+}
+
+void
+WifiPhy::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex, Time relativeStart, Time mpduDuration)
+{
+  NS_LOG_FUNCTION (this << *event << mpduIndex << relativeStart << mpduDuration);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+
+  std::pair<bool, SignalNoiseDbm> rxInfo = GetReceptionStatus (psdu, event, relativeStart, mpduDuration);
+  NS_LOG_DEBUG ("Extracted MPDU #" << mpduIndex << ": duration: " << mpduDuration.GetNanoSeconds () << "ns" <<
+                ", correct reception: " << rxInfo.first << ", Signal/Noise: " << rxInfo.second.signal << "/" << rxInfo.second.noise << "dBm");
+
+  m_signalNoise = rxInfo.second;
+  m_statusPerMpdu.push_back (rxInfo.first);
+
+  if (rxInfo.first)
+    {
+      m_state->ContinueRxNextMpdu (Copy (psdu), m_interference.CalculateSnr (event), event->GetTxVector ());
+    }
+}
+
+void
 WifiPhy::EndReceive (Ptr<Event> event)
 {
   Time psduDuration = event->GetEndTime () - event->GetStartTime ();
@@ -3182,62 +3243,23 @@ WifiPhy::EndReceive (Ptr<Event> event)
   NS_ASSERT (GetLastRxEndTime () == Simulator::Now ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
-  double snr = m_interference.CalculateSnr (event);
-  std::vector<bool> statusPerMpdu;
-  SignalNoiseDbm signalNoise;
-
   Ptr<const WifiPsdu> psdu = event->GetPsdu ();
-  Time relativeStart = NanoSeconds (0);
-  bool receptionOkAtLeastForOneMpdu = false;
-  std::pair<bool, SignalNoiseDbm> rxInfo;
-  WifiTxVector txVector = event->GetTxVector ();
-  size_t nMpdus = psdu->GetNMpdus ();
-  if (nMpdus > 1)
+  if (psdu->GetNMpdus () == 1)
     {
-      //Extract all MPDUs of the A-MPDU to compute per-MPDU PER stats
-      Time remainingAmpduDuration = psduDuration;
-      MpduType mpdutype = FIRST_MPDU_IN_AGGREGATE;
-      auto mpdu = psdu->begin ();
-      uint32_t totalAmpduSize = 0;
-      double totalAmpduNumSymbols = 0.0;
-      for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
-        {
-          Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
-                                                  GetPhyBand (), mpdutype, true, totalAmpduSize, totalAmpduNumSymbols);
-          remainingAmpduDuration -= mpduDuration;
-          if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
-            {
-              mpduDuration += remainingAmpduDuration; //apply a correction just in case rounding had induced slight shift
-            }
-          rxInfo = GetReceptionStatus (Create<WifiPsdu> (*mpdu, false),
-                                       event, relativeStart, mpduDuration);
-          NS_LOG_DEBUG ("Extracted MPDU #" << i << ": duration: " << mpduDuration.GetNanoSeconds () << "ns" <<
-                        ", correct reception: " << rxInfo.first <<
-                        ", Signal/Noise: " << rxInfo.second.signal << "/" << rxInfo.second.noise << "dBm");
-          signalNoise = rxInfo.second; //same information for all MPDUs
-          statusPerMpdu.push_back (rxInfo.first);
-          receptionOkAtLeastForOneMpdu |= rxInfo.first;
-
-          //Prepare next iteration
-          ++i;
-          relativeStart += mpduDuration;
-          mpdutype = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
-        }
-    }
-  else
-    {
-      rxInfo = GetReceptionStatus (psdu, event, relativeStart, psduDuration);
-      signalNoise = rxInfo.second; //same information for all MPDUs
-      statusPerMpdu.push_back (rxInfo.first);
-      receptionOkAtLeastForOneMpdu = rxInfo.first;
+      //We do not enter here for A-MPDU since this is done in WifiPhy::EndOfMpdu
+      std::pair<bool, SignalNoiseDbm> rxInfo = GetReceptionStatus (psdu, event, NanoSeconds (0), psduDuration);
+      m_signalNoise = rxInfo.second;
+      m_statusPerMpdu.push_back (rxInfo.first);
     }
 
   NotifyRxEnd (psdu);
-
-  if (receptionOkAtLeastForOneMpdu)
+  double snr = m_interference.CalculateSnr (event);
+  if (std::count (m_statusPerMpdu.begin (), m_statusPerMpdu.end (), true))
     {
-      NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, signalNoise, statusPerMpdu);
-      m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, statusPerMpdu);
+      //At least one MPDU has been successfully received
+      WifiTxVector txVector = event->GetTxVector ();
+      NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, m_signalNoise, m_statusPerMpdu);
+      m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, m_statusPerMpdu);
     }
   else
     {

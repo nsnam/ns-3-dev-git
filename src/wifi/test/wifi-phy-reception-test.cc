@@ -1513,6 +1513,10 @@ void
 TestAmpduReception::RxSuccess (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   NS_LOG_FUNCTION (this << *psdu << snr << txVector);
+  if (statusPerMpdu.empty ()) //wait for the whole A-MPDU
+    {
+      return;
+    }
   NS_ABORT_MSG_IF (psdu->GetNMpdus () != statusPerMpdu.size (), "Should have one receive status per MPDU");
   auto rxOkForMpdu = statusPerMpdu.begin ();
   for (auto mpdu = psdu->begin (); mpdu != psdu->end (); ++mpdu)
