@@ -368,15 +368,6 @@ def configure(conf):
 
     env = conf.env
 
-    # ns-3 now only supports Python3 but Waf is based on Python2
-    # This can be removed once Waf moves to Python3
-    if Options.options.with_python is None:
-        if sys.version_info < (3,):
-            # Forcing otherwise unused Options.options.python to select python3
-            # This option is checked later by waflib
-            Options.options.python = 'python3'
-            conf.msg('Configuring Waf to use python3: ', Options.options.python, 'GREEN')
-
     if Options.options.enable_gcov:
         env['GCOV_ENABLED'] = True
         env.append_value('CCFLAGS', '-fprofile-arcs')
