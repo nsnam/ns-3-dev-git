@@ -54,7 +54,7 @@ def main(argv):
     #
     # No reason for pesky access points, so we'll use an ad-hoc network.
     #
-    wifiMac = ns.wifi.WifiMacHelper
+    wifiMac = ns.wifi.WifiMacHelper()
     wifiMac.SetType ("ns3::AdhocWifiMac");
 
     #
