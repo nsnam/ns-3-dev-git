@@ -2630,6 +2630,11 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
 Time
 WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band)
 {
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      return ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, band);
+    }
+
   Time maxDuration = Seconds (0);
   for (auto & staIdPsdu : psduMap)
     {
@@ -2815,8 +2820,17 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
         }
       return;
     }
-
-  Time txDuration = CalculateTxDuration (psdus, txVector, GetPhyBand ());
+  
+  Time txDuration;
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      NS_ASSERT (txVector.GetLength () > 0);
+      txDuration = ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, GetPhyBand ());
+    }
+  else
+    {
+      txDuration = CalculateTxDuration (psdus, txVector, GetPhyBand ());
+    }
 
   if ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ())))
     {
