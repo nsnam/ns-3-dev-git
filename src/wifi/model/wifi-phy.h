@@ -341,6 +341,23 @@ public:
   Time GetLastRxEndTime (void) const;
 
   /**
+   * \param ppduDuration the duration of the HE TB PPDU
+   * \param band the frequency band being used
+   *
+   * \return the L-SIG length value corresponding to that HE TB PPDU duration.
+   */
+  static uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band);
+
+  /**
+   * \param length the L-SIG length value
+   * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
+   * \param band the frequency band being used
+   *
+   * \return the duration of the HE TB PPDU corresponding to that L-SIG length value.
+   */
+  static Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band);
+
+  /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
    * \param band the frequency band being used
