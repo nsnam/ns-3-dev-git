@@ -90,6 +90,7 @@ public:
    * \param stbc enable or disable STBC
    * \param ldpc enable or disable LDPC (BCC is used otherwise)
    * \param bssColor the BSS color
+   * \param length the LENGTH field of the L-SIG
    */
   WifiTxVector (WifiMode mode,
                 uint8_t powerLevel,
@@ -102,7 +103,8 @@ public:
                 bool aggregation,
                 bool stbc = false,
                 bool ldpc = false,
-                uint8_t bssColor = 0);
+                uint8_t bssColor = 0,
+                uint16_t length = 0);
   /**
    * Copy constructor
    * \param txVector the TXVECTOR to copy
@@ -280,6 +282,16 @@ public:
    */
   uint8_t GetBssColor (void) const;
   /**
+   * Set the LENGTH field of the L-SIG
+   * \param length the LENGTH field of the L-SIG
+   */
+  void SetLength (uint16_t length);
+  /**
+   * Get the LENGTH field of the L-SIG
+   * \return the LENGTH field of the L-SIG
+   */
+  uint16_t GetLength (void) const;
+  /**
    * The standard disallows certain combinations of WifiMode, number of
    * spatial streams, and channel widths.  This method can be used to
    * check whether this WifiTxVector contains an invalid combination.
@@ -360,6 +372,7 @@ private:
   bool     m_stbc;               /**< STBC used or not */
   bool     m_ldpc;               /**< LDPC FEC coding if true, BCC otherwise*/
   uint8_t  m_bssColor;           /**< BSS color */
+  uint16_t m_length;             /**< LENGTH field of the L-SIG */
 
   bool     m_modeInitialized;         /**< Internal initialization flag */
 

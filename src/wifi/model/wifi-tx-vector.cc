@@ -35,6 +35,7 @@ WifiTxVector::WifiTxVector ()
     m_stbc (false),
     m_ldpc (false),
     m_bssColor (0),
+    m_length (0),
     m_modeInitialized (false)
 {
 }
@@ -50,7 +51,8 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             bool aggregation,
                             bool stbc,
                             bool ldpc,
-                            uint8_t bssColor)
+                            uint8_t bssColor,
+                            uint16_t length)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
     m_preamble (preamble),
@@ -63,6 +65,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_stbc (stbc),
     m_ldpc (ldpc),
     m_bssColor (bssColor),
+    m_length (length),
     m_modeInitialized (true)
 {
 }
@@ -80,6 +83,7 @@ WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
     m_stbc (txVector.m_stbc),
     m_ldpc (txVector.m_ldpc),
     m_bssColor (txVector.m_bssColor),
+    m_length (txVector.m_length),
     m_modeInitialized (txVector.m_modeInitialized)
 {
   m_muUserInfos.clear ();
@@ -316,6 +320,18 @@ WifiTxVector::GetBssColor (void) const
   return m_bssColor;
 }
 
+void
+WifiTxVector::SetLength (uint16_t length)
+{
+  m_length = length;
+}
+
+uint16_t
+WifiTxVector::GetLength (void) const
+{
+  return m_length;
+}
+
 bool
 WifiTxVector::IsValid (void) const
 {
@@ -476,6 +492,14 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
      << " MPDU aggregation: " << v.IsAggregation ()
      << " STBC: " << v.IsStbc ()
      << " FEC coding: " << (v.IsLdpc () ? "LDPC" : "BCC");
+  if (v.GetPreambleType () >= WIFI_PREAMBLE_HE_SU)
+    {
+      os << " BSS color: " << +v.GetBssColor ();
+    }
+  if (v.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      os << " Length: " << v.GetLength ();
+    }
   if (v.IsMu ())
     {
       WifiTxVector::HeMuUserInfoMap userInfoMap = v.GetHeMuUserInfoMap ();
