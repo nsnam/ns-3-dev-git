@@ -101,6 +101,10 @@ def configure(conf):
     conf.check_nonfatal(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H')
     conf.check_nonfatal(header_name='dirent.h', define_name='HAVE_DIRENT_H')
 
+    if conf.check_nonfatal(header_name='stdlib.h'):
+        conf.define('HAVE_STDLIB_H', 1)
+        conf.define('HAVE_GETENV', 1)
+
     conf.check_nonfatal(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
     # Check for POSIX threads
@@ -240,6 +244,8 @@ def build(bld):
         'model/show-progress.cc',
         'model/system-wall-clock-timestamp.cc',
         'model/version.cc',
+        'model/attribute-container.cc',
+        'model/pair.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -271,11 +277,6 @@ def build(bld):
         'test/type-id-test-suite.cc',
         ]
 
-    if (bld.env['ENABLE_EXAMPLES']):
-        core_test.source.extend([
-            'test/examples-as-tests-test-suite.cc',
-            ])
-
     headers = bld(features='ns3header')
     headers.module = 'core'
     headers.source = [
@@ -290,7 +291,6 @@ def build(bld):
         'model/map-scheduler.h',
         'model/heap-scheduler.h',
         'model/calendar-scheduler.h',
-        'model/priority-queue-scheduler.h',
         'model/simulation-singleton.h',
         'model/singleton.h',
         'model/timer.h',
@@ -299,7 +299,6 @@ def build(bld):
         'model/synchronizer.h',
         'model/make-event.h',
         'model/system-wall-clock-ms.h',
-        'model/system-wall-clock-timestamp.h',
         'model/empty.h',
         'model/callback.h',
         'model/object-base.h',
@@ -369,6 +368,10 @@ def build(bld):
         'model/time-printer.h',
         'model/show-progress.h',
         'model/version.h',
+        'model/pair.h',
+        'model/attribute-container-accessor-helper.h',
+        'model/attribute-container.h',
+        'model/extended-attribute-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
