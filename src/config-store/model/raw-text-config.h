@@ -61,6 +61,8 @@ public:
   virtual void Global (void);
   virtual void Attributes (void);
 private:
+  virtual bool ParseLine (const std::string &line, std::string &type, std::string &name, std::string &value);
+
   /**
    * Strip out attribute value
    * \param value the input string
