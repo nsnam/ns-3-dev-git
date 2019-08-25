@@ -483,14 +483,6 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_maintainBufferTimeout;
-  /// Verify if the maintain buffer is equal or not
-  /// \param en The Entry to check
-  /// \param nextHop The next hop to check
-  /// \return true if an Entry next hop is equal to the function second parameter
-  static bool IsEqual (DsrMaintainBuffEntry en, const Ipv4Address nextHop)
-  {
-    return (en.GetNextHop () == nextHop);
-  }
 };
 /*******************************************************************************************************************************/
 } // namespace dsr
