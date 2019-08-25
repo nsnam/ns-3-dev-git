@@ -259,18 +259,6 @@ private:
 
   uint32_t m_maxLen;                                            ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time m_sendBufferTimeout;                                     ///< The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-  /**
-   * Check if the send buffer entry is the same or not
-   *
-   * \param en SendBufferEntry
-   * \param dst IPv4 address to check
-   * \return true if the SendBufferEntry destination is the same,
-   *         false otherwise
-   */
-  static bool IsEqual (DsrSendBuffEntry en, const Ipv4Address dst)
-  {
-    return (en.GetDestination () == dst);
-  }
 };
 /*******************************************************************************************************************************/
 } // namespace dsr

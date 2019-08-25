@@ -271,16 +271,6 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
-  /**
-   * Determine if queue matches a destination address
-   * \param en The queue entry
-   * \param dst The destination IPv4 address
-   * \returns true if the queue entry matches the destination address
-   */
-  static bool IsEqual (QueueEntry en, const Ipv4Address dst)
-  {
-    return (en.GetIpv4Header ().GetDestination () == dst);
-  }
 };
 
 

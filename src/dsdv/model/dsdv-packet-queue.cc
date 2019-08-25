@@ -88,13 +88,14 @@ PacketQueue::DropPacketWithDst (Ipv4Address dst)
   for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i
        != m_queue.end (); ++i)
     {
-      if (IsEqual (*i, dst))
+      if (i->GetIpv4Header ().GetDestination () == dst)
         {
           Drop (*i, "DropPacketWithDst ");
         }
     }
-  m_queue.erase (std::remove_if (m_queue.begin (), m_queue.end (),
-                                 std::bind2nd (std::ptr_fun (PacketQueue::IsEqual), dst)), m_queue.end ());
+  auto new_end = std::remove_if (m_queue.begin (), m_queue.end (), [&](const QueueEntry& en)
+                                 { return en.GetIpv4Header ().GetDestination () == dst; });
+  m_queue.erase (new_end, m_queue.end ());
 }
 
 bool

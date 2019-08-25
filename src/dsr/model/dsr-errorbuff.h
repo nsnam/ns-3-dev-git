@@ -298,17 +298,6 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_errorBufferTimeout;
-  /**
-   * Check if the send buffer entry is the same or not
-   * \param en Buffer Entry
-   * \param link Link description.
-   * \return true if the entry is compatible with the link description (source and next hop)
-   */
-  ///
-  static bool LinkEqual (DsrErrorBuffEntry en, const std::vector<Ipv4Address> link)
-  {
-    return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));
-  }
 };
 /*******************************************************************************************************************************/
 } // namespace dsr
