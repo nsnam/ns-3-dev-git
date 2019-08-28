@@ -210,7 +210,7 @@ VhtCapabilities::GetSupportedMcsAndNssSet () const
 void
 VhtCapabilities::SetMaxMpduLength (uint16_t length)
 {
-  NS_ABORT_MSG_IF (length != 3895 && length != 7991 && length == 11454,
+  NS_ABORT_MSG_IF (length != 3895 && length != 7991 && length != 11454,
                    "Invalid MPDU Max Length value");
   if (length == 11454)
     {
