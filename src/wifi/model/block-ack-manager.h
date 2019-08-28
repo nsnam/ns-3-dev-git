@@ -430,16 +430,16 @@ private:
   void InactivityTimeout (Mac48Address recipient, uint8_t tid);
 
   /**
-   * Set the starting sequence number for the agreement with recipient equal to
-   * <i>recipient</i> and TID equal to <i>tid</i> to the given <i>startingSeq</i>.
-   * Also, remove packets that became old from the retransmit queue and from the
-   * queue of outstanding packets.
+   * Remove packets from the retransmit queue and from the queue of outstanding
+   * packets that become old after setting the starting sequence number for the
+   * agreement with recipient equal to <i>recipient</i> and TID equal to <i>tid</i>
+   * to the given <i>startingSeq</i>.
    *
    * \param recipient the recipient MAC address
    * \param tid Traffic ID
    * \param startingSeq the new starting sequence number
    */
-  void SetStartingSequence (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
+  void RemoveOldPackets (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
 
   /**
    * typedef for a list of WifiMacQueueItem.
