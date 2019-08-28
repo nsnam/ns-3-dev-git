@@ -24,6 +24,8 @@
 #include "block-ack-agreement.h"
 #include "block-ack-window.h"
 
+class OriginatorBlockAckWindowTest;
+
 namespace ns3 {
 
 class WifiMacQueueItem;
@@ -57,6 +59,7 @@ class OriginatorBlockAckAgreement : public BlockAckAgreement
 {
   /// allow BlockAckManager class access
   friend class BlockAckManager;
+  friend class ::OriginatorBlockAckWindowTest;
 
 
 public:
