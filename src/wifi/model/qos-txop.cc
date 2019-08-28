@@ -941,7 +941,10 @@ QosTxop::RestartAccessIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
-       || !m_queue->IsEmpty () || m_baManager->HasPackets ())
+       // check first if the BA manager retransmit queue is empty, so that expired
+       // frames (if any) are removed and a Block Ack Request is scheduled to advance
+       // the starting sequence number of the transmit (and receiver) window
+       || m_baManager->HasPackets () || !m_queue->IsEmpty ())
       && !IsAccessRequested ())
     {
       Ptr<const Packet> packet;
@@ -978,7 +981,10 @@ QosTxop::StartAccessIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
-      && (!m_queue->IsEmpty () || m_baManager->HasPackets ())
+      // check first if the BA manager retransmit queue is empty, so that expired
+      // frames (if any) are removed and a Block Ack Request is scheduled to advance
+      // the starting sequence number of the transmit (and receiver) window
+      && (m_baManager->HasPackets () || !m_queue->IsEmpty ())
       && !IsAccessRequested ())
     {
       Ptr<const Packet> packet;
