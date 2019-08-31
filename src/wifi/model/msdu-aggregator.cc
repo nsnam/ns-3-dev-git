@@ -75,36 +75,6 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
   return amsduSize + CalculatePadding (amsduSize) + 14 + msduSize;
 }
 
-void
-MsduAggregator::Aggregate (Ptr<const Packet> msdu, Ptr<Packet> amsdu,
-                           Mac48Address src, Mac48Address dest) const
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (amsdu);
-
-  // pad the previous A-MSDU subframe if the A-MSDU is not empty
-  if (amsdu->GetSize () > 0)
-    {
-      uint8_t padding = CalculatePadding (amsdu->GetSize ());
-
-      if (padding)
-        {
-          Ptr<Packet> pad = Create<Packet> (padding);
-          amsdu->AddAtEnd (pad);
-        }
-    }
-
-  // add A-MSDU subframe header and MSDU
-  AmsduSubframeHeader hdr;
-  hdr.SetDestinationAddr (dest);
-  hdr.SetSourceAddr (src);
-  hdr.SetLength (static_cast<uint16_t> (msdu->GetSize ()));
-
-  Ptr<Packet> tmp = msdu->Copy ();
-  tmp->AddHeader (hdr);
-  amsdu->AddAtEnd (tmp);
-}
-
 Ptr<WifiMacQueueItem>
 MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
                               WifiTxVector txVector, uint32_t ampduSize,
@@ -145,10 +115,8 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
       return 0;
     }
 
-  Ptr<Packet> amsdu = Create<Packet> ();
+  Ptr<WifiMacQueueItem> amsdu = Create<WifiMacQueueItem> (Create<const Packet> (), (*peekedIt)->GetHeader ());
   uint8_t nMsdu = 0;
-  WifiMacHeader header = (*peekedIt)->GetHeader ();
-  Time tstamp = (*peekedIt)->GetTimeStamp ();
   // We need to keep track of the first MSDU. When it is processed, it is not known
   // if aggregation will succeed or not.
   WifiMacQueue::ConstIterator first = peekedIt;
@@ -160,7 +128,7 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
     {
       // check if aggregating the peeked MSDU violates the A-MSDU size limit
       uint16_t newAmsduSize = GetSizeIfAggregated ((*peekedIt)->GetPacket ()->GetSize (),
-                                                   amsdu->GetSize ());
+                                                   amsdu->GetPacket ()->GetSize ());
 
       if (newAmsduSize > maxAmsduSize)
         {
@@ -170,33 +138,25 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
 
       // check if the A-MSDU obtained by aggregating the peeked MSDU violates
       // the A-MPDU size limit or the PPDU duration limit
-      if (!qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH,
+      if (!qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (amsdu->GetHeader ().GetSize () + newAmsduSize
+                                                          + WIFI_MAC_FCS_LENGTH,
                                                           recipient, tid, txVector, ampduSize, ppduDurationLimit))
         {
           NS_LOG_DEBUG ("No other MSDU can be aggregated");
           break;
         }
 
-      // We can now safely aggregate the MSDU to the A-MSDU
-      Aggregate ((*peekedIt)->GetPacket (), amsdu,
-                 qosTxop->MapSrcAddressForAggregation (header),
-                 qosTxop->MapDestAddressForAggregation (header));
-
-      /* "The expiration of the A-MSDU lifetime timer occurs only when the lifetime
-       * timer of all of the constituent MSDUs of the A-MSDU have expired" (Section
-       * 10.12 of 802.11-2016)
-       */
-      // The timestamp of the A-MSDU is the most recent among those of the MSDUs
-      tstamp = Max (tstamp, (*peekedIt)->GetTimeStamp ());
-
+      // The MSDU can be aggregated to the A-MSDU.
       // If it is the first MSDU, move to the next one
       if (nMsdu == 0)
         {
+          amsdu = Copy (*peekedIt);
           peekedIt++;
         }
       // otherwise, remove it from the queue
       else
         {
+          amsdu->Aggregate (*peekedIt);
           peekedIt = queue->Remove (peekedIt);
         }
 
@@ -214,10 +174,7 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
   // Aggregation succeeded, we have to remove the first MSDU
   queue->Remove (first);
 
-  header.SetQosAmsdu ();
-  header.SetAddr3 (qosTxop->GetLow ()->GetBssid ());
-
-  return Create<WifiMacQueueItem> (amsdu, header, tstamp);
+  return amsdu;
 }
 
 uint8_t

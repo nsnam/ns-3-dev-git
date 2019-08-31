@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "wifi-mode.h"
 #include "qos-utils.h"
+#include <map>
 
 namespace ns3 {
 
@@ -56,17 +57,6 @@ public:
 
   MsduAggregator ();
   virtual ~MsduAggregator ();
-
-  /**
-   * Aggregate an MSDU to an A-MSDU.
-   *
-   * \param msdu the MSDU.
-   * \param amsdu the A-MSDU.
-   * \param src the source address.
-   * \param dest the destination address
-   */
-  void Aggregate (Ptr<const Packet> msdu, Ptr<Packet> amsdu,
-                  Mac48Address src, Mac48Address dest) const;
 
   /**
    * Compute the size of the A-MSDU resulting from the aggregation of an MSDU of
@@ -137,7 +127,6 @@ public:
    */
   void SetEdcaQueues (EdcaQueues map);
 
-private:
   /**
    * Calculate how much padding must be added to the end of an A-MSDU of the
    * given size if a new MSDU is added.
@@ -149,6 +138,7 @@ private:
    */
   static uint8_t CalculatePadding (uint16_t amsduSize);
 
+private:
   EdcaQueues m_edca;   //!< the map of EDCA queues
 };
 

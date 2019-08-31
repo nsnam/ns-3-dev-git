@@ -26,6 +26,8 @@
 
 #include "ns3/nstime.h"
 #include "wifi-mac-header.h"
+#include "msdu-aggregator.h"
+#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 
@@ -97,15 +99,45 @@ public:
   uint32_t GetSize (void) const;
 
   /**
+   * \brief Aggregate the MSDU contained in the given MPDU to this MPDU (thus
+   *        constituting an A-MSDU). Note that the given MPDU cannot contain
+   *        an A-MSDU.
+   * \param msdu the MPDU containing the MSDU to aggregate
+   */
+  void Aggregate (Ptr<const WifiMacQueueItem> msdu);
+
+  /**
+   * \brief Get a constant iterator pointing to the first MSDU in the list of aggregated MSDUs.
+   *
+   * \return a constant iterator pointing to the first MSDU in the list of aggregated MSDUs
+   */
+  MsduAggregator::DeaggregatedMsdusCI begin (void);
+  /**
+   * \brief Get a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs.
+   *
+   * \return a constant iterator indicating past-the-last MSDU in the list of aggregated MSDUs
+   */
+  MsduAggregator::DeaggregatedMsdusCI end (void);
+
+  /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<const Packet> m_packet;  //!< The packet contained in this queue item
-  WifiMacHeader m_header;      //!< Wifi MAC header associated with the packet
-  Time m_tstamp;               //!< timestamp when the packet arrived at the queue
+  /**
+   * \brief Aggregate the MSDU contained in the given MPDU to this MPDU (thus
+   *        constituting an A-MSDU). Note that the given MPDU cannot contain
+   *        an A-MSDU.
+   * \param msdu the MPDU containing the MSDU to aggregate
+   */
+  void DoAggregate (Ptr<const WifiMacQueueItem> msdu);
+
+  Ptr<const Packet> m_packet;                   //!< The packet (MSDU or A-MSDU) contained in this queue item
+  WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
+  Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
+  MsduAggregator::DeaggregatedMsdus m_msduList; //!< The list of aggregated MSDUs included in this MPDU
 };
 
 /**
