@@ -1018,9 +1018,13 @@ ApWifiMac::TxFailed (const WifiMacHeader &hdr)
 }
 
 void
-ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  // Create a copy of the MPDU payload because non-const operations like RemovePacketTag
+  // and RemoveHeader may need to be performed.
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   Mac48Address from = hdr->GetAddr2 ();
   if (hdr->IsData ())
     {
@@ -1039,7 +1043,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   if (hdr->IsQosAmsdu ())
                     {
                       NS_LOG_DEBUG ("Received A-MSDU from=" << from << ", size=" << packet->GetSize ());
-                      DeaggregateAmsduAndForward (packet, hdr);
+                      DeaggregateAmsduAndForward (mpdu);
                       packet = 0;
                     }
                   else
@@ -1536,28 +1540,26 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  RegularWifiMac::Receive (packet, hdr);
+  RegularWifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr));
 }
 
 void
-ApWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
+ApWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << aggregatedPacket << hdr);
-  MsduAggregator::DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
-  for (MsduAggregator::DeaggregatedMsdusCI i = packets.begin ();
-       i != packets.end (); ++i)
+  NS_LOG_FUNCTION (this << *mpdu);
+  for (auto& i : *PeekPointer (mpdu))
     {
-      if ((*i).second.GetDestinationAddr () == GetAddress ())
+      if (i.second.GetDestinationAddr () == GetAddress ())
         {
-          ForwardUp ((*i).first, (*i).second.GetSourceAddr (),
-                     (*i).second.GetDestinationAddr ());
+          ForwardUp (i.first, i.second.GetSourceAddr (),
+                     i.second.GetDestinationAddr ());
         }
       else
         {
-          Mac48Address from = (*i).second.GetSourceAddr ();
-          Mac48Address to = (*i).second.GetDestinationAddr ();
+          Mac48Address from = i.second.GetSourceAddr ();
+          Mac48Address to = i.second.GetDestinationAddr ();
           NS_LOG_DEBUG ("forwarding QoS frame from=" << from << ", to=" << to);
-          ForwardDown ((*i).first, from, to, hdr->GetQosTid ());
+          ForwardDown (i.first, from, to, mpdu->GetHeader ().GetQosTid ());
         }
     }
 }

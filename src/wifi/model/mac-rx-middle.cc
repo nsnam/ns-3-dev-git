@@ -22,7 +22,7 @@
 #include "ns3/sequence-number.h"
 #include "ns3/packet.h"
 #include "mac-rx-middle.h"
-#include "wifi-mac-header.h"
+#include "wifi-mac-queue-item.h"
 
 namespace ns3 {
 
@@ -296,9 +296,11 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
 }
 
 void
-MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (packet << hdr);
+  NS_LOG_FUNCTION (*mpdu);
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   NS_ASSERT (hdr->IsData () || hdr->IsMgt ());
   if (!m_pcfCallback.IsNull ())
     {
@@ -339,7 +341,18 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     {
       originator->SetSequenceControl (hdr->GetSequenceControl ());
     }
-  m_callback (aggregate, hdr);
+  if (aggregate == packet)
+    {
+      m_callback (mpdu);
+    }
+  else
+    {
+      // We could do this in all cases, but passing the received mpdu in case of
+      // A-MSDUs saves us the time to deaggregate the A-MSDU in MSDUs (which are
+      // kept separate in the received mpdu) and allows us to pass the originally
+      // transmitted packets (i.e., with the same UID) to the receiver.
+      m_callback (Create<WifiMacQueueItem> (aggregate, *hdr));
+    }
 }
 
 void

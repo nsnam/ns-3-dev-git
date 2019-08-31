@@ -154,7 +154,7 @@ public:
 
 
 private:
-  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an ACK from the receiver).  If the packet
@@ -180,11 +180,9 @@ private:
    * here because, as an AP, we also need to think about redistributing
    * to other associated STAs.
    *
-   * \param aggregatedPacket the Packet containing the A-MSDU.
-   * \param hdr a pointer to the MAC header for \c aggregatedPacket.
+   * \param mpdu the MPDU containing the A-MSDU.
    */
-  void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
-                                   const WifiMacHeader *hdr);
+  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.

@@ -63,7 +63,7 @@ public:
   /**
    * typedef for a callback for MacLowRx
    */
-  typedef Callback<void, Ptr<Packet>, const WifiMacHeader*> MacLowRxCallback;
+  typedef Callback<void, Ptr<WifiMacQueueItem>> MacLowRxCallback;
 
   MacLow ();
   virtual ~MacLow ();
@@ -270,7 +270,7 @@ public:
    * This callback typically forwards incoming packets to
    * an instance of ns3::MacRxMiddle.
    */
-  void SetRxCallback (Callback<void,Ptr<Packet>,const WifiMacHeader *> callback);
+  void SetRxCallback (Callback<void, Ptr<WifiMacQueueItem>> callback);
   /**
    * \param dcf listen to NAV events for every incoming and outgoing packet.
    */
@@ -813,18 +813,16 @@ private:
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
   /**
-   * \param packet the packet
-   * \param hdr the header
+   * \param mpdu the MPDU
    * \returns true if MPDU received
    *
    * This method updates the reorder buffer and the scoreboard when an MPDU is received in an HT station
    * and stores the MPDU if needed when an MPDU is received in an non-HT Station (implements HT
    * immediate block Ack)
    */
-  bool ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr);
+  bool ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu);
   /**
-   * \param packet the packet
-   * \param hdr the header
+   * \param mpdu the MPDU
    * \returns true if the MPDU stored
    *
    * This method checks if exists a valid established block ack agreement.
@@ -832,7 +830,7 @@ private:
    * in order of increasing sequence control field. All comparison are performed
    * circularly modulo 2^12.
    */
-  bool StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr);
+  bool StoreMpduIfNeeded (Ptr<WifiMacQueueItem> mpdu);
   /**
    * Invoked after that a block ack request has been received. Looks for corresponding
    * block ack agreement and creates block ack bitmap on a received packets basis.
@@ -961,11 +959,10 @@ private:
   /*
    * BlockAck data structures.
    */
-  typedef std::pair<Ptr<Packet>, WifiMacHeader> BufferedPacket; //!< buffered packet typedef
-  typedef std::list<BufferedPacket>::iterator BufferedPacketI; //!< buffered packet iterator typedef
+  typedef std::list<Ptr<WifiMacQueueItem>>::iterator BufferedPacketI; //!< buffered packet iterator typedef
 
   typedef std::pair<Mac48Address, uint8_t> AgreementKey; //!< agreement key typedef
-  typedef std::pair<BlockAckAgreement, std::list<BufferedPacket> > AgreementValue; //!< agreement value typedef
+  typedef std::pair<BlockAckAgreement, std::list<Ptr<WifiMacQueueItem>> > AgreementValue; //!< agreement value typedef
 
   typedef std::map<AgreementKey, AgreementValue> Agreements; //!< agreements
   typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI; //!< agreements iterator

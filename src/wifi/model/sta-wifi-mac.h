@@ -187,10 +187,9 @@ private:
   /**
    * Handle a received packet.
    *
-   * \param packet the received packet
-   * \param hdr the MAC header of the received packet
+   * \param mpdu the received MPDU
    */
-  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * Update associated AP's information from beacon. If STA is not associated,
    * this information will used for the association process.

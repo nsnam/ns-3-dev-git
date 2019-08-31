@@ -475,7 +475,7 @@ MacLow::IsPromisc (void) const
 }
 
 void
-MacLow::SetRxCallback (Callback<void, Ptr<Packet>, const WifiMacHeader *> callback)
+MacLow::SetRxCallback (Callback<void, Ptr<WifiMacQueueItem>> callback)
 {
   m_rxCallback = callback;
 }
@@ -783,7 +783,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
    * we handle any packet present in the
    * packet queue.
    */
-  WifiMacHeader hdr = mpdu->GetHeader ();
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
   Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
 
   bool isPrevNavZero = IsNavZero ();
@@ -1026,7 +1026,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
         }
       m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr,
                                     rxSnr, txVector.GetMode ());
-      if (hdr.IsQosData () && ReceiveMpdu (packet, hdr))
+      if (hdr.IsQosData () && ReceiveMpdu (mpdu))
         {
           /* From section 9.10.4 in IEEE 802.11:
              Upon the receipt of a QoS data frame from the originator for which
@@ -1090,6 +1090,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
               SnrTag tag;
               tag.Set (rxSnr);
               packet->AddPacketTag (tag);
+              mpdu = Create<WifiMacQueueItem> (packet, hdr);
             }
           if (hdr.IsMgt () && ampduSubframe)
             {
@@ -1137,6 +1138,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
                   SnrTag tag;
                   tag.Set (rxSnr);
                   packet->AddPacketTag (tag);
+                  mpdu = Create<WifiMacQueueItem> (packet, hdr);
                 }
               goto rxPacket;
             }
@@ -1168,7 +1170,7 @@ rxPacket:
       NS_ASSERT (m_currentTxop != 0);
       m_currentTxop->GotAck ();
     }
-  m_rxCallback (packet, &hdr);
+  m_rxCallback (mpdu);
   return;
 }
 
@@ -2148,8 +2150,10 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 }
 
 bool
-MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
+MacLow::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu)
 {
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+
   if (m_stationManager->GetHtSupported ()
       || m_stationManager->GetVhtSupported ()
       || m_stationManager->GetHeSupported ())
@@ -2167,7 +2171,7 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
           //Implement HT immediate Block Ack support for HT Delayed Block Ack is not added yet
           if (!QosUtilsIsOldPacket ((*it).second.first.GetStartingSequence (), seqNumber))
             {
-              StoreMpduIfNeeded (packet, hdr);
+              StoreMpduIfNeeded (mpdu);
               if (!IsInWindow (hdr.GetSequenceNumber (), (*it).second.first.GetStartingSequence (), (*it).second.first.GetBufferSize ()))
                 {
                   uint16_t delta = (seqNumber - (*it).second.first.GetWinEnd () + 4096) % 4096;
@@ -2183,26 +2187,26 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
         }
       return false;
     }
-  return StoreMpduIfNeeded (packet, hdr);
+  return StoreMpduIfNeeded (mpdu);
 }
 
 bool
-MacLow::StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr)
+MacLow::StoreMpduIfNeeded (Ptr<WifiMacQueueItem> mpdu)
 {
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+
   AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
   if (it != m_bAckAgreements.end ())
     {
-      BufferedPacket bufferedPacket (packet, hdr);
-
       uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
       uint32_t mappedSeqControl = QosUtilsMapSeqControlToUniqueInteger (hdr.GetSequenceControl (), endSequence);
 
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end ()
-           && QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedSeqControl; i++)
+           && QosUtilsMapSeqControlToUniqueInteger ((*i)->GetHeader ().GetSequenceControl (), endSequence) < mappedSeqControl; i++)
         {
         }
-      (*it).second.second.insert (i, bufferedPacket);
+      (*it).second.second.insert (i, mpdu);
 
       //Update block ack cache
       BlockAckCachesI j = m_bAckCaches.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
@@ -2233,7 +2237,7 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
   agreement.SetTimeout (respHdr->GetTimeout ());
   agreement.SetStartingSequence (startingSeq);
 
-  std::list<BufferedPacket> buffer (0);
+  std::list<Ptr<WifiMacQueueItem>> buffer (0);
   AgreementKey key (originator, respHdr->GetTid ());
   AgreementValue value (agreement, buffer);
   m_bAckAgreements.insert (std::make_pair (key, value));
@@ -2283,31 +2287,31 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
       uint16_t guard = 0;
       if (last != (*it).second.second.end ())
         {
-          guard = (*it).second.second.begin ()->second.GetSequenceControl ();
+          guard = (*(*it).second.second.begin ())->GetHeader ().GetSequenceControl ();
         }
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end ()
-           && QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedStart; )
+           && QosUtilsMapSeqControlToUniqueInteger ((*i)->GetHeader ().GetSequenceControl (), endSequence) < mappedStart; )
         {
-          if (guard == (*i).second.GetSequenceControl ())
+          if (guard == (*i)->GetHeader ().GetSequenceControl ())
             {
-              if (!(*i).second.IsMoreFragments ())
+              if (!(*i)->GetHeader ().IsMoreFragments ())
                 {
                   while (last != i)
                     {
-                      m_rxCallback ((*last).first, &(*last).second);
+                      m_rxCallback (*last);
                       last++;
                     }
-                  m_rxCallback ((*last).first, &(*last).second);
+                  m_rxCallback (*last);
                   last++;
                   /* go to next packet */
-                  while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
+                  while (i != (*it).second.second.end () && guard == (*i)->GetHeader ().GetSequenceControl ())
                     {
                       i++;
                     }
                   if (i != (*it).second.second.end ())
                     {
-                      guard = (*i).second.GetSequenceControl ();
+                      guard = (*i)->GetHeader ().GetSequenceControl ();
                       last = i;
                     }
                 }
@@ -2319,13 +2323,13 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
           else
             {
               /* go to next packet */
-              while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
+              while (i != (*it).second.second.end () && guard == (*i)->GetHeader ().GetSequenceControl ())
                 {
                   i++;
                 }
               if (i != (*it).second.second.end ())
                 {
-                  guard = (*i).second.GetSequenceControl ();
+                  guard = (*i)->GetHeader ().GetSequenceControl ();
                   last = i;
                 }
             }
@@ -2343,19 +2347,19 @@ MacLow::RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_
       uint16_t guard = (*it).second.first.GetStartingSequenceControl ();
       BufferedPacketI lastComplete = (*it).second.second.begin ();
       BufferedPacketI i = (*it).second.second.begin ();
-      for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
+      for (; i != (*it).second.second.end () && guard == (*i)->GetHeader ().GetSequenceControl (); i++)
         {
-          if (!(*i).second.IsMoreFragments ())
+          if (!(*i)->GetHeader ().IsMoreFragments ())
             {
               while (lastComplete != i)
                 {
-                  m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                  m_rxCallback (*lastComplete);
                   lastComplete++;
                 }
-              m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+              m_rxCallback (*lastComplete);
               lastComplete++;
             }
-          guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+          guard = (*i)->GetHeader ().IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
         }
       (*it).second.first.SetStartingSequenceControl (guard);
       /* All packets already forwarded to WifiMac must be removed from buffer:

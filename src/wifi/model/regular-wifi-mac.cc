@@ -857,10 +857,12 @@ RegularWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address t
 }
 
 void
-RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+RegularWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
 
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   Mac48Address to = hdr->GetAddr1 ();
   Mac48Address from = hdr->GetAddr2 ();
 
@@ -955,15 +957,13 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 }
 
 void
-RegularWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
+RegularWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << aggregatedPacket << hdr);
-  MsduAggregator::DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
-  for (MsduAggregator::DeaggregatedMsdusCI i = packets.begin ();
-       i != packets.end (); ++i)
+  NS_LOG_FUNCTION (this << *mpdu);
+  for (auto& msduPair : *PeekPointer (mpdu))
     {
-      ForwardUp ((*i).first, (*i).second.GetSourceAddr (),
-                 (*i).second.GetDestinationAddr ());
+      ForwardUp (msduPair.first, msduPair.second.GetSourceAddr (),
+                 msduPair.second.GetDestinationAddr ());
     }
 }
 

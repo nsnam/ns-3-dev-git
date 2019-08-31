@@ -176,7 +176,7 @@ public:
 protected:
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 private:
-  virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
 
   VendorSpecificContentManager m_vscManager; ///< VSC manager
 };

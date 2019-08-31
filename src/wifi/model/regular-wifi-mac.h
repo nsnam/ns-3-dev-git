@@ -389,10 +389,9 @@ protected:
    * classes so that they can perform their data handling before
    * invoking the base version.
    *
-   * \param packet the packet that has been received.
-   * \param hdr a pointer to the MAC header of the received frame.
+   * \param mpdu the MPDU that has been received.
    */
-  virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an ACK from the receiver).
@@ -421,11 +420,9 @@ protected:
    * This method can be called to de-aggregate an A-MSDU and forward
    * the constituent packets up the stack.
    *
-   * \param aggregatedPacket the Packet containing the A-MSDU.
-   * \param hdr a pointer to the MAC header for \c aggregatedPacket.
+   * \param mpdu the MPDU containing the A-MSDU.
    */
-  virtual void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
-                                           const WifiMacHeader *hdr);
+  virtual void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
 
   /**
    * This method can be called to accept a received ADDBA Request. An

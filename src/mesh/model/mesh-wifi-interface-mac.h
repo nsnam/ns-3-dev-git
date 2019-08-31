@@ -180,10 +180,9 @@ private:
   /**
    * Frame receive handler
    *
-   * \param packet the received packet
-   * \param hdr the wifi MAC header
+   * \param mpdu the received MPDU
    */
-  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * Send frame. Frame is supposed to be tagged by routing information.
    *

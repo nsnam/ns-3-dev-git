@@ -66,7 +66,7 @@ public:
 
 
 private:
-  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  void Receive (Ptr<WifiMacQueueItem> mpdu);
 };
 
 } //namespace ns3

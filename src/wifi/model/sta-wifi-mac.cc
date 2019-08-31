@@ -502,9 +502,13 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 }
 
 void
-StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  // Create a copy of the MPDU payload because non-const operations like RemovePacketTag
+  // and RemoveHeader may need to be performed.
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr3 () == GetAddress ())
     {
@@ -547,7 +551,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           if (hdr->IsQosAmsdu ())
             {
               NS_ASSERT (hdr->GetAddr3 () == GetBssid ());
-              DeaggregateAmsduAndForward (packet, hdr);
+              DeaggregateAmsduAndForward (mpdu);
               packet = 0;
             }
           else
@@ -712,7 +716,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   //Invoke the receive handler of our parent class to deal with any
   //other frames. Specifically, this will handle Block Ack-related
   //Management Action frames.
-  RegularWifiMac::Receive (packet, hdr);
+  RegularWifiMac::Receive (Create<WifiMacQueueItem> (packet, *hdr));
 }
 
 void

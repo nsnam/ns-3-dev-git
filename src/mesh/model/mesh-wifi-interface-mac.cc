@@ -417,8 +417,10 @@ MeshWifiInterfaceMac::SendBeacon ()
   ScheduleNextBeacon ();
 }
 void
-MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+MeshWifiInterfaceMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
+  const WifiMacHeader* hdr = &mpdu->GetHeader ();
+  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   // Process beacon
   if ((hdr->GetAddr1 () != GetAddress ()) && (hdr->GetAddr1 () != Mac48Address::GetBroadcast ()))
     {
