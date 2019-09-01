@@ -24,10 +24,18 @@ ns-3's Git workflow in a nutshell
 
 Experienced git users will not necessarily need instruction on how to set up personal repositories (below).  However, they should be aware of the project's workflow:
 
-* The main repository's master branch is the main development branch.
-* Releases are tagged changesets on the master branch.  If a hotfix release must be made from a changeset in the past, a new hotfix support branch will be created and maintained for any such releases.  Hotfix releases will be tagged from the hotfix support branch if it has diverged from master.
-* Maintainers can commit obvious non-critical fixes (documentation improvements, typos etc.) directly into the master branch.  Users who are not maintainers can create Merge Requests for small items such as these.
-* For each new major feature, create a feature branch in your own fork.  Create Merge Requests as needed to solicit review.  Merge feature branches into master after review.  Merged feature branches can then be deleted.
+* The main repository's ``master`` branch is the main development branch.  The project maintains only this one branch and strives to maintain a mostly linear history on it.
+* Releases are made by creating a branch from the ``master`` branch and tagging the branch with the release number when ready, and then merging the release branch back to the ``master`` branch.  Releases can be identified by a git tag, and a modified ``VERSION`` file in the branch.  However, the modified ``VERSION`` file is not merged back to ``master``.
+
+  * If a hotfix release must be made to update a past release, a new hotfix support branch will be created by branching from the tip of the last relevant release.  Changesets from ``master`` branch (such as bug fixes) may be cherry-picked to the hotfix branch.  The hotfix release is tagged with the hotfix version number, and merged back to the ``master`` branch.
+
+* Merges to the ns-3 ``master`` branch are fast forwarded when possible, and commits can be squashed as appropriate, to maintain a clean linear history.  Merge commits can be avoided in simple cases.
+
+  * More complicated merges might not be able to be fast forwarded, with the result that there will be a merge commit upon the merge.
+
+* Maintainers can commit obvious non-critical fixes (documentation improvements, typos etc.) directly into the ``master`` branch.  Users who are not maintainers can create GitLab.com Merge Requests for small items such as these, for maintainers to review.
+* Maintainers can directly commit bug fixes to their maintained modules without review/approval by other maintainers, although a review phase is recommended for non-trivial fixes.  Larger commits that touch multiple modules should be reviewed and approved by the set of affected maintainers.
+* When proposing code (new features, bug fixes, etc.) for a module maintained by someone else, the typical workflow will be to fork the ``nsnam/ns-3-dev.git`` repository, create a local feature branch on your fork, and use GitLab.com to generate a Merge Request towards ``nsnam/ns-3-dev.git`` when ready.  The Merge Request will then be reviewed, and in response to changes requested or comments from maintainers, authors are are asked to modify their feature branch and rebase to the tip of ``ns-3-dev.git`` as needed.
 
 Setup of a personal repository
 ******************************
@@ -301,3 +309,263 @@ Review and merge someone else's work
 Gitlab.com has a plenty of documentation on how to handle merge requests. Please take a look here: https://docs.gitlab.com/ee/user/project/merge_requests/index.html.
 
 If you are committing a patch from someone else, and it is not coming through a Merge Request process, you can use the --author='' argument to 'git commit' to assign authorship to another email address (such as we have done in the past with the Mercurial -u option).
+
+Making a release
+****************
+As stated above, the project has adopted a workflow to aim for a mostly
+linear history on a single ``master`` branch.  Releases are branches from
+this ``master`` branch but the branches themselves are not long-lived;
+the release branches are merged back to ``master`` in a special way.  However,
+the release branches can be checked out by using the git tag facility;
+a named release such as 'ns-3.30' can be checked out on a branch by specifying
+the release name 'ns-3.30' (or 'ns-3.30.1' etc.).
+
+To facilitate this, let's look at a toy repository and the git commands
+involved.  This repository is initialized with a few files (``a``, ``b``, 
+``c``, and ``README.md``) and a ``VERSION`` file.  ``VERSION`` is always
+kept on the string ``3-dev`` in the ``master`` branch, but is changed to
+the release number in the release branches.
+
+::
+
+  $ ls
+  a  b  c  README.md  VERSION
+
+The git log command can be appended with some arguments to display the
+branch history:
+
+::
+
+  $ git log --graph --decorate --oneline --all
+  * d3e953b (HEAD -> master) Add VERSION file
+  * 62b05c5 Add three files a, b, and c
+  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+
+  $ cat VERSION
+  3-dev
+
+  $ git branch -a
+  * master
+    remotes/origin/HEAD -> origin/master
+    remotes/origin/master
+
+
+Now, let's create a notional ns-3.1 release.
+
+::
+
+  $ git checkout -b 'ns-3.1-release'
+  Switched to a new branch 'ns-3.1-release'
+
+We change the VERSION field from '3-dev' to '3.1':
+
+::
+
+  $ sed -i 's/3-dev/3.1/g' VERSION
+  $ cat VERSION
+  3.1
+  $ git commit -m"Update VERSION to 3.1" VERSION
+  
+Let's release this.  Add a git annotated tag as follows:
+
+::
+
+  $ git tag -a 'ns-3.1' -m"ns-3.1 release"
+
+Now, let's merge back to ``master``.  However, we want to avoid touching
+the ``VERSION`` file on ``master``; we want all other changes and tags
+but this one.  We can accomplish this with a special merge as follows.
+
+::
+
+  $ git checkout master
+  $ git merge --no-commit --no-ff ns-3.1-release
+  Automatic merge went well; stopped before committing as requested
+
+Now, we want to reset VERSION to the previous string, which existed before
+we branched.  We can use ``git reset`` on this file and then finish the merge.
+Recall its commit hash of ``d3e953b`` from above
+
+::
+
+  $ git reset d3e953b VERSION
+  Unstaged changes after reset:
+  M	VERSION
+  $ sed -i 's/3.1/3-dev/g' VERSION
+  $ cat VERSION
+  3-dev
+
+Finally, commit the branch and delete our local release branch.
+
+::
+
+  $ git commit -m"Merge ns-3.1-release branch"
+  $ git branch -d ns-3.1-release
+
+The git history now looks like this:
+
+::
+
+  $ git log --graph --decorate --oneline --all
+  *   80de6c5 (HEAD -> master) Merge ns-3.1-release branch
+  |\  
+  | * 5718d61 (tag: ns-3.1, ns-3.1-release) Update VERSION to 3.1
+  |/  
+  * d3e953b Add VERSION file
+  * 62b05c5 Add three files a, b, and c
+  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+  $ git tag
+  ns-3.1
+
+This may now be pushed to ``nsnam/ns-3-dev.git`` and development can continue.
+
+**Note:**  When pushing to the remote, don't forget to push the tags:
+
+::
+
+  $ git push --follow-tags
+
+Future users who want to check out the ns-3.1 release will do something like:
+
+::
+
+  $ git checkout -b my-local-ns-3.1 ns-3.1
+  Switched to a new branch 'my-local-ns-3.1'
+
+**Note:**  It is a good idea to avoid naming the new branch the same as the tag
+name; in this case, 'ns-3.1'.
+
+Let's assume now that master evolves with new features and bugfixes.  They
+are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual:
+
+::
+
+  $ git checkout master
+  ... (some changes)
+  $ git commit -m"make some changes" -a
+  $ echo 'd' >> d
+  $ git add d
+  $ git commit -m"Add new feature" d
+  ... (some more changes)
+  $ git commit -m"some more changes" -a
+  ... (now fix a really important bug)
+  $ echo 'abc' >> a
+  $ git commit -m"Fix missing abc bug on file a" a
+  
+
+Now the tree looks like this:
+
+::
+
+  $ git log --graph --decorate --oneline --all
+  * ee37d41 (HEAD -> master) Fix missing abc bug on file a
+  * 9a3432a some more changes
+  * ba28d6d Add new feature
+  * e50015a make some changes
+  *   80de6c5 Merge ns-3.1-release branch
+  |\  
+  | * 5718d61 (tag: ns-3.1) Update VERSION to 3.1
+  |/  
+  * d3e953b Add VERSION file
+  * 62b05c5 Add three files a, b, and c
+  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+
+Let's assume that the changeset ``ee37d41`` is considered important to fix in
+the ns-3.1 release, but we don't want the other changes introduced since then.
+The solution will be to create a new branch for a hotfix release, and follow
+similar steps.  The branch for the hotfix should come from commit ``5718d61``,
+and should cherry-pick commit ``ee37d41`` (which may require merge if it
+doesn't apply cleanly), and then the hotfix branch can be tagged and merged
+as was done before.
+
+::
+
+  $ git checkout -b ns-3.1.1-release ns-3.1
+  $ git cherry-pick ee37d41
+  ... (resolve any conflicts)
+  $ git add a
+  $ git commit
+  $ sed -i 's/3.1/3.1.1/g' VERSION
+  $ cat VERSION
+  3.1.1
+  $ git commit -m"Update VERSION to 3.1.1" VERSION
+  $ git tag -a 'ns-3.1.1' -m"ns-3.1.1 release"
+
+Now the merge:
+
+::
+
+  $ git checkout master
+  $ git merge --no-commit --no-ff ns-3.1.1-release
+
+This time we see:
+
+::
+
+  Auto-merging a
+  CONFLICT (content): Merge conflict in a
+  Auto-merging VERSION
+  CONFLICT (content): Merge conflict in VERSION
+  Automatic merge failed; fix conflicts and then commit the result.
+
+And we can then do:
+
+::
+
+  $ git reset ee37d41 a
+  $ git reset ee37d41 VERSION
+
+Which leaves us with:
+
+::
+
+  Unstaged changes after reset:
+  M	VERSION
+  M	a
+
+We can next hand-edit these files to restore them to original state, so that:
+
+::
+
+  $ git status
+  On branch master
+  Your branch is ahead of 'origin/master' by 8 commits.
+    (use "git push" to publish your local commits)
+
+  All conflicts fixed but you are still merging.
+    (use "git commit" to conclude merge)
+
+  $ git commit
+  $ git branch -d ns-3.1.1-release
+
+The new log should show:
+
+::
+  
+  $ git log --graph --decorate --oneline --all
+  *   815ce6e (HEAD -> master) Merge branch 'ns-3.1.1-release'
+  |\  
+  | * 12a29ca (tag: ns-3.1.1, ns-3.1.1-release) Update VERSION to 3.1.1
+  | * 21ebdbf Fix missing abc bug on file a
+  * | ee37d41 Fix missing abc bug on file a
+  * | 9a3432a some more changes
+  * | ba28d6d Add new feature
+  * | e50015a make some changes
+  * |   80de6c5 Merge ns-3.1-release branch
+  |\ \  
+  | |/  
+  | * 5718d61 (tag: ns-3.1) Update VERSION to 3.1
+  |/  
+  * d3e953b Add VERSION file
+  * 62b05c5 Add three files a, b, and c
+  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+
+And we can continue to commit on top of master going forward.  The two
+tags are:
+
+::
+
+  $ git tag
+  ns-3.1
+  ns-3.1.1
+
