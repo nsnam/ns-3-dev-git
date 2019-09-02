@@ -26,6 +26,7 @@
 #include "ns3/log.h"
 #include "ns3/config.h"
 
+#include <istream>
 #include <sstream>
 #include <algorithm>
 #include <functional>
@@ -141,12 +142,11 @@ RawTextConfigLoad::SetFilename (std::string filename)
 std::string
 RawTextConfigLoad::Strip (std::string value)
 {
+  NS_LOG_FUNCTION (this << value);
   std::string::size_type start = value.find ("\"");
-  NS_ASSERT_MSG (start != std::string::npos, "Ill-formed attribute value: " << value);
-
-  std::string::size_type end = value.find ("\"", start + 1);
-
-  NS_ASSERT_MSG (end != std::string::npos, "Ill-formed attribute value: " << value);
+  std::string::size_type end = value.find ("\"", 1);
+  NS_ASSERT_MSG (start == 0, "Ill-formed attribute value: " << value);
+  NS_ASSERT_MSG (end == value.size () - 1, "Ill-formed attribute value: " << value);
   return value.substr (start+1, end-start-1);
 }
 
@@ -211,18 +211,25 @@ RawTextConfigLoad::Attributes (void)
 bool
 RawTextConfigLoad::ParseLine (const std::string &line, std::string &type, std::string &name, std::string &value)
 {
+  NS_LOG_FUNCTION (this << line << type << name << value);
+
+  // check for blank line
+  {
+    std::istringstream iss (line);
+    iss >> std::ws;     // remove all blanks line
+    if (!iss.good ())   // eofbit set if no non-blanks
+      return false;
+  }
+
   if (line.front () == '#')
     return false;     // comment line
-  if (line.empty () || line == std::string (line.size (), ' '))
-    return false;  // blank line
 
   // for multiline values, append line to value if type and name not empty
-  if (type.empty () || name.empty ())
+  if (type.empty () && name.empty ())
     {
       std::istringstream iss (line);
-      std::ostringstream rem;
-      iss >> type >> name >> rem.rdbuf ();
-      value = rem.str ();   // remaining line, includes embedded spaces
+      iss >> type >> name >> std::ws;
+      std::getline (iss, value);   // remaining line, includes embedded spaces
     }
   else
     {
