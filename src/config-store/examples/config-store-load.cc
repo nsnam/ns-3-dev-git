@@ -35,9 +35,11 @@ public:
 
 NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
 
-// Assign a new default value to A::TestInt16 (-5)
-// Configure a TestInt16 value for a special instance of A (to -3)
-// View the output from the config store
+// Load a ConfigStore file previously saved with config-store-save example.
+// Set the filename via --ns3::ConfigStore::Filename=<filename>.
+// May edit text files to explore comments and blank lines, multi-line
+// values.  
+// Observe behavior with NS_LOG=RawTextConfigLoad.
 // 
 int main (int argc, char *argv[])
 {
