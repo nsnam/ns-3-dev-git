@@ -36,7 +36,7 @@ def options(opt):
                          % ", ".join([repr(p) for p in list(int64x64.keys())])),
                    choices=list(int64x64.keys()),
                    dest='int64x64_impl')
-                   
+
     opt.add_option('--disable-pthread',
                    help=('Whether to enable the use of POSIX threads'),
                    action="store_true", default=False,
@@ -239,6 +239,8 @@ def build(bld):
         'model/hash.cc',
         'model/des-metrics.cc',
         'model/ascii-file.cc',
+        'model/attribute-container.cc',
+        'model/pair.cc',
         'model/node-printer.cc',
         'model/time-printer.cc',
         'model/show-progress.cc',
@@ -275,6 +277,8 @@ def build(bld):
         'test/watchdog-test-suite.cc',
         'test/hash-test-suite.cc',
         'test/type-id-test-suite.cc',
+        'test/pair-value-test-suite.cc',
+        'test/attribute-container-test-suite.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -372,6 +376,9 @@ def build(bld):
         'model/attribute-container-accessor-helper.h',
         'model/attribute-container.h',
         'model/extended-attribute-helper.h',
+        'model/node-printer.h',
+        'model/time-printer.h',
+        'model/show-progress.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -445,39 +452,3 @@ def build(bld):
     pymod = bld.ns3_python_bindings()
     if pymod is not None:
         pymod.source += ['bindings/module_helpers.cc']
-
-def print_version(bld, tg):
-    tg.post()
-
-    for task in tg.tasks:
-        if task.__class__.__name__ == 'git_ns3_version_info':
-            #manually run task
-            task.run()
-            break
-
-    handlers = {
-        'VERSION_TAG': lambda s: s.strip('"'),
-        'CLOSEST_TAG': lambda s: s.strip('"'),
-        'VERSION_TAG_DISTANCE': lambda s: '' if s == '0' else "+" + s,
-        'VERSION_COMMIT_HASH': lambda s: "@" + s.strip('"'),
-        'VERSION_DIRTY_FLAG': lambda s: '' if s == '0' else '-dirty',
-        'BUILD_PROFILE': lambda s: "-" + s
-    }
-
-    fields=('VERSION_TAG', 'CLOSEST_TAG', 'VERSION_TAG_DISTANCE', 
-            'VERSION_COMMIT_HASH', 'VERSION_DIRTY_FLAG', 'BUILD_PROFILE') 
-
-    parts = dict()
-
-    for field in fields:
-        if field in bld.env:
-            parts[field] = handlers[field](bld.env[field])
-        else:
-            parts[field] = ''
-
-    if parts['CLOSEST_TAG'] != parts['VERSION_TAG']:
-        parts['CLOSEST_TAG'] = "+" + parts['CLOSEST_TAG']
-    else:
-        parts['CLOSEST_TAG'] = ""
-    
-    print(''.join([parts[f] for f in fields]))
