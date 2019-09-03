@@ -503,9 +503,9 @@ public:
   /**
    * Constructor
    *
-   * \param latitude latitude
-   * \param longitude longitude
-   * \param altitude altitude
+   * \param latitude latitude (deg)
+   * \param longitude longitude (deg)
+   * \param altitude altitude (m)
    * \param sphType sphere type
    * \param i index
    */
@@ -518,11 +518,12 @@ public:
 
 private:
   virtual void DoRun (void);
+
   /**
    * Name function
-   * \param latitude the latitude
-   * \param longitude the longitude
-   * \param altitude the altitude
+   * \param latitude the latitude (deg)
+   * \param longitude the longitude (deg)
+   * \param altitude the altitude (m)
    * \param sphType the sphere type
    * \returns the name string
    */
@@ -530,9 +531,9 @@ private:
                            double longitude, 
                            double altitude,
                            GeographicPositions::EarthSpheroidType sphType);
-  double m_latitude; ///< latitude
-  double m_longitude; ///< longitude
-  double m_altitude; ///< altitude
+  double m_latitude; ///< latitude (deg)
+  double m_longitude; ///< longitude (deg)
+  double m_altitude; ///< altitude (m)
   GeographicPositions::EarthSpheroidType m_sphType; ///< spheroid type
   int m_i; ///< index
 };
@@ -544,10 +545,24 @@ GeoToCartesianTestCase::Name (double latitude,
                               GeographicPositions::EarthSpheroidType sphType)
 {
   std::ostringstream oss;
-  oss << "latitude = " << latitude << " degrees, "
-      << "longitude = " << longitude << " degrees, "
-      << "altitude = " << altitude << " meters, "
-      << "earth spheroid type = " << sphType;
+  oss << "Geo->Cart: "
+      << "LAT-LON-ALT-SPHEROID = " 
+      << latitude << " deg - "
+      << longitude << " deg - "
+      << altitude << " m - ";
+  switch (sphType)
+    {
+      case GeographicPositions::SPHERE:
+        oss  << "SPHERE";
+        break;
+      case GeographicPositions::GRS80:
+        oss << "GRS80";
+        break;
+      case GeographicPositions::WGS84:
+        oss << "WGS84";
+        break;
+    };
+
   return oss.str();
 }
 
@@ -636,6 +651,123 @@ GeoToCartesianTestCase::DoRun (void)
  * \ingroup mobility-test
  * \ingroup tests
  *
+ * \brief Cartesian to Geo Test Case
+ *
+ * This test verifies the accuracy of the CartesianToGeographicCoordinates()
+ * method in the GeographicPositions class, which converts earth
+ * ECEF Cartesian coordinates to geographic/geodetic coordinates. To do so, it
+ * compares the values generated from the method and converted back to geographic
+ * coordinates.  Values are compared using 216 test cases for each of the three
+ * earth spheroid models.
+ */
+class CartesianToGeoTestCase : public TestCase
+{
+public:
+  /**
+   * Constructor
+   *
+   * \param latitude latitude (deg)
+   * \param longitude longitude (deg)
+   * \param altitude altitude (m)
+   * \param sphType sphere type
+   * \param i index
+   */
+  CartesianToGeoTestCase (double latitude,
+                          double longitude,
+                          double altitude,
+                          GeographicPositions::EarthSpheroidType sphType,
+                          int i);
+  virtual ~CartesianToGeoTestCase ();
+
+private:
+  virtual void DoRun (void);
+
+  /**
+   * Name function
+   * \param latitude the latitude (deg)
+   * \param longitude the longitude (deg)
+   * \param altitude the altitude (m)
+   * \param sphType the sphere type
+   * \returns the name string
+   */
+  static std::string Name (double latitude,
+                           double longitude,
+                           double altitude,
+                           GeographicPositions::EarthSpheroidType sphType);
+  double m_latitude; ///< latitude (deg)
+  double m_longitude; ///< longitude (deg)
+  double m_altitude; ///< altitude (m)
+  GeographicPositions::EarthSpheroidType m_sphType; ///< spheroid type
+};
+
+std::string
+CartesianToGeoTestCase::Name (double latitude,
+                              double longitude,
+                              double altitude,
+                              GeographicPositions::EarthSpheroidType sphType)
+{
+  std::ostringstream oss;
+  oss << "Cart->Geo: "
+      << "LAT-LON-ALT-SPHEROID = " 
+      << latitude << " deg - "
+      << longitude << " deg - "
+      << altitude << " m - ";
+  switch (sphType)
+    {
+      case GeographicPositions::SPHERE:
+        oss  << "SPHERE";
+        break;
+      case GeographicPositions::GRS80:
+        oss << "GRS80";
+        break;
+      case GeographicPositions::WGS84:
+        oss << "WGS84";
+        break;
+    };
+
+  return oss.str();
+}
+
+CartesianToGeoTestCase::CartesianToGeoTestCase (double latitude,
+                                                double longitude,
+                                                double altitude,
+                                                GeographicPositions::EarthSpheroidType sphType,
+                                                int i)
+  : TestCase (Name (latitude, longitude, altitude, sphType)),
+    m_latitude (latitude),
+    m_longitude (longitude),
+    m_altitude (altitude),
+    m_sphType (sphType)
+{
+}
+
+CartesianToGeoTestCase::~CartesianToGeoTestCase ()
+{
+}
+
+void
+CartesianToGeoTestCase::DoRun (void)
+{
+  Vector cart = GeographicPositions::GeographicToCartesianCoordinates (m_latitude,
+                                                                       m_longitude,
+                                                                       m_altitude,
+                                                                       m_sphType);
+  Vector geo = GeographicPositions::CartesianToGeographicCoordinates (cart, m_sphType);
+
+  // geographic coords are ambiguous due to angular wrapping, convert to
+  // rectangular for comparison
+  Vector geocart = GeographicPositions::GeographicToCartesianCoordinates (geo.x, geo.y, geo.z, m_sphType);
+
+  NS_TEST_ASSERT_MSG_LT_OR_EQ (CalculateDistance (cart, geocart),
+                               2.5, // minimum passing tolerance (m)
+                               "Double conversion out-of-tolerance: " <<
+                               geo << " <> " << Vector ({m_latitude, m_longitude, m_altitude}));
+}
+
+/**
+ * \ingroup mobility-test
+ * \ingroup tests
+ *
  * \brief Geo To Cartesian Test Suite
  */
 class GeoToCartesianTestSuite : public TestSuite
@@ -661,6 +793,12 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite ()
                                                        GeographicPositions::SPHERE,
                                                        i), 
                            TestCase::QUICK);
+              AddTestCase (new CartesianToGeoTestCase (latitude,
+                                                       longitude,
+                                                       altitude,
+                                                       GeographicPositions::SPHERE,
+                                                       i),
+                           TestCase::QUICK);
               ++i;
             }
         }
@@ -678,6 +816,12 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite ()
                                                        GeographicPositions::GRS80,
                                                        i), 
                            TestCase::QUICK);
+              AddTestCase (new CartesianToGeoTestCase (latitude,
+                                                       longitude,
+                                                       altitude,
+                                                       GeographicPositions::GRS80,
+                                                       i),
+                           TestCase::QUICK);
               ++i;
             }
         }
@@ -694,6 +838,12 @@ GeoToCartesianTestSuite::GeoToCartesianTestSuite ()
                                                        altitude, 
                                                        GeographicPositions::WGS84,
                                                        i), 
+                           TestCase::QUICK);
+              AddTestCase (new CartesianToGeoTestCase (latitude,
+                                                       longitude,
+                                                       altitude,
+                                                       GeographicPositions::WGS84,
+                                                       i),
                            TestCase::QUICK);
               ++i;
             }

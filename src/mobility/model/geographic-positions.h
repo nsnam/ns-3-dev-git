@@ -73,6 +73,27 @@ public:
                                                   double altitude,
                                                   EarthSpheroidType sphType);
 
+/**
+ * Inverse of GeographicToCartesianCoordinates using [1]
+ *
+ * This function iteratively converts cartesian (ECEF) coordinates to
+ * geographic coordinates. The residual delta is 1 m, which is approximately
+ * 1 / 30 arc seconds or 9.26e-6 deg.
+ *
+ * @param pos a vector containing the Cartesian coordinates (x, y, z referenced
+ * in meters) of the point (origin (0, 0, 0) is center of earth)
+ * @param sphType earth spheroid model to use for conversion
+ *
+ * @return Vector position where x = latitude (deg), y = longitude (deg),
+ * z = altitude above the ellipsoid (m)
+ *
+ * [1] "Ellipsoidal and Cartesian Coordinates Conversion", Navipedia,
+ * European Space Agency, Jul 8, 2019.
+ * <https://gssc.esa.int/navipedia/index.php/Ellipsoidal_and_Cartesian_Coordinates_Conversion>
+ */
+static Vector CartesianToGeographicCoordinates (Vector pos,
+                                                EarthSpheroidType sphType);
+
   /**
    * Generates uniformly distributed random points (in ECEF Cartesian 
    * coordinates) within a given altitude above earth's surface centered around 

@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("GeographicPositions");
 namespace ns3 {
 
 /// Earth's radius in meters if modeled as a perfect sphere
-static const double EARTH_RADIUS = 6371e3; 
+static constexpr double EARTH_RADIUS = 6371e3; 
 
 /**
  * GRS80 and WGS84 sources
@@ -41,13 +41,19 @@ static const double EARTH_RADIUS = 6371e3;
  */
 
 /// Earth's semi-major axis in meters as defined by both GRS80 and WGS84
-static const double EARTH_SEMIMAJOR_AXIS = 6378137;
+static constexpr double EARTH_SEMIMAJOR_AXIS = 6378137;
 
 /// Earth's first eccentricity as defined by GRS80
-static const double EARTH_GRS80_ECCENTRICITY = 0.0818191910428158;
+static constexpr double EARTH_GRS80_ECCENTRICITY = 0.0818191910428158;
 
 /// Earth's first eccentricity as defined by WGS84
-static const double EARTH_WGS84_ECCENTRICITY = 0.0818191908426215;
+static constexpr double EARTH_WGS84_ECCENTRICITY = 0.0818191908426215;
+
+/// Conversion factor: degrees to radians
+static constexpr double DEG2RAD = M_PI / 180.0;
+
+/// Conversion factor: radians to degrees
+static constexpr double RAD2DEG = 180.0 * M_1_PI;
 
 Vector
 GeographicPositions::GeographicToCartesianCoordinates (double latitude, 
@@ -56,8 +62,8 @@ GeographicPositions::GeographicToCartesianCoordinates (double latitude,
                                                        EarthSpheroidType sphType)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  double latitudeRadians = 0.01745329 * latitude;
-  double longitudeRadians = 0.01745329 * longitude;
+  double latitudeRadians = DEG2RAD * latitude;
+  double longitudeRadians = DEG2RAD * longitude;
   double a; // semi-major axis of earth
   double e; // first eccentricity of earth
   if (sphType == SPHERE)
@@ -83,6 +89,74 @@ GeographicPositions::GeographicToCartesianCoordinates (double latitude,
   double z = ((1 - pow (e, 2)) * Rn + altitude) * sin (latitudeRadians);
   Vector cartesianCoordinates = Vector (x, y, z);
   return cartesianCoordinates;
+}
+
+Vector
+GeographicPositions::CartesianToGeographicCoordinates (Vector pos, EarthSpheroidType sphType)
+{
+  NS_LOG_FUNCTION (pos << sphType);
+
+  double a; // semi-major axis of earth
+  double e; // first eccentricity of earth
+  if (sphType == SPHERE)
+    {
+      a = EARTH_RADIUS;
+      e = 0;
+    }
+  else if (sphType == GRS80)
+    {
+      a = EARTH_SEMIMAJOR_AXIS;
+      e = EARTH_GRS80_ECCENTRICITY;
+    }
+  else // if sphType == WGS84
+    {
+      a = EARTH_SEMIMAJOR_AXIS;
+      e = EARTH_WGS84_ECCENTRICITY;
+    }
+
+  Vector lla, tmp;
+  lla.y = atan2 (pos.y, pos.x); // longitude (rad), in +/- pi
+
+  double e2 = e * e;
+  // sqrt (pos.x^2 + pos.y^2)
+  double p = CalculateDistance (pos, {0, 0, pos.z});
+  lla.x = atan2 (pos.z, p * (1 - e2));  // init latitude (rad), in +/- pi
+
+  do
+    {
+      tmp = lla;
+      double N = a / sqrt (1 - e2 * sin (tmp.x) * sin (tmp.x));
+      double v = p / cos (tmp.x);
+      lla.z = v - N;  // altitude
+      lla.x = atan2 (pos.z, p * (1 - e2 * N / v));
+    }
+  // 1 m difference is approx 1 / 30 arc seconds = 9.26e-6 deg
+  while (fabs (lla.x - tmp.x) > 0.00000926 * DEG2RAD);
+
+  lla.x *= RAD2DEG;
+  lla.y *= RAD2DEG;
+
+  // canonicalize (latitude) x in [-90, 90] and (longitude) y in [-180, 180)
+  if (lla.x > 90.0)
+    {
+      lla.x = 180 - lla.x;
+      lla.y += lla.y < 0 ? 180 : -180;
+    }
+  else if (lla.x < -90.0)
+    {
+      lla.x = -180 - lla.x;
+      lla.y += lla.y < 0 ? 180 : -180;
+    }
+  if (lla.y == 180.0) lla.y = -180;
+
+  // make sure lat/lon in the right range to double check canonicalization
+  // and conversion routine
+  NS_ASSERT_MSG (-180.0 <= lla.y, "Conversion error: longitude too negative");
+  NS_ASSERT_MSG (180.0 > lla.y, "Conversion error: longitude too positive");
+  NS_ASSERT_MSG (-90.0 <= lla.x, "Conversion error: latitude too negative");
+  NS_ASSERT_MSG (90.0 >= lla.x, "Conversion error: latitude too positive");
+
+  return lla;
 }
 
 std::list<Vector>
@@ -114,9 +188,9 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
       maxAltitude = 0;
     }
 
-  double originLatitudeRadians = originLatitude * (M_PI / 180);
-  double originLongitudeRadians = originLongitude * (M_PI / 180);
-  double originColatitude = (M_PI / 2) - originLatitudeRadians;
+  double originLatitudeRadians = originLatitude * DEG2RAD;
+  double originLongitudeRadians = originLongitude * DEG2RAD;
+  double originColatitude = (M_PI_2) - originLatitudeRadians;
 
   double a = maxDistFromOrigin / EARTH_RADIUS; // maximum alpha allowed 
                                                // (arc length formula)
@@ -138,7 +212,7 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
 
       // shift coordinate system from North Pole referred to origin point referred
       // reference: http://en.wikibooks.org/wiki/General_Astronomy/Coordinate_Systems
-      double theta = M_PI / 2 - alpha; // angle of elevation of new point wrt 
+      double theta = M_PI_2 - alpha;   // angle of elevation of new point wrt 
                                        // origin point (latitude in coordinate 
                                        // system referred to origin point)
       double randPointLatitude = asin(sin(theta)*cos(originColatitude) + 
@@ -147,12 +221,12 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
       double intermedLong = asin((sin(randPointLatitude)*cos(originColatitude) - 
                             sin(theta)) / (cos(randPointLatitude)*sin(originColatitude))); 
                             // right ascension
-      intermedLong = intermedLong + M_PI / 2; // shift to longitude 0
+      intermedLong = intermedLong + M_PI_2; // shift to longitude 0
 
       //flip / mirror point if it has phi in quadrant II or III (wasn't 
       //resolved correctly by arcsin) across longitude 0
-      if (phi > (M_PI / 2) && phi <= ((3 * M_PI) / 2))
-      intermedLong = -intermedLong;
+      if (phi > (M_PI_2) && phi <= (3 * M_PI_2))
+        intermedLong = -intermedLong;
 
       // shift longitude to be referenced to origin
       double randPointLongitude = intermedLong + originLongitudeRadians; 
@@ -161,8 +235,8 @@ GeographicPositions::RandCartesianPointsAroundGeographicPoint (double originLati
       double randAltitude = uniRand->GetValue (0, maxAltitude);
 
       Vector pointPosition = GeographicPositions::GeographicToCartesianCoordinates 
-                             (randPointLatitude * (180/M_PI), 
-                              randPointLongitude * (180/M_PI),
+                             (randPointLatitude * RAD2DEG, 
+                              randPointLongitude * RAD2DEG,
                               randAltitude,
                               SPHERE);
                               // convert coordinates 
