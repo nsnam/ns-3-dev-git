@@ -202,7 +202,7 @@ void BulkSendApplication::SendData (void)
         }
       // We exit this loop when actual < toSend as the send side
       // buffer is full. The "DataSent" callback will pop when
-      // some buffer space has freed ip.
+      // some buffer space has freed up.
       if ((unsigned)actual != toSend)
         {
           break;
