@@ -88,9 +88,13 @@ public:
    * \param channelWidth channel width (MHz)
    * \param txPowerW  transmit power (W) to allocate
    * \param guardBandwidth width of the guard band (MHz)
+   * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
+   * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
+   * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
    * \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth);
+  static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
+                                                              double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM
@@ -101,9 +105,13 @@ public:
    * \param channelWidth channel width (MHz)
    * \param txPowerW  transmit power (W) to allocate
    * \param guardBandwidth width of the guard band (MHz)
+   * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
+   * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
+   * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
    * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth);
+  static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
+                                                                double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM
@@ -114,9 +122,13 @@ public:
    * \param channelWidth channel width (MHz)
    * \param txPowerW  transmit power (W) to allocate
    * \param guardBandwidth width of the guard band (MHz)
+   * \param minInnerBandDbr the minimum relative power in the inner band (in dBr)
+   * \param minOuterbandDbr the minimum relative power in the outer band (in dBr)
+   * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
    * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth);
+  static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint16_t channelWidth, double txPowerW, uint16_t guardBandwidth,
+                                                                double minInnerBandDbr = -20, double minOuterbandDbr = -28, double lowestPointDbr = -40);
 
   /**
    * Create a power spectral density corresponding to the noise
@@ -157,6 +169,7 @@ public:
    * Create a transmit power spectral density corresponding to OFDM
    * transmit spectrum mask requirements for 11a/11g/11n/11ac/11ax
    * Channel width may vary between 5, 10, 20, 40, 80, and 160 MHz.
+   * The default (standard) values are illustrated below.
    *
    *   [ guard band  ][    channel width     ][  guard band ]
    *                   __________   __________                  _ 0 dBr
@@ -184,13 +197,15 @@ public:
    * \param maskBand start and stop subcarrier indexes of transmit mask (in case signal doesn't cover whole SpectrumModel)
    * \param txPowerPerBandW power allocated to each subcarrier in the allocated sub bands
    * \param nGuardBands size (in number of subcarriers) of the guard band (left and right)
-   * \param innerSlopeWidth size (in number of subcarriers) of the inner band (i.e. slope going from 0 dBr to -20 dBr)
+   * \param innerSlopeWidth size (in number of subcarriers) of the inner band (i.e. slope going from 0 dBr to -20 dBr in the figure above)
+   * \param minInnerBandDbr the minimum relative power in the inner band (i.e. -20 dBr in the figure above)
+   * \param minOuterbandDbr the minimum relative power in the outer band (i.e. -28 dBr in the figure above)
    * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
    * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
   static void CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::vector <WifiSpectrumBand> allocatedSubBands, WifiSpectrumBand maskBand,
-                                         double txPowerPerBandW, uint32_t nGuardBands,
-                                         uint32_t innerSlopeWidth, double lowestPointDbr);
+                                         double txPowerPerBandW, uint32_t nGuardBands, uint32_t innerSlopeWidth,
+                                         double minInnerBandDbr, double minOuterbandDbr, double lowestPointDbr);
 
   /**
    * Normalize the transmit spectrum mask generated by CreateSpectrumMaskForOfdm

@@ -207,7 +207,7 @@ private:
    */
   void UpdateInterferenceHelperBands (void);
 
-  Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
+  Ptr<SpectrumChannel> m_channel; //!< SpectrumChannel that this SpectrumWifiPhy is connected to
 
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum PHY interface
   Ptr<AntennaModel> m_antenna;                              //!< antenna model
@@ -215,6 +215,9 @@ private:
   bool m_disableWifiReception;                              //!< forces this PHY to fail to sync on any signal
   TracedCallback<bool, uint32_t, double, Time> m_signalCb;  //!< Signal callback
 
+  double m_txMaskInnerBandMinimumRejection; //!< The minimum rejection (in dBr) for the inner band of the transmit spectrum mask
+  double m_txMaskOuterBandMinimumRejection; //!< The minimum rejection (in dBr) for the outer band of the transmit spectrum mask
+  double m_txMaskOuterBandMaximumRejection; //!< The maximum rejection (in dBr) for the outer band of the transmit spectrum mask
 };
 
 } //namespace ns3
