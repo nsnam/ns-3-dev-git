@@ -2097,7 +2097,7 @@ exhibits all of the problems we purport to fix with the |ns3| tracing
 system!  You would be correct.  But, bear with us.  We're not done
 yet.
 
-One of the most important things we want to do is to is to have the
+One of the most important things we want to do is to have the
 ability to easily control the amount of output coming out of the
 simulation; and we also want to save those data to a file so we can
 refer back to it later.  We can use the mid-level trace helpers
