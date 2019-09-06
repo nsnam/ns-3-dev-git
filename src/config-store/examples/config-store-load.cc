@@ -43,9 +43,22 @@ NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
 // 
 int main (int argc, char *argv[])
 {
+  std::string filename;
+
   CommandLine cmd;
+  cmd.Usage ("Basic usage: ./waf --run \"config-store-load <filename>\"");
+  cmd.AddNonOption ("filename", "Relative path to config-store input file", filename);
   cmd.Parse (argc, argv);
   
+  if (filename.empty ())
+    {
+      std::ostringstream oss;
+      cmd.PrintHelp (oss);
+      NS_FATAL_ERROR ("Missing required filename argument" << std::endl << std::endl << oss.str ());
+      return 1;
+    }
+  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue (filename));
+
   Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));
 
   Ptr<ConfigExample> a_obj = CreateObject<ConfigExample> ();
@@ -65,16 +78,10 @@ int main (int argc, char *argv[])
   // ConfigureAttributes() will work below.
   Config::RegisterRootNamespaceObject (b_obj);
   
-  // Set ns3::ConfigStore::Filename on command line
-  TypeId tid = ConfigStore::GetTypeId ();
-  TypeId::AttributeInformation info;
-  NS_ABORT_IF (!tid.LookupAttributeByName ("Filename", &info));
+  std::string::size_type pos = filename.rfind ('.');
+  NS_ABORT_MSG_IF (pos == filename.npos, "Could not find filename extension for " << filename);
 
-  std::string fn = info.initialValue->SerializeToString (info.checker);
-  std::string::size_type pos = fn.rfind ('.');
-  NS_ABORT_MSG_IF (pos == fn.npos, "Could not find filename extension for " << fn);
-
-  std::string ext = fn.substr (pos);
+  std::string ext = filename.substr (pos);
   // Input config store from XML format
   if (ext == ".xml")
     {
@@ -99,7 +106,7 @@ int main (int argc, char *argv[])
     }
   else
     {
-      NS_FATAL_ERROR ("Unsupported extension " << ext << " of filename " << fn);
+      NS_FATAL_ERROR ("Unsupported extension " << ext << " of filename " << filename);
     }
     
   Simulator::Run ();
