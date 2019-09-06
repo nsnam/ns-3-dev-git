@@ -894,6 +894,8 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
     {
+      m_stationManager->ReportRxOk (hdr.GetAddr2 (), rxSnr, txVector.GetMode ());
+
       CtrlBAckRequestHeader blockAckReq;
       packet->RemoveHeader (blockAckReq);
       if (!blockAckReq.IsMultiTid ())
