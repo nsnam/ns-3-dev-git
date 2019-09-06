@@ -2987,7 +2987,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
 
   m_endTxEvent = Simulator::Schedule (txDuration, &WifiPhy::NotifyTxEnd, this, psdus); //TODO: fix for MU
 
-  StartTx (ppdu);
+  StartTx (ppdu, txVector.GetTxPowerLevel ()); //now that the content of the TXVECTOR is stored in the WifiPpdu through PHY headers, the method calling StartTx has to specify the TX power level to use upon transmission
 
   m_channelAccessRequested = false;
   m_powerRestricted = false;

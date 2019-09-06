@@ -63,7 +63,7 @@ public:
   virtual ~SpectrumWifiPhy ();
 
   // Implementation of pure virtual method.
-  void StartTx (Ptr<WifiPpdu> ppdu);
+  void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel);
   Ptr<Channel> GetChannel (void) const;
 
   /**

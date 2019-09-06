@@ -513,10 +513,11 @@ SpectrumWifiPhy::GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint1
 }
 
 void
-SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
+SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
 {
-  NS_LOG_FUNCTION (this << ppdu);
+  NS_LOG_FUNCTION (this << ppdu << +txPowerLevel);
   WifiTxVector txVector = ppdu->GetTxVector ();
+  txVector.SetTxPowerLevel (txPowerLevel);
   double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
   double txPowerWatts = DbmToW (txPowerDbm);

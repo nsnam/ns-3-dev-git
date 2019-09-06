@@ -58,7 +58,7 @@ public:
   virtual ~YansWifiPhy ();
 
   // Implementation of pure virtual method.
-  void StartTx (Ptr<WifiPpdu> ppdu);
+  void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel);
   virtual Ptr<Channel> GetChannel (void) const;
 
   /**
