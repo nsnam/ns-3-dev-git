@@ -14,12 +14,14 @@ def build(bld):
         'model/radvd-prefix.cc',
         'model/radvd.cc',
         'model/v4ping.cc',
+        'model/v4traceroute.cc',
         'model/dhcp-header.cc',
         'model/dhcp-server.cc',
         'model/dhcp-client.cc',
         'helper/ping6-helper.cc',
         'helper/radvd-helper.cc',
         'helper/v4ping-helper.cc',
+        'helper/v4traceroute-helper.cc',
         'helper/dhcp-helper.cc',
         ]
 
@@ -36,11 +38,13 @@ def build(bld):
         'model/radvd-interface.h',
         'model/radvd-prefix.h',
         'model/v4ping.h',
+        'model/v4traceroute.h',
         'model/dhcp-header.h',
         'model/dhcp-server.h',
         'model/dhcp-client.h',
         'helper/ping6-helper.h',
         'helper/v4ping-helper.h',
+        'helper/v4traceroute-helper.h',
         'helper/radvd-helper.h',
         'helper/dhcp-helper.h',
         ]
