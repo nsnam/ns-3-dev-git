@@ -240,19 +240,36 @@ protected:
 
 private:
   /**
-   * Get the Radiotap header.
+   * Get the Radiotap header for a transmitted packet.
    *
+   * \param header the radiotap header to be filled in
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
-   *
-   * \returns the Radiotap header
    */
-  static RadiotapHeader GetRadiotapHeader (Ptr<Packet> packet,
-                                           uint16_t channelFreqMhz,
-                                           WifiTxVector txVector,
-                                           MpduInfo aMpdu);
+  static void GetRadiotapHeader (RadiotapHeader &header,
+                                 Ptr<Packet> packet,
+                                 uint16_t channelFreqMhz,
+                                 WifiTxVector txVector,
+                                 MpduInfo aMpdu);
+
+  /**
+   * Get the Radiotap header for a received packet.
+   *
+   * \param header the radiotap header to be filled in
+   * \param packet the packet
+   * \param channelFreqMhz the channel frequency
+   * \param txVector the TXVECTOR
+   * \param aMpdu the A-MPDU information
+   * \param signalNoise the rx signal and noise information
+   */
+  static void GetRadiotapHeader (RadiotapHeader &header,
+                                 Ptr<Packet> packet,
+                                 uint16_t channelFreqMhz,
+                                 WifiTxVector txVector,
+                                 MpduInfo aMpdu,
+                                 SignalNoiseDbm signalNoise);
 
   /**
    * \brief Enable pcap output the indicated net device.

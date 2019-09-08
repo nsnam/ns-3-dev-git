@@ -725,7 +725,7 @@ RadiotapHeader::SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uin
     {
       m_hePad = ((2 - m_length % 2) % 2);
       m_present |= RADIOTAP_HE;
-      m_length += 12;
+      m_length += (12 + m_hePad);
     }
 
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
