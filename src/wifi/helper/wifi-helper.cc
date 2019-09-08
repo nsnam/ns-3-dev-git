@@ -566,6 +566,14 @@ WifiPhyHelper::GetRadiotapHeader (
 
       header.SetHeFields (data1, data2, data3, data4, data5, 0);
     }
+  
+  if (preamble == WIFI_PREAMBLE_HE_MU)
+    {
+      //TODO: fill in fields (everything is set to 0 so far)
+      std::array<uint8_t, 4> ruChannel1, ruChannel2;
+      header.SetHeMuFields (0, 0, ruChannel1, ruChannel2);
+      header.SetHeMuPerUserFields (0, 0, 0, 0);
+    }
 }
 
 void

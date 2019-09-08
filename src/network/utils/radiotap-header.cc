@@ -56,7 +56,15 @@ RadiotapHeader::RadiotapHeader ()
     m_heData3 (0),
     m_heData4 (0),
     m_heData5 (0),
-    m_heData6 (0)
+    m_heData6 (0),
+    m_heMuPad (0),
+    m_heMuFlags1 (0),
+    m_heMuFlags2 (0),
+    m_heMuOtherUserPad (0),
+    m_heMuPerUser1 (0),
+    m_heMuPerUser2 (0),
+    m_heMuPerUserPosition (0),
+    m_heMuPerUserKnown (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -277,6 +285,36 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
       start.WriteU16 (m_heData4);
       start.WriteU16 (m_heData5);
       start.WriteU16 (m_heData6);
+    }
+
+  //
+  // HE MU field.
+  //
+  if (m_present & RADIOTAP_HE_MU) // bit 24
+    {
+      start.WriteU8 (0, m_heMuPad);
+      start.WriteU16 (m_heMuFlags1);
+      start.WriteU16 (m_heMuFlags2);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+      start.WriteU8 (0);
+    }
+
+  //
+  // HE MU other user field.
+  //
+  if (m_present & RADIOTAP_HE_MU_OTHER_USER) // bit 25
+    {
+      start.WriteU8 (0, m_heMuOtherUserPad);
+      start.WriteU16 (m_heMuPerUser1);
+      start.WriteU16 (m_heMuPerUser2);
+      start.WriteU8 (m_heMuPerUserPosition);
+      start.WriteU8 (m_heMuPerUserKnown);
     }
 }
 
@@ -509,6 +547,38 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
       bytesRead += (12 + m_hePad);
     }
 
+  //
+  // HE MU field.
+  //
+  if (m_present & RADIOTAP_HE_MU) // bit 24
+    {
+      m_heMuPad = ((2 - bytesRead % 2) % 2);
+      m_heMuFlags1 = start.ReadU16 ();
+      m_heMuFlags2 = start.ReadU16 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      start.ReadU8 ();
+      bytesRead += (12 + m_heMuPad);
+    }
+
+  //
+  // HE MU other user field.
+  //
+  if (m_present & RADIOTAP_HE_MU_OTHER_USER) // bit 25
+    {
+      m_heMuOtherUserPad = ((2 - bytesRead % 2) % 2);
+      m_heMuPerUser1 = start.ReadU16 ();
+      m_heMuPerUser2 = start.ReadU16 ();
+      m_heMuPerUserPosition = start.ReadU8 ();
+      m_heMuPerUserKnown = start.ReadU8 ();
+      bytesRead += (6 + m_heMuOtherUserPad);
+    }
+
   NS_ASSERT_MSG (m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
   return bytesRead;
 }
@@ -543,7 +613,13 @@ RadiotapHeader::Print (std::ostream &os) const
      << " heData3=" << m_heData3
      << " heData4=" << m_heData4
      << " heData5=" << m_heData5
-     << " heData6=" << m_heData6;
+     << " heData6=" << m_heData6
+     << " heMuFlags1=" << m_heMuFlags1
+     << " heMuFlags2=" << m_heMuFlags2
+     << " heMuPerUser1=" << m_heMuPerUser1
+     << " heMuPerUser2=" << m_heMuPerUser2
+     << " heMuPerUserPosition=" << +m_heMuPerUserPosition
+     << " heMuPerUserKnown=" << +m_heMuPerUserKnown;
 }
 
 void
@@ -732,6 +808,40 @@ RadiotapHeader::SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uin
       m_hePad = ((2 - m_length % 2) % 2);
       m_present |= RADIOTAP_HE;
       m_length += (12 + m_hePad);
+    }
+
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
+}
+
+void
+RadiotapHeader::SetHeMuFields (uint16_t flags1, uint16_t flags2, const std::array<uint8_t, 4> &/*ruChannel1*/, const std::array<uint8_t, 4> &/*ruChannel2*/)
+{
+  NS_LOG_FUNCTION (this << flags1 << flags2);
+  m_heMuFlags1 = flags1;
+  m_heMuFlags2 = flags2;
+  if (!(m_present & RADIOTAP_HE_MU))
+    {
+      m_heMuPad = ((2 - m_length % 2) % 2);
+      m_present |= RADIOTAP_HE_MU;
+      m_length += (12 + m_heMuPad);
+    }
+
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
+}
+
+void
+RadiotapHeader::SetHeMuPerUserFields (uint16_t per_user_1, uint16_t per_user_2, uint8_t perUserPosition, uint8_t perUserKnown)
+{
+  NS_LOG_FUNCTION (this << per_user_1 << per_user_2 << +perUserPosition << +perUserKnown);
+  m_heMuPerUser1 = per_user_1;
+  m_heMuPerUser2 = per_user_2;
+  m_heMuPerUserPosition = perUserPosition;
+  m_heMuPerUserKnown = perUserKnown;
+  if (!(m_present & RADIOTAP_HE_MU_OTHER_USER))
+    {
+      m_heMuOtherUserPad = ((2 - m_length % 2) % 2);
+      m_present |= RADIOTAP_HE_MU_OTHER_USER;
+      m_length += (6 + m_heMuOtherUserPad);
     }
 
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
