@@ -54,7 +54,9 @@ RadiotapHeader::RadiotapHeader ()
     m_heData1 (0),
     m_heData2 (0),
     m_heData3 (0),
-    m_heData5 (0)
+    m_heData4 (0),
+    m_heData5 (0),
+    m_heData6 (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -272,9 +274,9 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
       start.WriteU16 (m_heData1);
       start.WriteU16 (m_heData2);
       start.WriteU16 (m_heData3);
-      start.WriteU16 (0); //HE data4 field
+      start.WriteU16 (m_heData4);
       start.WriteU16 (m_heData5);
-      start.WriteU16 (0); //HE data6 field
+      start.WriteU16 (m_heData6);
     }
 }
 
@@ -501,9 +503,9 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
       m_heData1 = start.ReadU16 ();
       m_heData2 = start.ReadU16 ();
       m_heData3 = start.ReadU16 ();
-      start.ReadU16 (); //HE data4 field
+      m_heData4 = start.ReadU16 ();
       m_heData5 = start.ReadU16 ();
-      start.ReadU16 (); //HE data6 field
+      m_heData6 = start.ReadU16 ();
       bytesRead += (12 + m_hePad);
     }
 
@@ -539,7 +541,9 @@ RadiotapHeader::Print (std::ostream &os) const
      << " heData1=" << m_heData1
      << " heData2=" << m_heData2
      << " heData3=" << m_heData3
-     << " heData5=" << m_heData5;
+     << " heData4=" << m_heData4
+     << " heData5=" << m_heData5
+     << " heData6=" << m_heData6;
 }
 
 void
@@ -714,13 +718,15 @@ RadiotapHeader::SetVhtFields (uint16_t known, uint8_t flags, uint8_t bandwidth, 
 }
 
 void
-RadiotapHeader::SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data5)
+RadiotapHeader::SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data4, uint16_t data5, uint16_t data6)
 {
-  NS_LOG_FUNCTION (this << data1 << data2 << data3 << data5);
+  NS_LOG_FUNCTION (this << data1 << data2 << data3 << data4 << data5 << data6);
   m_heData1 = data1;
   m_heData2 = data2;
   m_heData3 = data3;
+  m_heData4 = data4;
   m_heData5 = data5;
+  m_heData6 = data6;
   if (!(m_present & RADIOTAP_HE))
     {
       m_hePad = ((2 - m_length % 2) % 2);

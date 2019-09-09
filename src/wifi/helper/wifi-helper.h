@@ -208,6 +208,7 @@ protected:
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
+   * \param staId the STA-ID (only used for MU)
    *
    * Handle TX pcap.
    */
@@ -215,7 +216,8 @@ protected:
                                 Ptr<const Packet> packet,
                                 uint16_t channelFreqMhz,
                                 WifiTxVector txVector,
-                                MpduInfo aMpdu);
+                                MpduInfo aMpdu,
+                                uint16_t staId = SU_STA_ID);
   /**
    * \param file the pcap file wrapper
    * \param packet the packet
@@ -223,6 +225,7 @@ protected:
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    * \param signalNoise the RX signal and noise information
+   * \param staId the STA-ID (only used for MU)
    *
    * Handle RX pcap.
    */
@@ -231,7 +234,8 @@ protected:
                                 uint16_t channelFreqMhz,
                                 WifiTxVector txVector,
                                 MpduInfo aMpdu,
-                                SignalNoiseDbm signalNoise);
+                                SignalNoiseDbm signalNoise,
+                                uint16_t staId = SU_STA_ID);
 
   ObjectFactory m_phy; ///< PHY object
   ObjectFactory m_errorRateModel; ///< error rate model
@@ -248,12 +252,14 @@ private:
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
+   * \param staId the STA-ID
    */
   static void GetRadiotapHeader (RadiotapHeader &header,
                                  Ptr<Packet> packet,
                                  uint16_t channelFreqMhz,
                                  WifiTxVector txVector,
-                                 MpduInfo aMpdu);
+                                 MpduInfo aMpdu,
+                                 uint16_t staId);
 
   /**
    * Get the Radiotap header for a received packet.
@@ -263,6 +269,7 @@ private:
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
+   * \param staId the STA-ID
    * \param signalNoise the rx signal and noise information
    */
   static void GetRadiotapHeader (RadiotapHeader &header,
@@ -270,6 +277,7 @@ private:
                                  uint16_t channelFreqMhz,
                                  WifiTxVector txVector,
                                  MpduInfo aMpdu,
+                                 uint16_t staId,
                                  SignalNoiseDbm signalNoise);
 
   /**

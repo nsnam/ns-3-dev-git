@@ -428,7 +428,7 @@ IncrementCounter (std::map<Mac48Address, uint64_t> & counter, Mac48Address addr,
 }
 
 void
-TracePacketReception (std::string context, Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise)
+TracePacketReception (std::string context, Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
   WifiMacHeader hdr;
   packet->PeekHeader (hdr);

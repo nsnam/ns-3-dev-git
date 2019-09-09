@@ -2643,7 +2643,7 @@ WifiPhy::NotifyRxDrop (Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason)
 
 void
 WifiPhy::NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz, WifiTxVector txVector,
-                               SignalNoiseDbm signalNoise, std::vector<bool> statusPerMpdu)
+                               SignalNoiseDbm signalNoise, std::vector<bool> statusPerMpdu, uint16_t staId)
 {
   MpduInfo aMpdu;
   if (psdu->IsAggregate ())
@@ -2658,7 +2658,7 @@ WifiPhy::NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
         {
           if (statusPerMpdu.at (i)) //packet received without error, hand over to sniffer
             {
-              m_phyMonitorSniffRxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, signalNoise);
+              m_phyMonitorSniffRxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
             }
           ++i;
           aMpdu.type = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
@@ -2668,12 +2668,12 @@ WifiPhy::NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
     {
       aMpdu.type = NORMAL_MPDU;
       NS_ASSERT_MSG (statusPerMpdu.size () == 1, "Should have one reception status for normal MPDU");
-      m_phyMonitorSniffRxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, signalNoise);
+      m_phyMonitorSniffRxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, signalNoise, staId);
     }
 }
 
 void
-WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz, WifiTxVector txVector)
+WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz, WifiTxVector txVector, uint16_t staId)
 {
   MpduInfo aMpdu;
   if (psdu->IsAggregate ())
@@ -2685,7 +2685,7 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
       aMpdu.type = (psdu->IsSingle ()) ? SINGLE_MPDU: FIRST_MPDU_IN_AGGREGATE;
       for (size_t i = 0; i < nMpdus;)
         {
-          m_phyMonitorSniffTxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu);
+          m_phyMonitorSniffTxTrace (psdu->GetAmpduSubframe (i), channelFreqMhz, txVector, aMpdu, staId);
           ++i;
           aMpdu.type = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
         }
@@ -2693,7 +2693,7 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
   else
     {
       aMpdu.type = NORMAL_MPDU;
-      m_phyMonitorSniffTxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu);
+      m_phyMonitorSniffTxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, staId);
     }
 }
 
@@ -2771,7 +2771,10 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
   double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
   NotifyTxBegin (psdus, txPowerW);
   m_phyTxPsduBeginTrace (psdus, txVector, txPowerW);
-  NotifyMonitorSniffTx (psdus.begin()->second, GetFrequency (), txVector); //TODO: fix for MU
+  for (auto const& psdu : psdus)
+    {
+      NotifyMonitorSniffTx (psdu.second, GetFrequency (), txVector, psdu.first);
+    }
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
   Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, txDuration, GetPhyBand ());
@@ -3254,7 +3257,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
     {
       //At least one MPDU has been successfully received
       WifiTxVector txVector = event->GetTxVector ();
-      NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, m_signalNoise, m_statusPerMpdu);
+      NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, m_signalNoise, m_statusPerMpdu, staId);
       m_state->SwitchFromRxEndOk (Copy (psdu), snr, txVector, staId, m_statusPerMpdu);
     }
   else

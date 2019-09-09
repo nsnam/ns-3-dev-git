@@ -107,7 +107,8 @@ void MonitorSniffRx (Ptr<const Packet> packet,
                      uint16_t channelFreqMhz,
                      WifiTxVector txVector,
                      MpduInfo aMpdu,
-                     SignalNoiseDbm signalNoise)
+                     SignalNoiseDbm signalNoise,
+                     uint16_t staId)
 
 {
   g_samples++;

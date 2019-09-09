@@ -325,21 +325,6 @@ public:
   };
 
   /**
-   * @brief HE data3.
-   */
-  enum HeData3
-  {
-    HE_DATA3_BSS_COLOR    = 0x003f, /**< BSS Color */
-    HE_DATA3_BEAM_CHANGE  = 0x0040, /**< Beam Change */
-    HE_DATA3_UL_DL        = 0x0080, /**< UL/DL */
-    HE_DATA3_DATA_MCS     = 0x0f00, /**< data MCS */
-    HE_DATA3_DATA_DCM     = 0x1000, /**< data DCM */
-    HE_DATA3_CODING       = 0x2000, /**< Coding */
-    HE_DATA3_LDPC_XSYMSEG = 0x4000, /**< LDPC extra symbol segment */
-    HE_DATA3_STBC         = 0x8000, /**< STBC */
-  };
-
-  /**
    * @brief HE data5.
    */
   enum HeData5
@@ -369,9 +354,16 @@ public:
    * @param data1 The data1 field.
    * @param data2 The data2 field.
    * @param data3 The data3 field.
+   * @param data4 The data4 field.
    * @param data5 The data5 field.
+   * @param data6 The data6 field.
    */
-  void SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data5);
+  void SetHeFields (uint16_t data1,
+                    uint16_t data2,
+                    uint16_t data3,
+                    uint16_t data4,
+                    uint16_t data5,
+                    uint16_t data6);
 
 private:
   /**
@@ -435,7 +427,9 @@ private:
   uint16_t m_heData1;      //!< HE data1 field.
   uint16_t m_heData2;      //!< HE data2 field.
   uint16_t m_heData3;      //!< HE data3 field.
+  uint16_t m_heData4;      //!< HE data4 field.
   uint16_t m_heData5;      //!< HE data5 field.
+  uint16_t m_heData6;      //!< HE data6 field.
 };
 
 } // namespace ns3

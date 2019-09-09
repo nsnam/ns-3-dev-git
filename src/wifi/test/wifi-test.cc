@@ -1957,8 +1957,9 @@ private:
    * \param txVector the TX vector
    * \param aMpdu the A-MPDU info
    * \param signalNoise the signal noise in dBm
+   * \param staId the STA-ID
    */
-  void RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise);
+  void RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId);
   /**
    * Callback when packet is dropped
    * \param context node context
@@ -2031,7 +2032,7 @@ Bug2470TestCase::AddbaStateChangedCallback (std::string context, Time t, Mac48Ad
 }
 
 void
-Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise)
+Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
   Ptr<Packet> packet = p->Copy ();
   if (aMpdu.type != MpduType::NORMAL_MPDU)
