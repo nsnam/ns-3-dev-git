@@ -22,6 +22,7 @@
 #include "ns3/test.h"
 #include "ns3/node.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
 #include "ns3/simulator.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/constant-position-mobility-model.h"
@@ -36,10 +37,14 @@
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-utils.h"
 #include "ns3/ap-wifi-mac.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/he-configuration.h"
+#include "ns3/ctrl-headers.h"
 #include "ns3/threshold-preamble-detection-model.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/non-communicating-net-device.h"
+#include "ns3/spectrum-wifi-helper.h"
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -2818,6 +2823,442 @@ TestPhyPaddingExclusion::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief UL-OFDMA power control test
+ */
+class TestUlOfdmaPowerControl : public TestCase
+{
+public:
+  TestUlOfdmaPowerControl ();
+  virtual ~TestUlOfdmaPowerControl ();
+
+private:
+  virtual void DoSetup (void);
+  virtual void DoRun (void);
+
+  /**
+   * Send a MU BAR through the AP to the STAs listed in the provided vector.
+   *
+   * \param staIds the vector of STA-IDs of STAs to address the MU-BAR to
+   */
+  void SendMuBar (std::vector <uint16_t> staIds);
+
+  /**
+   * Send a QoS Data packet to the destination station in order
+   * to set up a block Ack session (so that the MU-BAR may have a reply).
+   *
+   * \param destination the address of the destination station
+   */
+  void SetupBa (Address destination);
+
+  /**
+   * Run one simulation with an optional BA session set up phase.
+   *
+   * \param setupBa true if BA session should be set up (i.e. upon first run),
+   *                false otherwise
+   */
+  void RunOne (bool setupBa);
+
+  /**
+   * Replace the AP's MacLow callback on its PHY's ReceiveOkCallback
+   * by the ReceiveOkCallbackAtAp method.
+   */
+  void ReplaceReceiveOkCallbackOfAp (void);
+
+  /**
+   * Receive OK callback function at AP.
+   * This method will be plugged into the AP PHY's ReceiveOkCallback once the
+   * block Ack session has been set up. This is done in the Reset function.
+   * \param psdu the PSDU
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+   * \param txVector the TXVECTOR used for the packet
+   * \param statusPerMpdu reception status per MPDU
+   */
+  void ReceiveOkCallbackAtAp (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                              WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+
+  uint8_t m_bssColor;           ///< BSS color
+
+  Ptr<WifiNetDevice> m_apDev;   ///< network device of AP
+  Ptr<WifiNetDevice> m_sta1Dev; ///< network device of STA 1
+  Ptr<WifiNetDevice> m_sta2Dev; ///< network device of STA 2
+
+  Ptr<SpectrumWifiPhy> m_phyAp; ///< PHY of AP
+
+  double m_txPowerAp;           ///< transmit power (in dBm) of AP
+  double m_txPowerStart;        ///< minimum transmission power (in dBm) for STAs
+  double m_txPowerEnd;          ///< maximum transmission power (in dBm) for STAs
+  uint8_t m_txPowerLevels;      ///< number of transmission power levels for STAs
+
+  double m_requestedRssiSta1;   ///< requested RSSI (in dBm) from STA 1 at AP for HE TB PPDUs
+  double m_requestedRssiSta2;   ///< requested RSSI (in dBm) from STA 2 at AP for HE TB PPDUs
+
+  double m_rssiSta1;            ///< expected RSSI (in dBm) from STA 1 at AP for HE TB PPDUs
+  double m_rssiSta2;            ///< expected RSSI (in dBm) from STA 2 at AP for HE TB PPDUs
+
+  double m_tol;                 ///< tolerance (in dB) between received and expected RSSIs
+};
+
+TestUlOfdmaPowerControl::TestUlOfdmaPowerControl ()
+  : TestCase ("UL-OFDMA power control test"),
+    m_bssColor (1),
+    m_txPowerAp (0),
+    m_txPowerStart (0),
+    m_txPowerEnd (0),
+    m_txPowerLevels (0),
+    m_requestedRssiSta1 (0),
+    m_requestedRssiSta2 (0),
+    m_rssiSta1 (0),
+    m_rssiSta2 (0),
+    m_tol (0.1)
+{
+}
+
+TestUlOfdmaPowerControl::~TestUlOfdmaPowerControl ()
+{
+  m_phyAp = 0;
+  m_apDev = 0;
+  m_sta1Dev = 0;
+  m_sta2Dev = 0;
+}
+
+void
+TestUlOfdmaPowerControl::SetupBa (Address destination)
+{
+  //Only one packet is sufficient to set up BA since AP and STAs are HE capable
+  Ptr<Packet> pkt = Create<Packet> (100);  // 100 dummy bytes of data
+  m_apDev->Send (pkt, destination, 0);
+}
+
+void
+TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
+{
+#ifdef NOTYET
+  NS_ASSERT (!staIds.empty () && staIds.size () <= 2);
+
+  //Build MU-BAR trigger frame
+  CtrlTriggerHeader muBar;
+  muBar.SetType (MU_BAR_TRIGGER);
+  muBar.SetUlLength (WifiPhy::ConvertHeTbPpduDurationToLSigLength (MicroSeconds (120), WIFI_PHY_BAND_5GHZ));
+  muBar.SetMoreTF (true);
+  muBar.SetCsRequired (true);
+  muBar.SetUlBandwidth (DEFAULT_CHANNEL_WIDTH);
+  muBar.SetGiAndLtfType (1600, 2);
+  muBar.SetApTxPower (static_cast<int8_t> (m_txPowerAp));
+  muBar.SetUlSpatialReuse (60500);
+
+  HeRu::RuType ru = (staIds.size () == 1) ? HeRu::RU_242_TONE : HeRu::RU_106_TONE;
+  std::size_t index = 1;
+  int8_t ulTargetRssi = -40; //will be overwritten
+  for (auto const& staId : staIds)
+    {
+      CtrlTriggerUserInfoField& ui = muBar.AddUserInfoField ();
+      ui.SetAid12 (staId);
+      ui.SetRuAllocation ({true, ru, index});
+      ui.SetUlFecCodingType (true);
+      ui.SetUlMcs (7);
+      ui.SetUlDcm (false);
+      ui.SetSsAllocation (1, 1);
+      if (staId == 1)
+        {
+          ulTargetRssi = m_requestedRssiSta1;
+        }
+      else if (staId == 2)
+        {
+          ulTargetRssi = m_requestedRssiSta2;
+        }
+      else
+        {
+          NS_ABORT_MSG ("Unknown STA-ID (" << staId << ")");
+        }
+      ui.SetUlTargetRssi (ulTargetRssi);
+
+      CtrlBAckRequestHeader bar;
+      bar.SetType (BlockAckReqType::COMPRESSED);
+      bar.SetTidInfo (0);
+      bar.SetStartingSequence (4095);
+      ui.SetMuBarTriggerDepUserInfo (bar);
+
+      ++index;
+    }
+
+  WifiConstPsduMap psdus;
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0,
+                                        DEFAULT_CHANNEL_WIDTH, false, false, false, m_bssColor);
+
+  Ptr<Packet> bar = Create<Packet> ();
+  bar->AddHeader (muBar);
+
+  Mac48Address receiver = Mac48Address::GetBroadcast ();
+  if (staIds.size () == 1)
+    {
+      uint16_t aidSta1 = DynamicCast<StaWifiMac> (m_sta1Dev->GetMac ())->GetAssociationId ();
+      if (staIds.front () == aidSta1)
+        {
+          receiver = Mac48Address::ConvertFrom (m_sta1Dev->GetAddress ());
+        }
+      else
+        {
+          NS_ASSERT (staIds.front () == DynamicCast<StaWifiMac> (m_sta2Dev->GetMac ())->GetAssociationId ());
+          receiver = Mac48Address::ConvertFrom (m_sta2Dev->GetAddress ());
+        }
+    }
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_TRIGGER);
+  hdr.SetAddr1 (receiver);
+  hdr.SetAddr2 (Mac48Address::ConvertFrom (m_apDev->GetAddress ()));
+  hdr.SetAddr3 (Mac48Address::ConvertFrom (m_apDev->GetAddress ()));
+  hdr.SetDsNotTo ();
+  hdr.SetDsFrom ();
+  hdr.SetNoRetry ();
+  hdr.SetNoMoreFragments ();
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (bar, hdr);
+
+  Time nav = m_apDev->GetPhy ()->GetSifs ();
+  uint16_t staId = staIds.front (); //either will do
+  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_FREQUENCY, staId);
+  psdu->SetDuration (nav);
+  psdus.insert (std::make_pair (SU_STA_ID, psdu));
+
+  m_phyAp->Send (psdus, txVector);
+#endif
+}
+
+void
+TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
+                                            WifiTxVector txVector, std::vector<bool> /*statusPerMpdu*/)
+{
+  NS_TEST_ASSERT_MSG_EQ (txVector.GetPreambleType (), WIFI_PREAMBLE_HE_TB, "HE TB PPDU expected");
+  double rssi = rxSignalInfo.rssi;
+  NS_ASSERT (psdu->GetNMpdus () == 1);
+  WifiMacHeader hdr = psdu->GetHeader (0);
+  NS_TEST_ASSERT_MSG_EQ (hdr.GetType (), WIFI_MAC_CTL_BACKRESP, "Block ACK expected");
+  if (hdr.GetAddr2 () == m_sta1Dev->GetAddress ())
+    {
+      NS_TEST_ASSERT_MSG_EQ_TOL (rssi, m_rssiSta1, m_tol, "The obtained RSSI from STA 1 at AP is different from the expected one (" << rssi << " vs " << m_rssiSta1 << ", with tolerance of " << m_tol << ")");
+    }
+  else if (psdu->GetAddr2 () == m_sta2Dev->GetAddress ())
+    {
+      NS_TEST_ASSERT_MSG_EQ_TOL (rssi, m_rssiSta2, m_tol, "The obtained RSSI from STA 2 at AP is different from the expected one (" << rssi << " vs " << m_rssiSta2 << ", with tolerance of " << m_tol << ")");
+    }
+  else
+    {
+      NS_ABORT_MSG ("The receiver address is unknown");
+    }
+}
+
+void
+TestUlOfdmaPowerControl::ReplaceReceiveOkCallbackOfAp (void)
+{
+  //Now that BA session has been established we can plug our method
+  m_phyAp->SetReceiveOkCallback (MakeCallback (&TestUlOfdmaPowerControl::ReceiveOkCallbackAtAp, this));
+}
+
+void
+TestUlOfdmaPowerControl::DoSetup (void)
+{
+  Ptr<Node> apNode = CreateObject<Node> ();
+  NodeContainer staNodes;
+  staNodes.Create (2);
+
+  Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+  Ptr<MatrixPropagationLossModel> lossModel = CreateObject<MatrixPropagationLossModel> ();
+  spectrumChannel->AddPropagationLossModel (lossModel);
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+  spectrumChannel->SetPropagationDelayModel (delayModel);
+
+  SpectrumWifiPhyHelper spectrumPhy;
+  spectrumPhy.SetChannel (spectrumChannel);
+  spectrumPhy.SetErrorRateModel ("ns3::NistErrorRateModel");
+  spectrumPhy.Set ("Frequency", UintegerValue (DEFAULT_FREQUENCY));
+  spectrumPhy.Set ("ChannelWidth", UintegerValue (DEFAULT_CHANNEL_WIDTH));
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue ("HeMcs7"),
+                                "ControlMode", StringValue ("HeMcs7"));
+
+  WifiMacHelper mac;
+  mac.SetType ("ns3::StaWifiMac");
+  NetDeviceContainer staDevs = wifi.Install (spectrumPhy, mac, staNodes);
+  wifi.AssignStreams (staDevs, 0);
+  m_sta1Dev = DynamicCast<WifiNetDevice> (staDevs.Get (0));
+  NS_ASSERT (m_sta1Dev);
+  m_sta2Dev = DynamicCast<WifiNetDevice> (staDevs.Get (1));
+  NS_ASSERT (m_sta2Dev);
+
+  //Set the beacon interval long enough so that associated STAs may not consider link lost when
+  //beacon generation is disabled during the actual tests. Having such a long interval also
+  //avoids bloating logs with beacons during the set up phase.
+  mac.SetType ("ns3::ApWifiMac",
+               "BeaconGeneration", BooleanValue (true),
+               "BeaconInterval", TimeValue (MicroSeconds (1024 * 600)));
+  m_apDev = DynamicCast<WifiNetDevice> (wifi.Install (spectrumPhy, mac, apNode).Get (0));
+  NS_ASSERT (m_apDev);
+  m_apDev->GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (m_bssColor));
+  m_phyAp = DynamicCast<SpectrumWifiPhy> (m_apDev->GetPhy ());
+  NS_ASSERT (m_phyAp);
+  //ReceiveOkCallback of AP will be set to corresponding test's method once BA sessions have been set up for both STAs
+
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0)); // put close enough in order to use MCS
+  positionAlloc->Add (Vector (2.0, 0.0, 0.0)); // STA 2 is a bit further away, but still in range of MCS
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.Install (apNode);
+  mobility.Install (staNodes);
+
+  lossModel->SetDefaultLoss (50.0);
+  lossModel->SetLoss (apNode->GetObject<MobilityModel> (), staNodes.Get (1)->GetObject<MobilityModel> (),
+                      56.0, true); //+6 dB between AP <-> STA 2 compared to AP <-> STA 1
+}
+
+void
+TestUlOfdmaPowerControl::RunOne (bool setupBa)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 0;
+
+  Ptr<WifiPhy> phySta1 = m_sta1Dev->GetPhy ();
+  Ptr<WifiPhy> phySta2 = m_sta2Dev->GetPhy ();
+
+  m_phyAp->AssignStreams (streamNumber);
+  phySta1->AssignStreams (streamNumber);
+  phySta2->AssignStreams (streamNumber);
+
+  m_phyAp->SetAttribute ("TxPowerStart", DoubleValue (m_txPowerAp));
+  m_phyAp->SetAttribute ("TxPowerEnd", DoubleValue (m_txPowerAp));
+  m_phyAp->SetAttribute ("TxPowerLevels", UintegerValue (1));
+
+  phySta1->SetAttribute ("TxPowerStart", DoubleValue (m_txPowerStart));
+  phySta1->SetAttribute ("TxPowerEnd", DoubleValue (m_txPowerEnd));
+  phySta1->SetAttribute ("TxPowerLevels", UintegerValue (m_txPowerLevels));
+
+  phySta2->SetAttribute ("TxPowerStart", DoubleValue (m_txPowerStart));
+  phySta2->SetAttribute ("TxPowerEnd", DoubleValue (m_txPowerEnd));
+  phySta2->SetAttribute ("TxPowerLevels", UintegerValue (m_txPowerLevels));
+
+  Time relativeStart = MilliSeconds (0);
+  if (setupBa)
+    {
+      //Set up BA for each station once the association phase has ended
+      //so that a BA session is established when the MU-BAR is received.
+      Simulator::Schedule (MilliSeconds (800), &TestUlOfdmaPowerControl::SetupBa, this, m_sta1Dev->GetAddress ());
+      Simulator::Schedule (MilliSeconds (850), &TestUlOfdmaPowerControl::SetupBa, this, m_sta2Dev->GetAddress ());
+      relativeStart = MilliSeconds (1000);
+    }
+  else
+    {
+      Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_apDev->GetMac ());
+      NS_ASSERT (apMac);
+      apMac->SetAttribute ("BeaconGeneration", BooleanValue (false));
+    }
+
+  Simulator::Schedule (relativeStart, &TestUlOfdmaPowerControl::ReplaceReceiveOkCallbackOfAp, this);
+
+  {
+    //Verify that the RSSI from STA 1 is consistent with what was requested
+    std::vector<uint16_t> staIds {1};
+    Simulator::Schedule (relativeStart, &TestUlOfdmaPowerControl::SendMuBar, this, staIds);
+  }
+
+  {
+    //Verify that the RSSI from STA 2 is consistent with what was requested
+    std::vector<uint16_t> staIds {2};
+    Simulator::Schedule (relativeStart + MilliSeconds (20), &TestUlOfdmaPowerControl::SendMuBar, this, staIds);
+  }
+
+  {
+    //Verify that the RSSI from STA 1 and 2 is consistent with what was requested
+    std::vector<uint16_t> staIds {1, 2};
+    Simulator::Schedule (relativeStart + MilliSeconds (40), &TestUlOfdmaPowerControl::SendMuBar, this, staIds);
+  }
+
+  Simulator::Stop (relativeStart + MilliSeconds (100));
+  Simulator::Run ();
+}
+
+void
+TestUlOfdmaPowerControl::DoRun (void)
+{
+  //Power configurations
+  m_txPowerAp = 20; //dBm, so as to have -30 and -36 dBm at STA 1 and STA 2 resp.,
+                    //since path loss = 50 dB for AP <-> STA 1 and 56 dB for AP <-> STA 2
+  m_txPowerStart = 15; //dBm
+
+  //Requested UL RSSIs: should correspond to 20 dBm transmit power at STAs
+  m_requestedRssiSta1 = -30.0;
+  m_requestedRssiSta2 = -36.0;
+
+  //Test single power level
+  {
+    //STA power configurations: 15 dBm only
+    m_txPowerEnd = 15;
+    m_txPowerLevels = 1;
+
+    //Expected UL RSSIs, considering that the provided power is 5 dB less than requested,
+    //regardless of the estimated path loss.
+    m_rssiSta1 = -35.0; // 15 dBm - 50 dB
+    m_rssiSta2 = -41.0; // 15 dBm - 56 dB
+
+    RunOne (true);
+  }
+
+  //Test 2 dBm granularity
+  {
+    //STA power configurations: [15:2:25] dBm
+    m_txPowerEnd = 25;
+    m_txPowerLevels = 6;
+
+    //Expected UL RSSIs, considering that the provided power (21 dBm) is 1 dB more than requested
+    m_rssiSta1 = -29.0; // 21 dBm - 50 dB
+    m_rssiSta2 = -35.0; // 21 dBm - 50 dB
+
+    RunOne (false);
+  }
+
+  //Test 1 dBm granularity
+  {
+    //STA power configurations: [15:1:25] dBm
+    m_txPowerEnd = 25;
+    m_txPowerLevels = 11;
+
+    //Expected UL RSSIs, considering that we can correctly tune the transmit power
+    m_rssiSta1 = -30.0; // 20 dBm - 50 dB
+    m_rssiSta2 = -36.0; // 20 dBm - 56 dB
+
+    RunOne (false);
+  }
+
+  //Ask for different power levels (3 dB difference between HE_TB_PPDUs)
+  {
+    //STA power configurations: [15:1:25] dBm
+    m_txPowerEnd = 25;
+    m_txPowerLevels = 11;
+
+    //Requested UL RSSIs
+    m_requestedRssiSta1 = -28.0; //2 dB higher than previously -> Tx power = 22 dBm at STA 1
+    m_requestedRssiSta2 = -37.0; //1 dB less than previously -> Tx power = 19 dBm at STA 2
+
+    //Expected UL RSSIs, considering that we can correctly tune the transmit power
+    m_rssiSta1 = -28.0; // 22 dBm - 50 dB
+    m_rssiSta2 = -37.0; // 19 dBm - 56 dB
+
+    RunOne (false);
+  }
+
+  Simulator::Destroy ();
+}
+
 
 /**
  * \ingroup wifi-test
@@ -2839,6 +3280,7 @@ WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite ()
   AddTestCase (new TestMultipleHeTbPreambles, TestCase::QUICK);
   AddTestCase (new TestUlOfdmaPhyTransmission, TestCase::QUICK);
   AddTestCase (new TestPhyPaddingExclusion, TestCase::QUICK);
+  AddTestCase (new TestUlOfdmaPowerControl, TestCase::QUICK); //FIXME: requires changes at MAC layer
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite
