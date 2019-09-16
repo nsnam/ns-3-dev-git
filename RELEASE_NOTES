@@ -31,6 +31,39 @@ Known issues
 In general, known issues are tracked on the project tracker available
 at https://gitlab.com/nsnam/ns-3-dev/issues
 
+Release 3.30.1
+==============
+Release 3.30.1 is a maintenance release that fixes the following issues from
+the ns-3.30 release:
+
+- fix issue with Block Ack transmit window leading to low throughput or
+  connection dropping
+- fix invalid restriction on Wi-Fi VHT Capabilities MaxMpduLength field
+- support for Apple clang version 11.0.0 (macOS Catalina preview release)
+- fix the handling of ICMP time exceeded responses
+- fix syntax error in Wi-Fi-based Tap Bridge Python example
+
+Availability
+------------
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.30.1.tar.bz2
+
+Supported platforms
+-------------------
+The list of supported platforms includes those listed for ns-3.30 plus
+- macOS 10.15 preview (Catalina) with Apple clang version 11.0.0
+
+New user-visible features
+-------------------------
+Features are identical to release 3.30.
+
+Bugs fixed
+----------
+- Issue #62 - ICMP does not handle ICMPv4 TIME_EXCEEDED responses 
+- Issue #77 - Wi-Fi VHT capabilities MaxMpduLength had invalid restriction
+- Issue #79 - Wi-Fi connection drop or low throughput due to Block Ack transmit window
+- Example program tap-wifi-virtual-machine.py had a syntax error
+
 Release 3.30
 ============
 
@@ -152,7 +185,7 @@ Other issues fixed:
 Known issues
 ------------
 In general, known issues are tracked on the project tracker available
-at http://www.nsnam.org/bugzilla/
+at https://gitlab.com/nsnam/ns-3-dev/issues
 
 Release 3.29
 ============
