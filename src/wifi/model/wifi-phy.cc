@@ -2688,6 +2688,8 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
         {
           NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+          m_interference.NotifyRxEnd ();
+          m_currentEvent = 0;
           MaybeCcaBusyDuration ();
           return;
         }
@@ -2696,6 +2698,8 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
         {
           NS_LOG_DEBUG ("Packet reception could not be started because not enough channel width");
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+          m_interference.NotifyRxEnd ();
+          m_currentEvent = 0;
           MaybeCcaBusyDuration ();
           return;
         }
@@ -2718,6 +2722,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
       NS_LOG_DEBUG ("Drop packet because PHY preamble detection failed");
       NotifyRxDrop (event->GetPacket (), PREAMBLE_DETECT_FAILURE);
       m_interference.NotifyRxEnd ();
+      m_currentEvent = 0;
     }
   // Like CCA-SD, CCA-ED is governed by the 4μs CCA window to flag CCA-BUSY
   // for any received signal greater than the CCA-ED threshold.
@@ -3036,12 +3041,16 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
         {
           NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
           NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+          m_interference.NotifyRxEnd ();
+          m_currentEvent = 0;
         }
     }
   else //plcp reception failed
     {
       NS_LOG_DEBUG ("Drop packet because HT PHY header reception failed");
       NotifyRxDrop (event->GetPacket (), SIG_A_FAILURE);
+      m_interference.NotifyRxEnd ();
+      m_currentEvent = 0;
     }
 }
 
