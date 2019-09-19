@@ -709,33 +709,26 @@ BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, 
   return false;
 }
 
-bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient)
+bool BlockAckManager::NeedBarRetransmission (uint8_t tid, Mac48Address recipient)
 {
-  //The standard says the BAR gets discarded when all MSDUs lifetime expires
-  AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
-  NS_ASSERT (it != m_agreements.end ());
-  if (QosUtilsIsOldPacket (it->second.first.GetStartingSequence (), seqNumber))
+  if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
     {
-      return false;
+      AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
+      NS_ASSERT (it != m_agreements.end ());
+
+      // A BAR needs to be retransmitted if there is at least a non-expired outstanding MPDU
+      for (auto& mpdu : it->second.second)
+        {
+          if (mpdu->GetTimeStamp () + m_queue->GetMaxDelay () > Simulator::Now ())
+            {
+              return true;
+            }
+        }
     }
-  else if (it->second.first.GetTimeout () > 0 && it->second.first.m_inactivityEvent.IsExpired ())
-    {
-      /*
-       * According to "11.5.4 Error recovery upon a peer failure",
-       * DELBA should be issued after inactivity timeout,
-       * so block ack request should not be retransmitted anymore.
-       *
-       * Otherwise we risk retransmitting BAR forever if condition
-       * above is never met and the STA is not available.
-       *
-       * See https://www.nsnam.org/bugzilla/show_bug.cgi?id=2928 for details.
-       */
-      return false;
-    }
-  else
-    {
-      return true;
-    }
+
+  // If the inactivity timer has expired, QosTxop::SendDelbaFrame has been called and
+  // has destroyed the agreement, hence we get here and correctly return false
+  return false;
 }
 
 void

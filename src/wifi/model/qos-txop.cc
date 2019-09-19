@@ -1012,27 +1012,23 @@ bool
 QosTxop::NeedBarRetransmission (void)
 {
   uint8_t tid = 0;
-  uint16_t seqNumber = 0;
   if (m_currentHdr.IsQosData ())
     {
       tid = m_currentHdr.GetQosTid ();
-      seqNumber = m_currentHdr.GetSequenceNumber ();
     }
   else if (m_currentHdr.IsBlockAckReq ())
     {
       CtrlBAckRequestHeader baReqHdr;
       m_currentPacket->PeekHeader (baReqHdr);
       tid = baReqHdr.GetTidInfo ();
-      seqNumber = baReqHdr.GetStartingSequence ();
     }
   else if (m_currentHdr.IsBlockAck ())
     {
       CtrlBAckResponseHeader baRespHdr;
       m_currentPacket->PeekHeader (baRespHdr);
       tid = baRespHdr.GetTidInfo ();
-      seqNumber = m_currentHdr.GetSequenceNumber ();
     }
-  return m_baManager->NeedBarRetransmission (tid, seqNumber, m_currentHdr.GetAddr1 ());
+  return m_baManager->NeedBarRetransmission (tid, m_currentHdr.GetAddr1 ());
 }
 
 void

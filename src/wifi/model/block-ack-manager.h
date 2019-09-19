@@ -336,17 +336,16 @@ public:
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
   /**
-   * This function returns true if the lifetime of the packets a BAR refers to didn't
-   * expire yet otherwise it returns false.
-   * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)
+   * This function returns true if a Block Ack agreement is established with the
+   * given recipient for the given TID and there is at least an outstanding MPDU
+   * for such agreement whose lifetime is not expired.
    *
    * \param tid Traffic ID
-   * \param seqNumber sequence number
-   * \param recipient MAC address
+   * \param recipient MAC address of the recipient
    *
    * \returns true if BAR retransmission needed
    */
-  bool NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient);
+  bool NeedBarRetransmission (uint8_t tid, Mac48Address recipient);
   /**
    * This function returns the buffer size negociated with the recipient.
    *
