@@ -127,7 +127,7 @@ GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr)
             {
             case WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST:
               {
-                MgtAddBaResponseHeader reqHdr;
+                MgtAddBaRequestHeader reqHdr;
                 pkt->RemoveHeader (reqHdr);
                 return reqHdr.GetTid ();
               }
