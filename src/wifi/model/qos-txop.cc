@@ -1741,7 +1741,12 @@ void
 QosTxop::ResetBa (Mac48Address recipient, uint8_t tid)
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
-  if (!m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
+  // This function is scheduled when waiting for an ADDBA response. However,
+  // before this function is called, a DELBA request may arrive, which causes
+  // the agreement to be deleted. Hence, check if an agreement exists before
+  // notifying that the agreement has to be reset.
+  if (m_baManager->ExistsAgreement (recipient, tid)
+      && !m_baManager->ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
     {
       m_baManager->NotifyAgreementReset (recipient, tid);
     }
