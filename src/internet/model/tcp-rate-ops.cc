@@ -57,7 +57,7 @@ TcpRateLinux::GetTypeId (void)
 
 const TcpRateOps::TcpRateSample &
 TcpRateLinux::GenerateSample (uint32_t delivered, uint32_t lost, bool is_sack_reneg,
-                         uint32_t priorInFlight, const Time &minRtt)
+                              uint32_t priorInFlight, const Time &minRtt)
 {
   NS_LOG_FUNCTION (this << delivered << lost << is_sack_reneg);
 
@@ -119,9 +119,9 @@ TcpRateLinux::GenerateSample (uint32_t delivered, uint32_t lost, bool is_sack_re
     }
 
   /* Record the last non-app-limited or the highest app-limited bw */
-  if (!m_rateSample.m_isAppLimited ||
-      (m_rateSample.m_delivered * m_rate.m_rateInterval >=
-       m_rate.m_rateDelivered * m_rateSample.m_interval))
+  if (!m_rateSample.m_isAppLimited
+      || (m_rateSample.m_delivered * m_rate.m_rateInterval >=
+          m_rate.m_rateDelivered * m_rateSample.m_interval))
     {
       m_rate.m_rateDelivered  = m_rateSample.m_delivered;
       m_rate.m_rateInterval   = m_rateSample.m_interval;
@@ -145,9 +145,9 @@ TcpRateLinux::CalculateAppLimited (uint32_t cWnd, uint32_t in_flight,
   /* Missing checks from Linux:
    * - Nothing in sending host's qdisc queues or NIC tx queue. NOT IMPLEMENTED
    */
-  if (tailSeq - nextTx < static_cast<int32_t> (segmentSize) && // We have less than one packet to send.
-      in_flight < cWnd &&                                      // We are not limited by CWND.
-      lostOut <= retransOut)                                   // All lost packets have been retransmitted.
+  if (tailSeq - nextTx < static_cast<int32_t> (segmentSize)    // We have less than one packet to send.
+      && in_flight < cWnd                                      // We are not limited by CWND.
+      && lostOut <= retransOut)                                // All lost packets have been retransmitted.
     {
       m_rate.m_appLimited = std::max (m_rate.m_delivered + in_flight, 1UL);
       m_rateTrace (m_rate);
@@ -175,8 +175,8 @@ TcpRateLinux::SkbDelivered (TcpTxItem * skb)
   m_rate.m_delivered    += skb->GetSeqSize ();
   m_rate.m_deliveredTime = Simulator::Now ();
 
-  if (m_rateSample.m_priorDelivered == 0 ||
-      skbInfo.m_delivered > m_rateSample.m_priorDelivered)
+  if (m_rateSample.m_priorDelivered == 0
+      || skbInfo.m_delivered > m_rateSample.m_priorDelivered)
     {
       m_rateSample.m_priorDelivered   = skbInfo.m_delivered;
       m_rateSample.m_priorTime        = skbInfo.m_deliveredTime;
@@ -266,14 +266,14 @@ operator<< (std::ostream & os, TcpRateLinux::TcpRateSample const & sample)
 bool
 operator== (TcpRateLinux::TcpRateSample const & lhs, TcpRateLinux::TcpRateSample const & rhs)
 {
-  return (lhs.m_deliveryRate   == rhs.m_deliveryRate     &&
-          lhs.m_isAppLimited   == rhs.m_isAppLimited &&
-          lhs.m_interval       == rhs.m_interval &&
-          lhs.m_delivered      == rhs.m_delivered    &&
-          lhs.m_priorDelivered == rhs.m_priorDelivered &&
-          lhs.m_priorTime      == rhs.m_priorTime  &&
-          lhs.m_sendElapsed    == rhs.m_sendElapsed &&
-          lhs.m_ackElapsed     == rhs.m_ackElapsed
+  return (lhs.m_deliveryRate   == rhs.m_deliveryRate
+          && lhs.m_isAppLimited   == rhs.m_isAppLimited
+          && lhs.m_interval       == rhs.m_interval
+          && lhs.m_delivered      == rhs.m_delivered
+          && lhs.m_priorDelivered == rhs.m_priorDelivered
+          && lhs.m_priorTime      == rhs.m_priorTime
+          && lhs.m_sendElapsed    == rhs.m_sendElapsed
+          && lhs.m_ackElapsed     == rhs.m_ackElapsed
           );
 }
 
@@ -281,10 +281,10 @@ bool
 operator== (TcpRateLinux::TcpRateConnection const & lhs,
             TcpRateLinux::TcpRateConnection const & rhs)
 {
-  return (lhs.m_delivered       == rhs.m_delivered     &&
-          lhs.m_deliveredTime   == rhs.m_deliveredTime &&
-          lhs.m_firstSentTime   == rhs.m_firstSentTime &&
-          lhs.m_appLimited      == rhs.m_appLimited
+  return (lhs.m_delivered       == rhs.m_delivered
+          && lhs.m_deliveredTime   == rhs.m_deliveredTime
+          && lhs.m_firstSentTime   == rhs.m_firstSentTime
+          && lhs.m_appLimited      == rhs.m_appLimited
           );
 }
 

@@ -108,8 +108,8 @@ public:
    * \return The TcpRateSample that will be used for CA
    */
   virtual const TcpRateSample & GenerateSample (uint32_t delivered, uint32_t lost,
-                                           bool is_sack_reneg, uint32_t priorInFlight,
-                                           const Time &minRtt) = 0;
+                                                bool is_sack_reneg, uint32_t priorInFlight,
+                                                const Time &minRtt) = 0;
 
   /**
    * \return The information about the rate connection
@@ -184,7 +184,9 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  virtual ~TcpRateLinux () override {}
+  virtual ~TcpRateLinux () override
+  {
+  }
 
   virtual void SkbSent (TcpTxItem *skb, bool isStartOfTransmission) override;
   virtual void SkbDelivered (TcpTxItem * skb) override;
@@ -193,9 +195,12 @@ public:
                                     const SequenceNumber32 &nextTx, const uint32_t lostOut,
                                     const uint32_t retransOut) override;
   virtual const TcpRateSample & GenerateSample (uint32_t delivered, uint32_t lost,
-                                           bool is_sack_reneg, uint32_t priorInFlight,
-                                           const Time &minRtt) override;
-  virtual const TcpRateConnection & GetConnectionRate () override { return m_rate; }
+                                                bool is_sack_reneg, uint32_t priorInFlight,
+                                                const Time &minRtt) override;
+  virtual const TcpRateConnection & GetConnectionRate () override
+  {
+    return m_rate;
+  }
 
   /**
    * TracedCallback signature for tcp rate update events.

@@ -69,19 +69,19 @@ private:
 };
 
 TcpRateLinuxBasicTest::TcpRateLinuxBasicTest (uint32_t cWnd, SequenceNumber32 tailSeq,
-                                    SequenceNumber32 nextTx, uint32_t lostOut,
-                                    uint32_t retransOut, uint32_t testCase, std::string testName)
+                                              SequenceNumber32 nextTx, uint32_t lostOut,
+                                              uint32_t retransOut, uint32_t testCase, std::string testName)
   : TestCase (testName),
-    m_cWnd (cWnd),
-    m_inFlight (0),
-    m_segmentSize (1),
-    m_delivered (0),
-    m_deliveredTime (Seconds (0)),
-    m_tailSeq (tailSeq),
-    m_nextTx (nextTx),
-    m_lostOut (lostOut),
-    m_retransOut (retransOut),
-    m_testCase (testCase)
+  m_cWnd (cWnd),
+  m_inFlight (0),
+  m_segmentSize (1),
+  m_delivered (0),
+  m_deliveredTime (Seconds (0)),
+  m_tailSeq (tailSeq),
+  m_nextTx (nextTx),
+  m_lostOut (lostOut),
+  m_retransOut (retransOut),
+  m_testCase (testCase)
 {
 }
 
@@ -281,8 +281,8 @@ private:
 TcpRateLinuxWithSocketsTest::TcpRateLinuxWithSocketsTest (const std::string &desc, bool sackEnabled,
                                                           std::vector<uint32_t> &toDrop)
   : TcpGeneralTest (desc),
-    m_sackEnabled (sackEnabled),
-    m_toDrop (toDrop)
+  m_sackEnabled (sackEnabled),
+  m_toDrop (toDrop)
 {
 }
 
@@ -322,7 +322,7 @@ TcpRateLinuxWithSocketsTest::CreateReceiverErrorModel ()
 
 void
 TcpRateLinuxWithSocketsTest::PktDropped (const Ipv4Header &ipH, const TcpHeader &tcpH,
-                                  Ptr<const Packet> p)
+                                         Ptr<const Packet> p)
 {
   NS_LOG_DEBUG ("Drop seq= " << tcpH.GetSequenceNumber () << " size " << p->GetSize ());
 }
@@ -333,8 +333,8 @@ TcpRateLinuxWithSocketsTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, 
   if (who == SENDER)
     {
       if (h.GetAckNumber () == m_lastAckRecv
-         && m_lastAckRecv != SequenceNumber32 (1)
-         && (h.GetFlags () & TcpHeader::FIN) == 0)
+          && m_lastAckRecv != SequenceNumber32 (1)
+          && (h.GetFlags () & TcpHeader::FIN) == 0)
         {
           m_isDupAck = true;
         }
@@ -441,7 +441,7 @@ private:
 TcpRateLinuxWithBufferTest::TcpRateLinuxWithBufferTest (uint32_t segmentSize,
                                                         std::string testString)
   : TestCase (testString),
-    m_segmentSize (segmentSize)
+  m_segmentSize (segmentSize)
 {
   m_rateOps  = CreateObject <TcpRateLinux> ();
   m_rateOps->TraceConnectWithoutContext ("TcpRateUpdated",
@@ -482,13 +482,13 @@ TcpRateLinuxWithBufferTest::TestWithSackBlocks ()
   m_txBuf.SetSegmentSize (m_segmentSize);
   m_txBuf.SetDupAckThresh (3);
 
-  m_txBuf.Add(Create<Packet> (10 * m_segmentSize));
+  m_txBuf.Add (Create<Packet> (10 * m_segmentSize));
 
   // Send 10 Segments
   for (uint8_t i = 0; i < 10; ++i)
     {
       bool isStartOfTransmission = m_txBuf.BytesInFlight () == 0;
-      TcpTxItem *outItem = m_txBuf.CopyFromSequence (m_segmentSize, SequenceNumber32((i * m_segmentSize) + 1));
+      TcpTxItem *outItem = m_txBuf.CopyFromSequence (m_segmentSize, SequenceNumber32 ((i * m_segmentSize) + 1));
       m_rateOps->SkbSent (outItem, isStartOfTransmission);
     }
 
@@ -506,14 +506,14 @@ TcpRateLinuxWithBufferTest::TestWithSackBlocks ()
   priorInFlight = m_txBuf.BytesInFlight ();
   sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (m_segmentSize * 4 + 1), SequenceNumber32 (m_segmentSize * 5 + 1)));
   m_expectedDelivered += m_segmentSize;
-  m_txBuf.Update(sack->GetSackList(), MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
+  m_txBuf.Update (sack->GetSackList (), MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
   m_expectedAckedSacked = m_segmentSize;
   m_rateOps->GenerateSample (m_segmentSize, 0, false, priorInFlight, Seconds (0));
 
   priorInFlight = m_txBuf.BytesInFlight ();
   sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (m_segmentSize * 3 + 1), SequenceNumber32 (m_segmentSize * 4 + 1)));
   m_expectedDelivered += m_segmentSize;
-  m_txBuf.Update(sack->GetSackList(), MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
+  m_txBuf.Update (sack->GetSackList (), MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
   m_rateOps->GenerateSample (m_segmentSize, 0, false, priorInFlight, Seconds (0));
 
   priorInFlight = m_txBuf.BytesInFlight ();
