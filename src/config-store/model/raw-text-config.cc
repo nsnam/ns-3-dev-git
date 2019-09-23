@@ -145,8 +145,8 @@ RawTextConfigLoad::Strip (std::string value)
   NS_LOG_FUNCTION (this << value);
   std::string::size_type start = value.find ("\"");
   std::string::size_type end = value.find ("\"", 1);
-  NS_ASSERT_MSG (start == 0, "Ill-formed attribute value: " << value);
-  NS_ASSERT_MSG (end == value.size () - 1, "Ill-formed attribute value: " << value);
+  NS_ABORT_MSG_IF (start == 0, "Ill-formed attribute value: " << value);
+  NS_ABORT_MSG_IF (end == value.size () - 1, "Ill-formed attribute value: " << value);
   return value.substr (start+1, end-start-1);
 }
 
@@ -164,7 +164,9 @@ RawTextConfigLoad::Default (void)
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
       if (type == "default")
-        Config::SetDefault (name, StringValue (value));
+        {
+          Config::SetDefault (name, StringValue (value));
+        }
       name.clear ();
       type.clear ();
     }
@@ -178,12 +180,17 @@ RawTextConfigLoad::Global (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) continue; // comment
+      if (!ParseLine (line, type, name, value)) 
+        {
+          continue; // comment
+        }
 
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
       if (type == "global")
-        Config::SetGlobal (name, StringValue (value));
+        {
+          Config::SetGlobal (name, StringValue (value));
+        }
       name.clear ();
       type.clear ();
     }
@@ -202,7 +209,9 @@ RawTextConfigLoad::Attributes (void)
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
       if (type == "value")
-        Config::Set (name, StringValue (value));
+        {
+          Config::Set (name, StringValue (value));
+        }
       name.clear ();
       type.clear ();
     }
@@ -218,11 +227,15 @@ RawTextConfigLoad::ParseLine (const std::string &line, std::string &type, std::s
     std::istringstream iss (line);
     iss >> std::ws;     // remove all blanks line
     if (!iss.good ())   // eofbit set if no non-blanks
-      return false;
+      {
+        return false;
+      }
   }
 
   if (line.front () == '#')
-    return false;     // comment line
+    {
+      return false;     // comment line
+    }
 
   // for multiline values, append line to value if type and name not empty
   if (type.empty () && name.empty ())
