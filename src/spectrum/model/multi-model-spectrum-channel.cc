@@ -250,7 +250,7 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
         }
       else
         {
-          NS_LOG_LOGIC ("converting txPowerSpectrum SpectrumModelUids" << txSpectrumModelUid << " --> " << rxSpectrumModelUid);
+          NS_LOG_LOGIC ("converting txPowerSpectrum SpectrumModelUids " << txSpectrumModelUid << " --> " << rxSpectrumModelUid);
           SpectrumConverterMap_t::const_iterator rxConverterIterator = txInfoIteratorerator->second.m_spectrumConverterMap.find (rxSpectrumModelUid);
           if (rxConverterIterator == txInfoIteratorerator->second.m_spectrumConverterMap.end ())
             {
