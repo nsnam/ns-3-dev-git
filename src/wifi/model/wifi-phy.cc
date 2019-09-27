@@ -2539,6 +2539,11 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector)
   Time txDuration = CalculateTxDuration (packet->GetSize (), txVector, GetFrequency ());
   NS_ASSERT (txDuration.IsStrictlyPositive ());
 
+  if (m_currentEvent != 0)
+    {
+      MaybeCcaBusyDuration (); //needed to keep busy state afterwards
+    }
+
   if (m_endPreambleDetectionEvent.IsRunning ())
     {
       m_endPreambleDetectionEvent.Cancel ();
