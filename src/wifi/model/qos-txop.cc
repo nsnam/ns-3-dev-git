@@ -164,9 +164,9 @@ QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
 }
 
 void
-QosTxop::ScheduleBar (Ptr<const WifiMacQueueItem> bar)
+QosTxop::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
 {
-  m_baManager->ScheduleBar (bar);
+  m_baManager->ScheduleBar (bar, skipIfNoDataQueued);
 }
 
 void
@@ -902,8 +902,28 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
       else
         {
           NS_LOG_DEBUG ("Block Ack Request Fail");
+          // if a BA agreement exists, we can get here if there is no outstanding
+          // MPDU whose lifetime has not expired yet.
+          if (m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), tid,
+                                                   OriginatorBlockAckAgreement::ESTABLISHED))
+            {
+              // If there is any (expired) outstanding MPDU, request the BA manager to discard
+              // it, which involves the scheduling of a BAR to advance the recipient's window
+              if (m_baManager->GetNBufferedPackets (m_currentHdr.GetAddr1 (), tid) > 0)
+                {
+                  m_baManager->DiscardOutstandingMpdus (m_currentHdr.GetAddr1 (), tid);
+                }
+              // otherwise, it means that we have not received a Block Ack in response to a
+              // BlockAckRequest sent while no frame was outstanding, whose purpose was therefore
+              // to advance the recipient's window. Schedule a BlockAckRequest with
+              // skipIfNoDataQueued set to true, so that the BlockAckRequest is only sent
+              // if there are data frames queued for this recipient.
+              else
+                {
+                  ScheduleBar (PrepareBlockAckRequest (m_currentHdr.GetAddr1 (), tid), true);
+                }
+            }
           //to reset the dcf.
-          m_baManager->DiscardOutstandingMpdus (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr));
           m_currentPacket = 0;
           ResetCw ();
           m_cwTrace = GetCw ();

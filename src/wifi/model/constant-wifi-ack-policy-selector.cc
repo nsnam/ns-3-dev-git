@@ -92,6 +92,13 @@ ConstantWifiAckPolicySelector::UpdateTxParams (Ptr<WifiPsdu> psdu, MacLowTransmi
       return;
     }
 
+  // If QosTxop forced the use of Block Ack QoS policy, do not make any change
+  if (params.MustSendBlockAckRequest ())
+    {
+      NS_LOG_DEBUG ("Use Block Ack policy as requested");
+      return;
+    }
+
   // find the maximum distance from the sequence number of an MPDU included in the
   // PSDU to the starting sequence number of the transmit window.
   uint16_t maxDistToStartingSeq = psdu->GetMaxDistFromStartingSeq (m_qosTxop->GetBaStartingSequence (receiver, tid));

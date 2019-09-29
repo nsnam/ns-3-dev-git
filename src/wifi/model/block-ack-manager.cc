@@ -37,11 +37,12 @@ Bar::Bar ()
   NS_LOG_FUNCTION (this);
 }
 
-Bar::Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid)
+Bar::Bar (Ptr<const WifiMacQueueItem> bar, uint8_t tid, bool skipIfNoDataQueued)
   : bar (bar),
-    tid (tid)
+    tid (tid),
+    skipIfNoDataQueued (skipIfNoDataQueued)
 {
-  NS_LOG_FUNCTION (this << *bar << +tid);
+  NS_LOG_FUNCTION (this << *bar << +tid << skipIfNoDataQueued);
 }
 
 NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
@@ -293,18 +294,26 @@ BlockAckManager::GetBar (bool remove)
   // (if needed) are scheduled
   m_retryPackets->Remove (WifiMacQueue::EMPTY, true);
 
-  while (!m_bars.empty ())
-    {
-      auto nextBar = m_bars.front ();
+  auto nextBar = m_bars.begin ();
 
-      if (nextBar.bar->GetHeader ().IsBlockAckReq ())
+  while (nextBar != m_bars.end ())
+    {
+      if (nextBar->bar->GetHeader ().IsBlockAckReq ())
         {
-          Mac48Address recipient = nextBar.bar->GetHeader ().GetAddr1 ();
-          AgreementsI it = m_agreements.find (std::make_pair (recipient, nextBar.tid));
+          Mac48Address recipient = nextBar->bar->GetHeader ().GetAddr1 ();
+          AgreementsI it = m_agreements.find (std::make_pair (recipient, nextBar->tid));
           if (it == m_agreements.end ())
             {
               // BA agreement was torn down; remove this BAR and continue
-              m_bars.pop_front ();
+              nextBar = m_bars.erase (nextBar);
+              continue;
+            }
+          if (nextBar->skipIfNoDataQueued
+              && m_retryPackets->PeekByTidAndAddress (nextBar->tid, recipient) == m_retryPackets->end ()
+              && m_queue->PeekByTidAndAddress (nextBar->tid, recipient) == m_queue->end ())
+            {
+              // skip this BAR as there is no data queued
+              nextBar++;
               continue;
             }
           // remove expired outstanding MPDUs and update the starting sequence number
@@ -323,20 +332,20 @@ BlockAckManager::GetBar (bool remove)
             }
           // update BAR if the starting sequence number changed
           CtrlBAckRequestHeader reqHdr;
-          nextBar.bar->GetPacket ()->PeekHeader (reqHdr);
+          nextBar->bar->GetPacket ()->PeekHeader (reqHdr);
           if (reqHdr.GetStartingSequence () != it->second.first.GetStartingSequence ())
             {
               reqHdr.SetStartingSequence (it->second.first.GetStartingSequence ());
               Ptr<Packet> packet = Create<Packet> ();
               packet->AddHeader (reqHdr);
-              nextBar.bar = Create<const WifiMacQueueItem> (packet, nextBar.bar->GetHeader ());
+              nextBar->bar = Create<const WifiMacQueueItem> (packet, nextBar->bar->GetHeader ());
             }
         }
 
-      bar = nextBar.bar;
+      bar = nextBar->bar;
       if (remove)
         {
-          m_bars.pop_front ();
+          m_bars.erase (nextBar);
         }
       break;
     }
@@ -344,10 +353,10 @@ BlockAckManager::GetBar (bool remove)
 }
 
 bool
-BlockAckManager::HasPackets (void) const
+BlockAckManager::HasPackets (void)
 {
   NS_LOG_FUNCTION (this);
-  return (!m_retryPackets->IsEmpty () || m_bars.size () > 0);
+  return (!m_retryPackets->IsEmpty () || GetBar (false) != 0);
 }
 
 uint32_t
@@ -661,7 +670,7 @@ BlockAckManager::GetBlockAckReqHeader (Mac48Address recipient, uint8_t tid) cons
 }
 
 void
-BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar)
+BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
 {
   NS_LOG_FUNCTION (this << *bar);
   NS_ASSERT (bar->GetHeader ().IsBlockAckReq ());
@@ -669,7 +678,7 @@ BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar)
   CtrlBAckRequestHeader reqHdr;
   bar->GetPacket ()->PeekHeader (reqHdr);
   uint8_t tid = reqHdr.GetTidInfo ();
-  Bar request (bar, tid);
+  Bar request (bar, tid, skipIfNoDataQueued);
 
   // if a BAR for the given agreement is present, replace it with the new one
   for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); i++)

@@ -197,11 +197,12 @@ public:
   Ptr<const WifiMacQueueItem> PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const;
   /**
    * \param bar the Block Ack Request to schedule
+   * \param skipIfNoDataQueued do not send if there is no data queued
    *
    * Request the Block Ack manager to schedule the transmission of the given
    * Block Ack Request.
    */
-  void ScheduleBar (Ptr<const WifiMacQueueItem> bar);
+  void ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued = false);
 
   /* dcf notifications forwarded here */
   /**
