@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2019 Ritsumeikan University
+ * Copyright (c) 2019 Ritsumeikan University, Shiga, Japan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -26,6 +26,7 @@
 
 #include "v4traceroute.h"
 #include "ns3/icmpv4.h"
+#include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/ipv4-address.h"
@@ -47,7 +48,7 @@ V4TraceRoute::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::V4TraceRoute")
     .SetParent<Application> ()
-    .SetGroupName("Internet-Apps")
+    .SetGroupName ("Internet-Apps")
     .AddConstructor<V4TraceRoute> ()
     .AddAttribute ("Remote",
                    "The address of the machine we want to trace.",
@@ -56,10 +57,10 @@ V4TraceRoute::GetTypeId (void)
                    MakeIpv4AddressChecker ())
     .AddAttribute ("Verbose",
                    "Produce usual output.",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&V4TraceRoute::m_verbose),
                    MakeBooleanChecker ())
-    .AddAttribute ("Interval", "Wait interval seconds between sending each packet.",
+    .AddAttribute ("Interval", "Wait interval between sent packets.",
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&V4TraceRoute::m_interval),
                    MakeTimeChecker ())
@@ -67,35 +68,35 @@ V4TraceRoute::GetTypeId (void)
                    UintegerValue (56),
                    MakeUintegerAccessor (&V4TraceRoute::m_size),
                    MakeUintegerChecker<uint32_t> ())
-	.AddAttribute ("MaxHop", "The maximum number of hops to trace.",
-				   UintegerValue (30),
-				   MakeUintegerAccessor (&V4TraceRoute::m_maxTtl),
-				   MakeUintegerChecker<uint32_t> ())
-	.AddAttribute ("ProbeNum", "The number of packets send to each hop.",
-				   UintegerValue (3),
-				   MakeUintegerAccessor (&V4TraceRoute::m_maxProbes),
-				   MakeUintegerChecker<uint16_t> ())
-	.AddAttribute ("Timeout", "The waiting time for a route response before a timeout.",
-				   TimeValue (Seconds (5)),
-				   MakeTimeAccessor (&V4TraceRoute::m_waitIcmpReplyTimeout),
-				   MakeTimeChecker ())
+    .AddAttribute ("MaxHop", "The maximum number of hops to trace.",
+                   UintegerValue (30),
+                   MakeUintegerAccessor (&V4TraceRoute::m_maxTtl),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ProbeNum", "The number of packets send to each hop.",
+                   UintegerValue (3),
+                   MakeUintegerAccessor (&V4TraceRoute::m_maxProbes),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Timeout", "The waiting time for a route response before a timeout.",
+                   TimeValue (Seconds (5)),
+                   MakeTimeAccessor (&V4TraceRoute::m_waitIcmpReplyTimeout),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
 
 
 V4TraceRoute::V4TraceRoute ()
-: m_interval (Seconds (0)),
-  m_size (56),
-  m_socket (0),
-  m_seq (0),
-  m_verbose (true),
-  m_recv (0),
-  m_probeCount(0),
-  m_maxProbes(3),
-  m_ttl (1),
-  m_maxTtl (30),
-  m_waitIcmpReplyTimeout (Seconds (5))
+  : m_interval (Seconds (0)),
+    m_size (56),
+    m_socket (0),
+    m_seq (0),
+    m_verbose (true),
+    m_recv (0),
+    m_probeCount (0),
+    m_maxProbes (3),
+    m_ttl (1),
+    m_maxTtl (30),
+    m_waitIcmpReplyTimeout (Seconds (5))
 {
   osRoute.clear ();
   routeIpv4.clear ();
@@ -111,33 +112,33 @@ V4TraceRoute::~V4TraceRoute ()
 void
 V4TraceRoute::Print (Ptr<OutputStreamWrapper> stream)
 {
-	printStream = stream;
+  printStream = stream;
 }
 
 void
 V4TraceRoute::StartApplication (void)
 {
   NS_LOG_FUNCTION (this);
-  std::cout<<"Application started\n";
+  NS_LOG_LOGIC ("Application started");
   m_started = Simulator::Now ();
 
   if (m_verbose)
-	{
-	  std::cout << "Traceroute to " << m_remote <<", "
-			    <<m_maxTtl<<" hops Max, "
-				<<m_size<<" bytes of data.\n";
-	}
-
-  if(printStream != NULL)
     {
-	  *printStream->GetStream ()<<"Traceroute to " << m_remote <<", "
-			                    <<m_maxTtl<<" hops Max, "
-								<<m_size<<" bytes of data.\n";
+      std::cout << "Traceroute to " << m_remote << ", "
+                << m_maxTtl << " hops Max, "
+                << m_size << " bytes of data.\n";
+    }
+
+  if (printStream != NULL)
+    {
+      *printStream->GetStream () << "Traceroute to " << m_remote << ", "
+                                 << m_maxTtl << " hops Max, "
+                                 << m_size << " bytes of data.\n";
     }
 
 
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
-  m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
+  m_socket->SetAttribute ("Protocol", UintegerValue (Icmpv4L4Protocol::PROT_NUMBER));
 
 
   NS_ASSERT (m_socket != 0);
@@ -163,9 +164,9 @@ V4TraceRoute::StopApplication (void)
       m_next.Cancel ();
     }
 
-  if (m_waitIcmpReplyTimer.IsRunning())
+  if (m_waitIcmpReplyTimer.IsRunning ())
     {
-	  m_waitIcmpReplyTimer.Cancel();
+      m_waitIcmpReplyTimer.Cancel ();
     }
 
   if (m_socket)
@@ -174,10 +175,14 @@ V4TraceRoute::StopApplication (void)
     }
 
   if (m_verbose)
-	std::cout<<"\nTrace Complete\n";
+    {
+      std::cout << "\nTrace Complete\n";
+    }
 
   if (printStream != NULL)
-    *printStream->GetStream () <<"Trace Complete\n"<< std::endl;
+    {
+      *printStream->GetStream () << "Trace Complete\n" << std::endl;
+    }
 }
 
 void
@@ -185,7 +190,7 @@ V4TraceRoute::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_next.IsRunning () || m_waitIcmpReplyTimer.IsRunning())
+  if (m_next.IsRunning () || m_waitIcmpReplyTimer.IsRunning ())
     {
       StopApplication ();
     }
@@ -217,174 +222,150 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
 
   while (m_socket->GetRxAvailable () > 0)
-	{
-	  Address from;
-	  Ptr<Packet> p = m_socket->RecvFrom (0xffffffff, 0, from);
-	  NS_LOG_DEBUG ("recv " << p->GetSize () << " bytes");
-	  NS_ASSERT (InetSocketAddress::IsMatchingType (from));
-	  InetSocketAddress realFrom = InetSocketAddress::ConvertFrom (from);
-	  NS_ASSERT (realFrom.GetPort () == 1); // protocol should be icmp.
-	  Ipv4Header ipv4;
-	  p->RemoveHeader (ipv4);
-	  NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
-	  Icmpv4Header icmp;
-	  p->RemoveHeader (icmp);
+    {
+      Address from;
+      Ptr<Packet> p = m_socket->RecvFrom (0xffffffff, 0, from);
+      NS_LOG_DEBUG ("recv " << p->GetSize () << " bytes");
+      NS_ASSERT (InetSocketAddress::IsMatchingType (from));
+      InetSocketAddress realFrom = InetSocketAddress::ConvertFrom (from);
+      NS_ASSERT (realFrom.GetPort () == 1);
+      Ipv4Header ipv4;
+      p->RemoveHeader (ipv4);
+      NS_ASSERT (ipv4.GetProtocol () == Icmpv4L4Protocol::PROT_NUMBER);
+      Icmpv4Header icmp;
+      p->RemoveHeader (icmp);
 
 
 
-	if (icmp.GetType () == Icmpv4Header::ICMPV4_TIME_EXCEEDED)
-	    {
+      if (icmp.GetType () == Icmpv4Header::ICMPV4_TIME_EXCEEDED)
+        {
 
-		  Icmpv4TimeExceeded timeoutResp;
-		  p->RemoveHeader(timeoutResp);
+          Icmpv4TimeExceeded timeoutResp;
+          p->RemoveHeader (timeoutResp);
 
-		  // GetData () gets 64 bits of data, but the received packet
-		  // only contains 32 bits of data.
-		  uint8_t data [8];
-		  timeoutResp.GetData(data);
+          // GetData () gets 64 bits of data, but the received packet
+          // only contains 32 bits of data.
+          uint8_t data [8];
+          timeoutResp.GetData (data);
 
           // Get the 7th and 8th Octect to obtain the Sequence number from
-		  // the original packet.
-		  uint16_t recvSeq;
-		  recvSeq = (uint16_t) data[7] << 0;
-		  recvSeq |= (uint16_t) data [6] << 8;
+          // the original packet.
+          uint16_t recvSeq;
+          recvSeq = (uint16_t) data[7] << 0;
+          recvSeq |= (uint16_t) data [6] << 8;
 
 
-		  std::map<uint16_t, Time>::iterator i = m_sent.find (recvSeq);
-		  if (i != m_sent.end ())
-		    {
-			  Time sendTime = i->second;
-			  NS_ASSERT (Simulator::Now () >= sendTime);
-			  Time delta = Simulator::Now () - sendTime;
+          std::map<uint16_t, Time>::iterator i = m_sent.find (recvSeq);
+          if (i != m_sent.end ())
+            {
+              Time sendTime = i->second;
+              NS_ASSERT (Simulator::Now () >= sendTime);
+              Time delta = Simulator::Now () - sendTime;
 
-             routeIpv4.str("");
-			 routeIpv4.clear ();
-			 routeIpv4<<realFrom.GetIpv4();
-			 osRoute<<delta.GetMilliSeconds()<<" ms ";
-			 if (m_probeCount == m_maxProbes)
-			   {
-				 if(m_verbose)
-                   std::cout<<m_ttl<<" "<<routeIpv4.str()<<" "<<osRoute.str()<<"\n";
+              routeIpv4.str ("");
+              routeIpv4.clear ();
+              routeIpv4 << realFrom.GetIpv4 ();
+              osRoute << delta.GetMilliSeconds () << " ms ";
+              if (m_probeCount == m_maxProbes)
+                {
+                  if (m_verbose)
+                    {
+                      std::cout << m_ttl << " " << routeIpv4.str () << " " << osRoute.str () << "\n";
+                    }
 
-                 if (printStream != NULL)
-                   {
-                	 *printStream->GetStream ()<<m_ttl<<" "
-                			                   <<routeIpv4.str()<<" "
-											   <<osRoute.str()<<"\n";
-                   }
-                 osRoute.str("");
-				 osRoute.clear();
-                 routeIpv4.str("");
-				 routeIpv4.clear();
+                  if (printStream != NULL)
+                    {
+                      *printStream->GetStream () << m_ttl << " "
+                                                 << routeIpv4.str () << " "
+                                                 << osRoute.str () << "\n";
+                    }
+                  osRoute.str ("");
+                  osRoute.clear ();
+                  routeIpv4.str ("");
+                  routeIpv4.clear ();
 
-			   }
+                }
 
-			  m_waitIcmpReplyTimer.Cancel();
+              m_waitIcmpReplyTimer.Cancel ();
 
-			  if (m_ttl < m_maxTtl+1)
-			    m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
-		    }
+              if (m_ttl < m_maxTtl + 1)
+                {
+                  m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
+                }
+            }
 
-	    }
-	else if (icmp.GetType () == Icmpv4Header::ICMPV4_ECHO_REPLY && m_remote == realFrom.GetIpv4 ())
-		{
-		  // When UDP is used, TraceRoute should stop until ICMPV4_DEST_UNREACH
-		  // (with code (3) PORT_UNREACH) is received,
-		  // however, the current ns-3 implementation does not include the UDP version of traceroute
-		  // , so only the version ICMP packets is used and stop until max_ttl is reached
-		  // or until an echo_reply is received m_maxProbes times.
+        }
+      else if (icmp.GetType () == Icmpv4Header::ICMPV4_ECHO_REPLY && m_remote == realFrom.GetIpv4 ())
+        {
+          // When UDP is used, TraceRoute should stop until ICMPV4_DEST_UNREACH
+          // (with code (3) PORT_UNREACH) is received, however, the current
+          // ns-3 implementation does not include the UDP version of traceroute.
+          // The traceroute ICMP version (the current version) stops until max_ttl is reached
+          // or until an ICMP ECHO REPLY is received m_maxProbes times.
 
-		  Icmpv4Echo echo;
-		  p->RemoveHeader (echo);
-		  std::map<uint16_t, Time>::iterator i = m_sent.find (echo.GetSequenceNumber ());
+          Icmpv4Echo echo;
+          p->RemoveHeader (echo);
+          std::map<uint16_t, Time>::iterator i = m_sent.find (echo.GetSequenceNumber ());
 
-		  if (i != m_sent.end () && echo.GetIdentifier () == 0)
-			{
-			  uint32_t * buf = new uint32_t [m_size];
-			  uint32_t dataSize = echo.GetDataSize ();
-			  uint32_t nodeId;
-			  uint32_t appId;
-			  if (dataSize == m_size)
-				{
-				  echo.GetData ((uint8_t *)buf);
-				  Read32 ((const uint8_t *) &buf[0], nodeId);
-				  Read32 ((const uint8_t *) &buf[1], appId);
+          if (i != m_sent.end () && echo.GetIdentifier () == 0)
+            {
+              uint32_t * buf = new uint32_t [m_size];
+              uint32_t dataSize = echo.GetDataSize ();
 
-				  if (nodeId == GetNode ()->GetId () &&
-					  appId == GetApplicationId ())
-					{
-					  Time sendTime = i->second;
-					  NS_ASSERT (Simulator::Now () >= sendTime);
-					  Time delta = Simulator::Now () - sendTime;
+              if (dataSize == m_size)
+                {
+                  echo.GetData ((uint8_t *)buf);
 
-					  m_sent.erase (i);
-					  //m_avgRtt.Update (delta.GetMilliSeconds ());
-					  //m_recv++;
-					  //m_traceRtt (delta);
+                  Time sendTime = i->second;
+                  NS_ASSERT (Simulator::Now () >= sendTime);
+                  Time delta = Simulator::Now () - sendTime;
 
-					  if (m_verbose)
-						{
-                          routeIpv4.str("");
-                          routeIpv4.clear();
-						  routeIpv4<<realFrom.GetIpv4();
-						  osRoute<<delta.GetMilliSeconds()<<" ms ";
-						  if (m_probeCount == m_maxProbes)
-						    {
-				              std::cout<<m_ttl<<" "<<routeIpv4.str()<<" "<<osRoute.str()<<"\n";
-				              if (printStream != NULL)
-				                {
-				            	  *printStream->GetStream()<<m_ttl<<" "
-				            			                   <<routeIpv4.str()<<" "
-														   <<osRoute.str()<<"\n";
-				                }
+                  m_sent.erase (i);
 
-							  osRoute.clear();
-							  routeIpv4.clear();
-							}
-						}
-					}
-				}
-			  delete[] buf;
-			}
+                  if (m_verbose)
+                    {
+                      routeIpv4.str ("");
+                      routeIpv4.clear ();
+                      routeIpv4 << realFrom.GetIpv4 ();
+                      osRoute << delta.GetMilliSeconds () << " ms ";
 
-		  m_waitIcmpReplyTimer.Cancel();
-		  if (m_probeCount == m_maxProbes)
-		    {
-			  StopApplication ();
-		    }
-		  else if (m_ttl < m_maxTtl+1)
-		  			   m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
-		}
-	}
+                      if (m_probeCount == m_maxProbes)
+                        {
+                          std::cout << m_ttl << " " << routeIpv4.str () << " " << osRoute.str () << "\n";
+                          if (printStream != NULL)
+                            {
+                              *printStream->GetStream () << m_ttl << " "
+                                                         << routeIpv4.str () << " "
+                                                         << osRoute.str () << "\n";
+                            }
+
+                          osRoute.clear ();
+                          routeIpv4.clear ();
+                        }
+                    }
+                }
+              delete[] buf;
+            }
+
+          m_waitIcmpReplyTimer.Cancel ();
+          if (m_probeCount == m_maxProbes)
+            {
+              StopApplication ();
+            }
+          else if (m_ttl < m_maxTtl + 1)
+            {
+              m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
+            }
+        }
+    }
 }
 
 
-
-
-void
-V4TraceRoute::Write32 (uint8_t *buffer, const uint32_t data)
-{
-  NS_LOG_FUNCTION (this << (void *) buffer << data);
-  buffer[0] = (data >> 0) & 0xff;
-  buffer[1] = (data >> 8) & 0xff;
-  buffer[2] = (data >> 16) & 0xff;
-  buffer[3] = (data >> 24) & 0xff;
-}
-
-
-void
-V4TraceRoute::Read32 (const uint8_t *buffer, uint32_t &data)
-{
-  NS_LOG_FUNCTION (this << (void *) buffer << data);
-  data = (buffer[3] << 24) + (buffer[2] << 16) + (buffer[1] << 8) + buffer[0];
-}
 
 
 void
 V4TraceRoute::Send ()
 {
- //　NS_LOG_FUNCTION (this);
-
   NS_LOG_INFO ("m_seq=" << m_seq);
   Ptr<Packet> p = Create<Packet> ();
   Icmpv4Echo echo;
@@ -399,14 +380,11 @@ V4TraceRoute::Send ()
   // be too surprised when you see that this is a little endian convention.
   //
   uint8_t* data = new uint8_t[m_size];
-  for (uint32_t i = 0; i < m_size; ++i) data[i] = 0;
+  for (uint32_t i = 0; i < m_size; ++i)
+    {
+      data[i] = 0;
+    }
   NS_ASSERT (m_size >= 16);
-
-  uint32_t tmp = GetNode ()->GetId ();
-  Write32 (&data[0 * sizeof(uint32_t)], tmp);
-
-  tmp = GetApplicationId ();
-  Write32 (&data[1 * sizeof(uint32_t)], tmp);
 
   Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) data, m_size);
   echo.SetData (dataPacket);
@@ -423,16 +401,16 @@ V4TraceRoute::Send ()
 
   if (m_probeCount < m_maxProbes)
     {
-	  m_probeCount++;
+      m_probeCount++;
     }
   else
-   {
-	  m_probeCount = 1;
-	  m_ttl++;
-   }
+    {
+      m_probeCount = 1;
+      m_ttl++;
+    }
 
   m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now ()));
-  m_socket->SetIpTtl(m_ttl);
+  m_socket->SetIpTtl (m_ttl);
 
 
   InetSocketAddress dst = InetSocketAddress (m_remote, 0);
@@ -453,7 +431,7 @@ V4TraceRoute::StartWaitReplyTimer (void)
                     m_waitIcmpReplyTimeout);
 
       m_waitIcmpReplyTimer = Simulator::Schedule (m_waitIcmpReplyTimeout,
-                                              &V4TraceRoute::HandleWaitReplyTimeout, this);
+                                                  &V4TraceRoute::HandleWaitReplyTimeout, this);
       Send ();
     }
 }
@@ -462,29 +440,31 @@ V4TraceRoute::StartWaitReplyTimer (void)
 void
 V4TraceRoute::HandleWaitReplyTimeout (void)
 {
-  if (m_ttl < m_maxTtl+1)
+  if (m_ttl < m_maxTtl + 1)
     {
-	  m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
+      m_next = Simulator::Schedule (m_interval, &V4TraceRoute::StartWaitReplyTimer, this);
     }
 
-  osRoute<<"*  ";
+  osRoute << "*  ";
   if (m_probeCount == m_maxProbes)
     {
-	  if(m_verbose)
-        std::cout<<m_ttl<<" "<<routeIpv4.str()<<" "<<osRoute.str()<<"\n";
-
-	  if (printStream != NULL)
+      if (m_verbose)
         {
-    	  *printStream->GetStream()<<m_ttl
-    			                    <<" "<<routeIpv4.str()<<" "
-									<<osRoute.str()<<"\n";
+          std::cout << m_ttl << " " << routeIpv4.str () << " " << osRoute.str () << "\n";
         }
-      osRoute.str("");
-	  osRoute.clear ();
-	  routeIpv4.str("");
-	  routeIpv4.clear ();
-	}
+
+      if (printStream != NULL)
+        {
+          *printStream->GetStream () << m_ttl
+                                     << " " << routeIpv4.str () << " "
+                                     << osRoute.str () << "\n";
+        }
+      osRoute.str ("");
+      osRoute.clear ();
+      routeIpv4.str ("");
+      routeIpv4.clear ();
+    }
 }
 
 
-} //ns3 namespace
+} // ns3 namespace

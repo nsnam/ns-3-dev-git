@@ -34,8 +34,21 @@ namespace ns3 {
 
 class Socket;
 
+/**
+ * \ingroup internet-apps
+ * \defgroup v4traceroute V4Traceroute
+ */
 
-class V4TraceRoute: public Application {
+/**
+ * \ingroup v4traceroute
+ * \brief Traceroute application sends one ICMP ECHO request with TTL=1,
+ *        and after receiving an ICMP TIME EXCEED reply, it increases the
+ *        TTL and repeat the process to reveal all the intermediate hops to
+ *        the destination.
+ *
+ */
+class V4TraceRoute : public Application
+{
 public:
   /**
   * \brief Get the type ID.
@@ -43,13 +56,12 @@ public:
   */
   static TypeId GetTypeId (void);
 
-  V4TraceRoute();
-  virtual ~V4TraceRoute();
+  V4TraceRoute ();
+  virtual ~V4TraceRoute ();
 
   void Print (Ptr<OutputStreamWrapper> stream);
 
 private:
-
   // inherited from Application base class.
   virtual void StartApplication (void);
   virtual void StopApplication (void);
@@ -67,39 +79,26 @@ private:
    */
   void Receive (Ptr<Socket> socket);
 
-  /**
-   * \brief Writes data to buffer in little-endian format.
-   *
-   * Least significant byte of data is at lowest buffer address
-   *
-   * \param buffer the buffer to write to
-   * \param data the data to write
-   */
-  void Write32 (uint8_t *buffer, const uint32_t data);
-
-
-  /**
-   * \brief Writes data from a little-endian formatted buffer to data.
-   *
-   * \param buffer the buffer to read from
-   * \param data the read data
-   */
-  void Read32 (const uint8_t *buffer, uint32_t &data);
-
-  /*brief Send one (ICMP ECHO) to the destination*/
+  /* \brief Send one (ICMP ECHO) to the destination.*/
   void Send ();
 
+  /* \brief Starts a timer after sending an ICMP ECHO.*/
   void StartWaitReplyTimer ();
 
+  /** \brief Triggers an action if an ICMP TIME EXCEED have not being received
+   *         in the time defined by StartWaitReplyTimer.
+   */
   void HandleWaitReplyTimeout ();
 
   /// Remote address
   Ipv4Address m_remote;
+
   /// Wait  interval  seconds between sending each packet
   Time m_interval;
   /**
    * Specifies  the number of data bytes to be sent.
-   * The default is 56, which translates into 64 ICMP data bytes when combined with the 8 bytes of ICMP header data.
+   * The default is 56, which translates into 64 ICMP data bytes when
+   * combined with the 8 bytes of ICMP header data.
    */
   uint32_t m_size;
   /// The socket we send packets from

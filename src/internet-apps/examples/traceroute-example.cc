@@ -29,7 +29,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/wifi-module.h" 
+#include "ns3/wifi-module.h"
 #include "ns3/v4traceroute-helper.h"
 #include <iostream>
 #include <cmath>
@@ -40,11 +40,13 @@ using namespace ns3;
  * \ingroup aodv-examples
  * \ingroup examples
  * \brief Test script.
- * 
+ *
  * This script creates 1-dimensional grid topology and Traceroute the last node from the first one:
- * 
+ *
  * [10.0.0.1] <-- step --> [10.0.0.2] <-- step --> [10.0.0.3] <-- step --> [10.0.0.4]
- * 
+ *
+ * The results should be all the intermediate hops all the way to 10.0.0.10
+ *
  * Usage:
  *
  * traceroute 10.0.0.10
@@ -69,7 +71,6 @@ public:
   void Report (std::ostream & os);
 
 private:
-
   // parameters
   /// Number of nodes
   uint32_t size;
@@ -104,7 +105,9 @@ int main (int argc, char **argv)
 {
   TracerouteExample test;
   if (!test.Configure (argc, argv))
-    NS_FATAL_ERROR ("Configuration failed. Aborted.");
+    {
+      NS_FATAL_ERROR ("Configuration failed. Aborted.");
+    }
 
   test.Run ();
   test.Report (std::cout);
@@ -112,12 +115,12 @@ int main (int argc, char **argv)
 }
 
 //-----------------------------------------------------------------------------
-TracerouteExample::TracerouteExample () :
-  size (10),
-  step (50),
-  totalTime (100),
-  pcap (false),
-  printRoutes (false)
+TracerouteExample::TracerouteExample ()
+  : size (10),
+    step (50),
+    totalTime (100),
+    pcap (false),
+    printRoutes (false)
 {
 }
 
@@ -160,7 +163,7 @@ TracerouteExample::Run ()
 
 void
 TracerouteExample::Report (std::ostream &)
-{ 
+{
 }
 
 void
@@ -198,7 +201,7 @@ TracerouteExample::CreateDevices ()
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
-  devices = wifi.Install (wifiPhy, wifiMac, nodes); 
+  devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
   if (pcap)
     {
@@ -229,14 +232,14 @@ TracerouteExample::InstallInternetStack ()
 void
 TracerouteExample::InstallApplications ()
 {
-  V4TraceRouteHelper traceroute (Ipv4Address("10.0.0.10")); //size - 1
+  V4TraceRouteHelper traceroute (Ipv4Address ("10.0.0.10")); //size - 1
   traceroute.SetAttribute ("Verbose", BooleanValue (true));
   ApplicationContainer p = traceroute.Install (nodes.Get (0));
 
   // Used when we wish to dump the traceroute results into a file
 
-  // Ptr<OutputStreamWrapper> printstrm = Create<OutputStreamWrapper> ("mytrace", std::ios::out);
-  // traceroute.PrintTraceRouteAt(nodes.Get(0),printstrm);
+  //Ptr<OutputStreamWrapper> printstrm = Create<OutputStreamWrapper> ("mytrace", std::ios::out);
+  //traceroute.PrintTraceRouteAt(nodes.Get(0),printstrm);
 
   p.Start (Seconds (0));
   p.Stop (Seconds (totalTime) - Seconds (0.001));

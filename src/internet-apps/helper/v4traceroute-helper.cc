@@ -33,7 +33,6 @@ V4TraceRouteHelper::V4TraceRouteHelper (Ipv4Address remote)
   m_factory.Set ("Remote", Ipv4AddressValue (remote));
 }
 
-
 void
 V4TraceRouteHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
@@ -77,12 +76,19 @@ V4TraceRouteHelper::InstallPriv (Ptr<Node> node) const
 void
 V4TraceRouteHelper::PrintTraceRouteAt (Ptr<Node> node, Ptr<OutputStreamWrapper> stream)
 {
-  Ptr<V4TraceRoute> trace = node->GetApplication(0)->GetObject <V4TraceRoute>();
-  if (trace)
+  Ptr<V4TraceRoute> trace;
+
+  for (uint32_t i = 0; i < node->GetNApplications (); ++i)
     {
-	  *stream->GetStream() <<"Tracing Route from Node "<<node->GetId()<<"\n";
-	  trace->Print(stream);
-	}
+      trace = node->GetApplication (i)->GetObject <V4TraceRoute> ();
+      if (trace != NULL)
+        {
+          *stream->GetStream () << "Tracing Route from Node " << node->GetId () << "\n";
+          trace->Print (stream);
+          return;
+        }
+    }
+  NS_ASSERT_MSG (false, "No V4TraceRoute application found in node " << node->GetId ());
 }
 
 } // namespace ns3

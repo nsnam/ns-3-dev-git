@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2019 Ritsumeikan University
+ * Copyright (c) 2019 Ritsumeikan University, Shiga, Japan
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- *  Alberto Gallegos <ramonet@fc.ritsumei.ac.jp>
+ *  Alberto Gallegos Ramonet <ramonet@fc.ritsumei.ac.jp>
  *
  */
 
