@@ -305,8 +305,10 @@ def register_types(module):
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem [class]
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem [class]
     module.add_class('TcpTxItem')
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation [struct]
+    module.add_class('RateInformation', outer_class=root_module['ns3::TcpTxItem'])
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
     ## timer.h (module 'core'): ns3::Timer [class]
@@ -572,6 +574,12 @@ def register_types(module):
     module.add_class('TcpOptionUnknown', parent=root_module['ns3::TcpOption'])
     ## tcp-option-winscale.h (module 'internet'): ns3::TcpOptionWinScale [class]
     module.add_class('TcpOptionWinScale', parent=root_module['ns3::TcpOption'])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps [class]
+    module.add_class('TcpRateOps', parent=root_module['ns3::Object'])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection [struct]
+    module.add_class('TcpRateConnection', outer_class=root_module['ns3::TcpRateOps'])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample [struct]
+    module.add_class('TcpRateSample', outer_class=root_module['ns3::TcpRateOps'])
     ## tcp-recovery-ops.h (module 'internet'): ns3::TcpRecoveryOps [class]
     module.add_class('TcpRecoveryOps', parent=root_module['ns3::Object'])
     ## tcp-rx-buffer.h (module 'internet'): ns3::TcpRxBuffer [class]
@@ -993,6 +1001,14 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::TcpPrrRecovery::ReductionBound_t', 'ns3::TcpPrrRecovery::ReductionBound_t')
     typehandlers.add_type_alias('ns3::TcpPrrRecovery::ReductionBound_t*', 'ns3::TcpPrrRecovery::ReductionBound_t*')
     typehandlers.add_type_alias('ns3::TcpPrrRecovery::ReductionBound_t&', 'ns3::TcpPrrRecovery::ReductionBound_t&')
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateLinux [class]
+    module.add_class('TcpRateLinux', parent=root_module['ns3::TcpRateOps'])
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateConnection const & )', 'ns3::TcpRateLinux::TcpRateUpdated')
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateConnection const & )*', 'ns3::TcpRateLinux::TcpRateUpdated*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateConnection const & )&', 'ns3::TcpRateLinux::TcpRateUpdated&')
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateSample const & )', 'ns3::TcpRateLinux::TcpRateSampleUpdated')
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateSample const & )*', 'ns3::TcpRateLinux::TcpRateSampleUpdated*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::TcpRateOps::TcpRateSample const & )&', 'ns3::TcpRateLinux::TcpRateSampleUpdated&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -1027,6 +1043,10 @@ def register_types(module):
     module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::Ipv6Header &', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ipv6L3Protocol::DropReason', 'ns3::Ptr<ns3::Ipv6>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Ipv6Header &, ns3::Ptr<const ns3::Packet>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::Ipv6Header &', 'ns3::Ptr<const ns3::Packet>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::TcpRateOps::TcpRateConnection &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'const ns3::TcpRateOps::TcpRateSample &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, double, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ipv4Address, unsigned char, unsigned char, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1343,6 +1363,7 @@ def register_methods(root_module):
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TcpTxItem_methods(root_module, root_module['ns3::TcpTxItem'])
+    register_Ns3TcpTxItemRateInformation_methods(root_module, root_module['ns3::TcpTxItem::RateInformation'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
@@ -1441,6 +1462,9 @@ def register_methods(root_module):
     register_Ns3TcpOptionTS_methods(root_module, root_module['ns3::TcpOptionTS'])
     register_Ns3TcpOptionUnknown_methods(root_module, root_module['ns3::TcpOptionUnknown'])
     register_Ns3TcpOptionWinScale_methods(root_module, root_module['ns3::TcpOptionWinScale'])
+    register_Ns3TcpRateOps_methods(root_module, root_module['ns3::TcpRateOps'])
+    register_Ns3TcpRateOpsTcpRateConnection_methods(root_module, root_module['ns3::TcpRateOps::TcpRateConnection'])
+    register_Ns3TcpRateOpsTcpRateSample_methods(root_module, root_module['ns3::TcpRateOps::TcpRateSample'])
     register_Ns3TcpRecoveryOps_methods(root_module, root_module['ns3::TcpRecoveryOps'])
     register_Ns3TcpRxBuffer_methods(root_module, root_module['ns3::TcpRxBuffer'])
     register_Ns3TcpScalable_methods(root_module, root_module['ns3::TcpScalable'])
@@ -1574,6 +1598,7 @@ def register_methods(root_module):
     register_Ns3TcpLedbat_methods(root_module, root_module['ns3::TcpLedbat'])
     register_Ns3TcpLp_methods(root_module, root_module['ns3::TcpLp'])
     register_Ns3TcpPrrRecovery_methods(root_module, root_module['ns3::TcpPrrRecovery'])
+    register_Ns3TcpRateLinux_methods(root_module, root_module['ns3::TcpRateLinux'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
@@ -1591,6 +1616,8 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Const_ns3Ipv4Header___amp___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::Ipv4Header &, ns3::Ptr<const ns3::Packet>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Const_ns3Ipv6Header___amp___Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ipv6L3ProtocolDropReason_Ns3Ptr__lt__ns3Ipv6__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::Ipv6Header &, ns3::Ptr<const ns3::Packet>, ns3::Ipv6L3Protocol::DropReason, ns3::Ptr<ns3::Ipv6>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Const_ns3Ipv6Header___amp___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::Ipv6Header &, ns3::Ptr<const ns3::Packet>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Const_ns3TcpRateOpsTcpRateConnection___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Const_ns3TcpRateOpsTcpRateSample___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, double, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ipv4Address_Unsigned_char_Unsigned_char_Unsigned_char_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ipv4Address, unsigned char, unsigned char, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ipv6Address_Unsigned_char_Unsigned_char_Unsigned_char_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ipv6Address, unsigned char, unsigned char, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -5924,32 +5951,64 @@ def register_Ns3TagBuffer_methods(root_module, cls):
 
 def register_Ns3TcpTxItem_methods(root_module, cls):
     cls.add_output_stream_operator()
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::TcpTxItem() [constructor]
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::TcpTxItem() [constructor]
     cls.add_constructor([])
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::TcpTxItem(ns3::TcpTxItem const & arg0) [constructor]
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::TcpTxItem(ns3::TcpTxItem const & arg0) [constructor]
     cls.add_constructor([param('ns3::TcpTxItem const &', 'arg0')])
-    ## tcp-tx-buffer.h (module 'internet'): uint32_t ns3::TcpTxItem::GetSeqSize() const [member function]
+    ## tcp-tx-item.h (module 'internet'): ns3::Time const & ns3::TcpTxItem::GetLastSent() const [member function]
+    cls.add_method('GetLastSent', 
+                   'ns3::Time const &', 
+                   [], 
+                   is_const=True)
+    ## tcp-tx-item.h (module 'internet'): ns3::Ptr<const ns3::Packet> ns3::TcpTxItem::GetPacket() const [member function]
+    cls.add_method('GetPacket', 
+                   'ns3::Ptr< ns3::Packet const >', 
+                   [], 
+                   is_const=True)
+    ## tcp-tx-item.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::TcpTxItem::GetPacketCopy() const [member function]
+    cls.add_method('GetPacketCopy', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   is_const=True)
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation & ns3::TcpTxItem::GetRateInformation() [member function]
+    cls.add_method('GetRateInformation', 
+                   'ns3::TcpTxItem::RateInformation &', 
+                   [])
+    ## tcp-tx-item.h (module 'internet'): uint32_t ns3::TcpTxItem::GetSeqSize() const [member function]
     cls.add_method('GetSeqSize', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxItem::Print(std::ostream & os) const [member function]
+    ## tcp-tx-item.h (module 'internet'): bool ns3::TcpTxItem::IsRetrans() const [member function]
+    cls.add_method('IsRetrans', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## tcp-tx-item.h (module 'internet'): bool ns3::TcpTxItem::IsSacked() const [member function]
+    cls.add_method('IsSacked', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## tcp-tx-item.h (module 'internet'): void ns3::TcpTxItem::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_lastSent [variable]
-    cls.add_instance_attribute('m_lastSent', 'ns3::Time', is_const=False)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_lost [variable]
-    cls.add_instance_attribute('m_lost', 'bool', is_const=False)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_packet [variable]
-    cls.add_instance_attribute('m_packet', 'ns3::Ptr< ns3::Packet >', is_const=False)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_retrans [variable]
-    cls.add_instance_attribute('m_retrans', 'bool', is_const=False)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_sacked [variable]
-    cls.add_instance_attribute('m_sacked', 'bool', is_const=False)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::m_startSeq [variable]
-    cls.add_instance_attribute('m_startSeq', 'ns3::SequenceNumber32', is_const=False)
+    return
+
+def register_Ns3TcpTxItemRateInformation_methods(root_module, cls):
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::RateInformation() [constructor]
+    cls.add_constructor([])
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::RateInformation(ns3::TcpTxItem::RateInformation const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpTxItem::RateInformation const &', 'arg0')])
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::m_delivered [variable]
+    cls.add_instance_attribute('m_delivered', 'uint64_t', is_const=False)
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::m_deliveredTime [variable]
+    cls.add_instance_attribute('m_deliveredTime', 'ns3::Time', is_const=False)
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::m_firstSent [variable]
+    cls.add_instance_attribute('m_firstSent', 'ns3::Time', is_const=False)
+    ## tcp-tx-item.h (module 'internet'): ns3::TcpTxItem::RateInformation::m_isAppLimited [variable]
+    cls.add_instance_attribute('m_isAppLimited', 'bool', is_const=False)
     return
 
 def register_Ns3TimeWithUnit_methods(root_module, cls):
@@ -10143,6 +10202,11 @@ def register_Ns3TcpCongestionOps_methods(root_module, cls):
     cls.add_constructor([])
     ## tcp-congestion-ops.h (module 'internet'): ns3::TcpCongestionOps::TcpCongestionOps(ns3::TcpCongestionOps const & other) [constructor]
     cls.add_constructor([param('ns3::TcpCongestionOps const &', 'other')])
+    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::CongControl(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpRateOps::TcpRateConnection const & rc, ns3::TcpRateOps::TcpRateSample const & rs) [member function]
+    cls.add_method('CongControl', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpRateOps::TcpRateConnection const &', 'rc'), param('ns3::TcpRateOps::TcpRateSample const &', 'rs')], 
+                   is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::CongestionStateSet(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCongState_t const newState) [member function]
     cls.add_method('CongestionStateSet', 
                    'void', 
@@ -10173,11 +10237,16 @@ def register_Ns3TcpCongestionOps_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## tcp-congestion-ops.h (module 'internet'): bool ns3::TcpCongestionOps::HasCongControl() const [member function]
+    cls.add_method('HasCongControl', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::IncreaseWindow(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked) [member function]
     cls.add_method('IncreaseWindow', 
                    'void', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
-                   is_virtual=True, is_pure_virtual=True)
+                   is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::PktsAcked(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked, ns3::Time const & rtt) [member function]
     cls.add_method('PktsAcked', 
                    'void', 
@@ -10842,20 +10911,118 @@ def register_Ns3TcpOptionWinScale_methods(root_module, cls):
                    [param('uint8_t', 'scale')])
     return
 
+def register_Ns3TcpRateOps_methods(root_module, cls):
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateOps() [constructor]
+    cls.add_constructor([])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateOps(ns3::TcpRateOps const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpRateOps const &', 'arg0')])
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateOps::CalculateAppLimited(uint32_t cWnd, uint32_t in_flight, uint32_t segmentSize, ns3::SequenceNumber32 const & tailSeq, ns3::SequenceNumber32 const & nextTx, uint32_t const lostOut, uint32_t const retransOut) [member function]
+    cls.add_method('CalculateAppLimited', 
+                   'void', 
+                   [param('uint32_t', 'cWnd'), param('uint32_t', 'in_flight'), param('uint32_t', 'segmentSize'), param('ns3::SequenceNumber32 const &', 'tailSeq'), param('ns3::SequenceNumber32 const &', 'nextTx'), param('uint32_t const', 'lostOut'), param('uint32_t const', 'retransOut')], 
+                   is_virtual=True, is_pure_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample const & ns3::TcpRateOps::GenerateSample(uint32_t delivered, uint32_t lost, bool is_sack_reneg, uint32_t priorInFlight, ns3::Time const & minRtt) [member function]
+    cls.add_method('GenerateSample', 
+                   'ns3::TcpRateOps::TcpRateSample const &', 
+                   [param('uint32_t', 'delivered'), param('uint32_t', 'lost'), param('bool', 'is_sack_reneg'), param('uint32_t', 'priorInFlight'), param('ns3::Time const &', 'minRtt')], 
+                   is_virtual=True, is_pure_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection const & ns3::TcpRateOps::GetConnectionRate() [member function]
+    cls.add_method('GetConnectionRate', 
+                   'ns3::TcpRateOps::TcpRateConnection const &', 
+                   [], 
+                   is_virtual=True, is_pure_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): static ns3::TypeId ns3::TcpRateOps::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateOps::SkbDelivered(ns3::TcpTxItem * skb) [member function]
+    cls.add_method('SkbDelivered', 
+                   'void', 
+                   [param('ns3::TcpTxItem *', 'skb')], 
+                   is_virtual=True, is_pure_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateOps::SkbSent(ns3::TcpTxItem * skb, bool isStartOfTransmission) [member function]
+    cls.add_method('SkbSent', 
+                   'void', 
+                   [param('ns3::TcpTxItem *', 'skb'), param('bool', 'isStartOfTransmission')], 
+                   is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3TcpRateOpsTcpRateConnection_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::TcpRateConnection() [constructor]
+    cls.add_constructor([])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::TcpRateConnection(ns3::TcpRateOps::TcpRateConnection const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpRateOps::TcpRateConnection const &', 'arg0')])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_appLimited [variable]
+    cls.add_instance_attribute('m_appLimited', 'uint32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_delivered [variable]
+    cls.add_instance_attribute('m_delivered', 'uint64_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_deliveredTime [variable]
+    cls.add_instance_attribute('m_deliveredTime', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_firstSentTime [variable]
+    cls.add_instance_attribute('m_firstSentTime', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_rateAppLimited [variable]
+    cls.add_instance_attribute('m_rateAppLimited', 'bool', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_rateDelivered [variable]
+    cls.add_instance_attribute('m_rateDelivered', 'int32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_rateInterval [variable]
+    cls.add_instance_attribute('m_rateInterval', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection::m_txItemDelivered [variable]
+    cls.add_instance_attribute('m_txItemDelivered', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3TcpRateOpsTcpRateSample_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::TcpRateSample() [constructor]
+    cls.add_constructor([])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::TcpRateSample(ns3::TcpRateOps::TcpRateSample const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpRateOps::TcpRateSample const &', 'arg0')])
+    ## tcp-rate-ops.h (module 'internet'): bool ns3::TcpRateOps::TcpRateSample::IsValid() const [member function]
+    cls.add_method('IsValid', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_ackElapsed [variable]
+    cls.add_instance_attribute('m_ackElapsed', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_ackedSacked [variable]
+    cls.add_instance_attribute('m_ackedSacked', 'uint32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_bytesLoss [variable]
+    cls.add_instance_attribute('m_bytesLoss', 'uint32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_delivered [variable]
+    cls.add_instance_attribute('m_delivered', 'int32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_deliveryRate [variable]
+    cls.add_instance_attribute('m_deliveryRate', 'ns3::DataRate', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_interval [variable]
+    cls.add_instance_attribute('m_interval', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_isAppLimited [variable]
+    cls.add_instance_attribute('m_isAppLimited', 'bool', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_priorDelivered [variable]
+    cls.add_instance_attribute('m_priorDelivered', 'uint32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_priorInFlight [variable]
+    cls.add_instance_attribute('m_priorInFlight', 'uint32_t', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_priorTime [variable]
+    cls.add_instance_attribute('m_priorTime', 'ns3::Time', is_const=False)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample::m_sendElapsed [variable]
+    cls.add_instance_attribute('m_sendElapsed', 'ns3::Time', is_const=False)
+    return
+
 def register_Ns3TcpRecoveryOps_methods(root_module, cls):
     ## tcp-recovery-ops.h (module 'internet'): ns3::TcpRecoveryOps::TcpRecoveryOps() [constructor]
     cls.add_constructor([])
     ## tcp-recovery-ops.h (module 'internet'): ns3::TcpRecoveryOps::TcpRecoveryOps(ns3::TcpRecoveryOps const & other) [constructor]
     cls.add_constructor([param('ns3::TcpRecoveryOps const &', 'other')])
-    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpRecoveryOps::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t lastAckedBytes, uint32_t lastSackedBytes) [member function]
+    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpRecoveryOps::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t deliveredBytes) [member function]
     cls.add_method('DoRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'lastAckedBytes'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True, is_pure_virtual=True)
-    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpRecoveryOps::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t lastSackedBytes) [member function]
+    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpRecoveryOps::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t deliveredBytes) [member function]
     cls.add_method('EnterRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True, is_pure_virtual=True)
     ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpRecoveryOps::ExitRecovery(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
     cls.add_method('ExitRecovery', 
@@ -11518,15 +11685,15 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::DupAck() [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::DupAck(uint32_t currentDelivered) [member function]
     cls.add_method('DupAck', 
                    'void', 
-                   [], 
+                   [param('uint32_t', 'currentDelivered')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::EnterRecovery() [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::EnterRecovery(uint32_t currentDelivered) [member function]
     cls.add_method('EnterRecovery', 
                    'void', 
-                   [], 
+                   [param('uint32_t', 'currentDelivered')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::EstimateRtt(ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('EstimateRtt', 
@@ -11663,10 +11830,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessAck(ns3::SequenceNumber32 const & ackNumber, bool scoreboardUpdated, ns3::SequenceNumber32 const & oldHeadSequence) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessAck(ns3::SequenceNumber32 const & ackNumber, bool scoreboardUpdated, uint32_t currentDelivered, ns3::SequenceNumber32 const & oldHeadSequence) [member function]
     cls.add_method('ProcessAck', 
                    'void', 
-                   [param('ns3::SequenceNumber32 const &', 'ackNumber'), param('bool', 'scoreboardUpdated'), param('ns3::SequenceNumber32 const &', 'oldHeadSequence')], 
+                   [param('ns3::SequenceNumber32 const &', 'ackNumber'), param('bool', 'scoreboardUpdated'), param('uint32_t', 'currentDelivered'), param('ns3::SequenceNumber32 const &', 'oldHeadSequence')], 
                    is_virtual=True, visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessClosing(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ProcessClosing', 
@@ -11688,9 +11855,9 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::TcpHeader const &', 'tcpHeader'), param('ns3::Address const &', 'fromAddress'), param('ns3::Address const &', 'toAddress')], 
                    visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): bool ns3::TcpSocketBase::ProcessOptionSack(ns3::Ptr<const ns3::TcpOption> const option) [member function]
+    ## tcp-socket-base.h (module 'internet'): uint32_t ns3::TcpSocketBase::ProcessOptionSack(ns3::Ptr<const ns3::TcpOption> const option) [member function]
     cls.add_method('ProcessOptionSack', 
-                   'bool', 
+                   'uint32_t', 
                    [param('ns3::Ptr< ns3::TcpOption const > const', 'option')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ProcessOptionSackPermitted(ns3::Ptr<const ns3::TcpOption> const option) [member function]
@@ -11728,10 +11895,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReadOptions(ns3::TcpHeader const & tcpHeader, bool & scoreboardUpdated) [member function]
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReadOptions(ns3::TcpHeader const & tcpHeader, uint32_t * bytesSacked) [member function]
     cls.add_method('ReadOptions', 
                    'void', 
-                   [param('ns3::TcpHeader const &', 'tcpHeader'), param('bool &', 'scoreboardUpdated')], 
+                   [param('ns3::TcpHeader const &', 'tcpHeader'), param('uint32_t *', 'bytesSacked')], 
                    visibility='protected')
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::ReceivedAck(ns3::Ptr<ns3::Packet> packet, ns3::TcpHeader const & tcpHeader) [member function]
     cls.add_method('ReceivedAck', 
@@ -11975,18 +12142,18 @@ def register_Ns3TcpTxBuffer_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## tcp-tx-buffer.h (module 'internet'): ns3::Ptr<ns3::Packet> ns3::TcpTxBuffer::CopyFromSequence(uint32_t numBytes, ns3::SequenceNumber32 const & seq) [member function]
+    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem * ns3::TcpTxBuffer::CopyFromSequence(uint32_t numBytes, ns3::SequenceNumber32 const & seq) [member function]
     cls.add_method('CopyFromSequence', 
-                   'ns3::Ptr< ns3::Packet >', 
+                   'ns3::TcpTxItem *', 
                    [param('uint32_t', 'numBytes'), param('ns3::SequenceNumber32 const &', 'seq')])
     ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxBuffer::DeleteRetransmittedFlagFromHead() [member function]
     cls.add_method('DeleteRetransmittedFlagFromHead', 
                    'void', 
                    [])
-    ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxBuffer::DiscardUpTo(ns3::SequenceNumber32 const & seq) [member function]
+    ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxBuffer::DiscardUpTo(ns3::SequenceNumber32 const & seq, ns3::Callback<void, ns3::TcpTxItem *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & beforeDelCb=ns3::TcpTxBuffer::m_nullCb) [member function]
     cls.add_method('DiscardUpTo', 
                    'void', 
-                   [param('ns3::SequenceNumber32 const &', 'seq')])
+                   [param('ns3::SequenceNumber32 const &', 'seq'), param('ns3::Callback< void, ns3::TcpTxItem *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'beforeDelCb', default_value='ns3::TcpTxBuffer::m_nullCb')])
     ## tcp-tx-buffer.h (module 'internet'): uint32_t ns3::TcpTxBuffer::GetLost() const [member function]
     cls.add_method('GetLost', 
                    'uint32_t', 
@@ -12083,10 +12250,10 @@ def register_Ns3TcpTxBuffer_methods(root_module, cls):
                    'ns3::SequenceNumber32', 
                    [], 
                    is_const=True)
-    ## tcp-tx-buffer.h (module 'internet'): bool ns3::TcpTxBuffer::Update(ns3::TcpOptionSack::SackList const & list) [member function]
+    ## tcp-tx-buffer.h (module 'internet'): uint32_t ns3::TcpTxBuffer::Update(ns3::TcpOptionSack::SackList const & list, ns3::Callback<void, ns3::TcpTxItem *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & sackedCb=ns3::TcpTxBuffer::m_nullCb) [member function]
     cls.add_method('Update', 
-                   'bool', 
-                   [param('ns3::TcpOptionSack::SackList const &', 'list')])
+                   'uint32_t', 
+                   [param('ns3::TcpOptionSack::SackList const &', 'list'), param('ns3::Callback< void, ns3::TcpTxItem *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'sackedCb', default_value='ns3::TcpTxBuffer::m_nullCb')])
     return
 
 def register_Ns3TcpVegas_methods(root_module, cls):
@@ -13540,6 +13707,16 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, template_parameters=['ns3::Ptr<ns3::Ipv6Interface> '], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::TcpRateOps::TcpRateConnection const&'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::TcpRateOps::TcpRateSample const&'], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -18301,15 +18478,15 @@ def register_Ns3TcpClassicRecovery_methods(root_module, cls):
     cls.add_constructor([])
     ## tcp-recovery-ops.h (module 'internet'): ns3::TcpClassicRecovery::TcpClassicRecovery(ns3::TcpClassicRecovery const & recovery) [constructor]
     cls.add_constructor([param('ns3::TcpClassicRecovery const &', 'recovery')])
-    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpClassicRecovery::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t lastAckedBytes, uint32_t lastSackedBytes) [member function]
+    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpClassicRecovery::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t deliveredBytes) [member function]
     cls.add_method('DoRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'lastAckedBytes'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True)
-    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpClassicRecovery::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t lastSackedBytes) [member function]
+    ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpClassicRecovery::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t deliveredBytes) [member function]
     cls.add_method('EnterRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True)
     ## tcp-recovery-ops.h (module 'internet'): void ns3::TcpClassicRecovery::ExitRecovery(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
     cls.add_method('ExitRecovery', 
@@ -18723,15 +18900,15 @@ def register_Ns3TcpPrrRecovery_methods(root_module, cls):
     cls.add_constructor([])
     ## tcp-prr-recovery.h (module 'internet'): ns3::TcpPrrRecovery::TcpPrrRecovery(ns3::TcpPrrRecovery const & sock) [constructor]
     cls.add_constructor([param('ns3::TcpPrrRecovery const &', 'sock')])
-    ## tcp-prr-recovery.h (module 'internet'): void ns3::TcpPrrRecovery::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t lastAckedBytes, uint32_t lastSackedBytes) [member function]
+    ## tcp-prr-recovery.h (module 'internet'): void ns3::TcpPrrRecovery::DoRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t deliveredBytes) [member function]
     cls.add_method('DoRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'lastAckedBytes'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True)
-    ## tcp-prr-recovery.h (module 'internet'): void ns3::TcpPrrRecovery::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t lastSackedBytes) [member function]
+    ## tcp-prr-recovery.h (module 'internet'): void ns3::TcpPrrRecovery::EnterRecovery(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t dupAckCount, uint32_t unAckDataCount, uint32_t deliveredBytes) [member function]
     cls.add_method('EnterRecovery', 
                    'void', 
-                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'lastSackedBytes')], 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'dupAckCount'), param('uint32_t', 'unAckDataCount'), param('uint32_t', 'deliveredBytes')], 
                    is_virtual=True)
     ## tcp-prr-recovery.h (module 'internet'): void ns3::TcpPrrRecovery::ExitRecovery(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
     cls.add_method('ExitRecovery', 
@@ -18757,6 +18934,43 @@ def register_Ns3TcpPrrRecovery_methods(root_module, cls):
     cls.add_method('UpdateBytesSent', 
                    'void', 
                    [param('uint32_t', 'bytesSent')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3TcpRateLinux_methods(root_module, cls):
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateLinux::TcpRateLinux() [constructor]
+    cls.add_constructor([])
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateLinux::TcpRateLinux(ns3::TcpRateLinux const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpRateLinux const &', 'arg0')])
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateLinux::CalculateAppLimited(uint32_t cWnd, uint32_t in_flight, uint32_t segmentSize, ns3::SequenceNumber32 const & tailSeq, ns3::SequenceNumber32 const & nextTx, uint32_t const lostOut, uint32_t const retransOut) [member function]
+    cls.add_method('CalculateAppLimited', 
+                   'void', 
+                   [param('uint32_t', 'cWnd'), param('uint32_t', 'in_flight'), param('uint32_t', 'segmentSize'), param('ns3::SequenceNumber32 const &', 'tailSeq'), param('ns3::SequenceNumber32 const &', 'nextTx'), param('uint32_t const', 'lostOut'), param('uint32_t const', 'retransOut')], 
+                   is_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateSample const & ns3::TcpRateLinux::GenerateSample(uint32_t delivered, uint32_t lost, bool is_sack_reneg, uint32_t priorInFlight, ns3::Time const & minRtt) [member function]
+    cls.add_method('GenerateSample', 
+                   'ns3::TcpRateOps::TcpRateSample const &', 
+                   [param('uint32_t', 'delivered'), param('uint32_t', 'lost'), param('bool', 'is_sack_reneg'), param('uint32_t', 'priorInFlight'), param('ns3::Time const &', 'minRtt')], 
+                   is_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): ns3::TcpRateOps::TcpRateConnection const & ns3::TcpRateLinux::GetConnectionRate() [member function]
+    cls.add_method('GetConnectionRate', 
+                   'ns3::TcpRateOps::TcpRateConnection const &', 
+                   [], 
+                   is_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): static ns3::TypeId ns3::TcpRateLinux::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateLinux::SkbDelivered(ns3::TcpTxItem * skb) [member function]
+    cls.add_method('SkbDelivered', 
+                   'void', 
+                   [param('ns3::TcpTxItem *', 'skb')], 
+                   is_virtual=True)
+    ## tcp-rate-ops.h (module 'internet'): void ns3::TcpRateLinux::SkbSent(ns3::TcpTxItem * skb, bool isStartOfTransmission) [member function]
+    cls.add_method('SkbSent', 
+                   'void', 
+                   [param('ns3::TcpTxItem *', 'skb'), param('bool', 'isStartOfTransmission')], 
                    is_virtual=True)
     return
 
@@ -19416,6 +19630,50 @@ def register_Ns3CallbackImpl__Void_Const_ns3Ipv6Header___amp___Ns3Ptr__lt__const
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ipv6Header const &', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1'), param('unsigned int', 'arg2')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Const_ns3TcpRateOpsTcpRateConnection___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::TcpRateOps::TcpRateConnection const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateConnection &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::TcpRateOps::TcpRateConnection const & arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::TcpRateOps::TcpRateConnection const &', 'arg0')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Const_ns3TcpRateOpsTcpRateSample___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::TcpRateOps::TcpRateSample const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, const ns3::TcpRateOps::TcpRateSample &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::TcpRateOps::TcpRateSample const & arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::TcpRateOps::TcpRateSample const &', 'arg0')], 
                    custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
