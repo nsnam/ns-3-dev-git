@@ -289,13 +289,56 @@ Ptr<const WifiMacQueueItem>
 BlockAckManager::GetBar (bool remove)
 {
   Ptr<const WifiMacQueueItem> bar;
-  if (m_bars.size () > 0)
+  // remove all expired MPDUs in the retransmission queue, so that Block Ack Requests
+  // (if needed) are scheduled
+  m_retryPackets->Remove (WifiMacQueue::EMPTY, true);
+
+  while (!m_bars.empty ())
     {
-      bar = m_bars.front ().bar;
+      auto nextBar = m_bars.front ();
+
+      if (nextBar.bar->GetHeader ().IsBlockAckReq ())
+        {
+          Mac48Address recipient = nextBar.bar->GetHeader ().GetAddr1 ();
+          AgreementsI it = m_agreements.find (std::make_pair (recipient, nextBar.tid));
+          if (it == m_agreements.end ())
+            {
+              // BA agreement was torn down; remove this BAR and continue
+              m_bars.pop_front ();
+              continue;
+            }
+          // remove expired outstanding MPDUs and update the starting sequence number
+          for (auto mpduIt = it->second.second.begin (); mpduIt != it->second.second.end (); )
+            {
+              if ((*mpduIt)->GetTimeStamp () + m_queue->GetMaxDelay () <= Simulator::Now ())
+                {
+                  // MPDU expired
+                  it->second.first.NotifyDiscardedMpdu (*mpduIt);
+                  mpduIt = it->second.second.erase (mpduIt);
+                }
+              else
+                {
+                  mpduIt++;
+                }
+            }
+          // update BAR if the starting sequence number changed
+          CtrlBAckRequestHeader reqHdr;
+          nextBar.bar->GetPacket ()->PeekHeader (reqHdr);
+          if (reqHdr.GetStartingSequence () != it->second.first.GetStartingSequence ())
+            {
+              reqHdr.SetStartingSequence (it->second.first.GetStartingSequence ());
+              Ptr<Packet> packet = Create<Packet> ();
+              packet->AddHeader (reqHdr);
+              nextBar.bar = Create<const WifiMacQueueItem> (packet, nextBar.bar->GetHeader ());
+            }
+        }
+
+      bar = nextBar.bar;
       if (remove)
         {
           m_bars.pop_front ();
         }
+      break;
     }
   return bar;
 }
