@@ -267,7 +267,7 @@ private:
   Ptr<MimicCongControl>        m_congCtl;     //!< Dummy congestion control.
   bool                         m_sackEnabled; //!< Sack Variable
   std::vector<uint32_t>        m_toDrop;      //!< List of SequenceNumber to drop
-  uint32_t                     m_bytesInFlight; //!< Bytes inflight
+  uint32_t                     m_bytesInFlight {0}; //!< Bytes inflight
   SequenceNumber32             m_lastAckRecv {SequenceNumber32 (1)};   //!< Last ACK received.
   bool                         m_isDupAck;    //!< Whether ACK is DupAck
   TcpRateLinux::TcpRateConnection        m_prevRate;    //!< Previous rate
