@@ -17,7 +17,7 @@ The ns-3 project used Mercurial in the past as its source code control system, b
 
 The ns-3 project is officially hosted on GitLab.com at https://gitlab.com/nsnam/.  For convenience and historical reasons, ns-3-dev mirrors are currently posted on Bitbucket.com and GitHub.com, and kept in sync with the official repository periodically via cron jobs.  We recommend that users who have been working from one of these mirrors repoint their remotes so that they pull origin or upstream from GitLab.com (see below explanation about how to configure remotes).
 
-This section of the manual provides common tips for both users and maintainers. Since the first part is shared, in this manual section we will start a personal repository and then explain what to do in some typical cases. ns-3 users often combine ns-3-dev with other repositories (pybindgen, netanim, apps from the app store).  This manual chapter does not cover this use case; it only focuses on the single ns-3-dev repository.  See other project documentation such as the ns-3 tutorial for descriptions on bundled releases distributed as source archives, or on the bake build tool for managing multiple repositories.  The guidelines listed below also largely pertain to the user who is using (and cloning) bake from the GitLab.com repository.
+This section of the manual provides common tips for both users and maintainers. Since the first part is shared, in this manual section we will start with a personal repository and then explain what to do in some typical cases. ns-3 users often combine ns-3-dev with other repositories (pybindgen, netanim, apps from the app store).  This manual chapter does not cover this use case; it only focuses on the single ns-3-dev repository.  See other project documentation such as the ns-3 tutorial for descriptions on bundled releases distributed as source archives, or on the bake build tool for managing multiple repositories.  The guidelines listed below also largely pertain to the user who is using (and cloning) bake from the GitLab.com repository.
 
 ns-3's Git workflow in a nutshell
 *********************************
@@ -45,7 +45,7 @@ We will provide two ways, one anonymous (but will impede the creation of merge r
 Directly cloning ns-3-dev
 +++++++++++++++++++++++++
 
-If you go to the official ns-3-dev page, hosted at https://gitlab.com/nsnam/ns-3-dev, you can find a button that says ```Clone``. If you are not logged in, then you will see only the option of cloning the repository through HTTPS, with this command:
+If you go to the official ns-3-dev page, hosted at https://gitlab.com/nsnam/ns-3-dev, you can find a button that says ``Clone``. If you are not logged in, then you will see only the option of cloning the repository through HTTPS, with this command:
 
 .. sourcecode:: bash
 
@@ -62,21 +62,21 @@ Assume that you are the user *john* on GitLab.com and that you want to create a 
 #. Navigate to https://gitlab.com/nsnam/ns-3-dev
 #. In the top-right corner of the page, click ``Fork``.
 
-Note that you may only do this once; if you try to fork again, Gitlab will take you to the page of the original fork. So, if you are planning to maintain two or more separate forks (for example, one for your private work, another for maintenance, etc.), you are doing a mistake. Instead, you should add these forks as a remote of your existing directory (see below for adding remotes). Usually, it is a good thing to add the maintainer's repository as remotes, because it can happen that "bleeding edge" features will appear there before landing in ns-3.
+Note that you may only do this once; if you try to fork again, Gitlab will take you to the page of the original fork. So, if you are planning to maintain two or more separate forks (for example, one for your private work, another for maintenance, etc.), you are doing a mistake. Instead, you should add these forks as a remote of your existing directory (see below for adding remotes). Usually, it is a good thing to add the maintainer's repository as remotes, because it can happen that "bleeding edge" features will appear there before landing in ns-3-dev.
 
-For more information on forking with Gilab, there is plenty of visual documentation (https://docs.gitlab.com/ee/gitlab-basics/fork-project.html). To work with your forked repository, you have two way: one is a clean clone while the other is meant to re-use an existing ns-3 git repository.
+For more information on forking with Gilab, there is plenty of visual documentation (https://docs.gitlab.com/ee/gitlab-basics/fork-project.html). To work with your forked repository, you have two ways: one is a clean clone while the other is meant to re-use an existing ns-3 git repository.
 
 Clone your forked repository on your machine
 ============================================
 
 Git is a distributed versioning system. This means that *nobody* will touch your personal repository, until you do something. Please note that every gitlab user has, at least, two repositories: the first is represented by the repository hosted on gitlab servers, which will be called in the following ``origin``. Then, you have your clone on your machine. This means that you could have many clones, on different machines, which points to ``origin``.
 
-To clone the newly created fork to your system go to the homepage of your fork (that should be in the form `https://gitlab.com/your-user-name/ns-3-dev`) and click the `Clone` button. Then, go to your computer's terminal, and issue the command (please refer to https://docs.gitlab.com/ee/gitlab-basics/command-line-commands.html#clone-your-project for more documentation):
+To clone the newly created fork to your system, go to the homepage of your fork (that should be in the form `https://gitlab.com/your-user-name/ns-3-dev`) and click the `Clone` button. Then, go to your computer's terminal, and issue the command (please refer to https://docs.gitlab.com/ee/gitlab-basics/command-line-commands.html#clone-your-project for more documentation):
 
 .. sourcecode:: bash
 
    $ git clone https://gitlab.com/your-user-name/ns-3-dev
-   $ cd ns-3-dev-git
+   $ cd ns-3-dev
 
 In this example we used the HTTPS address because in some place the git + ssh address is blocked by firewalls. If you are not under this constraint, it is recommended to use the git + ssh address to avoid the username/password typing at each request.
 
@@ -94,7 +94,7 @@ You could have already used git in the past, and therefore already having a ns-3
 
    $ git remote add nsnam https://gitlab.com/nsnam/ns-3-dev
 
-With the command above, we added a remote repository, named upstream, which links to the official ns-3 repo. To show your remote repositories:
+With the command above, we added a remote repository, named nsnam, which links to the official ns-3 repo. To show your remote repositories:
 
 .. sourcecode:: bash
 
@@ -170,7 +170,7 @@ To switch between branches, remove the -b option. You should now see:
     * master
      [name_of_your_new_branch]
      remotes/origin/master
-     remotes/upstream/master
+     remotes/nsnam/master
 
 Edit and commit the modifications
 *********************************
@@ -258,7 +258,7 @@ The last command will rewind your work, update the HEAD of your branch to the ac
 Pushing your changes to origin
 ******************************
 
-After you have done some work on a branch, if you would like to share it with others there is nothing better than pushing your work to your origin repository, on Gitlab servers.
+After you have done some work on a branch, if you would like to share it with others, there is nothing better than pushing your work to your origin repository, on Gitlab servers.
 
 .. sourcecode:: bash
 
@@ -277,7 +277,7 @@ Please note that for older git version, the push command looks like:
 Submit work for review
 **********************
 
-After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html to create a merge request. Please remember to add, as reviewer, at least one maintainer. To get the information on who is maintaining what, please refer to the nsnam website.
+After you push your branch to origin, you can follow the instructions here https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html to create a merge request. Please remember to add, as reviewer, at least one maintainer. To get the information on who is maintaining what, please refer to the `nsnam website <https://www.nsnam.org/develop/maintainers/>`_.
 
 Porting patches from mercurial repositories to git
 **************************************************
