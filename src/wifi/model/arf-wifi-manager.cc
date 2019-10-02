@@ -40,7 +40,6 @@ struct ArfWifiRemoteStation : public WifiRemoteStation
   uint32_t m_success; ///< success count
   uint32_t m_failed; ///< failed count
   bool m_recovery; ///< recovery
-  uint32_t m_retry; ///< retry count
   uint32_t m_timerTimeout; ///< timer timeout
   uint32_t m_successThreshold; ///< success threshold
   uint8_t m_rate; ///< rate
@@ -114,7 +113,6 @@ ArfWifiManager::DoCreateStation (void) const
   station->m_success = 0;
   station->m_failed = 0;
   station->m_recovery = false;
-  station->m_retry = 0;
   station->m_timer = 0;
 
   return station;
@@ -144,13 +142,12 @@ ArfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   ArfWifiRemoteStation *station = (ArfWifiRemoteStation *)st;
   station->m_timer++;
   station->m_failed++;
-  station->m_retry++;
   station->m_success = 0;
 
   if (station->m_recovery)
     {
-      NS_ASSERT (station->m_retry >= 1);
-      if (station->m_retry == 1)
+      NS_ASSERT (station->m_failed >= 1);
+      if (station->m_failed == 1)
         {
           //need recovery fallback
           if (station->m_rate != 0)
@@ -162,8 +159,8 @@ ArfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
     }
   else
     {
-      NS_ASSERT (station->m_retry >= 1);
-      if (((station->m_retry - 1) % 2) == 1)
+      NS_ASSERT (station->m_failed >= 1);
+      if (((station->m_failed - 1) % 2) == 1)
         {
           //need normal fallback
           if (station->m_rate != 0)
@@ -171,7 +168,7 @@ ArfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
               station->m_rate--;
             }
         }
-      if (station->m_retry >= 2)
+      if (station->m_failed >= 2)
         {
           station->m_timer = 0;
         }
@@ -201,7 +198,6 @@ void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_success++;
   station->m_failed = 0;
   station->m_recovery = false;
-  station->m_retry = 0;
   NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
   if ((station->m_success == m_successThreshold
        || station->m_timer == m_timerThreshold)

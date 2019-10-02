@@ -43,7 +43,6 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   uint32_t m_failed; ///< failed
   bool m_recovery; ///< recovery
   bool m_justModifyRate; ///< just modify rate
-  uint32_t m_retry; ///< retry
   uint32_t m_successThreshold; ///< success threshold
   uint32_t m_timerTimeout; ///< timer timeout
   uint8_t m_rate; ///< rate
@@ -157,7 +156,6 @@ AarfcdWifiManager::DoCreateStation (void) const
   station->m_success = 0;
   station->m_failed = 0;
   station->m_recovery = false;
-  station->m_retry = 0;
   station->m_timer = 0;
 
   //aarf-cd specific fields below
@@ -183,7 +181,6 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *)st;
   station->m_timer++;
   station->m_failed++;
-  station->m_retry++;
   station->m_success = 0;
 
   if (!station->m_rtsOn)
@@ -198,17 +195,17 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
           ResetRtsWnd (station);
         }
       station->m_rtsCounter = station->m_rtsWnd;
-      if (station->m_retry >= 2)
+      if (station->m_failed >= 2)
         {
           station->m_timer = 0;
         }
     }
   else if (station->m_recovery)
     {
-      NS_ASSERT (station->m_retry >= 1);
+      NS_ASSERT (station->m_failed >= 1);
       station->m_justModifyRate = false;
       station->m_rtsCounter = station->m_rtsWnd;
-      if (station->m_retry == 1)
+      if (station->m_failed == 1)
         {
           //need recovery fallback
           if (m_turnOffRtsAfterRateDecrease)
@@ -229,10 +226,10 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
     }
   else
     {
-      NS_ASSERT (station->m_retry >= 1);
+      NS_ASSERT (station->m_failed >= 1);
       station->m_justModifyRate = false;
       station->m_rtsCounter = station->m_rtsWnd;
-      if (((station->m_retry - 1) % 2) == 1)
+      if (((station->m_failed - 1) % 2) == 1)
         {
           //need normal fallback
           if (m_turnOffRtsAfterRateDecrease)
@@ -247,7 +244,7 @@ AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
               station->m_rate--;
             }
         }
-      if (station->m_retry >= 2)
+      if (station->m_failed >= 2)
         {
           station->m_timer = 0;
         }
@@ -282,7 +279,6 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_success++;
   station->m_failed = 0;
   station->m_recovery = false;
-  station->m_retry = 0;
   station->m_justModifyRate = false;
   station->m_haveASuccess = true;
   NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
