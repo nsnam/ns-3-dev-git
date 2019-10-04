@@ -163,6 +163,7 @@ PacketSocketClient::Send (void)
 
   if ((m_socket->Send (p)) >= 0)
     {
+      m_txTrace (p, m_peerAddress);
       NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
                                     << peerAddressStringStream.str () << " Uid: "
                                     << p->GetUid () << " Time: "
@@ -177,7 +178,6 @@ PacketSocketClient::Send (void)
 
   if ((m_sent < m_maxPackets) || (m_maxPackets == 0))
     {
-      m_txTrace (p, m_peerAddress);
       m_sendEvent = Simulator::Schedule (m_interval, &PacketSocketClient::Send, this);
     }
 }
