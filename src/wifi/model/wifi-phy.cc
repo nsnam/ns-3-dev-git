@@ -3119,6 +3119,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
 
   m_interference.NotifyRxEnd ();
   m_currentEvent = 0;
+  MaybeCcaBusyDuration ();
 }
 
 std::pair<bool, SignalNoiseDbm>
