@@ -439,8 +439,7 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 
   // Enable/disable RTS
   if (!frame->GetHeader ().IsBlockAckReq ()
-      && m_stationManager->NeedRts (recipient, &frame->GetHeader (),
-                                    frame->GetPacket (), m_low->GetDataTxVector (frame))
+      && m_stationManager->NeedRts (&frame->GetHeader (), frame->GetPacket ())
       && !m_low->IsCfPeriod ())
     {
       params.EnableRts ();
@@ -1010,8 +1009,7 @@ QosTxop::RestartAccessIfNeeded (void)
         }
       if (packet != 0)
         {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet,
-                                                                 m_low->GetDataTxVector (Create<const WifiMacQueueItem> (packet, hdr)));
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (&hdr, packet);
         }
       else
         {
@@ -1042,8 +1040,7 @@ QosTxop::StartAccessIfNeeded (void)
         }
       if (packet != 0)
         {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (hdr.GetAddr1 (), &hdr, packet,
-                                                                 m_low->GetDataTxVector (Create<const WifiMacQueueItem> (packet, hdr)));
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (&hdr, packet);
         }
       else
         {

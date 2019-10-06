@@ -807,11 +807,12 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address, uint8_t tid
 }
 
 bool
-WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *header,
-                                   Ptr<const Packet> packet, WifiTxVector txVector)
+WifiRemoteStationManager::NeedRts (const WifiMacHeader *header, Ptr<const Packet> packet)
 {
+  NS_LOG_FUNCTION (this << *header << packet);
+  Mac48Address address = header->GetAddr1 ();
+  WifiTxVector txVector = GetDataTxVector (address, header, packet);
   WifiMode mode = txVector.GetMode ();
-  NS_LOG_FUNCTION (this << address << *header << packet << mode);
   if (address.IsGroup ())
     {
       return false;
