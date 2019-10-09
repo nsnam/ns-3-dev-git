@@ -2686,28 +2686,7 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event, Time rxDuration)
       NotifyRxBegin (event->GetPacket ());
 
       m_timeLastPreambleDetected = Simulator::Now ();
-
       WifiTxVector txVector = event->GetTxVector ();
-
-      if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
-        {
-          NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
-          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
-          m_interference.NotifyRxEnd ();
-          m_currentEvent = 0;
-          MaybeCcaBusyDuration ();
-          return;
-        }
-
-      if ((txVector.GetChannelWidth () >= 40) && (txVector.GetChannelWidth () > GetChannelWidth ()))
-        {
-          NS_LOG_DEBUG ("Packet reception could not be started because not enough channel width");
-          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
-          m_interference.NotifyRxEnd ();
-          m_currentEvent = 0;
-          MaybeCcaBusyDuration ();
-          return;
-        }
 
       if ((txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT) && (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF))
         {
@@ -3029,7 +3008,22 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
     }
   if (canReceivePayload) //plcp reception succeeded
     {
-      if (IsModeSupported (txMode) || IsMcsSupported (txMode))
+      if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
+        {
+          NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
+          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+        }
+      else if ((txVector.GetChannelWidth () >= 40) && (txVector.GetChannelWidth () > GetChannelWidth ()))
+        {
+          NS_LOG_DEBUG ("Packet reception could not be started because not enough channel width");
+          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+        }
+      else if (!IsModeSupported (txMode) && !IsMcsSupported (txMode))
+        {
+          NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
+          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
+        }
+      else
         {
           Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePlcpPreambleAndHeaderDuration (txVector);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
@@ -3041,22 +3035,17 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
               params.bssColor = event->GetTxVector ().GetBssColor ();
               NotifyEndOfHePreamble (params);
             }
-        }
-      else //mode is not allowed
-        {
-          NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txMode << ")");
-          NotifyRxDrop (event->GetPacket (), UNSUPPORTED_SETTINGS);
-          m_interference.NotifyRxEnd ();
-          m_currentEvent = 0;
+          return;
         }
     }
   else //plcp reception failed
     {
       NS_LOG_DEBUG ("Drop packet because HT PHY header reception failed");
       NotifyRxDrop (event->GetPacket (), SIG_A_FAILURE);
-      m_interference.NotifyRxEnd ();
-      m_currentEvent = 0;
     }
+  m_interference.NotifyRxEnd ();
+  m_currentEvent = 0;
+  MaybeCcaBusyDuration ();
 }
 
 void
