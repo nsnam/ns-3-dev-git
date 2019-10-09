@@ -26,6 +26,8 @@
 
 #include "wifi-mac-queue-item.h"
 #include "ns3/queue.h"
+#include <unordered_map>
+#include "qos-utils.h"
 
 namespace ns3 {
 
@@ -260,7 +262,7 @@ public:
   ConstIterator Remove (ConstIterator pos, bool removeExpired = false);
   /**
    * Return the number of packets having destination address specified by
-   * <i>dest</i>.
+   * <i>dest</i>. The complexity is linear in the size of the queue.
    *
    * \param dest the given destination
    *
@@ -269,7 +271,8 @@ public:
   uint32_t GetNPacketsByAddress (Mac48Address dest);
   /**
    * Return the number of QoS packets having TID equal to <i>tid</i> and
-   * destination address equal to <i>dest</i>.
+   * destination address equal to <i>dest</i>.  The complexity is linear in
+   * the size of the queue.
    *
    * \param tid the given TID
    * \param dest the given destination
@@ -277,6 +280,31 @@ public:
    * \return the number of QoS packets
    */
   uint32_t GetNPacketsByTidAndAddress (uint8_t tid, Mac48Address dest);
+
+  /**
+   * Return the number of QoS packets in the queue having tid equal to <i>tid</i>
+   * and destination address equal to <i>dest</i>. The complexity in the average
+   * case is constant. However, packets expired since the last non-const
+   * operation on the queue are included in the returned count.
+   *
+   * \param tid the given TID
+   * \param dest the given destination
+   *
+   * \return the number of QoS packets in the queue
+   */
+  uint32_t GetNPackets (uint8_t tid, Mac48Address dest) const;
+  /**
+   * Return the number of bytes in the queue having tid equal to <i>tid</i> and
+   * destination address equal to <i>dest</i>. The complexity in the average
+   * case is constant. However, packets expired since the last non-const
+   * operation on the queue are included in the returned count.
+   *
+   * \param tid the given TID
+   * \param dest the given destination
+   *
+   * \return the number of bytes in the queue
+   */
+  uint32_t GetNBytes (uint8_t tid, Mac48Address dest) const;
 
   /**
    * \return true if the queue is empty; false otherwise
@@ -314,7 +342,8 @@ private:
   bool TtlExceeded (ConstIterator &it);
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
-   * sets the iterator field of the item, if insertion succeeded.
+   * sets the iterator field of the item and updates internal statistics, if
+   * insertion succeeded.
    *
    * \param pos the position before where the item will be inserted
    * \param item the item to enqueue
@@ -323,7 +352,8 @@ private:
   bool DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item);
   /**
    * Wrapper for the DoDequeue method provided by the base class that additionally
-   * resets the iterator field of the item, if an item was dequeued.
+   * resets the iterator field of the item and updates internal statistics, if
+   * an item was dequeued.
    *
    * \param pos the position of the item to dequeue
    * \return the item.
@@ -331,7 +361,8 @@ private:
   Ptr<WifiMacQueueItem> DoDequeue (ConstIterator pos);
   /**
    * Wrapper for the DoRemove method provided by the base class that additionally
-   * resets the iterator field of the item, if an item was dropped.
+   * resets the iterator field of the item and updates internal statistics, if
+   * an item was dropped.
    *
    * \param pos the position of the item to drop
    * \return the item.
@@ -341,6 +372,11 @@ private:
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
   mutable bool m_expiredPacketsPresent;     //!< True if expired packets are in the queue
+
+  //!< Per (MAC address, TID) pair queued packets
+  std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedPackets;
+  //!< Per (MAC address, TID) pair queued bytes
+  std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedBytes;
 
   /// Traced callback: fired when a packet is dropped due to lifetime expiration
   TracedCallback<Ptr<const WifiMacQueueItem> > m_traceExpired;
