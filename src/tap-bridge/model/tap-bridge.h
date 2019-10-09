@@ -451,6 +451,13 @@ private:
   bool m_linkUp;
 
   /**
+   * Flag indicating whether or not the link is up.  In this case,
+   * whether or not ns-3 is connected to the underlying TAP device
+   * with a file descriptor.
+   */
+  bool m_verbose;
+
+  /**
    * Callbacks to fire if the link changes state (up or down).
    */
   TracedCallback<> m_linkChangeCallbacks;
