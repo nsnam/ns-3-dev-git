@@ -885,6 +885,7 @@ BlockAckManager::InsertInRetryQueue (Ptr<WifiMacQueueItem> mpdu)
 
       it = m_retryPackets->PeekByTidAndAddress (tid, recipient, ++it);
     }
+  mpdu->GetHeader ().SetRetry ();
   m_retryPackets->Insert (it, mpdu);
 }
 
