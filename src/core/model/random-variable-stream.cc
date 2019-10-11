@@ -946,7 +946,7 @@ GammaRandomVariable::GetBeta (void) const
   tools/ranvar.cc
 
   Originally the algorithm was devised by Marsaglia in 2000:
-  G. Marsaglia, W. W. Tsang: A simple method for gereating Gamma variables
+  G. Marsaglia, W. W. Tsang: A simple method for generating Gamma variables
   ACM Transactions on mathematical software, Vol. 26, No. 3, Sept. 2000
 
   The Gamma distribution density function has the form
