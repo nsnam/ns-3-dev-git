@@ -37,7 +37,7 @@ using namespace ns3;
 /* needed shift to get a Q0.32 number from rec_inv_sqrt */
 #define REC_INV_SQRT_SHIFT_ns3 (32 - REC_INV_SQRT_BITS_ns3)
 
-static uint16_t _codel_Newton_step (uint32_t count, uint16_t rec_inv_sqrt)
+static uint16_t _codel_Newton_step (uint16_t rec_inv_sqrt, uint32_t count)
 {
   uint32_t invsqrt = ((uint32_t)rec_inv_sqrt) << REC_INV_SQRT_SHIFT_ns3;
   uint32_t invsqrt2 = ((uint64_t)invsqrt * invsqrt) >> 32;
@@ -337,23 +337,17 @@ CoDelQueueDiscNewtonStepTest::DoRun (void)
 
   // Spot check a few points in the expected operational range of
   // CoDelQueueDisc's m_count and m_recInvSqrt variables
-  uint32_t count = 2;
-  uint16_t recInvSqrt = 65535;
-  queue->m_count = count;
-  queue->m_recInvSqrt = recInvSqrt;
-  queue->NewtonStep ();
-  // Test that ns-3 value is exactly the same as the Linux value
-  NS_TEST_ASSERT_MSG_EQ (_codel_Newton_step (count, recInvSqrt), queue->m_recInvSqrt,
+  uint16_t result;
+  for (uint16_t recInvSqrt = 0xff; recInvSqrt > 0; recInvSqrt /= 2)
+    {
+      for (uint32_t count = 1; count < 0xff; count *= 2)
+        {
+           result = queue->NewtonStep (recInvSqrt, count);
+           // Test that ns-3 value is exactly the same as the Linux value
+           NS_TEST_ASSERT_MSG_EQ (_codel_Newton_step (recInvSqrt, count), result,
                          "ns-3 NewtonStep() fails to match Linux equivalent");
-
-  count = 4;
-  recInvSqrt = 36864;
-  queue->m_count = count;
-  queue->m_recInvSqrt = recInvSqrt;
-  queue->NewtonStep ();
-  // Test that ns-3 value is exactly the same as the Linux value
-  NS_TEST_ASSERT_MSG_EQ (_codel_Newton_step (count, recInvSqrt), queue->m_recInvSqrt,
-                         "ns-3 NewtonStep() fails to match Linux equivalent");
+        }
+    }
 }
 
 /**
@@ -373,7 +367,7 @@ public:
    * \param t
    * \returns the codel control law
    */
-  uint32_t _codel_control_law (Ptr<CoDelQueueDisc> queue, uint32_t t);
+  uint32_t _codel_control_law (uint32_t t, uint32_t interval, uint32_t recInvSqrt);
 };
 
 CoDelQueueDiscControlLawTest::CoDelQueueDiscControlLawTest ()
@@ -384,9 +378,9 @@ CoDelQueueDiscControlLawTest::CoDelQueueDiscControlLawTest ()
 // The following code borrowed from Linux codel.h,
 // except the addition of queue parameter
 uint32_t
-CoDelQueueDiscControlLawTest::_codel_control_law (Ptr<CoDelQueueDisc> queue, uint32_t t)
+CoDelQueueDiscControlLawTest::_codel_control_law (uint32_t t, uint32_t interval, uint32_t recInvSqrt)
 {
-  return t + _reciprocal_scale (queue->Time2CoDel (queue->m_interval), queue->m_recInvSqrt << REC_INV_SQRT_SHIFT_ns3);
+  return t + _reciprocal_scale (interval, recInvSqrt << REC_INV_SQRT_SHIFT_ns3);
 }
 // End Linux borrrow
 
@@ -395,18 +389,19 @@ CoDelQueueDiscControlLawTest::DoRun (void)
 {
   Ptr<CoDelQueueDisc> queue = CreateObject<CoDelQueueDisc> ();
 
-  /* Spot check a few points of m_dropNext
-   The integer approximations in Linux should be within
-   2% of the true floating point value obtained in ns-3
-   */
-  uint32_t dropNextTestVals [4] = {292299, 341128, 9804717, 55885007};
+  // Check a few points within the operational range of ControlLaw
+  uint32_t interval = queue->Time2CoDel (MilliSeconds (100));
 
-  for (int i = 0; i < 4; ++i)
+  uint32_t codelTimeVal;
+  for (Time timeVal = Seconds (0); timeVal <= Seconds (20); timeVal += MilliSeconds (100))
     {
-      uint32_t ns3Result = queue->ControlLaw(dropNextTestVals[i]); 
-      uint32_t linuxResult = _codel_control_law(queue, dropNextTestVals[i]); 
-      NS_TEST_EXPECT_MSG_EQ((0.98 * ns3Result < linuxResult && linuxResult < 1.02 * ns3Result), true, 
-        "Linux result should stay within 2% of ns-3 result"); 
+      for (uint16_t recInvSqrt = 0xff; recInvSqrt > 0; recInvSqrt /= 2)
+        {
+          codelTimeVal = queue->Time2CoDel (timeVal);
+          uint32_t ns3Result = queue->ControlLaw (codelTimeVal, interval, recInvSqrt); 
+          uint32_t linuxResult = _codel_control_law (codelTimeVal, interval, recInvSqrt); 
+          NS_TEST_EXPECT_MSG_EQ (ns3Result, linuxResult, "Linux result for ControlLaw should equal ns-3 result");
+        }
     }
 }
 
