@@ -130,8 +130,11 @@ private:
    * \brief Calculate the reciprocal square root of m_count by using Newton's method
    *  http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Iterative_methods_for_reciprocal_square_roots
    * m_recInvSqrt (new) = (m_recInvSqrt (old) / 2) * (3 - m_count * m_recInvSqrt^2)
+   * \param recInvSqrt reciprocal value of sqrt (count)
+   * \param count count value
+   * \return The new recInvSqrt value
    */
-  void NewtonStep (void);
+  static uint16_t NewtonStep (uint16_t recInvSqrt, uint32_t count);
 
   /**
    * \brief Determine the time for next drop
@@ -139,10 +142,12 @@ private:
    * Here, we use m_recInvSqrt calculated by Newton's method in NewtonStep() to avoid
    * both sqrt() and divide operations
    *
-   * \param t Current next drop time
-   * \returns The new next drop time:
+   * \param t Current next drop time (in units of CoDel time)
+   * \param interval interval (in units of CoDel time)
+   * \param recInvSqrt reciprocal value of sqrt (count)
+   * \return The new next drop time (in units of CoDel time)
    */
-  uint32_t ControlLaw (uint32_t t);
+  static uint32_t ControlLaw (uint32_t t, uint32_t interval, uint32_t recInvSqrt);
 
   /**
    * \brief Determine whether a packet is OK to be dropped. The packet

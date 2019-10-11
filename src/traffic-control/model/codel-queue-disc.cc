@@ -136,24 +136,24 @@ CoDelQueueDisc::~CoDelQueueDisc ()
   NS_LOG_FUNCTION (this);
 }
 
-void
-CoDelQueueDisc::NewtonStep (void)
+uint16_t
+CoDelQueueDisc::NewtonStep (uint16_t recInvSqrt, uint32_t count)
 {
-  NS_LOG_FUNCTION (this);
-  uint32_t invsqrt = ((uint32_t) m_recInvSqrt) << REC_INV_SQRT_SHIFT;
+  NS_LOG_FUNCTION_NOARGS ();
+  uint32_t invsqrt = ((uint32_t) recInvSqrt) << REC_INV_SQRT_SHIFT;
   uint32_t invsqrt2 = ((uint64_t) invsqrt * invsqrt) >> 32;
-  uint64_t val = (3ll << 32) - ((uint64_t) m_count * invsqrt2);
+  uint64_t val = (3ll << 32) - ((uint64_t) count * invsqrt2);
 
   val >>= 2; /* avoid overflow */
   val = (val * invsqrt) >> (32 - 2 + 1);
-  m_recInvSqrt = static_cast<uint16_t>(val >> REC_INV_SQRT_SHIFT);
+  return static_cast<uint16_t>(val >> REC_INV_SQRT_SHIFT);
 }
 
 uint32_t
-CoDelQueueDisc::ControlLaw (uint32_t t)
+CoDelQueueDisc::ControlLaw (uint32_t t, uint32_t interval, uint32_t recInvSqrt)
 {
-  NS_LOG_FUNCTION (this);
-  return t + ReciprocalDivide (Time2CoDel (m_interval), m_recInvSqrt << REC_INV_SQRT_SHIFT);
+  NS_LOG_FUNCTION_NOARGS ();
+  return t + ReciprocalDivide (interval, recInvSqrt << REC_INV_SQRT_SHIFT);
 }
 
 bool
@@ -268,7 +268,7 @@ CoDelQueueDisc::DoDequeue (void)
               DropAfterDequeue (item, TARGET_EXCEEDED_DROP);
 
               ++m_count;
-              NewtonStep ();
+              m_recInvSqrt = NewtonStep (m_recInvSqrt, m_count);
               item = GetInternalQueue (0)->Dequeue ();
 
               if (item)
@@ -288,7 +288,7 @@ CoDelQueueDisc::DoDequeue (void)
                 {
                   /* schedule the next drop */
                   NS_LOG_LOGIC ("Running ControlLaw for input m_dropNext: " << (double)m_dropNext / 1000000);
-                  m_dropNext = ControlLaw (m_dropNext);
+                  m_dropNext = ControlLaw (m_dropNext, Time2CoDel (m_interval), m_recInvSqrt);
                   NS_LOG_LOGIC ("Scheduled next drop at " << (double)m_dropNext / 1000000);
                 }
             }
@@ -326,7 +326,7 @@ CoDelQueueDisc::DoDequeue (void)
           if (delta > 1 && CoDelTimeBefore (now - m_dropNext, 16 * Time2CoDel (m_interval)))
             {
               m_count = delta;
-              NewtonStep ();
+              m_recInvSqrt = NewtonStep (m_recInvSqrt, m_count);
             }
           else
             {
@@ -335,7 +335,7 @@ CoDelQueueDisc::DoDequeue (void)
             }
           m_lastCount = m_count;
           NS_LOG_LOGIC ("Running ControlLaw for input now: " << (double)now);
-          m_dropNext = ControlLaw (now);
+          m_dropNext = ControlLaw (now, Time2CoDel (m_interval), m_recInvSqrt);
           NS_LOG_LOGIC ("Scheduled next drop at " << (double)m_dropNext / 1000000 << " now " << (double)now / 1000000);
         }
     }
