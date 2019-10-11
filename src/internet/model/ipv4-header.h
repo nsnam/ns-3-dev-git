@@ -58,11 +58,14 @@ public:
 public:
   /**
    * \enum DscpType
-   * \brief DiffServ Code Points
-   * Code Points defined in
-   * Assured Forwarding (AF) \RFC{2597}
-   * Expedited Forwarding (EF) \RFC{2598}
-   * Default and Class Selector (CS) \RFC{2474}
+   * \brief DiffServ codepoints
+   *
+   * The values correspond to the 6-bit DSCP codepoint within the 8-bit
+   * DS field defined in \RFC {2474}.  ECN bits are separately set with the
+   * SetEcn() method.  Codepoints are defined in
+   * Assured Forwarding (AF) \RFC{2597},
+   * Expedited Forwarding (EF) \RFC{2598}, and
+   * Default and Class Selector (CS) \RFC{2474}.
    */
   enum DscpType
     {
