@@ -172,8 +172,9 @@ LenaDeactivateBearerTestCase::DoRun (void)
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("EpcHelper", logLevel);
   // LogComponentEnable ("EpcEnbApplication", logLevel);
-  // LogComponentEnable ("EpcSgwPgwApplication", logLevel);
-  // LogComponentEnable ("EpcMme", logLevel);
+  // LogComponentEnable ("EpcMmeApplication", logLevel);
+  // LogComponentEnable ("EpcPgwApplication", logLevel);
+  // LogComponentEnable ("EpcSgwApplication", logLevel);
   // LogComponentEnable ("LteEnbRrc", logLevel);
 
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));

@@ -127,8 +127,10 @@ main (int argc, char *argv[])
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("EpcHelper", logLevel);
   // LogComponentEnable ("EpcEnbApplication", logLevel);
+  // LogComponentEnable ("EpcMmeApplication", logLevel);
+  // LogComponentEnable ("EpcPgwApplication", logLevel);
+  // LogComponentEnable ("EpcSgwApplication", logLevel);
   // LogComponentEnable ("EpcX2", logLevel);
-  // LogComponentEnable ("EpcSgwPgwApplication", logLevel);
 
   // LogComponentEnable ("LteEnbRrc", logLevel);
   // LogComponentEnable ("LteEnbNetDevice", logLevel);

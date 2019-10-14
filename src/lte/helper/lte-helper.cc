@@ -1335,8 +1335,9 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("ComponentCarrierUe", LOG_LEVEL_ALL);
   LogComponentEnable ("CqaFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcEnbApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("EpcMme", LOG_LEVEL_ALL);
-  LogComponentEnable ("EpcSgwPgwApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcMmeApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcPgwApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcSgwApplication", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcTft", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcTftClassifier", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcUeNas", LOG_LEVEL_ALL);
