@@ -306,7 +306,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                           noiseInterferenceW,
                                                           txVector.GetChannelWidth ()),
-                                            current - previous,
+                                            Min (windowEnd, current) - previous,
                                             payloadMode, txVector);
           NS_LOG_DEBUG ("Both previous and current point to the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
@@ -316,7 +316,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                           noiseInterferenceW,
                                                           txVector.GetChannelWidth ()),
-                                            current - windowStart,
+                                            Min (windowEnd, current) - windowStart,
                                             payloadMode, txVector);
           NS_LOG_DEBUG ("previous is before windowed payload and current is in the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }

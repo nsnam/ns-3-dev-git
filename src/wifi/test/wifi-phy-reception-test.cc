@@ -1635,7 +1635,7 @@ void
 TestAmpduReception::DoRun (void)
 {
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (1);
+  RngSeedManager::SetRun (2);
   int64_t streamNumber = 1;
   double rxPowerDbm = -30;
   m_phy->AssignStreams (streamNumber);
