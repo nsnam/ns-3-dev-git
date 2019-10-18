@@ -216,9 +216,6 @@ MinstrelWifiManager::CheckInit (MinstrelWifiRemoteStation *station)
       InitSampleTable (station);
       RateInit (station);
       station->m_initialized = true;
-      std::ostringstream tmp;
-      tmp << "minstrel-stats-" << station->m_state->m_address << ".txt";
-      station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
     }
 }
 
@@ -1043,6 +1040,13 @@ MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
 void
 MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
 {
+  if (!station->m_statsFile.is_open ())
+    {
+      std::ostringstream tmp;
+      tmp << "minstrel-stats-" << station->m_state->m_address << ".txt";
+      station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
+    }
+
   station->m_statsFile << "best   _______________rate________________    ________statistics________    ________last_______    ______sum-of________\n" <<
     "rate  [      name       idx airtime max_tp]  [avg(tp) avg(prob) sd(prob)]  [prob.|retry|suc|att]  [#success | #attempts]\n";
 

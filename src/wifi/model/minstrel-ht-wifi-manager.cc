@@ -444,9 +444,6 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
           station->m_sampleTable = SampleRate (m_numRates, std::vector<uint8_t> (m_nSampleCol));
           InitSampleTable (station);
           RateInit (station);
-          std::ostringstream tmp;
-          tmp << "minstrel-ht-stats-" << station->m_state->m_address << ".txt";
-          station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
           station->m_initialized = true;
         }
     }
@@ -1611,6 +1608,13 @@ MinstrelHtWifiManager::InitSampleTable (MinstrelHtWifiRemoteStation *station)
 void
 MinstrelHtWifiManager::PrintTable (MinstrelHtWifiRemoteStation *station)
 {
+  if (!station->m_statsFile.is_open ())
+    {
+      std::ostringstream tmp;
+      tmp << "minstrel-ht-stats-" << station->m_state->m_address << ".txt";
+      station->m_statsFile.open (tmp.str ().c_str (), std::ios::out);
+    }
+
   station->m_statsFile << "               best   ____________rate__________    ________statistics________    ________last_______    ______sum-of________\n" <<
     " mode guard #  rate  [name   idx airtime  max_tp]  [avg(tp) avg(prob) sd(prob)]  [prob.|retry|suc|att]  [#success | #attempts]\n";
   for (uint8_t i = 0; i < m_numGroups; i++)
