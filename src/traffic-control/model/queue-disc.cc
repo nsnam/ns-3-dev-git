@@ -360,6 +360,11 @@ QueueDisc::QueueDisc (QueueDiscSizePolicy policy)
       return DropAfterDequeue (item,
                                m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (r).data ());
     };
+  m_childQueueDiscMarkFunctor = [this] (Ptr<const QueueDiscItem> item, const char* r)
+    {
+      return Mark (const_cast<QueueDiscItem *> (PeekPointer (item)),
+                   m_childQueueDiscMarkMsg.assign (CHILD_QUEUE_DISC_MARK).append (r).data ());
+    };
 }
 
 QueueDisc::QueueDisc (QueueDiscSizePolicy policy, QueueSizeUnit unit)
@@ -636,7 +641,7 @@ QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
                    "A queue disc with WAKE_CHILD as wake mode can only be a root queue disc");
 
   // set the parent callbacks on the child queue disc, so that it can notify
-  // the parent queue disc of packets enqueued, dequeued or dropped
+  // the parent queue disc of packets enqueued, dequeued, dropped, or marked
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
                                      MakeCallback (&QueueDisc::PacketEnqueued, this));
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("Dequeue",
@@ -647,6 +652,9 @@ QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("DropAfterDequeue",
                                      MakeCallback (&ChildQueueDiscDropFunctor::operator(),
                                                    &m_childQueueDiscDadFunctor));
+  qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("Mark",
+                                     MakeCallback (&ChildQueueDiscMarkFunctor::operator(),
+                                                   &m_childQueueDiscMarkFunctor));
   m_classes.push_back (qdClass);
 }
 

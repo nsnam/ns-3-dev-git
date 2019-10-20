@@ -515,6 +515,7 @@ public:
   // Reasons for dropping packets
   static constexpr const char* INTERNAL_QUEUE_DROP = "Dropped by internal queue";    //!< Packet dropped by an internal queue
   static constexpr const char* CHILD_QUEUE_DISC_DROP = "(Dropped by child queue disc) "; //!< Packet dropped by a child queue disc
+  static constexpr const char* CHILD_QUEUE_DISC_MARK = "(Marked by child queue disc) "; //!< Packet marked by a child queue disc
 
 protected:
   /**
@@ -709,6 +710,7 @@ private:
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
   bool m_peeked;                    //!< A packet was dequeued because Peek was called
   std::string m_childQueueDiscDropMsg;  //!< Reason why a packet was dropped by a child queue disc
+  std::string m_childQueueDiscMarkMsg;  //!< Reason why a packet was marked by a child queue disc
   QueueDiscSizePolicy m_sizePolicy;     //!< The queue disc size policy
   bool m_prohibitChangeMode;            //!< True if changing mode is prohibited
 
@@ -731,6 +733,8 @@ private:
   typedef std::function<void (Ptr<const QueueDiscItem>)> InternalQueueDropFunctor;
   /// Type for the function objects notifying that a packet has been dropped by a child queue disc
   typedef std::function<void (Ptr<const QueueDiscItem>, const char*)> ChildQueueDiscDropFunctor;
+  /// Type for the function objects notifying that a packet has been marked by a child queue disc
+  typedef std::function<void (Ptr<const QueueDiscItem>, const char*)> ChildQueueDiscMarkFunctor;
 
   /// Function object called when an internal queue dropped a packet before enqueue
   InternalQueueDropFunctor m_internalQueueDbeFunctor;
@@ -740,6 +744,8 @@ private:
   ChildQueueDiscDropFunctor m_childQueueDiscDbeFunctor;
   /// Function object called when a child queue disc dropped a packet after dequeue
   ChildQueueDiscDropFunctor m_childQueueDiscDadFunctor;
+  /// Function object called when a child queue disc marked a packet
+  ChildQueueDiscMarkFunctor m_childQueueDiscMarkFunctor;
 };
 
 /**

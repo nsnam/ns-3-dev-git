@@ -60,7 +60,7 @@ is stopped. Waking a queue disc is equivalent to make it run.
 Every queue disc collects statistics about the total number of packets/bytes
 received from the upper layers (in case of root queue disc) or from the parent
 queue disc (in case of child queue disc), enqueued, dequeued, requeued, dropped,
-dropped before enqueue, dropped after dequeue, stored in the queue disc and
+dropped before enqueue, dropped after dequeue, marked, and stored in the queue disc and
 sent to the netdevice or to the parent queue disc. Note that packets that are
 dequeued may be requeued, i.e., retained by the traffic control infrastructure,
 if the netdevice is not ready to receive them. Requeued packets are not part
@@ -126,6 +126,7 @@ The base class QueueDisc provides many trace sources:
 * ``Dequeue``
 * ``Requeue``
 * ``Drop``
+* ``Mark``
 * ``PacketsInQueue``
 * ``BytesInQueue``
 
