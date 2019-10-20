@@ -44,7 +44,8 @@ TypeId FqCoDelFlow::GetTypeId (void)
 
 FqCoDelFlow::FqCoDelFlow ()
   : m_deficit (0),
-    m_status (INACTIVE)
+    m_status (INACTIVE),
+    m_index (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -87,6 +88,19 @@ FqCoDelFlow::GetStatus (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_status;
+}
+
+void
+FqCoDelFlow::SetIndex (uint32_t index)
+{
+  NS_LOG_FUNCTION (this);
+  m_index = index;
+}
+
+uint32_t
+FqCoDelFlow::GetIndex (void) const
+{
+  return m_index;
 }
 
 
@@ -193,6 +207,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       Ptr<QueueDisc> qd = m_queueDiscFactory.Create<QueueDisc> ();
       qd->Initialize ();
       flow->SetQueueDisc (qd);
+      flow->SetIndex (h);
       AddQueueDiscClass (flow);
 
       m_flowsIndices[h] = GetNQueueDiscClasses () - 1;
@@ -215,6 +230,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   if (GetCurrentSize () > GetMaxSize ())
     {
+      NS_LOG_DEBUG ("Overload; enter FqCodelDrop ()");
       FqCoDelDrop ();
     }
 
@@ -239,6 +255,7 @@ FqCoDelQueueDisc::DoDequeue (void)
 
           if (flow->GetDeficit () <= 0)
             {
+              NS_LOG_DEBUG ("Increase deficit for new flow index " << flow->GetIndex ());
               flow->IncreaseDeficit (m_quantum);
               flow->SetStatus (FqCoDelFlow::OLD_FLOW);
               m_oldFlows.push_back (flow);
@@ -246,7 +263,7 @@ FqCoDelQueueDisc::DoDequeue (void)
             }
           else
             {
-              NS_LOG_DEBUG ("Found a new flow with positive deficit");
+              NS_LOG_DEBUG ("Found a new flow " << flow->GetIndex () << " with positive deficit");
               found = true;
             }
         }
@@ -257,13 +274,14 @@ FqCoDelQueueDisc::DoDequeue (void)
 
           if (flow->GetDeficit () <= 0)
             {
+              NS_LOG_DEBUG ("Increase deficit for old flow index " << flow->GetIndex ());
               flow->IncreaseDeficit (m_quantum);
               m_oldFlows.push_back (flow);
               m_oldFlows.pop_front ();
             }
           else
             {
-              NS_LOG_DEBUG ("Found an old flow with positive deficit");
+              NS_LOG_DEBUG ("Found an old flow " << flow->GetIndex () << " with positive deficit");
               found = true;
             }
         }
@@ -382,6 +400,7 @@ FqCoDelQueueDisc::FqCoDelDrop (void)
 
   do
     {
+      NS_LOG_DEBUG ("Drop packet (overflow); count: " << count << " len: " << len << " threshold: " << threshold);
       item = qd->GetInternalQueue (0)->Dequeue ();
       DropAfterDequeue (item, OVERLIMIT_DROP);
       len += item->GetSize ();
