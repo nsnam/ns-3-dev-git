@@ -568,15 +568,9 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
         p->AddPacketTag (tag);
       }
   }
-  //
-  // If dest is set to the limited broadcast address (all ones),
-  // convert it to send a copy of the packet out of every 
-  // interface as a subnet-directed broadcast.
-  // Exception:  if the interface has a /32 address, there is no
-  // valid subnet-directed broadcast, so send it as limited broadcast
-  // Note also that some systems will only send limited broadcast packets
+
+  // Note that some systems will only send limited broadcast packets
   // out of the "default" interface; here we send it out all interfaces
-  //
   if (dest.IsBroadcast ())
     {
       if (!m_allowBroadcast)
@@ -630,6 +624,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
           NS_LOG_LOGIC ("Route exists");
           if (!m_allowBroadcast)
             {
+              // Here we try to route subnet-directed broadcasts
               uint32_t outputIfIndex = ipv4->GetInterfaceForDevice (route->GetOutputDevice ());
               uint32_t ifNAddr = ipv4->GetNAddresses (outputIfIndex);
               for (uint32_t addrI = 0; addrI < ifNAddr; ++addrI)
