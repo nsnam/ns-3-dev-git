@@ -112,6 +112,11 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
     .SetParent<QueueDisc> ()
     .SetGroupName ("TrafficControl")
     .AddConstructor<FqCoDelQueueDisc> ()
+    .AddAttribute ("UseEcn",
+                   "True to use ECN (packets are marked instead of being dropped)",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&FqCoDelQueueDisc::m_useEcn),
+                   MakeBooleanChecker ())
     .AddAttribute ("Interval",
                    "The CoDel algorithm interval for each FQCoDel queue",
                    StringValue ("100ms"),
@@ -143,6 +148,11 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&FqCoDelQueueDisc::m_perturbation),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("CeThreshold",
+                   "The FqCoDel CE threshold for marking packets",
+                   TimeValue (Time::Max ()),
+                   MakeTimeAccessor (&FqCoDelQueueDisc::m_ceThreshold),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -205,6 +215,13 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       NS_LOG_DEBUG ("Creating a new flow queue with index " << h);
       flow = m_flowFactory.Create<FqCoDelFlow> ();
       Ptr<QueueDisc> qd = m_queueDiscFactory.Create<QueueDisc> ();
+      // If CoDel, Set values of CoDelQueueDisc to match this QueueDisc
+      Ptr<CoDelQueueDisc> codel = qd->GetObject<CoDelQueueDisc> ();
+      if (codel)
+        {
+          codel->SetAttribute ("UseEcn", BooleanValue (m_useEcn));
+          codel->SetAttribute ("CeThreshold", TimeValue (m_ceThreshold));
+        }
       qd->Initialize ();
       flow->SetQueueDisc (qd);
       flow->SetIndex (h);

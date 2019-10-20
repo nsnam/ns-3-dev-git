@@ -153,12 +153,14 @@ private:
    */
   uint32_t FqCoDelDrop (void);
 
+  bool m_useEcn;             //!< True if ECN is used (packets are marked instead of being dropped)
   std::string m_interval;    //!< CoDel interval attribute
   std::string m_target;      //!< CoDel target attribute
   uint32_t m_quantum;        //!< Deficit assigned to flows at each round
   uint32_t m_flows;          //!< Number of flow queues
   uint32_t m_dropBatchSize;  //!< Max number of packets dropped from the fat flow
   uint32_t m_perturbation;   //!< hash perturbation value
+  Time m_ceThreshold;        //!< Threshold above which to CE mark
 
   std::list<Ptr<FqCoDelFlow> > m_newFlows;    //!< The list of new flows
   std::list<Ptr<FqCoDelFlow> > m_oldFlows;    //!< The list of old flows
