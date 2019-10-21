@@ -975,7 +975,7 @@ TestSimpleFrameCaptureModel::DoRun (void)
   Simulator::Schedule (Seconds (1.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm, 1000);
   Simulator::Schedule (Seconds (1.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm, 1500);
   Simulator::Schedule (Seconds (1.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
-  Reset ();
+  Simulator::Schedule (Seconds (1.2), &TestSimpleFrameCaptureModel::Reset, this);
 
   // CASE 2: send two packets with second one 6 dB weaker within the capture window:
   // PHY should not switch reception because first one has higher power.
@@ -984,7 +984,7 @@ TestSimpleFrameCaptureModel::DoRun (void)
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm - 6, 1500);
   Simulator::Schedule (Seconds (2.1), &TestSimpleFrameCaptureModel::Expect1000BPacketReceived, this);
   Simulator::Schedule (Seconds (2.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
-  Reset ();
+  Simulator::Schedule (Seconds (2.2), &TestSimpleFrameCaptureModel::Reset, this);
 
   // CASE 3: send two packets with second one 6 dB higher within the capture window:
   // PHY should switch reception because the second one has a higher power.
@@ -993,7 +993,7 @@ TestSimpleFrameCaptureModel::DoRun (void)
   Simulator::Schedule (Seconds (3.0) + MicroSeconds (10.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm + 6, 1500);
   Simulator::Schedule (Seconds (3.1), &TestSimpleFrameCaptureModel::Expect1000BPacketDropped, this);
   Simulator::Schedule (Seconds (3.1), &TestSimpleFrameCaptureModel::Expect1500BPacketReceived, this);
-  Reset ();
+  Simulator::Schedule (Seconds (3.2), &TestSimpleFrameCaptureModel::Reset, this);
 
   // CASE 4: send two packets with second one 6 dB higher after the capture window:
   // PHY should not switch reception because capture window duration has elapsed when the second packet arrives.
@@ -1001,7 +1001,7 @@ TestSimpleFrameCaptureModel::DoRun (void)
   Simulator::Schedule (Seconds (4.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm, 1000);
   Simulator::Schedule (Seconds (4.0) + MicroSeconds (25.0), &TestSimpleFrameCaptureModel::SendPacket, this, rxPowerDbm + 6, 1500);
   Simulator::Schedule (Seconds (4.1), &TestSimpleFrameCaptureModel::Expect1500BPacketDropped, this);
-  Reset ();
+  Simulator::Schedule (Seconds (4.2), &TestSimpleFrameCaptureModel::Reset, this);
 
   Simulator::Run ();
   Simulator::Destroy ();
