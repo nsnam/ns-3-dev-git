@@ -4,3 +4,6 @@ def build(bld):
     obj = bld.create_ns3_program('buildings-pathloss-profiler',
                                  ['buildings'])
     obj.source = 'buildings-pathloss-profiler.cc'
+    obj = bld.create_ns3_program('outdoor-random-walk-example',
+                                 ['buildings'])
+    obj.source = 'outdoor-random-walk-example.cc'
