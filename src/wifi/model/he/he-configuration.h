@@ -74,6 +74,22 @@ private:
   Time m_guardInterval;      //!< Supported HE guard interval
   uint8_t m_bssColor;        //!< BSS color
   uint16_t m_mpduBufferSize; //!< MPDU buffer size
+  uint8_t m_muBeAifsn;       //!< AIFSN for BE in MU EDCA Parameter Set
+  uint8_t m_muBkAifsn;       //!< AIFSN for BK in MU EDCA Parameter Set
+  uint8_t m_muViAifsn;       //!< AIFSN for VI in MU EDCA Parameter Set
+  uint8_t m_muVoAifsn;       //!< AIFSN for VO in MU EDCA Parameter Set
+  uint16_t m_muBeCwMin;      //!< CWmin for BE in MU EDCA Parameter Set
+  uint16_t m_muBkCwMin;      //!< CWmin for BK in MU EDCA Parameter Set
+  uint16_t m_muViCwMin;      //!< CWmin for VI in MU EDCA Parameter Set
+  uint16_t m_muVoCwMin;      //!< CWmin for VO in MU EDCA Parameter Set
+  uint16_t m_muBeCwMax;      //!< CWmax for BE in MU EDCA Parameter Set
+  uint16_t m_muBkCwMax;      //!< CWmax for BK in MU EDCA Parameter Set
+  uint16_t m_muViCwMax;      //!< CWmax for VI in MU EDCA Parameter Set
+  uint16_t m_muVoCwMax;      //!< CWmax for VO in MU EDCA Parameter Set
+  Time m_beMuEdcaTimer;      //!< Timer for BE in MU EDCA Parameter Set
+  Time m_bkMuEdcaTimer;      //!< Timer for BK in MU EDCA Parameter Set
+  Time m_viMuEdcaTimer;      //!< Timer for VI in MU EDCA Parameter Set
+  Time m_voMuEdcaTimer;      //!< Timer for VO in MU EDCA Parameter Set
 };
 
 } //namespace ns3
