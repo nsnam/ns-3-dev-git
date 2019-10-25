@@ -291,6 +291,16 @@ private:
    */
   void SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit);
   /**
+   * Set the MU EDCA parameters.
+   *
+   * \param ac the Access Category
+   * \param cwMin the minimum contention window size
+   * \param cwMax the maximum contention window size
+   * \param aifsn the number of slots that make up an AIFS
+   * \param muEdcaTimer the MU EDCA timer
+   */
+  void SetMuEdcaParameters (AcIndex ac, uint16_t cwMin, uint16_t cwMax, uint8_t aifsn, Time muEdcaTimer);
+  /**
    * Return the Capability information of the current STA.
    *
    * \return the Capability information that we support

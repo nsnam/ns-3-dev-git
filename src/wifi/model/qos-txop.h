@@ -389,6 +389,34 @@ public:
    */
   virtual Time GetRemainingTxop (void) const;
 
+  /**
+   * Set the minimum contention window size to use while the MU EDCA Timer
+   * is running.
+   *
+   * \param cwMin the minimum contention window size.
+   */
+  void SetMuCwMin (uint16_t cwMin);
+  /**
+   * Set the maximum contention window size to use while the MU EDCA Timer
+   * is running.
+   *
+   * \param cwMax the maximum contention window size.
+   */
+  void SetMuCwMax (uint16_t cwMax);
+  /**
+   * Set the number of slots that make up an AIFS while the MU EDCA Timer
+   * is running.
+   *
+   * \param aifsn the number of slots that make up an AIFS.
+   */
+  void SetMuAifsn (uint8_t aifsn);
+  /**
+   * Set the MU EDCA Timer.
+   *
+   * \param timer the timer duration.
+   */
+  void SetMuEdcaTimer (Time timer);
+
 protected:
   void DoDispose (void) override;
 
@@ -422,6 +450,11 @@ private:
   Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response
   Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit BlockAckRequest should be sent upon missed BlockAck Response
+
+  uint32_t m_muCwMin;       //!< the MU CW minimum
+  uint32_t m_muCwMax;       //!< the MU CW maximum
+  uint8_t m_muAifsn;        //!< the MU AIFSN
+  Time m_muEdcaTimer;       //!< the MU EDCA Timer
 
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };

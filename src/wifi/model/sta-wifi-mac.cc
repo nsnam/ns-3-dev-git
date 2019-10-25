@@ -821,6 +821,19 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
                 }
             }
         }
+
+      MuEdcaParameterSet muEdcaParameters = beacon.GetMuEdcaParameterSet ();
+      if (muEdcaParameters.IsPresent ())
+        {
+          SetMuEdcaParameters (AC_BE, muEdcaParameters.GetMuCwMin (AC_BE), muEdcaParameters.GetMuCwMax (AC_BE),
+                               muEdcaParameters.GetMuAifsn (AC_BE), muEdcaParameters.GetMuEdcaTimer (AC_BE));
+          SetMuEdcaParameters (AC_BK, muEdcaParameters.GetMuCwMin (AC_BK), muEdcaParameters.GetMuCwMax (AC_BK),
+                               muEdcaParameters.GetMuAifsn (AC_BK), muEdcaParameters.GetMuEdcaTimer (AC_BK));
+          SetMuEdcaParameters (AC_VI, muEdcaParameters.GetMuCwMin (AC_VI), muEdcaParameters.GetMuCwMax (AC_VI),
+                               muEdcaParameters.GetMuAifsn (AC_VI), muEdcaParameters.GetMuEdcaTimer (AC_VI));
+          SetMuEdcaParameters (AC_VO, muEdcaParameters.GetMuCwMin (AC_VO), muEdcaParameters.GetMuCwMax (AC_VO),
+                               muEdcaParameters.GetMuAifsn (AC_VO), muEdcaParameters.GetMuEdcaTimer (AC_VO));
+        }
     }
   m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
   m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
@@ -981,6 +994,19 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           HeOperation heOperation = assocResp.GetHeOperation ();
           GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
         }
+
+      MuEdcaParameterSet muEdcaParameters = assocResp.GetMuEdcaParameterSet ();
+      if (muEdcaParameters.IsPresent ())
+        {
+          SetMuEdcaParameters (AC_BE, muEdcaParameters.GetMuCwMin (AC_BE), muEdcaParameters.GetMuCwMax (AC_BE),
+                               muEdcaParameters.GetMuAifsn (AC_BE), muEdcaParameters.GetMuEdcaTimer (AC_BE));
+          SetMuEdcaParameters (AC_BK, muEdcaParameters.GetMuCwMin (AC_BK), muEdcaParameters.GetMuCwMax (AC_BK),
+                               muEdcaParameters.GetMuAifsn (AC_BK), muEdcaParameters.GetMuEdcaTimer (AC_BK));
+          SetMuEdcaParameters (AC_VI, muEdcaParameters.GetMuCwMin (AC_VI), muEdcaParameters.GetMuCwMax (AC_VI),
+                               muEdcaParameters.GetMuAifsn (AC_VI), muEdcaParameters.GetMuEdcaTimer (AC_VI));
+          SetMuEdcaParameters (AC_VO, muEdcaParameters.GetMuCwMin (AC_VO), muEdcaParameters.GetMuCwMax (AC_VO),
+                               muEdcaParameters.GetMuAifsn (AC_VO), muEdcaParameters.GetMuEdcaTimer (AC_VO));
+        }
     }
   for (const auto & mode : m_phy->GetModeList ())
     {
@@ -1084,11 +1110,21 @@ StaWifiMac::SetState (MacState value)
 void
 StaWifiMac::SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit)
 {
-  Ptr<QosTxop> edca = m_edca.find (ac)->second;
+  Ptr<QosTxop> edca = GetQosTxop (ac);
   edca->SetMinCw (cwMin);
   edca->SetMaxCw (cwMax);
   edca->SetAifsn (aifsn);
   edca->SetTxopLimit (txopLimit);
+}
+
+void
+StaWifiMac::SetMuEdcaParameters (AcIndex ac, uint16_t cwMin, uint16_t cwMax, uint8_t aifsn, Time muEdcaTimer)
+{
+  Ptr<QosTxop> edca = GetQosTxop (ac);
+  edca->SetMuCwMin (cwMin);
+  edca->SetMuCwMax (cwMax);
+  edca->SetMuAifsn (aifsn);
+  edca->SetMuEdcaTimer (muEdcaTimer);
 }
 
 void

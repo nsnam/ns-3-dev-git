@@ -33,6 +33,7 @@ class CapabilityInformation;
 class DsssParameterSet;
 class ErpInformation;
 class EdcaParameterSet;
+class MuEdcaParameterSet;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
@@ -231,6 +232,12 @@ private:
    * \return the EDCA Parameter Set that we support
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
+  /**
+   * Return the MU EDCA Parameter Set of the current AP.
+   *
+   * \return the MU EDCA Parameter Set that we support
+   */
+  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
   /**
    * Return the HT operation of the current AP.
    *

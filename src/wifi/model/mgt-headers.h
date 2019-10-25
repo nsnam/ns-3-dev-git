@@ -38,6 +38,7 @@
 #include "edca-parameter-set.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/he-operation.h"
+#include "ns3/mu-edca-parameter-set.h"
 
 namespace ns3 {
 
@@ -400,6 +401,12 @@ public:
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
   /**
+   * Return the MU EDCA Parameter Set.
+   *
+   * \return the MU EDCA Parameter Set
+   */
+  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -466,6 +473,12 @@ public:
    */
   void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
   /**
+   * Set the MU EDCA Parameter Set.
+   *
+   * \param muEdcaParameterSet the MU EDCA Parameter Set
+   */
+  void SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameterSet);
+  /**
    * Set the HE capabilities.
    *
    * \param heCapabilities HE capabilities
@@ -504,6 +517,7 @@ private:
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   HeCapabilities m_heCapability; //!< HE capabilities
   HeOperation m_heOperation; //!< HE operation
+  MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
 };
 
 
@@ -706,6 +720,12 @@ public:
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
   /**
+   * Return the MU EDCA Parameter Set.
+   *
+   * \return the MU EDCA Parameter Set
+   */
+  MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -790,6 +810,12 @@ public:
    */
   void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
   /**
+   * Set the MU EDCA Parameter Set.
+   *
+   * \param muEdcaParameterSet the MU EDCA Parameter Set
+   */
+  void SetMuEdcaParameterSet (MuEdcaParameterSet muEdcaParameterSet);
+  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -824,6 +850,7 @@ private:
   HeOperation m_heOperation;         //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
+  MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
 };
 
 

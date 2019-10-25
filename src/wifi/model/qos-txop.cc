@@ -92,7 +92,11 @@ QosTxop::GetTypeId (void)
 
 QosTxop::QosTxop ()
   : m_startTxop (Seconds (0)),
-    m_txopDuration (Seconds (0))
+    m_txopDuration (Seconds (0)),
+    m_muCwMin (0),
+    m_muCwMax (0),
+    m_muAifsn (0),
+    m_muEdcaTimer (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
   m_qosBlockedDestinations = Create<QosBlockedDestinations> ();
@@ -143,6 +147,34 @@ QosTxop::SetDroppedMpduCallback (DroppedMpdu callback)
   m_baManager->GetRetransmitQueue ()->TraceConnectWithoutContext ("Expired",
                                                                   m_droppedMpduCallback
                                                                   .Bind (WIFI_MAC_DROP_EXPIRED_LIFETIME));
+}
+
+void
+QosTxop::SetMuCwMin (uint16_t cwMin)
+{
+  NS_LOG_FUNCTION (this << cwMin);
+  m_muCwMin = cwMin;
+}
+
+void
+QosTxop::SetMuCwMax (uint16_t cwMax)
+{
+  NS_LOG_FUNCTION (this << cwMax);
+  m_muCwMax = cwMax;
+}
+
+void
+QosTxop::SetMuAifsn (uint8_t aifsn)
+{
+  NS_LOG_FUNCTION (this << +aifsn);
+  m_muAifsn = aifsn;
+}
+
+void
+QosTxop::SetMuEdcaTimer (Time timer)
+{
+  NS_LOG_FUNCTION (this << timer);
+  m_muEdcaTimer = timer;
 }
 
 Ptr<BlockAckManager>

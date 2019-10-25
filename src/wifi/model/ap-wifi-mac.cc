@@ -505,6 +505,60 @@ ApWifiMac::GetEdcaParameterSet (void) const
   return edcaParameters;
 }
 
+MuEdcaParameterSet
+ApWifiMac::GetMuEdcaParameterSet (void) const
+{
+  NS_LOG_FUNCTION (this);
+  MuEdcaParameterSet muEdcaParameters;
+  if (GetHeSupported ())
+    {
+      Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
+      NS_ASSERT (heConfiguration != 0);
+
+      muEdcaParameters.SetQosInfo (0);
+
+      UintegerValue uintegerValue;
+      TimeValue timeValue;
+
+      heConfiguration->GetAttribute ("MuBeAifsn", uintegerValue);
+      muEdcaParameters.SetMuAifsn (AC_BE, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuBeCwMin", uintegerValue);
+      muEdcaParameters.SetMuCwMin (AC_BE, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuBeCwMax", uintegerValue);
+      muEdcaParameters.SetMuCwMax (AC_BE, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("BeMuEdcaTimer", timeValue);
+      muEdcaParameters.SetMuEdcaTimer (AC_BE, timeValue.Get ());
+
+      heConfiguration->GetAttribute ("MuBkAifsn", uintegerValue);
+      muEdcaParameters.SetMuAifsn (AC_BK, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuBkCwMin", uintegerValue);
+      muEdcaParameters.SetMuCwMin (AC_BK, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuBkCwMax", uintegerValue);
+      muEdcaParameters.SetMuCwMax (AC_BK, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("BkMuEdcaTimer", timeValue);
+      muEdcaParameters.SetMuEdcaTimer (AC_BK, timeValue.Get ());
+
+      heConfiguration->GetAttribute ("MuViAifsn", uintegerValue);
+      muEdcaParameters.SetMuAifsn (AC_VI, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuViCwMin", uintegerValue);
+      muEdcaParameters.SetMuCwMin (AC_VI, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuViCwMax", uintegerValue);
+      muEdcaParameters.SetMuCwMax (AC_VI, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("ViMuEdcaTimer", timeValue);
+      muEdcaParameters.SetMuEdcaTimer (AC_VI, timeValue.Get ());
+
+      heConfiguration->GetAttribute ("MuVoAifsn", uintegerValue);
+      muEdcaParameters.SetMuAifsn (AC_VO, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuVoCwMin", uintegerValue);
+      muEdcaParameters.SetMuCwMin (AC_VO, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("MuVoCwMax", uintegerValue);
+      muEdcaParameters.SetMuCwMax (AC_VO, uintegerValue.Get ());
+      heConfiguration->GetAttribute ("VoMuEdcaTimer", timeValue);
+      muEdcaParameters.SetMuEdcaTimer (AC_VO, timeValue.Get ());
+    }
+  return muEdcaParameters;
+}
+
 HtOperation
 ApWifiMac::GetHtOperation (void) const
 {
@@ -709,6 +763,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
     {
       probe.SetHeCapabilities (GetHeCapabilities ());
       probe.SetHeOperation (GetHeOperation ());
+      probe.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
     }
   packet->AddHeader (probe);
 
@@ -799,6 +854,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
     {
       assoc.SetHeCapabilities (GetHeCapabilities ());
       assoc.SetHeOperation (GetHeOperation ());
+      assoc.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
     }
   packet->AddHeader (assoc);
 
@@ -855,6 +911,7 @@ ApWifiMac::SendOneBeacon (void)
     {
       beacon.SetHeCapabilities (GetHeCapabilities ());
       beacon.SetHeOperation (GetHeOperation ());
+      beacon.SetMuEdcaParameterSet (GetMuEdcaParameterSet ());
     }
   packet->AddHeader (beacon);
 
