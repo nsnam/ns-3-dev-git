@@ -190,6 +190,8 @@ typedef uint8_t WifiInformationElementId;
 
 #define IE_EXT_HE_CAPABILITIES                  ((WifiInformationElementId)35)
 #define IE_EXT_HE_OPERATION                     ((WifiInformationElementId)36)
+#define IE_EXT_UORA_PARAMETER_SET               ((WifiInformationElementId)37)
+#define IE_EXT_MU_EDCA_PARAMETER_SET            ((WifiInformationElementId)38)
 
 /**
  * \brief Information element, as defined in 802.11-2007 standard
