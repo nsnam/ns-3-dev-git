@@ -27,6 +27,8 @@
 #include "ns3/socket.h"
 #include "ns3/net-device.h"
 #include "ns3/uinteger.h"
+#include "ns3/string.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/object-vector.h"
 #include "ns3/ipv4-header.h"
@@ -68,6 +70,15 @@ Ipv4L3Protocol::GetTypeId (void)
                    "will be cleared from the buffer.",
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&Ipv4L3Protocol::m_fragmentExpirationTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("EnableRFC6621",
+                   "Enable RFC 6621 packet de-duplication",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&Ipv4L3Protocol::m_enableRfc6621),
+                   MakeBooleanChecker ())
+    .AddAttribute ("DuplicateExpire", "Expiration delay for duplicate cache entries",
+                   TimeValue (MilliSeconds (1)),
+                   MakeTimeAccessor (&Ipv4L3Protocol::m_expire),
                    MakeTimeChecker ())
     .AddTraceSource ("Tx",
                      "Send ipv4 packet to outgoing interface.",
@@ -318,6 +329,15 @@ Ipv4L3Protocol::DoDispose (void)
   m_fragments.clear ();
   m_fragmentsTimers.clear ();
 
+  for (auto dup: m_dups)
+    {
+      if (dup.second.IsRunning ())
+        {
+          dup.second.Cancel ();
+        }
+    }
+  m_dups.clear ();
+
   Object::DoDispose ();
 }
 
@@ -506,7 +526,7 @@ Ipv4L3Protocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) const
 #endif
       if (true)
         {
-          NS_LOG_LOGIC ("For me (Ipv4Addr multicast address");
+          NS_LOG_LOGIC ("For me (Ipv4Addr multicast address)");
           return true;
         }
     }
@@ -627,6 +647,13 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       NS_LOG_LOGIC ("Forwarding to raw socket"); 
       Ptr<Ipv4RawSocketImpl> socket = *i;
       socket->ForwardUp (packet, ipHeader, ipv4Interface);
+    }
+
+  if (m_enableRfc6621 && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
+    {
+      NS_LOG_LOGIC ("Dropping received packet -- duplicate.");
+      m_dropTrace (ipHeader, packet, DROP_DUPLICATE, m_node->GetObject<Ipv4> (), interface);
+      return;
     }
 
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
@@ -1697,4 +1724,85 @@ Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4H
   m_fragments.erase (key);
   m_fragmentsTimers.erase (key);
 }
+
+bool
+Ipv4L3Protocol::UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header)
+{
+  NS_LOG_FUNCTION (this << p << header);
+
+  // \todo RFC 6621 mandates SHA-1 hash.  For now ns3 hash should be fine.
+  uint8_t proto = header.GetProtocol ();
+  Ipv4Address src = header.GetSource ();
+  Ipv4Address dst = header.GetDestination ();
+  uint64_t id = header.GetIdentification ();
+
+  // concat hash value onto id
+  uint64_t hash = id << 32;
+  if (header.GetFragmentOffset () || !header.IsLastFragment ())
+    {
+      // use I-DPD (RFC 6621, Sec 6.2.1)
+      hash |= header.GetFragmentOffset ();
+    }
+  else
+    {
+      // use H-DPD (RFC 6621, Sec 6.2.2)
+
+      // serialize packet
+      Ptr<Packet> pkt = p->Copy ();
+      pkt->AddHeader (header);
+
+      std::ostringstream oss (std::ios_base::binary);
+      pkt->CopyData (&oss, pkt->GetSize ());
+      std::string bytes = oss.str ();
+
+      NS_ASSERT_MSG (bytes.size () >= 20, "Degenerate header serialization");
+
+      // zero out mutable fields
+      bytes[1] = 0;               // DSCP / ECN
+      bytes[6] = bytes[7] = 0;    // Flags / Fragment offset
+      bytes[8] = 0;               // TTL
+      bytes[10] = bytes[11] = 0;  // Header checksum
+      if (header.GetSerializedSize () > 20)     // assume options should be 0'd
+        std::fill_n (bytes.begin () + 20, header.GetSerializedSize () - 20, 0);
+
+      // concat hash onto ID
+      hash |= (uint64_t)Hash32 (bytes);
+    }
+
+  // assume this is a new entry
+  bool isDup = false;
+  DupTuple_t key {hash, proto, src, dst};
+  NS_LOG_DEBUG ("Packet " << p->GetUid () << " key = (" <<
+                std::hex << std::get<0> (key) << ", " <<
+                std::dec << +std::get<1> (key) << ", " <<
+                std::get<2> (key) << ", " <<
+                std::get<3> (key) << ")");
+
+  // place a new entry, on collision the existing entry iterator is returned
+  auto iter = m_dups.emplace_hint (m_dups.end (), key, EventId ());
+  // cancel un-expired event
+  if (iter->second.IsRunning ())
+    {
+      iter->second.Cancel ();
+      isDup = true;  // flag this was a duplicate
+    }
+  // set the expiration event
+  iter->second = Simulator::Schedule (m_expire, &Ipv4L3Protocol::RemoveDuplicate, this, iter);
+  return isDup;
+}
+
+void
+Ipv4L3Protocol::RemoveDuplicate (DupMap_t::const_iterator iter)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_LOGIC ("Remove key = (" <<
+                std::hex << std::get<0> (iter->first) << ", " <<
+                std::dec << +std::get<1> (iter->first) << ", " <<
+                std::get<2> (iter->first) << ", " <<
+                std::get<3> (iter->first) << ")");
+
+  m_dups.erase (iter);
+}
+
+
 } // namespace ns3

@@ -101,7 +101,8 @@ public:
     DROP_BAD_CHECKSUM,   /**< Bad checksum */
     DROP_INTERFACE_DOWN,   /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR,   /**< Route error */
-    DROP_FRAGMENT_TIMEOUT /**< Fragment timeout exceeded */
+    DROP_FRAGMENT_TIMEOUT, /**< Fragment timeout exceeded */
+    DROP_DUPLICATE  /**< Duplicate packet received */
   };
 
   /**
@@ -555,6 +556,29 @@ private:
   MapFragments_t       m_fragments; //!< Fragmented packets.
   Time                 m_fragmentExpirationTimeout; //!< Expiration timeout
   MapFragmentsTimers_t m_fragmentsTimers; //!< Expiration events.
+
+  /// IETF RFC 6621, Section 6.2 de-duplication w/o IPSec
+  /// RFC 6621 recommended duplicate packet tuple: {IPV hash, IP protocol, IP source address, IP destination address}
+  typedef std::tuple <uint64_t, uint8_t, Ipv4Address, Ipv4Address> DupTuple_t;
+  /// Maps packet duplicate tuple to expiration event
+  typedef std::map<DupTuple_t, EventId> DupMap_t;
+
+  /**
+   * Registers duplicate entry, return false if new
+   * \param [in] p Possibly duplicate packet.
+   * \param [in] header Packet \p p header.
+   * \return True if this packet is a duplicate
+   */
+  bool UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header);
+  /**
+   * Remove duplicate packet entry
+   * \param [in] iter Iterator into duplicate map to remove
+   */
+  void RemoveDuplicate (DupMap_t::const_iterator iter);
+
+  bool                 m_enableRfc6621; //!< Enable RFC 6621 de-duplication
+  DupMap_t             m_dups;          //!< map of packet duplicate tuples to expiry event
+  Time                 m_expire;        //!< duplicate entry expiration delay
 
 };
 

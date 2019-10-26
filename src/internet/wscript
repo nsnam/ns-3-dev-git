@@ -297,6 +297,7 @@ def build(bld):
         'test/ipv4-rip-test.cc',
         'test/tcp-close-test.cc',
         'test/icmp-test.cc',
+        'test/ipv4-deduplication-test.cc',
         ]
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
