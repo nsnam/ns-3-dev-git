@@ -91,7 +91,6 @@ V4TraceRoute::V4TraceRoute ()
     m_socket (0),
     m_seq (0),
     m_verbose (true),
-    m_recv (0),
     m_probeCount (0),
     m_maxProbes (3),
     m_ttl (1),

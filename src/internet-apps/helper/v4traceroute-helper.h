@@ -85,6 +85,11 @@ public:
    * \param value  attribute's value
    */
   void SetAttribute (std::string name, const AttributeValue &value);
+  /**
+   * \brief Print the resulting trace routes from given node.
+   * \param node The origin node where the traceroute is initiated.
+   * \param stream The outputstream used to print the resulting traced routes.
+   */
   static void PrintTraceRouteAt (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
 
 

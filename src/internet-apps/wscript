@@ -53,4 +53,3 @@ def build(bld):
         bld.recurse('examples')
 
     bld.ns3_python_bindings()
-

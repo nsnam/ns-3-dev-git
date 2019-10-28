@@ -55,14 +55,14 @@ public:
   * \return the object TypeId
   */
   static TypeId GetTypeId (void);
-
   V4TraceRoute ();
   virtual ~V4TraceRoute ();
-
+  /**
+   * \brief Prints the application traced routes into a given OutputStream.
+   */
   void Print (Ptr<OutputStreamWrapper> stream);
 
 private:
-  // inherited from Application base class.
   virtual void StartApplication (void);
   virtual void StopApplication (void);
   virtual void DoDispose (void);
@@ -79,10 +79,10 @@ private:
    */
   void Receive (Ptr<Socket> socket);
 
-  /* \brief Send one (ICMP ECHO) to the destination.*/
+  /** \brief Send one (ICMP ECHO) to the destination.*/
   void Send ();
 
-  /* \brief Starts a timer after sending an ICMP ECHO.*/
+  /** \brief Starts a timer after sending an ICMP ECHO.*/
   void StartWaitReplyTimer ();
 
   /** \brief Triggers an action if an ICMP TIME EXCEED have not being received
@@ -107,33 +107,31 @@ private:
   uint16_t m_seq;
   /// produce traceroute style output if true
   bool m_verbose;
-  /// received packets counter
-  uint32_t m_recv;
   /// Start time to report total ping time
   Time m_started;
   /// Next packet will be sent
   EventId m_next;
-  // The Current probe value
+  /// The Current probe value
   uint32_t m_probeCount;
-  // The maximum number of probe packets per hop
+  /// The maximum number of probe packets per hop
   u_int16_t m_maxProbes;
-  // The current TTL value
+  /// The current TTL value
   uint16_t m_ttl;
-  // The maximium Ttl (Max number of hops to trace)
+  /// The maximium Ttl (Max number of hops to trace)
   uint32_t m_maxTtl;
-  // The wait time until the response is considered lost.
+  /// The wait time until the response is considered lost.
   Time  m_waitIcmpReplyTimeout;
-
+  /// The timer used to wait for the probes ICMP replies
   EventId m_waitIcmpReplyTimer;
   /// All sent but not answered packets. Map icmp seqno -> when sent
   std::map<uint16_t, Time> m_sent;
-  // Stream of characters used for printing the traceroute results
+  /// Stream of characters used for printing the traceroute results
   std::ostringstream os;
-  // Stream of characters used for printing a single route
+  /// Stream of characters used for printing a single route
   std::ostringstream osRoute;
-  // The Ipv4 address of the latest hop found
+  /// The Ipv4 address of the latest hop found
   std::ostringstream routeIpv4;
-  // Stream of the traceroute used for the output file
+  /// Stream of the traceroute used for the output file
   Ptr<OutputStreamWrapper> printStream;
 
 
