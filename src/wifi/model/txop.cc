@@ -186,7 +186,7 @@ void
 Txop::ResetCw (void)
 {
   NS_LOG_FUNCTION (this);
-  m_cw = m_cwMin;
+  m_cw = GetMinCw ();
   m_cwTrace = m_cw;
 }
 
@@ -195,7 +195,9 @@ Txop::UpdateFailedCw (void)
 {
   NS_LOG_FUNCTION (this);
   //see 802.11-2012, section 9.19.2.5
-  m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
+  m_cw = std::min ( 2 * (m_cw + 1) - 1, GetMaxCw ());
+  // if the MU EDCA timer is running, CW cannot be less than MU CW min
+  m_cw = std::max (m_cw, GetMinCw ());
   m_cwTrace = m_cw;
 }
 

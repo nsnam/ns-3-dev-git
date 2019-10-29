@@ -416,6 +416,47 @@ public:
    * \param timer the timer duration.
    */
   void SetMuEdcaTimer (Time timer);
+  /**
+   * Start the MU EDCA Timer.
+   */
+  void StartMuEdcaTimerNow (void);
+  /**
+   * Return true if the MU EDCA Timer is running, false otherwise.
+   *
+   * \return whether the MU EDCA Timer is running
+   */
+  bool MuEdcaTimerRunning (void) const;
+  /**
+   * Return true if the EDCA is disabled (the MU EDCA Timer is running and the
+   * MU AIFSN is zero), false otherwise.
+   *
+   * \return whether the EDCA is disabled
+   */
+  bool EdcaDisabled (void) const;
+  /**
+   * Return the minimum contention window size from the EDCA Parameter Set
+   * or the MU EDCA Parameter Set, depending on whether the MU EDCA Timer is
+   * running or not.
+   *
+   * \return the currently used minimum contention window size.
+   */
+  uint32_t GetMinCw (void) const override;
+  /**
+   * Return the maximum contention window size from the EDCA Parameter Set
+   * or the MU EDCA Parameter Set, depending on whether the MU EDCA Timer is
+   * running or not.
+   *
+   * \return the currently used maximum contention window size.
+   */
+  uint32_t GetMaxCw (void) const override;
+  /**
+   * Return the number of slots that make up an AIFS according to the
+   * EDCA Parameter Set or the MU EDCA Parameter Set, depending on whether the
+   * MU EDCA Timer is running or not.
+   *
+   * \return the number of slots that currently make up an AIFS.
+   */
+  uint8_t GetAifsn (void) const override;
 
 protected:
   void DoDispose (void) override;
@@ -451,10 +492,11 @@ private:
   Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit BlockAckRequest should be sent upon missed BlockAck Response
 
-  uint32_t m_muCwMin;       //!< the MU CW minimum
-  uint32_t m_muCwMax;       //!< the MU CW maximum
-  uint8_t m_muAifsn;        //!< the MU AIFSN
-  Time m_muEdcaTimer;       //!< the MU EDCA Timer
+  uint32_t m_muCwMin;          //!< the MU CW minimum
+  uint32_t m_muCwMax;          //!< the MU CW maximum
+  uint8_t m_muAifsn;           //!< the MU AIFSN
+  Time m_muEdcaTimer;          //!< the MU EDCA Timer
+  Time m_muEdcaTimerStartTime; //!< last start time of the MU EDCA Timer
 
   TracedCallback<Time, Time> m_txopTrace; //!< TXOP trace callback
 };

@@ -333,6 +333,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
     {
       Ptr<Txop> txop = *i;
       if (txop->GetAccessStatus () == Txop::REQUESTED
+          && (!txop->IsQosTxop () || !StaticCast<QosTxop> (txop)->EdcaDisabled ())
           && GetBackoffEndFor (txop) <= Simulator::Now () )
         {
           /**
@@ -539,6 +540,19 @@ ChannelAccessManager::DoRestartAccessTimeoutIfNeeded (void)
                                                  &ChannelAccessManager::AccessTimeout, this);
         }
     }
+}
+
+void
+ChannelAccessManager::DisableEdcaFor (Ptr<Txop> qosTxop, Time duration)
+{
+  NS_LOG_FUNCTION (this << qosTxop << duration);
+  NS_ASSERT (qosTxop->IsQosTxop ());
+  UpdateBackoff ();
+  Time resume = Simulator::Now () + duration;
+  NS_LOG_DEBUG ("Backoff will resume at time " << resume << " with "
+                << qosTxop->GetBackoffSlots () << " remaining slot(s)");
+  qosTxop->UpdateBackoffSlotsNow (0, resume);
+  DoRestartAccessTimeoutIfNeeded ();
 }
 
 void

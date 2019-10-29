@@ -115,6 +115,17 @@ public:
   Time GetAccessGrantStart (bool ignoreNav = false) const;
 
   /**
+   * \param qosTxop a QosTxop that needs to be disabled
+   * \param duration the amount of time during which the QosTxop is disabled
+   *
+   * Disable the given EDCA for the given amount of time. This EDCA will not be
+   * granted channel access during this period and the backoff timer will be frozen.
+   * After this period, the EDCA will start normal operations again by resuming
+   * the backoff timer.
+   */
+  void DisableEdcaFor (Ptr<Txop> qosTxop, Time duration);
+
+  /**
    * \param duration expected duration of reception
    *
    * Notify the Txop that a packet reception started

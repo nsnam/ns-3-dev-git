@@ -1506,6 +1506,21 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                                                                               ret.second, rxSignalInfo.snr,
                                                                               tag.Get (staId),  m_txParams.m_txVector);
                 }
+
+              if (m_psduMap.at (staId)->GetHeader (0).IsQosData ()
+                  && (blockAck.GetAckType (index)  // Ack or All-ack context
+                      || std::any_of (blockAck.GetBitmap (index).begin (),
+                                      blockAck.GetBitmap (index).end (),
+                                      [](uint8_t b) { return b != 0; })))
+                {
+                  NS_ASSERT (m_psduMap.at (staId)->GetHeader (0).HasData ());
+                  NS_ASSERT (m_psduMap.at (staId)->GetHeader (0).GetQosTid () == tid);
+                  // the station has received a response from the AP for the HE TB PPDU
+                  // transmitted in response to a Basic Trigger Frame and at least one
+                  // MPDU was acknowledged. Therefore, it needs to update the access
+                  // parameters if it received an MU EDCA Parameter Set element.
+                  m_mac->GetQosTxop (tid)->StartMuEdcaTimerNow ();
+                }
             }
 
           // cancel the timer

@@ -166,19 +166,19 @@ public:
    *
    * \return the minimum contention window size.
    */
-  uint32_t GetMinCw (void) const;
+  virtual uint32_t GetMinCw (void) const;
   /**
    * Return the maximum contention window size.
    *
    * \return the maximum contention window size.
    */
-  uint32_t GetMaxCw (void) const;
+  virtual uint32_t GetMaxCw (void) const;
   /**
    * Return the number of slots that make up an AIFS.
    *
    * \return the number of slots that make up an AIFS.
    */
-  uint8_t GetAifsn (void) const;
+  virtual uint8_t GetAifsn (void) const;
   /**
    * Return the TXOP limit.
    *
