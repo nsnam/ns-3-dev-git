@@ -49,7 +49,6 @@
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/simple-net-device-helper.h"
-#include "ns3/packet-sink-helper.h"
 
 #include "ns3/traffic-control-layer.h"
 
