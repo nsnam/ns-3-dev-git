@@ -221,3 +221,15 @@ Ipv4QueueDiscItem. It returns true if marking the packet is successful, i.e.,
 it successfully sets the CE bit in the IPv4 header. The ``Mark ()`` method
 will return false, however, if the IPv4 header indicates the ``ECN_NotECT``
 codepoint.
+
+RFC 6621 duplicate packet detection 
+***********************************
+To support mesh network protocols over broadcast-capable networks (e.g. Wi-Fi),
+it is useful to have support for duplicate packet detection and filtering,
+since nodes in a network may receive multiple copies of flooded multicast
+packets arriving on different paths.  The ``Ipv4L3Protocol`` model in |ns3| 
+has a model for hash-based duplicate packet detection (DPD) based on 
+Section 6.2.2 of (:rfc:`6621`).  The model, disabled by default, must be
+enabled by setting ``EnableRFC6621`` to true.  A second attribute, 
+``DuplicateExpire``, sets the expiration delay for erasing the cache entry
+of a packet in the duplicate cache; the delay value defaults to 1ms. 
