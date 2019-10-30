@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2013 Universita' di Firenze
- * Copyright (c) 2019 WPL, Inc. : RFC 6621 mutlicast packet de-duplication
+ * Copyright (c) 2019 Caliola Engineering, LLC : RFC 6621 multicast packet de-duplication
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
- * Modified (2019): Jared Dulmage <jared.dulmage@wpli.net>
+ * Modified (2019): Jared Dulmage <jared.dulmage@caliola.com>
  *   Tests dissemination of multicast packets across a mesh
  *   network to all nodes over multiple hops.  Tests check
  *   the number of received packets and dropped packets
