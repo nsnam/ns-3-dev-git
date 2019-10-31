@@ -751,22 +751,27 @@ synonym for ``--build-profile``.
 
 The build profile controls the use of logging, assertions, and compiler optimization:
 
-+--------------------+---------------------------------+-----------------------------------------------------------------+
-| Feature            | Build Profile                                                                                     |
-+                    +---------------------------------+-------------------------------+---------------------------------+
-|                    | ``debug``                       | ``release``                   | ``optimized``                   |
-+====================+=================================+===============================+=================================+
-| Enabled Features   | |  ``NS3_BUILD_PROFILE_DEBUG``  | ``NS3_BUILD_PROFILE_RELEASE`` | ``NS3_BUILD_PROFILE_OPTIMIZED`` |
-|                    | |  ``NS_LOG...``                |                               |                                 |
-|                    | |  ``NS_ASSERT...``             |                               |                                 |
-+--------------------+---------------------------------+-------------------------------+---------------------------------+
-| Code Wrapper Macro | ``NS_BUILD_DEBUG(code)``        |  ``NS_BUILD_RELEASE(code)``   | ``NS_BUILD_OPTIMIZED(code)``    |
-+--------------------+---------------------------------+-------------------------------+---------------------------------+
-| Compiler Flags     | ``-O0 -ggdb -g3``               | ``-O3 -g0``                   | ``-O3 -g``                      |
-|                    |                                 | ``-fomit-frame-pointer``      | ``-fstrict-overflow``           |
-|                    |                                 |                               | ``-march=native``               |
-+--------------------+---------------------------------+-------------------------------+---------------------------------+
+.. table:: Build profiles
+    :widths: 10 28 30 32
 
+    +----------+---------------------------------+-----------------------------------------------------------------+
+    | Feature  | Build Profile                                                                                     |
+    +          +---------------------------------+-------------------------------+---------------------------------+
+    |          | ``debug``                       | ``release``                   | ``optimized``                   |
+    +==========+=================================+===============================+=================================+
+    | Enabled  | |  ``NS3_BUILD_PROFILE_DEBUG``  | ``NS3_BUILD_PROFILE_RELEASE`` | ``NS3_BUILD_PROFILE_OPTIMIZED`` |
+    | Features | |  ``NS_LOG...``                |                               |                                 |
+    |          | |  ``NS_ASSERT...``             |                               |                                 |
+    +----------+---------------------------------+-------------------------------+---------------------------------+
+    | Code     | ``NS_BUILD_DEBUG(code)``        |  ``NS_BUILD_RELEASE(code)``   | ``NS_BUILD_OPTIMIZED(code)``    |
+    | Wrapper  |                                 |                               |                                 |
+    | Macro    |                                 |                               |                                 |
+    +----------+---------------------------------+-------------------------------+---------------------------------+
+    | Compiler | ``-O0 -ggdb -g3``               | ``-O3 -g0``                   | ``-O3 -g``                      |
+    | Flags    |                                 | ``-fomit-frame-pointer``      | ``-fstrict-overflow``           |
+    |          |                                 |                               | ``-march=native``               |
+    +----------+---------------------------------+-------------------------------+---------------------------------+
+    
 As you can see, logging and assertions are only available in debug builds.
 Recommended practice is to develop your scenario in debug mode, then
 conduct repetitive runs (for statistics or changing parameters) in
