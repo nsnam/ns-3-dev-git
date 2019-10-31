@@ -71,10 +71,10 @@ Ipv4L3Protocol::GetTypeId (void)
                    TimeValue (Seconds (30)),
                    MakeTimeAccessor (&Ipv4L3Protocol::m_fragmentExpirationTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("EnableRFC6621",
-                   "Enable RFC 6621 packet de-duplication",
+    .AddAttribute ("EnableDuplicatePacketDetection",
+                   "Enable multicast duplicate packet detection based on RFC 6621",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&Ipv4L3Protocol::m_enableRfc6621),
+                   MakeBooleanAccessor (&Ipv4L3Protocol::m_enableDpd),
                    MakeBooleanChecker ())
     .AddAttribute ("DuplicateExpire", "Expiration delay for duplicate cache entries",
                    TimeValue (MilliSeconds (1)),
@@ -649,7 +649,7 @@ Ipv4L3Protocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t p
       socket->ForwardUp (packet, ipHeader, ipv4Interface);
     }
 
-  if (m_enableRfc6621 && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
+  if (m_enableDpd && ipHeader.GetDestination ().IsMulticast () && UpdateDuplicate (packet, ipHeader))
     {
       NS_LOG_LOGIC ("Dropping received packet -- duplicate.");
       m_dropTrace (ipHeader, packet, DROP_DUPLICATE, m_node->GetObject<Ipv4> (), interface);

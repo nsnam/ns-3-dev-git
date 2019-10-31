@@ -266,7 +266,7 @@ Ipv4DeduplicationTest::DoRun (void)
 {
   // multicast target
   const std::string targetAddr = "239.192.100.1";
-  Config::SetDefault ("ns3::Ipv4L3Protocol::EnableRFC6621", BooleanValue (m_mode != DISABLED));
+  Config::SetDefault ("ns3::Ipv4L3Protocol::EnableDuplicatePacketDetection", BooleanValue (m_mode != DISABLED));
   Config::SetDefault ("ns3::Ipv4L3Protocol::DuplicateExpire", TimeValue (m_expire));
 
   // Create topology

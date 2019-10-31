@@ -576,7 +576,7 @@ private:
    */
   void RemoveDuplicate (DupMap_t::const_iterator iter);
 
-  bool                 m_enableRfc6621; //!< Enable RFC 6621 de-duplication
+  bool                 m_enableDpd;     //!< Enable multicast duplicate packet detection
   DupMap_t             m_dups;          //!< map of packet duplicate tuples to expiry event
   Time                 m_expire;        //!< duplicate entry expiration delay
 
