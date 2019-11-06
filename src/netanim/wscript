@@ -16,4 +16,4 @@ def build (bld) :
     headers.source = ['model/animation-interface.h', ]
     if (bld.env['ENABLE_EXAMPLES']) :
        bld.recurse('examples')
-
+    bld.ns3_python_bindings()
