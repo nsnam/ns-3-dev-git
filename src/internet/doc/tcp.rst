@@ -75,6 +75,10 @@ TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
 TcpSocketBase. In future releases, they can be extracted as separate modules,
 following the congestion control design.
 
+As of the ns-3.31 release, the default initial window was set to 10 segments
+(in previous releases, it was set to 1 segment).  This aligns with current
+Linux default, and is discussed further in :rfc:`6928`.
+
 Acknowledgments
 +++++++++++++++
 

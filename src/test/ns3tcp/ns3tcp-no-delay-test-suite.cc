@@ -121,6 +121,8 @@ Ns3TcpNoDelayTestCase::DoRun (void)
 
   // Enable or disable TCP no delay option
   Config::SetDefault ("ns3::TcpSocket::TcpNoDelay", BooleanValue (m_noDelay));
+  // This test was written with initial window of 1 segment
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
 
   // Connect the socket writer
   Simulator::Schedule (Seconds (1), &SocketWriter::Connect, socketWriter);

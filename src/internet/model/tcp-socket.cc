@@ -73,7 +73,7 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("InitialCwnd",
                    "TCP initial congestion window size (segments)",
-                   UintegerValue (1),
+                   UintegerValue (10),
                    MakeUintegerAccessor (&TcpSocket::GetInitialCwnd,
                                          &TcpSocket::SetInitialCwnd),
                    MakeUintegerChecker<uint32_t> ())

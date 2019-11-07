@@ -243,6 +243,9 @@ void
 Ns3TcpCwndTestCase1::DoRun (void)
 {
   NS_LOG_DEBUG ("Starting test case 1");
+  // This test was written with initial window of 1 segment
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
+
   //
   // Create two nodes.  One (node zero) will be the node with the TCP
   // under test which is the ns-3 TCP implementation.  The other node (node
@@ -446,6 +449,8 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // Set up some default values for the simulation.
   Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 4)));
   Packet::EnablePrinting ();
+  // This test was written with initial window of 1 segment
+  Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (1));
 
   NodeContainer n0n1;
   n0n1.Create (2);
