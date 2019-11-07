@@ -132,6 +132,14 @@ TcpLinuxReno::GetSsThresh (Ptr<const TcpSocketState> state,
   return std::max<uint32_t> (2 * state->m_segmentSize, state->m_cWnd / 2);
 }
 
+void
+TcpLinuxReno::ReduceCwnd (Ptr<TcpSocketState> tcb)
+{
+  NS_LOG_FUNCTION (this << tcb);
+
+  tcb->m_cWnd = std::max ( tcb->m_cWnd.Get () / 2, tcb->m_segmentSize);
+}
+
 Ptr<TcpCongestionOps>
 TcpLinuxReno::Fork ()
 {
