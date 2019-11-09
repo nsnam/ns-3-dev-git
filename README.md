@@ -10,13 +10,13 @@ The Network Simulator, Version 3
 4) [Getting access to the ns-3 documentation](#getting-access-to-the-ns-3-documentation)
 5) [Working with the development version of ns-3](#working-with-the-development-version-of-ns-3)
 
-Note:  Much more substantial information about ns-3 can be found at
+Note: More substantial information about ns-3 can be found at
 http://www.nsnam.org
 
 ## An Open Source project
 
-ns-3 is a free open source project aiming to build a discrete-event
-network simulator targeted for simulation research and education.   
+ns-3 is a free open source project aimed at building a discrete-event
+network simulator targeted for simulating research and education.   
 This is a collaborative project; we hope that
 the missing pieces of the models we have not yet implemented
 will be contributed by the community in an open collaboration
@@ -36,15 +36,15 @@ http://www.nsnam.org/documentation/latest/
 
 The code for the framework and the default models provided
 by ns-3 is built as a set of libraries. User simulations
-are expected to be written as simple programs that make
+are expected to be written in simple programs that make
 use of these ns-3 libraries.
 
-To build the set of default libraries and the example
+To build the set of default libraries together with example
 programs included in this package, you need to use the
 tool 'waf'. Detailed information on how to use waf is
 included in the file doc/build.txt
 
-However, the real quick and dirty way to get started is to
+However, the real quick and easy way to get started is to
 type the command
 ```shell
 ./waf configure --enable-examples
@@ -99,7 +99,7 @@ This documentation includes:
 
   - models in the ns-3 model library
 
-  - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
+  - a wiki-link for user-contributed tips: http://www.nsnam.org/wiki/
 
   - API documentation generated using doxygen: this is
     a reference manual, most likely not very well suited
