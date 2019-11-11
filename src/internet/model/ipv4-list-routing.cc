@@ -75,7 +75,7 @@ Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit 
   NS_LOG_FUNCTION (this << stream);
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
                         << ", Time: " << Now().As (unit)
-                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
+                        << ", Local time: " << m_ipv4->GetObject<Node> ()->GetLocalTime ().As (unit)
                         << ", Ipv4ListRouting table" << std::endl;
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)

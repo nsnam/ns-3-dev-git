@@ -86,7 +86,7 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
 
   *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
+      << ", Local time: " << m_ipv6->GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", Ipv6StaticRouting table" << std::endl;
 
   if (GetNRoutes () > 0)
