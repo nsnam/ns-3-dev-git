@@ -549,11 +549,12 @@ LteEnbRrcProtocolReal::DoSendSystemInformation (uint16_t cellId, LteRrcSap::Syst
               if (ueRrc->GetCellId () == cellId)
                 {
                   NS_LOG_LOGIC ("sending SI to IMSI " << ueDev->GetImsi ());
-                  ueRrc->GetLteUeRrcSapProvider ()->RecvSystemInformation (msg);
-                  Simulator::Schedule (RRC_REAL_MSG_DELAY, 
-                                       &LteUeRrcSapProvider::RecvSystemInformation,
-                                       ueRrc->GetLteUeRrcSapProvider (), 
-                                       msg);
+
+                  Simulator::ScheduleWithContext (node->GetId (),
+                                                  RRC_REAL_MSG_DELAY,
+                                                  &LteUeRrcSapProvider::RecvSystemInformation,
+                                                  ueRrc->GetLteUeRrcSapProvider (),
+                                                  msg);
                 }
             }
         }
