@@ -952,15 +952,15 @@ TcpGeneralTest::SetInitialCwnd (SocketWho who, uint32_t initialCwnd)
     }
 }
 void
-TcpGeneralTest::SetEcn (SocketWho who, TcpSocketBase::EcnMode_t ecnMode)
+TcpGeneralTest::SetEcnMode (SocketWho who, TcpSocketState::EcnMode_t ecnMode)
 {
   if (who == SENDER)
     {
-      m_senderSocket->SetEcn (ecnMode);
+      m_senderSocket->SetEcnMode (ecnMode);
     }
    else if (who == RECEIVER)
    {
-      m_receiverSocket->SetEcn (ecnMode);
+      m_receiverSocket->SetEcnMode (ecnMode);
     }
   else
     {

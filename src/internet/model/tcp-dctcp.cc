@@ -87,6 +87,18 @@ Ptr<TcpCongestionOps> TcpDctcp::Fork (void)
 }
 
 void
+TcpDctcp::Init (Ptr<TcpSocketState> tcb)
+{
+  NS_LOG_FUNCTION (this << tcb);
+  if (tcb->m_ecnMode != TcpSocketState::DctcpEcn)
+    {
+      NS_LOG_INFO (this << "Enabling DctcpEcn for DCTCP");
+      tcb->m_ecnMode = TcpSocketState::DctcpEcn;
+    }
+  tcb->m_ectCodePoint = TcpSocketState::Ect1;
+}
+
+void
 TcpDctcp::ReduceCwnd (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
@@ -244,6 +256,5 @@ TcpDctcp::CwndEvent (Ptr<TcpSocketState> tcb,
       /* Don't care for the rest. */
       break;
     }
-
 }
 }

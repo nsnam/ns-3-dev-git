@@ -75,6 +75,16 @@ public:
   virtual std::string GetName () const = 0;
 
   /**
+   * \brief Set configuration required by congestion control algorithm
+   *
+   * \param tcb internal congestion state
+   */
+  virtual void Init (Ptr<TcpSocketState> tcb)
+    {
+      NS_UNUSED (tcb);
+    }
+
+  /**
    * \brief Get the slow start threshold after a loss event
    *
    * Is guaranteed that the congestion control state (\p TcpAckState_t) is

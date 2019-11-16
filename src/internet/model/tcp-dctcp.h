@@ -65,6 +65,15 @@ public:
    */
   virtual std::string GetName () const;
 
+  /**
+   * \brief Set configuration required by congestion control algorithm,
+   *        This method will force DctcpEcn mode and will force usage of ECT(1),
+   *        despite any other configuration in the base classes.
+   *
+   * \param ecnMode ECN Mode
+   */
+  virtual void Init (Ptr<TcpSocketState> tcb);
+
   virtual Ptr<TcpCongestionOps> Fork ();
 
   /**
@@ -91,7 +100,6 @@ public:
    */
   virtual void CwndEvent (Ptr<TcpSocketState> tcb,
                           const TcpSocketState::TcpCAEvent_t event);
-
 private:
   /**
    * \brief Changes state of m_ceState to true

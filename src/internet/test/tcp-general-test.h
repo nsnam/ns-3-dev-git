@@ -597,7 +597,7 @@ protected:
    * \param who socket to force
    * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
    */
-  void SetEcn (SocketWho who, TcpSocketBase::EcnMode_t ecnMode);
+  void SetEcnMode (SocketWho who, TcpSocketState::EcnMode_t ecnMode);
 
   /**
    * \brief Forcefully set the initial ssth

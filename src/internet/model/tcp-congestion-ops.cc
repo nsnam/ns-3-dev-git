@@ -17,7 +17,6 @@
  *
  */
 #include "tcp-congestion-ops.h"
-#include "tcp-socket-base.h"
 #include "ns3/log.h"
 
 namespace ns3 {

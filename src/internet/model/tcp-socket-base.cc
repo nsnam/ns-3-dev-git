@@ -143,10 +143,10 @@ TcpSocketBase::GetTypeId (void)
                    MakeBooleanAccessor (&TcpSocketBase::m_limitedTx),
                    MakeBooleanChecker ())
     .AddAttribute ("EcnMode", "Determines the mode of ECN",
-                   EnumValue (EcnMode_t::NoEcn),
-                   MakeEnumAccessor (&TcpSocketBase::m_ecnMode),
-                   MakeEnumChecker (EcnMode_t::NoEcn, "NoEcn",
-                                    EcnMode_t::ClassicEcn, "ClassicEcn"))
+                   EnumValue (TcpSocketState::EcnMode_t::NoEcn),
+                   MakeEnumAccessor (&TcpSocketBase::SetEcnMode),
+                   MakeEnumChecker (TcpSocketState::NoEcn, "NoEcn",
+                                    TcpSocketState::ClassicEcn, "ClassicEcn"))
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
@@ -338,7 +338,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_txTrace (sock.m_txTrace),
     m_rxTrace (sock.m_rxTrace),
     m_pacingTimer (Timer::REMOVE_ON_DESTROY),
-    m_ecnMode (sock.m_ecnMode),
     m_ecnEchoSeq (sock.m_ecnEchoSeq),
     m_ecnCESeq (sock.m_ecnCESeq),
     m_ecnCWRSeq (sock.m_ecnCWRSeq)
@@ -368,6 +367,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
   if (sock.m_congestionControl)
     {
       m_congestionControl = sock.m_congestionControl->Fork ();
+      m_congestionControl->Init (m_tcb);
     }
 
   if (sock.m_recoveryOps)
@@ -1008,7 +1008,7 @@ TcpSocketBase::DoConnect (void)
   if (m_state == CLOSED || m_state == LISTEN || m_state == SYN_SENT || m_state == LAST_ACK || m_state == CLOSE_WAIT)
     { // send a SYN packet and change state into SYN_SENT
       // send a SYN packet with ECE and CWR flags set if sender is ECN capable
-      if (m_ecnMode == EcnMode_t::ClassicEcn)
+      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn)
         {
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
         }
@@ -2095,7 +2095,8 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if the traffic is ECN capable and
        * sender has sent ECN SYN packet
        */
-      if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+
+      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN packet");
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE);
@@ -2125,7 +2126,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       /* Check if we received an ECN SYN-ACK packet. Change the ECN state of sender to ECN_IDLE if receiver has sent an ECN SYN-ACK
        * packet and the  traffic is ECN Capable
        */
-      if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
+      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN-ACK packet.");
           NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_IDLE");
@@ -2205,7 +2206,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN
        * packet and the  traffic is ECN Capable
        */
-      if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN packet");
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
@@ -2771,7 +2772,8 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN
    * packet and the traffic is ECN Capable
    */
-  if (m_ecnMode == EcnMode_t::ClassicEcn && (h.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+  if (m_tcb->m_ecnMode != TcpSocketState::NoEcn &&
+      (h.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
     {
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE);
       NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_IDLE");
@@ -2812,15 +2814,7 @@ TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
       SocketIpTosTag ipTosTag;
       if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn (GetIpTos ()))
         {
-          // Classic traffic have ECT(0) flags whereas L4S have ECT(1) flags set with the last received ipTos
-          if (m_congestionControl->GetName () == "TcpDctcp")
-            {
-              ipTosTag.SetTos (MarkEcnEct1 (GetIpTos ()));
-            }
-          else
-            {
-              ipTosTag.SetTos (MarkEcnEct0 (GetIpTos ()));
-            }
+          ipTosTag.SetTos (MarkEcnCodePoint (GetIpTos (), m_tcb->m_ectCodePoint));
         }
       else
         {
@@ -2831,24 +2825,10 @@ TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
     }
   else
     {
-      if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize () > 0)
-        {
-          // Classic traffic have ECT0 flags whereas L4S have ECT1 flags set
-          SocketIpTosTag ipTosTag;
-          if (m_congestionControl->GetName () == "TcpDctcp")
-            {
-              ipTosTag.SetTos (MarkEcnEct1 (GetIpTos ()));
-            }
-          else
-            {
-              ipTosTag.SetTos (MarkEcnEct0 (GetIpTos ()));
-            }
-          p->AddPacketTag (ipTosTag);
-        }
-      else if (m_congestionControl->GetName () == "TcpDctcp")
+      if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize () > 0) || m_tcb->m_ecnMode == TcpSocketState::DctcpEcn)
         {
           SocketIpTosTag ipTosTag;
-          ipTosTag.SetTos (MarkEcnEct1 (GetIpTos ()));
+          ipTosTag.SetTos (MarkEcnCodePoint (GetIpTos (), m_tcb->m_ectCodePoint));
           p->AddPacketTag (ipTosTag);
         }
     }
@@ -2858,15 +2838,7 @@ TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
       SocketIpv6TclassTag ipTclassTag;
       if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && !CheckNoEcn (GetIpv6Tclass ()))
         {
-          //Classic traffic have ECT0 flags whereas L4S have ECT1 flags set
-          if (m_congestionControl->GetName () == "TcpDctcp")
-            {
-              ipTclassTag.SetTclass (MarkEcnEct1 (GetIpv6Tclass ()));
-            }
-          else
-            {
-              ipTclassTag.SetTclass (MarkEcnEct0 (GetIpv6Tclass ()));
-            }
+          ipTclassTag.SetTclass (MarkEcnCodePoint (GetIpv6Tclass (), m_tcb->m_ectCodePoint));
         }
       else
         {
@@ -2877,24 +2849,10 @@ TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
     }
   else
     {
-      if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize () > 0)
+      if ((m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED && p->GetSize () > 0) || m_tcb->m_ecnMode == TcpSocketState::DctcpEcn)
         {
           SocketIpv6TclassTag ipTclassTag;
-          // Classic traffic have ECT0 flags whereas L4S have ECT1 flags set
-          if (m_congestionControl->GetName () == "TcpDctcp")
-            {
-              ipTclassTag.SetTclass (MarkEcnEct1 (GetIpv6Tclass ()));
-            }
-          else
-            {
-              ipTclassTag.SetTclass (MarkEcnEct0 (GetIpv6Tclass ()));
-            }
-          p->AddPacketTag (ipTclassTag);
-        }
-      else if (m_congestionControl->GetName () == "TcpDctcp")
-        {
-          SocketIpv6TclassTag ipTclassTag;
-          ipTclassTag.SetTclass (MarkEcnEct0 (GetIpv6Tclass ()));
+          ipTclassTag.SetTclass (MarkEcnCodePoint (GetIpv6Tclass (), m_tcb->m_ectCodePoint));
           p->AddPacketTag (ipTclassTag);
         }
     }
@@ -2921,6 +2879,7 @@ TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
       p->ReplacePacketTag (priorityTag);
     }
 }
+
 /* Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
     TCP header, and send to TcpL4Protocol */
 uint32_t
@@ -3521,7 +3480,7 @@ TcpSocketBase::ReTxTimeout ()
     {
       if (m_synCount > 0)
         {
-          if (m_ecnMode == EcnMode_t::ClassicEcn)
+          if (m_tcb->m_ecnMode != TcpSocketState::NoEcn)
             {
               SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
             }
@@ -3702,27 +3661,11 @@ TcpSocketBase::PersistTimeout ()
   if (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED)
     {
       SocketIpTosTag ipTosTag;
-      //Classic traffic have ECT0 flags whereas L4S have ECT1 flags set
-      if (m_congestionControl->GetName () == "TcpDctcp")
-        {
-          ipTosTag.SetTos (MarkEcnEct1 (0));
-        }
-      else
-        {
-          ipTosTag.SetTos (MarkEcnEct0 (0));
-        }
+      ipTosTag.SetTos (MarkEcnCodePoint (0, m_tcb->m_ectCodePoint));
       p->AddPacketTag (ipTosTag);
 
       SocketIpv6TclassTag ipTclassTag;
-      //Classic traffic have ECT0 flags whereas L4S have ECT1 flags set
-      if (m_congestionControl->GetName () == "TcpDctcp")
-        {
-          ipTclassTag.SetTclass (MarkEcnEct1 (0));
-        }
-      else
-        {
-          ipTclassTag.SetTclass (MarkEcnEct0 (0));
-        }
+      ipTclassTag.SetTclass (MarkEcnCodePoint (0, m_tcb->m_ectCodePoint));
       p->AddPacketTag (ipTclassTag);
     }
   m_txTrace (p, tcpHeader, this);
@@ -4303,6 +4246,7 @@ TcpSocketBase::SetCongestionControlAlgorithm (Ptr<TcpCongestionOps> algo)
 {
   NS_LOG_FUNCTION (this << algo);
   m_congestionControl = algo;
+  m_congestionControl->Init (m_tcb);
 }
 
 void
@@ -4338,10 +4282,10 @@ TcpSocketBase::NotifyPacingPerformed (void)
 }
 
 void
-TcpSocketBase::SetEcn (EcnMode_t ecnMode)
+TcpSocketBase::SetEcnMode (TcpSocketState::EcnMode_t ecnMode)
 {
-  NS_LOG_FUNCTION (this);
-  m_ecnMode = ecnMode;
+  NS_LOG_FUNCTION (this << ecnMode);
+  m_tcb->m_ecnMode = ecnMode;
 }
 
 //RttHistory methods

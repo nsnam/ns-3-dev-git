@@ -405,11 +405,11 @@ TcpEcnTest::ConfigureProperties ()
   TcpGeneralTest::ConfigureProperties ();
   if (m_testcase == 2 || m_testcase == 4 || m_testcase == 5 || m_testcase == 6)
     {
-      SetEcn (SENDER, TcpSocketBase::ClassicEcn);
+      SetEcnMode (SENDER, TcpSocketState::ClassicEcn);
     }
   if (m_testcase == 3 || m_testcase == 4 ||m_testcase == 5 || m_testcase == 6)
     {
-      SetEcn (RECEIVER, TcpSocketBase::ClassicEcn);
+      SetEcnMode (RECEIVER, TcpSocketState::ClassicEcn);
     }
 }
 

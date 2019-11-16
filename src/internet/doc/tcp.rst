@@ -835,11 +835,7 @@ To enable DCTCP on a chosen TCP socket, the following configuration can be used:
 
   Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
 
-DCTCP requires ECN to be enabled:
-
-::
-
-  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("ClassicEcn"));
+The ECN is enabled automatically when DCTCP is used, even if the user has not explicitly enabled it.
 
 DCTCP depends on a simple queue management algorithm in routers / switches to
 mark packets. The current implementation of DCTCP in ns-3 uses RED with a simple
