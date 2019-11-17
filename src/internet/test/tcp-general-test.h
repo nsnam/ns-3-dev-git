@@ -592,12 +592,12 @@ protected:
   void SetInitialCwnd (SocketWho who, uint32_t initialCwnd);
 
   /**
-   * \brief Forcefully set the ecn mode on
+   * \brief Forcefully set the ecn use on
    *
    * \param who socket to force
-   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   * \param useEcn Mode of ECN. Currently Off and On are supported.
    */
-  void SetEcnMode (SocketWho who, TcpSocketState::EcnMode_t ecnMode);
+  void SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn);
 
   /**
    * \brief Forcefully set the initial ssth

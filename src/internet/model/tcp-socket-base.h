@@ -532,11 +532,11 @@ public:
     }
 
   /**
-   * \brief Set ECN mode to use on the socket
+   * \brief Set use of ECN on the socket
    *
-   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   * \param useEcn Use of ECN. Currently Off and On are supported.
    */
-  void SetEcnMode (TcpSocketState::EcnMode_t ecnMode);
+  void SetUseEcn (TcpSocketState::UseEcn_t useEcn);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno

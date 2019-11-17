@@ -786,16 +786,21 @@ Data Center TCP (DCTCP)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 DCTCP is an enhancement to the TCP congestion control algorithm for data center
-networks and leverages Explicit Congestion Notification (ECN) to provide multi-bit
+networks and leverages Explicit Congestion Notification (ECN) to provide more fine-grained congestion
 feedback to the end hosts. DCTCP extends the Explicit Congestion Notification
 to estimate the fraction of bytes that encounter congestion, rather than simply
 detecting that the congestion has occurred. DCTCP then scales the congestion
 window based on this estimate. This approach achieves high burst tolerance, low
 latency, and high throughput with shallow-buffered switches.
 
-* Receiver functionality: If CE is set in IP header of incoming packet, send congestion notification to the sender by setting ECE in TCP header.
+* Receiver functionality: If CE is set in IP header of incoming packet, send
+congestion notification to the sender by setting ECE in TCP header. This processing
+is different from standard ECN processing which sets ECE bit for every ACK untill
+it observes CWR
 
-* Sender functionality: It should maintain an average of fraction of packets marked (α) by using the exponential weighted moving average as shown below:
+* Sender functionality: The sender makes use of the modified receiver ECE semantics
+to maintain an average of fraction of packets marked (α) by using the exponential
+ weighted moving average as shown below:
 
 ::
 
@@ -806,7 +811,8 @@ where
 * g is the estimation gain (between 0 and 1)
 * F is the fraction of packets marked in current RTT.
 
-On receipt of an ACK with ECE bit set, the sender should respond by reducing the congestion
+For windows in which at least one ACK was received with ECE set,
+the sender should respond by reducing the congestion
 window as follows, once for every window of data:
 
 ::
@@ -817,9 +823,9 @@ Following the recommendation of RFC 8257, the default values of the parameters a
 
 ::
 
-  g = 0.0625
+  g = 0.0625 (i.e., 1/16)
 
-  alpha (α) = 1
+  initial alpha (α) = 1
 
 
 
@@ -835,6 +841,8 @@ To enable DCTCP on a chosen TCP socket, the following configuration can be used:
 
   Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
 
+This will take effect only if socket has already instantiated.
+
 The ECN is enabled automatically when DCTCP is used, even if the user has not explicitly enabled it.
 
 DCTCP depends on a simple queue management algorithm in routers / switches to
@@ -847,6 +855,9 @@ To configure RED router for DCTCP:
 
   Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (1.0));
+  Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (16));
+  Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (16));
+
 
 The following unit tests have been written to validate the implementation of DCTCP:
 
@@ -869,7 +880,7 @@ Window Reduced (CWR) and ECN Echo (ECE).
 
 More information is available in RFC 3168: https://tools.ietf.org/html/rfc3168
 
-The following ECN states are declared in ``src/internet/model/tcp-socket.h``
+The following ECN states are declared in ``src/internet/model/tcp-socket-state.h``
 
 ::
 
@@ -891,24 +902,37 @@ The following enum represents the mode of ECN:
 
   typedef enum
     {
-      NoEcn = 0,   //!< ECN is not enabled.
-      ClassicEcn   //!< ECN functionality as described in RFC 3168.
+      ClassicEcn,  //!< ECN functionality as described in RFC 3168.
+      DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
     } EcnMode_t;
 
 The following are some important ECN parameters
   // ECN parameters
-  EcnMode_t                     m_ecnMode;    //!< Socket ECN capability
-  TracedValue<SequenceNumber32> m_ecnEchoSeq; //!< Sequence number of the last received ECN Echo
+  EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
+  UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
 
 Enabling ECN
 ^^^^^^^^^^^^
 
 By default, support for ECN is disabled in TCP sockets.  To enable, change
-the value of the attribute ``ns3::TcpSocketBase::EcnMode`` from NoEcn to ClassicEcn.
+the value of the attribute ``ns3::TcpSocketBase::UseEcn`` to ``On``.
+Following are supported value for the same, this functionality is aligned with
+Linux: https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
 
 ::
 
-  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("ClassicEcn"))
+  typedef enum
+    {
+      Off        = 0,   //!< Disable
+      On         = 1,   //!< Enable
+      AcceptOnly = 2,   //!< Enable only when the peer endpoint is ECN capable
+    } UseEcn_t;
+
+For example:
+
+::
+
+  Config::SetDefault ("ns3::TcpSocketBase::UseEcn", StringValue ("On"))
 
 ECN negotiation
 ^^^^^^^^^^^^^^^
@@ -919,7 +943,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn)
+    if (m_useEcn == UseEcn_t::On)
       {
         SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
       }
@@ -933,7 +957,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+    if (m_useEcn != UseEcn_t::Off && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
       {
         SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
         m_ecnState = ECN_IDLE;
@@ -948,7 +972,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 
 ::
 
-    if (m_ecnMode == EcnMode_t::ClassicEcn &&  (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
+    if (m_useEcn != UseEcn_t::Off &&  (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
       {
         m_ecnState = ECN_IDLE;
       }

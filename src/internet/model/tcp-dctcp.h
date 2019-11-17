@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * \ingroup congestionOps
+ * \ingroup tcp
  *
  * \brief An implementation of DCTCP. This model implements all the functionalities mentioned
  * in the DCTCP SIGCOMM paper except dynamic buffer allocation in switches
@@ -148,6 +148,7 @@ private:
   bool m_ceState;                       //!< DCTCP Congestion Experienced state
   bool m_delayedAckReserved;            //!< Delayed Ack state
   double m_g;                           //!< Estimation gain
+  bool m_useEct0;                       //!< Use ECT(0) for ECN codepoint
 };
 
 } // namespace ns3

@@ -100,6 +100,19 @@ public:
   } TcpCAEvent_t;
 
   /**
+   * \brief Parameter value related to ECN enable/disable functionality
+   *        similar to sysctl for tcp_ecn. Currently value 2 from
+   *        https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+   *        is not implemented.
+   */
+  typedef enum
+    {
+      Off        = 0,   //!< Disable
+      On         = 1,   //!< Enable
+      AcceptOnly = 2,   //!< Enable only when the peer endpoint is ECN capable
+    } UseEcn_t;
+
+  /**
    * \brief ECN code points
    */
   typedef enum
@@ -115,7 +128,6 @@ public:
    */
   typedef enum
     {
-      NoEcn = 0,   //!< ECN is not enabled.
       ClassicEcn,  //!< ECN functionality as described in RFC 3168.
       DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
     } EcnMode_t;
@@ -178,7 +190,8 @@ public:
 
   Ptr<TcpRxBuffer>       m_rxBuffer;                 //!< Rx buffer (reordering buffer)
 
-  EcnMode_t              m_ecnMode {NoEcn};      //!< Socket ECN capability
+  EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
+  UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
 
   EcnCodePoint_t         m_ectCodePoint {Ect0};  //!< ECT code point to use
 

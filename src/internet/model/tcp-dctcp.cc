@@ -40,12 +40,17 @@ TypeId TcpDctcp::GetTypeId (void)
                    "Parameter G for updating dctcp_alpha",
                    DoubleValue (0.0625),
                    MakeDoubleAccessor (&TcpDctcp::m_g),
-                   MakeDoubleChecker<double> (0))
+                   MakeDoubleChecker<double> (0, 1))
     .AddAttribute ("DctcpAlphaOnInit",
                    "Initial alpha value",
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&TcpDctcp::SetDctcpAlpha),
-                   MakeDoubleChecker<double> (0))
+                   MakeDoubleChecker<double> (0, 1))
+    .AddAttribute ("UseEct0",
+                   "Use ECT(0) for ECN codepoint, if false use ECT(1)",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&TcpDctcp::m_useEct0),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -73,6 +78,9 @@ TcpDctcp::TcpDctcp (const TcpDctcp& sock)
   NS_LOG_FUNCTION (this);
   m_delayedAckReserved = (sock.m_delayedAckReserved);
   m_ceState = (sock.m_ceState);
+  m_g = sock.m_g;
+  m_alpha = sock.m_alpha;
+  m_useEct0 = sock.m_useEct0;
 }
 
 TcpDctcp::~TcpDctcp (void)
@@ -90,19 +98,17 @@ void
 TcpDctcp::Init (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  if (tcb->m_ecnMode != TcpSocketState::DctcpEcn)
-    {
-      NS_LOG_INFO (this << "Enabling DctcpEcn for DCTCP");
-      tcb->m_ecnMode = TcpSocketState::DctcpEcn;
-    }
-  tcb->m_ectCodePoint = TcpSocketState::Ect1;
+  NS_LOG_INFO (this << "Enabling DctcpEcn for DCTCP");
+  tcb->m_useEcn = TcpSocketState::On;
+  tcb->m_ecnMode = TcpSocketState::DctcpEcn;
+  tcb->m_ectCodePoint = m_useEct0? TcpSocketState::Ect0 : TcpSocketState::Ect1;
 }
 
 void
 TcpDctcp::ReduceCwnd (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  uint32_t val = (int)((1 - m_alpha / 2.0) * tcb->m_cWnd);
+  uint32_t val = static_cast<uint32_t>((1 - m_alpha / 2.0) * tcb->m_cWnd);
   tcb->m_cWnd = std::max (val, 2 * tcb->m_segmentSize);
 }
 
@@ -122,16 +128,13 @@ TcpDctcp::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time
     }
   if (tcb->m_lastAckedSeq >= m_nextSeq)
     {
-      double bytesEcn;
+      double bytesEcn = 0.0;
       if (m_ackedBytesTotal >  0)
         {
-          bytesEcn = (double) m_ackedBytesEcn / m_ackedBytesTotal;
-        }
-      else
-        {
-          bytesEcn = 0.0;
+          bytesEcn = static_cast<double> (m_ackedBytesEcn * 1.0 / m_ackedBytesTotal);
         }
       m_alpha = (1.0 - m_g) * m_alpha + m_g * bytesEcn;
+      NS_LOG_INFO (this << "bytesEcn " << bytesEcn << ", m_alpha " << m_alpha);
       Reset (tcb);
     }
 }

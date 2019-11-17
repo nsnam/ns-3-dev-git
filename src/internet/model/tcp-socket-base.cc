@@ -142,11 +142,12 @@ TcpSocketBase::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&TcpSocketBase::m_limitedTx),
                    MakeBooleanChecker ())
-    .AddAttribute ("EcnMode", "Determines the mode of ECN",
-                   EnumValue (TcpSocketState::EcnMode_t::NoEcn),
-                   MakeEnumAccessor (&TcpSocketBase::SetEcnMode),
-                   MakeEnumChecker (TcpSocketState::NoEcn, "NoEcn",
-                                    TcpSocketState::ClassicEcn, "ClassicEcn"))
+    .AddAttribute ("UseEcn", "Parameter to set ECN functionality",
+                   EnumValue (TcpSocketState::Off),
+                   MakeEnumAccessor (&TcpSocketBase::SetUseEcn),
+                   MakeEnumChecker (TcpSocketState::Off, "Off",
+                                    TcpSocketState::On, "On",
+                                    TcpSocketState::AcceptOnly, "AcceptOnly"))
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
@@ -1008,7 +1009,7 @@ TcpSocketBase::DoConnect (void)
   if (m_state == CLOSED || m_state == LISTEN || m_state == SYN_SENT || m_state == LAST_ACK || m_state == CLOSE_WAIT)
     { // send a SYN packet and change state into SYN_SENT
       // send a SYN packet with ECE and CWR flags set if sender is ECN capable
-      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn)
+      if (m_tcb->m_useEcn == TcpSocketState::On)
         {
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
         }
@@ -2096,7 +2097,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
        * sender has sent ECN SYN packet
        */
 
-      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+      if (m_tcb->m_useEcn != TcpSocketState::Off && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN packet");
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE);
@@ -2126,7 +2127,7 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       /* Check if we received an ECN SYN-ACK packet. Change the ECN state of sender to ECN_IDLE if receiver has sent an ECN SYN-ACK
        * packet and the  traffic is ECN Capable
        */
-      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
+      if (m_tcb->m_useEcn != TcpSocketState::Off && (tcpflags & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN-ACK packet.");
           NS_LOG_DEBUG (TcpSocketState::EcnStateName[m_tcb->m_ecnState] << " -> ECN_IDLE");
@@ -2206,7 +2207,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN
        * packet and the  traffic is ECN Capable
        */
-      if (m_tcb->m_ecnMode != TcpSocketState::NoEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+      if (m_tcb->m_useEcn != TcpSocketState::Off && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
         {
           NS_LOG_INFO ("Received ECN SYN packet");
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
@@ -2772,7 +2773,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
   /* Check if we received an ECN SYN packet. Change the ECN state of receiver to ECN_IDLE if sender has sent an ECN SYN
    * packet and the traffic is ECN Capable
    */
-  if (m_tcb->m_ecnMode != TcpSocketState::NoEcn &&
+  if (m_tcb->m_useEcn != TcpSocketState::Off &&
       (h.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
     {
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK | TcpHeader::ECE);
@@ -3480,7 +3481,7 @@ TcpSocketBase::ReTxTimeout ()
     {
       if (m_synCount > 0)
         {
-          if (m_tcb->m_ecnMode != TcpSocketState::NoEcn)
+          if (m_tcb->m_useEcn != TcpSocketState::Off)
             {
               SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
             }
@@ -4282,10 +4283,10 @@ TcpSocketBase::NotifyPacingPerformed (void)
 }
 
 void
-TcpSocketBase::SetEcnMode (TcpSocketState::EcnMode_t ecnMode)
+TcpSocketBase::SetUseEcn (TcpSocketState::UseEcn_t useEcn)
 {
-  NS_LOG_FUNCTION (this << ecnMode);
-  m_tcb->m_ecnMode = ecnMode;
+  NS_LOG_FUNCTION (this << useEcn);
+  m_tcb->m_useEcn = useEcn;
 }
 
 //RttHistory methods

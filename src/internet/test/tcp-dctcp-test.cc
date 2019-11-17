@@ -59,6 +59,7 @@ protected:
   virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
   virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
   void ConfigureProperties ();
+  void ConfigureEnvironment ();
 
 private:
   uint32_t m_senderSent;
@@ -159,16 +160,15 @@ void
 TcpDctcpCodePointsTest::ConfigureProperties ()
 {
   TcpGeneralTest::ConfigureProperties ();
-  if (m_testCase == 2)
-    {
-      SetEcnMode (SENDER, TcpSocketState::ClassicEcn);
-      SetEcnMode (RECEIVER, TcpSocketState::ClassicEcn);
-    }
-  else
-    {
-      SetEcnMode (SENDER, TcpSocketState::DctcpEcn);
-      SetEcnMode (RECEIVER, TcpSocketState::DctcpEcn);
-    }
+  SetUseEcn (SENDER, TcpSocketState::On);
+  SetUseEcn (RECEIVER, TcpSocketState::On);
+}
+
+void
+TcpDctcpCodePointsTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  Config::SetDefault ("ns3::TcpDctcp::UseEct0", BooleanValue (false));
 }
 
 /**
