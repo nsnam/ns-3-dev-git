@@ -237,7 +237,7 @@ public:
    * Store the packet in the internal queue until it
    * can be sent safely.
    */
-  virtual void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  virtual void Queue (Ptr<Packet> packet, const WifiMacHeader &hdr);
 
   /**
    * Sends CF frame to sta with address <i>addr</i>.

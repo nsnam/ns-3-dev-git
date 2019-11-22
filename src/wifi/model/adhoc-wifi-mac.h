@@ -62,7 +62,7 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  void Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  void Enqueue (Ptr<Packet> packet, Mac48Address to);
 
 
 private:

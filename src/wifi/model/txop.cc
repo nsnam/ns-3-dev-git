@@ -313,19 +313,18 @@ Txop::HasFramesToTransmit (void)
 }
 
 void
-Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+Txop::Queue (Ptr<Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
-  Ptr<Packet> packetCopy = packet->Copy ();
   // remove the priority tag attached, if any
   SocketPriorityTag priorityTag;
-  packetCopy->RemovePacketTag (priorityTag);
-  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  packet->RemovePacketTag (priorityTag);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
   if (m_channelAccessManager->NeedBackoffUponAccess (this))
     {
       GenerateBackoff ();
     }
-  m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
+  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
   StartAccessIfNeeded ();
 }
 

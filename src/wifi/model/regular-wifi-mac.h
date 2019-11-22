@@ -193,7 +193,7 @@ public:
    * this device to operate in a bridged mode, forwarding received
    * frames without altering the source address.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
 
   virtual bool SupportsSendFrom (void) const;
 
@@ -205,7 +205,7 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
   /**
    * \param phy the physical layer attached to this MAC.
    */
@@ -259,7 +259,7 @@ public:
    * \param from the MAC address of the device that sent the packet.
    * \param to the MAC address of the device that the packet is destined for.
    */
-  typedef Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
+  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
   /**
    * \param upCallback the callback to invoke when a packet must be
    * forwarded up the stack.
@@ -414,7 +414,7 @@ protected:
    * \param from the address of the source
    * \param to the address of the destination
    */
-  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
+  void ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
 
   /**
    * This method can be called to de-aggregate an A-MSDU and forward

@@ -182,7 +182,7 @@ public:
    * this device to operate in a bridged mode, forwarding received
    * frames without altering the source address.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) = 0;
   /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
@@ -191,7 +191,7 @@ public:
    * dequeued as soon as the DCF function determines that
    * access it granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
   /**
    * \return if this MAC supports sending from arbitrary address.
    *
@@ -224,7 +224,7 @@ public:
   /**
    * \param upCallback the callback to invoke when a packet must be forwarded up the stack.
    */
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback) = 0;
+  virtual void SetForwardUpCallback (Callback<void,Ptr<const Packet>, Mac48Address, Mac48Address> upCallback) = 0;
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */

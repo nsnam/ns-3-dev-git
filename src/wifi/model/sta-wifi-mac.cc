@@ -432,7 +432,7 @@ StaWifiMac::IsWaitAssocResp (void) const
 }
 
 void
-StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
   if (!IsAssociated ())
@@ -506,9 +506,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
-  // Create a copy of the MPDU payload because non-const operations like RemovePacketTag
-  // and RemoveHeader may need to be performed.
-  Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
+  Ptr<const Packet> packet = mpdu->GetPacket ();
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr3 () == GetAddress ())
     {
@@ -577,7 +575,8 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
     {
       NS_LOG_DEBUG ("Beacon received");
       MgtBeaconHeader beacon;
-      packet->RemoveHeader (beacon);
+      Ptr<Packet> copy = packet->Copy ();
+      copy->RemoveHeader (beacon);
       CapabilityInformation capabilities = beacon.GetCapabilities ();
       NS_ASSERT (capabilities.IsEss ());
       bool goodBeacon = false;
@@ -632,7 +631,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
         {
           NS_LOG_DEBUG ("Beacon received while scanning from " << hdr->GetAddr2 ());
           SnrTag snrTag;
-          bool removed = packet->RemovePacketTag (snrTag);
+          bool removed = copy->RemovePacketTag (snrTag);
           NS_ASSERT (removed);
           ApInfo apInfo;
           apInfo.m_apAddr = hdr->GetAddr2 ();
@@ -650,14 +649,15 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
         {
           NS_LOG_DEBUG ("Probe response received while scanning from " << hdr->GetAddr2 ());
           MgtProbeResponseHeader probeResp;
-          packet->RemoveHeader (probeResp);
+          Ptr<Packet> copy = packet->Copy ();
+          copy->RemoveHeader (probeResp);
           if (!probeResp.GetSsid ().IsEqual (GetSsid ()))
             {
               NS_LOG_DEBUG ("Probe response is not for our SSID");
               return;
             }
           SnrTag snrTag;
-          bool removed = packet->RemovePacketTag (snrTag);
+          bool removed = copy->RemovePacketTag (snrTag);
           NS_ASSERT (removed);
           ApInfo apInfo;
           apInfo.m_apAddr = hdr->GetAddr2 ();
@@ -674,7 +674,7 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
       if (m_state == WAIT_ASSOC_RESP)
         {
           MgtAssocResponseHeader assocResp;
-          packet->RemoveHeader (assocResp);
+          packet->PeekHeader (assocResp);
           if (m_assocRequestEvent.IsRunning ())
             {
               m_assocRequestEvent.Cancel ();

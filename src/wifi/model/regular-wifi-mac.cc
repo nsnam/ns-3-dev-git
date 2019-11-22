@@ -832,7 +832,7 @@ RegularWifiMac::GetRifsSupported (void) const
 }
 
 void
-RegularWifiMac::Enqueue (Ptr<const Packet> packet,
+RegularWifiMac::Enqueue (Ptr<Packet> packet,
                          Mac48Address to, Mac48Address from)
 {
   //We expect RegularWifiMac subclasses which do support forwarding (e.g.,
@@ -850,7 +850,7 @@ RegularWifiMac::SupportsSendFrom (void) const
 }
 
 void
-RegularWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
+RegularWifiMac::ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << from << to);
   m_forwardUp (packet, from, to);

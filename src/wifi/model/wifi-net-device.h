@@ -150,7 +150,7 @@ protected:
    * \param from
    * \param to
    */
-  void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
+  void ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
 
 
 private:

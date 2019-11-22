@@ -155,7 +155,7 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
                                                         : msdu->GetHeader ().GetAddr4 ()));
   hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
 
-  m_msduList.push_back ({msdu->GetPacket ()->Copy (), hdr});
+  m_msduList.push_back ({msdu->GetPacket (), hdr});
 
   // build the A-MSDU
   NS_ASSERT (m_packet);

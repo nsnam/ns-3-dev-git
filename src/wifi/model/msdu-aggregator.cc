@@ -300,7 +300,7 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
           deserialized += padding;
         }
 
-      std::pair<Ptr<Packet>, AmsduSubframeHeader> packetHdr (extractedMsdu, hdr);
+      std::pair<Ptr<const Packet>, AmsduSubframeHeader> packetHdr (extractedMsdu, hdr);
       set.push_back (packetHdr);
     }
   NS_LOG_INFO ("Deaggreated A-MSDU: extracted " << set.size () << " MSDUs");

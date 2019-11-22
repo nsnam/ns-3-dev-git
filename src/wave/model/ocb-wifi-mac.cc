@@ -156,7 +156,7 @@ OcbWifiMac::SetLinkDownCallback (Callback<void> linkDown)
 }
 
 void
-OcbWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+OcbWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
   if (m_stationManager->IsBrandNew (to))

@@ -50,7 +50,7 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
   /**
    * Enable or disable QoS support for the device.
    *

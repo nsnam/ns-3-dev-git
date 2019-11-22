@@ -33,6 +33,14 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/node-container.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/pointer.h"
+#include "ns3/packet-socket-server.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/packet-socket-helper.h"
+#include <iterator>
 
 using namespace ns3;
 
@@ -610,6 +618,207 @@ HeAggregationTest::DoRun ()
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test for A-MSDU and A-MPDU aggregation
+ *
+ * This test aims to check that the packets passed to the MAC layer (on the sender
+ * side) are forwarded up to the upper layer (on the receiver side) when A-MSDU and
+ * A-MPDU aggregation are used. This test checks that no packet copies are performed,
+ * hence packets can be tracked by means of a pointer.
+ *
+ * In this test, an HT STA sends 8 packets (each of 1000 bytes) to an HT AP.
+ * The block ack threshold is set to 2, hence the first packet is sent as an MPDU
+ * containing a single MSDU because the establishment of a Block Ack agreement is
+ * not triggered yet. The maximum A-MSDU size is set to 4500 bytes and the
+ * maximum A-MPDU size is set to 7500 bytes, hence the remaining packets are sent
+ * in an A-MPDU containing two MPDUs, the first one including 4 MSDUs and the second
+ * one including 3 MPDUs.
+ */
+class PreservePacketsInAmpdus : public TestCase
+{
+public:
+  PreservePacketsInAmpdus ();
+  virtual ~PreservePacketsInAmpdus ();
+
+  virtual void DoRun (void);
+
+
+private:
+  std::list<Ptr<const Packet>> m_packetList; ///< List of packets passed to the MAC
+  std::vector<std::size_t> m_nMpdus;         ///< Number of MPDUs in PSDUs passed to the PHY
+  std::vector<std::size_t> m_nMsdus;         ///< Number of MSDUs in MPDUs passed to the PHY
+
+  /**
+   * Callback invoked when an MSDU is passed to the MAC
+   * \param packet the MSDU to transmit
+   */
+  void NotifyMacTransmit (Ptr<const Packet> packet);
+  /**
+   * Callback invoked when the sender MAC passes a PSDU(s) to the PHY
+   * \param psdu the PSDU
+   * \param txVector the TX vector
+   * \param txPowerW the transmit power in Watts
+   */
+  void NotifyPsduForwardedDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  /**
+   * Callback invoked when the receiver MAC forwards a packet up to the upper layer
+   * \param p the packet
+   */
+  void NotifyMacForwardUp (Ptr<const Packet> p);
+};
+
+PreservePacketsInAmpdus::PreservePacketsInAmpdus ()
+  : TestCase ("Test case to check that the Wifi Mac forwards up the same packets received at sender side.")
+{
+}
+
+PreservePacketsInAmpdus::~PreservePacketsInAmpdus ()
+{
+}
+
+void
+PreservePacketsInAmpdus::NotifyMacTransmit (Ptr<const Packet> packet)
+{
+  m_packetList.push_back (packet);
+}
+
+void
+PreservePacketsInAmpdus::NotifyPsduForwardedDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+{
+  if (!psdu->GetHeader (0).IsQosData ())
+    {
+      return;
+    }
+
+  m_nMpdus.push_back (psdu->GetNMpdus ());
+
+  for (auto& mpdu : *PeekPointer (psdu))
+    {
+      std::size_t dist = std::distance (mpdu->begin (), mpdu->end ());
+      // the list of aggregated MSDUs is empty if the MPDU includes a non-aggregated MSDU
+      m_nMsdus.push_back (dist > 0 ? dist : 1);
+    }
+}
+
+void
+PreservePacketsInAmpdus::NotifyMacForwardUp (Ptr<const Packet> p)
+{
+  auto it = std::find (m_packetList.begin (), m_packetList.end (), p);
+  NS_TEST_EXPECT_MSG_EQ ((it != m_packetList.end ()), true, "Packet being forwarded up not found");
+  m_packetList.erase (it);
+}
+
+void
+PreservePacketsInAmpdus::DoRun (void)
+{
+  NodeContainer wifiStaNode;
+  wifiStaNode.Create (1);
+
+  NodeContainer wifiApNode;
+  wifiApNode.Create (1);
+
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  Ssid ssid = Ssid ("ns-3-ssid");
+  mac.SetType ("ns3::StaWifiMac",
+               "BE_MaxAmsduSize", UintegerValue (4500),
+               "BE_MaxAmpduSize", UintegerValue (7500),
+               "Ssid", SsidValue (ssid),
+               /* setting blockack threshold for sta's BE queue */
+               "BE_BlockAckThreshold", UintegerValue (2),
+               "ActiveProbing", BooleanValue (false));
+
+  NetDeviceContainer staDevices;
+  staDevices = wifi.Install (phy, mac, wifiStaNode);
+
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid),
+               "BeaconGeneration", BooleanValue (true));
+
+  NetDeviceContainer apDevices;
+  apDevices = wifi.Install (phy, mac, wifiApNode);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+  mobility.Install (wifiStaNode);
+
+  Ptr<WifiNetDevice> ap_device = DynamicCast<WifiNetDevice> (apDevices.Get (0));
+  Ptr<WifiNetDevice> sta_device = DynamicCast<WifiNetDevice> (staDevices.Get (0));
+
+  PacketSocketAddress socket;
+  socket.SetSingleDevice (sta_device->GetIfIndex ());
+  socket.SetPhysicalAddress (ap_device->GetAddress ());
+  socket.SetProtocol (1);
+
+  // install packet sockets on nodes.
+  PacketSocketHelper packetSocket;
+  packetSocket.Install (wifiStaNode);
+  packetSocket.Install (wifiApNode);
+
+  Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
+  client->SetAttribute ("PacketSize", UintegerValue (1000));
+  client->SetAttribute ("MaxPackets", UintegerValue (8));
+  client->SetAttribute ("Interval", TimeValue (Seconds (1)));
+  client->SetRemote (socket);
+  wifiStaNode.Get (0)->AddApplication (client);
+  client->SetStartTime (Seconds (1));
+  client->SetStopTime (Seconds (3.0));
+  Simulator::Schedule (Seconds (1.5), &PacketSocketClient::SetAttribute, client,
+                       "Interval", TimeValue (MicroSeconds (0)));
+
+  Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
+  server->SetLocal (socket);
+  wifiApNode.Get (0)->AddApplication (server);
+  server->SetStartTime (Seconds (0.0));
+  server->SetStopTime (Seconds (4.0));
+
+  PointerValue ptr;
+  sta_device->GetMac ()->GetAttribute ("BE_Txop", ptr);
+  Ptr<QosTxop> qosTxop = ptr.Get<QosTxop> ();
+
+  sta_device->GetMac ()->TraceConnectWithoutContext ("MacTx",
+    MakeCallback (&PreservePacketsInAmpdus::NotifyMacTransmit, this));
+  qosTxop->GetLow ()->GetPhy ()->TraceConnectWithoutContext ("PhyTxPsduBegin",
+    MakeCallback (&PreservePacketsInAmpdus::NotifyPsduForwardedDown, this));
+  ap_device->GetMac ()->TraceConnectWithoutContext ("MacRx",
+    MakeCallback (&PreservePacketsInAmpdus::NotifyMacForwardUp, this));
+
+  Simulator::Stop (Seconds (5));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+
+  // Two packets are transmitted. The first one is an MPDU containing a single MSDU.
+  // The second one is an A-MPDU containing two MPDUs: the first MPDU contains 4 MSDUs
+  // and the second MPDU contains 3 MSDUs
+  NS_TEST_EXPECT_MSG_EQ (m_nMpdus.size (), 2, "Unexpected number of transmitted packets");
+  NS_TEST_EXPECT_MSG_EQ (m_nMsdus.size (), 3, "Unexpected number of transmitted MPDUs");
+  NS_TEST_EXPECT_MSG_EQ (m_nMpdus[0], 1, "Unexpected number of MPDUs in the first A-MPDU");
+  NS_TEST_EXPECT_MSG_EQ (m_nMsdus[0], 1, "Unexpected number of MSDUs in the first MPDU");
+  NS_TEST_EXPECT_MSG_EQ (m_nMpdus[1], 2, "Unexpected number of MPDUs in the second A-MPDU");
+  NS_TEST_EXPECT_MSG_EQ (m_nMsdus[1], 4, "Unexpected number of MSDUs in the second MPDU");
+  NS_TEST_EXPECT_MSG_EQ (m_nMsdus[2], 3, "Unexpected number of MSDUs in the third MPDU");
+  // All the packets must have been forwarded up at the receiver
+  NS_TEST_EXPECT_MSG_EQ (m_packetList.empty (), true, "Some packets have not been forwarded up");
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Wifi Aggregation Test Suite
  */
 class WifiAggregationTestSuite : public TestSuite
@@ -624,6 +833,7 @@ WifiAggregationTestSuite::WifiAggregationTestSuite ()
   AddTestCase (new AmpduAggregationTest, TestCase::QUICK);
   AddTestCase (new TwoLevelAggregationTest, TestCase::QUICK);
   AddTestCase (new HeAggregationTest, TestCase::QUICK);
+  AddTestCase (new PreservePacketsInAmpdus, TestCase::QUICK);
 }
 
 static WifiAggregationTestSuite g_wifiAggregationTestSuite; ///< the test suite

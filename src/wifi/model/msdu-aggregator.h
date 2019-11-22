@@ -43,9 +43,9 @@ class MsduAggregator : public Object
 {
 public:
   /// DeaggregatedMsdus typedef
-  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
+  typedef std::list<std::pair<Ptr<const Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   /// DeaggregatedMsdusCI typedef
-  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
+  typedef std::list<std::pair<Ptr<const Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
   /// EDCA queues typedef
   typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
 

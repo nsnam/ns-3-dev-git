@@ -74,7 +74,7 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  void Enqueue (Ptr<const Packet> packet, Mac48Address to);
+  void Enqueue (Ptr<Packet> packet, Mac48Address to);
 
   /**
    * \param packet the packet to send.
@@ -87,7 +87,7 @@ public:
    * this device to operate in a bridged mode, forwarding received
    * frames without altering the source address.
    */
-  void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
+  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
 
   bool SupportsSendFrom (void) const;
 
@@ -191,7 +191,7 @@ private:
    * \param from the address to be used for Address 3 field in the header
    * \param to the address to be used for Address 1 field in the header
    */
-  void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
+  void ForwardDown (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet).
    *
@@ -200,7 +200,7 @@ private:
    * \param to the address to be used for Address 1 field in the header
    * \param tid the traffic id for the packet
    */
-  void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid);
+  void ForwardDown (Ptr<Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid);
   /**
    * Forward a probe response packet to the DCF. The standard is not clear on the correct
    * queue for management frames if QoS is supported. We always use the DCF.
