@@ -882,11 +882,10 @@ AnimationInterface::WifiPhyRxBeginTrace (std::string context, Ptr<const Packet> 
   NS_ASSERT (ndev);
   UpdatePosition (ndev);
   uint64_t animUid = GetAnimUidFromPacket (p);
-  NS_LOG_INFO ("Wifi RxBeginTrace for packet:" << animUid);
+  NS_LOG_INFO ("Wifi RxBeginTrace for packet: " << animUid);
   if (!IsPacketPending (animUid, AnimationInterface::WIFI))
     {
-      NS_ASSERT (0);
-      NS_LOG_WARN ("WifiPhyRxBeginTrace: unknown Uid");
+      NS_ASSERT_MSG (false, "WifiPhyRxBeginTrace: unknown Uid");
       std::ostringstream oss;
       WifiMacHeader hdr;
       if (!p->PeekHeader (hdr))
@@ -1011,8 +1010,7 @@ AnimationInterface::WavePhyRxBeginTrace (std::string context, Ptr<const Packet> 
   NS_LOG_INFO ("Wave RxBeginTrace for packet:" << animUid);
   if (!IsPacketPending (animUid, AnimationInterface::WAVE))
     {
-      NS_ASSERT (0);
-      NS_LOG_WARN ("WavePhyRxBeginTrace: unknown Uid");
+      NS_ASSERT_MSG (false, "WavePhyRxBeginTrace: unknown Uid");
       std::ostringstream oss;
       WifiMacHeader hdr;
       if (!p->PeekHeader (hdr))
