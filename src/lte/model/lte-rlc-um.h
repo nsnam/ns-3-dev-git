@@ -141,6 +141,7 @@ private:
   /**
    * Timers. See section 7.3 in TS 36.322
    */
+  Time    m_reorderingTimerValue; ///< reordering timer value
   EventId m_reorderingTimer; ///< reordering timer
   EventId m_rbsTimer; ///< RBS timer
 

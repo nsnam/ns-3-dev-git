@@ -63,6 +63,11 @@ LteRlcUm::GetTypeId (void)
                    UintegerValue (10 * 1024),
                    MakeUintegerAccessor (&LteRlcUm::m_maxTxBufferSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ReorderingTimer",
+                   "Value of the t-Reordering timer (See section 7.3 of 3GPP TS 36.322)",
+                   TimeValue (MilliSeconds (100)),
+                   MakeTimeAccessor (&LteRlcUm::m_reorderingTimerValue),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -558,7 +563,7 @@ LteRlcUm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
         {
           NS_LOG_LOGIC ("VR(UH) > VR(UR)");
           NS_LOG_LOGIC ("Start reordering timer");
-          m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
+          m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
                                                    &LteRlcUm::ExpireReorderingTimer ,this);
           m_vrUx = m_vrUh;
           NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
@@ -1173,7 +1178,7 @@ LteRlcUm::ExpireReorderingTimer (void)
   if ( m_vrUh > m_vrUr)
     {
       NS_LOG_LOGIC ("Start reordering timer");
-      m_reorderingTimer = Simulator::Schedule (Time ("0.1s"),
+      m_reorderingTimer = Simulator::Schedule (m_reorderingTimerValue,
                                                &LteRlcUm::ExpireReorderingTimer, this);
       m_vrUx = m_vrUh;
       NS_LOG_LOGIC ("New VR(UX) = " << m_vrUx);
