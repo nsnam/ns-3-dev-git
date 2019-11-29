@@ -560,8 +560,8 @@ private:
   /// IETF RFC 6621, Section 6.2 de-duplication w/o IPSec
   /// RFC 6621 recommended duplicate packet tuple: {IPV hash, IP protocol, IP source address, IP destination address}
   typedef std::tuple <uint64_t, uint8_t, Ipv4Address, Ipv4Address> DupTuple_t;
-  /// Maps packet duplicate tuple to expiration event
-  typedef std::map<DupTuple_t, EventId> DupMap_t;
+  /// Maps packet duplicate tuple to expiration time
+  typedef std::map<DupTuple_t, Time> DupMap_t;
 
   /**
    * Registers duplicate entry, return false if new
@@ -574,12 +574,13 @@ private:
    * Remove duplicate packet entry
    * \param [in] iter Iterator into duplicate map to remove
    */
-  void RemoveDuplicate (DupMap_t::const_iterator iter);
+  void RemoveDuplicates (void);
 
-  bool                 m_enableDpd;     //!< Enable multicast duplicate packet detection
-  DupMap_t             m_dups;          //!< map of packet duplicate tuples to expiry event
-  Time                 m_expire;        //!< duplicate entry expiration delay
-
+  bool                m_enableDpd;    //!< Enable multicast duplicate packet detection
+  DupMap_t            m_dups;         //!< map of packet duplicate tuples to expiry event
+  Time                m_expire;       //!< duplicate entry expiration delay
+  Time                m_purge;        //!< time between purging expired duplicate entries
+  EventId             m_cleanDpd;     //!< event to cleanup expired duplicate entries
 };
 
 } // Namespace ns3

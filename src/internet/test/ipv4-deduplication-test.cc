@@ -31,6 +31,7 @@
 #include "ns3/socket.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
+#include "ns3/uinteger.h"
 #include "ns3/string.h"
 #include "ns3/config.h"
 
@@ -49,6 +50,7 @@
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/simple-net-device-helper.h"
+#include "ns3/on-off-helper.h"
 
 #include "ns3/traffic-control-layer.h"
 
@@ -356,6 +358,11 @@ Ipv4DeduplicationTest::DoRun (void)
       socket->SetAllowBroadcast (true);
       NS_TEST_EXPECT_MSG_EQ (socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), 1234)), 0,
                              "Could not bind socket for node " << Names::FindName (*iter));
+
+      auto udpSocket = socket->GetObject<UdpSocket> ();
+      udpSocket->MulticastJoinGroup (0, Ipv4Address (targetAddr.c_str ())); // future proof?
+      udpSocket->SetAttribute ("IpMulticastTtl", StringValue ("4"));
+
       socket->SetRecvCallback (MakeCallback (&Ipv4DeduplicationTest::ReceivePkt, this));
       sockets.push_back (socket);
     }
@@ -366,9 +373,6 @@ Ipv4DeduplicationTest::DoRun (void)
 
   // start TX from A
   auto txSocket = sockets.front ();
-  auto udpSocket = txSocket->GetObject<UdpSocket> ();
-  udpSocket->MulticastJoinGroup (0, Ipv4Address (targetAddr.c_str ())); // future proof?
-  udpSocket->SetAttribute ("IpMulticastTtl", StringValue ("4"));
 
   // ------ Now the tests ------------
 
@@ -497,3 +501,125 @@ Ipv4DeduplicationTestSuite::Ipv4DeduplicationTestSuite ()
 
 static Ipv4DeduplicationTestSuite g_ipv4DeduplicationTestSuite; //!< Static variable for test initialization
 
+
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 Deduplication Performance Test
+ *
+ * This test case sets up a fully connected network of
+ * 10 nodes.  Each node transmits 2 packets / second
+ * for about 20 seconds.  Packets are relayed from
+ * every receiver.  The test outputs the number of
+ * events that have been processed during the course
+ * of the simulation.  Test runtime is also a metric.
+ * 
+ * The de-duplication cache entry expiration algorithm 
+ * has evolved from an event-per-expiry (EPE) algorithm to
+ * a periodic event, batch purge (PBP) algorithm.  The
+ * current metrics are taken from tests on the development
+ * box.  Periodic batch purge period defaults to 1s.
+ * 
+ *        Events        Runtime
+ *  EVE   656140          29s
+ *  PBP   337420          29s
+ * 
+ */
+class Ipv4DeduplicationPerformanceTest : public TestCase
+{
+  public:
+    Ipv4DeduplicationPerformanceTest (void);
+    virtual void DoRun (void);
+};
+
+Ipv4DeduplicationPerformanceTest::Ipv4DeduplicationPerformanceTest ()
+  : TestCase ("Ipv4Deduplication performance test")
+{}
+
+void
+Ipv4DeduplicationPerformanceTest::DoRun (void)
+{
+  // multicast target
+  const std::string targetAddr = "239.192.100.1";
+  Config::SetDefault ("ns3::Ipv4L3Protocol::EnableDuplicatePacketDetection", BooleanValue (true));
+  Config::SetDefault ("ns3::Ipv4L3Protocol::DuplicateExpire", TimeValue (Time ("10s")));
+
+  // Create nodes
+  auto nodes = NodeContainer ();
+  nodes.Create (20);
+
+  SimpleNetDeviceHelper simplenet;
+  auto devices = simplenet.Install (nodes);
+
+  Ipv4ListRoutingHelper listRouting;
+  Ipv4StaticRoutingHelper staticRouting;
+  listRouting.Add (staticRouting, 0);
+
+  InternetStackHelper internet;
+  internet.SetIpv6StackInstall (false);
+  internet.SetIpv4ArpJitter (true);
+  internet.SetRoutingHelper (listRouting);
+  internet.Install (nodes);
+
+  Ipv4AddressHelper ipv4address;
+  ipv4address.SetBase ("10.0.0.0", "255.255.255.0");
+  ipv4address.Assign (devices);
+
+  // add static routes for each node / device
+  auto diter = devices.Begin ();
+  for (auto end = nodes.End (),
+           iter = nodes.Begin (); iter != end; ++iter)
+    {
+      // route for forwarding
+      staticRouting.AddMulticastRoute (*iter, Ipv4Address::GetAny (), targetAddr.c_str (), *diter, NetDeviceContainer (*diter));
+      
+      // route for host
+      // Use host routing entry according to note in Ipv4StaticRouting::RouteOutput:
+      //// Note:  Multicast routes for outbound packets are stored in the
+      //// normal unicast table.  An implication of this is that it is not
+      //// possible to source multicast datagrams on multiple interfaces.
+      //// This is a well-known property of sockets implementation on 
+      //// many Unix variants.
+      //// So, we just log it and fall through to LookupStatic ()
+      auto ipv4 = (*iter)->GetObject <Ipv4> ();
+      NS_ASSERT_MSG ((bool) ipv4, "Node " << (*iter)->GetId () << " does not have Ipv4 aggregate");
+      auto routing = staticRouting.GetStaticRouting (ipv4);
+      routing->AddHostRouteTo (targetAddr.c_str (), ipv4->GetInterfaceForDevice (*diter), 0);
+
+      ++diter;
+    }
+  
+  // Create application
+  OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (targetAddr.c_str (), 1234));
+  onoff.SetConstantRate (DataRate ("8kbps")); // 2 packets / second for default 512B packets
+  onoff.SetAttribute ("MaxBytes", UintegerValue (512 * 40));  // 20 seconds worth of packets
+  auto apps = onoff.Install (nodes);
+
+  apps.StartWithJitter (Seconds (4), CreateObjectWithAttributes <UniformRandomVariable> ("Max", DoubleValue (4)));
+
+  Simulator::Run ();
+  NS_LOG_UNCOND ("Executed " << Simulator::GetEventCount () << " events");
+  Simulator::Destroy ();
+}
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief IPv4 Deduplication Performance TestSuite
+ */
+class Ipv4DeduplicationPerformanceTestSuite : public TestSuite
+{
+public:
+  Ipv4DeduplicationPerformanceTestSuite ();
+};
+
+Ipv4DeduplicationPerformanceTestSuite::Ipv4DeduplicationPerformanceTestSuite ()
+  : TestSuite ("ipv4-deduplication-performance", PERFORMANCE)
+{
+  AddTestCase (new Ipv4DeduplicationPerformanceTest, TestCase::EXTENSIVE);
+}
+
+static Ipv4DeduplicationPerformanceTestSuite g_ipv4DeduplicationPerformanceTestSuite; //!< Static variable for test initialization

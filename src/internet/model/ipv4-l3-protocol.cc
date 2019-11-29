@@ -80,6 +80,12 @@ Ipv4L3Protocol::GetTypeId (void)
                    TimeValue (MilliSeconds (1)),
                    MakeTimeAccessor (&Ipv4L3Protocol::m_expire),
                    MakeTimeChecker ())
+    .AddAttribute ("PurgeExpiredPeriod", 
+                   "Time between purges of expired duplicate packet entries, "
+                   "0 means never purge",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&Ipv4L3Protocol::m_purge),
+                   MakeTimeChecker (Seconds (0)))
     .AddTraceSource ("Tx",
                      "Send ipv4 packet to outgoing interface.",
                      MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace),
@@ -329,12 +335,9 @@ Ipv4L3Protocol::DoDispose (void)
   m_fragments.clear ();
   m_fragmentsTimers.clear ();
 
-  for (auto dup: m_dups)
+  if (m_cleanDpd.IsRunning ())
     {
-      if (dup.second.IsRunning ())
-        {
-          dup.second.Cancel ();
-        }
+      m_cleanDpd.Cancel ();
     }
   m_dups.clear ();
 
@@ -1763,14 +1766,21 @@ Ipv4L3Protocol::UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header)
       bytes[8] = 0;               // TTL
       bytes[10] = bytes[11] = 0;  // Header checksum
       if (header.GetSerializedSize () > 20)     // assume options should be 0'd
-        std::fill_n (bytes.begin () + 20, header.GetSerializedSize () - 20, 0);
-
+        {
+          std::fill_n (bytes.begin () + 20, header.GetSerializedSize () - 20, 0);
+        }
+        
       // concat hash onto ID
       hash |= (uint64_t)Hash32 (bytes);
     }
 
+  // set cleanup job for new duplicate entries
+  if (!m_cleanDpd.IsRunning () && m_purge.IsStrictlyPositive ())
+    {
+      m_cleanDpd = Simulator::Schedule (m_expire, &Ipv4L3Protocol::RemoveDuplicates, this);
+    }
+
   // assume this is a new entry
-  bool isDup = false;
   DupTuple_t key {hash, proto, src, dst};
   NS_LOG_DEBUG ("Packet " << p->GetUid () << " key = (" <<
                 std::hex << std::get<0> (key) << ", " <<
@@ -1779,29 +1789,49 @@ Ipv4L3Protocol::UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header)
                 std::get<3> (key) << ")");
 
   // place a new entry, on collision the existing entry iterator is returned
-  auto iter = m_dups.emplace_hint (m_dups.end (), key, EventId ());
-  // cancel un-expired event
-  if (iter->second.IsRunning ())
-    {
-      iter->second.Cancel ();
-      isDup = true;  // flag this was a duplicate
-    }
+  DupMap_t::iterator iter;
+  bool inserted, isDup;
+  std::tie (iter, inserted) = m_dups.emplace (key, Seconds (0));
+  isDup = !inserted && iter->second > Simulator::Now ();
+
   // set the expiration event
-  iter->second = Simulator::Schedule (m_expire, &Ipv4L3Protocol::RemoveDuplicate, this, iter);
+  iter->second = Simulator::Now () + m_expire;
   return isDup;
 }
 
 void
-Ipv4L3Protocol::RemoveDuplicate (DupMap_t::const_iterator iter)
+Ipv4L3Protocol::RemoveDuplicates (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC ("Remove key = (" <<
-                std::hex << std::get<0> (iter->first) << ", " <<
-                std::dec << +std::get<1> (iter->first) << ", " <<
-                std::get<2> (iter->first) << ", " <<
-                std::get<3> (iter->first) << ")");
 
-  m_dups.erase (iter);
+  DupMap_t::size_type n = 0;
+  Time expire = Simulator::Now ();
+  auto iter = m_dups.cbegin ();
+  while (iter != m_dups.cend ())
+    {
+      if (iter->second < expire)
+        {
+          NS_LOG_LOGIC ("Remove key = (" <<
+                        std::hex << std::get<0> (iter->first) << ", " <<
+                        std::dec << +std::get<1> (iter->first) << ", " <<
+                        std::get<2> (iter->first) << ", " <<
+                        std::get<3> (iter->first) << ")");
+          iter = m_dups.erase (iter);
+          ++n;
+        }
+      else
+        {
+          ++iter;
+        }
+    }
+  
+  NS_LOG_DEBUG ("Purged " << n << " expired duplicate entries out of " << (n + m_dups.size ()));
+  
+  // keep cleaning up if necessary
+  if (!m_dups.empty () && m_purge.IsStrictlyPositive ())
+    {
+      m_cleanDpd = Simulator::Schedule (m_purge, &Ipv4L3Protocol::RemoveDuplicates, this);
+    }
 }
 
 
