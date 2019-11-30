@@ -393,7 +393,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac48Address addr, Ipv6Addre
   buf2[11] = 0xff;
   buf2[12] = 0xfe;
   memcpy (buf2 + 13, buf + 3, 3);
-  buf2[8] |= 0x02;
+  buf2[8] ^= 0x02;
 
   ret.Set (buf2);
   return ret;
@@ -470,7 +470,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address addr)
   buf2[11] = 0xff;
   buf2[12] = 0xfe;
   memcpy (buf2 + 13, buf + 3, 3);
-  buf2[8] |= 0x02;
+  buf2[8] ^= 0x02;
 
   ret.Set (buf2);
   return ret;
