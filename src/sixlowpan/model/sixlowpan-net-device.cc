@@ -2082,25 +2082,23 @@ Ipv6Address SixLowPanNetDevice::MakeLinkLocalAddressFromMac (Address const &addr
 {
   Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
 
-  if (m_forceEtherType && Mac48Address::IsMatchingType (addr))
+  if (Mac64Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr));
+    }
+  else if (Mac48Address::IsMatchingType (addr))
     {
       ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr));
     }
-  else
+  else if (Mac16Address::IsMatchingType (addr))
     {
-      if (Mac64Address::IsMatchingType (addr))
-        {
-          ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr));
-        }
-      else if (Mac16Address::IsMatchingType (addr))
-        {
-          ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr));
-        }
-      else if (Mac8Address::IsMatchingType (addr))
-        {
-          ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr));
-        }
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr));
     }
+  else if (Mac8Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr));
+    }
+
   if (ipv6Addr.IsAny ())
     {
       NS_ABORT_MSG ("Unknown address type");
@@ -2112,21 +2110,23 @@ Ipv6Address SixLowPanNetDevice::MakeGlobalAddressFromMac (Address const &addr, I
 {
   Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
 
-  if (m_forceEtherType && Mac48Address::IsMatchingType (addr))
+  if (Mac64Address::IsMatchingType (addr))
     {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), Ipv6Address (prefix) );
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), Ipv6Address (prefix) );
     }
-  else
+  else if (Mac48Address::IsMatchingType (addr))
     {
-      if (Mac64Address::IsMatchingType (addr))
-        {
-          ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), Ipv6Address (prefix));
-        }
-      else if (Mac16Address::IsMatchingType (addr))
-        {
-          ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), Ipv6Address (prefix) );
-        }
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), Ipv6Address (prefix));
     }
+  else if (Mac16Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), Ipv6Address (prefix) );
+    }
+  else if (Mac8Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), Ipv6Address (prefix) );
+    }
+
   if (ipv6Addr.IsAny ())
     {
       NS_ABORT_MSG ("Unknown address type");

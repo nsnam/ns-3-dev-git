@@ -106,7 +106,7 @@ LrWpanAckTestCase::LrWpanAckTestCase ()
 void
 LrWpanAckTestCase::DataIndication (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataIndicationParams params, Ptr<Packet> p)
 {
-  if (dev->GetAddress () == Mac16Address ("00:02"))
+  if (dev->GetMac ()->GetShortAddress () == Mac16Address ("00:02"))
     {
       Ptr<Packet> p = Create<Packet> (10);  // 10 bytes of dummy data
       McpsDataRequestParams params;
@@ -129,7 +129,7 @@ LrWpanAckTestCase::DataIndication (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDev
 void
 LrWpanAckTestCase::DataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params)
 {
-  if (dev->GetAddress () == Mac16Address ("00:01"))
+  if (dev->GetMac ()->GetShortAddress () == Mac16Address ("00:01"))
     {
       testCase->m_requestAckTime = Simulator::Now ();
     }

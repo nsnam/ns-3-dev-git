@@ -251,14 +251,53 @@ void
 LrWpanNetDevice::SetAddress (Address address)
 {
   NS_LOG_FUNCTION (this);
-  m_mac->SetShortAddress (Mac16Address::ConvertFrom (address));
+  if (Mac16Address::IsMatchingType (address))
+    {
+      m_mac->SetShortAddress (Mac16Address::ConvertFrom (address));
+    }
+  else if (Mac48Address::IsMatchingType (address))
+    {
+      uint8_t buf[6];
+      Mac48Address addr = Mac48Address::ConvertFrom (address);
+      addr.CopyTo (buf);
+      Mac16Address addr16;
+      addr16.CopyFrom (buf+4);
+      m_mac->SetShortAddress (addr16);
+      uint16_t panId;
+      panId = buf[0];
+      panId <<= 8;
+      panId |= buf[1];
+      m_mac->SetPanId (panId);
+    }
+  else
+    {
+      NS_ABORT_MSG ("LrWpanNetDevice::SetAddress - address is not of a compatible type");
+    }
 }
 
 Address
 LrWpanNetDevice::GetAddress (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_mac->GetShortAddress ();
+
+  if (m_mac->GetShortAddress () == Mac16Address ("00:00"))
+    {
+      return m_mac->GetExtendedAddress ();
+    }
+  uint8_t buf[6];
+
+  uint16_t panId = m_mac->GetPanId ();
+  buf[0] = panId >> 8;
+  // Make sure the U/L bit is set
+  buf[0] |= 0x02;
+  buf[1] = panId & 0xff;
+  buf[2] = 0;
+  buf[3] = 0;
+  m_mac->GetShortAddress ().CopyTo (buf+4);
+
+  Mac48Address pseudoAddress;
+  pseudoAddress.CopyFrom (buf);
+  return pseudoAddress;
 }
 
 bool
@@ -304,7 +343,19 @@ Address
 LrWpanNetDevice::GetBroadcast (void) const
 {
   NS_LOG_FUNCTION (this);
-  return Mac16Address ("ff:ff");
+  uint8_t buf[6];
+
+  uint16_t panId = m_mac->GetPanId ();
+  buf[0] = panId >> 8;
+  buf[1] = panId & 0xff;
+  buf[2] = 0;
+  buf[3] = 0;
+  buf[4] = 0xff;
+  buf[5] = 0xff;
+
+  Mac48Address pseudoAddress;
+  pseudoAddress.CopyFrom (buf);
+  return pseudoAddress;
 }
 
 bool
@@ -351,7 +402,7 @@ LrWpanNetDevice::GetMulticast (Ipv6Address addr) const
   //  newaddr.CopyFrom(buf2);
   //  return newaddr;
 
-  return Mac16Address ("ff:ff");
+  return GetBroadcast ();
 }
 
 bool
@@ -385,7 +436,20 @@ LrWpanNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
     }
 
   McpsDataRequestParams m_mcpsDataRequestParams;
-  m_mcpsDataRequestParams.m_dstAddr = Mac16Address::ConvertFrom (dest);
+
+  std::cout << "Trying to send a packet to " << dest << std::endl;
+  Mac16Address dst16;
+  if (Mac48Address::IsMatchingType (dest))
+    {
+      uint8_t buf[6];
+      dest.CopyTo (buf);
+      dst16.CopyFrom (buf+4);
+    }
+  else
+    {
+      dst16 = Mac16Address::ConvertFrom (dest);
+    }
+  m_mcpsDataRequestParams.m_dstAddr = dst16;
   m_mcpsDataRequestParams.m_dstAddrMode = SHORT_ADDR;
   m_mcpsDataRequestParams.m_dstPanId = m_mac->GetPanId ();
   m_mcpsDataRequestParams.m_srcAddrMode = SHORT_ADDR;
