@@ -528,6 +528,8 @@ protected:
    * This method is not virtual to prevent subclasses from redefining it.
    * Subclasses must instead provide the implementation of the CheckConfig
    * and InitializeParams methods (which are called by this method).
+   * \sa QueueDisc::InitializeParams
+   * \sa QueueDisc::CheckConfig
    */
   void DoInitialize (void);
 
@@ -615,13 +617,21 @@ private:
   /**
    * Check whether the current configuration is correct. Default objects (such
    * as internal queues) might be created by this method to ensure the
-   * configuration is correct.
+   * configuration is correct.  This method is automatically called at
+   * simulation initialization time, and it is called before
+   * the InitializeParams () method.  It is appropriate to promote parameter
+   * initialization to this method if it aids in checking for correct
+   * configuration.
+   * \sa QueueDisc::InitializeParams
    * \return true if the configuration is correct, false otherwise
    */
   virtual bool CheckConfig (void) = 0;
 
   /**
    * Initialize parameters (if any) before the first packet is enqueued.
+   * This method is automatically called at simulation initialization time,
+   * after the CheckConfig() method has been called.
+   * \sa QueueDisc::CheckConfig
    */
   virtual void InitializeParams (void) = 0;
 

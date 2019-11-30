@@ -310,6 +310,9 @@ TbfQueueDisc::CheckConfig (void)
       return false;
     }
 
+  // This type of variable initialization would normally be done in
+  // InitializeParams (), but we want to use the value to subsequently
+  // check configuration of peak rate, so we move it forward here.
   if (m_mtu == 0)
     {
       Ptr<NetDeviceQueueInterface> ndqi = GetNetDeviceQueueInterface ();
