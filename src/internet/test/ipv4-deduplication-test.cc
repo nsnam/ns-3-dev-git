@@ -50,7 +50,6 @@
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/simple-net-device-helper.h"
-#include "ns3/on-off-helper.h"
 
 #include "ns3/traffic-control-layer.h"
 
@@ -532,11 +531,18 @@ class Ipv4DeduplicationPerformanceTest : public TestCase
   public:
     Ipv4DeduplicationPerformanceTest (void);
     virtual void DoRun (void);
+  private:
+    std::vector <Ptr<Socket> > m_sockets;
+    std::vector <uint8_t> m_txPackets;
+    uint8_t m_target;
+    void DoSendData (Ptr<Socket> socket, Address to, uint8_t socketIndex);
 };
 
 Ipv4DeduplicationPerformanceTest::Ipv4DeduplicationPerformanceTest ()
   : TestCase ("Ipv4Deduplication performance test")
-{}
+{
+  m_target = 40;
+}
 
 void
 Ipv4DeduplicationPerformanceTest::DoRun (void)
@@ -569,8 +575,7 @@ Ipv4DeduplicationPerformanceTest::DoRun (void)
 
   // add static routes for each node / device
   auto diter = devices.Begin ();
-  for (auto end = nodes.End (),
-           iter = nodes.Begin (); iter != end; ++iter)
+  for (auto iter = nodes.Begin (); iter != nodes.End (); ++iter)
     {
       // route for forwarding
       staticRouting.AddMulticastRoute (*iter, Ipv4Address::GetAny (), targetAddr.c_str (), *diter, NetDeviceContainer (*diter));
@@ -591,18 +596,46 @@ Ipv4DeduplicationPerformanceTest::DoRun (void)
       ++diter;
     }
   
-  // Create application
-  OnOffHelper onoff ("ns3::UdpSocketFactory", InetSocketAddress (targetAddr.c_str (), 1234));
-  onoff.SetConstantRate (DataRate ("8kbps")); // 2 packets / second for default 512B packets
-  onoff.SetAttribute ("MaxBytes", UintegerValue (512 * 40));  // 20 seconds worth of packets
-  auto apps = onoff.Install (nodes);
 
-  apps.StartWithJitter (Seconds (4), CreateObjectWithAttributes <UniformRandomVariable> ("Max", DoubleValue (4)));
+  // Create the UDP sockets
+  Ptr<UniformRandomVariable> jitter = CreateObjectWithAttributes <UniformRandomVariable> ("Max", DoubleValue (4));
+  Address to = InetSocketAddress (Ipv4Address (targetAddr.c_str ()), 1234);
+  for (auto iter = nodes.Begin (); iter != nodes.End (); ++iter)
+    {
+      Ptr<SocketFactory> udpSocketFactory = (*iter)->GetObject<UdpSocketFactory> ();
+      m_sockets.push_back (udpSocketFactory->CreateSocket ());
+      m_txPackets.push_back (0);
+    }
+
+  for (uint8_t i = 0; i<nodes.GetN (); i++)
+    {
+      Simulator::ScheduleWithContext (m_sockets[i]->GetNode ()->GetId (), Seconds (4+Seconds(jitter->GetValue ())),
+                                      &Ipv4DeduplicationPerformanceTest::DoSendData, this, m_sockets[i], to, i);
+    }
 
   Simulator::Run ();
   NS_LOG_UNCOND ("Executed " << Simulator::GetEventCount () << " events");
+
+  for (auto iter = m_sockets.begin (); iter != m_sockets.end (); iter++)
+    {
+      (*iter)->Close ();
+    }
+
   Simulator::Destroy ();
 }
+
+void
+Ipv4DeduplicationPerformanceTest::DoSendData (Ptr<Socket> socket, Address to, uint8_t socketIndex)
+{
+  socket->SendTo (Create<Packet> (512), 0, to);
+  if (m_txPackets[socketIndex] < m_target)
+    {
+      m_txPackets[socketIndex] += 1;
+      Simulator::ScheduleWithContext (m_sockets[socketIndex]->GetNode ()->GetId (), Seconds (.5),
+                                      &Ipv4DeduplicationPerformanceTest::DoSendData, this, m_sockets[socketIndex], to, socketIndex);
+    }
+}
+
 
 /**
  * \ingroup internet-test
