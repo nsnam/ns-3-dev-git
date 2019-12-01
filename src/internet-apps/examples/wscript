@@ -6,3 +6,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('dhcp-example', ['internet', 'internet-apps', 'csma', 'point-to-point', 'applications'])
     obj.source = 'dhcp-example.cc'
+    
+    obj = bld.create_ns3_program('traceroute-example', ['aodv', 'core', 'network', 'internet', 'point-to-point', 'wifi','internet-apps'])
+    obj.source = 'traceroute-example.cc'
