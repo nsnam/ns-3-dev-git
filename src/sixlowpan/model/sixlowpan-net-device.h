@@ -271,21 +271,6 @@ private:
   TracedCallback<DropReason, Ptr<const Packet>, Ptr<SixLowPanNetDevice>, uint32_t> m_dropTrace;
 
   /**
-   * \brief Make a link-local address from a MAC address.
-   * \param [in] addr The MAC address.
-   * \return The IPv6 link-local address.
-   */
-  Ipv6Address MakeLinkLocalAddressFromMac (Address const &addr);
-
-  /**
-   * \brief Make a global address from a MAC address.
-   * \param [in] addr the MAC address.
-   * \param [in] prefix The address prefix.
-   * \return The IPv6 address.
-   */
-  Ipv6Address MakeGlobalAddressFromMac (Address const &addr, Ipv6Address prefix);
-
-  /**
    * \brief Compress the headers according to HC1 compression.
    * \param [in] packet The packet to be compressed.
    * \param [in] src The MAC source address.

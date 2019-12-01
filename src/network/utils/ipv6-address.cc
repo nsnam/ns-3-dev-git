@@ -361,6 +361,34 @@ Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
     return (v4Addr);
 }
 
+Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Address addr, Ipv6Address prefix)
+{
+  Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
+
+  if (Mac64Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), Ipv6Address (prefix) );
+    }
+  else if (Mac48Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), Ipv6Address (prefix));
+    }
+  else if (Mac16Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), Ipv6Address (prefix) );
+    }
+  else if (Mac8Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), Ipv6Address (prefix) );
+    }
+
+  if (ipv6Addr.IsAny ())
+    {
+      NS_ABORT_MSG ("Unknown address type");
+    }
+  return ipv6Addr;
+}
+
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac16Address addr, Ipv6Address prefix)
 {
   NS_LOG_FUNCTION (addr << prefix);
@@ -370,6 +398,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac16Address addr, Ipv6Addre
 
   addr.CopyTo (buf);
   prefix.GetBytes (buf2);
+  memset (buf2+8, 0, 8);
 
   memcpy (buf2 + 14, buf, 2);
   buf2[11] = 0xff;
@@ -425,6 +454,7 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac8Address addr, Ipv6Addres
   buf[0] = 0;
   addr.CopyTo (&buf[1]);
   prefix.GetBytes (buf2);
+  memset (buf2+8, 0, 8);
 
   memcpy (buf2 + 14, buf, 2);
   buf2[11] = 0xff;
@@ -432,6 +462,34 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac8Address addr, Ipv6Addres
 
   ret.Set (buf2);
   return ret;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Address addr)
+{
+  Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
+
+  if (Mac64Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr));
+    }
+  else if (Mac48Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr));
+    }
+  else if (Mac16Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr));
+    }
+  else if (Mac8Address::IsMatchingType (addr))
+    {
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr));
+    }
+
+  if (ipv6Addr.IsAny ())
+    {
+      NS_ABORT_MSG ("Unknown address type");
+    }
+  return ipv6Addr;
 }
 
 Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address addr)

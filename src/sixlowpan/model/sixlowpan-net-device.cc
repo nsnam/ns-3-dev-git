@@ -552,7 +552,7 @@ SixLowPanNetDevice::CompressLowPanHc1 (Ptr<Packet> packet, Address const &src, A
       uint8_t bufTwo[16];
       Ipv6Address srcAddr = ipHeader.GetSourceAddress ();
       srcAddr.GetBytes (bufOne);
-      Ipv6Address mySrcAddr = MakeLinkLocalAddressFromMac (src);
+      Ipv6Address mySrcAddr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (src);
 
       NS_LOG_LOGIC ("Checking source compression: " << mySrcAddr << " - " << srcAddr );
 
@@ -582,7 +582,7 @@ SixLowPanNetDevice::CompressLowPanHc1 (Ptr<Packet> packet, Address const &src, A
 
       Ipv6Address dstAddr = ipHeader.GetDestinationAddress ();
       dstAddr.GetBytes (bufOne);
-      Ipv6Address myDstAddr = MakeLinkLocalAddressFromMac (dst);
+      Ipv6Address myDstAddr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (dst);
 
       NS_LOG_LOGIC ("Checking destination compression: " << myDstAddr << " - " << dstAddr );
 
@@ -675,7 +675,7 @@ SixLowPanNetDevice::DecompressLowPanHc1 (Ptr<Packet> packet, Address const &src,
           address[j + 8] = 0;
           address[j] = prefix[j];
         }
-      ipHeader.SetSourceAddress ( MakeGlobalAddressFromMac (src, Ipv6Address (address)));
+      ipHeader.SetSourceAddress (Ipv6Address::MakeAutoconfiguredAddress (src, Ipv6Address (address)));
       break;
     case SixLowPanHc1::HC1_PCII:
       interface = encoding.GetSrcInterface ();
@@ -688,7 +688,7 @@ SixLowPanNetDevice::DecompressLowPanHc1 (Ptr<Packet> packet, Address const &src,
       ipHeader.SetSourceAddress ( Ipv6Address (address) );
       break;
     case SixLowPanHc1::HC1_PCIC:
-      ipHeader.SetSourceAddress (MakeLinkLocalAddressFromMac (src));
+      ipHeader.SetSourceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (src));
       break;
     }
 
@@ -715,7 +715,7 @@ SixLowPanNetDevice::DecompressLowPanHc1 (Ptr<Packet> packet, Address const &src,
           address[j + 8] = 0;
           address[j] = prefix[j];
         }
-      ipHeader.SetDestinationAddress ( MakeGlobalAddressFromMac (dst, Ipv6Address (address)));
+      ipHeader.SetDestinationAddress (Ipv6Address::MakeAutoconfiguredAddress (dst, Ipv6Address (address)));
       break;
     case SixLowPanHc1::HC1_PCII:
       interface = encoding.GetDstInterface ();
@@ -728,7 +728,7 @@ SixLowPanNetDevice::DecompressLowPanHc1 (Ptr<Packet> packet, Address const &src,
       ipHeader.SetDestinationAddress ( Ipv6Address (address) );
       break;
     case SixLowPanHc1::HC1_PCIC:
-      ipHeader.SetDestinationAddress (MakeLinkLocalAddressFromMac (dst));
+      ipHeader.SetDestinationAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (dst));
       break;
     }
 
@@ -873,7 +873,7 @@ SixLowPanNetDevice::CompressLowPanIphc (Ptr<Packet> packet, Address const &src, 
       // Set the Source Address
       iphcHeader.SetSrcAddress (srcAddr);
 
-      Ipv6Address mySrcAddr = MakeLinkLocalAddressFromMac (src);
+      Ipv6Address mySrcAddr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (src);
       NS_LOG_LOGIC ("Checking source compression: " << mySrcAddr << " - " << srcAddr );
 
       if ( mySrcAddr == srcAddr )
@@ -914,7 +914,7 @@ SixLowPanNetDevice::CompressLowPanIphc (Ptr<Packet> packet, Address const &src, 
       // Set the Destination Address
       iphcHeader.SetDstAddress (dstAddr);
 
-      Ipv6Address myDstAddr = MakeLinkLocalAddressFromMac (dst);
+      Ipv6Address myDstAddr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (dst);
       NS_LOG_LOGIC ("Checking destination compression: " << myDstAddr << " - " << dstAddr );
 
       if ( !iphcHeader.GetM () )
@@ -1034,7 +1034,7 @@ SixLowPanNetDevice::DecompressLowPanIphc (Ptr<Packet> packet, Address const &src
     {
       if ( encoding.GetSam () == SixLowPanIphc::HC_COMPR_0 )
         {
-          ipHeader.SetSourceAddress (MakeLinkLocalAddressFromMac (src));
+          ipHeader.SetSourceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (src));
         }
       else
         {
@@ -1060,7 +1060,7 @@ SixLowPanNetDevice::DecompressLowPanIphc (Ptr<Packet> packet, Address const &src
     {
       if ( !encoding.GetM () && encoding.GetDam () == SixLowPanIphc::HC_COMPR_0 )
         {
-          ipHeader.SetDestinationAddress (MakeLinkLocalAddressFromMac (dst));
+          ipHeader.SetDestinationAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (dst));
         }
       else
         {
@@ -2076,62 +2076,6 @@ void SixLowPanNetDevice::HandleFragmentsTimeout (FragmentKey key, uint32_t iif)
 
   m_fragments.erase (key);
   m_fragmentsTimers.erase (key);
-}
-
-Ipv6Address SixLowPanNetDevice::MakeLinkLocalAddressFromMac (Address const &addr)
-{
-  Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
-
-  if (Mac64Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr));
-    }
-  else if (Mac48Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr));
-    }
-  else if (Mac16Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr));
-    }
-  else if (Mac8Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr));
-    }
-
-  if (ipv6Addr.IsAny ())
-    {
-      NS_ABORT_MSG ("Unknown address type");
-    }
-  return ipv6Addr;
-}
-
-Ipv6Address SixLowPanNetDevice::MakeGlobalAddressFromMac (Address const &addr, Ipv6Address prefix)
-{
-  Ipv6Address ipv6Addr = Ipv6Address::GetAny ();
-
-  if (Mac64Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), Ipv6Address (prefix) );
-    }
-  else if (Mac48Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), Ipv6Address (prefix));
-    }
-  else if (Mac16Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), Ipv6Address (prefix) );
-    }
-  else if (Mac8Address::IsMatchingType (addr))
-    {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), Ipv6Address (prefix) );
-    }
-
-  if (ipv6Addr.IsAny ())
-    {
-      NS_ABORT_MSG ("Unknown address type");
-    }
-  return ipv6Addr;
 }
 
 }
