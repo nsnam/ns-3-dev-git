@@ -88,15 +88,15 @@ Ipv6L3ProtocolTestCase::DoRun ()
   index = ipv6->AddIpv6Interface (interface2);
   NS_TEST_ASSERT_MSG_EQ (index, 2, "The index is not 2??");
 
+  interface->SetUp ();
+  interface2->SetUp ();
+
   Ipv6InterfaceAddress ifaceAddr = interface->GetLinkLocalAddress ();
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr.GetAddress ().IsLinkLocal (), true,
                          "Should be link local??");
 
-  interface->SetUp ();
   NS_TEST_ASSERT_MSG_EQ (interface->GetNAddresses (), 1,
                          "interface has always a link-local address"); /* interface has always a link-local address */
-
-  interface2->SetUp ();
 
   Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress (
       "2001:1234:5678:9000::1", Ipv6Prefix (64));

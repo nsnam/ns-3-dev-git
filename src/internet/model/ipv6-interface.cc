@@ -128,13 +128,9 @@ void Ipv6Interface::DoSetup ()
     {
       return; /* no NDISC cache for ip6-localhost */
     }
+  int32_t interfaceId = m_node->GetObject<Ipv6> ()->GetInterfaceForDevice (m_device);
+  Ptr<Icmpv6L4Protocol> icmpv6 = DynamicCast<Icmpv6L4Protocol> (m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber (), interfaceId));
 
-  Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
-  Ptr<Icmpv6L4Protocol> icmpv6;
-  if (proto)
-    {
-      icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
-    }
   if (icmpv6 && !m_ndCache)
     {
       m_ndCache = icmpv6->CreateCache (m_device, this);
@@ -145,14 +141,12 @@ void Ipv6Interface::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_node = node;
-  DoSetup ();
 }
 
 void Ipv6Interface::SetDevice (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
   m_device = device;
-  DoSetup ();
 }
 
 void
@@ -246,17 +240,21 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
       if (!addr.IsAny () || !addr.IsLocalhost ())
         {
           /* DAD handling */
-          Ptr<IpL4Protocol> proto = m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
-          Ptr<Icmpv6L4Protocol> icmpv6;
-          if (proto)
-            {
-              icmpv6 = proto->GetObject <Icmpv6L4Protocol> ();
-            }
+
+          int32_t interfaceId = m_node->GetObject<Ipv6> ()->GetInterfaceForDevice (m_device);
+          Ptr<Icmpv6L4Protocol> icmpv6 = DynamicCast<Icmpv6L4Protocol> (m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber (), interfaceId));
 
           if (icmpv6 && icmpv6->IsAlwaysDad ())
             {
-              Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
-              Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
+              if (icmpv6->IsAlwaysDad ())
+                {
+                  Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
+                  Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
+                }
+              else
+                {
+                  Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
+                }
             }
         }
       return true;
@@ -430,8 +428,11 @@ void Ipv6Interface::Send (Ptr<Packet> p, const Ipv6Header & hdr, Ipv6Address des
   /* other address */
   if (m_device->NeedsArp ())
     {
-      NS_LOG_LOGIC ("Needs ARP" << " " << dest);
-      Ptr<Icmpv6L4Protocol> icmpv6 = ipv6->GetIcmpv6 ();
+      NS_LOG_LOGIC ("Needs NDISC " << dest);
+
+      int32_t interfaceId = m_node->GetObject<Ipv6> ()->GetInterfaceForDevice (m_device);
+      Ptr<Icmpv6L4Protocol> icmpv6 = DynamicCast<Icmpv6L4Protocol> (m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber (), interfaceId));
+
       Address hardwareDestination;
       bool found = false;
 
@@ -459,7 +460,7 @@ void Ipv6Interface::Send (Ptr<Packet> p, const Ipv6Header & hdr, Ipv6Address des
     }
   else
     {
-      NS_LOG_LOGIC ("Doesn't need ARP");
+      NS_LOG_LOGIC ("Doesn't need NDISC");
       m_tc->Send (m_device, Create<Ipv6QueueDiscItem> (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER, hdr));
     }
 }

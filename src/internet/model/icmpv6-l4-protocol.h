@@ -57,6 +57,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId (void) const;
 
   /**
    * \brief ICMPv6 protocol number (58).
@@ -114,6 +115,12 @@ public:
    * \param node the node to set
    */
   void SetNode (Ptr<Node> node);
+
+  /**
+   * \brief Get the node.
+   * \return node
+   */
+  Ptr<Node> GetNode ();
 
   /**
    * \brief This method is called by AggregateObject and completes the aggregation
@@ -199,7 +206,7 @@ public:
    * \param target target IPv6 address
    * \param hardwareAddress our mac address
    */
-  void SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address target, Address hardwareAddress);
+  virtual void SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address target, Address hardwareAddress);
 
   /**
    * \brief Send an error Destination Unreachable.
@@ -345,7 +352,7 @@ public:
   /**
    * \brief Send a Router Solicitation.
    * \param src link-local source address
-   * \param dst destination address (usealy ff02::2 i.e all-routers)
+   * \param dst destination address (usually ff02::2 i.e all-routers)
    * \param hardwareAddress link-layer address (SHOULD be included if src is not ::)
    */
   void SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwareAddress);
@@ -356,7 +363,7 @@ public:
    * \param interface the IPv6 interface
    * \return a smart pointer of NdCache or 0 if problem
    */
-  Ptr<NdiscCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface);
+  virtual Ptr<NdiscCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface);
 
   /**
    * \brief Is the node must do DAD.
@@ -380,54 +387,7 @@ protected:
    */
   virtual void DoDispose ();
 
-private:
   typedef std::list<Ptr<NdiscCache> > CacheList; //!< container of NdiscCaches
-
-
-  /**
-   * \brief Neighbor Discovery node constants: max multicast solicitations.
-   */
-  uint8_t m_maxMulticastSolicit;
-
-  /**
-   * \brief Neighbor Discovery node constants: max unicast solicitations.
-   */
-  uint8_t m_maxUnicastSolicit;
-
-  /**
-   * \brief Neighbor Discovery node constants: reachable time.
-   */
-  Time m_reachableTime;
-
-  /**
-   * \brief Neighbor Discovery node constants: retransmission timer.
-   */
-  Time m_retransmissionTime;
-
-  /**
-   * \brief Neighbor Discovery node constants: delay for the first probe.
-   */
-  Time m_delayFirstProbe;
-
-  /**
-   * \brief The node.
-   */
-  Ptr<Node> m_node;
-
-  /**
-   * \brief A list of cache by device.
-   */
-  CacheList m_cacheList;
-
-  /**
-   * \brief Always do DAD ?
-   */
-  bool m_alwaysDad;
-
-  /**
-   * \brief Random jitter before sending solicitations
-   */
-  Ptr<RandomVariableStream> m_solicitationJitter;
 
   /**
    * \brief Notify an ICMPv6 reception to upper layers (if requested).
@@ -553,6 +513,52 @@ private:
   // From IpL4Protocol
   virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
   virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+
+  /**
+   * \brief Always do DAD ?
+   */
+  bool m_alwaysDad;
+
+  /**
+   * \brief A list of cache by device.
+   */
+  CacheList m_cacheList;
+
+private:
+  /**
+   * \brief Neighbor Discovery node constants: max multicast solicitations.
+   */
+  uint8_t m_maxMulticastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: max unicast solicitations.
+   */
+  uint8_t m_maxUnicastSolicit;
+
+  /**
+   * \brief Neighbor Discovery node constants: reachable time.
+   */
+  Time m_reachableTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: retransmission timer.
+   */
+  Time m_retransmissionTime;
+
+  /**
+   * \brief Neighbor Discovery node constants: delay for the first probe.
+   */
+  Time m_delayFirstProbe;
+
+  /**
+   * \brief The node.
+   */
+  Ptr<Node> m_node;
+
+  /**
+   * \brief Random jitter before sending solicitations
+   */
+  Ptr<RandomVariableStream> m_solicitationJitter;
 
   IpL4Protocol::DownTargetCallback6 m_downTarget; //!< callback to Ipv6::Send
 

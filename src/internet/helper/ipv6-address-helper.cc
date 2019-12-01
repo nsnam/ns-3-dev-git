@@ -231,6 +231,9 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c)
       NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
                      "Interface index not found");
 
+      // the first round is to make sure that the interface is set up, including its link-local addresses.
+      ipv6->SetUp (ifIndex);
+
       Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), Ipv6Prefix (64));
       ipv6->SetMetric (ifIndex, 1);
       ipv6->AddAddress (ifIndex, ipv6Addr);
@@ -283,6 +286,9 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c, s
         }
       NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
                      "Interface index not found");
+
+      // the first round is to make sure that the interface is set up, including its link-local addresses.
+      ipv6->SetUp (ifIndex);
 
       ipv6->SetMetric (ifIndex, 1);
 

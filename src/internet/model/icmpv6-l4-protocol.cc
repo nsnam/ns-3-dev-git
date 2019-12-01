@@ -32,7 +32,6 @@
 #include "ns3/string.h"
 #include "ns3/integer.h"
 
-#include "ipv6-raw-socket-factory-impl.h"
 #include "ipv6-l3-protocol.h"
 #include "ipv6-interface.h"
 #include "icmpv6-l4-protocol.h"
@@ -99,6 +98,12 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
   return tid;
 }
 
+TypeId Icmpv6L4Protocol::GetInstanceTypeId () const
+{
+  NS_LOG_FUNCTION (this);
+  return Icmpv6L4Protocol::GetTypeId ();
+}
+
 Icmpv6L4Protocol::Icmpv6L4Protocol ()
   : m_node (0)
 {
@@ -146,8 +151,6 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
             {
               SetNode (node);
               ipv6->Insert (this);
-              Ptr<Ipv6RawSocketFactoryImpl> rawFactory = CreateObject<Ipv6RawSocketFactoryImpl> ();
-              ipv6->AggregateObject (rawFactory);
               SetDownTarget6 (MakeCallback (&Ipv6::Send, ipv6));
             }
         }
@@ -159,6 +162,12 @@ void Icmpv6L4Protocol::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_node = node;
+}
+
+Ptr<Node> Icmpv6L4Protocol::GetNode ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_node;
 }
 
 uint16_t Icmpv6L4Protocol::GetStaticProtocolNumber ()
@@ -199,7 +208,7 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
     }
 
   /** \todo disable multicast loopback to prevent NS probing to be received by the sender */
-
+  
   NdiscCache::Ipv6PayloadHeaderPair p = ForgeNS ("::",Ipv6Address::MakeSolicitedAddress (target), target, interface->GetDevice ()->GetAddress ());
 
   /* update last packet UID */
@@ -1277,7 +1286,7 @@ Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
         }
     }
 
-  NS_ASSERT (false);
+  NS_ASSERT_MSG (false, "Icmpv6L4Protocol can not find a NDIS Cache for device " << device);
   /* quiet compiler */
   return 0;
 }
