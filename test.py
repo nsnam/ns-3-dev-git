@@ -1717,10 +1717,13 @@ def run_tests():
                 crashed_testnames.append(job.display_name)
                 status = "CRASH"
 
+        finished_tests = skipped_tests + passed_tests + failed_tests + crashed_tests + valgrind_errors
+        progress = "[%d/%d]" % (finished_tests, jobs)
+
         if options.duration or options.constrain == "performance":
-            print("%s (%.3f): %s %s" % (status, job.elapsed_time, kind, job.display_name))
+            print("%s %s (%.3f): %s %s" % (progress, status, job.elapsed_time, kind, job.display_name))
         else:
-            print("%s: %s %s" % (status, kind, job.display_name))
+            print("%s %s: %s %s" % (progress, status, kind, job.display_name))
 
         if job.is_example or job.is_pyexample:
             #
