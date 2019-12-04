@@ -57,7 +57,7 @@ TrafficControlLayer::GetInstanceTypeId (void) const
 TrafficControlLayer::TrafficControlLayer ()
   : Object ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 TrafficControlLayer::~TrafficControlLayer ()
@@ -119,17 +119,22 @@ TrafficControlLayer::ScanDevices (void)
 
   NS_ASSERT_MSG (m_node, "Cannot run ScanDevices without an aggregated node");
 
+  NS_LOG_DEBUG ("Scanning devices on node " << m_node->GetId ());
   for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
     {
+      NS_LOG_DEBUG ("Scanning devices on node " << m_node->GetId ());
       Ptr<NetDevice> dev = m_node->GetDevice (i);
+      NS_LOG_DEBUG ("Checking device " << i << " with pointer " << dev << " of type " << dev->GetInstanceTypeId ().GetName ());
 
       // note: there may be no NetDeviceQueueInterface aggregated to the device
       Ptr<NetDeviceQueueInterface> ndqi = dev->GetObject<NetDeviceQueueInterface> ();
+      NS_LOG_DEBUG ("Pointer to NetDeviceQueueInterface: " << ndqi);
 
       std::map<Ptr<NetDevice>, NetDeviceInfo>::iterator ndi = m_netDevices.find (dev);
 
       if (ndi != m_netDevices.end ())
         {
+          NS_LOG_DEBUG ("Device entry found; installing NetDeviceQueueInterface pointer " << ndqi << " to internal map");
           ndi->second.m_ndqi = ndqi;
         }
       else if (ndqi)
@@ -139,6 +144,7 @@ TrafficControlLayer::ScanDevices (void)
       // the Traffic Control layer checks whether the device queue is stopped even
       // when there is no queue disc.
         {
+          NS_LOG_DEBUG ("No device entry found; create entry for device and store pointer to NetDeviceQueueInterface: " << ndqi);
           m_netDevices[dev] = {nullptr, ndqi, QueueDiscVector ()};
           ndi = m_netDevices.find (dev);
         }
@@ -146,6 +152,7 @@ TrafficControlLayer::ScanDevices (void)
       // if a queue disc is installed, set the wake callbacks on netdevice queues
       if (ndi != m_netDevices.end () && ndi->second.m_rootQueueDisc)
         {
+          NS_LOG_DEBUG ("Setting the wake callbacks on NetDevice queues");
           ndi->second.m_queueDiscsToWake.clear ();
 
           if (ndqi)
