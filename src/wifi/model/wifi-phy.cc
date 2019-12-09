@@ -3049,7 +3049,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
 
   Ptr<const Packet> packet = event->GetPacket ();
   Time relativeStart = NanoSeconds (0);
-  bool receptionOkAtLeastForOneMpdu = true;
+  bool receptionOkAtLeastForOneMpdu = false;
   std::pair<bool, SignalNoiseDbm> rxInfo;
   WifiTxVector txVector = event->GetTxVector ();
   if (txVector.IsAggregation ())
