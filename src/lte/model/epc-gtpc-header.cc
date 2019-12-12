@@ -874,14 +874,14 @@ GtpcModifyBearerRequestMessage::Print (std::ostream &os) const
   os << " imsi " << m_imsi << " uliEcgi " << m_uliEcgi;
 }
 
-uint8_t
+uint64_t
 GtpcModifyBearerRequestMessage::GetImsi () const
 {
   return m_imsi;
 }
 
 void
-GtpcModifyBearerRequestMessage::SetImsi (uint8_t imsi)
+GtpcModifyBearerRequestMessage::SetImsi (uint64_t imsi)
 {
   m_imsi = imsi;
 }

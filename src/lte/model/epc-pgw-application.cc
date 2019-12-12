@@ -290,7 +290,7 @@ EpcPgwApplication::DoRecvCreateSessionRequest (Ptr<Packet> packet)
   packet->RemoveHeader (msg);
   uint64_t imsi = msg.GetImsi ();
   uint16_t cellId = msg.GetUliEcgi ();
-  NS_LOG_DEBUG ("cellId " << cellId << " imsi " << (uint16_t)imsi);
+  NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
   NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi);
@@ -351,9 +351,9 @@ EpcPgwApplication::DoRecvModifyBearerRequest (Ptr<Packet> packet)
 
   GtpcModifyBearerRequestMessage msg;
   packet->RemoveHeader (msg);
-  uint8_t imsi = msg.GetImsi ();
+  uint64_t imsi = msg.GetImsi ();
   uint16_t cellId = msg.GetUliEcgi ();
-  NS_LOG_DEBUG ("cellId " << cellId << "IMSI " << (uint16_t)imsi);
+  NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint64_t, Ptr<UeInfo> >::iterator ueit = m_ueInfoByImsiMap.find (imsi);
   NS_ASSERT_MSG (ueit != m_ueInfoByImsiMap.end (), "unknown IMSI " << imsi); 

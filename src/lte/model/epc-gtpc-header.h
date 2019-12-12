@@ -334,8 +334,8 @@ public:
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetMessageSize (void) const;
 
-  uint8_t GetImsi () const;
-  void SetImsi (uint8_t imsi);
+  uint64_t GetImsi () const;
+  void SetImsi (uint64_t imsi);
 
   uint32_t GetUliEcgi () const;
   void SetUliEcgi (uint32_t uliEcgi);

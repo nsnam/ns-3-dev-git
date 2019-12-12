@@ -231,9 +231,9 @@ EpcSgwApplication::DoRecvCreateSessionRequest (Ptr<Packet> packet)
 
   GtpcCreateSessionRequestMessage msg;
   packet->RemoveHeader (msg);
-  uint8_t imsi = msg.GetImsi ();
+  uint64_t imsi = msg.GetImsi ();
   uint16_t cellId = msg.GetUliEcgi ();
-  NS_LOG_DEBUG ("IMSI " << (uint16_t)imsi << " cellId " << cellId);
+  NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
   NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
@@ -298,9 +298,9 @@ EpcSgwApplication::DoRecvModifyBearerRequest (Ptr<Packet> packet)
 
   GtpcModifyBearerRequestMessage msg;
   packet->RemoveHeader (msg);
-  uint8_t imsi = msg.GetImsi ();
+  uint64_t imsi = msg.GetImsi ();
   uint16_t cellId = msg.GetUliEcgi ();
-  NS_LOG_DEBUG ("IMSI " << (uint16_t)imsi << " cellId " << cellId);
+  NS_LOG_DEBUG ("cellId " << cellId << " IMSI " << imsi);
 
   std::map<uint16_t, EnbInfo>::iterator enbit = m_enbInfoByCellId.find (cellId);
   NS_ASSERT_MSG (enbit != m_enbInfoByCellId.end (), "unknown CellId " << cellId); 
