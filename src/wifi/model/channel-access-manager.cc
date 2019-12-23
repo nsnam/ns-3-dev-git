@@ -561,6 +561,11 @@ ChannelAccessManager::NotifyRxEndErrorNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
+  if (m_lastRxEnd > Simulator::Now ())
+    {
+      m_lastBusyStart = Simulator::Now ();
+      m_lastBusyDuration = m_lastRxEnd - m_lastBusyStart;
+    }
   m_lastRxEnd = Simulator::Now ();
   m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
   m_lastRxReceivedOk = false;
