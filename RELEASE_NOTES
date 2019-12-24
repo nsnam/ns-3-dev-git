@@ -27,6 +27,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Issue #119 - Waf --lcov-report option was broken
 - Issue #84 - Wi-Fi removing wrong header due to copy-paste error
 
 Known issues
