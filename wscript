@@ -108,20 +108,12 @@ def dist_hook():
 
 # Print the sorted list of module names in columns.
 def print_module_names(names):
-    # Sort the list of module names.
-    names.sort()
-
-    # Print the list of module names in 3 columns.
-    i = 1
-    for name in names:
-        print(name.ljust(25), end=' ')
-        if i == 3:
-                print()
-                i = 0
-        i = i+1
-
-    if i != 1:
-        print()
+    """Print the list of module names in 3 columns."""
+    for i, name in enumerate(sorted(names)):
+        if i % 3 == 2 or i == len(names) - 1:
+          print(name)
+        else:
+          print(name.ljust(25), end=' ')
 
 # return types of some APIs differ in Python 2/3 (type string vs class bytes)
 # This method will decode('utf-8') a byte object in Python 3, 
