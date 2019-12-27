@@ -445,6 +445,7 @@ ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> state)
   NS_LOG_FUNCTION (this << state);
   Time mostRecentEvent = MostRecent ({state->GetBackoffStart (),
                                      GetAccessGrantStart () + (state->GetAifsn () * m_slot)});
+  NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
   return mostRecentEvent;
 }
@@ -453,9 +454,10 @@ Time
 ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> state)
 {
   NS_LOG_FUNCTION (this << state);
-  NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
-                " end: " << (GetBackoffStartFor (state) + state->GetBackoffSlots () * m_slot).As (Time::US));
-  return GetBackoffStartFor (state) + (state->GetBackoffSlots () * m_slot);
+  Time backoffEnd = GetBackoffStartFor (state) + (state->GetBackoffSlots () * m_slot);
+  NS_LOG_DEBUG ("Backoff end: " << backoffEnd.As (Time::US));
+
+  return backoffEnd;
 }
 
 void
