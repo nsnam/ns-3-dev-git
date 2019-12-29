@@ -171,17 +171,35 @@ private:
    */
   void ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from);
   /**
+   * Schedule a check that the channel access manager is busy or idle
+   * \param time the expectedtime
+   * \param busy whether the manager is expected to be busy
+   */
+  void ExpectBusy (uint64_t time, bool busy);
+  /**
+   * Perform check that channel access manager is busy or idle
+   * \param busy whether expected state is busy
+   */
+  void DoCheckBusy (bool busy);
+  /**
    * Add expect collision function
    * \param at
    * \param duration the duration
    */
   void AddRxOkEvt (uint64_t at, uint64_t duration);
   /**
-   * Add receive error event function
+   * Add receive error event function for error at end of frame
    * \param at the event time
    * \param duration the duration
    */
   void AddRxErrorEvt (uint64_t at, uint64_t duration);
+  /**
+   * Add receive error event function for error during frame
+   * \param at the event time
+   * \param duration the duration
+   * \param duration the time after event time to force the error
+   */
+  void AddRxErrorEvt (uint64_t at, uint64_t duration, uint64_t timeUntilError);
   /**
    * Add receive inside SIFS event function
    * \param at the event time
@@ -430,6 +448,19 @@ ChannelAccessManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint3
 }
 
 void
+ChannelAccessManagerTest::ExpectBusy (uint64_t time, bool busy)
+{
+  Simulator::Schedule (MicroSeconds (time) - Now (),
+                       &ChannelAccessManagerTest::DoCheckBusy, this, busy);
+}
+
+void
+ChannelAccessManagerTest::DoCheckBusy (bool busy)
+{
+  NS_TEST_EXPECT_MSG_EQ (m_ChannelAccessManager->IsBusy (), busy, "Incorrect busy/idle state");
+}
+
+void
 ChannelAccessManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
   m_ChannelAccessManager = CreateObject<ChannelAccessManager> ();
@@ -505,6 +536,17 @@ ChannelAccessManagerTest::AddRxErrorEvt (uint64_t at, uint64_t duration)
   Simulator::Schedule (MicroSeconds (at + duration) - Now (),
                        &ChannelAccessManager::NotifyRxEndErrorNow, m_ChannelAccessManager);
 }
+
+void
+ChannelAccessManagerTest::AddRxErrorEvt (uint64_t at, uint64_t duration, uint64_t timeUntilError)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (),
+                       &ChannelAccessManager::NotifyRxStartNow, m_ChannelAccessManager,
+                       MicroSeconds (duration));
+  Simulator::Schedule (MicroSeconds (at + timeUntilError) - Now (),
+                       &ChannelAccessManager::NotifyRxEndErrorNow, m_ChannelAccessManager);
+}
+
 
 void
 ChannelAccessManagerTest::AddNavReset (uint64_t at, uint64_t duration)
@@ -708,6 +750,20 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 102, 0);
   ExpectCollision (30, 4, 0); //backoff: 4 slots
+  EndTest ();
+
+  // Test that channel stays busy for first frame's duration after Rx error
+  //
+  //  20          60
+  //   |    rx     |
+  //        |
+  //       40 force Rx error
+  StartTest (4, 6, 10);
+  AddDcfState (1);
+  AddRxErrorEvt (20, 40, 20); // At time 20, start reception for 40, but force error 20 into frame
+  ExpectBusy (41, true); // channel should remain busy for remaining duration
+  ExpectBusy (59, true);
+  ExpectBusy (61, false);
   EndTest ();
 
   // Test an EIFS which is interrupted by a successful transmission.
