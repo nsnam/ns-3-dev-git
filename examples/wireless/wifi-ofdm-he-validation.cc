@@ -16,7 +16,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-// This example is used to validate NIST and YANS error rate models for VHT rates.
+// This example is used to validate NIST and YANS error rate models for HE rates.
 //
 // It outputs plots of the Frame Success Rate versus the Signal-to-noise ratio for
 // both NIST and YANS error rate models and for every HE MCS value.
