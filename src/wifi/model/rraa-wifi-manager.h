@@ -51,9 +51,9 @@ typedef std::vector<std::pair<WifiRraaThresholds, WifiMode> > RraaThresholdsTabl
  * by "Starsky H. Y. Wong", "Hao Yang", "Songwu Lu", and,
  * "Vaduvur Bharghavan" published in Mobicom 06.
  *
- * This RAA does not support HT, VHT nor HE modes and will error
+ * This RAA does not support non-legacy modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
- * that has VhtSupported, HtSupported or HeSupported set.
+ * that supports 802.11n or higher.
  */
 class RraaWifiManager : public WifiRemoteStationManager
 {

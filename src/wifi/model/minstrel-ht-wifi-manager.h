@@ -178,8 +178,12 @@ static const uint8_t MAX_VHT_WIDTH = 160;        //!< Maximal channel width.
  * each interval. However, it samples less often the low rates and high
  * probability of error rates.
  *
- * When this rate control is configured but HT and VHT are not supported,
+ * When this rate control is configured but non-legacy modes are not supported,
  * Minstrel-HT uses legacy Minstrel (minstrel-wifi-manager) for rate control.
+ *
+ * This RAA does not support HE modes yet and will error
+ * exit if the user tries to configure this RAA with a Wi-Fi MAC
+ * that supports 802.11ax or higher.
  */
 class MinstrelHtWifiManager : public WifiRemoteStationManager
 {

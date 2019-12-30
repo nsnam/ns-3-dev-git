@@ -35,9 +35,9 @@ namespace ns3 {
  * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and
  * T. Turletti.
  *
- * This RAA does not support HT, VHT nor HE modes and will error
+ * This RAA does not support non-legacy modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
- * that has VhtSupported, HtSupported or HeSupported set.
+ * that supports 802.11n or higher.
  */
 class AarfWifiManager : public WifiRemoteStationManager
 {

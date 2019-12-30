@@ -124,10 +124,10 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
  * that it considers successful, and spends a fraction of its time
  * doing 'look around' by trying other rates.
  *
- * Minstrel is appropriate for non-HT/VHT/HE configurations; for HT/VHT/HE
- * (i.e. 802.11n/ac/ax), users should use MinstrelHtWifiManager instead.
+ * Minstrel is appropriate for nlegacy configurations; for non-legacy
+ * (i.e. 802.11n or higher), users should use MinstrelHtWifiManager instead.
  * Minstrel will error exit if the user tries to configure it with a
- * Wi-Fi MAC that has VhtSupported, HtSupported or HeSupported set.
+ * Wi-Fi MAC that supports 802.11n or higher.
  *
  * Some notes on this implementation follow.  The implementation has
  * been adapted to bring it closer to the Linux implementation.
