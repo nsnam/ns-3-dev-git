@@ -178,7 +178,7 @@ public:
                                        uint8_t length);
   /**
    * This information element is a bit special in that it is only
-   * included if the STA is an HT or a VHT STA. To support this we
+   * included if the STA is a non-legacy STA. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
    *
@@ -196,13 +196,13 @@ public:
 
 
 private:
-  //fields supported by HT and VHT
+  //fields if HT supported
   uint8_t m_20_40_bssCoexistenceManagementSupport; ///< 20/40 BSS Coexistence Management Support
   uint8_t m_extendedChannelSwitching; ///< Extended Channel Switching
   uint8_t m_psmpCapability; ///< PSMP Capability
   uint8_t m_spsmpSupport; ///< S-PSMP Support
 
-  //fields supported by VHT
+  //fields if VHT supported
   uint8_t m_event; ///< Event
   uint8_t m_diagnostics; ///< Diagnostics
   uint8_t m_multicastDiagnostics; ///< Multicast Diagnostics

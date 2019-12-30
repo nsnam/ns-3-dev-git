@@ -117,8 +117,8 @@ IdealWifiManager::DoInitialize ()
       NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName ());
       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
     }
-  // Add all HT, VHT and HE MCSes
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  // Add all MCSes
+  if (GetHtSupported ())
     {
       nModes = GetPhy ()->GetNMcs ();
       for (uint8_t i = 0; i < nModes; i++)
@@ -319,8 +319,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     }
   else
     {
-      if ((GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-          && (GetHtSupported (st) || GetVhtSupported (st) || GetHeSupported (st)))
+      if (GetHtSupported () && GetHtSupported (st))
         {
           for (uint8_t i = 0; i < GetNMcsSupported (station); i++)
             {

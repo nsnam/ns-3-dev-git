@@ -352,9 +352,9 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
       hdr.SetType (WIFI_MAC_DATA);
     }
 
-  if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetQosSupported ())
     {
-      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since non-legacy control field is not yet implemented (set it to 1 when implemented)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
@@ -435,11 +435,11 @@ ApWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
       rates.SetBasicRate (modeDataRate);
     }
-  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
+  //If it is a non-legacy AP, then add the BSSMembershipSelectorSet
   //The standard says that the BSSMembershipSelectorSet
   //must have its MSB set to 1 (must be treated as a Basic Rate)
   //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
@@ -759,13 +759,13 @@ ApWifiMac::SendProbeResp (Mac48Address to)
     {
       probe.SetEdcaParameterSet (GetEdcaParameterSet ());
     }
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
       probe.SetHtOperation (GetHtOperation ());
     }
-  if (GetVhtSupported () || GetHeSupported ())
+  if (GetVhtSupported ())
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
       probe.SetVhtOperation (GetVhtOperation ());
@@ -837,13 +837,13 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
     {
       assoc.SetEdcaParameterSet (GetEdcaParameterSet ());
     }
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
       assoc.SetHtCapabilities (GetHtCapabilities ());
       assoc.SetHtOperation (GetHtOperation ());
     }
-  if (GetVhtSupported () || GetHeSupported ())
+  if (GetVhtSupported ())
     {
       assoc.SetVhtCapabilities (GetVhtCapabilities ());
       assoc.SetVhtOperation (GetVhtOperation ());
@@ -897,13 +897,13 @@ ApWifiMac::SendOneBeacon (void)
     {
       beacon.SetEdcaParameterSet (GetEdcaParameterSet ());
     }
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       beacon.SetExtendedCapabilities (GetExtendedCapabilities ());
       beacon.SetHtCapabilities (GetHtCapabilities ());
       beacon.SetHtOperation (GetHtOperation ());
     }
-  if (GetVhtSupported () || GetHeSupported ())
+  if (GetVhtSupported ())
     {
       beacon.SetVhtCapabilities (GetVhtCapabilities ());
       beacon.SetVhtOperation (GetVhtOperation ());
@@ -1266,7 +1266,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                             }
                         }
                     }
-                  if (GetHtSupported () || GetVhtSupported ())
+                  if (GetHtSupported ())
                     {
                       ExtendedCapabilities extendedCapabilities = assocReq.GetExtendedCapabilities ();
                       //TODO: to be completed
@@ -1454,7 +1454,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                             }
                         }
                     }
-                  if (GetHtSupported () || GetVhtSupported ())
+                  if (GetHtSupported ())
                     {
                       ExtendedCapabilities extendedCapabilities = reassocReq.GetExtendedCapabilities ();
                       //TODO: to be completed
@@ -1597,7 +1597,7 @@ bool
 ApWifiMac::GetRifsMode (void) const
 {
   bool rifsMode = false;
-  if (GetHtSupported () && !GetVhtSupported ()) //RIFS mode is forbidden for VHT
+  if (GetHtSupported () && !GetVhtSupported ()) //RIFS mode is no longer allowed with 802.11ac or higher
     {
       if (m_nonHtStations.empty () || !m_disableRifs)
         {

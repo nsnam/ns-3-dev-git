@@ -188,8 +188,8 @@ MinstrelHtWifiManager::DoInitialize ()
    * Then, after all initializations are finished, we check actual support for each receiving station.
    */
 
-  // Check if the device supports HT or VHT
-  if (GetHtSupported () || GetVhtSupported ())
+  // Check if the device supports non legacy
+  if (GetHtSupported ())
     {
       m_numGroups = MAX_SUPPORTED_STREAMS * MAX_HT_STREAM_GROUPS;
       m_numRates = MAX_HT_GROUP_RATES;
@@ -389,8 +389,8 @@ MinstrelHtWifiManager::DoCreateStation (void) const
   station->m_ampduLen = 0;
   station->m_ampduPacketCount = 0;
 
-  // If the device supports HT
-  if (GetHtSupported () || GetVhtSupported ())
+  // If the device supports non-legacy
+  if (GetHtSupported ())
     {
       /**
        * Assume the station is HT.
@@ -422,9 +422,9 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
        *  the station will not support HT either.
        *  We save from using another check and variable.
        */
-      if (!GetHtSupported (station) && !GetVhtSupported (station))
+      if (!GetHtSupported (station))
         {
-          NS_LOG_INFO ("Non-HT station " << station);
+          NS_LOG_INFO ("legacy station " << station);
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
           m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
@@ -437,7 +437,7 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
         }
       else
         {
-          NS_LOG_DEBUG ("HT station " << station);
+          NS_LOG_DEBUG ("non-legacy station " << station);
           station->m_isHt = true;
           station->m_nModes = GetNMcsSupported (station);
           station->m_minstrelTable = MinstrelRate (station->m_nModes);
@@ -1436,7 +1436,7 @@ MinstrelHtWifiManager::RateInit (MinstrelHtWifiRemoteStation *station)
           station->m_groupsTable[groupId].m_supported = false;
           if (!(!GetVhtSupported (station) && m_minstrelGroups[groupId].isVht)                    ///Is VHT supported by the receiver?
               && (m_minstrelGroups[groupId].isVht || !GetVhtSupported (station) || !m_useVhtOnly) ///If it is an HT MCS, check if VHT only is disabled
-              && !(!GetShortGuardIntervalSupported (station) && m_minstrelGroups[groupId].sgi)             ///Is SGI supported by the receiver?
+              && !(!GetShortGuardIntervalSupported (station) && m_minstrelGroups[groupId].sgi)    ///Is SGI supported by the receiver?
               && (GetChannelWidth (station) >= m_minstrelGroups[groupId].chWidth)                 ///Is channel width supported by the receiver?
               && (GetNumberOfSupportedStreams (station) >= m_minstrelGroups[groupId].streams))    ///Are streams supported by the receiver?
             {

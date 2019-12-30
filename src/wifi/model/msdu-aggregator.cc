@@ -286,7 +286,7 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
 
   // Determine the constraint imposed by the recipient based on the PPDU
   // format used to transmit the A-MSDU
-  if (modulation == WIFI_MOD_CLASS_HE || modulation == WIFI_MOD_CLASS_VHT)
+  if (modulation >= WIFI_MOD_CLASS_VHT)
     {
       // the maximum A-MSDU size is indirectly constrained by the maximum MPDU
       // size supported by the recipient and advertised in the VHT Capabilities

@@ -647,7 +647,7 @@ MacLow::IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uin
   uint32_t ppduPayloadSize = mpduSize;
 
   // compute the correct size for A-MPDUs and S-MPDUs
-  if (ampduSize > 0 || modulation == WIFI_MOD_CLASS_HE || modulation == WIFI_MOD_CLASS_VHT)
+  if (ampduSize > 0 || modulation >= WIFI_MOD_CLASS_VHT)
     {
       ppduPayloadSize = GetMpduAggregator ()->GetSizeIfAggregated (mpduSize, ampduSize);
     }
@@ -1242,7 +1242,7 @@ MacLow::GetControlAnswerMode (WifiMode reqMode) const
           found = true;
         }
     }
-  if (m_stationManager->GetHtSupported () || m_stationManager->GetVhtSupported () || m_stationManager->GetHeSupported ())
+  if (m_stationManager->GetHtSupported ())
     {
       if (!found)
         {
@@ -1312,7 +1312,7 @@ MacLow::GetControlAnswerMode (WifiMode reqMode) const
           found = true;
         }
     }
-  if (m_stationManager->GetHtSupported () || m_stationManager->GetVhtSupported () || m_stationManager->GetHeSupported ())
+  if (m_stationManager->GetHtSupported () )
     {
       for (uint8_t idx = 0; idx < m_phy->GetNMcs (); idx++)
         {

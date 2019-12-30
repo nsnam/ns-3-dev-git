@@ -2997,7 +2997,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
   WifiTxVector txVector = event->GetTxVector ();
   WifiMode txMode = txVector.GetMode ();
   bool canReceivePayload;
-  if ((txMode.GetModulationClass () == WIFI_MOD_CLASS_HT) || (txMode.GetModulationClass () == WIFI_MOD_CLASS_VHT) || (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE))
+  if (txMode.GetModulationClass () >= WIFI_MOD_CLASS_HT)
     {
       InterferenceHelper::SnrPer snrPer;
       snrPer = m_interference.CalculateNonLegacyPhyHeaderSnrPer (event);

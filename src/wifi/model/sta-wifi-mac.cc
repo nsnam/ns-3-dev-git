@@ -161,12 +161,12 @@ StaWifiMac::SendProbeRequest (void)
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
     }
-  if (GetVhtSupported () || GetHeSupported ())
+  if (GetVhtSupported ())
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
     }
@@ -202,12 +202,12 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       assoc.SetSupportedRates (GetSupportedRates ());
       assoc.SetCapabilities (GetCapabilities ());
       assoc.SetListenInterval (0);
-      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+      if (GetHtSupported ())
         {
           assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           assoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (GetVhtSupported () || GetHeSupported ())
+      if (GetVhtSupported ())
         {
           assoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
@@ -225,12 +225,12 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       reassoc.SetSupportedRates (GetSupportedRates ());
       reassoc.SetCapabilities (GetCapabilities ());
       reassoc.SetListenInterval (0);
-      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+      if (GetHtSupported ())
         {
           reassoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           reassoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (GetVhtSupported () || GetHeSupported ())
+      if (GetVhtSupported ())
         {
           reassoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
@@ -470,9 +470,9 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       hdr.SetType (WIFI_MAC_DATA);
     }
-  if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetQosSupported ())
     {
-      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since non-legacy control field is not yet implemented (set it to 1 when implemented)
     }
 
   hdr.SetAddr1 (GetBssid ());
@@ -833,7 +833,7 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
             }
         }
     }
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       ExtendedCapabilities extendedCapabilities = beacon.GetExtendedCapabilities ();
       //TODO: to be completed
@@ -1074,7 +1074,7 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
             }
         }
     }
-  if (GetHtSupported () || GetVhtSupported ())
+  if (GetHtSupported ())
     {
       ExtendedCapabilities extendedCapabilities = assocResp.GetExtendedCapabilities ();
       //TODO: to be completed
@@ -1105,7 +1105,7 @@ StaWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
     }
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+  if (GetHtSupported ())
     {
       for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
