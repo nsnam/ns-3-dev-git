@@ -21,6 +21,8 @@
 #ifndef WIFI_PREAMBLE_H
 #define WIFI_PREAMBLE_H
 
+#include "ns3/fatal-error.h"
+
 namespace ns3 {
 
 /**
@@ -40,6 +42,36 @@ enum WifiPreamble
   WIFI_PREAMBLE_HE_MU,
   WIFI_PREAMBLE_HE_TB
 };
+
+inline std::ostream& operator<< (std::ostream& os, WifiPreamble preamble)
+{
+  switch (preamble)
+    {
+    case WIFI_PREAMBLE_LONG:
+      return (os << "LONG");
+    case WIFI_PREAMBLE_SHORT:
+      return (os << "SHORT");
+    case WIFI_PREAMBLE_HT_MF:
+      return (os << "HT_MF");
+    case WIFI_PREAMBLE_HT_GF:
+      return (os << "HT_GF");
+    case WIFI_PREAMBLE_VHT_SU:
+      return (os << "VHT_SU");
+    case WIFI_PREAMBLE_VHT_MU:
+      return (os << "VHT_MU");
+    case WIFI_PREAMBLE_HE_SU:
+      return (os << "HE_SU");
+    case WIFI_PREAMBLE_HE_ER_SU:
+      return (os << "HE_ER_SU");
+    case WIFI_PREAMBLE_HE_MU:
+      return (os << "HE_MU");
+    case WIFI_PREAMBLE_HE_TB:
+      return (os << "HE_TB");
+    default:
+      NS_FATAL_ERROR ("Invalid preamble");
+      return (os << "INVALID");
+    }
+}
 
 } //namespace ns3
 
