@@ -1261,6 +1261,9 @@ protected:
 
   // Fast Retransmit and Recovery
   SequenceNumber32       m_recover    {0};   //!< Previous highest Tx seqnum for fast recovery (set it to initial seq number)
+  bool                   m_recoverActive {false}; //!< Whether "m_recover" has been set/activated
+                                                  //!< It is used to avoid comparing with the old m_recover value
+                                                  //!< which was set for handling previous congestion event.
   uint32_t               m_retxThresh {3};   //!< Fast Retransmit threshold
   bool                   m_limitedTx  {true}; //!< perform limited transmit
 

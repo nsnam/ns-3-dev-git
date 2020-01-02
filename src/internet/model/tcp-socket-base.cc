@@ -333,6 +333,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_timestampEnabled (sock.m_timestampEnabled),
     m_timestampToEcho (sock.m_timestampToEcho),
     m_recover (sock.m_recover),
+    m_recoverActive (sock.m_recoverActive),
     m_retxThresh (sock.m_retxThresh),
     m_limitedTx (sock.m_limitedTx),
     m_isFirstPartialAck (sock.m_isFirstPartialAck),
@@ -1575,6 +1576,7 @@ TcpSocketBase::EnterRecovery (uint32_t currentDelivered)
   // (4) Invoke fast retransmit and enter loss recovery as follows:
   // (4.1) RecoveryPoint = HighData
   m_recover = m_tcb->m_highTxMark;
+  m_recoverActive = true;
 
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_RECOVERY);
   m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
@@ -1655,10 +1657,26 @@ TcpSocketBase::DupAck (uint32_t currentDelivered)
     }
   else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
     {
+      // m_dupackCount should not exceed its threshold in CA_DISORDER state
+      // when m_recoverActive has not been set. When recovery point
+      // have been set after timeout, the sender could enter into CA_DISORDER
+      // after receiving new ACK smaller than m_recover. After that, m_dupackCount
+      // can be equal and larger than m_retxThresh and we should avoid entering
+      // CA_RECOVERY and reducing sending rate again.
+      NS_ASSERT((m_dupAckCount <= m_retxThresh) || m_recoverActive);
+
       // RFC 6675, Section 5, continuing:
       // ... and take the following steps:
       // (1) If DupAcks >= DupThresh, go to step (4).
-      if ((m_dupAckCount == m_retxThresh) && (m_highRxAckMark >= m_recover))
+      //     Sequence number comparison (m_highRxAckMark >= m_recover) will take
+      //     effect only when m_recover has been set. Hence, we can avoid to use
+      //     m_recover in the last congestion event and fail to enter
+      //     CA_RECOVERY when sequence number is advanced significantly since
+      //     the last congestion event, which could be common for
+      //     bandwidth-greedy application in high speed and reliable network
+      //     (such as datacenter network) whose sending rate is constrainted by
+      //     TCP socket buffer size at receiver side.
+      if ((m_dupAckCount == m_retxThresh) && ((m_highRxAckMark >= m_recover) || (!m_recoverActive)))
         {
           EnterRecovery (currentDelivered);
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
@@ -2007,6 +2025,14 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
               NS_LOG_DEBUG (segsAcked << " segments acked in CA_LOSS, ack of" <<
                             ackNumber << ", exiting CA_LOSS -> CA_OPEN");
+            }
+
+          if (ackNumber >= m_recover)
+            {
+              // All lost segments in the congestion event have been
+              // retransmitted successfully. The recovery point (m_recover)
+              // should be deactivated.
+              m_recoverActive = false;
             }
 
           if (exitedFastRecovery)
@@ -3554,6 +3580,7 @@ TcpSocketBase::ReTxTimeout ()
   // RecoveryPoint MUST be preserved and the loss recovery algorithm
   // outlined in this document MUST be terminated.
   m_recover = m_tcb->m_highTxMark;
+  m_recoverActive = true;
 
   // RFC 6298, clause 2.5, double the timer
   Time doubledRto = m_rto + m_rto;
