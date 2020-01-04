@@ -45,18 +45,19 @@
 // Note that the program checks the consistency between the selected standard
 // the selected preamble type.
 //
-// The output of the program displays InterfenceHelper and YansWifiPhy trace
+// The output of the program displays InterfenceHelper and SpectrumWifiPhy trace
 // logs associated to the chosen scenario.
 //
 
 #include "ns3/log.h"
+#include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
 #include "ns3/simulator.h"
 #include "ns3/command-line.h"
-#include "ns3/yans-wifi-channel.h"
-#include "ns3/yans-wifi-phy.h"
+#include "ns3/single-model-spectrum-channel.h"
+#include "ns3/spectrum-wifi-phy.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/nist-error-rate-model.h"
@@ -64,6 +65,7 @@
 #include "ns3/simple-frame-capture-model.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-mac-trailer.h"
+#include "ns3/wifi-net-device.h"
 
 using namespace ns3;
 
@@ -90,6 +92,10 @@ public:
     double txPowerLevelB; ///< transmit power level B
     uint32_t packetSizeA; ///< packet size A
     uint32_t packetSizeB; ///< packet size B
+    uint16_t channelA; ///< channel number A
+    uint16_t channelB; ///< channel number B
+    uint16_t widthA; ///< channel width A
+    uint16_t widthB; ///< channel width B
     WifiPhyStandard standard; ///< standard
     WifiPreamble preamble; ///< preamble
     bool captureEnabled; ///< whether physical layer capture is enabled
@@ -114,8 +120,8 @@ private:
   void SendA (void) const;
   /// Send B function
   void SendB (void) const;
-  Ptr<YansWifiPhy> m_txA; ///< transmit A function
-  Ptr<YansWifiPhy> m_txB; ///< transmit B function
+  Ptr<SpectrumWifiPhy> m_txA; ///< transmit A function
+  Ptr<SpectrumWifiPhy> m_txB; ///< transmit B function
   struct Input m_input; ///< input
   bool m_droppedA; ///< flag to indicate whether packet A has been dropped
   bool m_droppedB; ///< flag to indicate whether packet B has been dropped
@@ -134,6 +140,7 @@ InterferenceExperiment::SendA (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeA));
+  txVector.SetChannelWidth (m_input.widthA);
   txVector.SetPreambleType (m_input.preamble);
   m_txA->Send (psdu, txVector);
 }
@@ -149,6 +156,7 @@ InterferenceExperiment::SendB (void) const
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeB));
+  txVector.SetChannelWidth (m_input.widthB);
   txVector.SetPreambleType (m_input.preamble);
   m_txB->Send (psdu, txVector);
 }
@@ -189,6 +197,10 @@ InterferenceExperiment::Input::Input ()
     txPowerLevelB (16.0206),
     packetSizeA (1500),
     packetSizeB (1500),
+    channelA (36),
+    channelB (36),
+    widthA (20),
+    widthB (20),
     standard (WIFI_PHY_STANDARD_80211a),
     preamble (WIFI_PREAMBLE_LONG),
     captureEnabled (false),
@@ -204,10 +216,10 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   double range = std::max (std::abs (input.xA), input.xB);
   Config::SetDefault ("ns3::RangePropagationLossModel::MaxRange", DoubleValue (range));
 
-  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
+  Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
   channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
   Ptr<RangePropagationLossModel> loss = CreateObject<RangePropagationLossModel> ();
-  channel->SetPropagationLossModel (loss);
+  channel->AddPropagationLossModel (loss);
 
   Ptr<MobilityModel> posTxA = CreateObject<ConstantPositionMobilityModel> ();
   posTxA->SetPosition (Vector (input.xA, 0.0, 0.0));
@@ -216,13 +228,27 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   Ptr<MobilityModel> posRx = CreateObject<ConstantPositionMobilityModel> ();
   posRx->SetPosition (Vector (0.0, 0.0, 0.0));
 
-  m_txA = CreateObject<YansWifiPhy> ();
+  Ptr<Node> nodeA = CreateObject<Node> ();
+  Ptr<WifiNetDevice> devA = CreateObject<WifiNetDevice> ();
+  m_txA = CreateObject<SpectrumWifiPhy> ();
+  m_txA->CreateWifiSpectrumPhyInterface (devA);
+  m_txA->SetDevice (devA);
   m_txA->SetTxPowerStart (input.txPowerLevelA);
   m_txA->SetTxPowerEnd (input.txPowerLevelA);
-  m_txB = CreateObject<YansWifiPhy> ();
+
+  Ptr<Node> nodeB = CreateObject<Node> ();
+  Ptr<WifiNetDevice> devB = CreateObject<WifiNetDevice> ();
+  m_txB = CreateObject<SpectrumWifiPhy> ();
+  m_txB->CreateWifiSpectrumPhyInterface (devB);
+  m_txB->SetDevice (devB);
   m_txB->SetTxPowerStart (input.txPowerLevelB);
   m_txB->SetTxPowerEnd (input.txPowerLevelB);
-  Ptr<YansWifiPhy> rx = CreateObject<YansWifiPhy> ();
+
+  Ptr<Node> nodeRx = CreateObject<Node> ();
+  Ptr<WifiNetDevice> devRx = CreateObject<WifiNetDevice> ();
+  Ptr<SpectrumWifiPhy> rx = CreateObject<SpectrumWifiPhy> ();
+  rx->CreateWifiSpectrumPhyInterface (devRx);
+  rx->SetDevice (devRx);
 
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_txA->SetErrorRateModel (error);
@@ -244,6 +270,17 @@ InterferenceExperiment::Run (struct InterferenceExperiment::Input input)
   m_txA->ConfigureStandard (input.standard);
   m_txB->ConfigureStandard (input.standard);
   rx->ConfigureStandard (input.standard);
+
+  devA->SetPhy (m_txA);
+  nodeA->AddDevice (devA);
+  devB->SetPhy (m_txB);
+  nodeB->AddDevice (devB);
+  devRx->SetPhy (rx);
+  nodeRx->AddDevice (devRx);
+
+  m_txA->SetChannelNumber (input.channelA);
+  m_txB->SetChannelNumber (input.channelB);
+  rx->SetChannelNumber (std::max (input.channelA, input.channelB));
 
   rx->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&InterferenceExperiment::PacketDropped, this));
 
@@ -280,6 +317,10 @@ int main (int argc, char *argv[])
   cmd.AddValue ("txPowerB", "TX power level of transmitter B", input.txPowerLevelB);
   cmd.AddValue ("txModeA", "Wifi mode used for payload transmission of sender A", input.txModeA);
   cmd.AddValue ("txModeB", "Wifi mode used for payload transmission of sender B", input.txModeB);
+  cmd.AddValue ("channelA", "The selected channel number of sender A", input.channelA);
+  cmd.AddValue ("channelB", "The selected channel number of sender B", input.channelB);
+  cmd.AddValue ("widthA", "The selected channel width (MHz) of sender A", input.widthA);
+  cmd.AddValue ("widthB", "The selected channel width (MHz) of sender B", input.widthB);
   cmd.AddValue ("standard", "IEEE 802.11 flavor", str_standard);
   cmd.AddValue ("preamble", "Type of preamble", str_preamble);
   cmd.AddValue ("enableCapture", "Enable/disable physical layer capture", input.captureEnabled);
@@ -321,6 +362,14 @@ int main (int argc, char *argv[])
     {
       input.standard = WIFI_PHY_STANDARD_80211ac;
     }
+  else if (str_standard == "WIFI_PHY_STANDARD_80211ax_2_4GHZ")
+    {
+      input.standard = WIFI_PHY_STANDARD_80211ax_2_4GHZ;
+    }
+  else if (str_standard == "WIFI_PHY_STANDARD_80211ax_5GHZ")
+    {
+      input.standard = WIFI_PHY_STANDARD_80211ax_5GHZ;
+    }
 
   if (str_preamble == "WIFI_PREAMBLE_LONG" && (input.standard == WIFI_PHY_STANDARD_80211a || input.standard == WIFI_PHY_STANDARD_80211b || input.standard == WIFI_PHY_STANDARD_80211g))
     {
@@ -341,6 +390,10 @@ int main (int argc, char *argv[])
   else if (str_preamble == "WIFI_PREAMBLE_VHT_SU" && input.standard == WIFI_PHY_STANDARD_80211ac)
     {
       input.preamble = WIFI_PREAMBLE_VHT_SU;
+    }
+  else if (str_preamble == "WIFI_PREAMBLE_HE_SU" && (input.standard == WIFI_PHY_STANDARD_80211ax_2_4GHZ || input.standard == WIFI_PHY_STANDARD_80211ax_5GHZ))
+    {
+      input.preamble = WIFI_PREAMBLE_HE_SU;
     }
   else
     {
