@@ -679,9 +679,7 @@ void QosTxop::NotifyInternalCollision (void)
           UpdateFailedCw ();
         }
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -689,9 +687,7 @@ void
 QosTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -737,9 +733,7 @@ QosTxop::NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList)
           m_currentPacket = 0;
         }
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -857,9 +851,7 @@ QosTxop::MissedAck (void)
       UpdateFailedCw ();
       m_cwTrace = GetCw ();
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -944,9 +936,7 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
           m_cwTrace = GetCw ();
         }
     }
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -1137,10 +1127,7 @@ QosTxop::TerminateTxop (void)
       NS_LOG_DEBUG ("Terminating TXOP. Duration = " << Simulator::Now () - m_startTxop);
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
-  m_cwTrace = GetCw ();
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
 
@@ -1692,9 +1679,7 @@ QosTxop::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   ResetCw ();
   m_cwTrace = GetCw ();
-  m_backoff = m_rng->GetInteger (0, GetCw ());
-  m_backoffTrace (m_backoff);
-  StartBackoffNow (m_backoff);
+  GenerateBackoff ();
 }
 
 void
@@ -1726,9 +1711,7 @@ QosTxop::AddBaResponseTimeout (Mac48Address recipient, uint8_t tid)
     {
       m_baManager->NotifyAgreementNoReply (recipient, tid);
       Simulator::Schedule (m_failedAddBaTimeout, &QosTxop::ResetBa, this, recipient, tid);
-      m_backoff = m_rng->GetInteger (0, GetCw ());
-      m_backoffTrace (m_backoff);
-      StartBackoffNow (m_backoff);
+      GenerateBackoff ();
       RestartAccessIfNeeded ();
     }
 }

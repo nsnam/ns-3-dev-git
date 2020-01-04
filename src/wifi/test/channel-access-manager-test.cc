@@ -58,23 +58,23 @@ private:
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
-  /// ExpectedCollision structure
-  struct ExpectedCollision
+  /// ExpectedBackoff structure
+  struct ExpectedBackoff
   {
     uint64_t at; //!< at
     uint32_t nSlots; //!< number of slots
   };
-  typedef std::list<struct ExpectedCollision> ExpectedCollisions; //!< expected collisions typedef
+  typedef std::list<struct ExpectedBackoff> ExpectedBackoffs; //!< expected backoffs typedef
 
-  ExpectedCollisions m_expectedInternalCollision; //!< expected internal collisions
-  ExpectedCollisions m_expectedCollision; //!< expected collision
+  ExpectedBackoffs m_expectedInternalCollision; //!< expected backoff due to an internal collision
+  ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal colllision)
   ExpectedGrants m_expectedGrants; //!< expected grants
 
   bool IsAccessRequested (void) const;
   void NotifyAccessRequested (void);
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
-  void NotifyCollision (void);
+  void GenerateBackoff (void);
   void NotifyChannelSwitching (void);
   void NotifySleep (void);
   void NotifyWakeUp (void);
@@ -129,10 +129,10 @@ public:
    */
   void NotifyInternalCollision (uint32_t i);
   /**
-   * Notify collision function
+   * Generate backoff function
    * \param i the DCF state
    */
-  void NotifyCollision (uint32_t i);
+  void GenerateBackoff (uint32_t i);
   /**
    * Notify channel switching function
    * \param i the DCF state
@@ -164,12 +164,12 @@ private:
    */
   void ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from);
   /**
-   * Expect internal collision function
+   * Expect generate backoff function
    * \param time the expectedtime
    * \param nSlots the number of slots
    * \param from the expected from
    */
-  void ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from);
+  void ExpectBackoff (uint64_t time, uint32_t nSlots, uint32_t from);
   /**
    * Schedule a check that the channel access manager is busy or idle
    * \param time the expectedtime
@@ -182,7 +182,7 @@ private:
    */
   void DoCheckBusy (bool busy);
   /**
-   * Add expect collision function
+   * Add receive ok event function
    * \param at
    * \param duration the duration
    */
@@ -337,9 +337,9 @@ TxopTest::NotifyInternalCollision (void)
 }
 
 void
-TxopTest::NotifyCollision (void)
+TxopTest::GenerateBackoff (void)
 {
-  m_test->NotifyCollision (m_i);
+  m_test->GenerateBackoff (m_i);
 }
 
 void
@@ -393,7 +393,7 @@ ChannelAccessManagerTest::NotifyInternalCollision (uint32_t i)
   NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), false, "Have expected internal collisions");
   if (!state->m_expectedInternalCollision.empty ())
     {
-      struct TxopTest::ExpectedCollision expected = state->m_expectedInternalCollision.front ();
+      struct TxopTest::ExpectedBackoff expected = state->m_expectedInternalCollision.front ();
       state->m_expectedInternalCollision.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected internal collision time is now");
       state->StartBackoffNow (expected.nSlots);
@@ -401,15 +401,15 @@ ChannelAccessManagerTest::NotifyInternalCollision (uint32_t i)
 }
 
 void
-ChannelAccessManagerTest::NotifyCollision (uint32_t i)
+ChannelAccessManagerTest::GenerateBackoff (uint32_t i)
 {
   Ptr<TxopTest> state = m_txop[i];
-  NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), false, "Have expected collisions");
-  if (!state->m_expectedCollision.empty ())
+  NS_TEST_EXPECT_MSG_EQ (state->m_expectedBackoff.empty (), false, "Have expected backoffs");
+  if (!state->m_expectedBackoff.empty ())
     {
-      struct TxopTest::ExpectedCollision expected = state->m_expectedCollision.front ();
-      state->m_expectedCollision.pop_front ();
-      NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected collision is now");
+      struct TxopTest::ExpectedBackoff expected = state->m_expectedBackoff.front ();
+      state->m_expectedBackoff.pop_front ();
+      NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected backoff is now");
       state->StartBackoffNow (expected.nSlots);
     }
 }
@@ -431,20 +431,20 @@ void
 ChannelAccessManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
   Ptr<TxopTest> state = m_txop[from];
-  struct TxopTest::ExpectedCollision col;
+  struct TxopTest::ExpectedBackoff col;
   col.at = time;
   col.nSlots = nSlots;
   state->m_expectedInternalCollision.push_back (col);
 }
 
 void
-ChannelAccessManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
+ChannelAccessManagerTest::ExpectBackoff (uint64_t time, uint32_t nSlots, uint32_t from)
 {
   Ptr<TxopTest> state = m_txop[from];
-  struct TxopTest::ExpectedCollision col;
-  col.at = time;
-  col.nSlots = nSlots;
-  state->m_expectedCollision.push_back (col);
+  struct TxopTest::ExpectedBackoff backoff;
+  backoff.at = time;
+  backoff.nSlots = nSlots;
+  state->m_expectedBackoff.push_back (backoff);
 }
 
 void
@@ -492,7 +492,7 @@ ChannelAccessManagerTest::EndTest (void)
       Ptr<TxopTest> state = *i;
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), true, "Have no expected grants");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), true, "Have no internal collisions");
-      NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), true, "Have no expected collisions");
+      NS_TEST_EXPECT_MSG_EQ (state->m_expectedBackoff.empty (), true, "Have no expected backoffs");
       state = 0;
     }
   m_txop.clear ();
@@ -640,7 +640,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddAccessRequest (1, 1, 4, 0);
   // Generate backoff when the request is within SIFS
-  ExpectCollision (1, 0, 0); // 0 slots
+  ExpectBackoff (1, 0, 0); // 0 slots
   AddAccessRequest (10, 2, 10, 0);
   EndTest ();
   // Bug 2369 addresses this case
@@ -651,7 +651,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (2);
   AddAccessRequest (4, 1, 5, 0);
   // Generate backoff when the request is within AIFSN
-  ExpectCollision (4, 0, 0); // 0 slots
+  ExpectBackoff (4, 0, 0); // 0 slots
   AddAccessRequest (12, 2, 12, 0);
   EndTest ();
   // Check that receiving inside SIFS shall be cancelled properly:
@@ -662,7 +662,7 @@ ChannelAccessManagerTest::DoRun (void)
   StartTest (1, 3, 10);
   AddDcfState (1);
   AddAccessRequest (1, 1, 4, 0);
-  ExpectCollision (1, 0, 0);
+  ExpectBackoff (1, 0, 0);
   AddRxInsideSifsEvt (6, 10);
   AddTxEvt (8, 1);
   AddAccessRequest (14, 2, 14, 0);
@@ -682,7 +682,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxOkEvt (20, 40);
   AddRxOkEvt (80, 20);
   AddAccessRequest (30, 2, 118, 0);
-  ExpectCollision (30, 4, 0); //backoff: 4 slots
+  ExpectBackoff (30, 4, 0); //backoff: 4 slots
   EndTest ();
   // Test the case where the backoff slots is zero.
   //
@@ -695,7 +695,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (30, 2, 70, 0);
-  ExpectCollision (30, 0, 0); // backoff: 0 slots
+  ExpectBackoff (30, 0, 0); // backoff: 0 slots
   EndTest ();
   // Test shows when two frames are received without interval between
   // them:
@@ -709,7 +709,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxOkEvt (20, 40);
   AddRxOkEvt (60, 40);
   AddAccessRequest (30, 2, 110, 0);
-  ExpectCollision (30, 0, 0); //backoff: 0 slots
+  ExpectBackoff (30, 0, 0); //backoff: 0 slots
   EndTest ();
 
   // Bug 2369.  Test case of requesting access within SIFS interval
@@ -723,7 +723,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (62, 2, 74, 0);
-  ExpectCollision (62, 1, 0); //backoff: 1 slots
+  ExpectBackoff (62, 1, 0); //backoff: 1 slots
   EndTest ();
 
   // Bug 2369.  Test case of requesting access after DIFS (no backoff)
@@ -749,7 +749,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 102, 0);
-  ExpectCollision (30, 4, 0); //backoff: 4 slots
+  ExpectBackoff (30, 4, 0); //backoff: 4 slots
   EndTest ();
 
   // Test that channel stays busy for first frame's duration after Rx error
@@ -776,7 +776,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 101, 0);
-  ExpectCollision (30, 4, 0); //backoff: 4 slots
+  ExpectBackoff (30, 4, 0); //backoff: 4 slots
   AddRxOkEvt (69, 6);
   EndTest ();
 
@@ -792,9 +792,9 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (3); //low priority DCF
   AddRxOkEvt (20, 40);
   AddAccessRequest (30, 10, 78, 0);
-  ExpectCollision (30, 2, 0); //backoff: 2 slot
+  ExpectBackoff (30, 2, 0); //backoff: 2 slot
   AddAccessRequest (40, 2, 110, 1);
-  ExpectCollision (40, 0, 1); //backoff: 0 slot
+  ExpectBackoff (40, 0, 1); //backoff: 0 slot
   ExpectInternalCollision (78, 1, 1); //backoff: 1 slot
   EndTest ();
 
@@ -810,7 +810,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (0); //low priority DCF
   AddAccessRequestWithAckTimeout (20, 20, 20, 0);
   AddAccessRequest (50, 10, 66, 1);
-  ExpectCollision (50, 0, 1);
+  ExpectBackoff (50, 0, 1);
   EndTest ();
 
   // Test of AckTimeout handling:
@@ -827,7 +827,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (0); //low priority DCF
   AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
   AddAccessRequest (41, 10, 48, 1);
-  ExpectCollision (41, 0, 1);
+  ExpectBackoff (41, 0, 1);
   EndTest ();
 
   //Repeat the same but with one queue:
@@ -838,7 +838,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (2);
   AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
   AddAccessRequest (41, 10, 56, 0);
-  ExpectCollision (41, 0, 0);
+  ExpectBackoff (41, 0, 0);
   EndTest ();
 
   // test simple NAV count. This scenario modelizes a simple DATA+ACK handshake
@@ -851,7 +851,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxOkEvt (66, 5);
   AddNavStart (71, 0);
   AddAccessRequest (30, 10, 93, 0);
-  ExpectCollision (30, 2, 0); //backoff: 2 slot
+  ExpectBackoff (30, 2, 0); //backoff: 2 slot
   EndTest ();
 
   // test more complex NAV handling by a CF-poll. This scenario modelizes a
@@ -864,7 +864,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxOkEvt (66, 5);
   AddNavReset (71, 2);
   AddAccessRequest (30, 10, 91, 0);
-  ExpectCollision (30, 2, 0); //backoff: 2 slot
+  ExpectBackoff (30, 2, 0); //backoff: 2 slot
   EndTest ();
 
 
@@ -880,7 +880,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxOkEvt (20, 40);
   AddRxOkEvt (78, 8);
   AddAccessRequest (30, 50, 108, 0);
-  ExpectCollision (30, 3, 0); //backoff: 3 slots
+  ExpectBackoff (30, 3, 0); //backoff: 3 slots
   EndTest ();
 
 
@@ -894,7 +894,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddSwitchingEvt (0,20);
   AddAccessRequest (21, 1, 24, 0);
-  ExpectCollision (21, 0, 0);
+  ExpectBackoff (21, 0, 0);
   EndTest ();
 
   //  20          40       50     53      54       55        56   57
@@ -906,7 +906,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddSwitchingEvt (20,20);
   AddCcaBusyEvt (30,20);
-  ExpectCollision (45, 2, 0); //backoff: 2 slots
+  ExpectBackoff (45, 2, 0); //backoff: 2 slots
   AddAccessRequest (45, 1, 56, 0);
   EndTest ();
 
@@ -920,7 +920,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxStartEvt (20,40);
   AddSwitchingEvt (30,20);
   AddAccessRequest (51, 1, 54, 0);
-  ExpectCollision (51, 0, 0);
+  ExpectBackoff (51, 0, 0);
   EndTest ();
 
   //  20     30          50     53      54   55
@@ -933,7 +933,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddCcaBusyEvt (20,40);
   AddSwitchingEvt (30,20);
   AddAccessRequest (51, 1, 54, 0);
-  ExpectCollision (51, 0, 0);
+  ExpectBackoff (51, 0, 0);
   EndTest ();
 
   //  20      30          50     53      54   55
@@ -946,7 +946,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddNavStart (20,40);
   AddSwitchingEvt (30,20);
   AddAccessRequest (51, 1, 54, 0);
-  ExpectCollision (51, 0, 0);
+  ExpectBackoff (51, 0, 0);
   EndTest ();
 
   //  20      40             50          55     58      59   60
@@ -958,10 +958,10 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddAccessRequestWithAckTimeout (20, 20, 20, 0);
   AddAccessRequest (45, 1, 50, 0);
-  ExpectCollision (45, 0, 0);
+  ExpectBackoff (45, 0, 0);
   AddSwitchingEvt (50,5);
   AddAccessRequest (56, 1, 59, 0);
-  ExpectCollision (56, 0, 0);
+  ExpectBackoff (56, 0, 0);
   EndTest ();
 
   //  20         60     66      70       74       78  80         100    106     110  112
@@ -973,10 +973,10 @@ ChannelAccessManagerTest::DoRun (void)
   AddDcfState (1);
   AddRxOkEvt (20,40);
   AddAccessRequest (30, 2, 80, 0);
-  ExpectCollision (30, 4, 0); //backoff: 4 slots
+  ExpectBackoff (30, 4, 0); //backoff: 4 slots
   AddSwitchingEvt (80,20);
   AddAccessRequest (101, 2, 110, 0);
-  ExpectCollision (101, 0, 0); //backoff: 0 slots
+  ExpectBackoff (101, 0, 0); //backoff: 0 slots
   EndTest ();
 }
 

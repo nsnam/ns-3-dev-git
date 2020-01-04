@@ -376,6 +376,10 @@ protected:
   virtual void NotifyCollision (void);
 
   /**
+   * Generate a new backoff now.
+   */
+  virtual void GenerateBackoff (void);
+  /**
    * Restart access request if needed.
    */
   virtual void RestartAccessIfNeeded (void);
