@@ -242,21 +242,6 @@ ChannelAccessManager::IsBusy (void) const
   return false;
 }
 
-bool
-ChannelAccessManager::IsWithinAifs (Ptr<Txop> state) const
-{
-  NS_LOG_FUNCTION (this << state);
-  Time ifsEnd = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
-  if (ifsEnd > Simulator::Now ())
-    {
-      NS_LOG_DEBUG ("IsWithinAifs () true; ifsEnd is at " << ifsEnd.GetSeconds ());
-      return true;
-    }
-  NS_LOG_DEBUG ("IsWithinAifs () false; ifsEnd was at " << ifsEnd.GetSeconds ());
-  return false;
-}
-
-
 void
 ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
 {

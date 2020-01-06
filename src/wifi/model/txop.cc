@@ -605,13 +605,6 @@ void
 Txop::NotifyInternalCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  NotifyCollision ();
-}
-
-void
-Txop::NotifyCollision (void)
-{
-  NS_LOG_FUNCTION (this);
   GenerateBackoff ();
   RestartAccessIfNeeded ();
 }

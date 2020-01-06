@@ -370,10 +370,6 @@ protected:
    * Notify the DCF that internal collision has occurred.
    */
   virtual void NotifyInternalCollision (void);
-  /**
-   * Notify the DCF that collision has occurred.
-   */
-  virtual void NotifyCollision (void);
 
   /**
    * Check if the DCF has frames to transmit.

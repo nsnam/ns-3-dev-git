@@ -279,14 +279,6 @@ private:
    */
   void DoGrantDcfAccess (void);
   /**
-   * Check if the device is between frames (in DIFS or AIFS interval)
-   *
-   * \param state the state to check
-   * \return true if the device is within AIFS,
-   *         false otherwise
-   */
-  bool IsWithinAifs (Ptr<Txop> state) const;
-  /**
    * Grant access to PCF
    */
   void DoGrantPcfAccess (Ptr<Txop> state);

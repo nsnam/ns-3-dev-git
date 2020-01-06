@@ -692,14 +692,6 @@ void QosTxop::NotifyInternalCollision (void)
 }
 
 void
-QosTxop::NotifyCollision (void)
-{
-  NS_LOG_FUNCTION (this);
-  GenerateBackoff ();
-  RestartAccessIfNeeded ();
-}
-
-void
 QosTxop::NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList)
 {
   NS_LOG_FUNCTION (this);

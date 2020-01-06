@@ -201,10 +201,6 @@ public:
    * Notify the EDCAF that internal collision has occurred.
    */
   void NotifyInternalCollision (void);
-  /**
-   * Notify the EDCAF that collision has occurred.
-   */
-  void NotifyCollision (void);
 
   /* Event handlers */
   /**
