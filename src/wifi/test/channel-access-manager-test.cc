@@ -75,6 +75,7 @@ private:
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void GenerateBackoff (void);
+  bool HasFramesToTransmit (void);
   void NotifyChannelSwitching (void);
   void NotifySleep (void);
   void NotifyWakeUp (void);
@@ -342,6 +343,12 @@ TxopTest::GenerateBackoff (void)
   m_test->GenerateBackoff (m_i);
 }
 
+bool
+TxopTest::HasFramesToTransmit (void)
+{
+  return !m_expectedGrants.empty ();
+}
+
 void
 TxopTest::NotifyChannelSwitching (void)
 {
@@ -465,6 +472,8 @@ ChannelAccessManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t 
 {
   m_ChannelAccessManager = CreateObject<ChannelAccessManager> ();
   m_low = CreateObject<MacLowStub> ();
+  m_low->SetSlotTime (MicroSeconds (slotTime));
+  m_low->SetSifs (MicroSeconds (sifs));
   m_ChannelAccessManager->SetupLow (m_low);
   m_ChannelAccessManager->SetSlot (MicroSeconds (slotTime));
   m_ChannelAccessManager->SetSifs (MicroSeconds (sifs));
@@ -478,7 +487,8 @@ ChannelAccessManagerTest::AddDcfState (uint32_t aifsn)
   Ptr<TxopTest> txop = CreateObject<TxopTest> (this, m_txop.size ());
   txop->SetAifsn (aifsn);
   m_txop.push_back (txop);
-  m_ChannelAccessManager->Add (txop);
+  txop->SetChannelAccessManager (m_ChannelAccessManager);
+  txop->SetMacLow (m_low);
 }
 
 void
@@ -601,6 +611,7 @@ ChannelAccessManagerTest::AddAccessRequestWithSuccessfullAck (uint64_t at, uint6
 void
 ChannelAccessManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<TxopTest> state)
 {
+  state->GenerateBackoffUponAccessIfNeeded ();
   state->QueueTx (txTime, expectedGrantTime);
   m_ChannelAccessManager->RequestAccess (state);
 }
@@ -632,40 +643,28 @@ ChannelAccessManagerTest::AddRxStartEvt (uint64_t at, uint64_t duration)
 void
 ChannelAccessManagerTest::DoRun (void)
 {
-  // Bug 2369 addresses this case
-  //  0      3       4    5      8       9  10   12
-  //  | sifs | aifsn | tx | sifs | aifsn |   | tx |
+  // DCF immediate access (no backoff)
+  //  1      4       5    6      8     11      12
+  //  | sifs | aifsn | tx | idle | sifs | aifsn | tx |
   //
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddAccessRequest (1, 1, 4, 0);
-  // Generate backoff when the request is within SIFS
-  ExpectBackoff (1, 0, 0); // 0 slots
-  AddAccessRequest (10, 2, 10, 0);
-  EndTest ();
-  // Bug 2369 addresses this case
-  //  0      3       5    6      9       11  12   13
-  //  | sifs | aifsn | tx | sifs | aifsn |   | tx |
-  //
-  StartTest (1, 3, 10);
-  AddDcfState (2);
-  AddAccessRequest (4, 1, 5, 0);
-  // Generate backoff when the request is within AIFSN
-  ExpectBackoff (4, 0, 0); // 0 slots
-  AddAccessRequest (12, 2, 12, 0);
+  AddAccessRequest (1, 1, 5, 0);
+  AddAccessRequest (8, 2, 12, 0);
   EndTest ();
   // Check that receiving inside SIFS shall be cancelled properly:
-  //  0      3       4    5      8     9     12       13 14
-  //  | sifs | aifsn | tx | sifs | ack | sifs | aifsn |  |tx |
+  //  1      4       5    6      9    10     14     17      18
+  //  | sifs | aifsn | tx | sifs | ack | idle | sifs | aifsn | tx |
+  //                        |
+  //                        7 start rx
   //
 
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddAccessRequest (1, 1, 4, 0);
-  ExpectBackoff (1, 0, 0);
-  AddRxInsideSifsEvt (6, 10);
-  AddTxEvt (8, 1);
-  AddAccessRequest (14, 2, 14, 0);
+  AddAccessRequest (1, 1, 5, 0);
+  AddRxInsideSifsEvt (7, 10);
+  AddTxEvt (9, 1);
+  AddAccessRequest (14, 2, 18, 0);
   EndTest ();
   // The test below mainly intends to test the case where the medium
   // becomes busy in the middle of a backoff slot: the backoff counter
@@ -712,31 +711,26 @@ ChannelAccessManagerTest::DoRun (void)
   ExpectBackoff (30, 0, 0); //backoff: 0 slots
   EndTest ();
 
-  // Bug 2369.  Test case of requesting access within SIFS interval
+  // Requesting access within SIFS interval (DCF immediate access)
   //
-  //  20    60     66      70         74
-  //   | rx  | sifs | aifsn | backoff | tx |
-  //           |
-  //          62 request access.
+  //  20    60     62     68      72
+  //   | rx  | idle | sifs | aifsn | tx |
   //
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
-  AddAccessRequest (62, 2, 74, 0);
-  ExpectBackoff (62, 1, 0); //backoff: 1 slots
+  AddAccessRequest (62, 2, 72, 0);
   EndTest ();
 
-  // Bug 2369.  Test case of requesting access after DIFS (no backoff)
+  // Requesting access after DIFS (DCF immediate access)
   //
-  //  20    60     66      70
-  //   | rx  | sifs | aifsn | tx |
-  //                        |
-  //                       70 request access.
+  //   20   60     70     76      80
+  //   | rx  | idle | sifs | aifsn | tx |
   //
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
-  AddAccessRequest (70, 2, 70, 0);
+  AddAccessRequest (70, 2, 80, 0);
   EndTest ();
 
   // Test an EIFS
@@ -750,6 +744,19 @@ ChannelAccessManagerTest::DoRun (void)
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 102, 0);
   ExpectBackoff (30, 4, 0); //backoff: 4 slots
+  EndTest ();
+
+  // Test DCF immediate access after an EIFS (EIFS is greater)
+  //
+  //  20          60     66           76             86
+  //               | <----+-eifs------>|
+  //   |    rx     | sifs | acktxttime | sifs + aifsn | tx |
+  //                             | sifs + aifsn |
+  //             request access 70             80
+  StartTest (4, 6, 10);
+  AddDcfState (1);
+  AddRxErrorEvt (20, 40);
+  AddAccessRequest (70, 2, 86, 0);
   EndTest ();
 
   // Test that channel stays busy for first frame's duration after Rx error
@@ -801,16 +808,15 @@ ChannelAccessManagerTest::DoRun (void)
   // Test of AckTimeout handling: First queue requests access and ack procedure fails,
   // inside the ack timeout second queue with higher priority requests access.
   //
-  //            20           40      50     60  66      76
-  // DCF0 - low  |     tx     | ack timeout |sifs|       |
-  // DCF1 - high |                    |     |sifs|  tx   |
-  //                                  ^ request access
+  //            20     26      34       54            74     80
+  // DCF1 - low  | sifs | aifsn |   tx   | ack timeout | sifs |       |
+  // DCF0 - high |                              |      | sifs |  tx   |
+  //                                            ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (2); //high priority DCF
-  AddDcfState (0); //low priority DCF
-  AddAccessRequestWithAckTimeout (20, 20, 20, 0);
-  AddAccessRequest (50, 10, 66, 1);
-  ExpectBackoff (50, 0, 1);
+  AddDcfState (0); //high priority DCF
+  AddDcfState (2); //low priority DCF
+  AddAccessRequestWithAckTimeout (20, 20, 34, 1);
+  AddAccessRequest (64, 10, 80, 0);
   EndTest ();
 
   // Test of AckTimeout handling:
@@ -818,27 +824,27 @@ ChannelAccessManagerTest::DoRun (void)
   // First queue requests access and ack is 2 us delayed (got ack interval at the picture),
   // inside this interval second queue with higher priority requests access.
   //
-  //            20           40  41   42    48      58
-  // DCF0 - low  |     tx     |got ack |sifs|       |
-  // DCF1 - high |                |    |sifs|  tx   |
-  //                              ^ request access
+  //            20     26      34           54        56     62
+  // DCF1 - low  | sifs | aifsn |     tx     | got ack | sifs |       |
+  // DCF0 - high |                                |    | sifs |  tx   |
+  //                                              ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (2); //high priority DCF
-  AddDcfState (0); //low priority DCF
-  AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
-  AddAccessRequest (41, 10, 48, 1);
-  ExpectBackoff (41, 0, 1);
+  AddDcfState (0); //high priority DCF
+  AddDcfState (2); //low priority DCF
+  AddAccessRequestWithSuccessfullAck (20, 20, 34, 2, 1);
+  AddAccessRequest (55, 10, 62, 0);
   EndTest ();
 
   //Repeat the same but with one queue:
-  //            20           40  41   42    48      58
-  // DCF0 - low  |     tx     |got ack |sifs|       |
-  //                              ^ request access
+  //      20     26      34         54     60    62     68      76       80
+  // DCF0  | sifs | aifsn |    tx    | sifs | ack | sifs | aifsn | bslot0 | tx |
+  //                                           ^ request access
   StartTest (4, 6, 10);
   AddDcfState (2);
-  AddAccessRequestWithSuccessfullAck (20, 20, 20, 2, 0);
-  AddAccessRequest (41, 10, 56, 0);
-  ExpectBackoff (41, 0, 0);
+  AddAccessRequest (20, 20, 34, 0);
+  AddRxOkEvt (60, 2); // ack
+  AddAccessRequest (61, 10, 80, 0);
+  ExpectBackoff (61, 1, 0); // 1 slot
   EndTest ();
 
   // test simple NAV count. This scenario modelizes a simple DATA+ACK handshake
@@ -868,10 +874,13 @@ ChannelAccessManagerTest::DoRun (void)
   EndTest ();
 
 
+  //  20         60         80     86      94
+  //   |    rx    |   idle   | sifs | aifsn |    tx    |
+  //                         ^ request access
   StartTest (4, 6, 10);
   AddDcfState (2);
   AddRxOkEvt (20, 40);
-  AddAccessRequest (80, 10, 80, 0);
+  AddAccessRequest (80, 10, 94, 0);
   EndTest ();
 
 
@@ -886,15 +895,13 @@ ChannelAccessManagerTest::DoRun (void)
 
   // Channel switching tests
 
-  //  0          20     23      24   25
-  //  | switching | sifs | aifsn | tx |
-  //                |
-  //               21 access request.
+  //  0          20     21     24      25   26
+  //  | switching | idle | sifs | aifsn | tx |
+  //                     ^ access request.
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddSwitchingEvt (0,20);
-  AddAccessRequest (21, 1, 24, 0);
-  ExpectBackoff (21, 0, 0);
+  AddSwitchingEvt (0, 20);
+  AddAccessRequest (21, 1, 25, 0);
   EndTest ();
 
   //  20          40       50     53      54       55        56   57
@@ -910,64 +917,56 @@ ChannelAccessManagerTest::DoRun (void)
   AddAccessRequest (45, 1, 56, 0);
   EndTest ();
 
-  //  20     30          50     53      54   55
-  //   |  rx  | switching | sifs | aifsn | tx |
-  //                        |
-  //                       51 access request.
+  //  20     30          50     51     54      55   56
+  //   |  rx  | switching | idle | sifs | aifsn | tx |
+  //                             ^ access request.
   //
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddRxStartEvt (20,40);
-  AddSwitchingEvt (30,20);
-  AddAccessRequest (51, 1, 54, 0);
-  ExpectBackoff (51, 0, 0);
+  AddRxStartEvt (20, 40);
+  AddSwitchingEvt (30, 20);
+  AddAccessRequest (51, 1, 55, 0);
   EndTest ();
 
-  //  20     30          50     53      54   55
-  //   | busy | switching | sifs | aifsn | tx |
-  //                        |
-  //                       51 access request.
+  //  20     30          50     51     54      55   56
+  //   | busy | switching | idle | sifs | aifsn | tx |
+  //                             ^ access request.
   //
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddCcaBusyEvt (20,40);
-  AddSwitchingEvt (30,20);
-  AddAccessRequest (51, 1, 54, 0);
-  ExpectBackoff (51, 0, 0);
+  AddCcaBusyEvt (20, 40);
+  AddSwitchingEvt (30, 20);
+  AddAccessRequest (51, 1, 55, 0);
   EndTest ();
 
-  //  20      30          50     53      54   55
-  //   |  nav  | switching | sifs | aifsn | tx |
-  //                        |
-  //                       51 access request.
+  //  20      30          50     51     54      55   56
+  //   |  nav  | switching | idle | sifs | aifsn | tx |
+  //                              ^ access request.
   //
   StartTest (1, 3, 10);
   AddDcfState (1);
   AddNavStart (20,40);
   AddSwitchingEvt (30,20);
-  AddAccessRequest (51, 1, 54, 0);
-  ExpectBackoff (51, 0, 0);
+  AddAccessRequest (51, 1, 55, 0);
   EndTest ();
 
-  //  20      40             50          55     58      59   60
-  //   |  tx   | ack timeout  | switching | sifs | aifsn | tx |
-  //                  |                     |
-  //                 45 access request.    56 access request.
+  //  20     23      24      44             54          59     60     63      64   65
+  //   | sifs | aifsn |  tx   | ack timeout  | switching | idle | sifs | aifsn | tx |
+  //                                 |                          |
+  //                                49 access request.          ^ access request.
   //
   StartTest (1, 3, 10);
   AddDcfState (1);
-  AddAccessRequestWithAckTimeout (20, 20, 20, 0);
-  AddAccessRequest (45, 1, 50, 0);
-  ExpectBackoff (45, 0, 0);
-  AddSwitchingEvt (50,5);
-  AddAccessRequest (56, 1, 59, 0);
-  ExpectBackoff (56, 0, 0);
+  AddAccessRequestWithAckTimeout (20, 20, 24, 0);
+  AddAccessRequest (49, 1, 54, 0);
+  AddSwitchingEvt (54, 5);
+  AddAccessRequest (60, 1, 64, 0);
   EndTest ();
 
-  //  20         60     66      70       74       78  80         100    106     110  112
-  //   |    rx    | sifs | aifsn | bslot0 | bslot1 |   | switching | sifs | aifsn | tx |
-  //        |                                                        |
-  //       30 access request.                                      101 access request.
+  //  20         60     66      70       74       78  80         100    101    107     111  113
+  //   |    rx    | sifs | aifsn | bslot0 | bslot1 |   | switching | idle | sifs | aifsn | tx |
+  //        |                                                             |
+  //       30 access request.                                             ^ access request.
   //
   StartTest (4, 6, 10);
   AddDcfState (1);
@@ -975,8 +974,7 @@ ChannelAccessManagerTest::DoRun (void)
   AddAccessRequest (30, 2, 80, 0);
   ExpectBackoff (30, 4, 0); //backoff: 4 slots
   AddSwitchingEvt (80,20);
-  AddAccessRequest (101, 2, 110, 0);
-  ExpectBackoff (101, 0, 0); //backoff: 0 slots
+  AddAccessRequest (101, 2, 111, 0);
   EndTest ();
 }
 

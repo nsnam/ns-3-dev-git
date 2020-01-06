@@ -376,6 +376,15 @@ protected:
   virtual void NotifyCollision (void);
 
   /**
+   * Check if the DCF has frames to transmit.
+   * \return true if the DCF has frames to transmit.
+   */
+  virtual bool HasFramesToTransmit (void);
+  /**
+   * Generate a new backoff, if needed, when a packet is queued for transmission.
+   */
+  virtual void GenerateBackoffUponAccessIfNeeded (void);
+  /**
    * Generate a new backoff now.
    */
   virtual void GenerateBackoff (void);

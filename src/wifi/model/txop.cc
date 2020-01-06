@@ -304,6 +304,55 @@ Txop::GetTxopLimit (void) const
   return m_txopLimit;
 }
 
+bool
+Txop::HasFramesToTransmit (void)
+{
+  bool ret = (m_currentPacket != 0 || !m_queue->IsEmpty ());
+  NS_LOG_FUNCTION (this << ret);
+  return ret;
+}
+
+void
+Txop::GenerateBackoffUponAccessIfNeeded (void)
+{
+  NS_LOG_FUNCTION (this);
+  /*
+   * From section 10.3.4.2 "Basic access" of IEEE 802.11-2016:
+   *
+   * A STA may transmit an MPDU when it is operating under the DCF access
+   * method, either in the absence of a PC, or in the CP of the PCF access
+   * method, when the STA determines that the medium is idle when a frame is
+   * queued for transmission, and remains idle for a period of a DIFS, or an
+   * EIFS (10.3.2.3.7) from the end of the immediately preceding medium-busy
+   * event, whichever is the greater, and the backoff timer is zero. Otherwise
+   * the random backoff procedure described in 10.3.4.3 shall be followed.
+   *
+   * From section 10.22.2.2 "EDCA backoff procedure" of IEEE 802.11-2016:
+   *
+   * The backoff procedure shall be invoked by an EDCAF when any of the following
+   * events occurs:
+   * a) An MA-UNITDATA.request primitive is received that causes a frame with that AC
+   *    to be queued for transmission such that one of the transmit queues associated
+   *    with that AC has now become non-empty and any other transmit queues
+   *    associated with that AC are empty; the medium is busy on the primary channel
+   */
+  if (!HasFramesToTransmit () && !m_low->IsCfPeriod () && m_backoffSlots == 0)
+    {
+      if (!m_channelAccessManager->IsBusy ())
+        {
+          // medium idle. If this is a DCF, use immediate access (we can transmit
+          // in a DIFS if the medium remains idle).
+          Time delay = (IsQosTxop () ? Seconds (0) : m_low->GetSifs () + GetAifsn () * m_low->GetSlotTime ());
+          UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
+        }
+      else
+        {
+          // medium busy, generate backoff
+          GenerateBackoff ();
+        }
+    }
+}
+
 void
 Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
@@ -313,6 +362,7 @@ Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   SocketPriorityTag priorityTag;
   packetCopy->RemovePacketTag (priorityTag);
   m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packetCopy);
+  GenerateBackoffUponAccessIfNeeded ();
   m_queue->Enqueue (Create<WifiMacQueueItem> (packetCopy, hdr));
   StartAccessIfNeeded ();
 }

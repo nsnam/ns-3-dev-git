@@ -280,38 +280,6 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();
-  // If currently transmitting; end of transmission (ACK or no ACK) will cause
-  // a later access request if needed from EndTxNoAck, GotAck, or MissedAck
-  Time lastTxEnd = m_lastTxStart + m_lastTxDuration;
-  if (lastTxEnd > Simulator::Now ())
-    {
-      NS_LOG_DEBUG ("Internal collision (currently transmitting)");
-      state->NotifyInternalCollision ();
-      DoRestartAccessTimeoutIfNeeded ();
-      return;
-    }
-  /**
-   * If there is a collision, generate a backoff
-   * by notifying the collision to the user.
-   */
-  if (state->GetBackoffSlots () == 0)
-    {
-      if (IsBusy ())
-        {
-          NS_LOG_DEBUG ("medium is busy: collision");
-          // someone else has accessed the medium; generate a backoff.
-          state->NotifyCollision ();
-          DoRestartAccessTimeoutIfNeeded ();
-          return;
-        }
-      else if (IsWithinAifs (state))
-        {
-          NS_LOG_DEBUG ("busy within AIFS");
-          state->NotifyCollision ();
-          DoRestartAccessTimeoutIfNeeded ();
-          return;
-        }
-    }
   DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
 }

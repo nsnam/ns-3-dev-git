@@ -182,6 +182,14 @@ QosTxop::GetTypeOfStation (void) const
   return m_typeOfStation;
 }
 
+bool
+QosTxop::HasFramesToTransmit (void)
+{
+  bool ret = (m_currentPacket != 0 || m_baManager->HasPackets () || !m_queue->IsEmpty ());
+  NS_LOG_FUNCTION (this << ret);
+  return ret;
+}
+
 uint16_t
 QosTxop::GetNextSequenceNumberFor (const WifiMacHeader *hdr)
 {

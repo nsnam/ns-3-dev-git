@@ -147,6 +147,12 @@ public:
   TypeOfStation GetTypeOfStation (void) const;
 
   /**
+   * Check if the EDCAF has frames to transmit.
+   * \return true if the EDCAF has frames to transmit.
+   */
+  virtual bool HasFramesToTransmit (void);
+
+  /**
    * \param address recipient address of the peer station
    * \param tid traffic ID.
    *

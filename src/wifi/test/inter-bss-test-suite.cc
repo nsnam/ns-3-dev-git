@@ -281,13 +281,13 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
 
   Simulator::Schedule (Seconds (2.4), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device2, ap_device2, m_payloadSize2 / 10);
   Simulator::Schedule (Seconds (2.4) + MicroSeconds (5), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2 / 10);
-  Simulator::Schedule (Seconds (2.4) + MicroSeconds (55), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device1, sta_device1, m_payloadSize1 / 10);
+  Simulator::Schedule (Seconds (2.4) + MicroSeconds (65), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device1, sta_device1, m_payloadSize1 / 10);
   Simulator::Schedule (Seconds (2.4) + MicroSeconds (105), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device3, sta_device3, m_payloadSize3 / 10);
   if (expectPhyReset)
     {
       // In this case, we check the TX power is restricted (and set the expected value slightly before transmission should occur)
       double expectedTxPower = std::min (m_txPowerDbm, 21 - (m_obssPdLevelDbm + 82));
-      Simulator::Schedule (Seconds (2.4) + MicroSeconds (300), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
+      Simulator::Schedule (Seconds (2.4) + MicroSeconds (450), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
     }
 
   Simulator::Stop (Seconds (2.5));
