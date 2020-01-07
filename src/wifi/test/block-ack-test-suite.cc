@@ -868,14 +868,29 @@ BlockAckAggregationDisabledTest::DoRun (void)
   packetSocket.Install (wifiStaNode);
   packetSocket.Install (wifiApNode);
 
-  Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
-  client->SetAttribute ("PacketSize", UintegerValue (1400));
-  client->SetAttribute ("MaxPackets", UintegerValue (14));
-  client->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
-  client->SetRemote (socket);
-  wifiStaNode.Get (0)->AddApplication (client);
-  client->SetStartTime (Seconds (1));
-  client->SetStopTime (Seconds (3.0));
+  // the first client application generates a single packet, which is sent
+  // with the normal ack policy because there are no other packets queued
+  Ptr<PacketSocketClient> client1 = CreateObject<PacketSocketClient> ();
+  client1->SetAttribute ("PacketSize", UintegerValue (1400));
+  client1->SetAttribute ("MaxPackets", UintegerValue (1));
+  client1->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+  client1->SetRemote (socket);
+  wifiStaNode.Get (0)->AddApplication (client1);
+  client1->SetStartTime (Seconds (1));
+  client1->SetStopTime (Seconds (3.0));
+
+  // the second client application generates 13 packets. Even if when the first
+  // packet is queued the queue is empty, the first packet is not transmitted
+  // immediately, but the EDCAF waits for the next slot boundary. At that time,
+  // other packets have been queued, hence a BA agreement is established first.
+  Ptr<PacketSocketClient> client2 = CreateObject<PacketSocketClient> ();
+  client2->SetAttribute ("PacketSize", UintegerValue (1400));
+  client2->SetAttribute ("MaxPackets", UintegerValue (13));
+  client2->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+  client2->SetRemote (socket);
+  wifiStaNode.Get (0)->AddApplication (client2);
+  client2->SetStartTime (Seconds (1.5));
+  client2->SetStopTime (Seconds (3.0));
 
   Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
   server->SetLocal (socket);
@@ -892,7 +907,7 @@ BlockAckAggregationDisabledTest::DoRun (void)
 
   Simulator::Destroy ();
 
-  // The client application generates 14 packets, so we expect that the wifi PHY
+  // The client applications generate 14 packets, so we expect that the wifi PHY
   // layer transmits 14 MPDUs, the server application receives 14 packets, and
   // two BARs are transmitted.
   NS_TEST_EXPECT_MSG_EQ (m_txTotal, 14, "Unexpected number of transmitted packets");

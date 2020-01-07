@@ -578,9 +578,28 @@ where the backoff timer duration is lazily calculated whenever needed since it
 is claimed to have much better performance than the simpler recurring timer
 solution.
 
-The backoff procedure of DCF is described in section 9.2.5.2 of [ieee80211]_.
+The DCF basic access is described in section 10.3.4.2 of [ieee80211-2016]_.
 
-*  “The backoff procedure shall be invoked for a STA to transfer a frame 
+*  “A STA may transmit an MPDU when it is operating under the DCF access method
+   [..] when the STA determines that the medium is idle when a frame is queued
+   for transmission, and remains idle for a period of a DIFS, or an EIFS
+   (10.3.2.3.7) from the end of the immediately preceding medium-busy event,
+   whichever is the greater, and the backoff timer is zero. Otherwise the random
+   backoff procedure described in 10.3.4.3 shall be followed."
+
+Thus, a station is allowed not to invoke the backoff procedure if all of the
+following conditions are met:
+
+*  the medium is idle when a frame is queued for transmission
+*  the medium remains idle until the most recent of these two events: a DIFS
+   from the time when the frame is queued for transmission; an EIFS from the
+   end of the immediately preceding medium-busy event (associated with the
+   reception of an erroneous frame)
+*  the backoff timer is zero
+
+The backoff procedure of DCF is described in section 10.3.4.3 of [ieee80211-2016]_.
+
+*  “A STA shall invoke the backoff procedure to transfer a frame
    when finding the medium busy as indicated by either the physical or 
    virtual CS mechanism.”
 *  “A backoff procedure shall be performed immediately after the end of 
@@ -588,19 +607,43 @@ The backoff procedure of DCF is described in section 9.2.5.2 of [ieee80211]_.
    type Data, Management, or Control with subtype PS-Poll, even if no 
    additional transmissions are currently queued.”
 
-Thus, if the queue is empty, a newly arrived packet should be transmitted 
-immediately after channel is sensed idle for DIFS.  If queue is not empty 
-and after a successful MPDU that has no more fragments, a node should 
-also start the backoff timer.
+The EDCA backoff procedure is slightly different than the DCF backoff procedure
+and is described in section 10.22.2.2 of [ieee80211-2016]_. The backoff procedure
+shall be invoked by an EDCAF when any of the following events occur:
 
-Some users have observed that the 802.11 MAC with an empty queue on an 
-idle channel will transmit the first frame arriving to the model 
-immediately without waiting for DIFS or backoff, and wonder whether this 
-is compliant.  According to the standard, “The backoff procedure shall 
-be invoked for a STA to transfer a frame when finding the medium busy 
-as indicated by either the physical or virtual CS mechanism.”  So in 
-this case, the medium is not found to be busy in recent past and the 
-station can transmit immediately. 
+*  a frame is "queued for transmission such that one of the transmit queues
+   associated with that AC has now become non-empty and any other transmit queues
+   associated with that AC are empty; the medium is busy on the primary channel"
+*  "The transmission of the MPDU in the final PPDU transmitted by the TXOP holder
+   during the TXOP for that AC has completed and the TXNAV timer has expired, and
+   the AC was a primary AC"
+*  "The transmission of an MPDU in the initial PPDU of a TXOP fails [..] and the
+   AC was a primary AC"
+*  "The transmission attempt collides internally with another EDCAF of an AC that
+   has higher priority"
+*  (optionally) "The transmission by the TXOP holder of an MPDU in a non-initial
+   PPDU of a TXOP fails"
+
+Additionally, section 10.22.2.4 of [ieee80211-2016]_ introduces the notion of
+slot boundary, which basically occurs following SIFS + AIFSN * slotTime of idle
+medium after the last busy medium that was the result of a reception of a frame
+with a correct FCS or following EIFS - DIFS + AIFSN * slotTime + SIFS of idle
+medium after the last indicated busy medium that was the result of a frame reception
+that has resulted in FCS error, or following a slotTime of idle medium occurring
+immediately after any of these conditions.
+
+On these specific slot boundaries, each EDCAF shall make a determination to perform
+one and only one of the following functions:
+
+*  Decrement the backoff timer.
+*  Initiate the transmission of a frame exchange sequence.
+*  Invoke the backoff procedure due to an internal collision.
+*  Do nothing.
+
+Thus, if an EDCAF decrements its backoff timer on a given slot boundary and, as
+a result, the backoff timer has a zero value, the EDCAF cannot immediately
+transmit, but it has to wait for another slotTime of idle medium before transmission
+can start.
 
 The higher-level MAC functions are implemented in a set of other C++ classes and
 deal with:

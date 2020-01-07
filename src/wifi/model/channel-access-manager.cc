@@ -262,6 +262,21 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
       m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::DoGrantPcfAccess, this, state);
       return;
     }
+  /*
+   * EDCAF operations shall be performed at slot boundaries (Sec. 10.22.2.4 of 802.11-2016)
+   */
+  Time accessGrantStart = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
+
+  if (state->IsQosTxop () && state->GetBackoffStart () > accessGrantStart)
+    {
+      // The backoff start time reported by the EDCAF is more recent than the last
+      // time the medium was busy plus an AIFS, hence we need to align it to the
+      // next slot boundary.
+      Time diff = state->GetBackoffStart () - accessGrantStart;
+      uint32_t nIntSlots = (diff / m_slot).GetHigh () + 1;
+      state->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * m_slot));
+    }
+
   UpdateBackoff ();
   NS_ASSERT (!state->IsAccessRequested ());
   state->NotifyAccessRequested ();

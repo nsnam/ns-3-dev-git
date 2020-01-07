@@ -88,6 +88,12 @@ and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g.,
 <b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 
 the pathloss for a node moving in and out of buildings in a simulation. See <a href=https://gitlab.com/nsnam/ns-3-dev/issues/80>issue 80</a> 
 for discussion.</li>
+<li> The implementation of the wifi channel access functions has been improved
+to make them more adherent to the IEEE 802.11-2016 standard. Concerning the DCF,
+the backoff procedure is no longer invoked when a packet is queued for transmission
+and the medium has not been idle for a DIFS, but it is invoked if the medium is busy
+or does not remain idle for a DIFS after the packet has been queued. Concerning the
+EDCAF, tranmissions are now correctly aligned at slot boundaries.</li>
 </ul>
 
 <hr>

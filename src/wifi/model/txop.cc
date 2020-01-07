@@ -341,7 +341,10 @@ Txop::GenerateBackoffUponAccessIfNeeded (void)
       if (!m_channelAccessManager->IsBusy ())
         {
           // medium idle. If this is a DCF, use immediate access (we can transmit
-          // in a DIFS if the medium remains idle).
+          // in a DIFS if the medium remains idle). If this is an EDCAF, update
+          // the backoff start time kept by the EDCAF to the current time in order
+          // to correctly align the backoff start time at the next slot boundary
+          // (performed by the next call to ChannelAccessManager::RequestAccess())
           Time delay = (IsQosTxop () ? Seconds (0) : m_low->GetSifs () + GetAifsn () * m_low->GetSlotTime ());
           UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
         }

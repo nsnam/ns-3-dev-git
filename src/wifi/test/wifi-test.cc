@@ -1954,14 +1954,14 @@ private:
    */
   void RunSubtest (PointerValue apErrorModel, PointerValue staErrorModel);
 
-  uint8_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
-  uint8_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
-  uint8_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
-  uint8_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
-  uint8_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
-  uint8_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
-  uint8_t m_addbaNoReplyCount;       ///< Count number of times ADDBA state machine is in no_reply state
-  uint8_t m_addbaResetCount;         ///< Count number of times ADDBA state machine is in reset state
+  uint16_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
+  uint16_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
+  uint16_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
+  uint16_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
+  uint16_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
+  uint16_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
+  uint16_t m_addbaNoReplyCount;       ///< Count number of times ADDBA state machine is in no_reply state
+  uint16_t m_addbaResetCount;         ///< Count number of times ADDBA state machine is in reset state
 };
 
 Bug2470TestCase::Bug2470TestCase ()
@@ -2096,8 +2096,10 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop", MakeCallback (&Bug2470TestCase::RxDropCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
-  Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
-  Simulator::Schedule (Seconds (0.8), &Bug2470TestCase::SendPacketBurst, this, 5, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.5) + MicroSeconds (5), &Bug2470TestCase::SendPacketBurst, this, 4, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.8), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  Simulator::Schedule (Seconds (0.8) + MicroSeconds (5), &Bug2470TestCase::SendPacketBurst, this, 4, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
 
   Simulator::Stop (Seconds (1.0));
   Simulator::Run ();
