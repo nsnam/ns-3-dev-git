@@ -292,7 +292,31 @@ will result in a list of the test suite being displayed, similar to
   ...
 
 Any of these listed suites can be selected to be run by itself using the
-``--suite`` option as shown above.  Examples are handled differently.
+``--suite`` option as shown above.
+
+To run multiple test suites at once it is possible to use a 'Unix filename pattern matching'
+style, e.g.,
+
+::
+
+     $ ../test.py -s 'ipv6*'
+
+Note the use of quotes. The result is similar to
+
+.. sourcecode:: text
+
+  PASS: TestSuite ipv6-protocol
+  PASS: TestSuite ipv6-packet-info-tag
+  PASS: TestSuite ipv6-list-routing
+  PASS: TestSuite ipv6-extension-header
+  PASS: TestSuite ipv6-address-generator
+  PASS: TestSuite ipv6-raw
+  PASS: TestSuite ipv6-dual-stack
+  PASS: TestSuite ipv6-fragmentation
+  PASS: TestSuite ipv6-address-helper
+  PASS: TestSuite ipv6-address
+  PASS: TestSuite ipv6-forwarding
+  PASS: TestSuite ipv6-ripng
 
 Similarly to test suites, one can run a single C++ example program
 using the ``--example`` option.  Note that the relative path for the

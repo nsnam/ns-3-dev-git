@@ -25,7 +25,7 @@ import threading
 import signal
 import xml.dom.minidom
 import shutil
-import re
+import fnmatch
 
 from utils import get_list_from_file
 
@@ -1315,14 +1315,19 @@ def run_tests():
         # See if this is a valid test suite.
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-name-list")
         (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
+
         if isinstance(suites, bytes):
             suites = suites.decode()
-        if options.suite in suites.split('\n'):
-            suites = options.suite + "\n"
-            single_suite = True
-        else:
+
+        suites_found = fnmatch.filter(suites.split('\n'), options.suite)
+
+        if not suites_found:
             print('The test suite was not run because an unknown test suite name was requested.', file=sys.stderr)
             sys.exit(2)
+        elif len(suites_found) == 1:
+            single_suite = True
+
+        suites = '\n'.join(suites_found)
 
     elif len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
@@ -1536,33 +1541,38 @@ def run_tests():
         # match what is done in the wscript file.
         example_name = "%s%s-%s%s" % (APPNAME, VERSION, options.example, BUILD_PROFILE_SUFFIX)
 
-        # Don't try to run this example if it isn't runnable.
-        if example_name not in ns3_runnable_programs_dictionary:
-            print("Example %s is not runnable." % example_name)
+        key_list = []
+        for key in ns3_runnable_programs_dictionary:
+            key_list.append (key)
+        example_name_key_list = fnmatch.filter(key_list, example_name)
+
+        if len(example_name_key_list) == 0:
+            print("No example matching the name %s" % options.example)
         else:
             #
             # If you tell me to run an example, I will try and run the example
             # irrespective of any condition.
             #
-            example_path = ns3_runnable_programs_dictionary[example_name]
-            example_path = os.path.abspath(example_path)
-            job = Job()
-            job.set_is_example(True)
-            job.set_is_pyexample(False)
-            job.set_display_name(example_path)
-            job.set_tmp_file_name("")
-            job.set_cwd(testpy_output_dir)
-            job.set_basedir(os.getcwd())
-            job.set_tempdir(testpy_output_dir)
-            job.set_shell_command(example_path)
-            job.set_build_path(options.buildpath)
+            for example_name_iter in example_name_key_list:
+                example_path = ns3_runnable_programs_dictionary[example_name_iter]
+                example_path = os.path.abspath(example_path)
+                job = Job()
+                job.set_is_example(True)
+                job.set_is_pyexample(False)
+                job.set_display_name(example_path)
+                job.set_tmp_file_name("")
+                job.set_cwd(testpy_output_dir)
+                job.set_basedir(os.getcwd())
+                job.set_tempdir(testpy_output_dir)
+                job.set_shell_command(example_path)
+                job.set_build_path(options.buildpath)
 
-            if options.verbose:
-                print("Queue %s" % example_name)
+                if options.verbose:
+                    print("Queue %s" % example_name_iter)
 
-            input_queue.put(job)
-            jobs = jobs + 1
-            total_tests = total_tests + 1
+                input_queue.put(job)
+                jobs = jobs + 1
+                total_tests = total_tests + 1
 
     #
     # Run some Python examples as smoke tests.  We have a list of all of
@@ -1636,29 +1646,32 @@ def run_tests():
     elif len(options.pyexample):
         # Don't try to run this example if it isn't runnable.
         example_name = os.path.basename(options.pyexample)
-        if example_name not in ns3_runnable_scripts:
-            print("Example %s is not runnable." % example_name)
+
+        example_name_list = fnmatch.filter(ns3_runnable_scripts, example_name)
+        if len(example_name_list) == 0:
+            print("No example matching the name %s" % example_name)
         else:
-            #
-            # If you tell me to run a python example, I will try and run the example
-            # irrespective of any condition.
-            #
-            job = Job()
-            job.set_is_pyexample(True)
-            job.set_display_name(options.pyexample)
-            job.set_tmp_file_name("")
-            job.set_cwd(testpy_output_dir)
-            job.set_basedir(os.getcwd())
-            job.set_tempdir(testpy_output_dir)
-            job.set_shell_command(options.pyexample)
-            job.set_build_path("")
+            for pyexmple_iter in example_name_list:
+                #
+                # If you tell me to run a python example, I will try and run the example
+                # irrespective of any condition.
+                #
+                job = Job()
+                job.set_is_pyexample(True)
+                job.set_display_name(pyexmple_iter)
+                job.set_tmp_file_name("")
+                job.set_cwd(testpy_output_dir)
+                job.set_basedir(os.getcwd())
+                job.set_tempdir(testpy_output_dir)
+                job.set_shell_command(pyexmple_iter)
+                job.set_build_path("")
 
-            if options.verbose:
-                print("Queue %s" % options.pyexample)
+                if options.verbose:
+                    print("Queue %s" % pyexmple_iter)
 
-            input_queue.put(job)
-            jobs = jobs + 1
-            total_tests = total_tests + 1
+                input_queue.put(job)
+                jobs = jobs + 1
+                total_tests = total_tests + 1
 
     #
     # Tell the worker threads to pack up and go home for the day.  Each one
