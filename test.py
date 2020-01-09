@@ -29,6 +29,19 @@ import fnmatch
 
 from utils import get_list_from_file
 
+# imported from waflib Logs
+colors_lst={'USE':True,'BOLD':'\x1b[01;1m','RED':'\x1b[01;31m','GREEN':'\x1b[32m','YELLOW':'\x1b[33m','PINK':'\x1b[35m','BLUE':'\x1b[01;34m','CYAN':'\x1b[36m','GREY':'\x1b[37m','NORMAL':'\x1b[0m','cursor_on':'\x1b[?25h','cursor_off':'\x1b[?25l',}
+def get_color(cl):
+    if colors_lst['USE']:
+        return colors_lst.get(cl,'')
+    return''
+class color_dict(object):
+    def __getattr__(self,a):
+        return get_color(a)
+    def __call__(self,a):
+        return get_color(a)
+colors=color_dict()
+
 try:
     import queue
 except ImportError:
@@ -604,7 +617,7 @@ def read_waf_config():
         except FileNotFoundError:
             print('The .lock-waf ... directory was not found.  You must do waf build before running test.py.', file=sys.stderr)
             sys.exit(2)
-     
+
     for line in f:
         if line.startswith("top_dir ="):
             key, val = line.split('=')
@@ -1095,7 +1108,6 @@ def run_tests():
                 waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
             else:
                 waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
-
         else:
             if sys.platform == "win32": #Modify for windows
                 waf_cmd = "./waf"
@@ -1711,29 +1723,34 @@ def run_tests():
 
         if job.is_skip:
             status = "SKIP"
+            status_print = colors.GREY + status + colors.NORMAL
             skipped_tests = skipped_tests + 1
             skipped_testnames.append(job.display_name + (" (%s)" % job.skip_reason))
         else:
             if job.returncode == 0:
                 status = "PASS"
+                status_print = colors.GREEN + status + colors.NORMAL
                 passed_tests = passed_tests + 1
             elif job.returncode == 1:
                 failed_tests = failed_tests + 1
                 failed_testnames.append(job.display_name)
                 status = "FAIL"
+                status_print = colors.RED + status + colors.NORMAL
             elif job.returncode == 2:
                 valgrind_errors = valgrind_errors + 1
                 valgrind_testnames.append(job.display_name)
                 status = "VALGR"
+                status_print = colors.CYAN + status + colors.NORMAL
             else:
                 crashed_tests = crashed_tests + 1
                 crashed_testnames.append(job.display_name)
                 status = "CRASH"
+                status_print = colors.PINK + status + colors.NORMAL
 
         if options.duration or options.constrain == "performance":
-            print("%s (%.3f): %s %s" % (status, job.elapsed_time, kind, job.display_name))
+            print("%s (%.3f): %s %s" % (status_print, job.elapsed_time, kind, job.display_name))
         else:
-            print("%s: %s %s" % (status, kind, job.display_name))
+            print("%s: %s %s" % (status_print, kind, job.display_name))
 
         if job.is_example or job.is_pyexample:
             #
