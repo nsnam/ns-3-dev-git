@@ -1274,15 +1274,17 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   if (GetHeSupported ())
                     {
                       HeCapabilities heCapabilities = assocReq.GetHeCapabilities ();
-                      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-                      m_stationManager->AddStationHeCapabilities (from, heCapabilities);
-                      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                      if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
-                          WifiMode mcs = m_phy->GetMcs (i);
-                          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                          m_stationManager->AddStationHeCapabilities (from, heCapabilities);
+                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                             {
-                              m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                              //here should add a control to add basic MCS when it is implemented
+                              WifiMode mcs = m_phy->GetMcs (i);
+                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                                {
+                                  m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                                  //here should add a control to add basic MCS when it is implemented
+                                }
                             }
                         }
                     }
@@ -1460,15 +1462,17 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   if (GetHeSupported ())
                     {
                       HeCapabilities heCapabilities = reassocReq.GetHeCapabilities ();
-                      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-                      m_stationManager->AddStationHeCapabilities (from, heCapabilities);
-                      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+                      if (heCapabilities.GetSupportedMcsAndNss () != 0)
                         {
-                          WifiMode mcs = m_phy->GetMcs (i);
-                          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                          m_stationManager->AddStationHeCapabilities (from, heCapabilities);
+                          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                             {
-                              m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
-                              //here should add a control to add basic MCS when it is implemented
+                              WifiMode mcs = m_phy->GetMcs (i);
+                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedTxMcs (mcs.GetMcsValue ()))
+                                {
+                                  m_stationManager->AddSupportedMcs (hdr->GetAddr2 (), mcs);
+                                  //here should add a control to add basic MCS when it is implemented
+                                }
                             }
                         }
                     }

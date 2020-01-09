@@ -841,15 +841,17 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
   if (GetHeSupported ())
     {
       HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
-      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-      m_stationManager->AddStationHeCapabilities (apAddr, heCapabilities);
-      HeOperation heOperation = beacon.GetHeOperation ();
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      if (heCapabilities.GetSupportedMcsAndNss () != 0)
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+          m_stationManager->AddStationHeCapabilities (apAddr, heCapabilities);
+          HeOperation heOperation = beacon.GetHeOperation ();
+          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
             {
-              m_stationManager->AddSupportedMcs (apAddr, mcs);
+              WifiMode mcs = m_phy->GetMcs (i);
+              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+                {
+                  m_stationManager->AddSupportedMcs (apAddr, mcs);
+                }
             }
         }
     }
@@ -1027,10 +1029,12 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetHeSupported ())
     {
       HeCapabilities hecapabilities = assocResp.GetHeCapabilities ();
-      //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
-      m_stationManager->AddStationHeCapabilities (apAddr, hecapabilities);
-      HeOperation heOperation = assocResp.GetHeOperation ();
-      GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
+      if (hecapabilities.GetSupportedMcsAndNss () != 0)
+        {
+          m_stationManager->AddStationHeCapabilities (apAddr, hecapabilities);
+          HeOperation heOperation = assocResp.GetHeOperation ();
+          GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
+        }
     }
   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
     {
