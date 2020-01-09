@@ -844,8 +844,8 @@ RecordHeaderTestCase::DoRun (void)
 
   f.Read (bufferIn, sizeof(bufferIn), tsSec, tsUsec, inclLen, origLen, readLen);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Read() of known good packet returns error");
-  NS_TEST_ASSERT_MSG_EQ (tsSec, 1234, "Incorrectly read seconds timestap from known good packet");
-  NS_TEST_ASSERT_MSG_EQ (tsUsec, 5678, "Incorrectly read microseconds timestap from known good packet");
+  NS_TEST_ASSERT_MSG_EQ (tsSec, 1234, "Incorrectly read seconds timestamp from known good packet");
+  NS_TEST_ASSERT_MSG_EQ (tsUsec, 5678, "Incorrectly read microseconds timestamp from known good packet");
   NS_TEST_ASSERT_MSG_EQ (inclLen, 43, "Incorrectly read included length from known good packet");
   NS_TEST_ASSERT_MSG_EQ (origLen, 128, "Incorrectly read original length from known good packet");
   NS_TEST_ASSERT_MSG_EQ (readLen, 43, "Incorrectly constructed actual read length from known good packet given buffer size");
@@ -953,8 +953,8 @@ RecordHeaderTestCase::DoRun (void)
 
   f.Read (bufferIn, sizeof(bufferIn), tsSec, tsUsec, inclLen, origLen, readLen);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Read() of known good packet returns error");
-  NS_TEST_ASSERT_MSG_EQ (tsSec, 1234, "Incorrectly read seconds timestap from known good packet");
-  NS_TEST_ASSERT_MSG_EQ (tsUsec, 5678, "Incorrectly read microseconds timestap from known good packet");
+  NS_TEST_ASSERT_MSG_EQ (tsSec, 1234, "Incorrectly read seconds timestamp from known good packet");
+  NS_TEST_ASSERT_MSG_EQ (tsUsec, 5678, "Incorrectly read microseconds timestamp from known good packet");
   NS_TEST_ASSERT_MSG_EQ (inclLen, 43, "Incorrectly read included length from known good packet");
   NS_TEST_ASSERT_MSG_EQ (origLen, 128, "Incorrectly read original length from known good packet");
   NS_TEST_ASSERT_MSG_EQ (readLen, 43, "Incorrectly constructed actual read length from known good packet given buffer size");
@@ -1120,7 +1120,7 @@ DiffTestCase::DoRun (void)
   //
   // Create different PCAP file (with the same timestamps, but different packets) and check that it is indeed different 
   //
-  std::string filename2 = "different.pcap";
+  std::string filename2 = CreateTempDirFilename ("different.pcap");
   PcapFile f;
 
   f.Open (filename2, std::ios::out);
