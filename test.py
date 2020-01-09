@@ -1215,7 +1215,7 @@ def run_tests():
     if options.kinds:
         path_cmd = os.path.join("utils", test_runner_name + " --print-test-type-list")
         (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
-        print(standard_out.decode())
+        print(standard_out)
 
     if options.list:
         if len(options.constrain):
