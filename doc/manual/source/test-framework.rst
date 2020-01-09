@@ -4,12 +4,12 @@
 Testing framework
 -----------------
 
-|ns3| consists of a simulation core engine, a set of models, example programs, 
-and tests.  Over time, new contributors contribute models, tests, and 
+|ns3| consists of a simulation core engine, a set of models, example programs,
+and tests.  Over time, new contributors contribute models, tests, and
 examples.  A Python test program ``test.py`` serves as the test
 execution manager; ``test.py`` can run test code and examples to
 look for regressions, can output the results into a number of forms, and
-can manage code coverage analysis tools.  On top of this, we layer 
+can manage code coverage analysis tools.  On top of this, we layer
 *buildslaves* that are automated build robots that perform
 robustness testing by running the test framework on different systems
 and with different configuration options.
@@ -17,7 +17,7 @@ and with different configuration options.
 Buildslaves
 ***********
 
-At the highest level of |ns3| testing are the buildslaves (build robots).  
+At the highest level of |ns3| testing are the buildslaves (build robots).
 If you are unfamiliar with
 this system look at `<https://ns-buildmaster.ee.washington.edu:8010/>`_.
 This is an open-source automated system that allows |ns3| to be rebuilt
@@ -25,12 +25,12 @@ and tested daily.  By running the buildbots on a number
 of different systems we can ensure that |ns3| builds and executes
 properly on all of its supported systems.
 
-Users (and developers) typically will not interact with the buildslave system other 
-than to read its messages regarding test results.  If a failure is detected in 
+Users (and developers) typically will not interact with the buildslave system other
+than to read its messages regarding test results.  If a failure is detected in
 one of the automated build and test jobs, the buildbot will send an email to the
 *ns-commits* mailing list.  This email will look something like
 
-.. sourcecode:  text
+.. sourcecode::  text
 
   [Ns-commits] Build failed in Jenkins: daily-ubuntu-without-valgrind » Ubuntu-64-15.04 #926
 
@@ -47,12 +47,12 @@ one of the automated build and test jobs, the buildbot will send an email to the
 
 In the full details URL shown in the email, one can find links to the detailed test output.
 
-The buildslave system will do its job quietly if there are no errors, and the 
+The buildslave system will do its job quietly if there are no errors, and the
 system will undergo build and test cycles every day to verify that all is well.
 
 Test.py
 *******
-The buildbots use a Python program, ``test.py``, that is responsible for 
+The buildbots use a Python program, ``test.py``, that is responsible for
 running all of the tests and collecting the resulting reports into a human-
 readable form.  This program is also available for use by users and developers
 as well.
@@ -77,7 +77,7 @@ back in a very concise form.  Running the command
 
 will result in a number of ``PASS``, ``FAIL``, ``CRASH`` or ``SKIP``
 indications followed by the kind of test that was run and its display name.
- 
+
 .. sourcecode:: text
 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -102,7 +102,7 @@ if you run ``test.py --help`` you should see a command summary like:
 .. sourcecode:: text
 
   Usage: test.py [options]
-  
+
   Options:
     -h, --help            show this help message and exit
     -b BUILDPATH, --buildpath=BUILDPATH
@@ -191,7 +191,7 @@ a text file::
 
   $ ./test.py --suite=propagation-loss-model --text=results.txt
 
-This will result in that single test suite being run with the test status written to 
+This will result in that single test suite being run with the test status written to
 the file ''results.txt''.
 
 You should find something similar to the following in that file
@@ -210,16 +210,16 @@ You should find something similar to the following in that file
       Line:      360
 
 Notice that the Test Suite is composed of two Test Cases.  The first test case
-checked the Friis propagation loss model and passed.  The second test case 
+checked the Friis propagation loss model and passed.  The second test case
 failed checking the Log Distance propagation model.  In this case, an SNR of
 176.395 was found, and the test expected a value of 176.407 correct to three
 decimal places.  The file which implemented the failing test is listed as well
 as the line of code which triggered the failure.
 
-If you desire, you could just as easily have written an HTML file using the 
+If you desire, you could just as easily have written an HTML file using the
 ``--html`` option as described above.
 
-Typically a user will run all tests at least once after downloading 
+Typically a user will run all tests at least once after downloading
 |ns3| to ensure that his or her environment has been built correctly
 and is generating correct results according to the test suites.  Developers
 will typically run the test suites before and after making a change to ensure
@@ -229,11 +229,6 @@ the developer might only want to run the unit tests periodically while making
 changes to a repository.  In this case, ``test.py`` can be told to constrain
 the types of tests being run to a particular class of tests.  The following
 command will result in only the unit tests being run::
-
-  $ ./test.py --constrain=unit
-
-Similarly, the following command will result in only the example smoke tests
-being run::
 
   $ ./test.py --constrain=unit
 
@@ -251,14 +246,13 @@ will result in the following list being displayed:
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   'build' finished successfully (0.939s)Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
-  bvt:         Build Verification Tests (to see if build completed successfully)
   core:        Run all TestSuite-based tests (exclude examples)
   example:     Examples (to see if example programs run successfully)
   performance: Performance Tests (check to see if the system is as fast as expected)
   system:      System Tests (spans modules to check integration of modules)
   unit:        Unit Tests (within modules to check basic functionality)
 
-Any of these kinds of test can be provided as a constraint using the ``--constraint`` 
+Any of these kinds of test can be provided as a constraint using the ``--constraint``
 option.
 
 To see a quick list of all of the test suites available, you can ask for them
@@ -297,7 +291,7 @@ will result in a list of the test suite being displayed, similar to
   example      aodv
   ...
 
-Any of these listed suites can be selected to be run by itself using the 
+Any of these listed suites can be selected to be run by itself using the
 ``--suite`` option as shown above.  Examples are handled differently.
 
 Similarly to test suites, one can run a single C++ example program
@@ -343,13 +337,13 @@ results in that single example being run.
 Because Python examples are not built, you do not need to specify the
 directory where |ns3| was built to run them.
 
-Normally when example programs are executed, they write a large amount of trace 
-file data.  This is normally saved to the base directory of the distribution 
+Normally when example programs are executed, they write a large amount of trace
+file data.  This is normally saved to the base directory of the distribution
 (e.g., /home/user/ns-3-dev).  When ``test.py`` runs an example, it really
 is completely unconcerned with the trace files.  It just wants to to determine
 if the example can be built and run without error.  Since this is the case, the
-trace files are written into a ``/tmp/unchecked-traces`` directory.  If you 
-run the above example, you should be able to find the associated 
+trace files are written into a ``/tmp/unchecked-traces`` directory.  If you
+run the above example, you should be able to find the associated
 ``udp-echo.tr`` and ``udp-echo-n-1.pcap`` files there.
 
 The list of available examples is defined by the contents of the ''examples''
@@ -382,8 +376,8 @@ Note the absence of the ``Waf`` build messages.
 ``test.py`` also supports running the test suites and examples under valgrind.
 Valgrind is a flexible program for debugging and profiling Linux executables.  By
 default, valgrind runs a tool called memcheck, which performs a range of memory-
-checking functions, including detecting accesses to uninitialised memory, misuse 
-of allocated memory (double frees, access after free, etc.) and detecting memory 
+checking functions, including detecting accesses to uninitialised memory, misuse
+of allocated memory (double frees, access after free, etc.) and detecting memory
 leaks.  This can be selected by using the ``--grind`` option.
 
 ::
@@ -394,7 +388,7 @@ As it runs, ``test.py`` and the programs that it runs indirectly, generate large
 numbers of temporary files.  Usually, the content of these files is not interesting,
 however in some cases it can be useful (for debugging purposes) to view these files.
 ``test.py`` provides a ``--retain`` option which will cause these temporary
-files to be kept after the run is completed.  The files are saved in a directory 
+files to be kept after the run is completed.  The files are saved in a directory
 named ``testpy-output`` under a subdirectory named according to the current Coordinated
 Universal Time (also known as Greenwich Mean Time).
 
@@ -410,21 +404,21 @@ and examples.  Select verbose in the following way::
 
   $ ./test.py --verbose
 
-All of these options can be mixed and matched.  For example, to run all of the 
+All of these options can be mixed and matched.  For example, to run all of the
 |ns3| core test suites under valgrind, in verbose mode, while generating an HTML
 output file, one would do::
 
-  $ ./test.py --verbose --grind --constrain=core --html=results.html 
+  $ ./test.py --verbose --grind --constrain=core --html=results.html
 
 TestTaxonomy
 ************
 
-As mentioned above, tests are grouped into a number of broadly defined 
+As mentioned above, tests are grouped into a number of broadly defined
 classifications to allow users to selectively run tests to address the different
 kinds of testing that need to be done.
 
 * Build Verification Tests
-* Unit Tests 
+* Unit Tests
 * System Tests
 * Examples
 * Performance Tests
@@ -432,12 +426,12 @@ kinds of testing that need to be done.
 Moreover, each test is further classified according to the expected time needed to
 run it. Tests are classified as:
 
-* QUICK 
+* QUICK
 * EXTENSIVE
 * TAKES_FOREVER
 
-Note that specifying EXTENSIVE fullness will also run tests in QUICK category. 
-Specifying TAKES_FOREVER will run tests in EXTENSIVE and QUICK categories. 
+Note that specifying EXTENSIVE fullness will also run tests in QUICK category.
+Specifying TAKES_FOREVER will run tests in EXTENSIVE and QUICK categories.
 By default, only QUICK tests are ran.
 
 As a rule of thumb, tests that must be run to ensure |ns3| coherence should be
@@ -446,16 +440,6 @@ can be EXTENSIVE; these are tests that typically need minutes. TAKES_FOREVER is
 left for tests that take a really long time, in the order of several minutes.
 The main classification goal is to be able to run the buildbots in a reasonable
 time, and still be able to perform more extensive tests when needed.
-
-BuildVerificationTests
-++++++++++++++++++++++
-
-These are relatively simple tests that are built along with the distribution
-and are used to make sure that the build is pretty much working.  Our
-current unit tests live in the source files of the code they test and are
-built into the |ns3| modules; and so fit the description of BVTs.  BVTs live
-in the same source code that is built into the |ns3| code.  Our current tests
-are examples of this kind of test.
 
 Unit Tests
 ++++++++++
@@ -478,7 +462,7 @@ System Tests
 
 System tests are those that involve more than one module in the system.  We
 have lots of this kind of test running in our current regression framework,
-but they are typically overloaded examples.  We provide a new place 
+but they are typically overloaded examples.  We provide a new place
 for this kind of test in the directory ``src/test``.  The file
 src/test/ns3tcp/ns3-interop-test-suite.cc is an example of this kind of
 test.  It uses NSC TCP to test the |ns3| TCP implementation.  Often there
@@ -533,16 +517,16 @@ below, this ``test-runner`` can be a helpful way to debug tests.
 Debugging Tests
 ***************
 
-The debugging of the test programs is best performed running the low-level 
-test-runner program. The test-runner is the bridge from generic Python 
-code to |ns3| code. It is written in C++ and uses the automatic test 
-discovery process in the |ns3| code to find and allow execution of all 
+The debugging of the test programs is best performed running the low-level
+test-runner program. The test-runner is the bridge from generic Python
+code to |ns3| code. It is written in C++ and uses the automatic test
+discovery process in the |ns3| code to find and allow execution of all
 of the various tests.
 
-The main reason why ``test.py`` is not suitable for debugging is that it is 
-not allowed for logging to be turned on using the ``NS_LOG`` environmental 
-variable when test.py runs.  This limitation does not apply to the test-runner 
-executable. Hence, if you want to see logging output from your tests, you 
+The main reason why ``test.py`` is not suitable for debugging is that it is
+not allowed for logging to be turned on using the ``NS_LOG`` environmental
+variable when test.py runs.  This limitation does not apply to the test-runner
+executable. Hence, if you want to see logging output from your tests, you
 have to run them using the test-runner directly.
 
 In order to execute the test-runner, you run it like any other |ns3| executable
@@ -556,25 +540,25 @@ You should see something like the following
 
   Usage: /home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/utils/ns3-dev-test-runner-debug [OPTIONS]
 
-  Options: 
+  Options:
   --help                 : print these options
   --print-test-name-list : print the list of names of tests available
   --list                 : an alias for --print-test-name-list
   --print-test-types     : print the type of tests along with their names
   --print-test-type-list : print the list of types of tests available
-  --print-temp-dir       : print name of temporary directory before running 
+  --print-temp-dir       : print name of temporary directory before running
                            the tests
   --test-type=TYPE       : process only tests of type TYPE
   --test-name=NAME       : process only test whose name matches NAME
-  --suite=NAME           : an alias (here for compatibility reasons only) 
+  --suite=NAME           : an alias (here for compatibility reasons only)
                            for --test-name=NAME
   --assert-on-failure    : when a test fails, crash immediately (useful
                            when running under a debugger
   --stop-on-failure      : when a test fails, stop immediately
-  --fullness=FULLNESS    : choose the duration of tests to run: QUICK, 
-                           EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE 
-                           includes QUICK and TAKES_FOREVER includes 
-                           QUICK and EXTENSIVE (only QUICK tests are 
+  --fullness=FULLNESS    : choose the duration of tests to run: QUICK,
+                           EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE
+                           includes QUICK and TAKES_FOREVER includes
+                           QUICK and EXTENSIVE (only QUICK tests are
                            run by default)
   --verbose              : print details of test execution
   --xml                  : format test run output as xml
@@ -586,17 +570,17 @@ You should see something like the following
 
 There are a number of things available to you which will be familiar to you if
 you have looked at ``test.py``.  This should be expected since the test-
-runner is just an interface between ``test.py`` and |ns3|.  You 
-may notice that example-related commands are missing here.  That is because 
+runner is just an interface between ``test.py`` and |ns3|.  You
+may notice that example-related commands are missing here.  That is because
 the examples are really not |ns3| tests.  ``test.py`` runs them
 as if they were to present a unified testing environment, but they are really
 completely different and not to be found here.
 
 The first new option that appears here, but not in test.py is the ``--assert-on-failure``
-option.  This option is useful when debugging a test case when running under a 
+option.  This option is useful when debugging a test case when running under a
 debugger like ``gdb``.  When selected, this option tells the underlying
 test case to cause a segmentation violation if an error is detected.  This has
-the nice side-effect of causing program execution to stop (break into the 
+the nice side-effect of causing program execution to stop (break into the
 debugger) when an error is detected.  If you are using gdb, you could use this
 option something like,
 
@@ -605,13 +589,13 @@ option something like,
   $ ./waf shell
   $ cd build/utils
   $ gdb ns3-dev-test-runner-debug
-  $ run --suite=global-value --assert-on-failure 
+  $ run --suite=global-value --assert-on-failure
 
-If an error is then found in the global-value test suite, a segfault would be 
+If an error is then found in the global-value test suite, a segfault would be
 generated and the (source level) debugger would stop at the ``NS_TEST_ASSERT_MSG``
 that detected the error.
 
-To run one of the tests directly from the test-runner 
+To run one of the tests directly from the test-runner
 using ``waf``, you will need to specify the test suite to run.
 So you could use the shell and do::
 
@@ -630,9 +614,9 @@ to write to.  The Python test utility (test.py) will provide a temporary file
 automatically, but if run stand-alone this temporary directory must be provided.
 It can be annoying to continually have to provide
 a ``--tempdir``, so the test runner will figure one out for you if you don't
-provide one.  It first looks for environment variables named ``TMP`` and 
+provide one.  It first looks for environment variables named ``TMP`` and
 ``TEMP`` and uses those.  If neither ``TMP`` nor ``TEMP`` are defined
-it picks ``/tmp``.  The code then tacks on an identifier indicating what 
+it picks ``/tmp``.  The code then tacks on an identifier indicating what
 created the directory (ns-3) then the time (hh.mm.ss) followed by a large random
 number.  The test runner creates a directory of that name to be used as the
 temporary directory.  Temporary files then go into a directory that will be
@@ -660,9 +644,9 @@ and test output can be found in the ``testpy-output/`` directory.
 Reporting of test failures
 ++++++++++++++++++++++++++
 
-When you run a test suite using the test-runner it will run the test 
+When you run a test suite using the test-runner it will run the test
 and report PASS or FAIL.
-To run more quietly, you need to specify an output file to which the tests will write their status using the ``--out`` option.  
+To run more quietly, you need to specify an output file to which the tests will write their status using the ``--out`` option.
 Try,
 
 ::
@@ -712,30 +696,30 @@ Class TestRunner
 
 The executables that run dedicated test programs use a TestRunner class.  This
 class provides for automatic test registration and listing, as well as a way to
-execute the individual tests.  Individual test suites use C++ global 
+execute the individual tests.  Individual test suites use C++ global
 constructors
 to add themselves to a collection of test suites managed by the test runner.
 The test runner is used to list all of the available tests and to select a test
 to be run.  This is a quite simple class that provides three static methods to
-provide or Adding and Getting test suites to a collection of tests.  See the 
+provide or Adding and Getting test suites to a collection of tests.  See the
 doxygen for class ``ns3::TestRunner`` for details.
 
 Test Suite
 **********
 
-All |ns3| tests are classified into Test Suites and Test Cases.  A 
+All |ns3| tests are classified into Test Suites and Test Cases.  A
 test suite is a collection of test cases that completely exercise a given kind
 of functionality.  As described above, test suites can be classified as,
 
 * Build Verification Tests
-* Unit Tests 
+* Unit Tests
 * System Tests
 * Examples
 * Performance Tests
 
 This classification is exported from the TestSuite class.  This class is quite
 simple, existing only as a place to export this type and to accumulate test
-cases.  From a user perspective, in order to create a new TestSuite in the 
+cases.  From a user perspective, in order to create a new TestSuite in the
 system one only has to define a new class that inherits from class ``TestSuite``
 and perform these two duties.
 
@@ -749,22 +733,22 @@ as a ''unit'' test with the display name, ``my-test-suite-name``.
   public:
     MyTestSuite ();
   };
-  
+
   MyTestSuite::MyTestSuite ()
     : TestSuite ("my-test-suite-name", UNIT)
   {
     AddTestCase (new MyTestCase, TestCase::QUICK);
   }
-  
+
   static MyTestSuite myTestSuite;
 
 The base class takes care of all of the registration and reporting required to
 be a good citizen in the test framework.
 
-Avoid putting initialization logic into the test suite or test case 
+Avoid putting initialization logic into the test suite or test case
 constructors.  This is
-because an instance of the test suite is created at run time 
-(due to the static variable above) regardless of whether the test is being 
+because an instance of the test suite is created at run time
+(due to the static variable above) regardless of whether the test is being
 run or not.  Instead, the TestCase provides a virtual ``DoSetup`` method
 that can be specialized to perform setup before ``DoRun`` is called.
 
@@ -776,7 +760,7 @@ of a test case include "one test case per feature", and "one test case per metho
 Mixtures of these models may be used.
 
 In order to create a new test case in the system, all one has to do is to inherit
-from the  ``TestCase`` base class, override the constructor to give the test 
+from the  ``TestCase`` base class, override the constructor to give the test
 case a name and override the ``DoRun`` method to run the test.  Optionally,
 override also the ``DoSetup`` method.
 
@@ -788,12 +772,12 @@ override also the ``DoSetup`` method.
     virtual void DoSetup (void);
     virtual void DoRun (void);
   };
-  
+
   MyTestCase::MyTestCase ()
     : TestCase ("Check some bit of functionality")
   {
   }
-  
+
   void
   MyTestCase::DoRun (void)
   {
@@ -803,7 +787,7 @@ override also the ``DoSetup`` method.
 Utilities
 *********
 
-There are a number of utilities of various kinds that are also part of the 
+There are a number of utilities of various kinds that are also part of the
 testing framework.  Examples include a generalized pcap file useful for
 storing test vectors; a generic container useful for transient storage of
 test vectors during test execution; and tools for generating presentations

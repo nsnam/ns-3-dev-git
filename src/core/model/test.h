@@ -1348,7 +1348,6 @@ public:
    */
   enum Type {
     ALL = 0,    //!<
-    BVT = 1,    //!< This test suite implements a Build Verification Test
     UNIT,       //!< This test suite implements a Unit Test
     SYSTEM,     //!< This test suite implements a System Test
     EXAMPLE,    //!< This test suite implements an Example Test

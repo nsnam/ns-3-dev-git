@@ -777,7 +777,6 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
   std::map<TestSuite::Type, std::string> label;
 
   label[TestSuite::ALL]         = "all          ";
-  label[TestSuite::BVT]         = "bvt          ";
   label[TestSuite::UNIT]        = "unit         ";
   label[TestSuite::SYSTEM]      = "system       ";
   label[TestSuite::EXAMPLE]     = "example      ";
@@ -799,7 +798,6 @@ void
 TestRunnerImpl::PrintTestTypeList (void) const
 {
   NS_LOG_FUNCTION (this);
-  std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
   std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
   std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
   std::cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
@@ -986,10 +984,6 @@ TestRunnerImpl::Run (int argc, char *argv[])
   if (testTypeString == "")
     {
       testType = TestSuite::ALL;
-    }
-  else if (testTypeString == "bvt")
-    {
-      testType = TestSuite::BVT;
     }
   else if (testTypeString == "core")
     {
