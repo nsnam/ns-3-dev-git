@@ -278,7 +278,7 @@ public:
    *
    * \return WifiMode
    *
-   * Create a WifiMode (not used for non-legacy).
+   * Create a non-HT WifiMode.
    */
   static WifiMode CreateWifiMode (std::string uniqueName,
                                   WifiModulationClass modClass,
@@ -294,7 +294,7 @@ public:
    *
    * \return WifiMode
    *
-   * Create a non-legacy WifiMode.
+   * Create a HT WifiMode.
    */
   static WifiMode CreateWifiMcs (std::string uniqueName,
                                  uint8_t mcsValue,

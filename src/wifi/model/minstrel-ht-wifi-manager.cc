@@ -188,7 +188,7 @@ MinstrelHtWifiManager::DoInitialize ()
    * Then, after all initializations are finished, we check actual support for each receiving station.
    */
 
-  // Check if the device supports non legacy
+  // Check if the device supports HT
   if (GetHtSupported ())
     {
       m_numGroups = MAX_SUPPORTED_STREAMS * MAX_HT_STREAM_GROUPS;
@@ -389,7 +389,7 @@ MinstrelHtWifiManager::DoCreateStation (void) const
   station->m_ampduLen = 0;
   station->m_ampduPacketCount = 0;
 
-  // If the device supports non-legacy
+  // If the device supports HT
   if (GetHtSupported ())
     {
       /**
@@ -424,7 +424,7 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
        */
       if (!GetHtSupported (station))
         {
-          NS_LOG_INFO ("legacy station " << station);
+          NS_LOG_INFO ("non-HT station " << station);
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
           m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
@@ -437,7 +437,7 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
         }
       else
         {
-          NS_LOG_DEBUG ("non-legacy station " << station);
+          NS_LOG_DEBUG ("HT station " << station);
           station->m_isHt = true;
           station->m_nModes = GetNMcsSupported (station);
           station->m_minstrelTable = MinstrelRate (station->m_nModes);

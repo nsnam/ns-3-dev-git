@@ -472,7 +472,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   if (GetQosSupported ())
     {
-      hdr.SetNoOrder (); // explicitly set to 0 for the time being since non-legacy control field is not yet implemented (set it to 1 when implemented)
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT control field is not yet implemented (set it to 1 when implemented)
     }
 
   hdr.SetAddr1 (GetBssid ());

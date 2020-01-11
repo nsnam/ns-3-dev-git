@@ -354,7 +354,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
 
   if (GetQosSupported ())
     {
-      hdr.SetNoOrder (); // explicitly set to 0 for the time being since non-legacy control field is not yet implemented (set it to 1 when implemented)
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT control field is not yet implemented (set it to 1 when implemented)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
@@ -435,7 +435,7 @@ ApWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
       rates.SetBasicRate (modeDataRate);
     }
-  //If it is a non-legacy AP, then add the BSSMembershipSelectorSet
+  //If it is a HT AP, then add the BSSMembershipSelectorSet
   //The standard says that the BSSMembershipSelectorSet
   //must have its MSB set to 1 (must be treated as a Basic Rate)
   //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates

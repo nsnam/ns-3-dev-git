@@ -369,7 +369,6 @@ MinstrelWifiManager::GetDataTxVector (MinstrelWifiRemoteStation *station)
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
-      //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
     }
   if (!station->m_initialized)
@@ -393,7 +392,6 @@ MinstrelWifiManager::GetRtsTxVector (MinstrelWifiRemoteStation *station)
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
-      //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
       channelWidth = 20;
     }
   WifiTxVector rtsTxVector;

@@ -41,7 +41,7 @@ namespace ns3 {
  * the time-based timer could be easily replaced with a packet-based
  * timer.)
  *
- * This RAA does not support non-legacy modes and will error
+ * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */

@@ -154,7 +154,7 @@ public:
   void StartReceiveHeader (Ptr<Event> event, Time rxDuration);
 
   /**
-   * Continue receiving the PHY header of a packet (i.e. after the end of receiving the legacy header part).
+   * Continue receiving the PHY header of a packet (i.e. after the end of receiving the non-HT header part).
    *
    * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    */

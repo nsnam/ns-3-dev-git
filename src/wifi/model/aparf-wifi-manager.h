@@ -38,7 +38,7 @@ struct AparfWifiRemoteStation;
  * Networks, Springer, 2005, 12, 123-145.
  * http://www.cs.mun.ca/~yzchen/papers/papers/rate_adaptation/80211_dynamic_rate_power_adjustment_chevillat_j2005.pdf
  *
- * This RAA does not support non-legacy modes and will error
+ * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */

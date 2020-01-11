@@ -178,7 +178,7 @@ public:
                                        uint8_t length);
   /**
    * This information element is a bit special in that it is only
-   * included if the STA is a non-legacy STA. To support this we
+   * included if the STA is a HT STA. To support this we
    * override the Serialize and GetSerializedSize methods of
    * WifiInformationElement.
    *

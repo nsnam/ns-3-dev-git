@@ -95,11 +95,11 @@ private:
   void AddSnrThreshold (WifiTxVector txVector, double snr);
 
   /**
-   * Convenience function for selecting a channel width for legacy mode
-   * \param mode legacy WifiMode
+   * Convenience function for selecting a channel width for non-HT mode
+   * \param mode non-HT WifiMode
    * \return the channel width (MHz) for the selected mode
    */
-  uint16_t GetChannelWidthForMode (WifiMode mode) const;
+  uint16_t GetChannelWidthForNonHtMode (WifiMode mode) const;
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the

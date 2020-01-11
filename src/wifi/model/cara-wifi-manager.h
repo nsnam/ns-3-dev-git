@@ -37,7 +37,7 @@ namespace ns3 {
  * Originally implemented by Federico Maguolo for a very early
  * prototype version of ns-3.
  *
- * This RAA does not support non-legacy modes and will error
+ * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */

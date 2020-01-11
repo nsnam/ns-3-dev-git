@@ -371,7 +371,7 @@ SpectrumWifiPhy::GetGuardBandwidth (uint16_t currentChannelWidth) const
   uint16_t guardBandwidth = 0;
   if (currentChannelWidth == 22)
     {
-      //handle case of use of legacy DSSS transmission
+      //handle case of DSSS transmission
       guardBandwidth = 10;
     }
   else

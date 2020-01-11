@@ -193,23 +193,23 @@ public:
    */
   double CalculateSnr (Ptr<Event> event) const;
   /**
-   * Calculate the SNIR at the start of the legacy PHY header and accumulate
+   * Calculate the SNIR at the start of the non-HT PHY header and accumulate
    * all SNIR changes in the snir vector.
    *
    * \param event the event corresponding to the first time the corresponding packet arrives
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculateLegacyPhyHeaderSnrPer (Ptr<Event> event) const;
+  struct InterferenceHelper::SnrPer CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event) const;
   /**
-   * Calculate the SNIR at the start of the non-legacy PHY header and accumulate
+   * Calculate the SNIR at the start of the HT PHY header and accumulate
    * all SNIR changes in the snir vector.
    *
    * \param event the event corresponding to the first time the corresponding packet arrives
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculateNonLegacyPhyHeaderSnrPer (Ptr<Event> event) const;
+  struct InterferenceHelper::SnrPer CalculateHtPhyHeaderSnrPer (Ptr<Event> event) const;
 
   /**
    * Notify that RX has started.
@@ -319,25 +319,25 @@ private:
    */
   double CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, std::pair<Time, Time> window) const;
   /**
-   * Calculate the error rate of the legacy PHY header. The legacy PHY header
+   * Calculate the error rate of the non-HT PHY header. The non-HT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event
    * \param ni
    *
-   * \return the error rate of the legacy PHY header
+   * \return the error rate of the non-HT PHY header
    */
-  double CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
+  double CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
   /**
-   * Calculate the error rate of the non-legacy PHY header. The non-legacy PHY header
+   * Calculate the error rate of the HT PHY header. TheHT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event
    * \param ni
    *
-   * \return the error rate of the non-legacy PHY header
+   * \return the error rate of the HT PHY header
    */
-  double CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
+  double CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const;
 
   double m_noiseFigure; /**< noise figure (linear) */
   Ptr<ErrorRateModel> m_errorRateModel; ///< error rate model

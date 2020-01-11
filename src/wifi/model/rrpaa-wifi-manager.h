@@ -45,7 +45,7 @@ struct RrpaaWifiRemoteStation;
  * international conference on Mobile computing and networking (pp. 146-157). ACM.
  * http://ocw.cs.pub.ro/courses/_media/isrm/articole/rrate_adapt_mobicom06.pdf
  *
- * This RAA does not support non-legacy modes and will error
+ * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */

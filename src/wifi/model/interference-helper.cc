@@ -334,7 +334,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
 }
 
 double
-InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const
+InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const
 {
   NS_LOG_FUNCTION (this);
   const WifiTxVector txVector = event->GetTxVector ();
@@ -360,14 +360,14 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
           psr *= 1;
           NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
         }
-      //Case 2: previous is in training or in SIG-B: legacy will not enter here since it didn't enter in the last two and they are all the same for legacy
+      //Case 2: previous is in training or in SIG-B: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpTrainingSymbolsStart)
         {
           NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
           psr *= 1;
           NS_LOG_DEBUG ("Case 2 - previous is in training or in SIG-B: nothing to do");
         }
-      //Case 3: previous is in HT-SIG or SIG-A: legacy will not enter here since it didn't enter in the last two and they are all the same for legacy
+      //Case 3: previous is in HT-SIG or SIG-A: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpHsigHeaderStart)
         {
           NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -388,7 +388,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
                                                 headerMode, txVector);
               NS_LOG_DEBUG ("Case 4a - previous in L-SIG and current after payload start: mode=" << headerMode << ", psr=" << psr);
             }
-          //Case 4b: current is in training or in SIG-B. legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 4b: current is in training or in SIG-B. non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpTrainingSymbolsStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -399,7 +399,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
                                                 headerMode, txVector);
               NS_LOG_DEBUG ("Case 4a - previous in L-SIG and current is in training or in SIG-B: mode=" << headerMode << ", psr=" << psr);
             }
-          //Case 4c: current in HT-SIG or in SIG-A. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 4c: current in HT-SIG or in SIG-A. non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -434,7 +434,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
                                                 headerMode, txVector);
               NS_LOG_DEBUG ("Case 5aii - previous is in the preamble and current is after payload start: mode=" << headerMode << ", psr=" << psr);
             }
-          //Case 5b: current is in training or in SIG-B. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 5b: current is in training or in SIG-B. non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpTrainingSymbolsStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -445,7 +445,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
                                                 headerMode, txVector);
               NS_LOG_DEBUG ("Case 5b - previous is in the preamble and current is in training or in SIG-B: mode=" << headerMode << ", psr=" << psr);
             }
-          //Case 5c: current in HT-SIG or in SIG-A. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 5c: current in HT-SIG or in SIG-A. non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -478,7 +478,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderPer (Ptr<const Event> event, NiChang
 }
 
 double
-InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const
+InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChanges *ni) const
 {
   NS_LOG_FUNCTION (this);
   const WifiTxVector txVector = event->GetTxVector ();
@@ -520,7 +520,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
           psr *= 1;
           NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
         }
-      //Case 2: previous is in training or in SIG-B: legacy will not enter here since it didn't enter in the last two and they are all the same for legacy
+      //Case 2: previous is in training or in SIG-B: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpTrainingSymbolsStart)
         {
           NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -545,7 +545,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
               NS_LOG_DEBUG ("Case 2b - previous is in training or in SIG-B and current is in training or in SIG-B: mode=" << mcsHeaderMode << ", psr=" << psr);
             }
         }
-      //Case 3: previous is in HT-SIG or SIG-A: legacy will not enter here since it didn't enter in the last two and they are all the same for legacy
+      //Case 3: previous is in HT-SIG or SIG-A: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpHsigHeaderStart)
         {
           NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -560,13 +560,13 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
               //Case 3ai: VHT or HE format
               if (preamble == WIFI_PREAMBLE_VHT_SU || preamble == WIFI_PREAMBLE_HE_SU || preamble == WIFI_PREAMBLE_VHT_MU || preamble == WIFI_PREAMBLE_HE_MU)
                 {
-                  //SIG-A is sent using legacy OFDM modulation
+                  //SIG-A is sent using non-HT OFDM modulation
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
                                                                   txVector.GetChannelWidth ()),
                                                     plcpTrainingSymbolsStart - previous,
                                                     headerMode, txVector);
-                  NS_LOG_DEBUG ("Case 3ai - previous is in SIG-A and current after payload start: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 3ai - previous is in SIG-A and current after payload start: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
               //Case 3aii: HT formats
               else
@@ -590,7 +590,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
               //Case 3bi: VHT or HE format
               if (preamble == WIFI_PREAMBLE_VHT_SU || preamble == WIFI_PREAMBLE_HE_SU || preamble == WIFI_PREAMBLE_VHT_MU || preamble == WIFI_PREAMBLE_HE_MU)
                 {
-                  //SIG-A is sent using legacy OFDM modulation
+                  //SIG-A is sent using non-HT OFDM modulation
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
                                                                   txVector.GetChannelWidth ()),
@@ -615,7 +615,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
               //Case 3ci: VHT or HE format
               if (preamble == WIFI_PREAMBLE_VHT_SU || preamble == WIFI_PREAMBLE_HE_SU || preamble == WIFI_PREAMBLE_VHT_MU || preamble == WIFI_PREAMBLE_HE_MU)
                 {
-                  //SIG-A is sent using legacy OFDM modulation
+                  //SIG-A is sent using non-HT OFDM modulation
                   psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
                                                                   noiseInterferenceW,
                                                                   txVector.GetChannelWidth ()),
@@ -642,7 +642,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
           //Case 4a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              //Case 4ai: legacy format
+              //Case 4ai: non-HT format
               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
                 {
                   psr *= 1;
@@ -661,7 +661,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                                                                   txVector.GetChannelWidth ()),
                                                     plcpTrainingSymbolsStart - plcpHsigHeaderStart,
                                                     headerMode, txVector);
-                  NS_LOG_DEBUG ("Case 4aii - previous is in L-SIG and current after payload start: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 4aii - previous is in L-SIG and current after payload start: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
               //Case 4aiii: HT mixed format
               else
@@ -674,7 +674,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                   NS_LOG_DEBUG ("Case 4aiii - previous in L-SIG and current after payload start: mcs mode=" << mcsHeaderMode << ", psr=" << psr);
                 }
             }
-          //Case 4b: current is in training or in SIG-B. legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 4b: current is in training or in SIG-B. non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpTrainingSymbolsStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -691,7 +691,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                                                                   txVector.GetChannelWidth ()),
                                                     plcpTrainingSymbolsStart - plcpHsigHeaderStart,
                                                     headerMode, txVector);
-                  NS_LOG_DEBUG ("Case 4bi - previous is in L-SIG and current in training or in SIG-B: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 4bi - previous is in L-SIG and current in training or in SIG-B: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
               //Case 4bii: HT mixed format
               else
@@ -704,7 +704,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                   NS_LOG_DEBUG ("Case 4bii - previous in L-SIG and current in HT training: mcs mode=" << mcsHeaderMode << ", psr=" << psr);
                 }
             }
-          //Case 4c: current in HT-SIG or in SIG-A. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 4c: current in HT-SIG or in SIG-A. Non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -742,7 +742,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
           //Case 5a: current after payload start
           if (current >= plcpPayloadStart)
             {
-              //Case 5ai: legacy format (No HT-SIG or Training Symbols)
+              //Case 5ai: non-HT format (No HT-SIG or Training Symbols)
               if (preamble == WIFI_PREAMBLE_LONG || preamble == WIFI_PREAMBLE_SHORT)
                 {
                   psr *= 1;
@@ -761,7 +761,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                                                                   txVector.GetChannelWidth ()),
                                                     plcpTrainingSymbolsStart - plcpHsigHeaderStart,
                                                     headerMode, txVector);
-                  NS_LOG_DEBUG ("Case 5aii - previous is in the preamble and current is after payload start: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 5aii - previous is in the preamble and current is after payload start: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
               //Case 5aiii: HT formats
               else
@@ -771,10 +771,10 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                                                                   txVector.GetChannelWidth ()),
                                                     plcpPayloadStart - plcpHsigHeaderStart,
                                                     mcsHeaderMode, txVector);
-                  NS_LOG_DEBUG ("Case 5aiii - previous is in the preamble and current is after payload start: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 5aiii - previous is in the preamble and current is after payload start: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
             }
-          //Case 5b: current is in training or in SIG-B. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 5b: current is in training or in SIG-B. Non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpTrainingSymbolsStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -791,7 +791,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                                                                   txVector.GetChannelWidth ()),
                                                     plcpTrainingSymbolsStart - plcpHsigHeaderStart,
                                                     headerMode, txVector);
-                  NS_LOG_DEBUG ("Case 5bi - previous is in the preamble and current in training or in SIG-B: mcs mode=" << mcsHeaderMode << ", legacy mode=" << headerMode << ", psr=" << psr);
+                  NS_LOG_DEBUG ("Case 5bi - previous is in the preamble and current in training or in SIG-B: mcs mode=" << mcsHeaderMode << ", non-HT mode=" << headerMode << ", psr=" << psr);
                 }
               //Case 5bii: HT mixed format
               else
@@ -804,7 +804,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderPer (Ptr<const Event> event, NiCh
                   NS_LOG_DEBUG ("Case 5bii - previous is in the preamble and current in HT training: mcs mode=" << mcsHeaderMode << ", psr=" << psr);
                 }
             }
-          //Case 5c: current in HT-SIG or in SIG-A. Legacy will not come here since it went in previous if or if the previous if is not true this will be not true
+          //Case 5c: current in HT-SIG or in SIG-A. Non-HT will not come here since it went in previous if or if the previous if is not true this will be not true
           else if (current >= plcpHsigHeaderStart)
             {
               NS_ASSERT ((preamble != WIFI_PREAMBLE_LONG) && (preamble != WIFI_PREAMBLE_SHORT));
@@ -878,7 +878,7 @@ InterferenceHelper::CalculateSnr (Ptr<Event> event) const
 }
 
 struct InterferenceHelper::SnrPer
-InterferenceHelper::CalculateLegacyPhyHeaderSnrPer (Ptr<Event> event) const
+InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event) const
 {
   NiChanges ni;
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
@@ -889,7 +889,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderSnrPer (Ptr<Event> event) const
   /* calculate the SNIR at the start of the plcp header and accumulate
    * all SNIR changes in the snir vector.
    */
-  double per = CalculateLegacyPhyHeaderPer (event, &ni);
+  double per = CalculateNonHtPhyHeaderPer (event, &ni);
 
   struct SnrPer snrPer;
   snrPer.snr = snr;
@@ -898,7 +898,7 @@ InterferenceHelper::CalculateLegacyPhyHeaderSnrPer (Ptr<Event> event) const
 }
 
 struct InterferenceHelper::SnrPer
-InterferenceHelper::CalculateNonLegacyPhyHeaderSnrPer (Ptr<Event> event) const
+InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event) const
 {
   NiChanges ni;
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
@@ -909,7 +909,7 @@ InterferenceHelper::CalculateNonLegacyPhyHeaderSnrPer (Ptr<Event> event) const
   /* calculate the SNIR at the start of the plcp header and accumulate
    * all SNIR changes in the snir vector.
    */
-  double per = CalculateNonLegacyPhyHeaderPer (event, &ni);
+  double per = CalculateHtPhyHeaderPer (event, &ni);
   
   struct SnrPer snrPer;
   snrPer.snr = snr;

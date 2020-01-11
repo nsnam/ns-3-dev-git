@@ -84,7 +84,7 @@ IdealWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 }
 
 uint16_t
-IdealWifiManager::GetChannelWidthForMode (WifiMode mode) const
+IdealWifiManager::GetChannelWidthForNonHtMode (WifiMode mode) const
 {
   NS_ASSERT (mode.GetModulationClass () != WIFI_MOD_CLASS_HT
              && mode.GetModulationClass () != WIFI_MOD_CLASS_VHT
@@ -111,7 +111,7 @@ IdealWifiManager::DoInitialize ()
   for (uint8_t i = 0; i < nModes; i++)
     {
       mode = GetPhy ()->GetMode (i);
-      txVector.SetChannelWidth (GetChannelWidthForMode (mode));
+      txVector.SetChannelWidth (GetChannelWidthForNonHtMode (mode));
       txVector.SetNss (nss);
       txVector.SetMode (mode);
       NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName ());
@@ -463,7 +463,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
               mode = GetSupported (station, i);
               txVector.SetMode (mode);
               txVector.SetNss (selectedNss);
-              txVector.SetChannelWidth (GetChannelWidthForMode (mode));
+              txVector.SetChannelWidth (GetChannelWidthForNonHtMode (mode));
               double threshold = GetSnrThreshold (txVector);
               uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
               NS_LOG_DEBUG ("mode = " << mode.GetUniqueName () <<
@@ -521,14 +521,13 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   WifiMode mode;
   uint8_t nss = 1;
   WifiMode maxMode = GetDefaultMode ();
-  //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac/ax
-  //RTS is sent in a legacy frame; RTS with HT/VHT/HE is not yet supported
+  //RTS is sent in a non-HT frame
   for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {
       mode = GetBasicMode (i);
       txVector.SetMode (mode);
       txVector.SetNss (nss);
-      txVector.SetChannelWidth (GetChannelWidthForMode (mode));
+      txVector.SetChannelWidth (GetChannelWidthForNonHtMode (mode));
       double threshold = GetSnrThreshold (txVector);
       if (threshold > maxThreshold && threshold < station->m_lastSnrObserved)
         {
@@ -536,7 +535,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
           maxMode = mode;
         }
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, GetNumberOfAntennas (), nss, 0, GetChannelWidthForMode (maxMode), GetAggregation (station), false);
+  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, GetNumberOfAntennas (), nss, 0, GetChannelWidthForNonHtMode (maxMode), GetAggregation (station), false);
 }
 
 bool

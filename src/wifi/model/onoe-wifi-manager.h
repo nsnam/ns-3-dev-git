@@ -39,7 +39,7 @@ struct OnoeWifiRemoteStation;
  * any publication or reference about this algorithm beyond the madwifi
  * source code.
  *
- * This RAA does not support non-legacy modes and will error
+ * This RAA does not support HT modes and will error
  * exit if the user tries to configure this RAA with a Wi-Fi MAC
  * that supports 802.11n or higher.
  */

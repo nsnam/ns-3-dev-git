@@ -1351,7 +1351,7 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
   NS_LOG_FUNCTION (this << mode);
   if (mode.GetModulationClass () >= WIFI_MOD_CLASS_HT)
     {
-      NS_FATAL_ERROR ("It is not allowed to add a non legacy rate in the BSSBasicRateSet!");
+      NS_FATAL_ERROR ("It is not allowed to add a HT rate in the BSSBasicRateSet!");
     }
   for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {
