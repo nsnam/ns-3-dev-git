@@ -6197,6 +6197,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -6216,6 +6221,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
@@ -17119,9 +17129,9 @@ def register_Ns3GtpcModifyBearerRequestMessage_methods(root_module, cls):
                    'std::list< ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified >', 
                    [], 
                    is_const=True)
-    ## epc-gtpc-header.h (module 'lte'): uint8_t ns3::GtpcModifyBearerRequestMessage::GetImsi() const [member function]
+    ## epc-gtpc-header.h (module 'lte'): uint64_t ns3::GtpcModifyBearerRequestMessage::GetImsi() const [member function]
     cls.add_method('GetImsi', 
-                   'uint8_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## epc-gtpc-header.h (module 'lte'): ns3::TypeId ns3::GtpcModifyBearerRequestMessage::GetInstanceTypeId() const [member function]
@@ -17163,10 +17173,10 @@ def register_Ns3GtpcModifyBearerRequestMessage_methods(root_module, cls):
     cls.add_method('SetBearerContextsToBeModified', 
                    'void', 
                    [param('std::list< ns3::GtpcModifyBearerRequestMessage::BearerContextToBeModified >', 'bearerContexts')])
-    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetImsi(uint8_t imsi) [member function]
+    ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetImsi(uint64_t imsi) [member function]
     cls.add_method('SetImsi', 
                    'void', 
-                   [param('uint8_t', 'imsi')])
+                   [param('uint64_t', 'imsi')])
     ## epc-gtpc-header.h (module 'lte'): void ns3::GtpcModifyBearerRequestMessage::SetUliEcgi(uint32_t uliEcgi) [member function]
     cls.add_method('SetUliEcgi', 
                    'void', 

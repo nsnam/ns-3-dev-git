@@ -70,6 +70,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::NixVector> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::NixVector'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::OutputStreamWrapper> [struct]
+    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::OutputStreamWrapper'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Packet'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::RadvdInterface> [struct]
@@ -189,6 +191,8 @@ def register_types(module):
     typehandlers.add_type_alias('uint32_t&', 'ns3::TypeId::hash_t&')
     ## v4ping-helper.h (module 'internet-apps'): ns3::V4PingHelper [class]
     module.add_class('V4PingHelper')
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::V4TraceRouteHelper [class]
+    module.add_class('V4TraceRouteHelper')
     ## empty.h (module 'core'): ns3::empty [class]
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t [class]
@@ -225,6 +229,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Ipv4Route', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4Route>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > [class]
+    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty, ns3::DefaultDeleter<ns3::RadvdInterface> > [class]
@@ -403,6 +409,8 @@ def register_types(module):
     module.add_class('ObjectFactoryChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
     module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## output-stream-wrapper.h (module 'network'): ns3::OutputStreamWrapper [class]
+    module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )', 'ns3::Packet::TracedCallback')
@@ -452,6 +460,8 @@ def register_types(module):
     module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## v4ping.h (module 'internet-apps'): ns3::V4Ping [class]
     module.add_class('V4Ping', parent=root_module['ns3::Application'])
+    ## v4traceroute.h (module 'internet-apps'): ns3::V4TraceRoute [class]
+    module.add_class('V4TraceRoute', parent=root_module['ns3::Application'])
     ## address.h (module 'network'): ns3::AddressChecker [class]
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
@@ -597,6 +607,7 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3EventImpl_methods(root_module, root_module['ns3::DefaultDeleter< ns3::EventImpl >'])
     register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Hash::Implementation >'])
     register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, root_module['ns3::DefaultDeleter< ns3::NixVector >'])
+    register_Ns3DefaultDeleter__Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::DefaultDeleter< ns3::OutputStreamWrapper >'])
     register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Packet >'])
     register_Ns3DefaultDeleter__Ns3RadvdInterface_methods(root_module, root_module['ns3::DefaultDeleter< ns3::RadvdInterface >'])
     register_Ns3DefaultDeleter__Ns3RadvdPrefix_methods(root_module, root_module['ns3::DefaultDeleter< ns3::RadvdPrefix >'])
@@ -638,6 +649,7 @@ def register_methods(root_module):
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
     register_Ns3V4PingHelper_methods(root_module, root_module['ns3::V4PingHelper'])
+    register_Ns3V4TraceRouteHelper_methods(root_module, root_module['ns3::V4TraceRouteHelper'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
@@ -655,6 +667,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Ipv4MulticastRoute_Ns3Empty_Ns3DefaultDeleter__lt__ns3Ipv4MulticastRoute__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> >'])
     register_Ns3SimpleRefCount__Ns3Ipv4Route_Ns3Empty_Ns3DefaultDeleter__lt__ns3Ipv4Route__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3RadvdInterface_Ns3Empty_Ns3DefaultDeleter__lt__ns3RadvdInterface__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::RadvdInterface, ns3::empty, ns3::DefaultDeleter<ns3::RadvdInterface> >'])
     register_Ns3SimpleRefCount__Ns3RadvdPrefix_Ns3Empty_Ns3DefaultDeleter__lt__ns3RadvdPrefix__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::RadvdPrefix, ns3::empty, ns3::DefaultDeleter<ns3::RadvdPrefix> >'])
@@ -723,6 +736,7 @@ def register_methods(root_module):
     register_Ns3NormalRandomVariable_methods(root_module, root_module['ns3::NormalRandomVariable'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
+    register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
     register_Ns3Ping6_methods(root_module, root_module['ns3::Ping6'])
@@ -734,6 +748,7 @@ def register_methods(root_module):
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
     register_Ns3V4Ping_methods(root_module, root_module['ns3::V4Ping'])
+    register_Ns3V4TraceRoute_methods(root_module, root_module['ns3::V4TraceRoute'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -1468,6 +1483,18 @@ def register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3DefaultDeleter__Ns3OutputStreamWrapper_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::OutputStreamWrapper>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::OutputStreamWrapper>::DefaultDeleter(ns3::DefaultDeleter<ns3::OutputStreamWrapper> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::OutputStreamWrapper > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::OutputStreamWrapper>::Delete(ns3::OutputStreamWrapper * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::OutputStreamWrapper *', 'object')], 
+                   is_static=True)
+    return
+
 def register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, cls):
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet>::DefaultDeleter() [constructor]
     cls.add_constructor([])
@@ -2152,6 +2179,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -2171,6 +2203,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
@@ -3373,6 +3410,37 @@ def register_Ns3V4PingHelper_methods(root_module, cls):
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
+def register_Ns3V4TraceRouteHelper_methods(root_module, cls):
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::V4TraceRouteHelper::V4TraceRouteHelper(ns3::V4TraceRouteHelper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::V4TraceRouteHelper const &', 'arg0')])
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::V4TraceRouteHelper::V4TraceRouteHelper(ns3::Ipv4Address remote) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'remote')])
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::ApplicationContainer ns3::V4TraceRouteHelper::Install(ns3::NodeContainer nodes) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'nodes')], 
+                   is_const=True)
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::ApplicationContainer ns3::V4TraceRouteHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## v4traceroute-helper.h (module 'internet-apps'): ns3::ApplicationContainer ns3::V4TraceRouteHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string', 'nodeName')], 
+                   is_const=True)
+    ## v4traceroute-helper.h (module 'internet-apps'): static void ns3::V4TraceRouteHelper::PrintTraceRouteAt(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
+    cls.add_method('PrintTraceRouteAt', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_static=True)
+    ## v4traceroute-helper.h (module 'internet-apps'): void ns3::V4TraceRouteHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
 def register_Ns3Empty_methods(root_module, cls):
     ## empty.h (module 'core'): ns3::empty::empty() [constructor]
     cls.add_constructor([])
@@ -3723,6 +3791,13 @@ def register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount(ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter< ns3::NixVector > > const &', 'o')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount(ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter< ns3::OutputStreamWrapper > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, cls):
@@ -6884,6 +6959,19 @@ def register_Ns3ObjectFactoryValue_methods(root_module, cls):
                    [param('ns3::ObjectFactory const &', 'value')])
     return
 
+def register_Ns3OutputStreamWrapper_methods(root_module, cls):
+    ## output-stream-wrapper.h (module 'network'): ns3::OutputStreamWrapper::OutputStreamWrapper(ns3::OutputStreamWrapper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::OutputStreamWrapper const &', 'arg0')])
+    ## output-stream-wrapper.h (module 'network'): ns3::OutputStreamWrapper::OutputStreamWrapper(std::string filename, std::ios_base::openmode filemode) [constructor]
+    cls.add_constructor([param('std::string', 'filename'), param('std::ios_base::openmode', 'filemode')])
+    ## output-stream-wrapper.h (module 'network'): ns3::OutputStreamWrapper::OutputStreamWrapper(std::ostream * os) [constructor]
+    cls.add_constructor([param('std::ostream *', 'os')])
+    ## output-stream-wrapper.h (module 'network'): std::ostream * ns3::OutputStreamWrapper::GetStream() [member function]
+    cls.add_method('GetStream', 
+                   'std::ostream *', 
+                   [])
+    return
+
 def register_Ns3Packet_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## packet.h (module 'network'): ns3::Packet::Packet() [constructor]
@@ -7621,6 +7709,35 @@ def register_Ns3V4Ping_methods(root_module, cls):
                    is_virtual=True, visibility='private')
     ## v4ping.h (module 'internet-apps'): void ns3::V4Ping::StopApplication() [member function]
     cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='private')
+    return
+
+def register_Ns3V4TraceRoute_methods(root_module, cls):
+    ## v4traceroute.h (module 'internet-apps'): static ns3::TypeId ns3::V4TraceRoute::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## v4traceroute.h (module 'internet-apps'): ns3::V4TraceRoute::V4TraceRoute() [constructor]
+    cls.add_constructor([])
+    ## v4traceroute.h (module 'internet-apps'): void ns3::V4TraceRoute::Print(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
+    ## v4traceroute.h (module 'internet-apps'): void ns3::V4TraceRoute::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='private')
+    ## v4traceroute.h (module 'internet-apps'): void ns3::V4TraceRoute::StopApplication() [member function]
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   is_virtual=True, visibility='private')
+    ## v4traceroute.h (module 'internet-apps'): void ns3::V4TraceRoute::DoDispose() [member function]
+    cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    is_virtual=True, visibility='private')

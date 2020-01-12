@@ -3620,13 +3620,13 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('AddForeignSignal', 
                    'void', 
                    [param('ns3::Time', 'duration'), param('double', 'rxPower')])
-    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateLegacyPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
-    cls.add_method('CalculateLegacyPhyHeaderSnrPer', 
+    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateHtPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
+    cls.add_method('CalculateHtPhyHeaderSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::Event >', 'event')], 
                    is_const=True)
-    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateNonLegacyPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
-    cls.add_method('CalculateNonLegacyPhyHeaderSnrPer', 
+    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateNonHtPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
+    cls.add_method('CalculateNonHtPhyHeaderSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::Event >', 'event')], 
                    is_const=True)
@@ -4068,6 +4068,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -4087,6 +4092,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 

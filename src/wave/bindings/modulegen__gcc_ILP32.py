@@ -78,6 +78,8 @@ def register_types(module):
     module.add_class('BlockAckAgreement', import_from_module='ns.wifi')
     ## block-ack-cache.h (module 'wifi'): ns3::BlockAckCache [class]
     module.add_class('BlockAckCache', import_from_module='ns.wifi')
+    ## block-ack-window.h (module 'wifi'): ns3::BlockAckWindow [class]
+    module.add_class('BlockAckWindow', import_from_module='ns.wifi')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -642,7 +644,7 @@ def register_types(module):
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', import_from_module='ns.internet', parent=root_module['ns3::Ipv4'])
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT'], outer_class=root_module['ns3::Ipv4L3Protocol'], import_from_module='ns.internet')
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT', 'DROP_DUPLICATE'], outer_class=root_module['ns3::Ipv4L3Protocol'], import_from_module='ns.internet')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )', 'ns3::Ipv4L3Protocol::SentTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )*', 'ns3::Ipv4L3Protocol::SentTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )&', 'ns3::Ipv4L3Protocol::SentTracedCallback&')
@@ -1155,6 +1157,7 @@ def register_methods(root_module):
     register_Ns3Bar_methods(root_module, root_module['ns3::Bar'])
     register_Ns3BlockAckAgreement_methods(root_module, root_module['ns3::BlockAckAgreement'])
     register_Ns3BlockAckCache_methods(root_module, root_module['ns3::BlockAckCache'])
+    register_Ns3BlockAckWindow_methods(root_module, root_module['ns3::BlockAckWindow'])
     register_Ns3Buffer_methods(root_module, root_module['ns3::Buffer'])
     register_Ns3BufferIterator_methods(root_module, root_module['ns3::Buffer::Iterator'])
     register_Ns3ByteTagIterator_methods(root_module, root_module['ns3::ByteTagIterator'])
@@ -2012,6 +2015,44 @@ def register_Ns3BlockAckCache_methods(root_module, cls):
                    [param('ns3::WifiMacHeader const *', 'hdr')])
     return
 
+def register_Ns3BlockAckWindow_methods(root_module, cls):
+    ## block-ack-window.h (module 'wifi'): ns3::BlockAckWindow::BlockAckWindow(ns3::BlockAckWindow const & arg0) [constructor]
+    cls.add_constructor([param('ns3::BlockAckWindow const &', 'arg0')])
+    ## block-ack-window.h (module 'wifi'): ns3::BlockAckWindow::BlockAckWindow() [constructor]
+    cls.add_constructor([])
+    ## block-ack-window.h (module 'wifi'): void ns3::BlockAckWindow::Advance(std::size_t count) [member function]
+    cls.add_method('Advance', 
+                   'void', 
+                   [param('std::size_t', 'count')])
+    ## block-ack-window.h (module 'wifi'): std::vector<bool, std::allocator<bool> >::reference ns3::BlockAckWindow::At(std::size_t distance) [member function]
+    cls.add_method('At', 
+                   'std::vector< bool > reference', 
+                   [param('std::size_t', 'distance')])
+    ## block-ack-window.h (module 'wifi'): uint16_t ns3::BlockAckWindow::GetWinEnd() const [member function]
+    cls.add_method('GetWinEnd', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## block-ack-window.h (module 'wifi'): std::size_t ns3::BlockAckWindow::GetWinSize() const [member function]
+    cls.add_method('GetWinSize', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## block-ack-window.h (module 'wifi'): uint16_t ns3::BlockAckWindow::GetWinStart() const [member function]
+    cls.add_method('GetWinStart', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## block-ack-window.h (module 'wifi'): void ns3::BlockAckWindow::Init(uint16_t winStart, uint16_t winSize) [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('uint16_t', 'winStart'), param('uint16_t', 'winSize')])
+    ## block-ack-window.h (module 'wifi'): void ns3::BlockAckWindow::Reset(uint16_t winStart) [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [param('uint16_t', 'winStart')])
+    return
+
 def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h (module 'network'): ns3::Buffer::Buffer(ns3::Buffer const & o) [constructor]
     cls.add_constructor([param('ns3::Buffer const &', 'o')])
@@ -2815,13 +2856,13 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('AddForeignSignal', 
                    'void', 
                    [param('ns3::Time', 'duration'), param('double', 'rxPower')])
-    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateLegacyPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
-    cls.add_method('CalculateLegacyPhyHeaderSnrPer', 
+    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateHtPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
+    cls.add_method('CalculateHtPhyHeaderSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::Event >', 'event')], 
                    is_const=True)
-    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateNonLegacyPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
-    cls.add_method('CalculateNonLegacyPhyHeaderSnrPer', 
+    ## interference-helper.h (module 'wifi'): ns3::InterferenceHelper::SnrPer ns3::InterferenceHelper::CalculateNonHtPhyHeaderSnrPer(ns3::Ptr<ns3::Event> event) const [member function]
+    cls.add_method('CalculateNonHtPhyHeaderSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::Event >', 'event')], 
                    is_const=True)
@@ -3315,6 +3356,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -3334,6 +3380,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
@@ -4106,6 +4157,20 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
     cls.add_constructor([param('ns3::OriginatorBlockAckAgreement const &', 'arg0')])
     ## originator-block-ack-agreement.h (module 'wifi'): ns3::OriginatorBlockAckAgreement::OriginatorBlockAckAgreement(ns3::Mac48Address recipient, uint8_t tid) [constructor]
     cls.add_constructor([param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
+    ## originator-block-ack-agreement.h (module 'wifi'): std::size_t ns3::OriginatorBlockAckAgreement::GetDistance(uint16_t seqNumber) const [member function]
+    cls.add_method('GetDistance', 
+                   'std::size_t', 
+                   [param('uint16_t', 'seqNumber')], 
+                   is_const=True)
+    ## originator-block-ack-agreement.h (module 'wifi'): uint16_t ns3::OriginatorBlockAckAgreement::GetStartingSequence() const [member function]
+    cls.add_method('GetStartingSequence', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::InitTxWindow() [member function]
+    cls.add_method('InitTxWindow', 
+                   'void', 
+                   [])
     ## originator-block-ack-agreement.h (module 'wifi'): bool ns3::OriginatorBlockAckAgreement::IsEstablished() const [member function]
     cls.add_method('IsEstablished', 
                    'bool', 
@@ -4131,6 +4196,18 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::NotifyAckedMpdu(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
+    cls.add_method('NotifyAckedMpdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
+    ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::NotifyDiscardedMpdu(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
+    cls.add_method('NotifyDiscardedMpdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
+    ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::NotifyTransmittedMpdu(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
+    cls.add_method('NotifyTransmittedMpdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
     ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::SetState(ns3::OriginatorBlockAckAgreement::State state) [member function]
     cls.add_method('SetState', 
                    'void', 
@@ -11399,10 +11476,10 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('SwitchToBlockAckIfNeeded', 
                    'bool', 
                    [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid'), param('uint16_t', 'startingSeq')])
-    ## block-ack-manager.h (module 'wifi'): bool ns3::BlockAckManager::NeedBarRetransmission(uint8_t tid, uint16_t seqNumber, ns3::Mac48Address recipient) [member function]
+    ## block-ack-manager.h (module 'wifi'): bool ns3::BlockAckManager::NeedBarRetransmission(uint8_t tid, ns3::Mac48Address recipient) [member function]
     cls.add_method('NeedBarRetransmission', 
                    'bool', 
-                   [param('uint8_t', 'tid'), param('uint16_t', 'seqNumber'), param('ns3::Mac48Address', 'recipient')])
+                   [param('uint8_t', 'tid'), param('ns3::Mac48Address', 'recipient')])
     ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetRecipientBufferSize(ns3::Mac48Address recipient, uint8_t tid) const [member function]
     cls.add_method('GetRecipientBufferSize', 
                    'uint16_t', 

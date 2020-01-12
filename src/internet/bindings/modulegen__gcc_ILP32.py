@@ -761,7 +761,7 @@ def register_types(module):
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Ipv4'])
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT'], outer_class=root_module['ns3::Ipv4L3Protocol'])
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT', 'DROP_DUPLICATE'], outer_class=root_module['ns3::Ipv4L3Protocol'])
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )', 'ns3::Ipv4L3Protocol::SentTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )*', 'ns3::Ipv4L3Protocol::SentTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )&', 'ns3::Ipv4L3Protocol::SentTracedCallback&')
@@ -3933,6 +3933,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -3952,6 +3957,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
@@ -20275,7 +20285,8 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
     ## icmpv6-l4-protocol.h (module 'internet'): ns3::Ptr<ns3::NdiscCache> ns3::Icmpv6L4Protocol::CreateCache(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
     cls.add_method('CreateCache', 
                    'ns3::Ptr< ns3::NdiscCache >', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')])
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   is_virtual=True)
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::DelayedSendMessage(ns3::Ptr<ns3::Packet> packet, ns3::Ipv6Address src, ns3::Ipv6Address dst, uint8_t ttl) [member function]
     cls.add_method('DelayedSendMessage', 
                    'void', 
@@ -20310,6 +20321,11 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::TypeId ns3::Icmpv6L4Protocol::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## icmpv6-l4-protocol.h (module 'internet'): uint8_t ns3::Icmpv6L4Protocol::GetMaxMulticastSolicit() const [member function]
     cls.add_method('GetMaxMulticastSolicit', 
                    'uint8_t', 
@@ -20320,6 +20336,10 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Ptr<ns3::Node> ns3::Icmpv6L4Protocol::GetNode() [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [])
     ## icmpv6-l4-protocol.h (module 'internet'): int ns3::Icmpv6L4Protocol::GetProtocolNumber() const [member function]
     cls.add_method('GetProtocolNumber', 
                    'int', 
@@ -20413,7 +20433,8 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SendNS(ns3::Ipv6Address src, ns3::Ipv6Address dst, ns3::Ipv6Address target, ns3::Address hardwareAddress) [member function]
     cls.add_method('SendNS', 
                    'void', 
-                   [param('ns3::Ipv6Address', 'src'), param('ns3::Ipv6Address', 'dst'), param('ns3::Ipv6Address', 'target'), param('ns3::Address', 'hardwareAddress')])
+                   [param('ns3::Ipv6Address', 'src'), param('ns3::Ipv6Address', 'dst'), param('ns3::Ipv6Address', 'target'), param('ns3::Address', 'hardwareAddress')], 
+                   is_virtual=True)
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SendRS(ns3::Ipv6Address src, ns3::Ipv6Address dst, ns3::Address hardwareAddress) [member function]
     cls.add_method('SendRS', 
                    'void', 
@@ -20433,26 +20454,91 @@ def register_Ns3Icmpv6L4Protocol_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): ns3::Ptr<ns3::NdiscCache> ns3::Icmpv6L4Protocol::FindCache(ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('FindCache', 
+                   'ns3::Ptr< ns3::NdiscCache >', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::Forward(ns3::Ipv6Address source, ns3::Icmpv6Header icmp, uint32_t info, ns3::Ipv6Header ipHeader, uint8_t const * payload) [member function]
+    cls.add_method('Forward', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'source'), param('ns3::Icmpv6Header', 'icmp'), param('uint32_t', 'info'), param('ns3::Ipv6Header', 'ipHeader'), param('uint8_t const *', 'payload')], 
+                   visibility='protected')
     ## icmpv6-l4-protocol.h (module 'internet'): ns3::IpL4Protocol::DownTargetCallback ns3::Icmpv6L4Protocol::GetDownTarget() const [member function]
     cls.add_method('GetDownTarget', 
                    'ns3::IpL4Protocol::DownTargetCallback', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, is_virtual=True, visibility='protected')
     ## icmpv6-l4-protocol.h (module 'internet'): ns3::IpL4Protocol::DownTargetCallback6 ns3::Icmpv6L4Protocol::GetDownTarget6() const [member function]
     cls.add_method('GetDownTarget6', 
                    'ns3::IpL4Protocol::DownTargetCallback6', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, is_virtual=True, visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleDestinationUnreachable(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleDestinationUnreachable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleEchoRequest(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleEchoRequest', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleNA(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleNA', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleNS(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleNS', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandlePacketTooBig(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandlePacketTooBig', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleParameterError(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleParameterError', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleRA(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleRA', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleRS(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleRS', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleRedirection(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleRedirection', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::HandleTimeExceeded(ns3::Ptr<ns3::Packet> p, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('HandleTimeExceeded', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
+    ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::ReceiveLLA(ns3::Icmpv6OptionLinkLayerAddress lla, ns3::Ipv6Address const & src, ns3::Ipv6Address const & dst, ns3::Ptr<ns3::Ipv6Interface> interface) [member function]
+    cls.add_method('ReceiveLLA', 
+                   'void', 
+                   [param('ns3::Icmpv6OptionLinkLayerAddress', 'lla'), param('ns3::Ipv6Address const &', 'src'), param('ns3::Ipv6Address const &', 'dst'), param('ns3::Ptr< ns3::Ipv6Interface >', 'interface')], 
+                   visibility='protected')
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SetDownTarget(ns3::IpL4Protocol::DownTargetCallback cb) [member function]
     cls.add_method('SetDownTarget', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv4Address, ns3::Ipv4Address, unsigned char, ns3::Ptr< ns3::Ipv4Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, visibility='private')
+                   is_virtual=True, visibility='protected')
     ## icmpv6-l4-protocol.h (module 'internet'): void ns3::Icmpv6L4Protocol::SetDownTarget6(ns3::IpL4Protocol::DownTargetCallback6 cb) [member function]
     cls.add_method('SetDownTarget6', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv6Address, ns3::Ipv6Address, unsigned char, ns3::Ptr< ns3::Ipv6Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True, visibility='private')
+                   is_virtual=True, visibility='protected')
     return
 
 def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
