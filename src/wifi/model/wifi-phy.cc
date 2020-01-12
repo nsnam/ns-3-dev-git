@@ -1344,7 +1344,7 @@ WifiPhy::SetChannelWidth (uint16_t channelwidth)
 {
   NS_LOG_FUNCTION (this << channelwidth);
   NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
-  bool changed = (m_channelWidth == channelwidth);
+  bool changed = (m_channelWidth != channelwidth);
   m_channelWidth = channelwidth;
   AddSupportedChannelWidth (channelwidth);
   if (changed && !m_capabilitiesChangedCallback.IsNull ())
@@ -1377,7 +1377,7 @@ void
 WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
 {
   NS_ASSERT (streams <= GetNumberOfAntennas ());
-  bool changed = (m_txSpatialStreams == streams);
+  bool changed = (m_txSpatialStreams != streams);
   m_txSpatialStreams = streams;
   ConfigureHtDeviceMcsSet ();
   if (changed && !m_capabilitiesChangedCallback.IsNull ())
@@ -1396,7 +1396,7 @@ void
 WifiPhy::SetMaxSupportedRxSpatialStreams (uint8_t streams)
 {
   NS_ASSERT (streams <= GetNumberOfAntennas ());
-  bool changed = (m_rxSpatialStreams == streams);
+  bool changed = (m_rxSpatialStreams != streams);
   m_rxSpatialStreams = streams;
   if (changed && !m_capabilitiesChangedCallback.IsNull ())
     {
