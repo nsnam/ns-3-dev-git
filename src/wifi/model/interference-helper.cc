@@ -262,6 +262,20 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
     {
       return 1.0;
     }
+  uint64_t rate = mode.GetDataRate (txVector.GetChannelWidth ());
+  uint64_t nbits = static_cast<uint64_t> (rate * duration.GetSeconds ());
+  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, nbits);
+  return csr;
+}
+
+double
+InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector) const
+{
+  if (duration.IsZero ())
+    {
+      return 1.0;
+    }
+  WifiMode mode = txVector.GetMode ();
   uint64_t rate = mode.GetDataRate (txVector);
   uint64_t nbits = static_cast<uint64_t> (rate * duration.GetSeconds ());
   if (txVector.GetMode ().GetModulationClass () >= WIFI_MOD_CLASS_HT)
@@ -303,21 +317,21 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, NiChanges *ni, 
       //Case 1: Both previous and current point to the windowed payload
       if (previous >= windowStart)
         {
-          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                          noiseInterferenceW,
-                                                          txVector.GetChannelWidth ()),
-                                            Min (windowEnd, current) - previous,
-                                            payloadMode, txVector);
+          psr *= CalculatePayloadChunkSuccessRate (CalculateSnr (powerW,
+                                                                 noiseInterferenceW,
+                                                                 txVector.GetChannelWidth ()),
+                                                   Min (windowEnd, current) - previous,
+                                                   txVector);
           NS_LOG_DEBUG ("Both previous and current point to the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       //Case 2: previous is before windowed payload and current is in the windowed payload
       else if (current >= windowStart)
         {
-          psr *= CalculateChunkSuccessRate (CalculateSnr (powerW,
-                                                          noiseInterferenceW,
-                                                          txVector.GetChannelWidth ()),
-                                            Min (windowEnd, current) - windowStart,
-                                            payloadMode, txVector);
+          psr *= CalculatePayloadChunkSuccessRate (CalculateSnr (powerW,
+                                                                 noiseInterferenceW,
+                                                                 txVector.GetChannelWidth ()),
+                                                   Min (windowEnd, current) - windowStart,
+                                                   txVector);
           NS_LOG_DEBUG ("previous is before windowed payload and current is in the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       noiseInterferenceW = j->second.GetPower () - powerW;

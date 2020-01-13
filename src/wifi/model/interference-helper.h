@@ -307,6 +307,17 @@ private:
    */
   double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
   /**
+   * Calculate the success rate of the payload chunk given the SINR, duration, and Wi-Fi mode.
+   * The duration and mode are used to calculate how many bits are present in the chunk.
+   *
+   * \param snir SINR
+   * \param duration
+   * \param txVector
+   *
+   * \return the success rate
+   */
+  double CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector) const;
+  /**
    * Calculate the error rate of the given PLCP payload only in the provided time
    * window (thus enabling per MPDU PER information). The PLCP payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
