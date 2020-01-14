@@ -149,7 +149,7 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
       if (std::abs (pit->GetAmp ()) > maxAmp)
         {
           maxAmp = std::abs (pit->GetAmp ());
-          // Modified in order to subtract delay of first tap (maxTapDelay appears to be used later in code 
+          // Modified in order to subtract delay of first tap (maxTapDelay appears to be used later in code
           // as delay from first reception, not from TX time)
           maxTapDelay = pit->GetDelay () - pdp.GetTap(0).GetDelay();
         }
@@ -157,7 +157,7 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
 
 
   double effRxPowerDb = rxPowerDb + KpToDb (csp);
-  //It appears to be just the first elements of the sum in Parrish paper, 
+  //It appears to be just the first elements of the sum in Parrish paper,
   // "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols", eq. 14
   double isiUpa = DbToKp(rxPowerDb) * pdp.SumTapsFromMaxNc (ts + clearingTime, ts); // added DpToKp()
   UanTransducer::ArrivalList::const_iterator it = arrivalList.begin ();
@@ -493,17 +493,17 @@ UanPhyPerUmodem::CalcPer (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 /*************** UanPhyGen definition *****************/
 UanPhyGen::UanPhyGen ()
   : UanPhy (),
-    m_state (IDLE),
-    m_channel (0),
-    m_transducer (0),
-    m_device (0),
-    m_mac (0),
-    m_txPwrDb (0),
-    m_rxThreshDb (0),
-    m_ccaThreshDb (0),
-    m_pktRx (0),
-    m_pktTx (0),
-    m_cleared (false)
+  m_state (IDLE),
+  m_channel (0),
+  m_transducer (0),
+  m_device (0),
+  m_mac (0),
+  m_txPwrDb (0),
+  m_rxThreshDb (0),
+  m_ccaThreshDb (0),
+  m_pktRx (0),
+  m_pktTx (0),
+  m_cleared (false)
 {
   m_pg = CreateObject<UniformRandomVariable> ();
 
@@ -741,6 +741,8 @@ UanPhyGen::TxEndEvent ()
       m_state = IDLE;
     }
   UpdatePowerConsumption (IDLE);
+
+  NotifyListenersTxEnd ();
 }
 
 void
@@ -1004,13 +1006,13 @@ void
 UanPhyGen::SetSleepMode (bool sleep )
 {
   if (sleep )
-  {
-    m_state = SLEEP;
-    if (!m_energyCallback.IsNull ())
-      {
-        m_energyCallback (SLEEP);
-      }
-  }
+    {
+      m_state = SLEEP;
+      if (!m_energyCallback.IsNull ())
+        {
+          m_energyCallback (SLEEP);
+        }
+    }
   else if (m_state == SLEEP)
     {
       if (GetInterferenceDb ((Ptr<Packet>) 0) > m_ccaThreshDb)
@@ -1152,6 +1154,16 @@ UanPhyGen::NotifyListenersTxStart (Time duration)
   for (; it != m_listeners.end (); it++)
     {
       (*it)->NotifyTxStart (duration);
+    }
+}
+
+void
+UanPhyGen::NotifyListenersTxEnd (void)
+{
+  ListenerList::const_iterator it = m_listeners.begin ();
+  for (; it != m_listeners.end (); it++)
+    {
+      (*it)->NotifyTxEnd ();
     }
 }
 

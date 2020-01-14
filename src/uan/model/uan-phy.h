@@ -96,7 +96,7 @@ public:
 
 protected:
   virtual void DoDispose (void);
-  
+
 };  // class UanPhyCalcSinr
 
 /**
@@ -147,7 +147,9 @@ class UanPhyListener
 {
 public:
   /** Default destructor */
-  virtual ~UanPhyListener () { }
+  virtual ~UanPhyListener ()
+  {
+  }
   /** Called when UanPhy begins receiving packet. */
   virtual void NotifyRxStart (void) = 0;
   /** Called when UanPhy finishes receiving packet without error. */
@@ -164,7 +166,8 @@ public:
    * \param duration Duration of transmission.
    */
   virtual void NotifyTxStart (Time duration) = 0;
-
+  /** Function called when Phy object finishes transmitting packet */
+  virtual void NotifyTxEnd (void) = 0;
 };  // class UanPhyListener
 
 /**
@@ -210,13 +213,12 @@ public:
    * \param [in] sinr The SINR.
    * \param [in] mode The channel mode.
    */
-  typedef void (* TracedCallback)
-    (Ptr<const Packet> pkt, double sinr, UanTxMode mode);
+  typedef void (* TracedCallback)(Ptr<const Packet> pkt, double sinr, UanTxMode mode);
 
-  
+
   /**
-   * Set the DeviceEnergyModel callback for UanPhy device. 
-   * 
+   * Set the DeviceEnergyModel callback for UanPhy device.
+   *
    * \param callback The DeviceEnergyModel change state callback.
    */
   virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback) = 0;
@@ -487,14 +489,14 @@ public:
    */
   void NotifyRxDrop (Ptr<const Packet> packet);
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream First stream index to use.
-  * \return The number of stream indices assigned by this model.
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream First stream index to use.
+   * \return The number of stream indices assigned by this model.
+   */
   virtual int64_t AssignStreams (int64_t stream) = 0;
 
   /**

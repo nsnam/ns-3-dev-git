@@ -59,7 +59,7 @@ public:
 
   /**
    * Set the contention window size.
-   *   
+   *
    * \param cw Contention window size.
    */
   virtual void SetCw (uint32_t cw);
@@ -96,6 +96,7 @@ public:
   virtual void NotifyCcaStart (void);
   virtual void NotifyCcaEnd (void);
   virtual void NotifyTxStart (Time duration);
+  virtual void NotifyTxEnd (void);
 
   /**
    *  TracedCallback signature for enqueue/dequeue of a packet.
@@ -103,12 +104,12 @@ public:
    * \param [in] packet The Packet being received.
    * \param [in] proto The protocol number.
    */
-  typedef void (* QueueTracedCallback)
-    (Ptr<const Packet> packet, uint16_t proto);
+  typedef void (* QueueTracedCallback)(Ptr<const Packet> packet, uint16_t proto);
 
 private:
   /** Enum defining possible Phy states. */
-  typedef enum {
+  typedef enum
+  {
     IDLE,     //!< Idle state.
     CCABUSY,  //!< Channel busy.
     RUNNING,  //!< Delay timer running.
@@ -141,8 +142,8 @@ private:
   uint16_t m_pktTxProt;
   /** Scheduled SendPacket event. */
   EventId m_sendEvent;
-  /** Scheduled EndTx event. */
-  EventId m_txEndEvent;
+  /** Tx is ongoing */
+  bool m_txOngoing;
   /** Current state. */
   State m_state;
 
