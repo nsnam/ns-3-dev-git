@@ -962,7 +962,7 @@ InterferenceHelper::NotifyRxEnd ()
   NS_LOG_FUNCTION (this);
   m_rxing = false;
   //Update m_firstPower for frame capture
-  auto it = m_niChanges.find (Simulator::Now ());
+  auto it = GetPreviousPosition (Simulator::Now ());
   it--;
   m_firstPower = it->second.GetPower ();
 }
