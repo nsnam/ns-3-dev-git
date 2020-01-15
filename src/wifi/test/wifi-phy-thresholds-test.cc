@@ -26,10 +26,11 @@
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-mac-trailer.h"
-#include "ns3/wifi-phy-tag.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-utils.h"
 #include "ns3/wifi-phy-header.h"
+#include "ns3/wifi-psdu.h"
+#include "ns3/wifi-ppdu.h"
 
 using namespace ns3;
 
@@ -80,17 +81,17 @@ protected:
   virtual void SendSignal (double txPowerWatts, bool wifiSignal);
   /**
    * PHY receive success callback function
-   * \param p the packet
+   * \param psdu the PSDU
    * \param snr the SNR
    * \param txVector the transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  virtual void RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  virtual void RxSuccess (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * PHY receive failure callback function
-   * \param p the packet
+   * \param psdu the PSDU
    */
-  virtual void RxFailure (Ptr<Packet> p);
+  virtual void RxFailure (Ptr<WifiPsdu> psdu);
   /**
    * PHY dropped packet callback function
    * \param p the packet
@@ -145,25 +146,26 @@ WifiPhyThresholdsTest::MakeWifiSignal (double txPowerWatts)
 
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
-  uint32_t size = pkt->GetSize () + hdr.GetSize () + trailer.GetSerializedSize ();
-  Time txDuration = m_phy->CalculateTxDuration (size, txVector, m_phy->GetFrequency ());
-  hdr.SetDuration (txDuration);
 
-  pkt->AddHeader (hdr);
-  pkt->AddTrailer (trailer);
-
+#if 0
   LSigHeader sig;
   pkt->AddHeader (sig);
 
   WifiPhyTag tag (txVector.GetPreambleType (), txVector.GetMode ().GetModulationClass (), 1);
   pkt->AddPacketTag (tag);
+#endif
+
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
+  Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetFrequency ());
+
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, CHANNEL_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->psd = txPowerSpectrum;
   txParams->txPhy = 0;
   txParams->duration = txDuration;
-  txParams->packet = pkt;
+  txParams->ppdu = ppdu;
   return txParams;
 }
 
@@ -192,16 +194,16 @@ WifiPhyThresholdsTest::SendSignal (double txPowerWatts, bool wifiSignal)
 }
 
 void
-WifiPhyThresholdsTest::RxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+WifiPhyThresholdsTest::RxSuccess (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
-  NS_LOG_FUNCTION (this << p << snr << txVector);
+  NS_LOG_FUNCTION (this << *psdu << snr << txVector);
   m_rxSuccess++;
 }
 
 void
-WifiPhyThresholdsTest::RxFailure (Ptr<Packet> p)
+WifiPhyThresholdsTest::RxFailure (Ptr<WifiPsdu> psdu)
 {
-  NS_LOG_FUNCTION (this << p);
+  NS_LOG_FUNCTION (this << *psdu);
   m_rxFailure++;
 }
 

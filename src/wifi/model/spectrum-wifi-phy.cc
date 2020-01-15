@@ -32,6 +32,8 @@
 #include "wifi-spectrum-signal-parameters.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-utils.h"
+#include "wifi-ppdu.h"
+#include "wifi-psdu.h"
 
 namespace ns3 {
 
@@ -217,7 +219,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   m_signalCb (wifiRxParams ? true : false, senderNodeId, WToDbm (rxPowerW), rxDuration);
 
   // Do no further processing if signal is too weak
-  // Current implementation assumes constant rx power over the packet duration
+  // Current implementation assumes constant rx power over the PPDU duration
   if (WToDbm (rxPowerW) < GetRxSensitivity ())
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (rxPowerW) << " dBm");
@@ -239,8 +241,8 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     }
 
   NS_LOG_INFO ("Received Wi-Fi signal");
-  Ptr<Packet> packet = wifiRxParams->packet->Copy ();
-  StartReceivePreamble (packet, rxPowerW, rxDuration);
+  Ptr<WifiPpdu> ppdu = Copy (wifiRxParams->ppdu);
+  StartReceivePreamble (ppdu, rxPowerW);
 }
 
 Ptr<AntennaModel>
@@ -311,19 +313,21 @@ SpectrumWifiPhy::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
 }
 
 void
-SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration)
+SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
 {
+  NS_LOG_FUNCTION (this << ppdu);
+  WifiTxVector txVector = ppdu->GetTxVector ();
   double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
   double txPowerWatts = DbmToW (txPowerDbm);
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, txVector.GetMode ().GetModulationClass ());
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
-  txParams->duration = txDuration;
+  txParams->duration = ppdu->GetTxDuration ();
   txParams->psd = txPowerSpectrum;
   NS_ASSERT_MSG (m_wifiSpectrumPhyInterface, "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
-  txParams->packet = packet;
+  txParams->ppdu = ppdu;
   NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << +GetChannelNumber ());
   NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);

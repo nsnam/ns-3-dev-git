@@ -362,22 +362,22 @@ public:
                                   Ptr<Txop> txop);
 
   /**
-   * \param packet packet received
-   * \param rxSnr snr of packet received
-   * \param txVector TXVECTOR of packet received
+   * \param mpdu MPDU received
+   * \param rxSnr snr of MPDU received
+   * \param txVector TXVECTOR of MPDU received
    * \param ampduSubframe true if this MPDU is part of an A-MPDU
    *
    * This method is typically invoked by the lower PHY layer to notify
-   * the MAC layer that a packet was successfully received.
+   * the MAC layer that an MPDU was successfully received.
    */
-  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
+  void ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   /**
-   * \param packet packet received.
+   * \param psdu PSDU received.
    *
    * This method is typically invoked by the lower PHY layer to notify
-   * the MAC layer that a packet was unsuccessfully received.
+   * the MAC layer that a PSDU was unsuccessfully received.
    */
-  void ReceiveError (Ptr<Packet> packet);
+  void ReceiveError (Ptr<WifiPsdu> psdu);
   /**
    * \param duration switching delay duration.
    *
@@ -442,7 +442,7 @@ public:
    * This function de-aggregates an A-MPDU and decide if each MPDU is received correctly or not
    *
    */
-  void DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, WifiTxVector txVector,
+  void DeaggregateAmpduAndReceive (Ptr<WifiPsdu> aggregatedPacket, double rxSnr, WifiTxVector txVector,
                                    std::vector<bool> statusPerMpdu);
 
   /**

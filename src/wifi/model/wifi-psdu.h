@@ -23,12 +23,12 @@
 
 #include "ns3/nstime.h"
 #include "wifi-mac-header.h"
+#include "wifi-mac-queue-item.h"
 #include <vector>
 #include <set>
 
 namespace ns3 {
 
-class WifiMacQueueItem;
 class Packet;
 
 /**
@@ -122,6 +122,19 @@ public:
    * \return the timestamp of the i-th MPDU.
    */
   Time GetTimeStamp (std::size_t i) const;
+
+  /**
+   * \brief Get a copy of the i-th A-MPDU subframe (includes subframe header, MPDU, and possibly padding)
+   * \return the i-th A-MPDU subframe.
+   */
+  Ptr<Packet> GetAmpduSubframe (std::size_t i) const;
+
+  /**
+   * \brief Return the size of the i-th A-MPDU subframe.
+   *
+   * \return the size of the i-th A-MPDU subframe.
+   */
+  std::size_t GetAmpduSubframeSize (std::size_t i) const;
 
   /**
    * Get the Receiver Address (RA), which is common to all the MPDUs
@@ -230,11 +243,26 @@ public:
    */
   std::vector<Ptr<WifiMacQueueItem>>::iterator end (void);
 
+  /**
+   * \brief Print the PSDU contents.
+   * \param os output stream in which the data should be printed.
+   */
+  void Print (std::ostream &os) const;
+
 private:
   bool m_isSingle;                                //!< true for an S-MPDU
   std::vector<Ptr<WifiMacQueueItem>> m_mpduList;  //!< list of constituent MPDUs
   uint32_t m_size;                                //!< the size of the PSDU
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param psdu the PSDU
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const WifiPsdu &psdu);
 
 
 } //namespace ns3

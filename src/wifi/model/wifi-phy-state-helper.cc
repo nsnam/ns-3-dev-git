@@ -25,6 +25,7 @@
 #include "wifi-phy-state-helper.h"
 #include "wifi-tx-vector.h"
 #include "wifi-phy-listener.h"
+#include "wifi-psdu.h"
 
 namespace ns3 {
 
@@ -453,33 +454,33 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
-  NS_LOG_FUNCTION (this << packet << snr << txVector << statusPerMpdu.size () <<
+  NS_LOG_FUNCTION (this << *psdu << snr << txVector << statusPerMpdu.size () <<
                    std::all_of(statusPerMpdu.begin(), statusPerMpdu.end(), [](bool v) { return v; })); //returns true if all true
   NS_ASSERT (statusPerMpdu.size () != 0);
   NS_ASSERT (m_endRx == Simulator::Now ());
-  m_rxOkTrace (packet, snr, txVector.GetMode (), txVector.GetPreambleType ());
+  m_rxOkTrace (psdu->GetPacket (), snr, txVector.GetMode (), txVector.GetPreambleType ());
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   if (!m_rxOkCallback.IsNull ())
     {
-      m_rxOkCallback (packet, snr, txVector, statusPerMpdu);
+      m_rxOkCallback (psdu, snr, txVector, statusPerMpdu);
     }
 
 }
 
 void
-WifiPhyStateHelper::SwitchFromRxEndError (Ptr<Packet> packet, double snr)
+WifiPhyStateHelper::SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr)
 {
-  NS_LOG_FUNCTION (this << packet << snr);
+  NS_LOG_FUNCTION (this << *psdu << snr);
   NS_ASSERT (m_endRx == Simulator::Now ());
-  m_rxErrorTrace (packet, snr);
+  m_rxErrorTrace (psdu->GetPacket (), snr);
   NotifyRxEndError ();
   DoSwitchFromRx ();
   if (!m_rxErrorCallback.IsNull ())
     {
-      m_rxErrorCallback (packet);
+      m_rxErrorCallback (psdu);
     }
 }
 

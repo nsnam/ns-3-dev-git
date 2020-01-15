@@ -44,6 +44,8 @@ class FrameCaptureModel;
 class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
+class WifiPsdu;
+class WifiPpdu;
 
 /**
  * Enumeration of the possible reeception failure reasons.
@@ -140,38 +142,37 @@ public:
   void SetCapabilitiesChangedCallback (Callback<void> callback);
 
   /**
-   * Start receiving the PHY preamble of a packet (i.e. the first bit of the preamble has arrived).
+   * Start receiving the PHY preamble of a PPDU (i.e. the first bit of the preamble has arrived).
    *
-   * \param packet the arriving packet
+   * \param ppdu the arriving PPDU
    * \param rxPowerW the receive power in W
-   * \param rxDuration the duration needed for the reception of the packet
    */
-  void StartReceivePreamble (Ptr<Packet> packet, double rxPowerW, Time rxDuration);
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW);
 
   /**
-   * Start receiving the PHY header of a packet (i.e. after the end of receiving the preamble).
+   * Start receiving the PHY header of a PPDU (i.e. after the end of receiving the preamble).
    *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
-   * \param rxDuration the duration needed for the reception of the header and payload of the packet
+   * \param event the event holding incoming PPDU's information
+   * \param headerPayloadDuration the duration needed for the reception of the header and PSDU of the PPDU
    */
-  void StartReceiveHeader (Ptr<Event> event, Time rxDuration);
+  void StartReceiveHeader (Ptr<Event> event, Time headerPayloadDuration);
 
   /**
-   * Continue receiving the PHY header of a packet (i.e. after the end of receiving the non-HT header part).
+   * Continue receiving the PHY header of a PPDU (i.e. after the end of receiving the non-HT header part).
    *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param event the event holding incoming PPDU's information
    */
   void ContinueReceiveHeader (Ptr<Event> event);
 
   /**
-   * Start receiving the payload of a packet (i.e. the first bit of the packet has arrived).
+   * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived).
    *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param event the event holding incoming PPDU's information
    */
   void StartReceivePayload (Ptr<Event> event);
 
   /**
-   * The last bit of the packet has arrived.
+   * The last symbol of the PPDU has arrived.
    *
    * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
    */
@@ -184,21 +185,17 @@ public:
   void EndReceiveInterBss (void);
 
   /**
-   * \param packet the packet to send
+   * \param psdu the PSDU to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
-   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
+   *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  void SendPacket (Ptr<const Packet> packet, WifiTxVector txVector);
+  void SendPacket (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
 
   /**
-   * \param packet the packet to send
-   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
-   *        this packet, and txPowerLevel, a power level to use to send this packet. The real transmission
-   *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
-   * \param txDuration duration of the transmission.
+   * \param ppdu the PPDU to send
    */
-  virtual void StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration) = 0;
+  virtual void StartTx (Ptr<WifiPpdu> ppdu) = 0;
 
   /**
    * Put in sleep mode.
@@ -1108,55 +1105,55 @@ public:
    * Public method used to fire a PhyTxBegin trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet being transmitted
+   * \param psdu the PSDU being transmitted
    * \param txPowerW the transmit power in Watts
    */
-  void NotifyTxBegin (Ptr<const Packet> packet, double txPowerW);
+  void NotifyTxBegin (Ptr<const WifiPsdu> psdu, double txPowerW);
   /**
    * Public method used to fire a PhyTxEnd trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet that was transmitted
+   * \param psdu the PSDU being transmitted
    */
-  void NotifyTxEnd (Ptr<const Packet> packet);
+  void NotifyTxEnd (Ptr<const WifiPsdu> psdu);
   /**
    * Public method used to fire a PhyTxDrop trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet that was failed to transmitted
+   * \param psdu the PSDU being transmitted
    */
-  void NotifyTxDrop (Ptr<const Packet> packet);
+  void NotifyTxDrop (Ptr<const WifiPsdu> psdu);
   /**
    * Public method used to fire a PhyRxBegin trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet being received
+   * \param psdu the PSDU being transmitted
    */
-  void NotifyRxBegin (Ptr<const Packet> packet);
+  void NotifyRxBegin (Ptr<const WifiPsdu> psdu);
   /**
    * Public method used to fire a PhyRxEnd trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet received
+   * \param psdu the PSDU being transmitted
    */
-  void NotifyRxEnd (Ptr<const Packet> packet);
+  void NotifyRxEnd (Ptr<const WifiPsdu> psdu);
   /**
    * Public method used to fire a PhyRxDrop trace.
    * Implemented for encapsulation purposes.
    *
-   * \param packet the packet that was dropped
+   * \param psdu the PSDU being transmitted
    * \param reason the reason the packet was dropped
    */
-  void NotifyRxDrop (Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
+  void NotifyRxDrop (Ptr<const WifiPsdu> psdu, WifiPhyRxfailureReason reason);
 
   /**
-   * Public method used to fire a MonitorSniffer trace for a wifi packet being received.
+   * Public method used to fire a MonitorSniffer trace for a wifi PSDU being received.
    * Implemented for encapsulation purposes.
    * This method will extract all MPDUs if packet is an A-MPDU and will fire tracedCallback.
    * The A-MPDU reference number (RX side) is set within the method. It must be a different value
    * for each A-MPDU but the same for each subframe within one A-MPDU.
    *
-   * \param packet the packet being received
+   * \param psdu the PSDU being received
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        received. Note that in real devices this is normally the
    *        frequency to which  the receiver is tuned, and this can be
@@ -1168,7 +1165,7 @@ public:
    * \param signalNoise signal power and noise power in dBm (noise power includes the noise figure)
    * \param statusPerMpdu reception status per MPDU
    */
-  void NotifyMonitorSniffRx (Ptr<const Packet> packet,
+  void NotifyMonitorSniffRx (Ptr<const WifiPsdu> psdu,
                              uint16_t channelFreqMhz,
                              WifiTxVector txVector,
                              SignalNoiseDbm signalNoise,
@@ -1200,18 +1197,18 @@ public:
                                             SignalNoiseDbm signalNoise);
 
   /**
-   * Public method used to fire a MonitorSniffer trace for a wifi packet being transmitted.
+   * Public method used to fire a MonitorSniffer trace for a wifi PSDU being transmitted.
    * Implemented for encapsulation purposes.
    * This method will extract all MPDUs if packet is an A-MPDU and will fire tracedCallback.
    * The A-MPDU reference number (RX side) is set within the method. It must be a different value
    * for each A-MPDU but the same for each subframe within one A-MPDU.
    *
-   * \param packet the packet being transmitted
+   * \param psdu the PSDU being received
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
    * \param txVector the TXVECTOR that holds tx parameters
    */
-  void NotifyMonitorSniffTx (Ptr<const Packet> packet,
+  void NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu,
                              uint16_t channelFreqMhz,
                              WifiTxVector txVector);
 
@@ -1730,24 +1727,23 @@ private:
   void MaybeCcaBusyDuration (void);
 
   /**
-   * Starting receiving the packet after having detected the medium is idle or after a reception switch.
+   * Starting receiving the PPDU after having detected the medium is idle or after a reception switch.
    *
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param event the event holding incoming PPDU's information
    * \param rxPowerW the receive power in W
-   * \param rxDuration the duration needed for the reception of the packet
    */
-  void StartRx (Ptr<Event> event, double rxPowerW, Time rxDuration);
+  void StartRx (Ptr<Event> event, double rxPowerW);
   /**
    * Get the reception status for the provided MPDU and notify.
    *
-   * \param mpdu the arriving MPDU
-   * \param event the corresponding event of the first time the packet arrives (also storing packet and TxVector information)
+   * \param psdu the arriving MPDU formatted as a PSDU
+   * \param event the event holding incoming PPDU's information
    * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU. 0 for normal MPDUs
    * \param mpduDuration the duration of the MPDU
    *
    * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
    */
-  std::pair<bool, SignalNoiseDbm> GetReceptionStatus (Ptr<const Packet> mpdu,
+  std::pair<bool, SignalNoiseDbm> GetReceptionStatus (Ptr<const WifiPsdu> psdu,
                                                       Ptr<Event> event,
                                                       Time relativeMpduStart,
                                                       Time mpduDuration);

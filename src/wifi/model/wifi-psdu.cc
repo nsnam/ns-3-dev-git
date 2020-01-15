@@ -20,10 +20,10 @@
 
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "wifi-mac-queue-item.h"
 #include "wifi-psdu.h"
 #include "wifi-mac-trailer.h"
 #include "mpdu-aggregator.h"
+#include "ampdu-subframe-header.h"
 #include "wifi-utils.h"
 
 namespace ns3 {
@@ -305,6 +305,35 @@ WifiPsdu::GetTimeStamp (std::size_t i) const
   return m_mpduList.at (i)->GetTimeStamp ();
 }
 
+Ptr<Packet>
+WifiPsdu::GetAmpduSubframe (std::size_t i) const
+{
+  NS_ASSERT (i < m_mpduList.size ());
+  Ptr<Packet> subframe = m_mpduList.at (i)->GetProtocolDataUnit ();
+  subframe->AddHeader (MpduAggregator::GetAmpduSubframeHeader (static_cast<uint16_t> (subframe->GetSize ()),
+                                                               m_isSingle));
+  size_t padding = GetAmpduSubframeSize (i) - subframe->GetSize ();
+  if (padding > 0)
+    {
+      Ptr<Packet> pad = Create<Packet> (padding);
+      subframe->AddAtEnd (pad);
+    }
+  return subframe;
+}
+
+std::size_t
+WifiPsdu::GetAmpduSubframeSize (std::size_t i) const
+{
+  NS_ASSERT (i < m_mpduList.size ());
+  size_t subframeSize = 4; //A-MPDU Subframe header size
+  subframeSize += m_mpduList.at (i)->GetSize ();
+  if (i != m_mpduList.size () - 1) //add padding if not last
+    {
+      subframeSize += MpduAggregator::CalculatePadding (subframeSize);
+    }
+  return subframeSize;
+}
+
 std::size_t
 WifiPsdu::GetNMpdus (void) const
 {
@@ -338,6 +367,31 @@ WifiPsdu::end (void)
 {
   NS_LOG_FUNCTION (this);
   return m_mpduList.end ();
+}
+
+void
+WifiPsdu::Print (std::ostream& os) const
+{
+  os << "size=" << m_size;
+  if (IsAggregate ())
+    {
+      os << ", A-MPDU of " << GetNMpdus () << " MPDUs";
+      for (const auto& mpdu : m_mpduList)
+        {
+          os << " (" << *mpdu << ")";
+        }
+      }
+  else
+    {
+      os << ", " << ((m_isSingle) ? "S-MPDU" : "normal MPDU")
+         << " (" << *(m_mpduList.at (0)) << ")";
+    }
+}
+
+std::ostream & operator << (std::ostream &os, const WifiPsdu &psdu)
+{
+  psdu.Print (os);
+  return os;
 }
 
 } //namespace ns3

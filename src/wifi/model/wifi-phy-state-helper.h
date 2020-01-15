@@ -34,24 +34,25 @@ class WifiPhyListener;
 class WifiTxVector;
 class WifiMode;
 class Packet;
+class WifiPsdu;
 
 /**
- * Callback if packet successfully received (i.e. if aggregate,
+ * Callback if PSDU successfully received (i.e. if aggregate,
  * it means that at least one MPDU of the A-MPDU was received,
  * considering that the per-MPDU reception status is also provided).
  *
- * arg1: packet received successfully
- * arg2: SNR of packet
- * arg3: TXVECTOR of packet
+ * arg1: PSDU received successfully
+ * arg2: SNR of PSDU
+ * arg3: TXVECTOR of PSDU
  * arg4: vector of per-MPDU status of reception.
  */
-typedef Callback<void, Ptr<Packet>, double, WifiTxVector, std::vector<bool>> RxOkCallback;
+typedef Callback<void, Ptr<WifiPsdu>, double, WifiTxVector, std::vector<bool>> RxOkCallback;
 /**
- * Callback if packet unsuccessfully received
+ * Callback if PSDU unsuccessfully received
  *
- * arg1: packet received unsuccessfully
+ * arg1: PSDU received unsuccessfully
  */
-typedef Callback<void, Ptr<Packet>> RxErrorCallback;
+typedef Callback<void, Ptr<WifiPsdu>> RxErrorCallback;
 
 /**
  * \ingroup wifi
@@ -178,19 +179,19 @@ public:
   /**
    * Switch from RX after the reception was successful.
    *
-   * \param packet the successfully received packet
-   * \param snr the SNR of the received packet
-   * \param txVector TXVECTOR of the packet
+   * \param psdu the successfully received PSDU
+   * \param snr the SNR of the received PSDU
+   * \param txVector TXVECTOR of the PSDU
    * \param statusPerMpdu reception status per MPDU
    */
-  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void SwitchFromRxEndOk (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   /**
    * Switch from RX after the reception failed.
    *
-   * \param packet the packet that we failed to received
-   * \param snr the SNR of the received packet
+   * \param psdu the PSDU that we failed to received
+   * \param snr the SNR of the received PSDU
    */
-  void SwitchFromRxEndError (Ptr<Packet> packet, double snr);
+  void SwitchFromRxEndError (Ptr<WifiPsdu> psdu, double snr);
   /**
    * Switch to CCA busy.
    *

@@ -20,7 +20,7 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/packet.h"
+#include "wifi-ppdu.h"
 #include "wifi-spectrum-signal-parameters.h"
 
 namespace ns3 {
@@ -36,7 +36,7 @@ WifiSpectrumSignalParameters::WifiSpectrumSignalParameters (const WifiSpectrumSi
   : SpectrumSignalParameters (p)
 {
   NS_LOG_FUNCTION (this << &p);
-  packet = p.packet;
+  ppdu = p.ppdu;
 }
 
 Ptr<SpectrumSignalParameters>

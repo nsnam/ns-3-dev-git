@@ -26,6 +26,7 @@
 #include "ns3/log.h"
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-utils.h"
 
 namespace ns3 {
 
@@ -85,6 +86,15 @@ uint32_t
 WifiMacQueueItem::GetSize (void) const
 {
   return m_packet->GetSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
+}
+
+Ptr<Packet>
+WifiMacQueueItem::GetProtocolDataUnit (void) const
+{
+  Ptr<Packet> mpdu = m_packet->Copy ();
+  mpdu->AddHeader (m_header);
+  AddWifiMacTrailer (mpdu);
+  return mpdu;
 }
 
 void

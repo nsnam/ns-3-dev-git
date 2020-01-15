@@ -62,6 +62,8 @@
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simple-frame-capture-model.h"
+#include "ns3/wifi-psdu.h"
+#include "ns3/wifi-mac-trailer.h"
 
 using namespace ns3;
 
@@ -75,7 +77,7 @@ bool expectRxBSuccessfull = false;
 class InterferenceExperiment
 {
 public:
-  /// Input atructure
+  /// Input structure
   struct Input
   {
     Input ();
@@ -117,38 +119,48 @@ private:
   struct Input m_input; ///< input
   bool m_droppedA; ///< flag to indicate whether packet A has been dropped
   bool m_droppedB; ///< flag to indicate whether packet B has been dropped
+  mutable uint64_t m_uidA;
+  mutable uint64_t m_uidB;
 };
 
 void
 InterferenceExperiment::SendA (void) const
 {
-  Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_ACK); //so that size may not be empty while being as short as possible
+  Ptr<Packet> p = Create<Packet> (m_input.packetSizeA - hdr.GetSerializedSize () - WIFI_MAC_FCS_LENGTH);
+  m_uidA = p->GetUid ();
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (p, hdr);
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeA));
   txVector.SetPreambleType (m_input.preamble);
-  m_txA->SendPacket (p, txVector);
+  m_txA->SendPacket (psdu, txVector);
 }
 
 void
 InterferenceExperiment::SendB (void) const
 {
-  Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_ACK); //so that size may not be empty while being as short as possible
+  Ptr<Packet> p = Create<Packet> (m_input.packetSizeB - hdr.GetSerializedSize () - WIFI_MAC_FCS_LENGTH);
+  m_uidB = p->GetUid ();
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (p, hdr);
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeB));
   txVector.SetPreambleType (m_input.preamble);
-  m_txB->SendPacket (p, txVector);
+  m_txB->SendPacket (psdu, txVector);
 }
 
 void
 InterferenceExperiment::PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailureReason reason)
 {
-  if (packet->GetUid () == 0)
+  if (packet->GetUid () == m_uidA)
     {
       m_droppedA = true;
     }
-  else if (packet->GetUid () == 1)
+  else if (packet->GetUid () == m_uidB)
     {
       m_droppedB = true;
     }
@@ -161,7 +173,9 @@ InterferenceExperiment::PacketDropped (Ptr<const Packet> packet, WifiPhyRxfailur
 
 InterferenceExperiment::InterferenceExperiment ()
   : m_droppedA (false),
-    m_droppedB (false)
+    m_droppedB (false),
+    m_uidA (0),
+    m_uidB (0)
 {
 }
 

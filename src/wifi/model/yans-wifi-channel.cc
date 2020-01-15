@@ -18,7 +18,6 @@
  * Author: Mathieu Lacage, <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
@@ -30,6 +29,8 @@
 #include "yans-wifi-channel.h"
 #include "yans-wifi-phy.h"
 #include "wifi-utils.h"
+#include "wifi-ppdu.h"
+#include "wifi-psdu.h"
 
 namespace ns3 {
 
@@ -82,9 +83,9 @@ YansWifiChannel::SetPropagationDelayModel (const Ptr<PropagationDelayModel> dela
 }
 
 void
-YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm, Time duration) const
+YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const WifiPpdu> ppdu, double txPowerDbm) const
 {
-  NS_LOG_FUNCTION (this << sender << packet << txPowerDbm << duration.GetSeconds ());
+  NS_LOG_FUNCTION (this << sender << ppdu << txPowerDbm);
   Ptr<MobilityModel> senderMobility = sender->GetMobility ();
   NS_ASSERT (senderMobility != 0);
   for (PhyList::const_iterator i = m_phyList.begin (); i != m_phyList.end (); i++)
@@ -102,7 +103,7 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
           double rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower=" << txPowerDbm << "dbm, rxPower=" << rxPowerDbm << "dbm, " <<
                         "distance=" << senderMobility->GetDistanceFrom (receiverMobility) << "m, delay=" << delay);
-          Ptr<Packet> copy = packet->Copy ();
+          Ptr<WifiPpdu> copy = Copy (ppdu);
           Ptr<NetDevice> dstNetDevice = (*i)->GetDevice ();
           uint32_t dstNode;
           if (dstNetDevice == 0)
@@ -116,23 +117,23 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
 
           Simulator::ScheduleWithContext (dstNode,
                                           delay, &YansWifiChannel::Receive,
-                                          (*i), copy, rxPowerDbm, duration);
+                                          (*i), copy, rxPowerDbm);
         }
     }
 }
 
 void
-YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPowerDbm, Time duration)
+YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<WifiPpdu> ppdu, double rxPowerDbm)
 {
-  NS_LOG_FUNCTION (phy << packet << rxPowerDbm << duration.GetSeconds ());
+  NS_LOG_FUNCTION (phy << ppdu << rxPowerDbm);
   // Do no further processing if signal is too weak
-  // Current implementation assumes constant rx power over the packet duration
+  // Current implementation assumes constant rx power over the PPDU duration
   if ((rxPowerDbm + phy->GetRxGain ()) < phy->GetRxSensitivity ())
     {
       NS_LOG_INFO ("Received signal too weak to process: " << rxPowerDbm << " dBm");
       return;
     }
-  phy->StartReceivePreamble (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
+  phy->StartReceivePreamble (ppdu, DbmToW (rxPowerDbm + phy->GetRxGain ()));
 }
 
 std::size_t

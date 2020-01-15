@@ -120,6 +120,14 @@ public:
   MsduAggregator::DeaggregatedMsdusCI end (void);
 
   /**
+   * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
+   *        (i.e. a copy of the packet stored in this item wrapped with MAC
+   *        header and trailer)
+   * \return the MAC protocol data unit corresponding to this item.
+   */
+  Ptr<Packet> GetProtocolDataUnit (void) const;
+
+  /**
    * \brief Print the item contents.
    * \param os output stream in which the data should be printed.
    */

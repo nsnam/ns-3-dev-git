@@ -95,39 +95,10 @@ MpduAggregator::Aggregate (Ptr<const WifiMacQueueItem> mpdu, Ptr<Packet> ampdu, 
   AddWifiMacTrailer (tmp);
 
   // add A-MPDU subframe header and MPDU to the A-MPDU
-  AmpduSubframeHeader hdr;
-  hdr.SetLength (static_cast<uint16_t> (tmp->GetSize ()));
-  if (isSingle)
-    {
-      hdr.SetEof (1);
-    }
+  AmpduSubframeHeader hdr = GetAmpduSubframeHeader (static_cast<uint16_t> (tmp->GetSize ()), isSingle);
 
   tmp->AddHeader (hdr);
   ampdu->AddAtEnd (tmp);
-}
-
-void
-MpduAggregator::AddHeaderAndPad (Ptr<Packet> mpdu, bool last, bool isSingleMpdu)
-{
-  NS_LOG_FUNCTION (mpdu << last << isSingleMpdu);
-  AmpduSubframeHeader currentHdr;
-
-  //This is called to prepare packets from the aggregate queue to be sent so no need to check total size since it has already been
-  //done before when deciding how many packets to add to the queue
-  currentHdr.SetLength (static_cast<uint16_t> (mpdu->GetSize ()));
-  if (isSingleMpdu)
-    {
-      currentHdr.SetEof (1);
-    }
-
-  mpdu->AddHeader (currentHdr);
-  uint32_t padding = CalculatePadding (mpdu->GetSize ());
-
-  if (padding && !last)
-    {
-      Ptr<Packet> pad = Create<Packet> (padding);
-      mpdu->AddAtEnd (pad);
-    }
 }
 
 uint32_t
@@ -222,96 +193,16 @@ MpduAggregator::CalculatePadding (uint32_t ampduSize)
   return (4 - (ampduSize % 4 )) % 4;
 }
 
-MpduAggregator::DeaggregatedMpdus
-MpduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
+AmpduSubframeHeader
+MpduAggregator::GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle)
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  DeaggregatedMpdus set;
-
   AmpduSubframeHeader hdr;
-  Ptr<Packet> extractedMpdu = Create<Packet> ();
-  uint32_t maxSize = aggregatedPacket->GetSize ();
-  uint16_t extractedLength;
-  uint32_t padding;
-  uint32_t deserialized = 0;
-
-  while (deserialized < maxSize)
+  hdr.SetLength (mpduSize);
+  if (isSingle)
     {
-      deserialized += aggregatedPacket->RemoveHeader (hdr);
-      extractedLength = hdr.GetLength ();
-      extractedMpdu = aggregatedPacket->CreateFragment (0, static_cast<uint32_t> (extractedLength));
-      aggregatedPacket->RemoveAtStart (extractedLength);
-      deserialized += extractedLength;
-
-      padding = (4 - (extractedLength % 4 )) % 4;
-
-      if (padding > 0 && deserialized < maxSize)
-        {
-          aggregatedPacket->RemoveAtStart (padding);
-          deserialized += padding;
-        }
-
-      std::pair<Ptr<Packet>, AmpduSubframeHeader> packetHdr (extractedMpdu, hdr);
-      set.push_back (packetHdr);
+      hdr.SetEof (1);
     }
-  NS_LOG_INFO ("Deaggreated A-MPDU: extracted " << set.size () << " MPDUs");
-  return set;
-}
-
-std::list<Ptr<const Packet>>
-MpduAggregator::PeekAmpduSubframes (Ptr<const Packet> aggregatedPacket)
-{
-  NS_LOG_FUNCTION (aggregatedPacket);
-  std::list<Ptr<const Packet> > ampduSubframes;
-
-  AmpduSubframeHeader hdr;
-  uint32_t maxSize = aggregatedPacket->GetSize ();
-  uint16_t bytesToExtract;
-  uint32_t padding;
-  uint32_t deserialized = 0;
-
-  Ptr<Packet> tempPacket = Create<Packet> ();
-  while (deserialized < maxSize)
-    {
-      tempPacket = aggregatedPacket->CreateFragment (deserialized, hdr.GetSerializedSize ());
-      bytesToExtract = tempPacket->PeekHeader (hdr);
-      bytesToExtract += hdr.GetLength ();
-
-      padding = (4 - (hdr.GetLength () % 4 )) % 4;
-      if (padding > 0 && (deserialized + bytesToExtract) < maxSize)
-        {
-          bytesToExtract += padding;
-        }
-
-      ampduSubframes.push_back (aggregatedPacket->CreateFragment (deserialized , bytesToExtract));
-      deserialized += bytesToExtract;
-    }
-  NS_LOG_INFO ("Peek A-MPDU subframes of A-MPDU: peeked " << ampduSubframes.size () << " A-MPDU subrames");
-  return ampduSubframes;
-}
-
-std::list<Ptr<const Packet>>
-MpduAggregator::PeekMpdus (Ptr<const Packet> aggregatedPacket)
-{
-  NS_LOG_FUNCTION (aggregatedPacket);
-  std::list<Ptr<const Packet> > ampduSubframes = PeekAmpduSubframes (aggregatedPacket);
-  std::list<Ptr<const Packet> > mpdus;
-
-  for (const auto& subframe : ampduSubframes)
-    {
-      mpdus.push_back (PeekMpduInAmpduSubframe (subframe));
-    }
-  NS_LOG_INFO ("Peek MPDUs of A-MPDU: peeked " << mpdus.size () << " MPDUs");
-  return mpdus;
-}
-
-Ptr<const Packet>
-MpduAggregator::PeekMpduInAmpduSubframe (Ptr<const Packet> ampduSubframe)
-{
-  NS_LOG_FUNCTION (ampduSubframe);
-  AmpduSubframeHeader hdr;
-  uint32_t headerSize = ampduSubframe->PeekHeader (hdr);
-  return ampduSubframe->CreateFragment (headerSize , hdr.GetLength ());
+  return hdr;
 }
 
 std::vector<Ptr<WifiMacQueueItem>>

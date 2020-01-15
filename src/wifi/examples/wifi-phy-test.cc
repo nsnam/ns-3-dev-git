@@ -28,6 +28,7 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/nist-error-rate-model.h"
+#include "ns3/wifi-psdu.h"
 
 using namespace ns3;
 
@@ -64,12 +65,12 @@ private:
   void Send (void);
   /**
    * Send receive function
-   * \param p the packet
+   * \param psdu the PSDU
    * \param snr the SNR
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_tx; ///< transmit
   struct Input m_input; ///< input
   struct Output m_output; ///< output
@@ -78,17 +79,17 @@ private:
 void
 PsrExperiment::Send (void)
 {
-  Ptr<Packet> p = Create<Packet> (m_input.packetSize);
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSize), WifiMacHeader ());
   WifiMode mode = WifiMode (m_input.txMode);
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevel);
   txVector.SetMode (mode);
   txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
-  m_tx->SendPacket (p, txVector);
+  m_tx->SendPacket (psdu, txVector);
 }
 
 void
-PsrExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+PsrExperiment::Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   m_output.received++;
 }
@@ -186,12 +187,12 @@ private:
   void SendB (void) const;
   /**
    * Receive function
-   * \param p the packet
+   * \param psdu the PSDU
    * \param snr the SNR
    * \param txVector the wifi transmit vector
    * \param statusPerMpdu reception status per MPDU
    */
-  void Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
+  void Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu);
   Ptr<WifiPhy> m_txA; ///< transmit A
   Ptr<WifiPhy> m_txB; ///< transmit B
   uint32_t m_flowIdA; ///< flow ID A
@@ -203,32 +204,32 @@ private:
 void
 CollisionExperiment::SendA (void) const
 {
-  Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
-  p->AddByteTag (FlowIdTag (m_flowIdA));
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSizeA), WifiMacHeader ());
+  (*psdu->begin ())->GetPacket ()->AddByteTag (FlowIdTag (m_flowIdA));
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelA);
   txVector.SetMode (WifiMode (m_input.txModeA));
   txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
-  m_txA->SendPacket (p, txVector);
+  m_txA->SendPacket (psdu, txVector);
 }
 
 void
 CollisionExperiment::SendB (void) const
 {
-  Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
-  p->AddByteTag (FlowIdTag (m_flowIdB));
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (Create<Packet> (m_input.packetSizeB), WifiMacHeader ());
+  (*psdu->begin ())->GetPacket ()->AddByteTag (FlowIdTag (m_flowIdB));
   WifiTxVector txVector;
   txVector.SetTxPowerLevel (m_input.txPowerLevelB);
   txVector.SetMode (WifiMode (m_input.txModeB));
   txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
-  m_txB->SendPacket (p, txVector);
+  m_txB->SendPacket (psdu, txVector);
 }
 
 void
-CollisionExperiment::Receive (Ptr<Packet> p, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
+CollisionExperiment::Receive (Ptr<WifiPsdu> psdu, double snr, WifiTxVector txVector, std::vector<bool> statusPerMpdu)
 {
   FlowIdTag tag;
-  if (p->FindFirstMatchingByteTag (tag))
+  if ((*psdu->begin ())->GetPacket ()->FindFirstMatchingByteTag (tag))
     {
       if (tag.GetFlowId () == m_flowIdA)
         {

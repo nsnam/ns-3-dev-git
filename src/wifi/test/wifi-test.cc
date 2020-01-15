@@ -41,11 +41,11 @@
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
-#include "ns3/wifi-phy-tag.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/ht-configuration.h"
-#include "ns3/wifi-phy-header.h"
+#include "ns3/wifi-ppdu.h"
+#include "ns3/wifi-psdu.h"
 
 using namespace ns3;
 
@@ -1391,28 +1391,11 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
 
   // Get channel bandwidth and modulation class
   Ptr<const WifiSpectrumSignalParameters> wifiTxParams = DynamicCast<WifiSpectrumSignalParameters> (txParams);
-  Ptr<Packet> packet = wifiTxParams->packet->Copy ();
-  WifiPhyTag tag;
-  if (!packet->RemovePacketTag (tag))
-    {
-      NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
-      return;
-    }
 
-  WifiModulationClass modulationClass = tag.GetModulation ();
-  WifiPreamble preamble = tag.GetPreambleType ();
-  if ((modulationClass != WIFI_MOD_CLASS_HT) || (preamble != WIFI_PREAMBLE_HT_GF))
-    {
-      LSigHeader sig;
-      packet->RemoveHeader (sig);
-      m_channelWidth = 20;
-    }
-  if (modulationClass == WIFI_MOD_CLASS_VHT)
-    {
-      VhtSigHeader vhtSig;
-      packet->RemoveHeader (vhtSig);
-      m_channelWidth = vhtSig.GetChannelWidth ();
-    }
+  Ptr<WifiPpdu> ppdu = Copy (wifiTxParams->ppdu);
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  m_channelWidth = txVector.GetChannelWidth ();
+  WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
 
   // Build a tuple and check if seen before (if so store it)
   FreqWidthSubbandModulationTuple tupleForCurrentTx = std::make_tuple (startingFreq, m_channelWidth, numBands, modulationClass);

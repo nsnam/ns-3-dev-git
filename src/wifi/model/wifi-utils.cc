@@ -276,41 +276,4 @@ GetPpduMaxTime (WifiPreamble preamble)
   return duration;
 }
 
-bool
-IsAmpdu (Ptr<const Packet> packet)
-{
-  AmpduSubframeHeader hdr;
-  //Rely on metadata if present
-  bool metadataEnabled = false;
-  PacketMetadata::ItemIterator metadataIterator = packet->BeginItem ();
-  while (metadataIterator.HasNext ())
-    {
-      metadataEnabled = true;
-      PacketMetadata::Item item = metadataIterator.Next ();
-      if (item.tid == hdr.GetTypeId ())
-        {
-          return true;
-        }
-    }
-  if (metadataEnabled)
-    {
-      //Didn't find header in metadata
-      return false;
-    }
-
-  //No metadata so peek manually into buffer and check consistency of extracted data
-  uint32_t totalSize = packet->GetSize ();
-  uint32_t deserialized = packet->PeekHeader (hdr);
-  if (deserialized == hdr.GetSerializedSize ()
-      && hdr.IsSignatureValid ()
-      && hdr.GetLength () <= (totalSize - deserialized))
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
 } //namespace ns3
