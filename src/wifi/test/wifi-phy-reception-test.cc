@@ -841,6 +841,35 @@ TestThresholdPreambleDetectionWithFrameCapture::DoRun (void)
   // In this case, the second packet should be marked as a failure
   Simulator::Schedule (Seconds (17.1), &TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount, this, 2, 6);
 
+  rxPowerDbm = -50;
+  // CASE 18: send two packets with second one 50 dB higher within the 4us window
+
+  Simulator::Schedule (Seconds (18.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm);
+  Simulator::Schedule (Seconds (18.0) + MicroSeconds (2.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm+50);
+  // The second packet should be received successfully
+  Simulator::Schedule (Seconds (18.1), &TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount, this, 3, 6);
+
+  // CASE 19: send two packets with second one 10 dB higher within the 4us window
+
+  Simulator::Schedule (Seconds (19.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm);
+  Simulator::Schedule (Seconds (19.0) + MicroSeconds (2.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm+10);
+  // The second packet should be captured, but not decoded since SNR to low for used MCS
+  Simulator::Schedule (Seconds (19.1), &TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount, this, 3, 7);
+
+  // CASE 20: send two packets with second one 50 dB higher in the same time
+
+  Simulator::Schedule (Seconds (20.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm);
+  Simulator::Schedule (Seconds (20.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm+50);
+  // The second packet should be received successfully, same as in CASE 13
+  Simulator::Schedule (Seconds (20.1), &TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount, this, 4, 7);
+
+  // CASE 21: send two packets with second one 10 dB higher in the same time
+
+  Simulator::Schedule (Seconds (21.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm);
+  Simulator::Schedule (Seconds (21.0), &TestThresholdPreambleDetectionWithFrameCapture::SendPacket, this, rxPowerDbm+10);
+  // The second packet should be captured, but not decoded since SNR to low for used MCS, same as in CASE 19
+  Simulator::Schedule (Seconds (21.1), &TestThresholdPreambleDetectionWithFrameCapture::CheckRxPacketCount, this, 4, 8);
+
   Simulator::Run ();
   Simulator::Destroy ();
 }
