@@ -206,7 +206,7 @@ IdealWifiManager::GetSnrThreshold (WifiTxVector txVector) const
 void
 IdealWifiManager::AddSnrThreshold (WifiTxVector txVector, double snr)
 {
-  NS_LOG_FUNCTION (this << txVector.GetMode ().GetUniqueName () << snr);
+  NS_LOG_FUNCTION (this << txVector.GetMode ().GetUniqueName () << txVector.GetChannelWidth () << snr);
   m_thresholds.push_back (std::make_pair (snr, txVector));
 }
 
@@ -215,11 +215,19 @@ IdealWifiManager::DoCreateStation (void) const
 {
   NS_LOG_FUNCTION (this);
   IdealWifiRemoteStation *station = new IdealWifiRemoteStation ();
-  station->m_lastSnrObserved = 0.0;
-  station->m_lastSnrCached = CACHE_INITIAL_VALUE;
-  station->m_lastMode = GetDefaultMode ();
-  station->m_nss = 1;
+  Reset (station);
   return station;
+}
+
+void
+IdealWifiManager::Reset (WifiRemoteStation *station) const
+{
+  NS_LOG_FUNCTION (this << station);
+  IdealWifiRemoteStation *st = static_cast<IdealWifiRemoteStation*> (station);
+  st->m_lastSnrObserved = 0.0;
+  st->m_lastSnrCached = CACHE_INITIAL_VALUE;
+  st->m_lastMode = GetDefaultMode ();
+  st->m_nss = 1;
 }
 
 void
@@ -276,17 +284,18 @@ IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccess
   station->m_lastSnrObserved = dataSnr;
 }
 
-
 void
 IdealWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
+  Reset (station);
 }
 
 void
 IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
+  Reset (station);
 }
 
 WifiTxVector

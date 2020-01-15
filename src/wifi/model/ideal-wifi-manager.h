@@ -77,6 +77,11 @@ private:
   bool IsLowLatency (void) const;
 
   /**
+   * Reset the station, invoked if the maximum amount of retries has failed.
+   */
+  void Reset (WifiRemoteStation *station) const;
+
+  /**
    * Return the minimum SNR needed to successfully transmit
    * data with this WifiTxVector at the specified BER.
    *
