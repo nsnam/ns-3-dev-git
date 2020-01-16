@@ -597,8 +597,26 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
           if (acceptFrame
               && (receivedMacHdr.GetDstAddrMode () == 2))
             {
-              acceptFrame = receivedMacHdr.GetShortDstAddr () == m_shortAddress
-                || receivedMacHdr.GetShortDstAddr () == Mac16Address ("ff:ff");        // check for broadcast addrs
+              if (receivedMacHdr.GetShortDstAddr () == m_shortAddress)
+                {
+                  // unicast, for me
+                  acceptFrame = true;
+                }
+              else if (receivedMacHdr.GetShortDstAddr () == Mac16Address ("ff:ff"))
+                {
+                  // broadcast
+                  acceptFrame = true;
+                }
+              else
+                {
+                  // multicast
+                  uint8_t buf[2];
+                  receivedMacHdr.GetShortDstAddr ().CopyTo (buf);
+                  if (buf[0] & 0x80)
+                    {
+                      acceptFrame = true;
+                    }
+                }
             }
 
           if (acceptFrame
