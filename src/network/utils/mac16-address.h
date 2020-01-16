@@ -86,6 +86,51 @@ public:
    */
   static Mac16Address Allocate (void);
 
+  /**
+   * \returns the broadcast address (0xFFFF)
+   */
+  static Mac16Address GetBroadcast (void);
+
+  /**
+   * Returns the multicast address associated with an IPv6 address
+   * according to RFC 4944 Section 9.
+   * An IPv6 packet with a multicast destination address (DST),
+   * consisting of the sixteen octets DST[1] through DST[16], is
+   * transmitted to the following 802.15.4 16-bit multicast address:
+
+  \verbatim
+    0                   1
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |1 0 0|DST[15]* |   DST[16]     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
+
+   * Here, DST[15]* refers to the last 5 bits in octet DST[15], that is,
+   * bits 3-7 within DST[15].  The initial 3-bit pattern of "100" follows
+   * the 16-bit address format for multicast addresses (Section 12).
+   *
+   * \returns the multicast 16-bit address.
+   */
+
+  static Mac16Address GetMulticast (Ipv6Address address);
+
+  /**
+   * Checks if the address is a broadcast address according
+   * to 802.15.4 scheme (i.e., 0xFFFF).
+   *
+   * \returns true if the address is 0xFFFF
+   */
+  bool IsBroadcast (void) const;
+
+  /**
+   * Checks if the address is a multicast address according
+   * to RFC 4944 Section 9 (i.e., if its first 3 bits are 100).
+   *
+   * \returns true if the address is in the range 0x8000 - 0x9FFF
+   */
+  bool IsMulticast (void) const;
+
 private:
   /**
    * \returns a new Address instance

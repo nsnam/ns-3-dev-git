@@ -152,8 +152,61 @@ uint8_t
 Mac16Address::GetType (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
   static uint8_t type = Address::Register ();
   return type;
+}
+
+Mac16Address
+Mac16Address::GetBroadcast (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  static Mac16Address broadcast = Mac16Address ("ff:ff");
+  return broadcast;
+}
+
+Mac16Address
+Mac16Address::GetMulticast (Ipv6Address address)
+{
+  NS_LOG_FUNCTION (address);
+
+  uint8_t ipv6AddrBuf[16];
+  address.GetBytes(ipv6AddrBuf);
+
+  uint8_t addrBuf[2];
+
+  addrBuf[0] = 0x80 | (ipv6AddrBuf[14] & 0x1F);
+  addrBuf[1] = ipv6AddrBuf[15];
+
+  Mac16Address multicastAddr;
+  multicastAddr.CopyFrom (addrBuf);
+
+  return multicastAddr;
+}
+
+bool
+Mac16Address::IsBroadcast (void) const
+{
+  NS_LOG_FUNCTION (this);
+  if (m_address[0] == 0xff && m_address[1] == 0xff)
+    {
+      return true;
+    }
+  return false;
+}
+
+bool
+Mac16Address::IsMulticast (void) const
+{
+  NS_LOG_FUNCTION (this);
+  uint8_t val = m_address[0];
+  val >>= 5;
+  if (val == 0x4)
+    {
+      return true;
+    }
+  return false;
 }
 
 std::ostream & operator<< (std::ostream& os, const Mac16Address & address)
