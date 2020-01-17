@@ -1552,8 +1552,8 @@ public:
    * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.
    *
    * \param powerRestricted flag whether the transmit power is restricted for the next transmission
-   * \param txPowerMaxSiso the SISO transmit power retriction for the next transmission
-   * \param txPowerMaxMimo the MIMO transmit power retriction for the next transmission
+   * \param txPowerMaxSiso the SISO transmit power restriction for the next transmission
+   * \param txPowerMaxMimo the MIMO transmit power restriction for the next transmission
    */
   void ResetCca (bool powerRestricted, double txPowerMaxSiso = 0, double txPowerMaxMimo = 0);
   /**
@@ -1887,7 +1887,7 @@ private:
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
-  bool m_powerRestricted;  //!< Flag whether transmit power is retricted by OBSS PD SR
+  bool m_powerRestricted;  //!< Flag whether transmit power is restricted by OBSS PD SR
   double m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
   double m_txPowerMaxMimo; //!< MIMO maximum transmit power due to OBSS PD SR power restriction
   bool m_channelAccessRequested;

@@ -267,17 +267,17 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
   // Verify transmit power restrictions are not applied if access to the channel is requested after ignored OBSS transmissions.
 
   Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, m_txPowerDbm);
-  // AP2 sends another packet 0.1s later. Power retriction should not be applied.
+  // AP2 sends another packet 0.1s later. Power restriction should not be applied.
   Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
-  // STA1 sends a packet 0.1s later. Power retriction should not be applied.
+  // STA1 sends a packet 0.1s later. Power restriction should not be applied.
   Simulator::Schedule (Seconds (2.3), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
 
   // Verify a scenario that involves 3 networks in order to verify corner cases for transmit power restrictions.
   // First, there is a transmission on network 2 from STA to AP, followed by a response from AP to STA.
   // During that time, the STA on network 1 has a packet to send and request access to the channel.
-  // If a CCA reset occured, it starts deferring while transmissions are ongoing from network 2.
+  // If a CCA reset occurred, it starts deferring while transmissions are ongoing from network 2.
   // Before its backoff expires, a transmission on network 3 occurs, also eventually triggering another CCA reset (depending on the scenario that is being run).
-  // This test checks whether this sequence preserves transmit power restrictions if CCA resets occured, since STA 1 has been defering during ignored OBSS transmissions.
+  // This test checks whether this sequence preserves transmit power restrictions if CCA resets occurred, since STA 1 has been deferring during ignored OBSS transmissions.
 
   Simulator::Schedule (Seconds (2.4), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device2, ap_device2, m_payloadSize2 / 10);
   Simulator::Schedule (Seconds (2.4) + MicroSeconds (5), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2 / 10);
