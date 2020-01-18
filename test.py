@@ -103,7 +103,7 @@ test_runner_name = "test-runner"
 # If the user has constrained us to run certain kinds of tests, we can tell waf
 # to only build
 #
-core_kinds = ["bvt", "core", "performance", "system", "unit"]
+core_kinds = ["core", "performance", "system", "unit"]
 
 #
 # There are some special cases for test suites that kill valgrind.  This is
@@ -2010,10 +2010,16 @@ def main(argv):
                       metavar="XML-FILE",
                       help="write detailed test results into XML-FILE.xml")
 
+    parser.add_option("--nocolor", action="store_true", dest="nocolor", default=False,
+                      help="do not use colors in the standard output")
+
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
-
+    
+    if options.nocolor:
+        colors_lst['USE'] = False
+    
     return run_tests()
 
 if __name__ == '__main__':
