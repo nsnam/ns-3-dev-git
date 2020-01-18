@@ -1663,23 +1663,23 @@ def run_tests():
         if len(example_name_list) == 0:
             print("No example matching the name %s" % example_name)
         else:
-            for pyexmple_iter in example_name_list:
+            for pyexample_iter in example_name_list:
                 #
                 # If you tell me to run a python example, I will try and run the example
                 # irrespective of any condition.
                 #
                 job = Job()
                 job.set_is_pyexample(True)
-                job.set_display_name(pyexmple_iter)
+                job.set_display_name(pyexample_iter)
                 job.set_tmp_file_name("")
                 job.set_cwd(testpy_output_dir)
                 job.set_basedir(os.getcwd())
                 job.set_tempdir(testpy_output_dir)
-                job.set_shell_command(pyexmple_iter)
+                job.set_shell_command(options.pyexample)
                 job.set_build_path("")
 
                 if options.verbose:
-                    print("Queue %s" % pyexmple_iter)
+                    print("Queue %s" % pyexample_iter)
 
                 input_queue.put(job)
                 jobs = jobs + 1
