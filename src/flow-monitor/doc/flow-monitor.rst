@@ -31,15 +31,25 @@ Design
 
 Flow Monitor module is designed in a modular way. It can be extended by subclassing
 ``ns3::FlowProbe`` and ``ns3::FlowClassifier``.
+Typically, a subclass of ``ns3::FlowProbe`` works by listening to the appropriate
+class Traces, and then uses its own ``ns3::FlowClassifier`` subclass to classify
+the packets passing though each node.
+
+Each Probe can try to listen to other classes traces (e.g., ``ns3::Ipv4FlowProbe``
+will try to use any ``ns3::NetDevice`` trace named ``TxQueue/Drop``) but this
+is something that the user should not rely into blindly, because the trace is not
+guaranteed to be in every type of ``ns3::NetDevice``. As an example,
+``CsmaNetDevice`` and ``PointToPointNetDevice`` have a ``TxQueue/Drop`` trace, while
+``WiFiNetDevice`` does not.
 
 The full module design is described in [FlowMonitor]_
 
 Scope and Limitations
 =====================
 
-At the moment, probes and classifiers are available for IPv4 and IPv6.
+At the moment, probes and classifiers are available only for IPv4 and IPv6.
 
-Each probe will classify packets in four points:
+IPv4 and IPv6 probes will classify packets in four points:
 
 * When a packet is sent (SendOutgoing IPv[4,6] traces)
 * When a packet is forwarded (UnicastForward IPv[4,6] traces)
@@ -76,6 +86,28 @@ The L2 headers are not included in the measure.
 
 These stats will be written in XML form upon request (see the Usage section).
 
+The "lost" packets problem
+##########################
+
+At the end of a simulation, Flow Monitor could report about "lost" packets, i.e.,
+packets that Flow Monitor have lost track of.
+
+It is important to keep in mind that Flow Monitor records the packets statistics by
+intercepting them at a given network level - let's say at IP level. When the simulation
+ends, any packet queued for transmission below the IP level will be considered as lost.
+
+It is strongly suggested to consider this point when using Flow Monitor. The user can choose to:
+
+* Ignore the lost packets (if their number is a statistically irrelevant quantity), or
+* Stop the Applications before the actual Simulation End time, leaving enough time between the two for the queued packets to be processed.
+
+The second method is the suggested one. Usually a few seconds are enough (the
+exact value depends on the network type).
+
+It is important to stress that "lost" packets could be anywhere in the network, and could count
+toward the received packets or the dropped ones. Ideally, their number should be zero or a minimal
+fraction of the other ones, i.e., they should be "statistically irrelevant".
+
 References
 ==========
 
@@ -93,26 +125,16 @@ The typical use is::
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll();
 
-  Simulator::Stop (Seconds(stop_time));
+  -yourApplicationsContainer-.Stop (Seconds (stop_time));;
+  Simulator::Stop (Seconds(stop_time+cleanup_time));
   Simulator::Run ();
 
   flowMonitor->SerializeToXmlFile("NameOfFile.xml", true, true);
 
 the ``SerializeToXmlFile ()`` function 2nd and 3rd parameters are used respectively to
 activate/deactivate the histograms and the per-probe detailed stats.
-Other possible alternatives can be found in the Doxygen documentation.
-
-It is important to keep in mind that Flow Monitor records the packets statistics by
-intercepting them at IP level. As a consequence, when the simulation ends, any
-packet queued for transmission below the IP level will be considered as lost.
-
-It is strongly suggested to consider this point when using Flow Monitor. The user can choose to:
-
-* Ignore the lost packets (if their number is a statistically irrelevant quantity), or
-* Stop the Applications before the actual Simulation End time, leaving enough time between the two for the queued packets to be processed.
-
-The second method is the suggested one. Usually a few seconds are enough (the
-exact value depends on the network type).
+Other possible alternatives can be found in the Doxygen documentation, while
+``cleanup_time`` is the time needed by in-flight packets to reach their destinations.
 
 Helpers
 =======
