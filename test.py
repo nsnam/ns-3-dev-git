@@ -1658,32 +1658,29 @@ def run_tests():
     elif len(options.pyexample):
         # Don't try to run this example if it isn't runnable.
         example_name = os.path.basename(options.pyexample)
-
-        example_name_list = fnmatch.filter(ns3_runnable_scripts, example_name)
-        if len(example_name_list) == 0:
-            print("No example matching the name %s" % example_name)
+        if example_name not in ns3_runnable_scripts:
+            print("Example %s is not runnable." % example_name)
         else:
-            for pyexample_iter in example_name_list:
-                #
-                # If you tell me to run a python example, I will try and run the example
-                # irrespective of any condition.
-                #
-                job = Job()
-                job.set_is_pyexample(True)
-                job.set_display_name(pyexample_iter)
-                job.set_tmp_file_name("")
-                job.set_cwd(testpy_output_dir)
-                job.set_basedir(os.getcwd())
-                job.set_tempdir(testpy_output_dir)
-                job.set_shell_command(options.pyexample)
-                job.set_build_path("")
+            #
+            # If you tell me to run a python example, I will try and run the example
+            # irrespective of any condition.
+            #
+            job = Job()
+            job.set_is_pyexample(True)
+            job.set_display_name(options.pyexample)
+            job.set_tmp_file_name("")
+            job.set_cwd(testpy_output_dir)
+            job.set_basedir(os.getcwd())
+            job.set_tempdir(testpy_output_dir)
+            job.set_shell_command(options.pyexample)
+            job.set_build_path("")
 
-                if options.verbose:
-                    print("Queue %s" % pyexample_iter)
+            if options.verbose:
+                print("Queue %s" % options.pyexample)
 
-                input_queue.put(job)
-                jobs = jobs + 1
-                total_tests = total_tests + 1
+            input_queue.put(job)
+            jobs = jobs + 1
+            total_tests = total_tests + 1
 
     #
     # Tell the worker threads to pack up and go home for the day.  Each one
