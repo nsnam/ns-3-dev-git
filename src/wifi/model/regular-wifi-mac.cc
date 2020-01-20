@@ -976,7 +976,7 @@ RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
   hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (originator);
   hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetAddress ());
+  hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
 

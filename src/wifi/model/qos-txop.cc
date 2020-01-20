@@ -1546,7 +1546,6 @@ QosTxop::SendBlockAckRequest (const Bar &bar)
   hdr.SetType (WIFI_MAC_CTL_BACKREQ);
   hdr.SetAddr1 (bar.recipient);
   hdr.SetAddr2 (m_low->GetAddress ());
-  hdr.SetAddr3 (m_low->GetBssid ());
   hdr.SetDsNotTo ();
   hdr.SetDsNotFrom ();
   hdr.SetNoRetry ();
@@ -1602,7 +1601,7 @@ QosTxop::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (dest);
   hdr.SetAddr2 (m_low->GetAddress ());
-  hdr.SetAddr3 (m_low->GetAddress ());
+  hdr.SetAddr3 (m_low->GetBssid ());
   hdr.SetDsNotTo ();
   hdr.SetDsNotFrom ();
 
@@ -1661,7 +1660,7 @@ QosTxop::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
   hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (addr);
   hdr.SetAddr2 (m_low->GetAddress ());
-  hdr.SetAddr3 (m_low->GetAddress ());
+  hdr.SetAddr3 (m_low->GetBssid ());
   hdr.SetDsNotTo ();
   hdr.SetDsNotFrom ();
 
