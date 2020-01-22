@@ -85,7 +85,8 @@ public:
    *
    * - the time to transmit the resulting PPDU, according to the given TxVector,
    * does not exceed both the maximum PPDU duration allowed by the corresponding
-   * modulation class (if any) and the given PPDU duration limit (if non null)
+   * modulation class (if any) and the given PPDU duration limit (if distinct from
+   * Time::Min ())
    *
    * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
    * from the EDCA queue and a null pointer is returned.
@@ -99,7 +100,7 @@ public:
    */
   Ptr<WifiMacQueueItem> GetNextAmsdu (Mac48Address recipient, uint8_t tid,
                                       WifiTxVector txVector, uint32_t ampduSize = 0,
-                                      Time ppduDurationLimit = Seconds (0)) const;
+                                      Time ppduDurationLimit = Time::Min ()) const;
 
   /**
    * Determine the maximum size for an A-MSDU of the given TID that can be sent

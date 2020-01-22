@@ -427,7 +427,7 @@ public:
    * If the peeked frame is a QoS Data frame, it is actually dequeued if it meets
    * the constraint on the maximum A-MPDU size (by assuming that the frame has to
    * be aggregated to an existing A-MPDU of the given size) and its transmission
-   * time does not exceed the given PPDU duration limit (if strictly positive).
+   * time does not exceed the given PPDU duration limit (if distinct from Time::Min ()).
    * If the peeked frame is a unicast QoS Data frame stored in the EDCA queue,
    * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
    * above) if <i>aggregate</i> is true and assign a sequence number to the
@@ -441,7 +441,7 @@ public:
    */
   Ptr<WifiMacQueueItem> DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
                                             bool aggregate = true, uint32_t ampduSize = 0,
-                                            Time ppduDurationLimit = Seconds (0));
+                                            Time ppduDurationLimit = Time::Min ());
   /**
    * Compute the MacLow transmission parameters for the given frame. Allowed frames
    * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA

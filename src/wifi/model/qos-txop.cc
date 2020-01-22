@@ -529,7 +529,7 @@ QosTxop::NotifyAccessGranted (void)
       else
         {
           // compute the limit on the PPDU duration due to the TXOP duration, if any
-          Time ppduDurationLimit = Seconds (0);
+          Time ppduDurationLimit = Time::Min ();
           if (peekedItem->GetHeader ().IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
             {
               MacLowTransmissionParameters params = GetTransmissionParameters (peekedItem);

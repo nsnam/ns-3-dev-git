@@ -542,7 +542,7 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
       Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
 
       // if a TXOP limit exists, compute the remaining TXOP duration
-      Time txopLimit = Seconds (0);
+      Time txopLimit = Time::Min ();
       if (m_currentTxop->GetTxopLimit ().IsStrictlyPositive ())
         {
           txopLimit = m_currentTxop->GetTxopRemaining () - CalculateOverheadTxTime (mpdu, m_txParams);
@@ -661,6 +661,11 @@ MacLow::IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uin
                                     WifiTxVector txVector, uint32_t ampduSize, Time ppduDurationLimit)
 {
   NS_LOG_FUNCTION (this << mpduSize << receiver << +tid << txVector << ampduSize << ppduDurationLimit);
+
+  if (ppduDurationLimit != Time::Min () && ppduDurationLimit.IsNegative ())
+    {
+      return false;
+    }
 
   WifiModulationClass modulation = txVector.GetMode ().GetModulationClass ();
 
