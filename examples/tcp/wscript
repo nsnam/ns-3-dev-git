@@ -43,3 +43,7 @@ def build(bld):
                                  ['point-to-point', 'internet', 'applications', 'flow-monitor'])
 
     obj.source = 'tcp-pacing.cc'
+
+    obj = bld.create_ns3_program('dctcp-example',
+                                 ['core', 'network', 'internet', 'point-to-point', 'applications', 'traffic-control'])
+    obj.source = 'dctcp-example.cc'
