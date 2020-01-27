@@ -330,7 +330,7 @@ SameRoomPositionAllocator::SameRoomPositionAllocator (NodeContainer c)
       NS_ASSERT_MSG (mm, "no mobility model aggregated to this node");
       Ptr<MobilityBuildingInfo> bmm = mm->GetObject <MobilityBuildingInfo> ();
       NS_ASSERT_MSG (bmm, "MobilityBuildingInfo has not been aggregated to this node mobility model");
-      BuildingsHelper::MakeConsistent (mm);
+      bmm->MakeConsistent (mm);
     }
 }
 

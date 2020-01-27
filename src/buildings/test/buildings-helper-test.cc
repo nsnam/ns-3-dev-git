@@ -150,7 +150,6 @@ BuildingsHelperOneTestCase::DoRun ()
   b->SetNRoomsY (m_bd.nry);
   Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> (b);
   bmm->AggregateObject (buildingInfo); // operation usually done by BuildingsHelper::Install
-  BuildingsHelper::MakeMobilityModelConsistent ();
 
   
   NS_TEST_ASSERT_MSG_EQ (buildingInfo->IsIndoor (), m_pib.indoor, "indoor/outdoor mismatch");

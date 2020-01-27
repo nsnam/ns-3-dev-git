@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   
   Ptr<MobilityBuildingInfo> buildingInfoEnb = CreateObject<MobilityBuildingInfo> ();
   mmEnb->AggregateObject (buildingInfoEnb); // operation usually done by BuildingsHelper::Install
-  BuildingsHelper::MakeConsistent (mmEnb);
+  buildingInfoEnb->MakeConsistent (mmEnb);
   
   Ptr<HybridBuildingsPropagationLossModel> propagationLossModel = CreateObject<HybridBuildingsPropagationLossModel> ();
   // cancel shadowing effect
@@ -92,7 +92,7 @@ main (int argc, char *argv[])
       mmUe->SetPosition (Vector (i, 0.0, hUe));
       Ptr<MobilityBuildingInfo> buildingInfoUe = CreateObject<MobilityBuildingInfo> ();
       mmUe->AggregateObject (buildingInfoUe); // operation usually done by BuildingsHelper::Install
-      BuildingsHelper::MakeConsistent (mmUe);
+      buildingInfoUe->MakeConsistent (mmUe);
       double loss = propagationLossModel->GetLoss (mmEnb, mmUe);
       outFile << i << "\t"
               << loss 

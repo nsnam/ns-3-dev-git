@@ -30,6 +30,7 @@
 #include <map>
 #include <ns3/building.h>
 #include <ns3/constant-velocity-helper.h>
+#include <ns3/mobility-model.h>
 
 
 
@@ -53,15 +54,23 @@ public:
   MobilityBuildingInfo (Ptr<Building> building);
 
   /** 
-   * 
+   * \brief Is indoor method.
    * \return true if the MobilityBuildingInfo instance is indoor, false otherwise
    */
   bool IsIndoor (void);
 
   /** 
    * 
+   * \brief Is outdoor function
+   *
    * \return true if the MobilityBuildingInfo instance is outdoor, false otherwise
+   *
+   * \deprecated This method will go away in future release of ns-3.
+   *  Calling \c IsInside () method of \c MobilityBuildingInfo class
+   *  will suffice the need to determine if a node is inside or outside
+   *  a building.
    */
+  NS_DEPRECATED
   bool IsOutdoor (void);
 
   /** 
@@ -106,6 +115,18 @@ public:
    * \return 
    */
   Ptr<Building> GetBuilding ();
+  /**
+   * \brief Make the given mobility model consistent, by determining whether
+   * its position falls inside any of the building in BuildingList, and
+   * updating accordingly the BuildingInfo aggregated with the MobilityModel.
+   *
+   * \param mm the mobility model to be made consistent
+   */
+  void MakeConsistent (Ptr<MobilityModel> mm);
+
+protected:
+  // inherited from Object
+  virtual void DoInitialize ();
 
 
 
@@ -116,6 +137,7 @@ private:
   uint8_t m_nFloor;
   uint8_t m_roomX;
   uint8_t m_roomY;
+  Vector m_cachedPosition;
 
 };
 

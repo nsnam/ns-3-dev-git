@@ -101,8 +101,6 @@ RandomRoomPositionAllocatorTestCase::DoRun ()
   mobility.Install (nodes);
   BuildingsHelper::Install (nodes);
 
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
   std::map<Room, uint32_t> roomCounter;
 
   for (NodeContainer::Iterator it = nodes.Begin (); it != nodes.End (); ++it)
@@ -189,8 +187,6 @@ SameRoomPositionAllocatorTestCase::DoRun ()
   mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (copyNodes);
   BuildingsHelper::Install (copyNodes);
-
-  BuildingsHelper::MakeMobilityModelConsistent ();
 
   std::map<Room, uint32_t> roomCounter;
 

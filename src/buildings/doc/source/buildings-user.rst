@@ -142,18 +142,20 @@ in special positions with respect to buildings:
 
 
 
-Make the Mobility Model Consistent
-**********************************
+Making the Mobility Model Consistent for a node
+***********************************************
 
-**Important**: whenever you use buildings, you have to issue the
-following command after we have placed all nodes and buildings in the simulation::
+Initially, a mobility model of a node is made consistent when a node is
+initialized, which eventually triggers a call to the ``DoInitialize``
+method of the `MobilityBuildingInfo`` class. In particular, it calls the
+``MakeMobilityModelConsistent`` method, which goes through the lists of
+all buildings, determine if the node is indoor or outdoor, and if indoor
+it also determines the building in which the node is located and the
+corresponding floor number inside the building. Moreover, this method also
+caches the position of the node, which is used to make the mobility model
+consistent for a moving node whenever the ``IsInside`` method of
+``MobilityBuildingInfo`` class is called.
 
-    BuildingsHelper::MakeMobilityModelConsistent ();
-
-This command will go through the lists of all nodes and of all
-buildings, determine for each user if it is indoor or outdoor, and if
-indoor it will also determine the building in which the user is
-located and the corresponding floor and number inside the building. 
 
 
 Building-aware pathloss model

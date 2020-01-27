@@ -53,6 +53,7 @@ BuildingsHelper::Install (Ptr<Node> node)
       NS_ABORT_MSG_UNLESS (0 != model, "node " << node->GetId () << " does not have a MobilityModel");
 
     }
+
   Ptr<MobilityBuildingInfo> buildingInfo = CreateObject<MobilityBuildingInfo> ();
   model->AggregateObject (buildingInfo);
 }
@@ -67,9 +68,9 @@ BuildingsHelper::MakeMobilityModelConsistent ()
       Ptr<MobilityModel> mm = (*nit)->GetObject<MobilityModel> ();
       if (mm != 0)
         {
-          MakeConsistent (mm);
           Ptr<MobilityBuildingInfo> bmm = mm->GetObject<MobilityBuildingInfo> ();
           NS_ABORT_MSG_UNLESS (0 != bmm, "node " << (*nit)->GetId () << " has a MobilityModel that does not have a MobilityBuildingInfo");
+          bmm->MakeConsistent (mm);
         }
     }
 }
@@ -87,13 +88,13 @@ BuildingsHelper::MakeConsistent (Ptr<MobilityModel> mm)
       if ((*bit)->IsInside (pos))
         {
           NS_LOG_LOGIC ("MobilityBuildingInfo " << bmm << " pos " << mm->GetPosition () << " falls inside building " << (*bit)->GetId ());
-          NS_ABORT_MSG_UNLESS (found == false, " MobilityBuildingInfo already inside another building!");		
+          NS_ABORT_MSG_UNLESS (found == false, " MobilityBuildingInfo already inside another building!");
           found = true;
           uint16_t floor = (*bit)->GetFloor (pos);
           uint16_t roomX = (*bit)->GetRoomX (pos);
-          uint16_t roomY = (*bit)->GetRoomY (pos);	   
-          bmm->SetIndoor (*bit, floor, roomX, roomY);	      
-        }		    	  
+          uint16_t roomY = (*bit)->GetRoomY (pos);
+          bmm->SetIndoor (*bit, floor, roomX, roomY);
+        }
     }
   if (!found)
     {

@@ -21,6 +21,7 @@
 
 #include <ns3/simulator.h>
 #include <ns3/position-allocator.h>
+#include <ns3/building-list.h>
 #include <ns3/mobility-building-info.h>
 #include <ns3/pointer.h>
 #include <ns3/log.h>
@@ -43,6 +44,14 @@ MobilityBuildingInfo::GetTypeId (void)
   return tid;
 }
 
+void
+MobilityBuildingInfo::DoInitialize ()
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<MobilityModel> mm = this->GetObject<MobilityModel> ();
+  MakeConsistent (mm);
+}
+
 
 MobilityBuildingInfo::MobilityBuildingInfo ()
 {
@@ -51,6 +60,7 @@ MobilityBuildingInfo::MobilityBuildingInfo ()
   m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
+  m_cachedPosition = Vector (0,0,0);
 }
 
 
@@ -68,14 +78,23 @@ bool
 MobilityBuildingInfo::IsIndoor (void)
 {
   NS_LOG_FUNCTION (this);
-  return (m_indoor);
+  Ptr<MobilityModel> mm = this->GetObject<MobilityModel> ();
+  Vector currentPosition = mm->GetPosition ();
+  bool posNotEqual = (currentPosition < m_cachedPosition) || (m_cachedPosition < currentPosition);
+  if (posNotEqual)
+    {
+      MakeConsistent (mm);
+    }
+
+  return m_indoor;
 }
 
 bool
 MobilityBuildingInfo::IsOutdoor (void)
 {
   NS_LOG_FUNCTION (this);
-  return (!m_indoor);
+  bool isIndoor = IsIndoor ();
+  return (!isIndoor);
 }
 
 void
@@ -153,6 +172,35 @@ MobilityBuildingInfo::GetBuilding ()
 {
   NS_LOG_FUNCTION (this);
   return (m_myBuilding);
+}
+
+void
+MobilityBuildingInfo::MakeConsistent (Ptr<MobilityModel> mm)
+{
+  bool found = false;
+  Vector pos = mm->GetPosition ();
+  for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
+    {
+      NS_LOG_LOGIC ("checking building " << (*bit)->GetId () << " with boundaries " << (*bit)->GetBoundaries ());
+      if ((*bit)->IsInside (pos))
+        {
+          NS_LOG_LOGIC ("MobilityBuildingInfo " << this << " pos " << pos << " falls inside building " << (*bit)->GetId ());
+          NS_ABORT_MSG_UNLESS (found == false, " MobilityBuildingInfo already inside another building!");
+          found = true;
+          uint16_t floor = (*bit)->GetFloor (pos);
+          uint16_t roomX = (*bit)->GetRoomX (pos);
+          uint16_t roomY = (*bit)->GetRoomY (pos);
+          SetIndoor (*bit, floor, roomX, roomY);
+        }
+    }
+  if (!found)
+    {
+      NS_LOG_LOGIC ("MobilityBuildingInfo " << this << " pos " << pos  << " is outdoor");
+      SetOutdoor ();
+    }
+
+  m_cachedPosition = pos;
+
 }
 
   
