@@ -64,23 +64,31 @@ TcpDctcp::TcpDctcp ()
   : TcpNewReno ()
 {
   NS_LOG_FUNCTION (this);
-  m_delayedAckReserved = false;
-  m_ceState = false;
   m_ackedBytesEcn = 0;
   m_ackedBytesTotal = 0;
+  m_priorRcvNxt = SequenceNumber32(0);
   m_priorRcvNxtFlag = false;
+  m_nextSeq = SequenceNumber32(0);
   m_nextSeqFlag = false;
+  m_ceState = false;
+  m_delayedAckReserved = false;
 }
 
 TcpDctcp::TcpDctcp (const TcpDctcp& sock)
   : TcpNewReno (sock)
+  , m_ackedBytesEcn(sock.m_ackedBytesEcn)
+  , m_ackedBytesTotal(sock.m_ackedBytesTotal)
+  , m_priorRcvNxt(sock.m_priorRcvNxt)
+  , m_priorRcvNxtFlag(sock.m_priorRcvNxtFlag)
+  , m_alpha(sock.m_alpha)
+  , m_nextSeq(sock.m_nextSeq)
+  , m_nextSeqFlag(sock.m_nextSeqFlag)
+  , m_ceState(sock.m_ceState)
+  , m_delayedAckReserved(sock.m_delayedAckReserved)
+  , m_g(sock.m_g)
+  , m_useEct0(sock.m_useEct0)
 {
   NS_LOG_FUNCTION (this);
-  m_delayedAckReserved = (sock.m_delayedAckReserved);
-  m_ceState = (sock.m_ceState);
-  m_g = sock.m_g;
-  m_alpha = sock.m_alpha;
-  m_useEct0 = sock.m_useEct0;
 }
 
 TcpDctcp::~TcpDctcp (void)
