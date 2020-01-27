@@ -55,6 +55,15 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
 <li> New attributes for <b> Ipv4L3Protocol</b> have been added to enable RFC 6621-based duplicate packet detection (DPD) (<b>EnableDuplicatePacketDetection</b>) and to control the cache expiration time (<b>DuplicateExpire</b>).</li>
+<li><b> MakeConsistent </b> method of <b> BuildingsHelper </b> class is 
+deprecated and moved to <b> MobilityBuildingInfo </b> class. <b> DoInitialize </b> 
+method of the <b> MobilityBuildingInfo </b> class would be responsible for making 
+the mobility model of a node consistent at the beginning of a simulation. 
+Therefore, there is no need for an explicit call to <b> MakeConsistent </b> in a simulation script.</li>
+<li> The <b> IsInside </b> method of <b> MobilityBuildingInfo </b> class is extended 
+to make the mobility model of a moving node consistent.</li>
+<li> The <b> IsOutside </b> method of <b> MobilityBuildingInfo </b> class is 
+deprecated. The <b> IsInside </b> method should be use to check the position of a node.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -66,6 +75,11 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
+<li> As a result of the above API changes in <b> MobilityBuildingInfo </b> 
+and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g., 
+<b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 
+the pathloss for a node moving in and out of buildings in a simulation. See <a href=https://gitlab.com/nsnam/ns-3-dev/issues/80>issue 80</a> 
+for discussion.</li>
 </ul>
 
 <hr>

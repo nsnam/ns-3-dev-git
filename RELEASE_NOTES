@@ -67,6 +67,7 @@ Bugs fixed
 - Issue #77 - Wi-Fi VHT capabilities MaxMpduLength had invalid restriction
 - Issue #79 - Wi-Fi connection drop or low throughput due to Block Ack transmit window
 - Example program tap-wifi-virtual-machine.py had a syntax error
+- Issue #80 - Indoor/outdoor status is not updated when the node moves
 
 Release 3.30
 ============
