@@ -106,10 +106,6 @@ int main (int argc, char *argv[])
   // set ylabel "Y"
   // set cblabel "SINR (dB)"
   // plot "rem.out" using ($1):($2):(10*log10($4)) with image
-  
-    
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
 
   Simulator::Run ();
 

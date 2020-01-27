@@ -843,8 +843,6 @@ main (int argc, char *argv[])
         }
     }
 
-  BuildingsHelper::MakeMobilityModelConsistent ();
-
   Ptr<RadioEnvironmentMapHelper> remHelper;
   if (generateRem)
     {
