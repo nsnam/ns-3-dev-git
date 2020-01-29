@@ -1236,6 +1236,168 @@ private:
  */
 std::ostream & operator<< (std::ostream & os, SixLowPanUdpNhcExtension const &header);
 
+/**
+ * \ingroup sixlowpan
+ * \brief 6LoWPAN BC0 header - see \RFC{4944}.
+ */
+class SixLowPanBc0 : public Header
+{
+public:
+  SixLowPanBc0 (void);
+
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * \brief Return the instance type identifier.
+   * \return Instance type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  virtual void Print (std::ostream& os) const;
+
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return Size.
+   */
+  virtual uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \brief Serialize the packet.
+   * \param [in] start Buffer iterator.
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
+
+  /**
+   * \brief Deserialize the packet.
+   * \param [in] start Buffer iterator.
+   * \return Size of the packet.
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  /**
+   * \brief Set the "Sequence Number" field.
+   * \param [in] seqNumber The sequence number value.
+   */
+  void SetSequenceNumber (uint8_t seqNumber);
+
+  /**
+   * \brief Get the "Sequence Number" field.
+   * \return The sequence number value.
+   */
+  uint8_t GetSequenceNumber (void) const;
+
+private:
+  uint8_t m_seqNumber;          //!< Sequence number.
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] header The BC0 Extension Header.
+ * \returns The reference to the output stream.
+ */
+std::ostream & operator<< (std::ostream & os, SixLowPanBc0 const &header);
+
+/**
+ * \ingroup sixlowpan
+ * \brief 6LoWPAN Mesh header - see \RFC{4944}.
+ */
+class SixLowPanMesh : public Header
+{
+public:
+  SixLowPanMesh (void);
+
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * \brief Return the instance type identifier.
+   * \return Instance type ID.
+   */
+  virtual TypeId GetInstanceTypeId (void) const;
+
+  virtual void Print (std::ostream& os) const;
+
+  /**
+   * \brief Get the serialized size of the packet.
+   * \return Size.
+   */
+  virtual uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \brief Serialize the packet.
+   * \param [in] start Buffer iterator.
+   */
+  virtual void Serialize (Buffer::Iterator start) const;
+
+  /**
+   * \brief Deserialize the packet.
+   * \param [in] start Buffer iterator.
+   * \return Size of the packet.
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  /**
+   * \brief Set the "Hops Left" field.
+   * \param [in] hopsLeft The number of hops left.
+   */
+  void SetHopsLeft (uint8_t hopsLeft);
+
+  /**
+   * \brief Get the "Hops Left" field.
+   * \return The number of hops left.
+   */
+  uint8_t GetHopsLeft (void) const;
+
+  /**
+   * \brief Set the "Originator" address.
+   * \param [in] originator The Originator address (Mac64Address or Mac16Address).
+   */
+  void SetOriginator (Address originator);
+
+  /**
+   * \brief Get the "Originator" address.
+   * \return The Originator address (Mac64Address or Mac16Address).
+   */
+  Address GetOriginator (void) const;
+
+  /**
+   * \brief Set the "Final Destination" address.
+   * \param [in] finalDst The Final Destination address (Mac64Address or Mac16Address).
+   */
+  void SetFinalDst (Address finalDst);
+
+  /**
+   * \brief Get the "Final Destination" address.
+   * \return The Final Destination address (Mac64Address or Mac16Address).
+   */
+  Address GetFinalDst (void) const;
+
+private:
+  uint8_t m_hopsLeft; //!< Hops left.
+  bool m_v;           //!< True if Originator address is 16 bit
+  bool m_f;           //!< True if Destination address is 16 bit
+  Address m_src;      //!< Originator (source) address.
+  Address m_dst;      //!< Destination (final) address.
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] header The Mesh Extension Header.
+ * \returns The reference to the output stream.
+ */
+std::ostream & operator<< (std::ostream & os, SixLowPanMesh const &header);
+
 }
 
 #endif /* SIXLOWPANHEADER_H_ */

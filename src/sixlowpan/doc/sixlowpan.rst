@@ -6,7 +6,7 @@
 -----------------------------------------------------------------
 
 This chapter describes the implementation of |ns3| model for the
-compression of IPv6 packets over IEEE 802.15.4-Based Networks 
+compression of IPv6 packets over IEEE 802.15.4-Based Networks
 as specified by :rfc:`4944` and :rfc:`6282`.
 
 Model Description
@@ -17,31 +17,27 @@ The source code for the sixlowpan module lives in the directory ``src/sixlowpan`
 Design
 ======
 
-The model design does not follow strictly the standard from an architectural 
+The model design does not follow strictly the standard from an architectural
 standpoint, as it does extend it beyond the original scope by supporting also
 other kinds of networks.
 
-Other than that, the module strictly follows :rfc:`4944` and :rfc:`6282`, with the 
+Other than that, the module strictly follows :rfc:`4944` and :rfc:`6282`, with the
 following exceptions:
 
-* MESH and LOWPAN_BC0 dispatch types are not supported
 * HC2 encoding is not supported
 * IPHC's SAC and DAC are not supported
-
-The MESH and LOWPAN_BC0 are not supported as they do apply only to mesh-under
-architecture, which is not one of the goals of the module development.
 
 The HC2 encoding is not supported, as it has been superseded by IPHC and NHC
 compression type (\ :rfc:`6282`).
 
-IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` for full 
-compliance. It is planned to support them in the future. 
+IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` for full
+compliance. It is planned to support them in the future.
 
 NetDevice
 #########
 
 The whole module is developed as a transparent NetDevice, which can act as a
-proxy between IPv6 and any NetDevice (the module has been successfully tested 
+proxy between IPv6 and any NetDevice (the module has been successfully tested
 with PointToPointNedevice, CsmaNetDevice and LrWpanNetDevice).
 
 For this reason, the module implements a virtual NetDevice, and all the calls are passed
@@ -55,19 +51,23 @@ The attributes are:
 * OmitUdpChecksum (boolean, default true), used to activate UDP checksum compression in IPHC.
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.
-* CompressionThreshold (unsigned 32 bits integer, default 0), minimum compressed payload size. 
-* ForceEtherType (boolean, default false), and
+* CompressionThreshold (unsigned 32 bits integer, default 0), minimum compressed payload size.
+* ForceEtherType (boolean, default false).
 * EtherType (unsigned 16 bits integer, default 0xFFFF), to force a particular L2 EtherType.
+* UseMeshUnder (boolean, default false), it enables mesh-under flood routing.
+* MeshUnderRadius (unsigned 8 bits integer, default 10), the maximum number of hops that a packet will be forwarded.
+* MeshCacheLength (unsigned 16 bits integer, default 10), the length of the cache for each source.
+* MeshUnderJitter (ns3::UniformRandomVariable[Min=0.0|Max=10.0]), the jitter in ms a node uses to forward mesh-under packets - used to prevent collisions.
 
 The CompressionThreshold attribute is similar to Contiki's SICSLOWPAN_CONF_MIN_MAC_PAYLOAD
 option. If a compressed packet size is less than the threshold, the uncompressed version is
 used (plus one byte for the correct dispatch header).
-This option is useful when a MAC requires a minimum frame size (e.g., ContikiMAC) and the 
+This option is useful when a MAC requires a minimum frame size (e.g., ContikiMAC) and the
 compression would violate the requirement.
 
 The last two attributes are needed to use the module with a NetDevice other than 802.15.4, as
 neither IANA or IEEE did reserve an EtherType for 6LoWPAN. As a consequence there might be a
-conflict with the L2 multiplexer/demultiplexer which is based on EtherType. The default 
+conflict with the L2 multiplexer/demultiplexer which is based on EtherType. The default
 value is 0xFFFF, which is reserved by IEEE (see [IANA802]_ and [Ethertype]_).
 The default module behaviour is to not change the EtherType, however this would not work with
 any NetDevice actually understanding and using the EtherType.
@@ -92,11 +92,33 @@ The Trace sources are:
 The Tx and Rx traces are called as soon as a packet is received or sent. The Drop trace is
 invoked when a packet (or a fragment) is discarded.
 
+Mesh-Under routing
+##################
+
+The module provides a very simple mesh-under routing [Shelby]_, implemented as a flooding
+(a mesh-under routing protocol is a routing system implemented below IP).
+
+This functionality can be activated through the UseMeshUnder attribute and fine-tuned using
+the MeshUnderRadius and MeshUnderJitter attributes.
+
+Note that flooding in a PAN generates a lot of overhead, which is often not wanted.
+Moreover, when using the mesh-under facility, ALL the packets are sent without acknowledgment
+because, at lower level, they are sent to a broadcast address.
+
+At node level, each packet is re-broadcasted if its BC0 Sequence Number is not in the cache of the
+recently seen packets. The cache length (by default 10) can be changed through the MeshCacheLength
+attribute.
 
 Scope and Limitations
 =====================
 
 Future versions of this module will support :rfc:`6775`, however no timeframe is guaranteed.
+
+It would be a good idea to improve the mesh-under flooding by providing the following:
+
+* Adaptive hop-limit calculation,
+* Adaptive forwarding jitter,
+* Use of direct (non mesh) transmission for packets directed to 1-hop neighbors.
 
 Using 6LoWPAN with IPv4 (or other L3 protocols)
 ###############################################
@@ -110,7 +132,7 @@ in advance.
 
 In the |ns3| implementation it is possible, but not advisable, to violate this requirement
 if the underlying NetDevice is capable of discriminating different protocols. As an example,
-CsmaNetDevice can carry IPv4 and 6LoWPAN at the same time. However, this configuration has 
+CsmaNetDevice can carry IPv4 and 6LoWPAN at the same time. However, this configuration has
 not been tested.
 
 References
@@ -121,6 +143,7 @@ References
 .. [RFC6775] :rfc:`6775`, "Neighbor Discovery Optimization for IPv6 over Low-Power Wireless Personal Area Networks (6LoWPANs)"
 .. [IANA802] IANA, assigned IEEE 802 numbers: http://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xml
 .. [Ethertype] IEEE Ethertype numbers: http://standards.ieee.org/develop/regauth/ethertype/eth.txt
+.. [Shelby] Z. Shelby and C. Bormann, 6LoWPAN: The Wireless Embedded Internet. Wiley, 2011. [Online]. Available: https://books.google.it/books?id=3Nm7ZCxscMQC
 
 Usage
 *****
@@ -133,7 +156,7 @@ Add ``sixlowpan`` to the list of modules built with |ns3|.
 Helper
 ======
 
-The helper is patterned after other device helpers. 
+The helper is patterned after other device helpers.
 
 Examples
 ========
@@ -156,5 +179,3 @@ Validation
 
 The model has been validated against WireShark, checking whatever the packets are correctly
 interpreted and validated.
-
-

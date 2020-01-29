@@ -23,6 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/mac64-address.h"
+#include "ns3/mac16-address.h"
+#include "ns3/ipv6-header.h"
 #include "sixlowpan-header.h"
 
 
@@ -128,7 +131,7 @@ void SixLowPanHc1::Print (std::ostream & os) const
   encoding <<= 1;
   encoding |= m_hc2HeaderPresent;
 
-  os << "encoding " << static_cast<int> (encoding) << ", hopLimit " << static_cast<int> (m_hopLimit);
+  os << "encoding " << +encoding << ", hopLimit " << +m_hopLimit;
 }
 
 uint32_t SixLowPanHc1::GetSerializedSize () const
@@ -545,7 +548,7 @@ NS_OBJECT_ENSURE_REGISTERED (SixLowPanFrag1);
 
 SixLowPanFrag1::SixLowPanFrag1 ()
   : m_datagramSize (0),
-    m_datagramTag (0)
+  m_datagramTag (0)
 {
 }
 
@@ -632,8 +635,8 @@ NS_OBJECT_ENSURE_REGISTERED (SixLowPanFragN);
 
 SixLowPanFragN::SixLowPanFragN ()
   : m_datagramSize (0),
-    m_datagramTag (0),
-    m_datagramOffset (0)
+  m_datagramTag (0),
+  m_datagramOffset (0)
 {
 }
 /*
@@ -655,7 +658,7 @@ TypeId SixLowPanFragN::GetInstanceTypeId (void) const
 
 void SixLowPanFragN::Print (std::ostream & os) const
 {
-  os << "datagram size " << m_datagramSize << " tag " << m_datagramTag << " offset " << static_cast<int> (m_datagramOffset);
+  os << "datagram size " << m_datagramSize << " tag " << m_datagramTag << " offset " << +m_datagramOffset;
 }
 
 uint32_t SixLowPanFragN::GetSerializedSize () const
@@ -815,7 +818,7 @@ TypeId SixLowPanIphc::GetInstanceTypeId (void) const
 
 void SixLowPanIphc::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << static_cast<int> (m_baseFormat);
+  os << "Compression kind: " << +m_baseFormat;
 }
 
 uint32_t SixLowPanIphc::GetSerializedSize () const
@@ -1508,7 +1511,7 @@ TypeId SixLowPanNhcExtension::GetInstanceTypeId (void) const
 
 void SixLowPanNhcExtension::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << static_cast<int> (m_nhcExtensionHeader) << " Size: " << GetSerializedSize ();
+  os << "Compression kind: " << +m_nhcExtensionHeader << " Size: " << GetSerializedSize ();
 }
 
 uint32_t SixLowPanNhcExtension::GetSerializedSize () const
@@ -1637,7 +1640,7 @@ TypeId SixLowPanUdpNhcExtension::GetInstanceTypeId (void) const
 
 void SixLowPanUdpNhcExtension::Print (std::ostream & os) const
 {
-  os << "Compression kind: " << static_cast<int> (m_baseFormat);
+  os << "Compression kind: " << +m_baseFormat;
 }
 
 uint32_t SixLowPanUdpNhcExtension::GetSerializedSize () const
@@ -1805,6 +1808,317 @@ std::ostream & operator << (std::ostream & os, const SixLowPanUdpNhcExtension & 
   return os;
 }
 
+/*
+ * SixLowPanBc0
+ */
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanBc0);
+
+SixLowPanBc0::SixLowPanBc0 ()
+{
+  m_seqNumber = 66;
+}
+
+TypeId SixLowPanBc0::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SixLowPanBc0")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanBc0> ();
+  return tid;
+}
+
+TypeId SixLowPanBc0::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void SixLowPanBc0::Print (std::ostream & os) const
+{
+  os << "Sequence number: " << +m_seqNumber;
+}
+
+uint32_t SixLowPanBc0::GetSerializedSize () const
+{
+  return 2;
+}
+
+void SixLowPanBc0::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (0x50);
+  i.WriteU8 (m_seqNumber);
+
+}
+
+uint32_t SixLowPanBc0::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t dispatch = i.ReadU8 ();
+
+  if (dispatch != 0x50)
+    {
+      return 0;
+    }
+
+  m_seqNumber = i.ReadU8 ();
+
+  return GetSerializedSize ();
+}
+
+void SixLowPanBc0::SetSequenceNumber (uint8_t seqNumber)
+{
+  m_seqNumber = seqNumber;
+}
+
+uint8_t SixLowPanBc0::GetSequenceNumber (void) const
+{
+  return m_seqNumber;
+}
+
+std::ostream & operator << (std::ostream & os, const SixLowPanBc0 & h)
+{
+  h.Print (os);
+  return os;
+}
+
+/*
+ * SixLowPanMesh
+ */
+NS_OBJECT_ENSURE_REGISTERED (SixLowPanMesh);
+
+SixLowPanMesh::SixLowPanMesh ()
+{
+  m_hopsLeft = 0;
+  m_src = Address ();
+  m_dst = Address ();
+  m_v = false;
+  m_f = false;
+}
+
+TypeId SixLowPanMesh::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::SixLowPanMesh")
+    .SetParent<Header> ()
+    .SetGroupName ("SixLowPan")
+    .AddConstructor<SixLowPanMesh> ();
+  return tid;
+}
+
+TypeId SixLowPanMesh::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void SixLowPanMesh::Print (std::ostream & os) const
+{
+  os << "Hops left: " << +m_hopsLeft << ", src: ";
+  if (Mac64Address::IsMatchingType (m_src))
+    {
+      os << Mac64Address::ConvertFrom (m_src);
+    }
+  else
+    {
+      os << Mac16Address::ConvertFrom (m_src);
+    }
+  os << ", dst: ";
+  if (Mac64Address::IsMatchingType (m_dst))
+    {
+      os << Mac64Address::ConvertFrom (m_dst);
+    }
+  else
+    {
+      os << Mac16Address::ConvertFrom (m_dst);
+    }
+}
+
+uint32_t SixLowPanMesh::GetSerializedSize () const
+{
+  uint32_t serializedSize = 1;
+
+  if (m_hopsLeft >= 0xF)
+    {
+      serializedSize++;
+    }
+
+  if (m_v)
+    {
+      serializedSize += 2;
+    }
+  else
+    {
+      serializedSize += 8;
+    }
+
+  if (m_f)
+    {
+      serializedSize += 2;
+    }
+  else
+    {
+      serializedSize += 8;
+    }
+
+  return serializedSize;
+}
+
+void SixLowPanMesh::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  uint8_t dispatch = 0x80;
+
+  if (m_v)
+    {
+      dispatch |= 0x20;
+    }
+  if (m_f)
+    {
+      dispatch |= 0x10;
+    }
+
+  if (m_hopsLeft < 0xF)
+    {
+      dispatch |= m_hopsLeft;
+      i.WriteU8 (dispatch);
+    }
+  else
+    {
+      dispatch |= 0xF;
+      i.WriteU8 (dispatch);
+      i.WriteU8 (m_hopsLeft);
+    }
+
+  uint8_t buffer[8];
+
+  m_src.CopyTo (buffer);
+  if (m_v)
+    {
+      i.Write (buffer, 2);
+    }
+  else
+    {
+      i.Write (buffer, 8);
+    }
+
+  m_dst.CopyTo (buffer);
+  if (m_f)
+    {
+      i.Write (buffer, 2);
+    }
+  else
+    {
+      i.Write (buffer, 8);
+    }
+}
+
+uint32_t SixLowPanMesh::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t temp = i.ReadU8 ();
+
+  if ((temp & 0xC0) != 0x80)
+    {
+      return 0;
+    }
+
+  m_v = temp & 0x20;
+  m_f = temp & 0x10;
+  m_hopsLeft = temp & 0xF;
+
+  if (m_hopsLeft == 0xF)
+    {
+      m_hopsLeft = i.ReadU8 ();
+    }
+
+  uint8_t buffer[8];
+  uint8_t addrSize;
+
+  if (m_v)
+    {
+      addrSize = 2;
+    }
+  else
+    {
+      addrSize = 8;
+    }
+  i.Read (buffer, addrSize);
+  m_src.CopyFrom (buffer, addrSize);
+
+  if (m_f)
+    {
+      addrSize = 2;
+    }
+  else
+    {
+      addrSize = 8;
+    }
+  i.Read (buffer, addrSize);
+  m_dst.CopyFrom (buffer, addrSize);
+
+  return GetSerializedSize ();
+}
+
+void SixLowPanMesh::SetOriginator (Address originator)
+{
+  if (Mac64Address::IsMatchingType (originator))
+    {
+      m_v = false;
+    }
+  else if (Mac16Address::IsMatchingType (originator))
+    {
+      m_v = true;
+    }
+  else
+    {
+      NS_ABORT_MSG ("SixLowPanMesh::SetOriginator - incompatible address");
+    }
+
+  m_src = originator;
+}
+
+Address SixLowPanMesh::GetOriginator (void) const
+{
+  return m_src;
+}
+
+void SixLowPanMesh::SetFinalDst (Address finalDst)
+{
+  if (Mac64Address::IsMatchingType (finalDst))
+    {
+      m_f = false;
+    }
+  else if (Mac16Address::IsMatchingType (finalDst))
+    {
+      m_f = true;
+    }
+  else
+    {
+      NS_ABORT_MSG ("SixLowPanMesh::SetFinalDst - incompatible address");
+    }
+
+  m_dst = finalDst;
+}
+
+Address SixLowPanMesh::GetFinalDst (void) const
+{
+  return m_dst;
+}
+
+void SixLowPanMesh::SetHopsLeft (uint8_t hopsLeft)
+{
+  m_hopsLeft = hopsLeft;
+}
+
+uint8_t SixLowPanMesh::GetHopsLeft (void) const
+{
+  return m_hopsLeft;
+}
+
+std::ostream & operator << (std::ostream & os, const SixLowPanMesh & h)
+{
+  h.Print (os);
+  return os;
+}
 
 }
 

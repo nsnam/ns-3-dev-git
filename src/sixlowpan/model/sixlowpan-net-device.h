@@ -28,6 +28,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -153,9 +154,9 @@ public:
    * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
    * in a future release.
    */
-  typedef void (* RxTxTracedCallback)
-    (Ptr<const Packet> packet, Ptr<SixLowPanNetDevice> sixNetDevice,
-     uint32_t ifindex);
+  typedef void (* RxTxTracedCallback)(Ptr<const Packet> packet,
+                                      Ptr<SixLowPanNetDevice> sixNetDevice,
+                                      uint32_t ifindex);
 
   /**
    * TracedCallback signature for
@@ -168,11 +169,11 @@ public:
    * is deprecated and will be changed to \c Ptr<const SixLowPanNetDevice>
    * in a future release.
    */
-  typedef void (* DropTracedCallback)
-    (DropReason reason, Ptr<const Packet> packet,
-     Ptr<SixLowPanNetDevice> sixNetDevice,
-     uint32_t ifindex);
-   
+  typedef void (* DropTracedCallback)(DropReason reason,
+                                      Ptr<const Packet> packet,
+                                      Ptr<SixLowPanNetDevice> sixNetDevice,
+                                      uint32_t ifindex);
+
 protected:
   virtual void DoDispose (void);
 
@@ -458,6 +459,13 @@ private:
   void DropOldestFragmentSet ();
 
   /**
+   * Get a Mac16 from its Mac48 pseudo-MAC
+   * \param addr the PseudoMac adddress
+   * \return the Mac16Address
+   */
+  Address Get16MacFrom48Mac (Address addr);
+
+  /**
    * Container for fragment key -> fragments.
    */
   typedef std::map< FragmentKey, Ptr<Fragments> > MapFragments_t;
@@ -485,6 +493,13 @@ private:
   uint16_t             m_fragmentReassemblyListSize;
 
   bool m_useIphc; //!< Use IPHC or HC1.
+
+  bool m_meshUnder;               //!< Use a mesh-under routing.
+  uint8_t m_bc0Serial;            //!< Serial number used in BC0 header.
+  uint8_t m_meshUnderHopsLeft;    //!< Start value for mesh-under hops left.
+  uint16_t m_meshCacheLength;     //!< length of the cache for each source.
+  Ptr<RandomVariableStream> m_meshUnderJitter; //!< Random variable for the mesh-under packet retransmission.
+  std::map <Address /* OriginatorAdddress */, std::list <uint8_t  /* SequenceNumber */> > m_seenPkts; //!< Seen packets, memorized by OriginatorAdddress, SequenceNumber.
 
   Ptr<Node> m_node; //!< Smart pointer to the Node.
   Ptr<NetDevice> m_netDevice; //!< Smart pointer to the underlying NetDevice.

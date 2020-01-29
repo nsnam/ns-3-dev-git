@@ -11,3 +11,7 @@ def build(bld):
     obj = bld.create_ns3_program('example-ping-lr-wpan',
                                  ['network', 'sixlowpan', 'internet', 'lr-wpan', 'internet-apps'])
     obj.source = 'example-ping-lr-wpan.cc'
+
+    obj = bld.create_ns3_program('example-ping-lr-wpan-mesh-under',
+                                 ['network', 'sixlowpan', 'internet', 'lr-wpan', 'internet-apps', 'csma'])
+    obj.source = 'example-ping-lr-wpan-mesh-under.cc'

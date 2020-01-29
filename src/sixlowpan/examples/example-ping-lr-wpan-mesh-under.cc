@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2013 Universita' di Firenze, Italy
+ * Copyright (c) 2019 Universita' di Firenze, Italy
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,7 +18,6 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
-
 #include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
@@ -28,19 +27,20 @@
 #include "ns3/propagation-module.h"
 #include "ns3/sixlowpan-module.h"
 #include "ns3/lr-wpan-module.h"
+#include "ns3/csma-module.h"
 
 using namespace ns3;
-
-
 
 int main (int argc, char** argv)
 {
   bool verbose = false;
 
+  Packet::EnablePrinting ();
+
   CommandLine cmd;
   cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
-  
+
   if (verbose)
     {
       LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
@@ -50,24 +50,29 @@ int main (int argc, char** argv)
       LogComponentEnable ("SixLowPanNetDevice", LOG_LEVEL_ALL);
     }
 
-  NodeContainer nodes;
-  nodes.Create(2);
+  uint32_t nWsnNodes = 4;
+  NodeContainer wsnNodes;
+  wsnNodes.Create (nWsnNodes);
+
+  NodeContainer wiredNodes;
+  wiredNodes.Create (1);
+  wiredNodes.Add (wsnNodes.Get (0));
 
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (20),
-                                 "DeltaY", DoubleValue (20),
-                                 "GridWidth", UintegerValue (3),
+                                 "DeltaX", DoubleValue (80),
+                                 "DeltaY", DoubleValue (80),
+                                 "GridWidth", UintegerValue (10),
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (nodes);
-  
+  mobility.Install (wsnNodes);
+
   LrWpanHelper lrWpanHelper;
   // Add and install the LrWpanNetDevice for each node
-  NetDeviceContainer lrwpanDevices = lrWpanHelper.Install(nodes);
+  NetDeviceContainer lrwpanDevices = lrWpanHelper.Install (wsnNodes);
 
   // Fake PAN association and short address assignment.
   // This is needed because the lr-wpan module does not provide (yet)
@@ -75,43 +80,60 @@ int main (int argc, char** argv)
   lrWpanHelper.AssociateToPan (lrwpanDevices, 0);
 
   InternetStackHelper internetv6;
-  internetv6.Install (nodes);
+  internetv6.Install (wsnNodes);
+  internetv6.Install (wiredNodes.Get (0));
 
-  SixLowPanHelper sixlowpan;
-  NetDeviceContainer devices = sixlowpan.Install (lrwpanDevices); 
- 
+  SixLowPanHelper sixLowPanHelper;
+  NetDeviceContainer sixLowPanDevices = sixLowPanHelper.Install (lrwpanDevices);
+
+  CsmaHelper csmaHelper;
+  NetDeviceContainer csmaDevices = csmaHelper.Install (wiredNodes);
+
   Ipv6AddressHelper ipv6;
-  ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer deviceInterfaces;
-  deviceInterfaces = ipv6.Assign (devices);
-  // check if addresses are assigned
-  //std::cout<< deviceInterfaces.GetAddress(0,1)<<std::endl;
-  //std::cout<< deviceInterfaces.GetAddress(1,1)<<std::endl;
+  ipv6.SetBase (Ipv6Address ("2001:cafe::"), Ipv6Prefix (64));
+  Ipv6InterfaceContainer wiredDeviceInterfaces;
+  wiredDeviceInterfaces = ipv6.Assign (csmaDevices);
+  wiredDeviceInterfaces.SetForwarding (1, true);
+  wiredDeviceInterfaces.SetDefaultRouteInAllNodes (1);
 
+  ipv6.SetBase (Ipv6Address ("2001:f00d::"), Ipv6Prefix (64));
+  Ipv6InterfaceContainer wsnDeviceInterfaces;
+  wsnDeviceInterfaces = ipv6.Assign (sixLowPanDevices);
+  wsnDeviceInterfaces.SetForwarding (0, true);
+  wsnDeviceInterfaces.SetDefaultRouteInAllNodes (0);
 
-   
+  for (uint32_t i = 0; i < sixLowPanDevices.GetN (); i++)
+    {
+      Ptr<NetDevice> dev = sixLowPanDevices.Get (i);
+      dev->SetAttribute ("UseMeshUnder", BooleanValue (true));
+      dev->SetAttribute ("MeshUnderRadius", UintegerValue (10));
+    }
+
   uint32_t packetSize = 10;
   uint32_t maxPacketCount = 5;
   Time interPacketInterval = Seconds (1.);
   Ping6Helper ping6;
 
-  ping6.SetLocal (deviceInterfaces.GetAddress (0, 1));
-  ping6.SetRemote (deviceInterfaces.GetAddress (1, 1));
+  ping6.SetLocal (wsnDeviceInterfaces.GetAddress (nWsnNodes - 1, 1));
+  ping6.SetRemote (wiredDeviceInterfaces.GetAddress (0, 1));
 
   ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));
   ping6.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  ApplicationContainer apps = ping6.Install (nodes.Get (0));
+  ApplicationContainer apps = ping6.Install (wsnNodes.Get (nWsnNodes - 1));
 
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
   AsciiTraceHelper ascii;
-  lrWpanHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan.tr"));
-  lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan"), true);
-  
+  lrWpanHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan-meshunder-lr-wpan.tr"));
+  lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan-meshunder-lr-wpan"), true);
+
+  csmaHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan-meshunder-csma.tr"));
+  csmaHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan-meshunder-csma"), true);
+
   Simulator::Stop (Seconds (10));
-  
+
   Simulator::Run ();
   Simulator::Destroy ();
 
