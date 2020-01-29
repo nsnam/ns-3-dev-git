@@ -60,7 +60,7 @@ MobilityBuildingInfo::MobilityBuildingInfo ()
   m_nFloor = 1;
   m_roomX = 1;
   m_roomY = 1;
-  m_cachedPosition = Vector (0,0,0);
+  m_cachedPosition = Vector (0, 0, 0);
 }
 
 
