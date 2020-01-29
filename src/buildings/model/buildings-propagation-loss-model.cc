@@ -188,9 +188,12 @@ double
 BuildingsPropagationLossModel::EvaluateSigma (Ptr<MobilityBuildingInfo> a, Ptr<MobilityBuildingInfo> b)
 const
 {
-  if (a->IsOutdoor ())
+  bool isAIndoor = a->IsIndoor ();
+  bool isBIndoor = b->IsIndoor ();
+
+  if (!isAIndoor) // a is outdoor
     {
-      if (b->IsOutdoor ())
+      if (!isBIndoor) // b is outdoor
         {
           return (m_shadowingSigmaOutdoor);
         }
@@ -201,7 +204,7 @@ const
         }
     }
   else
-  if (b->IsIndoor ())
+  if (isBIndoor) // b is indoor
     {
       return (m_shadowingSigmaIndoor);
     }
