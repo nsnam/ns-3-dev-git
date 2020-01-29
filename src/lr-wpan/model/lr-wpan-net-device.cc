@@ -395,7 +395,6 @@ LrWpanNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protoco
 
   McpsDataRequestParams m_mcpsDataRequestParams;
 
-  std::cout << "Trying to send a packet to " << dest << std::endl;
   Mac16Address dst16;
   if (Mac48Address::IsMatchingType (dest))
     {
