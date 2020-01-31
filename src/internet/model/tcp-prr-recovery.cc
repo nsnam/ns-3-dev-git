@@ -22,7 +22,8 @@
  */
 
 #include "tcp-prr-recovery.h"
-#include "ns3/tcp-congestion-ops.h"
+#include "tcp-socket-state.h"
+
 #include "ns3/log.h"
 
 namespace ns3 {

@@ -24,11 +24,13 @@
 #ifndef TCPLP_H
 #define TCPLP_H
 
-#include "ns3/tcp-congestion-ops.h"
-#include "ns3/tcp-recovery-ops.h"
+#include "tcp-congestion-ops.h"
+
 #include "ns3/traced-value.h"
 
 namespace ns3 {
+
+class TcpSocketState;
 
 class TcpLp : public TcpNewReno
 {

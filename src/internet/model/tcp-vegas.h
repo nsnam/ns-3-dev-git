@@ -27,10 +27,11 @@
 #ifndef TCPVEGAS_H
 #define TCPVEGAS_H
 
-#include "ns3/tcp-congestion-ops.h"
-#include "ns3/tcp-recovery-ops.h"
+#include "tcp-congestion-ops.h"
 
 namespace ns3 {
+
+class TcpSocketState;
 
 /**
  * \ingroup congestionOps

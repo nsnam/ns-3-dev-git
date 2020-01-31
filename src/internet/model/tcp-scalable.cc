@@ -28,6 +28,8 @@
  */
 
 #include "tcp-scalable.h"
+#include "tcp-socket-state.h"
+
 #include "ns3/log.h"
 
 namespace ns3 {

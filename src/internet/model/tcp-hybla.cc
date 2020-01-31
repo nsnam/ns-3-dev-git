@@ -18,8 +18,9 @@
  */
 
 #include "tcp-hybla.h"
+#include "tcp-socket-state.h"
+
 #include "ns3/log.h"
-#include "ns3/tcp-socket-base.h"
 
 namespace ns3 {
 

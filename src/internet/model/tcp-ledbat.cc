@@ -20,8 +20,10 @@
  */
 
 #include "tcp-ledbat.h"
+#include "tcp-socket-state.h"
+
 #include "ns3/log.h"
-#include "ns3/simulator.h"
+#include "ns3/simulator.h" // Now ()
 
 namespace ns3 {
 

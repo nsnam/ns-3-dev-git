@@ -19,8 +19,8 @@
 #ifndef TCPCONGESTIONOPS_H
 #define TCPCONGESTIONOPS_H
 
-#include "ns3/tcp-socket-state.h"
-#include "ns3/tcp-rate-ops.h"
+#include "tcp-rate-ops.h"
+#include "tcp-socket-state.h"
 
 namespace ns3 {
 
