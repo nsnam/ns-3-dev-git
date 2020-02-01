@@ -104,6 +104,46 @@ public:
   friend bool operator < (const Vector3D &a, const Vector3D &b);
 
   /**
+   * Less than or equal to comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is less than or equal to \p b.
+   */
+  friend bool operator <= (const Vector3D &a, const Vector3D &b);
+
+  /**
+   * Greater than comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is greater than \p b.
+   */
+  friend bool operator > (const Vector3D &a, const Vector3D &b);
+
+  /**
+   * Greater than or equal to comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is greater than or equal to \p b.
+   */
+  friend bool operator >= (const Vector3D &a, const Vector3D &b);
+
+  /**
+   * Equality operator.
+   * \param [in] a lhs vector.
+   * \param [in] b rhs vector.
+   * \returns \c true if \p a is equal to \p b.
+   */
+  friend bool operator == (const Vector3D &a, const Vector3D &b);
+
+  /**
+   * Inequality operator.
+   * \param [in] a lhs vector.
+   * \param [in] b rhs vector.
+   * \returns \c true if \p a is not equal to \p b.
+   */
+  friend bool operator != (const Vector3D &a, const Vector3D &b);
+
+  /**
    * Addition operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
@@ -180,6 +220,46 @@ public:
    * \returns \c true if \p a is less than \p b
    */
   friend bool operator < (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * Less than or equal to comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is less than or equal to \p b.
+   */
+  friend bool operator <= (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * Greater than comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is greater than \p b.
+   */
+  friend bool operator > (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * Greater than or equal to comparison operator
+   * \param [in] a lhs vector
+   * \param [in] b rhs vector
+   * \returns \c true if \p a is greater than or equal to \p b.
+   */
+  friend bool operator >= (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * Equality operator.
+   * \param [in] a lhs vector.
+   * \param [in] b rhs vector.
+   * \returns \c true if \p a is equal to \p b.
+   */
+  friend bool operator == (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * Inequality operator.
+   * \param [in] a lhs vector.
+   * \param [in] b rhs vector.
+   * \returns \c true if \p a is not equal to \p b.
+   */
+  friend bool operator != (const Vector2D &a, const Vector2D &b);
 
   /**
    * Addition operator.
