@@ -531,15 +531,8 @@ ChannelAccessManagerTest<TxopType>::EndTest (void)
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), true, "Have no expected grants");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), true, "Have no internal collisions");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedBackoff.empty (), true, "Have no expected backoffs");
+      state->Dispose ();
       state = 0;
-    }
-  m_txop.clear ();
-
-  for (typename TxopTests::const_iterator i = m_txop.begin (); i != m_txop.end (); i++)
-    {
-      Ptr<TxopTest<TxopType>> txop = *i;
-      txop->Dispose ();
-      txop = 0;
     }
   m_txop.clear ();
 

@@ -290,7 +290,9 @@ OriginatorBlockAckWindowTest::DoRun (void)
     }
 
   // Notify the acknowledgment of 5 packets
-  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (Create<Packet> (), WifiMacHeader ());
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  Ptr<WifiMacQueueItem> mpdu = Create<WifiMacQueueItem> (Create<Packet> (), hdr);
   uint16_t seqNumber = startingSeq;
   mpdu->GetHeader ().SetSequenceNumber (seqNumber);
   agreement.NotifyAckedMpdu (mpdu);
