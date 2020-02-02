@@ -19,6 +19,13 @@ import ns.internet
 import ns.network
 import ns.point_to_point
 
+# // Default Network Topology
+# //
+# //       10.1.1.0
+# // n0 -------------- n1
+# //    point-to-point
+# //
+
 ns.core.LogComponentEnable("UdpEchoClientApplication", ns.core.LOG_LEVEL_INFO)
 ns.core.LogComponentEnable("UdpEchoServerApplication", ns.core.LOG_LEVEL_INFO)
 
