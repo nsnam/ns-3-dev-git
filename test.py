@@ -1744,6 +1744,7 @@ def run_tests():
                 status = "CRASH"
                 status_print = colors.PINK + status + colors.NORMAL
 
+        print("[%d/%d]" % (passed_tests + failed_tests + skipped_tests + crashed_tests, total_tests), end=' ')
         if options.duration or options.constrain == "performance":
             print("%s (%.3f): %s %s" % (status_print, job.elapsed_time, kind, job.display_name))
         else:
