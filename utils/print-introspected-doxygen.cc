@@ -977,6 +977,52 @@ PrintTypeIdBlocks (std::ostream & os)
  ***************************************************************/
 
 /**
+ * Print the list of all TypeIds
+ *
+ * \param [in,out] os The output stream.
+ */
+void
+PrintAllTypeIds (std::ostream & os)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  os << commentStart << page << "TypeIdList All TypeIds\n"
+     << std::endl;
+  os << "This is a list of all" << reference << "TypeIds.\n"
+     << "For more information see the" << reference << "TypeId "
+     << "section of this API documentation and the TypeId section "
+     << "in the Configuration and Attributes chapter of the Manual.\n"
+     << std::endl;
+
+  os << listStart << std::endl;
+  
+  NameMap nameMap = GetNameMap ();
+  // Iterate over the map, which will print the class names in
+  // alphabetical order.
+  for (auto item : nameMap)
+    {
+      // Handle only real TypeIds
+      if (item.second < 0)
+        {
+          continue ;
+        }
+      // Get the class's index out of the map;
+      TypeId tid = TypeId::GetRegistered (item.second);
+      
+      os << indentHtmlOnly
+	 <<   listLineStart
+         <<     boldStart
+         <<       tid.GetName ()
+         <<     boldStop
+	 <<   listLineStop
+	 << std::endl;
+      
+    }
+  os << commentStop << std::endl;
+
+}  // PrintAllTypeIds ()
+
+
+/**
  * Print the list of all Attributes.
  *
  * \param [in,out] os The output stream.
@@ -1569,6 +1615,7 @@ int main (int argc, char *argv[])
 
   PrintTypeIdBlocks (std::cout);
   
+  PrintAllTypeIds (std::cout);
   PrintAllAttributes (std::cout);
   PrintAllGlobals (std::cout);
   PrintAllLogComponents (std::cout);
