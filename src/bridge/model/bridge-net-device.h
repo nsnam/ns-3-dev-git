@@ -26,6 +26,12 @@
 #include <string>
 #include <map>
 
+/**
+ * \file
+ * \ingroup bridge
+ * ns3::BridgeNetDevice declaration.
+ */
+
 namespace ns3 {
 
 class Node;

@@ -24,6 +24,12 @@
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 
+/**
+ * \file
+ * \ingroup bridge
+ * ns3::BridgeNetDevice implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");

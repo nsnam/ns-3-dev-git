@@ -19,6 +19,12 @@
 #include "ns3/log.h"
 #include "bridge-channel.h"
 
+/**
+ * \file
+ * \ingroup bridge
+ * ns3::BridgeChannel implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BridgeChannel");

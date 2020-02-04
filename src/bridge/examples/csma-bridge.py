@@ -28,6 +28,11 @@
 # - DropTail queues 
 # - Tracing of queues and packet receptions to file "csma-bridge.tr"
 
+## \file
+#  \ingroup bridge
+#  Bridge example connecting two broadcast domains.
+
+
 import ns.applications
 import ns.bridge
 import ns.core

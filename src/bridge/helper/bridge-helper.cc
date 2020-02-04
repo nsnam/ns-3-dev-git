@@ -22,6 +22,12 @@
 #include "ns3/node.h"
 #include "ns3/names.h"
 
+/**
+ * \filez
+ * \ingroup bridge
+ * ns3::BridgeHelper implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BridgeHelper");
