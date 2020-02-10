@@ -67,7 +67,8 @@ public:
 
   /**
    * \brief Set configuration required by congestion control algorithm,
-   *        This method will force DctcpEcn mode and will force usage of ECT(1),
+   *        This method will force DctcpEcn mode and will force usage of
+   *        either ECT(0) or ECT(1) (depending on the 'UseEct0' attribute),
    *        despite any other configuration in the base classes.
    *
    * \param ecnMode ECN Mode
