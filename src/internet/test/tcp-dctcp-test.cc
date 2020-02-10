@@ -80,19 +80,22 @@ TcpDctcpCodePointsTest::TcpDctcpCodePointsTest (uint8_t testCase, const std::str
 void
 TcpDctcpCodePointsTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
 {
+  bool foundTag = false;  // IpTosTag will only be found if ECN bits are set
   if (who == SENDER && (m_testCase == 1 || m_testCase == 2))
     {
       m_senderSent++;
       SocketIpTosTag ipTosTag;
-      p->PeekPacketTag (ipTosTag);
+      foundTag = p->PeekPacketTag (ipTosTag);
       if (m_testCase == 1)
         {
           if (m_senderSent == 1)
             {
+              NS_TEST_ASSERT_MSG_EQ (foundTag, true, "Tag not found");
               NS_TEST_ASSERT_MSG_EQ (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should have ECT1 for SYN packet for DCTCP traffic");
             }
           if (m_senderSent == 3)
             {
+              NS_TEST_ASSERT_MSG_EQ (foundTag, true, "Tag not found");
               NS_TEST_ASSERT_MSG_EQ (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should have ECT1 for data packets for DCTCP traffic");
             }
         }
@@ -100,10 +103,11 @@ TcpDctcpCodePointsTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, Socke
         {
           if (m_senderSent == 1)
             {
-              NS_TEST_ASSERT_MSG_NE (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should not have ECT1 for SYN packet for DCTCP traffic");
+              NS_TEST_ASSERT_MSG_EQ (foundTag, false, "IP TOS should not have ECT1 for SYN packet for DCTCP traffic");
             }
           if (m_senderSent == 3)
             {
+              NS_TEST_ASSERT_MSG_EQ (foundTag, true, "Tag not found");
               NS_TEST_ASSERT_MSG_EQ (unsigned (ipTosTag.GetTos ()), 0x2, "IP TOS should have ECT0 for data packets for non-DCTCP but ECN enabled traffic");
             }
         }
@@ -112,15 +116,17 @@ TcpDctcpCodePointsTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, Socke
     {
       m_receiverSent++;
       SocketIpTosTag ipTosTag;
-      p->PeekPacketTag (ipTosTag);
+      foundTag = p->PeekPacketTag (ipTosTag);
       if (m_testCase == 1)
         {
           if (m_receiverSent == 1)
             {
+              NS_TEST_ASSERT_MSG_EQ (foundTag, true, "Tag not found");
               NS_TEST_ASSERT_MSG_EQ (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should have ECT1 for SYN+ACK packet for DCTCP traffic");
             }
           if (m_receiverSent == 2)
             {
+              NS_TEST_ASSERT_MSG_EQ (foundTag, true, "Tag not found");
               NS_TEST_ASSERT_MSG_EQ (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should have ECT1 for pure ACK packets for DCTCP traffic");
             }
         }
@@ -128,12 +134,11 @@ TcpDctcpCodePointsTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, Socke
         {
           if (m_receiverSent == 1)
             {
-              NS_TEST_ASSERT_MSG_NE (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should not have ECT0 for SYN+ACK packet for non-DCTCP traffic");
-              NS_TEST_ASSERT_MSG_NE (unsigned (ipTosTag.GetTos ()), 0x2, "IP TOS should not have ECT1 for SYN+ACK packet for non-DCTCP traffic");
+              NS_TEST_ASSERT_MSG_EQ (foundTag, false, "IP TOS should have neither ECT0 nor ECT1 for SYN+ACK packet for non-DCTCP traffic");
             }
           if (m_receiverSent == 2)
             {
-              NS_TEST_ASSERT_MSG_NE (unsigned (ipTosTag.GetTos ()), 0x1, "IP TOS should not have ECT1 for pure ACK packets for non-DCTCP traffic but ECN enabled traffic");
+              NS_TEST_ASSERT_MSG_EQ (foundTag, false, "IP TOS should not have ECT1 for pure ACK packets for non-DCTCP traffic but ECN enabled traffic");
             }
         }
     }
