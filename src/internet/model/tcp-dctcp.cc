@@ -66,27 +66,27 @@ TcpDctcp::TcpDctcp ()
   NS_LOG_FUNCTION (this);
   m_ackedBytesEcn = 0;
   m_ackedBytesTotal = 0;
-  m_priorRcvNxt = SequenceNumber32(0);
+  m_priorRcvNxt = SequenceNumber32 (0);
   m_priorRcvNxtFlag = false;
-  m_nextSeq = SequenceNumber32(0);
+  m_nextSeq = SequenceNumber32 (0);
   m_nextSeqFlag = false;
   m_ceState = false;
   m_delayedAckReserved = false;
 }
 
 TcpDctcp::TcpDctcp (const TcpDctcp& sock)
-  : TcpNewReno (sock)
-  , m_ackedBytesEcn(sock.m_ackedBytesEcn)
-  , m_ackedBytesTotal(sock.m_ackedBytesTotal)
-  , m_priorRcvNxt(sock.m_priorRcvNxt)
-  , m_priorRcvNxtFlag(sock.m_priorRcvNxtFlag)
-  , m_alpha(sock.m_alpha)
-  , m_nextSeq(sock.m_nextSeq)
-  , m_nextSeqFlag(sock.m_nextSeqFlag)
-  , m_ceState(sock.m_ceState)
-  , m_delayedAckReserved(sock.m_delayedAckReserved)
-  , m_g(sock.m_g)
-  , m_useEct0(sock.m_useEct0)
+  : TcpNewReno (sock),
+    m_ackedBytesEcn (sock.m_ackedBytesEcn),
+    m_ackedBytesTotal (sock.m_ackedBytesTotal),
+    m_priorRcvNxt (sock.m_priorRcvNxt),
+    m_priorRcvNxtFlag (sock.m_priorRcvNxtFlag),
+    m_alpha (sock.m_alpha),
+    m_nextSeq (sock.m_nextSeq),
+    m_nextSeqFlag (sock.m_nextSeqFlag),
+    m_ceState (sock.m_ceState),
+    m_delayedAckReserved (sock.m_delayedAckReserved),
+    m_g (sock.m_g),
+    m_useEct0 (sock.m_useEct0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -109,14 +109,14 @@ TcpDctcp::Init (Ptr<TcpSocketState> tcb)
   NS_LOG_INFO (this << "Enabling DctcpEcn for DCTCP");
   tcb->m_useEcn = TcpSocketState::On;
   tcb->m_ecnMode = TcpSocketState::DctcpEcn;
-  tcb->m_ectCodePoint = m_useEct0? TcpSocketState::Ect0 : TcpSocketState::Ect1;
+  tcb->m_ectCodePoint = m_useEct0 ? TcpSocketState::Ect0 : TcpSocketState::Ect1;
 }
 
 void
 TcpDctcp::ReduceCwnd (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  uint32_t val = static_cast<uint32_t>((1 - m_alpha / 2.0) * tcb->m_cWnd);
+  uint32_t val = static_cast<uint32_t> ((1 - m_alpha / 2.0) * tcb->m_cWnd);
   tcb->m_cWnd = std::max (val, 2 * tcb->m_segmentSize);
 }
 
@@ -268,4 +268,5 @@ TcpDctcp::CwndEvent (Ptr<TcpSocketState> tcb,
       break;
     }
 }
-}
+
+} // namespace ns3
