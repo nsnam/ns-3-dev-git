@@ -864,8 +864,32 @@ The following unit tests have been written to validate the implementation of DCT
 * ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
 * ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
 * ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
-* Test to validate cwnd increment in DCTCP
+* DCTCP follows New Reno behavior for slow start
 * Test to validate cwnd decrement in DCTCP
+
+An example program based on an experimental topology found in the original
+DCTCP SIGCOMM paper is provided in ``examples/tcp/dctcp-example.cc``.
+This example uses a simple topology consisting of forty DCTCP senders
+and receivers and two ECN-enabled switches to examine throughput,
+fairness, and queue delay properties of the network.
+
+This implementation was tested extensively against a version of DCTCP in
+the Linux kernel version 4.4 using the ns-3 direct code execution (DCE)
+environment.  Some differences were noted:
+
+* Linux maintains its congestion window in segments and not bytes, and
+  the arithmetic is not floating point, so some differences in the
+  evolution of congestion window have been observed.
+* Linux uses pacing, while ns-3 currently does not provide a dynamically
+  adjusting pacing implementation; segments are sent out at the line rate
+  unless the user has enabled pacing and set the maximum pacing rate to
+  less than the line rate.
+* Linux implements a state called 'Congestion Window Reduced' (CWR) 
+  immediately following a cwnd reduction, and performs proportional rate
+  reduction similar to how a fast retransmit event is handled.  During
+  CWR, no cwnd additive increases are performed.  This implementation does
+  not implement CWR and performs additive increase during the round trip
+  time that immediately follows a cwnd reduction.
 
 More information about DCTCP is available in the RFC 8257:
 https://tools.ietf.org/html/rfc8257
