@@ -1732,10 +1732,10 @@ LteUePhy::SetTxModeGain (uint8_t txMode, double gain)
 
 
 void
-LteUePhy::ReceiveLteDlHarqFeedback (DlInfoListElement_s m)
+LteUePhy::EnqueueDlHarqFeedback (DlInfoListElement_s m)
 {
   NS_LOG_FUNCTION (this);
-  // generate feedback to eNB and send it through ideal PUCCH
+  // get the feedback from LteSpectrumPhy and send it through ideal PUCCH to eNB
   Ptr<DlHarqFeedbackLteControlMessage> msg = Create<DlHarqFeedbackLteControlMessage> ();
   msg->SetDlHarqFeedback (m);
   SetControlMessages (msg);
