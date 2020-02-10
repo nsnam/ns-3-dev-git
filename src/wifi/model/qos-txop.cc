@@ -57,7 +57,7 @@ QosTxop::GetTypeId (void)
     .SetParent<ns3::Txop> ()
     .SetGroupName ("Wifi")
     .AddConstructor<QosTxop> ()
-    .AddAttribute ("UseExpliciteBarAfterMissedBlockAck",
+    .AddAttribute ("UseExplicitBarAfterMissedBlockAck",
                    "Specify whether explicit Block Ack Request should be sent upon missed Block Ack Response.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&QosTxop::m_useExplicitBarAfterMissedBlockAck),
