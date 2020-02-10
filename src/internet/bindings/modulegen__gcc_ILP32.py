@@ -595,11 +595,6 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::TcpSocket::TcpStates_t&', 'ns3::TcpSocket::TcpStates_t&')
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase [class]
     module.add_class('TcpSocketBase', parent=root_module['ns3::TcpSocket'])
-    ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase::EcnMode_t [enumeration]
-    module.add_enum('EcnMode_t', ['NoEcn', 'ClassicEcn'], outer_class=root_module['ns3::TcpSocketBase'])
-    typehandlers.add_type_alias('ns3::TcpSocketBase::EcnMode_t', 'ns3::TcpSocketBase::EcnMode_t')
-    typehandlers.add_type_alias('ns3::TcpSocketBase::EcnMode_t*', 'ns3::TcpSocketBase::EcnMode_t*')
-    typehandlers.add_type_alias('ns3::TcpSocketBase::EcnMode_t&', 'ns3::TcpSocketBase::EcnMode_t&')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )', 'ns3::TcpSocketBase::TcpTxRxTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )*', 'ns3::TcpSocketBase::TcpTxRxTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )&', 'ns3::TcpSocketBase::TcpTxRxTracedCallback&')
@@ -611,6 +606,12 @@ def register_types(module):
     module.add_enum('TcpCongState_t', ['CA_OPEN', 'CA_DISORDER', 'CA_CWR', 'CA_RECOVERY', 'CA_LOSS', 'CA_LAST_STATE'], outer_class=root_module['ns3::TcpSocketState'])
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::TcpCAEvent_t [enumeration]
     module.add_enum('TcpCAEvent_t', ['CA_EVENT_TX_START', 'CA_EVENT_CWND_RESTART', 'CA_EVENT_COMPLETE_CWR', 'CA_EVENT_LOSS', 'CA_EVENT_ECN_NO_CE', 'CA_EVENT_ECN_IS_CE', 'CA_EVENT_DELAYED_ACK', 'CA_EVENT_NON_DELAYED_ACK'], outer_class=root_module['ns3::TcpSocketState'])
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::UseEcn_t [enumeration]
+    module.add_enum('UseEcn_t', ['Off', 'On', 'AcceptOnly'], outer_class=root_module['ns3::TcpSocketState'])
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::EcnCodePoint_t [enumeration]
+    module.add_enum('EcnCodePoint_t', ['NotECT', 'Ect1', 'Ect0', 'CongExp'], outer_class=root_module['ns3::TcpSocketState'])
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::EcnMode_t [enumeration]
+    module.add_enum('EcnMode_t', ['ClassicEcn', 'DctcpEcn'], outer_class=root_module['ns3::TcpSocketState'])
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::EcnState_t [enumeration]
     module.add_enum('EcnState_t', ['ECN_DISABLED', 'ECN_IDLE', 'ECN_CE_RCVD', 'ECN_SENDING_ECE', 'ECN_ECE_RCVD', 'ECN_CWR_SENT'], outer_class=root_module['ns3::TcpSocketState'])
     typehandlers.add_type_alias('ns3::TcpSocketState::TcpCongState_t', 'ns3::TcpSocketState::TcpCongState_t')
@@ -619,6 +620,15 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::TcpSocketState::TcpCAEvent_t', 'ns3::TcpSocketState::TcpCAEvent_t')
     typehandlers.add_type_alias('ns3::TcpSocketState::TcpCAEvent_t*', 'ns3::TcpSocketState::TcpCAEvent_t*')
     typehandlers.add_type_alias('ns3::TcpSocketState::TcpCAEvent_t&', 'ns3::TcpSocketState::TcpCAEvent_t&')
+    typehandlers.add_type_alias('ns3::TcpSocketState::UseEcn_t', 'ns3::TcpSocketState::UseEcn_t')
+    typehandlers.add_type_alias('ns3::TcpSocketState::UseEcn_t*', 'ns3::TcpSocketState::UseEcn_t*')
+    typehandlers.add_type_alias('ns3::TcpSocketState::UseEcn_t&', 'ns3::TcpSocketState::UseEcn_t&')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnCodePoint_t', 'ns3::TcpSocketState::EcnCodePoint_t')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnCodePoint_t*', 'ns3::TcpSocketState::EcnCodePoint_t*')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnCodePoint_t&', 'ns3::TcpSocketState::EcnCodePoint_t&')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnMode_t', 'ns3::TcpSocketState::EcnMode_t')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnMode_t*', 'ns3::TcpSocketState::EcnMode_t*')
+    typehandlers.add_type_alias('ns3::TcpSocketState::EcnMode_t&', 'ns3::TcpSocketState::EcnMode_t&')
     typehandlers.add_type_alias('ns3::TcpSocketState::EcnState_t', 'ns3::TcpSocketState::EcnState_t')
     typehandlers.add_type_alias('ns3::TcpSocketState::EcnState_t*', 'ns3::TcpSocketState::EcnState_t*')
     typehandlers.add_type_alias('ns3::TcpSocketState::EcnState_t&', 'ns3::TcpSocketState::EcnState_t&')
@@ -980,6 +990,8 @@ def register_types(module):
     module.add_class('TcpBic', parent=root_module['ns3::TcpCongestionOps'])
     ## tcp-recovery-ops.h (module 'internet'): ns3::TcpClassicRecovery [class]
     module.add_class('TcpClassicRecovery', parent=root_module['ns3::TcpRecoveryOps'])
+    ## tcp-dctcp.h (module 'internet'): ns3::TcpDctcp [class]
+    module.add_class('TcpDctcp', parent=root_module['ns3::TcpNewReno'])
     ## tcp-highspeed.h (module 'internet'): ns3::TcpHighSpeed [class]
     module.add_class('TcpHighSpeed', parent=root_module['ns3::TcpNewReno'])
     ## tcp-htcp.h (module 'internet'): ns3::TcpHtcp [class]
@@ -1590,6 +1602,7 @@ def register_methods(root_module):
     register_Ns3RipNg_methods(root_module, root_module['ns3::RipNg'])
     register_Ns3TcpBic_methods(root_module, root_module['ns3::TcpBic'])
     register_Ns3TcpClassicRecovery_methods(root_module, root_module['ns3::TcpClassicRecovery'])
+    register_Ns3TcpDctcp_methods(root_module, root_module['ns3::TcpDctcp'])
     register_Ns3TcpHighSpeed_methods(root_module, root_module['ns3::TcpHighSpeed'])
     register_Ns3TcpHtcp_methods(root_module, root_module['ns3::TcpHtcp'])
     register_Ns3TcpHybla_methods(root_module, root_module['ns3::TcpHybla'])
@@ -6156,10 +6169,10 @@ def register_Ns3TracedValue__Ns3SequenceNumber__lt__unsigned_int__int__gt___meth
     cls.add_constructor([param('ns3::SequenceNumber< unsigned int, int > const &', 'v')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> > const & other) [constructor]
     cls.add_constructor([param('ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > > const &', 'other')])
-    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(int const & other) [constructor]
-    cls.add_constructor([param('int const &', 'other')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> > const & other) [constructor]
     cls.add_constructor([param('ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > > const &', 'other')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(int const & other) [constructor]
+    cls.add_constructor([param('int const &', 'other')])
     ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
     cls.add_method('Connect', 
                    'void', 
@@ -10257,11 +10270,21 @@ def register_Ns3TcpCongestionOps_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
                    is_virtual=True)
+    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::Init(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
+                   is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::PktsAcked(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked, ns3::Time const & rtt) [member function]
     cls.add_method('PktsAcked', 
                    'void', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked'), param('ns3::Time const &', 'rtt')], 
                    is_virtual=True)
+    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpCongestionOps::ReduceCwnd(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('ReduceCwnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3TcpHeader_methods(root_module, cls):
@@ -10455,6 +10478,11 @@ def register_Ns3TcpNewReno_methods(root_module, cls):
     cls.add_method('IncreaseWindow', 
                    'void', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
+                   is_virtual=True)
+    ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpNewReno::ReduceCwnd(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('ReduceCwnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
                    is_virtual=True)
     ## tcp-congestion-ops.h (module 'internet'): void ns3::TcpNewReno::CongestionAvoidance(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked) [member function]
     cls.add_method('CongestionAvoidance', 
@@ -11447,6 +11475,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'uint8_t', 
                    [param('uint8_t', 'tos')], 
                    is_const=True)
+    ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::MarkEcnCodePoint(uint8_t const tos, ns3::TcpSocketState::EcnCodePoint_t const codePoint) const [member function]
+    cls.add_method('MarkEcnCodePoint', 
+                   'uint8_t', 
+                   [param('uint8_t const', 'tos'), param('ns3::TcpSocketState::EcnCodePoint_t const', 'codePoint')], 
+                   is_const=True)
     ## tcp-socket-base.h (module 'internet'): uint8_t ns3::TcpSocketBase::MarkEcnEct0(uint8_t tos) const [member function]
     cls.add_method('MarkEcnEct0', 
                    'uint8_t', 
@@ -11485,10 +11518,6 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
     cls.add_method('SetCongestionControlAlgorithm', 
                    'void', 
                    [param('ns3::Ptr< ns3::TcpCongestionOps >', 'algo')])
-    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetEcn(ns3::TcpSocketBase::EcnMode_t ecnMode) [member function]
-    cls.add_method('SetEcn', 
-                   'void', 
-                   [param('ns3::TcpSocketBase::EcnMode_t', 'ecnMode')])
     ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetMinRto(ns3::Time minRto) [member function]
     cls.add_method('SetMinRto', 
                    'void', 
@@ -11516,6 +11545,10 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::TcpL4Protocol >', 'tcp')], 
                    is_virtual=True)
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::SetUseEcn(ns3::TcpSocketState::UseEcn_t useEcn) [member function]
+    cls.add_method('SetUseEcn', 
+                   'void', 
+                   [param('ns3::TcpSocketState::UseEcn_t', 'useEcn')])
     ## tcp-socket-base.h (module 'internet'): int ns3::TcpSocketBase::ShutdownRecv() [member function]
     cls.add_method('ShutdownRecv', 
                    'int', 
@@ -12098,8 +12131,12 @@ def register_Ns3TcpSocketState_methods(root_module, cls):
     cls.add_instance_attribute('m_congState', 'ns3::TracedValue< ns3::TcpSocketState::TcpCongState_t >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_currentPacingRate [variable]
     cls.add_instance_attribute('m_currentPacingRate', 'ns3::DataRate', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_ecnMode [variable]
+    cls.add_instance_attribute('m_ecnMode', 'ns3::TcpSocketState::EcnMode_t', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_ecnState [variable]
     cls.add_instance_attribute('m_ecnState', 'ns3::TracedValue< ns3::TcpSocketState::EcnState_t >', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_ectCodePoint [variable]
+    cls.add_instance_attribute('m_ectCodePoint', 'ns3::TcpSocketState::EcnCodePoint_t', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_highTxMark [variable]
     cls.add_instance_attribute('m_highTxMark', 'ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_initialCWnd [variable]
@@ -12122,10 +12159,16 @@ def register_Ns3TcpSocketState_methods(root_module, cls):
     cls.add_instance_attribute('m_rcvTimestampEchoReply', 'uint32_t', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_rcvTimestampValue [variable]
     cls.add_instance_attribute('m_rcvTimestampValue', 'uint32_t', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_rxBuffer [variable]
+    cls.add_instance_attribute('m_rxBuffer', 'ns3::Ptr< ns3::TcpRxBuffer >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_segmentSize [variable]
     cls.add_instance_attribute('m_segmentSize', 'uint32_t', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_sendEmptyPacketCallback [variable]
+    cls.add_instance_attribute('m_sendEmptyPacketCallback', 'ns3::Callback< void, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', is_const=False)
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_ssThresh [variable]
     cls.add_instance_attribute('m_ssThresh', 'ns3::TracedValue< unsigned int >', is_const=False)
+    ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::m_useEcn [variable]
+    cls.add_instance_attribute('m_useEcn', 'ns3::TcpSocketState::UseEcn_t', is_const=False)
     return
 
 def register_Ns3TcpTxBuffer_methods(root_module, cls):
@@ -13571,6 +13614,11 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, template_parameters=['ns3::SequenceNumber<unsigned int', ' int> '], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, template_parameters=['unsigned int'], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
@@ -13582,11 +13630,6 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, template_parameters=['ns3::TcpSocketState::EcnState_t'], visibility='protected')
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, template_parameters=['ns3::SequenceNumber<unsigned int', ' int> '], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -18476,6 +18519,11 @@ def register_Ns3TcpBic_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked')], 
                    is_virtual=True)
+    ## tcp-bic.h (module 'internet'): void ns3::TcpBic::ReduceCwnd(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('ReduceCwnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
+                   is_virtual=True)
     ## tcp-bic.h (module 'internet'): uint32_t ns3::TcpBic::Update(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
     cls.add_method('Update', 
                    'uint32_t', 
@@ -18518,6 +18566,48 @@ def register_Ns3TcpClassicRecovery_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3TcpDctcp_methods(root_module, cls):
+    ## tcp-dctcp.h (module 'internet'): ns3::TcpDctcp::TcpDctcp() [constructor]
+    cls.add_constructor([])
+    ## tcp-dctcp.h (module 'internet'): ns3::TcpDctcp::TcpDctcp(ns3::TcpDctcp const & sock) [constructor]
+    cls.add_constructor([param('ns3::TcpDctcp const &', 'sock')])
+    ## tcp-dctcp.h (module 'internet'): void ns3::TcpDctcp::CwndEvent(ns3::Ptr<ns3::TcpSocketState> tcb, ns3::TcpSocketState::TcpCAEvent_t const event) [member function]
+    cls.add_method('CwndEvent', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('ns3::TcpSocketState::TcpCAEvent_t const', 'event')], 
+                   is_virtual=True)
+    ## tcp-dctcp.h (module 'internet'): ns3::Ptr<ns3::TcpCongestionOps> ns3::TcpDctcp::Fork() [member function]
+    cls.add_method('Fork', 
+                   'ns3::Ptr< ns3::TcpCongestionOps >', 
+                   [], 
+                   is_virtual=True)
+    ## tcp-dctcp.h (module 'internet'): std::string ns3::TcpDctcp::GetName() const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tcp-dctcp.h (module 'internet'): static ns3::TypeId ns3::TcpDctcp::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tcp-dctcp.h (module 'internet'): void ns3::TcpDctcp::Init(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
+                   is_virtual=True)
+    ## tcp-dctcp.h (module 'internet'): void ns3::TcpDctcp::PktsAcked(ns3::Ptr<ns3::TcpSocketState> tcb, uint32_t segmentsAcked, ns3::Time const & rtt) [member function]
+    cls.add_method('PktsAcked', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb'), param('uint32_t', 'segmentsAcked'), param('ns3::Time const &', 'rtt')], 
+                   is_virtual=True)
+    ## tcp-dctcp.h (module 'internet'): void ns3::TcpDctcp::ReduceCwnd(ns3::Ptr<ns3::TcpSocketState> tcb) [member function]
+    cls.add_method('ReduceCwnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::TcpSocketState >', 'tcb')], 
+                   is_virtual=True)
     return
 
 def register_Ns3TcpHighSpeed_methods(root_module, cls):
