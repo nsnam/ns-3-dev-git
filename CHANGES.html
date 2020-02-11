@@ -76,6 +76,7 @@ transmitted.</li>
 <h2>Changes to existing API:</h2>
 <ul>
 <li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
+<li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
