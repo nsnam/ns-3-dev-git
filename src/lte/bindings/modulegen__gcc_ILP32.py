@@ -10719,6 +10719,11 @@ def register_Ns3Vector2D_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_numeric_operator('-', root_module['ns3::Vector2D'], root_module['ns3::Vector2D'], param('ns3::Vector2D const &', 'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Vector2D'], root_module['ns3::Vector2D'], param('ns3::Vector2D const &', 'right'))
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>=')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<=')
     ## vector.h (module 'core'): ns3::Vector2D::Vector2D(ns3::Vector2D const & arg0) [constructor]
     cls.add_constructor([param('ns3::Vector2D const &', 'arg0')])
     ## vector.h (module 'core'): ns3::Vector2D::Vector2D(double _x, double _y) [constructor]
@@ -10741,6 +10746,11 @@ def register_Ns3Vector3D_methods(root_module, cls):
     cls.add_binary_comparison_operator('<')
     cls.add_binary_numeric_operator('-', root_module['ns3::Vector3D'], root_module['ns3::Vector3D'], param('ns3::Vector3D const &', 'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Vector3D'], root_module['ns3::Vector3D'], param('ns3::Vector3D const &', 'right'))
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>=')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('<=')
     ## vector.h (module 'core'): ns3::Vector3D::Vector3D(ns3::Vector3D const & arg0) [constructor]
     cls.add_constructor([param('ns3::Vector3D const &', 'arg0')])
     ## vector.h (module 'core'): ns3::Vector3D::Vector3D(double _x, double _y, double _z) [constructor]
@@ -20853,6 +20863,11 @@ def register_Ns3LteUePhy_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::EnqueueDlHarqFeedback(ns3::DlInfoListElement_s mes) [member function]
+    cls.add_method('EnqueueDlHarqFeedback', 
+                   'void', 
+                   [param('ns3::DlInfoListElement_s', 'mes')], 
+                   is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::GenerateCtrlCqiReport(ns3::SpectrumValue const & sinr) [member function]
     cls.add_method('GenerateCtrlCqiReport', 
                    'void', 
@@ -20932,11 +20947,6 @@ def register_Ns3LteUePhy_methods(root_module, cls):
     cls.add_method('ReceiveLteControlMessageList', 
                    'void', 
                    [param('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'msgList')], 
-                   is_virtual=True)
-    ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceiveLteDlHarqFeedback(ns3::DlInfoListElement_s mes) [member function]
-    cls.add_method('ReceiveLteDlHarqFeedback', 
-                   'void', 
-                   [param('ns3::DlInfoListElement_s', 'mes')], 
                    is_virtual=True)
     ## lte-ue-phy.h (module 'lte'): void ns3::LteUePhy::ReceivePss(uint16_t cellId, ns3::Ptr<ns3::SpectrumValue> p) [member function]
     cls.add_method('ReceivePss', 
@@ -26259,11 +26269,6 @@ def register_Ns3LteEnbPhy_methods(root_module, cls):
                    'void', 
                    [param('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'arg0')], 
                    is_virtual=True)
-    ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::ReceiveLteUlHarqFeedback(ns3::UlInfoListElement_s mes) [member function]
-    cls.add_method('ReceiveLteUlHarqFeedback', 
-                   'void', 
-                   [param('ns3::UlInfoListElement_s', 'mes')], 
-                   is_virtual=True)
     ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::ReportInterference(ns3::SpectrumValue const & interf) [member function]
     cls.add_method('ReportInterference', 
                    'void', 
@@ -26273,6 +26278,11 @@ def register_Ns3LteEnbPhy_methods(root_module, cls):
     cls.add_method('ReportRsReceivedPower', 
                    'void', 
                    [param('ns3::SpectrumValue const &', 'power')], 
+                   is_virtual=True)
+    ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::ReportUlHarqFeedback(ns3::UlInfoListElement_s mes) [member function]
+    cls.add_method('ReportUlHarqFeedback', 
+                   'void', 
+                   [param('ns3::UlInfoListElement_s', 'mes')], 
                    is_virtual=True)
     ## lte-enb-phy.h (module 'lte'): void ns3::LteEnbPhy::SendControlChannels(std::list<ns3::Ptr<ns3::LteControlMessage>, std::allocator<ns3::Ptr<ns3::LteControlMessage> > > ctrlMsgList) [member function]
     cls.add_method('SendControlChannels', 
