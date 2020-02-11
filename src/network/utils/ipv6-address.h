@@ -456,15 +456,37 @@ public:
 
   /**
    * \brief Constructs an Ipv6Prefix by using the input 16 bytes.
+   *
+   * The prefix length is calculated as the minimum prefix length, i.e.,
+   * 2001:db8:cafe:: will have a 47 bit prefix length.
+   *
    * \param prefix the 128-bit prefix
    */
   Ipv6Prefix (uint8_t prefix[16]);
 
   /**
    * \brief Constructs an Ipv6Prefix by using the input string.
+   *
+   * The prefix length is calculated as the minimum prefix length, i.e.,
+   * 2001:db8:cafe:: will have a 47 bit prefix length.
+   *
    * \param prefix the 128-bit prefix
    */
   Ipv6Prefix (char const* prefix);
+
+  /**
+   * \brief Constructs an Ipv6Prefix by using the input 16 bytes.
+   * \param prefix the 128-bit prefix
+   * \param prefixLength the prefix length
+   */
+  Ipv6Prefix (uint8_t prefix[16], uint8_t prefixLength);
+
+  /**
+   * \brief Constructs an Ipv6Prefix by using the input string.
+   * \param prefix the 128-bit prefix
+   * \param prefixLength the prefix length
+   */
+  Ipv6Prefix (char const* prefix, uint8_t prefixLength);
 
   /**
    * \brief Constructs an Ipv6Prefix by using the input number of bits.
@@ -511,6 +533,18 @@ public:
   uint8_t GetPrefixLength () const;
 
   /**
+   * \brief Set prefix length.
+   * \param prefixLength the prefix length
+   */
+   void SetPrefixLength (uint8_t prefixLength);
+
+   /**
+    * \brief Get the minimum prefix length, i.e., 128 - the length of the largest sequence trailing zeroes.
+    * \return minimum prefix length
+    */
+   uint8_t GetMinimumPrefixLength () const;
+
+  /**
    * \brief Comparison operation between two Ipv6Prefix.
    * \param other the IPv6 prefix to which to compare this prefix
    * \return true if the prefixes are equal, false otherwise
@@ -548,6 +582,11 @@ private:
    * \brief The prefix representation.
    */
   uint8_t m_prefix[16];
+
+  /**
+   * \brief The prefix length.
+   */
+  uint8_t m_prefixLength;
 
   /**
    * \brief Equal to operator.

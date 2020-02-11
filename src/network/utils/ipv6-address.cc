@@ -941,18 +941,43 @@ Ipv6Prefix::Ipv6Prefix ()
 {
   NS_LOG_FUNCTION (this);
   memset (m_prefix, 0x00, 16);
+  m_prefixLength = 64;
 }
 
 Ipv6Prefix::Ipv6Prefix (char const* prefix)
 {
   NS_LOG_FUNCTION (this << prefix);
   AsciiToIpv6Host (prefix, m_prefix);
+  m_prefixLength = GetMinimumPrefixLength ();
 }
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix[16])
 {
   NS_LOG_FUNCTION (this << &prefix);
   memcpy (m_prefix, prefix, 16);
+  m_prefixLength = GetMinimumPrefixLength ();
+}
+
+Ipv6Prefix::Ipv6Prefix (char const* prefix, uint8_t prefixLength)
+{
+  NS_LOG_FUNCTION (this << prefix);
+  AsciiToIpv6Host (prefix, m_prefix);
+
+  uint8_t autoLength = GetMinimumPrefixLength ();
+  NS_ASSERT_MSG (autoLength <= prefixLength, "Ipv6Prefix: address and prefix are not compatible: " << Ipv6Address (prefix) << "/" << +prefixLength);
+
+  m_prefixLength = prefixLength;
+}
+
+Ipv6Prefix::Ipv6Prefix (uint8_t prefix[16], uint8_t prefixLength)
+{
+  NS_LOG_FUNCTION (this << &prefix);
+  memcpy (m_prefix, prefix, 16);
+
+  uint8_t autoLength = GetMinimumPrefixLength ();
+  NS_ASSERT_MSG (autoLength <= prefixLength, "Ipv6Prefix: address and prefix are not compatible: " << Ipv6Address (prefix) << "/" << +prefixLength);
+
+  m_prefixLength = prefixLength;
 }
 
 Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
@@ -963,6 +988,7 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
   unsigned int i=0;
 
   memset (m_prefix, 0x00, 16);
+  m_prefixLength = prefix;
 
   NS_ASSERT (prefix <= 128);
 
@@ -993,11 +1019,13 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const& prefix)
 {
   memcpy (m_prefix, prefix.m_prefix, 16);
+  m_prefixLength = prefix.m_prefixLength;
 }
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const* prefix)
 {
   memcpy (m_prefix, prefix->m_prefix, 16);
+  m_prefixLength = prefix->m_prefixLength;
 }
 
 Ipv6Prefix::~Ipv6Prefix ()
@@ -1030,6 +1058,83 @@ bool Ipv6Prefix::IsMatch (Ipv6Address a, Ipv6Address b) const
 void Ipv6Prefix::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
+
+  uint16_t address[8];
+  uint8_t i;
+
+  for (i=0; i<8; i++)
+    {
+      address[i] = (uint16_t(m_prefix[2*i]) << 8) | uint16_t(m_prefix[2*i+1]);
+    }
+
+  int8_t bestBase = -1;
+  int8_t bestLen = 0;
+  int8_t curBase = -1;
+  int8_t curLen = 0;
+
+  for (i=0; i<8; i++)
+    {
+      if (address[i] == 0)
+        {
+          if (curBase == -1)
+            {
+              curBase = i;
+              curLen = 1;
+            }
+          else
+            {
+              curLen++;
+            }
+        }
+      else
+        {
+          if (curBase != -1)
+            {
+              if (bestBase == -1 || curLen > bestLen)
+                {
+                  bestBase = curBase;
+                  bestLen = curLen;
+                }
+              curBase = -1;
+            }
+        }
+    }
+  if (curBase != -1)
+    {
+      if (bestBase == -1 || curLen > bestLen)
+        {
+          bestBase = curBase;
+          bestLen = curLen;
+        }
+    }
+  if (bestBase != -1 && bestLen < 2)
+    {
+      bestBase = -1;
+    }
+
+  for (i = 0; i < 8;) {
+      // Are we inside the best run of 0x00's?
+      if (i == bestBase)
+        {
+          os << ':';
+          i += bestLen;
+          continue;
+        }
+      // Are we following an initial run of 0x00s or any real hex?
+      if (i != 0)
+        {
+          os << ':';
+        }
+      os << std::hex << (unsigned int) address[i];
+      i++;
+  }
+  // Was it a trailing run of 0x00's?
+  if (bestBase != -1 && (bestBase + bestLen) == 8)
+    {
+      os << ':';
+    }
+  os << std::dec;
+
 
   os << "/" << (unsigned int) GetPrefixLength();
 }
@@ -1064,21 +1169,41 @@ void Ipv6Prefix::GetBytes (uint8_t buf[16]) const
 uint8_t Ipv6Prefix::GetPrefixLength () const
 {
   NS_LOG_FUNCTION (this);
-  uint8_t i = 0;
-  uint8_t prefixLength = 0;
+  return m_prefixLength;
+}
 
-  for(i = 0; i < 16; i++)
+void Ipv6Prefix::SetPrefixLength (uint8_t prefixLength)
+{
+  NS_LOG_FUNCTION (this);
+  m_prefixLength = prefixLength;
+}
+
+uint8_t Ipv6Prefix::GetMinimumPrefixLength () const
+{
+  NS_LOG_FUNCTION (this);
+
+  uint8_t prefixLength = 0;
+  bool stop = false;
+
+  for(int8_t i=15; i>=0 && !stop; i--)
     {
       uint8_t mask = m_prefix[i];
 
-      while(mask != 0)
+      for(uint8_t j=0; j<8 && !stop; j++)
         {
-          mask = mask << 1;
-          prefixLength++;
+          if ((mask & 1) == 0)
+            {
+              mask = mask >> 1;
+              prefixLength++;
+            }
+          else
+            {
+              stop = true;
+            }
         }
     }
 
-  return prefixLength;
+  return 128 - prefixLength;
 }
 
 bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
