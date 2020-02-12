@@ -36,4 +36,13 @@ Thanks to the "Schedule" feature of Gitlab, we setup pipelines that have to be r
 As weekly jobs, we perform the build, testing, and documentation stage in every platform we support (Ubuntu, Fedora, Arch Linux) with all the compilers we support (GCC and CLang). Weekly pipelines should define a variable, named `RELEASE`, as `weekly`. To add the support for your platform, please see how the jobs are constructed (for instance, the GCC jobs are in `gitlab-ci-gcc.yml`). We currently miss the jobs for OS X and Windows.
 
 ## Test your changes
-When you fork ns-3-dev on Gitlab, you get access to 2000 free hours of execution time on the Gitlab CI infrastructure. You automatically inherit all the scripts as well, so you can test your changes before requesting a merge. The per-commit script will execute automatically, but to perform a deeper test, you can manually run the daily or the weekly test. Go to the Gitlab interface, then enter in the CI/CD menu and select Pipelines. On the top, you can manually run a pipeline: select the branch, and add a variable `RELEASE` set to `daily` or `weekly` following your need, and then run it.
+When you fork ns-3-dev on Gitlab, you get access to 2000 free hours of execution time on the Gitlab CI infrastructure. You automatically inherit all the scripts as well, so you can test your changes before requesting a merge. As mentioned previously, we store our YML files under the directory ./utils/tests, therefore, to execute per-commit script automatically, Gitlab CI/CD requires a custom path to the YML file.
+
+To customize the path:
+
+1. Go to the project’s **Settings > CI / CD**.
+2. Expand the **General pipelines** section.
+3. Provide `utils/tests/gitlab-ci.yml` as a value in the **Custom CI configuration path** field.
+4. Click **Save changes**.
+
+To perform a deeper test, you can manually run the daily or the weekly test. Go to the Gitlab interface, then enter in the CI/CD menu and select Pipelines. On the top, you can manually run a pipeline: select the branch, and add a variable `RELEASE` set to `daily` or `weekly` following your need, and then run it.
