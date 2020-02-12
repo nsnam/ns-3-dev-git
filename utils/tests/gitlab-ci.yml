@@ -42,6 +42,7 @@ stages:
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
+  timeout: 9h
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
 
