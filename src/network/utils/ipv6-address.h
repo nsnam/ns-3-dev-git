@@ -101,9 +101,12 @@ public:
   /**
    * \brief Comparison operation between two Ipv6Addresses.
    *
-   * \param other the IPv6 address to which to compare thisaddress
+   * \deprecated Use the == operator (same functionality)
+   *
+   * \param other the IPv6 address to which to compare this address
    * \return true if the addresses are equal, false otherwise
    */
+  NS_DEPRECATED_3_31
   bool IsEqual (const Ipv6Address& other) const;
 
   /**
@@ -312,12 +315,19 @@ public:
   bool IsDocumentation () const;
 
   /**
+   * \brief Compares an address and a prefix.
+   * \param prefix the prefix to compare with
+   * \return true if the address has the given prefix
+   */
+  bool HasPrefix (Ipv6Prefix const& prefix) const;
+
+  /**
    * \brief Combine this address with a prefix.
    * \param prefix a IPv6 prefix
    * \return an IPv6 address that is this address combined
    * (bitwise AND) with a prefix, yielding an IPv6 network address.
    */
-  Ipv6Address CombinePrefix (Ipv6Prefix const & prefix);
+  Ipv6Address CombinePrefix (Ipv6Prefix const & prefix) const;
 
   /**
    * \brief If the Address matches the type.
@@ -536,19 +546,23 @@ public:
    * \brief Set prefix length.
    * \param prefixLength the prefix length
    */
-   void SetPrefixLength (uint8_t prefixLength);
+  void SetPrefixLength (uint8_t prefixLength);
 
    /**
     * \brief Get the minimum prefix length, i.e., 128 - the length of the largest sequence trailing zeroes.
     * \return minimum prefix length
     */
-   uint8_t GetMinimumPrefixLength () const;
+  uint8_t GetMinimumPrefixLength () const;
 
   /**
    * \brief Comparison operation between two Ipv6Prefix.
+   *
+   * \deprecated Use the == operator (same functionality)
+   *
    * \param other the IPv6 prefix to which to compare this prefix
    * \return true if the prefixes are equal, false otherwise
    */
+  NS_DEPRECATED_3_31
   bool IsEqual (const Ipv6Prefix& other) const;
 
   /**

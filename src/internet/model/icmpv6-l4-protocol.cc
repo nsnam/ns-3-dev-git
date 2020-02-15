@@ -798,7 +798,7 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
         {
           entry = cache->Add (redirTarget);
           /* destination and target different => necessarily a router */
-          entry->SetRouter (!redirTarget.IsEqual (redirDestination) ? true : false);
+          entry->SetRouter (redirTarget != redirDestination);
           entry->SetMacAddress (llOptionHeader.GetAddress ());
           entry->MarkStale ();
         }
@@ -823,7 +823,7 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
   /* add redirection in routing table */
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
 
-  if (redirTarget.IsEqual (redirDestination))
+  if (redirTarget == redirDestination)
     {
       ipv6->GetRoutingProtocol ()->NotifyAddRoute (redirDestination, Ipv6Prefix (128), Ipv6Address ("::"), ipv6->GetInterfaceForAddress (dst));
     }

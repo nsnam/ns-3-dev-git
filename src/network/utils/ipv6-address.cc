@@ -729,7 +729,7 @@ bool Ipv6Address::IsIpv4MappedAddress () const
   return (false);
 }
 
-Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)
+Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix) const
 {
   NS_LOG_FUNCTION (this << prefix);
   Ipv6Address ipv6;
@@ -809,6 +809,16 @@ bool Ipv6Address::IsDocumentation () const
       return true;
     }
   return false;
+}
+
+bool Ipv6Address::HasPrefix (Ipv6Prefix const& prefix) const
+{
+  NS_LOG_FUNCTION (this << prefix);
+
+  Ipv6Address masked = CombinePrefix (prefix);
+  Ipv6Address reference = Ipv6Address::GetOnes ().CombinePrefix (prefix);
+
+  return (masked == reference);
 }
 
 

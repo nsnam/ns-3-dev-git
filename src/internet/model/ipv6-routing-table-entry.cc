@@ -108,7 +108,7 @@ Ipv6RoutingTableEntry::~Ipv6RoutingTableEntry ()
 
 bool Ipv6RoutingTableEntry::IsHost () const
 {
-  if (m_destNetworkPrefix.IsEqual (Ipv6Prefix::GetOnes ()))
+  if (m_destNetworkPrefix == Ipv6Prefix::GetOnes ())
     {
       return true;
     }
@@ -137,7 +137,7 @@ bool Ipv6RoutingTableEntry::IsNetwork () const
 
 bool Ipv6RoutingTableEntry::IsDefault () const
 {
-  if (m_dest.IsEqual (Ipv6Address::GetZero ()))
+  if (m_dest == Ipv6Address::GetZero ())
     {
       return true;
     }
@@ -156,7 +156,7 @@ Ipv6Prefix Ipv6RoutingTableEntry::GetDestNetworkPrefix () const
 
 bool Ipv6RoutingTableEntry::IsGateway () const
 {
-  if (m_gateway.IsEqual (Ipv6Address::GetZero ()))
+  if (m_gateway == Ipv6Address::GetZero ())
     {
       return false;
     }

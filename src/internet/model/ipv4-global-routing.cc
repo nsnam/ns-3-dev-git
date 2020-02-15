@@ -152,7 +152,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
        i++) 
     {
       NS_ASSERT ((*i)->IsHost ());
-      if ((*i)->GetDest ().IsEqual (dest)) 
+      if ((*i)->GetDest () == dest)
         {
           if (oif != 0)
             {

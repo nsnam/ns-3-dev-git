@@ -96,7 +96,7 @@ bool
 Ipv4RoutingTableEntry::IsHost (void) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetOnes ()))
+  if (m_destNetworkMask == Ipv4Mask::GetOnes ())
     {
       return true;
     }
@@ -121,7 +121,7 @@ bool
 Ipv4RoutingTableEntry::IsDefault (void) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_dest.IsEqual (Ipv4Address::GetZero ()))
+  if (m_dest == Ipv4Address::GetZero ())
     {
       return true;
     }
@@ -146,7 +146,7 @@ bool
 Ipv4RoutingTableEntry::IsGateway (void) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_gateway.IsEqual (Ipv4Address::GetZero ()))
+  if (m_gateway == Ipv4Address::GetZero ())
     {
       return false;
     }

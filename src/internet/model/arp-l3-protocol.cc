@@ -228,7 +228,7 @@ ArpL3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pro
           break;
         } 
       else if (arp.IsReply () && 
-               arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress (i).GetLocal ()) &&
+               arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress (i).GetLocal () &&
                arp.GetDestinationHardwareAddress () == device->GetAddress ())
         {
           found = true;

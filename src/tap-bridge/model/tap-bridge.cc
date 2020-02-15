@@ -391,7 +391,7 @@ TapBridge::CreateTap (void)
       if (wantIp
           && (ipv4 == 0)
           && m_tapIp.IsBroadcast ()
-          && m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
+          && m_tapNetmask == Ipv4Mask::GetOnes ())
         {
           NS_FATAL_ERROR ("TapBridge::CreateTap(): Tap device IP configuration requested but neither IP address nor IP netmask is provided");
         }
@@ -464,7 +464,7 @@ TapBridge::CreateTap (void)
         }
 
       std::ostringstream ossNetmask;
-      if (m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
+      if (m_tapNetmask == Ipv4Mask::GetOnes ())
         {
           ossNetmask << "-n" << ipv4Mask;
         }

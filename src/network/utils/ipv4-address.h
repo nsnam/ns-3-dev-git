@@ -25,6 +25,7 @@
 #include <ostream>
 #include "ns3/address.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -77,9 +78,13 @@ public:
   void Set (char const *address);
   /**
    * \brief Comparison operation between two Ipv4Addresses
+   *
+   * \deprecated Use the == operator (same functionality)
+   *
    * \param other address to which to compare this address
    * \return True if the addresses are equal. False otherwise.
    */
+  NS_DEPRECATED_3_31
   bool IsEqual (const Ipv4Address &other) const
   {
     return m_address == other.m_address;
@@ -279,9 +284,13 @@ public:
    */
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
   /**
+   *
+   * \deprecated Use the == operator (same functionality)
+   *
    * \param other a mask to compare 
    * \return true if the mask equals the mask passed as input parameter
    */
+  NS_DEPRECATED_3_31
   bool IsEqual (Ipv4Mask other) const;
   /** 
    * Get the host-order 32-bit IP mask
@@ -321,6 +330,25 @@ public:
    * \return the 255.255.255.255 mask
    */
   static Ipv4Mask GetOnes (void);
+
+  /**
+   * \brief Equal to operator.
+   *
+   * \param a the first operand.
+   * \param b the first operand.
+   * \returns true if the operands are equal.
+   */
+  friend bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
+
+  /**
+   * \brief Not equal to operator.
+   *
+   * \param a the first operand.
+   * \param b the first operand.
+   * \returns true if the operands are not equal.
+   */
+  friend bool operator != (Ipv4Mask const &a, Ipv4Mask const &b);
+
 
 private:
   uint32_t m_mask; //!< IP mask
@@ -418,7 +446,11 @@ public:
  * \param b the first operand
  * \returns true if the operands are equal
  */
-bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
+inline bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return (a.m_mask == b.m_mask);
+}
+
 /**
  * \brief Not equal to operator.
  *
@@ -426,7 +458,11 @@ bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
  * \param b the first operand
  * \returns true if the operands are not equal
  */
-bool operator != (Ipv4Mask const &a, Ipv4Mask const &b);
+inline bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return (a.m_mask != b.m_mask);
+}
+
 
 } // namespace ns3
 

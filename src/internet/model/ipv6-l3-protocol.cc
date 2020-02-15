@@ -1064,7 +1064,7 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
             {
               Ipv6InterfaceAddress iaddr = GetAddress (j, i);
               Ipv6Address addr = iaddr.GetAddress ();
-              if (addr.IsEqual (hdr.GetDestinationAddress ()))
+              if (addr == hdr.GetDestinationAddress ())
                 {
                   if (j == interface)
                     {
@@ -1164,7 +1164,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       ipv6Fragment->GetFragments (packet, ipHeader, targetMtu, fragments);
     }
 
-  if (!route->GetGateway ().IsEqual (Ipv6Address::GetAny ()))
+  if (route->GetGateway () != Ipv6Address::GetAny ())
     {
       if (outInterface->IsUp ())
         {

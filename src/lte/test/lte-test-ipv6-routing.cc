@@ -185,7 +185,11 @@ void LteIpv6RoutingTestCase::Checker ()
           sourcePort = udpHeader2.GetSourcePort ();
           destinationPort = udpHeader2.GetDestinationPort ();
           //Check whether the uids, addresses and ports match
-          if ((p2->GetUid () == p1->GetUid ()) && sorceAddress.IsEqual (ipv6header1.GetDestinationAddress ()) && destinationAddress.IsEqual (ipv6header1.GetSourceAddress ()) && sourcePort == udpHeader1.GetDestinationPort () && destinationPort == udpHeader1.GetSourcePort ())
+          if ((p2->GetUid () == p1->GetUid ())
+              && sorceAddress == ipv6header1.GetDestinationAddress ()
+              && destinationAddress == ipv6header1.GetSourceAddress ()
+              && sourcePort == udpHeader1.GetDestinationPort ()
+              && destinationPort == udpHeader1.GetSourcePort ())
             {
               b = true;
               break;

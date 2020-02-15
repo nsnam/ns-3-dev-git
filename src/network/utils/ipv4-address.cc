@@ -436,15 +436,6 @@ std::istream & operator >> (std::istream &is, Ipv4Mask &mask)
   return is;
 }
 
-bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
-{
-  return a.IsEqual (b);
-}
-bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
-{
-  return !a.IsEqual (b);
-}
-
 ATTRIBUTE_HELPER_CPP (Ipv4Address);
 ATTRIBUTE_HELPER_CPP (Ipv4Mask);
 

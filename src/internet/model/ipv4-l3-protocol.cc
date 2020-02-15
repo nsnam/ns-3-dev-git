@@ -954,7 +954,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   Ptr<Ipv4Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
-  if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
+  if (route->GetGateway () != Ipv4Address ("0.0.0.0"))
     {
       if (outInterface->IsUp ())
         {
