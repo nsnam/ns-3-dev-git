@@ -60,4 +60,8 @@
 #define NS_DEPRECATED
 #endif
 
+#ifdef NS_DEPRECATED
+#define NS_DEPRECATED_3_31 NS_DEPRECATED
+#endif
+
 #endif /* NS3_DEPRECATED_H */
