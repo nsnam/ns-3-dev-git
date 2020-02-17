@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
     }
 
   // Devices queue configuration
-  Config::SetDefault ("ns3::QueueBase::MaxSize",
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize",
                       QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
 
   // Create gateway, source, and sink

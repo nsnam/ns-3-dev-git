@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (pktSize));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue (appDataRate));
 
-  Config::SetDefault ("ns3::QueueBase::MaxSize",
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize",
                       QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, maxPackets)));
 
   if (!modeBytes)

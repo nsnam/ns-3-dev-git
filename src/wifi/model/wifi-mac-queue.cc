@@ -39,10 +39,11 @@ WifiMacQueue::GetTypeId (void)
     .SetParent<Queue<WifiMacQueueItem> > ()
     .SetGroupName ("Wifi")
     .AddConstructor<WifiMacQueue> ()
-    .AddAttribute ("MaxQueueSize",
+    .AddAttribute ("MaxSize",
                    "The max queue size",
                    QueueSizeValue (QueueSize ("500p")),
-                   MakeQueueSizeAccessor (&WifiMacQueue::SetMaxQueueSize),
+                   MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
+                                          &QueueBase::GetMaxSize),
                    MakeQueueSizeChecker ())
     .AddAttribute ("MaxDelay", "If a packet stays longer than this delay in the queue, it is dropped.",
                    TimeValue (MilliSeconds (500)),
@@ -72,19 +73,6 @@ WifiMacQueue::~WifiMacQueue ()
 }
 
 const WifiMacQueue::ConstIterator WifiMacQueue::EMPTY = std::list<Ptr<WifiMacQueueItem>> ().end ();
-
-void
-WifiMacQueue::SetMaxQueueSize (QueueSize size)
-{
-  NS_LOG_FUNCTION (this << size);
-  m_maxSize = size;
-}
-
-QueueSize
-WifiMacQueue::GetMaxQueueSize (void) const
-{
-  return m_maxSize;
-}
 
 void
 WifiMacQueue::SetMaxDelay (Time delay)
@@ -138,8 +126,6 @@ WifiMacQueue::Insert (ConstIterator pos, Ptr<WifiMacQueueItem> item)
   NS_LOG_FUNCTION (this << *item);
   NS_ASSERT_MSG (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS,
                  "WifiMacQueues must be in packet mode");
-
-  QueueBase::SetMaxSize (GetMaxQueueSize ()); //Make sure QueueBase has the same maximum queue size
 
   // insert the item if the queue is not full
   if (QueueBase::GetNPackets () < GetMaxSize ().GetValue ())

@@ -55,24 +55,24 @@ main (int argc, char *argv[])
   // The maximum queue size can either be enforced in bytes ('b') or
   // packets ('p').  A special type called the ns3::QueueSize can
   // hold queue size values in either unit (bytes or packets).  The
-  // queue base class ns3::QueueBase has a MaxSize attribute that can
+  // DropTailQueue<Packet> class has a MaxSize attribute that can
   // be set to a QueueSize.
 
   // By default, the MaxSize attribute has a value of 100 packets ('100p')
-  // (this default can be observed in the function QueueBase::GetTypeId)
+  // (this default can be observed in the function DropTail<Item>::GetTypeId)
   // 
   // Here, we set it to 80 packets.  We could use one of two value types:
   // a string-based value or a QueueSizeValue value
-  Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("80p"));
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize", StringValue ("80p"));
   // The below function call is redundant
-  Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 80)));
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 80)));
 
   // Allow the user to override any of the defaults and the above
   // SetDefaults() at run-time, via command-line arguments
-  // For example, via "--ns3::QueueBase::MaxSize=80p"
+  // For example, via "--ns3::DropTailQueue<Packet>::MaxSize=80p"
   CommandLine cmd;
   // This provides yet another way to set the value from the command line:
-  cmd.AddValue ("maxSize", "ns3::QueueBase::MaxSize");
+  cmd.AddValue ("maxSize", "ns3::DropTailQueue<Packet>::MaxSize");
   cmd.Parse (argc, argv);
 
   // Now, we will create a few objects using the low-level API

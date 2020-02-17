@@ -308,7 +308,7 @@ Ns3TcpStateTestCase::DoRun (void)
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", StringValue (tcpModel));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
-  Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("20p"));
+  Config::SetDefault ("ns3::DropTailQueue<Packet>::MaxSize", StringValue ("20p"));
   Config::SetDefault ("ns3::TcpSocketBase::Timestamp", BooleanValue (false));
 
   if (m_writeLogging)

@@ -75,6 +75,12 @@ DropTailQueue<Item>::GetTypeId (void)
     .SetParent<Queue<Item> > ()
     .SetGroupName ("Network")
     .template AddConstructor<DropTailQueue<Item> > ()
+    .AddAttribute ("MaxSize",
+                   "The max queue size",
+                   QueueSizeValue (QueueSize ("100p")),
+                   MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
+                                          &QueueBase::GetMaxSize),
+                   MakeQueueSizeChecker ())
   ;
   return tid;
 }
