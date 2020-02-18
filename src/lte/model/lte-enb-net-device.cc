@@ -239,16 +239,16 @@ LteEnbNetDevice::HasCellId (uint16_t cellId) const
   return false;
 }
 
-uint8_t 
+uint16_t
 LteEnbNetDevice::GetUlBandwidth () const
 {
   return m_ulBandwidth;
 }
 
 void 
-LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
+LteEnbNetDevice::SetUlBandwidth (uint16_t bw)
 { 
-  NS_LOG_FUNCTION (this << uint16_t (bw));
+  NS_LOG_FUNCTION (this << bw);
   switch (bw)
     { 
     case 6:
@@ -261,19 +261,19 @@ LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
       break;
 
     default:
-      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      NS_FATAL_ERROR ("invalid bandwidth value " << bw);
       break;
     }
 }
 
-uint8_t 
+uint16_t
 LteEnbNetDevice::GetDlBandwidth () const
 {
   return m_dlBandwidth;
 }
 
 void 
-LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
+LteEnbNetDevice::SetDlBandwidth (uint16_t bw)
 {
   NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
@@ -288,7 +288,7 @@ LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
       break;
 
     default:
-      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      NS_FATAL_ERROR ("invalid bandwidth value " << bw);
       break;
     }
 }

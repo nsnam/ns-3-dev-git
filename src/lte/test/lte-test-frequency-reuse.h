@@ -64,7 +64,7 @@ public:
    * \param availableUlRb the available UL per RB
    */
   LteFrTestCase (std::string name,
-                 uint32_t userNum,uint8_t dlBandwidth,uint8_t ulBandwidth,
+                 uint32_t userNum,uint16_t dlBandwidth,uint16_t ulBandwidth,
                  std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteFrTestCase ();
 
@@ -83,8 +83,8 @@ protected:
   virtual void DoRun (void);
 
   uint32_t m_userNum; ///< the number of UE nodes
-  uint8_t m_dlBandwidth; ///< the DL bandwidth
-  uint8_t m_ulBandwidth; ///< the UL bandwidth
+  uint16_t m_dlBandwidth; ///< the DL bandwidth
+  uint16_t m_ulBandwidth; ///< the UL bandwidth
 
   std::vector<bool> m_availableDlRb; ///< the available DL for each RB
   bool m_usedMutedDlRbg; ///< used muted DL RBG?
@@ -121,9 +121,9 @@ public:
    */
   LteHardFrTestCase (std::string name, uint32_t userNum,
                      std::string schedulerType,
-                     uint8_t dlBandwidth, uint8_t ulBandwidth,
-                     uint8_t dlSubBandOffset, uint8_t dlSubBandwidth,
-                     uint8_t ulSubBandOffset, uint8_t ulSubBandwidth,
+                     uint16_t dlBandwidth, uint16_t ulBandwidth,
+                     uint8_t dlSubBandOffset, uint16_t dlSubBandwidth,
+                     uint8_t ulSubBandOffset, uint16_t ulSubBandwidth,
                      std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteHardFrTestCase ();
 
@@ -168,9 +168,9 @@ public:
    */
   LteStrictFrTestCase (std::string name, uint32_t userNum,
                        std::string schedulerType,
-                       uint8_t dlBandwidth, uint8_t ulBandwidth,
-                       uint8_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint8_t dlEdgeSubBandwidth,
-                       uint8_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint8_t ulEdgeSubBandwidth,
+                       uint16_t dlBandwidth, uint16_t ulBandwidth,
+                       uint16_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint16_t dlEdgeSubBandwidth,
+                       uint16_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint16_t ulEdgeSubBandwidth,
                        std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteStrictFrTestCase ();
 
@@ -179,13 +179,13 @@ private:
 
   std::string m_schedulerType; ///< scheduler type
 
-  uint8_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
+  uint16_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
   uint8_t m_dlEdgeSubBandOffset; ///< DL edge subband offset
-  uint8_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
+  uint16_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
 
-  uint8_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
+  uint16_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
   uint8_t m_ulEdgeSubBandOffset; ///< UL edge subband offset
-  uint8_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
+  uint16_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
 };
 
 /**
@@ -263,8 +263,8 @@ protected:
 
   std::string m_schedulerType; ///< the scheduler type
  
-  uint8_t m_dlBandwidth; ///< the DL bandwidth
-  uint8_t m_ulBandwidth; ///< the UL bandwidth
+  uint16_t m_dlBandwidth; ///< the DL bandwidth
+  uint16_t m_ulBandwidth; ///< the UL bandwidth
 
   Time m_teleportTime; ///< the telport time
   Ptr<MobilityModel> m_ueMobility; ///< the UE mobility model

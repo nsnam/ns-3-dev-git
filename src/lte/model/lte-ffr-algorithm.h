@@ -99,22 +99,22 @@ public:
   /**
    * \return the uplink bandwidth in RBs
    */
-  uint8_t GetUlBandwidth () const;
+  uint16_t GetUlBandwidth () const;
 
   /**
    * \param bw the uplink bandwidth in RBs
    */
-  void SetUlBandwidth (uint8_t bw);
+  void SetUlBandwidth (uint16_t bw);
 
   /**
    * \return the downlink bandwidth in RBs
    */
-  uint8_t GetDlBandwidth () const;
+  uint16_t GetDlBandwidth () const;
 
   /**
    * \param bw the downlink bandwidth in RBs
    */
-  void SetDlBandwidth (uint8_t bw);
+  void SetDlBandwidth (uint16_t bw);
 
   /**
    * \param cellTypeId for automatic FR configuration
@@ -202,7 +202,7 @@ protected:
    * \brief DoGetMinContinuousUlBandwidth in number of RB
    * \return number of RB in min continuous UL Bandwidth
    */
-  virtual uint8_t DoGetMinContinuousUlBandwidth () = 0;
+  virtual uint16_t DoGetMinContinuousUlBandwidth () = 0;
 
   // FFR SAP RRC PROVIDER IMPLEMENTATION
 
@@ -217,7 +217,7 @@ protected:
    * \param ulBandwidth UL bandwidth in number of RB
    * \param dlBandwidth DL bandwidth in number of RB
    */
-  virtual void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  virtual void DoSetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth);
 
   /**
    * \brief Implementation of LteFfrRrcSapProvider::ReportUeMeas.

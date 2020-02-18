@@ -149,14 +149,14 @@ RadioEnvironmentMapHelper::GetTypeId (void)
 }
 
 
-uint8_t 
+uint16_t
 RadioEnvironmentMapHelper::GetBandwidth () const
 {
   return m_bandwidth;
 }
 
 void 
-RadioEnvironmentMapHelper::SetBandwidth (uint8_t bw)
+RadioEnvironmentMapHelper::SetBandwidth (uint16_t bw)
 {
   switch (bw)
     { 
@@ -170,7 +170,7 @@ RadioEnvironmentMapHelper::SetBandwidth (uint8_t bw)
       break;
 
     default:
-      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      NS_FATAL_ERROR ("invalid bandwidth value " << bw);
       break;
     }
 }

@@ -67,7 +67,7 @@ public:
   EnbMacMemberLteEnbCmacSapProvider (LteEnbMac* mac);
 
   // inherited from LteEnbCmacSapProvider
-  virtual void ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  virtual void ConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth);
   virtual void AddUe (uint16_t rnti);
   virtual void RemoveUe (uint16_t rnti);
   virtual void AddLc (LcInfo lcinfo, LteMacSapUser* msu);
@@ -89,7 +89,7 @@ EnbMacMemberLteEnbCmacSapProvider::EnbMacMemberLteEnbCmacSapProvider (LteEnbMac*
 }
 
 void
-EnbMacMemberLteEnbCmacSapProvider::ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
+EnbMacMemberLteEnbCmacSapProvider::ConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth)
 {
   m_mac->DoConfigureMac (ulBandwidth, dlBandwidth);
 }
@@ -789,9 +789,9 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
 // ////////////////////////////////////////////
 
 void
-LteEnbMac::DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
+LteEnbMac::DoConfigureMac (uint16_t ulBandwidth, uint16_t dlBandwidth)
 {
-  NS_LOG_FUNCTION (this << " ulBandwidth=" << (uint16_t) ulBandwidth << " dlBandwidth=" << (uint16_t) dlBandwidth);
+  NS_LOG_FUNCTION (this << " ulBandwidth=" << ulBandwidth << " dlBandwidth=" << dlBandwidth);
   FfMacCschedSapProvider::CschedCellConfigReqParameters params;
   // Configure the subset of parameters used by FfMacScheduler
   params.m_ulBandwidth = ulBandwidth;

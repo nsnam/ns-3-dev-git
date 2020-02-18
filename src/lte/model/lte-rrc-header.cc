@@ -74,7 +74,7 @@ RrcAsn1Header::GetMessageType ()
 }
 
 int
-RrcAsn1Header::BandwidthToEnum (uint8_t bandwidth) const
+RrcAsn1Header::BandwidthToEnum (uint16_t bandwidth) const
 {
   int n;
   switch (bandwidth)
@@ -86,15 +86,15 @@ RrcAsn1Header::BandwidthToEnum (uint8_t bandwidth) const
       case 75: n = 4; break;
       case 100: n = 5; break;
       default:
-        NS_FATAL_ERROR ("Wrong bandwidth: " << (uint16_t) bandwidth);
+        NS_FATAL_ERROR ("Wrong bandwidth: " << bandwidth);
     }
   return n;
 }
 
-uint8_t
+uint16_t
 RrcAsn1Header::EnumToBandwidth (int n) const
 {
-  uint8_t bw;
+  uint16_t bw;
   switch (n)
     {
       case 0: bw = 6; break;

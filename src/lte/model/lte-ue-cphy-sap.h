@@ -106,7 +106,7 @@ public:
   /**
    * \param dlBandwidth the DL bandwidth in number of PRBs
    */
-  virtual void SetDlBandwidth (uint8_t dlBandwidth) = 0;
+  virtual void SetDlBandwidth (uint16_t dlBandwidth) = 0;
 
   /** 
    * \brief Configure uplink (normally done after reception of SIB2)
@@ -114,7 +114,7 @@ public:
    * \param ulEarfcn the uplink carrier frequency (EARFCN)
    * \param ulBandwidth the UL bandwidth in number of PRBs
    */
-  virtual void ConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth) = 0;
+  virtual void ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth) = 0;
 
   /**
    * \brief Configure referenceSignalPower
@@ -316,8 +316,8 @@ public:
   virtual void StartCellSearch (uint32_t dlEarfcn);
   virtual void SynchronizeWithEnb (uint16_t cellId);
   virtual void SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn);
-  virtual void SetDlBandwidth (uint8_t dlBandwidth);
-  virtual void ConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth);
+  virtual void SetDlBandwidth (uint16_t dlBandwidth);
+  virtual void ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth);
   virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower);
   virtual void SetRnti (uint16_t rnti);
   virtual void SetTransmissionMode (uint8_t txMode);
@@ -375,14 +375,14 @@ MemberLteUeCphySapProvider<C>::SynchronizeWithEnb (uint16_t cellId, uint32_t dlE
 
 template <class C>
 void
-MemberLteUeCphySapProvider<C>::SetDlBandwidth (uint8_t dlBandwidth)
+MemberLteUeCphySapProvider<C>::SetDlBandwidth (uint16_t dlBandwidth)
 {
   m_owner->DoSetDlBandwidth (dlBandwidth);
 }
 
 template <class C>
 void 
-MemberLteUeCphySapProvider<C>::ConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
+MemberLteUeCphySapProvider<C>::ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth)
 {
   m_owner->DoConfigureUplink (ulEarfcn, ulBandwidth);
 }

@@ -124,7 +124,7 @@ public:
    * \brief Get the minimum continuous Ul bandwidth
    * \returns the minimum continuous UL bandwidth
    */
-  virtual uint8_t GetMinContinuousUlBandwidth () = 0;
+  virtual uint16_t GetMinContinuousUlBandwidth () = 0;
 }; // end of class LteFfrSapProvider
 
 
@@ -168,7 +168,7 @@ public:
   virtual void ReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
   virtual void ReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap );
   virtual uint8_t GetTpc (uint16_t rnti);
-  virtual uint8_t GetMinContinuousUlBandwidth ();
+  virtual uint16_t GetMinContinuousUlBandwidth ();
 private:
   MemberLteFfrSapProvider ();
   C* m_owner; ///< the owner class
@@ -240,7 +240,7 @@ MemberLteFfrSapProvider<C>::GetTpc ( uint16_t rnti )
 }
 
 template <class C>
-uint8_t
+uint16_t
 MemberLteFfrSapProvider<C>::GetMinContinuousUlBandwidth ()
 {
   return m_owner->DoGetMinContinuousUlBandwidth ();

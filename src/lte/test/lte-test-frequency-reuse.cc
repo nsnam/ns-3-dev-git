@@ -175,7 +175,7 @@ UlDataRxStartNofitication (LteFrTestCase *testcase,
 }
 
 LteFrTestCase::LteFrTestCase (std::string name,
-                              uint32_t userNum,uint8_t dlBandwidth,uint8_t ulBandwidth,
+                              uint32_t userNum,uint16_t dlBandwidth,uint16_t ulBandwidth,
                               std::vector<bool> availableDlRb, std::vector<bool> availableUlRb)
   : TestCase ("Test: " + name),
     m_userNum (userNum),
@@ -242,9 +242,9 @@ LteFrTestCase::DoRun (void)
 
 LteHardFrTestCase::LteHardFrTestCase (std::string name, uint32_t userNum,
                                       std::string schedulerType,
-                                      uint8_t dlBandwidth, uint8_t ulBandwidth,
-                                      uint8_t dlSubBandOffset, uint8_t dlSubBandwidth,
-                                      uint8_t ulSubBandOffset, uint8_t ulSubBandwidth,
+                                      uint16_t dlBandwidth, uint16_t ulBandwidth,
+                                      uint8_t dlSubBandOffset, uint16_t dlSubBandwidth,
+                                      uint8_t ulSubBandOffset, uint16_t ulSubBandwidth,
                                       std::vector<bool> availableDlRb, std::vector<bool> availableUlRb)
   : LteFrTestCase (name, userNum, dlBandwidth, ulBandwidth, availableDlRb, availableUlRb),
     m_schedulerType (schedulerType),
@@ -357,9 +357,9 @@ LteHardFrTestCase::DoRun (void)
 
 LteStrictFrTestCase::LteStrictFrTestCase (std::string name, uint32_t userNum,
                                           std::string schedulerType,
-                                          uint8_t dlBandwidth, uint8_t ulBandwidth,
-                                          uint8_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint8_t dlEdgeSubBandwidth,
-                                          uint8_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint8_t ulEdgeSubBandwidth,
+                                          uint16_t dlBandwidth, uint16_t ulBandwidth,
+                                          uint16_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint16_t dlEdgeSubBandwidth,
+                                          uint16_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint16_t ulEdgeSubBandwidth,
                                           std::vector<bool> availableDlRb, std::vector<bool> availableUlRb)
   : LteFrTestCase (name, userNum, dlBandwidth, ulBandwidth, availableDlRb, availableUlRb),
     m_schedulerType (schedulerType),
@@ -1508,7 +1508,7 @@ LteDistributedFfrAreaTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteEnbRrc::RsrqFilterCoefficient",
                       UintegerValue (0));
 
-  uint8_t bandwidth = 25;
+  uint16_t bandwidth = 25;
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();

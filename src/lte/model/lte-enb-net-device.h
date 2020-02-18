@@ -116,22 +116,22 @@ public:
   /** 
    * \return the uplink bandwidth in RBs
    */
-  uint8_t GetUlBandwidth () const;
+  uint16_t GetUlBandwidth () const;
 
   /** 
    * \param bw the uplink bandwidth in RBs
    */
-  void SetUlBandwidth (uint8_t bw);
+  void SetUlBandwidth (uint16_t bw);
 
   /** 
    * \return the downlink bandwidth in RBs
    */
-  uint8_t GetDlBandwidth () const;
+  uint16_t GetDlBandwidth () const;
 
   /** 
    * \param bw the downlink bandwidth in RBs
    */
-  void SetDlBandwidth (uint8_t bw);
+  void SetDlBandwidth (uint16_t bw);
 
   /** 
    * \return the downlink carrier frequency (EARFCN)
@@ -244,8 +244,8 @@ private:
 
   uint16_t m_cellId; /**< Cell Identifier. Part of the CGI, see TS 29.274, section 8.21.1  */
 
-  uint8_t m_dlBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink bandwidth in RBs */
-  uint8_t m_ulBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink bandwidth in RBs */
+  uint16_t m_dlBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink bandwidth in RBs */
+  uint16_t m_ulBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink bandwidth in RBs */
 
   uint32_t m_dlEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink carrier frequency */
   uint32_t m_ulEarfcn;  /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink carrier frequency */

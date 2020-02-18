@@ -61,13 +61,13 @@ public:
   /** 
    * \return the bandwidth (in num of RBs) over which SINR is calculated
    */
-  uint8_t GetBandwidth () const;
+  uint16_t GetBandwidth () const;
 
   /** 
    *
    * \param bw  the bandwidth (in num of RBs) over which SINR is calculated
    */
-  void SetBandwidth (uint8_t bw);
+  void SetBandwidth (uint16_t bw);
 
   /** 
    * Deploy the RemSpectrumPhy objects that generate the map according to the specified settings.

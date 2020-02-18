@@ -207,7 +207,7 @@ LteUplinkOpenLoopPowerControlTestCase::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 
-  uint8_t bandwidth = 25;
+  uint16_t bandwidth = 25;
   double d1 = 0;
 
   // Create Nodes: eNodeB and UE
@@ -321,7 +321,7 @@ LteUplinkClosedLoopPowerControlAbsoluteModeTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetFfrAlgorithmType ("ns3::LteFfrSimple");
 
-  uint8_t bandwidth = 25;
+  uint16_t bandwidth = 25;
   double d1 = 100;
 
   // Create Nodes: eNodeB and UE
@@ -434,7 +434,7 @@ LteUplinkClosedLoopPowerControlAccumulatedModeTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetFfrAlgorithmType ("ns3::LteFfrSimple");
 
-  uint8_t bandwidth = 25;
+  uint16_t bandwidth = 25;
   double d1 = 10;
 
   // Create Nodes: eNodeB and UE

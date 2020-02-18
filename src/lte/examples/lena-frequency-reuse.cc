@@ -107,7 +107,7 @@ int main (int argc, char *argv[])
   bool generateSpectrumTrace = false;
   bool generateRem = false;
   int32_t remRbId = -1;
-  uint8_t bandwidth = 25;
+  uint16_t bandwidth = 25;
   double distance = 1000;
   Box macroUeBox = Box (-distance * 0.5, distance * 1.5, -distance * 0.5, distance * 1.5, 1.5, 1.5);
 

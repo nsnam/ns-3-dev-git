@@ -75,7 +75,7 @@ public:
  * \param expected the expected Tx Power Spectral Density
  */
   LteDownlinkPowerControlSpectrumValueTestCase (std::string name,
-                                                uint16_t earfcn, uint8_t bw, double powerTx,
+                                                uint16_t earfcn, uint16_t bw, double powerTx,
                                                 std::map<int, double> powerTxMap, std::vector <int> activeRbs,
                                                 SpectrumValue& expected);
   virtual ~LteDownlinkPowerControlSpectrumValueTestCase ();

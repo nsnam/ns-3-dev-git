@@ -493,14 +493,14 @@ private:
    *
    * \param dlBandwidth the DL bandwidth
    */
-  void DoSetDlBandwidth (uint8_t dlBandwidth);
+  void DoSetDlBandwidth (uint16_t dlBandwidth);
   /**
    * \brief Configure UL uplink function
    *
    * \param ulEarfcn UL EARFCN
    * \param ulBandwidth the UL bandwidth
    */
-  void DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth);
+  void DoConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth);
   /**
    * \brief Configure reference signal power function
    *

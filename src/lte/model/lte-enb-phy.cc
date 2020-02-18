@@ -91,7 +91,7 @@ public:
    * \param ulBandwidth the UL bandwidth
    * \param dlBandwidth the DL bandwidth
    */
-  virtual void SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  virtual void SetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth);
   /**
    * Set Cell ID function
    *
@@ -116,7 +116,7 @@ EnbMemberLteEnbPhySapProvider::SendMacPdu (Ptr<Packet> p)
 }
 
 void
-EnbMemberLteEnbPhySapProvider::SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+EnbMemberLteEnbPhySapProvider::SetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth)
 {
   m_phy->DoSetBandwidth (ulBandwidth, dlBandwidth);
 }
@@ -894,7 +894,7 @@ LteEnbPhy::CreatePuschCqiReport (const SpectrumValue& sinr)
 
 
 void
-LteEnbPhy::DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+LteEnbPhy::DoSetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth)
 {
   NS_LOG_FUNCTION (this << (uint32_t) ulBandwidth << (uint32_t) dlBandwidth);
   m_ulBandwidth = ulBandwidth;

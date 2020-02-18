@@ -48,8 +48,8 @@ public:
    * @param ulBandwidth
    * @param dlBandwidth
    */
-  virtual void ConfigureMac (uint8_t ulBandwidth,
-                             uint8_t dlBandwidth) = 0;
+  virtual void ConfigureMac (uint16_t ulBandwidth,
+                             uint16_t dlBandwidth) = 0;
 
   /**
    * Add UE function

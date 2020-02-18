@@ -83,7 +83,7 @@ protected:
   virtual void DoReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
   virtual void DoReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap );
   virtual uint8_t DoGetTpc (uint16_t rnti);
-  virtual uint8_t DoGetMinContinuousUlBandwidth ();
+  virtual uint16_t DoGetMinContinuousUlBandwidth ();
 
   // FFR SAP RRC PROVIDER IMPLEMENTATION
   virtual void DoReportUeMeas (uint16_t rnti, LteRrcSap::MeasResults measResults);

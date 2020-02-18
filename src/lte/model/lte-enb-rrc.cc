@@ -2175,11 +2175,11 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> cc
 {
   auto it = ccPhyConf.begin ();
   NS_ASSERT (it != ccPhyConf.end ());
-  uint8_t ulBandwidth = it->second->GetUlBandwidth ();
-  uint8_t dlBandwidth = it->second->GetDlBandwidth ();
+  uint16_t ulBandwidth = it->second->GetUlBandwidth ();
+  uint16_t dlBandwidth = it->second->GetDlBandwidth ();
   uint32_t ulEarfcn = it->second->GetUlEarfcn ();
   uint32_t dlEarfcn = it->second->GetDlEarfcn ();
-  NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
+  NS_LOG_FUNCTION (this << ulBandwidth << dlBandwidth
                         << ulEarfcn << dlEarfcn);
   NS_ASSERT (!m_configured);
 

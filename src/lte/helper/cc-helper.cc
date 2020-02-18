@@ -175,7 +175,7 @@ CcHelper::EquallySpacedCcs ()
 
   uint32_t ulEarfcn = m_ulEarfcn;
   uint32_t dlEarfcn = m_dlEarfcn;
-  uint32_t maxBandwidthRb = std::max<uint32_t> (m_ulBandwidth, m_dlBandwidth);
+  uint16_t maxBandwidthRb = std::max<uint16_t> (m_ulBandwidth, m_dlBandwidth);
 
   // Convert bandwidth from RBs to kHz
   uint32_t maxBandwidthKhz = LteSpectrumValueHelper::GetChannelBandwidth(maxBandwidthRb) / 1e3;

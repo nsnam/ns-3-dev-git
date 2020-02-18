@@ -95,7 +95,7 @@ public:
    *
    * \return the nominal channel bandwidth in Hz as per 3GPP TS 36.101
    */
-  static double GetChannelBandwidth (uint8_t txBandwidthConf);
+  static double GetChannelBandwidth (uint16_t txBandwidthConf);
 
   /**
    *
@@ -109,7 +109,7 @@ public:
    * configuration. If such SpectrumModel does not exist, it is
    * created.
    */
-  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t earfcn, uint8_t bandwidth);
+  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t earfcn, uint16_t bandwidth);
 
 
   /**
@@ -126,7 +126,7 @@ public:
    * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint32_t earfcn,
-                                                          uint8_t bandwidth,
+                                                          uint16_t bandwidth,
                                                           double powerTx,
                                                           std::vector <int> activeRbs);
 
@@ -147,7 +147,7 @@ public:
    * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateTxPowerSpectralDensity (uint32_t earfcn,
-                                                          uint8_t bandwidth,
+                                                          uint16_t bandwidth,
                                                           double powerTx,
                                                           std::map<int, double> powerTxMap,
                                                           std::vector <int> activeRbs);
@@ -167,7 +167,7 @@ public:
    * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
    */
   static Ptr<SpectrumValue> CreateUlTxPowerSpectralDensity (uint16_t earfcn,
-                                                            uint8_t bandwidth,
+                                                            uint16_t bandwidth,
                                                             double powerTx,
                                                             std::vector <int> activeRbs);
 
@@ -182,7 +182,7 @@ public:
    *
    * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral Density in W/Hz for each Resource Block
    */
-  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t earfcn, uint8_t bandwidth, double noiseFigure);
+  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t earfcn, uint16_t bandwidth, double noiseFigure);
 
   /**
    *  create a SpectrumValue that models the power spectral density of AWGN

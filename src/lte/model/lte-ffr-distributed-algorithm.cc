@@ -365,7 +365,7 @@ LteFfrDistributedAlgorithm::DoGetTpc (uint16_t rnti)
   return 1;
 }
 
-uint8_t
+uint16_t
 LteFfrDistributedAlgorithm::DoGetMinContinuousUlBandwidth ()
 {
   NS_LOG_FUNCTION (this);

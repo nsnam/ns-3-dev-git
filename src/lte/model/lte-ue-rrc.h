@@ -822,8 +822,8 @@ private:
 
   LteRrcSap::PdschConfigDedicated m_pdschConfigDedicated; ///< the PDSCH condig dedicated
 
-  uint8_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
-  uint8_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
+  uint16_t m_dlBandwidth; /**< Downlink bandwidth in RBs. */
+  uint16_t m_ulBandwidth; /**< Uplink bandwidth in RBs. */
 
   uint32_t m_dlEarfcn;  /**< Downlink carrier frequency. */
   uint32_t m_ulEarfcn;  /**< Uplink carrier frequency. */

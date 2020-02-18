@@ -94,8 +94,8 @@ private:
 
   uint16_t m_nUser; ///< the number of users
   uint16_t m_dist; ///< the distance
-  uint32_t m_dlBandwidth; ///< DL bandwidth
-  uint32_t m_ulBandwidth; ///< UL bandwidth
+  uint16_t m_dlBandwidth; ///< DL bandwidth
+  uint16_t m_ulBandwidth; ///< UL bandwidth
   uint32_t m_numberOfComponentCarriers; ///< number of component carriers
 
   std::map <uint8_t, uint32_t> m_ccDownlinkTraffic; ///< CC DL traffic

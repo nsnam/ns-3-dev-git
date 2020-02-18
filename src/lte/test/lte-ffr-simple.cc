@@ -270,7 +270,7 @@ LteFfrSimple::DoGetTpc (uint16_t rnti)
   return 1; // 1 is mapped to 0 for Accumulated mode, and to -1 in Absolute mode TS36.213 Table 5.1.1.1-2
 }
 
-uint8_t
+uint16_t
 LteFfrSimple::DoGetMinContinuousUlBandwidth ()
 {
   NS_LOG_FUNCTION (this);

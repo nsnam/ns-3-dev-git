@@ -329,7 +329,7 @@ private:
    * \param ulBandwidth UL bandwidth
    * \param dlBandwidth DL bandwidth
    */
-  void DoSetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth);
+  void DoSetBandwidth (uint16_t ulBandwidth, uint16_t dlBandwidth);
   /**
    * Set EARFCN
    *
