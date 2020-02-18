@@ -23,11 +23,6 @@
 #define COMPONENT_CARRIER_H
 
 #include <ns3/object.h>
-#include <ns3/packet.h>
-#include <ns3/nstime.h>
-#include "ns3/lte-phy.h"
-#include <ns3/lte-enb-phy.h>
-#include <ns3/pointer.h>
 
 namespace ns3 {
 
@@ -58,22 +53,22 @@ public:
   /**
    * \return the uplink bandwidth in RBs
    */
-  uint8_t GetUlBandwidth () const;
+  uint16_t GetUlBandwidth () const;
 
   /**
    * \param bw the uplink bandwidth in RBs
    */
-  virtual void SetUlBandwidth (uint8_t bw);
+  virtual void SetUlBandwidth (uint16_t bw);
 
   /**
    * \return the downlink bandwidth in RBs
    */
-  uint8_t GetDlBandwidth () const;
+  uint16_t GetDlBandwidth () const;
 
   /**
    * \param bw the downlink bandwidth in RBs
    */
-  virtual void SetDlBandwidth (uint8_t bw);
+  virtual void SetDlBandwidth (uint16_t bw);
 
   /**
    * \return the downlink carrier frequency (EARFCN)
@@ -152,23 +147,17 @@ public:
    */
   bool IsPrimary () const;
 
-
-  uint8_t m_dlBandwidth;   /**< downlink bandwidth in RBs */
-  uint8_t m_ulBandwidth;   /**< uplink bandwidth in RBs */
-
-  uint32_t m_dlEarfcn;    /**< downlink carrier frequency */
-  uint32_t m_ulEarfcn;    /**< uplink carrier frequency */
-
 protected:
-  // inherited from Object
-  virtual void DoInitialize (void);
-  uint16_t m_csgId; ///< CSG ID
-  bool m_csgIndication; ///< CSG indication
+  uint32_t m_csgId {0}; ///< CSG ID
+  bool m_csgIndication {false}; ///< CSG indication
 
-  bool m_primaryCarrier; ///< whether the carrier is primary
-  bool m_isConstructed; ///< whether the instance is constructed
-//    bool m_isConfigured;
+  bool m_primaryCarrier {false}; ///< whether the carrier is primary
 
+  uint16_t m_dlBandwidth {0};   ///< downlink bandwidth in RBs */
+  uint16_t m_ulBandwidth {0};   ///< uplink bandwidth in RBs */
+
+  uint32_t m_dlEarfcn {0};    ///< downlink carrier frequency */
+  uint32_t m_ulEarfcn {0};    ///< uplink carrier frequency */
 };
 
 /**
@@ -186,9 +175,15 @@ public:
    */
   static TypeId GetTypeId (void);
 
+  /**
+   * \brief Constructor
+   */
   ComponentCarrierBaseStation ();
 
-  virtual ~ComponentCarrierBaseStation (void);
+  /**
+   * \brief ~ComponentCarrierBaseStation
+   */
+  virtual ~ComponentCarrierBaseStation (void) override;
 
   /**
    * Get cell identifier
@@ -203,7 +198,7 @@ public:
   void SetCellId (uint16_t cellId);
 
 protected:
-  uint16_t m_cellId; ///< Cell identifier
+  uint16_t m_cellId {0}; ///< Cell identifier
 };
 
 } // namespace ns3
