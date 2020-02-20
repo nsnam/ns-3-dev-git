@@ -58,6 +58,9 @@ private:
   /// allow ChannelAccessManagerTest class access
   friend class ChannelAccessManagerTest<TxopType>;
 
+  /// Inherited
+  void DoDispose (void);
+
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
   /// ExpectedBackoff structure
@@ -72,16 +75,45 @@ private:
   ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal colllision)
   ExpectedGrants m_expectedGrants; //!< expected grants
 
+  /**
+   * \returns true if access has been requested for this function and
+   *          has not been granted already, false otherwise.
+   */
   bool IsAccessRequested (void) const;
+  /**
+   * Notify that access request has been received.
+   */
   void NotifyAccessRequested (void);
+  /**
+   * Notify the DCF that access has been granted.
+   */
   void NotifyAccessGranted (void);
+  /**
+   * Notify the DCF that internal collision has occurred.
+   */
   void NotifyInternalCollision (void);
+  /**
+   * Generate a new backoff now.
+   */
   void GenerateBackoff (void);
+  /**
+   * Check if the DCF has frames to transmit.
+   * \return true if the DCF has frames to transmit.
+   */
   bool HasFramesToTransmit (void);
+  /**
+   * When a channel switching occurs, enqueued packets are removed.
+   */
   void NotifyChannelSwitching (void);
+  /**
+   * When sleep operation occurs, if there is a pending packet transmission,
+   * it will be reinserted to the front of the queue.
+   */
   void NotifySleep (void);
+  /**
+   * When wake up operation occurs, channel access will be restarted.
+   */
   void NotifyWakeUp (void);
-  void DoDispose (void);
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
   uint32_t m_i; //!< the DCF state
@@ -101,7 +133,10 @@ public:
   {
   }
   /**
-   * This function indicates whether it is the CF period.
+   * This function indicates whether Simulator::Now is in the CF period.
+   *
+   * \return true if Simulator::Now is in CF period,
+   *         false otherwise
    */
   bool IsCfPeriod (void) const
   {
@@ -201,7 +236,7 @@ private:
    * Add receive error event function for error during frame
    * \param at the event time
    * \param duration the duration
-   * \param duration the time after event time to force the error
+   * \param timeUntilError the time after event time to force the error
    */
   void AddRxErrorEvt (uint64_t at, uint64_t duration, uint64_t timeUntilError);
   /**

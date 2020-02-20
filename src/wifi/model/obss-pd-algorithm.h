@@ -45,6 +45,10 @@ class WifiNetDevice;
 class ObssPdAlgorithm : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**
@@ -91,6 +95,9 @@ private:
   double m_txPowerRefSiso; ///< SISO reference TX power level
   double m_txPowerRefMimo; ///< MIMO reference TX power level
 
+  /**
+   * TracedCallback signature for PHY reset events.
+   */
   TracedCallback<uint8_t, double, bool, double, double>  m_resetEvent;
 };
 

@@ -98,9 +98,14 @@ private:
    * \param d3 distance d3 (in meters)
    * \param d4 distance d4 (in meters)
    * \param d5 distance d5 (in meters)
+   * \return the node posiitions
    */
   Ptr<ListPositionAllocator> AllocatePositions (double d1, double d2, double d3, double d4, double d5);
 
+  /**
+   * Set the expected transmit power in dBm
+   * \param txPowerDbm the transmit power in dBm
+   */
   void SetExpectedTxPower (double txPowerDbm);
 
   /**
@@ -125,6 +130,8 @@ private:
 
   /**
    * Check if the Phy State for a device is an expected value
+   * \param expectedState the expected PHY state
+   * \param device the device to check
    */
   void CheckPhyState (Ptr<WifiNetDevice> device, WifiPhyState expectedState);
 
@@ -157,17 +164,17 @@ private:
   unsigned int m_payloadSize2; ///< size in bytes of packet payload in BSS 2
   unsigned int m_payloadSize3; ///< size in bytes of packet payload in BSS 3
 
-  NetDeviceContainer m_staDevices;
-  NetDeviceContainer m_apDevices;
+  NetDeviceContainer m_staDevices; ///< STA devices
+  NetDeviceContainer m_apDevices;  ///< AP devices
 
-  double m_txPowerDbm;
-  double m_obssPdLevelDbm;
-  double m_obssRxPowerDbm;
-  double m_expectedTxPowerDbm;
+  double m_txPowerDbm;         ///< configured transmit power in dBm
+  double m_obssPdLevelDbm;     ///< OBSS-PD level in dBm
+  double m_obssRxPowerDbm;     ///< forced RX power in dBm for OBSS
+  double m_expectedTxPowerDbm; ///< expected transmit power in dBm
 
-  uint8_t m_bssColor1;
-  uint8_t m_bssColor2;
-  uint8_t m_bssColor3;
+  uint8_t m_bssColor1; ///< color for BSS 1
+  uint8_t m_bssColor2; ///< color for BSS 2
+  uint8_t m_bssColor3; ///< color for BSS 3
 };
 
 TestInterBssConstantObssPdAlgo::TestInterBssConstantObssPdAlgo ()

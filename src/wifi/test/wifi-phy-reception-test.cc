@@ -89,10 +89,14 @@ private:
   virtual void DoRun (void);
 
   /**
-   * Check the PHY state
+   * Schedule now to check  the PHY state
    * \param expectedState the expected PHY state
    */
   void CheckPhyState (WifiPhyState expectedState);
+  /**
+   * Check the PHY state now
+   * \param expectedState the expected PHY state
+   */
   void DoCheckPhyState (WifiPhyState expectedState);
   /**
    * Check the number of received packets
@@ -436,10 +440,14 @@ private:
   virtual void DoRun (void);
 
   /**
-   * Check the PHY state
+   * Schedule now to check  the PHY state
    * \param expectedState the expected PHY state
    */
   void CheckPhyState (WifiPhyState expectedState);
+  /**
+   * Check the PHY state now
+   * \param expectedState the expected PHY state
+   */
   void DoCheckPhyState (WifiPhyState expectedState);
   /**
    * Check the number of received packets
@@ -917,9 +925,21 @@ private:
    */
   void RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason);
 
+  /**
+   * Verify whether 1000 bytes packet has been received
+   */
   void Expect1000BPacketReceived ();
+  /**
+   * Verify whether 1500 bytes packet has been received
+   */
   void Expect1500BPacketReceived ();
+  /**
+   * Verify whether 1000 bytes packet has been dropped
+   */
   void Expect1000BPacketDropped ();
+  /**
+   * Verify whether 1500 bytes packet has been dropped
+   */
   void Expect1500BPacketDropped ();
 
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
@@ -1140,10 +1160,14 @@ private:
   virtual void DoRun (void);
 
   /**
-   * Check the PHY state
+   * Schedule now to check  the PHY state
    * \param expectedState the expected PHY state
    */
   void CheckPhyState (WifiPhyState expectedState);
+  /**
+   * Check the PHY state now
+   * \param expectedState the expected PHY state
+   */
   void DoCheckPhyState (WifiPhyState expectedState);
 };
 
@@ -1451,14 +1475,14 @@ private:
 
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
 
-  uint8_t m_rxSuccessBitmapAmpdu1;
-  uint8_t m_rxSuccessBitmapAmpdu2;
+  uint8_t m_rxSuccessBitmapAmpdu1; ///< bitmap of successfully received MPDUs in A-MPDU #1
+  uint8_t m_rxSuccessBitmapAmpdu2; ///< bitmap of successfully received MPDUs in A-MPDU #2
 
-  uint8_t m_rxFailureBitmapAmpdu1;
-  uint8_t m_rxFailureBitmapAmpdu2;
+  uint8_t m_rxFailureBitmapAmpdu1; ///< bitmap of unsuccessfully received MPDUs in A-MPDU #1
+  uint8_t m_rxFailureBitmapAmpdu2; ///< bitmap of unsuccessfully received MPDUs in A-MPDU #2
 
-  uint8_t m_rxDroppedBitmapAmpdu1;
-  uint8_t m_rxDroppedBitmapAmpdu2;
+  uint8_t m_rxDroppedBitmapAmpdu1; ///< bitmap of dropped MPDUs in A-MPDU #1
+  uint8_t m_rxDroppedBitmapAmpdu2; ///< bitmap of dropped MPDUs in A-MPDU #2
 };
 
 TestAmpduReception::TestAmpduReception ()

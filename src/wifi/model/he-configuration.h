@@ -37,6 +37,11 @@ class HeConfiguration : public Object
 {
 public:
   HeConfiguration ();
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void);
 
   /**

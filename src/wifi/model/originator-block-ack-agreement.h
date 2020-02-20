@@ -59,6 +59,7 @@ class OriginatorBlockAckAgreement : public BlockAckAgreement
 {
   /// allow BlockAckManager class access
   friend class BlockAckManager;
+  /// allow OriginatorBlockAckWindowTest class access
   friend class ::OriginatorBlockAckWindowTest;
 
 
@@ -198,8 +199,6 @@ private:
   /**
    * Advance the transmit window so that the starting sequence number is the
    * nearest unacknowledged MPDU.
-   *
-   * \param newStartingSeq the new starting sequence number
    */
   void AdvanceTxWindow (void);
 

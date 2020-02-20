@@ -97,24 +97,28 @@ public:
 
   /**
    * \brief Get the header of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the header of the i-th MPDU.
    */
   const WifiMacHeader & GetHeader (std::size_t i) const;
 
   /**
    * \brief Get the header of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the header of the i-th MPDU.
    */
   WifiMacHeader & GetHeader (std::size_t i);
 
   /**
    * \brief Get the payload of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the payload of the i-th MPDU.
    */
   Ptr<const Packet> GetPayload (std::size_t i) const;
 
   /**
    * \brief Get the timestamp of the i-th MPDU
+   * \param i index in the list of MPDUs
    * \return the timestamp of the i-th MPDU.
    */
   Time GetTimeStamp (std::size_t i) const;
@@ -174,11 +178,10 @@ public:
 
   /**
    * Get the maximum distance between the sequence number of any QoS Data frame
-   * included in the given PSDU that is not an old frame and the given starting
-   * sequence number. If the given PSDU does not contain any QoS Data frame that
+   * included in this PSDU that is not an old frame and the given starting
+   * sequence number. If this  PSDU does not contain any QoS Data frame that
    * is not an old frame, an invalid distance (4096) is returned.
    *
-   * \param psdu the given PSDU.
    * \param startingSeq the given starting sequence number.
    * \return the maximum distance between the sequence numbers included in the
    *         PSDU and the given starting sequence number

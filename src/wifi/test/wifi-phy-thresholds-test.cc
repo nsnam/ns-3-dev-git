@@ -48,7 +48,15 @@ static const uint16_t CHANNEL_WIDTH = 20; //MHz
 class WifiPhyThresholdsTest : public TestCase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param test_name the test name
+   */
   WifiPhyThresholdsTest (std::string test_name);
+  /**
+   * Destructor
+   */
   virtual ~WifiPhyThresholdsTest ();
 
 protected:

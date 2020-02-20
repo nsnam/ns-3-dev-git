@@ -43,6 +43,13 @@ enum WifiPreamble
   WIFI_PREAMBLE_HE_TB
 };
 
+/**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param preamble the preamble
+* \returns a reference to the stream
+*/
 inline std::ostream& operator<< (std::ostream& os, WifiPreamble preamble)
 {
   switch (preamble)

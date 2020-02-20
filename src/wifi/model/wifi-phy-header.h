@@ -107,11 +107,13 @@ public:
    * Fill the RATE field of L-SIG (in bit/s).
    *
    * \param rate the RATE field of L-SIG expressed in bit/s
+   * \param channelWidth the channel width (in MHz)
    */
   void SetRate (uint64_t rate, uint16_t channelWidth = 20);
   /**
    * Return the RATE field of L-SIG (in bit/s).
    *
+   * \param channelWidth the channel width (in MHz)
    * \return the RATE field of L-SIG expressed in bit/s
    */
   uint64_t GetRate (uint16_t channelWidth = 20) const;

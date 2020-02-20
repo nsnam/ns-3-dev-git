@@ -341,10 +341,10 @@ public:
   /**
    * \param item packet to send (does not include the 802.11 MAC header and checksum)
    * \param params transmission parameters of packet.
+   * \return the transmission time that does not include the time required to transmit the frame
    *
-   * This transmission time does not include the time required to transmit the frame.
-   * It only includes the time for the RTS/CTS exchange (if any) and for the Ack
-   * frame (if any).
+   * This transmission time  only includes the time for the RTS/CTS exchange (if any)
+   * and for the Ack frame (if any).
    */
   Time CalculateOverheadTxTime (Ptr<const WifiMacQueueItem> item,
                                const MacLowTransmissionParameters& params) const;
@@ -462,11 +462,17 @@ public:
    */
   bool DoNavStartNow (Time duration);
   /**
-   * This function indicates whether it is the CF period.
+   * This function indicates whether Simulator::Now is in the CF period.
+   *
+   * \return true if Simulator::Now is in CF period,
+   *         false otherwise
    */
   virtual bool IsCfPeriod (void) const;
   /**
    * This function decides if a CF frame can be transmitted in the current CFP.
+   *
+   * \return true if a CF frame can be transmitted in the current CFP,
+   *         false otherwise
    */
   bool CanTransmitNextCfFrame (void) const;
 
@@ -495,6 +501,7 @@ public:
    * \param aggr pointer to the MPDU aggregator.
    */
   void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
+
 
 private:
   /**

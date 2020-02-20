@@ -1368,7 +1368,7 @@ private:
    */
   void SendPacketBurst (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination) const;
 
-  uint16_t m_channelWidth;
+  uint16_t m_channelWidth; ///< channel width (in MHz)
 };
 
 Bug2843TestCase::Bug2843TestCase ()

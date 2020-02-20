@@ -280,6 +280,8 @@ private:
   void DoGrantDcfAccess (void);
   /**
    * Grant access to PCF
+   *
+   * \param state
    */
   void DoGrantPcfAccess (Ptr<Txop> state);
 

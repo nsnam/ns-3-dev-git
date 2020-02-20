@@ -45,7 +45,10 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 
-typedef enum
+/**
+ * Enumeration of the possible reeception failure reasons.
+ */
+enum WifiPhyRxfailureReason
 {
   UNKNOWN = 0,
   UNSUPPORTED_SETTINGS,
@@ -58,7 +61,7 @@ typedef enum
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET
-} WifiPhyRxfailureReason;
+};
 
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm
@@ -74,7 +77,7 @@ struct MpduInfo
   uint32_t mpduRefNumber; ///< MPDU ref number
 };
 
-// Parameters for receive HE preamble
+/// Parameters for receive HE preamble
 struct HePreambleParameters
 {
   double rssiW; ///< RSSI in W
@@ -1887,10 +1890,10 @@ private:
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
-  bool m_powerRestricted;  //!< Flag whether transmit power is restricted by OBSS PD SR
-  double m_txPowerMaxSiso; //!< SISO maximum transmit power due to OBSS PD SR power restriction
-  double m_txPowerMaxMimo; //!< MIMO maximum transmit power due to OBSS PD SR power restriction
-  bool m_channelAccessRequested;
+  bool m_powerRestricted;        //!< Flag whether transmit power is restricted by OBSS PD SR
+  double m_txPowerMaxSiso;       //!< SISO maximum transmit power due to OBSS PD SR power restriction
+  double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction
+  bool m_channelAccessRequested; //!< Flag if channels access has been requestd (used for OBSS_PD SR)
 
   bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
   bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)

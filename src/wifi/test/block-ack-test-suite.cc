@@ -664,11 +664,20 @@ class BlockAckAggregationDisabledTest : public TestCase
   */
   struct TxopDurationTracer
   {
+    /**
+     * Callback for the TxopTrace trace
+     * \param startTime TXOP start time
+     * \param duration TXOP duration
+     */
     void Trace (Time startTime, Time duration);
-    Time m_max {Seconds (0)};
+    Time m_max {Seconds (0)};  ///< max TXOP duration
   };
 
 public:
+  /**
+   * \brief Constructor
+   * \param txop true for non-null TXOP limit
+   */
   BlockAckAggregationDisabledTest (bool txop);
   virtual ~BlockAckAggregationDisabledTest ();
 

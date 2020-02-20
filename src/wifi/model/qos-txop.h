@@ -92,9 +92,11 @@ enum TypeOfStation
 class QosTxop : public Txop
 {
 public:
-  /// Allow test cases to access private members
+  /// allow AmpduAggregationTest class access
   friend class ::AmpduAggregationTest;
+  /// allow TwoLevelAggregationTest class access
   friend class ::TwoLevelAggregationTest;
+  /// allow HeAggregationTest class access
   friend class ::HeAggregationTest;
 
   std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
@@ -437,6 +439,7 @@ public:
    *
    * \param peekedItem the peeked frame.
    * \param txVector the TX vector used to transmit the peeked frame
+   * \param aggregate whether to attempt A-MSDU aggregation
    * \param ampduSize the size of the existing A-MPDU, if any
    * \param ppduDurationLimit the limit on the PPDU duration
    * \returns the dequeued frame.

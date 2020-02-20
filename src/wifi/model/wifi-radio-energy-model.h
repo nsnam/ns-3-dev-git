@@ -400,6 +400,7 @@ private:
   void DoDispose (void);
 
   /**
+   * \param state the wifi state
    * \returns draw of device, at given state.
    */
   double GetStateA (int state) const;
