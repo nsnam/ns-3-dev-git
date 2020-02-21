@@ -242,6 +242,56 @@ ChannelAccessManager::IsBusy (void) const
   return false;
 }
 
+bool
+ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
+{
+  NS_LOG_FUNCTION (this << txop);
+
+  // the Txop might have a stale value of remaining backoff slots
+  UpdateBackoff ();
+
+  /*
+   * From section 10.3.4.2 "Basic access" of IEEE 802.11-2016:
+   *
+   * A STA may transmit an MPDU when it is operating under the DCF access
+   * method, either in the absence of a PC, or in the CP of the PCF access
+   * method, when the STA determines that the medium is idle when a frame is
+   * queued for transmission, and remains idle for a period of a DIFS, or an
+   * EIFS (10.3.2.3.7) from the end of the immediately preceding medium-busy
+   * event, whichever is the greater, and the backoff timer is zero. Otherwise
+   * the random backoff procedure described in 10.3.4.3 shall be followed.
+   *
+   * From section 10.22.2.2 "EDCA backoff procedure" of IEEE 802.11-2016:
+   *
+   * The backoff procedure shall be invoked by an EDCAF when any of the following
+   * events occurs:
+   * a) An MA-UNITDATA.request primitive is received that causes a frame with that AC
+   *    to be queued for transmission such that one of the transmit queues associated
+   *    with that AC has now become non-empty and any other transmit queues
+   *    associated with that AC are empty; the medium is busy on the primary channel
+   */
+  if (!txop->HasFramesToTransmit () && !txop->GetLow ()->IsCfPeriod () && txop->GetBackoffSlots () == 0)
+    {
+      if (!IsBusy ())
+        {
+          // medium idle. If this is a DCF, use immediate access (we can transmit
+          // in a DIFS if the medium remains idle). If this is an EDCAF, update
+          // the backoff start time kept by the EDCAF to the current time in order
+          // to correctly align the backoff start time at the next slot boundary
+          // (performed by the next call to ChannelAccessManager::RequestAccess())
+          Time delay = (txop->IsQosTxop () ? Seconds (0)
+                                           : m_sifs + txop->GetAifsn () * m_slot);
+          txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
+        }
+      else
+        {
+          // medium busy, backoff is neeeded
+          return true;
+        }
+    }
+  return false;
+}
+
 void
 ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
 {

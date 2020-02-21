@@ -377,10 +377,6 @@ protected:
    */
   virtual bool HasFramesToTransmit (void);
   /**
-   * Generate a new backoff, if needed, when a packet is queued for transmission.
-   */
-  virtual void GenerateBackoffUponAccessIfNeeded (void);
-  /**
    * Generate a new backoff now.
    */
   virtual void GenerateBackoff (void);

@@ -679,7 +679,10 @@ void
 ChannelAccessManagerTest<TxopType>::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime,
                                                      Ptr<TxopTest<TxopType>> state)
 {
-  state->GenerateBackoffUponAccessIfNeeded ();
+  if (m_ChannelAccessManager->NeedBackoffUponAccess (state))
+    {
+      state->GenerateBackoff ();
+    }
   state->QueueTx (txTime, expectedGrantTime);
   m_ChannelAccessManager->RequestAccess (state);
 }

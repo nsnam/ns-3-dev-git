@@ -460,7 +460,6 @@ DcfImmediateAccessBroadcastTestCase::NotifyPhyTxBegin (Ptr<const Packet> p, doub
 {
   if (m_numSentPackets == 0)
     {
-      NS_ASSERT_MSG (Simulator::Now () == Time (Seconds (1)), "Packet 0 not transmitted at 1 second");
       m_numSentPackets++;
       m_firstTransmissionTime = Simulator::Now ();
     }
@@ -536,13 +535,17 @@ DcfImmediateAccessBroadcastTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
+  // First packet is transmitted a DIFS after the packet is queued. A DIFS
+  // is 2 slots (2 * 9 = 18 us) plus a SIFS (16 us), i.e., 34 us
+  Time expectedFirstTransmissionTime = Seconds (1.0) + MicroSeconds (34);
+
   //First packet has 1408 us of transmit time.   Slot time is 9 us.
   //Backoff is 1 slots.  SIFS is 16 us.  DIFS is 2 slots = 18 us.
   //Should send next packet at 1408 us + (1 * 9 us) + 16 us + (2 * 9) us
   //1451 us after the first one.
   uint32_t expectedWait1 = 1408 + (1 * 9) + 16 + (2 * 9);
-  Time expectedSecondTransmissionTime = MicroSeconds (expectedWait1) + MilliSeconds (1000);
-  NS_TEST_ASSERT_MSG_EQ (m_firstTransmissionTime, MilliSeconds (1000), "The first transmission time not correct!");
+  Time expectedSecondTransmissionTime = expectedFirstTransmissionTime + MicroSeconds (expectedWait1);
+  NS_TEST_ASSERT_MSG_EQ (m_firstTransmissionTime, expectedFirstTransmissionTime, "The first transmission time not correct!");
 
   NS_TEST_ASSERT_MSG_EQ (m_secondTransmissionTime, expectedSecondTransmissionTime, "The second transmission time not correct!");
 }
