@@ -639,8 +639,8 @@ MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSu
 
   NS_ASSERT_MSG (station->m_isHt, "A-MPDU Tx Status called but no HT or VHT supported.");
 
-  NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus= " <<
-                +nSuccessfulMpdus << " FailedMpdus= " << +nFailedMpdus);
+  NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus=" <<
+                +nSuccessfulMpdus << " FailedMpdus=" << +nFailedMpdus);
 
   station->m_ampduPacketCount++;
   station->m_ampduLen += nSuccessfulMpdus + nFailedMpdus;

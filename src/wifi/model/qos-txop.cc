@@ -865,10 +865,6 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
    * frames. (IEEE std 802.11-2016 sec. 10.24.7.7
    */
   uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
-  if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
-    {
-      m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus, 0, 0);
-    }
   if (m_useExplicitBarAfterMissedBlockAck || m_currentHdr.IsBlockAckReq ())
     {
       if (NeedBarRetransmission ())
@@ -898,6 +894,10 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
     }
   else
     {
+      if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
+        {
+          m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), tid, 0, nMpdus, 0, 0);
+        }
       // implicit BAR and do not use BAR after missed block ack, hence try to retransmit data frames
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
