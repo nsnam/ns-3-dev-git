@@ -20,7 +20,8 @@
  *         Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  *
  */
-#pragma once
+#ifndef TCP_PRR_RECOVERY_H
+#define TCP_PRR_RECOVERY_H
 
 #include "ns3/tcp-recovery-ops.h"
 
@@ -90,3 +91,4 @@ private:
 };
 } // namespace ns3
 
+#endif /* TCP_PRR_RECOVERY_H */

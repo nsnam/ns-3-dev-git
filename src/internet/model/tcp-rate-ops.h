@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#pragma once
+#ifndef TCP_RATE_OPS_H
+#define TCP_RATE_OPS_H
 
 #include "ns3/object.h"
 #include "ns3/tcp-tx-item.h"
@@ -263,3 +264,5 @@ bool operator== (TcpRateLinux::TcpRateSample const & lhs, TcpRateLinux::TcpRateS
 bool operator== (TcpRateLinux::TcpRateConnection const & lhs, TcpRateLinux::TcpRateConnection const & rhs);
 
 } //namespace ns3
+
+#endif /* TCP_RATE_OPS_H */

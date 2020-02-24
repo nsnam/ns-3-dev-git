@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#pragma once
+#ifndef TCP_TX_ITEM_H
+#define TCP_TX_ITEM_H
 
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
@@ -113,3 +114,5 @@ private:
 };
 
 } //namespace ns3
+
+#endif /* TCP_TX_ITEM_H */

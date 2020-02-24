@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#pragma once
+#ifndef TCP_SOCKET_STATE_H
+#define TCP_SOCKET_STATE_H
 
 #include "ns3/object.h"
 #include "ns3/data-rate.h"
@@ -243,3 +244,5 @@ namespace TracedValueCallback {
 }  // namespace TracedValueCallback
 
 } //namespace ns3
+
+#endif /* TCP_SOCKET_STATE_H */
