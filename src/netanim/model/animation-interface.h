@@ -55,6 +55,7 @@ namespace ns3 {
 
 
 struct NodeSize;
+class WifiPsdu;
 
 /**
  * \defgroup netanim Network Animation
@@ -1046,12 +1047,13 @@ private:
                    Time txTime,
                    Time rxTime);
   /**
-   * wifi Phy transmit begin trace function
+   * wifi Phy transmit PSDU begin trace function
    * \param context the context
-   * \param p the packet
-   * \param txPowerW the tx power
+   * \param psdu the PSDU
+   * \param txVector the TXVECTOR
+   * \param txPowerW the tx power in Watts
    */
-  void WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p, double txPowerW);
+  void WifiPhyTxBeginTrace (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
   /**
    * wifi Phy receive begin trace function
    *

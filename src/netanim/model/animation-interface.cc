@@ -46,6 +46,7 @@
 #include "ns3/wimax-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
+#include "ns3/wifi-psdu.h"
 #include "ns3/lr-wpan-mac-header.h"
 #include "ns3/lr-wpan-net-device.h"
 #include "ns3/constant-position-mobility-model.h"
@@ -867,10 +868,41 @@ AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 }
 
 void 
-AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const Packet> p, double txPowerW)
+AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
 {
   NS_LOG_FUNCTION (this);
-  return GenericWirelessTxTrace (context, p, AnimationInterface::WIFI);
+  NS_UNUSED (txVector);
+  CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS;
+  Ptr<NetDevice> ndev = GetNetDeviceFromContext (context);
+  NS_ASSERT (ndev);
+  UpdatePosition (ndev);
+
+  AnimPacketInfo pktInfo (ndev, Simulator::Now ());
+  AnimUidPacketInfoMap * pendingPackets =  ProtocolTypeToPendingPackets (WIFI);
+  for (auto mpdu = psdu->begin (); mpdu != psdu->end (); ++mpdu)
+    {
+      ++gAnimUid;
+      NS_LOG_INFO ("WifiPhyTxTrace for MPDU:" << gAnimUid);
+      AddByteTag (gAnimUid, (*mpdu)->GetPacket ()); //the underlying MSDU/A-MSDU should be handed off
+      AddPendingPacket (WIFI, gAnimUid, pktInfo);
+      OutputWirelessPacketTxInfo ((*mpdu)->GetProtocolDataUnit (), pendingPackets->at (gAnimUid), gAnimUid); //PDU should be considered in order to have header
+    }
+
+  Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (ndev);
+  if (netDevice)
+    {
+      Mac48Address nodeAddr = netDevice->GetMac ()->GetAddress ();
+      std::ostringstream oss;
+      oss << nodeAddr;
+      Ptr<Node> n = netDevice->GetNode ();
+      NS_ASSERT (n);
+      m_macToNodeIdMap[oss.str ()] = n->GetId ();
+      NS_LOG_INFO ("Added Mac" << oss.str () << " node:" <<m_macToNodeIdMap[oss.str ()]);
+    }
+  else
+    {
+      NS_ABORT_MSG ("This NetDevice should be a Wi-Fi network device");
+    }
 }
 
 void 
@@ -1592,7 +1624,7 @@ AnimationInterface::ConnectCallbacks ()
   // Connect the callbacks
   Config::Connect ("/ChannelList/*/TxRxPointToPoint",
                    MakeCallback (&AnimationInterface::DevTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
                    MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
                    MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
