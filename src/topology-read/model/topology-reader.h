@@ -29,6 +29,12 @@
 #include "ns3/node.h"
 
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::TopologyReader declaration.
+ */
+
 namespace ns3 {
 
 class NodeContainer;

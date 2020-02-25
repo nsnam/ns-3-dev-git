@@ -28,6 +28,12 @@
 #include "inet-topology-reader.h"
 
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::InetTopologyReader implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("InetTopologyReader");

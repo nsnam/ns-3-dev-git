@@ -23,6 +23,12 @@
 #include "topology-reader.h"
 
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::TopologyReader implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TopologyReader");

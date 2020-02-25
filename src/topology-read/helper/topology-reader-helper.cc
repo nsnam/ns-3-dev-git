@@ -26,6 +26,12 @@
 #include "ns3/rocketfuel-topology-reader.h"
 #include "ns3/log.h"
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::TopologyHelper implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper");

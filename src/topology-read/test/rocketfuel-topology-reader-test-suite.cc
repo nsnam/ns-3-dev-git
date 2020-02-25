@@ -38,6 +38,12 @@ using namespace ns3;
  */
 
 /**
+ * \file
+ * \ingroup topology-test
+ * ns3::RockefuelTopologyReader test suite.
+ */
+
+/**
  * \ingroup topology-test
  * \ingroup tests
 

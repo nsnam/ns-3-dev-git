@@ -24,6 +24,12 @@
 
 #include "topology-reader.h"
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::OrbisTopologyReader declaration.
+ */
+
 namespace ns3 {
 
 

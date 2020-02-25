@@ -27,6 +27,12 @@
 #include "orbis-topology-reader.h"
 
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::OrbisTopologyReader implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("OrbisTopologyReader");

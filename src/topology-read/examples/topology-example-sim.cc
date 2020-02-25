@@ -36,6 +36,34 @@
 #include "ns3/topology-read-module.h"
 #include <list>
 
+/**
+ * \file
+ * \ingroup topology
+ * Example of TopologyReader: .read in a topology in a specificed format.
+ */
+
+//  Document the available input files
+/**
+ * \file RocketFuel_toposample_1239_weights.txt
+ * Example TopologyReader input file in RocketFuel format;
+ * to read this with topology-example-sim.cc use \c --format=Rocket
+ */
+/**
+ * \file Inet_toposample.txt
+ * Example TopologyReader input file in Inet format;
+ * to read this with topology-example-sim.cc use \c --format=Inet
+ */
+/**
+ * \file Inet_small_toposample.txt
+ * Example TopologyReader input file in Inet format;
+ * to read this with topology-example-sim.cc use \c --format=Inet
+ */
+/**
+ * \file Orbis_toposample.txt
+ * Example TopologyReader input file in Orbis format;
+ * to read this with topology-example-sim.cc use \c --format=Orbis
+ */
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TopologyCreationExperiment");

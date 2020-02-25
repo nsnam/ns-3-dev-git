@@ -23,6 +23,12 @@
 
 #include "topology-reader.h"
 
+/**
+ * \file
+ * \ingroup topology
+ * ns3::RocketfuelTopologyReader declaration.
+ */
+
 namespace ns3 {
 
 
