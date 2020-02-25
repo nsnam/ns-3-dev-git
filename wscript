@@ -242,6 +242,10 @@ def options(opt):
                          'but do not wait for ns-3 to finish the full build.'),
                    action="store_true", default=False,
                    dest='doxygen_no_build')
+    opt.add_option('--docset',
+                   help=('Create Docset, without building. This requires the docsetutil tool from Xcode 9.2 or earlier. See Bugzilla 2196 for more details.'),
+                   action="store_true", default=False,
+                   dest="docset_build")
     opt.add_option('--enable-des-metrics',
                    help=('Log all events in a json file with the name of the executable (which must call CommandLine::Parse(argc, argv)'),
                    action="store_true", default=False,
@@ -1057,6 +1061,10 @@ def build(bld):
         _doxygen(bld)
         raise SystemExit(0)
 
+    if Options.options.docset_build:
+        _docset(bld)
+        raise SystemExit(0)
+
     if Options.options.run_no_build:
         # Check that the requested program name is valid
         program_name, dummy_program_argv = wutils.get_run_program(Options.options.run_no_build, wutils.get_command_template(bld.env))
@@ -1266,6 +1274,65 @@ def _doxygen(bld):
         Logs.error("Doxygen build returned an error.")
         raise SystemExit(1)
 
+def _docset(bld):
+    # Get the doxygen config
+    doxyfile = os.path.join('doc', 'doxygen.conf')
+    Logs.info("docset: reading " + doxyfile)
+    doxygen_config = open(doxyfile, 'r')
+    doxygen_config_contents = doxygen_config.read()
+    doxygen_config.close()
+
+    # Create the output directory
+    docset_path = os.path.join('doc', 'docset')
+    Logs.info("docset: checking for output directory " + docset_path)
+    if not os.path.exists(docset_path):
+        Logs.info("docset: creating output directory " + docset_path)
+        os.mkdir(docset_path)
+
+    doxyfile = os.path.join('doc', 'doxygen.docset.conf')
+    doxygen_config = open(doxyfile, 'w')
+    Logs.info("docset: writing doxygen conf " + doxyfile)
+    doxygen_config.write(doxygen_config_contents)
+    doxygen_config.write(
+        """
+        HAVE_DOT = NO
+        GENERATE_DOCSET = YES
+        DISABLE_INDEX = YES
+        SEARCHENGINE = NO
+        GENERATE_TREEVIEW = NO
+        OUTPUT_DIRECTORY=""" + docset_path + "\n"
+        )
+    doxygen_config.close()
+
+    # Run Doxygen manually, so as to avoid build
+    Logs.info("docset: running doxygen")
+    env = wutils.bld.env
+    _getVersion()
+    if subprocess.Popen(env['DOXYGEN'] + [doxyfile]).wait():
+        Logs.error("Doxygen docset build returned an error.")
+        raise SystemExit(1)
+
+    # Build docset
+    docset_path = os.path.join(docset_path, 'html')
+    Logs.info("docset: Running docset Make")
+    if subprocess.Popen(["make"], cwd=docset_path).wait():
+        Logs.error("Docset make returned and error.")
+        raise SystemExit(1)
+
+    # Additional steps from
+    #   https://github.com/Kapeli/Dash-User-Contributions/tree/master/docsets/ns-3
+    docset_out = os.path.join(docset_path, 'org.nsnam.ns3.docset')
+    icons = os.path.join('doc', 'ns3_html_theme', 'static')
+    shutil.copy(os.path.join(icons, 'ns-3-bars-16x16.png'),
+                os.path.join(docset_out, 'icon.png'))
+    shutil.copy(os.path.join(icons, 'ns-3-bars-32x32.png'),
+                os.path.join(docset_out, 'icon@x2.png'))
+    shutil.copy(os.path.join(docset_path, 'Info.plist'),
+                os.path.join(docset_out, 'Contents'))
+    shutil.move(docset_out, os.path.join('doc', 'ns-3.docset'))
+
+    print("Docset built successfully.")
+    
 
 def _getVersion():
     """update the ns3_version.js file, when building documentation"""
