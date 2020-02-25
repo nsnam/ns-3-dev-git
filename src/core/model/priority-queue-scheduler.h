@@ -22,9 +22,11 @@
 #define PRIORITY_QUEUE_SCHEDULER_H
 
 #include "scheduler.h"
+#include <functional>
+#include <algorithm>
 #include <stdint.h>
-#include <queue>
 #include <utility>
+#include <queue>
 
 /**
  * \file
@@ -36,10 +38,10 @@ namespace ns3 {
 
 /**
  * \ingroup scheduler
- * \brief a std::map event scheduler
+ * \brief a std::priority_queue event scheduler
  *
- * This class implements the an event scheduler using an std::map
- * data structure.
+ * This class implements the an event scheduler using
+ * std::priority_queue on a std::vector.
  */
 class PriorityQueueScheduler : public Scheduler
 {
@@ -60,15 +62,39 @@ public:
   virtual bool IsEmpty (void) const;
   virtual Scheduler::Event PeekNext (void) const;
   virtual Scheduler::Event RemoveNext (void);
-  virtual void Remove (const Event &ev);
+  virtual void Remove (const Scheduler::Event &ev);
 
 private:
 
+  /** Custom priority_queue which supports remove
+   */
+  class EventPriorityQueue :
+    public std::priority_queue<Scheduler::Event,
+                               std::vector<Scheduler::Event>>
+  {
+  public:
+
+    bool remove(const Scheduler::Event & value)
+    {
+      auto it = std::find(this->c.begin(), this->c.end(), value);
+      if (it != this->c.end())
+        {
+          this->c.erase(it);
+          std::make_heap(this->c.begin(), this->c.end(), this->comp);
+          return true;
+        }
+      else
+        {
+          return false;
+        }
+    }
+  };  // class EventPriorityQueue
+
+  
   /** The event list. */
-  std::priority_queue<Scheduler::Event,
-                      std::vector<Scheduler::Event>,
-                      std::greater<Scheduler::Event>> m_list;
-};
+  EventPriorityQueue m_list;
+
+};  // class PriorityQueueScheduler
 
 } // namespace ns3
 

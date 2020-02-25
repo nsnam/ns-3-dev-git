@@ -21,7 +21,9 @@
 #include "priority-queue-scheduler.h"
 #include "event-impl.h"
 #include "assert.h"
+#include "log-macros-disabled.h"
 #include "log.h"
+#include "scheduler.h"
 #include <string>
 
 /**
@@ -90,7 +92,7 @@ void
 PriorityQueueScheduler::Remove (const Scheduler::Event &ev)
 {
   NS_LOG_FUNCTION (this);
-  ev.impl->Cancel ();
+  m_list.remove (ev);
 }
 
 } // namespace ns3
