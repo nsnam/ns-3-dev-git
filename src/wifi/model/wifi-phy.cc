@@ -330,6 +330,11 @@ WifiPhy::GetTypeId (void)
                      "has begun transmitting over the channel medium",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace),
                      "ns3::Packet::TracedCallback")
+    .AddTraceSource ("PhyTxPsduBegin",
+                     "Trace source indicating a PSDU "
+                     "has begun transmitting over the channel medium",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyTxPsduBeginTrace),
+                     "ns3::WifiPhy::PsduTxBeginCallback")
     .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet "
                      "has been completely transmitted over the channel. "
@@ -2522,7 +2527,9 @@ WifiPhy::SendPacket (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
       NS_LOG_DEBUG ("Transmitting without power restriction");
     }
 
-  NotifyTxBegin (psdu, DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ()));
+  double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
+  NotifyTxBegin (psdu, txPowerW);
+  m_phyTxPsduBeginTrace (psdu, txVector, txPowerW);
   NotifyMonitorSniffTx (psdu, GetFrequency (), txVector);
   m_state->SwitchToTx (txDuration, psdu->GetPacket (), GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 

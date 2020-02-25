@@ -1230,6 +1230,15 @@ public:
                                             MpduInfo aMpdu);
 
   /**
+   * TracedCallback signature for PSDU transmit events.
+   *
+   * \param psdu the PSDU being transmitted
+   * \param txVector the TXVECTOR holding the tx parameters
+   * \param txPowerW the transmit power in Watts
+   */
+  typedef void (* PsduTxBeginCallback)(Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+
+  /**
    * Public method used to fire a EndOfHePreamble trace once both HE SIG fields have been received, as well as training fields.
    *
    * \param params the HE preamble parameters
@@ -1755,6 +1764,13 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, double > m_phyTxBeginTrace;
+  /**
+   * The trace source fired when a PSDU begins the transmission process on
+   * the medium.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const WifiPsdu>, WifiTxVector, double /* Tx power (W) */> m_phyTxPsduBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
