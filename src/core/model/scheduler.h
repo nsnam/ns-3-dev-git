@@ -139,6 +139,34 @@ public:
 
 /**
  * \ingroup Events
+ * Compare (equal) two events by EventKey.
+ *
+ * \param [in] a The first event.
+ * \param [in] b The second event.
+ * \returns \c true if \c a != \c b
+ */
+inline bool operator == (const Scheduler::EventKey &a,
+                         const Scheduler::EventKey &b)
+{
+  return a.m_uid == b.m_uid;
+}
+
+/**
+ * \ingroup Events
+ * Compare (not equal) two events by EventKey.
+ *
+ * \param [in] a The first event.
+ * \param [in] b The second event.
+ * \returns \c true if \c a != \c b
+ */
+inline bool operator != (const Scheduler::EventKey &a,
+                         const Scheduler::EventKey &b)
+{
+  return a.m_uid != b.m_uid;
+}
+
+/**
+ * \ingroup Events
  * Compare (less than) two events by EventKey.
  *
  * Note the invariants which this function must provide:
@@ -169,20 +197,6 @@ inline bool operator < (const Scheduler::EventKey &a,
 }
 
 /**
- * \ingroup Events
- * Compare (not equal) two events by EventKey.
- *
- * \param [in] a The first event.
- * \param [in] b The second event.
- * \returns \c true if \c a != \c b
- */
-inline bool operator != (const Scheduler::EventKey &a,
-                         const Scheduler::EventKey &b)
-{
-  return a.m_uid != b.m_uid;
-}
-
-/**
  * Compare (greater than) two events by EventKey.
  *
  * \param [in] a The first event.
@@ -208,6 +222,32 @@ inline bool operator > (const Scheduler::EventKey &a,
 }
 
 /**
+ * Compare (equal) two events by Event.
+ *
+ * \param [in] a The first event.
+ * \param [in] b The second event.
+ * \returns \c true if \c a == \c b
+ */
+inline bool operator == (const Scheduler::Event &a,
+                         const Scheduler::Event &b)
+{
+  return a.key == b.key;
+}
+
+/**
+ * Compare (not equal) two events by Event.
+ *
+ * \param [in] a The first event.
+ * \param [in] b The second event.
+ * \returns \c true if \c a != \c b
+ */
+inline bool operator != (const Scheduler::Event &a,
+                         const Scheduler::Event &b)
+{
+  return a.key != b.key;
+}
+
+/**
  * Compare (less than) two events by Event.
  *
  * \param [in] a The first event.
@@ -218,6 +258,19 @@ inline bool operator < (const Scheduler::Event &a,
                         const Scheduler::Event &b)
 {
   return a.key < b.key;
+}
+
+/**
+ * Compare (greater than) two events by Event.
+ *
+ * \param [in] a The first event.
+ * \param [in] b The second event.
+ * \returns \c true if \c a > \c b
+ */
+inline bool operator > (const Scheduler::Event &a,
+                        const Scheduler::Event &b)
+{
+  return a.key > b.key;
 }
 
 
