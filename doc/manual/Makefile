@@ -41,6 +41,7 @@ SOURCES = \
 	source/tests.rst \
 	source/tracing.rst \
 	source/troubleshoot.rst \
+	source/utilities.rst \
 	${SRC}/stats/doc/data-collection.rst \
 	${SRC}/stats/doc/data-collection-overview.rst \
 	${SRC}/stats/doc/statistics.rst \

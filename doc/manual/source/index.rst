@@ -31,6 +31,7 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    statistics
    realtime
    helpers
+   utilities
    gnuplot
    python
    tests
