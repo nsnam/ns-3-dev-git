@@ -1,5 +1,5 @@
 .. include:: replace.txt
-.. highlight:: cpp
+.. highlight:: bash
 
 .. Section Separators:
    ----
@@ -45,9 +45,7 @@ We will provide two ways, one anonymous (but will impede the creation of merge r
 Directly cloning ns-3-dev
 +++++++++++++++++++++++++
 
-If you go to the official ns-3-dev page, hosted at https://gitlab.com/nsnam/ns-3-dev, you can find a button that says ``Clone``. If you are not logged in, then you will see only the option of cloning the repository through HTTPS, with this command:
-
-.. sourcecode:: bash
+If you go to the official ns-3-dev page, hosted at https://gitlab.com/nsnam/ns-3-dev, you can find a button that says ``Clone``. If you are not logged in, then you will see only the option of cloning the repository through HTTPS, with this command::
 
    $ git clone https://gitlab.com/nsnam/ns-3-dev.git
 
@@ -71,9 +69,7 @@ Clone your forked repository on your machine
 
 Git is a distributed versioning system. This means that *nobody* will touch your personal repository, until you do something. Please note that every gitlab user has, at least, two repositories: the first is represented by the repository hosted on gitlab servers, which will be called in the following ``origin``. Then, you have your clone on your machine. This means that you could have many clones, on different machines, which points to ``origin``.
 
-To clone the newly created fork to your system, go to the homepage of your fork (that should be in the form `https://gitlab.com/your-user-name/ns-3-dev`) and click the `Clone` button. Then, go to your computer's terminal, and issue the command (please refer to https://docs.gitlab.com/ee/gitlab-basics/command-line-commands.html#clone-your-project for more documentation):
-
-.. sourcecode:: bash
+To clone the newly created fork to your system, go to the homepage of your fork (that should be in the form `https://gitlab.com/your-user-name/ns-3-dev`) and click the `Clone` button. Then, go to your computer's terminal, and issue the command (please refer to https://docs.gitlab.com/ee/gitlab-basics/command-line-commands.html#clone-your-project for more documentation)::
 
    $ git clone https://gitlab.com/your-user-name/ns-3-dev
    $ cd ns-3-dev
@@ -88,21 +84,15 @@ Git is able to fetch and push changes to several repositories, each of them is c
 Add the official ns-3 repository as remote upstream
 ***************************************************
 
-You could have already used git in the past, and therefore already having a ns-3 git repository somewhere. Or, instead, you could have it cloned for the first time in the step above. In both cases, when you fork/clone a repository, your history is no more bound to the repository itself. At this point, it is your duty to sync your fork with the original repository. The first remote repository we have encountered is ``origin``; we must add the official ns-3 repo as another remote repository:
-
-.. sourcecode:: bash
+You could have already used git in the past, and therefore already having a ns-3 git repository somewhere. Or, instead, you could have it cloned for the first time in the step above. In both cases, when you fork/clone a repository, your history is no more bound to the repository itself. At this point, it is your duty to sync your fork with the original repository. The first remote repository we have encountered is ``origin``; we must add the official ns-3 repo as another remote repository::
 
    $ git remote add nsnam https://gitlab.com/nsnam/ns-3-dev
 
-With the command above, we added a remote repository, named nsnam, which links to the official ns-3 repo. To show your remote repositories:
-
-.. sourcecode:: bash
+With the command above, we added a remote repository, named nsnam, which links to the official ns-3 repo. To show your remote repositories::
 
    $ git remote show
 
-To see to what ``origin`` is linking to:
-
-.. sourcecode:: bash
+To see to what ``origin`` is linking to::
 
    $ git remote show origin
 
@@ -111,9 +101,7 @@ Many options are available; please refer to the git manual for more.
 Add your forked repository as remote
 ************************************
 
-If you were a user of the old github mirror, you probably have an existing git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote.
-
-.. sourcecode:: bash
+If you were a user of the old github mirror, you probably have an existing git repository installed somewhere. In your case, it is not necessary to clone your fork and to port all your work in the new directory; you can add the fork as new remote::
 
    $ git remote rename origin old-origin
    $ git remote add origin https://gitlab.com/your-user-name/ns-3-dev
@@ -124,9 +112,7 @@ to your forked repository on gitlab.
 Keep in sync your repository with latest ns-3-dev updates
 *********************************************************
 
-We assume, from now to the end of this document, that you will not make commits on top of the master branch. It should be kept clean from *any* personal modifications: all the works must be done in branches. Therefore, to move the current HEAD of the master branch to the latest commit in ns-3-dev, you should do:
-
-.. sourcecode:: bash
+We assume, from now to the end of this document, that you will not make commits on top of the master branch. It should be kept clean from *any* personal modifications: all the works must be done in branches. Therefore, to move the current HEAD of the master branch to the latest commit in ns-3-dev, you should do::
 
    $ git checkout master
    $ git fetch nsnam
@@ -137,15 +123,11 @@ If you tried a pull which resulted in a conflict and you would like to start ove
 Start a new branch to do some work
 **********************************
 
-Look at the available branches:
-
-.. sourcecode:: bash
+Look at the available branches::
 
    $ git branch -a
 
-you should see something like:
-
-.. sourcecode:: bash
+you should see something like::
 
    * master
      remotes/origin/master
@@ -155,16 +137,12 @@ The branch master is your local master branch; remotes/origin/master point at th
 
 Before entering in details on how to create a new branch, we have to explain why it is recommended to do it. First of all, if you put all your work in a separate branch, you can easily see the diff between ns-3 mainline and your feature branch (with ``git diff master``). Also, you can integrate more easily the upstream advancements in your work, and when you wish, you can create a *conflict-free* merge request, that will ease the maintainer's job in reviewing your work.
 
-To create a new branch, starting from master, the command is:
-
-.. sourcecode:: bash
+To create a new branch, starting from master, the command is::
 
    $ git checkout master
    $ git checkout -b [name_of_your_new_branch]
 
-To switch between branches, remove the -b option. You should now see:
-
-.. sourcecode:: bash
+To switch between branches, remove the -b option. You should now see::
 
    $ git branch -a
     * master
@@ -177,9 +155,7 @@ Edit and commit the modifications
 
 After you edit some file, you should commit the difference. As a policy, git users love small and incremental patches. So, commit early, and commit often: you could rewrite your history later.
 
-Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we can see the repository status:
-
-.. sourcecode:: bash
+Suppose we edited ``src/internet/model/tcp-socket-base.cc``. With git status, we can see the repository status::
 
    $ git status
       On branch tcp-next
@@ -201,7 +177,7 @@ and we can see the edits with git diff:
    @@ -1439,6 +1439,10 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
           // There is a DupAck
           ++m_dupAckCount;
-
+   
    +      // I'm introducing a subtle bug!
    +
    +      m_tcb->m_cWnd = m_tcb->m_ssThresh;
@@ -211,15 +187,11 @@ and we can see the edits with git diff:
               // From Open we go Disorder
 
 
-To create a commit, select the file you want to add to the commit with git add:
-
-.. sourcecode:: bash
+To create a commit, select the file you want to add to the commit with git add::
 
    $ git add src/internet/model/tcp-socket-base.cc
 
-and then commit the result:
-
-.. sourcecode:: bash
+and then commit the result::
 
    $ git commit -m "My new TCP broken"
 
@@ -248,7 +220,7 @@ Rebase your branch on top of master
 
 Meanwhile you were busy with your branch, the upstream master could have changed. To rebase your work with the now new master, first of all sync your master branch (pulling the nsnam/master branch into your local master branch) as explained before; then
 
-.. sourcecode:: bash
+::
 
     $ git checkout [name_of_your_new_branch]
     $ git rebase master
@@ -260,16 +232,14 @@ Pushing your changes to origin
 
 After you have done some work on a branch, if you would like to share it with others, there is nothing better than pushing your work to your origin repository, on Gitlab servers.
 
-.. sourcecode:: bash
+::
 
     $ git checkout [name_of_your_new_branch]
     $ git push origin [name_of_your_new_branch]
 
 The ``git push`` command can be used every time you need to push something from your computer to a remote repository, except when you propose changes to the main ns-3-dev repository: your changes must pass a review stage.
 
-Please note that for older git version, the push command looks like:
-
-.. sourcecode:: bash
+Please note that for older git version, the push command looks like::
 
     $ git push -u origin [name_of_your_new_branch]
 
@@ -282,7 +252,7 @@ After you push your branch to origin, you can follow the instructions here https
 Porting patches from mercurial repositories to git
 **************************************************
 
-  Placeholder section. Please improve it.
+*Placeholder section; please improve it.*
 
 Working with git as a maintainer
 --------------------------------
@@ -292,9 +262,7 @@ As a maintainer, you are a person who has write access to the main nsnam reposit
 Pushing your own work
 *********************
 
-Since you have been added to the Developer list on Gitlab (if not, please open an issue) you can use the git + ssh address when adding nsnam as remote. Once you have done that, you can do your modifications to a local branch, then update the master to point to the latest changes of the nsnam repo, and then:
-
-.. sourcecode:: bash
+Since you have been added to the Developer list on Gitlab (if not, please open an issue) you can use the git + ssh address when adding nsnam as remote. Once you have done that, you can do your modifications to a local branch, then update the master to point to the latest changes of the nsnam repo, and then::
 
     $ git checkout master
     $ git pull nsnam master
@@ -357,18 +325,14 @@ Now, let's create a notional ns-3.1 release.
   $ git checkout -b 'ns-3.1-release'
   Switched to a new branch 'ns-3.1-release'
 
-We change the VERSION field from '3-dev' to '3.1':
-
-::
+We change the VERSION field from '3-dev' to '3.1'::
 
   $ sed -i 's/3-dev/3.1/g' VERSION
   $ cat VERSION
   3.1
   $ git commit -m"Update VERSION to 3.1" VERSION
   
-Let's release this.  Add a git annotated tag as follows:
-
-::
+Let's release this.  Add a git annotated tag as follows::
 
   $ git tag -a 'ns-3.1' -m"ns-3.1 release"
 
@@ -402,9 +366,7 @@ Finally, commit the branch and delete our local release branch.
   $ git commit -m"Merge ns-3.1-release branch"
   $ git branch -d ns-3.1-release
 
-The git history now looks like this:
-
-::
+The git history now looks like this::
 
   $ git log --graph --decorate --oneline --all
   *   80de6c5 (HEAD -> master) Merge ns-3.1-release branch
@@ -419,15 +381,11 @@ The git history now looks like this:
 
 This may now be pushed to ``nsnam/ns-3-dev.git`` and development can continue.
 
-**Note:**  When pushing to the remote, don't forget to push the tags:
-
-::
+**Note:**  When pushing to the remote, don't forget to push the tags::
 
   $ git push --follow-tags
 
-Future users who want to check out the ns-3.1 release will do something like:
-
-::
+Future users who want to check out the ns-3.1 release will do something like::
 
   $ git checkout -b my-local-ns-3.1 ns-3.1
   Switched to a new branch 'my-local-ns-3.1'
@@ -436,9 +394,7 @@ Future users who want to check out the ns-3.1 release will do something like:
 name; in this case, 'ns-3.1'.
 
 Let's assume now that master evolves with new features and bugfixes.  They
-are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual:
-
-::
+are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual::
 
   $ git checkout master
   ... (some changes)
@@ -453,9 +409,7 @@ are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual:
   $ git commit -m"Fix missing abc bug on file a" a
   
 
-Now the tree looks like this:
-
-::
+Now the tree looks like this::
 
   $ git log --graph --decorate --oneline --all
   * ee37d41 (HEAD -> master) Fix missing abc bug on file a
@@ -491,16 +445,12 @@ as was done before.
   $ git commit -m"Update VERSION to 3.1.1" VERSION
   $ git tag -a 'ns-3.1.1' -m"ns-3.1.1 release"
 
-Now the merge:
-
-::
+Now the merge::
 
   $ git checkout master
   $ git merge --no-commit --no-ff ns-3.1.1-release
 
-This time we see:
-
-::
+This time we see::
 
   Auto-merging a
   CONFLICT (content): Merge conflict in a
@@ -508,24 +458,18 @@ This time we see:
   CONFLICT (content): Merge conflict in VERSION
   Automatic merge failed; fix conflicts and then commit the result.
 
-And we can then do:
-
-::
+And we can then do::
 
   $ git reset ee37d41 a
   $ git reset ee37d41 VERSION
 
-Which leaves us with:
-
-::
+Which leaves us with::
 
   Unstaged changes after reset:
   M	VERSION
   M	a
 
-We can next hand-edit these files to restore them to original state, so that:
-
-::
+We can next hand-edit these files to restore them to original state, so that::
 
   $ git status
   On branch master
@@ -538,9 +482,7 @@ We can next hand-edit these files to restore them to original state, so that:
   $ git commit
   $ git branch -d ns-3.1.1-release
 
-The new log should show:
-
-::
+The new log should show::
   
   $ git log --graph --decorate --oneline --all
   *   815ce6e (HEAD -> master) Merge branch 'ns-3.1.1-release'
@@ -561,9 +503,7 @@ The new log should show:
   * 3e124c8 (origin/master, origin/HEAD) Initial commit
 
 And we can continue to commit on top of master going forward.  The two
-tags are:
-
-::
+tags are::
 
   $ git tag
   ns-3.1
