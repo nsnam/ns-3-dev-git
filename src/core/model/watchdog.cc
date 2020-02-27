@@ -42,6 +42,7 @@ Watchdog::Watchdog ()
 Watchdog::~Watchdog ()
 {
   NS_LOG_FUNCTION (this);
+  m_event.Cancel ();
   delete m_impl;
 }
 
