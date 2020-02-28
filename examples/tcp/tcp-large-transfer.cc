@@ -212,5 +212,8 @@ void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace)
         }
       currentTxBytes += amountSent;
     }
-  localSocket->Close ();
+  if (currentTxBytes >= totalTxBytes)
+    {
+      localSocket->Close ();
+    }
 }
