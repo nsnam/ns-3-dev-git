@@ -1047,11 +1047,11 @@ private:
   /**
    * wifi Phy transmit PSDU begin trace function
    * \param context the context
-   * \param psdu the PSDU
+   * \param psduMap the PSDU map
    * \param txVector the TXVECTOR
    * \param txPowerW the tx power in Watts
    */
-  void WifiPhyTxBeginTrace (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void WifiPhyTxBeginTrace (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
   /**
    * wifi Phy receive begin trace function
    *

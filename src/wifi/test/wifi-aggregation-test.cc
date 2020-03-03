@@ -654,11 +654,11 @@ private:
   void NotifyMacTransmit (Ptr<const Packet> packet);
   /**
    * Callback invoked when the sender MAC passes a PSDU(s) to the PHY
-   * \param psdu the PSDU
+   * \param psduMap the PSDU map
    * \param txVector the TX vector
    * \param txPowerW the transmit power in Watts
    */
-  void NotifyPsduForwardedDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void NotifyPsduForwardedDown (WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
   /**
    * Callback invoked when the receiver MAC forwards a packet up to the upper layer
    * \param p the packet
@@ -682,16 +682,19 @@ PreservePacketsInAmpdus::NotifyMacTransmit (Ptr<const Packet> packet)
 }
 
 void
-PreservePacketsInAmpdus::NotifyPsduForwardedDown (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+PreservePacketsInAmpdus::NotifyPsduForwardedDown (WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
-  if (!psdu->GetHeader (0).IsQosData ())
+  NS_TEST_EXPECT_MSG_EQ ((psduMap.size () == 1 && psduMap.begin ()->first == SU_STA_ID),
+                         true, "No DL MU PPDU expected");
+
+  if (!psduMap[SU_STA_ID]->GetHeader (0).IsQosData ())
     {
       return;
     }
 
-  m_nMpdus.push_back (psdu->GetNMpdus ());
+  m_nMpdus.push_back (psduMap[SU_STA_ID]->GetNMpdus ());
 
-  for (auto& mpdu : *PeekPointer (psdu))
+  for (auto& mpdu : *PeekPointer (psduMap[SU_STA_ID]))
     {
       std::size_t dist = std::distance (mpdu->begin (), mpdu->end ());
       // the list of aggregated MSDUs is empty if the MPDU includes a non-aggregated MSDU

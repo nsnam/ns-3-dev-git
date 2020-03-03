@@ -2422,11 +2422,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW);
 };
 
 Issue169TestCase::Issue169TestCase ()
@@ -2452,9 +2452,9 @@ Issue169TestCase::SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, 
 }
 
 void
-Issue169TestCase::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+Issue169TestCase::TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psdus.begin()->second->GetSize () >= 1000)
     {
       NS_TEST_ASSERT_MSG_EQ (txVector.GetMode ().GetModulationClass (), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Ideal rate manager selected incorrect modulation class");
     }
@@ -2556,11 +2556,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   /**
    * Check if the selected WifiMode is correct
@@ -2594,9 +2594,9 @@ IdealRateManagerChannelWidthTest::SendPacket (Ptr<NetDevice> sourceDevice, Addre
 }
 
 void
-IdealRateManagerChannelWidthTest::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+IdealRateManagerChannelWidthTest::TxCallback (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psduMap.begin ()->second->GetSize () >= 1000)
     {
       m_txMode = txVector.GetMode ();
     }
@@ -2715,11 +2715,11 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psdu the PSDU to transmit
+   * \param psduMap the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
-  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+  void TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW);
 
   /**
    * Check if the selected WifiMode is correct
@@ -2768,9 +2768,9 @@ IdealRateManagerMimoTest::SendPacket (Ptr<NetDevice> sourceDevice, Address& dest
 }
 
 void
-IdealRateManagerMimoTest::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+IdealRateManagerMimoTest::TxCallback (std::string context, WifiConstPsduMap psdus, WifiTxVector txVector, double txPowerW)
 {
-  if (psdu->GetSize () >= 1000)
+  if (psdus.begin ()->second->GetSize () >= 1000)
     {
       m_txVector = txVector;
     }

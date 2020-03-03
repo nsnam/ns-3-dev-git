@@ -2768,7 +2768,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
 
   double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
   NotifyTxBegin (psdus, txPowerW);
-  m_phyTxPsduBeginTrace (psdus.begin()->second, txVector, txPowerW); // TODO: fix for MU
+  m_phyTxPsduBeginTrace (psdus, txVector, txPowerW);
   NotifyMonitorSniffTx (psdus.begin()->second, GetFrequency (), txVector); //TODO: fix for MU
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 

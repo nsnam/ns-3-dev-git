@@ -868,7 +868,7 @@ AnimationInterface::UanPhyGenRxTrace (std::string context, Ptr<const Packet> p)
 }
 
 void
-AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+AnimationInterface::WifiPhyTxBeginTrace (std::string context, WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW)
 {
   NS_LOG_FUNCTION (this);
   NS_UNUSED (txVector);
@@ -879,13 +879,16 @@ AnimationInterface::WifiPhyTxBeginTrace (std::string context, Ptr<const WifiPsdu
 
   AnimPacketInfo pktInfo (ndev, Simulator::Now ());
   AnimUidPacketInfoMap * pendingPackets =  ProtocolTypeToPendingPackets (WIFI);
-  for (auto mpdu = psdu->begin (); mpdu != psdu->end (); ++mpdu)
+  for (auto& psdu : psduMap)
     {
-      ++gAnimUid;
-      NS_LOG_INFO ("WifiPhyTxTrace for MPDU:" << gAnimUid);
-      AddByteTag (gAnimUid, (*mpdu)->GetPacket ()); //the underlying MSDU/A-MSDU should be handed off
-      AddPendingPacket (WIFI, gAnimUid, pktInfo);
-      OutputWirelessPacketTxInfo ((*mpdu)->GetProtocolDataUnit (), pendingPackets->at (gAnimUid), gAnimUid); //PDU should be considered in order to have header
+      for (auto& mpdu : *PeekPointer (psdu.second))
+        {
+          ++gAnimUid;
+          NS_LOG_INFO ("WifiPhyTxTrace for MPDU:" << gAnimUid);
+          AddByteTag (gAnimUid, mpdu->GetPacket ()); //the underlying MSDU/A-MSDU should be handed off
+          AddPendingPacket (WIFI, gAnimUid, pktInfo);
+          OutputWirelessPacketTxInfo (mpdu->GetProtocolDataUnit (), pendingPackets->at (gAnimUid), gAnimUid); //PDU should be considered in order to have header
+        }
     }
 
   Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice> (ndev);
