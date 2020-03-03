@@ -1917,6 +1917,33 @@ WifiPhy::GetHePhyHeaderMode ()
   return WifiPhy::GetHeMcs0 ();
 }
 
+WifiMode
+WifiPhy::GetHeSigBMode (WifiTxVector txVector)
+{
+  NS_ABORT_MSG_IF (!txVector.IsMu (), "HE-SIG-B only available for HE MU");
+  uint8_t smallestMcs = 5; //maximum MCS for HE-SIG-B
+  for (auto & info : txVector.GetHeMuUserInfoMap ())
+    {
+      smallestMcs = std::min (smallestMcs, info.second.mcs.GetMcsValue ());
+    }
+  switch (smallestMcs) //GetVhtMcs (mcs) is not static
+  {
+    case 0:
+      return WifiPhy::GetVhtMcs0 ();
+    case 1:
+      return WifiPhy::GetVhtMcs1 ();
+    case 2:
+      return WifiPhy::GetVhtMcs2 ();
+    case 3:
+      return WifiPhy::GetVhtMcs3 ();
+    case 4:
+      return WifiPhy::GetVhtMcs4 ();
+    case 5:
+    default:
+      return WifiPhy::GetVhtMcs5 ();
+  }
+}
+
 Time
 WifiPhy::GetPreambleDetectionDuration (void)
 {
