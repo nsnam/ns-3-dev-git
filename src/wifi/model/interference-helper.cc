@@ -164,8 +164,9 @@ InterferenceHelper::AddForeignSignal (Time duration, double rxPowerW)
 {
   // Parameters other than duration and rxPowerW are unused for this type
   // of signal, so we provide dummy versions
-  Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0),
-                                                               WifiMacHeader ()),
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0), hdr),
                                              WifiTxVector (), duration, 0);
   Add (fakePpdu, WifiTxVector (), duration, rxPowerW);
 }
