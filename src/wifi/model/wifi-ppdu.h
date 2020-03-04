@@ -94,6 +94,7 @@ private:
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
   uint16_t m_frequency;             //!< the frequency used to transmit that PPDU
   uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU
+  uint8_t m_txPowerLevel;           //!< the transmission power level (used only for Tx and initializing the returned WifiTxVector)
 };
 
 /**

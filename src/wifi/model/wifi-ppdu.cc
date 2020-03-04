@@ -35,7 +35,8 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
     m_psdu (psdu),
     m_truncatedTx (false),
     m_frequency (frequency),
-    m_channelWidth (txVector.GetChannelWidth ())
+    m_channelWidth (txVector.GetChannelWidth ()),
+    m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
   NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
   if (!txVector.IsValid ())
@@ -502,6 +503,7 @@ WifiPpdu::GetTxVector (void) const
         NS_FATAL_ERROR ("unsupported modulation class");
         break;
     }
+  txVector.SetTxPowerLevel (m_txPowerLevel);
   return txVector;
 }
 

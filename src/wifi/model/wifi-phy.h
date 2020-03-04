@@ -1964,7 +1964,7 @@ private:
   bool m_powerRestricted;        //!< Flag whether transmit power is restricted by OBSS PD SR
   double m_txPowerMaxSiso;       //!< SISO maximum transmit power due to OBSS PD SR power restriction
   double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction
-  bool m_channelAccessRequested; //!< Flag if channels access has been requestd (used for OBSS_PD SR)
+  bool m_channelAccessRequested; //!< Flag if channels access has been requested (used for OBSS_PD SR)
 
   bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
   bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)

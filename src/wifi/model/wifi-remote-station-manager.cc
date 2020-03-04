@@ -582,6 +582,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
         }
       txVector.SetMode (mgtMode);
       txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+      txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
     }

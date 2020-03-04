@@ -394,6 +394,7 @@ WifiPhy::WifiPhy ()
     m_initialFrequency (0),
     m_frequencyChannelNumberInitialized (false),
     m_channelWidth (0),
+    m_powerRestricted (false),
     m_channelAccessRequested (false),
     m_txSpatialStreams (0),
     m_rxSpatialStreams (0),
