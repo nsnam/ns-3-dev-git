@@ -370,7 +370,7 @@ CarrierAggregationTestCase::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the assignation is done in a RR fashion
+   * Check that the assignment is done in a RR fashion
    */
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;

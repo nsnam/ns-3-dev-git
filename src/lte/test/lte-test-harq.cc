@@ -246,7 +246,7 @@ LenaHarqTestCase::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the assignation is done in a RR fashion
+   * Check that the assignment is done in a RR fashion
    */
   NS_LOG_INFO ("\tTest on downlink data shared channels (PDSCH)");
   NS_LOG_INFO ("Test with " << m_nUser << " user(s) at distance " << m_dist << " expected Thr " << m_throughputRef);

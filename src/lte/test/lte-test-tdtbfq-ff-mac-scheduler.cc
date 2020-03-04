@@ -433,7 +433,7 @@ LenaTdTbfqFfMacSchedulerTestCase1::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the downlink assignation is done in a "token bank fair queue" manner
+   * Check that the downlink assignment is done in a "token bank fair queue" manner
    */
 
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
@@ -455,7 +455,7 @@ LenaTdTbfqFfMacSchedulerTestCase1::DoRun (void)
     }
 
   /**
-  * Check that the uplink assignation is done in a "round robin" manner
+  * Check that the uplink assignment is done in a "round robin" manner
   */
 
   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
@@ -685,7 +685,7 @@ LenaTdTbfqFfMacSchedulerTestCase2::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the downlink assignation is done in a "token bank fair queue" manner
+   * Check that the downlink assignment is done in a "token bank fair queue" manner
    */
 
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s)");

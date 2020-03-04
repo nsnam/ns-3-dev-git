@@ -268,7 +268,7 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the downlink assignation is done in a "time domain maximum throughput" manner
+   * Check that the downlink assignment is done in a "time domain maximum throughput" manner
    */
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
@@ -282,7 +282,7 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
     }
 
   /**
-  * Check that the assignation is done in a "time domain maximum throughput" manner among users
+  * Check that the assignment is done in a "time domain maximum throughput" manner among users
   * with maximum SINRs: without fading, current FD MT always assign all resources to one UE
   */
 
@@ -304,7 +304,7 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
     }
 
   /**
-  * Check that the uplink assignation is done in a "proportional fair" manner
+  * Check that the uplink assignment is done in a "proportional fair" manner
   */
   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> ulDataRxed;
@@ -318,7 +318,7 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << m_thrRefUl);
     }
   /**
-  * Check that the assignation is done in a "proportional fair" manner among users
+  * Check that the assignment is done in a "proportional fair" manner among users
   * with equal SINRs: the bandwidth should be distributed according to the 
   * ratio of the estimated throughput per TTI of each user; therefore equally 
   * partitioning the whole bandwidth achievable from a single users in a TTI

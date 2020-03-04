@@ -76,9 +76,9 @@ public:
    *
    * \return true if the MobilityBuildingInfo instance is outdoor, false otherwise
    *
-   * \deprecated This method will go away in future release of ns-3.
-   *  Calling \c IsInside () method of \c MobilityBuildingInfo class
-   *  will suffice the need to determine if a node is inside or outside
+   * \deprecated This method will go away in a future release of ns-3.
+   *  Calling \c IsIndoor () method of \c MobilityBuildingInfo class
+   *  will satisfy the need to determine if a node is inside or outside
    *  a building.
    */
   NS_DEPRECATED
