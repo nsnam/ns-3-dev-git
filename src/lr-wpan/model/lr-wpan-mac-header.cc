@@ -252,14 +252,11 @@ LrWpanMacHeader::GetKeyIdIndex (void) const
   return(m_auxKeyIdKeyIndex);
 }
 
-
 bool
 LrWpanMacHeader::IsBeacon (void) const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_BEACON);
 }
-
-
 
 bool
 LrWpanMacHeader::IsData (void) const
@@ -267,15 +264,11 @@ LrWpanMacHeader::IsData (void) const
   return(m_fctrlFrmType == LRWPAN_MAC_DATA);
 }
 
-
-
 bool
 LrWpanMacHeader::IsAcknowledgment (void) const
 {
   return(m_fctrlFrmType == LRWPAN_MAC_ACKNOWLEDGMENT);
 }
-
-
 
 bool
 LrWpanMacHeader::IsCommand (void) const
@@ -786,9 +779,6 @@ LrWpanMacHeader::Deserialize (Buffer::Iterator start)
     }
   return i.GetDistanceFrom (start);
 }
-
-// ----------------------------------------------------------------------------------------------------------
-
 
 } //namespace ns3
 

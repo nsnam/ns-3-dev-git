@@ -54,17 +54,16 @@ class LrWpanMacHeader : public Header
 {
 
 public:
-
   /**
    * The possible MAC types, see IEEE 802.15.4-2006, Table 79.
    */
   enum LrWpanMacType
   {
-    LRWPAN_MAC_BEACON = 0,        //!< LRWPAN_MAC_BEACON
-    LRWPAN_MAC_DATA = 1,          //!< LRWPAN_MAC_DATA
-    LRWPAN_MAC_ACKNOWLEDGMENT = 2,//!< LRWPAN_MAC_ACKNOWLEDGMENT
-    LRWPAN_MAC_COMMAND = 3,       //!< LRWPAN_MAC_COMMAND
-    LRWPAN_MAC_RESERVED           //!< LRWPAN_MAC_RESERVED
+    LRWPAN_MAC_BEACON = 0,         //!< LRWPAN_MAC_BEACON
+    LRWPAN_MAC_DATA = 1,           //!< LRWPAN_MAC_DATA
+    LRWPAN_MAC_ACKNOWLEDGMENT = 2, //!< LRWPAN_MAC_ACKNOWLEDGMENT
+    LRWPAN_MAC_COMMAND = 3,        //!< LRWPAN_MAC_COMMAND
+    LRWPAN_MAC_RESERVED            //!< LRWPAN_MAC_RESERVED
   };
 
   /**
@@ -113,37 +112,31 @@ public:
    * \return the Frame control field
    */
   uint16_t GetFrameControl (void) const;
-
   /**
    * Check if Security Enabled bit of Frame Control is enabled
    * \return true if Security Enabled bit is enabled
    */
   bool IsSecEnable (void) const;
-
   /**
    * Check if Frame Pending bit of Frame Control is enabled
    * \return true if Frame Pending bit is enabled
    */
   bool IsFrmPend (void) const;
-
   /**
    * Check if Ack. Request bit of Frame Control is enabled
    * \return true if Ack. Request bit is enabled
    */
   bool IsAckReq (void) const;
-
   /**
    * Check if PAN ID Compression bit of Frame Control is enabled
    * \return true if PAN ID Compression bit is enabled
    */
   bool IsPanIdComp (void) const;
-
   /**
    * Get the Reserved bits of Frame control field
    * \return the Reserved bits
    */
   uint8_t GetFrmCtrlRes (void) const;
-
   /**
    * Get the Dest. Addressing Mode of Frame control field
    * \return the Dest. Addressing Mode bits
@@ -159,13 +152,11 @@ public:
    * \return the Source Addressing Mode bits
    */
   uint8_t GetSrcAddrMode (void) const;
-
   /**
    * Get the frame Sequence number
    * \return the sequence number
    */
   uint8_t GetSeqNum (void) const;
-
   /**
    * Get the Destination PAN ID
    * \return the Destination PAN ID
@@ -196,7 +187,6 @@ public:
    * \return the Source Extended address
    */
   Mac64Address GetExtSrcAddr (void) const;
-
   /**
    * Get the Auxiliary Security Header - Security Control Octect
    * \return the Auxiliary Security Header - Security Control Octect
@@ -223,7 +213,6 @@ public:
    * \return the Auxiliary Security Header - Security Control - Reserved bits
    */
   uint8_t GetSecCtrlReserved (void) const;
-
   /**
    * Get the Auxiliary Security Header - Key Identifier - Key Source (2 Octects)
    * \return the Auxiliary Security Header - Key Identifier - Key Source  (2 Octects)
@@ -239,7 +228,6 @@ public:
    * \return the Auxiliary Security Header - Key Identifier - Key Index
    */
   uint8_t GetKeyIdIndex (void) const;
-
   /**
    * Returns true if the header is a beacon
    * \return true if the header is a beacon
@@ -260,59 +248,48 @@ public:
    * \return true if the header is a command
    */
   bool IsCommand (void) const;
-
   /**
    * Set the Frame Control field "Frame Type" bits
    * \param wpanMacType the frame type
    */
   void SetType (enum LrWpanMacType wpanMacType);
-
   /**
    * Set the whole Frame Control field
    * \param frameControl the Frame Control field
    */
   void SetFrameControl (uint16_t frameControl);
-
   /**
    * Set the Frame Control field "Security Enabled" bit to true
    */
   void SetSecEnable (void);
-
   /**
    * Set the Frame Control field "Security Enabled" bit to false
    */
   void SetSecDisable (void);
-
   /**
    * Set the Frame Control field "Frame Pending" bit to true
    */
   void SetFrmPend (void);
-
   /**
    * Set the Frame Control field "Frame Pending" bit to false
    */
   void SetNoFrmPend (void);
-
   /**
    * Set the Frame Control field "Ack. Request" bit to true
    */
   void SetAckReq (void);
-
   /**
    * Set the Frame Control field "Ack. Request" bit to false
    */
   void SetNoAckReq (void);
-
   /**
    * Set the Frame Control field "PAN ID Compression" bit to true
    */
   void SetPanIdComp (void);
-
   /**
    * Set the Frame Control field "PAN ID Compression" bit to false
    */
   void SetNoPanIdComp (void);
-
   /**
    * Set the Frame Control field "Reserved" bits
    * \param res reserved bits
@@ -333,13 +310,11 @@ public:
    * \param addrMode Source address mode
    */
   void SetSrcAddrMode (uint8_t addrMode);
-
   /**
    * Set the Sequence number
    * \param seqNum sequence number
    */
   void SetSeqNum (uint8_t seqNum);
-
   /* The Source/Destination Addressing fields are only set if SrcAddrMode/DstAddrMode are set */
   /**
    * Set Source address fields
@@ -377,7 +352,6 @@ public:
    * \param frmCntr the "Frame Counter" octect
    */
   void SetFrmCounter (uint32_t frmCntr);
-
   /**
    * Set the Security Control field "Security Level" bits (3 bits)
    * \param secLevel the "Security Level" bits
@@ -388,13 +362,11 @@ public:
    * \param keyIdMode the "Key Identifier Mode" bits
    */
   void SetKeyIdMode (uint8_t keyIdMode);
-
   /**
    * Set the Security Control field "Reserved" bits (3 bits)
    * \param res the "Reserved" bits
    */
   void SetSecCtrlReserved (uint8_t res);
-
   /* Variable length will be dependent on Key Id Mode*/
   /**
    * Set the Key Index
@@ -413,7 +385,6 @@ public:
    * \param keyIndex the Key index
    */
   void SetKeyId (uint64_t keySrc, uint8_t keyIndex);
-
   /**
    * \brief Get the type ID.
    * \return the object TypeId

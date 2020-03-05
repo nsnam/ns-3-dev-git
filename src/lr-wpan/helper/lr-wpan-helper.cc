@@ -254,6 +254,63 @@ LrWpanHelper::AssociateToPan (NetDeviceContainer c, uint16_t panId)
   return;
 }
 
+void
+LrWpanHelper::AssociateToBeaconPan (NetDeviceContainer c, uint16_t panId, Mac16Address coor, uint8_t bcnOrd, uint8_t sfrmOrd)
+{
+  NetDeviceContainer devices;
+  uint16_t id = 1;
+  uint8_t idBuf[2];
+  Mac16Address address;
+
+  if (bcnOrd > 14)
+    {
+      NS_LOG_DEBUG("The Beacon Order must be an int between 0 and 14");
+      return;
+    }
+
+
+  if ((sfrmOrd > 14) || (sfrmOrd > bcnOrd))
+    {
+      NS_LOG_DEBUG("The Superframe Order must be an int between 0 and 14, and less or equal to Beacon Order");
+      return;
+    }
+
+  for (NetDeviceContainer::Iterator i = c.Begin (); i != c.End (); i++)
+    {
+      Ptr<LrWpanNetDevice> device = DynamicCast<LrWpanNetDevice> (*i);
+      if (device)
+        {
+          idBuf[0] = (id >> 8) & 0xff;
+          idBuf[1] = (id >> 0) & 0xff;
+          address.CopyFrom (idBuf);
+
+          device->GetMac ()->SetShortAddress (address);
+
+          if (address == coor)
+            {
+              MlmeStartRequestParams params;
+              params.m_panCoor = true;
+              params.m_PanId = panId;
+              params.m_bcnOrd = bcnOrd;
+              params.m_sfrmOrd = sfrmOrd;
+
+              Ptr<UniformRandomVariable> uniformRandomVariable = CreateObject<UniformRandomVariable> ();;
+              Time jitter = Time (MilliSeconds (uniformRandomVariable->GetInteger (0, 10)));
+
+              Simulator::Schedule (jitter, &LrWpanMac::MlmeStartRequest,
+                                              device->GetMac (), params);
+            }
+          else
+            {
+              device->GetMac ()->SetPanId (panId);
+              device->GetMac ()->SetAssociatedCoor(coor);
+            }
+          id++;
+        }
+    }
+  return;
+}
+
 /**
  * @brief Write a packet in a PCAP file
  * @param file the output file

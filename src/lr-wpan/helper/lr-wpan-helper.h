@@ -113,6 +113,19 @@ public:
   void AssociateToPan (NetDeviceContainer c, uint16_t panId);
 
   /**
+   * \brief Associate the nodes to the same PAN and initiate beacon enabled mode.
+   *
+   * \param c a set of nodes
+   * \param panID the PAN id
+   * \param coor the address of the PAN coordinator
+   * \param bcnOrd indicates the interval between beacons.
+   *               The value must be an int between 0 and 14.
+   * \param sfrmOrd indicates the length of the superframe.
+   *                The value must be an int between 0 and 14 and less or equal to the bcnOrd
+   */
+  void AssociateToBeaconPan (NetDeviceContainer c, uint16_t panId, Mac16Address coor, uint8_t bcnOrd, uint8_t sfrmOrd);
+
+  /**
    * Helper to enable all LrWpan log components with one statement
    */
   void EnableLogComponents (void);
