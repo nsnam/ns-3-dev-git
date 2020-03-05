@@ -62,37 +62,53 @@ void
 PriorityQueueScheduler::Insert (const Event &ev)
 {
   NS_LOG_FUNCTION (this << ev.impl << ev.key.m_ts << ev.key.m_uid);
-  m_list.push (ev);
+  m_queue.push (ev);
 }
 
 bool
 PriorityQueueScheduler::IsEmpty (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_list.empty ();
+  return m_queue.empty ();
 }
 
 Scheduler::Event
 PriorityQueueScheduler::PeekNext (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_list.top ();
+  return m_queue.top ();
 }
 
 Scheduler::Event
 PriorityQueueScheduler::RemoveNext (void)
 {
   NS_LOG_FUNCTION (this);
-  Scheduler::Event ev = m_list.top ();
-  m_list.pop ();
+  Scheduler::Event ev = m_queue.top ();
+  m_queue.pop ();
   return ev;
+}
+
+bool
+PriorityQueueScheduler::EventPriorityQueue::remove(const Scheduler::Event &ev)
+{
+  auto it = std::find(this->c.begin(), this->c.end(), ev);
+  if (it != this->c.end())
+    {
+      this->c.erase(it);
+      std::make_heap(this->c.begin(), this->c.end(), this->comp);
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 void
 PriorityQueueScheduler::Remove (const Scheduler::Event &ev)
 {
   NS_LOG_FUNCTION (this);
-  m_list.remove (ev);
+  m_queue.remove (ev);
 }
 
 } // namespace ns3

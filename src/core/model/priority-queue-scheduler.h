@@ -40,8 +40,19 @@ namespace ns3 {
  * \ingroup scheduler
  * \brief a std::priority_queue event scheduler
  *
- * This class implements the an event scheduler using
- * std::priority_queue on a std::vector.
+ * This class implements an event scheduler using
+ * `std::priority_queue` on a `std::vector`.
+ *
+ * \par Time Complexity
+ *
+ * Operation    | Complexity  | Reason
+ * ------------ | ----------- | ------
+ * Insert()     | Logarithmic | `push_heap()`
+ * IsEmpty()    | Constant    | `vector::empty()`
+ * PeekNext()   | Constant    | `vector::front()`
+ * Remove()     | Linear      | `find()` and `make_heap()`
+ * RemoveNext() | Logarithmic | `pop_heap()`
+ *
  */
 class PriorityQueueScheduler : public Scheduler
 {
@@ -74,25 +85,16 @@ private:
   {
   public:
 
-    bool remove(const Scheduler::Event & value)
-    {
-      auto it = std::find(this->c.begin(), this->c.end(), value);
-      if (it != this->c.end())
-        {
-          this->c.erase(it);
-          std::make_heap(this->c.begin(), this->c.end(), this->comp);
-          return true;
-        }
-      else
-        {
-          return false;
-        }
-    }
+    /**
+     * \copydoc PriorityQueueScheduler::Remove()
+     * \returns \c true if the event was found, false otherwise.
+     */
+    bool remove(const Scheduler::Event &ev);
+    
   };  // class EventPriorityQueue
 
-  
-  /** The event list. */
-  EventPriorityQueue m_list;
+  /** The event queue. */
+  EventPriorityQueue m_queue;
 
 };  // class PriorityQueueScheduler
 
