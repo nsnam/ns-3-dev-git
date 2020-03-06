@@ -23,13 +23,25 @@ def register_types(module):
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanTxOption [enumeration]
     module.add_enum('LrWpanTxOption', ['TX_OPTION_NONE', 'TX_OPTION_ACK', 'TX_OPTION_GTS', 'TX_OPTION_INDIRECT'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMacState [enumeration]
-    module.add_enum('LrWpanMacState', ['MAC_IDLE', 'MAC_CSMA', 'MAC_SENDING', 'MAC_ACK_PENDING', 'CHANNEL_ACCESS_FAILURE', 'CHANNEL_IDLE', 'SET_PHY_TX_ON'])
+    module.add_enum('LrWpanMacState', ['MAC_IDLE', 'MAC_CSMA', 'MAC_SENDING', 'MAC_ACK_PENDING', 'CHANNEL_ACCESS_FAILURE', 'CHANNEL_IDLE', 'SET_PHY_TX_ON', 'MAC_GTS', 'MAC_INACTIVE', 'MAC_CSMA_DEFERRED'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::SuperframeStatus [enumeration]
+    module.add_enum('SuperframeStatus', ['CAP', 'CFP', 'INACTIVE'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::SuperframeType [enumeration]
+    module.add_enum('SuperframeType', ['OUTGOING', 'INCOMING'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAddressMode [enumeration]
     module.add_enum('LrWpanAddressMode', ['NO_PANID_ADDR', 'ADDR_MODE_RESERVED', 'SHORT_ADDR', 'EXT_ADDR'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanAssociationStatus [enumeration]
     module.add_enum('LrWpanAssociationStatus', ['ASSOCIATED', 'PAN_AT_CAPACITY', 'PAN_ACCESS_DENIED', 'ASSOCIATED_WITHOUT_ADDRESS', 'DISASSOCIATED'])
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMcpsDataConfirmStatus [enumeration]
     module.add_enum('LrWpanMcpsDataConfirmStatus', ['IEEE_802_15_4_SUCCESS', 'IEEE_802_15_4_TRANSACTION_OVERFLOW', 'IEEE_802_15_4_TRANSACTION_EXPIRED', 'IEEE_802_15_4_CHANNEL_ACCESS_FAILURE', 'IEEE_802_15_4_INVALID_ADDRESS', 'IEEE_802_15_4_INVALID_GTS', 'IEEE_802_15_4_NO_ACK', 'IEEE_802_15_4_COUNTER_ERROR', 'IEEE_802_15_4_FRAME_TOO_LONG', 'IEEE_802_15_4_UNAVAILABLE_KEY', 'IEEE_802_15_4_UNSUPPORTED_SECURITY', 'IEEE_802_15_4_INVALID_PARAMETER'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMlmeStartConfirmStatus [enumeration]
+    module.add_enum('LrWpanMlmeStartConfirmStatus', ['MLMESTART_SUCCESS', 'MLMESTART_NO_SHORT_ADDRESS', 'MLMESTART_SUPERFRAME_OVERLAP', 'MLMESTART_TRACKING_OFF', 'MLMESTART_INVALID_PARAMETER', 'MLMESTART_COUNTER_ERROR', 'MLMESTART_FRAME_TOO_LONG', 'MLMESTART_UNAVAILABLE_KEY', 'MLMESTART_UNSUPPORTED_SECURITY', 'MLMESTART_CHANNEL_ACCESS_FAILURE'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanSyncLossReason [enumeration]
+    module.add_enum('LrWpanSyncLossReason', ['MLMESYNCLOSS_PAN_ID_CONFLICT', 'MLMESYNCLOSS_REALIGMENT', 'MLMESYNCLOSS_BEACON_LOST', 'MLMESYNCLOSS_SUPERFRAME_OVERLAP'])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMlmePollConfirmStatus [enumeration]
+    module.add_enum('LrWpanMlmePollConfirmStatus', ['MLMEPOLL_SUCCESS', 'MLMEPOLL_CHANNEL_ACCESS_FAILURE', 'MLMEPOLL_NO_ACK', 'MLMEPOLL_NO_DATA', 'MLMEPOLL_COUNTER_ERROR', 'MLMEPOLL_FRAME_TOO_LONG', 'MLMEPOLL_UNAVAILABLE_KEY', 'MLMEPOLL_UNSUPPORTED_SECURITY', 'MLMEPOLL_INVALID_PARAMETER'])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::DeviceType [enumeration]
+    module.add_enum('DeviceType', ['RFD', 'FFD'])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyOption [enumeration]
     module.add_enum('LrWpanPhyOption', ['IEEE_802_15_4_868MHZ_BPSK', 'IEEE_802_15_4_915MHZ_BPSK', 'IEEE_802_15_4_868MHZ_ASK', 'IEEE_802_15_4_915MHZ_ASK', 'IEEE_802_15_4_868MHZ_OQPSK', 'IEEE_802_15_4_915MHZ_OQPSK', 'IEEE_802_15_4_2_4GHZ_OQPSK', 'IEEE_802_15_4_INVALID_PHY_OPTION'])
     ## lr-wpan-phy.h (module 'lr-wpan'): ns3::LrWpanPhyEnumeration [enumeration]
@@ -93,6 +105,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::GtsFields [class]
+    module.add_class('GtsFields')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher', import_from_module='ns.core')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
@@ -142,6 +156,20 @@ def register_types(module):
     module.add_class('McpsDataIndicationParams')
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::McpsDataRequestParams [struct]
     module.add_class('McpsDataRequestParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeBeaconNotifyIndicationParams [struct]
+    module.add_class('MlmeBeaconNotifyIndicationParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollConfirmParams [struct]
+    module.add_class('MlmePollConfirmParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams [struct]
+    module.add_class('MlmePollRequestParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartConfirmParams [struct]
+    module.add_class('MlmeStartConfirmParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams [struct]
+    module.add_class('MlmeStartRequestParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams [struct]
+    module.add_class('MlmeSyncLossIndicationParams')
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncRequestParams [struct]
+    module.add_class('MlmeSyncRequestParams')
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
     typehandlers.add_type_alias('std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', 'ns3::NetDeviceContainer::Iterator')
@@ -182,6 +210,8 @@ def register_types(module):
     module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_RAW', 'DLT_IEEE802_11', 'DLT_LINUX_SLL', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO', 'DLT_IEEE802_15_4', 'DLT_NETLINK'], outer_class=root_module['ns3::PcapHelper'], import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelperForDevice [class]
     module.add_class('PcapHelperForDevice', import_from_module='ns.network', allow_subclassing=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::PendingAddrFields [class]
+    module.add_class('PendingAddrFields')
     ## sequence-number.h (module 'network'): ns3::SequenceNumber<unsigned char, signed char> [class]
     module.add_class('SequenceNumber8', import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
@@ -190,6 +220,8 @@ def register_types(module):
     module.add_class('Simulator', import_from_module='ns.core', destructor_visibility='private')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
     module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'], import_from_module='ns.core')
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::SuperframeField [class]
+    module.add_class('SuperframeField')
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -200,6 +232,8 @@ def register_types(module):
     module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::LrWpanMacState'])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::LrWpanPhyEnumeration> [class]
     module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::LrWpanPhyEnumeration'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['ns3::SuperframeStatus'])
     ## type-id.h (module 'core'): ns3::TypeId [class]
     module.add_class('TypeId', import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeFlag [enumeration]
@@ -288,6 +322,8 @@ def register_types(module):
     module.add_class('AttributeChecker', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
     module.add_class('AttributeValue', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::BeaconPayloadHeader [class]
+    module.add_class('BeaconPayloadHeader', parent=root_module['ns3::Header'])
     ## boolean.h (module 'core'): ns3::BooleanChecker [class]
     module.add_class('BooleanChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## boolean.h (module 'core'): ns3::BooleanValue [class]
@@ -298,6 +334,10 @@ def register_types(module):
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader [class]
+    module.add_class('CommandPayloadHeader', parent=root_module['ns3::Header'])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader::MacCommand [enumeration]
+    module.add_enum('MacCommand', ['ASSOCIATION_REQ', 'ASSOCIATION_RESP', 'DISASSOCIATION_NOTIF', 'DATA_REQ', 'PANID_CONFLICT', 'ORPHAN_NOTIF', 'BEACON_REQ', 'COOR_REALIGN', 'GTS_REQ', 'CMD_RESERVED'], outer_class=root_module['ns3::CommandPayloadHeader'])
     ## double.h (module 'core'): ns3::DoubleValue [class]
     module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor [class]
@@ -438,6 +478,14 @@ def register_types(module):
     module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::McpsDataConfirmParams', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::McpsDataIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::McpsDataIndicationParams', 'ns3::Ptr<ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::MlmeBeaconNotifyIndicationParams', 'ns3::Ptr<ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::MlmePollConfirmParams', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::MlmeStartConfirmParams', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::MlmeSyncLossIndicationParams', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -448,6 +496,8 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::SuperframeStatus', 'ns3::SuperframeStatus', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Time', 'ns3::LrWpanPhyEnumeration', 'ns3::LrWpanPhyEnumeration', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -457,12 +507,21 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< void, ns3::LrWpanMacState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LrWpanMacStateCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::LrWpanMacState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LrWpanMacStateCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::LrWpanMacState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LrWpanMacStateCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::LrWpanMacTransCostCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::LrWpanMacTransCostCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::LrWpanMacTransCostCallback&')
     typehandlers.add_type_alias('ns3::LrWpanTxOption', 'ns3::LrWpanTxOption')
     typehandlers.add_type_alias('ns3::LrWpanTxOption*', 'ns3::LrWpanTxOption*')
     typehandlers.add_type_alias('ns3::LrWpanTxOption&', 'ns3::LrWpanTxOption&')
     typehandlers.add_type_alias('ns3::LrWpanMacState', 'ns3::LrWpanMacState')
     typehandlers.add_type_alias('ns3::LrWpanMacState*', 'ns3::LrWpanMacState*')
     typehandlers.add_type_alias('ns3::LrWpanMacState&', 'ns3::LrWpanMacState&')
+    typehandlers.add_type_alias('ns3::SuperframeStatus', 'ns3::SuperframeStatus')
+    typehandlers.add_type_alias('ns3::SuperframeStatus*', 'ns3::SuperframeStatus*')
+    typehandlers.add_type_alias('ns3::SuperframeStatus&', 'ns3::SuperframeStatus&')
+    typehandlers.add_type_alias('ns3::SuperframeType', 'ns3::SuperframeType')
+    typehandlers.add_type_alias('ns3::SuperframeType*', 'ns3::SuperframeType*')
+    typehandlers.add_type_alias('ns3::SuperframeType&', 'ns3::SuperframeType&')
     typehandlers.add_type_alias('ns3::LrWpanAddressMode', 'ns3::LrWpanAddressMode')
     typehandlers.add_type_alias('ns3::LrWpanAddressMode*', 'ns3::LrWpanAddressMode*')
     typehandlers.add_type_alias('ns3::LrWpanAddressMode&', 'ns3::LrWpanAddressMode&')
@@ -472,12 +531,33 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::LrWpanMcpsDataConfirmStatus', 'ns3::LrWpanMcpsDataConfirmStatus')
     typehandlers.add_type_alias('ns3::LrWpanMcpsDataConfirmStatus*', 'ns3::LrWpanMcpsDataConfirmStatus*')
     typehandlers.add_type_alias('ns3::LrWpanMcpsDataConfirmStatus&', 'ns3::LrWpanMcpsDataConfirmStatus&')
+    typehandlers.add_type_alias('ns3::LrWpanMlmeStartConfirmStatus', 'ns3::LrWpanMlmeStartConfirmStatus')
+    typehandlers.add_type_alias('ns3::LrWpanMlmeStartConfirmStatus*', 'ns3::LrWpanMlmeStartConfirmStatus*')
+    typehandlers.add_type_alias('ns3::LrWpanMlmeStartConfirmStatus&', 'ns3::LrWpanMlmeStartConfirmStatus&')
+    typehandlers.add_type_alias('ns3::LrWpanSyncLossReason', 'ns3::LrWpanSyncLossReason')
+    typehandlers.add_type_alias('ns3::LrWpanSyncLossReason*', 'ns3::LrWpanSyncLossReason*')
+    typehandlers.add_type_alias('ns3::LrWpanSyncLossReason&', 'ns3::LrWpanSyncLossReason&')
+    typehandlers.add_type_alias('ns3::LrWpanMlmePollConfirmStatus', 'ns3::LrWpanMlmePollConfirmStatus')
+    typehandlers.add_type_alias('ns3::LrWpanMlmePollConfirmStatus*', 'ns3::LrWpanMlmePollConfirmStatus*')
+    typehandlers.add_type_alias('ns3::LrWpanMlmePollConfirmStatus&', 'ns3::LrWpanMlmePollConfirmStatus&')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::McpsDataConfirmCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::McpsDataConfirmCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::McpsDataConfirmCallback&')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::McpsDataIndicationCallback')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::McpsDataIndicationCallback*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::McpsDataIndicationCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::MlmeStartConfirmCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::MlmeStartConfirmCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::MlmeStartConfirmCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::MlmeBeaconNotifyIndicationCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::MlmeBeaconNotifyIndicationCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::MlmeBeaconNotifyIndicationCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::MlmeSyncLossIndicationCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::MlmeSyncLossIndicationCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::MlmeSyncLossIndicationCallback&')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::MlmePollConfirmCallback')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::MlmePollConfirmCallback*')
+    typehandlers.add_type_alias('ns3::Callback< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::MlmePollConfirmCallback&')
     typehandlers.add_type_alias('ns3::LrWpanEdPower', 'ns3::LrWpanEdPower')
     typehandlers.add_type_alias('ns3::LrWpanEdPower*', 'ns3::LrWpanEdPower*')
     typehandlers.add_type_alias('ns3::LrWpanEdPower&', 'ns3::LrWpanEdPower&')
@@ -625,6 +705,9 @@ def register_types_ns3_TracedValueCallback(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState )', 'ns3::TracedValueCallback::LrWpanMacState')
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState )*', 'ns3::TracedValueCallback::LrWpanMacState*')
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanMacState, ns3::LrWpanMacState )&', 'ns3::TracedValueCallback::LrWpanMacState&')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SuperframeStatus, ns3::SuperframeStatus )', 'ns3::TracedValueCallback::SuperframeStatus')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SuperframeStatus, ns3::SuperframeStatus )*', 'ns3::TracedValueCallback::SuperframeStatus*')
+    typehandlers.add_type_alias('void ( * ) ( ns3::SuperframeStatus, ns3::SuperframeStatus )&', 'ns3::TracedValueCallback::SuperframeStatus&')
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration )', 'ns3::TracedValueCallback::LrWpanPhyEnumeration')
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration )*', 'ns3::TracedValueCallback::LrWpanPhyEnumeration*')
     typehandlers.add_type_alias('void ( * ) ( ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration )&', 'ns3::TracedValueCallback::LrWpanPhyEnumeration&')
@@ -666,6 +749,7 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumSignalParameters >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
+    register_Ns3GtsFields_methods(root_module, root_module['ns3::GtsFields'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
@@ -683,6 +767,13 @@ def register_methods(root_module):
     register_Ns3McpsDataConfirmParams_methods(root_module, root_module['ns3::McpsDataConfirmParams'])
     register_Ns3McpsDataIndicationParams_methods(root_module, root_module['ns3::McpsDataIndicationParams'])
     register_Ns3McpsDataRequestParams_methods(root_module, root_module['ns3::McpsDataRequestParams'])
+    register_Ns3MlmeBeaconNotifyIndicationParams_methods(root_module, root_module['ns3::MlmeBeaconNotifyIndicationParams'])
+    register_Ns3MlmePollConfirmParams_methods(root_module, root_module['ns3::MlmePollConfirmParams'])
+    register_Ns3MlmePollRequestParams_methods(root_module, root_module['ns3::MlmePollRequestParams'])
+    register_Ns3MlmeStartConfirmParams_methods(root_module, root_module['ns3::MlmeStartConfirmParams'])
+    register_Ns3MlmeStartRequestParams_methods(root_module, root_module['ns3::MlmeStartRequestParams'])
+    register_Ns3MlmeSyncLossIndicationParams_methods(root_module, root_module['ns3::MlmeSyncLossIndicationParams'])
+    register_Ns3MlmeSyncRequestParams_methods(root_module, root_module['ns3::MlmeSyncRequestParams'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
@@ -698,14 +789,17 @@ def register_methods(root_module):
     register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
+    register_Ns3PendingAddrFields_methods(root_module, root_module['ns3::PendingAddrFields'])
     register_Ns3SequenceNumber8_methods(root_module, root_module['ns3::SequenceNumber8'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
+    register_Ns3SuperframeField_methods(root_module, root_module['ns3::SuperframeField'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3TracedValue__Ns3LrWpanMacState_methods(root_module, root_module['ns3::TracedValue< ns3::LrWpanMacState >'])
     register_Ns3TracedValue__Ns3LrWpanPhyEnumeration_methods(root_module, root_module['ns3::TracedValue< ns3::LrWpanPhyEnumeration >'])
+    register_Ns3TracedValue__Ns3SuperframeStatus_methods(root_module, root_module['ns3::TracedValue< ns3::SuperframeStatus >'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
@@ -739,11 +833,13 @@ def register_methods(root_module):
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
+    register_Ns3BeaconPayloadHeader_methods(root_module, root_module['ns3::BeaconPayloadHeader'])
     register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
     register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3CommandPayloadHeader_methods(root_module, root_module['ns3::CommandPayloadHeader'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
     register_Ns3EmptyAttributeAccessor_methods(root_module, root_module['ns3::EmptyAttributeAccessor'])
     register_Ns3EmptyAttributeChecker_methods(root_module, root_module['ns3::EmptyAttributeChecker'])
@@ -792,11 +888,16 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3LrWpanPhyEnumeration_Ns3LrWpanPhyEnumeration_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3McpsDataConfirmParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::McpsDataConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3McpsDataIndicationParams_Ns3Ptr__lt__ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::McpsDataIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3MlmeBeaconNotifyIndicationParams_Ns3Ptr__lt__ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3MlmePollConfirmParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3MlmeStartConfirmParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3MlmeSyncLossIndicationParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_char_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, unsigned char, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3SuperframeStatus_Ns3SuperframeStatus_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Time_Ns3LrWpanPhyEnumeration_Ns3LrWpanPhyEnumeration_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Time, ns3::LrWpanPhyEnumeration, ns3::LrWpanPhyEnumeration, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3LrWpanNetDevice_methods(root_module, root_module['ns3::LrWpanNetDevice'])
@@ -1589,6 +1690,46 @@ def register_Ns3EventId_methods(root_module, cls):
                    'ns3::EventImpl *', 
                    [], 
                    is_const=True)
+    return
+
+def register_Ns3GtsFields_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::GtsFields::GtsFields(ns3::GtsFields const & arg0) [constructor]
+    cls.add_constructor([param('ns3::GtsFields const &', 'arg0')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::GtsFields::GtsFields() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::GtsFields::Deserialize(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('Deserialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::GtsFields::GetGtsDirectionField() const [member function]
+    cls.add_method('GetGtsDirectionField', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::GtsFields::GetGtsSpecField() const [member function]
+    cls.add_method('GetGtsSpecField', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint32_t ns3::GtsFields::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::GtsFields::Serialize(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::GtsFields::SetGtsDirectionField(uint8_t gtsDir) [member function]
+    cls.add_method('SetGtsDirectionField', 
+                   'void', 
+                   [param('uint8_t', 'gtsDir')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::GtsFields::SetGtsSpecField(uint8_t gtsSpec) [member function]
+    cls.add_method('SetGtsSpecField', 
+                   'void', 
+                   [param('uint8_t', 'gtsSpec')])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
@@ -2444,6 +2585,97 @@ def register_Ns3McpsDataRequestParams_methods(root_module, cls):
     cls.add_instance_attribute('m_txOptions', 'uint8_t', is_const=False)
     return
 
+def register_Ns3MlmeBeaconNotifyIndicationParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeBeaconNotifyIndicationParams::MlmeBeaconNotifyIndicationParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeBeaconNotifyIndicationParams::MlmeBeaconNotifyIndicationParams(ns3::MlmeBeaconNotifyIndicationParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmeBeaconNotifyIndicationParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeBeaconNotifyIndicationParams::m_bsn [variable]
+    cls.add_instance_attribute('m_bsn', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3MlmePollConfirmParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollConfirmParams::MlmePollConfirmParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollConfirmParams::MlmePollConfirmParams(ns3::MlmePollConfirmParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmePollConfirmParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollConfirmParams::m_status [variable]
+    cls.add_instance_attribute('m_status', 'ns3::LrWpanMlmePollConfirmStatus', is_const=False)
+    return
+
+def register_Ns3MlmePollRequestParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::MlmePollRequestParams(ns3::MlmePollRequestParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmePollRequestParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::MlmePollRequestParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::m_coorAddrMode [variable]
+    cls.add_instance_attribute('m_coorAddrMode', 'ns3::LrWpanAddressMode', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::m_coorExtAddr [variable]
+    cls.add_instance_attribute('m_coorExtAddr', 'ns3::Mac64Address', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::m_coorPanId [variable]
+    cls.add_instance_attribute('m_coorPanId', 'uint16_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmePollRequestParams::m_coorShortAddr [variable]
+    cls.add_instance_attribute('m_coorShortAddr', 'ns3::Mac16Address', is_const=False)
+    return
+
+def register_Ns3MlmeStartConfirmParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartConfirmParams::MlmeStartConfirmParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartConfirmParams::MlmeStartConfirmParams(ns3::MlmeStartConfirmParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmeStartConfirmParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartConfirmParams::m_status [variable]
+    cls.add_instance_attribute('m_status', 'ns3::LrWpanMlmeStartConfirmStatus', is_const=False)
+    return
+
+def register_Ns3MlmeStartRequestParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::MlmeStartRequestParams(ns3::MlmeStartRequestParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmeStartRequestParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::MlmeStartRequestParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_PanId [variable]
+    cls.add_instance_attribute('m_PanId', 'uint16_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_battLifeExt [variable]
+    cls.add_instance_attribute('m_battLifeExt', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_bcnOrd [variable]
+    cls.add_instance_attribute('m_bcnOrd', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_coorRealgn [variable]
+    cls.add_instance_attribute('m_coorRealgn', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_logCh [variable]
+    cls.add_instance_attribute('m_logCh', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_logChPage [variable]
+    cls.add_instance_attribute('m_logChPage', 'uint32_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_panCoor [variable]
+    cls.add_instance_attribute('m_panCoor', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_sfrmOrd [variable]
+    cls.add_instance_attribute('m_sfrmOrd', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeStartRequestParams::m_startTime [variable]
+    cls.add_instance_attribute('m_startTime', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3MlmeSyncLossIndicationParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams::MlmeSyncLossIndicationParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams::MlmeSyncLossIndicationParams(ns3::MlmeSyncLossIndicationParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmeSyncLossIndicationParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams::m_logCh [variable]
+    cls.add_instance_attribute('m_logCh', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams::m_lossReason [variable]
+    cls.add_instance_attribute('m_lossReason', 'ns3::LrWpanSyncLossReason', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncLossIndicationParams::m_panId [variable]
+    cls.add_instance_attribute('m_panId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3MlmeSyncRequestParams_methods(root_module, cls):
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncRequestParams::MlmeSyncRequestParams(ns3::MlmeSyncRequestParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MlmeSyncRequestParams const &', 'arg0')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncRequestParams::MlmeSyncRequestParams() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncRequestParams::m_logCh [variable]
+    cls.add_instance_attribute('m_logCh', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::MlmeSyncRequestParams::m_trackBcn [variable]
+    cls.add_instance_attribute('m_trackBcn', 'bool', is_const=False)
+    return
+
 def register_Ns3NetDeviceContainer_methods(root_module, cls):
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer::NetDeviceContainer(ns3::NetDeviceContainer const & arg0) [constructor]
     cls.add_constructor([param('ns3::NetDeviceContainer const &', 'arg0')])
@@ -3014,6 +3246,63 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
                    is_virtual=True, is_pure_virtual=True)
     return
 
+def register_Ns3PendingAddrFields_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::PendingAddrFields::PendingAddrFields(ns3::PendingAddrFields const & arg0) [constructor]
+    cls.add_constructor([param('ns3::PendingAddrFields const &', 'arg0')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::PendingAddrFields::PendingAddrFields() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::PendingAddrFields::AddAddress(ns3::Mac16Address shortAddr) [member function]
+    cls.add_method('AddAddress', 
+                   'void', 
+                   [param('ns3::Mac16Address', 'shortAddr')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::PendingAddrFields::AddAddress(ns3::Mac64Address extAddr) [member function]
+    cls.add_method('AddAddress', 
+                   'void', 
+                   [param('ns3::Mac64Address', 'extAddr')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::PendingAddrFields::Deserialize(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('Deserialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::PendingAddrFields::GetNumExtAddr() const [member function]
+    cls.add_method('GetNumExtAddr', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::PendingAddrFields::GetNumShortAddr() const [member function]
+    cls.add_method('GetNumShortAddr', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::PendingAddrFields::GetPndAddrSpecField() const [member function]
+    cls.add_method('GetPndAddrSpecField', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint32_t ns3::PendingAddrFields::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): bool ns3::PendingAddrFields::SearchAddress(ns3::Mac16Address shortAddr) [member function]
+    cls.add_method('SearchAddress', 
+                   'bool', 
+                   [param('ns3::Mac16Address', 'shortAddr')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): bool ns3::PendingAddrFields::SearchAddress(ns3::Mac64Address extAddr) [member function]
+    cls.add_method('SearchAddress', 
+                   'bool', 
+                   [param('ns3::Mac64Address', 'extAddr')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::PendingAddrFields::Serialize(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::PendingAddrFields::SetPndAddrSpecField(uint8_t pndAddrSpecField) [member function]
+    cls.add_method('SetPndAddrSpecField', 
+                   'void', 
+                   [param('uint8_t', 'pndAddrSpecField')])
+    return
+
 def register_Ns3SequenceNumber8_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_binary_numeric_operator('+', root_module['ns3::SequenceNumber8'], root_module['ns3::SequenceNumber8'], param('ns3::SequenceNumber< unsigned char, signed char > const &', 'right'))
@@ -3129,6 +3418,91 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time const &', 'delay')], 
                    is_static=True)
+    return
+
+def register_Ns3SuperframeField_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::SuperframeField::SuperframeField(ns3::SuperframeField const & arg0) [constructor]
+    cls.add_constructor([param('ns3::SuperframeField const &', 'arg0')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::SuperframeField::SuperframeField() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::SuperframeField::Deserialize(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('Deserialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::SuperframeField::GetBeaconOrder() const [member function]
+    cls.add_method('GetBeaconOrder', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::SuperframeField::GetFinalCapSlot() const [member function]
+    cls.add_method('GetFinalCapSlot', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint8_t ns3::SuperframeField::GetFrameOrder() const [member function]
+    cls.add_method('GetFrameOrder', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint32_t ns3::SuperframeField::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): uint16_t ns3::SuperframeField::GetSuperframe() const [member function]
+    cls.add_method('GetSuperframe', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): bool ns3::SuperframeField::IsAssocPermit() const [member function]
+    cls.add_method('IsAssocPermit', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): bool ns3::SuperframeField::IsBattLifeExt() const [member function]
+    cls.add_method('IsBattLifeExt', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): bool ns3::SuperframeField::IsPanCoor() const [member function]
+    cls.add_method('IsPanCoor', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): ns3::Buffer::Iterator ns3::SuperframeField::Serialize(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True)
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetAssocPermit(bool assocPermit) [member function]
+    cls.add_method('SetAssocPermit', 
+                   'void', 
+                   [param('bool', 'assocPermit')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetBattLifeExt(bool battLifeExt) [member function]
+    cls.add_method('SetBattLifeExt', 
+                   'void', 
+                   [param('bool', 'battLifeExt')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetBeaconOrder(uint8_t bcnOrder) [member function]
+    cls.add_method('SetBeaconOrder', 
+                   'void', 
+                   [param('uint8_t', 'bcnOrder')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetFinalCapSlot(uint8_t capSlot) [member function]
+    cls.add_method('SetFinalCapSlot', 
+                   'void', 
+                   [param('uint8_t', 'capSlot')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetPanCoor(bool panCoor) [member function]
+    cls.add_method('SetPanCoor', 
+                   'void', 
+                   [param('bool', 'panCoor')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetSuperframe(uint16_t superFrm) [member function]
+    cls.add_method('SetSuperframe', 
+                   'void', 
+                   [param('uint16_t', 'superFrm')])
+    ## lr-wpan-fields.h (module 'lr-wpan'): void ns3::SuperframeField::SetSuperframeOrder(uint8_t frmOrder) [member function]
+    cls.add_method('SetSuperframeOrder', 
+                   'void', 
+                   [param('uint8_t', 'frmOrder')])
     return
 
 def register_Ns3Tag_methods(root_module, cls):
@@ -3304,6 +3678,44 @@ def register_Ns3TracedValue__Ns3LrWpanPhyEnumeration_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::LrWpanPhyEnumeration const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Ns3SuperframeStatus_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus>::TracedValue(ns3::TracedValue<ns3::SuperframeStatus> const & o) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::SuperframeStatus > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus>::TracedValue(ns3::SuperframeStatus const & v) [constructor]
+    cls.add_constructor([param('ns3::SuperframeStatus const &', 'v')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus>::TracedValue(ns3::TracedValue<ns3::SuperframeStatus> const & other) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::SuperframeStatus > const &', 'other')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SuperframeStatus>::TracedValue(ns3::TracedValue<ns3::SuperframeStatus> const & other) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::SuperframeStatus > const &', 'other')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SuperframeStatus>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SuperframeStatus>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SuperframeStatus>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SuperframeStatus>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): ns3::SuperframeStatus ns3::TracedValue<ns3::SuperframeStatus>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::SuperframeStatus', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SuperframeStatus>::Set(ns3::SuperframeStatus const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::SuperframeStatus const &', 'v')])
     return
 
 def register_Ns3TypeId_methods(root_module, cls):
@@ -3687,6 +4099,10 @@ def register_Ns3LrWpanHelper_methods(root_module, cls):
     cls.add_method('AssociateToPan', 
                    'void', 
                    [param('ns3::NetDeviceContainer', 'c'), param('uint16_t', 'panId')])
+    ## lr-wpan-helper.h (module 'lr-wpan'): void ns3::LrWpanHelper::AssociateToBeaconPan(ns3::NetDeviceContainer c, uint16_t panId, ns3::Mac16Address coor, uint8_t bcnOrd, uint8_t sfrmOrd) [member function]
+    cls.add_method('AssociateToBeaconPan', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('uint16_t', 'panId'), param('ns3::Mac16Address', 'coor'), param('uint8_t', 'bcnOrd'), param('uint8_t', 'sfrmOrd')])
     ## lr-wpan-helper.h (module 'lr-wpan'): void ns3::LrWpanHelper::EnableLogComponents() [member function]
     cls.add_method('EnableLogComponents', 
                    'void', 
@@ -4719,6 +5135,70 @@ def register_Ns3AttributeValue_methods(root_module, cls):
                    is_const=True, is_virtual=True, is_pure_virtual=True)
     return
 
+def register_Ns3BeaconPayloadHeader_methods(root_module, cls):
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::BeaconPayloadHeader::BeaconPayloadHeader(ns3::BeaconPayloadHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::BeaconPayloadHeader const &', 'arg0')])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::BeaconPayloadHeader::BeaconPayloadHeader() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): uint32_t ns3::BeaconPayloadHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::GtsFields ns3::BeaconPayloadHeader::GetGtsFields() const [member function]
+    cls.add_method('GetGtsFields', 
+                   'ns3::GtsFields', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::TypeId ns3::BeaconPayloadHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::PendingAddrFields ns3::BeaconPayloadHeader::GetPndAddrFields() const [member function]
+    cls.add_method('GetPndAddrFields', 
+                   'ns3::PendingAddrFields', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): uint32_t ns3::BeaconPayloadHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::SuperframeField ns3::BeaconPayloadHeader::GetSuperframeSpecField() const [member function]
+    cls.add_method('GetSuperframeSpecField', 
+                   'ns3::SuperframeField', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): static ns3::TypeId ns3::BeaconPayloadHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::BeaconPayloadHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::BeaconPayloadHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::BeaconPayloadHeader::SetGtsFields(ns3::GtsFields gtsFields) [member function]
+    cls.add_method('SetGtsFields', 
+                   'void', 
+                   [param('ns3::GtsFields', 'gtsFields')])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::BeaconPayloadHeader::SetPndAddrFields(ns3::PendingAddrFields pndAddrFields) [member function]
+    cls.add_method('SetPndAddrFields', 
+                   'void', 
+                   [param('ns3::PendingAddrFields', 'pndAddrFields')])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::BeaconPayloadHeader::SetSuperframeSpecField(ns3::SuperframeField sfrmField) [member function]
+    cls.add_method('SetSuperframeSpecField', 
+                   'void', 
+                   [param('ns3::SuperframeField', 'sfrmField')])
+    return
+
 def register_Ns3BooleanChecker_methods(root_module, cls):
     ## boolean.h (module 'core'): ns3::BooleanChecker::BooleanChecker() [constructor]
     cls.add_constructor([])
@@ -4811,6 +5291,11 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, template_parameters=['ns3::SuperframeStatus'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, template_parameters=['ns3::Ptr<ns3::Packet const> '], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
@@ -4831,12 +5316,32 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::McpsDataIndicationParams'], visibility='protected')
+                   is_static=True, template_parameters=['ns3::MlmeBeaconNotifyIndicationParams'], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
                    is_static=True, template_parameters=['ns3::Ptr<ns3::Packet> '], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::MlmeSyncLossIndicationParams'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::MlmePollConfirmParams'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::MlmeStartConfirmParams'], visibility='protected')
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, template_parameters=['ns3::McpsDataIndicationParams'], visibility='protected')
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -4895,6 +5400,54 @@ def register_Ns3CallbackValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::CallbackBase', 'base')])
+    return
+
+def register_Ns3CommandPayloadHeader_methods(root_module, cls):
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader::CommandPayloadHeader(ns3::CommandPayloadHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CommandPayloadHeader const &', 'arg0')])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader::CommandPayloadHeader() [constructor]
+    cls.add_constructor([])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader::CommandPayloadHeader(ns3::CommandPayloadHeader::MacCommand macCmd) [constructor]
+    cls.add_constructor([param('ns3::CommandPayloadHeader::MacCommand', 'macCmd')])
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): uint32_t ns3::CommandPayloadHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::CommandPayloadHeader::MacCommand ns3::CommandPayloadHeader::GetCommandFrameType() const [member function]
+    cls.add_method('GetCommandFrameType', 
+                   'ns3::CommandPayloadHeader::MacCommand', 
+                   [], 
+                   is_const=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): ns3::TypeId ns3::CommandPayloadHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): uint32_t ns3::CommandPayloadHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): static ns3::TypeId ns3::CommandPayloadHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::CommandPayloadHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::CommandPayloadHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## lr-wpan-mac-pl-headers.h (module 'lr-wpan'): void ns3::CommandPayloadHeader::SetCommandFrameType(ns3::CommandPayloadHeader::MacCommand macCmd) [member function]
+    cls.add_method('SetCommandFrameType', 
+                   'void', 
+                   [param('ns3::CommandPayloadHeader::MacCommand', 'macCmd')])
     return
 
 def register_Ns3DoubleValue_methods(root_module, cls):
@@ -5407,14 +5960,26 @@ def register_Ns3LrWpanCsmaCa_methods(root_module, cls):
     cls.add_method('RequestCCA', 
                    'void', 
                    [])
+    ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::DeferCsmaTimeout() [member function]
+    cls.add_method('DeferCsmaTimeout', 
+                   'void', 
+                   [])
     ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::PlmeCcaConfirm(ns3::LrWpanPhyEnumeration status) [member function]
     cls.add_method('PlmeCcaConfirm', 
                    'void', 
                    [param('ns3::LrWpanPhyEnumeration', 'status')])
+    ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::SetLrWpanMacTransCostCallback(ns3::LrWpanMacTransCostCallback trans) [member function]
+    cls.add_method('SetLrWpanMacTransCostCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'trans')])
     ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::SetLrWpanMacStateCallback(ns3::LrWpanMacStateCallback macState) [member function]
     cls.add_method('SetLrWpanMacStateCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::LrWpanMacState, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'macState')])
+    ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::SetBatteryLifeExtension(bool batteryLifeExtension) [member function]
+    cls.add_method('SetBatteryLifeExtension', 
+                   'void', 
+                   [param('bool', 'batteryLifeExtension')])
     ## lr-wpan-csmaca.h (module 'lr-wpan'): int64_t ns3::LrWpanCsmaCa::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -5422,6 +5987,10 @@ def register_Ns3LrWpanCsmaCa_methods(root_module, cls):
     ## lr-wpan-csmaca.h (module 'lr-wpan'): uint8_t ns3::LrWpanCsmaCa::GetNB() [member function]
     cls.add_method('GetNB', 
                    'uint8_t', 
+                   [])
+    ## lr-wpan-csmaca.h (module 'lr-wpan'): bool ns3::LrWpanCsmaCa::GetBatteryLifeExtension() [member function]
+    cls.add_method('GetBatteryLifeExtension', 
+                   'bool', 
                    [])
     ## lr-wpan-csmaca.h (module 'lr-wpan'): void ns3::LrWpanCsmaCa::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -5489,6 +6058,10 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
                    'ns3::Mac64Address', 
                    [], 
                    is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): uint32_t ns3::LrWpanMac::GetIfsSize() [member function]
+    cls.add_method('GetIfsSize', 
+                   'uint32_t', 
+                   [])
     ## lr-wpan-mac.h (module 'lr-wpan'): uint64_t ns3::LrWpanMac::GetMacAckWaitDuration() const [member function]
     cls.add_method('GetMacAckWaitDuration', 
                    'uint64_t', 
@@ -5517,6 +6090,10 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
                    'ns3::Mac16Address', 
                    [], 
                    is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): uint64_t ns3::LrWpanMac::GetTxPacketSymbols() [member function]
+    cls.add_method('GetTxPacketSymbols', 
+                   'uint64_t', 
+                   [])
     ## lr-wpan-mac.h (module 'lr-wpan'): static ns3::TypeId ns3::LrWpanMac::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -5526,6 +6103,18 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
     cls.add_method('McpsDataRequest', 
                    'void', 
                    [param('ns3::McpsDataRequestParams', 'params'), param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::MlmePollRequest(ns3::MlmePollRequestParams params) [member function]
+    cls.add_method('MlmePollRequest', 
+                   'void', 
+                   [param('ns3::MlmePollRequestParams', 'params')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::MlmeStartRequest(ns3::MlmeStartRequestParams params) [member function]
+    cls.add_method('MlmeStartRequest', 
+                   'void', 
+                   [param('ns3::MlmeStartRequestParams', 'params')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::MlmeSyncRequest(ns3::MlmeSyncRequestParams params) [member function]
+    cls.add_method('MlmeSyncRequest', 
+                   'void', 
+                   [param('ns3::MlmeSyncRequestParams', 'params')])
     ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::PdDataConfirm(ns3::LrWpanPhyEnumeration status) [member function]
     cls.add_method('PdDataConfirm', 
                    'void', 
@@ -5554,6 +6143,14 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
     cls.add_method('PlmeSetTRXStateConfirm', 
                    'void', 
                    [param('ns3::LrWpanPhyEnumeration', 'status')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetAssociatedCoor(ns3::Mac16Address mac) [member function]
+    cls.add_method('SetAssociatedCoor', 
+                   'void', 
+                   [param('ns3::Mac16Address', 'mac')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetAssociatedCoor(ns3::Mac64Address mac) [member function]
+    cls.add_method('SetAssociatedCoor', 
+                   'void', 
+                   [param('ns3::Mac64Address', 'mac')])
     ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetAssociationStatus(ns3::LrWpanAssociationStatus status) [member function]
     cls.add_method('SetAssociationStatus', 
                    'void', 
@@ -5582,6 +6179,22 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
     cls.add_method('SetMcpsDataIndicationCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::McpsDataIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetMlmeBeaconNotifyIndicationCallback(ns3::MlmeBeaconNotifyIndicationCallback c) [member function]
+    cls.add_method('SetMlmeBeaconNotifyIndicationCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetMlmePollConfirmCallback(ns3::MlmePollConfirmCallback c) [member function]
+    cls.add_method('SetMlmePollConfirmCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetMlmeStartConfirmCallback(ns3::MlmeStartConfirmCallback c) [member function]
+    cls.add_method('SetMlmeStartConfirmCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetMlmeSyncLossIndicationCallback(ns3::MlmeSyncLossIndicationCallback c) [member function]
+    cls.add_method('SetMlmeSyncLossIndicationCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
     ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::SetPanId(uint16_t panId) [member function]
     cls.add_method('SetPanId', 
                    'void', 
@@ -5598,20 +6211,64 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
     cls.add_method('SetShortAddress', 
                    'void', 
                    [param('ns3::Mac16Address', 'address')])
+    ## lr-wpan-mac.h (module 'lr-wpan'): bool ns3::LrWpanMac::isCoordDest() [member function]
+    cls.add_method('isCoordDest', 
+                   'bool', 
+                   [])
+    ## lr-wpan-mac.h (module 'lr-wpan'): bool ns3::LrWpanMac::isTxAckReq() [member function]
+    cls.add_method('isTxAckReq', 
+                   'bool', 
+                   [])
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aBaseSlotDuration [variable]
+    cls.add_static_attribute('aBaseSlotDuration', 'uint32_t const', is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aBaseSuperframeDuration [variable]
+    cls.add_static_attribute('aBaseSuperframeDuration', 'uint32_t const', is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aMaxLostBeacons [variable]
+    cls.add_static_attribute('aMaxLostBeacons', 'uint32_t const', is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aMaxSIFSFrameSize [variable]
+    cls.add_static_attribute('aMaxSIFSFrameSize', 'uint32_t const', is_const=True)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aMinMPDUOverhead [variable]
     cls.add_static_attribute('aMinMPDUOverhead', 'uint32_t const', is_const=True)
-    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_aBaseSlotDuration [variable]
-    cls.add_instance_attribute('m_aBaseSlotDuration', 'uint64_t', is_const=False)
-    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_aBaseSuperframeDuration [variable]
-    cls.add_instance_attribute('m_aBaseSuperframeDuration', 'uint64_t', is_const=False)
-    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_aNumSuperframeSlots [variable]
-    cls.add_instance_attribute('m_aNumSuperframeSlots', 'uint64_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::aNumSuperframeSlots [variable]
+    cls.add_static_attribute('aNumSuperframeSlots', 'uint32_t const', is_const=True)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_beaconInterval [variable]
+    cls.add_instance_attribute('m_beaconInterval', 'uint32_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_beaconRxTime [variable]
+    cls.add_instance_attribute('m_beaconRxTime', 'uint64_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_beaconTrackingOn [variable]
+    cls.add_instance_attribute('m_beaconTrackingOn', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_deviceCapability [variable]
+    cls.add_instance_attribute('m_deviceCapability', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_fnlCapSlot [variable]
+    cls.add_instance_attribute('m_fnlCapSlot', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_ifs [variable]
+    cls.add_instance_attribute('m_ifs', 'uint32_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_incomingBeaconInterval [variable]
+    cls.add_instance_attribute('m_incomingBeaconInterval', 'uint32_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_incomingBeaconOrder [variable]
+    cls.add_instance_attribute('m_incomingBeaconOrder', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_incomingFnlCapSlot [variable]
+    cls.add_instance_attribute('m_incomingFnlCapSlot', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_incomingSuperframeDuration [variable]
+    cls.add_instance_attribute('m_incomingSuperframeDuration', 'uint32_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_incomingSuperframeOrder [variable]
+    cls.add_instance_attribute('m_incomingSuperframeOrder', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macAutoRequest [variable]
+    cls.add_instance_attribute('m_macAutoRequest', 'bool', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macBeaconOrder [variable]
-    cls.add_instance_attribute('m_macBeaconOrder', 'uint64_t', is_const=False)
+    cls.add_instance_attribute('m_macBeaconOrder', 'uint8_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macBeaconTxTime [variable]
     cls.add_instance_attribute('m_macBeaconTxTime', 'uint64_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macBsn [variable]
+    cls.add_instance_attribute('m_macBsn', 'ns3::SequenceNumber8', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macCoordExtendedAddress [variable]
+    cls.add_instance_attribute('m_macCoordExtendedAddress', 'ns3::Mac64Address', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macCoordShortAddress [variable]
+    cls.add_instance_attribute('m_macCoordShortAddress', 'ns3::Mac16Address', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macDsn [variable]
     cls.add_instance_attribute('m_macDsn', 'ns3::SequenceNumber8', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macLIFSPeriod [variable]
+    cls.add_instance_attribute('m_macLIFSPeriod', 'uint32_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macMaxFrameRetries [variable]
     cls.add_instance_attribute('m_macMaxFrameRetries', 'uint8_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macPanId [variable]
@@ -5620,10 +6277,20 @@ def register_Ns3LrWpanMac_methods(root_module, cls):
     cls.add_instance_attribute('m_macPromiscuousMode', 'bool', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macRxOnWhenIdle [variable]
     cls.add_instance_attribute('m_macRxOnWhenIdle', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macSIFSPeriod [variable]
+    cls.add_instance_attribute('m_macSIFSPeriod', 'uint32_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macSuperframeOrder [variable]
-    cls.add_instance_attribute('m_macSuperframeOrder', 'uint64_t', is_const=False)
+    cls.add_instance_attribute('m_macSuperframeOrder', 'uint8_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macSyncSymbolOffset [variable]
     cls.add_instance_attribute('m_macSyncSymbolOffset', 'uint64_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_macTransactionPersistanceTime [variable]
+    cls.add_instance_attribute('m_macTransactionPersistanceTime', 'uint16_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_numLostBeacons [variable]
+    cls.add_instance_attribute('m_numLostBeacons', 'uint8_t', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_panCoor [variable]
+    cls.add_instance_attribute('m_panCoor', 'bool', is_const=False)
+    ## lr-wpan-mac.h (module 'lr-wpan'): ns3::LrWpanMac::m_superframeDuration [variable]
+    cls.add_instance_attribute('m_superframeDuration', 'uint32_t', is_const=False)
     ## lr-wpan-mac.h (module 'lr-wpan'): void ns3::LrWpanMac::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -6782,6 +7449,94 @@ def register_Ns3CallbackImpl__Void_Ns3McpsDataIndicationParams_Ns3Ptr__lt__ns3Pa
                    custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
+def register_Ns3CallbackImpl__Void_Ns3MlmeBeaconNotifyIndicationParams_Ns3Ptr__lt__ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::MlmeBeaconNotifyIndicationParams, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::MlmeBeaconNotifyIndicationParams arg0, ns3::Ptr<ns3::Packet> arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::MlmeBeaconNotifyIndicationParams', 'arg0'), param('ns3::Ptr< ns3::Packet >', 'arg1')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3MlmePollConfirmParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::MlmePollConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::MlmePollConfirmParams arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::MlmePollConfirmParams', 'arg0')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3MlmeStartConfirmParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::MlmeStartConfirmParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::MlmeStartConfirmParams arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::MlmeStartConfirmParams', 'arg0')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3MlmeSyncLossIndicationParams_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::MlmeSyncLossIndicationParams, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::MlmeSyncLossIndicationParams arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::MlmeSyncLossIndicationParams', 'arg0')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -6889,6 +7644,28 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Em
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'arg0')], 
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3SuperframeStatus_Ns3SuperframeStatus_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::SuperframeStatus, ns3::SuperframeStatus, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::SuperframeStatus arg0, ns3::SuperframeStatus arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::SuperframeStatus', 'arg0'), param('ns3::SuperframeStatus', 'arg1')], 
                    custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
