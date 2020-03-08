@@ -307,7 +307,6 @@ private:
   Time m_lastRxStart;           //!< the last receive start time
   Time m_lastRxDuration;        //!< the last receive duration time
   bool m_lastRxReceivedOk;      //!< the last receive OK
-  Time m_lastRxEnd;             //!< the last receive end time
   Time m_lastTxStart;           //!< the last transmit start time
   Time m_lastTxDuration;        //!< the last transmit duration time
   Time m_lastBusyStart;         //!< the last busy start time

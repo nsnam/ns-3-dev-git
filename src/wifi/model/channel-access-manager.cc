@@ -106,7 +106,6 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastRxStart (MicroSeconds (0)),
     m_lastRxDuration (MicroSeconds (0)),
     m_lastRxReceivedOk (true),
-    m_lastRxEnd (MicroSeconds (0)),
     m_lastTxStart (MicroSeconds (0)),
     m_lastTxDuration (MicroSeconds (0)),
     m_lastBusyStart (MicroSeconds (0)),
@@ -218,7 +217,8 @@ ChannelAccessManager::IsBusy (void) const
 {
   NS_LOG_FUNCTION (this);
   // PHY busy
-  if (m_lastRxEnd > Simulator::Now ())
+  Time lastRxEnd = m_lastRxStart + m_lastRxDuration;
+  if (lastRxEnd > Simulator::Now ())
     {
       return true;
     }
@@ -407,18 +407,11 @@ Time
 ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
 {
   NS_LOG_FUNCTION (this);
-  Time rxAccessStart;
-  if (m_lastRxEnd <= Simulator::Now ())
+  Time lastRxEnd = m_lastRxStart + m_lastRxDuration;
+  Time rxAccessStart = lastRxEnd + m_sifs;
+  if ((lastRxEnd <= Simulator::Now ()) && !m_lastRxReceivedOk)
     {
-      rxAccessStart = m_lastRxEnd + m_sifs;
-      if (!m_lastRxReceivedOk)
-        {
-          rxAccessStart += m_eifsNoDifs;
-        }
-    }
-  else
-    {
-      rxAccessStart = m_lastRxStart + m_lastRxDuration + m_sifs;
+      rxAccessStart += m_eifsNoDifs;
     }
   Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_sifs;
   Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_sifs;
@@ -560,7 +553,6 @@ ChannelAccessManager::NotifyRxStartNow (Time duration)
   UpdateBackoff ();
   m_lastRxStart = Simulator::Now ();
   m_lastRxDuration = duration;
-  m_lastRxEnd = m_lastRxStart + m_lastRxDuration;
   m_lastRxReceivedOk = true;
 }
 
@@ -569,8 +561,7 @@ ChannelAccessManager::NotifyRxEndOkNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end ok");
-  m_lastRxEnd = Simulator::Now ();
-  m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+  m_lastRxDuration = Simulator::Now () - m_lastRxStart;
   m_lastRxReceivedOk = true;
 }
 
@@ -579,13 +570,14 @@ ChannelAccessManager::NotifyRxEndErrorNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
-  if (m_lastRxEnd > Simulator::Now ())
+  Time now = Simulator::Now ();
+  Time lastRxEnd = m_lastRxStart + m_lastRxDuration;
+  if (lastRxEnd > now)
     {
-      m_lastBusyStart = Simulator::Now ();
-      m_lastBusyDuration = m_lastRxEnd - m_lastBusyStart;
+      m_lastBusyStart = now;
+      m_lastBusyDuration = lastRxEnd - m_lastBusyStart;
     }
-  m_lastRxEnd = Simulator::Now ();
-  m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+  m_lastRxDuration = now - m_lastRxStart;
   m_lastRxReceivedOk = false;
 }
 
@@ -594,17 +586,18 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   m_lastRxReceivedOk = true;
-  if (m_lastRxEnd > Simulator::Now ())
+  Time now = Simulator::Now ();
+  Time lastRxEnd = m_lastRxStart + m_lastRxDuration;
+  if (lastRxEnd > now)
     {
       //this may be caused only if PHY has started to receive a packet
       //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
-      NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
-      m_lastRxEnd = Simulator::Now ();
-      m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+      NS_ASSERT (now - m_lastRxStart <= m_sifs);
+      m_lastRxDuration = now - m_lastRxStart;
     }
   NS_LOG_DEBUG ("tx start for " << duration);
   UpdateBackoff ();
-  m_lastTxStart = Simulator::Now ();
+  m_lastTxStart = now;
   m_lastTxDuration = duration;
 }
 
@@ -628,11 +621,10 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
 
   m_lastRxReceivedOk = true;
 
-  if (m_lastRxEnd > Simulator::Now ())
+  if (m_lastRxStart + m_lastRxDuration > now)
     {
       //channel switching during packet reception
-      m_lastRxEnd = Simulator::Now ();
-      m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+      m_lastRxDuration = now - m_lastRxStart;
     }
   if (m_lastNavStart + m_lastNavDuration > now)
     {
