@@ -31,6 +31,7 @@
 #include "ns3/ptr.h"
 #include "ns3/data-rate.h"
 #include "ns3/traced-callback.h"
+#include "ns3/e2e-stats-header.h"
 
 namespace ns3 {
 
@@ -82,6 +83,13 @@ class Socket;
 *
 * If the underlying socket type supports broadcast, this application
 * will automatically enable the SetAllowBroadcast(true) socket option.
+*
+* If the attribute "EnableE2EStats" is enabled, the application will use
+* some byte of the payload to store an header with a sequence number,
+* a timestamp, and the size of the packet sent. To get these statistics,
+* please use PacketSink (and enable its "EnableE2EStats" attribute) or extract
+* the header yourself in your application (you can see how PacketSink is working
+* with such headers).
 */
 class OnOffApplication : public Application 
 {
@@ -150,6 +158,7 @@ private:
 
   Ptr<Socket>     m_socket;       //!< Associated socket
   Address         m_peer;         //!< Peer address
+  Address         m_local;        //!< Local address to bind to
   bool            m_connected;    //!< True if connected
   Ptr<RandomVariableStream>  m_onTime;       //!< rng for On Time
   Ptr<RandomVariableStream>  m_offTime;      //!< rng for Off Time
@@ -163,12 +172,18 @@ private:
   EventId         m_startStopEvent;     //!< Event id for next start or stop event
   EventId         m_sendEvent;    //!< Event id of pending "send packet" event
   TypeId          m_tid;          //!< Type of the socket used
+  uint32_t        m_seq {0};      //!< Sequence
+  bool            m_enableE2EStats {false}; //!< Enable or disable the e2e statistic generation
+
 
   /// Traced Callback: transmitted packets.
   TracedCallback<Ptr<const Packet> > m_txTrace;
 
   /// Callbacks for tracing the packet Tx events, includes source and destination addresses
   TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_txTraceWithAddresses;
+
+  /// Callback for tracing the packet Tx events, includes source, destination, and the packet sent
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &, const E2eStatsHeader &> m_txTraceWithStats;
 
 private:
   /**

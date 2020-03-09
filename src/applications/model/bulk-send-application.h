@@ -26,6 +26,7 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
+#include "ns3/e2e-stats-header.h"
 
 namespace ns3 {
 
@@ -64,6 +65,12 @@ class Socket;
  * For example, TCP sockets can be used, but
  * UDP sockets can not be used.
  *
+ * If the attribute "EnableE2EStats" is enabled, the application will use
+ * some byte of the payload to store an header with a sequence number,
+ * a timestamp, and the size of the packet sent. To get these statistics,
+ * please use PacketSink (and enable its "EnableE2EStats" attribute) or extract
+ * the header yourself in your application (you can see how PacketSink is working
+ * with such headers).
  */
 class BulkSendApplication : public Application
 {
@@ -108,19 +115,28 @@ private:
 
   /**
    * \brief Send data until the L4 transmission buffer is full.
+   * \param from From address
+   * \param to To address
    */
-  void SendData ();
+  void SendData (const Address &from, const Address &to);
 
   Ptr<Socket>     m_socket;       //!< Associated socket
   Address         m_peer;         //!< Peer address
+  Address         m_local;        //!< Local address to bind to
   bool            m_connected;    //!< True if connected
   uint32_t        m_sendSize;     //!< Size of data to send each time
   uint64_t        m_maxBytes;     //!< Limit total number of bytes sent
   uint64_t        m_totBytes;     //!< Total bytes sent so far
   TypeId          m_tid;          //!< The type of protocol to use.
+  uint32_t        m_seq {0};      //!< Sequence
+  bool            m_enableE2EStats {false}; //!< Enable or disable the e2e statistic generation
+
 
   /// Traced Callback: sent packets
   TracedCallback<Ptr<const Packet> > m_txTrace;
+
+  /// Callback for tracing the packet Tx events, includes source, destination, and the packet sent
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &, const E2eStatsHeader &> m_txTraceWithStats;
 
 private:
   /**

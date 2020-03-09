@@ -31,6 +31,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/udp-socket-factory.h"
 #include "packet-sink.h"
+#include "ns3/boolean.h"
 
 namespace ns3 {
 
@@ -55,6 +56,11 @@ PacketSink::GetTypeId (void)
                    TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&PacketSink::m_tid),
                    MakeTypeIdChecker ())
+    .AddAttribute ("EnableE2EStats",
+                   "Enable E2E statistics (sequences, timestamps)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&PacketSink::m_enableE2EStats),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Rx",
                      "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTrace),
@@ -62,6 +68,10 @@ PacketSink::GetTypeId (void)
     .AddTraceSource ("RxWithAddresses", "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithAddresses),
                      "ns3::Packet::TwoAddressTracedCallback")
+    .AddTraceSource ("RxE2EStat",
+                     "A sequence number and a timestamp have been received",
+                     MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithAddressesAndSeqTs),
+                     "ns3::PacketSink::E2EStatCallback")
   ;
   return tid;
 }
@@ -197,6 +207,50 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
       socket->GetSockName (localAddress);
       m_rxTrace (packet, from);
       m_rxTraceWithAddresses (packet, from, localAddress);
+
+      if (m_enableE2EStats)
+        {
+          PacketReceived (packet, from, localAddress);
+        }
+    }
+}
+
+void
+PacketSink::PacketReceived (const Ptr<Packet> &p, const Address &from,
+                            const Address &localAddress)
+{
+  E2eStatsHeader header;
+  Ptr<Packet> buffer;
+
+  auto itBuffer = m_buffer.find (from);
+  if (itBuffer == m_buffer.end ())
+    {
+      itBuffer = m_buffer.insert (std::make_pair (from, Create<Packet> (0))).first;
+    }
+
+  buffer = itBuffer->second;
+  buffer->AddAtEnd (p);
+  buffer->PeekHeader (header);
+
+  NS_ABORT_IF (header.GetSize () == 0);
+
+  while (buffer->GetSize () >= header.GetSize ())
+    {
+      Ptr<Packet> complete = buffer->CreateFragment (0, static_cast<uint32_t> (header.GetSize ()));
+      buffer->RemoveAtStart (static_cast<uint32_t> (header.GetSize ()));
+
+      complete->RemoveHeader (header);
+
+      m_rxTraceWithAddressesAndSeqTs (complete, from, localAddress, header);
+
+      if (buffer->GetSize () > 0)
+        {
+          buffer->PeekHeader (header);
+        }
+      else
+        {
+          break;
+        }
     }
 }
 

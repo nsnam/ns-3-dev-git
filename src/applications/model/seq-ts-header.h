@@ -31,7 +31,8 @@ namespace ns3 {
  * \brief Packet header for UDP client/server application.
  *
  * The header is made of a 32bits sequence number followed by
- * a 64bits time stamp.
+ * a 64bits time stamp. If you need to use this header with a transport protocol
+ * such as TCP, please consider to use SizeHeader.
  */
 class SeqTsHeader : public Header
 {

@@ -73,6 +73,7 @@ allows to choose between Block Ack policy and Implicit Block Ack Request policy 
 allows to request an acknowledgment after a configurable number of MPDUs have been
 transmitted.</li>
 <li>The MaxSize attribute is removed from the QueueBase base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
+<li>The applications have now a "EnableE2EStats" attribute.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

@@ -26,6 +26,9 @@
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 #include "ns3/address.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/e2e-stats-header.h"
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -91,7 +94,19 @@ public:
    * \return list of pointers to accepted sockets
    */
   std::list<Ptr<Socket> > GetAcceptedSockets (void) const;
- 
+
+  /**
+   * TracedCallback signature for an E2E stat callback
+   *
+   * \param p The packet received
+   * \param from From address
+   * \param to Local address
+   * \param seq The sequence received
+   * \param time The delay the sequence has needed from the sender to the receiver
+   */
+  typedef void (* E2EStatCallback)(Ptr<const Packet> p, const Address &from, const Address & to,
+                                   const E2eStatsHeader &header);
+
 protected:
   virtual void DoDispose (void);
 private:
@@ -121,7 +136,44 @@ private:
    */
   void HandlePeerError (Ptr<Socket> socket);
 
-  // In the case of TCP, each socket accept returns a new socket, so the 
+  /**
+   * \brief Packet received: calculation of the e2e statistics
+   * \param p received packet
+   * \param from from address
+   * \param localAddress local address
+   *
+   * The method calculates e2e statistics about the received packet. If
+   * the transport protocol is stream-based, then reconstruct first the
+   * original packet, and then extract the statistic header from it.
+   */
+  void PacketReceived (const Ptr<Packet> &p, const Address &from, const Address &localAddress);
+
+  /**
+   * \brief Hashing for the Address class
+   */
+  struct AddressHash
+  {
+    /**
+     * \brief operator ()
+     * \param x the address of which calculate the hash
+     * \return the hash of x
+     *
+     * Should this method go in address.h?
+     *
+     * It calculates the hash taking the uint32_t hash value of the ipv4 address.
+     * It works only for InetSocketAddresses (Ipv4 version)
+     */
+    size_t operator() (const Address &x) const
+    {
+      NS_ABORT_IF (!InetSocketAddress::IsMatchingType (x));
+      InetSocketAddress a = InetSocketAddress::ConvertFrom (x);
+      return std::hash<uint32_t>()(a.GetIpv4 ().Get ());
+    }
+  };
+
+  std::unordered_map<Address, Ptr<Packet>, AddressHash> m_buffer; //!< Buffer for received packets
+
+  // In the case of TCP, each socket accept returns a new socket, so the
   // listening socket is stored separately from the accepted sockets
   Ptr<Socket>     m_socket;       //!< Listening socket
   std::list<Ptr<Socket> > m_socketList; //!< the accepted sockets
@@ -130,12 +182,14 @@ private:
   uint64_t        m_totalRx;      //!< Total bytes received
   TypeId          m_tid;          //!< Protocol TypeId
 
+  bool            m_enableE2EStats {false}; //!< Enable or disable the E2E statistics generation
+
   /// Traced Callback: received packets, source address.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
-
   /// Callback for tracing the packet Rx events, includes source and destination addresses
   TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;
-
+  /// Callback for tracing the packet Rx events, includes source, destination addresses, sequence and timestamp
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &, const E2eStatsHeader&> m_rxTraceWithAddressesAndSeqTs;
 };
 
 } // namespace ns3
