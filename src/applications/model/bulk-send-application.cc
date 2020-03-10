@@ -70,17 +70,17 @@ BulkSendApplication::GetTypeId (void)
                    TypeIdValue (TcpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&BulkSendApplication::m_tid),
                    MakeTypeIdChecker ())
-    .AddAttribute ("EnableE2EStats",
-                   "Enable E2E statistics (sequences, timestamps)",
+    .AddAttribute ("EnableSeqTsSizeHeader",
+                   "Add SeqTsSizeHeader to each packet",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&BulkSendApplication::m_enableE2EStats),
+                   MakeBooleanAccessor (&BulkSendApplication::m_enableSeqTsSizeHeader),
                    MakeBooleanChecker ())
-    .AddTraceSource ("Tx", "A new packet is created and is sent",
+    .AddTraceSource ("Tx", "A new packet is sent",
                      MakeTraceSourceAccessor (&BulkSendApplication::m_txTrace),
                      "ns3::Packet::TracedCallback")
-    .AddTraceSource ("TxE2EStat", "Statistic sent with the packet",
-                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTraceWithStats),
-                     "ns3::PacketSink::E2EStatCallback")
+    .AddTraceSource ("TxWithSeqTsSize", "A new packet is created with SeqTsSizeHeader",
+                     MakeTraceSourceAccessor (&BulkSendApplication::m_txTraceWithSeqTsSize),
+                     "ns3::PacketSink::SeqTsSizeCallback")
   ;
   return tid;
 }
@@ -89,7 +89,8 @@ BulkSendApplication::GetTypeId (void)
 BulkSendApplication::BulkSendApplication ()
   : m_socket (0),
     m_connected (false),
-    m_totBytes (0)
+    m_totBytes (0),
+    m_unsentPacket (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -119,6 +120,7 @@ BulkSendApplication::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   m_socket = 0;
+  m_unsentPacket = 0;
   // chain up
   Application::DoDispose ();
 }
@@ -221,16 +223,20 @@ void BulkSendApplication::SendData (const Address &from, const Address &to)
       NS_LOG_LOGIC ("sending packet at " << Simulator::Now ());
 
       Ptr<Packet> packet;
-      if (m_enableE2EStats)
+      if (m_unsentPacket)
         {
-          // Should we add a trace for the sent tx and timestamp?
-          E2eStatsHeader header;
+          packet = m_unsentPacket;
+        }
+      else if (m_enableSeqTsSizeHeader)
+        {
+          SeqTsSizeHeader header;
           header.SetSeq (m_seq++);
           header.SetSize (toSend);
           NS_ABORT_IF (toSend < header.GetSerializedSize ());
           packet = Create<Packet> (toSend - header.GetSerializedSize ());
+          // Trace before adding header, for consistency with PacketSink
+          m_txTraceWithSeqTsSize (packet, from, to, header);
           packet->AddHeader (header);
-          m_txTraceWithStats (packet, from, to, header);
         }
       else
         {
@@ -238,17 +244,24 @@ void BulkSendApplication::SendData (const Address &from, const Address &to)
         }
 
       int actual = m_socket->Send (packet);
-      if (actual > 0)
+      if ((unsigned) actual == toSend)
         {
           m_totBytes += actual;
           m_txTrace (packet);
+          m_unsentPacket = 0;
         }
-      // We exit this loop when actual < toSend as the send side
-      // buffer is full. The "DataSent" callback will pop when
-      // some buffer space has freed up.
-      if ((unsigned)actual != toSend)
+      else if (actual == -1)
         {
+          // We exit this loop when actual < toSend as the send side
+          // buffer is full. The "DataSent" callback will pop when
+          // some buffer space has freed up.
+          NS_LOG_DEBUG ("Unable to send packet; caching for later attempt");
+          m_unsentPacket = packet;
           break;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unexpected return value from m_socket->Send ()");
         }
     }
   // Check if time to close (all sent)

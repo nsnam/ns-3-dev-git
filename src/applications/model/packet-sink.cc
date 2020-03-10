@@ -56,10 +56,10 @@ PacketSink::GetTypeId (void)
                    TypeIdValue (UdpSocketFactory::GetTypeId ()),
                    MakeTypeIdAccessor (&PacketSink::m_tid),
                    MakeTypeIdChecker ())
-    .AddAttribute ("EnableE2EStats",
-                   "Enable E2E statistics (sequences, timestamps)",
+    .AddAttribute ("EnableSeqTsSizeHeader",
+                   "Enable optional header tracing of SeqTsSizeHeader",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&PacketSink::m_enableE2EStats),
+                   MakeBooleanAccessor (&PacketSink::m_enableSeqTsSizeHeader),
                    MakeBooleanChecker ())
     .AddTraceSource ("Rx",
                      "A packet has been received",
@@ -68,10 +68,10 @@ PacketSink::GetTypeId (void)
     .AddTraceSource ("RxWithAddresses", "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithAddresses),
                      "ns3::Packet::TwoAddressTracedCallback")
-    .AddTraceSource ("RxE2EStat",
-                     "A sequence number and a timestamp have been received",
-                     MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithAddressesAndSeqTs),
-                     "ns3::PacketSink::E2EStatCallback")
+    .AddTraceSource ("RxWithSeqTsSize",
+                     "A packet with SeqTsSize header has been received",
+                     MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithSeqTsSize),
+                     "ns3::PacketSink::SeqTsSizeCallback")
   ;
   return tid;
 }
@@ -208,7 +208,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
       m_rxTrace (packet, from);
       m_rxTraceWithAddresses (packet, from, localAddress);
 
-      if (m_enableE2EStats)
+      if (m_enableSeqTsSizeHeader)
         {
           PacketReceived (packet, from, localAddress);
         }
@@ -219,7 +219,7 @@ void
 PacketSink::PacketReceived (const Ptr<Packet> &p, const Address &from,
                             const Address &localAddress)
 {
-  E2eStatsHeader header;
+  SeqTsSizeHeader header;
   Ptr<Packet> buffer;
 
   auto itBuffer = m_buffer.find (from);
@@ -236,14 +236,15 @@ PacketSink::PacketReceived (const Ptr<Packet> &p, const Address &from,
 
   while (buffer->GetSize () >= header.GetSize ())
     {
+      NS_LOG_DEBUG ("Removing packet of size " << header.GetSize () << " from buffer of size " << buffer->GetSize ());
       Ptr<Packet> complete = buffer->CreateFragment (0, static_cast<uint32_t> (header.GetSize ()));
       buffer->RemoveAtStart (static_cast<uint32_t> (header.GetSize ()));
 
       complete->RemoveHeader (header);
 
-      m_rxTraceWithAddressesAndSeqTs (complete, from, localAddress, header);
+      m_rxTraceWithSeqTsSize (complete, from, localAddress, header);
 
-      if (buffer->GetSize () > 0)
+      if (buffer->GetSize () > header.GetSerializedSize ())
         {
           buffer->PeekHeader (header);
         }
@@ -254,7 +255,6 @@ PacketSink::PacketReceived (const Ptr<Packet> &p, const Address &from,
     }
 }
 
-
 void PacketSink::HandlePeerClose (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -264,7 +264,6 @@ void PacketSink::HandlePeerError (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
 }
- 
 
 void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
 {

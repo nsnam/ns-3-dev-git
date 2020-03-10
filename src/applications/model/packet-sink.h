@@ -27,7 +27,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/address.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/e2e-stats-header.h"
+#include "ns3/seq-ts-size-header.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -96,16 +96,15 @@ public:
   std::list<Ptr<Socket> > GetAcceptedSockets (void) const;
 
   /**
-   * TracedCallback signature for an E2E stat callback
+   * TracedCallback signature for a reception with addresses and SeqTsSizeHeader
    *
-   * \param p The packet received
+   * \param p The packet received (without the SeqTsSize header)
    * \param from From address
    * \param to Local address
-   * \param seq The sequence received
-   * \param time The delay the sequence has needed from the sender to the receiver
+   * \param header The SeqTsSize header
    */
-  typedef void (* E2EStatCallback)(Ptr<const Packet> p, const Address &from, const Address & to,
-                                   const E2eStatsHeader &header);
+  typedef void (* SeqTsSizeCallback)(Ptr<const Packet> p, const Address &from, const Address & to,
+                                   const SeqTsSizeHeader &header);
 
 protected:
   virtual void DoDispose (void);
@@ -137,14 +136,13 @@ private:
   void HandlePeerError (Ptr<Socket> socket);
 
   /**
-   * \brief Packet received: calculation of the e2e statistics
+   * \brief Packet received: assemble byte stream to extract SeqTsSizeHeader
    * \param p received packet
    * \param from from address
    * \param localAddress local address
    *
-   * The method calculates e2e statistics about the received packet. If
-   * the transport protocol is stream-based, then reconstruct first the
-   * original packet, and then extract the statistic header from it.
+   * The method assembles a received byte stream and extracts SeqTsSizeHeader
+   * instances from the stream to export in a trace source.
    */
   void PacketReceived (const Ptr<Packet> &p, const Address &from, const Address &localAddress);
 
@@ -182,14 +180,14 @@ private:
   uint64_t        m_totalRx;      //!< Total bytes received
   TypeId          m_tid;          //!< Protocol TypeId
 
-  bool            m_enableE2EStats {false}; //!< Enable or disable the E2E statistics generation
+  bool            m_enableSeqTsSizeHeader {false}; //!< Enable or disable the export of SeqTsSize header 
 
   /// Traced Callback: received packets, source address.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
   /// Callback for tracing the packet Rx events, includes source and destination addresses
   TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;
-  /// Callback for tracing the packet Rx events, includes source, destination addresses, sequence and timestamp
-  TracedCallback<Ptr<const Packet>, const Address &, const Address &, const E2eStatsHeader&> m_rxTraceWithAddressesAndSeqTs;
+  /// Callbacks for tracing the packet Rx events, includes source, destination addresses, and headers
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &, const SeqTsSizeHeader&> m_rxTraceWithSeqTsSize;
 };
 
 } // namespace ns3

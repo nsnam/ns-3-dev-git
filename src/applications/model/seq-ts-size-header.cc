@@ -1,6 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright (c) 2009 INRIA
  * Copyright (c) 2018 Natale Patriciello <natale.patriciello@gmail.com>
+ *                    (added timestamp and size fields)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,39 +20,51 @@
  */
 
 #include "ns3/log.h"
-#include "e2e-stats-header.h"
+#include "seq-ts-size-header.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("SizeHeader");
+NS_LOG_COMPONENT_DEFINE ("SeqTsSizeHeader");
 
-NS_OBJECT_ENSURE_REGISTERED (E2eStatsHeader);
+NS_OBJECT_ENSURE_REGISTERED (SeqTsSizeHeader);
 
-E2eStatsHeader::E2eStatsHeader ()
+SeqTsSizeHeader::SeqTsSizeHeader ()
   : SeqTsHeader ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 TypeId
-E2eStatsHeader::GetTypeId (void)
+SeqTsSizeHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::SizeHeader")
+  static TypeId tid = TypeId ("ns3::SeqTsSizeHeader")
     .SetParent<SeqTsHeader> ()
     .SetGroupName ("Applications")
-    .AddConstructor<E2eStatsHeader> ()
+    .AddConstructor<SeqTsSizeHeader> ()
   ;
   return tid;
 }
 
 TypeId
-E2eStatsHeader::GetInstanceTypeId (void) const
+SeqTsSizeHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
 void
-E2eStatsHeader::Print (std::ostream &os) const
+SeqTsSizeHeader::SetSize (uint64_t size)
+{
+  m_size = size;
+}
+
+uint64_t
+SeqTsSizeHeader::GetSize (void) const
+{
+  return m_size;
+}
+
+void
+SeqTsSizeHeader::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << "(size=" << m_size << ") AND ";
@@ -58,14 +72,13 @@ E2eStatsHeader::Print (std::ostream &os) const
 }
 
 uint32_t
-E2eStatsHeader::GetSerializedSize (void) const
+SeqTsSizeHeader::GetSerializedSize (void) const
 {
-  NS_LOG_FUNCTION (this);
   return SeqTsHeader::GetSerializedSize () + 8;
 }
 
 void
-E2eStatsHeader::Serialize (Buffer::Iterator start) const
+SeqTsSizeHeader::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;
@@ -74,7 +87,7 @@ E2eStatsHeader::Serialize (Buffer::Iterator start) const
 }
 
 uint32_t
-E2eStatsHeader::Deserialize (Buffer::Iterator start)
+SeqTsSizeHeader::Deserialize (Buffer::Iterator start)
 {
   NS_LOG_FUNCTION (this << &start);
   Buffer::Iterator i = start;

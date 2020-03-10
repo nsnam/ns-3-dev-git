@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2016 Universita' di Firenze
+ * Copyright (c) 2009 INRIA
+ * Copyright (c) 2016 Universita' di Firenze (added echo fields)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -55,7 +56,7 @@ SeqTsEchoHeader::GetSeq (void) const
 void
 SeqTsEchoHeader::SetTsValue (Time ts)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << ts);
   m_tsValue = ts;
 }
 
@@ -69,7 +70,7 @@ SeqTsEchoHeader::GetTsValue (void) const
 void
 SeqTsEchoHeader::SetTsEchoReply (Time ts)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << ts);
   m_tsEchoReply = ts;
 }
 

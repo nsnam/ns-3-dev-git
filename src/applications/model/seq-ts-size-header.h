@@ -1,6 +1,8 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
+ *   Copyright (c) 2009 INRIA
  *   Copyright (c) 2018 Natale Patriciello <natale.patriciello@gmail.com>
+ *                      (added timestamp and size fields)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License version 2 as
@@ -16,7 +18,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#pragma once
+#ifndef SEQ_TS_SIZE_HEADER_H
+#define SEQ_TS_SIZE_HEADER_H
 
 #include <ns3/seq-ts-header.h>
 
@@ -25,17 +28,13 @@ namespace ns3 {
  * \ingroup applications
  * \brief Header with a sequence, a timestamp, and a "size" attribute
  *
- * Sometimes, you would need an header that not only track an application
- * sequence number, or an application timestamp, but also track
- * how big are these application packets.
+ * This header adds a size attribute to the sequence number and timestamp
+ * of class \c SeqTsHeader.  The size attribute can be used to track
+ * application data units for stream-based sockets such as TCP.
  *
- * This header extends SeqTsHeader, adding space to store the information
- * about the size of these packets.
- *
- * When you will use a protocol like TCP, you will find the answer to the question
- * "isn't SeqTsHeader enough?".
+ * \sa ns3::SeqTsHeader
  */
-class E2eStatsHeader : public SeqTsHeader
+class SeqTsSizeHeader : public SeqTsHeader
 {
 public:
   /**
@@ -45,35 +44,21 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * @brief SizeHeader constructor
+   * \brief constructor
    */
-  E2eStatsHeader ();
+  SeqTsSizeHeader ();
 
   /**
-   * \brief ~SizeHeader
-   *
-   * Nothing much to add here
+   * \brief Set the size information that the header will carry
+   * \param size the size
    */
-  virtual ~E2eStatsHeader () override
-  {
-  }
+  void SetSize (uint64_t size);
 
   /**
-   * @brief Set the size information that the header will carry
-   * @param size the size
+   * \brief Get the size information that the header is carrying
+   * \return the size
    */
-  void SetSize (uint64_t size)
-  {
-    m_size = size;
-  }
-  /**
-   * @brief Get the size information that the header is carrying
-   * @return the size
-   */
-  uint64_t GetSize (void) const
-  {
-    return m_size;
-  }
+  uint64_t GetSize (void) const;
 
   // Inherited
   virtual TypeId GetInstanceTypeId (void) const override;
@@ -87,3 +72,5 @@ private:
 };
 
 } // namespace ns3
+
+#endif /* SEQ_TS_SIZE_HEADER */
