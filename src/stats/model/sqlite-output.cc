@@ -175,6 +175,17 @@ SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long &value) const
 
 template<>
 bool
+SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const long long &value) const
+{
+  if (sqlite3_bind_int64 (stmt, pos, value) == SQLITE_OK)
+    {
+      return true;
+    }
+  return false;
+}
+
+template<>
+bool
 SQLiteOutput::Bind (sqlite3_stmt *stmt, int pos, const uint16_t &value) const
 {
   if (sqlite3_bind_int (stmt, pos, static_cast<int> (value)) == SQLITE_OK)
