@@ -11,7 +11,7 @@ Using the WifiNetDevice
 The modularity provided by the implementation makes low-level configuration of
 the WifiNetDevice powerful but complex. For this reason, we provide some helper
 classes to perform common operations in a simple matter, and leverage the |ns3|
-attribute system to allow users to control the parametrization of the underlying
+attribute system to allow users to control the parameterization of the underlying
 models.
 
 Users who use the low-level |ns3| API and who wish to add a WifiNetDevice to
@@ -43,11 +43,11 @@ To create a WifiNetDevice, users need to follow these steps:
   decoded or not depending on the received signal strength and noise.  Thus, the main
   configuration of WifiPhy is the error rate model, which is the one that actually 
   calculates the probability of successfully decoding the frame based on the signal.
-* Configure WifiMac: this step is more on related to the architecture and device level.
+* Configure WifiMac: this step is more related to the architecture and device level.
   The users configure the wifi architecture (i.e. ad-hoc or ap-sta) and whether QoS (802.11e),
   HT (802.11n) and/or VHT (802.11ac) and/or HE (802.11ax) features are supported or not.
 * Create WifiDevice: at this step, users configure the desired wifi standard
-  (e.g. **802.11b**, **802.11g**, **802.11a**, **802.11n**, **802.11ac** or **802.11ax**) and rate control algorithm
+  (e.g. **802.11b**, **802.11g**, **802.11a**, **802.11n**, **802.11ac** or **802.11ax**) and rate control algorithm.
 * Configure mobility: finally, mobility model is (usually) required before WifiNetDevice
   can be used.
 
@@ -102,7 +102,7 @@ Users will typically type code such as::
 
 to get the defaults.  Specifically, the default is a channel model with a
 propagation delay equal to a constant, the speed of light (``ns3::ConstantSpeedPropagationDelayModel``),
-and a propagation loss based on a default log distance model (``ns3::LogDistancePropagationLossModel``)), using a default exponent of 3.
+and a propagation loss based on a default log distance model (``ns3::LogDistancePropagationLossModel``), using a default exponent of 3.
 Please note that the default log distance model is configured with a reference
 loss of 46.6777 dB at reference distance of 1m.  The reference loss of 46.6777 dB
 was calculated using Friis propagation loss model at 5.15 GHz.  The reference loss
@@ -180,14 +180,14 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
   WifiMacHelper mac;
 
   mac.SetType ("ns3::StaWifiMac",
-  "Ssid", SsidValue (ssid),
-  "ActiveProbing", BooleanValue (false));
+	       "Ssid", SsidValue (ssid),
+	       "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
 
   mac.SetType ("ns3::ApWifiMac",
-  "Ssid", SsidValue (ssid));
+	       "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
@@ -425,7 +425,7 @@ arguments:
 The pair of (channelNumber, standard) are used as an index to a map that
 returns a Frequency and ChannelWidth.  By calling this method, one can
 dynamically add members to the map.  For instance, let's suppose that you
-previously configured WIFI_PHY_STANDARD_80211a, and wanted to deine a new
+previously configured WIFI_PHY_STANDARD_80211a, and wanted to define a new
 channel number '34' of width 20 MHz and at center frequency 5160 MHz.
 
 If you try to simply configure ChannelNumber to the value 34, it will fail,
@@ -485,7 +485,7 @@ different configurations can be obtained.   Below are some common use cases.
   all of the other configuration details.
 
 * **(interaction between channel number and frequency):**  If the user 
-  the user sets Frequency to a different value than the currently configured
+  sets Frequency to a different value than the currently configured
   ChannelNumber (or if ChannelNumber is zero), then the ChannelNumber is 
   set to a new channel number if known, or to zero if unknown. 
 
@@ -703,7 +703,7 @@ on a set of nodes in a NodeContainer "c"::
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager, a
 WifiMac, and a WifiPhy (connected to the matching Channel).
 
-The ``WifiHelper::SetStandard`` method set various default timing parameters as defined in the selected standard version, overwriting values that may exist or have been previously configured.
+The ``WifiHelper::SetStandard`` method sets various default timing parameters as defined in the selected standard version, overwriting values that may exist or have been previously configured.
 In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
 
   WifiHelper wifi;
@@ -747,7 +747,7 @@ policy selector associated with BE AC to 0.5::
                                   "BaThreshold", DoubleValue (0.5));
 
 The WifiHelper is also used to configure OBSS PD spatial reuse for 802.11ax.
-The following line configure a WifiHelper to support OBSS PD spatial reuse 
+The following lines configure a WifiHelper to support OBSS PD spatial reuse
 using the ``ConstantObssPdAlgorithm`` with a threshold set to -72 dBm::
 
   WifiHelper wifi;
@@ -768,7 +768,7 @@ user sets the standard to a variant that supports HT capabilities (802.11n,
 created for the device.  The configuration object is used to store and 
 manage HT-specific attributes.
 
-802.11n/ac PHY layer can use either either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter for a given device, the following lines of code could be used (in this example, it enables the support of a short guard interval for the first station)::
+802.11n/ac PHY layer can use either long (800 ns) or short (400 ns) OFDM guard intervals. To configure this parameter for a given device, the following lines of code could be used (in this example, it enables the support of a short guard interval for the first station)::
 
  Ptr<NetDevice> nd = wifiStaDevices.Get (0);
  Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();
@@ -801,7 +801,7 @@ IEEE 802.11ax is also known as High Efficiency (HE).  Once the ``ns3::WifiHelper
 HE configuration object will automatically be created to manage HE-specific
 attributes for 802.11ax devices.
 
-802.11ax PHY layer can use either either 3200 ns, 1600 ns or 800 ns OFDM guard intervals. To configure this parameter, the following line of code could be used (in this example, it enables the support of 1600 ns guard interval), such as in this example code snippet::
+802.11ax PHY layer can use either 3200 ns, 1600 ns or 800 ns OFDM guard intervals. To configure this parameter, the following lines of code could be used (in this example, it enables the support of 1600 ns guard interval), such as in this example code snippet::
 
  Ptr<NetDevice> nd = wifiStaDevices.Get (0);
  Ptr<WifiNetDevice> wnd = nd->GetObject<WifiNetDevice> ();

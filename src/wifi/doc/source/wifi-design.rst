@@ -74,7 +74,7 @@ There are presently three **MAC high models** that provide for the three
 parent ``ns3::RegularWifiMac``, is not discussed here) Wi-Fi topological
 elements - Access Point (AP) (``ns3::ApWifiMac``), 
 non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
-Basic Service Set (IBSS - also commonly referred to as an ad hoc
+Basic Service Set (IBSS) - also commonly referred to as an ad hoc
 network (``ns3::AdhocWifiMac``).
 
 The simplest of these is ``ns3::AdhocWifiMac``, which implements a
@@ -179,7 +179,7 @@ The following details pertain to the physical layer and channel models:
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
-where some limitations in the models exist. Support for 802.11n and ac is evolving.
+where some limitations in the models exist. Support for 802.11n, ac and ax is evolving.
 
 Some implementation choices that are not imposed by the standard are listed below:
 
@@ -221,7 +221,7 @@ delay model also added. Packets sent from a ``ns3::YansWifiPhy`` object
 onto the channel with a particular signal power, are copied to all of the
 other ``ns3::YansWifiPhy`` objects after the signal power is reduced due
 to the propagation loss model(s), and after a delay corresponding to
-transmission (serialization) delay and propagation delay due 
+transmission (serialization) delay and propagation delay due to
 any channel propagation delay model (typically due to speed-of-light
 delay between the positions of the devices).
 
@@ -237,7 +237,7 @@ WifiPhy and related models
 
 The ``ns3::WifiPhy`` is an abstract base class representing the 802.11
 physical layer functions.  Packets passed to this object (via a
-``SendPacket()`` method are sent over a channel object, and
+``SendPacket()`` method) are sent over a channel object, and
 upon reception, the receiving PHY object decides (based on signal power
 and interference) whether the packet was successful or not.  This class
 also provides a number of callbacks for notifications of physical layer
@@ -368,12 +368,12 @@ all such signals is compared against an energy detection threshold to
 determine whether the PHY should enter a CCA_BUSY state. 
 The ``WifiPhy::CcaEdThreshold`` attribute 
 corresponds to what the standard calls the "ED threshold" for CCA Mode 1.
-In section 16.4.8.5:  "CCA Mode 1: Energy above threshold. CCA shall report 
-a busy medium upon detection of any energy above the ED threshold."
-By default, this value is set to the -62 dBm level specified in the standard
-for 20 MHz channels.  When using ``YansWifiPhy``, there are no non-Wi-Fi
-signals, so it is unlikely that this attribute would play much of a role
-in Yans wifi models if left at the default value, but if there is a strong
+In section 16.4.8.5 in the 802.11-2012 standard: "CCA Mode 1: Energy above
+threshold. CCA shall report a busy medium upon detection of any energy above
+the ED threshold." By default, this value is set to the -62 dBm level specified
+in the standard for 20 MHz channels. When using ``YansWifiPhy``, there are no
+non-Wi-Fi signals, so it is unlikely that this attribute would play much of a
+role in Yans wifi models if left at the default value, but if there is a strong
 Wi-Fi signal that is not otherwise being received by the model, it has
 the possibility to raise the CCA_BUSY while the overall energy exceeds
 this threshold.
@@ -395,7 +395,7 @@ threshold.
 The basic operation of probability of error calculations is shown in Figure
 :ref:`snir`.  Packets are represented as bits (not symbols) in the |ns3|
 model, and the InterferenceHelper breaks the packet into one or more
-"chunks" each with a different signal to noise (and interference) ratio
+"chunks", each with a different signal to noise (and interference) ratio
 (SNIR).  Each chunk is separately evaluated by asking for the probability
 of error for a given number of bits from the error model in use.  The
 InterferenceHelper builds an aggregate "probability of error" value
@@ -438,8 +438,7 @@ hard-decision of punctured codes, the coded BER is calculated using
 Chernoff bounds.
 
 The 802.11b model was split from the OFDM model when the NIST error rate
-model was added, into a new model called DsssErrorRateModel.  The current
-behavior is that users may 
+model was added, into a new model called DsssErrorRateModel.
 
 Furthermore, the 5.5 Mbps and 11 Mbps models for 802.11b rely on library
 methods implemented in the GNU Scientific Library (GSL).  The Waf build
@@ -451,7 +450,7 @@ As a result, there are three error models:
 
 #. ``ns3::DsssErrorRateModel``:  contains models for 802.11b modes.  The
    802.11b 1 Mbps and 2 Mbps error models are based on classical modulation
-   analysis.  If GNU GSL is installed, the 5.5 Mbps and 11 Mbps from 
+   analysis.  If GSL is installed, the 5.5 Mbps and 11 Mbps from
    [pursley2009]_ are used; otherwise, a backup Matlab model is used.
 #. ``ns3::NistErrorRateModel``: is the default for OFDM modes and reuses
    ``ns3::DsssErrorRateModel`` for 802.11b modes. 
@@ -533,7 +532,7 @@ The MAC model
 Infrastructure association
 ##########################
 
-Association in infrastructure (IBSS) mode is a high-level MAC function.
+Association in infrastructure mode is a high-level MAC function.
 Either active probing or passive scanning is used (default is passive scan).
 At the start of the simulation, Wi-Fi network devices configured as
 STA will attempt to scan the channel. Depends on whether passive or active
@@ -809,12 +808,12 @@ a reduced power. Otherwise, no TX power restrictions will be applied.
 Constant OBSS PD Algorithm
 ##########################
 
-Constant OBSS PD algorithm is a simple OBSS PD algorithm implemmented in the ``ConstantObssPdAlgorithm`` class.
+Constant OBSS PD algorithm is a simple OBSS PD algorithm implemented in the ``ConstantObssPdAlgorithm`` class.
 
 Once a HE preamble and its header have been received by the PHY, ``ConstantObssPdAlgorithm::
 ReceiveHeSig`` is triggered.
 The algorithm then checks whether this is an OBSS frame by comparing its own BSS color with the BSS color of the received preamble.
-If this is an OBSS frame, it compare the received RSSI with its configured OBSS PD level value. The PHY then gets reset to IDLE
+If this is an OBSS frame, it compares the received RSSI with its configured OBSS PD level value. The PHY then gets reset to IDLE
 state in case the received RSSI is lower than that constant OBSS PD level value, and is informed about a TX power restrictions.
 
 Note: since our model is based on a single threshold, the PHY only supports one restricted power level.
@@ -834,7 +833,7 @@ Depending on your goal, the common tasks are (in no particular order):
 * MAC high modification. For example, handling new management frames (think beacon/probe), 
   beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``, 
   ``infrastructure-wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
-* Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interested for this task.
+* Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interest for this task.
 * Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
   ``Txop`` and ``QosTxop``.
 * Fragmentation and RTS threholds are handled by Wi-Fi remote station manager.  Note that Wi-Fi remote
