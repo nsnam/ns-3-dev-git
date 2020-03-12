@@ -26,7 +26,7 @@
 #include "data-output-interface.h"
 
 
-class sqlite3_stmt;
+struct sqlite3_stmt;
 
 namespace ns3 {
 
