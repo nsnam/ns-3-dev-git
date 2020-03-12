@@ -159,7 +159,7 @@ public:
  *
  * \brief Models an always in-LoS condition model
  */
-class AlwaysLosChannelConditionModel : public Object
+class AlwaysLosChannelConditionModel : public ChannelConditionModel
 {
 public:
   /**
@@ -186,7 +186,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b, that will be always LoS
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
+  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
   * \brief Copy constructor
@@ -202,6 +202,17 @@ public:
   * \returns
   */
   AlwaysLosChannelConditionModel &operator = (const AlwaysLosChannelConditionModel &) = delete;
+
+  /**
+   * If this  model uses objects of type RandomVariableStream,
+   * set the stream numbers to the integers starting with the offset
+   * 'stream'. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t AssignStreams (int64_t stream) override;
 };
 
 /**
@@ -209,7 +220,7 @@ public:
  *
  * \brief Models a never in-LoS condition model
  */
-class NeverLosChannelConditionModel : public Object
+class NeverLosChannelConditionModel : public ChannelConditionModel
 {
 public:
   /**
@@ -236,7 +247,7 @@ public:
    * \param b mobility model
    * \return the condition of the channel between a and b, that will be always non-LoS
    */
-  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const;
+  virtual Ptr<ChannelCondition> GetChannelCondition (Ptr<const MobilityModel> a, Ptr<const MobilityModel> b) const override;
 
   /**
   * \brief Copy constructor
@@ -252,6 +263,17 @@ public:
   * \returns
   */
   NeverLosChannelConditionModel &operator = (const NeverLosChannelConditionModel &) = delete;
+
+  /**
+   * If this  model uses objects of type RandomVariableStream,
+   * set the stream numbers to the integers starting with the offset
+   * 'stream'. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t AssignStreams (int64_t stream) override;
 };
 
 /**

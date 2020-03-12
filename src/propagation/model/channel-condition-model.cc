@@ -118,6 +118,12 @@ AlwaysLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   return c;
 }
 
+int64_t
+AlwaysLosChannelConditionModel::AssignStreams (int64_t stream)
+{
+  return 0;
+}
+
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (NeverLosChannelConditionModel);
@@ -151,6 +157,12 @@ NeverLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   c->SetLosCondition (ChannelCondition::NLOS);
 
   return c;
+}
+
+int64_t
+NeverLosChannelConditionModel::AssignStreams (int64_t stream)
+{
+  return 0;
 }
 
 // ------------------------------------------------------------------------- //
