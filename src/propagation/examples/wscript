@@ -5,12 +5,9 @@ def build(bld):
         return;
 
     obj = bld.create_ns3_program('main-propagation-loss',
-                                 ['core', 'mobility', 'config-store', 'stats', 'propagation'])
+                                 ['core', 'mobility', 'config-store', 'stats', 'propagation', 'buildings'])
     obj.source = 'main-propagation-loss.cc'
 
     obj = bld.create_ns3_program('jakes-propagation-model-example',
-                                 ['core', 'propagation'])
+                                 ['core', 'propagation', 'buildings'])
     obj.source = 'jakes-propagation-model-example.cc'
-
-
-

@@ -19,7 +19,7 @@ You can get a more detailed report in HTML format in this way::
 
     $ ./test.py -w results.html
 
-After the above command has run, you can view the detailed result for each test by opening the file ``results.html`` with a web browser. 
+After the above command has run, you can view the detailed result for each test by opening the file ``results.html`` with a web browser.
 
 You can run each test suite separately using this command::
 
@@ -107,6 +107,12 @@ This test validates the outdoor to indoor transmissions for short distances. In 
 Buildings Shadowing Test
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The test suite ``buildings-shadowing-test`` is a unit test intended to verify the statistical distribution of the shadowing model implemented by ``BuildingsPathlossModel``. The shadowing is modeled according to a normal distribution with mean :math:`\mu = 0` and variable standard deviation :math:`\sigma`, according to models commonly used in literature. Three test cases are provided, which cover the cases of indoor, outdoor and indoor-to-outdoor communications. 
+The test suite ``buildings-shadowing-test`` is a unit test intended to verify the statistical distribution of the shadowing model implemented by ``BuildingsPathlossModel``. The shadowing is modeled according to a normal distribution with mean :math:`\mu = 0` and variable standard deviation :math:`\sigma`, according to models commonly used in literature. Three test cases are provided, which cover the cases of indoor, outdoor and indoor-to-outdoor communications.
 Each test case generates 1000 different samples of shadowing for different pairs of MobilityModel instances in a given scenario. Shadowing values are obtained by subtracting from the total loss value returned by ``HybridBuildingsPathlossModel`` the path loss component which is constant and pre-determined for each test case. The test verifies that the sample mean and sample variance of the shadowing values fall within the 99% confidence interval of the sample mean and sample variance. The test also verifies that the shadowing values returned at successive times for the same pair of MobilityModel instances is constant.
 
+Buildings Channel Condition Model Test
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The BuildingsChannelConditionModelTestSuite tests the class BuildingsChannelConditionModel.
+It checks if the channel condition between two nodes is correctly determined when a
+building is deployed.

@@ -25,6 +25,7 @@ New user-visible features
 - (internet) An option to enable IPv4 hash-based multicast duplicate packet 
   detection (DPD) based on RFC 6621 has been added.
 - (stats) A new interface to SQLite has been added.
+- (propagation) 3GPP TR 38.901 pathloss and channel condition models added
 
 Bugs fixed
 ----------

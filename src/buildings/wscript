@@ -11,6 +11,7 @@ def build(bld):
         'model/buildings-propagation-loss-model.cc',
         'model/hybrid-buildings-propagation-loss-model.cc',
         'model/oh-buildings-propagation-loss-model.cc',
+        'model/buildings-channel-condition-model.cc',
         'helper/building-container.cc',
         'helper/building-position-allocator.cc',
         'helper/building-allocator.cc',
@@ -23,8 +24,9 @@ def build(bld):
         'test/building-position-allocator-test.cc',
         'test/buildings-pathloss-test.cc',
         'test/buildings-shadowing-test.cc',
+        'test/buildings-channel-condition-model-test.cc',
         ]
-    
+
     headers = bld(features='ns3header')
     headers.module = 'buildings'
     headers.source = [
@@ -35,6 +37,7 @@ def build(bld):
         'model/buildings-propagation-loss-model.h',
         'model/hybrid-buildings-propagation-loss-model.h',
         'model/oh-buildings-propagation-loss-model.h',
+        'model/buildings-channel-condition-model.h',
         'helper/building-container.h',
         'helper/building-allocator.h',
         'helper/building-position-allocator.h',

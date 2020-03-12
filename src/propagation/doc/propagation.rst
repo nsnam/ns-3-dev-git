@@ -15,11 +15,11 @@ PropagationLossModel
 Propagation loss models calculate the Rx signal power considering the Tx signal power and the
 mutual Rx and Tx antennas positions.
 
-A propagation loss model can be "chained" to another one, making a list. The final Rx power 
-takes into account all the chained models. In this way one can use a slow fading and a fast 
+A propagation loss model can be "chained" to another one, making a list. The final Rx power
+takes into account all the chained models. In this way one can use a slow fading and a fast
 fading model (for example), or model separately different fading effects.
 
-The following propagation delay models are implemented:
+The following propagation loss models are implemented:
 
 * Cost231PropagationLossModel
 * FixedRssLossModel
@@ -36,6 +36,12 @@ The following propagation delay models are implemented:
 * RangePropagationLossModel
 * ThreeLogDistancePropagationLossModel
 * TwoRayGroundPropagationLossModel
+* ThreeGppPropagationLossModel
+
+  * ThreeGppRMaPropagationLossModel
+  * ThreeGppUMaPropagationLossModel
+  * ThreeGppUmiStreetCanyonPropagationLossModel
+  * ThreeGppIndoorOfficePropagationLossModel
 
 Other models could be available thanks to other modules, e.g., the ``building`` module.
 
@@ -53,7 +59,7 @@ The original equation was described as:
   \frac{P_r}{P_t} = \frac{A_r A_t}{d^2\lambda^2}
 
 with the following equation for the case of an isotropic antenna with no heat loss:
- 
+
 .. math::
 
   A_{isotr.} = \frac{\lambda^2}{4\pi}
@@ -73,20 +79,20 @@ Modern extensions to this original equation are:
 With:
 
   :math:`P_t` : transmission power (W)
-  
+
   :math:`P_r` : reception power (W)
-  
+
   :math:`G_t` : transmission gain (unit-less)
-  
+
   :math:`G_r` : reception gain (unit-less)
-  
+
   :math:`\lambda` : wavelength (m)
-  
+
   :math:`d` : distance (m)
-  
+
   :math:`L` : system loss (unit-less)
 
-In the implementation, :math:`\lambda` is calculated as 
+In the implementation, :math:`\lambda` is calculated as
 :math:`\frac{C}{f}`, where :math:`C = 299792458` m/s is the speed of light in
 vacuum, and :math:`f` is the frequency in Hz which can be configured by
 the user via the Frequency attribute.
@@ -97,16 +103,16 @@ approximately as the region for :math:`d > 3 \lambda`.
 The model will still return a value for :math:`d < 3 \lambda`, as
 doing so (rather than triggering a fatal error) is practical for
 many simulation scenarios. However, we stress that the values
-obtained in such conditions shall not be considered realistic. 
+obtained in such conditions shall not be considered realistic.
 
 Related with this issue, we note that the Friis formula is
-undefined for :math:`d = 0`, and results in 
+undefined for :math:`d = 0`, and results in
 :math:`P_r > P_t` for :math:`d < \lambda / 2 \sqrt{\pi}`.
 
 Both these conditions occur outside of the far field region, so in
-principle the Friis model shall not be used in these conditions. 
+principle the Friis model shall not be used in these conditions.
 In practice, however, Friis is often used in scenarios where accurate
-propagation modeling is not deemed important, and values of 
+propagation modeling is not deemed important, and values of
 :math:`d = 0` can occur.
 
 To allow practical use of the model in such
@@ -114,7 +120,7 @@ scenarios, we have to 1) return some value for :math:`d = 0`, and
 2) avoid large discontinuities in propagation loss values (which
 could lead to artifacts such as bogus capture effects which are
 much worse than inaccurate propagation loss values). The two issues
-are conflicting, as, according to the Friis formula, 
+are conflicting, as, according to the Friis formula,
 :math:`\lim_{d \to 0}  P_r = +\infty`;
 so if, for :math:`d = 0`, we use a fixed loss value, we end up with an infinitely large
 discontinuity, which as we discussed can cause undesirable
@@ -123,13 +129,13 @@ simulation artifacts.
 To avoid these artifact, this implementation of the Friis model
 provides an attribute called MinLoss which allows to specify the
 minimum total loss (in dB) returned by the model. This is used in
-such a way that 
+such a way that
 :math:`P_r` continuously increases for :math:`d \to 0`, until
 MinLoss is reached, and then stay constant; this allow to
 return a value for :math:`d = 0` and at the same time avoid
 discontinuities. The model won't be much realistic, but at least
 the simulation artifacts discussed before are avoided. The default value of
-MinLoss is 0 dB, which means that by default the model will return 
+MinLoss is 0 dB, which means that by default the model will return
 :math:`P_r = P_t` for :math:`d <= \lambda / 2 \sqrt{\pi}`.
 We note that this value of :math:`d` is outside of the far field
 region, hence the validity of the model in the far field region is
@@ -155,7 +161,7 @@ set via SetHeightAboveZ.
 
 The two-ray model does not give a good result for short distances, due to the
 oscillation caused by constructive and destructive combination of the two
-rays. Instead the Friis free-space model is used for small distances. 
+rays. Instead the Friis free-space model is used for small distances.
 
 The crossover distance, below which Friis is used, is calculated as follows:
 
@@ -163,7 +169,7 @@ The crossover distance, below which Friis is used, is calculated as follows:
 
   dCross = \frac{(4 * \pi * H_t * H_r)}{\lambda}
 
-In the implementation,  :math:`\lambda` is calculated as 
+In the implementation,  :math:`\lambda` is calculated as
 :math:`\frac{C}{f}`, where :math:`C = 299792458` m/s is the speed of light in
 vacuum, and :math:`f` is the frequency in Hz which can be configured by
 the user via the Frequency attribute.
@@ -184,13 +190,13 @@ log-distance propagation model:
 where:
 
   :math:`n` : the path loss distance exponent
-  
+
   :math:`d_0` : reference distance (m)
-  
+
   :math:`L_0` : path loss at reference distance (dB)
-  
+
   :math:`d` :  - distance (m)
-  
+
   :math:`L` : path loss (dB)
 
 When the path loss is requested at a distance smaller than
@@ -218,7 +224,7 @@ first from 0 to the reference distance is invalid and returns txPowerDbm.
 
 .. math::
 
-  \underbrace{0 \cdots\cdots}_{=0} \underbrace{d_0 \cdots\cdots}_{n_0} \underbrace{d_1 \cdots\cdots}_{n_1} \underbrace{d_2 \cdots\cdots}_{n_2} \infty 
+  \underbrace{0 \cdots\cdots}_{=0} \underbrace{d_0 \cdots\cdots}_{n_0} \underbrace{d_1 \cdots\cdots}_{n_1} \underbrace{d_2 \cdots\cdots}_{n_2} \infty
 
 Complete formula for the path loss in dB:
 
@@ -235,15 +241,15 @@ Complete formula for the path loss in dB:
 
 where:
 
-  
+
   :math:`d_0, d_1, d_2` : three distance fields (m)
-  
+
   :math:`n_0, n_1, n_2` : path loss distance exponent for each field (unitless)
-  
+
   :math:`L_0` : path loss at reference distance (dB)
-  
+
   :math:`d` :  - distance (m)
-  
+
   :math:`L` : path loss (dB)
 
 When the path loss is requested at a distance smaller than the reference
@@ -272,14 +278,14 @@ model, which accounts for the variations in signal strength due to multipath
 fading. The model does not account for the path loss due to the
 distance traveled by the signal, hence for typical simulation usage it
 is recommended to consider using it in combination with other models
-that take into account this aspect. 
+that take into account this aspect.
 
 The Nakagami-m distribution is applied to the power level. The probability density function is defined as
 
 .. math::
 
   p(x; m, \omega) = \frac{2 m^m}{\Gamma(m) \omega^m} x^{2m - 1} e^{-\frac{m}{\omega} x^2} )
-  
+
 with :math:`m` the fading depth parameter and :math:`\omega` the average received power.
 
 It is implemented by either a :cpp:class:`GammaRandomVariable` or a :cpp:class:`ErlangRandomVariable`
@@ -303,14 +309,14 @@ This model sets a constant received power level independent of the transmit powe
 
 The received power is constant independent of the transmit power; the user
 must set received power level.  Note that if this loss model is chained to other loss
-models, it should be the first loss model in the chain. 
-Else it will disregard the losses computed by loss models that precede it in the chain. 
+models, it should be the first loss model in the chain.
+Else it will disregard the losses computed by loss models that precede it in the chain.
 
 MatrixPropagationLossModel
 ==========================
 
 The propagation loss is fixed for each pair of nodes and doesn't depend on their actual positions.
-This model should be useful for synthetic tests. Note that by default the propagation loss is 
+This model should be useful for synthetic tests. Note that by default the propagation loss is
 assumed to be symmetric.
 
 RangePropagationLossModel
@@ -326,15 +332,15 @@ transmit power level. Receivers beyond MaxRange receive at power
 OkumuraHataPropagationLossModel
 ===============================
 
-This model is used to model open area pathloss for long distance (i.e., > 1 Km). 
-In order to include all the possible frequencies usable by LTE we need to consider 
-several variants of the well known Okumura Hata model. In fact, the original Okumura 
-Hata model [hata]_ is designed for frequencies ranging from 150 MHz to 1500 MHz, 
-the COST231 [cost231]_ extends it for the frequency range from 1500 MHz to 2000 MHz. 
-Another important aspect is the scenarios considered by the models, in fact the all 
-models are originally designed for urban scenario and then only the standard one and 
-the COST231 are extended to suburban, while only the standard one has been extended 
-to open areas. Therefore, the model cannot cover all scenarios at all frequencies. 
+This model is used to model open area pathloss for long distance (i.e., > 1 Km).
+In order to include all the possible frequencies usable by LTE we need to consider
+several variants of the well known Okumura Hata model. In fact, the original Okumura
+Hata model [hata]_ is designed for frequencies ranging from 150 MHz to 1500 MHz,
+the COST231 [cost231]_ extends it for the frequency range from 1500 MHz to 2000 MHz.
+Another important aspect is the scenarios considered by the models, in fact the all
+models are originally designed for urban scenario and then only the standard one and
+the COST231 are extended to suburban, while only the standard one has been extended
+to open areas. Therefore, the model cannot cover all scenarios at all frequencies.
 In the following we detail the models adopted.
 
 The pathloss expression of the COST231 OH is:
@@ -362,8 +368,8 @@ and
   :math:`h_\mathrm{M}` : UE height above the ground [m]
 
   :math:`d` : distance [km]
-  
-  :math:`log` : is a logarithm in base 10 (this for the whole document) 
+
+  :math:`log` : is a logarithm in base 10 (this for the whole document)
 
 
 This model is only for urban scenarios.
@@ -403,7 +409,7 @@ The extension for the standard OH in open area is
   L_\mathrm{O} = L_\mathrm{U} - 4.70 (\log{f})^2 + 18.33\log{f} - 40.94
 
 
-The literature lacks of extensions of the COST231 to open area (for suburban it seems that 
+The literature lacks of extensions of the COST231 to open area (for suburban it seems that
 we can just impose C = 0); therefore we consider it a special case fo the suburban one.
 
 
@@ -416,8 +422,8 @@ ToDo
 ItuR1411LosPropagationLossModel
 ===============================
 
-This model is designed for Line-of-Sight (LoS) short range outdoor communication in the 
-frequency range 300 MHz to 100 GHz.  This model provides an upper and lower bound 
+This model is designed for Line-of-Sight (LoS) short range outdoor communication in the
+frequency range 300 MHz to 100 GHz.  This model provides an upper and lower bound
 respectively according to the following formulas
 
 .. math::
@@ -456,14 +462,14 @@ The value used by the simulator is the average one for modeling the median pathl
 ItuR1411NlosOverRooftopPropagationLossModel
 ===========================================
 
-This model is designed for Non-Line-of-Sight (LoS) short range outdoor communication over 
-rooftops in the frequency range 300 MHz to 100 GHz. This model includes several scenario-dependent 
-parameters, such as average street width, orientation, etc. It is advised to set the values of 
-these parameters manually (using the ns-3 attribute system) according to the desired scenario. 
+This model is designed for Non-Line-of-Sight (LoS) short range outdoor communication over
+rooftops in the frequency range 300 MHz to 100 GHz. This model includes several scenario-dependent
+parameters, such as average street width, orientation, etc. It is advised to set the values of
+these parameters manually (using the ns-3 attribute system) according to the desired scenario.
 
-In detail, the model is based on [walfisch]_ and [ikegami]_, where the loss is expressed 
-as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to 
-street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past 
+In detail, the model is based on [walfisch]_ and [ikegami]_, where the loss is expressed
+as the sum of free-space loss (:math:`L_{bf}`), the diffraction loss from rooftop to
+street (:math:`L_{rts}`) and the reduction due to multiple screen diffraction past
 rows of building (:math:`L_{msd}`). The formula is:
 
 .. math::
@@ -501,9 +507,9 @@ where:
   :math:`\varphi` : is the street orientation with respect to the direct path (degrees)
 
 
-The multiple screen diffraction loss depends on the BS antenna height relative to the building 
-height and on the incidence angle. The former is selected as the higher antenna in the communication 
-link. Regarding the latter, the "settled field distance" is used for select the proper model; 
+The multiple screen diffraction loss depends on the BS antenna height relative to the building
+height and on the incidence angle. The former is selected as the higher antenna in the communication
+link. Regarding the latter, the "settled field distance" is used for select the proper model;
 its value is given by
 
 .. math::
@@ -514,7 +520,7 @@ with
 
   :math:`\Delta h_b = h_b - h_m`
 
-Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the building extend), 
+Therefore, in case of :math:`l > d_s` (where `l` is the distance over which the building extend),
 it can be evaluated according to
 
 .. math::
@@ -523,7 +529,7 @@ it can be evaluated according to
 
   L_{bsh} = \left\{ \begin{array}{ll} -18\log{(1+\Delta h_{b})} & \mbox{for } h_{b} > h_{r} \\ 0 & \mbox{for } h_{b} \le h_{hr} \end{array}\right.
 
-  k_a = \left\{ \begin{array}{lll} 
+  k_a = \left\{ \begin{array}{lll}
       71.4 & \mbox{for } h_{b} > h_{r} \mbox{ and } f>2000 \mbox{ MHz} \\
       54 & \mbox{for } h_{b} > h_{r} \mbox{ and } f\le2000 \mbox{ MHz} \\
       54-0.8\Delta h_b & \mbox{for } h_{b} \le h_{r} \mbox{ and } d \ge 500 \mbox{ m} \\
@@ -555,7 +561,7 @@ where
   Q_M = \left\{ \begin{array}{lll}
         2.35\left(\frac{\Delta h_b}{d}\sqrt{\frac{b}{\lambda}}\right)^{0.9} & \mbox{for } h_{b} > h_{r} \\
         \frac{b}{d} &  \mbox{for } h_{b} \approx h_{r} \\
-        \frac{b}{2\pi d}\sqrt{\frac{\lambda}{\rho}}\left(\frac{1}{\theta}-\frac{1}{2\pi + \theta}\right) & \mbox{for }  h_{b} < h_{r} 
+        \frac{b}{2\pi d}\sqrt{\frac{\lambda}{\rho}}\left(\frac{1}{\theta}-\frac{1}{2\pi + \theta}\right) & \mbox{for }  h_{b} < h_{r}
         \end{array}\right.
 
 
@@ -571,13 +577,206 @@ where:
 Kun2600MhzPropagationLossModel
 ==============================
 
-This is the empirical model for the pathloss at 2600 MHz for urban areas which is described in [kun2600mhz]_. 
-The model is as follows. Let :math:`d` be the distance between the transmitter and the receiver 
+This is the empirical model for the pathloss at 2600 MHz for urban areas which is described in [kun2600mhz]_.
+The model is as follows. Let :math:`d` be the distance between the transmitter and the receiver
 in meters; the pathloss :math:`L` in dB is calculated as:
 
 .. math::
 
   L = 36 + 26\log{d}
+
+ThreeGppPropagationLossModel
+============================
+
+The base class :cpp:class:`ThreeGppPropagationLossModel` and its derived classes implement
+the path loss and shadow fading models described in 3GPP TR 38.901 [38901]_.
+3GPP TR 38.901 includes multiple scenarios modeling different propagation
+environments, i.e., indoor, outdoor urban and rural, for frequencies between
+0.5 and 100 GHz.
+
+*Implemented features:*
+
+  * Path loss and shadowing models (3GPP TR 38.901, Sec. 7.4.1)
+  * Autocorrelation of shadow fading (3GPP TR 38.901, Sec. 7.4.4)
+  * `Channel condition models <propagation.html#threegppchannelconditionmodel>`_ (3GPP TR 38.901, Sec. 7.4.2)
+
+*To be implemented:*
+
+  * O2I penetration loss (3GPP TR 38.901, Sec. 7.4.3)
+  * Spatial consistent update of the channel states (3GPP TR 38.901 Sec. 7.6.3.3)
+
+**Configuration**
+
+The :cpp:class:`ThreeGppPropagationLossModel` instance is paired with a :cpp:class:`ChannelConditionModel`
+instance used to retrieve the LOS/NLOS channel condition. By default, a 3GPP
+channel condition model related to the same scenario is set (e.g., by default,
+:cpp:class:`ThreeGppRmaPropagationLossModel` is paired with
+:cpp:class:`ThreeGppRmaChannelConditionModel`), but it can be configured using
+the method SetChannelConditionModel. The channel condition models are stored inside the
+propagation module, for a limitation of the current spectrum API and to avoid
+a circular dependency between the spectrum and the propagation modules. Please
+note that it is necessary to install at least one :cpp:class:`ChannelConditionModel` when
+using any :cpp:class:`ThreeGppPropagationLossModel` subclass. Please look below for more
+information about the Channel Condition models.
+
+The operating frequency has to be set using the attribute "Frequency",
+otherwise an assert is raised. The addition of the shadow fading component can
+be enabled/disabled through the attribute "ShadowingEnabled".
+Other scenario-related parameters can be configured through attributes of the
+derived classes.
+
+**Implementation details**
+
+The method DoCalcRxPower computes the propagation loss considering the path loss
+and the shadow fading (if enabled). The path loss is computed by the method
+GetLossLos or GetLossNlos depending on the LOS/NLOS channel condition, and their
+implementation is left to the derived classes. The shadow fading is computed by
+the method GetShadowing, which generates an additional random loss component
+characterized by Gaussian distribution with zero mean and scenario-specific
+standard deviation. Subsequent shadowing components of each BS-UT link are
+correlated as described in 3GPP TR 38.901, Sec. 7.4.4 [38901]_.
+
+*Note 1*: The TR defines height ranges for UTs and BSs, depending on the chosen
+propagation model (for the exact values, please see below in the specific model
+documentation). If the user does not set correct values, the model will emit
+a warning but perform the calculation anyway.
+
+*Note 2*: The 3GPP model is originally intended to be used to represent BS-UT
+links. However, in ns-3, we may need to compute the pathloss between two BSs
+or UTs to evaluate the interference. We have decided to support this case by
+considering the tallest node as a BS and the smallest as a UT. As a consequence,
+the height values may be outside the validity range of the chosen class:
+therefore, an inaccuracy warning may be printed, but it can be ignored.
+
+There are four derived class, each one implementing the propagation model for a different scenario:
+
+ThreeGppRMaPropagationLossModel
+```````````````````````````````
+
+This class implements the LOS/NLOS path loss and shadow fading models described in 3GPP TR 38.901 [38901]_, Table 7.4.1-1 for the RMa scenario.
+It supports frequencies between 0.5 and 30 GHz.
+It is possible to configure some scenario-related parameters through the attributes AvgBuildingHeight and AvgStreetWidth.
+
+As specified in the TR, the 2D distance between the transmitter and the receiver
+should be between 10 m and 10 km for the LOS case, or between 10 m and 5 km for
+the NLOS case, otherwise the model may not be accurate (a warning message is
+printed if the user has enabled logging on the model). Also, the height of the
+base station (hBS) should be between 10 m and 150 m, while the height of the
+user terminal (hUT) should be between 1 m and 10 m.
+
+ThreeGppUMaPropagationLossModel
+```````````````````````````````
+
+This implements the LOS/NLOS path loss and shadow fading models described in 3GPP
+TR 38.901 [38901]_, Table 7.4.1-1 for the UMa scenario. It supports frequencies
+between 0.5 and 100 GHz.
+
+As specified in the TR, the 2D distance between the transmitter and the receiver
+should be between 10 m and 5 km both for the LOS and NLOS cases, otherwise the model may not be
+accurate (a warning message is printed if the user has enabled logging on the model).
+Also, the height of the base station (hBS) should be 25 m and the height of the
+user terminal (hUT) should be between 1.5 m and 22.5 m.
+
+ThreeGppUmiStreetCanyonPropagationLossModel
+```````````````````````````````````````````
+
+This implements the LOS/NLOS path loss and shadow fading models described in 3GPP
+TR 38.901 [38901]_, Table 7.4.1-1 for the UMi-Street Canyon scenario. It
+supports frequencies between 0.5 and 100 GHz.
+
+As specified in the TR, the 2D distance between the transmitter and the receiver
+should be between 10 m and 5 km both for the LOS and NLOS cases, otherwise the model may not be
+accurate (a warning message is printed if the user has enabled logging on
+the model). Also, the height of the base station (hBS) should be 10 m and the
+height of the user terminal (hUT) should be between 1.5 m and 10 m (the validity
+range is reduced because we assume that the height of the UT nodes is always
+lower that the height of the BS nodes).
+
+ThreeGppIndoorOfficePropagationLossModel
+````````````````````````````````````````
+
+This implements the LOS/NLOS path loss and shadow fading models described in 3GPP
+TR 38.901 [38901]_, Table 7.4.1-1 for the Indoor-Office scenario. It supports
+frequencies between 0.5 and 100 GHz.
+
+As specified in the TR, the 3D distance between the transmitter and the receiver
+should be between 1 m and 150 m both for the LOS and NLOS cases, otherwise the
+model may not be accurate (a warning log message is printed if the user has
+enabled logging on the model).
+
+Testing
+```````
+
+The test suite :cpp:class:`ThreeGppPropagationLossModelsTestSuite` provides test cases for the classes
+implementing the 3GPP propagation loss models.
+The test cases :cpp:class:`ThreeGppRmaPropagationLossModelTestCase`,
+:cpp:class:`ThreeGppUmaPropagationLossModelTestCase`,
+:cpp:class:`ThreeGppUmiPropagationLossModelTestCase` and
+:cpp:class:`ThreeGppIndoorOfficePropagationLossModelTestCas`e compute the path loss between two nodes and compares it with the value obtained using the formulas in 3GPP TR 38.901 [38901]_, Table 7.4.1-1.
+The test case :cpp:class:`ThreeGppShadowingTestCase` checks if the shadowing is correctly computed by testing the deviation of the overall propagation loss from the path loss. The test is carried out for all the scenarios, both in LOS and NLOS condition.
+
+ChannelConditionModel
+*********************
+
+The loss models require to know if two nodes are in Line-of-Sight (LoS) or if
+they are not. The interface for that is represented by this class. The main
+method is GetChannelCondition (a, b), which returns a :cpp:class:`ChannelCondition` object
+containing the information about the channel state.
+
+We modeled the LoS condition in two ways: (i) by using a probabilistic model
+specified by the 3GPP (), and (ii) by using an ns-3 specific
+building-aware model, which checks the space position of the BSs and the UTs.
+For what regards the first option, the probability is independent of the node
+location: in other words, following the 3GPP model, two UT spatially separated
+by an epsilon may have different LoS conditions. To take into account mobility,
+we have inserted a parameter called "UpdatePeriod," which indicates how often a
+3GPP-based channel condition has to be updated. By default, this attribute is
+set to 0, meaning that after the channel condition is generated, it is never
+updated. With this default value, we encourage the users to run multiple
+simulations with different seeds to get statistical significance from the data.
+For the users interested in using mobile nodes, we suggest changing this
+parameter to a value that takes into account the node speed and the desired
+accuracy. For example, lower-speed node conditions may be updated in terms of
+seconds, while high-speed UT or BS may be updated more often.
+
+The two approach are coded, respectively, in the classes:
+
+* :cpp:class:`ThreeGppChannelConditionModel`
+* :cpp:class:`BuildingsChannelConditionModel` (see the ``building`` module documentation for further details)
+
+ThreeGppChannelConditionModel
+=============================
+This is the base class for the 3GPP channel condition models.
+It provides the possibility to updated the condition of each channel periodically,
+after a given time period which can be configured through the attribute "UpdatePeriod".
+If "UpdatePeriod" is set to 0, the channel condition is never updated.
+It has five derived classes implementing the channel condition models described in 3GPP TR 38.901 [38901]_ for different propagation scenarios.
+
+ThreeGppRmaChannelConditionModel
+````````````````````````````````
+This implements the statistical channel condition model described in 3GPP TR 38.901 [38901]_, Table 7.4.2-1, for the RMa scenario.
+
+ThreeGppUmaChannelConditionModel
+````````````````````````````````
+This implements the statistical channel condition model described in 3GPP TR 38.901 [38901]_, Table 7.4.2-1, for the UMa scenario.
+
+ThreeGppUmiStreetCanyonChannelConditionModel
+````````````````````````````````````````````
+This implements the statistical channel condition model described in 3GPP TR 38.901 [38901]_, Table 7.4.2-1, for the UMi-Street Canyon scenario.
+
+ThreeGppIndoorMixedOfficeChannelConditionModel
+``````````````````````````````````````````````
+This implements the statistical channel condition model described in 3GPP TR 38.901 [38901]_, Table 7.4.2-1, for the Indoor-Mixed office scenario.
+
+ThreeGppIndoorOpenOfficeChannelConditionModel
+`````````````````````````````````````````````
+This implements the statistical channel condition model described in 3GPP TR 38.901 [38901]_, Table 7.4.2-1, for the Indoor-Open office scenario.
+
+Testing
+=======
+The test suite :cpp:class:`ChannelConditionModelsTestSuite` contains a single test case:
+
+* :cpp:class:`ThreeGppChannelConditionModelTestCase`, which tests all the 3GPP channel condition models. It determines the channel condition between two nodes multiple times, estimates the LOS probability, and compares it with the value given by the formulas in 3GPP TR 38.901 [38901]_, Table 7.4.2-1
 
 
 PropagationDelayModel
@@ -601,8 +800,7 @@ RandomPropagationDelayModel
 
 The propagation delay is totally random, and it changes each time the model is called.
 All the packets (even those between two fixed nodes) experience a random delay.
-As a consequence, the packets order is not preserved. 
-
+As a consequence, the packets order is not preserved.
 
 References
 **********
@@ -621,3 +819,4 @@ References
 .. [kun2600mhz] Sun Kun, Wang Ping, Li Yingze, "Path loss models for suburban scenario at 2.3GHz, 2.6GHz and 3.5GHz",
    in Proc. of the 8th International Symposium on Antennas, Propagation and EM Theory (ISAPE),  Kunming,  China, Nov 2008.
 
+.. [38901] 3GPP. 2018. TR 38.901, Study on channel model for frequencies from 0.5 to 100 GHz, V15.0.0. (2018-06).
