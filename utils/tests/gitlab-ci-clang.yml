@@ -4,7 +4,7 @@
 # "RELEASE", that has a value "weekly". Also, a variable "CLANG" should be set
 # to True.
 
-# We support CLANG 6 and 7 (8 in the near future).
+# We support CLANG 6 - 11
 # The test is done under Linux.
 
 .weekly-build-clang:
@@ -13,7 +13,7 @@
   only:
     variables:
       - $RELEASE == "weekly"
-      - $CLANG == "True"
+      - $CLANG_BUILD_ENABLE == "True"
   before_script:
     - apt-get --quiet update --yes
     - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk2.0-0 libgtk2.0-dev libboost-all-dev libgsl23 --yes
@@ -66,5 +66,49 @@ weekly-build-clang-7-optimized:
   extends: .weekly-build-clang
   variables:
     CLANG: 7
+    MODE: optimized
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+# CLANG 8
+weekly-build-clang-8-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 8
+    MODE: debug
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-8-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 8
+    MODE: release
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-8-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 8
+    MODE: optimized
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+# CLANG 9
+weekly-build-clang-9-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 9
+    MODE: debug
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-9-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 9
+    MODE: release
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-9-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 9
     MODE: optimized
     EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev

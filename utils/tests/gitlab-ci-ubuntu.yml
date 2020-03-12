@@ -63,24 +63,24 @@ weekly-build-ubuntu-18.04-optimized:
     MODE: optimized
     LIBGSL: libgsl23
 
-# Ubuntu 18.10 (Until July 2019)
-weekly-build-ubuntu-18.10-debug:
+# Ubuntu Rolling
+weekly-build-ubuntu-rolling-debug:
   extends: .weekly-build-ubuntu
-  image: ubuntu:18.10
+  image: ubuntu:rolling
   variables:
     MODE: debug
     LIBGSL: libgsl23
 
-weekly-build-ubuntu-18.10-release:
+weekly-build-ubuntu-rolling-release:
   extends: .weekly-build-ubuntu
-  image: ubuntu:18.10
+  image: ubuntu:rolling
   variables:
     MODE: release
     LIBGSL: libgsl23
 
-weekly-build-ubuntu-18.10-optimized:
+weekly-build-ubuntu-rolling-optimized:
   extends: .weekly-build-ubuntu
-  image: ubuntu:18.10
+  image: ubuntu:rolling
   variables:
     MODE: optimized
     LIBGSL: libgsl23
