@@ -253,6 +253,14 @@ public:
                  T &value);
 
   /**
+   * Callback function signature for 
+   * AddValue(const std::string&,const std::string&,Callback<bool,const std::string>).
+   *
+   * \param [in] value The argument value.
+   */
+  typedef bool (* Callback) (const std::string value);
+  
+  /**
    * Add a program argument, using a Callback to parse the value
    *
    * \param [in] name The name of the program-supplied argument
@@ -261,11 +269,11 @@ public:
    *   store the value.
    *
    * The callback should have the signature
-   * <tt>bool callback (const std::string value)</tt>
+   * CommandLine::Callback
    */
   void AddValue (const std::string &name,
                  const std::string &help,
-                 Callback<bool, std::string> callback);
+                 ns3::Callback<bool, std::string> callback);
 
   /**
    * Add a program argument as a shorthand for an Attribute.
@@ -434,7 +442,7 @@ private:
      * \return \c true if parsing the value succeeded
      */
     virtual bool Parse (const std::string value);
-    Callback<bool, std::string> m_callback;  /**< The Callback */
+    ns3::Callback<bool, std::string> m_callback;  /**< The Callback */
   };  // class CallbackItem
 
 

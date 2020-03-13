@@ -539,7 +539,7 @@ CommandLine::CallbackItem::Parse (const std::string value)
 void
 CommandLine::AddValue (const std::string &name,
                        const std::string &help,
-                       Callback<bool, std::string> callback)
+                       ns3::Callback<bool, std::string> callback)
 {
   NS_LOG_FUNCTION (this << &name << &help << &callback);
   CallbackItem *item = new CallbackItem ();
