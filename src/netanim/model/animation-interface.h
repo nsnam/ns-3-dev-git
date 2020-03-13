@@ -50,8 +50,8 @@ namespace ns3 {
 #define MAX_PKTS_PER_TRACE_FILE 100000
 #define PURGE_INTERVAL 5
 #define NETANIM_VERSION "netanim-3.108"
-#define CHECK_STARTED_INTIMEWINDOW {if (!m_started || !IsInTimeWindow ()) return;}
-#define CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS {if (!m_started || !IsInTimeWindow () || !m_trackPackets) return;}
+#define CHECK_STARTED_INTIMEWINDOW {if (!m_started || !IsInTimeWindow ()) {return; }}
+#define CHECK_STARTED_INTIMEWINDOW_TRACKPACKETS {if (!m_started || !IsInTimeWindow () || !m_trackPackets) {return; }}
 
 
 struct NodeSize;
@@ -74,7 +74,6 @@ class WifiPsdu;
 class AnimationInterface
 {
 public:
-
   /**
    * \brief Constructor
    * \param filename The Filename for the trace file used by the Animator
@@ -83,20 +82,20 @@ public:
   AnimationInterface (const std::string filename);
 
   /**
-   * Counter Types 
+   * Counter Types
    */
   typedef enum
-    {
-      UINT32_COUNTER,
-      DOUBLE_COUNTER
-    } CounterType;
+  {
+    UINT32_COUNTER,
+    DOUBLE_COUNTER
+  } CounterType;
 
   /**
    * \brief typedef for WriteCallBack used for listening to AnimationInterface
    * write messages
-   * 
+   *
    */
-  typedef void (*AnimWriteCallback) (const char * str);
+  typedef void (*AnimWriteCallback)(const char * str);
 
   /**
    * \brief Destructor for the animator interface.
@@ -151,7 +150,7 @@ public:
   /**
    * \brief Enable tracking of the Ipv4 routing table for all Nodes
    *
-   * \param fileName Trace file for storing routing table information 
+   * \param fileName Trace file for storing routing table information
    * \param startTime Start time for capture
    * \param stopTime  End time for capture
    * \param pollInterval The periodic interval at which routing table information is polled
@@ -185,7 +184,7 @@ public:
 
   /**
    * \brief Specify the time at which capture should start
-   * 
+   *
    * \param t The time at which AnimationInterface should begin capture of traffic info
    *
    * \returns none
@@ -194,7 +193,7 @@ public:
 
   /**
    * \brief Specify the time at which capture should stop
-   * 
+   *
    * \param t The time at which AnimationInterface should stop capture of traffic info
    *
    * \returns none
@@ -204,16 +203,16 @@ public:
   /**
    * \brief Set Max packets per trace file
    * \param maxPktsPerFile The maximum number of packets per trace file.
-	    AnimationInterface will create trace files with the following 
+            AnimationInterface will create trace files with the following
             filenames : filename, filename-1, filename-2..., filename-N
-	    where each file contains packet info for 'maxPktsPerFile' number of packets
+            where each file contains packet info for 'maxPktsPerFile' number of packets
    *
    * \returns none
    */
   void SetMaxPktsPerTraceFile (uint64_t maxPktsPerFile);
 
   /**
-   * \brief Set mobility poll interval:WARNING: setting a low interval can 
+   * \brief Set mobility poll interval:WARNING: setting a low interval can
    * cause slowness
    *
    * \param t Time interval between fetching mobility/position information
@@ -248,7 +247,7 @@ public:
    *
    * \returns none
    */
-  static void SetConstantPosition (Ptr <Node> n, double x, double y, double z=0);
+  static void SetConstantPosition (Ptr <Node> n, double x, double y, double z = 0);
 
   /**
    * \brief Helper function to update the description for a given node
@@ -285,7 +284,7 @@ public:
    *
    * \returns none
    */
-  void UpdateNodeSize (uint32_t nodeId, double width, double height); 
+  void UpdateNodeSize (uint32_t nodeId, double width, double height);
 
   /**
    * \brief Helper function to update the node color
@@ -331,7 +330,7 @@ public:
    *
    * \returns none
    */
-  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity); 
+  void SetBackgroundImage (std::string fileName, double x, double y, double scaleX, double scaleY, double opacity);
 
   /**
    * \brief Helper function to update the description for a link
@@ -358,7 +357,7 @@ public:
   /**
    * \brief Helper function to print the routing path from a source node to destination IP
    * \param fromNodeId The source node
-   * \param destinationIpv4Address The destination Ipv4 Address 
+   * \param destinationIpv4Address The destination Ipv4 Address
    *
    * \returns reference to this AnimationInterface object
    */
@@ -401,16 +400,16 @@ public:
    * \brief Setup a node counter
    * \param counterName A string to identify the counter
    * \param counterType The type of the counter, such as uint32, double etc
-   * 
+   *
    * \returns The id of the counter to be used as a reference for future
    */
-  uint32_t AddNodeCounter (std::string counterName, CounterType counterType); 
+  uint32_t AddNodeCounter (std::string counterName, CounterType counterType);
 
   /**
    *
    * \brief Add a resource such as the path to an image file
    * \param resourcePath Absolute Path to an image/resource
-   * 
+   *
    * \returns a number identifying the resource
    */
   uint32_t AddResource (std::string resourcePath);
@@ -425,14 +424,13 @@ public:
   double GetNodeEnergyFraction (Ptr <const Node> node) const;
 
 private:
-
   /**
    * AnimPacketInfo class
    */
   class AnimPacketInfo
-  
+
   {
-  public:
+public:
     AnimPacketInfo ();
     /**
      * Constructor
@@ -447,11 +445,11 @@ private:
      * \param fbTx fb transmit
      * \param txNodeId transmit node ID
      */
-    AnimPacketInfo(Ptr <const NetDevice> tx_nd, const Time fbTx, uint32_t txNodeId = 0);
+    AnimPacketInfo (Ptr <const NetDevice> tx_nd, const Time fbTx, uint32_t txNodeId = 0);
     Ptr <const NetDevice> m_txnd; ///< transmit device
     uint32_t m_txNodeId; ///< node ID
     double m_fbTx; ///< fb transmit
-    double m_lbTx; ///< lb transmit    
+    double m_lbTx; ///< lb transmit
     double m_fbRx; ///< fb receive
     double m_lbRx; ///< lb receive
     Ptr <const NetDevice> m_rxnd; ///< receive device
@@ -465,11 +463,11 @@ private:
 
   /// RGB structure
   typedef struct
-    {
-      uint8_t r; ///< r
-      uint8_t g; ///< g
-      uint8_t b; ///< b
-    } Rgb; ///< RGB structure
+  {
+    uint8_t r;   ///< r
+    uint8_t g;   ///< g
+    uint8_t b;   ///< b
+  } Rgb;   ///< RGB structure
 
   /// P2pLinkNodeIdPair structure
   typedef struct
@@ -497,54 +495,54 @@ private:
      * \return true if equal
      */
     bool operator () (P2pLinkNodeIdPair first, P2pLinkNodeIdPair second) const
-      {
-        //Check if they are the same node pairs but flipped
-        if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode)) ||
-              ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
-          {
-            return false;
-          }
-        std::ostringstream oss1;
-        oss1 << first.fromNode << first.toNode;
-        std::ostringstream oss2;
-        oss2 << second.fromNode << second.toNode;
-        return oss1.str () < oss2.str ();
-      }
+    {
+      //Check if they are the same node pairs but flipped
+      if (  ((first.fromNode == second.fromNode) && (first.toNode == second.toNode))
+            || ((first.fromNode == second.toNode) && (first.toNode == second.fromNode)) )
+        {
+          return false;
+        }
+      std::ostringstream oss1;
+      oss1 << first.fromNode << first.toNode;
+      std::ostringstream oss2;
+      oss2 << second.fromNode << second.toNode;
+      return oss1.str () < oss2.str ();
+    }
 
   };
 
   /// Ipv4RouteTrackElement structure
-  typedef struct 
-    {
-      std::string destination; ///< destination
-      uint32_t fromNodeId; ///< from node ID
-    } Ipv4RouteTrackElement; ///< IPv4 route track element
+  typedef struct
+  {
+    std::string destination;   ///< destination
+    uint32_t fromNodeId;   ///< from node ID
+  } Ipv4RouteTrackElement;   ///< IPv4 route track element
 
   /// Ipv4RoutePathElement structure
-  typedef struct 
-    {
-      uint32_t nodeId; ///< node ID
-      std::string nextHop; ///< next hop
-    } Ipv4RoutePathElement; ///< IPv4 route path element
+  typedef struct
+  {
+    uint32_t nodeId;   ///< node ID
+    std::string nextHop;   ///< next hop
+  } Ipv4RoutePathElement;   ///< IPv4 route path element
 
   /// ProtocolType enumeration
   typedef enum
-    {
-      UAN,
-      LTE,
-      WIFI,
-      WIMAX,
-      CSMA,
-      LRWPAN,
-      WAVE
-    } ProtocolType;
+  {
+    UAN,
+    LTE,
+    WIFI,
+    WIMAX,
+    CSMA,
+    LRWPAN,
+    WAVE
+  } ProtocolType;
 
   /// NodeSize structure
   typedef struct
-    {
-      double width; ///< width
-      double height; ///< height
-    } NodeSize; ///< node size
+  {
+    double width;   ///< width
+    double height;   ///< height
+  } NodeSize;   ///< node size
   typedef std::map <P2pLinkNodeIdPair, LinkProperties, LinkPairCompare> LinkPropertiesMap; ///< LinkPropertiesMap typedef
   typedef std::map <uint32_t, std::string> NodeDescriptionsMap; ///< NodeDescriptionsMap typedef
   typedef std::map <uint32_t, Rgb> NodeColorsMap; ///< NodeColorsMap typedef
@@ -564,14 +562,14 @@ private:
   /// AnimXmlElement class
   class AnimXmlElement
   {
-    public:
+public:
     /**
      * Constructor
      *
      * \param tagName tag name
      * \param emptyElement empty element?
      */
-    AnimXmlElement (std::string tagName, bool emptyElement=true);
+    AnimXmlElement (std::string tagName, bool emptyElement = true);
     template <typename T>
     /**
      * Add attribute function
@@ -579,25 +577,25 @@ private:
      * \param value the attribute value
      * \param xmlEscape true to escape
      */
-    void AddAttribute (std::string attribute, T value, bool xmlEscape=false);
+    void AddAttribute (std::string attribute, T value, bool xmlEscape = false);
     /**
      * Set text function
      * \param text the text for the element
      */
-    void SetText(std::string text);
+    void SetText (std::string text);
     /**
      * Append child function
      * \param e the element to add as a child
      */
-    void AppendChild(AnimXmlElement e);
+    void AppendChild (AnimXmlElement e);
     /**
      * Get text for the element function
      * \param autoClose auto close the element
      * \returns the text
      */
-    std::string ToString(bool autoClose = true);
+    std::string ToString (bool autoClose = true);
 
-  private:
+private:
     std::string m_tagName; ///< tag name
     std::string m_text; ///< element string
     std::vector<std::string> m_attributes; ///< list of attributes
@@ -613,10 +611,10 @@ private:
   FILE * m_routingF; ///< File handle for routing table output (0 if None);
   Time m_mobilityPollInterval; ///< mobility poll interval
   std::string m_outputFileName; ///< output file name
-  uint64_t gAnimUid ;    ///< Packet unique identifier used by AnimationInterface
+  uint64_t gAnimUid;     ///< Packet unique identifier used by AnimationInterface
   AnimWriteCallback m_writeCallback; ///< write callback
   bool m_started; ///< started
-  bool m_enablePacketMetadata; ///< enable packet metadata 
+  bool m_enablePacketMetadata; ///< enable packet metadata
   Time m_startTime; ///< start time
   Time m_stopTime; ///< stop time
   uint64_t m_maxPktsPerFile; ///< maximum pakets per file
@@ -638,7 +636,7 @@ private:
 
   // Counter ID
   uint32_t m_remainingEnergyCounterId; ///< remaining energy counter ID
-  
+
   uint32_t m_ipv4L3ProtocolTxCounterId; ///< IPv4 L3 protocol transmit counter ID
   uint32_t m_ipv4L3ProtocolRxCounterId; ///< IPv4 L3 protocol receive counter ID
   uint32_t m_ipv4L3ProtocolDropCounterId; ///< IPv4 protocol drop counter ID
@@ -648,13 +646,13 @@ private:
   uint32_t m_queueDropCounterId; ///< queue drop counter ID
 
   uint32_t m_wifiMacTxCounterId; ///< wifi MAC transmit counter ID
-  uint32_t m_wifiMacTxDropCounterId; ///< wifi MAC transmit drop counter ID 
+  uint32_t m_wifiMacTxDropCounterId; ///< wifi MAC transmit drop counter ID
   uint32_t m_wifiMacRxCounterId; ///< wifi MAC receive counter ID
   uint32_t m_wifiMacRxDropCounterId; ///< wifi MAC receive drop counter ID
- 
+
   uint32_t m_wifiPhyTxDropCounterId; ///< wifi Phy transmit drop counter ID
   uint32_t m_wifiPhyRxDropCounterId; ///< wifi Phy receive drop counter ID
-  
+
   AnimUidPacketInfoMap m_pendingWifiPackets; ///< pending wifi packets
   AnimUidPacketInfoMap m_pendingWimaxPackets; ///< pending wimax packets
   AnimUidPacketInfoMap m_pendingLrWpanPackets; ///< pending LR-WPAN packets
@@ -695,8 +693,8 @@ private:
   NodeCounterMap64 m_nodeWifiPhyRxDrop; ///< node wifi Phy receive drop
   NodeCounterMap64 m_nodeLrWpanMacTx; ///< node LR-WPAN MAC transmit
   NodeCounterMap64 m_nodeLrWpanMacTxDrop; ///< node LR-WPAN MAC transmit drop
-  NodeCounterMap64 m_nodeLrWpanMacRx;///< node LR-WPAN MAC receive
-  NodeCounterMap64 m_nodeLrWpanMacRxDrop;///< node LR-WPAN MAC receive drop
+  NodeCounterMap64 m_nodeLrWpanMacRx; ///< node LR-WPAN MAC receive
+  NodeCounterMap64 m_nodeLrWpanMacRxDrop; ///< node LR-WPAN MAC receive drop
 
   /**
    * Get elements from context
@@ -716,7 +714,7 @@ private:
    * \returns the device
    */
   Ptr <NetDevice> GetNetDeviceFromContext (std::string context);
-  
+
   // ##### General #####
   /**
    * Start animation function
@@ -787,7 +785,7 @@ private:
    * \param nd the device
    * \returns the IPv6 address
    */
-  std::string GetIpv6Address(Ptr <NetDevice> nd);
+  std::string GetIpv6Address (Ptr <NetDevice> nd);
   /**
    * Get IPv4 addresses
    * \param nd the device
@@ -824,7 +822,7 @@ private:
    * Protocol type to pending packets function
    * \param protocolType the protocol type
    * \returns AnimUidPacketInfoMap *
-   */ 
+   */
   AnimUidPacketInfoMap * ProtocolTypeToPendingPackets (ProtocolType protocolType);
   /**
    * Protocol type to string function
@@ -939,7 +937,7 @@ private:
    * \param interfaceIndex the interface index
    */
   void Ipv4TxTrace (std::string context,
-                    Ptr<const Packet> p, Ptr<Ipv4> ipv4,  
+                    Ptr<const Packet> p, Ptr<Ipv4> ipv4,
                     uint32_t interfaceIndex);
   /**
    * IPv4 receive trace function
@@ -961,9 +959,9 @@ private:
    * \param interfaceIndex the interface index
    */
   void Ipv4DropTrace (std::string context,
-                      const Ipv4Header & ipv4Header, 
-                      Ptr<const Packet> p, 
-                      Ipv4L3Protocol::DropReason dropReason, Ptr<Ipv4> ipv4, 
+                      const Ipv4Header & ipv4Header,
+                      Ptr<const Packet> p,
+                      Ipv4L3Protocol::DropReason dropReason, Ptr<Ipv4> ipv4,
                       uint32_t interfaceIndex);
 
   /**
@@ -1066,7 +1064,7 @@ private:
    * \param context the context
    * \param p the packet
    */
-  void WavePhyTxBeginTrace (std::string context, 
+  void WavePhyTxBeginTrace (std::string context,
                             Ptr<const Packet> p);
   /**
    * WAVE Phy receive begin trace function
@@ -1074,7 +1072,7 @@ private:
    * \param context the context
    * \param p the packet
    */
-  void WavePhyRxBeginTrace (std::string context, 
+  void WavePhyRxBeginTrace (std::string context,
                             Ptr<const Packet> p);
   /**
    * LR-WPAN Phy receive begin trace function
@@ -1100,7 +1098,7 @@ private:
    */
   void WimaxTxTrace (std::string context,
                      Ptr<const Packet> p,
-		     const Mac48Address & m);
+                     const Mac48Address & m);
   /**
    * WIMax receive trace function
    * \param context the context
@@ -1144,8 +1142,8 @@ private:
    * \param m the MAC address
    */
   void LteTxTrace (std::string context,
-                      Ptr<const Packet> p,
-                      const Mac48Address & m);
+                   Ptr<const Packet> p,
+                   const Mac48Address & m);
   /**
    * LTE receive trace function
    * \param context the context
@@ -1153,8 +1151,8 @@ private:
    * \param m the MAC address
    */
   void LteRxTrace (std::string context,
-                      Ptr<const Packet> p,
-                      const Mac48Address & m);
+                   Ptr<const Packet> p,
+                   const Mac48Address & m);
   /**
    * LTE Spectrum Phy transmit start function
    * \param context the context
@@ -1201,7 +1199,7 @@ private:
    */
   void GenericWirelessRxTrace (std::string context, Ptr<const Packet> p, ProtocolType protocolType);
 
-  
+
   /// Connect callbacks function
   void ConnectCallbacks ();
   /// Connect LTE function
@@ -1267,7 +1265,7 @@ private:
   void MobilityCourseChangeTrace (Ptr <const MobilityModel> mob);
 
 
-  // ##### XML Helpers ##### 
+  // ##### XML Helpers #####
 
   /**
    * Write non P2P link properties function
@@ -1401,19 +1399,19 @@ private:
    * \param fId the FID
    * \param fbTx the FB transmit
    * \param lbTx the LB transmit
-   * \param tId the TID 
+   * \param tId the TID
    * \param fbRx the FB receive
    * \param lbRx the LB receive
    * \param metaInfo the meta info
    */
-  void WriteXmlP (std::string pktType, 
-                                 uint32_t fId, 
-                                 double fbTx, 
-                                 double lbTx, 
-                                 uint32_t tId, 
-                                 double fbRx, 
-                                 double lbRx,
-                                 std::string metaInfo = ""); 
+  void WriteXmlP (std::string pktType,
+                  uint32_t fId,
+                  double fbTx,
+                  double lbTx,
+                  uint32_t tId,
+                  double fbRx,
+                  double lbRx,
+                  std::string metaInfo = "");
   /**
    * Write XMLP function
    * \param animUid the UID
@@ -1492,21 +1490,20 @@ private:
  *
  * When Anim receives a Tx Notification we tag the packet with a unique global uint64_t identifier
  * before recording Tx information
- * When Anim receives Rx notifications the tag is used to retrieve Tx information recorded earlier 
- * 
+ * When Anim receives Rx notifications the tag is used to retrieve Tx information recorded earlier
+ *
  */
 
 class AnimByteTag : public Tag
 {
 public:
-
   /**
    * \brief Get Type Id
    * \returns Type Id
    *
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * \brief Get Instance Type Id
    * \returns Type Id
