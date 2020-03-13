@@ -51,3 +51,31 @@ To perform a deeper test, you can manually run the daily or the weekly test. Go 
 Related to the timeout, our `gitlab-ci.yml` script also configures the job-level timeout. Currently, this timeout is set to 9h considering the extensive and time-consuming testing done in weekly jobs.
 
 **Note**: The job-level timeout can exceed the [project-level](https://docs.gitlab.com/ce/user/project/pipelines/settings.html#timeout) timeout (default: 60 min), but can not exceed the Runner-specific timeout.
+
+
+To summarize, if you are unsure about the commit you're about to
+merge into master, you can push it to a branch of your fork, then go to
+the Gitlab interface, click CI/CD, click Schedules, create a New
+schedule, set the description, any pattern that you wish to use, and the
+target branch you want to test. Then, put one or more variables from the
+list below:
+
+```shell
+RELEASE, that can take the value "weekly" or "daily" or "monthly"
+(if you want to perform all the build/test that are done daily, once a week,
+or once a month, respectively)
+
+FEDORA = True
+(to test all the fedora builds)
+
+UBUNTU = True
+(to test all the Ubuntu builds)
+
+GCC_BUILD_ENABLE = True
+(to test all the GCC builds)
+
+CLANG_BUILD_ENABLE = True
+(to test all the clang builds)
+```
+
+... and then click Save, and run it manually from the "Schedules" page.
