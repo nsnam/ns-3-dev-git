@@ -29,7 +29,6 @@
 #include "ns3/constant-velocity-mobility-model.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/simulator.h"
-#include "ns3/buildings-module.h"
 
 using namespace ns3;
 
@@ -157,19 +156,13 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun (void)
   Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
   nodes.Get (1)->AggregateObject (b);
 
-  // Create a building which will be used to simulate the NLOS state
-  Ptr<Building> building = Create<Building> ();
-  building->SetBoundaries (Box (0.5, 0.75, 99.0, 101.0, 0.0, 50.0));
-  BuildingsHelper::Install (nodes);
-
-  // Use the building channel condition model, so that we have a deterministic
-  // LOS/NLOS channel state
-  Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel> ();
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
 
   // Create the propagation loss model
   Ptr<ThreeGppRmaPropagationLossModel> lossModel = CreateObject<ThreeGppRmaPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
-  lossModel->SetChannelConditionModel (condModel);
 
   for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
     {
@@ -178,19 +171,18 @@ ThreeGppRmaPropagationLossModelTestCase::DoRun (void)
       Vector posBs = Vector (0.0, 0.0, 35.0);
       Vector posUt = Vector (testVector.m_distance, 0.0, 1.5);
 
-      // If NLOS, put the BS and the UT between the building
-      if (!testVector.m_isLos)
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
         {
-          posBs.y = +100.0;
-          posUt.y = +100.0;
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
         }
 
       a->SetPosition (posBs);
       b->SetPosition (posUt);
-      Ptr<MobilityBuildingInfo> buildingInfoA = a->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (a);
-      Ptr<MobilityBuildingInfo> buildingInfoB = b->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (b);
 
       lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
       NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
@@ -321,19 +313,13 @@ ThreeGppUmaPropagationLossModelTestCase::DoRun (void)
   Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
   nodes.Get (1)->AggregateObject (b);
 
-  // Create a building which will be used to simulate the NLOS state
-  Ptr<Building> building = Create<Building> ();
-  building->SetBoundaries (Box (0.5, 0.75, 99.0, 101.0, 0.0, 50.0));
-  BuildingsHelper::Install (nodes);
-
-  // Use the building channel condition model, so that we have a deterministic
-  // LOS/NLOS channel state
-  Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel> ();
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
 
   // Create the propagation loss model
   Ptr<ThreeGppUmaPropagationLossModel> lossModel = CreateObject<ThreeGppUmaPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
-  lossModel->SetChannelConditionModel (condModel);
 
   for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
     {
@@ -342,19 +328,18 @@ ThreeGppUmaPropagationLossModelTestCase::DoRun (void)
       Vector posBs = Vector (0.0, 0.0, 25.0);
       Vector posUt = Vector (testVector.m_distance, 0.0, 1.5);
 
-      // If NLOS, put the BS and the UT between the building
-      if (!testVector.m_isLos)
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
         {
-          posBs.y = +100.0;
-          posUt.y = +100.0;
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
         }
 
       a->SetPosition (posBs);
       b->SetPosition (posUt);
-      Ptr<MobilityBuildingInfo> buildingInfoA = a->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (a);
-      Ptr<MobilityBuildingInfo> buildingInfoB = b->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (b);
 
       lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
       NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
@@ -479,19 +464,13 @@ ThreeGppUmiPropagationLossModelTestCase::DoRun (void)
   Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
   nodes.Get (1)->AggregateObject (b);
 
-  // Create a building which will be used to simulate the NLOS state
-  Ptr<Building> building = Create<Building> ();
-  building->SetBoundaries (Box (0.5, 0.75, 99.0, 101.0, 0.0, 50.0));
-  BuildingsHelper::Install (nodes);
-
-  // Use the building channel condition model, so that we have a deterministic
-  // LOS/NLOS channel state
-  Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel> ();
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
 
   // Create the propagation loss model
   Ptr<ThreeGppUmiStreetCanyonPropagationLossModel> lossModel = CreateObject<ThreeGppUmiStreetCanyonPropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
-  lossModel->SetChannelConditionModel (condModel);
 
   for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
     {
@@ -500,19 +479,18 @@ ThreeGppUmiPropagationLossModelTestCase::DoRun (void)
       Vector posBs = Vector (0.0, 0.0, 10.0);
       Vector posUt = Vector (testVector.m_distance, 0.0, 1.5);
 
-      // If NLOS, put the BS and the UT between the building
-      if (!testVector.m_isLos)
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
         {
-          posBs.y = +100.0;
-          posUt.y = +100.0;
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
         }
 
       a->SetPosition (posBs);
       b->SetPosition (posUt);
-      Ptr<MobilityBuildingInfo> buildingInfoA = a->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (a);
-      Ptr<MobilityBuildingInfo> buildingInfoB = b->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (b);
 
       lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
       NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
@@ -643,19 +621,13 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
   Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
   nodes.Get (1)->AggregateObject (b);
 
-  // Create a building which will be used to simulate the NLOS state
-  Ptr<Building> building = Create<Building> ();
-  building->SetBoundaries (Box (0.25, 0.75, 99.0, 101.0, 0.0, 50.0));
-  BuildingsHelper::Install (nodes);
-
-  // Use the building channel condition model, so that we have a deterministic
-  // LOS/NLOS channel state
-  Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel> ();
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
 
   // Create the propagation loss model
   Ptr<ThreeGppIndoorOfficePropagationLossModel> lossModel = CreateObject<ThreeGppIndoorOfficePropagationLossModel> ();
   lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
-  lossModel->SetChannelConditionModel (condModel);
 
   for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
     {
@@ -664,19 +636,18 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
       Vector posBs = Vector (0.0, 0.0, 3.0);
       Vector posUt = Vector (testVector.m_distance, 0.0, 1.5);
 
-      // If NLOS, put the BS and the UT between the building
-      if (!testVector.m_isLos)
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
         {
-          posBs.y = +100.0;
-          posUt.y = +100.0;
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
         }
 
       a->SetPosition (posBs);
       b->SetPosition (posUt);
-      Ptr<MobilityBuildingInfo> buildingInfoA = a->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (a);
-      Ptr<MobilityBuildingInfo> buildingInfoB = b->GetObject<MobilityBuildingInfo> ();
-      buildingInfoA->MakeConsistent (b);
 
       lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
       NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
@@ -715,6 +686,8 @@ private:
    */
   void EvaluateLoss (Ptr<MobilityModel> a, Ptr<MobilityModel> b, uint8_t testNum);
 
+  void ChangeChannelCondition (Ptr<ChannelConditionModel> ccm);
+
   /**
    * Struct containing the parameters for each test
    */
@@ -750,6 +723,12 @@ ThreeGppShadowingTestCase::EvaluateLoss (Ptr<MobilityModel> a, Ptr<MobilityModel
 }
 
 void
+ThreeGppShadowingTestCase::ChangeChannelCondition (Ptr<ChannelConditionModel> ccm)
+{
+  m_lossModel->SetChannelConditionModel (ccm);
+}
+
+void
 ThreeGppShadowingTestCase::RunTest (uint16_t testNum, std::string propagationLossModelType, double hBs, double hUt, double distance, bool shadowingEnabled)
 {
   // Add a new entry for this test in the results map
@@ -769,21 +748,18 @@ ThreeGppShadowingTestCase::RunTest (uint16_t testNum, std::string propagationLos
   b->SetPosition (Vector (0.0, distance, hUt));
   b->SetVelocity (Vector (1.0, 0.0, 0.0));
 
-  // Create a building which will be used to simulate the NLOS state
-  Ptr<Building> building = Create<Building> ();
-  building->SetBoundaries (Box (99.0, 1000.0, 0.0, distance - 0.01, 0.0, 50.0));
-  BuildingsHelper::Install (nodes);
-
-  // Use the building channel condition model, so that we have a deterministic
-  // LOS/NLOS channel state
-  Ptr<ChannelConditionModel> condModel = CreateObject<BuildingsChannelConditionModel> ();
-
   // Create the propagation loss model
   ObjectFactory propagationLossModelFactory = ObjectFactory (propagationLossModelType);
   m_lossModel = propagationLossModelFactory.Create<ThreeGppPropagationLossModel> ();
   m_lossModel->SetAttribute ("Frequency", DoubleValue (3.5e9));
   m_lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (shadowingEnabled)); // enable the shadow fading
-  m_lossModel->SetChannelConditionModel (condModel);
+
+  // Set the channel condition to LOS
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  m_lossModel->SetChannelConditionModel (losCondModel);
+  // Schedule a transition to NLOS
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
+  Simulator::Schedule (Seconds (99.5), &ThreeGppShadowingTestCase::ChangeChannelCondition, this, nlosCondModel);
 
   // Schedule multiple calls to EvaluateLoss. Use both EvaluateLoss (a,b) and
   // EvaluateLoss (b,a) to check if the reciprocity holds.
