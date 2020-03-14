@@ -56,7 +56,7 @@ Where?
 
 Documentation for a specific module, ``foo``, should normally go in
 ``src/foo/doc/``.  For example ``src/foo/doc/foo.rst`` would be the
-top-level document for the module.  The ``src/create-module.py`` script
+top-level document for the module.  The ``utils/create-module.py`` script
 will create this file for you.
 
 Some models require several ``.rst`` files, and figures; these should

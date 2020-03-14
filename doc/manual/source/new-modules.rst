@@ -43,17 +43,25 @@ Not all directories will be present in each module.
 Step 1 - Create a Module Skeleton
 *********************************
 
-A python program is provided in the source directory that
+A python program is provided in the ``utils`` directory that
 will create a skeleton for a new module.  For the purposes
 of this discussion we will assume that your new module
-is called ``new-module``.  From the ``src`` directory, do the following
+is called ``new-module``.  From the top directory, do the following
 to create the new module:
 
 .. sourcecode:: bash
 
-  $ ./create-module.py new-module
+  $ ./utils/create-module.py new-module
 
-Next, ``cd`` into ``new-module``; you will find this directory layout:
+By default ``create-module.py`` creates the module skeleton in the
+``src`` directory.  However, it can also create modules in ``contrib``:
+
+.. sourcecode:: bash
+
+  $ ./utils/create-module.py contrib/new-contrib
+  
+Let's assume we've created our new module in ``src``.
+``cd`` into ``src/new-module``; you will find this directory layout:
 
 .. sourcecode:: text
 

@@ -1,5 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 from __future__ import print_function
+from collections import deque
 import os, os.path
 import sys
 import shutil
@@ -15,26 +16,67 @@ try:
 except NameError:
     from sets import Set as set # Python 2.3 fallback
 
-all_contrib_modules = []
-for dirname in os.listdir('contrib'):
-    if dirname.startswith('.') or dirname == 'CVS':
-        continue
-    path = os.path.join('contrib', dirname)
-    if not os.path.isdir(path):
-        continue
-    if os.path.exists(os.path.join(path, 'wscript')):
-        all_contrib_modules.append(dirname)
-all_contrib_modules.sort()
+# Allow mulitple modules to live in a single directory in contrib.
+# For example, a directory structure like:
+# contrib/package/module1
+#                /module2
+# Useful for external projects that are building interdependent modules that
+# are logically packaged together.
+def find_contrib_modules(ctx, log=False):
+    modules = []
+
+    entries = deque( (ctx.path, d) for d in ctx.path.listdir() )
+    
+    while entries:
+        parent, entry = entries.popleft()
+ 
+        if not entry or entry[0] == '.' or entry.endswith('CVS'):
+            continue
+
+        node = parent.find_node(entry) 
+
+        if not node:
+            continue
+
+        if node.isdir():
+            #does this directory have a wscript file?
+            wscript_node = node.find_node('wscript')
+
+            if wscript_node:
+                #found a wscript file, treat this directory as a module.
+                
+                #get the path relative to the context path 
+                module_path = node.path_from(ctx.path)
+                modules.append(module_path)
+
+                if log:
+                    ctx.msg("Found contrib module", module_path)
+            else:
+                #maybe this directory is a project, 
+                #add its children to the list of entries to process
+                entries.extend( (node, d) for d in node.listdir() )
+
+    return sorted(modules)
 
 def get_required_boost_libs(conf):
-    for module in all_contrib_modules:
+    for module in find_contrib_modules(conf):
         conf.recurse (module, name="required_boost_libs", mandatory=False)
 
 def options(opt):
-    for module in all_contrib_modules:
+    for module in find_contrib_modules(opt):
         opt.recurse(module, mandatory=False)
 
 def configure(conf):
+    all_contrib_modules = find_contrib_modules(conf, True)
+
+    # Append blddir to the module path before recursing into modules
+    # This is required for contrib modules with test suites
+    blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
+    conf.env.append_value('NS3_MODULE_PATH', blddir)
+
+    # Remove duplicate path items
+    conf.env['NS3_MODULE_PATH'] = wutils.uniquify_list(conf.env['NS3_MODULE_PATH'])
+
     for module in all_contrib_modules:
         conf.recurse(module, mandatory=False)
 
@@ -52,8 +94,11 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         module = bld(features='cxx cxxstlib ns3module')
     else:
         module = bld(features='cxx cxxshlib ns3module')
-    module.target = '%s/lib/ns%s-%s%s' % (bld.srcnode.path_from(module.path), wutils.VERSION,
-                                       name, bld.env.BUILD_SUFFIX)
+    target = '%s/lib/ns%s-%s%s' % (bld.srcnode.path_from(module.path),
+                                          wutils.VERSION,
+                                          name, bld.env.BUILD_SUFFIX)
+    
+    module.target = target
     linkflags = []
     cxxflags = []
     ccflags = []
@@ -153,7 +198,7 @@ def ns3_python_bindings(bld):
         return
 
     if ("ns3-%s" % (module,)) not in env.NS3_ENABLED_MODULES:
-        #print "bindings for module %s which is not enabled, skip" % module
+        #print "bindings for module %s which is not enabled, skip" % module)
         return
 
     env.append_value('PYTHON_MODULES_BUILT', module)
@@ -260,6 +305,8 @@ def build(bld):
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     
+    all_contrib_modules = find_contrib_modules(bld)
+
     # Remove these modules from the list of all modules.
     for not_built in bld.env['MODULES_NOT_BUILT']:
 

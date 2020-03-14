@@ -33,7 +33,7 @@ TestSuite), these things need to be decided up front:
   separately in src/test/ directory).  You will have to edit the wscript
   file in that directory to compile your new code, if it is a new file.
 
-A program called ``src/create-module.py`` is a good starting point.
+A program called ``utils/create-module.py`` is a good starting point.
 This program can be invoked such as ``create-module.py router`` for
 a hypothetical new module called ``router``.  Once you do this, you
 will see a ``router`` directory, and a ``test/router-test-suite.cc`` 
