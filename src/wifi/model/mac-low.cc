@@ -518,7 +518,7 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
    *
    * This typically happens because the high-priority
    * QapScheduler has taken access to the channel from
-   * one of the Edca of the QAP.
+   * one of the EDCA of the QAP.
    */
   m_currentPacket = Create<WifiPsdu> (mpdu, false);
   const WifiMacHeader& hdr = mpdu->GetHeader ();
@@ -1038,7 +1038,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
         {
           /* From section 9.10.4 in IEEE 802.11:
              Upon the receipt of a QoS data frame from the originator for which
-             the Block Ack agreement exists, the recipient shall buffer the MSDU
+             the block ack agreement exists, the recipient shall buffer the MSDU
              regardless of the value of the Ack Policy subfield within the
              QoS Control field of the QoS data frame. */
           if (hdr.IsQosAck () && !ampduSubframe)
@@ -1071,7 +1071,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
              agreement for that packet doesn't exist.
 
              From section 11.5.3 in IEEE 802.11e:
-             When a recipient does not have an active Block ack for a TID, but receives
+             When a recipient does not have an active block ack for a TID, but receives
              data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
              them and shall send a DELBA frame using the normal access
              mechanisms. */
@@ -1207,7 +1207,7 @@ MacLow::GetAckDuration (Mac48Address to, WifiTxVector dataTxVector) const
 Time
 MacLow::GetAckDuration (WifiTxVector ackTxVector) const
 {
-  NS_ASSERT (ackTxVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT); //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
+  NS_ASSERT (ackTxVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT); //Ack should always use non-HT PPDU (HT PPDU cases not supported yet)
   return m_phy->CalculateTxDuration (GetAckSize (), ackTxVector, m_phy->GetFrequency ());
 }
 
@@ -1293,7 +1293,7 @@ MacLow::GetControlAnswerMode (WifiMode reqMode) const
    *
    * To allow the transmitting STA to calculate the contents of the
    * Duration/ID field, a STA responding to a received frame shall
-   * transmit its Control Response frame (either CTS or ACK), other
+   * transmit its Control Response frame (either CTS or Ack), other
    * than the BlockAck control frame, at the highest rate in the
    * BSSBasicRateSet parameter that is less than or equal to the
    * rate of the immediately previous frame in the frame exchange
@@ -1409,7 +1409,7 @@ MacLow::GetControlAnswerMode (WifiMode reqMode) const
 
   /**
    * If we still haven't found a suitable rate for the response then
-   * someone has messed up the simulation config. This probably means
+   * someone has messed up the simulation configuration. This probably means
    * that the WifiPhyStandard is not set correctly, or that a rate that
    * is not supported by the PHY has been explicitly requested.
    *
@@ -1747,9 +1747,9 @@ MacLow::CtsTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("cts timeout");
-  /// \todo should check that there was no rx start before now.
-  /// we should restart a new cts timeout now until the expected
-  /// end of rx if there was a rx start before now.
+  /// \todo should check that there was no RX start before now.
+  /// we should restart a new CTS timeout now until the expected
+  /// end of RX if there was a RX start before now.
   m_stationManager->ReportRtsFailed (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0));
 
   Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
@@ -1769,9 +1769,9 @@ MacLow::NormalAckTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("normal ack timeout");
-  /// \todo should check that there was no rx start before now.
+  /// \todo should check that there was no RX start before now.
   /// we should restart a new ack timeout now until the expected
-  /// end of rx if there was a rx start before now.
+  /// end of RX if there was a RX start before now.
   Ptr<Txop> txop = m_currentTxop;
   m_currentTxop = 0;
   txop->MissedAck ();
@@ -1953,10 +1953,10 @@ MacLow::SendDataPacket (void)
               break;
             }
           NS_ASSERT (m_cfAckInfo.address != Mac48Address ());
-          //Standard says that, for frames of type Data+CF-ACK, Data+CF-Poll+CF-ACK, and CF-Poll+CF-ACK,
-          //the rate chosen to transmit the frame must be supported by both the addressed recipient STA and the STA to which the ACK is intended.
+          //Standard says that, for frames of type Data+CF-Ack, Data+CF-Poll+CF-Ack, and CF-Poll+CF-Ack,
+          //the rate chosen to transmit the frame must be supported by both the addressed recipient STA and the STA to which the Ack is intended.
           //This ideally requires the rate manager to handle this case, but this requires to update all rate manager classes.
-          //Instead, we simply fetch two TxVector and we select the one with the lowest datarate.
+          //Instead, we simply fetch two TxVector and we select the one with the lowest data rate.
           //This should be later changed, at the latest once HCCA is implemented for HT/VHT/HE stations.
           WifiMacHeader tmpHdr = m_currentPacket->GetHeader (0);
           tmpHdr.SetAddr1 (m_cfAckInfo.address);
@@ -2059,7 +2059,7 @@ MacLow::SendDataAfterCts (Time duration)
 {
   NS_LOG_FUNCTION (this);
   /* send the third step in a
-   * RTS/CTS/DATA/ACK handshake
+   * RTS/CTS/Data/Ack handshake
    */
   NS_ASSERT (m_currentPacket != 0);
 
@@ -2133,7 +2133,7 @@ void
 MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this);
-  // send an ACK, after SIFS, when you receive a packet
+  // send an Ack, after SIFS, when you receive a packet
   WifiTxVector ackTxVector = GetAckTxVector (source, dataTxMode);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
@@ -2143,7 +2143,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   ack.SetNoMoreFragments ();
   ack.SetAddr1 (source);
   // 802.11-2012, Section 8.3.1.4:  Duration/ID is received duration value
-  // minus the time to transmit the ACK frame and its SIFS interval
+  // minus the time to transmit the Ack frame and its SIFS interval
   duration -= GetAckDuration (ackTxVector);
   duration -= GetSifs ();
   NS_ASSERT_MSG (duration.IsPositive (), "Please provide test case to maintainers if this assert is hit.");
@@ -2155,7 +2155,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
 
-  //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
+  //Ack should always use non-HT PPDU (HT PPDU cases not supported yet)
   ForwardDown (Create<const WifiPsdu> (packet, ack), ackTxVector);
 }
 
@@ -2178,7 +2178,7 @@ MacLow::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu)
       AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
       if (it != m_bAckAgreements.end ())
         {
-          //Implement HT immediate Block Ack support for HT Delayed Block Ack is not added yet
+          //Implement HT immediate BlockAck support for HT Delayed BlockAck is not added yet
           if (!QosUtilsIsOldPacket ((*it).second.first.GetStartingSequence (), seqNumber))
             {
               StoreMpduIfNeeded (mpdu);
@@ -2418,7 +2418,7 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
 
   NS_ASSERT (duration.IsPositive ());
   hdr.SetDuration (duration);
-  //here should be present a control about immediate or delayed block ack
+  //here should be present a control about immediate or delayed BlockAck
   //for now we assume immediate
   SnrTag tag;
   tag.Set (rxSnr);
@@ -2503,7 +2503,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
               && !m_stationManager->GetVhtSupported ()
               && !m_stationManager->GetHeSupported ())
             {
-              /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac
+              /* All packets with smaller sequence than starting sequence control must be passed up to WifiMac
                * See 9.10.3 in IEEE 802.11e standard.
                */
               RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequenceControl (), originator, tid);
@@ -2582,7 +2582,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
                 {
                   if (psdu->IsSingle ())
                     {
-                      //If the MPDU is sent as a VHT/HE single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an ACK.
+                      //If the MPDU is sent as a VHT/HE single MPDU (EOF=1 in A-MPDU subframe header), then the responder sends an Ack.
                       NS_LOG_DEBUG ("Receive S-MPDU");
                       ampduSubframe = false;
                     }
@@ -2619,7 +2619,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
                     {
                       if (normalAck)
                         {
-                          //send block Ack
+                          //send BlockAck
                           if (firsthdr.IsBlockAckReq ())
                             {
                               NS_FATAL_ERROR ("Sending a BlockAckReq with QosPolicy equal to Normal Ack");
@@ -2628,7 +2628,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<WifiPsdu> psdu, double rxSnr, WifiTxVect
                           AgreementsI it = m_bAckAgreements.find (std::make_pair (firsthdr.GetAddr2 (), tid));
                           if (it != m_bAckAgreements.end ())
                             {
-                              /* See section 11.5.3 in IEEE 802.11 for mean of this timer */
+                              /* See section 11.5.3 in IEEE 802.11 for the definition of this timer */
                               ResetBlockAckInactivityTimerIfNeeded (it->second.first);
                               NS_LOG_DEBUG ("rx A-MPDU/sendImmediateBlockAck from=" << firsthdr.GetAddr2 ());
                               NS_ASSERT (m_sendAckEvent.IsRunning ());

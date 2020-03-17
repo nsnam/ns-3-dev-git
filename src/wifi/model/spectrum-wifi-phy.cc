@@ -219,7 +219,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   m_signalCb (wifiRxParams ? true : false, senderNodeId, WToDbm (rxPowerW), rxDuration);
 
   // Do no further processing if signal is too weak
-  // Current implementation assumes constant rx power over the PPDU duration
+  // Current implementation assumes constant RX power over the PPDU duration
   if (WToDbm (rxPowerW) < GetRxSensitivity ())
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (rxPowerW) << " dBm");

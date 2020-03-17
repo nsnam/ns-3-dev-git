@@ -47,7 +47,7 @@ public:
    * This method returns whether the preamble detection was successful.
    *
    * \param rssi the RSSI of the received signal (in Watts).
-   * \param snr the SNR ratio (not dB) of the received signal.
+   * \param snr the SNR ratio (linear scale) of the received signal.
    * \param channelWidth the channel width of the received signal in MHz.
    *
    * \return true if the preamble has been detected,
@@ -58,7 +58,7 @@ public:
 
 private:
   double m_threshold; ///< SNR threshold in dB used to decide whether a preamble is successfully received
-  double m_rssiMin;   ///< Minimum RSSI that shall be received to start the decision
+  double m_rssiMin;   ///< Minimum RSSI in dBm that shall be received to start the decision
 };
 
 } //namespace ns3

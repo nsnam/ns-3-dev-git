@@ -44,7 +44,7 @@ public:
    * This method returns whether the preamble detection was successful.
    *
    * \param rssi the RSSI of the received signal (in Watts).
-   * \param snr the SNR of the received signal.
+   * \param snr the SNR of the received signal in linear scale.
    * \param channelWidth the channel width of the received signal in MHz.
    *
    * \return true if the preamble has been detected,

@@ -128,7 +128,7 @@ public:
    */
   struct SnrPer
   {
-    double snr; ///< SNR
+    double snr; ///< SNR in linear scale
     double per; ///< PER
   };
 
@@ -138,7 +138,7 @@ public:
   /**
    * Set the noise figure.
    *
-   * \param value noise figure
+   * \param value noise figure in linear scale
    */
   void SetNoiseFigure (double value);
   /**
@@ -190,7 +190,7 @@ public:
   void AddForeignSignal (Time duration, double rxPower);
   /**
    * Calculate the SNIR at the start of the payload and accumulate
-   * all SNIR changes in the snir vector for each MPDU of an A-MPDU.
+   * all SNIR changes in the SNIR vector for each MPDU of an A-MPDU.
    * This workaround is required in order to provide one PER per MPDU, for
    * reception success/failure evaluation, while hiding aggregation details from
    * this class.
@@ -206,12 +206,12 @@ public:
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
    *
-   * \return the SNR for the PPDU
+   * \return the SNR for the PPDU in linear scale
    */
   double CalculateSnr (Ptr<Event> event) const;
   /**
    * Calculate the SNIR at the start of the non-HT PHY header and accumulate
-   * all SNIR changes in the snir vector.
+   * all SNIR changes in the SNIR vector.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
    *
@@ -220,7 +220,7 @@ public:
   struct InterferenceHelper::SnrPer CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event) const;
   /**
    * Calculate the SNIR at the start of the HT PHY header and accumulate
-   * all SNIR changes in the snir vector.
+   * all SNIR changes in the SNIR vector.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
    *
@@ -252,20 +252,20 @@ public:
     /**
      * Create a NiChange at the given time and the amount of NI change.
      *
-     * \param power the power
+     * \param power the power in watts
      * \param event causes this NI change
      */
     NiChange (double power, Ptr<Event> event);
     /**
      * Return the power
      *
-     * \return the power
+     * \return the power in watts
      */
     double GetPower (void) const;
     /**
      * Add a given amount of power.
      *
-     * \param power the power to be added to the existing value
+     * \param power the power to be added to the existing value in watts
      */
     void AddPower (double power);
     /**
@@ -277,7 +277,7 @@ public:
 
 
 private:
-    double m_power; ///< power
+    double m_power; ///< power in watts
     Ptr<Event> m_event; ///< event
   };
 
@@ -295,8 +295,8 @@ private:
   /**
    * Calculate noise and interference power in W.
    *
-   * \param event
-   * \param ni
+   * \param event the event
+   * \param ni the NiChanges
    *
    * \return noise and interference power
    */
@@ -308,17 +308,17 @@ private:
    * \param noiseInterference noise and interference power, W
    * \param channelWidth signal width in MHz
    *
-   * \return SNR in linear ratio
+   * \return SNR in linear scale
    */
   double CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth) const;
   /**
    * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
    * The duration and mode are used to calculate how many bits are present in the chunk.
    *
-   * \param snir SINR
-   * \param duration
-   * \param mode
-   * \param txVector
+   * \param snir the SINR
+   * \param duration the duration of the chunk
+   * \param mode the WifiMode
+   * \param txVector the TXVECTOR
    *
    * \return the success rate
    */
@@ -327,9 +327,9 @@ private:
    * Calculate the success rate of the payload chunk given the SINR, duration, and Wi-Fi mode.
    * The duration and mode are used to calculate how many bits are present in the chunk.
    *
-   * \param snir SINR
-   * \param duration
-   * \param txVector
+   * \param snir the SINR
+   * \param duration the duration of the chunk
+   * \param txVector the TXVECTOR
    *
    * \return the success rate
    */
@@ -339,8 +339,8 @@ private:
    * window (thus enabling per MPDU PER information). The PLCP payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
    *
-   * \param event
-   * \param ni
+   * \param event the event
+   * \param ni the NiChanges
    * \param window time window (pair of start and end times) of PLCP payload to focus on
    *
    * \return the error rate of the payload
@@ -350,8 +350,8 @@ private:
    * Calculate the error rate of the non-HT PHY header. The non-HT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).
    *
-   * \param event
-   * \param ni
+   * \param event the event
+   * \param ni the NiChanges
    *
    * \return the error rate of the non-HT PHY header
    */
@@ -360,8 +360,8 @@ private:
    * Calculate the error rate of the HT PHY header. TheHT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).
    *
-   * \param event
-   * \param ni
+   * \param event the event
+   * \param ni the NiChanges
    *
    * \return the error rate of the HT PHY header
    */
@@ -372,25 +372,25 @@ private:
   uint8_t m_numRxAntennas; /**< the number of RX antennas in the corresponding receiver */
   /// Experimental: needed for energy duration calculation
   NiChanges m_niChanges;
-  double m_firstPower; ///< first power
+  double m_firstPower; ///< first power in watts
   bool m_rxing; ///< flag whether it is in receiving state
 
   /**
-   * Returns an iterator to the first nichange that is later than moment
+   * Returns an iterator to the first NiChange that is later than moment
    *
    * \param moment time to check from
    * \returns an iterator to the list of NiChanges
    */
   NiChanges::const_iterator GetNextPosition (Time moment) const;
   /**
-   * Returns an iterator to the first nichange that is later than moment
+   * Returns an iterator to the first NiChange that is later than moment
    *
    * \param moment time to check from
    * \returns an iterator to the list of NiChanges
    */
   //NiChanges::iterator GetNextPosition (Time moment);
   /**
-   * Returns an iterator to the last nichange that is before than moment
+   * Returns an iterator to the last NiChange that is before than moment
    *
    * \param moment time to check from
    * \returns an iterator to the list of NiChanges
@@ -401,8 +401,8 @@ private:
    * Add NiChange to the list at the appropriate position and
    * return the iterator of the new event.
    *
-   * \param moment
-   * \param change
+   * \param moment time to check from
+   * \param change the NiChange to add
    * \returns the iterator of the new event
    */
   NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change);

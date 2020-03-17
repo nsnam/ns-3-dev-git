@@ -60,7 +60,7 @@
 //
 // HT and mixed-HT results show that HT GF permits to slightly increase performance when all HT stations support GF mode, and RIFS also permits
 // such a small improvement when no non-HT station is present. In order to show the benefit offered by RIFS, aggregation has been disabled and
-// Block ACK together with a TXOP duration of 3008 microseconds have been set.
+// BlockAck together with a TXOP duration of 3008 microseconds have been set.
 //
 // The user can also select the payload size and can choose either an UDP or a TCP connection.
 // Example: ./waf --run "wifi-mixed-network --isUdp=1"

@@ -175,7 +175,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("maxSsrc", "The maximum number of retransmission attempts for a RTS packet", maxSsrc);
-  cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a DATA packet", maxSlrc);
+  cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a Data packet", maxSlrc);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
   cmd.AddValue ("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
   cmd.AddValue ("stepSize", "Power between steps (dBm)", stepSize);

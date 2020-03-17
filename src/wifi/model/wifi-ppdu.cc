@@ -246,7 +246,7 @@ WifiPpdu::GetTxVector (void) const
                 break;
             }
           txVector.SetMode (mode);
-          //OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 Mhz
+          //OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
           txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
           break;
         }
@@ -284,7 +284,7 @@ WifiPpdu::GetTxVector (void) const
                 break;
             }
           txVector.SetMode (mode);
-          //ERP-OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 Mhz
+          //ERP-OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
           txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
           break;
         }

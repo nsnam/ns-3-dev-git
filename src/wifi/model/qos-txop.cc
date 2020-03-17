@@ -58,12 +58,12 @@ QosTxop::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddConstructor<QosTxop> ()
     .AddAttribute ("UseExplicitBarAfterMissedBlockAck",
-                   "Specify whether explicit Block Ack Request should be sent upon missed Block Ack Response.",
+                   "Specify whether explicit BlockAckRequest should be sent upon missed BlockAck Response.",
                    BooleanValue (true),
                    MakeBooleanAccessor (&QosTxop::m_useExplicitBarAfterMissedBlockAck),
                    MakeBooleanChecker ())
     .AddAttribute ("AddBaResponseTimeout",
-                   "The timeout to wait for ADDBA response after the ACK to "
+                   "The timeout to wait for ADDBA response after the Ack to "
                    "ADDBA request is received.",
                    TimeValue (MilliSeconds (1)),
                    MakeTimeAccessor (&QosTxop::SetAddBaResponseTimeout,
@@ -535,7 +535,7 @@ QosTxop::NotifyAccessGranted (void)
               NS_LOG_DEBUG ("no packets available for transmission");
               return;
             }
-          // check if a Block Ack agreement needs to be established
+          // check if a block ack agreement needs to be established
           m_currentHdr = peekedItem->GetHeader ();
           m_currentPacket = peekedItem->GetPacket ();
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
@@ -549,10 +549,10 @@ QosTxop::NotifyAccessGranted (void)
 
           m_stationManager->UpdateFragmentationThreshold ();
           Ptr<WifiMacQueueItem> item;
-          // non-broadcast QoS data frames may be sent in MU PPDUs. Given that at this stage
+          // non-broadcast QoS Data frames may be sent in MU PPDUs. Given that at this stage
           // we do not know the bandwidth it would be given nor the selected acknowledgment
           // sequence, we cannot determine the constraints on size and duration limit. Hence,
-          // we only peek the non-broadcast QoS data frame. MacLow will be in charge of
+          // we only peek the non-broadcast QoS Data frame. MacLow will be in charge of
           // computing the correct limits and dequeue the frame.
           if (peekedItem->GetHeader ().IsQosData () && !peekedItem->GetHeader ().GetAddr1 ().IsBroadcast ()
               && !NeedFragmentation ())
@@ -1097,7 +1097,7 @@ QosTxop::StartNextPacket (void)
 
       if (GetTxopRemaining () >= m_low->CalculateOverallTxTime (nextFrame->GetPacket (), &nextFrame->GetHeader (), params))
         {
-          // check if a Block Ack agreement needs to be established
+          // check if a block ack agreement needs to be established
           m_currentHdr = nextFrame->GetHeader ();
           m_currentPacket = nextFrame->GetPacket ();
           if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
@@ -1114,10 +1114,10 @@ QosTxop::StartNextPacket (void)
             {
               item = Copy (m_baManager->GetBar ());
             }
-          // non-broadcast QoS data frames may be sent in MU PPDUs. Given that at this stage
+          // non-broadcast QoS Data frames may be sent in MU PPDUs. Given that at this stage
           // we do not know the bandwidth it would be given nor the selected acknowledgment
           // sequence, we cannot determine the constraints on size and duration limit. Hence,
-          // we only peek the non-broadcast QoS data frame. MacLow will be in charge of
+          // we only peek the non-broadcast QoS Data frame. MacLow will be in charge of
           // computing the correct limits and dequeue the frame.
           else if (nextFrame->GetHeader ().IsQosData () && !nextFrame->GetHeader ().GetAddr1 ().IsBroadcast ())
             {

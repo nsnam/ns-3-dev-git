@@ -46,14 +46,14 @@ public:
   /**
    * \brief Create a Wifi MAC queue item containing a packet and a Wifi MAC header.
    * \param p the const packet included in the created item.
-   * \param header the Wifi Mac header included in the created item.
+   * \param header the Wifi MAC header included in the created item.
    */
   WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header);
 
   /**
    * \brief Create a Wifi MAC queue item containing a packet and a Wifi MAC header.
    * \param p the const packet included in the created item.
-   * \param header the Wifi Mac header included in the created item.
+   * \param header the Wifi MAC header included in the created item.
    * \param tstamp the timestamp associated with the created item.
    */
   WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header, Time tstamp);
@@ -94,7 +94,7 @@ public:
    * \brief Return the size of the packet stored by this item, including header
    *        size and trailer size
    *
-   * \return the size of the packet stored by this item.
+   * \return the size of the packet stored by this item in bytes.
    */
   uint32_t GetSize (void) const;
 
@@ -151,8 +151,8 @@ private:
 /**
  * \brief Stream insertion operator.
  *
- * \param os the stream
- * \param item the item
+ * \param os the output stream
+ * \param item the WifiMacQueueItem
  * \returns a reference to the stream
  */
 std::ostream& operator<< (std::ostream& os, const WifiMacQueueItem &item);

@@ -51,13 +51,13 @@ WifiRadioEnergyModel::GetTypeId (void)
                                        &WifiRadioEnergyModel::GetCcaBusyCurrentA),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxCurrentA",
-                   "The radio Tx current in Ampere.",
+                   "The radio TX current in Ampere.",
                    DoubleValue (0.380),    // transmit at 0dBm = 380mA
                    MakeDoubleAccessor (&WifiRadioEnergyModel::SetTxCurrentA,
                                        &WifiRadioEnergyModel::GetTxCurrentA),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("RxCurrentA",
-                   "The radio Rx current in Ampere.",
+                   "The radio RX current in Ampere.",
                    DoubleValue (0.313),    // receive mode = 313mA
                    MakeDoubleAccessor (&WifiRadioEnergyModel::SetRxCurrentA,
                                        &WifiRadioEnergyModel::GetRxCurrentA),
@@ -74,7 +74,7 @@ WifiRadioEnergyModel::GetTypeId (void)
                    MakeDoubleAccessor (&WifiRadioEnergyModel::SetSleepCurrentA,
                                        &WifiRadioEnergyModel::GetSleepCurrentA),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("TxCurrentModel", "A pointer to the attached tx current model.",
+    .AddAttribute ("TxCurrentModel", "A pointer to the attached TX current model.",
                    PointerValue (),
                    MakePointerAccessor (&WifiRadioEnergyModel::m_txCurrentModel),
                    MakePointerChecker<WifiTxCurrentModel> ())
@@ -97,7 +97,7 @@ WifiRadioEnergyModel::WifiRadioEnergyModel ()
   // set callback for WifiPhy listener
   m_listener = new WifiRadioEnergyModelPhyListener;
   m_listener->SetChangeStateCallback (MakeCallback (&DeviceEnergyModel::ChangeState, this));
-  // set callback for updating the tx current
+  // set callback for updating the TX current
   m_listener->SetUpdateTxCurrentCallback (MakeCallback (&WifiRadioEnergyModel::SetTxCurrentFromModel, this));
 }
 

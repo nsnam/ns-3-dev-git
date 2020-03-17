@@ -38,15 +38,15 @@ VhtOperation::ElementId () const
 }
 
 void
-VhtOperation::SetVhtSupported (uint8_t vhtsupported)
+VhtOperation::SetVhtSupported (uint8_t vhtSupported)
 {
-  m_vhtSupported = vhtsupported;
+  m_vhtSupported = vhtSupported;
 }
 
 uint8_t
 VhtOperation::GetInformationFieldSize () const
 {
-  //we should not be here if vht is not supported
+  //we should not be here if VHT is not supported
   NS_ASSERT (m_vhtSupported > 0);
   return 5;
 }
@@ -161,14 +161,6 @@ VhtOperation::DeserializeInformationField (Buffer::Iterator start, uint8_t lengt
   return length;
 }
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param VhtOperation the VHT operation
- *
- * \returns output stream
- */
 std::ostream &
 operator << (std::ostream &os, const VhtOperation &VhtOperation)
 {

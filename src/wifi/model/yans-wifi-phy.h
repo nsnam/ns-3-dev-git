@@ -57,20 +57,16 @@ public:
   YansWifiPhy ();
   virtual ~YansWifiPhy ();
 
+  // Implementation of pure virtual method.
+  void StartTx (Ptr<WifiPpdu> ppdu);
+  virtual Ptr<Channel> GetChannel (void) const;
+
   /**
    * Set the YansWifiChannel this YansWifiPhy is to be connected to.
    *
    * \param channel the YansWifiChannel this YansWifiPhy is to be connected to
    */
   void SetChannel (const Ptr<YansWifiChannel> channel);
-
-  /**
-   * \param ppdu the PPDU to send
-   */
-  void StartTx (Ptr<WifiPpdu> ppdu);
-
-  virtual Ptr<Channel> GetChannel (void) const;
-
 
 protected:
   // Inherited

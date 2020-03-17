@@ -45,14 +45,14 @@ struct RateInfo
   uint32_t retryCount;          ///< retry limit
   uint32_t adjustedRetryCount;  ///< adjust the retry limit for this rate
   uint32_t numRateAttempt;      ///< how many number of attempts so far
-  uint32_t numRateSuccess;      ///< number of successful pkts
-  uint32_t prob;                ///< (# pkts success )/(# total pkts)
+  uint32_t numRateSuccess;      ///< number of successful packets
+  uint32_t prob;                ///< (# packets success)/(# total packets)
   /**
    * EWMA calculation
    * ewma_prob =[prob *(100 - ewma_level) + (ewma_prob_old * ewma_level)]/100
    */
   uint32_t ewmaProb;
-  uint32_t throughput;  ///< throughput of a rate
+  uint32_t throughput;  ///< throughput of a rate in bps
 
   uint32_t prevNumRateAttempt;  //!< Number of transmission attempts with previous rate.
   uint32_t prevNumRateSuccess;  //!< Number of successful frames transmitted with previous rate.
@@ -87,25 +87,25 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
   /**
    * To keep track of the current position in the our random sample table
    * going row by row from 1st column until the 10th column(Minstrel defines 10)
-   * then we wrap back to the row 1 col 1.
+   * then we wrap back to the row 1 column 1.
    * note: there are many other ways to do this.
    */
-  uint8_t m_col;                 ///< vector index
+  uint8_t m_col;                 ///< column index
   uint8_t m_index;               ///< vector index
-  uint16_t m_maxTpRate;          ///< the current throughput rate
-  uint16_t m_maxTpRate2;         ///< second highest throughput rate
-  uint16_t m_maxProbRate;        ///< rate with highest prob of success
+  uint16_t m_maxTpRate;          ///< the current throughput rate in bps
+  uint16_t m_maxTpRate2;         ///< second highest throughput rate in bps
+  uint16_t m_maxProbRate;        ///< rate with highest probability of success in bps
   uint8_t m_nModes;              ///< number of modes supported
   int m_totalPacketsCount;       ///< total number of packets as of now
   int m_samplePacketsCount;      ///< how many packets we have sample so far
-  int m_numSamplesDeferred;      ///< number samles deferred
+  int m_numSamplesDeferred;      ///< number samples deferred
   bool m_isSampling;             ///< a flag to indicate we are currently sampling
-  uint16_t m_sampleRate;         ///< current sample rate
+  uint16_t m_sampleRate;         ///< current sample rate in bps
   bool m_sampleDeferred;         ///< a flag to indicate sample rate is on the second stage
-  uint32_t m_shortRetry;         ///< short retries such as control packts
+  uint32_t m_shortRetry;         ///< short retries such as control packets
   uint32_t m_longRetry;          ///< long retries such as data packets
   uint32_t m_retry;              ///< total retries short + long
-  uint16_t m_txrate;             ///< current transmit rate
+  uint16_t m_txrate;             ///< current transmit rate in bps
   bool m_initialized;            ///< for initializing tables
   MinstrelRate m_minstrelTable;  ///< minstrel table
   SampleRate m_sampleTable;      ///< sample table
@@ -181,29 +181,29 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   /**
-   * updating the rate
+   * Update the rate.
    *
    * \param station the station object
    */
   void UpdateRate (MinstrelWifiRemoteStation *station);
 
   /**
-   * updating the Minstrel Table every 1/10 seconds
+   * Update the Minstrel Table every 1/10 seconds.
    *
    * \param station the station object
    */
   void UpdateStats (MinstrelWifiRemoteStation *station);
 
   /**
-   * find a rate to use from Minstrel Table
+   * Find a rate to use from Minstrel Table.
    *
    * \param station the station object
-   * \returns the rate
+   * \returns the rate in bps
    */
   uint16_t FindRate (MinstrelWifiRemoteStation *station);
 
   /**
-   * Get data transmit vector
+   * Get data transmit vector.
    *
    * \param station the station object
    * \returns WifiTxVector
@@ -211,7 +211,7 @@ public:
   WifiTxVector GetDataTxVector (MinstrelWifiRemoteStation *station);
 
   /**
-   * Get RTS transmit vector
+   * Get RTS transmit vector.
    *
    * \param station the station object
    * \returns WifiTxVector
@@ -219,36 +219,36 @@ public:
   WifiTxVector GetRtsTxVector (MinstrelWifiRemoteStation *station);
 
   /**
-   * Count retries
+   * Get the number of retries.
    *
    * \param station the station object
-   * \returns the number if retries
+   * \returns the number of retries
    */
   uint32_t CountRetries (MinstrelWifiRemoteStation *station);
 
   /**
-   * Update packet counters
+   * Update packet counters.
    *
    * \param station the station object
    */
   void UpdatePacketCounters (MinstrelWifiRemoteStation *station);
 
   /**
-   * update the number of retries and reset accordingly
+   * Update the number of retries and reset accordingly.
    *
    * \param station the station object
    */
   void UpdateRetry (MinstrelWifiRemoteStation *station);
 
   /**
-   * check for initializations
+   * Check for initializations.
    *
    * \param station the station object
    */
   void CheckInit (MinstrelWifiRemoteStation *station);
 
   /**
-   * initialize Sample Table
+   * Initialize Sample Table.
    *
    * \param station the station object
    */
@@ -277,7 +277,7 @@ private:
   bool IsLowLatency (void) const;
 
   /**
-   * for estimating the TxTime of a packet with a given mode
+   * Estimate the TxTime of a packet with a given mode.
    *
    * \param mode Wi-Fi mode
    * \returns the transmission time
@@ -292,14 +292,14 @@ private:
   void AddCalcTxTime (WifiMode mode, Time t);
 
   /**
-   * initialize Minstrel Table
+   * Initialize Minstrel Table.
    *
    * \param station the station object
    */
   void RateInit (MinstrelWifiRemoteStation *station);
 
   /**
-   * getting the next sample from Sample Table
+   * Get the next sample from Sample Table.
    *
    * \param station the station object
    * \returns the next sample
@@ -318,8 +318,8 @@ private:
    *
    * There are four main parts:
    *  - wait for DIFS (sense idle channel)
-   *  - ACK timeouts
-   *  - DATA transmission
+   *  - Ack timeouts
+   *  - Data transmission
    *  - backoffs according to CW
    *
    * \param dataTransmissionTime the data transmission time
@@ -330,14 +330,14 @@ private:
   Time CalculateTimeUnicastPacket (Time dataTransmissionTime, uint32_t shortRetries, uint32_t longRetries);
 
   /**
-   * printing Sample Table
+   * Print Sample Table.
    *
    * \param station the station object
    */
   void PrintSampleTable (MinstrelWifiRemoteStation *station);
 
   /**
-   * printing Minstrel Table
+   * Print Minstrel Table.
    *
    * \param station the station object
    */
@@ -348,7 +348,7 @@ private:
    * Essentially a map from WifiMode to its corresponding transmission time
    * to transmit a reference packet.
    */
-  typedef std::map<WifiMode,Time> TxTime;
+  typedef std::map<WifiMode, Time> TxTime;
 
   TxTime m_calcTxTime;      ///< to hold all the calculated TxTime for all modes
   Time m_updateStats;       ///< how frequent do we calculate the stats (1/10 seconds)

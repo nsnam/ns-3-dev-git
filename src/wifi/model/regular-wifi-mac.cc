@@ -1151,7 +1151,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetBkBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
     .AddAttribute ("VO_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_VO. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1159,7 +1159,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetVoBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("VI_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_VI. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1167,7 +1167,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetViBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BE_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_BE. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",
@@ -1175,7 +1175,7 @@ RegularWifiMac::GetTypeId (void)
                    MakeUintegerAccessor (&RegularWifiMac::SetBeBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BK_BlockAckInactivityTimeout",
-                   "Represents max time (blocks of 1024 micro seconds) allowed for block ack"
+                   "Represents max time (blocks of 1024 microseconds) allowed for block ack"
                    "inactivity for AC_BK. If this value isn't equal to 0 a timer start after that a"
                    "block ack setup is completed and will be reset every time that a block ack"
                    "frame is received. If this value is 0, block ack inactivity timeout won't be used.",

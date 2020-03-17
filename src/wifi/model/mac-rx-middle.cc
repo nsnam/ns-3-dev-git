@@ -198,7 +198,7 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
   if (hdr->IsQosData ()
       && !hdr->GetAddr2 ().IsGroup ())
     {
-      /* only for qos data non-broadcast frames */
+      /* only for QoS data non-broadcast frames */
       originator = m_qosOriginatorStatus[std::make_pair (source, hdr->GetQosTid ())];
       if (originator == 0)
         {
@@ -209,8 +209,8 @@ MacRxMiddle::Lookup (const WifiMacHeader *hdr)
   else
     {
       /* - management frames
-       * - qos data broadcast frames
-       * - nqos data frames
+       * - QoS data broadcast frames
+       * - non-QoS data frames
        * see section 7.1.3.4.1
        */
       originator = m_originatorStatus[source];

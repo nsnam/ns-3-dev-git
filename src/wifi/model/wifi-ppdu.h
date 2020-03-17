@@ -92,9 +92,9 @@ private:
   WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
   Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
-  uint16_t m_frequency;             //!< the frequency used to transmit that PPDU
-  uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU
-  uint8_t m_txPowerLevel;           //!< the transmission power level (used only for Tx and initializing the returned WifiTxVector)
+  uint16_t m_frequency;             //!< the frequency used to transmit that PPDU in MHz
+  uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU in MHz
+  uint8_t m_txPowerLevel;           //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
 };
 
 /**

@@ -110,19 +110,19 @@ public:
    * \param guardInterval the considered guard interval duration in nanoseconds
    * \param nss the considered number of streams
    *
-   * \returns the physical bit rate of this signal.
+   * \returns the physical bit rate of this signal in bps.
    *
    * If a transmission mode uses 1/2 FEC, and if its
-   * data rate is 3.25Mbps, the phy rate is 6.5Mbps
+   * data rate is 3.25Mbps, the PHY rate is 6.5Mbps
    */
   uint64_t GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the WifiTxVector of the signal
    *
-   * \returns the physical bit rate of this signal.
+   * \returns the physical bit rate of this signal in bps.
    *
    * If a transmission mode uses 1/2 FEC, and if its
-   * data rate is 3.25Mbps, the phy rate is 6.5Mbps
+   * data rate is 3.25Mbps, the PHY rate is 6.5Mbps
    */
   uint64_t GetPhyRate (WifiTxVector txVector) const;
   /**
@@ -131,7 +131,7 @@ public:
    * \param guardInterval the considered guard interval duration in nanoseconds
    * \param nss the considered number of streams
    *
-   * \returns the data bit rate of this signal.
+   * \returns the data bit rate of this signal in bps.
    */
   uint64_t GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
@@ -170,11 +170,11 @@ public:
    */
   bool IsMandatory (void) const;
   /**
-   * \returns the uid associated to this wireless mode.
+   * \returns the UID associated to this wireless mode.
    *
-   * Each specific wireless mode should have a different uid.
+   * Each specific wireless mode should have a different UID.
    * For example, the 802.11b 1Mbps and the 802.11b 2Mbps modes
-   * should have different uids.
+   * should have different UIDs.
    */
   uint32_t GetUid (void) const;
   /**
@@ -193,13 +193,13 @@ public:
    */
   uint64_t GetNonHtReferenceRate (void) const;
   /**
-   * \param mode wifi mode
+   * \param mode the WifiMode
    * \returns true if this WifiMode has a
    * a code rate strictly higher than mode.
    */
   bool IsHigherCodeRate (WifiMode mode) const;
   /**
-   * \param mode wifi mode
+   * \param mode the WifiMode
    * \returns true if this WifiMode has a
    * a rate strictly higher than mode.
    */
@@ -233,10 +233,43 @@ private:
   uint32_t m_uid; ///< UID
 };
 
-/// equality operator
+/**
+ * Check if the two WifiModes are identical.
+ *
+ * \param a WifiMode
+ * \param b WifiMode
+ *
+ * \return true if the two WifiModes are identical,
+ *         false otherwise
+ */
 bool operator == (const WifiMode &a, const WifiMode &b);
+/**
+ * Compare two WifiModes
+ *
+ * \param a WifiMode
+ * \param b WifiMode
+ *
+ * \return true if a is less than b,
+ *         false otherwise
+ */
 bool operator < (const WifiMode &a, const WifiMode &b);
+/**
+ * Serialize WifiMode to ostream (human-readable).
+ *
+ * \param os the output stream
+ * \param mode the WifiMode
+ *
+ * \return std::ostream
+ */
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
+/**
+ * Serialize WifiMode from istream (human-readable).
+ *
+ * \param is the input stream
+ * \param mode the WifiMode
+ *
+ * \return std::istream
+ */
 std::istream & operator >> (std::istream &is, WifiMode &mode);
 
 ATTRIBUTE_HELPER_HEADER (WifiMode);
@@ -287,7 +320,7 @@ public:
   /**
    * \param uniqueName the name of the associated WifiMode. This name
    *        must be unique across _all_ instances.
-   * \param mcsValue the mcs value
+   * \param mcsValue the MCS value
    * \param modClass the class of modulation
    *
    * \return WifiMode
@@ -332,23 +365,23 @@ private:
    *
    * \param name human-readable WifiMode
    *
-   * \return WifiMode
+   * \return the WifiMode
    */
   WifiMode Search (std::string name) const;
   /**
    * Allocate a WifiModeItem from a given uniqueUid.
    *
-   * \param uniqueUid
+   * \param uniqueUid the unique UID
    *
-   * \return uid
+   * \return the allocated UID index
    */
   uint32_t AllocateUid (std::string uniqueUid);
   /**
-   * Return a WifiModeItem at the given uid index.
+   * Return a WifiModeItem at the given UID index.
    *
-   * \param uid
+   * \param uid the UID index
    *
-   * \return WifiModeItem at the given uid
+   * \return WifiModeItem at the given UID
    */
   WifiModeItem* Get (uint32_t uid);
 

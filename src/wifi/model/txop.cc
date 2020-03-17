@@ -624,7 +624,7 @@ Txop::MissedCts (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      //to reset the dcf.
+      //to reset the DCF.
       m_currentPacket = 0;
       ResetCw ();
       m_cwTrace = GetCw ();
@@ -680,7 +680,7 @@ Txop::MissedAck (void)
         {
           m_txFailedCallback (m_currentHdr);
         }
-      //to reset the dcf.
+      //to reset the DCF.
       m_currentPacket = 0;
       ResetCw ();
       m_cwTrace = GetCw ();

@@ -63,11 +63,11 @@ public:
   virtual ~WifiNetDevice ();
 
   /**
-   * \param mac the mac layer to use.
+   * \param mac the MAC layer to use.
    */
   void SetMac (const Ptr<WifiMac> mac);
   /**
-   * \param phy the phy layer to use.
+   * \param phy the PHY layer to use.
    */
   void SetPhy (const Ptr<WifiPhy> phy);
   /**
@@ -75,11 +75,11 @@ public:
    */
   void SetRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
-   * \returns the mac we are currently using.
+   * \returns the MAC we are currently using.
    */
   Ptr<WifiMac> GetMac (void) const;
   /**
-   * \returns the phy we are currently using.
+   * \returns the PHY we are currently using.
    */
   Ptr<WifiPhy> GetPhy (void) const;
   /**
@@ -146,9 +146,9 @@ protected:
    * Receive a packet from the lower layer and pass the
    * packet up the stack.
    *
-   * \param packet
-   * \param from
-   * \param to
+   * \param packet the packet to forward up
+   * \param from the source address
+   * \param to the destination address
    */
   void ForwardUp (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
 
@@ -194,7 +194,7 @@ private:
   Ptr<VhtConfiguration> m_vhtConfiguration; //!< the VhtConfiguration
   Ptr<HeConfiguration> m_heConfiguration; //!< the HeConfiguration
   NetDevice::ReceiveCallback m_forwardUp; //!< forward up callback
-  NetDevice::PromiscReceiveCallback m_promiscRx; //!< promiscious receive callback
+  NetDevice::PromiscReceiveCallback m_promiscRx; //!< promiscuous receive callback
 
   TracedCallback<Ptr<const Packet>, Mac48Address> m_rxLogger; //!< receive trace callback
   TracedCallback<Ptr<const Packet>, Mac48Address> m_txLogger; //!< transmit trace callback

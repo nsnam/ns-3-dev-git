@@ -37,7 +37,7 @@ enum MpduType
   FIRST_MPDU_IN_AGGREGATE,
   /** The MPDU is part of an A-MPDU with multiple MPDUs, but is neither the first nor the last aggregate */
   MIDDLE_MPDU_IN_AGGREGATE,
-  /** The MPDU is the last aggregate in an A-MPDU with muliple MPDUs */
+  /** The MPDU is the last aggregate in an A-MPDU with multiple MPDUs */
   LAST_MPDU_IN_AGGREGATE
 };
 

@@ -36,7 +36,7 @@ SnrTag::GetTypeId (void)
     .SetParent<Tag> ()
     .SetGroupName ("Wifi")
     .AddConstructor<SnrTag> ()
-    .AddAttribute ("Snr", "The snr of the last packet received",
+    .AddAttribute ("Snr", "The SNR of the last packet received",
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&SnrTag::Get),
                    MakeDoubleChecker<double> ())

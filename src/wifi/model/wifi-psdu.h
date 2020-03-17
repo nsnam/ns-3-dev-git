@@ -46,7 +46,7 @@ public:
    * in an S-MPDU.
    *
    * \param p the payload of the MPDU.
-   * \param header the Wifi Mac header of the MPDU.
+   * \param header the Wifi MAC header of the MPDU.
    */
   WifiPsdu (Ptr<const Packet> p, const WifiMacHeader & header);
 
@@ -202,7 +202,7 @@ public:
   uint16_t GetMaxDistFromStartingSeq (uint16_t startingSeq) const;
 
   /**
-   * \brief Return the size of the PSDU
+   * \brief Return the size of the PSDU in bytes
    *
    * \return the size of the PSDU.
    */
@@ -252,7 +252,7 @@ public:
 private:
   bool m_isSingle;                                //!< true for an S-MPDU
   std::vector<Ptr<WifiMacQueueItem>> m_mpduList;  //!< list of constituent MPDUs
-  uint32_t m_size;                                //!< the size of the PSDU
+  uint32_t m_size;                                //!< the size of the PSDU in bytes
 };
 
 /**

@@ -82,6 +82,14 @@ private:
   uint16_t m_code; ///< status code
 };
 
+/**
+ * Serialize StatusCode to the given ostream.
+ *
+ * \param os the output stream
+ * \param code the StatusCode
+ *
+ * \return std::ostream
+ */
 std::ostream &operator << (std::ostream &os, const StatusCode &code);
 
 } //namespace ns3

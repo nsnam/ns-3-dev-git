@@ -184,7 +184,7 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> (0, 196))
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "
-                   "this threshold (dbm) to allow the PHY layer to detect the signal.",
+                   "this threshold (dBm) to allow the PHY layer to detect the signal.",
                    DoubleValue (-101.0),
                    MakeDoubleAccessor (&WifiPhy::SetEdThreshold),
                    MakeDoubleChecker<double> (),
@@ -198,7 +198,7 @@ WifiPhy::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("CcaEdThreshold",
                    "The energy of a non Wi-Fi received signal should be higher than "
-                   "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state. "
+                   "this threshold (dBm) to allow the PHY layer to declare CCA BUSY state. "
                    "This check is performed on the 20 MHz primary channel only.",
                    DoubleValue (-62.0),
                    MakeDoubleAccessor (&WifiPhy::SetCcaEdThreshold,
@@ -223,13 +223,13 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&WifiPhy::m_nTxPower),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("TxPowerEnd",
-                   "Maximum available transmission level (dbm).",
+                   "Maximum available transmission level (dBm).",
                    DoubleValue (16.0206),
                    MakeDoubleAccessor (&WifiPhy::SetTxPowerEnd,
                                        &WifiPhy::GetTxPowerEnd),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxPowerStart",
-                   "Minimum available transmission level (dbm).",
+                   "Minimum available transmission level (dBm).",
                    DoubleValue (16.0206),
                    MakeDoubleAccessor (&WifiPhy::SetTxPowerStart,
                                        &WifiPhy::GetTxPowerStart),
@@ -1371,13 +1371,13 @@ WifiPhy::GetFrequency (void) const
 }
 
 void
-WifiPhy::SetChannelWidth (uint16_t channelwidth)
+WifiPhy::SetChannelWidth (uint16_t channelWidth)
 {
-  NS_LOG_FUNCTION (this << channelwidth);
-  NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
-  bool changed = (m_channelWidth != channelwidth);
-  m_channelWidth = channelwidth;
-  AddSupportedChannelWidth (channelwidth);
+  NS_LOG_FUNCTION (this << channelWidth);
+  NS_ASSERT_MSG (channelWidth == 5 || channelWidth == 10 || channelWidth == 20 || channelWidth == 22 || channelWidth == 40 || channelWidth == 80 || channelWidth == 160, "wrong channel width value");
+  bool changed = (m_channelWidth != channelWidth);
+  m_channelWidth = channelWidth;
+  AddSupportedChannelWidth (channelWidth);
   if (changed && !m_capabilitiesChangedCallback.IsNull ())
     {
       m_capabilitiesChangedCallback ();
@@ -2278,7 +2278,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_VHT:
       {
         //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
-        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
+        //In the future has to create a station manager that only uses these data rates if sender and receiver support GI
         uint16_t gi = txVector.GetGuardInterval ();
         NS_ASSERT (gi == 400 || gi == 800);
         symbolDuration = NanoSeconds (3200 + gi);
@@ -2287,7 +2287,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_HE:
       {
         //if short GI data rate is used then symbol duration is 3.6us else symbol duration is 4us
-        //In the future has to create a stationmanager that only uses these data rates if sender and receiver support GI
+        //In the future has to create a station manager that only uses these data rates if sender and receiver support GI
         uint16_t gi = txVector.GetGuardInterval ();
         NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
         symbolDuration = NanoSeconds (12800 + gi);
@@ -2723,7 +2723,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
        * during the switching state. This way the medium can be correctly sensed
        * when the device listens to the channel for the first time after the
        * switching e.g. after channel switching, the channel may be sensed as
-       * busy due to other devices' tramissions started before the end of
+       * busy due to other devices' transmissions started before the end of
        * the switching.
        */
       if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
@@ -2818,7 +2818,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       //If we are here, this means non-HT PHY header was already successfully received
       canReceivePayload = true;
     }
-  if (canReceivePayload) //plcp reception succeeded
+  if (canReceivePayload) //PLCP reception succeeded
     {
       if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
         {
@@ -2850,7 +2850,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
           return;
         }
     }
-  else //plcp reception failed
+  else //PLCP reception failed
     {
       NS_LOG_DEBUG ("Drop packet because HT PHY header reception failed");
       NotifyRxDrop (event->GetPsdu (), SIG_A_FAILURE);

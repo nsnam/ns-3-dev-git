@@ -99,7 +99,7 @@ public:
   /**
   * Sets the selected payload transmission mode
   *
-  * \param mode
+  * \param mode the payload WifiMode
   */
   void SetMode (WifiMode mode);
   /**
@@ -109,7 +109,7 @@ public:
   /**
    * Sets the selected transmission power level
    *
-   * \param powerlevel
+   * \param powerlevel the transmission power level
    */
   void SetTxPowerLevel (uint8_t powerlevel);
   /**
@@ -119,7 +119,7 @@ public:
   /**
    * Sets the preamble type
    *
-   * \param preamble
+   * \param preamble the preamble type
    */
   void SetPreambleType (WifiPreamble preamble);
   /**
@@ -129,7 +129,7 @@ public:
   /**
    * Sets the selected channelWidth (in MHz)
    *
-   * \param channelWidth
+   * \param channelWidth the channel width (in MHz)
    */
   void SetChannelWidth (uint16_t channelWidth);
   /**
@@ -149,27 +149,27 @@ public:
   /**
    * Sets the number of TX antennas
    *
-   * \param nTx
+   * \param nTx the number of TX antennas
    */
   void SetNTx (uint8_t nTx);
   /**
-   * \returns the number of Nss
+   * \returns the number of spatial streams
    */
   uint8_t GetNss (void) const;
   /**
    * Sets the number of Nss refer to IEEE 802.11n Table 20-28 for explanation and range
    *
-   * \param nss
+   * \param nss the number of spatial streams
    */
   void SetNss (uint8_t nss);
   /**
-   * \returns the number of Ness
+   * \returns the number of extended spatial streams
    */
   uint8_t GetNess (void) const;
   /**
    * Sets the Ness number refer to IEEE 802.11n Table 20-6 for explanation
    *
-   * \param ness
+   * \param ness the number of extended spatial streams
    */
   void SetNess (uint8_t ness);
   /**
@@ -240,10 +240,10 @@ private:
 /**
  * Serialize WifiTxVector to the given ostream.
  *
- * \param os
- * \param v
+ * \param os the output stream
+ * \param v the WifiTxVector to stringify
  *
- * \return ostream
+ * \return ouput stream
  */
 std::ostream & operator << (std::ostream & os,const WifiTxVector &v);
 

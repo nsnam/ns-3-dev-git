@@ -340,7 +340,7 @@ WifiTxVector
 ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  /// \todo we could/should implement the Arf algorithm for
+  /// \todo we could/should implement the ARF algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);

@@ -57,21 +57,21 @@ int main (int argc, char *argv[])
 {
   uint32_t slot = 9; //slot time in microseconds
   uint32_t sifs = 10; //SIFS duration in microseconds
-  uint32_t ackTimeout = 88; //ACK timeout duration in microseconds
+  uint32_t ackTimeout = 88; //Ack timeout duration in microseconds
   uint32_t ctsTimeout = 88; //CTS timeout duration in microseconds
   uint32_t rifs = 2; //RIFS duration in microseconds
-  uint32_t basicBlockAckTimeout = 286; //Basic Block ACK timeout duration in microseconds
-  uint32_t compressedBlockAckTimeout = 112; //Compressed Block ACK timeout duration in microseconds
+  uint32_t basicBlockAckTimeout = 286; //Basic BlockAck timeout duration in microseconds
+  uint32_t compressedBlockAckTimeout = 112; //Compressed BlockAck timeout duration in microseconds
   double simulationTime = 10; //simulation time in seconds
 
   CommandLine cmd;
   cmd.AddValue ("slot", "Slot time in microseconds", slot);
   cmd.AddValue ("sifs", "SIFS duration in microseconds", sifs);
-  cmd.AddValue ("ackTimeout", "ACK timeout duration in microseconds", ackTimeout);
+  cmd.AddValue ("ackTimeout", "Ack timeout duration in microseconds", ackTimeout);
   cmd.AddValue ("ctsTimeout", "CTS timeout duration in microseconds", ctsTimeout);
   cmd.AddValue ("rifs", "RIFS duration in microseconds", rifs);
-  cmd.AddValue ("basicBlockAckTimeoutTimeout", "Basic Block ACK timeout duration in microseconds", basicBlockAckTimeout);
-  cmd.AddValue ("compressedBlockAckTimeoutTimeout", "Compressed Block ACK timeout duration in microseconds", compressedBlockAckTimeout);
+  cmd.AddValue ("basicBlockAckTimeoutTimeout", "Basic BlockAck timeout duration in microseconds", basicBlockAckTimeout);
+  cmd.AddValue ("compressedBlockAckTimeoutTimeout", "Compressed BlockAck timeout duration in microseconds", compressedBlockAckTimeout);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.Parse (argc,argv);
 

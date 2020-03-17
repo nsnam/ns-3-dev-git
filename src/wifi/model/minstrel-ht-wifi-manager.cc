@@ -100,7 +100,7 @@ MinstrelHtWifiManager::GetTypeId (void)
                    MakeUintegerAccessor (&MinstrelHtWifiManager::m_nSampleCol),
                    MakeUintegerChecker <uint8_t> ())
     .AddAttribute ("PacketLength",
-                   "The packet length used for calculating mode TxTime",
+                   "The packet length used for calculating mode TxTime (bytes)",
                    UintegerValue (1200),
                    MakeUintegerAccessor (&MinstrelHtWifiManager::m_frameLength),
                    MakeUintegerChecker <uint32_t> ())
@@ -161,7 +161,7 @@ void
 MinstrelHtWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  // Setup phy for legacy manager.
+  // Setup PHY for legacy manager.
   m_legacyManager->SetupPhy (phy);
   WifiRemoteStationManager::SetupPhy (phy);
 }
@@ -207,7 +207,7 @@ MinstrelHtWifiManager::DoInitialize ()
        *  - A global continuous index, which identifies all rates within all groups, in [0, m_numGroups * m_numRates]
        *  - A groupId, which indexes a group in the array, in [0, m_numGroups]
        *  - A rateId, which identifies a rate within a group, in [0, m_numRates]
-       *  - A deviceIndex, which indexes a MCS in the phy MCS array.
+       *  - A deviceIndex, which indexes a MCS in the PHY MCS array.
        *  - A mcsIndex, which indexes a MCS in the wifi-remote-station-manager supported MCSs array.
        */
       NS_LOG_DEBUG ("Initialize MCS Groups:");
@@ -235,7 +235,7 @@ MinstrelHtWifiManager::DoInitialize ()
                     {
                       m_minstrelGroups[groupId].isSupported = true;
 
-                      // Calculate tx time for all rates of the group
+                      // Calculate TX time for all rates of the group
                       WifiModeList htMcsList = GetHtDeviceMcsList ();
                       for (uint8_t i = 0; i < MAX_HT_GROUP_RATES; i++)
                         {
@@ -274,7 +274,7 @@ MinstrelHtWifiManager::DoInitialize ()
                         {
                           m_minstrelGroups[groupId].isSupported = true;
 
-                          // Calculate tx time for all rates of the group
+                          // Calculate TX time for all rates of the group
                           WifiModeList vhtMcsList = GetVhtDeviceMcsList ();
                           for (uint8_t i = 0; i < MAX_VHT_GROUP_RATES; i++)
                             {
@@ -698,7 +698,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
    *  3  |  Best probability       | Best probability
    *
    * Note: For clarity, multiple blocks of if's and else's are used
-   * Following implementation in Linux, in MinstrelHT Lowest baserate is not used.
+   * Following implementation in Linux, in MinstrelHT lowest base rate is not used.
    * Explanation can be found here: http://marc.info/?l=linux-wireless&m=144602778611966&w=2
    */
 
@@ -710,7 +710,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
   station->m_longRetry++;
 
   /**
-   * Get the ids for all rates.
+   * Get the IDs for all rates.
    */
   uint8_t maxTpRateId = GetRateId (station->m_maxTpRate);
   uint8_t maxTpGroupId = GetGroupId (station->m_maxTpRate);
@@ -1274,7 +1274,7 @@ MinstrelHtWifiManager::CalculateThroughput (MinstrelHtWifiRemoteStation *station
 {
   /**
   * Calculating throughput.
-  * Do not account throughput if success prob is below 10%
+  * Do not account throughput if probability of success is below 10%
   * (as done in minstrel_ht linux implementation).
   */
   if (ewmaProb < 10)

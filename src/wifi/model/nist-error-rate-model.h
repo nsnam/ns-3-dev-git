@@ -51,16 +51,16 @@ private:
   /**
    * Return the coded BER for the given p and b.
    *
-   * \param p
-   * \param bValue
+   * \param p the SNR ratio (not dB)
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    *
-   * \return BER
+   * \return the coded BER
    */
   double CalculatePe (double p, uint32_t bValue) const;
   /**
    * Return BER of BPSK at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    *
    * \return BER of BPSK at the given SNR
    */
@@ -68,7 +68,7 @@ private:
   /**
    * Return BER of QPSK at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    *
    * \return BER of QPSK at the given SNR
    */
@@ -76,7 +76,7 @@ private:
   /**
    * Return BER of QAM16 at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    *
    * \return BER of QAM16 at the given SNR
    */
@@ -84,7 +84,7 @@ private:
   /**
    * Return BER of QAM64 at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    *
    * \return BER of QAM64 at the given SNR
    */
@@ -92,23 +92,23 @@ private:
   /**
    * Return BER of QAM256 at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \return BER of QAM256 at the given SNR
    */
   double Get256QamBer (double snr) const;
   /**
    * Return BER of QAM1024 at the given SNR.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \return BER of QAM1024 at the given SNR
    */
   double Get1024QamBer (double snr) const;
   /**
    * Return BER of BPSK at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    *
    * \return BER of BPSK at the given SNR after applying FEC
    */
@@ -117,9 +117,9 @@ private:
   /**
    * Return BER of QPSK at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    *
    * \return BER of QPSK at the given SNR after applying FEC
    */
@@ -128,9 +128,9 @@ private:
   /**
    * Return BER of QAM16 at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    *
    * \return BER of QAM16 at the given SNR after applying FEC
    */
@@ -139,9 +139,9 @@ private:
   /**
    * Return BER of QAM64 at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    *
    * \return BER of QAM64 at the given SNR after applying FEC
    */
@@ -150,9 +150,9 @@ private:
   /**
    * Return BER of QAM256 at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    * \return BER of QAM256 at the given SNR after applying FEC
    */
   double GetFec256QamBer (double snr, uint64_t nbits,
@@ -160,9 +160,9 @@ private:
   /**
    * Return BER of QAM1024 at the given SNR after applying FEC.
    *
-   * \param snr snr ratio (not dB)
+   * \param snr SNR ratio (not dB)
    * \param nbits the number of bits in the chunk
-   * \param bValue
+   * \param bValue such that coding rate = bValue / (bValue + 1)
    * \return BER of QAM1024 at the given SNR after applying FEC
    */
   double GetFec1024QamBer (double snr, uint64_t nbits,

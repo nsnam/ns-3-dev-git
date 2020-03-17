@@ -295,7 +295,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   //We search within the Supported rate set the mode with the
-  //highest data rate for which the snr threshold is smaller than m_lastSnr
+  //highest data rate for which the SNR threshold is smaller than m_lastSnr
   //to ensure correct packet delivery.
   WifiMode maxMode = GetDefaultMode ();
   WifiTxVector txVector;
@@ -513,7 +513,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   //We search within the Basic rate set the mode with the highest
-  //snr threshold possible which is smaller than m_lastSnr to
+  //SNR threshold possible which is smaller than m_lastSnr to
   //ensure correct packet delivery.
   double maxThreshold = 0.0;
   WifiTxVector txVector;

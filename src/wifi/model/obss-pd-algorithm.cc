@@ -38,7 +38,7 @@ ObssPdAlgorithm::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddAttribute ("ObssPdLevel",
-                   "The current OBSS PD level.",
+                   "The current OBSS PD level (dBm).",
                    DoubleValue (-82.0),
                    MakeDoubleAccessor (&ObssPdAlgorithm::m_obssPdLevel),
                    MakeDoubleChecker<double> (-101, -62))

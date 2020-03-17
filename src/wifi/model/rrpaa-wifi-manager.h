@@ -56,7 +56,7 @@ struct RrpaaWifiRemoteStation;
  */
 struct WifiRrpaaThresholds
 {
-  double m_ori; //!< The Oportunistic Rate Increase threshold.
+  double m_ori; //!< The Opportunistic Rate Increase threshold.
   double m_mtl; //!< The Maximum Tolerable Loss threshold.
   uint32_t m_ewnd; //!< The Estimation Window size.
 };
@@ -119,76 +119,76 @@ private:
 
   /**
    * Check for initializations.
-   * \param station The remote station.
+   * \param station the remote station.
    */
   void CheckInit (RrpaaWifiRemoteStation *station);
 
   /**
    * Check if the counter should be reset.
    *
-   * \param station
+   * \param station the remote station
    */
   void CheckTimeout (RrpaaWifiRemoteStation *station);
   /**
    * Find an appropriate rate and power for the given station, using
    * a basic algorithm.
    *
-   * \param station
+   * \param station the remote station
    */
   void RunBasicAlgorithm (RrpaaWifiRemoteStation *station);
   /**
    * Run an enhanced algorithm which activates the use of RTS
    * for the given station if the conditions are met.
    *
-   * \param station
+   * \param station the remote station
    */
   void RunAdaptiveRtsAlgorithm (RrpaaWifiRemoteStation *station);
   /**
    * Reset the counters of the given station.
    *
-   * \param station
+   * \param station the remote station
    */
   void ResetCountersBasic (RrpaaWifiRemoteStation *station);
 
   /**
    * Initialize the thresholds internal list for the given station.
    *
-   * \param station
+   * \param station the remote station
    */
   void InitThresholds (RrpaaWifiRemoteStation *station);
 
   /**
    * Get the thresholds for the given station and mode.
    *
-   * \param station
-   * \param mode
+   * \param station the remote station
+   * \param mode the WifiMode
    *
-   * \return threshold
+   * \return the RRPAA thresholds
    */
   WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, WifiMode mode) const;
 
   /**
    * Get the thresholds for the given station and mode index.
    *
-   * \param station
-   * \param rate
+   * \param station the remote station
+   * \param index the mode index in the supported rates
    *
-   * \return threshold
+   * \return the RRPAA thresholds
    */
-  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, uint8_t rate) const;
+  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, uint8_t index) const;
 
   /**
    * Get the estimated TxTime of a packet with a given mode.
    *
-   * \param mode
+   * \param mode the WifiMode
    *
-   * \return time
+   * \return the estimated TX time
    */
   Time GetCalcTxTime (WifiMode mode) const;
   /**
    * Add transmission time for the given mode to an internal list.
    *
-   * \param mode Wi-Fi mode
+   * \param mode the WifiMode
    * \param t transmission time
    */
   void AddCalcTxTime (WifiMode mode, Time t);
@@ -204,8 +204,8 @@ private:
   Time m_sifs;             //!< Value of SIFS configured in the device.
   Time m_difs;             //!< Value of DIFS configured in the device.
 
-  uint32_t m_frameLength;  //!< Data frame length used for calculate mode TxTime.
-  uint32_t m_ackLength;    //!< Ack frame length used for calculate mode TxTime.
+  uint32_t m_frameLength;  //!< Data frame length used for calculate mode TxTime (in bytes).
+  uint32_t m_ackLength;    //!< Ack frame length used for calculate mode TxTime (in bytes).
 
   bool m_basic;            //!< If using the basic algorithm (without RTS/CTS).
   Time m_timeout;          //!< Timeout for the RRAA BASIC loss estimation block.

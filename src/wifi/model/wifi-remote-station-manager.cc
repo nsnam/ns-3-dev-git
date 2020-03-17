@@ -48,11 +48,11 @@ WifiRemoteStationManager::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddAttribute ("IsLowLatency",
-                   "If true, we attempt to modelize a so-called low-latency device: "
-                   "a device where decisions about tx parameters can be made on a per-packet basis and "
+                   "If true, we attempt to model a so-called low-latency device: "
+                   "a device where decisions about TX parameters can be made on a per-packet basis and "
                    "feedback about the transmission of each packet is obtained before sending the next. "
-                   "Otherwise, we modelize a high-latency device, that is a device where we cannot update "
-                   "our decision about tx parameters after every packet transmission.",
+                   "Otherwise, we model a high-latency device, that is a device where we cannot update "
+                   "our decision about TX parameters after every packet transmission.",
                    TypeId::ATTR_GET,
                    BooleanValue (true), //this value is ignored because there is no setter
                    MakeBooleanAccessor (&WifiRemoteStationManager::IsLowLatency),
@@ -158,7 +158,7 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
   //full set of transmit rates that are supported. We need to know
   //this in order to find the relevant mandatory rates when choosing a
   //transmit rate for automatic control responses like
-  //acknowledgements.
+  //acknowledgments.
   m_wifiPhy = phy;
   m_defaultTxMode = phy->GetMode (0);
   NS_ASSERT (m_defaultTxMode.IsMandatory ());
@@ -865,7 +865,7 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
     }
   else if (!m_useNonErpProtection)
     {
-      //search for the BSS Basic Rate set, if the used mode is in the basic set then there is no need for Cts To Self
+      //search for the BSS Basic Rate set, if the used mode is in the basic set then there is no need for CTS To Self
       for (WifiModeListIterator i = m_bssBasicRateSet.begin (); i != m_bssBasicRateSet.end (); i++)
         {
           if (mode == *i)
@@ -876,7 +876,7 @@ WifiRemoteStationManager::NeedCtsToSelf (WifiTxVector txVector)
         }
       if (GetHtSupported ())
         {
-          //search for the BSS Basic MCS set, if the used mode is in the basic set then there is no need for Cts To Self
+          //search for the BSS Basic MCS set, if the used mode is in the basic set then there is no need for CTS To Self
           for (WifiModeListIterator i = m_bssBasicMcsSet.begin (); i != m_bssBasicMcsSet.end (); i++)
             {
               if (mode == *i)
@@ -1513,7 +1513,7 @@ WifiMode
 WifiRemoteStationManager::GetNonErpSupported (const WifiRemoteStation *station, uint8_t i) const
 {
   NS_ASSERT (i < GetNNonErpSupported (station));
-  //IEEE 802.11g standard defines that if the protection mechanism is enabled, Rts, Cts and Cts-To-Self
+  //IEEE 802.11g standard defines that if the protection mechanism is enabled, RTS, CTS and CTS-To-Self
   //frames should select a rate in the BSSBasicRateSet that corresponds to an 802.11b basic rate.
   //This is a implemented here to avoid changes in every RAA, but should maybe be moved in case it breaks standard rules.
   uint32_t index = 0;

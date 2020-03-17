@@ -228,10 +228,10 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
       return mpduList;
     }
 
-  //Have to make sure that the block ACK agreement is established before sending an A-MPDU
+  //Have to make sure that the block ack agreement is established before sending an A-MPDU
   if (edcaIt->second->GetBaAgreementEstablished (recipient, tid))
     {
-      /* here is performed mpdu aggregation */
+      /* here is performed MPDU aggregation */
       uint16_t startingSequenceNumber = edcaIt->second->GetBaStartingSequence (recipient, tid);
       Ptr<WifiMacQueueItem> nextMpdu;
       uint16_t maxMpdus = edcaIt->second->GetBaBufferSize (recipient, tid);
@@ -240,7 +240,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
       // check if the received MPDU meets the size and duration constraints
       if (edcaIt->second->GetLow ()->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
         {
-          // mpdu can be aggregated
+          // MPDU can be aggregated
           nextMpdu = Copy (mpdu);
         }
 

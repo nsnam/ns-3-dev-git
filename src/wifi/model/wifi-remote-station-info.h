@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * \brief Tid independent remote station statistics
+ * \brief TID independent remote station statistics
  *
  * Structure is similar to struct sta_info in Linux kernel (see
  * net/mac80211/sta_info.h)
@@ -41,10 +41,12 @@ public:
   /**
    * \brief Updates average frame error rate when data or RTS was transmitted successfully.
    *
-   * \param retryCounter is slrc or ssrc value at the moment of success transmission.
+   * \param retryCounter is SLRC or SSRC value at the moment of success transmission.
    */
   void NotifyTxSuccess (uint32_t retryCounter);
-  /// Updates average frame error rate when final data or RTS has failed.
+  /**
+   * Updates average frame error rate when final data or RTS has failed.
+   */
   void NotifyTxFailed ();
   /**
    * Return frame error rate (probability that frame is corrupted due to transmission error).
@@ -61,12 +63,10 @@ private:
    * \return average coefficient for frame error rate
    */
   double CalculateAveragingCoefficient ();
-  /// averaging coefficient depends on the memory time
-  Time m_memoryTime;
-  /// when last update has occurred
-  Time m_lastUpdate;
-  /// moving percentage of failed frames
-  double m_failAvg;
+
+  Time m_memoryTime; ///< averaging coefficient depends on the memory time
+  Time m_lastUpdate; ///< when last update has occurred
+  double m_failAvg;  ///< moving percentage of failed frames
 };
 
 } //namespace ns3

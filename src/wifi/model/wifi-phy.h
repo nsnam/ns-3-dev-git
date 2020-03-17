@@ -48,7 +48,7 @@ class WifiPsdu;
 class WifiPpdu;
 
 /**
- * Enumeration of the possible reeception failure reasons.
+ * Enumeration of the possible reception failure reasons.
  */
 enum WifiPhyRxfailureReason
 {
@@ -186,7 +186,7 @@ public:
 
   /**
    * \param psdu the PSDU to send
-   * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
+   * \param txVector the TXVECTOR that has TX parameters such as mode, the transmission mode to use to send
    *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
@@ -275,7 +275,7 @@ public:
   static Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector);
   /**
    *
-   * \return the preamble detection duration, which is the time correletion needs to detect the start of an incoming frame.
+   * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
    */
   static Time GetPreambleDetectionDuration (void);
   /**
@@ -286,7 +286,7 @@ public:
   static Time GetPlcpTrainingSymbolDuration (WifiTxVector txVector);
   /**
    * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
-   *         in Mixed Format and greenfield format PLCP header
+   *         in Mixed Format and Greenfield format PLCP header
    */
   static WifiMode GetHtPlcpHeaderMode ();
   /**
@@ -300,7 +300,7 @@ public:
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the HT-SIG in Mixed Format and greenfield format PLCP header
+   * \return the duration of the HT-SIG in Mixed Format and Greenfield format PLCP header
    */
   static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
   /**
@@ -442,8 +442,8 @@ public:
    * \param txVector the transmission vector
    * \param ber the probability of bit error rate
    *
-   * \return the minimum snr which is required to achieve
-   *          the requested ber for the specified transmission vector. (W/W)
+   * \return the minimum SNR which is required to achieve
+   *          the requested BER for the specified transmission vector. (W/W)
    */
   double CalculateSnr (WifiTxVector txVector, double ber) const;
 
@@ -466,7 +466,7 @@ public:
   *
   * \param selector index in array of supported memberships
   *
-  * \return the memebership selector whose index is specified.
+  * \return the membership selector whose index is specified.
   */
   uint8_t GetBssMembershipSelector (uint8_t selector) const;
   /**
@@ -540,7 +540,7 @@ public:
    *
    * where Starting channel frequency is standard-dependent,
    * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
-   * This method may fail to take action if the Phy model determines that
+   * This method may fail to take action if the PHY model determines that
    * the channel number cannot be switched for some reason (e.g. sleep state)
    *
    * \param id the channel number
@@ -593,7 +593,7 @@ public:
    */
   typedef std::pair<uint8_t, WifiPhyStandard> ChannelNumberStandardPair;
   /**
-   * A pair of a center Frequency and a ChannelWidth
+   * A pair of a center Frequency (MHz) and a ChannelWidth (MHz)
    */
   typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
 
@@ -1208,7 +1208,7 @@ public:
    *        transmitted. This is because it is possible to have the receiver
    *        tuned on a given channel and still to be able to receive packets
    *        on a nearby channel.
-   * \param txVector the TXVECTOR that holds rx parameters
+   * \param txVector the TXVECTOR that holds RX parameters
    * \param signalNoise signal power and noise power in dBm (noise power includes the noise figure)
    * \param statusPerMpdu reception status per MPDU
    */
@@ -1230,7 +1230,7 @@ public:
    *        transmitted. This is because it is possible to have the receiver
    *        tuned on a given channel and still to be able to receive packets
    *        on a nearby channel.
-   * \param txVector the TXVECTOR that holds rx parameters
+   * \param txVector the TXVECTOR that holds RX parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \param signalNoise signal power and noise power in dBm
@@ -1253,7 +1253,7 @@ public:
    * \param psdu the PSDU being received
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
-   * \param txVector the TXVECTOR that holds tx parameters
+   * \param txVector the TXVECTOR that holds TX parameters
    */
   void NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu,
                              uint16_t channelFreqMhz,
@@ -1265,7 +1265,7 @@ public:
    * \param packet the packet being transmitted
    * \param channelFreqMhz the frequency in MHz at which the packet is
    *        transmitted.
-   * \param txVector the TXVECTOR that holds tx parameters
+   * \param txVector the TXVECTOR that holds TX parameters
    * \param aMpdu the type of the packet (0 is not A-MPDU, 1 is a MPDU that is part of an A-MPDU and 2 is the last MPDU in an A-MPDU)
    *        and the A-MPDU reference number (must be a different value for each A-MPDU but the same for each subframe within one A-MPDU)
    * \todo WifiTxVector should be passed by const reference because
@@ -1280,7 +1280,7 @@ public:
    * TracedCallback signature for PSDU transmit events.
    *
    * \param psdu the PSDU being transmitted
-   * \param txVector the TXVECTOR holding the tx parameters
+   * \param txVector the TXVECTOR holding the TX parameters
    * \param txPowerW the transmit power in Watts
    */
   typedef void (* PsduTxBeginCallback)(Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
@@ -1313,7 +1313,7 @@ public:
   /**
    * Sets the energy detection threshold (dBm).
    * The energy of a received signal should be higher than
-   * this threshold (dbm) to allow the PHY layer to detect the signal.
+   * this threshold (dBm) to allow the PHY layer to detect the signal.
    *
    * \param threshold the energy detection threshold in dBm
    *
@@ -1555,7 +1555,7 @@ public:
    * is typically used to force specific packet losses or
    * for testing purposes.
    *
-   * \param em Ptr to the ErrorModel.
+   * \param em Pointer to the ErrorModel.
    */
   void SetPostReceptionErrorModel (const Ptr<ErrorModel> em);
   /**
@@ -1578,17 +1578,17 @@ public:
   void SetWifiRadioEnergyModel (const Ptr<WifiRadioEnergyModel> wifiRadioEnergyModel);
 
   /**
-   * \return the channel width
+   * \return the channel width in MHz
    */
   uint16_t GetChannelWidth (void) const;
   /**
-   * \param channelwidth channel width
+   * \param channelWidth the channel width (in MHz)
    */
-  virtual void SetChannelWidth (uint16_t channelwidth);
+  virtual void SetChannelWidth (uint16_t channelWidth);
   /**
-   * \param channelwidth channel width (in MHz) to support
+   * \param width the channel width (in MHz) to support
    */
-  void AddSupportedChannelWidth (uint16_t channelwidth);
+  void AddSupportedChannelWidth (uint16_t width);
   /**
    * \return a vector containing the supported channel widths, values in MHz
    */
@@ -1608,8 +1608,8 @@ public:
    * Reset PHY to IDLE, with some potential TX power restrictions for the next transmission.
    *
    * \param powerRestricted flag whether the transmit power is restricted for the next transmission
-   * \param txPowerMaxSiso the SISO transmit power restriction for the next transmission
-   * \param txPowerMaxMimo the MIMO transmit power restriction for the next transmission
+   * \param txPowerMaxSiso the SISO transmit power restriction for the next transmission in dBm
+   * \param txPowerMaxMimo the MIMO transmit power restriction for the next transmission in dBm
    */
   void ResetCca (bool powerRestricted, double txPowerMaxSiso = 0, double txPowerMaxMimo = 0);
   /**
@@ -1649,14 +1649,14 @@ protected:
    * is typically called internally by SetFrequency ().
    *
    * \brief Perform any actions necessary when user changes frequency
-   * \param frequency frequency to try to switch to
+   * \param frequency frequency to try to switch to in MHz
    * \return true if WifiPhy can actually change the frequency; false if not
    * \see SetFrequency
    */
   bool DoFrequencySwitch (uint16_t frequency);
 
   /**
-   * Check if Phy state should move to CCA busy state based on current
+   * Check if PHY state should move to CCA busy state based on current
    * state of interference tracker.  In this model, CCA becomes busy when
    * the aggregation of all signals as tracked by the InterferenceHelper
    * class is higher than the CcaEdThreshold
@@ -1714,7 +1714,7 @@ private:
   void Configure80211_5Mhz ();
   /**
    * Configure WifiPhy with appropriate channel frequency and
-   * supported rates for holland.
+   * supported rates for Holland.
    */
   void ConfigureHolland (void);
   /**
@@ -1733,7 +1733,7 @@ private:
    */
   void Configure80211ax (void);
   /**
-   * Configure the device Mcs set with the appropriate HtMcs modes for
+   * Configure the device MCS set with the appropriate HtMcs modes for
    * the number of available transmit spatial streams
    */
   void ConfigureHtDeviceMcsSet (void);
@@ -1767,8 +1767,8 @@ private:
 
   /**
    * Look for channel number matching the frequency and width
-   * \param frequency The center frequency to use
-   * \param width The channel width to use
+   * \param frequency The center frequency to use in MHz
+   * \param width The channel width to use in MHz
    * \return the channel number if found, zero if not
    */
   uint8_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width) const;
@@ -1827,7 +1827,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const WifiPsdu>, WifiTxVector, double /* Tx power (W) */> m_phyTxPsduBeginTrace;
+  TracedCallback<Ptr<const WifiPsdu>, WifiTxVector, double /* TX power (W) */> m_phyTxPsduBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -1838,7 +1838,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
 
   /**
-   * The trace source fired when the phy layer drops a packet as it tries
+   * The trace source fired when the PHY layer drops a packet as it tries
    * to transmit it.
    *
    * \see class CallBackTraceSource
@@ -1862,14 +1862,14 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndTrace;
 
   /**
-   * The trace source fired when the phy layer drops a packet it has received.
+   * The trace source fired when the PHY layer drops a packet it has received.
    *
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet>, WifiPhyRxfailureReason > m_phyRxDropTrace;
 
   /**
-   * A trace source that emulates a wifi device in monitor mode
+   * A trace source that emulates a Wi-Fi device in monitor mode
    * sniffing a packet being received.
    *
    * As a reference with the real world, firing this trace
@@ -1878,12 +1878,12 @@ private:
    *
    * \see class CallBackTraceSource
    * \todo WifiTxVector and signalNoiseDbm should be be passed as
-   * const  references because of their sizes.
+   *       const references because of their sizes.
    */
   TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo, SignalNoiseDbm> m_phyMonitorSniffRxTrace;
 
   /**
-   * A trace source that emulates a wifi device in monitor mode
+   * A trace source that emulates a Wi-Fi device in monitor mode
    * sniffing a packet being transmitted.
    *
    * As a reference with the real world, firing this trace
@@ -1897,7 +1897,7 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t, WifiTxVector, MpduInfo> m_phyMonitorSniffTxTrace;
 
   /**
-   * A trace source that indiates the end of both HE SIG fields as well as training fields for received 802.11ax packets
+   * A trace source that indicates the end of both HE SIG fields as well as training fields for received 802.11ax packets
    *
    * \see class CallBackTraceSource
    */
@@ -1949,9 +1949,9 @@ private:
   WifiPhyStandard m_standard;               //!< WifiPhyStandard
   bool m_isConstructed;                     //!< true when ready to set frequency
   uint16_t m_channelCenterFrequency;        //!< Center frequency in MHz
-  uint16_t m_initialFrequency;              //!< Store frequency until initialization
+  uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
-  uint16_t m_channelWidth;                  //!< Channel width
+  uint16_t m_channelWidth;                  //!< Channel width (MHz)
 
   double   m_rxSensitivityW;      //!< Receive sensitivity threshold in watts
   double   m_ccaEdThresholdW;     //!< Clear channel assessment (CCA) threshold in watts
@@ -1962,8 +1962,8 @@ private:
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
   bool m_powerRestricted;        //!< Flag whether transmit power is restricted by OBSS PD SR
-  double m_txPowerMaxSiso;       //!< SISO maximum transmit power due to OBSS PD SR power restriction
-  double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction
+  double m_txPowerMaxSiso;       //!< SISO maximum transmit power due to OBSS PD SR power restriction (dBm)
+  double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction (dBm)
   bool m_channelAccessRequested; //!< Flag if channels access has been requested (used for OBSS_PD SR)
 
   bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
@@ -1977,9 +1977,9 @@ private:
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
 
   typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap; //!< channel to frequency width map typedef
-  static ChannelToFrequencyWidthMap m_channelToFrequencyWidth; //!< the channel to frequency width map
+  static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;                               //!< the channel to frequency width map
 
-  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width
+  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
   uint8_t               m_channelNumber;            //!< Operating channel number
   uint8_t               m_initialChannelNumber;     //!< Initial channel number
 
@@ -1988,14 +1988,14 @@ private:
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 
-  Ptr<Event> m_currentEvent; //!< Hold the current event
-  Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
+  Ptr<Event> m_currentEvent;                            //!< Hold the current event
+  Ptr<FrameCaptureModel> m_frameCaptureModel;           //!< Frame capture model
   Ptr<PreambleDetectionModel> m_preambleDetectionModel; //!< Preamble detection model
-  Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel; //!< Wifi radio energy model
-  Ptr<ErrorModel> m_postReceptionErrorModel; //!< Error model for receive packet events
-  Time m_timeLastPreambleDetected; //!< Record the time the last preamble was detected
+  Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel;     //!< Wifi radio energy model
+  Ptr<ErrorModel> m_postReceptionErrorModel;            //!< Error model for receive packet events
+  Time m_timeLastPreambleDetected;                      //!< Record the time the last preamble was detected
 
-  Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
+  Callback<void> m_capabilitiesChangedCallback;         //!< Callback when PHY capabilities changed
 };
 
 } //namespace ns3

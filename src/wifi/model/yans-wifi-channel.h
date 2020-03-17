@@ -75,9 +75,9 @@ public:
   void SetPropagationDelayModel (const Ptr<PropagationDelayModel> delay);
 
   /**
-   * \param sender the phy object from which the packet is originating.
+   * \param sender the PHY object from which the packet is originating.
    * \param ppdu the PPDU to send
-   * \param txPowerDbm the tx power associated to the packet, in dBm
+   * \param txPowerDbm the TX power associated to the packet, in dBm
    *
    * This method should not be invoked by normal users. It is
    * currently invoked only from YansWifiPhy::StartTx.  The channel
@@ -111,7 +111,7 @@ private:
    *
    * \param receiver the device to which the packet is destined
    * \param ppdu the PPDU being sent
-   * \param txPowerDbm the tx power associated to the packet being sent (dBm)
+   * \param txPowerDbm the TX power associated to the packet being sent (dBm)
    */
   static void Receive (Ptr<YansWifiPhy> receiver, Ptr<WifiPpdu> ppdu, double txPowerDbm);
 

@@ -38,12 +38,25 @@ class VhtOperation : public WifiInformationElement
 {
 public:
   VhtOperation ();
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
+  /* This information element is a bit special in that it is only
+     included if the STA is a VHT STA. To support this we
+     override the Serialize and GetSerializedSize methods of
+     WifiInformationElement. */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+
   /**
    * Set the VHT supported information element.
    *
-   * \param vhtsupported the VHT supported information element
+   * \param vhtSupported the VHT supported information element
    */
-  void SetVhtSupported (uint8_t vhtsupported);
+  void SetVhtSupported (uint8_t vhtSupported);
 
   /**
    * Set the Channel Width field in the VHT Operation information element.
@@ -103,56 +116,12 @@ public:
    */
   uint16_t GetBasicVhtMcsAndNssSet (void) const;
 
-  /**
-   * Return the element ID.
-   *
-   * \returns the element ID
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Return the information field size.
-   *
-   * \returns the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize the information field.
-   *
-   * \param start the information field iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Deserialize the information field.
-   *
-   * \param start the iterator
-   * \param length the length
-   * \returns the information field size
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA is a VHT STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this VHT Operations IE.
-   *
-   * \return the serialized size of this VHT Operations IE
-   */
-  uint16_t GetSerializedSize () const;
-
 
 private:
   //VHT Operation Information
   uint8_t m_channelWidth; ///< channel width
   uint8_t m_channelCenterFrequencySegment0; ///< channel center frequency segment 0
-  uint8_t m_channelCenterFrequencySegment1; ///< channel center frequency segment 0
+  uint8_t m_channelCenterFrequencySegment1; ///< channel center frequency segment 1
 
   //Basic VHT-MCS and NSS Set
   uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
@@ -161,6 +130,14 @@ private:
   uint8_t m_vhtSupported;
 };
 
+/**
+ * output stream output operator
+ *
+ * \param os the output stream
+ * \param VhtOperation the VHT operation
+ *
+ * \returns output stream
+ */
 std::ostream &operator << (std::ostream &os, const VhtOperation &VhtOperation);
 
 } //namespace ns3

@@ -53,63 +53,60 @@ public:
   RegularWifiMac ();
   virtual ~RegularWifiMac ();
 
-  /**
-   * \param slotTime the slot duration
-   */
+  // Implementations of pure virtual methods.
   void SetSlot (Time slotTime);
-  /**
-   * \param sifs the sifs duration
-   */
   void SetSifs (Time sifs);
-  /**
-   * \param eifsNoDifs the duration of an EIFS minus DIFS.
-   *
-   * This value is used to calculate the EIFS depending
-   * on AIFSN.
-   */
   void SetEifsNoDifs (Time eifsNoDifs);
-  /**
-   * \param pifs the pifs duration.
-   */
   void SetPifs (Time pifs);
-  /**
-   * \param rifs the rifs duration.
-   */
   void SetRifs (Time rifs);
-  /**
-   * \param ctsTimeout the duration of a CTS timeout.
-   */
   void SetCtsTimeout (Time ctsTimeout);
-  /**
-   * \param ackTimeout the duration of an ACK timeout.
-   */
   void SetAckTimeout (Time ackTimeout);
-
+  void SetShortSlotTimeSupported (bool enable);
+  void SetSsid (Ssid ssid);
+  void SetAddress (Mac48Address address);
+  void SetPromisc (void);
   Time GetRifs (void) const;
-  /**
-   * \return the current PIFS duration.
-   */
   Time GetPifs (void) const;
-  /**
-   * \return the current SIFS duration.
-   */
   Time GetSifs (void) const;
-  /**
-   * \return the current slot duration.
-   */
   Time GetSlot (void) const;
-  /**
-   * \return the current EIFS minus DIFS duration
-   */
   Time GetEifsNoDifs (void) const;
-  /**
-   * \return the current CTS timeout duration.
-   */
   Time GetCtsTimeout (void) const;
-  /**
-   * \return the current ACK timeout duration.
-   */
   Time GetAckTimeout (void) const;
+  bool GetShortSlotTimeSupported (void) const;
+  Ssid GetSsid (void) const;
+  Mac48Address GetAddress (void) const;
+  Mac48Address GetBssid (void) const;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
+  virtual bool SupportsSendFrom (void) const;
+  virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
+  Ptr<WifiPhy> GetWifiPhy (void) const;
+  void ResetWifiPhy (void);
+  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
+
+  /**
+   * This type defines the callback of a higher layer that a
+   * WifiMac(-derived) object invokes to pass a packet up the stack.
+   *
+   * \param packet the packet that has been received.
+   * \param from the MAC address of the device that sent the packet.
+   * \param to the MAC address of the device that the packet is destined for.
+   */
+  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
+
+  void SetForwardUpCallback (ForwardUpCallback upCallback);
+  void SetLinkUpCallback (Callback<void> linkUp);
+  void SetLinkDownCallback (Callback<void> linkDown);
+
+  /* Next functions are not pure virtual so non-QoS WifiMacs are not
+   * forced to implement them.
+   */
+  void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  Time GetBasicBlockAckTimeout (void) const;
+  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  Time GetCompressedBlockAckTimeout (void) const;
+
+  // Should be implemented by child classes
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
 
   /**
    * Enable or disable CTS-to-self feature.
@@ -118,21 +115,6 @@ public:
    *               false otherwise
    */
   void SetCtsToSelfSupported (bool enable);
-
-  /**
-   * Enable or disable short slot time feature.
-   *
-   * \param enable true if short slot time is to be supported,
-   *               false otherwise
-   */
-  void SetShortSlotTimeSupported (bool enable);
-  /**
-   * \return whether the device supports short slot time capability.
-   *
-   * \return true if short slot time is supported,
-   *         false otherwise.
-   */
-  bool GetShortSlotTimeSupported (void) const;
   /**
    * Enable or disable RIFS feature.
    *
@@ -150,78 +132,10 @@ public:
    */
   bool GetRifsSupported (void) const;
   /**
-   * \return the MAC address associated to this MAC layer.
-   */
-  Mac48Address GetAddress (void) const;
-  /**
-   * \return the ssid which this MAC layer is going to try to stay in.
-   */
-  Ssid GetSsid (void) const;
-  /**
-   * \param address the current address of this MAC layer.
-   */
-  void SetAddress (Mac48Address address);
-  /**
-   * \param ssid the current ssid of this MAC layer.
-   */
-  void SetSsid (Ssid ssid);
-  /**
    * \param bssid the BSSID of the network that this device belongs to.
    */
   void SetBssid (Mac48Address bssid);
-  /**
-   * \return the bssid of the network this device belongs to.
-   */
-  Mac48Address GetBssid (void) const;
-  /**
-   * \brief Sets the interface in promiscuous mode.
-   *
-   * Enables promiscuous mode on the interface. Note that any further
-   * filtering on the incoming frame path may affect the overall
-   * behavior.
-   */
-  void SetPromisc (void);
 
-  /**
-   * \param packet the packet to send.
-   * \param to the address to which the packet should be sent.
-   * \param from the address from which the packet should be sent.
-   *
-   * The packet should be enqueued in a tx queue, and should be
-   * dequeued as soon as the channel access function determines that
-   * access is granted to this MAC.  The extra parameter "from" allows
-   * this device to operate in a bridged mode, forwarding received
-   * frames without altering the source address.
-   */
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-
-  virtual bool SupportsSendFrom (void) const;
-
-  /**
-   * \param packet the packet to send.
-   * \param to the address to which the packet should be sent.
-   *
-   * The packet should be enqueued in a tx queue, and should be
-   * dequeued as soon as the channel access function determines that
-   * access is granted to this MAC.
-   */
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
-  /**
-   * \param phy the physical layer attached to this MAC.
-   */
-  virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
-  /**
-   * \return the physical layer attached to this MAC.
-   */
-  Ptr<WifiPhy> GetWifiPhy (void) const;
-  /**
-   * removes attached WifiPhy device from this MAC.
-   */
-  void ResetWifiPhy (void);
-  /**
-   * \param stationManager the station manager attached to this MAC.
-   */
-  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
   /**
    * \return the station manager attached to this MAC.
    */
@@ -251,47 +165,15 @@ public:
    */
   HeCapabilities GetHeCapabilities (void) const;
 
-  /**
-   * This type defines the callback of a higher layer that a
-   * WifiMac(-derived) object invokes to pass a packet up the stack.
-   *
-   * \param packet the packet that has been received.
-   * \param from the MAC address of the device that sent the packet.
-   * \param to the MAC address of the device that the packet is destined for.
-   */
-  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
-  /**
-   * \param upCallback the callback to invoke when a packet must be
-   * forwarded up the stack.
-   */
-  void SetForwardUpCallback (ForwardUpCallback upCallback);
-  /**
-   * \param linkUp the callback to invoke when the link becomes up.
-   */
-  void SetLinkUpCallback (Callback<void> linkUp);
-  /**
-   * \param linkDown the callback to invoke when the link becomes down.
-   */
-  void SetLinkDownCallback (Callback<void> linkDown);
-
-  /* Next functions are not pure virtual so non Qos WifiMacs are not
-   * forced to implement them.
-   */
-  void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  Time GetBasicBlockAckTimeout (void) const;
-  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  Time GetCompressedBlockAckTimeout (void) const;
-
-
 protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
+  Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;  //!< TX middle (aggregation etc.)
-  Ptr<MacLow> m_low;        //!< MacLow (RTS, CTS, DATA, ACK etc.)
+  Ptr<MacLow> m_low;            //!< MacLow (RTS, CTS, Data, Ack etc.)
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< channel access manager
-  Ptr<WifiPhy> m_phy;       //!< Wifi PHY
+  Ptr<WifiPhy> m_phy;           //!< Wifi PHY
 
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
 
@@ -346,10 +228,10 @@ protected:
   Ptr<QosTxop> GetBKQueue (void) const;
 
   /**
-   * \param standard the phy standard to be used
+   * \param standard the PHY standard to be used
    *
    * This method is called by ns3::WifiMac::ConfigureStandard to
-   * complete the configuration process for a requested phy standard.
+   * complete the configuration process for a requested PHY standard.
    *
    * This method may be overridden by a derived class (e.g., in order
    * to apply DCF or EDCA parameters specific to the usage model it is
@@ -360,8 +242,8 @@ protected:
   void FinishConfigureStandard (WifiPhyStandard standard);
 
   /**
-   * \param cwMin the minimum congestion window size
-   * \param cwMax the maximum congestion window size
+   * \param cwMin the minimum contention window size
+   * \param cwMax the maximum contention window size
    *
    * This method is called to set the minimum and the maximum
    * contention window size.
@@ -394,14 +276,14 @@ protected:
   virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
-   * (i.e. we received an ACK from the receiver).
+   * (i.e. we received an Ack from the receiver).
    *
    * \param hdr the header of the packet that we successfully sent
    */
   virtual void TxOk (const WifiMacHeader &hdr);
   /**
    * The packet we sent was successfully received by the receiver
-   * (i.e. we did not receive an ACK from the receiver).
+   * (i.e. we did not receive an Ack from the receiver).
    *
    * \param hdr the header of the packet that we failed to sent
    */
@@ -532,27 +414,27 @@ private:
   void SetupEdcaQueue (AcIndex ac);
 
   /**
-   * Set the Block ACK threshold for AC_VO.
+   * Set the block ack threshold for AC_VO.
    *
-   * \param threshold the Block ACK threshold for AC_VO.
+   * \param threshold the block ack threshold for AC_VO.
    */
   void SetVoBlockAckThreshold (uint8_t threshold);
   /**
-   * Set the Block ACK threshold for AC_VI.
+   * Set the block ack threshold for AC_VI.
    *
-   * \param threshold the Block ACK threshold for AC_VI.
+   * \param threshold the block ack threshold for AC_VI.
    */
   void SetViBlockAckThreshold (uint8_t threshold);
   /**
-   * Set the Block ACK threshold for AC_BE.
+   * Set the block ack threshold for AC_BE.
    *
-   * \param threshold the Block ACK threshold for AC_BE.
+   * \param threshold the block ack threshold for AC_BE.
    */
   void SetBeBlockAckThreshold (uint8_t threshold);
   /**
-   * Set the Block ACK threshold for AC_BK.
+   * Set the block ack threshold for AC_BK.
    *
-   * \param threshold the Block ACK threshold for AC_BK.
+   * \param threshold the block ack threshold for AC_BK.
    */
   void SetBkBlockAckThreshold (uint8_t threshold);
 
@@ -611,15 +493,15 @@ private:
   /// Disable aggregation function
   void DisableAggregation (void);
 
-  uint16_t m_voMaxAmsduSize; ///< maximum A-MSDU size for AC_VO
-  uint16_t m_viMaxAmsduSize; ///< maximum A-MSDU size for AC_VI
-  uint16_t m_beMaxAmsduSize; ///< maximum A-MSDU size for AC_BE
-  uint16_t m_bkMaxAmsduSize; ///< maximum A-MSDU size for AC_BK
+  uint16_t m_voMaxAmsduSize; ///< maximum A-MSDU size for AC_VO (in bytes)
+  uint16_t m_viMaxAmsduSize; ///< maximum A-MSDU size for AC_VI (in bytes)
+  uint16_t m_beMaxAmsduSize; ///< maximum A-MSDU size for AC_BE (in bytes)
+  uint16_t m_bkMaxAmsduSize; ///< maximum A-MSDU size for AC_BK (in bytes)
 
-  uint32_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO
-  uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI
-  uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE
-  uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK
+  uint32_t m_voMaxAmpduSize; ///< maximum A-MPDU size for AC_VO (in bytes)
+  uint32_t m_viMaxAmpduSize; ///< maximum A-MPDU size for AC_VI (in bytes)
+  uint32_t m_beMaxAmpduSize; ///< maximum A-MPDU size for AC_BE (in bytes)
+  uint32_t m_bkMaxAmpduSize; ///< maximum A-MPDU size for AC_BK (in bytes)
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback; ///< transmit OK callback
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback

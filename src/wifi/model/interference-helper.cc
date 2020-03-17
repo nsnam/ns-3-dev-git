@@ -34,7 +34,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
 
 /****************************************************************
- *       Phy event class
+ *       PHY event class
  ****************************************************************/
 
 Event::Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, double rxPower)
@@ -379,11 +379,11 @@ InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChange
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
       double snr = CalculateSnr (powerW, noiseInterferenceW, txVector.GetChannelWidth ());
-      //Case 1: previous and current after playload start
+      //Case 1: previous and current after payload start
       if (previous >= plcpPayloadStart)
         {
           psr *= 1;
-          NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
+          NS_LOG_DEBUG ("Case 1 - previous and current after payload start: nothing to do");
         }
       //Case 2: previous is in training or in SIG-B: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpTrainingSymbolsStart)
@@ -508,11 +508,11 @@ InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChanges *
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
       double snr = CalculateSnr (powerW, noiseInterferenceW, txVector.GetChannelWidth ());
-      //Case 1: previous and current after playload start: nothing to do
+      //Case 1: previous and current after payload start: nothing to do
       if (previous >= plcpPayloadStart)
         {
           psr *= 1;
-          NS_LOG_DEBUG ("Case 1 - previous and current after playload start: nothing to do");
+          NS_LOG_DEBUG ("Case 1 - previous and current after payload start: nothing to do");
         }
       //Case 2: previous is in training or in SIG-B: non-HT will not enter here since it didn't enter in the last two and they are all the same for non-HT
       else if (previous >= plcpTrainingSymbolsStart)
@@ -746,7 +746,7 @@ InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, std::pair<Time, Ti
                              event->GetTxVector ().GetChannelWidth ());
 
   /* calculate the SNIR at the start of the MPDU (located through windowing) and accumulate
-   * all SNIR changes in the snir vector.
+   * all SNIR changes in the SNIR vector.
    */
   double per = CalculatePayloadPer (event, &ni, relativeMpduStartStop);
 
@@ -776,8 +776,8 @@ InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event) const
                              noiseInterferenceW,
                              event->GetTxVector ().GetChannelWidth ());
 
-  /* calculate the SNIR at the start of the plcp header and accumulate
-   * all SNIR changes in the snir vector.
+  /* calculate the SNIR at the start of the PLCP header and accumulate
+   * all SNIR changes in the SNIR vector.
    */
   double per = CalculateNonHtPhyHeaderPer (event, &ni);
 
@@ -796,8 +796,8 @@ InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event) const
                              noiseInterferenceW,
                              event->GetTxVector ().GetChannelWidth ());
   
-  /* calculate the SNIR at the start of the plcp header and accumulate
-   * all SNIR changes in the snir vector.
+  /* calculate the SNIR at the start of the PLCP header and accumulate
+   * all SNIR changes in the SNIR vector.
    */
   double per = CalculateHtPhyHeaderPer (event, &ni);
   

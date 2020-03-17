@@ -266,7 +266,7 @@ public:
    * Get the size of the serialized IE including Element ID and
    * length fields.
    *
-   * \return the size of the serialized IE
+   * \return the size of the serialized IE in bytes
    */
   uint16_t GetSerializedSize () const;
 

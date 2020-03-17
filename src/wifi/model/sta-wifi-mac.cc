@@ -310,7 +310,7 @@ StaWifiMac::TryToEnsureAssociated (void)
     case REFUSED:
       /* we have sent an association request and received a negative
          association response. We wait until someone restarts an
-         association with a given ssid.
+         association with a given SSID.
        */
       break;
     }

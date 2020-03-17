@@ -27,7 +27,7 @@ namespace ns3 {
 class Time;
 
 /**
- * \brief receive notifications about phy events.
+ * \brief receive notifications about PHY events.
  */
 class WifiPhyListener
 {
@@ -67,13 +67,13 @@ public:
   virtual void NotifyRxEndError (void) = 0;
   /**
    * \param duration the expected transmission duration.
-   * \param txPowerDbm the nominal tx power in dBm
+   * \param txPowerDbm the nominal TX power in dBm
    *
    * We are about to send the first bit of the packet.
    * We do not send any event to notify the end of
    * transmission. Listeners should assume that the
    * channel implicitly reverts to the idle state
-   * unless they have received a cca busy report.
+   * unless they have received a CCA busy report.
    */
   virtual void NotifyTxStart (Time duration, double txPowerDbm) = 0;
   /**

@@ -41,10 +41,10 @@ namespace ns3 {
  *    - 1 Mbps mode is based on DBPSK. BER is from equation 5.2-69 from John G. Proakis
  *      Digital Communications, 2001 edition
  *    - 2 Mbps model is based on DQPSK. Equation 8 from "Tight bounds and accurate
- *      approximations for dqpsk transmission bit error rate", G. Ferrari and G.E. Corazza
+ *      approximations for DQPSK transmission bit error rate", G. Ferrari and G.E. Corazza
  *      ELECTRONICS LETTERS, 40(20):1284-1285, September 2004
  *    - 5.5 Mbps and 11 Mbps are based on equations (18) and (17) from "Properties and
- *      performance of the ieee 802.11b complementarycode-key signal sets",
+ *      performance of the IEEE 802.11b complementary code-key signal sets",
  *      Michael B. Pursley and Thomas C. Royster. IEEE TRANSACTIONS ON COMMUNICATIONS,
  *      57(2):440-449, February 2009.
  *    - More detailed description and validation can be found in

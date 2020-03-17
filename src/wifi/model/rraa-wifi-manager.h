@@ -101,7 +101,7 @@ private:
    * Return the index for the maximum transmission rate for
    * the given station.
    *
-   * \param station
+   * \param station the remote station
    *
    * \return the index for the maximum transmission rate
    */
@@ -109,64 +109,64 @@ private:
   /**
    * Check if the counter should be reset.
    *
-   * \param station
+   * \param station the remote station
    */
   void CheckTimeout (RraaWifiRemoteStation *station);
   /**
    * Find an appropriate rate for the given station, using
    * a basic algorithm.
    *
-   * \param station
+   * \param station the remote station
    */
   void RunBasicAlgorithm (RraaWifiRemoteStation *station);
   /**
    * Activate the use of RTS for the given station if the conditions are met.
    *
-   * \param station
+   * \param station the remote station
    */
   void ARts (RraaWifiRemoteStation *station);
   /**
    * Reset the counters of the given station.
    *
-   * \param station
+   * \param station the remote station
    */
   void ResetCountersBasic (RraaWifiRemoteStation *station);
   /**
    * Initialize the thresholds internal list for the given station.
    *
-   * \param station
+   * \param station the remote station
    */
   void InitThresholds (RraaWifiRemoteStation *station);
   /**
    * Get the thresholds for the given station and mode.
    *
-   * \param station
-   * \param mode
+   * \param station the remote station
+   * \param mode the WifiMode
    *
-   * \return threshold
+   * \return the RRAA thresholds
    */
   WifiRraaThresholds GetThresholds (RraaWifiRemoteStation *station, WifiMode mode) const;
   /**
    * Get the thresholds for the given station and mode index.
    *
-   * \param station
-   * \param rate
+   * \param station the remote station
+   * \param index the mode index in the supported rates
    *
-   * \return threshold
+   * \return the RRAA thresholds
    */
-  WifiRraaThresholds GetThresholds (RraaWifiRemoteStation *station, uint8_t rate) const;
+  WifiRraaThresholds GetThresholds (RraaWifiRemoteStation *station, uint8_t index) const;
   /**
    * Get the estimated TxTime of a packet with a given mode.
    *
-   * \param mode
+   * \param mode the WifiMode
    *
-   * \return time
+   * \return the estimated TX time
    */
   Time GetCalcTxTime (WifiMode mode) const;
   /**
    * Add transmission time for the given mode to an internal list.
    *
-   * \param mode Wi-Fi mode
+   * \param mode the WifiMode
    * \param t transmission time
    */
   void AddCalcTxTime (WifiMode mode, Time t);

@@ -66,7 +66,7 @@ public:
 
 private:
   virtual void DoDispose (void);
-  Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum phy
+  Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum PHY
   Ptr<NetDevice> m_netDevice; ///< the device
   Ptr<SpectrumChannel> m_channel; ///< spectrum channel
 };

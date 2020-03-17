@@ -35,7 +35,9 @@ namespace ns3 {
 class Ssid : public WifiInformationElement
 {
 public:
-  // broadcast ssid
+  /**
+   * Create SSID with broadcast SSID
+   */
   Ssid ();
   /**
    * Create SSID from a given string
@@ -43,6 +45,13 @@ public:
    * \param s SSID in string
    */
   Ssid (std::string s);
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start,
+                                       uint8_t length);
 
   /**
    * Check if the two SSIDs are equal.
@@ -68,43 +77,29 @@ public:
    */
   char* PeekString (void) const;
 
-  /**
-   * Get the ElementID.
-   *
-   * \returns the element ID
-   */
-  WifiInformationElementId ElementId () const;
-
-  /**
-   * Get the information field size.
-   *
-   * \returns the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-
-  /**
-   * Get the information field size.
-   *
-   * \param start the information field iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-
-  /**
-   * Get the information field size.
-   *
-   * \param start the information field iterator
-   * \param length the size of the information field
-   * \returns the size of the field read
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                       uint8_t length);
 
 private:
   uint8_t m_ssid[33]; //!< Raw SSID value
   uint8_t m_length;   //!< Length of the SSID
 };
 
+/**
+ * Serialize SSID to the given ostream
+ *
+ * \param os the output stream
+ * \param ssid the SSID
+ *
+ * \return std::ostream
+ */
 std::ostream &operator << (std::ostream &os, const Ssid &ssid);
+/**
+ * Serialize from the given istream to this SSID.
+ *
+ * \param is the input stream
+ * \param ssid the SSID
+ *
+ * \return std::istream
+ */
 std::istream &operator >> (std::istream &is, Ssid &ssid);
 
 ATTRIBUTE_HELPER_HEADER (Ssid);

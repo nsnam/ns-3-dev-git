@@ -63,9 +63,9 @@ VhtCapabilities::ElementId () const
 }
 
 void
-VhtCapabilities::SetVhtSupported (uint8_t vhtsupported)
+VhtCapabilities::SetVhtSupported (uint8_t vhtSupported)
 {
-  m_vhtSupported = vhtsupported;
+  m_vhtSupported = vhtSupported;
 }
 
 uint8_t
@@ -227,39 +227,39 @@ VhtCapabilities::SetMaxMpduLength (uint16_t length)
 }
 
 void
-VhtCapabilities::SetSupportedChannelWidthSet (uint8_t channelwidthset)
+VhtCapabilities::SetSupportedChannelWidthSet (uint8_t channelWidthSet)
 {
-  m_supportedChannelWidthSet = channelwidthset;
+  m_supportedChannelWidthSet = channelWidthSet;
 }
 
 void
-VhtCapabilities::SetRxLdpc (uint8_t rxldpc)
+VhtCapabilities::SetRxLdpc (uint8_t rxLdpc)
 {
-  m_rxLdpc = rxldpc;
+  m_rxLdpc = rxLdpc;
 }
 
 void
-VhtCapabilities::SetShortGuardIntervalFor80Mhz (uint8_t shortguardinterval)
+VhtCapabilities::SetShortGuardIntervalFor80Mhz (uint8_t shortGuardInterval)
 {
-  m_shortGuardIntervalFor80Mhz = shortguardinterval;
+  m_shortGuardIntervalFor80Mhz = shortGuardInterval;
 }
 
 void
-VhtCapabilities::SetShortGuardIntervalFor160Mhz (uint8_t shortguardinterval)
+VhtCapabilities::SetShortGuardIntervalFor160Mhz (uint8_t shortGuardInterval)
 {
-  m_shortGuardIntervalFor160Mhz = shortguardinterval;
+  m_shortGuardIntervalFor160Mhz = shortGuardInterval;
 }
 
 void
-VhtCapabilities::SetRxStbc (uint8_t rxstbc)
+VhtCapabilities::SetRxStbc (uint8_t rxStbc)
 {
-  m_rxStbc = rxstbc;
+  m_rxStbc = rxStbc;
 }
 
 void
-VhtCapabilities::SetTxStbc (uint8_t txstbc)
+VhtCapabilities::SetTxStbc (uint8_t txStbc)
 {
-  m_txStbc = txstbc;
+  m_txStbc = txStbc;
 }
 
 void
@@ -331,15 +331,15 @@ VhtCapabilities::IsSupportedRxMcs (uint8_t mcs) const
 }
 
 void
-VhtCapabilities::SetRxHighestSupportedLgiDataRate (uint16_t supporteddatarate)
+VhtCapabilities::SetRxHighestSupportedLgiDataRate (uint16_t supportedDatarate)
 {
-  m_rxHighestSupportedLongGuardIntervalDataRate = supporteddatarate;
+  m_rxHighestSupportedLongGuardIntervalDataRate = supportedDatarate;
 }
 
 void
-VhtCapabilities::SetTxHighestSupportedLgiDataRate (uint16_t supporteddatarate)
+VhtCapabilities::SetTxHighestSupportedLgiDataRate (uint16_t supportedDatarate)
 {
-  m_txHighestSupportedLongGuardIntervalDataRate = supporteddatarate;
+  m_txHighestSupportedLongGuardIntervalDataRate = supportedDatarate;
 }
 
 uint16_t
@@ -415,14 +415,6 @@ VhtCapabilities::GetRxHighestSupportedLgiDataRate () const
   return m_rxHighestSupportedLongGuardIntervalDataRate;
 }
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param VhtCapabilities the VHT capabilities
- *
- * \returns output stream
- */
 std::ostream &
 operator << (std::ostream &os, const VhtCapabilities &VhtCapabilities)
 {

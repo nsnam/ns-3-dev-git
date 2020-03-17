@@ -40,9 +40,9 @@ struct OnoeWifiRemoteStation : public WifiRemoteStation
   Time m_nextModeUpdate; ///< next mode update
   uint32_t m_shortRetry; ///< short retry
   uint32_t m_longRetry; ///< long retry
-  uint32_t m_tx_ok; ///< transmit ok
+  uint32_t m_tx_ok; ///< transmit OK
   uint32_t m_tx_err; ///< transmit error
-  uint32_t m_tx_retr; ///< transmit retr
+  uint32_t m_tx_retr; ///< transmit retry
   uint32_t m_tx_upper; ///< transmit upper
   uint8_t m_txrate; ///< transmit rate
 };

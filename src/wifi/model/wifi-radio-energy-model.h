@@ -43,7 +43,7 @@ class WifiRadioEnergyModelPhyListener : public WifiPhyListener
 {
 public:
   /**
-   * Callback type for updating the transmit current based on the nominal tx power.
+   * Callback type for updating the transmit current based on the nominal TX power.
    */
   typedef Callback<void, double> UpdateTxCurrentCallback;
 
@@ -58,9 +58,9 @@ public:
   void SetChangeStateCallback (DeviceEnergyModel::ChangeStateCallback callback);
 
   /**
-   * \brief Sets the update tx current callback.
+   * \brief Sets the update TX current callback.
    *
-   * \param callback Update tx current callback.
+   * \param callback Update TX current callback.
    */
   void SetUpdateTxCurrentCallback (UpdateTxCurrentCallback callback);
 
@@ -98,7 +98,7 @@ public:
    * IDLE after TX duration.
    *
    * \param duration the expected transmission duration.
-   * \param txPowerDbm the nominal tx power in dBm
+   * \param txPowerDbm the nominal TX power in dBm
    *
    * Defined in ns3::WifiPhyListener
    */
@@ -152,8 +152,8 @@ private:
   DeviceEnergyModel::ChangeStateCallback m_changeStateCallback;
 
   /**
-   * Callback used to update the tx current stored in WifiRadioEnergyModel based on
-   * the nominal tx power used to transmit the current frame.
+   * Callback used to update the TX current stored in WifiRadioEnergyModel based on
+   * the nominal TX power used to transmit the current frame.
    */
   UpdateTxCurrentCallback m_updateTxCurrentCallback;
 
@@ -207,7 +207,7 @@ private:
  * \f$ I_{sleep} = 0.033 \f$
  *
  * The dependence of the power consumption in transmission mode on the nominal
- * transmit power can also be achieved through a wifi tx current model.
+ * transmit power can also be achieved through a wifi TX current model.
  *
  */
 class WifiRadioEnergyModel : public DeviceEnergyModel
@@ -241,7 +241,7 @@ public:
   void SetEnergySource (const Ptr<EnergySource> source);
 
   /**
-   * \returns Total energy consumption of the wifi device.
+   * \returns Total energy consumption of the wifi device in watts.
    *
    * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
    */
@@ -249,73 +249,73 @@ public:
 
   // Setter & getters for state power consumption.
   /**
-   * \brief Gets idle current.
+   * \brief Gets idle current in Amperes.
    *
    * \returns idle current of the wifi device.
    */
   double GetIdleCurrentA (void) const;
   /**
-   * \brief Sets idle current.
+   * \brief Sets idle current in Amperes.
    *
    * \param idleCurrentA the idle current
    */
   void SetIdleCurrentA (double idleCurrentA);
   /**
-   * \brief Gets CCA busy current.
+   * \brief Gets CCA busy current in Amperes.
    *
    * \returns CCA Busy current of the wifi device.
    */
   double GetCcaBusyCurrentA (void) const;
   /**
-   * \brief Sets CCA busy current.
+   * \brief Sets CCA busy current in Amperes.
    *
    * \param ccaBusyCurrentA the CCA busy current
    */
   void SetCcaBusyCurrentA (double ccaBusyCurrentA);
   /**
-   * \brief Gets transmit current.
+   * \brief Gets transmit current in Amperes.
    *
    * \returns transmit current of the wifi device.
    */
   double GetTxCurrentA (void) const;
   /**
-   * \brief Sets transmit current.
+   * \brief Sets transmit current in Amperes.
    *
    * \param txCurrentA the transmit current
    */
   void SetTxCurrentA (double txCurrentA);
   /**
-   * \brief Gets receive current.
+   * \brief Gets receive current in Amperes.
    *
    * \returns receive current of the wifi device.
    */
   double GetRxCurrentA (void) const;
   /**
-   * \brief Sets receive current.
+   * \brief Sets receive current in Amperes.
    *
    * \param rxCurrentA the receive current
    */
   void SetRxCurrentA (double rxCurrentA);
   /**
-   * \brief Gets switching current.
+   * \brief Gets switching current in Amperes.
    *
    * \returns switching current of the wifi device.
    */
   double GetSwitchingCurrentA (void) const;
   /**
-   * \brief Sets switching current.
+   * \brief Sets switching current in Amperes.
    *
    * \param switchingCurrentA the switching current
    */
   void SetSwitchingCurrentA (double switchingCurrentA);
   /**
-   * \brief Gets sleep current.
+   * \brief Gets sleep current in Amperes.
    *
    * \returns sleep current of the wifi device.
    */
   double GetSleepCurrentA (void) const;
   /**
-   * \brief Sets sleep current.
+   * \brief Sets sleep current in Amperes.
    *
    * \param sleepCurrentA the sleep current
    */
@@ -341,15 +341,15 @@ public:
   void SetEnergyRechargedCallback (WifiRadioEnergyRechargedCallback callback);
 
   /**
-   * \param model the model used to compute the wifi tx current.
+   * \param model the model used to compute the wifi TX current.
    */
   void SetTxCurrentModel (const Ptr<WifiTxCurrentModel> model);
 
   /**
-   * \brief Calls the CalcTxCurrent method of the tx current model to
-   *        compute the tx current based on such model
+   * \brief Calls the CalcTxCurrent method of the TX current model to
+   *        compute the TX current based on such model
    *
-   * \param txPowerDbm the nominal tx power in dBm
+   * \param txPowerDbm the nominal TX power in dBm
    */
   void SetTxCurrentFromModel (double txPowerDbm);
 
@@ -401,12 +401,12 @@ private:
 
   /**
    * \param state the wifi state
-   * \returns draw of device, at given state.
+   * \returns draw of device in Amperes, at given state.
    */
   double GetStateA (int state) const;
 
   /**
-   * \returns Current draw of device, at current state.
+   * \returns Current draw of device in Amperes, at current state.
    *
    * Implements DeviceEnergyModel::GetCurrentA.
    */
@@ -423,15 +423,15 @@ private:
   Ptr<EnergySource> m_source; ///< energy source
 
   // Member variables for current draw in different radio modes.
-  double m_txCurrentA; ///< transmit current
-  double m_rxCurrentA; ///< receive current
-  double m_idleCurrentA; ///< idle current
-  double m_ccaBusyCurrentA; ///< CCA busy current
-  double m_switchingCurrentA; ///< switching current
-  double m_sleepCurrentA; ///< sleep current
+  double m_txCurrentA; ///< transmit current in Amperes
+  double m_rxCurrentA; ///< receive current in Amperes
+  double m_idleCurrentA; ///< idle current in Amperes
+  double m_ccaBusyCurrentA; ///< CCA busy current in Amperes
+  double m_switchingCurrentA; ///< switching current in Amperes
+  double m_sleepCurrentA; ///< sleep current in Amperes
   Ptr<WifiTxCurrentModel> m_txCurrentModel; ///< current model
 
-  /// This variable keeps track of the total energy consumed by this model.
+  /// This variable keeps track of the total energy consumed by this model in watts.
   TracedValue<double> m_totalEnergyConsumption;
 
   // State variables.

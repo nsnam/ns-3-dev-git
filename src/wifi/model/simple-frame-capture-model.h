@@ -73,7 +73,7 @@ public:
 
 
 private:
-  double m_margin; ///< margin for determining if a new frame
+  double m_margin; ///< margin for determining if a new frame (dB)
 };
 
 } //namespace ns3

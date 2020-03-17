@@ -34,12 +34,12 @@ namespace ns3 {
  * similar to RBAR in spirit (see <i>A rate-adaptive MAC
  * protocol for multihop wireless networks</i> by G. Holland,
  * N. Vaidya, and P. Bahl.): every station keeps track of the
- * snr of every packet received and sends back this snr to the
+ * SNR of every packet received and sends back this SNR to the
  * original transmitter by an out-of-band mechanism. Each
- * transmitter keeps track of the last snr sent back by a receiver
+ * transmitter keeps track of the last SNR sent back by a receiver
  * and uses it to pick a transmission mode based on a set
- * of snr thresholds built from a target ber and transmission
- * mode-specific snr/ber curves.
+ * of SNR thresholds built from a target BER and transmission
+ * mode-specific SNR/BER curves.
  */
 class IdealWifiManager : public WifiRemoteStationManager
 {
@@ -80,17 +80,17 @@ private:
    * Return the minimum SNR needed to successfully transmit
    * data with this WifiTxVector at the specified BER.
    *
-   * \param txVector WifiTxVector (containing valid mode, width, and nss)
+   * \param txVector WifiTxVector (containing valid mode, width, and Nss)
    *
-   * \return the minimum SNR for the given WifiTxVector
+   * \return the minimum SNR for the given WifiTxVector in linear scale
    */
   double GetSnrThreshold (WifiTxVector txVector) const;
   /**
    * Adds a pair of WifiTxVector and the minimum SNR for that given vector
    * to the list.
    *
-   * \param txVector the WifiTxVector storing mode, channel width, and nss
-   * \param snr the minimum SNR for the given txVector
+   * \param txVector the WifiTxVector storing mode, channel width, and Nss
+   * \param snr the minimum SNR for the given txVector in linear scale
    */
   void AddSnrThreshold (WifiTxVector txVector, double snr);
 

@@ -137,7 +137,7 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     }
   else if (modulation == WIFI_MOD_CLASS_HT && useGreenfield)
     {
-      //If protection for greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
+      //If protection for Greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
       return WIFI_PREAMBLE_HT_GF;
     }
   else if (modulation == WIFI_MOD_CLASS_HT)

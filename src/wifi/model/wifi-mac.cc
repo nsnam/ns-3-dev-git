@@ -135,7 +135,7 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::SetCtsTimeout,
                                      &WifiMac::GetCtsTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("AckTimeout", "When this timeout expires, the DATA/ACK handshake has failed.",
+    .AddAttribute ("AckTimeout", "When this timeout expires, the Data/Ack handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::GetAckTimeout,
                                      &WifiMac::SetAckTimeout),

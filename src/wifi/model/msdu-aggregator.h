@@ -64,9 +64,9 @@ public:
    * Note that only the basic A-MSDU subframe format (section 9.3.2.2.2 of IEEE
    * 802.11-2016) is supported.
    *
-   * \param msduSize the MSDU size.
-   * \param amsduSize the A-MSDU size.
-   * \return the size of the resulting A-MSDU.
+   * \param msduSize the MSDU size in bytes.
+   * \param amsduSize the A-MSDU size in bytes.
+   * \return the size of the resulting A-MSDU in bytes.
    */
   static uint16_t GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize);
 
@@ -94,7 +94,7 @@ public:
    * \param recipient the receiver station address.
    * \param tid the TID.
    * \param txVector the TxVector used to transmit the frame
-   * \param ampduSize the size of the existing A-MPDU
+   * \param ampduSize the size of the existing A-MPDU in bytes
    * \param ppduDurationLimit the limit on the PPDU duration
    * \return the resulting A-MSDU, if aggregation is possible, 0 otherwise.
    */
@@ -109,7 +109,7 @@ public:
    * \param recipient the receiver station address.
    * \param tid the TID.
    * \param modulation the modulation class.
-   * \return the maximum A-MSDU size.
+   * \return the maximum A-MSDU size in bytes.
    */
   uint16_t GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
                             WifiModulationClass modulation) const;

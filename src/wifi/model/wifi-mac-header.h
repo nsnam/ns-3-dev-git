@@ -84,7 +84,7 @@ class WifiMacHeader : public Header
 {
 public:
   /**
-   * ACK policy for QoS frames.
+   * Ack policy for QoS frames.
    */
   enum QosAckPolicy
   {
@@ -230,9 +230,9 @@ public:
    */
   void SetQosNoEosp ();
   /**
-   * Set the QoS ACK policy in the QoS control field.
+   * Set the QoS Ack policy in the QoS control field.
    *
-   * \param policy
+   * \param policy the Qos Ack policy
    */
   void SetQosAckPolicy (QosAckPolicy policy);
   /**
@@ -246,7 +246,7 @@ public:
   /**
    * Set TXOP limit in the QoS control field.
    *
-   * \param txop
+   * \param txop the TXOP limit
    */
   void SetQosTxopLimit (uint8_t txop);
   /**
@@ -307,14 +307,14 @@ public:
   /**
    * Return true if the Type is DATA.  The method does
    * not check the Subtype field. (e.g. the header may be
-   * DATA with QoS)
+   * Data with QoS)
    *
    * \return true if Type is DATA, false otherwise
    */
   bool IsData (void) const;
   /**
    * Return true if the Type is DATA and Subtype is one of the
-   * possible values for QoS DATA.
+   * possible values for QoS Data.
    *
    * \return true if Type is QoS DATA, false otherwise
    */
@@ -345,15 +345,15 @@ public:
    */
   bool IsCfPoll (void) const;
   /**
-   * Return true if the header is a CF-ACK header.
+   * Return true if the header is a CF-Ack header.
    *
-   * \return true if the header is a CF_ACK header, false otherwise
+   * \return true if the header is a CF-Ack header, false otherwise
    */
   bool IsCfAck (void) const;
   /**
-   * Return true if the header is a CF-END header.
+   * Return true if the header is a CF-End header.
    *
-   * \return true if the header is a CF_END header, false otherwise
+   * \return true if the header is a CF-End header, false otherwise
    */
   bool IsCfEnd (void) const;
   /**
@@ -369,21 +369,21 @@ public:
    */
   bool IsCts (void) const;
   /**
-   * Return true if the header is an ACK header.
+   * Return true if the header is an Ack header.
    *
-   * \return true if the header is an ACK header, false otherwise
+   * \return true if the header is an Ack header, false otherwise
    */
   bool IsAck (void) const;
   /**
-   * Return true if the header is a Block ACK Request header.
+   * Return true if the header is a BlockAckRequest header.
    *
-   * \return true if the header is a Block ACK Request header, false otherwise
+   * \return true if the header is a BlockAckRequest header, false otherwise
    */
   bool IsBlockAckReq (void) const;
   /**
-   * Return true if the header is a Block ACK header.
+   * Return true if the header is a BlockAck header.
    *
-   * \return true if the header is a Block ACK header, false otherwise
+   * \return true if the header is a BlockAck header, false otherwise
    */
   bool IsBlockAck (void) const;
   /**
@@ -451,14 +451,14 @@ public:
    *
    * \return true if the header is an Action header, false otherwise
    */
-  bool IsAction () const;
+  bool IsAction (void) const;
   /**
    * Check if the header is a Multihop action header.
    *
    * \return true if the header is a Multihop action header,
    *         false otherwise
    */
-  bool IsMultihopAction () const;
+  bool IsMultihopAction (void) const;
   /**
    * Return the raw duration from the Duration/ID field.
    *
@@ -502,21 +502,21 @@ public:
    */
   bool IsMoreFragments (void) const;
   /**
-   * Return if the QoS ACK policy is Block ACK.
+   * Return if the QoS Ack policy is Block Ack.
    *
-   * \return true if the QoS ACK policy is Block ACK, false otherwise
+   * \return true if the QoS Ack policy is Block Ack, false otherwise
    */
   bool IsQosBlockAck (void) const;
   /**
-   * Return if the QoS ACK policy is No ACK.
+   * Return if the QoS Ack policy is No Ack.
    *
-   * \return true if the QoS ACK policy is No ACK, false otherwise
+   * \return true if the QoS Ack policy is No Ack, false otherwise
    */
   bool IsQosNoAck (void) const;
   /**
-   * Return if the QoS ACK policy is Normal ACK.
+   * Return if the QoS Ack policy is Normal Ack.
    *
-   * \return true if the QoS ACK policy is No ACK, false otherwise
+   * \return true if the QoS Ack policy is No Ack, false otherwise
    */
   bool IsQosAck (void) const;
   /**
@@ -539,9 +539,9 @@ public:
    */
   uint8_t GetQosTid (void) const;
   /**
-   * Return the QoS ACK policy in the QoS control field.
+   * Return the QoS Ack policy in the QoS control field.
    *
-   * \return the QoS ACK policy in the QoS control field
+   * \return the QoS Ack policy in the QoS control field
    */
   QosAckPolicy GetQosAckPolicy (void) const;
   /**
@@ -604,27 +604,27 @@ private:
    */
   void PrintFrameControl (std::ostream &os) const;
 
-  uint8_t m_ctrlType; ///< control type
-  uint8_t m_ctrlSubtype; ///< control subtype
-  uint8_t m_ctrlToDs; ///< control to DS
-  uint8_t m_ctrlFromDs; ///< control from DS
+  uint8_t m_ctrlType;     ///< control type
+  uint8_t m_ctrlSubtype;  ///< control subtype
+  uint8_t m_ctrlToDs;     ///< control to DS
+  uint8_t m_ctrlFromDs;   ///< control from DS
   uint8_t m_ctrlMoreFrag; ///< control more fragments
-  uint8_t m_ctrlRetry; ///< control retry
+  uint8_t m_ctrlRetry;    ///< control retry
   uint8_t m_ctrlMoreData; ///< control more data
-  uint8_t m_ctrlWep; ///< control WEP
-  uint8_t m_ctrlOrder; ///< control order (set to 1 for QoS Data and Management frames to signify that HT/VHT/HE control field is present, knowing that the latter are not implemented yet)
-  uint16_t m_duration; ///< duration
-  Mac48Address m_addr1; ///< address 1
-  Mac48Address m_addr2; ///< address 2
-  Mac48Address m_addr3; ///< address 3
-  uint8_t m_seqFrag; ///< sequence fragment
-  uint16_t m_seqSeq; ///< sequence sequence
-  Mac48Address m_addr4; ///< address 4
-  uint8_t m_qosTid; ///< QOS TID
-  uint8_t m_qosEosp; ///< QOS EOSP
-  uint8_t m_qosAckPolicy; ///< QOS ack policy
-  uint8_t m_amsduPresent; ///< AMSDU present
-  uint8_t m_qosStuff; ///< QOS stuff
+  uint8_t m_ctrlWep;      ///< control WEP
+  uint8_t m_ctrlOrder;    ///< control order (set to 1 for QoS Data and Management frames to signify that HT/VHT/HE control field is present, knowing that the latter are not implemented yet)
+  uint16_t m_duration;    ///< duration
+  Mac48Address m_addr1;   ///< address 1
+  Mac48Address m_addr2;   ///< address 2
+  Mac48Address m_addr3;   ///< address 3
+  uint8_t m_seqFrag;      ///< sequence fragment
+  uint16_t m_seqSeq;      ///< sequence sequence
+  Mac48Address m_addr4;   ///< address 4
+  uint8_t m_qosTid;       ///< QoS TID
+  uint8_t m_qosEosp;      ///< QoS EOSP
+  uint8_t m_qosAckPolicy; ///< QoS Ack policy
+  uint8_t m_amsduPresent; ///< A-MSDU present
+  uint8_t m_qosStuff;     ///< QoS stuff
 };
 
 } //namespace ns3
