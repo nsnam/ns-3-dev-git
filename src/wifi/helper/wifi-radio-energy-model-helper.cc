@@ -128,7 +128,7 @@ WifiRadioEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
   source->AppendDeviceEnergyModel (model);
   // set energy source pointer
   model->SetEnergySource (source);
-  // create and register energy model phy listener
+  // create and register energy model PHY listener
   wifiPhy->RegisterListener (model->GetPhyListener ());
   //
   if (m_txCurrentModel.GetTypeId ().GetUid ())

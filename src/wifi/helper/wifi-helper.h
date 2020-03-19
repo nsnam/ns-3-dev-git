@@ -208,7 +208,7 @@ protected:
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    *
-   * Handle tx pcap.
+   * Handle TX pcap.
    */
   static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
                                 Ptr<const Packet> packet,
@@ -221,9 +221,9 @@ protected:
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
-   * \param signalNoise the rx signal and noise information
+   * \param signalNoise the RX signal and noise information
    *
-   * Handle rx pcap.
+   * Handle RX pcap.
    */
   static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file,
                                 Ptr<const Packet> packet,
@@ -240,14 +240,14 @@ protected:
 
 private:
   /**
-   * Get the radiotap header.
+   * Get the Radiotap header.
    *
    * \param packet the packet
    * \param channelFreqMhz the channel frequency
    * \param txVector the TXVECTOR
    * \param aMpdu the A-MPDU information
    *
-   * \returns the radiotap header
+   * \returns the Radiotap header
    */
   static RadiotapHeader GetRadiotapHeader (Ptr<Packet> packet,
                                            uint16_t channelFreqMhz,
@@ -271,13 +271,13 @@ private:
                                    bool explicitFilename);
 
   /**
-   * \brief Enable ascii trace output on the indicated net device.
+   * \brief Enable ASCII trace output on the indicated net device.
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
    *
-   * \param stream The output stream object to use when logging ascii traces.
-   * \param prefix Filename prefix to use for ascii trace files.
+   * \param stream The output stream object to use when logging ASCII traces.
+   * \param prefix Filename prefix to use for ASCII trace files.
    * \param nd Net device for which you want to enable tracing.
    * \param explicitFilename Treat the prefix as an explicit filename if true
    */
@@ -415,7 +415,7 @@ public:
   /**
    * \param f the select queue callback
    *
-   * Set the select queue callback to set on the netdevice queue interface aggregated
+   * Set the select queue callback to set on the NetDevice queue interface aggregated
    * to the WifiNetDevice, in case RegularWifiMac with QoS enabled is used
    */
   void SetSelectQueueCallback (SelectQueueCallback f);
@@ -456,13 +456,13 @@ public:
   virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                                       const WifiMacHelper &mac, std::string nodeName) const;
   /**
-   * \param standard the phy standard to configure during installation
+   * \param standard the PHY standard to configure during installation
    *
    * This method sets standards-compliant defaults for WifiMac
-   * parameters such as sifs time, slot time, timeout values, etc.,
+   * parameters such as SIFS time, slot time, timeout values, etc.,
    * based on the standard selected.  It results in
    * WifiMac::ConfigureStandard(standard) being called on each
-   * installed mac object.
+   * installed MAC object.
    *
    * The default standard of 802.11a will be applied if SetStandard()
    * is not called.
@@ -488,7 +488,7 @@ public:
 
   /**
   * Assign a fixed random variable stream number to the random variables
-  * used by the Phy and Mac aspects of the Wifi models.  Each device in
+  * used by the PHY and MAC aspects of the Wifi models.  Each device in
   * container c has fixed stream numbers assigned to its random variables.
   * The Wifi channel (e.g. propagation loss model) is excluded.
   * Return the number of streams (possibly zero) that
@@ -504,11 +504,11 @@ public:
 
 
 protected:
-  ObjectFactory m_stationManager; ///< station manager
-  ObjectFactory m_ackPolicySelector[4]; ///< ack policy selector for all ACs
-  WifiPhyStandard m_standard; ///< wifi standard
+  ObjectFactory m_stationManager;            ///< station manager
+  ObjectFactory m_ackPolicySelector[4];      ///< ack policy selector for all ACs
+  WifiPhyStandard m_standard;                ///< wifi standard
   SelectQueueCallback m_selectQueueCallback; ///< select queue callback
-  ObjectFactory m_obssPdAlgorithm; ///< OBSS PD algorithm
+  ObjectFactory m_obssPdAlgorithm;           ///< OBSS_PD algorithm
 };
 
 } //namespace ns3

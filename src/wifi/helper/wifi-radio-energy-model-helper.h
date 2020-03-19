@@ -59,16 +59,14 @@ public:
    *
    * Sets the callback to be invoked when energy is depleted.
    */
-  void SetDepletionCallback (
-    WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
+  void SetDepletionCallback (WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
 
   /**
    * \param callback Callback function for energy recharged handling.
    *
    * Sets the callback to be invoked when energy is recharged.
    */
-  void SetRechargedCallback (
-    WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
+  void SetRechargedCallback (WifiRadioEnergyModel::WifiRadioEnergyRechargedCallback callback);
 
   /**
    * \param name the name of the model to set

@@ -46,7 +46,7 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 
 /**
- * ASCII trace Phy transmit sink with context
+ * ASCII trace PHY transmit sink with context
  * \param stream the output stream
  * \param context the context name
  * \param p the packet
@@ -68,7 +68,7 @@ AsciiPhyTransmitSinkWithContext (
 }
 
 /**
- * ASCII trace Phy transmit sink without context
+ * ASCII trace PHY transmit sink without context
  * \param stream the output stream
  * \param p the packet
  * \param mode the wifi mode
@@ -88,7 +88,7 @@ AsciiPhyTransmitSinkWithoutContext (
 }
 
 /**
- * ASCII trace Phy receive sink with context
+ * ASCII trace PHY receive sink with context
  * \param stream the output stream
  * \param context the context name
  * \param p the packet
@@ -110,7 +110,7 @@ AsciiPhyReceiveSinkWithContext (
 }
 
 /**
- * ASCII trace Phy receive sink without context
+ * ASCII trace PHY receive sink without context
  * \param stream the output stream
  * \param p the packet
  * \param snr the SNR
@@ -578,7 +578,7 @@ WifiPhyHelper::EnableAsciiInternal (
   Ptr<NetDevice> nd,
   bool explicitFilename)
 {
-  //All of the ascii enable functions vector through here including the ones
+  //All of the ASCII enable functions vector through here including the ones
   //that are wandering through all of devices on perhaps all of the nodes in
   //the system. We can only deal with devices of type WifiNetDevice.
   Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
@@ -618,7 +618,7 @@ WifiPhyHelper::EnableAsciiInternal (
         }
 
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
-      //We could go poking through the phy and the state looking for the
+      //We could go poking through the PHY and the state looking for the
       //correct trace source, but we can let Config deal with that with
       //some search cost.  Since this is presumably happening at topology
       //creation time, it doesn't seem much of a price to pay.

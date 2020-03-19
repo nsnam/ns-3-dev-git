@@ -84,7 +84,7 @@ public:
    * \param v10 the value of the attribute to set
    *
    * All the attributes specified in this method should exist
-   * in the requested mac.
+   * in the requested MAC.
    */
   virtual void SetType (std::string type,
                         std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
