@@ -664,7 +664,7 @@ PrintReceivedRoutingPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address srcA
 {
   std::ostringstream oss;
 
-  oss << Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ();
+  oss << Simulator::Now ().As (Time::S) << " " << socket->GetNode ()->GetId ();
 
   if (InetSocketAddress::IsMatchingType (srcAddress))
     {
@@ -1309,7 +1309,7 @@ private:
   double m_txSafetyRange10; ///< range 10
   std::vector <double> m_txSafetyRanges; ///< list of ranges
   std::string m_exp; ///< exp
-  int m_cumulativeBsmCaptureStart; ///< capture start
+  Time m_cumulativeBsmCaptureStart; ///< capture start
 };
 
 VanetRoutingExperiment::VanetRoutingExperiment ()
@@ -1797,10 +1797,10 @@ VanetRoutingExperiment::CheckThroughput ()
 
   if (m_log != 0 )
     {
-      NS_LOG_UNCOND ("At t=" << (Simulator::Now ()).GetSeconds () << "s BSM_PDR1=" << wavePDR1_2 << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2 << " BSM_PDR4=" << wavePDR4_2 << " BSM_PDR5=" << wavePDR5_2 << " BSM_PDR6=" << wavePDR6_2 << " BSM_PDR7=" << wavePDR7_2 << " BSM_PDR8=" << wavePDR8_2 << " BSM_PDR9=" << wavePDR9_2 << " BSM_PDR10=" << wavePDR10_2 << " Goodput=" << kbps << "Kbps" /*<< " MAC/PHY-OH=" << mac_phy_oh*/);
+      NS_LOG_UNCOND ("At t=" << (Simulator::Now ()).As (Time::S) << " BSM_PDR1=" << wavePDR1_2 << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2 << " BSM_PDR4=" << wavePDR4_2 << " BSM_PDR5=" << wavePDR5_2 << " BSM_PDR6=" << wavePDR6_2 << " BSM_PDR7=" << wavePDR7_2 << " BSM_PDR8=" << wavePDR8_2 << " BSM_PDR9=" << wavePDR9_2 << " BSM_PDR10=" << wavePDR10_2 << " Goodput=" << kbps << "Kbps" /*<< " MAC/PHY-OH=" << mac_phy_oh*/);
     }
 
-  out << (Simulator::Now ()).GetSeconds () << ","
+  out << (Simulator::Now ()).As (Time::S) << ","
       << kbps << ","
       << packetsReceived << ","
       << m_nSinks << ","
@@ -1836,8 +1836,8 @@ VanetRoutingExperiment::CheckThroughput ()
       m_waveBsmHelper.GetWaveBsmStats ()->SetRxPktInRangeCount (index, 0);
     }
 
-  double currentTime = (Simulator::Now ()).GetSeconds ();
-  if (currentTime <= (double) m_cumulativeBsmCaptureStart)
+  Time currentTime = Simulator::Now ();
+  if (currentTime <= m_cumulativeBsmCaptureStart)
     {
       for (int index = 1; index <= 10; index++)
         {
@@ -1855,6 +1855,7 @@ VanetRoutingExperiment::SetConfigFromGlobals ()
   UintegerValue uintegerValue;
   DoubleValue doubleValue;
   StringValue stringValue;
+  TimeValue timeValue;
 
   // This may not be the best way to manage program configuration
   // (directing them through global values), but management
@@ -1895,8 +1896,9 @@ VanetRoutingExperiment::SetConfigFromGlobals ()
   m_asciiTrace = uintegerValue.Get ();
   GlobalValue::GetValueByName ("VRCpcap", uintegerValue);
   m_pcap = uintegerValue.Get ();
-  GlobalValue::GetValueByName ("VRCcumulativeBsmCaptureStart", uintegerValue);
-  m_cumulativeBsmCaptureStart = uintegerValue.Get ();
+  GlobalValue::GetValueByName ("VRCcumulativeBsmCaptureStart", timeValue);
+  m_cumulativeBsmCaptureStart = timeValue.Get ();
+
 
   GlobalValue::GetValueByName ("VRCtxSafetyRange1", doubleValue);
   m_txSafetyRange1 = doubleValue.Get ();
@@ -1972,7 +1974,7 @@ VanetRoutingExperiment::SetGlobalsFromConfig ()
   g_routingTables.SetValue (UintegerValue (m_routingTables));
   g_asciiTrace.SetValue (UintegerValue (m_asciiTrace));
   g_pcap.SetValue (UintegerValue (m_pcap));
-  g_cumulativeBsmCaptureStart.SetValue (UintegerValue (m_cumulativeBsmCaptureStart));
+  g_cumulativeBsmCaptureStart.SetValue (TimeValue (m_cumulativeBsmCaptureStart));
 
   g_txSafetyRange1.SetValue (DoubleValue (m_txSafetyRange1));
   g_txSafetyRange2.SetValue (DoubleValue (m_txSafetyRange2));

@@ -127,9 +127,9 @@ WaveMacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
     {
       // The attempt for this transmission will be canceled;
       // and this packet will be pending for next transmission by QosTxop class
-      NS_LOG_DEBUG ("Because the required transmission time = " << transmissionTime.GetMilliSeconds ()
-                                                                << "ms exceeds the remainingTime = " << remainingTime.GetMilliSeconds ()
-                                                                << "ms, currently this packet will not be transmitted.");
+      NS_LOG_DEBUG ("Because the required transmission time = " << transmissionTime.As (Time::MS)
+                                                                << " exceeds the remainingTime = " << remainingTime.As (Time::MS)
+                                                                << ", currently this packet will not be transmitted.");
     }
   else
     {

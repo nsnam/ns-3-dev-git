@@ -209,7 +209,7 @@ OcbWifiMacTestCase::MacAssoc (std::string context,Mac48Address bssid)
     {
       macassoc_time = Now ();
       macassoc_pos = GetCurrentPosition (1);
-      std::cout << "MacAssoc time = " << macassoc_time.GetNanoSeconds ()
+      std::cout << "MacAssoc time = " << macassoc_time.As (Time::NS)
                 << " position = " << macassoc_pos
                 << std::endl;
     }
@@ -224,7 +224,7 @@ OcbWifiMacTestCase::PhyRxOkTrace (std::string context, Ptr<const Packet> packet,
     {
       phyrx_time = Now ();
       phyrx_pos = GetCurrentPosition (1);
-      std::cout << "PhyRxOk time = " << phyrx_time.GetNanoSeconds ()
+      std::cout << "PhyRxOk time = " << phyrx_time.As (Time::NS)
                 << " position = " << phyrx_pos
                 << std::endl;
     }
@@ -240,7 +240,7 @@ OcbWifiMacTestCase::PhyTxTrace (std::string context, Ptr<const Packet> packet, W
     {
       phytx_time = Now ();
       phytx_pos = GetCurrentPosition (1);
-      std::cout << "PhyTx data time = " << phytx_time.GetNanoSeconds ()
+      std::cout << "PhyTx data time = " << phytx_time.As (Time::NS)
                 << " position = " << phytx_pos
                 << std::endl;
     }
@@ -431,7 +431,7 @@ OcbWifiMacTestCase::DoRun ()
   Simulator::Stop (Seconds (71.0));
   Simulator::Run ();
   Simulator::Destroy ();
-  NS_TEST_ASSERT_MSG_EQ (macassoc_time.GetNanoSeconds (), 0, "In Ocb mode, there is no associate state machine" );
+  NS_TEST_ASSERT_MSG_EQ (macassoc_time.GetNanoSeconds(), 0, "In Ocb mode, there is no associate state machine" );
   NS_TEST_ASSERT_MSG_LT (phytx_time, phyrx_time, "before mobile node receives frames from far static node, it can send data packet directly" );
   NS_TEST_ASSERT_MSG_EQ (macassoc_pos.x, 0.0, "");
   NS_TEST_ASSERT_MSG_GT ((phytx_pos.x - phyrx_pos.x), 0.0, "");
