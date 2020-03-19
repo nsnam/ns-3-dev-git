@@ -68,7 +68,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint64_t nbits)
   return std::min (1.0, std::pow (1.0 - sep, nbits / 4.0));
 #else
   NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model");
-  //The matlab model
+  //The Matlab model
   double ber;
   if (sinr > WLAN_SIR_PERFECT)
     {
@@ -80,7 +80,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint64_t nbits)
     }
   else
     {
-      //fitprops.coeff from matlab berfit
+      //fitprops.coeff from Matlab berfit
       double a1 = 5.3681634344056195e-001;
       double a2 = 3.3092430025608586e-003;
       double a3 = 4.1654372361004000e-001;
@@ -103,7 +103,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint64_t nbits)
   return std::min (1.0, std::pow (1.0 - sep, nbits / 8.0));
 #else
   NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model");
-  //The matlab model
+  //The Matlab model
   double ber;
   if (sinr > WLAN_SIR_PERFECT)
     {
@@ -115,7 +115,7 @@ DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint64_t nbits)
     }
   else
     {
-      //fitprops.coeff from matlab berfit
+      //fitprops.coeff from Matlab berfit
       double a1 = 7.9056742265333456e-003;
       double a2 = -1.8397449399176360e-001;
       double a3 = 1.0740689468707241e+000;

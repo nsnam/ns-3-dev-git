@@ -27,6 +27,7 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
+ * \brief Headers for A-MPDU subframes
  */
 class AmpduSubframeHeader : public Header
 {
@@ -49,19 +50,19 @@ public:
   /**
    * Set the length field.
    *
-   * \param length
+   * \param length in bytes
    */
   void SetLength (uint16_t length);
   /**
   * Set the EOF field.
   *
-  * \param eof
+  * \param eof set EOF field if true
   */
   void SetEof (bool eof);
   /**
    * Return the length field.
    *
-   * \return the length field
+   * \return the length field in bytes
    */
   uint16_t GetLength (void) const;
   /**
@@ -80,7 +81,7 @@ public:
   bool IsSignatureValid (void) const;
 
 private:
-  uint16_t m_length;   //!< length field
+  uint16_t m_length;   //!< length field in bytes
   bool m_eof;          //!< EOF field
   uint8_t m_signature; //!< delimiter signature (should correspond to pattern 0x4E in order to be assumed valid)
 };

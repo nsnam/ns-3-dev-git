@@ -44,9 +44,9 @@ public:
 
   /**
    * \param txVector a specific transmission vector including WifiMode
-   * \param ber a target ber
+   * \param ber a target BER
    *
-   * \return the snr which corresponds to the requested ber
+   * \return the SNR which corresponds to the requested BER
    */
   double CalculateSnr (WifiTxVector txVector, double ber) const;
 

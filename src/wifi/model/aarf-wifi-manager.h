@@ -69,11 +69,11 @@ private:
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool IsLowLatency (void) const;
 
-  uint32_t m_minTimerThreshold; ///< minimum timer threshold
+  uint32_t m_minTimerThreshold;   ///< minimum timer threshold
   uint32_t m_minSuccessThreshold; ///< minimum success threshold
-  double m_successK; ///< Multiplication factor for the success threshold
+  double m_successK;              ///< Multiplication factor for the success threshold
   uint32_t m_maxSuccessThreshold; ///< maximum success threshold
-  double m_timerK; ///< Multiplication factor for the timer threshold
+  double m_timerK;                ///< Multiplication factor for the timer threshold
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

@@ -55,21 +55,21 @@ public:
   virtual ~ChannelAccessManager ();
 
   /**
-   * Set up listener for Phy events.
+   * Set up listener for PHY events.
    *
-   * \param phy
+   * \param phy the WifiPhy to listen to
    */
   void SetupPhyListener (Ptr<WifiPhy> phy);
   /**
-   * Remove current registered listener for Phy events.
+   * Remove current registered listener for PHY events.
    *
-   * \param phy
+   * \param phy the WifiPhy to listen to
    */
   void RemovePhyListener (Ptr<WifiPhy> phy);
   /**
    * Set up listener for MacLow events.
    *
-   * \param low
+   * \param low the MacLow to listen to
    */
   void SetupLow (Ptr<MacLow> low);
 
@@ -158,7 +158,7 @@ public:
    */
   void NotifyTxStartNow (Time duration);
   /**
-   * \param duration expected duration of cca busy period
+   * \param duration expected duration of CCA busy period
    *
    * Notify the DCF that a CCA busy period has just started.
    */
@@ -190,29 +190,29 @@ public:
   /**
    * \param duration the value of the received NAV.
    *
-   * Called at end of rx
+   * Called at end of RX
    */
   void NotifyNavResetNow (Time duration);
   /**
    * \param duration the value of the received NAV.
    *
-   * Called at end of rx
+   * Called at end of RX
    */
   void NotifyNavStartNow (Time duration);
   /**
-   * Notify that ACK timer has started for the given duration.
+   * Notify that ack timer has started for the given duration.
    *
-   * \param duration
+   * \param duration the duration of the timer
    */
   void NotifyAckTimeoutStartNow (Time duration);
   /**
-   * Notify that ACK timer has reset.
+   * Notify that ack timer has reset.
    */
   void NotifyAckTimeoutResetNow (void);
   /**
    * Notify that CTS timer has started for the given duration.
    *
-   * \param duration
+   * \param duration the duration of the timer
    */
   void NotifyCtsTimeoutStartNow (Time duration);
   /**
@@ -261,7 +261,7 @@ private:
    * Return the time when the backoff procedure
    * started for the given Txop.
    *
-   * \param state
+   * \param state the Txop
    *
    * \return the time when the backoff procedure started
    */
@@ -270,7 +270,7 @@ private:
    * Return the time when the backoff procedure
    * ended (or will ended) for the given Txop.
    *
-   * \param state
+   * \param state the Txop
    *
    * \return the time when the backoff procedure ended (or will ended)
    */
@@ -290,7 +290,7 @@ private:
   /**
    * Grant access to PCF
    *
-   * \param state
+   * \param state the Txop
    */
   void DoGrantPcfAccess (Ptr<Txop> state);
 
@@ -300,7 +300,7 @@ private:
   typedef std::vector<Ptr<Txop> > States;
 
   States m_states;              //!< the DCF states
-  Time m_lastAckTimeoutEnd;     //!< the last ACK timeout end time
+  Time m_lastAckTimeoutEnd;     //!< the last Ack timeout end time
   Time m_lastCtsTimeoutEnd;     //!< the last CTS timeout end time
   Time m_lastNavStart;          //!< the last NAV start time
   Time m_lastNavDuration;       //!< the last NAV duration time
@@ -320,8 +320,8 @@ private:
   EventId m_accessTimeout;      //!< the access timeout ID
   Time m_slot;                  //!< the slot time
   Time m_sifs;                  //!< the SIFS time
-  PhyListener* m_phyListener;   //!< the phy listener
-  Ptr<WifiPhy> m_phy;           //!< Ptr to the PHY
+  PhyListener* m_phyListener;   //!< the PHY listener
+  Ptr<WifiPhy> m_phy;           //!< pointer to the PHY
 };
 
 } //namespace ns3

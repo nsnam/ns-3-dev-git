@@ -73,10 +73,10 @@ private:
                   Ptr<const Packet> packet, bool normally);
   bool IsLowLatency (void) const;
 
-  uint32_t m_timerTimeout; ///< timer threshold
+  uint32_t m_timerTimeout;     ///< timer threshold
   uint32_t m_successThreshold; ///< success threshold
   uint32_t m_failureThreshold; ///< failure threshold
-  uint32_t m_probeThreshold; ///< probe threshold
+  uint32_t m_probeThreshold;   ///< probe threshold
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

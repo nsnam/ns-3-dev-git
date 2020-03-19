@@ -108,7 +108,7 @@ ConstantWifiAckPolicySelector::UpdateTxParams (Ptr<WifiPsdu> psdu, MacLowTransmi
   //   and the starting sequence number of the transmit window is greater than
   //   or equal to the window size multiplied by the BaThreshold
   // * no other frame belonging to this BA agreement is queued (because, in such
-  //   a case, a Block Ack is not going to be requested anytime soon)
+  //   a case, a Block Ack is not going to be requested any time soon)
   // * this is the initial frame of a transmission opportunity and it is not
   //   protected by RTS/CTS (see Annex G.3 of IEEE 802.11-2016)
   bool isResponseNeeded = (maxDistToStartingSeq >= m_baThreshold * m_qosTxop->GetBaBufferSize (receiver, tid)

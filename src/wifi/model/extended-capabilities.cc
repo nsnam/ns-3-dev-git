@@ -393,18 +393,10 @@ ExtendedCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8
   return length;
 }
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param extendedcapabilities the extended capabilities
- *
- * \returns output stream
- */
 std::ostream &
-operator << (std::ostream &os, const ExtendedCapabilities &extendedcapabilities)
+operator << (std::ostream &os, const ExtendedCapabilities &extendedCapabilities)
 {
-  os << +extendedcapabilities.GetExtendedCapabilitiesByte1 ();
+  os << +extendedCapabilities.GetExtendedCapabilitiesByte1 ();
   return os;
 }
 

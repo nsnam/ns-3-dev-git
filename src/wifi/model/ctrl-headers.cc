@@ -318,7 +318,7 @@ CtrlBAckResponseHeader::GetSerializedSize (void) const
         size += (2 + 32);
         break;
       case MULTI_TID_BLOCK_ACK:
-        size += (2 + 2 + 8) * (m_tidInfo + 1); //Multi-tid block ack
+        size += (2 + 2 + 8) * (m_tidInfo + 1); //Multi-TID block ack
         break;
       default:
         NS_FATAL_ERROR ("Invalid BA type");
@@ -627,7 +627,7 @@ CtrlBAckResponseHeader::SetReceivedFragment (uint16_t seq, uint8_t frag)
       case COMPRESSED_BLOCK_ACK:
       case EXTENDED_COMPRESSED_BLOCK_ACK:
         /* We can ignore this...compressed block ack doesn't support
-           acknowledgement of single fragments */
+           acknowledgment of single fragments */
         break;
       case MULTI_TID_BLOCK_ACK:
         NS_FATAL_ERROR ("Multi-tid block ack is not supported.");

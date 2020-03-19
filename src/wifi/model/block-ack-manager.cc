@@ -166,7 +166,7 @@ BlockAckManager::DestroyAgreement (Mac48Address recipient, uint8_t tid)
             }
         }
       m_agreements.erase (it);
-      //remove scheduled bar
+      //remove scheduled BAR
       for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); )
         {
           if (i->bar->GetHeader ().GetAddr1 () == recipient && i->tid == tid)
@@ -476,7 +476,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
 
           if (it->second.first.m_inactivityEvent.IsRunning ())
             {
-              /* Upon reception of a block ack frame, the inactivity timer at the
+              /* Upon reception of a BlockAck frame, the inactivity timer at the
                  originator must be reset.
                  For more details see section 11.5.3 in IEEE802.11e standard */
               it->second.first.m_inactivityEvent.Cancel ();
@@ -637,7 +637,7 @@ BlockAckManager::NotifyDiscardedMpdu (Ptr<const WifiMacQueueItem> mpdu)
   // actually advance the transmit window
   it->second.first.NotifyDiscardedMpdu (mpdu);
 
-  // schedule a block ack request
+  // schedule a BlockAckRequest
   NS_LOG_DEBUG ("Schedule a Block Ack Request for agreement (" << recipient << ", " << +tid << ")");
   Ptr<Packet> bar = Create<Packet> ();
   bar->AddHeader (GetBlockAckReqHeader (recipient, tid));

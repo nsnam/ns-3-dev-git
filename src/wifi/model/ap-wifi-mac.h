@@ -56,45 +56,14 @@ public:
   ApWifiMac ();
   virtual ~ApWifiMac ();
 
-  /**
-   * \param stationManager the station manager attached to this MAC.
-   */
+  // Implementations of pure virtual methods, or overridden from base class.
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-
-  /**
-   * \param linkUp the callback to invoke when the link becomes up.
-   */
   void SetLinkUpCallback (Callback<void> linkUp);
-
-  /**
-   * \param packet the packet to send.
-   * \param to the address to which the packet should be sent.
-   *
-   * The packet should be enqueued in a tx queue, and should be
-   * dequeued as soon as the channel access function determines that
-   * access is granted to this MAC.
-   */
   void Enqueue (Ptr<Packet> packet, Mac48Address to);
-
-  /**
-   * \param packet the packet to send.
-   * \param to the address to which the packet should be sent.
-   * \param from the address from which the packet should be sent.
-   *
-   * The packet should be enqueued in a tx queue, and should be
-   * dequeued as soon as the channel access function determines that
-   * access is granted to this MAC.  The extra parameter "from" allows
-   * this device to operate in a bridged mode, forwarding received
-   * frames without altering the source address.
-   */
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-
   bool SupportsSendFrom (void) const;
-
-  /**
-   * \param address the current address of this MAC layer.
-   */
   void SetAddress (Mac48Address address);
+
   /**
    * \param interval the interval between two beacon transmissions.
    */
@@ -113,7 +82,7 @@ public:
   Time GetCfpMaxDuration (void) const;
   /**
    * Determine whether short slot time should be enabled or not in the BSS.
-   * Typically, true is returned only when there is no non-erp stations associated
+   * Typically, true is returned only when there is no non-ERP stations associated
    * to the AP, and that short slot time is supported by the AP and by all other
    * ERP stations that are associated to the AP. Otherwise, false is returned.
    *
@@ -157,7 +126,7 @@ private:
   void Receive (Ptr<WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
-   * (i.e. we received an ACK from the receiver).  If the packet
+   * (i.e. we received an Ack from the receiver).  If the packet
    * was an association response to the receiver, we record that
    * the receiver is now associated with us.
    *
@@ -166,7 +135,7 @@ private:
   void TxOk (const WifiMacHeader &hdr);
   /**
    * The packet we sent was successfully received by the receiver
-   * (i.e. we did not receive an ACK from the receiver).  If the packet
+   * (i.e. we did not receive an Ack from the receiver).  If the packet
    * was an association response to the receiver, we record that
    * the receiver is not associated with us yet.
    *

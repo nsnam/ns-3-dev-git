@@ -35,6 +35,21 @@ class ErpInformation : public WifiInformationElement
 {
 public:
   ErpInformation ();
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start,
+                                       uint8_t length);
+
+  /* This information element is a bit special in that it is only
+     included if the STA is an ERP STA. To support this we
+     override the Serialize and GetSerializedSize methods of
+     WifiInformationElement. */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+
   /**
    * Set the ERP supported field.
    *
@@ -80,52 +95,6 @@ public:
    */
   uint8_t GetNonErpPresent (void) const;
 
-  /**
-   * Get the element ID field.
-   *
-   * \returns WifiInformationElementId
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Get the information field size.
-   *
-   * \returns the element field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize the information field.
-   *
-   * \param start the information element iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Get the information field size.
-   *
-   * \param start the information element iterator
-   * \param length the information field length
-   *
-   * \returns the information field
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start,
-                                       uint8_t length);
-
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA is an ERP STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this ErpInformation information element.
-   *
-   * \return the serialized size of this ErpInformation information element
-   */
-  uint16_t GetSerializedSize () const;
 
 private:
   uint8_t m_erpInformation; ///< ERP information
@@ -138,11 +107,11 @@ private:
  * output stream output operator
  *
  * \param os output stream
- * \param erpinformation
+ * \param erpInformation the ERP Information
  *
  * \returns output stream
  */
-std::ostream &operator << (std::ostream &os, const ErpInformation &erpinformation);
+std::ostream &operator << (std::ostream &os, const ErpInformation &erpInformation);
 
 } //namespace ns3
 

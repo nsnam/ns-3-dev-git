@@ -38,12 +38,26 @@ class HeOperation : public WifiInformationElement
 {
 public:
   HeOperation ();
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  WifiInformationElementId ElementIdExt () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
+  /* This information element is a bit special in that it is only
+     included if the STA is a HE STA. To support this we
+     override the Serialize and GetSerializedSize methods of
+     WifiInformationElement. */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+
   /**
    * Set the HE supported information element.
    *
-   * \param hesupported the HE supported information element
+   * \param heSupported the HE supported information element
    */
-  void SetHeSupported (uint8_t hesupported);
+  void SetHeSupported (uint8_t heSupported);
 
   /**
    * Set the HE Operation Parameters field in the HE Operation information element.
@@ -53,7 +67,7 @@ public:
   void SetHeOperationParameters (uint32_t ctrl);
   /**
    * Set the Basic HE-MCS and NSS field in the HE Operation information element
-   * by specifying the tuple (nss, maxMcs).
+   * by specifying the tuple (<i>nss</i>, <i>maxMcs</i>).
    *
    * \param nss the NSS
    * \param maxHeMcs the maximum supported HE-MCS value corresponding to that NSS
@@ -83,67 +97,18 @@ public:
    */
   uint8_t GetBssColor (void) const;
 
-  /**
-   * Return the element ID.
-   *
-   * \returns the element ID
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Get the wifi information element ID extension
-   * \returns the wifi information element ID extension
-   */
-  WifiInformationElementId ElementIdExt () const;
-  /**
-   * Return the information field size.
-   *
-   * \returns the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize the information field.
-   *
-   * \param start the information field iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Deserialize the information field.
-   *
-   * \param start the iterator
-   * \param length the length
-   * \returns the information field size
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA is a HE STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this HE Operations IE.
-   *
-   * \return the serialized size of this HE Operations IE
-   */
-  uint16_t GetSerializedSize () const;
-
 
 private:
   //HE Operation Parameters fields
-  uint8_t m_bssColor; //!< BSS color
-  uint8_t m_defaultPEDuration; //!< default PE duration
-  uint8_t m_twtRequired; //!< TWT required
+  uint8_t m_bssColor;                     //!< BSS color
+  uint8_t m_defaultPEDuration;            //!< default PE duration
+  uint8_t m_twtRequired;                  //!< TWT required
   uint16_t m_heDurationBasedRtsThreshold; //!< HE duration based RTS threshold
-  uint8_t m_partialBssColor; //!< partial BSS color
-  uint8_t m_maxBssidIndicator; //!< max BSSID indicator
-  uint8_t m_txBssidIndicator; //!< TX BSSID indicator
-  uint8_t m_bssColorDisabled; //!< BSS color disabled
-  uint8_t m_dualBeacon; //!< Dual Beacon
+  uint8_t m_partialBssColor;              //!< partial BSS color
+  uint8_t m_maxBssidIndicator;            //!< max BSSID indicator
+  uint8_t m_txBssidIndicator;             //!< TX BSSID indicator
+  uint8_t m_bssColorDisabled;             //!< BSS color disabled
+  uint8_t m_dualBeacon;                   //!< Dual Beacon
 
   //Basic HE-MCS and NSS Set
   uint16_t m_basicHeMcsAndNssSet; ///< basic HE MCS NSS set
@@ -154,6 +119,14 @@ private:
   uint8_t m_heSupported;
 };
 
+/**
+ * output stream output operator
+ *
+ * \param os output stream
+ * \param HeOperation the HE operation
+ *
+ * \returns output stream
+ */
 std::ostream &operator << (std::ostream &os, const HeOperation &HeOperation);
 
 } //namespace ns3

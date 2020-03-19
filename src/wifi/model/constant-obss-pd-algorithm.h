@@ -29,7 +29,7 @@ namespace ns3 {
  * \brief Constant OBSS PD algorithm
  * \ingroup wifi
  *
- * This constant OBSS_PD algorithm is a simple OBSS_PD algorithm which evalutes if a receiving
+ * This constant OBSS_PD algorithm is a simple OBSS_PD algorithm which evaluates if a receiving
  * signal should be accepted or rejected based on a constant threshold.
  *
  * Once a HE preamble and its header have been received by the PHY, the ReceiveHeSig method is
@@ -37,7 +37,7 @@ namespace ns3 {
  * color with the BSS color of the received preamble. If this is an OBSS frame, it compares the
  * received RSSI with its configured OBSS_PD level value. The PHY then gets reset to IDLE state
  * in case the received RSSI is lower than that constant OBSS PD level value, and is informed
- * about TX power restrictions that might be applied to the next tranmission.
+ * about TX power restrictions that might be applied to the next transmission.
  */
 class ConstantObssPdAlgorithm : public ObssPdAlgorithm
 {

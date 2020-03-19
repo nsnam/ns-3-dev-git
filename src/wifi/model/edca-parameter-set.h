@@ -35,6 +35,19 @@ class EdcaParameterSet : public WifiInformationElement
 {
 public:
   EdcaParameterSet ();
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
+  /* This information element is a bit special in that it is only
+     included if the STA is a QoS STA. To support this we
+     override the Serialize and GetSerializedSize methods of
+     WifiInformationElement. */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+
   /**
    * Set QOS supported function
    * \param qosSupported the QOS supported indicator
@@ -275,47 +288,6 @@ public:
    * \return the AC_VO TXOP Limit field in the EdcaParameterSet information element
    */
   uint16_t GetVoTxopLimit (void) const;
-
-  /**
-   * Element ID function
-   * \returns the wifi information element ID
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Get information field size function
-   * \returns the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize information field function
-   * \param start the iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Deserialize information field function
-   * \param start the iterator
-   * \param length the length
-   * \returns the size
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA is a QoS STA. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this EDCA Parameter Set.
-   *
-   * \return the serialized size of this EDCA Parameter Set
-   */
-  uint16_t GetSerializedSize () const;
 
 
 private:

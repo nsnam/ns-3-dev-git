@@ -40,7 +40,7 @@ HeCapabilities::HeCapabilities ()
     m_muCascadeSupport (0),
     m_ackEnabledMultiTidAggregationSupport (0),
     m_groupAddressedMultiStaBlockAckInDlMuSupport (0),
-    m_omiAcontrolSupport (0),
+    m_omControlSupport (0),
     m_ofdmaRaSupport (0),
     m_maxAmpduLengthExponent (0),
     m_amsduFragmentationSupport (0),
@@ -103,15 +103,15 @@ HeCapabilities::ElementIdExt () const
 }
 
 void
-HeCapabilities::SetHeSupported (uint8_t hesupported)
+HeCapabilities::SetHeSupported (uint8_t heSupported)
 {
-  m_heSupported = hesupported;
+  m_heSupported = heSupported;
 }
 
 uint8_t
 HeCapabilities::GetInformationFieldSize () const
 {
-  //we should not be here if ht is not supported
+  //we should not be here if HE is not supported
   NS_ASSERT (m_heSupported > 0);
   return 19; //todo: variable length!
 }
@@ -189,7 +189,7 @@ HeCapabilities::SetHeMacCapabilitiesInfo (uint32_t ctrl1, uint8_t ctrl2)
   m_muCascadeSupport = (ctrl1 >> 22) & 0x01;
   m_ackEnabledMultiTidAggregationSupport = (ctrl1 >> 23) & 0x01;
   m_groupAddressedMultiStaBlockAckInDlMuSupport = (ctrl1 >> 24) & 0x01;
-  m_omiAcontrolSupport = (ctrl1 >> 25) & 0x03;
+  m_omControlSupport = (ctrl1 >> 25) & 0x03;
   m_ofdmaRaSupport = (ctrl1 >> 26) & 0x01;
   m_maxAmpduLengthExponent = (ctrl1 >> 27) & 0x03;
   m_amsduFragmentationSupport = (ctrl1 >> 29) & 0x01;
@@ -221,7 +221,7 @@ HeCapabilities::GetHeMacCapabilitiesInfo1 () const
   val |= (m_muCascadeSupport & 0x01) << 22;
   val |= (m_ackEnabledMultiTidAggregationSupport & 0x01) << 23;
   val |= (m_groupAddressedMultiStaBlockAckInDlMuSupport & 0x01) << 24;
-  val |= (m_omiAcontrolSupport & 0x03) << 25;
+  val |= (m_omControlSupport & 0x03) << 25;
   val |= (m_ofdmaRaSupport & 0x01) << 26;
   val |= (m_maxAmpduLengthExponent & 0x03) << 27;
   val |= (m_amsduFragmentationSupport & 0x01) << 29;
@@ -433,11 +433,11 @@ HeCapabilities::SetHeLtfAndGiForHePpdus (uint8_t heLtfAndGiForHePpdus)
 }
 
 void
-HeCapabilities::SetMaxAmpduLength (uint32_t maxampdulength)
+HeCapabilities::SetMaxAmpduLength (uint32_t maxAmpduLength)
 {
   for (uint8_t i = 0; i <= 3; i++)
     {
-      if ((1ul << (20 + i)) - 1 == maxampdulength)
+      if ((1ul << (20 + i)) - 1 == maxAmpduLength)
         {
           m_maxAmpduLengthExponent = i;
           return;
@@ -490,12 +490,6 @@ HeCapabilities::GetMaxAmpduLength (void) const
   return (1ul << (20 + m_maxAmpduLengthExponent)) - 1;
 }
 
-/**
- * output stream output operator
- * \param os the output stream
- * \param HeCapabilities the HE capabilities
- * \returns the output stream
- */
 std::ostream &
 operator << (std::ostream &os, const HeCapabilities &HeCapabilities)
 {

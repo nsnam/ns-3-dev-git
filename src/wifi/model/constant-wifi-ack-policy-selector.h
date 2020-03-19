@@ -56,8 +56,8 @@ public:
   virtual void UpdateTxParams (Ptr<WifiPsdu> psdu, MacLowTransmissionParameters & params);
 
 private:
-  bool m_useExplicitBar;         //!< true for sending BARs, false for using Implicit BAR Ack policy
-  double m_baThreshold;          //!< Threshold to determine when a Block Ack must be requested
+  bool m_useExplicitBar; //!< true for sending BARs, false for using Implicit BAR ack policy
+  double m_baThreshold;  //!< Threshold to determine when a BlockAck must be requested
 };
 
 } //namespace ns3

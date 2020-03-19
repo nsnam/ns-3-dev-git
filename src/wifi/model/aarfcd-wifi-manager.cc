@@ -86,12 +86,12 @@ AarfcdWifiManager::GetTypeId (void)
                    MakeUintegerAccessor (&AarfcdWifiManager::m_minSuccessThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinRtsWnd",
-                   "Minimum value for Rts window of Aarf-CD",
+                   "Minimum value for RTS window of AARF-CD",
                    UintegerValue (1),
                    MakeUintegerAccessor (&AarfcdWifiManager::m_minRtsWnd),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MaxRtsWnd",
-                   "Maximum value for Rts window of Aarf-CD",
+                   "Maximum value for RTS window of AARF-CD",
                    UintegerValue (40),
                    MakeUintegerAccessor (&AarfcdWifiManager::m_maxRtsWnd),
                    MakeUintegerChecker<uint32_t> ())
@@ -149,7 +149,7 @@ AarfcdWifiManager::DoCreateStation (void) const
   NS_LOG_FUNCTION (this);
   AarfcdWifiRemoteStation *station = new AarfcdWifiRemoteStation ();
 
-  //aarf fields below
+  //AARF fields below
   station->m_successThreshold = m_minSuccessThreshold;
   station->m_timerTimeout = m_minTimerThreshold;
   station->m_rate = 0;
@@ -158,7 +158,7 @@ AarfcdWifiManager::DoCreateStation (void) const
   station->m_recovery = false;
   station->m_timer = 0;
 
-  //aarf-cd specific fields below
+  //AARF-CD specific fields below
   station->m_rtsOn = false;
   station->m_rtsWnd = m_minRtsWnd;
   station->m_rtsCounter = 0;
@@ -337,7 +337,7 @@ WifiTxVector
 AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  /// \todo we could/should implement the Aarf algorithm for
+  /// \todo we could/should implement the AARF algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);

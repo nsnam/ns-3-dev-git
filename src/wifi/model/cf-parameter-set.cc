@@ -46,7 +46,7 @@ CfParameterSet::SetPcfSupported (uint8_t pcfsupported)
 uint8_t
 CfParameterSet::GetInformationFieldSize () const
 {
-  //we should not be here if pcf is not supported
+  //we should not be here if PCF is not supported
   NS_ASSERT (m_pcfSupported > 0);
   return 6;
 }
@@ -146,14 +146,6 @@ CfParameterSet::SetCFPDurRemainingUs (uint64_t durRemaining)
   m_CFPDurRemaining = durRemaining;
 }
 
-/**
- * output operator
- *
- * \param os output stream
- * \param cfParameterSet
- *
- * \return output stream
- */
 std::ostream &
 operator << (std::ostream &os, const CfParameterSet &cfParameterSet)
 {

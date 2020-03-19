@@ -31,12 +31,23 @@
 namespace ns3 {
 
 #ifdef HAVE_GSL
+/**
+ * Structure for integral function parameters
+ */
 typedef struct FunctionParameterType
 {
-  double beta;
-  double n;
+  double beta; ///< Beta parameter
+  double n;    ///< n parameter
 } FunctionParameters;
 
+/**
+ * Integral function using GSL library
+ *
+ * \param x the input x variable
+ * \param params a pointer to FunctionParameters struct
+ *
+ * \return the integral function
+ */
 double IntegralFunction (double x, void *params);
 #endif
 
@@ -48,14 +59,14 @@ double IntegralFunction (double x, void *params);
  *    - 1 Mbps mode is based on DBPSK. BER is from equation 5.2-69 from John G. Proakis
  *      Digital Communications, 2001 edition
  *    - 2 Mbps model is based on DQPSK. Equation 8 from "Tight bounds and accurate
- *      approximations for dqpsk transmission bit error rate", G. Ferrari and G.E. Corazza
+ *      approximations for DQPSK transmission bit error rate", G. Ferrari and G.E. Corazza
  *      ELECTRONICS LETTERS, 40(20):1284-1285, September 2004
  *    - 5.5 Mbps and 11 Mbps are based on equations (18) and (17) from "Properties and
- *      performance of the ieee 802.11b complementarycode-key signal sets",
+ *      performance of the IEEE 802.11b complementarycode-key signal sets",
  *      Michael B. Pursley and Thomas C. Royster. IEEE TRANSACTIONS ON COMMUNICATIONS,
  *      57(2):440-449, February 2009.
  *
- *  This model is designed to run with highest accuracy using the Gnu
+ *  This model is designed to run with highest accuracy using the GNU
  *  Scientific Library (GSL), but if GSL is not installed on the platform,
  *  will fall back to (slightly less accurate) Matlab-derived models for
  *  the CCK modulation types.
@@ -69,7 +80,7 @@ public:
   /**
    * A function DQPSK
    *
-   * \param x x
+   * \param x the input variable
    *
    * \return DQPSK (x)
    */

@@ -35,11 +35,24 @@ class DsssParameterSet : public WifiInformationElement
 {
 public:
   DsssParameterSet ();
+
+  // Implementations of pure virtual methods of WifiInformationElement
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
+  /* This information element is a bit special in that it is only
+     included if the STA does support DSSS. To support this we
+     override the Serialize and GetSerializedSize methods of
+     WifiInformationElement. */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+
   /**
    * Set DSSS supported
-   * \param DsssSupported the DSSS supported indicator
+   * \param dsssSupported the DSSS supported indicator
    */
-  void SetDsssSupported (uint8_t DsssSupported);
+  void SetDsssSupported (uint8_t dsssSupported);
 
   /**
    * Set the Current Channel field in the DsssParameterSet information element.
@@ -47,48 +60,6 @@ public:
    * \param currentChannel the CurrentChannel field in the DsssParameterSet information element
    */
   void SetCurrentChannel (uint8_t currentChannel);
-
-  /**
-   * Element ID function
-   * \returns the wifi information element ID
-   */
-  WifiInformationElementId ElementId () const;
-  /**
-   * Get information field size function
-   * \returns the information field size
-   */
-  uint8_t GetInformationFieldSize () const;
-  /**
-   * Serialize information field function
-   * \param start the iterator
-   * \returns the updated iterator
-   */
-  void SerializeInformationField (Buffer::Iterator start) const;
-  /**
-   * Deserialize infornamtion field function
-   * \param start the iterator
-   * \param length the length
-   * \returns the updated iterator
-   */
-  uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-
-  /**
-   * This information element is a bit special in that it is only
-   * included if the STA does support DSSS. To support this we
-   * override the Serialize and GetSerializedSize methods of
-   * WifiInformationElement.
-   *
-   * \param start
-   *
-   * \return an iterator
-   */
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  /**
-   * Return the serialized size of this DSSS Parameter Set.
-   *
-   * \return the serialized size of this DSSS Parameter Set
-   */
-  uint16_t GetSerializedSize () const;
 
 
 private:

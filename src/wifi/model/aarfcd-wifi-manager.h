@@ -70,7 +70,7 @@ private:
    * The fundamental reason for this is that there is a backoff between each data
    * transmission, be it an initial transmission or a retransmission.
    *
-   * \param station the station that we failed to send DATA
+   * \param station the station that we failed to send Data
    */
   void DoReportDataFailed (WifiRemoteStation *station);
   void DoReportRtsOk (WifiRemoteStation *station,
@@ -116,18 +116,18 @@ private:
    */
   void TurnOnRts (AarfcdWifiRemoteStation *station);
 
-  //aarf fields below
-  uint32_t m_minTimerThreshold; ///< minimum timer threshold
+  //AARF fields below
+  uint32_t m_minTimerThreshold;   ///< minimum timer threshold
   uint32_t m_minSuccessThreshold; ///< minimum success threshold
-  double m_successK; ///< Multiplication factor for the success threshold
+  double m_successK;              ///< Multiplication factor for the success threshold
   uint32_t m_maxSuccessThreshold; ///< maximum success threshold
-  double m_timerK; ///< Multiplication factor for the timer threshold
+  double m_timerK;                ///< Multiplication factor for the timer threshold
 
-  //aarf-cd fields below
-  uint32_t m_minRtsWnd; ///< minimum RTS window
-  uint32_t m_maxRtsWnd; ///< maximum RTS window
+  //AARF-CD fields below
+  uint32_t m_minRtsWnd;               ///< minimum RTS window
+  uint32_t m_maxRtsWnd;               ///< maximum RTS window
   bool m_turnOffRtsAfterRateDecrease; ///< turn off RTS after rate decrease
-  bool m_turnOnRtsAfterRateIncrease; ///< turn on RTS after rate increase
+  bool m_turnOnRtsAfterRateIncrease;  ///< turn on RTS after rate increase
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

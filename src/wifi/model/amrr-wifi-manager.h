@@ -75,32 +75,32 @@ private:
   /**
    * Update the mode used to send to the given station.
    *
-   * \param station
+   * \param station the remote station state
    */
   void UpdateMode (AmrrWifiRemoteStation *station);
   /**
    * Reset transmission statistics of the given station.
    *
-   * \param station
+   * \param station the remote station state
    */
   void ResetCnt (AmrrWifiRemoteStation *station);
   /**
    * Increase the transmission rate to the given station.
    *
-   * \param station
+   * \param station the remote station state
    */
   void IncreaseRate (AmrrWifiRemoteStation *station);
   /**
    * Decrease the transmission rate to the given station.
    *
-   * \param station
+   * \param station the remote station state
    */
   void DecreaseRate (AmrrWifiRemoteStation *station);
   /**
    * Check if the current rate for the given station is the
    * minimum rate.
    *
-   * \param station
+   * \param station the remote station state
    *
    * \return true if the current rate is the minimum rate,
    *         false otherwise
@@ -110,7 +110,7 @@ private:
    * Check if the current rate for the given station is the
    * maximum rate.
    *
-   * \param station
+   * \param station the remote station state
    *
    * \return true if the current rate is the maximum rate,
    *         false otherwise
@@ -120,7 +120,7 @@ private:
    * Check if the number of retransmission and transmission error
    * is less than the number of successful transmission (times ratio).
    *
-   * \param station
+   * \param station the remote station state
    *
    * \return true if the number of retransmission and transmission error
    *              is less than the number of successful transmission
@@ -131,7 +131,7 @@ private:
    * Check if the number of retransmission and transmission error
    * is greater than the number of successful transmission (times ratio).
    *
-   * \param station
+   * \param station the remote station state
    *
    * \return true if the number of retransmission and transmission error
    *              is less than the number of successful transmission
@@ -142,18 +142,18 @@ private:
    * Check if the number of retransmission, transmission error,
    * and successful transmission are greater than 10.
    *
-   * \param station
+   * \param station the remote station state
    * \return true if the number of retransmission, transmission error,
    *         and successful transmission are greater than 10,
    *         false otherwise
    */
   bool IsEnough (AmrrWifiRemoteStation *station) const;
 
-  Time m_updatePeriod; ///< update period
-  double m_failureRatio; ///< failure ratio
-  double m_successRatio; ///< success ratio
+  Time m_updatePeriod;            ///< update period
+  double m_failureRatio;          ///< failure ratio
+  double m_successRatio;          ///< success ratio
   uint32_t m_maxSuccessThreshold; ///< maximum success threshold
-  uint32_t m_minSuccessThreshold; ///< mnimum success threshold
+  uint32_t m_minSuccessThreshold; ///< minimum success threshold
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

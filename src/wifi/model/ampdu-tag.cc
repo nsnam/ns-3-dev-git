@@ -49,9 +49,9 @@ AmpduTag::AmpduTag ()
 }
 
 void
-AmpduTag::SetRemainingNbOfMpdus (uint8_t nbofmpdus)
+AmpduTag::SetRemainingNbOfMpdus (uint8_t nbOfMpdus)
 {
-  m_nbOfMpdus = nbofmpdus;
+  m_nbOfMpdus = nbOfMpdus;
 }
 
 void

@@ -25,7 +25,7 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
- * The different block ACK policies.
+ * The different block ack policies.
  */
 enum BlockAckType
 {

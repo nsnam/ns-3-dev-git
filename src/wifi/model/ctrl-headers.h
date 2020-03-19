@@ -28,15 +28,15 @@ namespace ns3 {
 
 /**
  * \ingroup wifi
- * \brief Headers for Block ack request.
+ * \brief Headers for BlockAckRequest.
  *
- *  802.11n standard includes three types of block ack:
- *    - Basic block ack (unique type in 802.11e)
- *    - Compressed block ack
- *    - Multi-TID block ack
- *  For now only basic block ack and compressed block ack
+ *  802.11n standard includes three types of BlockAck:
+ *    - Basic BlockAck (unique type in 802.11e)
+ *    - Compressed BlockAck
+ *    - Multi-TID BlockAck
+ *  For now only basic BlockAck and compressed BlockAck
  *  are supported.
- *  Basic block ack is also default variant.
+ *  Basic BlockAck is also default variant.
  */
 class CtrlBAckRequestHeader : public Header
 {
@@ -55,21 +55,21 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * Enable or disable HT immediate ACK.
+   * Enable or disable HT immediate Ack.
    *
-   * \param immediateAck enable or disable HT immediate ACK
+   * \param immediateAck enable or disable HT immediate Ack
    */
   void SetHtImmediateAck (bool immediateAck);
   /**
-   * Set the block ACK type.
+   * Set the block ack type.
    *
-   * \param type
+   * \param type the BA type
    */
   void SetType (BlockAckType type);
   /**
    * Set Traffic ID (TID).
    *
-   * \param tid
+   * \param tid the TID
    */
   void SetTidInfo (uint8_t tid);
   /**
@@ -81,16 +81,16 @@ public:
   void SetStartingSequence (uint16_t seq);
 
   /**
-   * Check if the current ACK policy is immediate.
+   * Check if the current Ack Policy is immediate.
    *
-   * \return true if the current ACK policy is immediate,
+   * \return true if the current Ack Policy is immediate,
    *         false otherwise
    */
   bool MustSendHtImmediateAck (void) const;
   /**
-   * Return the block ACK type ID.
+   * Return the Block Ack type ID.
    *
-   * \return type
+   * \return the BA type
    */
   BlockAckType GetType (void) const;
   /**
@@ -106,32 +106,32 @@ public:
    */
   uint16_t GetStartingSequence (void) const;
   /**
-   * Check if the current ACK policy is basic
-   * (i.e. not multiple TID and not compressed ACK).
+   * Check if the current Ack Policy is Basic Block Ack
+   * (i.e. not multi-TID nor compressed).
    *
-   * \return true if the current ACK policy is basic,
+   * \return true if the current Ack Policy is Basic Block Ack,
    *         false otherwise
    */
   bool IsBasic (void) const;
   /**
-   * Check if the current ACK policy is compressed ACK
-   * and not multiple TID.
+   * Check if the current Ack Policy is Compressed Block Ack
+   * and not multi-TID.
    *
-   * \return true if the current ACK policy is compressed ACK,
+   * \return true if the current Ack Policy is Compressed Block Ack,
    *         false otherwise
    */
   bool IsCompressed (void) const;
   /**
-   * Check if the current BA policy is extended compressed block ACK.
+   * Check if the current Ack Policy is Extended Compressed Block Ack.
    *
-   * \return true if the current BA policy is extended compressed block ACK,
+   * \return true if the current Ack Policy is Extended Compressed Block Ack,
    *         false otherwise
    */
   bool IsExtendedCompressed (void) const;
   /**
-   * Check if the current ACK policy has multiple TID.
+   * Check if the current Ack Policy has Multi-TID Block Ack.
    *
-   * \return true if the current ACK policy has multiple TID,
+   * \return true if the current Ack Policy has Multi-TID Block Ack,
    *         false otherwise
    */
   bool IsMultiTid (void) const;
@@ -149,46 +149,46 @@ private:
    * Set the starting sequence control with the given
    * sequence control value
    *
-   * \param seqControl
+   * \param seqControl the sequence control value
    */
   void SetStartingSequenceControl (uint16_t seqControl);
   /**
-   * Return the Block ACK control.
+   * Return the Block Ack control.
    *
-   * \return the Block ACK control
+   * \return the Block Ack control
    */
   uint16_t GetBarControl (void) const;
   /**
-   * Set the Block ACK control.
+   * Set the Block Ack control.
    *
-   * \param bar
+   * \param bar the BAR control value
    */
   void SetBarControl (uint16_t bar);
 
   /**
-   * The lsb bit of the BAR control field is used only for the
+   * The LSB bit of the BAR control field is used only for the
    * HT (High Throughput) delayed block ack configuration.
-   * For now only non HT immediate block ack is implemented so this field
+   * For now only non HT immediate BlockAck is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_barAckPolicy;    ///< bar ack policy
+  bool m_barAckPolicy;    ///< BAR Ack Policy
   BlockAckType m_baType;  ///< BA type
   uint16_t m_tidInfo;     ///< TID info
-  uint16_t m_startingSeq; ///< starting seq
+  uint16_t m_startingSeq; ///< starting sequence number
 };
 
 
 /**
  * \ingroup wifi
- * \brief Headers for Block ack response.
+ * \brief Headers for BlockAck response.
  *
- *  802.11n standard includes three types of block ack:
- *    - Basic block ack (unique type in 802.11e)
- *    - Compressed block ack
- *    - Multi-TID block ack
- *  For now only basic block ack and compressed block ack
+ *  802.11n standard includes three types of BlockAck:
+ *    - Basic BlockAck (unique type in 802.11e)
+ *    - Compressed BlockAck
+ *    - Multi-TID BlockAck
+ *  For now only basic BlockAck and compressed BlockAck
  *  are supported.
- *  Basic block ack is also default variant.
+ *  Basic BlockAck is also default variant.
  */
 class CtrlBAckResponseHeader : public Header
 {
@@ -207,21 +207,21 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * Enable or disable HT immediate ACK.
+   * Enable or disable HT immediate Ack.
    *
-   * \param immediateAck enable or disable HT immediate ACK
+   * \param immediateAck enable or disable HT immediate Ack
    */
   void SetHtImmediateAck (bool immediateAck);
   /**
-   * Set the block ACK type.
+   * Set the block ack type.
    *
-   * \param type
+   * \param type the BA type
    */
   void SetType (BlockAckType type);
   /**
    * Set Traffic ID (TID).
    *
-   * \param tid
+   * \param tid the TID
    */
   void SetTidInfo (uint8_t tid);
   /**
@@ -233,14 +233,14 @@ public:
   void SetStartingSequence (uint16_t seq);
 
   /**
-   * Check if the current ACK policy is immediate.
+   * Check if the current Ack Policy is immediate.
    *
-   * \return true if the current ACK policy is immediate,
+   * \return true if the current Ack Policy is immediate,
    *         false otherwise
    */
   bool MustSendHtImmediateAck (void) const;
   /**
-   * Return the block ACK type ID.
+   * Return the block ack type ID.
    *
    * \return type
    */
@@ -258,30 +258,30 @@ public:
    */
   uint16_t GetStartingSequence (void) const;
   /**
-   * Check if the current BA policy is basic block ACK.
+   * Check if the current BA policy is Basic Block Ack.
    *
-   * \return true if the current BA policy is basic block ACK,
+   * \return true if the current BA policy is Basic Block Ack,
    *         false otherwise
    */
   bool IsBasic (void) const;
   /**
-   * Check if the current BA policy is compressed block ACK.
+   * Check if the current BA policy is Compressed Block Ack.
    *
-   * \return true if the current BA policy is compressed block ACK,
+   * \return true if the current BA policy is Compressed Block Ack,
    *         false otherwise
    */
   bool IsCompressed (void) const;
   /**
-   * Check if the current BA policy is extended compressed block ACK.
+   * Check if the current BA policy is Extended Compressed Block Ack.
    *
-   * \return true if the current BA policy is extended compressed block ACK,
+   * \return true if the current BA policy is Extended Compressed Block Ack,
    *         false otherwise
    */
   bool IsExtendedCompressed (void) const;
   /**
-   * Check if the current BA policy is multi-TID block ACK.
+   * Check if the current BA policy is Multi-TID Block Ack.
    *
-   * \return true if the current BA policy is multi-TID block ACK,
+   * \return true if the current BA policy is Multi-TID Block Ack,
    *         false otherwise
    */
   bool IsMultiTid (void) const;
@@ -290,34 +290,34 @@ public:
    * Set the bitmap that the packet with the given sequence
    * number was received.
    *
-   * \param seq
+   * \param seq the sequence number
    */
   void SetReceivedPacket (uint16_t seq);
   /**
    * Set the bitmap that the packet with the given sequence
    * number and fragment number was received.
    *
-   * \param seq
-   * \param frag
+   * \param seq the sequence number
+   * \param frag the fragment number
    */
   void SetReceivedFragment (uint16_t seq, uint8_t frag);
   /**
    * Check if the packet with the given sequence number
-   * was ACKed in this Block ACK response.
+   * was acknowledged in this BlockAck response.
    *
-   * \param seq
+   * \param seq the sequence number
    * \return true if the packet with the given sequence number
-   *         was ACKed in this Block ACK response, false otherwise
+   *         was ACKed in this BlockAck response, false otherwise
    */
   bool IsPacketReceived (uint16_t seq) const;
   /**
    * Check if the packet with the given sequence number
-   * and fragment number was ACKed in this Block ACK response.
+   * and fragment number was acknowledged in this BlockAck response.
    *
-   * \param seq
-   * \param frag
+   * \param seq the sequence number
+   * \param frag the fragment number
    * \return true if the packet with the given sequence number
-   *         and sequence number was ACKed in this Block ACK response,
+   *         and sequence number was acknowledged in this BlockAck response,
    *         false otherwise
    */
   bool IsFragmentReceived (uint16_t seq, uint8_t frag) const;
@@ -332,26 +332,25 @@ public:
    * Set the starting sequence control with the given
    * sequence control value
    *
-   * \param seqControl
+   * \param seqControl the raw sequence control value
    */
   void SetStartingSequenceControl (uint16_t seqControl);
   /**
-   * Return the bitmap from the block ACK response header.
+   * Return the bitmap from the BlockAck response header.
    *
-   * \return the bitmap from the block ACK response header
+   * \return the bitmap from the BlockAck response header
    */
-
   const uint16_t* GetBitmap (void) const;
   /**
-   * Return the compressed bitmap from the block ACK response header.
+   * Return the compressed bitmap from the BlockAck response header.
    *
-   * \return the compressed bitmap from the block ACK response header
+   * \return the compressed bitmap from the BlockAck response header
    */
   uint64_t GetCompressedBitmap (void) const;
   /**
-   * Return the extended compressed bitmap from the block ACK response header.
+   * Return the extended compressed bitmap from the BlockAck response header.
    *
-   * \return the extended compressed bitmap from the block ACK response header
+   * \return the extended compressed bitmap from the BlockAck response header
    */
   const uint64_t* GetExtendedCompressedBitmap (void) const;
 
@@ -363,29 +362,29 @@ public:
 
 private:
   /**
-   * Return the block ACK control.
+   * Return the Block Ack control.
    *
-   * \return the block ACK control
+   * \return the Block Ack control
    */
   uint16_t GetBaControl (void) const;
   /**
-   * Set the block ACK control.
+   * Set the Block Ack control.
    *
-   * \param bar
+   * \param ba the BA control to set
    */
-  void SetBaControl (uint16_t bar);
+  void SetBaControl (uint16_t ba);
 
   /**
    * Serialize bitmap to the given buffer.
    *
-   * \param start
+   * \param start the iterator
    * \return Buffer::Iterator to the next available buffer
    */
   Buffer::Iterator SerializeBitmap (Buffer::Iterator start) const;
   /**
    * Deserialize bitmap from the given buffer.
    *
-   * \param start
+   * \param start the iterator
    * \return Buffer::Iterator to the next available buffer
    */
   Buffer::Iterator DeserializeBitmap (Buffer::Iterator start);
@@ -411,26 +410,26 @@ private:
    *
    * \param seq the sequence number
    *
-   * \return
+   * \return true if the sequence number is concerned by the bitmap
    */
   bool IsInBitmap (uint16_t seq) const;
 
   /**
-   * The lsb bit of the BA control field is used only for the
+   * The LSB bit of the BA control field is used only for the
    * HT (High Throughput) delayed block ack configuration.
    * For now only non HT immediate block ack is implemented so this field
    * is here only for a future implementation of HT delayed variant.
    */
-  bool m_baAckPolicy;     ///< BA ack policy
+  bool m_baAckPolicy;     ///< BA Ack Policy
   BlockAckType m_baType;  ///< BA type
   uint16_t m_tidInfo;     ///< TID info
-  uint16_t m_startingSeq; ///< starting seq
+  uint16_t m_startingSeq; ///< starting sequence number
 
   union
   {
-    uint16_t m_bitmap[64]; ///< the block ack bitmap
-    uint64_t m_compressedBitmap; ///< the compressed block ack bitmap
-    uint64_t m_extendedCompressedBitmap[4]; ///< the extended compressed block ack bitmap
+    uint16_t m_bitmap[64]; ///< the basic BlockAck bitmap
+    uint64_t m_compressedBitmap; ///< the compressed BlockAck bitmap
+    uint64_t m_extendedCompressedBitmap[4]; ///< the extended compressed BlockAck bitmap
   } bitmap; ///< bitmap union type
 };
 

@@ -61,7 +61,7 @@ private:
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool IsLowLatency (void) const;
 
-  WifiMode m_dataMode; //!< Wifi mode for unicast DATA frames
+  WifiMode m_dataMode; //!< Wifi mode for unicast Data frames
   WifiMode m_ctlMode;  //!< Wifi mode for RTS frames
 };
 

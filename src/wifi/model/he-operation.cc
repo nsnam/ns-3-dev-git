@@ -50,9 +50,9 @@ HeOperation::ElementIdExt () const
 }
 
 void
-HeOperation::SetHeSupported (uint8_t hesupported)
+HeOperation::SetHeSupported (uint8_t heSupported)
 {
-  m_heSupported = hesupported;
+  m_heSupported = heSupported;
 }
 
 uint8_t
@@ -176,14 +176,6 @@ HeOperation::DeserializeInformationField (Buffer::Iterator start, uint8_t length
   return length;
 }
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param HeOperation the HE operation
- *
- * \returns output stream
- */
 std::ostream &
 operator << (std::ostream &os, const HeOperation &HeOperation)
 {

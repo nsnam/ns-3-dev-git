@@ -38,14 +38,14 @@ NS_LOG_COMPONENT_DEFINE ("AmrrWifiManager");
 struct AmrrWifiRemoteStation : public WifiRemoteStation
 {
   Time m_nextModeUpdate; ///< next mode update time
-  uint32_t m_tx_ok; ///< transmit ok
-  uint32_t m_tx_err; ///< transmit error
-  uint32_t m_tx_retr; ///< transmit retry
-  uint32_t m_retry; ///< retry
-  uint8_t m_txrate; ///< transmit rate
+  uint32_t m_tx_ok;      ///< transmit OK
+  uint32_t m_tx_err;     ///< transmit error
+  uint32_t m_tx_retr;    ///< transmit retry
+  uint32_t m_retry;      ///< retry
+  uint8_t m_txrate;      ///< transmit rate
   uint32_t m_successThreshold; ///< success threshold
-  uint32_t m_success; ///< success
-  bool m_recovery; ///< recovery
+  uint32_t m_success;    ///< success
+  bool m_recovery;       ///< recovery
 };
 
 

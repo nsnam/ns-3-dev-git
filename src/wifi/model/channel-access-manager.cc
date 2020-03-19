@@ -39,7 +39,7 @@ public:
   /**
    * Create a PhyListener for the given ChannelAccessManager.
    *
-   * \param dcf
+   * \param dcf the ChannelAccessManager
    */
   PhyListener (ns3::ChannelAccessManager *dcf)
     : m_dcf (dcf)
@@ -285,7 +285,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
         }
       else
         {
-          // medium busy, backoff is neeeded
+          // medium busy, backoff is needed
           return true;
         }
     }
@@ -352,7 +352,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
           && GetBackoffEndFor (state) <= Simulator::Now () )
         {
           /**
-           * This is the first dcf we find with an expired backoff and which
+           * This is the first DCF we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
           NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << state->GetBackoffSlots ());
@@ -368,7 +368,7 @@ ChannelAccessManager::DoGrantDcfAccess (void)
                   NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" <<
                                 otherState->GetBackoffSlots ());
                   /**
-                   * all other dcfs with a lower priority whose backoff
+                   * all other DCFs with a lower priority whose backoff
                    * has expired and which needed access to the medium
                    * must be notified that we did get an internal collision.
                    */
@@ -766,8 +766,8 @@ ChannelAccessManager::NotifyNavResetNow (Time duration)
   m_lastNavStart = Simulator::Now ();
   m_lastNavDuration = duration;
   /**
-   * If the nav reset indicates an end-of-nav which is earlier
-   * than the previous end-of-nav, the expected end of backoff
+   * If the NAV reset indicates an end-of-NAV which is earlier
+   * than the previous end-of-NAV, the expected end of backoff
    * might be later than previously thought so, we might need
    * to restart a new access timeout.
    */
