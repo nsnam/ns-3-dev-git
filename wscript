@@ -1061,10 +1061,6 @@ def build(bld):
         _doxygen(bld, skip_pid=True)
         raise SystemExit(0)
 
-    if Options.options.docset_build:
-        _docset(bld)
-        raise SystemExit(0)
-
     if Options.options.run_no_build:
         # Check that the requested program name is valid
         program_name, dummy_program_argv = wutils.get_run_program(Options.options.run_no_build, wutils.get_command_template(bld.env))
@@ -1232,7 +1228,7 @@ class Ns3ShellContext(Context.Context):
         wutils.run_argv([shell], env, os_env)
 
 
-def _print_introspected_doxygen (bld):
+def _print_introspected_doxygen(bld):
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
     except ValueError: 

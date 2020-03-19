@@ -93,14 +93,20 @@ function status_report
 {
     local status="$1"
     local long_msg="$2"
+    local exitonerr="${3:-yes}"
     if [ $status -eq 0 ]; then
 	verbose "$long_msg "  "done."
 	rm -f $VERBLOG
     else
-	verbose "$long_msg "  "FAILED.  Details:"
-	cat $VERBLOG
-	rm -f $VERBLOG
-	exit 1
+	if [ $exitonerr == "yes" ]; then
+	    verbose "$long_msg "  "FAILED.  Details:"
+	    cat $VERBLOG
+	    rm -f $VERBLOG
+	    exit 1
+	else
+	    verbose "$long_msg "  "FAILED, continuing"
+	    rm -f $VERBLOG
+	fi
     fi
 }
    
@@ -196,7 +202,11 @@ if [ $skip_doxy -eq 1 ]; then
 else
 
     if [ $skip_intro -eq 1 ]; then
-	verbose "" "Skipping ./waf build and print-introspected-doxygen."
+	verbose "" "Skipping ./waf build"
+	verbose -n "Trying print-introspected-doxygen..."
+	(cd "$ROOT" && ./waf --run-no-build print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+	status_report $? "./waf --run print-introspected-doxygen" noexit
+	
     else
         # Run introspection, which may require a build
 	verbose -n "Building..."
@@ -204,8 +214,7 @@ else
 	status_report $? "./waf build"
 	verbose -n "Running print-introspected-doxygen..."
 	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
-	status_report $? "./waf --run print-introspected-doxygen"
-	
+	status_report $? "./waf --run print-introspected-doxygen"	
     fi
 
     # Modify doxygen.conf to generate all the warnings
