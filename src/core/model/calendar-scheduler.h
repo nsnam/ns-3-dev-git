@@ -48,6 +48,12 @@ class EventImpl;
  * the original algorithm (to the best of my knowledge).
  *
  * \note
+ * This queue is much slower than I expected (much slower than the
+ * std::map queue) and this seems to be because the original resizing policy
+ * is horribly bad.  This is most likely the reason why there have been
+ * so many variations published which all slightly tweak the resizing
+ * heuristics to obtain a better distribution of events across buckets.
+ *
  * While inserion sort is not discussed in the original article, its
  * implementation appears to dramatically affect performance.
  * CalendarScheduler sorts buckets in \em reverse chronological order.
@@ -76,6 +82,8 @@ public:
   virtual Scheduler::Event PeekNext (void) const;
   virtual Scheduler::Event RemoveNext (void);
   virtual void Remove (const Scheduler::Event &ev);
+
+  bool SetReverse (bool reverse);
 
 private:
   /** Double the number of buckets if necessary. */
@@ -150,6 +158,8 @@ private:
   uint64_t m_lastPrio;
   /** Number of events in queue. */
   uint32_t m_qSize;
+  /** Switch between old and new configuration after bug 2498. */
+  bool m_reverse = false;
 };
 
 } // namespace ns3

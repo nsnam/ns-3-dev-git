@@ -109,7 +109,7 @@ CalendarScheduler::DoInsert (const Event &ev)
   Bucket::iterator end = m_buckets[bucket].end ();
   for (Bucket::iterator i = m_buckets[bucket].begin (); i != end; ++i)
     {
-      if (ev.key > i->key)
+      if ((ev.key < i->key && !m_reverse) || (ev.key > i->key && m_reverse))
         {
           m_buckets[bucket].insert (i, ev);
           return;
@@ -148,7 +148,7 @@ CalendarScheduler::PeekNext (void) const
     {
       if (!m_buckets[i].empty ())
         {
-          Scheduler::Event next = m_buckets[i].back ();
+          Scheduler::Event next = m_reverse ? m_buckets[i].back () : m_buckets[i].front ();
           if (next.key.m_ts < bucketTop)
             {
               return next;
@@ -184,13 +184,13 @@ CalendarScheduler::DoRemoveNext (void)
     {
       if (!m_buckets[i].empty ())
         {
-          Scheduler::Event next = m_buckets[i].back ();
+          Scheduler::Event next = m_reverse ? m_buckets[i].back () : m_buckets[i].front ();
           if (next.key.m_ts < bucketTop)
             {
               m_lastBucket = i;
               m_lastPrio = next.key.m_ts;
               m_bucketTop = bucketTop;
-              m_buckets[i].pop_back ();
+              m_reverse ? m_buckets[i].pop_back () : m_buckets[i].pop_front ();
               return next;
             }
           if (next.key < minKey)
@@ -208,8 +208,8 @@ CalendarScheduler::DoRemoveNext (void)
   m_lastPrio = minKey.m_ts;
   m_lastBucket = Hash (minKey.m_ts);
   m_bucketTop = (minKey.m_ts / m_width + 1) * m_width;
-  Scheduler::Event next = m_buckets[minBucket].back ();
-  m_buckets[minBucket].pop_back ();
+  Scheduler::Event next = m_reverse ? m_buckets[minBucket].back () : m_buckets[minBucket].front();
+  m_reverse ? m_buckets[minBucket].pop_back () : m_buckets[minBucket].pop_front ();
 
   return next;
 }
@@ -381,6 +381,15 @@ CalendarScheduler::Resize (uint32_t newSize)
   // PrintInfo ();
   uint64_t newWidth = CalculateNewWidth ();
   DoResize (newSize, newWidth);
+}
+
+bool CalendarScheduler::SetReverse (bool reverse)
+{
+	NS_LOG_FUNCTION (this << reverse);
+
+	bool old_reverse = m_reverse;
+	m_reverse = reverse;
+	return old_reverse;
 }
 
 } // namespace ns3
