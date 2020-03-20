@@ -272,7 +272,7 @@ int main (int argc, char *argv[])
   // table header
   LOG ("");
   LOG (std::left << std::setw (g_fwidth) << "Run #" <<
-       std::left << std::setw (3 * g_fwidth) << "Inititialization:" <<
+       std::left << std::setw (3 * g_fwidth) << "Initialization:" <<
        std::left << std::setw (3 * g_fwidth) << "Simulation:");
   LOG (std::left << std::setw (g_fwidth) << "" <<
        std::left << std::setw (g_fwidth) << "Time (s)" <<

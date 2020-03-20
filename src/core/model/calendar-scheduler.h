@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Alexander Krotov <krotov@iitp.ru>
  */
 
 #ifndef CALENDAR_SCHEDULER_H
@@ -47,11 +48,13 @@ class EventImpl;
  * the original algorithm (to the best of my knowledge).
  *
  * \note
- * This queue is much slower than I expected (much slower than the
- * std::map queue) and this seems to be because the original resizing policy
- * is horribly bad.  This is most likely the reason why there have been
- * so many variations published which all slightly tweak the resizing
- * heuristics to obtain a better distribution of events across buckets.
+ * While inserion sort is not discussed in the original article, its
+ * implementation appears to dramatically affect performance.
+ * CalendarScheduler sorts buckets in \em reverse chronological order.
+ * This heuristic, originating in NS-2 implementation of
+ * calendar scheduler, reduces enqueue time, as it is likely that
+ * timestamp of new event is greater than timestamp of already
+ * scheduled event.
  */
 class CalendarScheduler : public Scheduler
 {
