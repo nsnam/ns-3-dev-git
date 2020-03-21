@@ -47,20 +47,31 @@ class EventImpl;
  * refinements published later but this class implements
  * the original algorithm (to the best of my knowledge).
  *
- * \note
- * This queue is much slower than I expected (much slower than the
+ * The default behavior is to store events in each bucket in
+ * increasing timestamp order.  This can be changed to reverse
+ * timstamp order using the Attribute \c Reverse,
+ *
+ * To change the ordering use the following pattern:
+ * \code
+ *   ObjectFactory factory ("ns3::CalendarScheduler");
+ *   factory.SetAttribute ("Reverse", BooleanValue (true));
+ *   Simulator::SetScheduler (factory);
+ * \endcode
+ *
+ * \note This queue is much slower than I expected (much slower than the
  * std::map queue) and this seems to be because the original resizing policy
  * is horribly bad.  This is most likely the reason why there have been
  * so many variations published which all slightly tweak the resizing
  * heuristics to obtain a better distribution of events across buckets.
  *
- * While inserion sort is not discussed in the original article, its
+ * \note While inserion sort is not discussed in the original article, its
  * implementation appears to dramatically affect performance.
- * CalendarScheduler sorts buckets in \em reverse chronological order.
- * This heuristic, originating in NS-2 implementation of
- * calendar scheduler, reduces enqueue time, as it is likely that
- * timestamp of new event is greater than timestamp of already
- * scheduled event.
+ * The default implementation sorts buckets in increasing (chronological)
+ * order.  The alternative, sorting buckets in decreasing order,
+ * was adopted in NS-2 because they observed that new events were
+ * more likely to be later than already scheduled events.
+ * In this case sorting buckets in reverse chronological order
+ * reduces enqueue time.
  */
 class CalendarScheduler : public Scheduler
 {
@@ -82,8 +93,6 @@ public:
   virtual Scheduler::Event PeekNext (void) const;
   virtual Scheduler::Event RemoveNext (void);
   virtual void Remove (const Scheduler::Event &ev);
-
-  bool SetReverse (bool reverse);
 
 private:
   /** Double the number of buckets if necessary. */
@@ -158,7 +167,40 @@ private:
   uint64_t m_lastPrio;
   /** Number of events in queue. */
   uint32_t m_qSize;
-  /** Switch between old and new configuration after bug 2498. */
+
+  /**
+   * Set the insertion order.
+   *
+   * This can only be used at construction, as invoked by the
+   * Attribute Reverse.
+   *
+   * \param [in] reverse If \c true, store events in *decreasing*
+   * time stamp order.
+   */
+  void SetReverse (bool reverse);
+  /**
+   * Get the next event from the bucket, according to \c m_reverse.
+   * \param [in] bucket The bucket to draw from.
+   * \return The next event from the \c bucket.
+   */
+  Scheduler::Event & (*NextEvent) (Bucket & bucket);
+  /**
+   * Ordering function to identify the insertion point, according to \c m_reverse.
+   * \param [in] newEvent The new event being inserted.
+   * \param [in] it The current position in the bucket being examined.
+   * \return \c true if the \c newEvent belongs before \it.
+   */
+  bool (*Order) (const EventKey & newEvent, const EventKey & it);
+  /**
+   * Pop the next event from the bucket, according to \c m_reverse.
+   * \param [in] bucket The bucket to pop from.
+   */
+  void (*Pop) (Bucket &);
+  /**
+   * Bucket ordering.
+   * If \c false (default), store events in increasing time stamp order.
+   * If \c true, store events in *decreasing* time stamp order.
+   */
   bool m_reverse = false;
 };
 

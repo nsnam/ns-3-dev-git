@@ -91,7 +91,7 @@ private:
   Ptr<RandomVariableStream> m_rand; ///< random variable
   uint32_t m_population; ///< population
   uint32_t m_total; ///< total
-  uint32_t m_count; ///< count 
+  uint32_t m_count; ///< count
 };
 
 void
@@ -213,6 +213,7 @@ int main (int argc, char *argv[])
   uint32_t total = 1000000;
   uint32_t runs  =       1;
   std::string filename = "";
+  bool calRev = false;
 
   CommandLine cmd (__FILE__);
   cmd.Usage ("Benchmark the simulator scheduler.\n"
@@ -224,6 +225,7 @@ int main (int argc, char *argv[])
              "In the case of either --file form, the input is expected\n"
              "to be ascii, giving the relative event times in ns.");
   cmd.AddValue ("cal",   "use CalendarSheduler",          schedCal);
+  cmd.AddValue ("calrev", "reverse ordering in the CalendarScheduler", calRev);
   cmd.AddValue ("heap",  "use HeapScheduler",             schedHeap);
   cmd.AddValue ("list",  "use ListSheduler",              schedList);
   cmd.AddValue ("map",   "use MapScheduler (default)",    schedMap);
@@ -242,6 +244,7 @@ int main (int argc, char *argv[])
   if (schedCal)
     {
       factory.SetTypeId ("ns3::CalendarScheduler");
+      factory.Set ("Reverse", BooleanValue (calRev));
     }
   if (schedHeap)
     {
@@ -261,7 +264,12 @@ int main (int argc, char *argv[])
   LOGME (std::setprecision (g_fwidth - 6));
   DEB ("debugging is ON");
 
-  LOGME ("scheduler: " << factory.GetTypeId ().GetName ());
+  std::string order;
+  if (schedCal)
+    {
+      order = ": insertion order: " + std::string (calRev ? "reverse" : "normal");
+    }
+  LOGME ("scheduler: " << factory.GetTypeId ().GetName () << order);
   LOGME ("population: " << pop);
   LOGME ("total events: " << total);
   LOGME ("runs: " << runs);
