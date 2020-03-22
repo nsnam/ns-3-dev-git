@@ -300,7 +300,7 @@ void
 RraaWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   station->m_lastFrameFail = true;
   CheckTimeout (station);
   station->m_counter--;
@@ -327,7 +327,7 @@ RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   station->m_lastFrameFail = false;
   CheckTimeout (station);
   station->m_counter--;
@@ -350,7 +350,7 @@ WifiTxVector
 RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -370,7 +370,7 @@ WifiTxVector
 RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -395,7 +395,7 @@ RraaWifiManager::DoNeedRts (WifiRemoteStation *st,
                             Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
-  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   CheckInit (station);
   if (m_basic)
     {

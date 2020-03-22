@@ -179,7 +179,7 @@ void
 ParfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  ParfWifiRemoteStation *station = (ParfWifiRemoteStation *)st;
+  ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nAttempt++;
   station->m_nFail++;
@@ -262,7 +262,7 @@ void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                       double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  ParfWifiRemoteStation *station = (ParfWifiRemoteStation *) st;
+  ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nAttempt++;
   station->m_nSuccess++;
@@ -311,7 +311,7 @@ WifiTxVector
 ParfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  ParfWifiRemoteStation *station = (ParfWifiRemoteStation *) st;
+  ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -342,7 +342,7 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  ParfWifiRemoteStation *station = (ParfWifiRemoteStation *) st;
+  ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {

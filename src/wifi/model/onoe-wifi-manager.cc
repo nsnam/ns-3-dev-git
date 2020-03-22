@@ -133,7 +133,7 @@ void
 OnoeWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   station->m_shortRetry++;
 }
 
@@ -141,7 +141,7 @@ void
 OnoeWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   station->m_longRetry++;
 }
 
@@ -155,7 +155,7 @@ void
 OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateRetry (station);
   station->m_tx_ok++;
 }
@@ -164,7 +164,7 @@ void
 OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateRetry (station);
   station->m_tx_err++;
 }
@@ -173,7 +173,7 @@ void
 OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateRetry (station);
   station->m_tx_err++;
 }
@@ -274,7 +274,7 @@ WifiTxVector
 OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));
   uint8_t rateIndex;
@@ -333,7 +333,7 @@ WifiTxVector
 OnoeWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {

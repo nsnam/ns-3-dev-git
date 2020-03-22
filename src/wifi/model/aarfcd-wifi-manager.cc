@@ -178,7 +178,7 @@ void
 AarfcdWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *)st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_failed++;
   station->m_success = 0;
@@ -264,7 +264,7 @@ AarfcdWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                   double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("station=" << station << " rts ok");
   station->m_rtsCounter--;
 }
@@ -274,7 +274,7 @@ AarfcdWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                    double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;
   station->m_failed = 0;
@@ -318,7 +318,7 @@ WifiTxVector
 AarfcdWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -339,7 +339,7 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   /// \todo we could/should implement the Aarf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -364,7 +364,7 @@ AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
                               Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
-  AarfcdWifiRemoteStation *station = (AarfcdWifiRemoteStation *) st;
+  AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn ? "RTS" : "BASIC") <<
                " rtsCounter=" << station->m_rtsCounter);
   return station->m_rtsOn;

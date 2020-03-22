@@ -222,7 +222,6 @@ IdealWifiManager::DoCreateStation (void) const
   return station;
 }
 
-
 void
 IdealWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
@@ -246,7 +245,7 @@ IdealWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                  double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode.GetUniqueName () << rtsSnr);
-  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   station->m_lastSnrObserved = rtsSnr;
 }
 
@@ -255,7 +254,7 @@ IdealWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                   double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode.GetUniqueName () << dataSnr);
-  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   if (dataSnr == 0)
     {
       NS_LOG_WARN ("DataSnr reported to be zero; not saving this report.");
@@ -268,7 +267,7 @@ void
 IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr);
-  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   if (dataSnr == 0)
     {
       NS_LOG_WARN ("DataSnr reported to be zero; not saving this report.");
@@ -294,7 +293,7 @@ WifiTxVector
 IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   //We search within the Supported rate set the mode with the
   //highest data rate for which the snr threshold is smaller than m_lastSnr
   //to ensure correct packet delivery.
@@ -512,7 +511,7 @@ WifiTxVector
 IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   //We search within the Basic rate set the mode with the highest
   //snr threshold possible which is smaller than m_lastSnr to
   //ensure correct packet delivery.

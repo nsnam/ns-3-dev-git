@@ -131,7 +131,7 @@ void
 CaraWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
+  CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_failed++;
   station->m_success = 0;
@@ -166,7 +166,7 @@ CaraWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
+  CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;
   station->m_failed = 0;
@@ -200,7 +200,7 @@ WifiTxVector
 CaraWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
+  CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -219,7 +219,7 @@ WifiTxVector
 CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
+  CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   uint16_t channelWidth = GetChannelWidth (station);
@@ -246,7 +246,7 @@ CaraWifiManager::DoNeedRts (WifiRemoteStation *st,
                             Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << normally);
-  CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
+  CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   return normally || station->m_failed >= m_probeThreshold;
 }
 

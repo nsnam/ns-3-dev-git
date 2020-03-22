@@ -155,7 +155,7 @@ void
 AmrrWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
+  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   station->m_retry++;
   station->m_tx_retr++;
 }
@@ -172,7 +172,7 @@ AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
+  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   station->m_retry = 0;
   station->m_tx_ok++;
 }
@@ -187,7 +187,7 @@ void
 AmrrWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
+  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   station->m_retry = 0;
   station->m_tx_err++;
 }
@@ -322,7 +322,7 @@ WifiTxVector
 AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
+  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));
   uint8_t rateIndex;
@@ -381,7 +381,7 @@ WifiTxVector
 AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
+  AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {

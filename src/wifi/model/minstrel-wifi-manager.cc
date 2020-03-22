@@ -714,14 +714,14 @@ void
 MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st << rxSnr << txMode);
-  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelWifiRemoteStation *)st)->m_txrate);
+  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << static_cast<MinstrelWifiRemoteStation*> (st)->m_txrate);
 }
 
 void
 MinstrelWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << station->m_txrate);
   station->m_shortRetry++;
 }
@@ -736,7 +736,7 @@ void
 MinstrelWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   UpdateRetry (station);
 }
 
@@ -744,7 +744,7 @@ void
 MinstrelWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
   CheckInit (station);
   if (!station->m_initialized)
@@ -760,7 +760,7 @@ MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                      double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -791,7 +791,7 @@ void
 MinstrelWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
@@ -855,7 +855,7 @@ WifiTxVector
 MinstrelWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   return GetDataTxVector (station);
 }
 
@@ -863,7 +863,7 @@ WifiTxVector
 MinstrelWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
   return GetRtsTxVector (station);
 }
 
@@ -871,7 +871,7 @@ bool
 MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
+  MinstrelWifiRemoteStation *station = static_cast<MinstrelWifiRemoteStation*> (st);
 
   CheckInit (station);
   if (!station->m_initialized)
