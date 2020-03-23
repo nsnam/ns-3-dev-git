@@ -53,6 +53,13 @@ namespace ns3 {
  * Remove()     | Linear      | `find()` and `make_heap()`
  * RemoveNext() | Logarithmic | `pop_heap()`
  *
+ * \par Memory Complexity
+ *
+ * Category  | Memory                           | Reason
+ * --------- | -------------------------------- | ------
+ * Overhead  | 3 x `sizeof (*)`<br/>(24 bytes)  | `vector`
+ * Per Event | 0                                | Events stored in `vector` directly
+ *
  */
 class PriorityQueueScheduler : public Scheduler
 {
@@ -77,11 +84,14 @@ public:
 
 private:
 
-  /** Custom priority_queue which supports remove
+  /**
+   * Custom priority_queue which supports remove,
+   * and returns entries in _increasing_ time order.
    */
   class EventPriorityQueue :
     public std::priority_queue<Scheduler::Event,
-                               std::vector<Scheduler::Event>>
+                               std::vector <Scheduler::Event>,
+                               std::greater<Scheduler::Event> >
   {
   public:
 
