@@ -489,9 +489,9 @@ MacLow::SetRxCallback (Callback<void, Ptr<WifiMacQueueItem>> callback)
 }
 
 void
-MacLow::RegisterDcf (Ptr<ChannelAccessManager> dcf)
+MacLow::RegisterChannelAccessManager (Ptr<ChannelAccessManager> channelAccessManager)
 {
-  m_channelAccessManagers.push_back (dcf);
+  m_channelAccessManagers.push_back (channelAccessManager);
 }
 
 void

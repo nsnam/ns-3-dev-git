@@ -65,8 +65,6 @@ class WifiRemoteStationManager;
 class Txop : public Object
 {
 public:
-  /// allow DcfListener class access
-  friend class DcfListener;
   /// allow MacLowTransmissionListener class access
   friend class MacLowTransmissionListener;
 
@@ -179,7 +177,7 @@ public:
    * Set the TXOP limit.
    *
    * \param txopLimit the TXOP limit.
-   *        Value zero corresponds to default DCF.
+   *        Value zero corresponds to default Txop.
    */
   void SetTxopLimit (Time txopLimit);
   /**
@@ -357,23 +355,23 @@ protected:
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
 
-  /* DCF notifications forwarded here */
+  /* Txop notifications forwarded here */
   /**
    * Notify that access request has been received.
    */
   virtual void NotifyAccessRequested (void);
   /**
-   * Notify the DCF that access has been granted.
+   * Notify the Txop that access has been granted.
    */
   virtual void NotifyAccessGranted (void);
   /**
-   * Notify the DCF that internal collision has occurred.
+   * Notify the Txop that internal collision has occurred.
    */
   virtual void NotifyInternalCollision (void);
 
   /**
-   * Check if the DCF has frames to transmit.
-   * \return true if the DCF has frames to transmit.
+   * Check if the Txop has frames to transmit.
+   * \return true if the Txop has frames to transmit.
    */
   virtual bool HasFramesToTransmit (void);
   /**
@@ -385,7 +383,7 @@ protected:
    */
   virtual void RestartAccessIfNeeded (void);
   /**
-   * Request access from DCF manager if needed.
+   * Request access from Txop if needed.
    */
   virtual void StartAccessIfNeeded (void);
 

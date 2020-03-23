@@ -277,9 +277,10 @@ public:
    */
   void SetRxCallback (Callback<void, Ptr<WifiMacQueueItem>> callback);
   /**
-   * \param dcf listen to NAV events for every incoming and outgoing packet.
+   * \param channelAccessManager pointer to ChannelAccessManager in order to listen to NAV events
+   *        for every incoming and outgoing packet.
    */
-  void RegisterDcf (Ptr<ChannelAccessManager> dcf);
+  void RegisterChannelAccessManager (Ptr<ChannelAccessManager> channelAccessManager);
 
   /**
    * Check whether the given MPDU, if transmitted according to the given TX vector,

@@ -168,7 +168,7 @@ void
 ChannelAccessManager::SetupLow (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
-  low->RegisterDcf (this);
+  low->RegisterChannelAccessManager (this);
 }
 
 void
