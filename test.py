@@ -2014,8 +2014,11 @@ def main(argv):
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
+
+    # From waf/waflib/Options.py
+    envcolor=os.environ.get('NOCOLOR','') and 'no' or 'auto' or 'yes'
     
-    if options.nocolor:
+    if options.nocolor or envcolor == 'no':
         colors_lst['USE'] = False
     
     return run_tests()
