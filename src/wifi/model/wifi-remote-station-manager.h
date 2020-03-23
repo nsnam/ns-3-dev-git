@@ -328,13 +328,13 @@ public:
    */
   bool GetUseGreenfieldProtection (void) const;
   /**
-   * Enable or disable short PLCP preambles.
+   * Enable or disable short PHY preambles.
    *
-   * \param enable enable or disable short PLCP preambles
+   * \param enable enable or disable short PHY preambles
    */
   void SetShortPreambleEnabled (bool enable);
   /**
-   * Return whether the device uses short PLCP preambles.
+   * Return whether the device uses short PHY preambles.
    *
    * \return true if short PHY preambles are enabled,
    *         false otherwise
@@ -1331,7 +1331,7 @@ private:
   bool m_useNonErpProtection;     //!< flag if protection for non-ERP stations against ERP transmissions is enabled
   bool m_useNonHtProtection;      //!< flag if protection for non-HT stations against HT transmissions is enabled
   bool m_useGreenfieldProtection; //!< flag if protection for stations that do not support HT Greenfield format is enabled
-  bool m_shortPreambleEnabled;    //!< flag if short PLCP preamble is enabled
+  bool m_shortPreambleEnabled;    //!< flag if short PHY preamble is enabled
   bool m_shortSlotTimeEnabled;    //!< flag if short slot time is enabled
   bool m_rifsPermitted;           //!< flag if RIFS is enabled
   ProtectionMode m_erpProtectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected

@@ -31,8 +31,8 @@ namespace ns3 {
 /**
  * This class mimics the TXVECTOR which is to be
  * passed to the PHY in order to define the parameters which are to be
- * used for a transmission. See IEEE 802.11-2007 15.2.6 "Transmit PLCP",
- * and also 15.4.4.2 "PMD_SAP peer-to-peer service primitive
+ * used for a transmission. See IEEE 802.11-2016 16.2.5 "Transmit PHY",
+ * and also 8.3.4.1 "PHY SAP peer-to-peer service primitive
  * parameters".
  *
  * If this class is constructed with the constructor that takes no
@@ -50,7 +50,7 @@ namespace ns3 {
  * appropriately.
  *
  * \note the above reference is valid for the DSSS PHY only (clause
- * 15). TXVECTOR is defined also for the other PHYs, however they
+ * 16). TXVECTOR is defined also for the other PHYs, however they
  * don't include the TXPWRLVL explicitly in the TXVECTOR. This is
  * somewhat strange, since all PHYs actually have a
  * PMD_TXPWRLVL.request primitive. We decide to include the power

@@ -347,7 +347,7 @@ WifiRemoteStationManager::GetFragmentationThreshold (void) const
 }
 
 void
-WifiRemoteStationManager::AddSupportedPlcpPreamble (Mac48Address address, bool isShortPreambleSupported)
+WifiRemoteStationManager::AddSupportedPhyPreamble (Mac48Address address, bool isShortPreambleSupported)
 {
   NS_LOG_FUNCTION (this << address << isShortPreambleSupported);
   NS_ASSERT (!address.IsGroup ());

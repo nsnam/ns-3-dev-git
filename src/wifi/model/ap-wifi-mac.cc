@@ -251,7 +251,7 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
 bool
 ApWifiMac::GetShortPreambleEnabled (void) const
 {
-  if (GetErpSupported () || m_phy->GetShortPlcpPreambleSupported ())
+  if (GetErpSupported () || m_phy->GetShortPhyPreambleSupported ())
     {
       for (std::list<Mac48Address>::const_iterator i = m_nonErpStations.begin (); i != m_nonErpStations.end (); i++)
         {
@@ -1118,7 +1118,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               MgtAssocRequestHeader assocReq;
               packet->PeekHeader (assocReq);
               CapabilityInformation capabilities = assocReq.GetCapabilities ();
-              m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
+              m_stationManager->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = assocReq.GetSupportedRates ();
               bool problem = false;
               bool isHtStation = false;
@@ -1314,7 +1314,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
               MgtReassocRequestHeader reassocReq;
               packet->PeekHeader (reassocReq);
               CapabilityInformation capabilities = reassocReq.GetCapabilities ();
-              m_stationManager->AddSupportedPlcpPreamble (from, capabilities.IsShortPreamble ());
+              m_stationManager->AddSupportedPhyPreamble (from, capabilities.IsShortPreamble ());
               SupportedRates rates = reassocReq.GetSupportedRates ();
               bool problem = false;
               bool isHtStation = false;

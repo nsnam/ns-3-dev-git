@@ -196,7 +196,7 @@ public:
    * this class.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
-   * \param relativeMpduStartStop the time window (pair of start and end times) of PLCP payload to focus on
+   * \param relativeMpduStartStop the time window (pair of start and end times) of PHY payload to focus on
    *
    * \return struct of SNR and PER (with PER being evaluated over the provided time window)
    */
@@ -335,13 +335,13 @@ private:
    */
   double CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector) const;
   /**
-   * Calculate the error rate of the given PLCP payload only in the provided time
-   * window (thus enabling per MPDU PER information). The PLCP payload can be divided into
+   * Calculate the error rate of the given PHY payload only in the provided time
+   * window (thus enabling per MPDU PER information). The PHY payload can be divided into
    * multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event the event
    * \param ni the NiChanges
-   * \param window time window (pair of start and end times) of PLCP payload to focus on
+   * \param window time window (pair of start and end times) of PHY payload to focus on
    *
    * \return the error rate of the payload
    */

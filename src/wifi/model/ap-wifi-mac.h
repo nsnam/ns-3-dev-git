@@ -123,7 +123,7 @@ public:
   /**
    * Determine whether short preamble should be enabled or not in the BSS.
    * Typically, true is returned only when the AP and all associated
-   * stations support short PLCP preamble.
+   * stations support short PHY preamble.
    *
    * \returns whether short preamble should be enabled or not in the BSS.
    */

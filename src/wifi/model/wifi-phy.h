@@ -270,9 +270,9 @@ public:
   /**
    * \param txVector the transmission parameters used for this packet
    *
-   * \return the total amount of time this PHY will stay busy for the transmission of the PLCP preamble and PLCP header.
+   * \return the total amount of time this PHY will stay busy for the transmission of the PHY preamble and PHY header.
    */
-  static Time CalculatePlcpPreambleAndHeaderDuration (WifiTxVector txVector);
+  static Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector);
   /**
    *
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
@@ -283,62 +283,62 @@ public:
    *
    * \return the training symbol duration
    */
-  static Time GetPlcpTrainingSymbolDuration (WifiTxVector txVector);
+  static Time GetPhyTrainingSymbolDuration (WifiTxVector txVector);
   /**
    * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
-   *         in Mixed Format and Greenfield format PLCP header
+   *         in Mixed Format and Greenfield format PHY header
    */
-  static WifiMode GetHtPlcpHeaderMode ();
+  static WifiMode GetHtPhyHeaderMode ();
   /**
    * \return the WifiMode used for the transmission of the VHT-STF, VHT-LTF and VHT-SIG-B fields
    */
-  static WifiMode GetVhtPlcpHeaderMode ();
+  static WifiMode GetVhtPhyHeaderMode ();
   /**
    * \return the WifiMode used for the transmission of the HE-STF, HE-LTF and HE-SIG-B fields
    */
-  static WifiMode GetHePlcpHeaderMode ();
+  static WifiMode GetHePhyHeaderMode ();
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the HT-SIG in Mixed Format and Greenfield format PLCP header
+   * \return the duration of the HT-SIG in Mixed Format and Greenfield format PHY header
    */
-  static Time GetPlcpHtSigHeaderDuration (WifiPreamble preamble);
+  static Time GetPhyHtSigHeaderDuration (WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the SIG-A1 in PLCP header
+   * \return the duration of the SIG-A1 in PHY header
    */
-  static Time GetPlcpSigA1Duration (WifiPreamble preamble);
+  static Time GetPhySigA1Duration (WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the SIG-A2 in PLCP header
+   * \return the duration of the SIG-A2 in PHY header
    */
-  static Time GetPlcpSigA2Duration (WifiPreamble preamble);
+  static Time GetPhySigA2Duration (WifiPreamble preamble);
   /**
    * \param preamble the type of preamble
    *
-   * \return the duration of the SIG-B in PLCP header
+   * \return the duration of the SIG-B in PHY header
    */
-  static Time GetPlcpSigBDuration (WifiPreamble preamble);
+  static Time GetPhySigBDuration (WifiPreamble preamble);
   /**
    * \param txVector the transmission parameters used for this packet
    *
-   * \return the WifiMode used for the transmission of the PLCP header
+   * \return the WifiMode used for the transmission of the PHY header
    */
-  static WifiMode GetPlcpHeaderMode (WifiTxVector txVector);
+  static WifiMode GetPhyHeaderMode (WifiTxVector txVector);
   /**
    * \param txVector the transmission parameters used for this packet
    *
-   * \return the duration of the PLCP header
+   * \return the duration of the PHY header
    */
-  static Time GetPlcpHeaderDuration (WifiTxVector txVector);
+  static Time GetPhyHeaderDuration (WifiTxVector txVector);
   /**
    * \param txVector the transmission parameters used for this packet
    *
-   * \return the duration of the PLCP preamble
+   * \return the duration of the PHY preamble
    */
-  static Time GetPlcpPreambleDuration (WifiTxVector txVector);
+  static Time GetPhyPreambleDuration (WifiTxVector txVector);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
@@ -1528,17 +1528,17 @@ public:
    */
   bool GetGreenfield (void) const;
   /**
-   * Enable or disable short PLCP preamble.
+   * Enable or disable short PHY preamble.
    *
-   * \param preamble sets whether short PLCP preamble is supported or not
+   * \param preamble sets whether short PHY preamble is supported or not
    */
-  void SetShortPlcpPreambleSupported (bool preamble);
+  void SetShortPhyPreambleSupported (bool preamble);
   /**
-   * Return whether short PLCP preamble is supported.
+   * Return whether short PHY preamble is supported.
    *
-   * \returns if short PLCP preamble is supported or not
+   * \returns if short PHY preamble is supported or not
    */
-  bool GetShortPlcpPreambleSupported (void) const;
+  bool GetShortPhyPreambleSupported (void) const;
 
   /**
    * Sets the error rate model.
@@ -1671,7 +1671,7 @@ protected:
   uint32_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
 
   EventId m_endRxEvent;                //!< the end of receive event
-  EventId m_endPlcpRxEvent;            //!< the end of PLCP receive event
+  EventId m_endPhyRxEvent;             //!< the end of PHY receive event
   EventId m_endPreambleDetectionEvent; //!< the end of preamble detection event
 
 
@@ -1968,7 +1968,7 @@ private:
 
   bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
   bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)
-  bool     m_shortPreamble;      //!< Flag if short PLCP preamble is supported
+  bool     m_shortPreamble;      //!< Flag if short PHY preamble is supported
 
   Time m_guardInterval; //!< Supported HE guard interval (deprecated)
 

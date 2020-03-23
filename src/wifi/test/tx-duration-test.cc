@@ -49,7 +49,7 @@ private:
    * Check if the payload tx duration returned by InterferenceHelper
    * corresponds to a known value of the pay
    *
-   * @param size size of payload in octets (includes everything after the PLCP header)
+   * @param size size of payload in octets (includes everything after the PHY header)
    * @param payloadMode the WifiMode used for the transmission
    * @param channelWidth the channel width used for the transmission (in MHz)
    * @param guardInterval the guard interval duration used for the transmission (in nanoseconds)
@@ -64,7 +64,7 @@ private:
    * Check if the overall tx duration returned by InterferenceHelper
    * corresponds to a known value of the pay
    *
-   * @param size size of payload in octets (includes everything after the PLCP header)
+   * @param size size of payload in octets (includes everything after the PHY header)
    * @param payloadMode the WifiMode used for the transmission
    * @param channelWidth the channel width used for the transmission (in MHz)
    * @param guardInterval the guard interval duration used for the transmission (in nanoseconds)
@@ -212,7 +212,7 @@ TxDurationTest::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11b CCK duration failed");
 
-  //Similar, but we add PLCP preamble and header durations
+  //Similar, but we add PHY preamble and header durations
   //and we test different rates.
   //The payload durations for modes other than 11mbb have been
   //calculated by hand according to  IEEE Std 802.11-2007 18.2.3.5

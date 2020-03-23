@@ -1132,7 +1132,7 @@ CapabilityInformation
 StaWifiMac::GetCapabilities (void) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreambleSupported () || GetErpSupported ());
+  capabilities.SetShortPreamble (m_phy->GetShortPhyPreambleSupported () || GetErpSupported ());
   capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
   if (GetPcfSupported ())
     {

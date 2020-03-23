@@ -49,7 +49,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_HR_DSSS:
         {
           m_dsssSig.SetRate (txVector.GetMode ().GetDataRate (22));
-          Time psduDuration = ppduDuration - WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          Time psduDuration = ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           m_dsssSig.SetLength (psduDuration.GetMicroSeconds ());
           break;
         }
@@ -83,7 +83,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
           m_vhtSig.SetMuFlag (m_preamble == WIFI_PREAMBLE_VHT_MU);
           m_vhtSig.SetChannelWidth (m_channelWidth);
           m_vhtSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
-          uint32_t nSymbols = (static_cast<double> ((ppduDuration - WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
+          uint32_t nSymbols = (static_cast<double> ((ppduDuration - WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector)).GetNanoSeconds ()) / (3200 + txVector.GetGuardInterval ()));
           if (txVector.GetGuardInterval () == 400)
             {
               m_vhtSig.SetShortGuardIntervalDisambiguation ((nSymbols % 10) == 9);
@@ -535,7 +535,7 @@ WifiPpdu::GetTxDuration (void) const
     {
       case WIFI_MOD_CLASS_DSSS:
       case WIFI_MOD_CLASS_HR_DSSS:
-          ppduDuration = MicroSeconds (m_dsssSig.GetLength ()) + WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          ppduDuration = MicroSeconds (m_dsssSig.GetLength ()) + WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           break;
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
@@ -547,7 +547,7 @@ WifiPpdu::GetTxDuration (void) const
       case WIFI_MOD_CLASS_VHT:
         {
           Time tSymbol = NanoSeconds (3200 + txVector.GetGuardInterval ());
-          Time preambleDuration = WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (m_lSig.GetLength () + 3) / 3)) * 4) + 20);
           uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds ()) / tSymbol.GetNanoSeconds ());
           if (m_vhtSig.GetShortGuardInterval () && m_vhtSig.GetShortGuardIntervalDisambiguation ())
@@ -560,7 +560,7 @@ WifiPpdu::GetTxDuration (void) const
       case WIFI_MOD_CLASS_HE:
         {
           Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
-          Time preambleDuration = WifiPhy::CalculatePlcpPreambleAndHeaderDuration (txVector);
+          Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           uint8_t sigExtension = 0;
           if (Is2_4Ghz (m_frequency))
             {

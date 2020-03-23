@@ -42,7 +42,7 @@
 //
 // The example compares first g only and mixed b/g cases with various configurations depending on the following parameters:
 // - protection mode that is configured on the AP;
-// - whether short PLCP is supported by the 802.11b station;
+// - whether short PPDU format is supported by the 802.11b station;
 // - whether short slot time is supported by both the 802.11g station and the AP.
 //
 // The example then compares HT only and mixed HT/non-HT cases with various configurations depending on the following parameters:
@@ -75,7 +75,7 @@ struct Parameters
   bool enableErpProtection;
   std::string erpProtectionMode;
   bool enableShortSlotTime;
-  bool enableShortPlcpPreamble;
+  bool enableShortPhyPreamble;
   WifiPhyStandard apType;
   bool apSupportsGreenfield;
   bool rifsSupported;
@@ -121,7 +121,7 @@ Experiment::Run (Parameters params)
             << "\n\t enableErpProtection=" << params.enableErpProtection
             << "\n\t erpProtectionMode=" << params.erpProtectionMode
             << "\n\t enableShortSlotTime=" << params.enableShortSlotTime
-            << "\n\t enableShortPlcpPreamble=" << params.enableShortPlcpPreamble
+            << "\n\t enableShortPhyPreamble=" << params.enableShortPhyPreamble
             << "\n\t apType=" << apTypeString
             << "\n\t apSupportsGreenfield=" << params.apSupportsGreenfield
             << "\n\t rifsSupported=" << params.rifsSupported
@@ -177,8 +177,8 @@ Experiment::Run (Parameters params)
                "Ssid", SsidValue (ssid),
                "ShortSlotTimeSupported", BooleanValue (params.enableShortSlotTime));
 
-  // Configure the PLCP preamble type: long or short
-  phy.Set ("ShortPlcpPreambleSupported", BooleanValue (params.enableShortPlcpPreamble));
+  // Configure the PHY preamble type: long or short
+  phy.Set ("ShortPlcpPreambleSupported", BooleanValue (params.enableShortPhyPreamble));
 
   NetDeviceContainer bStaDevice;
   bStaDevice = wifi.Install (phy, mac, wifiBStaNodes);
@@ -399,7 +399,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.erpProtectionMode = "Cts-To-Self";
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211g;
   params.apSupportsGreenfield = false;
   params.rifsSupported = false;
@@ -440,7 +440,7 @@ int main (int argc, char *argv[])
   params.testName = "g only with short slot time enabled";
   params.enableErpProtection = false;
   params.enableShortSlotTime = true;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.nWifiB = 0;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 29 || throughput > 30))
@@ -453,7 +453,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed b/g with all g features disabled";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 22.5 || throughput > 23.5))
@@ -466,7 +466,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed b/g with short plcp preamble enabled";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = true;
+  params.enableShortPhyPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 22.5 || throughput > 23.5))
@@ -480,7 +480,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = true;
   params.erpProtectionMode = "Rts-Cts";
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 19 || throughput > 20))
@@ -493,7 +493,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed b/g with short plcp preamble enabled using RTS-CTS protection";
   params.enableErpProtection = true;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = true;
+  params.enableShortPhyPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 19 || throughput > 20))
@@ -507,7 +507,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = true;
   params.erpProtectionMode = "Cts-To-Self";
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 20.5 || throughput > 21.5))
@@ -520,7 +520,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed b/g with short plcp preamble enabled using CTS-TO-SELF protection";
   params.enableErpProtection = true;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = true;
+  params.enableShortPhyPreamble = true;
   params.nWifiB = 1;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 20.5 || throughput > 21.5))
@@ -533,7 +533,7 @@ int main (int argc, char *argv[])
   params.testName = "HT GF not supported";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
@@ -555,7 +555,7 @@ int main (int argc, char *argv[])
   params.testName = "HT only with GF used";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
@@ -577,7 +577,7 @@ int main (int argc, char *argv[])
   params.testName = "HT only with GF allowed but disabled by protection";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
@@ -599,7 +599,7 @@ int main (int argc, char *argv[])
   params.testName = "HT only with GF not supported by the receiver";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
@@ -621,7 +621,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed HT/non-HT with GF enabled";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
@@ -643,7 +643,7 @@ int main (int argc, char *argv[])
   params.testName = "HT only with RIFS enabled";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.rifsSupported = true;
@@ -667,7 +667,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed HT/non-HT with RIFS enabled but not forbidden";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.rifsSupported = true;
@@ -691,7 +691,7 @@ int main (int argc, char *argv[])
   params.testName = "Mixed HT/non-HT with RIFS enabled but forbidden";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
-  params.enableShortPlcpPreamble = false;
+  params.enableShortPhyPreamble = false;
   params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.rifsSupported = true;
