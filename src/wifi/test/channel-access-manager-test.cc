@@ -42,8 +42,8 @@ public:
   /**
    * Constructor
    *
-   * \param test the test DCF manager
-   * \param i the DCF state
+   * \param test the test channel access manager
+   * \param i the index of the Txop
    */
   TxopTest (ChannelAccessManagerTest<TxopType> *test, uint32_t i);
 
@@ -72,7 +72,7 @@ private:
   typedef std::list<struct ExpectedBackoff> ExpectedBackoffs; //!< expected backoffs typedef
 
   ExpectedBackoffs m_expectedInternalCollision; //!< expected backoff due to an internal collision
-  ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal colllision)
+  ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal collision)
   ExpectedGrants m_expectedGrants; //!< expected grants
 
   /**
@@ -85,11 +85,11 @@ private:
    */
   void NotifyAccessRequested (void);
   /**
-   * Notify the DCF that access has been granted.
+   * Notify the Txop that access has been granted.
    */
   void NotifyAccessGranted (void);
   /**
-   * Notify the DCF that internal collision has occurred.
+   * Notify the Txop that internal collision has occurred.
    */
   void NotifyInternalCollision (void);
   /**
@@ -97,8 +97,8 @@ private:
    */
   void GenerateBackoff (void);
   /**
-   * Check if the DCF has frames to transmit.
-   * \return true if the DCF has frames to transmit.
+   * Check if the Txop has frames to transmit.
+   * \return true if the Txop has frames to transmit.
    */
   bool HasFramesToTransmit (void);
   /**
@@ -116,7 +116,7 @@ private:
   void NotifyWakeUp (void);
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
-  uint32_t m_i; //!< the DCF state
+  uint32_t m_i; //!< the index of the Txop
   bool m_accessRequested; //!< true if access requested
 };
 
@@ -148,7 +148,7 @@ public:
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief Dcf Manager Test
+ * \brief Channel Access Manager Test
  */
 template <typename TxopType>
 class ChannelAccessManagerTest : public TestCase
@@ -159,22 +159,22 @@ public:
 
   /**
    * Notify access granted function
-   * \param i the DCF state
+   * \param i the index of the Txop
    */
   void NotifyAccessGranted (uint32_t i);
   /**
    * Notify internal collision function
-   * \param i the DCF state
+   * \param i the index of the Txop
    */
   void NotifyInternalCollision (uint32_t i);
   /**
    * Generate backoff function
-   * \param i the DCF state
+   * \param i the index of the Txop
    */
   void GenerateBackoff (uint32_t i);
   /**
    * Notify channel switching function
-   * \param i the DCF state
+   * \param i the index of the Txop
    */
   void NotifyChannelSwitching (uint32_t i);
 
@@ -185,33 +185,33 @@ private:
    * \param slotTime the slot time
    * \param sifs the SIFS
    * \param eifsNoDifsNoSifs the EIFS no DIFS no SIFS
-   * \param ackTimeoutValue the ack timeout value
+   * \param ackTimeoutValue the Ack timeout value
    */
   void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue = 20);
   /**
-   * Add DCF state function
+   * Add Txop function
    * \param aifsn the AIFSN
    */
-  void AddDcfState (uint32_t aifsn);
+  void AddTxop (uint32_t aifsn);
   /// End test function
   void EndTest (void);
   /**
    * Expect internal collision function
-   * \param time the expectedtime
+   * \param time the expected time
    * \param nSlots the number of slots
    * \param from the expected from
    */
   void ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from);
   /**
    * Expect generate backoff function
-   * \param time the expectedtime
+   * \param time the expected time
    * \param nSlots the number of slots
    * \param from the expected from
    */
   void ExpectBackoff (uint64_t time, uint32_t nSlots, uint32_t from);
   /**
    * Schedule a check that the channel access manager is busy or idle
-   * \param time the expectedtime
+   * \param time the expected time
    * \param busy whether the manager is expected to be busy
    */
   void ExpectBusy (uint64_t time, bool busy);
@@ -221,8 +221,8 @@ private:
    */
   void DoCheckBusy (bool busy);
   /**
-   * Add receive ok event function
-   * \param at
+   * Add receive OK event function
+   * \param at the event time
    * \param duration the duration
    */
   void AddRxOkEvt (uint64_t at, uint64_t duration);
@@ -264,7 +264,7 @@ private:
    */
   void AddNavStart (uint64_t at, uint64_t duration);
   /**
-   * Add ack timeout reset function
+   * Add Ack timeout reset function
    * \param at the event time
    */
   void AddAckTimeoutReset (uint64_t at);
@@ -273,33 +273,33 @@ private:
    * \param at the event time
    * \param txTime the transmit time
    * \param expectedGrantTime the expected grant time
-   * \param from
+   * \param from the index of the requesting Txop
    */
   void AddAccessRequest (uint64_t at, uint64_t txTime,
                          uint64_t expectedGrantTime, uint32_t from);
   /**
-   * Add access request with ack timeout
+   * Add access request with Ack timeout
    * \param at time to schedule DoAccessRequest event
-   * \param txTime DoAccessRequest txTime
-   * \param expectedGrantTime DoAccessRequest expectedGrantTime
-   * \param from DoAccessRequest TxopTest
+   * \param txTime the transmit time
+   * \param expectedGrantTime the expected grant time
+   * \param from the index of the requesting Txop
    */
   void AddAccessRequestWithAckTimeout (uint64_t at, uint64_t txTime,
                                        uint64_t expectedGrantTime, uint32_t from);
   /**
    * Add access request with successful ack
    * \param at time to schedule DoAccessRequest event
-   * \param txTime DoAccessRequest txTime
-   * \param expectedGrantTime DoAccessRequest expectedGrantTime
-   * \param ackDelay is delay of the ack after txEnd
-   * \param from DoAccessRequest TxopTest
+   * \param txTime the transmit time
+   * \param expectedGrantTime the expected grant time
+   * \param ackDelay the delay of the Ack after txEnd
+   * \param from the index of the requesting Txop
    */
   void AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime,
                                            uint64_t expectedGrantTime, uint32_t ackDelay, uint32_t from);
   /**
-   * Add access request with successful ack
-   * \param txTime DoAccessRequest txTime
-   * \param expectedGrantTime DoAccessRequest expectedGrantTime
+   * Add access request with successful Ack
+   * \param txTime the transmit time
+   * \param expectedGrantTime the expected grant time
    * \param state TxopTest
    */
   void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<TxopTest<TxopType>> state);
@@ -325,9 +325,9 @@ private:
   typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
   Ptr<MacLowStub> m_low; //!< the MAC low stubbed
-  Ptr<ChannelAccessManager> m_ChannelAccessManager; //!< the DCF manager
-  TxopTests m_txop; //!< the TXOP
-  uint32_t m_ackTimeoutValue; //!< the ack timeout value
+  Ptr<ChannelAccessManager> m_ChannelAccessManager; //!< the channel access manager
+  TxopTests m_txop; //!< the vector of Txop test instances
+  uint32_t m_ackTimeoutValue; //!< the Ack timeout value
 };
 
 template <typename TxopType>
@@ -544,7 +544,7 @@ ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs,
 
 template <typename TxopType>
 void
-ChannelAccessManagerTest<TxopType>::AddDcfState (uint32_t aifsn)
+ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
 {
   Ptr<TxopTest<TxopType>> txop = CreateObject<TxopTest<TxopType>> (this, m_txop.size ());
   txop->SetAifsn (aifsn);
@@ -726,7 +726,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //  | sifs | aifsn | tx | idle | sifs | aifsn | tx |
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddAccessRequest (1, 1, 5, 0);
   AddAccessRequest (8, 2, 12, 0);
   EndTest ();
@@ -738,7 +738,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //
 
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddAccessRequest (1, 1, 5, 0);
   AddRxInsideSifsEvt (7, 10);
   AddTxEvt (9, 1);
@@ -755,7 +755,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //       30 request access. backoff slots: 4
 
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (80, 20);
   AddAccessRequest (30, 2, 118, 0);
@@ -769,7 +769,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //       30 request access. backoff slots: 0
 
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (30, 2, 70, 0);
   ExpectBackoff (30, 0, 0); // backoff: 0 slots
@@ -782,7 +782,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //       30 request access. backoff slots: 0
 
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (60, 40);
   AddAccessRequest (30, 2, 110, 0);
@@ -795,7 +795,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //   | rx  | idle | sifs | aifsn | tx |
   //
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (62, 2, 72, 0);
   EndTest ();
@@ -806,7 +806,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //   | rx  | idle | sifs | aifsn | tx |
   //
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (70, 2, 80, 0);
   EndTest ();
@@ -818,7 +818,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //        |      | <------eifs------>|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 102, 0);
   ExpectBackoff (30, 4, 0); //backoff: 4 slots
@@ -832,7 +832,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //                             | sifs + aifsn |
   //             request access 70             80
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (70, 2, 86, 0);
   EndTest ();
@@ -844,7 +844,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //        |
   //       40 force Rx error
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 40, 20); // At time 20, start reception for 40, but force error 20 into frame
   ExpectBusy (41, true); // channel should remain busy for remaining duration
   ExpectBusy (59, true);
@@ -858,7 +858,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //        |      | <--eifs-->|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 2, 101, 0);
   ExpectBackoff (30, 4, 0); //backoff: 4 slots
@@ -873,8 +873,8 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   // DCF1  |    rx     | sifs  | aifsn | aifsn  | aifsn  |     | sifs | aifsn | aifsn | aifsn | bslot |  tx  |
   //                                                                 94      98     102     106     110    112
   StartTest (4, 6, 10);
-  AddDcfState (1); //high priority DCF
-  AddDcfState (3); //low priority DCF
+  AddTxop (1); //high priority DCF
+  AddTxop (3); //low priority DCF
   AddRxOkEvt (20, 40);
   AddAccessRequest (30, 10, 78, 0);
   ExpectBackoff (30, 2, 0); //backoff: 2 slot
@@ -884,71 +884,71 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   EndTest ();
 
   // Test of AckTimeout handling: First queue requests access and ack procedure fails,
-  // inside the ack timeout second queue with higher priority requests access.
+  // inside the Ack timeout second queue with higher priority requests access.
   //
   //            20     26      34       54            74     80
-  // DCF1 - low  | sifs | aifsn |   tx   | ack timeout | sifs |       |
+  // DCF1 - low  | sifs | aifsn |   tx   | Ack timeout | sifs |       |
   // DCF0 - high |                              |      | sifs |  tx   |
   //                                            ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (0); //high priority DCF
-  AddDcfState (2); //low priority DCF
+  AddTxop (0); //high priority DCF
+  AddTxop (2); //low priority DCF
   AddAccessRequestWithAckTimeout (20, 20, 34, 1);
   AddAccessRequest (64, 10, 80, 0);
   EndTest ();
 
   // Test of AckTimeout handling:
   //
-  // First queue requests access and ack is 2 us delayed (got ack interval at the picture),
+  // First queue requests access and Ack is 2 us delayed (got Ack interval at the picture),
   // inside this interval second queue with higher priority requests access.
   //
   //            20     26      34           54        56     62
-  // DCF1 - low  | sifs | aifsn |     tx     | got ack | sifs |       |
+  // DCF1 - low  | sifs | aifsn |     tx     | got Ack | sifs |       |
   // DCF0 - high |                                |    | sifs |  tx   |
   //                                              ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (0); //high priority DCF
-  AddDcfState (2); //low priority DCF
+  AddTxop (0); //high priority DCF
+  AddTxop (2); //low priority DCF
   AddAccessRequestWithSuccessfullAck (20, 20, 34, 2, 1);
   AddAccessRequest (55, 10, 62, 0);
   EndTest ();
 
   //Repeat the same but with one queue:
   //      20     26      34         54     60    62     68      76       80
-  // DCF0  | sifs | aifsn |    tx    | sifs | ack | sifs | aifsn | bslot0 | tx |
+  // DCF0  | sifs | aifsn |    tx    | sifs | Ack | sifs | aifsn | bslot0 | tx |
   //                                           ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (2);
+  AddTxop (2);
   AddAccessRequest (20, 20, 34, 0);
-  AddRxOkEvt (60, 2); // ack
+  AddRxOkEvt (60, 2); // Ack
   AddAccessRequest (61, 10, 80, 0);
   ExpectBackoff (61, 1, 0); // 1 slot
   EndTest ();
 
-  // test simple NAV count. This scenario modelizes a simple DATA+ACK handshake
-  // where the data rate used for the ACK is higher than expected by the DATA source
-  // so, the data exchange completes before the end of nav.
+  // test simple NAV count. This scenario models a simple Data+Ack handshake
+  // where the data rate used for the Ack is higher than expected by the Data source
+  // so, the data exchange completes before the end of NAV.
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddNavStart (60, 15);
   AddRxOkEvt (66, 5);
   AddNavStart (71, 0);
   AddAccessRequest (30, 10, 93, 0);
-  ExpectBackoff (30, 2, 0); //backoff: 2 slot
+  ExpectBackoff (30, 2, 0); //backoff: 2 slots
   EndTest ();
 
-  // test more complex NAV handling by a CF-poll. This scenario modelizes a
-  // simple DATA+ACK handshake interrupted by a CF-poll which resets the
+  // test more complex NAV handling by a CF-poll. This scenario models a
+  // simple Data+Ack handshake interrupted by a CF-poll which resets the
   // NAV counter.
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 40);
   AddNavStart (60, 15);
   AddRxOkEvt (66, 5);
   AddNavReset (71, 2);
   AddAccessRequest (30, 10, 91, 0);
-  ExpectBackoff (30, 2, 0); //backoff: 2 slot
+  ExpectBackoff (30, 2, 0); //backoff: 2 slots
   EndTest ();
 
 
@@ -956,14 +956,14 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //   |    rx    |   idle   | sifs | aifsn |    tx    |
   //                         ^ request access
   StartTest (4, 6, 10);
-  AddDcfState (2);
+  AddTxop (2);
   AddRxOkEvt (20, 40);
   AddAccessRequest (80, 10, 94, 0);
   EndTest ();
 
 
   StartTest (4, 6, 10);
-  AddDcfState (2);
+  AddTxop (2);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (78, 8);
   AddAccessRequest (30, 50, 108, 0);
@@ -977,7 +977,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //  | switching | idle | sifs | aifsn | tx |
   //                     ^ access request.
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddSwitchingEvt (0, 20);
   AddAccessRequest (21, 1, 25, 0);
   EndTest ();
@@ -988,7 +988,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //        30 busy.   45 access request.
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddSwitchingEvt (20,20);
   AddCcaBusyEvt (30,20);
   ExpectBackoff (45, 2, 0); //backoff: 2 slots
@@ -1000,7 +1000,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //                             ^ access request.
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxStartEvt (20, 40);
   AddSwitchingEvt (30, 20);
   AddAccessRequest (51, 1, 55, 0);
@@ -1011,7 +1011,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //                             ^ access request.
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddCcaBusyEvt (20, 40);
   AddSwitchingEvt (30, 20);
   AddAccessRequest (51, 1, 55, 0);
@@ -1022,19 +1022,19 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //                              ^ access request.
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddNavStart (20,40);
   AddSwitchingEvt (30,20);
   AddAccessRequest (51, 1, 55, 0);
   EndTest ();
 
   //  20     23      24      44             54          59     60     63      64   65
-  //   | sifs | aifsn |  tx   | ack timeout  | switching | idle | sifs | aifsn | tx |
+  //   | sifs | aifsn |  tx   | Ack timeout  | switching | idle | sifs | aifsn | tx |
   //                                 |                          |
   //                                49 access request.          ^ access request.
   //
   StartTest (1, 3, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddAccessRequestWithAckTimeout (20, 20, 24, 0);
   AddAccessRequest (49, 1, 54, 0);
   AddSwitchingEvt (54, 5);
@@ -1047,7 +1047,7 @@ ChannelAccessManagerTest<Txop>::DoRun (void)
   //       30 access request.                                             ^ access request.
   //
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20,40);
   AddAccessRequest (30, 2, 80, 0);
   ExpectBackoff (30, 4, 0); //backoff: 4 slots
@@ -1069,7 +1069,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                |
   //               52 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 30);
   AddAccessRequest (52, 20, 60, 0);
   EndTest ();
@@ -1080,7 +1080,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                       |
   //                      58 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 30);
   AddAccessRequest (52, 20, 60, 0);
   EndTest ();
@@ -1091,7 +1091,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                               |
   //                              62 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 30);
   AddAccessRequest (62, 20, 64, 0);
   EndTest ();
@@ -1103,7 +1103,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                   |
   //                  55 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 30);
   AddAccessRequest (55, 20, 76, 0);
   EndTest ();
@@ -1115,7 +1115,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                                        |
   //                                       70 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 30);
   AddAccessRequest (70, 20, 76, 0);
   EndTest ();
@@ -1127,7 +1127,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //                                                     |
   //                                                    82 request access
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxErrorEvt (20, 30);
   AddAccessRequest (82, 20, 84, 0);
   EndTest ();
@@ -1139,7 +1139,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //     30 request access.    decrement  decrement  decrement  decrement
   //        backoff slots: 4    slots: 3   slots: 2   slots: 1   slots: 0
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 30);
   AddAccessRequest (30, 20, 76, 0);
   ExpectBackoff (30, 4, 0);
@@ -1152,7 +1152,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   //     30 request access.    decrement                    decrement  decrement
   //        backoff slots: 3    slots: 2                     slots: 1   slots: 0
   StartTest (4, 6, 10);
-  AddDcfState (1);
+  AddTxop (1);
   AddRxOkEvt (20, 30);
   AddRxOkEvt (61, 10);
   AddRxOkEvt (87, 10);
@@ -1165,38 +1165,38 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief Dcf Test Suite
+ * \brief Txop Test Suite
  */
-class DcfTestSuite : public TestSuite
+class TxopTestSuite : public TestSuite
 {
 public:
-  DcfTestSuite ();
+  TxopTestSuite ();
 };
 
-DcfTestSuite::DcfTestSuite ()
+TxopTestSuite::TxopTestSuite ()
   : TestSuite ("wifi-devices-dcf", UNIT)
 {
   AddTestCase (new ChannelAccessManagerTest<Txop>, TestCase::QUICK);
 }
 
-static DcfTestSuite g_dcfTestSuite;
+static TxopTestSuite g_dcfTestSuite;
 
 /**
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief Edca Test Suite
+ * \brief QosTxop Test Suite
  */
-class EdcaTestSuite : public TestSuite
+class QosTxopTestSuite : public TestSuite
 {
 public:
-  EdcaTestSuite ();
+  QosTxopTestSuite ();
 };
 
-EdcaTestSuite::EdcaTestSuite ()
+QosTxopTestSuite::QosTxopTestSuite ()
   : TestSuite ("wifi-devices-edca", UNIT)
 {
   AddTestCase (new ChannelAccessManagerTest<QosTxop>, TestCase::QUICK);
 }
 
-static EdcaTestSuite g_edcaTestSuite;
+static QosTxopTestSuite g_edcaTestSuite;

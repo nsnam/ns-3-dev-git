@@ -101,7 +101,7 @@ public:
   Time GetEifsNoDifs (void) const;
 
   /**
-   * \param dcf a new Txop.
+   * \param txop a new Txop.
    *
    * The ChannelAccessManager does not take ownership of this pointer so, the callee
    * must make sure that the Txop pointer will stay valid as long
@@ -110,7 +110,7 @@ public:
    * has the highest priority, the second Txop added, has the second
    * highest priority, etc.
    */
-  void Add (Ptr<Txop> dcf);
+  void Add (Ptr<Txop> txop);
 
   /**
    * Determine if a new backoff needs to be generated when a packet is queued
@@ -122,7 +122,7 @@ public:
   bool NeedBackoffUponAccess (Ptr<Txop> txop);
 
   /**
-   * \param state a Txop
+   * \param txop a Txop
    * \param isCfPeriod flag whether it is called during the CF period
    *
    * Notify the ChannelAccessManager that a specific Txop needs access to the
@@ -130,29 +130,29 @@ public:
    * timer and, invoking Txop::DoNotifyAccessGranted when the access
    * is granted if it ever gets granted.
    */
-  void RequestAccess (Ptr<Txop> state, bool isCfPeriod = false);
+  void RequestAccess (Ptr<Txop> txop, bool isCfPeriod = false);
 
   /**
    * \param duration expected duration of reception
    *
-   * Notify the DCF that a packet reception started
+   * Notify the Txop that a packet reception started
    * for the expected duration.
    */
   void NotifyRxStartNow (Time duration);
   /**
-   * Notify the DCF that a packet reception was just
+   * Notify the Txop that a packet reception was just
    * completed successfully.
    */
   void NotifyRxEndOkNow (void);
   /**
-   * Notify the DCF that a packet reception was just
+   * Notify the Txop that a packet reception was just
    * completed unsuccessfully.
    */
   void NotifyRxEndErrorNow (void);
   /**
    * \param duration expected duration of transmission
    *
-   * Notify the DCF that a packet transmission was
+   * Notify the Txop that a packet transmission was
    * just started and is expected to last for the specified
    * duration.
    */
@@ -160,31 +160,31 @@ public:
   /**
    * \param duration expected duration of CCA busy period
    *
-   * Notify the DCF that a CCA busy period has just started.
+   * Notify the Txop that a CCA busy period has just started.
    */
   void NotifyMaybeCcaBusyStartNow (Time duration);
   /**
    * \param duration expected duration of channel switching period
    *
-   * Notify the DCF that a channel switching period has just started.
+   * Notify the Txop that a channel switching period has just started.
    * During switching state, new packets can be enqueued in Txop/QosTxop
    * but they won't access to the medium until the end of the channel switching.
    */
   void NotifySwitchingStartNow (Time duration);
   /**
-   * Notify the DCF that the device has been put in sleep mode.
+   * Notify the Txop that the device has been put in sleep mode.
    */
   void NotifySleepNow (void);
   /**
-   * Notify the DCF that the device has been put in off mode.
+   * Notify the Txop that the device has been put in off mode.
    */
   void NotifyOffNow (void);
   /**
-   * Notify the DCF that the device has been resumed from sleep mode.
+   * Notify the Txop that the device has been resumed from sleep mode.
    */
   void NotifyWakeupNow (void);
   /**
-   * Notify the DCF that the device has been resumed from off mode.
+   * Notify the Txop that the device has been resumed from off mode.
    */
   void NotifyOnNow (void);
   /**
@@ -261,20 +261,20 @@ private:
    * Return the time when the backoff procedure
    * started for the given Txop.
    *
-   * \param state the Txop
+   * \param txop the Txop
    *
    * \return the time when the backoff procedure started
    */
-  Time GetBackoffStartFor (Ptr<Txop> state);
+  Time GetBackoffStartFor (Ptr<Txop> txop);
   /**
    * Return the time when the backoff procedure
    * ended (or will ended) for the given Txop.
    *
-   * \param state the Txop
+   * \param txop the Txop
    *
    * \return the time when the backoff procedure ended (or will ended)
    */
-  Time GetBackoffEndFor (Ptr<Txop> state);
+  Time GetBackoffEndFor (Ptr<Txop> txop);
 
   void DoRestartAccessTimeoutIfNeeded (void);
 
@@ -284,22 +284,22 @@ private:
    */
   void AccessTimeout (void);
   /**
-   * Grant access to DCF
+   * Grant access to Txop using DCF/EDCF contention rules
    */
   void DoGrantDcfAccess (void);
   /**
-   * Grant access to PCF
+   * Grant access to Txop using PCF preemption
    *
-   * \param state the Txop
+   * \param txop the Txop
    */
-  void DoGrantPcfAccess (Ptr<Txop> state);
+  void DoGrantPcfAccess (Ptr<Txop> txop);
 
   /**
    * typedef for a vector of Txops
    */
-  typedef std::vector<Ptr<Txop> > States;
+  typedef std::vector<Ptr<Txop>> Txops;
 
-  States m_states;              //!< the DCF states
+  Txops m_txops;                //!< the vector of managed Txops
   Time m_lastAckTimeoutEnd;     //!< the last Ack timeout end time
   Time m_lastCtsTimeoutEnd;     //!< the last CTS timeout end time
   Time m_lastNavStart;          //!< the last NAV start time
