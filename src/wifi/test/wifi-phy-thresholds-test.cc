@@ -355,7 +355,8 @@ WifiPhyThresholdsStrongWifiSignalTest::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (m_rxDropped + m_rxFailure, 0, "Packet reception should have been successfull");
   NS_TEST_ASSERT_MSG_EQ (m_rxSuccess, 1, "Packet should have been successfully received");
-  NS_TEST_ASSERT_MSG_EQ (m_stateChanged, 2, "State should have moved to RX then back to IDLE");
+  NS_TEST_ASSERT_MSG_EQ (m_ccabusyStateCount, 2, "State should have moved to CCA_BUSY once");
+  NS_TEST_ASSERT_MSG_EQ (m_stateChanged, 4, "State should have moved to CCA_BUSY, then to RX and finally back to IDLE");
   NS_TEST_ASSERT_MSG_EQ (m_rxStateCount, 1, "State should have moved to RX once");
   NS_TEST_ASSERT_MSG_EQ (m_idleStateCount, 1, "State should have moved to IDLE once");
 }
@@ -397,7 +398,7 @@ WifiPhyThresholdsStrongForeignSignalTest::DoRun (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_rxDropped + m_rxSuccess + m_rxFailure, 0, "Reception of non-wifi packet should not be triggered");
-  NS_TEST_ASSERT_MSG_EQ (m_ccabusyStateCount, 1, "State should have moved to CCA-BUSY");
+  NS_TEST_ASSERT_MSG_EQ (m_idleStateCount, 1, "State should have moved to CCA-BUSY then back to IDLE");
 }
 
 /**

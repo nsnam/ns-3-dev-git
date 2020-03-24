@@ -153,9 +153,8 @@ public:
    * Start receiving the PHY header of a PPDU (i.e. after the end of receiving the preamble).
    *
    * \param event the event holding incoming PPDU's information
-   * \param headerPayloadDuration the duration needed for the reception of the header and PSDU of the PPDU
    */
-  void StartReceiveHeader (Ptr<Event> event, Time headerPayloadDuration);
+  void StartReceiveHeader (Ptr<Event> event);
 
   /**
    * Continue receiving the PHY header of a PPDU (i.e. after the end of receiving the non-HT header part).

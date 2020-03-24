@@ -210,10 +210,8 @@ public:
   void SwitchFromSleep (Time duration);
   /**
    * Abort current reception
-   *
-   * \param failure flag to indicate whether RX abortion is due to a failure
    */
-  void SwitchFromRxAbort (bool failure);
+  void SwitchFromRxAbort (void);
   /**
    * Switch to off mode.
    */

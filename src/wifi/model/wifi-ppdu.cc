@@ -38,11 +38,11 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
     m_channelWidth (txVector.GetChannelWidth ()),
     m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
   if (!txVector.IsValid ())
     {
       return;
     }
+  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
   switch (m_modulation)
     {
       case WIFI_MOD_CLASS_DSSS:

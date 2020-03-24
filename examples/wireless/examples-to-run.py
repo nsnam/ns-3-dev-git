@@ -48,7 +48,7 @@ cpp_examples = [
     ("wifi-he-network --simulationTime=0.3 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=745", "True", "True"),
     ("wifi-he-network --simulationTime=0.25 --frequency=2.4 --useRts=0 --minExpectedThroughput=6 --maxExpectedThroughput=238", "True", "True"),
     ("wifi-he-network --simulationTime=0.3 --frequency=2.4 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=223", "True", "True"),
-    ("wifi-simple-ht-hidden-stations --simulationTime=1.5 --enableRts=0 --nMpdus=32 --minExpectedThroughput=50 --maxExpectedThroughput=51", "True", "True"),
+    ("wifi-simple-ht-hidden-stations --simulationTime=1 --enableRts=0 --nMpdus=32 --minExpectedThroughput=50 --maxExpectedThroughput=51", "True", "True"),
     ("wifi-simple-ht-hidden-stations --simulationTime=1 --enableRts=1 --nMpdus=32 --minExpectedThroughput=57 --maxExpectedThroughput=58", "True", "True"),
     ("wifi-mixed-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1 --verifyResults=1", "True", "True"),

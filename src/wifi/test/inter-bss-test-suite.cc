@@ -243,10 +243,10 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (6), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, WifiPhyState::IDLE);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (6), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::IDLE);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (6), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, WifiPhyState::IDLE);
-  // All PHYs should be receiving the PHY header if preamble has been detected (always the case in this test).
-  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, WifiPhyState::RX);
-  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::RX);
-  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, WifiPhyState::RX);
+  // All PHYs should be receiving the PHY header (i.e. PHY state is CCA_BUSY) if preamble has been detected (always the case in this test).
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, WifiPhyState::CCA_BUSY);
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::CCA_BUSY);
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, WifiPhyState::CCA_BUSY);
   // PHYs of AP1 and STA1 should be idle if they were reset by OBSS_PD SR, otherwise they should be receiving.
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (50), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::RX);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (50), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::RX);
@@ -257,7 +257,7 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
 
   // AP2 sends another packet 0.1s later.
   Simulator::Schedule (Seconds (2.1), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
-  // STA1 sends a packet 100us later. Even though AP2 is still transmitting, STA1 can transmit simultaneously if it's PHY was reset by OBSS_PD SR.
+  // STA1 sends a packet 90us later. Even though AP2 is still transmitting, STA1 can transmit simultaneously if it's PHY was reset by OBSS_PD SR.
   Simulator::Schedule (Seconds (2.1) + MicroSeconds (90), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
   if (expectPhyReset)
     {
@@ -266,10 +266,10 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
       Simulator::Schedule (Seconds (2.1) + MicroSeconds (89), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
     }
   // Check simultaneous transmissions
-  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::TX : WifiPhyState::RX);
-  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, WifiPhyState::RX);
-  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::RX);
   Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device2, WifiPhyState::TX);
+  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::TX : WifiPhyState::RX);
+  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::RX);
+  Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::CCA_BUSY : WifiPhyState::RX);
 
   // Verify transmit power restrictions are not applied if access to the channel is requested after ignored OBSS transmissions.
 
