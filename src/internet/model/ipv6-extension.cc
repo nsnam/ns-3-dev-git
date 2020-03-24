@@ -315,6 +315,12 @@ TypeId Ipv6ExtensionFragment::GetTypeId ()
     .SetParent<Ipv6Extension> ()
     .SetGroupName ("Internet")
     .AddConstructor<Ipv6ExtensionFragment> ()
+    .AddAttribute ("FragmentExpirationTimeout",
+                   "When this timeout expires, the fragments "
+                   "will be cleared from the buffer.",
+                   TimeValue (Seconds (60)),
+                   MakeTimeAccessor (&Ipv6ExtensionFragment::m_fragmentExpirationTimeout),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -339,6 +345,11 @@ void Ipv6ExtensionFragment::DoDispose ()
     }
 
   m_fragments.clear ();
+  m_timeoutEventList.clear ();
+  if (m_timeoutEvent.IsRunning ())
+    {
+      m_timeoutEvent.Cancel ();
+    }
   Ipv6Extension::DoDispose ();
 }
 
@@ -376,7 +387,7 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet,
   uint32_t identification = fragmentHeader.GetIdentification ();
   Ipv6Address src = ipv6Header.GetSourceAddress ();
 
-  std::pair<Ipv6Address, uint32_t> fragmentsId = std::pair<Ipv6Address, uint32_t> (src, identification);
+  FragmentKey_t fragmentsId = FragmentKey_t (src, identification);
   Ptr<Fragments> fragments;
 
   Ipv6Header ipHeader = ipv6Header;
@@ -387,10 +398,8 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet,
     {
       fragments = Create<Fragments> ();
       m_fragments.insert (std::make_pair (fragmentsId, fragments));
-      EventId timeout = Simulator::Schedule (Seconds (60),
-                                             &Ipv6ExtensionFragment::HandleFragmentsTimeout, this,
-                                             fragmentsId, ipHeader);
-      fragments->SetTimeoutEventId (timeout);
+      FragmentsTimeoutsListI_t iter = SetTimeout (fragmentsId, ipHeader);
+      fragments->SetTimeoutIter (iter);
     }
   else
     {
@@ -409,7 +418,8 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet,
   if (fragments->IsEntire ())
     {
       packet = fragments->GetPacket ();
-      fragments->CancelTimeout ();
+
+      m_timeoutEventList.erase (fragments->GetTimeoutIter ());
       m_fragments.erase (fragmentsId);
       stopProcessing = false;
     }
@@ -466,7 +476,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
               hopbyhopHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
             }
 
-          unfragmentablePart.push_back (std::pair<Ipv6ExtensionHeader *, uint8_t> (hopbyhopHeader, Ipv6Header::IPV6_EXT_HOP_BY_HOP));
+          unfragmentablePart.emplace_back (hopbyhopHeader, Ipv6Header::IPV6_EXT_HOP_BY_HOP);
           unfragmentablePartSize += extensionHeaderLength;
         }
       else if (nextHeader == Ipv6Header::IPV6_EXT_ROUTING)
@@ -490,7 +500,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
               routingHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
             }
 
-          unfragmentablePart.push_back (std::pair<Ipv6ExtensionHeader *, uint8_t> (routingHeader, Ipv6Header::IPV6_EXT_ROUTING));
+          unfragmentablePart.emplace_back (routingHeader, Ipv6Header::IPV6_EXT_ROUTING);
           unfragmentablePartSize += extensionHeaderLength;
         }
       else if (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION)
@@ -510,7 +520,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
               destinationHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
             }
 
-          unfragmentablePart.push_back (std::pair<Ipv6ExtensionHeader *, uint8_t> (destinationHeader, Ipv6Header::IPV6_EXT_DESTINATION));
+          unfragmentablePart.emplace_back (destinationHeader, Ipv6Header::IPV6_EXT_DESTINATION);
           unfragmentablePartSize += extensionHeaderLength;
         }
     }
@@ -581,7 +591,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
       oss << ipv6Header;
       fragment->Print (oss);
 
-      listFragments.push_back (Ipv6PayloadHeaderPair (fragment, ipv6Header));
+      listFragments.emplace_back (fragment, ipv6Header);
     }
   while (moreFragment);
 
@@ -594,7 +604,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, Ipv6Header ipv6Hea
 }
 
 
-void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint32_t> fragmentsId,
+void Ipv6ExtensionFragment::HandleFragmentsTimeout (FragmentKey_t fragmentsId,
                                                     Ipv6Header ipHeader)
 {
   Ptr<Fragments> fragments;
@@ -620,6 +630,44 @@ void Ipv6ExtensionFragment::HandleFragmentsTimeout (std::pair<Ipv6Address, uint3
   // clear the buffers
   m_fragments.erase (fragmentsId);
 }
+
+
+Ipv6ExtensionFragment::FragmentsTimeoutsListI_t Ipv6ExtensionFragment::SetTimeout (FragmentKey_t key, Ipv6Header ipHeader)
+{
+  if (m_timeoutEventList.empty ())
+    {
+      m_timeoutEvent = Simulator::Schedule (m_fragmentExpirationTimeout, &Ipv6ExtensionFragment::HandleTimeout, this);
+    }
+  m_timeoutEventList.emplace_back (Simulator::Now () + m_fragmentExpirationTimeout, key, ipHeader);
+
+  Ipv6ExtensionFragment::FragmentsTimeoutsListI_t iter = --m_timeoutEventList.end();
+
+  return (iter);
+}
+
+void Ipv6ExtensionFragment::HandleTimeout (void)
+{
+  Time now = Simulator::Now ();
+
+  while (!m_timeoutEventList.empty () && std::get<0> (*m_timeoutEventList.begin ()) == now)
+    {
+      HandleFragmentsTimeout (std::get<1> (*m_timeoutEventList.begin ()),
+                              std::get<2> (*m_timeoutEventList.begin ()));
+      m_timeoutEventList.pop_front ();
+    }
+
+  if (m_timeoutEventList.empty ())
+    {
+      return;
+    }
+
+  Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
+  m_timeoutEvent = Simulator::Schedule (difference, &Ipv6ExtensionFragment::HandleTimeout, this);
+
+  return;
+}
+
+
 
 Ipv6ExtensionFragment::Fragments::Fragments ()
   : m_moreFragment (0)
@@ -718,16 +766,15 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPartialPacket () const
   return p;
 }
 
-void Ipv6ExtensionFragment::Fragments::SetTimeoutEventId (EventId event)
+void Ipv6ExtensionFragment::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t iter)
 {
-  m_timeoutEventId = event;
+  m_timeoutIter = iter;
   return;
 }
 
-void Ipv6ExtensionFragment::Fragments::CancelTimeout ()
+Ipv6ExtensionFragment::FragmentsTimeoutsListI_t Ipv6ExtensionFragment::Fragments::GetTimeoutIter ()
 {
-  m_timeoutEventId.Cancel ();
-  return;
+  return m_timeoutIter;
 }
 
 

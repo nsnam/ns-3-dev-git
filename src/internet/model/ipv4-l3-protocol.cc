@@ -324,16 +324,12 @@ Ipv4L3Protocol::DoDispose (void)
       it->second = 0;
     }
 
-  for (MapFragmentsTimers_t::iterator it = m_fragmentsTimers.begin (); it != m_fragmentsTimers.end (); it++)
-    {
-      if (it->second.IsRunning ())
-        {
-          it->second.Cancel ();
-        }
-    }
-
   m_fragments.clear ();
-  m_fragmentsTimers.clear ();
+  m_timeoutEventList.clear ();
+  if (m_timeoutEvent.IsRunning ())
+    {
+      m_timeoutEvent.Cancel ();
+    }
 
   if (m_cleanDpd.IsRunning ())
     {
@@ -1507,7 +1503,7 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Head
 
       NS_LOG_LOGIC ("New fragment " << *fragment);
 
-      listFragments.push_back (Ipv4PayloadHeaderPair (fragment, fragmentHeader));
+      listFragments.emplace_back (fragment, fragmentHeader);
 
       offset += currentFragmentablePartSize;
 
@@ -1524,7 +1520,7 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
 
   uint64_t addressCombination = uint64_t (ipHeader.GetSource ().Get ()) << 32 | uint64_t (ipHeader.GetDestination ().Get ());
   uint32_t idProto = uint32_t (ipHeader.GetIdentification ()) << 16 | uint32_t (ipHeader.GetProtocol ());
-  std::pair<uint64_t, uint32_t> key;
+  FragmentKey_t key;
   bool ret = false;
   Ptr<Packet> p = packet->Copy ();
 
@@ -1538,9 +1534,9 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
     {
       fragments = Create<Fragments> ();
       m_fragments.insert (std::make_pair (key, fragments));
-      m_fragmentsTimers[key] = Simulator::Schedule (m_fragmentExpirationTimeout,
-                                                    &Ipv4L3Protocol::HandleFragmentsTimeout, this,
-                                                    key, ipHeader, iif);
+
+      FragmentsTimeoutsListI_t iter = SetTimeout (key, ipHeader, iif);
+      fragments->SetTimeoutIter (iter);
     }
   else
     {
@@ -1554,14 +1550,9 @@ Ipv4L3Protocol::ProcessFragment (Ptr<Packet>& packet, Ipv4Header& ipHeader, uint
   if ( fragments->IsEntire () )
     {
       packet = fragments->GetPacket ();
+      m_timeoutEventList.erase (fragments->GetTimeoutIter ());
       fragments = 0;
       m_fragments.erase (key);
-      if (m_fragmentsTimers[key].IsRunning ())
-        {
-          NS_LOG_LOGIC ("Stopping WaitFragmentsTimer at " << Simulator::Now ().GetSeconds () << " due to complete packet");
-          m_fragmentsTimers[key].Cancel ();
-        }
-      m_fragmentsTimers.erase (key);
       ret = true;
     }
 
@@ -1706,7 +1697,21 @@ Ipv4L3Protocol::Fragments::GetPartialPacket () const
 }
 
 void
-Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4Header & ipHeader, uint32_t iif)
+Ipv4L3Protocol::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t iter)
+{
+  m_timeoutIter = iter;
+  return;
+}
+
+Ipv4L3Protocol::FragmentsTimeoutsListI_t
+Ipv4L3Protocol::Fragments::GetTimeoutIter ()
+{
+  return m_timeoutIter;
+}
+
+
+void
+Ipv4L3Protocol::HandleFragmentsTimeout (FragmentKey_t key, Ipv4Header & ipHeader, uint32_t iif)
 {
   NS_LOG_FUNCTION (this << &key << &ipHeader << iif);
 
@@ -1725,7 +1730,6 @@ Ipv4L3Protocol::HandleFragmentsTimeout (std::pair<uint64_t, uint32_t> key, Ipv4H
   it->second = 0;
 
   m_fragments.erase (key);
-  m_fragmentsTimers.erase (key);
 }
 
 bool
@@ -1834,5 +1838,44 @@ Ipv4L3Protocol::RemoveDuplicates (void)
     }
 }
 
+Ipv4L3Protocol::FragmentsTimeoutsListI_t
+Ipv4L3Protocol::SetTimeout (FragmentKey_t key, Ipv4Header ipHeader, uint32_t iif)
+{
+  Time now = Simulator::Now () + m_fragmentExpirationTimeout;
+
+  if (m_timeoutEventList.empty ())
+    {
+      m_timeoutEvent = Simulator::Schedule (m_fragmentExpirationTimeout, &Ipv4L3Protocol::HandleTimeout, this);
+    }
+  m_timeoutEventList.emplace_back (now, key, ipHeader, iif);
+
+  Ipv4L3Protocol::FragmentsTimeoutsListI_t iter = --m_timeoutEventList.end();
+
+  return (iter);
+}
+
+void
+Ipv4L3Protocol::HandleTimeout (void)
+{
+  Time now = Simulator::Now ();
+
+  while (!m_timeoutEventList.empty () && std::get<0> (*m_timeoutEventList.begin ()) == now)
+    {
+      HandleFragmentsTimeout (std::get<1> (*m_timeoutEventList.begin ()),
+                              std::get<2> (*m_timeoutEventList.begin ()),
+                              std::get<3> (*m_timeoutEventList.begin ()));
+      m_timeoutEventList.pop_front ();
+    }
+
+  if (m_timeoutEventList.empty ())
+    {
+      return;
+    }
+
+  Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
+  m_timeoutEvent = Simulator::Schedule (difference, &Ipv4L3Protocol::HandleTimeout, this);
+
+  return;
+}
 
 } // namespace ns3

@@ -173,11 +173,11 @@ void SixLowPanNetDevice::DoDispose ()
   m_netDevice = 0;
   m_node = 0;
 
-  for (MapFragmentsTimersI_t iter = m_fragmentsTimers.begin (); iter != m_fragmentsTimers.end (); iter++)
+  m_timeoutEventList.clear ();
+  if (m_timeoutEvent.IsRunning ())
     {
-      iter->second.Cancel ();
+      m_timeoutEvent.Cancel ();
     }
-  m_fragmentsTimers.clear ();
 
   for (MapFragmentsI_t iter = m_fragments.begin (); iter != m_fragments.end (); iter++)
     {
@@ -1962,7 +1962,7 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
   NS_LOG_FUNCTION ( this << *packet );
   SixLowPanFrag1 frag1Header;
   SixLowPanFragN fragNHeader;
-  FragmentKey key;
+  FragmentKey_t key;
   uint16_t packetSize;
   key.first = std::pair<Address, Address> (src, dst);
 
@@ -2028,16 +2028,8 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
       // erase the oldest packet.
       if ( m_fragmentReassemblyListSize && (m_fragments.size () >= m_fragmentReassemblyListSize) )
         {
-          MapFragmentsTimers_t::iterator iter;
-          MapFragmentsTimers_t::iterator iterFound = m_fragmentsTimers.begin ();
-          for ( iter = m_fragmentsTimers.begin (); iter != m_fragmentsTimers.end (); iter++)
-            {
-              if ( iter->second.GetTs () < iterFound->second.GetTs () )
-                {
-                  iterFound = iter;
-                }
-            }
-          FragmentKey oldestKey = iterFound->first;
+          FragmentsTimeoutsListI_t iter = m_timeoutEventList.begin ();
+          FragmentKey_t oldestKey = std::get<1> (*iter);
 
           std::list< Ptr<Packet> > storedFragments = m_fragments[oldestKey]->GetFraments ();
           for (std::list< Ptr<Packet> >::iterator fragIter = storedFragments.begin ();
@@ -2046,8 +2038,7 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
               m_dropTrace (DROP_FRAGMENT_BUFFER_FULL, *fragIter, m_node->GetObject<SixLowPanNetDevice> (), GetIfIndex ());
             }
 
-          m_fragmentsTimers[oldestKey].Cancel ();
-          m_fragmentsTimers.erase (oldestKey);
+          m_timeoutEventList.erase (m_fragments[oldestKey]->GetTimeoutIter ());
           m_fragments[oldestKey] = 0;
           m_fragments.erase (oldestKey);
 
@@ -2056,9 +2047,9 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
       fragments->SetPacketSize (packetSize);
       m_fragments.insert (std::make_pair (key, fragments));
       uint32_t ifIndex = GetIfIndex ();
-      m_fragmentsTimers[key] = Simulator::Schedule (m_fragmentExpirationTimeout,
-                                                    &SixLowPanNetDevice::HandleFragmentsTimeout, this,
-                                                    key, ifIndex);
+
+      FragmentsTimeoutsListI_t iter = SetTimeout (key, ifIndex);
+      fragments->SetTimeoutIter (iter);
     }
   else
     {
@@ -2083,14 +2074,9 @@ bool SixLowPanNetDevice::ProcessFragment (Ptr<Packet>& packet, Address const &sr
       packet->RemoveHeader (frag1Header);
 
       NS_LOG_LOGIC ("Rebuilt packet. Size " << packet->GetSize () << " - " << *packet);
+      m_timeoutEventList.erase (fragments->GetTimeoutIter ());
       fragments = 0;
       m_fragments.erase (key);
-      if (m_fragmentsTimers[key].IsRunning ())
-        {
-          NS_LOG_LOGIC ("Stopping 6LoWPAN WaitFragmentsTimer at " << Simulator::Now ().GetSeconds () << " due to complete packet");
-          m_fragmentsTimers[key].Cancel ();
-        }
-      m_fragmentsTimers.erase (key);
       return true;
     }
 
@@ -2220,7 +2206,20 @@ std::list< Ptr<Packet> > SixLowPanNetDevice::Fragments::GetFraments () const
   return fragments;
 }
 
-void SixLowPanNetDevice::HandleFragmentsTimeout (FragmentKey key, uint32_t iif)
+void
+SixLowPanNetDevice::Fragments::SetTimeoutIter (FragmentsTimeoutsListI_t iter)
+{
+  m_timeoutIter = iter;
+  return;
+}
+
+SixLowPanNetDevice::FragmentsTimeoutsListI_t
+SixLowPanNetDevice::Fragments::GetTimeoutIter ()
+{
+  return m_timeoutIter;
+}
+
+void SixLowPanNetDevice::HandleFragmentsTimeout (FragmentKey_t key, uint32_t iif)
 {
   NS_LOG_FUNCTION (this);
 
@@ -2235,7 +2234,6 @@ void SixLowPanNetDevice::HandleFragmentsTimeout (FragmentKey key, uint32_t iif)
   it->second = 0;
 
   m_fragments.erase (key);
-  m_fragmentsTimers.erase (key);
 }
 
 Address SixLowPanNetDevice::Get16MacFrom48Mac (Address addr)
@@ -2249,6 +2247,41 @@ Address SixLowPanNetDevice::Get16MacFrom48Mac (Address addr)
   shortAddr.CopyFrom (buf + 4);
 
   return shortAddr;
+}
+
+SixLowPanNetDevice::FragmentsTimeoutsListI_t SixLowPanNetDevice::SetTimeout (FragmentKey_t key, uint32_t iif)
+{
+  if (m_timeoutEventList.empty ())
+    {
+      m_timeoutEvent = Simulator::Schedule (m_fragmentExpirationTimeout, &SixLowPanNetDevice::HandleTimeout, this);
+    }
+  m_timeoutEventList.emplace_back (Simulator::Now () + m_fragmentExpirationTimeout, key, iif);
+
+  SixLowPanNetDevice::FragmentsTimeoutsListI_t iter = --m_timeoutEventList.end();
+
+  return (iter);
+}
+
+void SixLowPanNetDevice::HandleTimeout (void)
+{
+  Time now = Simulator::Now ();
+
+  while (!m_timeoutEventList.empty () && std::get<0> (*m_timeoutEventList.begin ()) == now)
+    {
+      HandleFragmentsTimeout (std::get<1> (*m_timeoutEventList.begin ()),
+                              std::get<2> (*m_timeoutEventList.begin ()));
+      m_timeoutEventList.pop_front ();
+    }
+
+  if (m_timeoutEventList.empty ())
+    {
+      return;
+    }
+
+  Time difference = std::get<0> (*m_timeoutEventList.begin ()) - now;
+  m_timeoutEvent = Simulator::Schedule (difference, &SixLowPanNetDevice::HandleTimeout, this);
+
+  return;
 }
 
 }
