@@ -2852,6 +2852,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       //If we are here, this means non-HT PHY header was already successfully received
       canReceivePayload = true;
     }
+  Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePhyPreambleAndHeaderDuration (txVector);
   if (canReceivePayload) //PHY reception succeeded
     {
       if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
@@ -2871,7 +2872,6 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
         }
       else
         {
-          Time payloadDuration = event->GetEndTime () - event->GetStartTime () - CalculatePhyPreambleAndHeaderDuration (txVector);
           m_state->SwitchToRx (payloadDuration);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
           NS_LOG_DEBUG ("Receiving payload");
@@ -2890,9 +2890,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       NS_LOG_DEBUG ("Drop packet because HT PHY header reception failed");
       NotifyRxDrop (event->GetPsdu (), SIG_A_FAILURE);
     }
-  m_interference.NotifyRxEnd ();
-  m_currentEvent = 0;
-  MaybeCcaBusyDuration ();
+  m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::ResetReceive, this, event);
 }
 
 void
@@ -3008,6 +3006,17 @@ WifiPhy::EndReceiveInterBss (void)
     {
       m_powerRestricted = false;
     }
+}
+
+void
+WifiPhy::ResetReceive (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  NS_ASSERT (event->GetEndTime () == Simulator::Now ());
+  NS_ASSERT (!IsStateRx ());
+  m_interference.NotifyRxEnd ();
+  m_currentEvent = 0;
+  MaybeCcaBusyDuration ();
 }
 
 void
