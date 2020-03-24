@@ -1998,13 +1998,6 @@ private:
   Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };
 
-/**
- * \param os          output stream
- * \param state       wifi state to stringify
- * \return output stream
- */
-std::ostream& operator<< (std::ostream& os, WifiPhyState state);
-
 } //namespace ns3
 
 #endif /* WIFI_PHY_H */

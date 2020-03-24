@@ -4135,30 +4135,6 @@ WifiPhy::AssignStreams (int64_t stream)
   return 1;
 }
 
-std::ostream& operator<< (std::ostream& os, WifiPhyState state)
-{
-  switch (state)
-    {
-    case WifiPhyState::IDLE:
-      return (os << "IDLE");
-    case WifiPhyState::CCA_BUSY:
-      return (os << "CCA_BUSY");
-    case WifiPhyState::TX:
-      return (os << "TX");
-    case WifiPhyState::RX:
-      return (os << "RX");
-    case WifiPhyState::SWITCHING:
-      return (os << "SWITCHING");
-    case WifiPhyState::SLEEP:
-      return (os << "SLEEP");
-    case WifiPhyState::OFF:
-      return (os << "OFF");
-    default:
-      NS_FATAL_ERROR ("Invalid WifiPhy state");
-      return (os << "INVALID");
-    }
-}
-
 } //namespace ns3
 
 namespace {

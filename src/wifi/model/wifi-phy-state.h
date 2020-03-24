@@ -22,6 +22,8 @@
 #ifndef WIFI_PHY_STATE_H
 #define WIFI_PHY_STATE_H
 
+#include "ns3/fatal-error.h"
+
 /**
   * The state of the PHY layer.
   */
@@ -57,5 +59,36 @@ enum WifiPhyState
     */
   OFF
 };
+
+/**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param state the state
+* \returns a reference to the stream
+*/
+inline std::ostream& operator<< (std::ostream& os, WifiPhyState state)
+{
+  switch (state)
+    {
+    case IDLE:
+      return (os << "IDLE");
+    case CCA_BUSY:
+      return (os << "CCA_BUSY");
+    case TX:
+      return (os << "TX");
+    case RX:
+      return (os << "RX");
+    case SWITCHING:
+      return (os << "SWITCHING");
+    case SLEEP:
+      return (os << "SLEEP");
+    case OFF:
+      return (os << "OFF");
+    default:
+      NS_FATAL_ERROR ("Invalid state");
+      return (os << "INVALID");
+    }
+}
 
 #endif /* WIFI_PHY_STATE_H */
