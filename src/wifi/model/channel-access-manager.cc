@@ -561,6 +561,7 @@ ChannelAccessManager::NotifyRxStartNow (Time duration)
   m_lastRxStart = Simulator::Now ();
   m_lastRxDuration = duration;
   m_lastRxEnd = m_lastRxStart + m_lastRxDuration;
+  m_lastRxReceivedOk = true;
 }
 
 void
@@ -592,6 +593,7 @@ void
 ChannelAccessManager::NotifyTxStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
+  m_lastRxReceivedOk = true;
   if (m_lastRxEnd > Simulator::Now ())
     {
       //this may be caused only if PHY has started to receive a packet
@@ -599,7 +601,6 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
       NS_ASSERT (Simulator::Now () - m_lastRxStart <= m_sifs);
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
-      m_lastRxReceivedOk = true;
     }
   NS_LOG_DEBUG ("tx start for " << duration);
   UpdateBackoff ();
@@ -625,12 +626,13 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   NS_ASSERT (m_lastTxStart + m_lastTxDuration <= now);
   NS_ASSERT (m_lastSwitchingStart + m_lastSwitchingDuration <= now);
 
+  m_lastRxReceivedOk = true;
+
   if (m_lastRxEnd > Simulator::Now ())
     {
       //channel switching during packet reception
       m_lastRxEnd = Simulator::Now ();
       m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
-      m_lastRxReceivedOk = true;
     }
   if (m_lastNavStart + m_lastNavDuration > now)
     {
@@ -672,7 +674,6 @@ ChannelAccessManager::NotifySwitchingStartNow (Time duration)
   NS_LOG_DEBUG ("switching start for " << duration);
   m_lastSwitchingStart = Simulator::Now ();
   m_lastSwitchingDuration = duration;
-
 }
 
 void
