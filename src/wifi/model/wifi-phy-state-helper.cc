@@ -166,14 +166,8 @@ WifiPhyStateHelper::GetDelayUntilIdle (void) const
       retval = m_endSwitching - Simulator::Now ();
       break;
     case WifiPhyState::IDLE:
-      retval = Seconds (0);
-      break;
     case WifiPhyState::SLEEP:
-      NS_FATAL_ERROR ("Cannot determine when the device will wake up.");
-      retval = Seconds (0);
-      break;
     case WifiPhyState::OFF:
-      NS_FATAL_ERROR ("Cannot determine when the device will be switched on.");
       retval = Seconds (0);
       break;
     default:
@@ -189,6 +183,12 @@ Time
 WifiPhyStateHelper::GetLastRxStartTime (void) const
 {
   return m_startRx;
+}
+
+Time
+WifiPhyStateHelper::GetLastRxEndTime (void) const
+{
+  return m_endRx;
 }
 
 WifiPhyState

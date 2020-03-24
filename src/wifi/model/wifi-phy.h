@@ -263,6 +263,12 @@ public:
    * \return the start time of the last received packet
    */
   Time GetLastRxStartTime (void) const;
+  /**
+   * Return the end time of the last received packet.
+   *
+   * \return the end time of the last received packet
+   */
+  Time GetLastRxEndTime (void) const;
 
   /**
    * \param size the number of bytes in the packet to send

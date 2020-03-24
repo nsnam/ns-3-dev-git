@@ -154,6 +154,12 @@ public:
    * \return the time the last RX start.
    */
   Time GetLastRxStartTime (void) const;
+  /**
+   * Return the time the last RX end.
+   *
+   * \return the time the last RX end.
+   */
+  Time GetLastRxEndTime (void) const;
 
   /**
    * Switch state to TX for the given duration.

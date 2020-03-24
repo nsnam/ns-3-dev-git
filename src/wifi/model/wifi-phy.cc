@@ -2559,9 +2559,10 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
   Time txDuration = CalculateTxDuration (psdu->GetSize (), txVector, GetFrequency ());
   NS_ASSERT (txDuration.IsStrictlyPositive ());
 
-  if (m_currentEvent != 0)
+  if ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ())))
     {
-      MaybeCcaBusyDuration (); //needed to keep busy state afterwards
+      //that packet will be noise _after_ the transmission.
+      MaybeCcaBusyDuration ();
     }
 
   if (m_endPreambleDetectionEvent.IsRunning ())
@@ -2660,7 +2661,10 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event)
 
       // Like CCA-SD, CCA-ED is governed by the 4μs CCA window to flag CCA-BUSY
       // for any received signal greater than the CCA-ED threshold.
-      MaybeCcaBusyDuration ();
+      if (event->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          MaybeCcaBusyDuration ();
+        }
     }
 }
 
@@ -2686,7 +2690,10 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
     {
       NS_LOG_DEBUG ("Abort reception because non-HT PHY header reception failed");
       AbortCurrentReception (L_SIG_FAILURE);
-      MaybeCcaBusyDuration ();
+      if (event->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          MaybeCcaBusyDuration ();
+        }
     }
 }
 
@@ -2698,16 +2705,25 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
   Time rxDuration = ppdu->GetTxDuration ();
   Ptr<const WifiPsdu> psdu = ppdu->GetPsdu ();
   Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW);
+  Time endRx = Simulator::Now () + rxDuration;
 
   if (m_state->GetState () == WifiPhyState::OFF)
     {
       NS_LOG_DEBUG ("Cannot start RX because device is OFF");
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          MaybeCcaBusyDuration ();
+        }
       return;
     }
 
   if (ppdu->IsTruncatedTx ())
     {
       NS_LOG_DEBUG ("Packet reception stopped because transmitter has been switched off");
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          MaybeCcaBusyDuration ();
+        }
       return;
     }
 
@@ -2716,10 +2732,13 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
       //If SetRate method was not called above when filling in txVector, this means the PHY does support the rate indicated in PHY SIG headers
       NS_LOG_DEBUG ("drop packet because of unsupported RX mode");
       NotifyRxDrop (psdu, UNSUPPORTED_SETTINGS);
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          MaybeCcaBusyDuration ();
+        }
       return;
     }
 
-  Time endRx = Simulator::Now () + rxDuration;
   switch (m_state->GetState ())
     {
     case WifiPhyState::SWITCHING:
@@ -2733,11 +2752,10 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
        * busy due to other devices' transmissions started before the end of
        * the switching.
        */
-      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
           //that packet will be noise _after_ the completion of the channel switching.
           MaybeCcaBusyDuration ();
-          return;
         }
       break;
     case WifiPhyState::RX:
@@ -2755,11 +2773,10 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
           NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                         rxPowerW << "W)");
           NotifyRxDrop (psdu, NOT_ALLOWED);
-          if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+          if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
             {
               //that packet will be noise _after_ the reception of the currently-received packet.
               MaybeCcaBusyDuration ();
-              return;
             }
         }
       break;
@@ -2767,11 +2784,10 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
       NS_LOG_DEBUG ("Drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (psdu, NOT_ALLOWED);
-      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
           //that packet will be noise _after_ the transmission of the currently-transmitted packet.
           MaybeCcaBusyDuration ();
-          return;
         }
       break;
     case WifiPhyState::CCA_BUSY:
@@ -2790,11 +2806,10 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
               NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                             rxPowerW << "W)");
               NotifyRxDrop (psdu, NOT_ALLOWED);
-              if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+              if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
                 {
                   //that packet will be noise _after_ the reception of the currently-received packet.
                   MaybeCcaBusyDuration ();
-                  return;
                 }
             }
         }
@@ -2809,6 +2824,11 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
     case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("Drop packet because in sleep mode");
       NotifyRxDrop (psdu, NOT_ALLOWED);
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          //that packet will be noise _after_ the sleep period.
+          MaybeCcaBusyDuration ();
+        }
       break;
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
@@ -2898,6 +2918,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
 {
   Time psduDuration = event->GetEndTime () - event->GetStartTime ();
   NS_LOG_FUNCTION (this << *event << psduDuration);
+  NS_ASSERT (GetLastRxEndTime () == Simulator::Now ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   double snr = m_interference.CalculateSnr (event);
@@ -4060,6 +4081,12 @@ Time
 WifiPhy::GetLastRxStartTime (void) const
 {
   return m_state->GetLastRxStartTime ();
+}
+
+Time
+WifiPhy::GetLastRxEndTime (void) const
+{
+  return m_state->GetLastRxEndTime ();
 }
 
 void
