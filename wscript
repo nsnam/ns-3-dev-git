@@ -1229,6 +1229,8 @@ class Ns3ShellContext(Context.Context):
 
 
 def _print_introspected_doxygen(bld):
+    env = wutils.bld.env
+    proc_env = wutils.get_proc_env()
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
     except ValueError: 
@@ -1243,6 +1245,8 @@ def _print_introspected_doxygen(bld):
                    " You need to build ns-3 at least once before "
                    "generating doxygen docs...")
         raise SystemExit(1)
+
+    Logs.info("Running print-introspected-doxygen")
 
     # Create a header file with the introspected information.
     doxygen_out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
