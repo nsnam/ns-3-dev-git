@@ -1409,6 +1409,13 @@ def run_tests():
             if len(stderr_results) == 0:
                 processors = int(stdout_results)
 
+    if (options.process_limit):
+        if (processors < options.process_limit):
+            print('Using all %s processors' % processors)
+        else:
+            processors = options.process_limit
+            print('Limiting to %s worker processes' % processors)
+
     #
     # Now, spin up one thread per processor which will eventually mean one test
     # per processor running concurrently.
@@ -2010,6 +2017,8 @@ def main(argv):
 
     parser.add_option("--nocolor", action="store_true", dest="nocolor", default=False,
                       help="do not use colors in the standard output")
+    parser.add_option("--jobs", action="store", type="int", dest="process_limit", default=0,
+                      help="limit number of worker threads")
 
     global options
     options = parser.parse_args()[0]
