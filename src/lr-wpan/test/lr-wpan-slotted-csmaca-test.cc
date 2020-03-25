@@ -276,7 +276,7 @@ LrWpanSlottedCsmacaTestCase::DoRun ()
   Time activePeriodsSum;
   Time transactionTime;
   uint64_t      symbolRate;
-  u_int32_t activePeriodSize = 20;
+  uint32_t activePeriodSize = 20;
   double boundary;
 
 

@@ -205,16 +205,16 @@ private:
   struct gtsDescriptor
   {
     Mac16Address m_gtsDescDevShortAddr;      //!< GTS Descriptor Device Short Address (Bit 0-15)
-    u_int8_t m_gtsDescStartSlot;             //!< GTS Descriptor GTS Starting Slot(Bit 16-19)
-    u_int8_t m_gtsDescLength;                //!< GTS Descriptor GTS Length (Bit 20-23)
+    uint8_t m_gtsDescStartSlot;              //!< GTS Descriptor GTS Starting Slot(Bit 16-19)
+    uint8_t m_gtsDescLength;                 //!< GTS Descriptor GTS Length (Bit 20-23)
   };
 
   //GTS specification field
-  u_int8_t m_gtsSpecDescCount;           //!< GTS specification field Descriptor Count (Bit 0-2)
+  uint8_t m_gtsSpecDescCount;            //!< GTS specification field Descriptor Count (Bit 0-2)
                                          //!< GTS specification field Reserved (Not necessary) (Bit 3-6)
-  u_int8_t m_gtsSpecPermit;              //!< GTS specification field GTS Permit (Bit 7)
+  uint8_t m_gtsSpecPermit;               //!< GTS specification field GTS Permit (Bit 7)
   //GTS Direction field
-  u_int8_t m_gtsDirMask;                 //!< GTS Direction field Directions Mask (Bit 0-6)
+  uint8_t m_gtsDirMask;                  //!< GTS Direction field Directions Mask (Bit 0-6)
                                          //!< GTS Direction field Reserved (Not Necessary) (Bit 7)
   //GTS List
   gtsDescriptor m_gtsList[6];            //!< GTS List field (maximum descriptors stored == 7)

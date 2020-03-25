@@ -114,7 +114,7 @@ private:
   /// The Current probe value
   uint32_t m_probeCount;
   /// The maximum number of probe packets per hop
-  u_int16_t m_maxProbes;
+  uint16_t m_maxProbes;
   /// The current TTL value
   uint16_t m_ttl;
   /// The maximium Ttl (Max number of hops to trace)

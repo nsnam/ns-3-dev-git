@@ -2315,7 +2315,7 @@ OLSR::mac_failed (Ptr<Packet> p)
          OLSR::node_id (ra_addr ()),
          OLSR::node_id (ch->next_hop ()));
 
-  if ((u_int32_t)ih->daddr () == IP_BROADCAST)
+  if ((uint32_t)ih->daddr () == IP_BROADCAST)
     {
       drop (p, DROP_RTR_MAC_CALLBACK);
       return;
