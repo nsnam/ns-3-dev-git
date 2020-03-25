@@ -30,7 +30,7 @@
 /**
  * \file
  * \ingroup time
- * ns3::Time, ns3::TimeWithUnit 
+ * ns3::Time, ns3::TimeWithUnit
  * and ns3::TimeValue attribute value implementations.
  */
 
@@ -68,10 +68,10 @@ bool Time::StaticInit ()
 
   if (firstTime)
     {
-      if (! g_markingTimes)
+      if (!g_markingTimes)
         {
           static MarkedTimes markingTimes;
-          g_markingTimes = & markingTimes;
+          g_markingTimes = &markingTimes;
         }
       else
         {
@@ -198,8 +198,8 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
     }
 
   // Y, D, H, MIN, S, MS, US, NS, PS, FS
-  const int8_t power [LAST] = { 17, 17, 17, 16, 15, 12, 9, 6, 3, 0 };
-  const int32_t coefficient [LAST] = { 315360, 864, 36, 6, 1, 1, 1, 1, 1, 1 };
+  const int8_t power[LAST] = { 17, 17, 17, 16, 15, 12, 9, 6, 3, 0 };
+  const int32_t coefficient[LAST] = { 315360, 864, 36, 6, 1, 1, 1, 1, 1, 1 };
   for (int i = 0; i < Time::LAST; i++)
     {
       int shift = power[i] - power[(int)unit];
@@ -214,11 +214,12 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
           quotient = coefficient[(int) unit] / coefficient[i];
           NS_ASSERT (quotient * coefficient[i] == coefficient[(int) unit]);
         }
-      NS_LOG_DEBUG ("SetResolution for unit " << (int) unit << " loop iteration " << i
-    		    << " has shift " << shift << " has quotient " << quotient);
+      NS_LOG_DEBUG ("SetResolution for unit " << (int) unit <<
+                    " loop iteration " << i <<
+                    " has shift " << shift << " has quotient " << quotient);
       int64_t factor = static_cast<int64_t> (std::pow (10, std::fabs (shift)) * quotient);
       double realFactor = std::pow (10, (double) shift)
-                        * static_cast<double> (coefficient[i]) / coefficient[(int) unit];
+        * static_cast<double> (coefficient[i]) / coefficient[(int) unit];
       NS_LOG_DEBUG ("SetResolution factor " << factor << " real factor " << realFactor);
       struct Information *info = &resolution->info[i];
       info->factor = factor;
@@ -276,7 +277,7 @@ Time::ClearMarkedTimes ()
   if (g_markingTimes)
     {
       NS_LOG_LOGIC ("clearing MarkedTimes");
-      g_markingTimes->erase (g_markingTimes->begin(), g_markingTimes->end ());
+      g_markingTimes->erase (g_markingTimes->begin (), g_markingTimes->end ());
       g_markingTimes = 0;
     }
 }  // Time::ClearMarkedTimes
@@ -304,7 +305,7 @@ Time::Mark (Time * const time)
         {
           NS_LOG_WARN ("already recorded " << time << "!");
         }
-   }
+    }
 }  // Time::Mark ()
 
 
@@ -344,24 +345,24 @@ Time::ConvertTimes (const enum Unit unit)
 {
   CriticalSection critical (GetMarkingMutex ());
 
-  NS_LOG_FUNCTION_NOARGS();
+  NS_LOG_FUNCTION_NOARGS ();
 
   NS_ASSERT_MSG (g_markingTimes != 0,
                  "No MarkedTimes registry. "
                  "Time::SetResolution () called more than once?");
 
-  for ( MarkedTimes::iterator it = g_markingTimes->begin();
-        it != g_markingTimes->end();
+  for ( MarkedTimes::iterator it = g_markingTimes->begin ();
+        it != g_markingTimes->end ();
         it++ )
     {
       Time * const tp = *it;
-      if ( ! (    (tp->m_data == std::numeric_limits<int64_t>::min ())
-               || (tp->m_data == std::numeric_limits<int64_t>::max ())
+      if ( !((tp->m_data == std::numeric_limits<int64_t>::min ())
+             || (tp->m_data == std::numeric_limits<int64_t>::max ())
              )
-         )
+           )
         {
-      tp->m_data = tp->ToInteger (unit);
-    }
+          tp->m_data = tp->ToInteger (unit);
+        }
     }
 
   NS_LOG_LOGIC ("logged " << g_markingTimes->size () << " Time objects.");
@@ -369,7 +370,7 @@ Time::ConvertTimes (const enum Unit unit)
   // Body of ClearMarkedTimes
   // Assert above already guarantees g_markingTimes != 0
   NS_LOG_LOGIC ("clearing MarkedTimes");
-  g_markingTimes->erase (g_markingTimes->begin(), g_markingTimes->end ());
+  g_markingTimes->erase (g_markingTimes->begin (), g_markingTimes->end ());
   g_markingTimes = 0;
 
 }  // Time::ConvertTimes ()
@@ -389,7 +390,7 @@ Time::As (const enum Unit unit) const
 {
   return TimeWithUnit (*this, unit);
 }
- 
+
 
 std::ostream &
 operator << (std::ostream & os, const Time & time)
@@ -406,6 +407,7 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
 
   switch (timeU.m_unit)
     {
+      // *NS_CHECK_STYLE_OFF*
     case Time::Y:    unit = "y";    break;
     case Time::D:    unit = "d";    break;
     case Time::H:    unit = "h";    break;
@@ -416,6 +418,7 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
     case Time::NS:   unit = "ns";   break;
     case Time::PS:   unit = "ps";   break;
     case Time::FS:   unit = "fs";   break;
+      // *NS_CHECK_STYLE_ON*
 
     case Time::LAST:
     default:
@@ -426,7 +429,7 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
 
   int64x64_t v = timeU.m_time.To (timeU.m_unit);
   os << v << unit;
-  
+
   return os;
 }
 
@@ -451,8 +454,10 @@ MakeTimeChecker (const Time min, const Time max)
   {
     Checker (const Time minValue, const Time maxValue)
       : m_minValue (minValue),
-        m_maxValue (maxValue) {}
-    virtual bool Check (const AttributeValue &value) const {
+        m_maxValue (maxValue)
+    {}
+    virtual bool Check (const AttributeValue &value) const
+    {
       NS_LOG_FUNCTION (&value);
       const TimeValue *v = dynamic_cast<const TimeValue *> (&value);
       if (v == 0)
@@ -461,25 +466,30 @@ MakeTimeChecker (const Time min, const Time max)
         }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetValueTypeName (void) const {
+    virtual std::string GetValueTypeName (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return "ns3::TimeValue";
     }
-    virtual bool HasUnderlyingTypeInformation (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << "Time" << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Ptr<AttributeValue> Create (void) const {
+    virtual Ptr<AttributeValue> Create (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<TimeValue> ();
     }
-    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+    {
       NS_LOG_FUNCTION (&source << &destination);
       const TimeValue *src = dynamic_cast<const TimeValue *> (&source);
       TimeValue *dst = dynamic_cast<TimeValue *> (&destination);

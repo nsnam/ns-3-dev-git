@@ -44,13 +44,14 @@ class EventImpl;
  * with Simulator::Cancel() or Simulator::Remove().
  *
  * The important thing to remember about this class is that
- * every variable of this type is _always_ in a valid state, 
+ * every variable of this type is _always_ in a valid state,
  * even when it has not been assigned an EventId coming from a
  * Simulator::Schedule() method:  calling Simulator::Cancel(), IsRunning(),
  * IsExpired() or passing around instances of this object
  * will not result in crashes or memory leaks.
  */
-class EventId {
+class EventId
+{
 public:
   /** Default constructor. This EventId does nothing. */
   EventId ();
@@ -76,10 +77,11 @@ public:
   bool IsExpired (void) const;
   /**
    * This method is syntactic sugar for !IsExpired().
-   * 
+   *
    * \returns \c true if the event has not expired, \c false otherwise.
    */
   bool IsRunning (void) const;
+
 public:
   /**
    * \name Scheduler Helpers.
@@ -88,7 +90,7 @@ public:
    */
   /**@{*/
   /** \return The underlying EventImpl pointer. */
-  EventImpl *PeekEventImpl (void) const;
+  EventImpl * PeekEventImpl (void) const;
   /** \return The virtual time stamp. */
   uint64_t GetTs (void) const;
   /** \return The event context. */
@@ -96,7 +98,7 @@ public:
   /** \return The unique id. */
   uint32_t GetUid (void) const;
   /**@}*/
-  
+
   /**
    * Test if two EventId's are equal.
    * \param [in] a The first EventId.
@@ -130,25 +132,25 @@ private:
  **  Inline implementations
  ************************************************/
 
-inline  
+inline
 bool
 operator == (const EventId &a, const EventId &b)
 {
-  return 
-    a.m_uid == b.m_uid && 
-    a.m_context == b.m_context && 
-    a.m_ts == b.m_ts && 
-    a.m_eventImpl == b.m_eventImpl;
+  return
+    a.m_uid == b.m_uid
+    && a.m_context == b.m_context
+    && a.m_ts == b.m_ts
+    && a.m_eventImpl == b.m_eventImpl;
 }
-  
-inline  
+
+inline
 bool
 operator != (const EventId &a, const EventId &b)
 {
   return !(a == b);
 }
-  
-inline  
+
+inline
 bool
 operator <  (const EventId &a, const EventId &b)
 {

@@ -43,7 +43,7 @@ namespace ns3 {
  * purely for compatibility to avoid breaking the code of users.
  */
 class RefCountBase : public SimpleRefCount<RefCountBase>
-{ 
+{
 public:
   /**
    * This only thing this class does it declare a virtual destructor

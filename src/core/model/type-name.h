@@ -61,7 +61,7 @@ template <> std::string TypeNameGet< uint64_t> (void);
 template <> std::string TypeNameGet< float   > (void);
 template <> std::string TypeNameGet< double  > (void);
 /**@}*/
-  
+
 } // namespace ns3
 
 #endif /* TYPE_NAME_H */

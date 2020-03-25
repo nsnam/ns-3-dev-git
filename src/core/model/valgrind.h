@@ -1,4 +1,4 @@
-/* -*- c -*-
+/* -*- c -*-  *NS_CHECK_STYLE_OFF* 
    ----------------------------------------------------------------
 
    Notice that the following BSD-style license applies to this one
@@ -5622,3 +5622,5 @@ VALGRIND_PRINTF_BACKTRACE(const char *format, ...)
 #undef PLAT_mips64_linux
 
 #endif   /* __VALGRIND_H */
+
+/* *NS_CHECK_STYLE_ON* */

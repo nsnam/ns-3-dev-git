@@ -30,8 +30,8 @@
  * and ns3::CriticalSection.
  */
 
-namespace ns3 { 
-	
+namespace ns3 {
+
 class SystemMutexPrivate;
 
 /**
@@ -45,17 +45,17 @@ class SystemMutexPrivate;
  * primitive to provide that capability.  We provide platform-independent
  * access to the OS-dependent capability with the SystemMutex class.
  *
- * There are two operations:  Lock and Unlock.  Lock allows an executing 
- * SystemThread to attempt to acquire ownership of the Mutual Exclusion 
+ * There are two operations:  Lock and Unlock.  Lock allows an executing
+ * SystemThread to attempt to acquire ownership of the Mutual Exclusion
  * object.  If the SystemMutex object is not owned by another thread, then
- * ownership is granted to the calling SystemThread and Lock returns 
+ * ownership is granted to the calling SystemThread and Lock returns
  * immediately,  However, if the SystemMutex is already owned by another
  * SystemThread, the calling SystemThread is blocked until the current owner
  * releases the SystemMutex by calling Unlock.
  *
  * @see CriticalSection
  */
-class SystemMutex 
+class SystemMutex
 {
 public:
   SystemMutex ();
@@ -70,7 +70,7 @@ public:
    * Release ownership of the Mutual Exclusion object.
    */
   void Unlock ();
-	
+
 private:
   /** The (system-dependent) implementation. */
   SystemMutexPrivate * m_priv;
@@ -93,8 +93,8 @@ private:
  *     ...
  *   }
  * @endcode
- * In this case, the critical section is entered when the CriticalSection 
- * object is created, and the critical section is exited when the 
+ * In this case, the critical section is entered when the CriticalSection
+ * object is created, and the critical section is exited when the
  * CriticalSection object goes out of scope at the end of the method.
  *
  * Finer granularity is achieved by using local scope blocks.
@@ -126,6 +126,7 @@ public:
   CriticalSection (SystemMutex &mutex);
   /** Destructor */
   ~CriticalSection ();
+
 private:
   SystemMutex &m_mutex;  /**< The mutex. */
 };

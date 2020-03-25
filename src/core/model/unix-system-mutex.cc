@@ -38,13 +38,15 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE_MASK ("SystemMutex", ns3::LOG_PREFIX_TIME);
 
 /** System-dependent implementation of SystemMutex. */
-class SystemMutexPrivate {
-public: 
-  SystemMutexPrivate ();    
+class SystemMutexPrivate
+{
+public:
+  SystemMutexPrivate ();
   ~SystemMutexPrivate ();
-	
+
   void Lock (void);         /**< Acquire ownership of the mutex. */
   void Unlock (void);       /**< Release ownership of the mutex. */
+
 private:
   pthread_mutex_t m_mutex;  /**< The mutex. */
 };
@@ -57,11 +59,11 @@ SystemMutexPrivate::SystemMutexPrivate ()
   pthread_mutexattr_init (&attr);
 //
 // Make this an error checking mutex.  This will check to see if the current
-// thread already owns the mutex before trying to lock it.  Instead of 
+// thread already owns the mutex before trying to lock it.  Instead of
 // deadlocking it returns an error.  It will also check to make sure a thread
 // has previously called pthread_mutex_lock when it calls pthread_mutex_unlock.
 //
-// Linux and OS X (at least) have, of course chosen different names for the 
+// Linux and OS X (at least) have, of course chosen different names for the
 // error checking flags just to make life difficult.
 //
 #if defined (PTHREAD_MUTEX_ERRORCHECK_NP)
@@ -72,28 +74,28 @@ SystemMutexPrivate::SystemMutexPrivate ()
   pthread_mutex_init (&m_mutex, &attr);
 }
 
-SystemMutexPrivate::~SystemMutexPrivate() 
+SystemMutexPrivate::~SystemMutexPrivate ()
 {
   NS_LOG_FUNCTION (this);
   pthread_mutex_destroy (&m_mutex);
 }
-	
+
 void
 SystemMutexPrivate::Lock (void)
 {
   NS_LOG_FUNCTION (this);
 
   int rc = pthread_mutex_lock (&m_mutex);
-  if (rc != 0) 
+  if (rc != 0)
     {
       NS_FATAL_ERROR ("SystemMutexPrivate::Lock()"
                       "pthread_mutex_lock failed: " << rc << " = \"" <<
                       std::strerror (rc) << "\"");
     }
 }
-	
+
 void
-SystemMutexPrivate::Unlock (void) 
+SystemMutexPrivate::Unlock (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -106,13 +108,13 @@ SystemMutexPrivate::Unlock (void)
     }
 }
 
-SystemMutex::SystemMutex() 
+SystemMutex::SystemMutex ()
   : m_priv (new SystemMutexPrivate ())
 {
   NS_LOG_FUNCTION (this);
 }
 
-SystemMutex::~SystemMutex() 
+SystemMutex::~SystemMutex ()
 {
   NS_LOG_FUNCTION (this);
   delete m_priv;

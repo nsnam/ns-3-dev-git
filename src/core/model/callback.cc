@@ -38,8 +38,7 @@ CallbackValue::CallbackValue ()
 }
 CallbackValue::CallbackValue (const CallbackBase &base)
   : m_value (base)
-{
-}
+{}
 CallbackValue::~CallbackValue ()
 {
   NS_LOG_FUNCTION (this);
@@ -94,28 +93,34 @@ CallbackImplBase::Demangle (const std::string& mangled)
                                          NULL, NULL, &status);
 
   std::string ret;
-  if (status == 0) {
+  if (status == 0)
+    {
       NS_ASSERT (demangled);
       ret = demangled;
     }
-  else if (status == -1) {
+  else if (status == -1)
+    {
       NS_LOG_UNCOND ("Callback demangling failed: Memory allocation failure occurred.");
       ret = mangled;
     }
-  else if (status == -2) {
+  else if (status == -2)
+    {
       NS_LOG_UNCOND ("Callback demangling failed: Mangled name is not a valid under the C++ ABI mangling rules.");
       ret = mangled;
     }
-  else if (status == -3) {
+  else if (status == -3)
+    {
       NS_LOG_UNCOND ("Callback demangling failed: One of the arguments is invalid.");
       ret = mangled;
     }
-  else {
+  else
+    {
       NS_LOG_UNCOND ("Callback demangling failed: status " << status);
       ret = mangled;
     }
 
-  if (demangled) {
+  if (demangled)
+    {
       std::free (demangled);
     }
   return ret;

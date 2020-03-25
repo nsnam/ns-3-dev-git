@@ -110,7 +110,7 @@ template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
 {
   return internal::MakeUintegerChecker (min,
-                                        max, 
+                                        max,
                                         TypeNameGet<T> ());
 }
 

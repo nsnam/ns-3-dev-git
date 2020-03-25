@@ -73,7 +73,7 @@ PointerValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   return oss.str ();
 }
 
-bool 
+bool
 PointerValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   // We assume that the string you want to deserialize contains
@@ -82,9 +82,9 @@ PointerValue::DeserializeFromString (std::string value, Ptr<const AttributeCheck
   NS_LOG_FUNCTION (this << value << checker);
   ObjectFactory factory;
   std::istringstream iss;
-  iss.str(value);
+  iss.str (value);
   iss >> factory;
-  if (iss.fail())
+  if (iss.fail ())
     {
       return false;
     }

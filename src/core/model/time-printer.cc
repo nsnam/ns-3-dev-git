@@ -33,7 +33,7 @@
 
 namespace ns3 {
 
-  NS_LOG_COMPONENT_DEFINE ("TimePrinter");
+NS_LOG_COMPONENT_DEFINE ("TimePrinter");
 
 void
 DefaultTimePrinter (std::ostream &os)
@@ -43,20 +43,23 @@ DefaultTimePrinter (std::ostream &os)
   os << std::fixed;
   switch (Time::GetResolution ())
     {
+      // *NS_CHECK_STYLE_OFF*
     case Time::US :    os << std::setprecision (6);   break;
     case Time::NS :    os << std::setprecision (9);   break;
     case Time::PS :    os << std::setprecision (12);  break;
     case Time::FS :    os << std::setprecision (15);  break;
-    default :          
+      // *NS_CHECK_STYLE_ON*
+
+    default:
       // default C++ precision of 5
       os << std::setprecision (5);
     }
   os << Simulator::Now ().As (Time::S);
-  
+
   os << std::setprecision (oldPrecision);
   os.flags (ff); // Restore stream flags
 }
 
-  
+
 } // namespace ns3
 

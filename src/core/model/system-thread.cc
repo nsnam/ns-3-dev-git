@@ -41,7 +41,7 @@ SystemThread::SystemThread (Callback<void> callback)
   NS_LOG_FUNCTION (this << &callback);
 }
 
-SystemThread::~SystemThread()
+SystemThread::~SystemThread ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -54,9 +54,9 @@ SystemThread::Start (void)
   int rc = pthread_create (&m_thread, NULL, &SystemThread::DoRun,
                            (void *)this);
 
-  if (rc) 
+  if (rc)
     {
-      NS_FATAL_ERROR ("pthread_create failed: " << rc << "=\"" << 
+      NS_FATAL_ERROR ("pthread_create failed: " << rc << "=\"" <<
                       strerror (rc) << "\".");
     }
 }
@@ -68,9 +68,9 @@ SystemThread::Join (void)
 
   void *thread_return;
   int rc = pthread_join (m_thread, &thread_return);
-  if (rc) 
+  if (rc)
     {
-      NS_FATAL_ERROR ("pthread_join failed: " << rc << "=\"" << 
+      NS_FATAL_ERROR ("pthread_join failed: " << rc << "=\"" <<
                       strerror (rc) << "\".");
     }
 }
@@ -85,14 +85,14 @@ SystemThread::DoRun (void *arg)
 
   return 0;
 }
-SystemThread::ThreadId 
+SystemThread::ThreadId
 SystemThread::Self (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return pthread_self ();
 }
 
-bool 
+bool
 SystemThread::Equals (SystemThread::ThreadId id)
 {
   NS_LOG_FUNCTION (id);

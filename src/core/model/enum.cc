@@ -60,7 +60,7 @@ EnumValue::Copy (void) const
   NS_LOG_FUNCTION (this);
   return ns3::Create<EnumValue> (*this);
 }
-std::string 
+std::string
 EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   NS_LOG_FUNCTION (this << checker);
@@ -78,7 +78,7 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   // quiet compiler.
   return "";
 }
-bool 
+bool
 EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   NS_LOG_FUNCTION (this << value << checker);
@@ -130,19 +130,19 @@ EnumChecker::Check (const AttributeValue &value) const
     }
   return false;
 }
-std::string 
+std::string
 EnumChecker::GetValueTypeName (void) const
 {
   NS_LOG_FUNCTION (this);
   return "ns3::EnumValue";
 }
-bool 
+bool
 EnumChecker::HasUnderlyingTypeInformation (void) const
 {
   NS_LOG_FUNCTION (this);
   return true;
 }
-std::string 
+std::string
 EnumChecker::GetUnderlyingTypeInformation (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -165,7 +165,7 @@ EnumChecker::Create (void) const
   return ns3::Create<EnumValue> ();
 }
 
-bool 
+bool
 EnumChecker::Copy (const AttributeValue &source, AttributeValue &destination) const
 {
   NS_LOG_FUNCTION (this << &source << &destination);
@@ -180,7 +180,7 @@ EnumChecker::Copy (const AttributeValue &source, AttributeValue &destination) co
 }
 
 
-Ptr<const AttributeChecker> 
+Ptr<const AttributeChecker>
 MakeEnumChecker (int v1, std::string n1,
                  int v2, std::string n2,
                  int v3, std::string n3,

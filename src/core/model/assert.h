@@ -59,22 +59,20 @@
  * \ingroup assert
  *
  * At runtime, in debugging builds, if this condition is not
- * true, the program prints the source file, line number and 
+ * true, the program prints the source file, line number and
  * unverified condition and halts by calling std::terminate
  *
  * \param [in] condition Condition to verify.
  */
-#define NS_ASSERT(condition)                                    \
-  do                                                            \
-    {                                                           \
-      if (!(condition))                                         \
-        {                                                       \
-          std::cerr << "assert failed. cond=\"" <<              \
-          # condition << "\", ";                               \
-          NS_FATAL_ERROR_NO_MSG ();                              \
-        }                                                       \
-    }                                                           \
-  while (false)
+#define NS_ASSERT(condition)                          \
+  do {                                                \
+      if (!(condition))                               \
+        {                                             \
+          std::cerr << "assert failed. cond=\""       \
+                    << # condition << "\", ";         \
+          NS_FATAL_ERROR_NO_MSG ();                   \
+        }                                             \
+    }  while (false)
 
 
 /**
@@ -88,32 +86,26 @@
  * \param [in] message Message to output
  */
 #define NS_ASSERT_MSG(condition, message)             \
-  do                                                  \
-    {                                                 \
+  do {                                                \
       if (!(condition))                               \
         {                                             \
           std::cerr << "assert failed. cond=\"" <<    \
-          # condition << "\", ";                     \
+            # condition << "\", ";                    \
           NS_FATAL_ERROR (message);                   \
         }                                             \
-    }                                                 \
-  while (false)
+    } while (false)
 
 #else /* NS3_ASSERT_ENABLE */
 
 #define NS_ASSERT(condition)                          \
-  do                                                  \
-    {                                                 \
+  do {                                                \
       (void)sizeof (condition);                       \
-    }                                                 \
-  while (false)
+    } while (false)
 
 #define NS_ASSERT_MSG(condition, message)             \
-  do                                                  \
-    {                                                 \
+  do {                                                \
       (void)sizeof (condition);                       \
-    }                                                 \
-  while (false)
+    } while (false)
 
 #endif /* NS3_ASSERT_ENABLE */
 

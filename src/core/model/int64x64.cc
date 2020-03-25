@@ -85,7 +85,7 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
   oss << hi << ".";  // collect the digits here so we can round properly
 
 
-  int64x64_t low(0, absVal.GetLow ());
+  int64x64_t low (0, absVal.GetLow ());
   std::size_t places = 0;    // Number of decimal places printed so far
   bool more = true;  // Should we print more digits?
 
@@ -101,9 +101,9 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
       low *= 10;
       digit = low.GetHigh ();
       NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
-                      "digit " << digit << " out of range [0,9] "
-                      << " streaming out "
-                      << HEXHILOW (value.GetHigh (), value.GetLow ()) );
+                      "digit " << digit << " out of range [0,9] " <<
+                      " streaming out " <<
+                      HEXHILOW (value.GetHigh (), value.GetLow ()) );
       low -= digit;
 
       oss << std::setw (1) << digit;
@@ -125,7 +125,8 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
                     << HEXHILOW (low.GetHigh (), low.GetLow ())
                     << std::dec << std::setfill (' ' ) << std::left);
 
-    } while (more);
+    }
+  while (more);
 
   // Check if we need to round the last printed digit,
   // based on the first unprinted digit
@@ -142,14 +143,14 @@ std::ostream &operator << (std::ostream &os, const int64x64_t &value)
         {
           if (*rit == '.')  // Skip over the decimal point
             {
-              continue ;
+              continue;
             }
 
           ++(*rit);         // Add the carry
           if (*rit <= '9')  // Relies on character order...
             {
               carry = false;
-              break ;       // Carry complete
+              break;        // Carry complete
             }
           else
             {
@@ -210,8 +211,8 @@ static uint64_t ReadLoDigits (std::string str)
     {
       int digit = *rit - '0';
       NS_ASSERT_MSG ( (0 <= digit) && (digit <= 9),
-                      "digit " << digit << " out of range [0,9]"
-                      << " streaming in low digits \"" << str << "\"");
+                      "digit " << digit << " out of range [0,9]" <<
+                      " streaming in low digits \"" << str << "\"");
       low = (low + digit + round) / 10;
     }
 
@@ -254,12 +255,12 @@ std::istream &operator >> (std::istream &is, int64x64_t &value)
   next = str.find (".", cur);
   if (next != std::string::npos)
     {
-      hi = ReadHiDigits (str.substr (cur, next-cur));
-      lo = ReadLoDigits (str.substr (next+1, str.size ()-(next+1)));
+      hi = ReadHiDigits (str.substr (cur, next - cur));
+      lo = ReadLoDigits (str.substr (next + 1, str.size () - (next + 1)));
     }
   else if (cur != std::string::npos)
     {
-      hi = ReadHiDigits (str.substr (cur, str.size ()-cur));
+      hi = ReadHiDigits (str.substr (cur, str.size () - cur));
       lo = 0;
     }
   else

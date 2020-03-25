@@ -86,14 +86,16 @@ public:
   /**
    * Constructor.
    */
-  Implementation () { };
+  Implementation ()
+  { }
   /**
    * Destructor.
    */
-  virtual ~Implementation () { };
+  virtual ~Implementation ()
+  { }
 };  // Hashfunction
 
-  
+
 /*--------------------------------------
  *  Hash function implementation
  *  by function pointers and templates
@@ -132,12 +134,15 @@ public:
    *
    * \param [in] hp Function pointer to a 32-bit hash function.
    */
-  Hash32 (Hash32Function_ptr hp) : m_fp (hp) { };
+  Hash32 (Hash32Function_ptr hp) : m_fp (hp)
+  { }
   uint32_t GetHash32 (const char * buffer, const std::size_t size)
   {
-    return (*m_fp) (buffer, size);
+    return (*m_fp)(buffer, size);
   }
-  void clear () { };
+  void clear ()
+  { }
+
 private:
   Hash32Function_ptr m_fp;  /**< The hash function. */
 };  // Hash32
@@ -156,10 +161,11 @@ public:
    *
    * \param [in] hp Function pointer to a 64-bit hash function.
    */
-  Hash64 (Hash64Function_ptr hp) : m_fp (hp) { };
+  Hash64 (Hash64Function_ptr hp) : m_fp (hp)
+  { }
   uint64_t GetHash64 (const char * buffer, const std::size_t size)
   {
-    return (*m_fp) (buffer, size);
+    return (*m_fp)(buffer, size);
   }
   uint32_t GetHash32 (const char * buffer, const std::size_t size)
   {
@@ -169,7 +175,9 @@ public:
     memcpy (&hash32, &hash64, sizeof (hash32));
     return hash32;
   }
-  void clear () { };
+  void clear ()
+  { }
+
 private:
   Hash64Function_ptr m_fp;  /**< The hash function. */
 };  // Hash64<Hash64Function_ptr>

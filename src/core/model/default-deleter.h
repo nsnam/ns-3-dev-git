@@ -50,7 +50,8 @@ struct DefaultDeleter
    * \tparam T \deduced The object type being deleted.
    * \param [in] object The object to delete.
    */
-  inline static void Delete (T *object) {
+  inline static void Delete (T *object)
+  {
     delete object;
   }
 };

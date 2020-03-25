@@ -55,11 +55,11 @@ namespace ns3 {
  * \tparam T7 \explicit Type of the seventh argument to the functor.
  * \tparam T8 \explicit Type of the eighth argument to the functor.
  */
-template<typename T1 = empty, typename T2 = empty, 
+template<typename T1 = empty, typename T2 = empty,
          typename T3 = empty, typename T4 = empty,
          typename T5 = empty, typename T6 = empty,
          typename T7 = empty, typename T8 = empty>
-class TracedCallback 
+class TracedCallback
 {
 public:
   /** Constructor. */
@@ -220,7 +220,6 @@ public:
   typedef void (* Uint32Callback)(const uint32_t value);
   /**@}*/
 
-  
 private:
   /**
    * Container type for holding the chain of Callbacks.
@@ -248,14 +247,13 @@ private:
 
 namespace ns3 {
 
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback ()
-  : m_callbackList () 
-{
-}
+  : m_callbackList ()
+{}
 template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
@@ -265,7 +263,9 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (const CallbackBa
 {
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   if (!cb.Assign (callback))
-    NS_FATAL_ERROR_NO_MSG();
+    {
+      NS_FATAL_ERROR_NO_MSG ();
+    }
   m_callbackList.push_back (cb);
 }
 template<typename T1, typename T2,
@@ -277,15 +277,17 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackBase & callback,
 {
   Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   if (!cb.Assign (callback))
-    NS_FATAL_ERROR ("when connecting to " << path);
+    {
+      NS_FATAL_ERROR ("when connecting to " << path);
+    }
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   m_callbackList.push_back (realCb);
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext (const CallbackBase & callback)
 {
   for (typename CallbackList::iterator i = m_callbackList.begin ();
@@ -301,24 +303,26 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext (const Callbac
         }
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const CallbackBase & callback, std::string path)
 {
   Callback<void,std::string,T1,T2,T3,T4,T5,T6,T7,T8> cb;
   if (!cb.Assign (callback))
-    NS_FATAL_ERROR ("when disconnecting from " << path);
+    {
+      NS_FATAL_ERROR ("when disconnecting from " << path);
+    }
   Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> realCb = cb.Bind (path);
   DisconnectWithoutContext (realCb);
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -327,11 +331,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const
       (*i)();
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -340,11 +344,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const
       (*i)(a1);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -353,11 +357,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2) const
       (*i)(a1, a2);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -366,11 +370,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3) const
       (*i)(a1, a2, a3);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -379,11 +383,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4)
       (*i)(a1, a2, a3, a4);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -392,11 +396,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
       (*i)(a1, a2, a3, a4, a5);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -405,11 +409,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
       (*i)(a1, a2, a3, a4, a5, a6);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
@@ -418,11 +422,11 @@ TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4,
       (*i)(a1, a2, a3, a4, a5, a6, a7);
     }
 }
-template<typename T1, typename T2, 
+template<typename T1, typename T2,
          typename T3, typename T4,
          typename T5, typename T6,
          typename T7, typename T8>
-void 
+void
 TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();

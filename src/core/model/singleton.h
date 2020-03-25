@@ -71,7 +71,7 @@ public:
    *
    * \return A pointer to the singleton instance.
    */
-  static T *Get (void);
+  static T * Get (void);
 
 };
 

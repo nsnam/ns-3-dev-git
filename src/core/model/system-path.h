@@ -47,80 +47,80 @@ namespace ns3 {
  */
 namespace SystemPath {
 
-  /**
-   * \ingroup systempath
-   * Get the file system path to the current executable.
-   *
-   * \return The directory in which the currently-executing binary is located
-   */
-  std::string FindSelfDirectory (void);
-  
-  /**
-   * \ingroup systempath
-   * Join two file system path elements.
-   *
-   * \param [in] left A path element
-   * \param [in] right A path element
-   * \return A concatenation of the two input paths
-   */
-  std::string Append (std::string left, std::string right);
+/**
+ * \ingroup systempath
+ * Get the file system path to the current executable.
+ *
+ * \return The directory in which the currently-executing binary is located
+ */
+std::string FindSelfDirectory (void);
 
-  /**
-   * \ingroup systempath
-   * Split a file system path into directories according to
-   * the local path separator.
-   *
-   * This is the inverse of Join.
-   *
-   * \param [in] path A path
-   * \return A list of path elements that can be joined together again with
-   *         the Join function.
-   * \sa ns3::SystemPath::Join
-   */
-  std::list<std::string> Split (std::string path);
+/**
+ * \ingroup systempath
+ * Join two file system path elements.
+ *
+ * \param [in] left A path element
+ * \param [in] right A path element
+ * \return A concatenation of the two input paths
+ */
+std::string Append (std::string left, std::string right);
 
-  /**
-   * Join a list of file system path directories into a single
-   * file system path.
-   *
-   * This is the inverse of Split.
-   *
-   * \ingroup systempath
-   * \param [in] begin Iterator to first element to join
-   * \param [in] end Iterator to one past the last element to join
-   * \return A path that is a concatenation of all the input elements.
-   */
-  std::string Join (std::list<std::string>::const_iterator begin,
-		    std::list<std::string>::const_iterator end);
-  
-  /**
-   * \ingroup systempath
-   * Get the list of files located in a file system directory.
-   *
-   * \param [in] path A path which identifies a directory
-   * \return A list of the filenames which are located in the input directory
-   */
-  std::list<std::string> ReadFiles (std::string path);
+/**
+ * \ingroup systempath
+ * Split a file system path into directories according to
+ * the local path separator.
+ *
+ * This is the inverse of Join.
+ *
+ * \param [in] path A path
+ * \return A list of path elements that can be joined together again with
+ *         the Join function.
+ * \sa ns3::SystemPath::Join
+ */
+std::list<std::string> Split (std::string path);
 
-  /**
-   * \ingroup systempath
-   * Get the name of a temporary directory.
-   *
-   * The returned path identifies a directory which does not exist yet.
-   * Call ns3::SystemPath::MakeDirectories to create it. Yes, there is a
-   * well-known security race in this API but we don't care in ns-3.
-   *
-   * \return A path which identifies a temporary directory.
-   */
-  std::string MakeTemporaryDirectoryName (void);
+/**
+ * Join a list of file system path directories into a single
+ * file system path.
+ *
+ * This is the inverse of Split.
+ *
+ * \ingroup systempath
+ * \param [in] begin Iterator to first element to join
+ * \param [in] end Iterator to one past the last element to join
+ * \return A path that is a concatenation of all the input elements.
+ */
+std::string Join (std::list<std::string>::const_iterator begin,
+                  std::list<std::string>::const_iterator end);
 
-  /**
-   * \ingroup systempath
-   * Create all the directories leading to path.
-   *
-   * \param [in] path A path to a directory
-   */
-  void MakeDirectories (std::string path);
+/**
+ * \ingroup systempath
+ * Get the list of files located in a file system directory.
+ *
+ * \param [in] path A path which identifies a directory
+ * \return A list of the filenames which are located in the input directory
+ */
+std::list<std::string> ReadFiles (std::string path);
+
+/**
+ * \ingroup systempath
+ * Get the name of a temporary directory.
+ *
+ * The returned path identifies a directory which does not exist yet.
+ * Call ns3::SystemPath::MakeDirectories to create it. Yes, there is a
+ * well-known security race in this API but we don't care in ns-3.
+ *
+ * \return A path which identifies a temporary directory.
+ */
+std::string MakeTemporaryDirectoryName (void);
+
+/**
+ * \ingroup systempath
+ * Create all the directories leading to path.
+ *
+ * \param [in] path A path to a directory
+ */
+void MakeDirectories (std::string path);
 
 } // namespace SystemPath
 

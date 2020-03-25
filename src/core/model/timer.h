@@ -272,7 +272,7 @@ private:
   /**
    * Bitfield for Timer State, DestroyPolicy and InternalSuspended.
    *
-   * \internal 
+   * \internal
    * The DestroyPolicy, State and InternalSuspended state are stored
    * in this single bitfield.  The State uses the low-order bits,
    * so the other users of the bitfield have to be careful in defining

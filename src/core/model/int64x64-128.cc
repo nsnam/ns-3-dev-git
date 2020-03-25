@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("int64x64-128");
  * \param [out] ub The unsigned magnitude of the second operand.
  * \returns \c true if the result will be negative.
  */
-static inline  
+static inline
 bool
 output_sign (const int128_t sa,
              const int128_t sb,
@@ -93,7 +93,7 @@ int64x64_t::Umul (const uint128_t a, const uint128_t b)
   // if the high part is not zero, put a warning
   NS_ABORT_MSG_IF ((hiPart & HP_MASK_HI) != 0,
                    "High precision 128 bits multiplication error: multiplication overflow.");
-  
+
   // Adding 64-bit terms to get 128-bit results, with carries
   res1 = loPart >> 64;
   res2 = midPart & HP_MASK_LO;
@@ -121,7 +121,7 @@ int64x64_t::Div (const int64x64_t & o)
 uint128_t
 int64x64_t::Udiv (const uint128_t a, const uint128_t b)
 {
-  
+
   uint128_t rem = a;
   uint128_t den = b;
   uint128_t quo = rem / den;
@@ -131,36 +131,36 @@ int64x64_t::Udiv (const uint128_t a, const uint128_t b)
   // Now, manage the remainder
   const uint64_t DIGITS = 64;  // Number of fraction digits (bits) we need
   const uint128_t ZERO = 0;
-  
+
   NS_ASSERT_MSG (rem < den,
                  "Remainder not less than divisor");
-  
+
   uint64_t digis = 0;          // Number of digits we have already
   uint64_t shift = 0;          // Number we are going to get this round
-  
-    // Skip trailing zeros in divisor
+
+  // Skip trailing zeros in divisor
   while ( (shift < DIGITS) && !(den & 0x1))
     {
       ++shift;
       den >>= 1;
     }
-  
+
   while ( (digis < DIGITS) && (rem != ZERO) )
     {
       // Skip leading zeros in remainder
-      while ( (digis + shift < DIGITS) &&
-              !(rem & HP128_MASK_HI_BIT))
-        {      
+      while ( (digis + shift < DIGITS)
+              && !(rem & HP128_MASK_HI_BIT))
+        {
           ++shift;
           rem <<= 1;
         }
 
       // Cast off denominator bits if:
       //   Need more digits and
-      //     LSB is zero or 
+      //     LSB is zero or
       //     rem < den
-      while ( (digis + shift < DIGITS) &&
-              ( !(den & 0x1) || (rem < den) ) )
+      while ( (digis + shift < DIGITS)
+              && ( !(den & 0x1) || (rem < den) ) )
         {
           ++shift;
           den >>= 1;
@@ -183,11 +183,11 @@ int64x64_t::Udiv (const uint128_t a, const uint128_t b)
       shift = DIGITS - digis;
       result <<= shift;
     }
-  
+
   return result;
 }
 
-void 
+void
 int64x64_t::MulByInvert (const int64x64_t & o)
 {
   bool negResult = _v < 0;
@@ -213,7 +213,7 @@ int64x64_t::UmulByInvert (const uint128_t a, const uint128_t b)
   return result;
 }
 
-int64x64_t 
+int64x64_t
 int64x64_t::Invert (const uint64_t v)
 {
   NS_ASSERT (v > 1);

@@ -129,7 +129,9 @@ void FdReader::Stop (void)
       char zero = 0;
       ssize_t len = write (m_evpipe[1], &zero, sizeof (zero));
       if (len != sizeof (zero))
-        NS_LOG_WARN ("incomplete write(): " << std::strerror (errno));
+        {
+          NS_LOG_WARN ("incomplete write(): " << std::strerror (errno));
+        }
     }
 
   // join the read thread

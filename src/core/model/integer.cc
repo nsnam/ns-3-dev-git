@@ -54,8 +54,10 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
     IntegerChecker (int64_t minValue, int64_t maxValue, std::string name)
       : m_minValue (minValue),
         m_maxValue (maxValue),
-        m_name (name) {}
-    virtual bool Check (const AttributeValue &value) const {
+        m_name (name)
+    {}
+    virtual bool Check (const AttributeValue &value) const
+    {
       NS_LOG_FUNCTION (&value);
       const IntegerValue *v = dynamic_cast<const IntegerValue *> (&value);
       if (v == 0)
@@ -64,25 +66,30 @@ MakeIntegerChecker (int64_t min, int64_t max, std::string name)
         }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetValueTypeName (void) const {
+    virtual std::string GetValueTypeName (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return "ns3::IntegerValue";
     }
-    virtual bool HasUnderlyingTypeInformation (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Ptr<AttributeValue> Create (void) const {
+    virtual Ptr<AttributeValue> Create (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<IntegerValue> ();
     }
-    virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const {
+    virtual bool Copy (const AttributeValue &src, AttributeValue &dst) const
+    {
       NS_LOG_FUNCTION (&src << &dst);
       const IntegerValue *source = dynamic_cast<const IntegerValue *> (&src);
       IntegerValue *destination = dynamic_cast<IntegerValue *> (&dst);

@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE("ObjectFactory");
+NS_LOG_COMPONENT_DEFINE ("ObjectFactory");
 
 ObjectFactory::ObjectFactory ()
 {
@@ -77,7 +77,7 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
     {
       return;
     }
-  
+
   struct TypeId::AttributeInformation info;
   if (!m_tid.LookupAttributeByName (name, &info))
     {
@@ -93,14 +93,14 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
   m_parameters.Add (name, info.checker, value.Copy ());
 }
 
-TypeId 
+TypeId
 ObjectFactory::GetTypeId (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_tid;
 }
 
-Ptr<Object> 
+Ptr<Object>
 ObjectFactory::Create (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -148,7 +148,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
   NS_ASSERT (lbracket != std::string::npos);
   NS_ASSERT (rbracket != std::string::npos);
   std::string tid = v.substr (0, lbracket);
-  std::string parameters = v.substr (lbracket+1,rbracket-(lbracket+1));
+  std::string parameters = v.substr (lbracket + 1,rbracket - (lbracket + 1));
   factory.SetTypeId (tid);
   std::string::size_type cur;
   cur = 0;
@@ -162,7 +162,7 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
         }
       else
         {
-          std::string name = parameters.substr (cur, equal-cur);
+          std::string name = parameters.substr (cur, equal - cur);
           struct TypeId::AttributeInformation info;
           if (!factory.m_tid.LookupAttributeByName (name, &info))
             {
@@ -175,12 +175,12 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
               std::string value;
               if (next == std::string::npos)
                 {
-                  value = parameters.substr (equal+1, parameters.size () - (equal+1));
+                  value = parameters.substr (equal + 1, parameters.size () - (equal + 1));
                   cur = parameters.size ();
                 }
               else
                 {
-                  value = parameters.substr (equal+1, next - (equal+1));
+                  value = parameters.substr (equal + 1, next - (equal + 1));
                   cur = next + 1;
                 }
               Ptr<AttributeValue> val = info.checker->Create ();

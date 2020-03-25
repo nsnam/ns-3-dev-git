@@ -71,9 +71,9 @@ public:
   void SetTypeId (const char *tid);
   void SetTypeId (std::string tid);
   /**@}*/
-  
+
   /**
-   * Check if the ObjectFactory has been configured with a TypeId 
+   * Check if the ObjectFactory has been configured with a TypeId
    *
    * \return true if a TypeId has been configured to the ObjectFactory
    */
@@ -142,7 +142,7 @@ private:
    * The list of attributes and values to be used in constructing
    * objects by this factory.
    */
-  AttributeConstructionList m_parameters;  
+  AttributeConstructionList m_parameters;
 };
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
@@ -175,18 +175,17 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
  * \returns A pointer to a newly allocated object.
  */
 template <typename T>
-Ptr<T> 
-CreateObjectWithAttributes
-  (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
-   std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
-   std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
-   std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
-   std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
-   std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
-   std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
-   std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
-   std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ()
-   );
+Ptr<T>
+CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
+                            std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
+                            std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
+                            std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
+                            std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
+                            std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
+                            std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
+                            std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
+                            std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ()
+                            );
 
 
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);
@@ -201,7 +200,7 @@ ATTRIBUTE_HELPER_HEADER (ObjectFactory);
 namespace ns3 {
 
 template <typename T>
-Ptr<T> 
+Ptr<T>
 ObjectFactory::Create (void) const
 {
   Ptr<Object> object = Create ();
@@ -209,7 +208,7 @@ ObjectFactory::Create (void) const
 }
 
 template <typename T>
-Ptr<T> 
+Ptr<T>
 CreateObjectWithAttributes (std::string n1, const AttributeValue & v1,
                             std::string n2, const AttributeValue & v2,
                             std::string n3, const AttributeValue & v3,
@@ -222,15 +221,15 @@ CreateObjectWithAttributes (std::string n1, const AttributeValue & v1,
 {
   ObjectFactory factory;
   factory.SetTypeId (T::GetTypeId ());
-  factory.Set(n1, v1);
-  factory.Set(n2, v2);
-  factory.Set(n3, v3);
-  factory.Set(n4, v4);
-  factory.Set(n5, v5);
-  factory.Set(n6, v6);
-  factory.Set(n7, v7);
-  factory.Set(n8, v8);
-  factory.Set(n9, v9);
+  factory.Set (n1, v1);
+  factory.Set (n2, v2);
+  factory.Set (n3, v3);
+  factory.Set (n4, v4);
+  factory.Set (n5, v5);
+  factory.Set (n6, v6);
+  factory.Set (n7, v7);
+  factory.Set (n8, v8);
+  factory.Set (n9, v9);
   return factory.Create<T> ();
 }
 

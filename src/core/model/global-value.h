@@ -33,11 +33,11 @@
 
 namespace ns3 {
 
-  /* Forward declaration */
-  namespace tests {
-    class GlobalValueTestCase;
-  }
-  
+/* Forward declaration */
+namespace tests {
+class GlobalValueTestCase;
+}
+
 /**
  * \ingroup Core
  *
@@ -49,7 +49,7 @@ namespace ns3 {
  *   - From the command line,
  *   - By explicit call to SetValue() or Bind().
  *
- * Instances of this class are expected to be allocated as static 
+ * Instances of this class are expected to be allocated as static
  * global variables and should be used to store configurable global state.
  * For example:
  * \code
@@ -64,9 +64,9 @@ namespace ns3 {
  * but they can also be set through the \c NS_GLOBAL_VALUE environment variable.
  * For example, \c NS_GLOBAL_VALUE='Name=Value;OtherName=OtherValue;' would set
  * global values \c Name and \c OtherName to \c Value and \c OtherValue,
- * respectively. 
+ * respectively.
  *
- * Users of the CommandLine class also get the ability to set global 
+ * Users of the CommandLine class also get the ability to set global
  * values through command line arguments to their program:
  * \c --Name=Value will set global value \c Name to \c Value.
  */
@@ -74,7 +74,7 @@ class GlobalValue
 {
   /** Container type for holding all the GlobalValues. */
   typedef std::vector<GlobalValue *> Vector;
-  
+
 public:
   /** Iterator type for the list of all global values. */
   typedef Vector::const_iterator Iterator;
@@ -160,28 +160,27 @@ public:
   static Iterator End (void);
 
 
-  /** 
+  /**
    * Finds the GlobalValue with the given name and returns its value
-   * 
+   *
    * \param [in] name the name of the GlobalValue to be found
    * \param [out] value where to store the value of the found GlobalValue
-   * 
+   *
    * \return \c true if the GlobalValue was found, \c false otherwise
    */
   static bool GetValueByNameFailSafe (std::string name, AttributeValue &value);
 
-  /** 
+  /**
    * Finds the GlobalValue with the given name and returns its
    * value.
    *
    * This method cannot fail, i.e., it will trigger a
    * NS_FATAL_ERROR if the requested GlobalValue is not found.
-   * 
+   *
    * \param [in] name the name of the GlobalValue to be found
    * \param [out] value where to store the value of the found GlobalValue
    */
   static void GetValueByName (std::string name, AttributeValue &value);
-
 
 private:
   // Test case needs direct access to GetVector()
@@ -192,7 +191,7 @@ private:
    *
    * \returns The vector.
    */
-  static Vector *GetVector (void);
+  static Vector * GetVector (void);
   /** Initialize from the \c NS_GLOBAL_VALUE environment variable. */
   void InitializeFromEnv (void);
 

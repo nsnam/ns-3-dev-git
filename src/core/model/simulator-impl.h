@@ -48,7 +48,7 @@ class Scheduler;
 class SimulatorImpl : public Object
 {
 public:
-  
+
   /**
    * Get the registered TypeId for this class.
    * \return The object TypeId.
@@ -96,7 +96,7 @@ public:
    */
   virtual void SetScheduler (ObjectFactory schedulerFactory) = 0;
   /** \copydoc Simulator::GetSystemId */
-  virtual uint32_t GetSystemId () const = 0; 
+  virtual uint32_t GetSystemId () const = 0;
   /** \copydoc Simulator::GetContext */
   virtual uint32_t GetContext (void) const = 0;
   /** \copydoc Simulator::GetEventCount */

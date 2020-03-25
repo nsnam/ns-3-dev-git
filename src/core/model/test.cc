@@ -66,7 +66,7 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
       return false;
     }
   return true;
-} 
+}
 
 /**
  * \ingroup testingimpl
@@ -84,8 +84,8 @@ struct TestCaseFailure
    * \param [in] _file    The source file.
    * \param [in] _line    The source line.
    */
-  TestCaseFailure (std::string _cond, std::string _actual, 
-                   std::string _limit, std::string _message, 
+  TestCaseFailure (std::string _cond, std::string _actual,
+                   std::string _limit, std::string _message,
                    std::string _file, int32_t _line);
   std::string cond;    /**< The name of the condition being tested. */
   std::string actual;  /**< The actual value returned by the test. */
@@ -107,7 +107,7 @@ std::ostream & operator << (std::ostream & os, const TestCaseFailure & failure)
      << "\" actual=\"" << failure.actual
      << "\" limit=\""  << failure.limit
      << "\" in=\""     << failure.file
-     << ":"            << failure.line 
+     << ":"            << failure.line
      << "\" "          << failure.message;
 
   return os;
@@ -140,7 +140,7 @@ class TestRunnerImpl : public Singleton<TestRunnerImpl>
 public:
   /** Constructor. */
   TestRunnerImpl ();
-  
+
   /**
    * Add a new top-level TestSuite.
    * \param [in] testSuite The new TestSuite.
@@ -184,7 +184,7 @@ private:
    * Clean up characters not allowed in XML.
    *
    * XML files have restrictions on certain characters that may be present in
-   * data.  We need to replace these characters with their alternate 
+   * data.  We need to replace these characters with their alternate
    * representation on the way into the XML file.
    *
    * Specifically, we make these replacements:
@@ -216,7 +216,7 @@ private:
    * \param [in] end Iterator to the end of the list.
    * \param [in] printTestType Preprend the test type label if \c true.
    */
-  void PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
+  void PrintTestNameList (std::list<TestCase *>::const_iterator begin,
                           std::list<TestCase *>::const_iterator end,
                           bool printTestType) const;
   /** Print the list of test types. */
@@ -255,8 +255,8 @@ private:
 
 
 
-TestCaseFailure::TestCaseFailure (std::string _cond, std::string _actual, 
-                                  std::string _limit, std::string _message, 
+TestCaseFailure::TestCaseFailure (std::string _cond, std::string _actual,
+                                  std::string _limit, std::string _message,
                                   std::string _file, int32_t _line)
   : cond (_cond), actual (_actual), limit (_limit),
     message (_message), file (_file), line (_line)
@@ -310,7 +310,7 @@ TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
   //
   // The Windows list is too restrictive:  we like to label
   // tests with "val = v1 * v2" or "v1 < 3" or "case: foo --> bar"
-  // So we allow ':<>*" 
+  // So we allow ':<>*"
 
   std::string badchars = "\"/\\|?";
   // Badchar Class  Regex          Count of failing test names
@@ -328,7 +328,7 @@ TestCase::AddTestCase (TestCase *testCase, enum TestCase::TestDuration duration)
         $ ./waf --run "test-runner --list" 2>&1 | grep "^Invalid" | wc
       */
       NS_LOG_UNCOND ("Invalid test name: cannot contain any of '"
-                      << badchars << "': " << testCase->m_name);
+                     << badchars << "': " << testCase->m_name);
     }
 
   testCase->m_duration = duration;
@@ -343,7 +343,7 @@ TestCase::IsFailed (void) const
   return m_result->childrenFailed || !m_result->failure.empty ();
 }
 
-void 
+void
 TestCase::Run (TestRunnerImpl *runner)
 {
   NS_LOG_FUNCTION (this << runner);
@@ -361,12 +361,12 @@ TestCase::Run (TestRunnerImpl *runner)
         }
     }
   DoRun ();
- out:
+out:
   m_result->clock.End ();
   DoTeardown ();
   m_runner = 0;
 }
-std::string 
+std::string
 TestCase::GetName (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -379,8 +379,8 @@ TestCase::GetParent () const
 }
 
 void
-TestCase::ReportTestFailure (std::string cond, std::string actual, 
-                             std::string limit, std::string message, 
+TestCase::ReportTestFailure (std::string cond, std::string actual,
+                             std::string limit, std::string message,
                              std::string file, int32_t line)
 {
   NS_LOG_FUNCTION (this << cond << actual << limit << message << file << line);
@@ -395,20 +395,20 @@ TestCase::ReportTestFailure (std::string cond, std::string actual,
     }
 
 }
-bool 
+bool
 TestCase::MustAssertOnFailure (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_runner->MustAssertOnFailure ();
 }
-bool 
+bool
 TestCase::MustContinueOnFailure (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_runner->MustContinueOnFailure ();
 }
 
-std::string 
+std::string
 TestCase::CreateDataDirFilename (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
@@ -426,7 +426,7 @@ TestCase::CreateDataDirFilename (std::string filename)
   std::string b = SystemPath::Append (a, filename);
   return b;
 }
-std::string 
+std::string
 TestCase::CreateTempDirFilename (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
@@ -448,32 +448,32 @@ TestCase::CreateTempDirFilename (std::string filename)
       return SystemPath::Append (tempDir, filename);
     }
 }
-bool 
+bool
 TestCase::IsStatusFailure (void) const
 {
   NS_LOG_FUNCTION (this);
   return !IsStatusSuccess ();
 }
-bool 
+bool
 TestCase::IsStatusSuccess (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_result->failure.empty ();
 }
 
-void 
+void
 TestCase::SetDataDir (std::string directory)
 {
   NS_LOG_FUNCTION (this << directory);
   m_dataDir = directory;
 }
 
-void 
+void
 TestCase::DoSetup (void)
 {
   NS_LOG_FUNCTION (this);
 }
-void 
+void
 TestCase::DoTeardown (void)
 {
   NS_LOG_FUNCTION (this);
@@ -481,31 +481,31 @@ TestCase::DoTeardown (void)
 
 
 TestSuite::TestSuite (std::string name, TestSuite::Type type)
-  : TestCase (name), 
+  : TestCase (name),
     m_type (type)
 {
   NS_LOG_FUNCTION (this << name << type);
   TestRunnerImpl::Get ()->AddTestSuite (this);
 }
 
-TestSuite::Type 
+TestSuite::Type
 TestSuite::GetTestType (void)
 {
   NS_LOG_FUNCTION (this);
   return m_type;
 }
 
-void 
+void
 TestSuite::DoRun (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 TestRunnerImpl::TestRunnerImpl ()
- : m_tempDir (""),
-   m_assertOnFailure (false),
-   m_continueOnFailure (true),
-   m_updateData (false)
+  : m_tempDir (""),
+    m_assertOnFailure (false),
+    m_continueOnFailure (true),
+    m_updateData (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -518,20 +518,20 @@ TestRunnerImpl::AddTestSuite (TestSuite *testSuite)
 }
 
 
-bool 
+bool
 TestRunnerImpl::MustAssertOnFailure (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_assertOnFailure;
 }
-bool 
+bool
 TestRunnerImpl::MustContinueOnFailure (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_continueOnFailure;
 }
 
-bool 
+bool
 TestRunnerImpl::MustUpdateData (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -549,7 +549,7 @@ TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
   NS_LOG_FUNCTION (this << path);
   bool haveVersion = false;
   bool haveLicense = false;
-  
+
   //
   // If there's a file named VERSION and a file named LICENSE in this
   // directory, we assume it's our top level source directory.
@@ -567,11 +567,11 @@ TestRunnerImpl::IsTopLevelSourceDir (std::string path) const
           haveLicense = true;
         }
     }
-  
+
   return haveVersion && haveLicense;
 }
 
-std::string 
+std::string
 TestRunnerImpl::GetTopLevelSourceDir (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -591,7 +591,7 @@ TestRunnerImpl::GetTopLevelSourceDir (void) const
 
 //
 // XML files have restrictions on certain characters that may be present in
-// data.  We need to replace these characters with their alternate 
+// data.  We need to replace these characters with their alternate
 // representation on the way into the XML file.
 //
 std::string
@@ -676,31 +676,31 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
   std::streamsize oldPrecision = (*os).precision (3);
   *os << std::fixed;
 
-  std::string statusString = test->IsFailed ()?"FAIL":"PASS";
+  std::string statusString = test->IsFailed () ? "FAIL" : "PASS";
   if (xml)
     {
       *os << Indent (level) << "<Test>" << std::endl;
-      *os << Indent (level+1) << "<Name>" << ReplaceXmlSpecialCharacters (test->m_name)
+      *os << Indent (level + 1) << "<Name>" << ReplaceXmlSpecialCharacters (test->m_name)
           << "</Name>" << std::endl;
-      *os << Indent (level+1) << "<Result>" << statusString << "</Result>" << std::endl;
-      *os << Indent (level+1) << "<Time real=\"" << real << "\" user=\"" << user 
+      *os << Indent (level + 1) << "<Result>" << statusString << "</Result>" << std::endl;
+      *os << Indent (level + 1) << "<Time real=\"" << real << "\" user=\"" << user
           << "\" system=\"" << system << "\"/>" << std::endl;
       for (uint32_t i = 0; i < test->m_result->failure.size (); i++)
         {
           TestCaseFailure failure = test->m_result->failure[i];
-          *os << Indent (level+2) << "<FailureDetails>" << std::endl
-              << Indent (level+3) << "<Condition>" 
+          *os << Indent (level + 2) << "<FailureDetails>" << std::endl
+              << Indent (level + 3) << "<Condition>"
               << ReplaceXmlSpecialCharacters (failure.cond) << "</Condition>" << std::endl
-              << Indent (level+3) << "<Actual>" 
+              << Indent (level + 3) << "<Actual>"
               << ReplaceXmlSpecialCharacters (failure.actual) << "</Actual>" << std::endl
-              << Indent (level+3) << "<Limit>" 
+              << Indent (level + 3) << "<Limit>"
               << ReplaceXmlSpecialCharacters (failure.limit) << "</Limit>" << std::endl
-              << Indent (level+3) << "<Message>" 
+              << Indent (level + 3) << "<Message>"
               << ReplaceXmlSpecialCharacters (failure.message) << "</Message>" << std::endl
-              << Indent (level+3) << "<File>" 
+              << Indent (level + 3) << "<File>"
               << ReplaceXmlSpecialCharacters (failure.file) << "</File>" << std::endl
-              << Indent (level+3) << "<Line>" << failure.line << "</Line>" << std::endl
-              << Indent (level+2) << "</FailureDetails>" << std::endl;
+              << Indent (level + 3) << "<Line>" << failure.line << "</Line>" << std::endl
+              << Indent (level + 2) << "</FailureDetails>" << std::endl;
         }
       for (uint32_t i = 0; i < test->m_children.size (); i++)
         {
@@ -711,7 +711,7 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
     }
   else
     {
-      *os << Indent (level) << statusString << " " << test->GetName () 
+      *os << Indent (level) << statusString << " " << test->GetName ()
           << " " << real << " s" << std::endl;
       if (m_verbose)
         {
@@ -727,10 +727,10 @@ TestRunnerImpl::PrintReport (TestCase *test, std::ostream *os, bool xml, int lev
         }
     }
 
-  (*os).unsetf(std::ios_base::floatfield);
+  (*os).unsetf (std::ios_base::floatfield);
   (*os).precision (oldPrecision);
 }
-  
+
 void
 TestRunnerImpl::PrintHelp (const char *program_name) const
 {
@@ -765,11 +765,11 @@ TestRunnerImpl::PrintHelp (const char *program_name) const
             << "output" << std::endl
             << "  --append=FILE          : append test result to FILE instead of standard "
             << "output" << std::endl
-    ;  
+  ;
 }
 
 void
-TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin, 
+TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
                                    std::list<TestCase *>::const_iterator end,
                                    bool printTestType) const
 {
@@ -784,7 +784,7 @@ TestRunnerImpl::PrintTestNameList (std::list<TestCase *>::const_iterator begin,
 
   for (std::list<TestCase *>::const_iterator i = begin; i != end; ++i)
     {
-      TestSuite * test= dynamic_cast<TestSuite *>(*i);
+      TestSuite * test = dynamic_cast<TestSuite *> (*i);
       NS_ASSERT (test != 0);
       if (printTestType)
         {
@@ -858,7 +858,7 @@ TestRunnerImpl::FilterTests (std::string testName,
 }
 
 
-int 
+int
 TestRunnerImpl::Run (int argc, char *argv[])
 {
   NS_LOG_FUNCTION (this << argc << argv);
@@ -882,7 +882,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
     {
       char *arg = *argi;
 
-      if (strcmp(arg, "--assert-on-failure") == 0)
+      if (strcmp (arg, "--assert-on-failure") == 0)
         {
           m_assertOnFailure = true;
         }
@@ -907,8 +907,8 @@ TestRunnerImpl::Run (int argc, char *argv[])
           PrintHelp (progname);
           return 0;
         }
-      else if (strcmp (arg, "--print-test-name-list") == 0 ||
-               strcmp(arg, "--list") == 0)
+      else if (strcmp (arg, "--print-test-name-list") == 0
+               || strcmp (arg, "--list") == 0)
         {
           printTestNameList = true;
         }
@@ -920,37 +920,37 @@ TestRunnerImpl::Run (int argc, char *argv[])
         {
           printTestTypeList = true;
         }
-     else if (strcmp(arg, "--append") == 0)
+      else if (strcmp (arg, "--append") == 0)
         {
           append = true;
         }
-      else if (strcmp(arg, "--xml") == 0)
+      else if (strcmp (arg, "--xml") == 0)
         {
           xml = true;
         }
-      else if (strncmp(arg, "--test-type=", strlen("--test-type=")) == 0)
+      else if (strncmp (arg, "--test-type=", strlen ("--test-type=")) == 0)
         {
-          testTypeString = arg + strlen("--test-type=");
+          testTypeString = arg + strlen ("--test-type=");
         }
-      else if (strncmp(arg, "--test-name=", strlen("--test-name=")) == 0)
+      else if (strncmp (arg, "--test-name=", strlen ("--test-name=")) == 0)
         {
-          testName = arg + strlen("--test-name=");
+          testName = arg + strlen ("--test-name=");
         }
-      else if (strncmp(arg, "--suite=", strlen("--suite=")) == 0)
+      else if (strncmp (arg, "--suite=", strlen ("--suite=")) == 0)
         {
-          testName = arg + strlen("--suite=");
+          testName = arg + strlen ("--suite=");
         }
-      else if (strncmp(arg, "--tempdir=", strlen("--tempdir=")) == 0)
+      else if (strncmp (arg, "--tempdir=", strlen ("--tempdir=")) == 0)
         {
-          m_tempDir = arg + strlen("--tempdir=");
+          m_tempDir = arg + strlen ("--tempdir=");
         }
-      else if (strncmp(arg, "--out=", strlen("--out=")) == 0)
+      else if (strncmp (arg, "--out=", strlen ("--out=")) == 0)
         {
-          out = arg + strlen("--out=");
+          out = arg + strlen ("--out=");
         }
-      else if (strncmp(arg, "--fullness=", strlen("--fullness=")) == 0)
+      else if (strncmp (arg, "--fullness=", strlen ("--fullness=")) == 0)
         {
-          fullness = arg + strlen("--fullness=");
+          fullness = arg + strlen ("--fullness=");
 
           // Set the maximum test length allowed.
           if (fullness == "QUICK")
@@ -1032,13 +1032,13 @@ TestRunnerImpl::Run (int argc, char *argv[])
       PrintTestTypeList ();
       return 0;
     }
-  
+
 
   std::ostream *os;
   if (out != "")
     {
       std::ofstream *ofs;
-      ofs = new std::ofstream();
+      ofs = new std::ofstream ();
       std::ios_base::openmode mode = std::ios_base::out;
       if (append)
         {
@@ -1090,7 +1090,7 @@ TestRunnerImpl::Run (int argc, char *argv[])
         DesMetrics::Get ()->Initialize (desargs, m_tempDir);
       }
 #endif
-      
+
       test->Run (this);
       PrintReport (test, os, xml, 0);
       if (test->IsFailed ())
@@ -1108,10 +1108,10 @@ TestRunnerImpl::Run (int argc, char *argv[])
       delete os;
     }
 
-  return failed?1:0;
+  return failed ? 1 : 0;
 }
 
-int 
+int
 TestRunner::Run (int argc, char *argv[])
 {
   NS_LOG_FUNCTION (argc << argv);

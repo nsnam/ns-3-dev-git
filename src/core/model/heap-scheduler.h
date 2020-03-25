@@ -151,7 +151,7 @@ private:
    * \param [in] b The second item.
    */
   inline void Exch (std::size_t a, std::size_t b);
-  /** Percolate a newly inserted Last item to its proper position. */ 
+  /** Percolate a newly inserted Last item to its proper position. */
   void BottomUp (void);
   /**
    * Percolate a deletion bubble down the heap.

@@ -86,9 +86,10 @@ private:
   void ProcessOneEvent (void);
   /** Move events from a different context into the main event queue. */
   void ProcessEventsWithContext (void);
- 
+
   /** Wrap an event with its execution context. */
-  struct EventWithContext {
+  struct EventWithContext
+  {
     /** The event context. */
     uint32_t context;
     /** Event timestamp. */

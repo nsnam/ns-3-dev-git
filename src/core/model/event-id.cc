@@ -73,19 +73,19 @@ EventId::PeekEventImpl (void) const
   NS_LOG_FUNCTION (this);
   return PeekPointer (m_eventImpl);
 }
-uint64_t 
+uint64_t
 EventId::GetTs (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_ts;
 }
-uint32_t 
+uint32_t
 EventId::GetContext (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_context;
 }
-uint32_t 
+uint32_t
 EventId::GetUid (void) const
 {
   NS_LOG_FUNCTION (this);

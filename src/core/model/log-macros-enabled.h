@@ -73,8 +73,8 @@
 #define NS_LOG_APPEND_FUNC_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
     {                                                           \
-      std::clog << g_log.Name () << ":" <<                      \
-      __FUNCTION__ << "(): ";                                   \
+      std::clog << g_log.Name () << ":"                         \
+                << __FUNCTION__ << "(): ";                      \
     }                                                           \
 
 /**
@@ -151,8 +151,7 @@
  */
 #define NS_LOG(level, msg)                                      \
   NS_LOG_CONDITION                                              \
-  do                                                            \
-    {                                                           \
+  do {                                                          \
       if (g_log.IsEnabled (level))                              \
         {                                                       \
           NS_LOG_APPEND_TIME_PREFIX;                            \
@@ -162,8 +161,7 @@
           NS_LOG_APPEND_LEVEL_PREFIX (level);                   \
           std::clog << msg << std::endl;                        \
         }                                                       \
-    }                                                           \
-  while (false)
+    } while (false)
 
 /**
  * \ingroup logging
@@ -175,8 +173,7 @@
  */
 #define NS_LOG_FUNCTION_NOARGS()                                \
   NS_LOG_CONDITION                                              \
-  do                                                            \
-    {                                                           \
+  do {                                                          \
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
           NS_LOG_APPEND_TIME_PREFIX;                            \
@@ -185,8 +182,7 @@
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "()" << std::endl;       \
         }                                                       \
-    }                                                           \
-  while (false)
+    } while (false)
 
 
 /**
@@ -236,12 +232,10 @@
  * \param [in] msg The message to log
  */
 #define NS_LOG_UNCOND(msg)              \
-  NS_LOG_CONDITION                                              \
-  do                                    \
-    {                                   \
+  NS_LOG_CONDITION                      \
+  do {                                  \
       std::clog << msg << std::endl;    \
-    }                                   \
-  while (false)
+    } while (false)
 
 
 #endif /* NS3_LOG_ENABLE */

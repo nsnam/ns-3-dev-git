@@ -64,7 +64,8 @@ public:
    * specifically the double implementation.  To handle this,
    * we expose the underlying implementation type here.
    */
-  enum impl_type {
+  enum impl_type
+  {
     int128_impl,  //!< Native int128_t implementation.
     cairo_impl,   //!< cairo wideint implementation
     ld_impl,      //!< long double implementation
@@ -75,7 +76,8 @@ public:
 
   /// Default constructor
   inline int64x64_t ()
-    : _v (0) {}
+    : _v (0)
+  {}
   /**@{*/
   /**
    * Construct from a floating point value.
@@ -83,9 +85,11 @@ public:
    * \param [in] v Floating value to represent
    */
   inline int64x64_t (double v)
-    : _v (v) {}
+    : _v (v)
+  {}
   inline int64x64_t (long double v)
-    : _v (v) {}
+    : _v (v)
+  {}
   /**@}*/
 
   /**@{*/
@@ -95,17 +99,23 @@ public:
    * \param [in] v Integer value to represent
    */
   inline int64x64_t (int v)
-    : _v (v) {}
+    : _v (v)
+  {}
   inline int64x64_t (long int v)
-    : _v (v) {}
+    : _v (v)
+  {}
   inline int64x64_t (long long int v)
-    : _v (static_cast<double> (v)) {}
+    : _v (static_cast<double> (v))
+  {}
   inline int64x64_t (unsigned int v)
-    : _v (v) {}
+    : _v (v)
+  {}
   inline int64x64_t (unsigned long int v)
-    : _v (v) {}
+    : _v (v)
+  {}
   inline int64x64_t (unsigned long long int v)
-    : _v (static_cast<double> (v)) {}
+    : _v (static_cast<double> (v))
+  {}
   /**@}*/
   /**
    * Construct from explicit high and low values.
@@ -116,10 +126,10 @@ public:
   explicit inline int64x64_t (int64_t hi, uint64_t lo)
   {
     const bool negative = hi < 0;
-    const long double hild = static_cast<long double> (hi); 
+    const long double hild = static_cast<long double> (hi);
     const long double fhi = negative ? -hild : hild;
     const long double flo = lo / HP_MAX_64;
-    _v = negative ? - fhi : fhi;
+    _v = negative ? -fhi : fhi;
     _v += flo;
     // _v = negative ? -_v : _v;
   }
@@ -130,7 +140,8 @@ public:
    * \param [in] o Value to copy.
    */
   inline int64x64_t (const int64x64_t & o)
-    : _v (o._v) {}
+    : _v (o._v)
+  {}
   /**
    * Assignment.
    *
@@ -151,6 +162,7 @@ public:
   {
     return (double)_v;
   }
+
 private:
   /**
    * Get the high and low portions of this value.
@@ -158,7 +170,7 @@ private:
    * \return A pair of the high and low words
    */
   std::pair<int64_t, uint64_t> GetHighLow (void) const
-    {
+  {
     const bool negative = _v < 0;
     const long double v = negative ? -_v : _v;
 
@@ -178,20 +190,21 @@ private:
     uint64_t lo = static_cast<uint64_t> (flo);
     if (flo >= HP_MAX_64)
       {
-	// conversion to uint64 rolled over
-	++hi;
+        // conversion to uint64 rolled over
+        ++hi;
       }
     if (negative)
       {
-	lo = ~lo;
-	hi = ~hi;
-	if (++lo == 0)
-	  {
-	    ++hi;
-	  }
+        lo = ~lo;
+        hi = ~hi;
+        if (++lo == 0)
+          {
+            ++hi;
+          }
       }
     return std::make_pair (hi, lo);
-    }
+  }
+
 public:
   /**
    * Get the integer portion.
@@ -243,7 +256,7 @@ private:
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  
+
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);

@@ -72,7 +72,7 @@ public:
    * time just as you might have different files of the same name
    * under different directories.
    *
-   * \param [in] name The name of the object you want to associate; which may be 
+   * \param [in] name The name of the object you want to associate; which may be
    *             prepended with a path to that object.
    * \param [in] object A smart pointer to the object itself.
    */
@@ -126,7 +126,7 @@ public:
    * file name.  Recall that the path string actually refers to a
    * previously named object, "under" which you want to accomplish
    * some naming action.
-   * 
+   *
    * However, the path is sometimes not available, and you only have
    * the object that is represented by the path in the names name
    * space.  To support this use-case in a reasonably high-performance
@@ -239,7 +239,7 @@ public:
    * file name.  Recall that the path string actually refers to a
    * previously named object, "under" which you want to accomplish
    * some naming action.
-   * 
+   *
    * However, the path is sometimes not available, and you only have
    * the object that is represented by the path in the names name
    * space.  To support this use-case in a reasonably high-performance
@@ -326,7 +326,7 @@ public:
    * in the system with that associated to it.  If there is, do a
    * GetObject on the resulting object to convert it to the requested
    * typename and return it.
-   * 
+   *
    * An object can be referred to in two ways.  Either you can talk
    * about it using its fully qualified path name, for example,
    * "/Names/client/eth0" or you can refer to it by its name, in this
@@ -449,10 +449,10 @@ private:
   static Ptr<Object> FindInternal (Ptr<Object> context, std::string name);
 };
 
-  
+
 template <typename T>
 /* static */
-Ptr<T> 
+Ptr<T>
 Names::Find (std::string path)
 {
   Ptr<Object> obj = FindInternal (path);
@@ -468,7 +468,7 @@ Names::Find (std::string path)
 
 template <typename T>
 /* static */
-Ptr<T> 
+Ptr<T>
 Names::Find (std::string path, std::string name)
 {
   Ptr<Object> obj = FindInternal (path, name);
@@ -484,7 +484,7 @@ Names::Find (std::string path, std::string name)
 
 template <typename T>
 /* static */
-Ptr<T> 
+Ptr<T>
 Names::Find (Ptr<Object> context, std::string name)
 {
   Ptr<Object> obj = FindInternal (context, name);

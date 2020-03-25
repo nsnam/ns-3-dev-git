@@ -45,7 +45,7 @@ namespace ns3 {
 class int64x64_t
 {
   /// uint128_t high bit (sign bit).
-  static const uint128_t   HP128_MASK_HI_BIT = (((int128_t)1)<<127);
+  static const uint128_t   HP128_MASK_HI_BIT = (((int128_t)1) << 127);
   /// Mask for fraction part.
   static const uint64_t    HP_MASK_LO = 0xffffffffffffffffULL;
   /// Mask for sign + integer part.
@@ -73,7 +73,8 @@ public:
    * specifically the double implementation.  To handle this,
    * we expose the underlying implementation type here.
    */
-  enum impl_type {
+  enum impl_type
+  {
     int128_impl,  //!< Native \c int128_t implementation.
     cairo_impl,   //!< Cairo wideint implementation.
     ld_impl,      //!< `long double` implementation.
@@ -84,7 +85,8 @@ public:
 
   /// Default constructor.
   inline int64x64_t ()
-    : _v (0)  {}
+    : _v (0)
+  {}
   /**
    * \name Construct from a floating point value.
    *
@@ -117,8 +119,8 @@ public:
     const uint64_t lo = flo;
     if (flo >= HP_MAX_64)
       {
-	// conversion to uint64 rolled over
-	++hi;
+        // conversion to uint64 rolled over
+        ++hi;
       }
     _v = hi << 64;
     _v |= lo;
@@ -138,12 +140,12 @@ public:
     _v <<= 64;
   }
   inline int64x64_t (const long int v)
-    : _v (v) 
+    : _v (v)
   {
     _v <<= 64;
   }
   inline int64x64_t (const long long int v)
-    : _v (v) 
+    : _v (v)
   {
     _v <<= 64;
   }
@@ -153,17 +155,17 @@ public:
     _v <<= 64;
   }
   inline int64x64_t (const unsigned long int v)
-    : _v (v) 
+    : _v (v)
   {
     _v <<= 64;
   }
   inline int64x64_t (const unsigned long long int v)
-    : _v (v) 
+    : _v (v)
   {
     _v <<= 64;
   }
   /**@}*/
-  
+
   /**
    * Construct from explicit high and low values.
    *
@@ -182,7 +184,8 @@ public:
    * \param [in] o Value to copy.
    */
   inline int64x64_t (const int64x64_t & o)
-    : _v (o._v) {}
+    : _v (o._v)
+  {}
   /**
    * Assignment.
    *
@@ -263,7 +266,7 @@ private:
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  
+
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);
@@ -276,7 +279,7 @@ private:
    * Implement `*=`.
    *
    * \param [in] o The other factor.
-   */   
+   */
   void Mul (const int64x64_t & o);
   /**
    * Implement `/=`.
@@ -334,7 +337,8 @@ private:
    * \param [in] v Integer value to represent.
    */
   inline int64x64_t (const int128_t v)
-    : _v (v) {}
+    : _v (v)
+  {}
 
   int128_t _v;  //!< The Q64.64 value.
 

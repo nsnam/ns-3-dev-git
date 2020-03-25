@@ -44,7 +44,7 @@ class ObjectBase;
  * \ingroup object
  * \brief a unique identifier for an interface.
  *
- * This class records a lot of meta-information about a 
+ * This class records a lot of meta-information about a
  * subclass of the Object base class:
  *  - the base class of the subclass
  *  - the set of accessible constructors in the subclass
@@ -59,10 +59,11 @@ class TypeId
 {
 public:
   /** Flags describing when a given attribute can be read or written. */
-  enum AttributeFlag {
-    ATTR_GET = 1<<0, /**< The attribute can be read */
-    ATTR_SET = 1<<1, /**< The attribute can be written */
-    ATTR_CONSTRUCT = 1<<2, /**< The attribute can be written at construction-time */
+  enum AttributeFlag
+  {
+    ATTR_GET = 1 << 0, /**< The attribute can be read */
+    ATTR_SET = 1 << 1, /**< The attribute can be written */
+    ATTR_CONSTRUCT = 1 << 2, /**< The attribute can be written at construction-time */
     ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT, /**< The attribute can be read, and written at any time */
   };
   /** The level of support or deprecation for attributes or trace sources. */
@@ -73,7 +74,8 @@ public:
     OBSOLETE     /**< Attribute or trace source is not used anymore; simulation fails. */
   };
   /** Attribute implementation. */
-  struct AttributeInformation {
+  struct AttributeInformation
+  {
     /** Attribute name. */
     std::string name;
     /** Attribute help string. */
@@ -94,7 +96,8 @@ public:
     std::string supportMsg;
   };
   /** TraceSource implementation. */
-  struct TraceSourceInformation {
+  struct TraceSourceInformation
+  {
     /** Trace name. */
     std::string name;
     /** Trace help string. */
@@ -116,17 +119,17 @@ public:
    * Get a TypeId by name.
    *
    * \param [in] name The name of the requested TypeId
-   * \returns The unique id associated with the requested name. 
+   * \returns The unique id associated with the requested name.
    *
-   * This method cannot fail: it will crash if the input 
+   * This method cannot fail: it will crash if the input
    * name is not a valid TypeId name.
    */
   static TypeId LookupByName (std::string name);
   /**
    * Get a TypeId by name.
-   * 
+   *
    * \param [in]  name The name of the requested TypeId
-   * \param [out] tid A pointer to the TypeId instance where the 
+   * \param [out] tid A pointer to the TypeId instance where the
    *              result of this function should be stored.
    * \returns \c true if the requested name was found.
    */
@@ -137,7 +140,7 @@ public:
    * \param [in] hash The hash to lookup
    * \returns The unique id associated with the requested hash.
    *
-   * This method cannot fail: it will crash if the input 
+   * This method cannot fail: it will crash if the input
    * hash does not match an existing TypeId.
    */
   static TypeId LookupByHash (hash_t hash);
@@ -145,7 +148,7 @@ public:
    * Get a TypeId by hash.
    *
    * \param [in]  hash The hash of the requested TypeId
-   * \param [out] tid A pointer to the TypeId instance where the 
+   * \param [out] tid A pointer to the TypeId instance where the
    *              result of this function should be stored.
    * \returns \c true if the requested hash was found.
    */
@@ -183,11 +186,11 @@ public:
    * This method cannot fail. It will return itself
    * if this TypeId has no parent. i.e., it is at the top
    * of the TypeId hierarchy. Currently, this is the
-   * case for the TypeId associated to the ns3::ObjectBase class 
+   * case for the TypeId associated to the ns3::ObjectBase class
    * only.
    */
   TypeId GetParent (void) const;
-  
+
   /**
    * Check if this TypeId has a parent.
    *
@@ -321,7 +324,7 @@ public:
    * \param [in] groupName The name of the group this TypeId belongs to.
    * \returns This TypeId instance.
    *
-   * The group name is purely an advisory information used to 
+   * The group name is purely an advisory information used to
    * group together types according to a user-specific grouping
    * scheme.
    */
@@ -342,7 +345,7 @@ public:
    * \returns This TypeId instance.
    */
   TypeId SetSize (std::size_t size);
-  
+
   /**
    * Record in this TypeId the fact that the default constructor
    * is accessible.
@@ -376,7 +379,7 @@ public:
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
-                       std::string help, 
+                       std::string help,
                        const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker,
@@ -416,7 +419,7 @@ public:
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
-                       std::string help, 
+                       std::string help,
                        uint32_t flags,
                        const AttributeValue &initialValue,
                        Ptr<const AttributeAccessor> accessor,
@@ -439,7 +442,7 @@ public:
   TypeId AddTraceSource (std::string name,
                          std::string help,
                          Ptr<const TraceSourceAccessor> accessor);
-  
+
   /**
    * Record a new TraceSource.
    *
@@ -527,7 +530,7 @@ public:
    * Typically this is used in serialization/deserialization.
    *
    * This method is even more internal than GetUid(). Use
-   * at your own risk and don't be surprised that it eats raw 
+   * at your own risk and don't be surprised that it eats raw
    * babies on full-moon nights.
    */
   void SetUid (uint16_t uid);
@@ -570,8 +573,8 @@ private:
    * \param [in] callback Callback which constructs an instance of this TypeId.
    */
   void DoAddConstructor (Callback<ObjectBase *> callback);
-  
-  /** The TypeId value. */ 
+
+  /** The TypeId value. */
   uint16_t m_tid;
 };
 
@@ -592,8 +595,8 @@ std::ostream & operator << (std::ostream &os, TypeId tid);
  * \returns The input stream.
  */
 std::istream & operator >> (std::istream &is, TypeId &tid);
-  
- /**
+
+/**
   * Comparison operator.
   * \param [in] a One value.
   * \param [in] b The other value.
@@ -607,24 +610,23 @@ bool operator <  (TypeId a, TypeId b);
 
 ATTRIBUTE_HELPER_HEADER (TypeId);
 
-} // namespace ns3 
+} // namespace ns3
 
 namespace ns3 {
 
 TypeId::TypeId ()
-  : m_tid (0) {
-}
+  : m_tid (0)
+{}
 TypeId::TypeId (const TypeId &o)
-  : m_tid (o.m_tid) {
-}
+  : m_tid (o.m_tid)
+{}
 TypeId &TypeId::operator = (const TypeId &o)
 {
   m_tid = o.m_tid;
   return *this;
 }
 TypeId::~TypeId ()
-{
-}
+{}
 inline bool operator == (TypeId a, TypeId b)
 {
   return a.m_tid == b.m_tid;
@@ -641,18 +643,20 @@ inline bool operator != (TypeId a, TypeId b)
  *************************************************************************/
 
 template <typename T>
-TypeId 
+TypeId
 TypeId::SetParent (void)
 {
   return SetParent (T::GetTypeId ());
 }
 
 template <typename T>
-TypeId 
+TypeId
 TypeId::AddConstructor (void)
 {
-  struct Maker {
-    static ObjectBase * Create () {
+  struct Maker
+  {
+    static ObjectBase * Create ()
+    {
       ObjectBase * base = new T ();
       return base;
     }

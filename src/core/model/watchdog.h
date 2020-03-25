@@ -53,7 +53,7 @@ class TimerImpl;
  *
  * \see Timer for a more sophisticated general purpose timer.
  */
-class Watchdog 
+class Watchdog
 {
 public:
   /** Constructor. */
@@ -195,14 +195,14 @@ namespace ns3 {
 
 
 template <typename FN>
-void 
+void
 Watchdog::SetFunction (FN fn)
 {
   delete m_impl;
   m_impl = MakeTimerImpl (fn);
 }
 template <typename MEM_PTR, typename OBJ_PTR>
-void 
+void
 Watchdog::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
 {
   delete m_impl;
@@ -210,7 +210,7 @@ Watchdog::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
 }
 
 template <typename T1>
-void 
+void
 Watchdog::SetArguments (T1 a1)
 {
   if (m_impl == 0)
@@ -221,7 +221,7 @@ Watchdog::SetArguments (T1 a1)
   m_impl->SetArgs (a1);
 }
 template <typename T1, typename T2>
-void 
+void
 Watchdog::SetArguments (T1 a1, T2 a2)
 {
   if (m_impl == 0)
@@ -233,7 +233,7 @@ Watchdog::SetArguments (T1 a1, T2 a2)
 }
 
 template <typename T1, typename T2, typename T3>
-void 
+void
 Watchdog::SetArguments (T1 a1, T2 a2, T3 a3)
 {
   if (m_impl == 0)
@@ -245,7 +245,7 @@ Watchdog::SetArguments (T1 a1, T2 a2, T3 a3)
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-void 
+void
 Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   if (m_impl == 0)
@@ -257,7 +257,7 @@ Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void 
+void
 Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   if (m_impl == 0)
@@ -269,7 +269,7 @@ Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-void 
+void
 Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   if (m_impl == 0)

@@ -175,8 +175,8 @@ CalendarScheduler::DoRemoveNext (void)
   uint64_t bucketTop = m_bucketTop;
   int32_t minBucket = -1;
   Scheduler::EventKey minKey;
-  NS_ASSERT(!IsEmpty());
-  minKey.m_ts = uint64_t(-int64_t(1));
+  NS_ASSERT (!IsEmpty ());
+  minKey.m_ts = uint64_t (-int64_t (1));
   minKey.m_uid = 0;
   minKey.m_context = 0xffffffff;
   do
@@ -207,7 +207,7 @@ CalendarScheduler::DoRemoveNext (void)
   m_lastPrio = minKey.m_ts;
   m_lastBucket = Hash (minKey.m_ts);
   m_bucketTop = (minKey.m_ts / m_width + 1) * m_width;
-  Scheduler::Event next = m_buckets[minBucket].front();
+  Scheduler::Event next = m_buckets[minBucket].front ();
   m_buckets[minBucket].pop_front ();
 
   return next;

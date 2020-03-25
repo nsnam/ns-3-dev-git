@@ -51,10 +51,10 @@ public:
    *
    * \returns A pointer to the singleton instance.
    */
-  static T *Get (void);
-  
+  static T * Get (void);
+
 private:
-  
+
   /**
    * Get the singleton object, creating a new one if it doesn't exist yet.
    *
@@ -64,8 +64,8 @@ private:
    *
    * \returns The address of the pointer holding the static instance.
    */
-  static T **GetObject (void);
-  
+  static T ** GetObject (void);
+
   /** Delete the static instance. */
   static void DeleteObject (void);
 
@@ -79,7 +79,7 @@ private:
   /**@{*/
   /** Default constructor */
   SimulationSingleton<T> (void);
-  
+
   /** Copy constructor. */
   SimulationSingleton<T> (const SimulationSingleton<T> &);
   /**

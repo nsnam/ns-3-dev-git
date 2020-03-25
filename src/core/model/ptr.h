@@ -70,7 +70,7 @@ namespace ns3 {
  * \tparam T \explicit The underlying type.
  */
 template <typename T>
-class Ptr 
+class Ptr
 {
 private:
 
@@ -78,15 +78,16 @@ private:
   T *m_ptr;
 
   /** Helper to test for null pointer. */
-  class Tester {
+  class Tester
+  {
   private:
     /** Disable delete (by virtue that this is unimplemented). */
     void operator delete (void *);
   };
-  
+
   /** Interoperate with const instances. */
   friend class Ptr<const T>;
-  
+
   /**
    * Get a permanent pointer to the underlying object.
    *
@@ -98,7 +99,7 @@ private:
    * \return The pointer managed by this smart pointer.
    */
   template <typename U>
-  friend U *GetPointer (const Ptr<U> &p);
+  friend U * GetPointer (const Ptr<U> &p);
   /**
    * Get a temporary pointer to the underlying object.
    *
@@ -110,11 +111,11 @@ private:
    * \return The pointer managed by this smart pointer.
    */
   template <typename U>
-  friend U *PeekPointer (const Ptr<U> &p);
+  friend U * PeekPointer (const Ptr<U> &p);
 
   /** Mark this as a a reference by incrementing the reference count. */
   inline void Acquire (void) const;
-  
+
 public:
   /** Create an empty smart pointer */
   Ptr ();
@@ -151,7 +152,7 @@ public:
    * \param [in] o The Ptr to copy.
    */
   template <typename U>
-  Ptr (Ptr<U> const &o); 
+  Ptr (Ptr<U> const &o);
   /** Destructor. */
   ~Ptr ();
   /**
@@ -435,7 +436,7 @@ bool operator > (const Ptr<T> &lhs, const Ptr<T> &rhs);
 template <typename T>
 bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs);
 /** @} */
-  
+
 /**
  * Return a copy of \c p with its stored pointer const casted from
  * \c T2 to \c T1.
@@ -448,7 +449,7 @@ bool operator >= (const Ptr<T> &lhs, const Ptr<T> &rhs);
 template <typename T1, typename T2>
 Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
 
-// Duplicate of struct CallbackTraits<T> as defined in callback.h  
+// Duplicate of struct CallbackTraits<T> as defined in callback.h
 template <typename T>
 struct CallbackTraits;
 
@@ -496,7 +497,8 @@ struct EventMemberImplObjTraits<Ptr<T> >
    * \param [in] p Object pointer
    * \return A reference to the object pointed to by p
    */
-  static T &GetReference (Ptr<T> p) {
+  static T & GetReference (Ptr<T> p)
+  {
     return *PeekPointer (p);
   }
 };
@@ -581,42 +583,42 @@ std::ostream &operator << (std::ostream &os, const Ptr<T> &p)
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator == (Ptr<T1> const &lhs, T2 const *rhs)
 {
   return PeekPointer (lhs) == rhs;
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator == (T1 const *lhs, Ptr<T2> &rhs)
 {
   return lhs == PeekPointer (rhs);
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator != (Ptr<T1> const &lhs, T2 const *rhs)
 {
   return PeekPointer (lhs) != rhs;
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator != (T1 const *lhs, Ptr<T2> &rhs)
 {
   return lhs != PeekPointer (rhs);
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 {
   return PeekPointer (lhs) == PeekPointer (rhs);
 }
 
 template <typename T1, typename T2>
-bool 
+bool
 operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 {
   return PeekPointer (lhs) != PeekPointer (rhs);
@@ -704,7 +706,7 @@ Ptr<T> Copy (Ptr<const T> object)
  ***************************************************/
 
 template <typename T>
-void 
+void
 Ptr<T>::Acquire (void) const
 {
   if (m_ptr != 0)
@@ -716,8 +718,7 @@ Ptr<T>::Acquire (void) const
 template <typename T>
 Ptr<T>::Ptr ()
   : m_ptr (0)
-{
-}
+{}
 
 template <typename T>
 Ptr<T>::Ptr (T *ptr)
@@ -737,7 +738,7 @@ Ptr<T>::Ptr (T *ptr, bool ref)
 }
 
 template <typename T>
-Ptr<T>::Ptr (Ptr const&o) 
+Ptr<T>::Ptr (Ptr const&o)
   : m_ptr (PeekPointer (o))
 {
   Acquire ();
@@ -751,9 +752,9 @@ Ptr<T>::Ptr (Ptr<U> const &o)
 }
 
 template <typename T>
-Ptr<T>::~Ptr () 
+Ptr<T>::~Ptr ()
 {
-  if (m_ptr != 0) 
+  if (m_ptr != 0)
     {
       m_ptr->Unref ();
     }
@@ -761,13 +762,13 @@ Ptr<T>::~Ptr ()
 
 template <typename T>
 Ptr<T> &
-Ptr<T>::operator = (Ptr const& o) 
+Ptr<T>::operator = (Ptr const& o)
 {
   if (&o == this)
     {
       return *this;
     }
-  if (m_ptr != 0) 
+  if (m_ptr != 0)
     {
       m_ptr->Unref ();
     }
@@ -778,7 +779,7 @@ Ptr<T>::operator = (Ptr const& o)
 
 template <typename T>
 T *
-Ptr<T>::operator -> () 
+Ptr<T>::operator -> ()
 {
   NS_ASSERT_MSG (m_ptr, "Attempted to dereference zero pointer");
   return m_ptr;
@@ -809,8 +810,8 @@ Ptr<T>::operator * ()
 }
 
 template <typename T>
-bool 
-Ptr<T>::operator! () 
+bool
+Ptr<T>::operator! ()
 {
   return m_ptr == 0;
 }
@@ -818,7 +819,7 @@ Ptr<T>::operator! ()
 template <typename T>
 Ptr<T>::operator Tester * () const
 {
-  if (m_ptr == 0) 
+  if (m_ptr == 0)
     {
       return 0;
     }

@@ -40,7 +40,7 @@ class AttributeConstructionList
 {
 public:
   /** A single Attribute triple */
-  struct Item 
+  struct Item
   {
     /** Checker used to validate serialized values. */
     Ptr<const AttributeChecker> checker;
@@ -78,7 +78,7 @@ public:
   CIterator Begin (void) const;
   /** \returns The end of the list (iterator to one past the last). */
   CIterator End (void) const;
-  
+
 private:
 
   /** The list of Items */

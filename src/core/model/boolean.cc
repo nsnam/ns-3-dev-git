@@ -71,14 +71,14 @@ std::ostream & operator << (std::ostream &os, const BooleanValue &value)
   return os;
 }
 
-Ptr<AttributeValue> 
+Ptr<AttributeValue>
 BooleanValue::Copy (void) const
 {
   NS_LOG_FUNCTION (this);
 
   return Create<BooleanValue> (*this);
 }
-std::string 
+std::string
 BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   NS_LOG_FUNCTION (this << checker);
@@ -86,27 +86,27 @@ BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   if (m_value)
     {
       return "true";
-    } 
+    }
   else
     {
       return "false";
     }
 }
-bool 
+bool
 BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   NS_LOG_FUNCTION (this << value << checker);
 
-  if (value == "true" ||
-      value == "1" ||
-      value == "t")
+  if (value == "true"
+      || value == "1"
+      || value == "t")
     {
       m_value = true;
       return true;
     }
-  else if (value == "false" ||
-           value == "0" ||
-           value == "f")
+  else if (value == "false"
+           || value == "0"
+           || value == "f")
     {
       m_value = false;
       return true;

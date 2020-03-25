@@ -28,14 +28,14 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE("AttributeConstructionList");
+NS_LOG_COMPONENT_DEFINE ("AttributeConstructionList");
 
 AttributeConstructionList::AttributeConstructionList ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-void 
+void
 AttributeConstructionList::Add (std::string name, Ptr<const AttributeChecker> checker, Ptr<AttributeValue> value)
 {
   // get rid of any previous value stored in this
@@ -58,7 +58,7 @@ AttributeConstructionList::Add (std::string name, Ptr<const AttributeChecker> ch
   m_list.push_back (attr);
 
 }
-Ptr<AttributeValue> 
+Ptr<AttributeValue>
 AttributeConstructionList::Find (Ptr<const AttributeChecker> checker) const
 {
   NS_LOG_FUNCTION (this << checker);
@@ -67,23 +67,23 @@ AttributeConstructionList::Find (Ptr<const AttributeChecker> checker) const
       NS_LOG_DEBUG ("Found " << k->name << " " << k->checker << " " << k->value);
       if (k->checker == checker)
         {
-	  return k->value;
-	}
-    }  
+          return k->value;
+        }
+    }
   return 0;
 }
 
-AttributeConstructionList::CIterator 
+AttributeConstructionList::CIterator
 AttributeConstructionList::Begin (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_list.begin();
+  return m_list.begin ();
 }
 AttributeConstructionList::CIterator
 AttributeConstructionList::End (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_list.end();
+  return m_list.end ();
 }
 
 } // namespace ns3

@@ -104,7 +104,7 @@ Object::Object ()
   m_aggregates->n = 1;
   m_aggregates->buffer[0] = this;
 }
-Object::~Object () 
+Object::~Object ()
 {
   // remove this object from the aggregate list
   NS_LOG_FUNCTION (this);
@@ -114,9 +114,9 @@ Object::~Object ()
       Object *current = m_aggregates->buffer[i];
       if (current == this)
         {
-          std::memmove (&m_aggregates->buffer[i], 
-                   &m_aggregates->buffer[i+1],
-                   sizeof (Object *)*(m_aggregates->n - (i+1)));
+          std::memmove (&m_aggregates->buffer[i],
+                        &m_aggregates->buffer[i + 1],
+                        sizeof (Object *) * (m_aggregates->n - (i + 1)));
           m_aggregates->n--;
         }
     }
@@ -186,8 +186,8 @@ Object::Initialize (void)
    * Note: the code here is a bit tricky because we need to protect ourselves from
    * modifications in the aggregate array while DoInitialize is called. The user's
    * implementation of the DoInitialize method could call GetObject (which could
-   * reorder the array) and it could call AggregateObject which would add an 
-   * object at the end of the array. To be safe, we restart iteration over the 
+   * reorder the array) and it could call AggregateObject which would add an
+   * object at the end of the array. To be safe, we restart iteration over the
    * array whenever we call some user code, just in case.
    */
   NS_LOG_FUNCTION (this);
@@ -210,13 +210,13 @@ Object::IsInitialized (void) const
   NS_LOG_FUNCTION (this);
   return m_initialized;
 }
-void 
+void
 Object::Dispose (void)
 {
   /**
    * Note: the code here is a bit tricky because we need to protect ourselves from
    * modifications in the aggregate array while DoDispose is called. The user's
-   * DoDispose implementation could call GetObject (which could reorder the array) 
+   * DoDispose implementation could call GetObject (which could reorder the array)
    * and it could call AggregateObject which would add an object at the end of the array.
    * So, to be safe, we restart the iteration over the array whenever we call some
    * user code.
@@ -239,16 +239,16 @@ void
 Object::UpdateSortedArray (struct Aggregates *aggregates, uint32_t j) const
 {
   NS_LOG_FUNCTION (this << aggregates << j);
-  while (j > 0 && 
-         aggregates->buffer[j]->m_getObjectCount > aggregates->buffer[j-1]->m_getObjectCount)
+  while (j > 0
+         && aggregates->buffer[j]->m_getObjectCount > aggregates->buffer[j - 1]->m_getObjectCount)
     {
-      Object *tmp = aggregates->buffer[j-1];
-      aggregates->buffer[j-1] = aggregates->buffer[j];
+      Object *tmp = aggregates->buffer[j - 1];
+      aggregates->buffer[j - 1] = aggregates->buffer[j];
       aggregates->buffer[j] = tmp;
       j--;
     }
 }
-void 
+void
 Object::AggregateObject (Ptr<Object> o)
 {
   NS_LOG_FUNCTION (this << o);
@@ -260,19 +260,19 @@ Object::AggregateObject (Ptr<Object> o)
   Object *other = PeekPointer (o);
   // first create the new aggregate buffer.
   uint32_t total = m_aggregates->n + other->m_aggregates->n;
-  struct Aggregates *aggregates = 
-    (struct Aggregates *)std::malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
+  struct Aggregates *aggregates =
+    (struct Aggregates *)std::malloc (sizeof(struct Aggregates) + (total - 1) * sizeof(Object*));
   aggregates->n = total;
 
   // copy our buffer to the new buffer
-  std::memcpy (&aggregates->buffer[0], 
-          &m_aggregates->buffer[0], 
-          m_aggregates->n*sizeof(Object*));
+  std::memcpy (&aggregates->buffer[0],
+               &m_aggregates->buffer[0],
+               m_aggregates->n * sizeof(Object*));
 
   // append the other buffer into the new buffer too
   for (uint32_t i = 0; i < other->m_aggregates->n; i++)
     {
-      aggregates->buffer[m_aggregates->n+i] = other->m_aggregates->buffer[i];
+      aggregates->buffer[m_aggregates->n + i] = other->m_aggregates->buffer[i];
       const TypeId typeId = other->m_aggregates->buffer[i]->GetInstanceTypeId ();
       if (DoGetObject (typeId))
         {
@@ -299,7 +299,7 @@ Object::AggregateObject (Ptr<Object> o)
 
   // Finally, call NotifyNewAggregate on all the objects aggregates together.
   // We purposely use the old aggregate buffers to iterate over the objects
-  // because this allows us to assume that they will not change from under 
+  // because this allows us to assume that they will not change from under
   // our feet, even if our users call AggregateObject from within their
   // NotifyNewAggregate method.
   for (uint32_t i = 0; i < a->n; i++)
@@ -327,14 +327,14 @@ Object::NotifyNewAggregate ()
   NS_LOG_FUNCTION (this);
 }
 
-Object::AggregateIterator 
+Object::AggregateIterator
 Object::GetAggregateIterator (void) const
 {
   NS_LOG_FUNCTION (this);
   return AggregateIterator (this);
 }
 
-void 
+void
 Object::SetTypeId (TypeId tid)
 {
   NS_LOG_FUNCTION (this << tid);
@@ -356,7 +356,7 @@ Object::DoInitialize (void)
   NS_ASSERT (!m_initialized);
 }
 
-bool 
+bool
 Object::Check (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -370,7 +370,7 @@ Object::Check (void) const
  * manipulating an object with a refcount of zero.  So, instead we
  * check the aggregate reference count.
  */
-bool 
+bool
 Object::CheckLoose (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -401,7 +401,7 @@ Object::DoDelete (void)
         }
     }
 
-  // Now, we know that we are alone to use this aggregate so, 
+  // Now, we know that we are alone to use this aggregate so,
   // we can dispose and delete everything safely.
 
   uint32_t n = m_aggregates->n;
@@ -421,7 +421,7 @@ Object::DoDelete (void)
     {
       // There is a trick here: each time we call delete below,
       // the deleted object is removed from the aggregate buffer
-      // in the destructor so, the index of the next element to 
+      // in the destructor so, the index of the next element to
       // lookup is always zero
       Object *current = aggregates->buffer[0];
       delete current;

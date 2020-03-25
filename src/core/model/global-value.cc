@@ -79,12 +79,12 @@ GlobalValue::InitializeFromEnv (void)
   while (next != std::string::npos)
     {
       next = env.find (";", cur);
-      std::string tmp = std::string (env, cur, next-cur);
+      std::string tmp = std::string (env, cur, next - cur);
       std::string::size_type equal = tmp.find ("=");
       if (equal != std::string::npos)
         {
           std::string name = tmp.substr (0, equal);
-          std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
+          std::string value = tmp.substr (equal + 1, tmp.size () - equal - 1);
           if (name == m_name)
             {
               Ptr<AttributeValue> v = m_checker->CreateValidValue (StringValue (value));
@@ -101,13 +101,13 @@ GlobalValue::InitializeFromEnv (void)
 #endif /* HAVE_GETENV */
 }
 
-std::string 
+std::string
 GlobalValue::GetName (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_name;
 }
-std::string 
+std::string
 GlobalValue::GetHelp (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -125,11 +125,11 @@ GlobalValue::GetValue (AttributeValue &value) const
   StringValue *str = dynamic_cast<StringValue *> (&value);
   if (str == 0)
     {
-      NS_FATAL_ERROR ("GlobalValue name="<<m_name<<": input value is not a string");
+      NS_FATAL_ERROR ("GlobalValue name=" << m_name << ": input value is not a string");
     }
   str->Set (m_currentValue->SerializeToString (m_checker));
 }
-Ptr<const AttributeChecker> 
+Ptr<const AttributeChecker>
 GlobalValue::GetChecker (void) const
 {
   NS_LOG_FUNCTION (this);
@@ -151,7 +151,7 @@ GlobalValue::SetValue (const AttributeValue &value)
   return true;
 }
 
-void 
+void
 GlobalValue::Bind (std::string name, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (name << &value);
@@ -162,14 +162,14 @@ GlobalValue::Bind (std::string name, const AttributeValue &value)
         {
           if (!(*i)->SetValue (value))
             {
-              NS_FATAL_ERROR ("Invalid new value for global value: "<<name);
+              NS_FATAL_ERROR ("Invalid new value for global value: " << name);
             }
           return;
         }
     }
-  NS_FATAL_ERROR ("Non-existant global value: "<<name);
+  NS_FATAL_ERROR ("Non-existant global value: " << name);
 }
-bool 
+bool
 GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (name << &value);
@@ -183,21 +183,21 @@ GlobalValue::BindFailSafe (std::string name, const AttributeValue &value)
     }
   return false;
 }
-GlobalValue::Iterator 
+GlobalValue::Iterator
 GlobalValue::Begin (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
   return GetVector ()->begin ();
 }
-GlobalValue::Iterator 
+GlobalValue::Iterator
 GlobalValue::End (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetVector ()->end ();
 }
 
-void 
+void
 GlobalValue::ResetInitialValue (void)
 {
   NS_LOG_FUNCTION (this);
@@ -215,7 +215,7 @@ GlobalValue::GetValueByNameFailSafe (std::string name, AttributeValue &value)
           (*gvit)->GetValue (value);
           return true;
         }
-    } 
+    }
   return false; // not found
 }
 

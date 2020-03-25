@@ -27,6 +27,7 @@
 
 namespace ns3 {
 
+// *NS_CHECK_STYLE_OFF*
 template <> std::string TypeNameGet< int8_t  > (void) { return "int8_t"  ; }
 template <> std::string TypeNameGet< int16_t > (void) { return "int16_t" ; }
 template <> std::string TypeNameGet< int32_t > (void) { return "int32_t" ; }
@@ -37,5 +38,6 @@ template <> std::string TypeNameGet< uint32_t> (void) { return "uint32_t"; }
 template <> std::string TypeNameGet< uint64_t> (void) { return "uint64_t"; }
 template <> std::string TypeNameGet< float   > (void) { return "float"   ; }
 template <> std::string TypeNameGet< double  > (void) { return "double"  ; }
-  
+// *NS_CHECK_STYLE_ON*
+
 } // namespace ns3

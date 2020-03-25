@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 INRIA 
+ * Copyright (c) 2010 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -40,7 +40,7 @@ namespace ns3 {
 class int64x64_t
 {
   /// High bit of fractional part
-  static const uint64_t    HPCAIRO_MASK_HI_BIT = (((uint64_t)1)<<63);
+  static const uint64_t    HPCAIRO_MASK_HI_BIT = (((uint64_t)1) << 63);
   /// Mask for fraction part
   static const uint64_t    HP_MASK_LO = 0xffffffffffffffffULL;
   /**
@@ -65,7 +65,8 @@ public:
    * specifically the double implementation.  To handle this,
    * we expose the underlying implementation type here.
    */
-  enum impl_type {
+  enum impl_type
+  {
     int128_impl,  //!< Native int128_t implementation.
     cairo_impl,   //!< cairo wideint implementation
     ld_impl,      //!< long double implementation
@@ -112,8 +113,8 @@ public:
     const cairo_uint64_t lo = (cairo_uint64_t)flo;
     if (flo >= HP_MAX_64)
       {
-	// conversion to uint64 rolled over
-	++hi;
+        // conversion to uint64 rolled over
+        ++hi;
       }
     _v.hi = hi;
     _v.lo = lo;
@@ -176,7 +177,8 @@ public:
    * \param [in] o Value to copy.
    */
   inline int64x64_t (const int64x64_t & o)
-    : _v (o._v) {}
+    : _v (o._v)
+  {}
   /**
    * Assignment.
    *
@@ -253,7 +255,7 @@ private:
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
   friend bool         operator >  (const int64x64_t & lhs, const int64x64_t & rhs);
-  
+
   friend int64x64_t & operator += (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);
@@ -266,7 +268,7 @@ private:
    * Implement `*=`.
    *
    * \param [in] o The other factor.
-   */   
+   */
   void Mul (const int64x64_t & o);
   /**
    * Implement `/=`.
@@ -354,7 +356,7 @@ inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
  */
 inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
 {
-  lhs._v = _cairo_int128_add( lhs._v, rhs._v );
+  lhs._v = _cairo_int128_add ( lhs._v, rhs._v );
   return lhs;
 }
 /**
@@ -363,7 +365,7 @@ inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
  */
 inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
 {
-  lhs._v = _cairo_int128_sub( lhs._v, rhs._v );
+  lhs._v = _cairo_int128_sub ( lhs._v, rhs._v );
   return lhs;
 }
 /**

@@ -36,7 +36,7 @@ namespace ns3 {
  * \defgroup geometry Geometry primitives
  * \brief Primitives for geometry, such as vectors and angles.
  */
-  
+
 /**
  * \ingroup geometry
  * \brief a 3d vector
@@ -55,7 +55,7 @@ public:
   Vector3D (double _x, double _y, double _z);
   /** Create vector (0.0, 0.0, 0.0) */
   Vector3D ();
-  
+
   double x;  //!< x coordinate of vector
   double y;  //!< y coordinate of vector
   double z;  //!< z coordinate of vector
@@ -65,7 +65,7 @@ public:
    * \returns the vector length.
    */
   double GetLength () const;
-  
+
   /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
@@ -73,7 +73,7 @@ public:
    * \returns The distance between \p a and \p b.
    */
   friend double CalculateDistance (const Vector3D &a, const Vector3D &b);
-  
+
   /**
    * Output streamer.
    * Vectors are written as "x:y:z".
@@ -183,7 +183,7 @@ public:
   // works:  /** \copydoc ns3::Vector3D::GetLength() */
   /** \copydoc Vector3D::GetLength() */
   double GetLength () const;
-  
+
   /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
@@ -191,7 +191,7 @@ public:
    * \returns The distance between \p a and \p b.
    */
   friend double CalculateDistance (const Vector2D &a, const Vector2D &b);
-  
+
   /**
    * Output streamer.
    * Vectors are written as "x:y".
@@ -284,9 +284,9 @@ std::ostream &operator << (std::ostream &os, const Vector3D &vector);
 std::ostream &operator << (std::ostream &os, const Vector2D &vector);
 std::istream &operator >> (std::istream &is, Vector3D &vector);
 std::istream &operator >> (std::istream &is, Vector2D &vector);
-bool operator < (const Vector3D &a, const Vector3D &b); 
+bool operator < (const Vector3D &a, const Vector3D &b);
 bool operator < (const Vector2D &a, const Vector2D &b);
-  
+
 ATTRIBUTE_HELPER_HEADER (Vector3D);
 ATTRIBUTE_HELPER_HEADER (Vector2D);
 
@@ -301,7 +301,7 @@ typedef Vector3D Vector;
  * Vector alias typedef for compatibility with mobility models
  */
 typedef Vector3DValue VectorValue;
-  
+
 /**
  * \relates Vector3D
  * Vector alias typedef for compatibility with mobility models
@@ -316,7 +316,7 @@ typedef Vector3DChecker VectorChecker;
  * \copydoc ns3::MakeAccessorHelper(T1)
  * \see AttributeAccessor
  */
-  
+
 /**
  * \relates Vector3D
  * \fn ns3::Ptr<const ns3::AttributeAccessor> ns3::MakeVectorAccessor (T1 a1, T2 a2)
@@ -332,8 +332,8 @@ ATTRIBUTE_ACCESSOR_DEFINE (Vector);
  * \see AttributeChecker
  */
 Ptr<const AttributeChecker> MakeVectorChecker (void);
-  
-  
+
+
 } // namespace ns3
 
 #endif /* NS3_VECTOR_H */

@@ -40,7 +40,8 @@ NS_LOG_COMPONENT_DEFINE ("SystemCondition");
  * \ingroup thread
  * Implementation of SystemCondition for Unix-like systems.
  */
-class SystemConditionPrivate {
+class SystemConditionPrivate
+{
 public:
   /** Conversion from ns to s. */
   static const uint64_t NS_PER_SEC = (uint64_t)1000000000;
@@ -98,7 +99,7 @@ SystemConditionPrivate::SystemConditionPrivate ()
   pthread_mutexattr_t mAttr;
   pthread_mutexattr_init (&mAttr);
 //
-// Linux and OS X (at least) have, of course chosen different names for the 
+// Linux and OS X (at least) have, of course chosen different names for the
 // error checking flags just to make life difficult.
 //
 #if defined (PTHREAD_MUTEX_ERRORCHECK_NP)
@@ -114,27 +115,27 @@ SystemConditionPrivate::SystemConditionPrivate ()
   pthread_cond_init (&m_cond, &cAttr);
 }
 
-SystemConditionPrivate::~SystemConditionPrivate() 
+SystemConditionPrivate::~SystemConditionPrivate ()
 {
   NS_LOG_FUNCTION (this);
   pthread_mutex_destroy (&m_mutex);
   pthread_cond_destroy (&m_cond);
 }
-	
+
 void
 SystemConditionPrivate::SetCondition (bool condition)
 {
   NS_LOG_FUNCTION (this << condition);
   m_condition = condition;
 }
-	
+
 bool
 SystemConditionPrivate::GetCondition (void)
 {
   NS_LOG_FUNCTION (this);
   return m_condition;
 }
-	
+
 void
 SystemConditionPrivate::Signal (void)
 {
@@ -144,7 +145,7 @@ SystemConditionPrivate::Signal (void)
   pthread_cond_signal (&m_cond);
   pthread_mutex_unlock (&m_mutex);
 }
-	
+
 void
 SystemConditionPrivate::Broadcast (void)
 {
@@ -197,63 +198,63 @@ SystemConditionPrivate::TimedWait (uint64_t ns)
       rc = pthread_cond_timedwait (&m_cond, &m_mutex, &ts);
       if (rc == ETIMEDOUT)
         {
-          pthread_mutex_unlock (&m_mutex); 
+          pthread_mutex_unlock (&m_mutex);
           return true;
         }
     }
   pthread_mutex_unlock (&m_mutex);
   return false;
 }
-	
-SystemCondition::SystemCondition() 
+
+SystemCondition::SystemCondition ()
   : m_priv (new SystemConditionPrivate ())
 {
   NS_LOG_FUNCTION (this);
 }
 
-SystemCondition::~SystemCondition () 
+SystemCondition::~SystemCondition ()
 {
   NS_LOG_FUNCTION (this);
   delete m_priv;
 }
 
 void
-SystemCondition::SetCondition (bool condition) 
+SystemCondition::SetCondition (bool condition)
 {
   NS_LOG_FUNCTION (this << condition);
   m_priv->SetCondition (condition);
 }
 
 bool
-SystemCondition::GetCondition (void) 
+SystemCondition::GetCondition (void)
 {
   NS_LOG_FUNCTION (this);
   return m_priv->GetCondition ();
 }
 
 void
-SystemCondition::Signal (void) 
+SystemCondition::Signal (void)
 {
   NS_LOG_FUNCTION (this);
   m_priv->Signal ();
 }
 
 void
-SystemCondition::Broadcast (void) 
+SystemCondition::Broadcast (void)
 {
   NS_LOG_FUNCTION (this);
   m_priv->Broadcast ();
 }
 
 void
-SystemCondition::Wait (void) 
+SystemCondition::Wait (void)
 {
   NS_LOG_FUNCTION (this);
   m_priv->Wait ();
 }
 
 bool
-SystemCondition::TimedWait (uint64_t ns) 
+SystemCondition::TimedWait (uint64_t ns)
 {
   NS_LOG_FUNCTION (this << ns);
   return m_priv->TimedWait (ns);

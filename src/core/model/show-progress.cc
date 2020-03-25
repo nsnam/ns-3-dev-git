@@ -37,7 +37,7 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("ShowProgress");  
+NS_LOG_COMPONENT_DEFINE ("ShowProgress");
 
 ShowProgress::ShowProgress (const Time interval /* = Seconds (1.0) */,
                             std::ostream & os /* = std::cout */)
@@ -80,20 +80,20 @@ ShowProgress::SetVerbose (bool verbose)
   NS_LOG_FUNCTION (this << verbose);
   m_verbose = verbose;
 }
-  
+
 void
 ShowProgress::SetStream (std::ostream & os)
 {
   m_os = &os;
 }
-  
+
 void
 ShowProgress::Start (void)
 {
   NS_LOG_FUNCTION (this);
   m_event = Simulator::Schedule (m_vtime, &ShowProgress::Feedback, this);
   m_timer.Start ();
-  
+
 }  // ShowProgress::Start
 
 void
@@ -113,7 +113,7 @@ ShowProgress::Feedback (void)
 
   // Speed: how fast are we compared to real time
   const int64x64_t speed = m_vtime / elapsed;
-  
+
   // Ratio: how much real time did we use,
   // compared to reporting interval target
   const int64x64_t ratio = elapsed / m_interval;
@@ -122,7 +122,7 @@ ShowProgress::Feedback (void)
   uint64_t events = Simulator::GetEventCount ();
   uint64_t nEvents = events - m_eventCount;
   m_eventCount = events;
-  
+
   /**
    * \internal Update algorithm
    *
@@ -141,32 +141,32 @@ ShowProgress::Feedback (void)
    * updates to \c m_vtime are sketched in this figure:
    * \verbatim
                       ^
-                      |   
+                      |
               ratio   |   vtime update
                       |
-                      |   
+                      |
                       |   *= MAXGAIN
-                      |   
+                      |
             MAXGAIN  -|--------------    *= min (ratio, MAXGAIN)
-                      |   
+                      |
                       |   *= ratio
-                      |   
+                      |
          HYSTERESIS  -|=============================================
-                      |   
-                      |   
-                      |   
+                      |
+                      |
+                      |
                    1 -|   No change
-                      |   
-                      |   
+                      |
+                      |
                       |
       1/ HYSTERESIS  -|==============================================
-                      |   
+                      |
                       |   *= ratio
-                      |   
-         1/ MAXGAIN  -|---------------   *=  max (ratio, 1/ MAXGAIN)   
-                      |   
+                      |
+         1/ MAXGAIN  -|---------------   *=  max (ratio, 1/ MAXGAIN)
+                      |
                       |   *= 1/MAXGAIN
-                      |   
+                      |
      \endverbatim
    *
    * As indicated, when ratio is outside the hysteresis band
@@ -185,24 +185,24 @@ ShowProgress::Feedback (void)
   // Save stream state
   auto precision = m_os->precision ();
   auto flags = m_os->flags ();
-  
+
   m_os->setf (std::ios::fixed, std:: ios::floatfield);
 
   if (m_verbose)
     {
       (*m_os) << m_repCount
-              << " [del: " << elapsed.As(Time::S)
-              << "/ int: " << m_interval.As(Time::S)
-              << " = rat: " << ratio 
+              << " [del: " << elapsed.As (Time::S)
+              << "/ int: " << m_interval.As (Time::S)
+              << " = rat: " << ratio
               << (ratio > HYSTERESIS ? " up" :
-                  (ratio < 1.0 / HYSTERESIS ? " dn" : " --"))
-              << ", vt: " << m_vtime.As(Time::S) << "] ";
+          (ratio < 1.0 / HYSTERESIS ? " dn" : " --"))
+              << ", vt: " << m_vtime.As (Time::S) << "] ";
     }
   m_repCount++;
-  
+
   // Print the current time
   (*m_printer)(*m_os);
-  
+
   (*m_os) << " ("
           << std::setprecision (3) << std::setw (8) << speed.GetDouble () << "x real time) "
           << nEvents << " events processed"
@@ -218,5 +218,5 @@ ShowProgress::Feedback (void)
 
 }  // ShowProgress::Feedback
 
-  
+
 }  // namespace ns3

@@ -59,7 +59,7 @@ Ptr<const AttributeChecker> MakeObjectMapChecker (void);
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
-                          INDEX (T::*getN)(void) const);
+                       INDEX (T::*getN)(void) const);
 
 /**
  * \ingroup attribute_ObjectMap
@@ -81,7 +81,8 @@ MakeObjectMapAccessor (U T::*memberVector)
 {
   struct MemberStdContainer : public ObjectPtrContainerAccessor
   {
-    virtual bool DoGetN (const ObjectBase *object, std::size_t *n) const {
+    virtual bool DoGetN (const ObjectBase *object, std::size_t *n) const
+    {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
         {
@@ -90,7 +91,8 @@ MakeObjectMapAccessor (U T::*memberVector)
       *n = (obj->*m_memberVector).size ();
       return true;
     }
-    virtual Ptr<Object> DoGet(const ObjectBase *object, std::size_t i, std::size_t *index) const {
+    virtual Ptr<Object> DoGet (const ObjectBase *object, std::size_t i, std::size_t *index) const
+    {
       const T *obj = static_cast<const T *> (object);
       typename U::const_iterator begin = (obj->*m_memberVector).begin ();
       typename U::const_iterator end = (obj->*m_memberVector).end ();
@@ -123,17 +125,17 @@ Ptr<const AttributeChecker> MakeObjectMapChecker (void)
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (Ptr<U> (T::*get)(INDEX) const,
-		       INDEX (T::*getN)(void) const)
+                       INDEX (T::*getN)(void) const)
 {
-  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX> (get, getN);
 }
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectMapAccessor (INDEX (T::*getN)(void) const,
-		       Ptr<U> (T::*get)(INDEX) const)
+                       Ptr<U> (T::*get)(INDEX) const)
 {
-  return MakeObjectPtrContainerAccessor<T,U,INDEX>(get, getN);
+  return MakeObjectPtrContainerAccessor<T,U,INDEX> (get, getN);
 }
 
 } // namespace ns3

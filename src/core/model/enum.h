@@ -176,7 +176,7 @@ Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2);
  * \param [in] n21 The corresponding name.
  * \param [in] v22 A enum value
  * \param [in] n22 The corresponding name.
- */ 
+ */
 Ptr<const AttributeChecker> MakeEnumChecker (int v1, std::string n1,
                                              int v2 = 0, std::string n2 = "",
                                              int v3 = 0, std::string n3 = "",

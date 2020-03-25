@@ -97,7 +97,7 @@ namespace ns3 {
  * \li Run everything, retaining the results directory: <br/>
  *   \code  ./test.py --nowaf --retain \endcode
  * \li Example traces end up in \c testpy-output/, so move there: <br/>
- *   \code cd testpy-output/$(date +"%F")*_/  \endcode 
+ *   \code cd testpy-output/$(date +"%F")*_/  \endcode
  *   (Remove the `_', which is to work around a Doxygen limitation.)
  * \li Remove the traces with less than 10 events: <br/>
  *   \code wc -l *.json | sort -nr | grep "^ *[789] " | cut -d ' ' -f 9 | xargs rm -f \endcode
@@ -105,28 +105,28 @@ namespace ns3 {
  *   \code wc -l *.json | sort -n | tail -2 \endcode
  *
  */
-class DesMetrics : public Singleton<DesMetrics> 
+class DesMetrics : public Singleton<DesMetrics>
 {
 public:
 
   /**
    * Open the DesMetrics trace file and print the header.
    *
-   * The trace file will have the same base name as the main program, 
-   * '.json' as the extension. 
+   * The trace file will have the same base name as the main program,
+   * '.json' as the extension.
    *
    * \param args [in] Command line arguments.
    * \param outDir [in] Directory where the trace file should be written.
    */
-      void Initialize (std::vector<std::string> args, std::string outDir = "");
+  void Initialize (std::vector<std::string> args, std::string outDir = "");
 
   /**
    * Trace an event to self at the time it is scheduled.
    *
-   * \param now [in] The local simulation time. 
-   * \param delay [in] The delay to the event. 
+   * \param now [in] The local simulation time.
+   * \param delay [in] The delay to the event.
    */
-  void Trace (const Time & now, const Time & delay); 
+  void Trace (const Time & now, const Time & delay);
 
   /**
    * Trace an event (with context) at the time it is scheduled.
@@ -154,14 +154,14 @@ private:
    * in \c command-line-test-suite.cc
    */
   static std::string m_outputDir;
-  
+
   bool m_initialized;    //!< Have we been initialized.
   std::ofstream m_os;    //!< The output JSON trace file stream.
   char m_separator;      //!< The separator between event records.
 
   /** Mutex to control access to the output file. */
   SystemMutex m_mutex;
-  
+
 };  // class DesMetrics
 
 

@@ -40,6 +40,8 @@
  * Implementation of the cairo_x functions which implement high precision arithmetic.
  */
 
+// *NS_CHECK_STYLE_OFF*
+
 #if HAVE_UINT64_T
 
 const char * cairo_impl64 = "uint64_t";

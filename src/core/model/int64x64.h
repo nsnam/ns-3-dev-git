@@ -69,11 +69,11 @@ namespace ns3 {
  *   Comparison  | `==`, `!=`, `<`, `<=`, `>`, `>=`
  *   Unary       | `+`, `-`, `!`
  */
-  
+
 /**
  * \ingroup highprec
  * \class int64x64_t
- * 
+ *
  * High precision numerical type, implementing Q64.64 fixed precision.
  */
 

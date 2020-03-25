@@ -57,7 +57,7 @@ GetObjectIid (void)
   return tid;
 }
 
-TypeId 
+TypeId
 ObjectBase::GetTypeId (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -65,7 +65,7 @@ ObjectBase::GetTypeId (void)
   return tid;
 }
 
-ObjectBase::~ObjectBase () 
+ObjectBase::~ObjectBase ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -82,34 +82,35 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
   // loop over the inheritance tree back to the Object base class.
   NS_LOG_FUNCTION (this << &attributes);
   TypeId tid = GetInstanceTypeId ();
-  do {
+  do
+    {
       // loop over all attributes in object type
-      NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeN ());
+      NS_LOG_DEBUG ("construct tid=" << tid.GetName () << ", params=" << tid.GetAttributeN ());
       for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
         {
-          struct TypeId::AttributeInformation info = tid.GetAttribute(i);
-          NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                        info.name <<"\"");
+          struct TypeId::AttributeInformation info = tid.GetAttribute (i);
+          NS_LOG_DEBUG ("try to construct \"" << tid.GetName () << "::" <<
+                        info.name << "\"");
           // is this attribute stored in this AttributeConstructionList instance ?
-          Ptr<AttributeValue> value = attributes.Find(info.checker);
+          Ptr<AttributeValue> value = attributes.Find (info.checker);
           // See if this attribute should not be set here in the
           // constructor.
           if (!(info.flags & TypeId::ATTR_CONSTRUCT))
             {
-              // Handle this attribute if it should not be 
+              // Handle this attribute if it should not be
               // set here.
               if (value == 0)
                 {
                   // Skip this attribute if it's not in the
                   // AttributeConstructionList.
                   continue;
-                }              
+                }
               else
                 {
                   // This is an error because this attribute is not
                   // settable in its constructor but is present in
                   // the AttributeConstructionList.
-                  NS_FATAL_ERROR ("Attribute name="<<info.name<<" tid="<<tid.GetName () << ": initial value cannot be set using attributes");
+                  NS_FATAL_ERROR ("Attribute name=" << info.name << " tid=" << tid.GetName () << ": initial value cannot be set using attributes");
                 }
             }
 
@@ -118,8 +119,8 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
               // We have a matching attribute value.
               if (DoSet (info.accessor, info.checker, *value))
                 {
-                  NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                info.name<<"\"");
+                  NS_LOG_DEBUG ("construct \"" << tid.GetName () << "::" <<
+                                info.name << "\"");
                   continue;
                 }
             }
@@ -135,18 +136,18 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
               while (next != std::string::npos)
                 {
                   next = env.find (";", cur);
-                  std::string tmp = std::string (env, cur, next-cur);
+                  std::string tmp = std::string (env, cur, next - cur);
                   std::string::size_type equal = tmp.find ("=");
                   if (equal != std::string::npos)
                     {
                       std::string name = tmp.substr (0, equal);
-                      std::string envval = tmp.substr (equal+1, tmp.size () - equal - 1);
+                      std::string envval = tmp.substr (equal + 1, tmp.size () - equal - 1);
                       if (name == tid.GetAttributeFullName (i))
                         {
                           if (DoSet (info.accessor, info.checker, StringValue (envval)))
                             {
-                              NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                            info.name <<"\" from env var");
+                              NS_LOG_DEBUG ("construct \"" << tid.GetName () << "::" <<
+                                            info.name << "\" from env var");
                               break;
                             }
                         }
@@ -158,16 +159,17 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
 
           // No matching attribute value so we try to set the default value.
           DoSet (info.accessor, info.checker, *info.initialValue);
-          NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                        info.name <<"\" from initial value.");
+          NS_LOG_DEBUG ("construct \"" << tid.GetName () << "::" <<
+                        info.name << "\" from initial value.");
         }
       tid = tid.GetParent ();
-    } while (tid != ObjectBase::GetTypeId ());
+    }
+  while (tid != ObjectBase::GetTypeId ());
   NotifyConstructionCompleted ();
 }
 
 bool
-ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor, 
+ObjectBase::DoSet (Ptr<const AttributeAccessor> accessor,
                    Ptr<const AttributeChecker> checker,
                    const AttributeValue &value)
 {
@@ -189,19 +191,19 @@ ObjectBase::SetAttribute (std::string name, const AttributeValue &value)
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<tid.GetName ());
+      NS_FATAL_ERROR ("Attribute name=" << name << " does not exist for this object: tid=" << tid.GetName ());
     }
-  if (!(info.flags & TypeId::ATTR_SET) ||
-      !info.accessor->HasSetter ())
+  if (!(info.flags & TypeId::ATTR_SET)
+      || !info.accessor->HasSetter ())
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" is not settable for this object: tid="<<tid.GetName ());
+      NS_FATAL_ERROR ("Attribute name=" << name << " is not settable for this object: tid=" << tid.GetName ());
     }
   if (!DoSet (info.accessor, info.checker, value))
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" could not be set for this object: tid="<<tid.GetName ());
+      NS_FATAL_ERROR ("Attribute name=" << name << " could not be set for this object: tid=" << tid.GetName ());
     }
 }
-bool 
+bool
 ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (this << name << &value);
@@ -211,8 +213,8 @@ ObjectBase::SetAttributeFailSafe (std::string name, const AttributeValue &value)
     {
       return false;
     }
-  if (!(info.flags & TypeId::ATTR_SET) ||
-      !info.accessor->HasSetter ())
+  if (!(info.flags & TypeId::ATTR_SET)
+      || !info.accessor->HasSetter ())
     {
       return false;
     }
@@ -227,12 +229,12 @@ ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
   TypeId tid = GetInstanceTypeId ();
   if (!tid.LookupAttributeByName (name, &info))
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<tid.GetName ());
+      NS_FATAL_ERROR ("Attribute name=" << name << " does not exist for this object: tid=" << tid.GetName ());
     }
-  if (!(info.flags & TypeId::ATTR_GET) || 
-      !info.accessor->HasGetter ())
+  if (!(info.flags & TypeId::ATTR_GET)
+      || !info.accessor->HasGetter ())
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" is not gettable for this object: tid="<<tid.GetName ());
+      NS_FATAL_ERROR ("Attribute name=" << name << " is not gettable for this object: tid=" << tid.GetName ());
     }
   bool ok = info.accessor->Get (this, value);
   if (ok)
@@ -242,13 +244,13 @@ ObjectBase::GetAttribute (std::string name, AttributeValue &value) const
   StringValue *str = dynamic_cast<StringValue *> (&value);
   if (str == 0)
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" tid="<<tid.GetName () << ": input value is not a string");
+      NS_FATAL_ERROR ("Attribute name=" << name << " tid=" << tid.GetName () << ": input value is not a string");
     }
   Ptr<AttributeValue> v = info.checker->Create ();
   ok = info.accessor->Get (this, *PeekPointer (v));
   if (!ok)
     {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" tid="<<tid.GetName () << ": could not get value");
+      NS_FATAL_ERROR ("Attribute name=" << name << " tid=" << tid.GetName () << ": could not get value");
     }
   str->Set (v->SerializeToString (info.checker));
 }
@@ -264,8 +266,8 @@ ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
     {
       return false;
     }
-  if (!(info.flags & TypeId::ATTR_GET) ||
-      !info.accessor->HasGetter ())
+  if (!(info.flags & TypeId::ATTR_GET)
+      || !info.accessor->HasGetter ())
     {
       return false;
     }
@@ -289,7 +291,7 @@ ObjectBase::GetAttributeFailSafe (std::string name, AttributeValue &value) const
   return true;
 }
 
-bool 
+bool
 ObjectBase::TraceConnectWithoutContext (std::string name, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << name << &cb);
@@ -302,7 +304,7 @@ ObjectBase::TraceConnectWithoutContext (std::string name, const CallbackBase &cb
   bool ok = accessor->ConnectWithoutContext (this, cb);
   return ok;
 }
-bool 
+bool
 ObjectBase::TraceConnect (std::string name, std::string context, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << name << context << &cb);
@@ -315,7 +317,7 @@ ObjectBase::TraceConnect (std::string name, std::string context, const CallbackB
   bool ok = accessor->Connect (this, context, cb);
   return ok;
 }
-bool 
+bool
 ObjectBase::TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << name << &cb);
@@ -328,7 +330,7 @@ ObjectBase::TraceDisconnectWithoutContext (std::string name, const CallbackBase 
   bool ok = accessor->DisconnectWithoutContext (this, cb);
   return ok;
 }
-bool 
+bool
 ObjectBase::TraceDisconnect (std::string name, std::string context, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << name << context << &cb);

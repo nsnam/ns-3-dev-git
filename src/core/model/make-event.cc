@@ -37,22 +37,22 @@ EventImpl * MakeEvent (void (*f)(void))
   // zero arg version
   class EventFunctionImpl0 : public EventImpl
   {
-public:
+  public:
     typedef void (*F)(void);
 
     EventFunctionImpl0 (F function)
       : m_function (function)
-    {
-    }
+    {}
     virtual ~EventFunctionImpl0 ()
-    {
-    }
-protected:
+    {}
+
+  protected:
     virtual void Notify (void)
     {
       (*m_function)();
     }
-private:
+
+  private:
     F m_function;
   } *ev = new EventFunctionImpl0 (f);
   return ev;

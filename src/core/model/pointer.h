@@ -37,7 +37,7 @@ class PointerValue : public AttributeValue
 {
 public:
   PointerValue ();
-  
+
   /**
    * Construct this PointerValue by referencing an explicit Object.
    *
@@ -70,7 +70,7 @@ public:
   /**
    * Cast to an Object of type \c T.
    * \tparam T \explicit The type to cast to.
-   */ 
+   */
   template <typename T>
   operator Ptr<T> () const;
 
@@ -94,7 +94,7 @@ private:
 };
 
 
-class PointerChecker : public AttributeChecker 
+class PointerChecker : public AttributeChecker
 {
 public:
 
@@ -104,7 +104,7 @@ public:
    */
   virtual TypeId GetPointeeTypeId (void) const = 0;
 };
-  
+
 /**
  * Create a PointerChecker for a type.
  * \tparam T \explicit The underlying type.
@@ -129,7 +129,8 @@ namespace internal {
 template <typename T>
 class PointerChecker : public ns3::PointerChecker
 {
-  virtual bool Check (const AttributeValue &val) const {
+  virtual bool Check (const AttributeValue &val) const
+  {
     const PointerValue *value = dynamic_cast<const PointerValue *> (&val);
     if (value == 0)
       {
@@ -146,20 +147,25 @@ class PointerChecker : public ns3::PointerChecker
       }
     return true;
   }
-  virtual std::string GetValueTypeName (void) const {
+  virtual std::string GetValueTypeName (void) const
+  {
     return "ns3::PointerValue";
   }
-  virtual bool HasUnderlyingTypeInformation (void) const {
+  virtual bool HasUnderlyingTypeInformation (void) const
+  {
     return true;
   }
-  virtual std::string GetUnderlyingTypeInformation (void) const {
+  virtual std::string GetUnderlyingTypeInformation (void) const
+  {
     TypeId tid = T::GetTypeId ();
     return "ns3::Ptr< " + tid.GetName () + " >";
   }
-  virtual Ptr<AttributeValue> Create (void) const {
+  virtual Ptr<AttributeValue> Create (void) const
+  {
     return ns3::Create<PointerValue> ();
   }
-  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+  virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+  {
     const PointerValue *src = dynamic_cast<const PointerValue *> (&source);
     PointerValue *dst = dynamic_cast<PointerValue *> (&destination);
     if (src == 0 || dst == 0)
@@ -169,7 +175,8 @@ class PointerChecker : public ns3::PointerChecker
     *dst = *src;
     return true;
   }
-  virtual TypeId GetPointeeTypeId (void) const {
+  virtual TypeId GetPointeeTypeId (void) const
+  {
     return T::GetTypeId ();
   }
 };
@@ -183,14 +190,14 @@ PointerValue::PointerValue (const Ptr<T> &object)
 }
 
 template <typename T>
-void 
+void
 PointerValue::Set (const Ptr<T> &object)
 {
   m_value = object;
 }
 
 template <typename T>
-Ptr<T> 
+Ptr<T>
 PointerValue::Get (void) const
 {
   T *v = dynamic_cast<T *> (PeekPointer (m_value));
@@ -204,7 +211,7 @@ PointerValue::operator Ptr<T> () const
 }
 
 template <typename T>
-bool 
+bool
 PointerValue::GetAccessor (Ptr<T> &v) const
 {
   Ptr<T> ptr = dynamic_cast<T*> (PeekPointer (m_value));

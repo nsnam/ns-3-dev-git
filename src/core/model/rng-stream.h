@@ -34,7 +34,7 @@ namespace ns3 {
  * \ingroup randomvariable
  * \defgroup rngimpl RNG Implementation
  */
-  
+
 /**
  * \ingroup rngimpl
  *
@@ -88,5 +88,5 @@ private:
 } // namespace ns3
 
 #endif
- 
+
 

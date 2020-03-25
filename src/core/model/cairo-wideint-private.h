@@ -42,12 +42,13 @@
 
 // Adapt to ns-3 environment
 #include "ns3/core-config.h"
-#define cairo_private 
+#define cairo_private
 #define HAVE_UINT64_T 1
 // Implementation tags added below and in cairo-wideint.c:
 // extern const char * cairo_impl64;
 // extern const char * cairo_impl128;
 
+// *NS_CHECK_STYLE_OFF*
 
 /*for compatibility with MacOS and Cygwin*/
 #ifndef HAVE_STDINT_H
@@ -355,5 +356,6 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
 };
 #endif
 
+// *NS_CHECK_STYLE_ON*
 
 #endif /* CAIRO_WIDEINT_H */

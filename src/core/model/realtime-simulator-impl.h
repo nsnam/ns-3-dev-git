@@ -47,7 +47,7 @@ namespace ns3 {
  *
  * Realtime simulator implementation.
  */
-  
+
 /**
  * \ingroup realtime
  *
@@ -65,13 +65,14 @@ public:
   /**
    * What to do when we can't maintain real time synchrony.
    */
-  enum SynchronizationMode {
+  enum SynchronizationMode
+  {
     /**
      * Make a best effort to keep synced to real-time.
      *
      * If we fall behind, keep going.
      */
-    SYNC_BEST_EFFORT, 
+    SYNC_BEST_EFFORT,
     /**
      * Keep to real time within the hard limit tolerance configured
      * with SetHardLimit, or die trying.
@@ -80,7 +81,7 @@ public:
      * a fatal error.
      * \see SetHardLimit
      */
-    SYNC_HARD_LIMIT,  
+    SYNC_HARD_LIMIT,
   };
 
   /** Constructor. */
@@ -202,13 +203,13 @@ private:
   /**< Timestep of the current event. */
   uint64_t m_currentTs;
   /**< Execution context. */
-  uint32_t m_currentContext;  
+  uint32_t m_currentContext;
   /** The event count. */
   uint64_t m_eventCount;
   /**@}*/
 
-  /** Mutex to control access to key state. */  
-  mutable SystemMutex m_mutex;  
+  /** Mutex to control access to key state. */
+  mutable SystemMutex m_mutex;
 
   /** The synchronizer in use to track real time. */
   Ptr<Synchronizer> m_synchronizer;

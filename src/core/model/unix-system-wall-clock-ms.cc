@@ -38,7 +38,8 @@ NS_LOG_COMPONENT_DEFINE ("SystemWallClockMs");
  * \ingroup system
  * \brief System-dependent implementation for SystemWallClockMs
  */
-class SystemWallClockMsPrivate {
+class SystemWallClockMsPrivate
+{
 public:
   /** \copydoc SystemWallClockMs::Start() */
   void Start (void);
@@ -59,7 +60,7 @@ private:
   int64_t m_elapsedSystem;  //!< Elapsed system time, in ms.
 };
 
-void 
+void
 SystemWallClockMsPrivate::Start (void)
 {
   NS_LOG_FUNCTION (this);
@@ -81,18 +82,18 @@ SystemWallClockMsPrivate::End (void)
   // is bad since this number is fractional on most machines and would result
   // in divide by zero errors due to integer rounding.
   //
-  // Multiplying by milliseconds per clock tick works up to a clock resolution 
+  // Multiplying by milliseconds per clock tick works up to a clock resolution
   // of 1000 ticks per second.  If we go  past this point, we begin to get zero
-  // elapsed times when millisecondsPerTick becomes fractional and another 
+  // elapsed times when millisecondsPerTick becomes fractional and another
   // rounding error appears.
   //
-  // So rounding errors using integers can bite you from both direction.  Since 
-  // all of our targets have math coprocessors, why not just use doubles 
+  // So rounding errors using integers can bite you from both direction.  Since
+  // all of our targets have math coprocessors, why not just use doubles
   // internally?  Works fine, lasts a long time.
   //
-  // If millisecondsPerTick becomes fractional, and an elapsed time greater than 
-  // a milliscond is measured, the function will work as expected.  If an elapsed 
-  // time is measured that turns out to be less than a millisecond, we'll just 
+  // If millisecondsPerTick becomes fractional, and an elapsed time greater than
+  // a milliscond is measured, the function will work as expected.  If an elapsed
+  // time is measured that turns out to be less than a millisecond, we'll just
   // return zero which would, I think, also will be expected.
   //
   NS_LOG_FUNCTION (this);

@@ -51,7 +51,7 @@ namespace Hash {
 
 namespace Function {
 
-/** FNV hash implementation details. */  
+/** FNV hash implementation details. */
 namespace Fnv1aImplementation {
 
 /*************************************************
@@ -63,13 +63,13 @@ namespace Fnv1aImplementation {
  * \defgroup hash_fnv FNV Hash Implementation
  */
 /**@{*/
-  
+
 extern "C" {
 
 // Changes from FNV distribution are marked with `//PDB'
 //
 
-// Begin fnv.h ----------------------------------->
+/* Begin fnv.h -------------- *NS_CHECK_STYLE_OFF* ----> */
 
 /*
  * fnv - Fowler/Noll/Vo- hash code
@@ -195,7 +195,7 @@ typedef uint32_t Fnv32_t;  //PDB
  */
 //#include "longlong.h"  //PDB - assume `unsigned long long' is 64 bit
 #define HAVE_64BIT_LONG_LONG  
-  
+
 
 
 /** 
@@ -292,9 +292,9 @@ enum fnv_type {
 
 #endif /* __FNV_H__ */
 
-// End fnv.h ------------------------------->
+/* End fnv.h ---------------- *NS_CHECK_STYLE_ON* -----> */
 
-// Begin hash_32a.c ------------------------------>
+/* Begin hash_32a.c --------- *NS_CHECK_STYLE_OFF* ----> */
 
 /*
  * hash_32 - 32 bit Fowler/Noll/Vo FNV-1a hash code
@@ -438,10 +438,10 @@ fnv_32a_str(char *str, Fnv32_t hval)
     /* return our new hash value */
     return hval;
 }
-  
-// End hash_32a.c -------------------------->
 
-// Begin hash_64a.c------------------------------->
+/* End hash_32a.c ----------- *NS_CHECK_STYLE_ON* -----> */
+
+/* Begin hash_64a.c --------- *NS_CHECK_STYLE_OFF* ----> */
 
 /*
  * hash_64 - 64 bit Fowler/Noll/Vo-0 FNV-1a hash code
@@ -734,8 +734,8 @@ fnv_64a_str(char *str, Fnv64_t hval)
     /* return our new hash value */
     return hval;
 }
-  
-// End hash_64a.c--------------------------->
+
+/* End hash_64a.c ----------- *NS_CHECK_STYLE_ON* -----> */
 
 }  /* extern "C" */
 

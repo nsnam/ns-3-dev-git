@@ -132,7 +132,7 @@ private:
 
   /** Calendar bucket type: a list of Events. */
   typedef std::list<Scheduler::Event> Bucket;
-  
+
   /** Array of buckets. */
   Bucket *m_buckets;
   /** Number of buckets in the array. */

@@ -103,22 +103,28 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
    */
   struct SimpleAttributeChecker : public BASE
   {
-    virtual bool Check (const AttributeValue &value) const {
+    virtual bool Check (const AttributeValue &value) const
+    {
       return dynamic_cast<const T *> (&value) != 0;
     }
-    virtual std::string GetValueTypeName (void) const {
+    virtual std::string GetValueTypeName (void) const
+    {
       return m_type;
     }
-    virtual bool HasUnderlyingTypeInformation (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const
+    {
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const
+    {
       return m_underlying;
     }
-    virtual Ptr<AttributeValue> Create (void) const {
+    virtual Ptr<AttributeValue> Create (void) const
+    {
       return ns3::Create<T> ();
     }
-    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+    {
       const T *src = dynamic_cast<const T *> (&source);
       T *dst = dynamic_cast<T *> (&destination);
       if (src == 0 || dst == 0)
@@ -146,7 +152,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *
  * \param [in] type The name of the class
  *
- * This macro defines and generates the code for the implementation 
+ * This macro defines and generates the code for the implementation
  * of the \c MakeTypeAccessor template functions. This macro is typically
  * invoked in a class header to allow users of this class to view and
  * use the template functions defined here. This macro is implemented
@@ -190,16 +196,16 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
     void Set (const type &value);                                       \
     type Get (void) const;                                              \
     template <typename T>                                               \
-      bool GetAccessor (T &value) const {                               \
+    bool GetAccessor (T & value) const {                                \
       value = T (m_value);                                              \
       return true;                                                      \
     }                                                                   \
     virtual Ptr<AttributeValue> Copy (void) const;                      \
     virtual std::string                                                 \
-      SerializeToString (Ptr<const AttributeChecker> checker) const;    \
+    SerializeToString (Ptr<const AttributeChecker> checker) const;      \
     virtual bool                                                        \
-      DeserializeFromString (std::string value,                         \
-                             Ptr<const AttributeChecker> checker);      \
+    DeserializeFromString (std::string value,                           \
+                           Ptr<const AttributeChecker> checker);        \
   private:                                                              \
     type m_value;                                                       \
   }
@@ -262,7 +268,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the class methods belonging to
- * the attribute value class \p nameValue 
+ * the attribute value class \p nameValue
  * of the underlying class \p type.
  *
  * \param [in] type The underlying type name
@@ -291,19 +297,19 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
   }                                                                     \
   std::string name ## Value::SerializeToString                          \
     (Ptr<const AttributeChecker> checker) const {                       \
-      std::ostringstream oss;                                           \
-      oss << m_value;                                                   \
-      return oss.str ();                                                \
+    std::ostringstream oss;                                             \
+    oss << m_value;                                                     \
+    return oss.str ();                                                  \
   }                                                                     \
   bool name ## Value::DeserializeFromString                             \
     (std::string value, Ptr<const AttributeChecker> checker) {          \
-      std::istringstream iss;                                           \
-      iss.str (value);                                                  \
-      iss >> m_value;                                                   \
-      NS_ABORT_MSG_UNLESS (iss.eof (),                                  \
-                           "Attribute value " << "\"" << value << "\""  \
-                           << " is not properly formatted");            \
-      return !iss.bad () && !iss.fail ();                               \
+    std::istringstream iss;                                             \
+    iss.str (value);                                                    \
+    iss >> m_value;                                                     \
+    NS_ABORT_MSG_UNLESS (iss.eof (),                                    \
+                         "Attribute value " << "\"" << value << "\"" << \
+                         " is not properly formatted");                 \
+    return !iss.bad () && !iss.fail ();                                 \
   }
 
 /**
@@ -338,7 +344,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)                               \
   Ptr<const AttributeChecker> Make ## type ## Checker (void) {          \
     return MakeSimpleAttributeChecker<type ## Value,type ## Checker>    \
-      (# type "Value", # type);                                         \
+             (# type "Value", # type);                                  \
   }                                                                     \
 
 /**
@@ -357,7 +363,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 #define ATTRIBUTE_CHECKER_IMPLEMENT_WITH_NAME(type,name)                \
   Ptr<const AttributeChecker> Make ## type ## Checker (void) {          \
     return MakeSimpleAttributeChecker<type ## Value,type ## Checker>    \
-      (# type "Value", name);                                           \
+             (# type "Value", name);                                    \
   }                                                                     \
 
 /**

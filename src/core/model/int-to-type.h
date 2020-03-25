@@ -31,7 +31,7 @@ namespace ns3 {
  * Convert an integer into a type.
  *
  * This trivial template is extremely useful, as explained in
- * "Modern C++ Design", p 29, section 2.4, 
+ * "Modern C++ Design", p 29, section 2.4,
  * "Mapping Integral Constants to Types".
  *
  * For an example, see timer-impl.h
@@ -43,7 +43,8 @@ template <int v>
 struct IntToType
 {
   /** Enumeration holding the type-specific value. */
-  enum v_e {
+  enum v_e
+  {
     value = v  /**< The integer value distinguishing this type. */
   };
 };

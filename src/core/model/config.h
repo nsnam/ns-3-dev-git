@@ -70,7 +70,7 @@ void Set (std::string path, const AttributeValue &value);
  * \param [in] name The full name of the attribute
  * \param [in] value The value to set.
  *
- * This method overrides the initial value of the 
+ * This method overrides the initial value of the
  * matching attribute. This method cannot fail: it will
  * crash if the input attribute name or value is invalid.
  */
@@ -81,8 +81,8 @@ void SetDefault (std::string name, const AttributeValue &value);
  * \param [in] value The value to set.
  * \returns \c true if the value was set successfully, false otherwise.
  *
- * This method overrides the initial value of the 
- * matching attribute. 
+ * This method overrides the initial value of the
+ * matching attribute.
  */
 bool SetDefaultFailSafe (std::string name, const AttributeValue &value);
 /**
@@ -161,8 +161,8 @@ public:
    * \param [in] contexts The corresponding contexts.
    * \param [in] path The path used for object matching.
    */
-  MatchContainer (const std::vector<Ptr<Object> > &objects, 
-                  const std::vector<std::string> &contexts, 
+  MatchContainer (const std::vector<Ptr<Object> > &objects,
+                  const std::vector<std::string> &contexts,
                   std::string path);
 
   /**
@@ -240,7 +240,7 @@ public:
    * \sa ns3::Config::DisconnectWithoutContext
    */
   void DisconnectWithoutContext (std::string name, const CallbackBase &cb);
-  
+
 private:
   /** The list of objects in this container. */
   std::vector<Ptr<Object> > m_objects;

@@ -81,7 +81,7 @@ namespace SystemPath {
  *
  * This is an internal function (by virtue of not being
  * declared in a \c .h file); the public API is FindSelfDirectory().
- * 
+ *
  * \param [in] path The full path to a file.
  * \returns The full path to the containing directory.
  */
@@ -89,14 +89,14 @@ std::string Dirname (std::string path)
 {
   NS_LOG_FUNCTION (path);
   std::list<std::string> elements = Split (path);
-  std::list<std::string>::const_iterator last = elements.end();
+  std::list<std::string>::const_iterator last = elements.end ();
   last--;
   return Join (elements.begin (), last);
 }
 
 std::string FindSelfDirectory (void)
 {
-  /** 
+  /**
    * This function returns the path to the running $PREFIX.
    * Mac OS X: _NSGetExecutablePath() (man 3 dyld)
    * Linux: readlink /proc/self/exe
@@ -115,7 +115,7 @@ std::string FindSelfDirectory (void)
     int status;
     while (true)
       {
-        status = readlink("/proc/self/exe", buffer, size);
+        status = readlink ("/proc/self/exe", buffer, size);
         if (status != 1 || (status == -1 && errno != ENAMETOOLONG))
           {
             break;
@@ -123,7 +123,7 @@ std::string FindSelfDirectory (void)
         size *= 2;
         free (buffer);
         buffer = (char*)malloc (size);
-	memset (buffer, 0, size);
+        memset (buffer, 0, size);
       }
     if (status == -1)
       {
@@ -142,10 +142,10 @@ std::string FindSelfDirectory (void)
     DWORD status = GetModuleFilename (0, lpFilename, size);
     while (status == size)
       {
-	size = size * 2;
-	free (lpFilename);
-	lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
-	status = GetModuleFilename (0, lpFilename, size);
+        size = size * 2;
+        free (lpFilename);
+        lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
+        status = GetModuleFilename (0, lpFilename, size);
       }
     NS_ASSERT (status != 0);
     filename = lpFilename;
@@ -159,32 +159,32 @@ std::string FindSelfDirectory (void)
     int status = _NSGetExecutablePath (buffer, &bufsize);
     if (status == -1)
       {
-	free (buffer);
-	buffer = (char *) malloc (bufsize);
-	status = _NSGetExecutablePath (buffer, &bufsize);
+        free (buffer);
+        buffer = (char *) malloc (bufsize);
+        status = _NSGetExecutablePath (buffer, &bufsize);
       }
     NS_ASSERT (status == 0);
     filename = buffer;
     free (buffer);
-  } 
+  }
 #elif defined (__FreeBSD__)
   {
     int     mib[4];
     std::size_t  bufSize = 1024;
-    char   *buf = (char *) malloc(bufSize);
+    char   *buf = (char *) malloc (bufSize);
 
     mib[0] = CTL_KERN;
     mib[1] = KERN_PROC;
     mib[2] = KERN_PROC_PATHNAME;
     mib[3] = -1;
 
-    sysctl(mib, 4, buf, &bufSize, NULL, 0);
+    sysctl (mib, 4, buf, &bufSize, NULL, 0);
     filename = buf;
   }
 #endif
-    return Dirname (filename);
+  return Dirname (filename);
 }
-  
+
 std::string Append (std::string left, std::string right)
 {
   // removing trailing separators from 'left'
@@ -193,11 +193,11 @@ std::string Append (std::string left, std::string right)
     {
       std::string::size_type lastSep = left.rfind (SYSTEM_PATH_SEP);
       if (lastSep != left.size () - 1)
-	{
-	  break;
-	}
+        {
+          break;
+        }
       left = left.substr (0, left.size () - 1);
-    } 
+    }
   std::string retval = left + SYSTEM_PATH_SEP + right;
   return retval;
 }
@@ -221,24 +221,24 @@ std::list<std::string> Split (std::string path)
 }
 
 std::string Join (std::list<std::string>::const_iterator begin,
-		  std::list<std::string>::const_iterator end)
+                  std::list<std::string>::const_iterator end)
 {
   NS_LOG_FUNCTION (&begin << &end);
   std::string retval = "";
   for (std::list<std::string>::const_iterator i = begin; i != end; i++)
     {
       if (i == begin)
-	{
-	  retval = *i;
-	}
+        {
+          retval = *i;
+        }
       else
-	{
-	  retval = retval + SYSTEM_PATH_SEP + *i;
-	}
+        {
+          retval = retval + SYSTEM_PATH_SEP + *i;
+        }
     }
   return retval;
 }
-  
+
 std::list<std::string> ReadFiles (std::string path)
 {
   NS_LOG_FUNCTION (path);
@@ -260,7 +260,7 @@ std::list<std::string> ReadFiles (std::string path)
   /** \todo untested */
   HANDLE hFind;
   WIN32_FIND_DATA fileData;
-  
+
   hFind = FindFirstFile (path.c_str (), &FindFileData);
   if (hFind == INVALID_HANDLE_VALUE)
     {
@@ -269,15 +269,16 @@ std::list<std::string> ReadFiles (std::string path)
   do
     {
       files.push_back (fileData.cFileName);
-    } while (FindNextFile (hFind, &fileData));
-  FindClose(hFind);
+    }
+  while (FindNextFile (hFind, &fileData));
+  FindClose (hFind);
 #else
 #error "No support for reading a directory on this platform"
 #endif
   return files;
 }
 
-std::string 
+std::string
 MakeTemporaryDirectoryName (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -288,9 +289,9 @@ MakeTemporaryDirectoryName (void)
     {
       path = getenv ("TEMP");
       if (path == NULL)
-	{
-	  path = const_cast<char *> ("/tmp");
-	}
+        {
+          path = const_cast<char *> ("/tmp");
+        }
     }
 
   //
@@ -308,10 +309,10 @@ MakeTemporaryDirectoryName (void)
 
   //
   // The final path to the directory is going to look something like
-  // 
+  //
   //   /tmp/ns3-14.30.29.32767
   //
-  // The first segment comes from one of the temporary directory env 
+  // The first segment comes from one of the temporary directory env
   // variables or /tmp if not found.  The directory name starts with an
   // identifier telling folks who is making all of the temp directories
   // and then the local time (in this case 14.30.29 -- which is 2:30 and
@@ -324,7 +325,7 @@ MakeTemporaryDirectoryName (void)
   return oss.str ();
 }
 
-void 
+void
 MakeDirectories (std::string path)
 {
   NS_LOG_FUNCTION (path);
@@ -344,7 +345,7 @@ MakeDirectories (std::string path)
       ++i;  // Now points to one past the directory we want to create
       std::string tmp = Join (elements.begin (), i);
       bool makeDirErr = false;
-      
+
 #if defined(HAVE_MKDIR_H)
       makeDirErr = mkdir (tmp.c_str (), S_IRWXU);
 #endif

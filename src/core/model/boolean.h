@@ -57,6 +57,7 @@ public:
   virtual Ptr<AttributeValue> Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
+
 private:
   bool m_value;
 };

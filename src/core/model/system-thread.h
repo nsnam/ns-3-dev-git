@@ -33,7 +33,7 @@
  * System-independent thread class ns3::SystemThread declaration.
  */
 
-namespace ns3 { 
+namespace ns3 {
 
 /**
  * @ingroup thread
@@ -41,12 +41,12 @@ namespace ns3 {
  * primitive.
  *
  * This class allows for creation of multiple threads of execution in a
- * process.  The exact implementation of the thread functionality is 
- * operating system dependent, but typically in ns-3 one is using an 
+ * process.  The exact implementation of the thread functionality is
+ * operating system dependent, but typically in ns-3 one is using an
  * environment in which Posix Threads are supported (either natively or
- * in the case of Windows via Cygwin's implementation of pthreads on the 
+ * in the case of Windows via Cygwin's implementation of pthreads on the
  * Win32 API.  In either case we expect that these will be kernel-level
- * threads and therefore a system with multiple CPUs will see truly concurrent 
+ * threads and therefore a system with multiple CPUs will see truly concurrent
  * execution.
  *
  * Synchronization between threads is provided via the SystemMutex class.
@@ -66,7 +66,7 @@ public:
    * @brief Create a SystemThread object.
    *
    * A system thread object is not created running.  A thread of execution
-   * must be explicitly started by calling the Start method.  When the 
+   * must be explicitly started by calling the Start method.  When the
    * Start method is called, it will spawn a thread of execution and cause
    * that thread to call out into the callback function provided here as
    * a parameter.
@@ -99,7 +99,7 @@ public:
    * @endcode
    *
    * Object lifetime is always an issue with threads, so it is common to use
-   * smart pointers.  If you are spinning up a thread in an object that is 
+   * smart pointers.  If you are spinning up a thread in an object that is
    * managed by a smart pointer, you can use that pointer directly:
    * @code
    *   Ptr<MyClass> myPtr = Create<MyClass> ();
@@ -108,12 +108,12 @@ public:
    *   st->Start ();
    * @endcode
    *
-   * Just like any thread, you can synchronize with its termination.  The 
+   * Just like any thread, you can synchronize with its termination.  The
    * method provided to do this is Join(). If you call Join() you will block
    * until the SystemThread run method returns.
    *
    * @param [in] callback entry point of the thread
-   * 
+   *
    * @warning I've made the system thread class look like a normal ns3 object
    * with smart pointers, and living in the heap.  This makes it very easy to
    * manage threads from a single master thread context.  You should be very
@@ -123,13 +123,13 @@ public:
    * atomic operation.  CREATE AND MANAGE YOUR THREADS IN ONE PLACE -- LEAVE
    * THE PTR THERE.
    */
-  SystemThread(Callback<void> callback);
+  SystemThread (Callback<void> callback);
 
   /**
    * @brief Destroy a SystemThread object.
    *
    */
-  ~SystemThread();
+  ~SystemThread ();
 
   /**
    * @brief Start a thread of execution, running the provided callback.
@@ -137,16 +137,16 @@ public:
   void Start (void);
 
   /**
-   * @brief Suspend the caller until the thread of execution, running the 
+   * @brief Suspend the caller until the thread of execution, running the
    * provided callback, finishes.
    */
   void Join (void);
   /**
    * @brief Returns the current thread Id.
    *
-   * @returns Current thread Id. 
+   * @returns Current thread Id.
    */
-  static ThreadId Self(void);
+  static ThreadId Self (void);
 
   /**
    * @brief Compares an ThreadId with the current ThreadId .
@@ -154,7 +154,7 @@ public:
    * @param [in] id The ThreadId to compare to.
    * @returns @c true if @c id matches the current ThreadId.
    */
-  static bool Equals(ThreadId id);
+  static bool Equals (ThreadId id);
 
 private:
 #ifdef HAVE_PTHREAD_H
@@ -164,11 +164,11 @@ private:
    * @param [in] arg This SystemThread instance to communicate to the newly
    *                 launched thread.
    */
-  static void *DoRun (void *arg);
+  static void * DoRun (void *arg);
 
   Callback<void> m_callback;  /**< The main function for this thread when launched. */
   pthread_t m_thread;  /**< The thread id of the child thread. */
-#endif 
+#endif
 };
 
 } // namespace ns3

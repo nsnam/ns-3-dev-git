@@ -81,8 +81,7 @@ public:
 
 NameNode::NameNode ()
   : m_parent (0), m_name (""), m_object (0)
-{
-}
+{}
 
 NameNode::NameNode (const NameNode &nameNode)
 {
@@ -124,9 +123,9 @@ public:
   NamesPriv ();
   /** Destructor. */
   ~NamesPriv ();
-  
+
   // Doxygen \copydoc bug: won't copy these docs, so we repeat them.
-  
+
   /**
    * Internal implementation for Names::Add(std::string,Ptr<Object>)
    *
@@ -258,7 +257,7 @@ private:
    * \param [in] object The object to check.
    * \returns The corresponding NameNode, if it exists.
    */
-  NameNode *IsNamed (Ptr<Object> object);
+  NameNode * IsNamed (Ptr<Object> object);
   /**
    * Check if a name already exists as a child of a NameNode.
    *
@@ -319,7 +318,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   NS_LOG_FUNCTION (this << name << object);
   //
   // This is the simple, easy to use version of Add, so we want it to be flexible.
-  // We don't want to force a user to always type the fully qualified namespace 
+  // We don't want to force a user to always type the fully qualified namespace
   // name, so we allow the namespace name to be omitted.  For example, calling
   // Add ("Client/ath0", obj) should result in exactly the same behavior as
   // Add ("/Names/Client/ath0", obj).  Calling Add ("Client", obj) should have
@@ -351,8 +350,8 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
     }
 
   //
-  // There must now be a fully qualified path in the string.  All fully 
-  // qualified names begin with "/Names".  We have to split off the final 
+  // There must now be a fully qualified path in the string.  All fully
+  // qualified names begin with "/Names".  We have to split off the final
   // segment which will become the name of the object.  A '/' that
   // separates the path from the final segment had better be there since
   // we just made sure that at least the namespace name was there.
@@ -426,19 +425,19 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
 {
   NS_LOG_FUNCTION (this << oldpath << newname);
   //
-  // This is the simple, easy to use version of Rename, so we want it to be 
-  // flexible.   We don't want to force a user to always type the fully 
+  // This is the simple, easy to use version of Rename, so we want it to be
+  // flexible.   We don't want to force a user to always type the fully
   // qualified namespace name, so we allow the namespace name to be omitted.
-  // For example, calling Rename ("Client/ath0", "eth0") should result in 
+  // For example, calling Rename ("Client/ath0", "eth0") should result in
   // exactly the same behavior as Rename ("/Names/Client/ath0", "eth0").
-  // Calling Rename ("Client", "Router") should have the same effect as 
+  // Calling Rename ("Client", "Router") should have the same effect as
   // Rename ("Names/Client", "Router")
   //
   // The first thing to do, then, is to "canonicalize" the input string to always
   // be a fully qualified path.
   //
   // If we are given a name that begins with "/Names/" we assume that this is a
-  // fully qualified path to the object we want to change.  We split the path into 
+  // fully qualified path to the object we want to change.  We split the path into
   // path string (cf directory) and a final segment (cf filename) and then call
   // the "Real" Rename.
   //
@@ -461,8 +460,8 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
     }
 
   //
-  // There must now be a fully qualified path in the oldpath string.  All 
-  // fully qualified names begin with "/Names".  We have to split off the final 
+  // There must now be a fully qualified path in the oldpath string.  All
+  // fully qualified names begin with "/Names".  We have to split off the final
   // segment which will become the name we want to rename.  A '/' that
   // separates the path from the final segment (name) had better be there since
   // we just made sure that at least the namespace name was there.
@@ -596,14 +595,14 @@ NamesPriv::Find (std::string path)
   // This is hooked in from simple, easy to use version of Find, so we want it
   // to be flexible.
   //
-  // If we are provided a path that doesn't begin with "/Names", we assume 
+  // If we are provided a path that doesn't begin with "/Names", we assume
   // that the caller has simply given us a path starting with a name that
   // is in the root namespace.  This allows people to omit the "/Names" prefix.
   // and simply do a Find ("Client/eth0") instead of having to always do a
   // Find ("/Names/Client/eth0");
   //
   // So, if we are given a name that begins with "/Names/" the upshot is that we
-  // just remove that prefix and treat the rest of the string as starting with a 
+  // just remove that prefix and treat the rest of the string as starting with a
   // name in the root namespace.
   //
 
@@ -627,7 +626,7 @@ NamesPriv::Find (std::string path)
 
   //
   // The string <remaining> is now composed entirely of path segments in
-  // the /Names name space and we have eaten the leading slash. e.g., 
+  // the /Names name space and we have eaten the leading slash. e.g.,
   // remaining = "ClientNode/eth0"
   //
   // The start of the search is always at the root of the name space.
@@ -639,7 +638,7 @@ NamesPriv::Find (std::string path)
       if (offset == std::string::npos)
         {
           //
-          // There are no remaining slashes so this is the last segment of the 
+          // There are no remaining slashes so this is the last segment of the
           // specified name.  We're done when we find it
           //
           std::map<std::string, NameNode *>::iterator i = node->m_nameMap.find (remaining);
@@ -657,7 +656,7 @@ NamesPriv::Find (std::string path)
       else
         {
           //
-          // There are more slashes so this is an intermediate segment of the 
+          // There are more slashes so this is an intermediate segment of the
           // specified name.  We need to "recurse" when we find this segment.
           //
           offset = remaining.find ("/");

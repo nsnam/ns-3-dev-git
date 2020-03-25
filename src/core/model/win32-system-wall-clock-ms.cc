@@ -36,7 +36,8 @@ NS_LOG_COMPONENT_DEFINE ("SystemWallClockMs");
  * \ingroup system
  * \brief System-dependent implementation for SystemWallClockMs
  */
-class SystemWallClockMsPrivate {
+class SystemWallClockMsPrivate
+{
 public:
   /** \copydoc SystemWallClockMs::Start() */
   void Start (void);
@@ -51,12 +52,12 @@ public:
 
 private:
   clock_t m_startTime;      //!< The wall clock start time.
-  int64_t m_elapsedReal;    //!< Elapsed real time, in ms.  
-  int64_t m_elapsedUser;    //!< Elapsed user time, in ms.  
+  int64_t m_elapsedReal;    //!< Elapsed real time, in ms.
+  int64_t m_elapsedUser;    //!< Elapsed user time, in ms.
   int64_t m_elapsedSystem;  //!< Elapsed system time, in ms.
 };
 
-void 
+void
 SystemWallClockMsPrivate::Start (void)
 {
   NS_LOG_FUNCTION (this);
@@ -78,18 +79,18 @@ SystemWallClockMsPrivate::End (void)
   // per millisecond is bad since this number is fractional on most machines
   // and would result in divide by zero errors due to integer rounding.
   //
-  // Multiplying by milliseconds per clock tick works up to a clock resolution 
+  // Multiplying by milliseconds per clock tick works up to a clock resolution
   // of 1000 ticks per second.  If we go  past this point, we begin to get zero
-  // elapsed times when millisecondsPerTick becomes fractional and another 
+  // elapsed times when millisecondsPerTick becomes fractional and another
   // rounding error appears.
   //
-  // So rounding errors using integers can bite you from two direction.  Since 
-  // all of our targets have math coprocessors, why not just use doubles 
+  // So rounding errors using integers can bite you from two direction.  Since
+  // all of our targets have math coprocessors, why not just use doubles
   // internally?  Works fine, lasts a long time.
   //
-  // If millisecondsPerTick becomes fractional, and an elapsed time greater than 
-  // a millisecond is measured, the function will work as expected.  If an elapsed 
-  // time is measured that turns out to be less than a millisecond, we'll just 
+  // If millisecondsPerTick becomes fractional, and an elapsed time greater than
+  // a millisecond is measured, the function will work as expected.  If an elapsed
+  // time is measured that turns out to be less than a millisecond, we'll just
   // return zero which would, I think, also will be expected.
   //
   NS_LOG_FUNCTION (this);

@@ -51,7 +51,7 @@
   do {                                                                 \
       std::cerr << "aborted. ";                                        \
       NS_FATAL_ERROR (msg);                                            \
-  } while (false)
+    } while (false)
 
 
 /**
@@ -76,11 +76,11 @@
  */
 #define NS_ABORT_IF(cond)                                              \
   do {                                                                 \
-    if (cond)                                                          \
-      {                                                                \
-        std::cerr << "aborted. cond=\"" << # cond << ", ";             \
-        NS_FATAL_ERROR_NO_MSG ();                                      \
-      }                                                                \
+      if (cond)                                                        \
+        {                                                              \
+          std::cerr << "aborted. cond=\"" << # cond << ", ";           \
+          NS_FATAL_ERROR_NO_MSG ();                                    \
+        }                                                              \
     } while (false)
 
 /**
@@ -107,12 +107,12 @@
  */
 #define NS_ABORT_MSG_IF(cond, msg)                                     \
   do {                                                                 \
-    if (cond)                                                          \
-      {                                                                \
-        std::cerr << "aborted. cond=\"" << # cond << "\", ";           \
-        NS_FATAL_ERROR (msg);                                          \
-      }                                                                \
-  } while (false)
+      if (cond)                                                        \
+        {                                                              \
+          std::cerr << "aborted. cond=\"" << # cond << "\", ";         \
+          NS_FATAL_ERROR (msg);                                        \
+        }                                                              \
+    } while (false)
 
 /**
  * \ingroup fatal

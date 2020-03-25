@@ -128,12 +128,18 @@ CommandLine::Parse (std::vector<std::string> args)
     {
       m_name = SystemPath::Split (args[0]).back ();
       args.erase (args.begin ());  // discard the program name
-      
+
       for (auto param : args)
         {
-          if (HandleOption (param)) continue;
-          if (HandleNonOption (param)) continue;
-          
+          if (HandleOption (param))
+            {
+              continue;
+            }
+          if (HandleNonOption (param))
+            {
+              continue;
+            }
+
           // is this possible?
           NS_ASSERT_MSG (false,
                          "unexpected error parsing command line parameter: '"
@@ -145,7 +151,7 @@ CommandLine::Parse (std::vector<std::string> args)
 #ifdef ENABLE_DES_METRICS
   DesMetrics::Get ()->Initialize (args);
 #endif
-  
+
 }
 
 bool
@@ -182,7 +188,7 @@ CommandLine::HandleOption (const std::string & param) const
   else
     {
       name = arg.substr (0, cur);
-      value = arg.substr (cur + 1, arg.size () - (cur+1));
+      value = arg.substr (cur + 1, arg.size () - (cur + 1));
     }
   HandleArgument (name, value);
 
@@ -194,11 +200,11 @@ CommandLine::HandleNonOption (const std::string &value)
 {
   NS_LOG_FUNCTION (this << value);
 
-  if (m_nonOptionCount == m_nonOptions.size())
+  if (m_nonOptionCount == m_nonOptions.size ())
     {
       // Add an unspecified non-option as a string
       NS_LOG_LOGIC ("adding StringItem, NOCount:" << m_nonOptionCount
-                    << ", NOSize:" << m_nonOptions.size ());
+                                                  << ", NOSize:" << m_nonOptions.size ());
       StringItem * item = new StringItem;
       item->m_name = "extra-non-option-argument";
       item->m_help = "Extra non-option argument encountered.";
@@ -241,13 +247,13 @@ CommandLine::PrintHelp (std::ostream &os) const
      << (nonOptions.size () ? " [Program Arguments]" : "")
      << " [General Arguments]"
      << std::endl;
-  
+
   if (m_usage.length ())
     {
       os << std::endl;
       os << m_usage << std::endl;
     }
-  
+
   std::size_t width = 0;
   for (auto it : m_options)
     {
@@ -319,7 +325,7 @@ CommandLine::PrintGlobals (std::ostream &os) const
 
   // Sort output
   std::vector<std::string> globals;
-  
+
   for (GlobalValue::Iterator i = GlobalValue::Begin ();
        i != GlobalValue::End ();
        ++i)
@@ -354,17 +360,17 @@ CommandLine::PrintAttributes (std::ostream &os, const std::string &type) const
     }
 
   os << "Attributes for TypeId " << tid.GetName () << std::endl;
-  
+
   // Sort output
   std::vector<std::string> attributes;
-  
+
   for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
     {
       std::stringstream ss;
       ss << "    --" << tid.GetAttributeFullName (i) << "=[";
       struct TypeId::AttributeInformation info = tid.GetAttribute (i);
       ss << info.initialValue->SerializeToString (info.checker) << "]"
-                << std::endl;
+         << std::endl;
       ss << "        " << info.help << std::endl;
       attributes.push_back (ss.str ());
     }
@@ -384,17 +390,17 @@ CommandLine::PrintGroup (std::ostream &os, const std::string &group) const
   NS_LOG_FUNCTION (this);
 
   os << "TypeIds in group " << group << ":" << std::endl;
-  
+
   // Sort output
   std::vector<std::string> groupTypes;
-  
+
   for (uint16_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       std::stringstream ss;
       TypeId tid = TypeId::GetRegistered (i);
       if (tid.GetGroupName () == group)
         {
-          ss << "    " <<tid.GetName () << std::endl;
+          ss << "    " << tid.GetName () << std::endl;
         }
       groupTypes.push_back (ss.str ());
     }
@@ -415,7 +421,7 @@ CommandLine::PrintTypeIds (std::ostream &os) const
 
   // Sort output
   std::vector<std::string> types;
-    
+
   for (uint16_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       std::stringstream ss;
@@ -443,7 +449,7 @@ CommandLine::PrintGroups (std::ostream &os) const
       TypeId tid = TypeId::GetRegistered (i);
       groups.insert (tid.GetGroupName ());
     }
-  
+
   os << "Registered TypeId groups:" << std::endl;
   // Sets are already sorted
   for (std::set<std::string>::const_iterator k = groups.begin ();
@@ -467,7 +473,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
       // method below never returns.
       PrintHelp (std::cout);
       std::exit (0);
-    } 
+    }
   else if (name == "PrintGroups")
     {
       // method below never returns.
@@ -504,7 +510,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
         {
           if (i->m_name == name)
             {
-              if (! i->Parse (value))
+              if (!i->Parse (value))
                 {
                   std::cerr << "Invalid argument value: "
                             << name << "=" << value << std::endl;
@@ -558,7 +564,7 @@ CommandLine::AddValue (const std::string &name,
   std::size_t colon = attributePath.rfind ("::");
   const std::string typeName = attributePath.substr (0, colon);
   NS_LOG_DEBUG ("typeName: '" << typeName << "', colon: " << colon);
-  
+
   TypeId tid;
   if (!TypeId::LookupByNameFailSafe (typeName, &tid))
     {
@@ -566,26 +572,26 @@ CommandLine::AddValue (const std::string &name,
     }
 
   const std::string attrName = attributePath.substr (colon + 2);
-  struct TypeId::AttributeInformation info;  
+  struct TypeId::AttributeInformation info;
   if (!tid.LookupAttributeByName (attrName, &info))
     {
       NS_FATAL_ERROR ("Attribute not found: " << attributePath);
     }
-      
+
   std::stringstream ss;
   ss << info.help
      << " (" << attributePath << ") ["
      << info.initialValue->SerializeToString (info.checker) << "]";
-  
+
   AddValue (name, ss.str (),
-            MakeBoundCallback (CommandLine::HandleAttribute, attributePath)) ;
+            MakeBoundCallback (CommandLine::HandleAttribute, attributePath));
 }
 
 std::string
 CommandLine::GetExtraNonOption (std::size_t i) const
 {
   std::string value;
-  
+
   if (m_nonOptions.size () >= i + m_NNonOptions)
     {
       auto ip = dynamic_cast<StringItem *> (m_nonOptions[i + m_NNonOptions]);
@@ -624,7 +630,7 @@ CommandLine::HandleAttribute (const std::string name,
     }
   return success;
 }
-    
+
 
 bool
 CommandLine::Item::HasDefault () const
@@ -650,7 +656,7 @@ CommandLine::StringItem::HasDefault (void) const
 {
   return false;
 }
- 
+
 std::string
 CommandLine::StringItem::GetDefault (void) const
 {
@@ -671,11 +677,11 @@ bool
 CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
 {
   std::string src = value;
-  std::transform(src.begin(), src.end(), src.begin(),
-    [](char c) {return static_cast<char>(std::tolower(c)); });
+  std::transform (src.begin (), src.end (), src.begin (),
+                  [](char c) {return static_cast<char> (std::tolower (c)); });
   if (src.length () == 0)
     {
-      val = ! val;
+      val = !val;
       return true;
     }
   else if ( (src == "true") || (src == "t") )

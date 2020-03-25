@@ -48,9 +48,9 @@ class FdReader : public SimpleRefCount<FdReader>
 {
 public:
   /** Constructor. */
-  FdReader();
+  FdReader ();
   /** Destructor. */
-  virtual ~FdReader();
+  virtual ~FdReader ();
 
   /**
    * Start a new read thread.
@@ -76,14 +76,16 @@ protected:
   struct Data
   {
     /** Default constructor, with null buffer and zero length. */
-    Data () : m_buf (0), m_len (0) {}
+    Data () : m_buf (0), m_len (0)
+    {}
     /**
      * Construct from a buffer of a given length.
      *
      * \param [in] buf The buffer.
      * \param [in] len The size of the buffer, in bytes.
      */
-    Data (uint8_t *buf, ssize_t len) : m_buf (buf), m_len (len) {}
+    Data (uint8_t *buf, ssize_t len) : m_buf (buf), m_len (len)
+    {}
     /** The read data buffer. */
     uint8_t *m_buf;
     /** The size of the read data buffer, in bytes. */
@@ -119,7 +121,7 @@ private:
 
   /** The main thread callback function to invoke when we have data. */
   Callback<void, uint8_t *, ssize_t> m_readCallback;
-  
+
   /** The thread doing the read, created and launched by Start(). */
   Ptr<SystemThread> m_readThread;
 
@@ -127,7 +129,7 @@ private:
   int m_evpipe[2];
   /** Signal the read thread to stop. */
   bool m_stop;
-  
+
   /**
    * The event scheduled for destroy time which will invoke DestroyEvent
    * and halt the thread.

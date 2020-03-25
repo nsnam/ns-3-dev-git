@@ -31,7 +31,7 @@
 namespace ns3 {
 
 /**
- * \ingroup randomvariable 
+ * \ingroup randomvariable
  *
  * Manage the seed number and run number of the underlying
  * random number generator, and automatic assignment of stream numbers.
@@ -61,10 +61,10 @@ public:
   /**
    * \brief Get the current seed value which will be used by all
    * subsequently instantiated RandomVariableStream objects.
-   * 
+   *
    * \return The seed value.
    *
-   * This returns the current seed value. 
+   * This returns the current seed value.
    */
   static uint32_t GetSeed (void);
 
@@ -103,7 +103,7 @@ public:
    * Get the next automatically assigned stream index.
    * \returns The next stream index.
    */
-  static uint64_t GetNextStreamIndex(void);
+  static uint64_t GetNextStreamIndex (void);
 
 };
 

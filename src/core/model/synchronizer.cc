@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("Synchronizer");
 
 NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
 
-TypeId 
+TypeId
 Synchronizer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Synchronizer")
@@ -88,10 +88,12 @@ Synchronizer::GetDrift (uint64_t ts)
   NS_LOG_FUNCTION (this << ts);
   int64_t tDrift = DoGetDrift (TimeStepToNanosecond (ts));
 
-  if (tDrift < 0) 
+  if (tDrift < 0)
     {
       return -static_cast<int64_t> (NanosecondToTimeStep (-tDrift));
-    } else {
+    }
+  else
+    {
       return static_cast<int64_t> (NanosecondToTimeStep (tDrift));
     }
 }
@@ -100,7 +102,7 @@ bool
 Synchronizer::Synchronize (uint64_t tsCurrent, uint64_t tsDelay)
 {
   NS_LOG_FUNCTION (this << tsCurrent << tsDelay);
-  return DoSynchronize (TimeStepToNanosecond (tsCurrent), 
+  return DoSynchronize (TimeStepToNanosecond (tsCurrent),
                         TimeStepToNanosecond (tsDelay));
 }
 

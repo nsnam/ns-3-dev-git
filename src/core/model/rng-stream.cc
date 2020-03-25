@@ -15,7 +15,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Modified for ns-3 by: 
+// Modified for ns-3 by:
 //   - Rajib Bhattacharjea<raj.b@gatech.edu>
 //   - Mathieu Lacage <mathieu.lacage@gmail.com>
 //
@@ -33,7 +33,7 @@
  */
 
 namespace ns3 {
-  
+
 // Note:  Logging in this file is largely avoided due to the
 // number of calls that are made to these functions and the possibility
 // of causing recursions leading to stack overflow
@@ -47,8 +47,9 @@ NS_LOG_COMPONENT_DEFINE ("RngStream");
  * @{
  */
 /** Namespace for MRG32k3a implementation details. */
-namespace MRG32k3a
-{
+namespace MRG32k3a {
+
+// *NS_CHECK_STYLE_OFF*
 
 /** Type for 3x3 matrix of doubles. */
 typedef double Matrix[3][3];
@@ -58,28 +59,28 @@ const double m1   =       4294967087.0;
 
 /** Second component modulus, 2<sup>32</sup> - 22853. */
 const double m2   =       4294944443.0;
-  
+
 /** Normalization to obtain randoms on [0,1). */
 const double norm =       1.0 / (m1 + 1.0);
-  
+
 /** First component multiplier of <i>n</i> - 2 value. */
 const double a12  =       1403580.0;
-  
+
 /** First component multiplier of <i>n</i> - 3 value. */
 const double a13n =       810728.0;
-  
+
 /** Second component multiplier of <i>n</i> - 1 value. */
 const double a21  =       527612.0;
-  
+
 /** Second component multiplier of <i>n</i> - 3 value. */
 const double a23n =       1370589.0;
 
 /** Decomposition factor for computing a*s in less than 53 bits, 2<sup>17</sup> */
 const double two17 =      131072.0;
-  
+
 /** IEEE-754 floating point precision, 2<sup>53</sup> */
 const double two53 =      9007199254740992.0;
-  
+
 /** First component transition matrix. */
 const Matrix A1p0 = {
   {       0.0,        1.0,       0.0 },
@@ -324,11 +325,13 @@ void PowerOfTwoMatrix (int n, Matrix a1p, Matrix a2p)
 
 } // namespace MRG32k3a
 
+// *NS_CHECK_STYLE_ON*
+
 
 namespace ns3 {
 
 using namespace MRG32k3a;
-  
+
 double RngStream::RandU01 ()
 {
   int32_t k;
@@ -342,7 +345,9 @@ double RngStream::RandU01 ()
     {
       p1 += m1;
     }
-  m_currentState[0] = m_currentState[1]; m_currentState[1] = m_currentState[2]; m_currentState[2] = p1;
+  m_currentState[0] = m_currentState[1];
+  m_currentState[1] = m_currentState[2];
+  m_currentState[2] = p1;
 
   /* Component 2 */
   p2 = a21 * m_currentState[5] - a23n * m_currentState[3];
@@ -352,7 +357,9 @@ double RngStream::RandU01 ()
     {
       p2 += m2;
     }
-  m_currentState[3] = m_currentState[4]; m_currentState[4] = m_currentState[5]; m_currentState[5] = p2;
+  m_currentState[3] = m_currentState[4];
+  m_currentState[4] = m_currentState[5];
+  m_currentState[5] = p2;
 
   /* Combination */
   u = ((p1 > p2) ? (p1 - p2) * norm : (p1 - p2 + m1) * norm);
@@ -374,7 +381,7 @@ RngStream::RngStream (uint32_t seedNumber, uint64_t stream, uint64_t substream)
   AdvanceNthBy (substream, 76, m_currentState);
 }
 
-RngStream::RngStream(const RngStream& r)
+RngStream::RngStream (const RngStream& r)
 {
   for (int i = 0; i < 6; ++i)
     {
@@ -382,7 +389,7 @@ RngStream::RngStream(const RngStream& r)
     }
 }
 
-void 
+void
 RngStream::AdvanceNthBy (uint64_t nth, int by, double state[6])
 {
   Matrix matrix1,matrix2;
@@ -392,7 +399,7 @@ RngStream::AdvanceNthBy (uint64_t nth, int by, double state[6])
       int bit = (nth >> nbit) & 0x1;
       if (bit)
         {
-          PowerOfTwoMatrix(by + nbit, matrix1, matrix2);
+          PowerOfTwoMatrix (by + nbit, matrix1, matrix2);
           MatVecModM (matrix1, state, state, m1);
           MatVecModM (matrix2, &state[3], &state[3], m2);
         }

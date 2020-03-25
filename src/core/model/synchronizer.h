@@ -48,7 +48,7 @@ namespace ns3 {
  * is maintained using a combination of sleep-waiting, busy-waiting and a
  * feedback loop.
  */
-class Synchronizer : public Object 
+class Synchronizer : public Object
 {
 public:
   /**
@@ -86,7 +86,7 @@ public:
    * synchronizer real time.
    *
    * This method is expected to be called at the "instant" before simulation
-   * begins.  At this point, simulation time = 0, and a 
+   * begins.  At this point, simulation time = 0, and a
    * set = 0 in this method.  We then associate this time with the current
    * value of the real time clock that will be used to actually perform the
    * synchronization.
@@ -102,7 +102,7 @@ public:
   void SetOrigin (uint64_t ts);
 
   /**
-   * @brief Retrieve the value of the origin of the simulation time in 
+   * @brief Retrieve the value of the origin of the simulation time in
    * Time.resolution units.
    *
    * @returns The simulation time used as the origin (in Time resolution units).
@@ -111,7 +111,7 @@ public:
   uint64_t GetOrigin (void);
 
   /**
-   * @brief Retrieve the difference between the real time clock used to 
+   * @brief Retrieve the difference between the real time clock used to
    * synchronize the simulation and the simulation time (in
    * Time resolution units).
    *
@@ -134,7 +134,7 @@ public:
    * to wait until that synchronizer / simulation time comes around.
    *
    * Subclasses are expected to implement the corresponding DoSynchronize pure
-   * virtual method to do the actual real-time-clock-specific work of waiting 
+   * virtual method to do the actual real-time-clock-specific work of waiting
    * (either busy-waiting or sleeping, or some combination thereof) until the
    * requested simulation time.
    *
@@ -161,7 +161,7 @@ public:
   void Signal (void);
 
   /**
-   * @brief Set the condition variable that tells a possible simulator thread 
+   * @brief Set the condition variable that tells a possible simulator thread
    * waiting in the Synchronize method that an event has happened which demands
    * a reevaluation of the wait time.
    *
@@ -193,7 +193,7 @@ public:
 
 protected:
   /**
-   * @brief Establish a correspondence between a simulation time and a 
+   * @brief Establish a correspondence between a simulation time and a
    * wall-clock (real) time.
    *
    * There are three timelines involved here:  the simulation (virtual) time,
@@ -207,10 +207,10 @@ protected:
    * value of the real time clock that will be used to actually perform the
    * synchronization.
    *
-   * Subclasses are expected to implement this method to do the actual 
+   * Subclasses are expected to implement this method to do the actual
    * real-time-clock-specific work of making the correspondence mentioned above.
    * for example, this is where the differences between Time parameters and
-   * parameters to clock_nanosleep would be dealt with. 
+   * parameters to clock_nanosleep would be dealt with.
    *
    * @param [in] ns The simulation time we need to use as the origin (normalized to
    *    nanosecond units).
@@ -259,7 +259,7 @@ protected:
    * or some combination) until the requested simulation time.
    *
    * @param [in] nsCurrent The current simulation time (in nanosecond units).
-   * @param [in] nsDelay The simulation time we need to wait for (normalized to 
+   * @param [in] nsDelay The simulation time we need to wait for (normalized to
    * nanosecond units).
    * @returns @c true if the function ran to completion,
    *          @c false if it was interrupted by a Signal.

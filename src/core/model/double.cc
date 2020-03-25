@@ -55,8 +55,10 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
     Checker (double minValue, double maxValue, std::string name)
       : m_minValue (minValue),
         m_maxValue (maxValue),
-        m_name (name) {}
-    virtual bool Check (const AttributeValue &value) const {
+        m_name (name)
+    {}
+    virtual bool Check (const AttributeValue &value) const
+    {
       NS_LOG_FUNCTION (&value);
       const DoubleValue *v = dynamic_cast<const DoubleValue *> (&value);
       if (v == 0)
@@ -65,25 +67,30 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::stri
         }
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
-    virtual std::string GetValueTypeName (void) const {
+    virtual std::string GetValueTypeName (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return "ns3::DoubleValue";
     }
-    virtual bool HasUnderlyingTypeInformation (void) const {
+    virtual bool HasUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return true;
     }
-    virtual std::string GetUnderlyingTypeInformation (void) const {
+    virtual std::string GetUnderlyingTypeInformation (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       std::ostringstream oss;
       oss << m_name << " " << m_minValue << ":" << m_maxValue;
       return oss.str ();
     }
-    virtual Ptr<AttributeValue> Create (void) const {
+    virtual Ptr<AttributeValue> Create (void) const
+    {
       NS_LOG_FUNCTION_NOARGS ();
       return ns3::Create<DoubleValue> ();
     }
-    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const {
+    virtual bool Copy (const AttributeValue &source, AttributeValue &destination) const
+    {
       NS_LOG_FUNCTION (&source << &destination);
       const DoubleValue *src = dynamic_cast<const DoubleValue *> (&source);
       DoubleValue *dst = dynamic_cast<DoubleValue *> (&destination);

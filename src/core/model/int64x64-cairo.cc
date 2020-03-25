@@ -54,7 +54,7 @@ NS_LOG_COMPONENT_DEFINE ("int64x64-cairo");
  * \param [out] ub The unsigned magnitude of the second operand.
  * \returns True if the result will be negative.
  */
-static inline  
+static inline
 bool
 output_sign (const cairo_int128_t sa,
              const cairo_int128_t sb,
@@ -109,9 +109,9 @@ int64x64_t::Umul (const cairo_uint128_t a, const cairo_uint128_t b)
   res2 = _cairo_uint64_to_uint128 (hiPart.lo);
   res1 = _cairo_uint128_add (res1, res2);
   res1 = _cairo_uint128_lsl (res1, 64);
-  
+
   result  = _cairo_uint128_add (result, res1);
-  
+
   return result;
 }
 
@@ -135,36 +135,36 @@ int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
   // Now, manage the remainder
   const uint64_t DIGITS = 64;  // Number of fraction digits (bits) we need
   const cairo_uint128_t ZERO = _cairo_uint32_to_uint128 ((uint32_t)0);
-  
+
   NS_ASSERT_MSG (_cairo_uint128_lt (rem, den),
                  "Remainder not less than divisor");
-  
+
   uint64_t digis = 0;          // Number of digits we have already
   uint64_t shift = 0;          // Number we are going to get this round
-  
-    // Skip trailing zeros in divisor
+
+  // Skip trailing zeros in divisor
   while ( (shift < DIGITS) && !(den.lo & 0x1))
     {
       ++shift;
       den = _cairo_uint128_rsl (den, 1);
     }
-  
-  while ( (digis < DIGITS) && !(_cairo_uint128_eq(rem, ZERO)) )
+
+  while ( (digis < DIGITS) && !(_cairo_uint128_eq (rem, ZERO)) )
     {
       // Skip leading zeros in remainder
-      while ( (digis + shift < DIGITS) &&
-              !(rem.hi & HPCAIRO_MASK_HI_BIT) )
-        {      
+      while ( (digis + shift < DIGITS)
+              && !(rem.hi & HPCAIRO_MASK_HI_BIT) )
+        {
           ++shift;
           rem = _cairo_int128_lsl (rem, 1);
         }
 
       // Cast off denominator bits if:
       //   Need more digits and
-      //     LSB is zero or 
+      //     LSB is zero or
       //     rem < den
-      while ( (digis + shift < DIGITS) &&
-              ( !(den.lo & 0x1) || _cairo_uint128_lt (rem, den) ) )
+      while ( (digis + shift < DIGITS)
+              && ( !(den.lo & 0x1) || _cairo_uint128_lt (rem, den) ) )
         {
           ++shift;
           den = _cairo_uint128_rsl (den, 1);
@@ -186,11 +186,11 @@ int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
       shift = DIGITS - digis;
       result = _cairo_uint128_lsl (result, static_cast<int> (shift));
     }
-  
+
   return result;
 }
 
-void 
+void
 int64x64_t::MulByInvert (const int64x64_t & o)
 {
   bool sign = _cairo_int128_negative (_v);
@@ -199,7 +199,7 @@ int64x64_t::MulByInvert (const int64x64_t & o)
 
   _v = sign ? _cairo_int128_negate (result) : result;
 }
-  
+
 cairo_uint128_t
 int64x64_t::UmulByInvert (const cairo_uint128_t a, const cairo_uint128_t b)
 {
@@ -214,7 +214,7 @@ int64x64_t::UmulByInvert (const cairo_uint128_t a, const cairo_uint128_t b)
   return result;
 }
 
-int64x64_t 
+int64x64_t
 int64x64_t::Invert (const uint64_t v)
 {
   NS_ASSERT (v > 1);

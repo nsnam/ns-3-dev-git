@@ -62,7 +62,7 @@ class ObjectBase;
  * \brief Hold a value for an Attribute.
  *
  * Instances of this class should always be wrapped into an Attribute object.
- * Most subclasses of this base class are implemented by the 
+ * Most subclasses of this base class are implemented by the
  * ATTRIBUTE_HELPER_* macros.
  */
 class AttributeValue : public SimpleRefCount<AttributeValue>
@@ -160,7 +160,7 @@ public:
  * binding authors to use the checker associated to an attribute
  * to detect the type of the associated attribute.
  *
- * Most subclasses of this base class are implemented by the 
+ * Most subclasses of this base class are implemented by the
  * ATTRIBUTE_HELPER_HEADER and ATTRIBUTE_HELPER_CPP macros.
  */
 class AttributeChecker : public SimpleRefCount<AttributeChecker>
@@ -207,7 +207,7 @@ public:
    */
   virtual std::string GetUnderlyingTypeInformation (void) const = 0;
   /**
-   * \returns a new instance of an AttributeValue (wrapper in an Attribute 
+   * \returns a new instance of an AttributeValue (wrapper in an Attribute
    *          instance) which matches the type of the underlying attribute.
    *
    * This method is typically used to create a temporary variable prior
@@ -234,6 +234,7 @@ class EmptyAttributeValue : public AttributeValue
 public:
   /** Default constructor. */
   EmptyAttributeValue ();
+
 private:
   /**
    * \returns a deep copy of this class, wrapped into an Attribute object.

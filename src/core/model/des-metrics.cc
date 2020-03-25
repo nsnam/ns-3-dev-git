@@ -38,7 +38,7 @@ namespace ns3 {
 /* static */
 std::string DesMetrics::m_outputDir; // = "";
 
-void 
+void
 DesMetrics::Initialize (std::vector<std::string> args, std::string outDir /* = "" */ )
 {
   if (m_initialized)
@@ -78,9 +78,12 @@ DesMetrics::Initialize (std::vector<std::string> args, std::string outDir /* = "
   m_os << " \"command_line_arguments\" : \"";
   if (args.size () == 0)
     {
-      for (std::size_t i = 0; i < args.size (); ++i) 
+      for (std::size_t i = 0; i < args.size (); ++i)
         {
-          if (i > 0) m_os << " ";
+          if (i > 0)
+            {
+              m_os << " ";
+            }
           m_os << args[i];
         }
     }
@@ -92,7 +95,7 @@ DesMetrics::Initialize (std::vector<std::string> args, std::string outDir /* = "
   m_os << " \"events\" : [" << std::endl;
 
   m_separator = ' ';
- 
+
 }
 
 void
@@ -100,7 +103,7 @@ DesMetrics::Trace (const Time & now, const Time & delay)
 {
   TraceWithContext (Simulator::GetContext (), now, delay);
 }
- 
+
 void
 DesMetrics::TraceWithContext (uint32_t context, const Time & now, const Time & delay)
 {
@@ -120,7 +123,7 @@ DesMetrics::TraceWithContext (uint32_t context, const Time & now, const Time & d
   // Force to signed so we can show NoContext as '-1'
   int32_t send = (sendCtx != Simulator::NO_CONTEXT) ? (int32_t)sendCtx : -1;
   int32_t recv = (context != Simulator::NO_CONTEXT) ? (int32_t)context : -1;
-  
+
   ss <<                                 "  [\""
      << send                         << "\",\""
      << now.GetTimeStep ()           << "\",\""
@@ -144,7 +147,7 @@ void
 DesMetrics::Close (void)
 {
   m_os << std::endl;    // Finish the last event line
-  
+
   m_os << " ]" << std::endl;
   m_os << "}" << std::endl;
   m_os.close ();

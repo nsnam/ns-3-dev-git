@@ -53,22 +53,22 @@ namespace ns3 {
  *   this marks a change in policy starting with ns-3.4.
  * - In ns-3.14 and earlier, ns-3 simulations used a different wrapper
  *   class called ns3::RandomVariable.  This implementation is documented
- *   above under Legacy Random Variables. As of ns-3.15, this class has 
- *   been replaced by ns3::RandomVariableStream; the underlying 
+ *   above under Legacy Random Variables. As of ns-3.15, this class has
+ *   been replaced by ns3::RandomVariableStream; the underlying
  *   pseudo-random number generator has not changed.
  * - To obtain randomness across multiple simulation runs, you must
  *   either set the seed differently or set the run number differently.
  *   To set a seed, call ns3::RngSeedManager::SetSeed() at the beginning
- *   of the program; to set a run number with the same seed, call 
+ *   of the program; to set a run number with the same seed, call
  *   ns3::RngSeedManager::SetRun() at the beginning of the program.
- * - Each RandomVariableStream used in ns-3 has a virtual random number 
- *   generator associated with it; all random variables use either 
- *   a fixed or random seed based on the use of the global seed. 
- * - If you intend to perform multiple runs of the same scenario, 
- *   with different random numbers, please be sure to read the manual 
+ * - Each RandomVariableStream used in ns-3 has a virtual random number
+ *   generator associated with it; all random variables use either
+ *   a fixed or random seed based on the use of the global seed.
+ * - If you intend to perform multiple runs of the same scenario,
+ *   with different random numbers, please be sure to read the manual
  *   section on how to perform independent replications.
  */
-  
+
 class RngStream;
 
 /**
@@ -109,7 +109,7 @@ public:
   /**
    * \brief Destructor.
    */
-  virtual ~RandomVariableStream();
+  virtual ~RandomVariableStream ();
 
   /**
    * \brief Specifies the stream number for the RngStream.
@@ -123,19 +123,19 @@ public:
    * \return The stream number for the RngStream.
    * -1 means this stream was allocated automatically.
    */
-  int64_t GetStream(void) const;
+  int64_t GetStream (void) const;
 
   /**
    * \brief Specify whether antithetic values should be generated.
    * \param [in] isAntithetic If \c true antithetic value will be generated.
    */
-  void SetAntithetic(bool isAntithetic);
+  void SetAntithetic (bool isAntithetic);
 
   /**
    * \brief Check if antithetic values will be generated.
    * \return \c true if antithetic values will be generated.
    */
-  bool IsAntithetic(void) const;
+  bool IsAntithetic (void) const;
 
   /**
    * \brief Get the next random value as a double drawn from the distribution.
@@ -154,7 +154,7 @@ protected:
    * \brief Get the pointer to the underlying RngStream.
    * \return The underlying RngStream
    */
-  RngStream *Peek(void) const;
+  RngStream * Peek (void) const;
 
 private:
   /**
@@ -189,7 +189,7 @@ private:
 
 };  // class RandomVariableStream
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The uniform distribution Random Number Generator (RNG).
@@ -208,11 +208,11 @@ private:
  * \code
  *   double min = 0.0;
  *   double max = 10.0;
- *  
+ *
  *   Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
  *   x->SetAttribute ("Min", DoubleValue (min));
  *   x->SetAttribute ("Max", DoubleValue (max));
- * 
+ *
  *   // The values returned by a uniformly distributed random
  *   // variable should always be within the range
  *   //
@@ -294,7 +294,7 @@ public:
    * \note The upper limit is included in the output range.
    */
   virtual uint32_t GetInteger (void);
-  
+
 private:
   /** The lower bound on values that can be returned by this RNG stream. */
   double m_min;
@@ -304,7 +304,7 @@ private:
 
 };  // class UniformRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The Random Number Generator (RNG) that returns a constant.
@@ -360,7 +360,7 @@ private:
 
 };  // class ConstantRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The Random Number Generator (RNG) that returns a pattern of
@@ -465,7 +465,7 @@ private:
 
 };  // class SequentialRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The exponential distribution Random Number Generator (RNG).
@@ -515,11 +515,11 @@ private:
  * \code
  *   double mean = 3.14;
  *   double bound = 0.0;
- *  
+ *
  *   Ptr<ExponentialRandomVariable> x = CreateObject<ExponentialRandomVariable> ();
  *   x->SetAttribute ("Mean", DoubleValue (mean));
  *   x->SetAttribute ("Bound", DoubleValue (bound));
- * 
+ *
  *   // The expected value for the mean of the values returned by an
  *   // exponentially distributed random variable is equal to mean.
  *   double value = x->GetValue ();
@@ -530,7 +530,7 @@ private:
  * The antithetic value is calculated from
  *
  *   \f[
- *       x' = - mean * \log(1 - u), 
+ *       x' = - mean * \log(1 - u),
  *   \f]
  *
  * where again \f$u\f$ is a uniform random variable on \f$[0,1)\f$.
@@ -596,7 +596,7 @@ private:
 
 };  // class ExponentialRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The Pareto distribution Random Number Generator (RNG).
@@ -622,11 +622,11 @@ private:
  * \code
  *   double scale = 5.0;
  *   double shape = 2.0;
- * 
+ *
  *   Ptr<ParetoRandomVariable> x = CreateObject<ParetoRandomVariable> ();
  *   x->SetAttribute ("Scale", DoubleValue (scale));
  *   x->SetAttribute ("Shape", DoubleValue (shape));
- * 
+ *
  *   // The expected value for the mean of the values returned by a
  *   // Pareto distributed random variable is
  *   //
@@ -693,7 +693,7 @@ public:
    *    \f]
    *
    * is a value that would be returned normally.
-   *    
+   *
    * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
@@ -746,11 +746,11 @@ public:
    *    \f]
    *
    * is a value that would be returned normally, where
-   *     
+   *
    *    \f[
    *         scale  =  mean * (shape - 1.0) / shape  .
    *    \f]
-   *    
+   *
    * The value returned in the antithetic case, \f$x'\f$, is
    * calculated as
    *
@@ -807,7 +807,7 @@ private:
 
 };  // class ParetoRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The Weibull distribution Random Number Generator (RNG) that allows stream numbers to be set deterministically.
@@ -831,20 +831,20 @@ private:
  * \code
  *   double scale = 5.0;
  *   double shape = 1.0;
- * 
+ *
  *   Ptr<WeibullRandomVariable> x = CreateObject<WeibullRandomVariable> ();
  *   x->SetAttribute ("Scale", DoubleValue (scale));
  *   x->SetAttribute ("Shape", DoubleValue (shape));
- * 
+ *
  *   // The expected value for the mean of the values returned by a
  *   // Weibull distributed random variable is
  *   //
  *   //     E[value]  =  scale * Gamma(1 + 1 / shape)  ,
- *   //               
- *   // where Gamma() is the Gamma function.  Note that 
- *   //               
+ *   //
+ *   // where Gamma() is the Gamma function.  Note that
+ *   //
  *   //     Gamma(n)  =  (n - 1)!
- *   //               
+ *   //
  *   // if n is a positive integer.
  *   //
  *   // For this example,
@@ -857,7 +857,7 @@ private:
  *   // which means
  *   //
  *   //     E[value]  =  scale  .
- *   //               
+ *   //
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -1013,7 +1013,7 @@ private:
 
 };  // class WeibullRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The normal (Gaussian) distribution Random Number Generator
@@ -1037,11 +1037,11 @@ private:
  * \code
  *   double mean = 5.0;
  *   double variance = 2.0;
- *   
+ *
  *   Ptr<NormalRandomVariable> x = CreateObject<NormalRandomVariable> ();
  *   x->SetAttribute ("Mean", DoubleValue (mean));
  *   x->SetAttribute ("Variance", DoubleValue (variance));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
  *   // normally distributed random variable is equal to mean.
  *   double value = x->GetValue ();
@@ -1252,7 +1252,7 @@ private:
 
 };  // class NormalRandomVariable
 
-  
+
 /**
  * \ingroup randomvariable
  * \brief The log-normal distribution Random Number Generator
@@ -1281,13 +1281,13 @@ private:
  * \code
  *   double mu = 5.0;
  *   double sigma = 2.0;
- *   
+ *
  *   Ptr<LogNormalRandomVariable> x = CreateObject<LogNormalRandomVariable> ();
  *   x->SetAttribute ("Mu", DoubleValue (mu));
  *   x->SetAttribute ("Sigma", DoubleValue (sigma));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
- *   // log-normally distributed random variable is equal to 
+ *   // log-normally distributed random variable is equal to
  *   //
  *   //                             2
  *   //                   mu + sigma  / 2
@@ -1472,7 +1472,7 @@ private:
   double m_sigma;
 
 };  // class LogNormalRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -1492,13 +1492,13 @@ private:
  * \code
  *   double alpha = 5.0;
  *   double beta = 2.0;
- *   
+ *
  *   Ptr<GammaRandomVariable> x = CreateObject<GammaRandomVariable> ();
  *   x->SetAttribute ("Alpha", DoubleValue (alpha));
  *   x->SetAttribute ("Beta", DoubleValue (beta));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
- *   // gammaly distributed random variable is equal to 
+ *   // gammaly distributed random variable is equal to
  *   //
  *   //     E[value]  =  alpha * beta  .
  *   //
@@ -1645,7 +1645,7 @@ private:
   double m_next;
 
 };  // class GammaRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -1669,13 +1669,13 @@ private:
  * \code
  *   uint32_t k = 5;
  *   double lambda = 2.0;
- *   
+ *
  *   Ptr<ErlangRandomVariable> x = CreateObject<ErlangRandomVariable> ();
  *   x->SetAttribute ("K", IntegerValue (k));
  *   x->SetAttribute ("Lambda", DoubleValue (lambda));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
- *   // Erlangly distributed random variable is equal to 
+ *   // Erlangly distributed random variable is equal to
  *   //
  *   //     E[value]  =  k * lambda  .
  *   //
@@ -1782,7 +1782,7 @@ private:
    * over [0,1] and
    *
    *    \f[
-   *         x = - mean * \log(u) 
+   *         x = - mean * \log(u)
    *    \f]
    *
    * is a value that would be returned normally, then \f$(1 - u\f$) is
@@ -1790,7 +1790,7 @@ private:
    * returned in the antithetic case, \f$x'\f$, is calculated as
    *
    *    \f[
-   *         x' = - mean * \log(1 - u), 
+   *         x' = - mean * \log(1 - u),
    *    \f]
    *
    * which now involves the log of the distance \f$u\f$ is from the 1.
@@ -1804,7 +1804,7 @@ private:
   double m_lambda;
 
 };  // class ErlangRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -1823,12 +1823,12 @@ private:
  *   double mean = 5.0;
  *   double min = 2.0;
  *   double max = 10.0;
- *   
+ *
  *   Ptr<TriangularRandomVariable> x = CreateObject<TriangularRandomVariable> ();
  *   x->SetAttribute ("Mean", DoubleValue (mean));
  *   x->SetAttribute ("Min", DoubleValue (min));
  *   x->SetAttribute ("Max", DoubleValue (max));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
  *   // triangularly distributed random variable is equal to mean.
  *   double value = x->GetValue ();
@@ -2037,7 +2037,7 @@ private:
   double m_max;
 
 };  // class TriangularRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -2061,29 +2061,29 @@ private:
  * \code
  *   uint32_t n = 1;
  *   double alpha = 2.0;
- *   
+ *
  *   Ptr<ZipfRandomVariable> x = CreateObject<ZipfRandomVariable> ();
  *   x->SetAttribute ("N", IntegerValue (n));
  *   x->SetAttribute ("Alpha", DoubleValue (alpha));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
- *   // Zipfly distributed random variable is equal to 
+ *   // Zipfly distributed random variable is equal to
  *   //
  *   //                   H
  *   //                    N, alpha - 1
  *   //     E[value]  =  ---------------
  *   //                     H
  *   //                      N, alpha
- *   //                          
+ *   //
  *   // where
  *   //
- *   //                    N   
- *   //                   ---    
+ *   //                    N
+ *   //                   ---
  *   //                   \     -alpha
  *   //     H          =  /    m        .
  *   //      N, alpha     ---
- *   //                   m=1    
- *   //                 
+ *   //                   m=1
+ *   //
  *   // For this test,
  *   //
  *   //                      -(alpha - 1)
@@ -2093,7 +2093,7 @@ private:
  *   //                     1
  *   //
  *   //               =  1  .
- *   //               
+ *   //
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -2196,7 +2196,7 @@ private:
   double m_c;
 
 };  // class ZipfRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -2217,23 +2217,23 @@ private:
  * Here is an example of how to use this class:
  * \code
  *   double alpha = 2.0;
- *   
+ *
  *   Ptr<ZetaRandomVariable> x = CreateObject<ZetaRandomVariable> ();
  *   x->SetAttribute ("Alpha", DoubleValue (alpha));
- *   
+ *
  *   // The expected value for the mean of the values returned by a
- *   // zetaly distributed random variable is equal to 
+ *   // zetaly distributed random variable is equal to
  *   //
  *   //                   zeta(alpha - 1)
  *   //     E[value]  =  ---------------   for alpha > 2 ,
  *   //                     zeta(alpha)
- *   //                          
+ *   //
  *   // where zeta(alpha) is the Riemann zeta function.
- *   //                 
+ *   //
  *   // There are no simple analytic forms for the Riemann zeta
  *   // function, which is the reason the known mean of the values
  *   // cannot be calculated in this example.
- *   //               
+ *   //
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -2325,7 +2325,7 @@ private:
   double m_b;
 
 };  // class ZetaRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -2345,7 +2345,7 @@ private:
  * Here is an example of how to use this class:
  * \code
  *   Ptr<DeterministicRandomVariable> s = CreateObject<DeterministicRandomVariable> ();
- * 
+ *
  *   // The following array should give the sequence
  *   //
  *   //    4, 4, 7, 7, 10, 10 .
@@ -2353,7 +2353,7 @@ private:
  *   double array [] = { 4, 4, 7, 7, 10, 10};
  *   uint64_t count = 6;
  *   s->SetValueArray (array, count);
- * 
+ *
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -2406,7 +2406,7 @@ private:
   double* m_data;
 
 };  // class DeterministicRandomVariable
-  
+
 
 /**
  * \ingroup randomvariable
@@ -2430,12 +2430,12 @@ private:
  *   x->CDF ( 0.0,  0.0);
  *   x->CDF ( 5.0,  0.5);
  *   x->CDF (10.0,  1.0);
- * 
+ *
  *   // The expected value for the mean of the values returned by this
  *   // empirical distribution is the midpoint of the distribution
  *   //
  *   //     E[value]  =  5 .
- *   //                          
+ *   //
  *   double value = x->GetValue ();
  * \endcode
  */
@@ -2491,7 +2491,7 @@ private:
   /** Helper to hold one point of the CDF. */
   class ValueCDF
   {
-public:
+  public:
     /** Constructor. */
     ValueCDF ();
     /**
@@ -2537,14 +2537,14 @@ public:
    */
   virtual double Interpolate (double c1, double c2,
                               double v1, double v2, double r);
-  
+
   /** \c true once the CDF has been validated. */
   bool m_validated;
   /** The vector of CDF points. */
   std::vector<ValueCDF> m_emp;
 
 };  // class EmpiricalRandomVariable
-  
+
 
 } // namespace ns3
 
