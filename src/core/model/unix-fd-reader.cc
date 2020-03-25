@@ -19,6 +19,8 @@
  * Author: Tom Goff <thomas.goff@boeing.com>
  */
 
+#include <sys/select.h>
+
 #include <cerrno>
 #include <cstring>
 #include <unistd.h>  // close()
