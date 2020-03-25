@@ -904,6 +904,8 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
           NS_LOG_DEBUG ("Block Ack Request Fail");
           // if a BA agreement exists, we can get here if there is no outstanding
           // MPDU whose lifetime has not expired yet.
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           if (m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), tid,
                                                    OriginatorBlockAckAgreement::ESTABLISHED))
             {
@@ -939,6 +941,8 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
           NS_LOG_DEBUG ("Block Ack Fail");
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           if (!m_txFailedCallback.IsNull ())
             {
               m_txFailedCallback (m_currentHdr);
