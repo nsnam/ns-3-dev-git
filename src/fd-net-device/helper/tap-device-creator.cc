@@ -22,6 +22,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cstring>
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
