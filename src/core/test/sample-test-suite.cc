@@ -43,7 +43,7 @@
 /// Class test suite. \endverbatim
  *
  * Define the class-tests group:
- * \verbatim /// \ingroup module-tests 
+ * \verbatim /// \ingroup module-tests
 /// \defgroup class-tests Class test suite \endverbatim
  *
  * Make sure test.h is included:
@@ -64,7 +64,7 @@ class ClassTestSuite : public TestSuite {...}; \endverbatim
 static ClassTestSuite g_classTestSuite; \endverbatim
  *
  * Finally, close the ingroup and namespace blocks:
- * \verbatim   }  // namespace tests                
+ * \verbatim   }  // namespace tests
 }  // namespace ns3 \endverbatim
 */
 
@@ -76,8 +76,8 @@ static ClassTestSuite g_classTestSuite; \endverbatim
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup testing-example
@@ -98,16 +98,14 @@ private:
 /** Add some help text to this case to describe what it is intended to test. */
 SampleTestCase1::SampleTestCase1 ()
   : TestCase ("Sample test case (does nothing)")
-{
-}
+{}
 
 /**
  * This destructor does nothing but we include it as a reminder that
  * the test case should clean up after itself
  */
 SampleTestCase1::~SampleTestCase1 ()
-{
-}
+{}
 
 /**
  * This method is the pure virtual method from class TestCase that every
@@ -149,6 +147,6 @@ SampleTestSuite::SampleTestSuite ()
 static SampleTestSuite g_sampleTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3

@@ -74,16 +74,15 @@ ThreadedSimulatorEventsTestCase::ThreadedSimulatorEventsTestCase (ObjectFactory 
     m_threads (threads),
     m_schedulerFactory (schedulerFactory),
     m_simulatorType (simulatorType)
-{
-}
+{}
 
 void
 ThreadedSimulatorEventsTestCase::End (void)
 {
   m_stop = true;
-  for (std::list<Ptr<SystemThread> >::iterator it2 = m_threadlist.begin(); it2 != m_threadlist.end(); ++it2)
+  for (std::list<Ptr<SystemThread> >::iterator it2 = m_threadlist.begin (); it2 != m_threadlist.end (); ++it2)
     {
-      (*it2)->Join();
+      (*it2)->Join ();
     }
 }
 void
@@ -91,7 +90,7 @@ ThreadedSimulatorEventsTestCase::SchedulingThread (std::pair<ThreadedSimulatorEv
 {
   ThreadedSimulatorEventsTestCase *me = context.first;
   unsigned int threadno = context.second;
-  
+
   while (!me->m_stop)
     {
       me->m_threadWaiting[threadno] = true;
@@ -100,14 +99,14 @@ ThreadedSimulatorEventsTestCase::SchedulingThread (std::pair<ThreadedSimulatorEv
                                       &ThreadedSimulatorEventsTestCase::DoNothing, me, threadno);
       while (!me->m_stop && me->m_threadWaiting[threadno])
         {
-          std::this_thread::sleep_for(std::chrono::nanoseconds(500));
+          std::this_thread::sleep_for (std::chrono::nanoseconds (500));
         }
     }
 }
 void
 ThreadedSimulatorEventsTestCase::DoNothing (unsigned int threadno)
 {
-  if (!m_error.empty())
+  if (!m_error.empty ())
     {
       m_error = "Bad threaded scheduling";
     }
@@ -119,90 +118,90 @@ ThreadedSimulatorEventsTestCase::EventA (int a)
   if (m_a != m_b || m_a != m_c || m_a != m_d)
     {
       m_error = "Bad scheduling";
-      Simulator::Stop();
-    };
+      Simulator::Stop ();
+    }
   ++m_a;
   Simulator::Schedule (MicroSeconds (10),
-                       &ThreadedSimulatorEventsTestCase::EventB, this, a+1);
+                       &ThreadedSimulatorEventsTestCase::EventB, this, a + 1);
 }
 
 void
 ThreadedSimulatorEventsTestCase::EventB (int b)
 {
-  if (m_a != (m_b+1) || m_a != (m_c+1) || m_a != (m_d+1))
+  if (m_a != (m_b + 1) || m_a != (m_c + 1) || m_a != (m_d + 1))
     {
       m_error = "Bad scheduling";
-      Simulator::Stop();
-    };
+      Simulator::Stop ();
+    }
   ++m_b;
   Simulator::Schedule (MicroSeconds (10),
-                       &ThreadedSimulatorEventsTestCase::EventC, this, b+1);
+                       &ThreadedSimulatorEventsTestCase::EventC, this, b + 1);
 }
 
 void
 ThreadedSimulatorEventsTestCase::EventC (int c)
 {
-  if (m_a != m_b || m_a != (m_c+1) || m_a != (m_d+1))
+  if (m_a != m_b || m_a != (m_c + 1) || m_a != (m_d + 1))
     {
       m_error = "Bad scheduling";
-      Simulator::Stop();
-    };
+      Simulator::Stop ();
+    }
   ++m_c;
   Simulator::Schedule (MicroSeconds (10),
-                       &ThreadedSimulatorEventsTestCase::EventD, this, c+1);
+                       &ThreadedSimulatorEventsTestCase::EventD, this, c + 1);
 }
 
 void
 ThreadedSimulatorEventsTestCase::EventD (int d)
 {
-  if (m_a != m_b || m_a != m_c || m_a != (m_d+1))
+  if (m_a != m_b || m_a != m_c || m_a != (m_d + 1))
     {
       m_error = "Bad scheduling";
-      Simulator::Stop();
-    };
+      Simulator::Stop ();
+    }
   ++m_d;
   if (m_stop)
     {
-      Simulator::Stop();
+      Simulator::Stop ();
     }
   else
     {
       Simulator::Schedule (MicroSeconds (10),
-                           &ThreadedSimulatorEventsTestCase::EventA, this, d+1);
+                           &ThreadedSimulatorEventsTestCase::EventA, this, d + 1);
     }
 }
 
-void 
+void
 ThreadedSimulatorEventsTestCase::DoSetup (void)
 {
-  if (!m_simulatorType.empty())
+  if (!m_simulatorType.empty ())
     {
       Config::SetGlobal ("SimulatorImplementationType", StringValue (m_simulatorType));
     }
-  
-  m_error = "";
-  
-  m_a = 
-  m_b = 
-  m_c = 
-  m_d = 0;
 
-  for (unsigned int i=0; i < m_threads; ++i)
+  m_error = "";
+
+  m_a =
+    m_b =
+      m_c =
+        m_d = 0;
+
+  for (unsigned int i = 0; i < m_threads; ++i)
     {
-      m_threadlist.push_back(
+      m_threadlist.push_back (
         Create<SystemThread> (MakeBoundCallback (
-            &ThreadedSimulatorEventsTestCase::SchedulingThread, 
-                std::pair<ThreadedSimulatorEventsTestCase *, unsigned int>(this,i) )) );
+                                &ThreadedSimulatorEventsTestCase::SchedulingThread,
+                                std::pair<ThreadedSimulatorEventsTestCase *, unsigned int> (this,i) )) );
     }
 }
-void 
+void
 ThreadedSimulatorEventsTestCase::DoTeardown (void)
 {
-  m_threadlist.clear();
- 
+  m_threadlist.clear ();
+
   Config::SetGlobal ("SimulatorImplementationType", StringValue ("ns3::DefaultSimulatorImpl"));
 }
-void 
+void
 ThreadedSimulatorEventsTestCase::DoRun (void)
 {
   m_stop = false;
@@ -211,16 +210,16 @@ ThreadedSimulatorEventsTestCase::DoRun (void)
   Simulator::Schedule (MicroSeconds (10), &ThreadedSimulatorEventsTestCase::EventA, this, 1);
   Simulator::Schedule (Seconds (1), &ThreadedSimulatorEventsTestCase::End, this);
 
-  
-  for (std::list<Ptr<SystemThread> >::iterator it = m_threadlist.begin(); it != m_threadlist.end(); ++it)
+
+  for (std::list<Ptr<SystemThread> >::iterator it = m_threadlist.begin (); it != m_threadlist.end (); ++it)
     {
-      (*it)->Start();
+      (*it)->Start ();
     }
-  
+
   Simulator::Run ();
   Simulator::Destroy ();
 
-  NS_TEST_EXPECT_MSG_EQ (m_error.empty(), true, m_error.c_str());
+  NS_TEST_EXPECT_MSG_EQ (m_error.empty (), true, m_error.c_str ());
   NS_TEST_EXPECT_MSG_EQ (m_a, m_b, "Bad scheduling");
   NS_TEST_EXPECT_MSG_EQ (m_a, m_c, "Bad scheduling");
   NS_TEST_EXPECT_MSG_EQ (m_a, m_d, "Bad scheduling");
@@ -247,18 +246,18 @@ public:
     unsigned int threadcounts[] = {
       0,
       2,
-      10, 
+      10,
       20
     };
     ObjectFactory factory;
-    
-    for (unsigned int i=0; i < (sizeof(simulatorTypes) / sizeof(simulatorTypes[0])); ++i) 
+
+    for (unsigned int i = 0; i < (sizeof(simulatorTypes) / sizeof(simulatorTypes[0])); ++i)
       {
-        for (unsigned int j=0; j < (sizeof(threadcounts) / sizeof(threadcounts[0])); ++j)
+        for (unsigned int j = 0; j < (sizeof(threadcounts) / sizeof(threadcounts[0])); ++j)
           {
-            for (unsigned int k=0; k < (sizeof(schedulerTypes) / sizeof(schedulerTypes[0])); ++k) 
+            for (unsigned int k = 0; k < (sizeof(schedulerTypes) / sizeof(schedulerTypes[0])); ++k)
               {
-                factory.SetTypeId(schedulerTypes[k]);
+                factory.SetTypeId (schedulerTypes[k]);
                 AddTestCase (new ThreadedSimulatorEventsTestCase (factory, simulatorTypes[i], threadcounts[j]), TestCase::QUICK);
               }
           }

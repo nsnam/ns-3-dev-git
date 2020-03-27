@@ -44,8 +44,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup commandline-tests
@@ -61,7 +61,8 @@ public:
    */
   CommandLineTestCaseBase (std::string description);
   /** Destructor */
-  virtual ~CommandLineTestCaseBase () {}
+  virtual ~CommandLineTestCaseBase ()
+  {}
 
   /**
    * Exercise the CommandLine with the provided arguments
@@ -79,8 +80,7 @@ int CommandLineTestCaseBase::m_count = 0;
 
 CommandLineTestCaseBase::CommandLineTestCaseBase (std::string description)
   : TestCase (description)
-{
-}
+{}
 
 void
 CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
@@ -88,14 +88,14 @@ CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
   std::stringstream ss;
   ss << GetParent ()->GetName () << "-testcase-" << m_count << "-" << GetName ();
   ++m_count;
-  
+
   int argc = n + 1;  // test name will go in argv[0], other n to follow
   char ** argv = new char* [argc + 1];  // extra entry for final null
   argv[argc] = 0;
 
   argv[0] = new char [strlen (ss.str ().c_str ()) + 1];
   strcpy (argv[0], ss.str ().c_str ());
-  
+
   va_list ap;
   va_start (ap, n);
   for (int i = 1; i < argc; ++i)
@@ -124,7 +124,9 @@ class CommandLineBooleanTestCase : public CommandLineTestCaseBase
 {
 public:
   CommandLineBooleanTestCase ();             /**< Constructor */
-  virtual ~CommandLineBooleanTestCase () {}  /**< Destructor */
+  /** Destructor */
+  virtual ~CommandLineBooleanTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);                 /**< Run the test */
@@ -133,8 +135,7 @@ private:
 
 CommandLineBooleanTestCase::CommandLineBooleanTestCase ()
   : CommandLineTestCaseBase ("boolean")
-{
-}
+{}
 
 void
 CommandLineBooleanTestCase::DoRun (void)
@@ -172,18 +173,19 @@ CommandLineBooleanTestCase::DoRun (void)
 class CommandLineIntTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineIntTestCase ();                 /**< Constructor */ 
-  virtual ~CommandLineIntTestCase () {}      /**< Destructor */  
-                                                                 
-private:                                                         
+  CommandLineIntTestCase ();                 /**< Constructor */
+  /** Destructor */
+  virtual ~CommandLineIntTestCase ()
+  {}
+
+private:
   virtual void DoRun (void);                 /**< Run the test */
 
 };
 
 CommandLineIntTestCase::CommandLineIntTestCase ()
   : CommandLineTestCaseBase ("int")
-{
-}
+{}
 
 void
 CommandLineIntTestCase::DoRun (void)
@@ -211,18 +213,18 @@ CommandLineIntTestCase::DoRun (void)
 class CommandLineUnsignedIntTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineUnsignedIntTestCase ();              /**< Constructor */ 
-  virtual ~CommandLineUnsignedIntTestCase () {}   /**< Destructor */  
-                                                                      
-private:                                                              
+  CommandLineUnsignedIntTestCase ();              /**< Constructor */
+  virtual ~CommandLineUnsignedIntTestCase ()
+  {}
+
+private:
   virtual void DoRun (void);                      /**< Run the test */
 
 };
 
 CommandLineUnsignedIntTestCase::CommandLineUnsignedIntTestCase ()
   : CommandLineTestCaseBase ("unsigned-int")
-{
-}
+{}
 
 void
 CommandLineUnsignedIntTestCase::DoRun (void)
@@ -247,18 +249,19 @@ CommandLineUnsignedIntTestCase::DoRun (void)
 class CommandLineStringTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineStringTestCase ();              /**< Constructor */ 
-  virtual ~CommandLineStringTestCase () {}   /**< Destructor */  
-                                                                 
-private:                                                         
+  CommandLineStringTestCase ();              /**< Constructor */
+  /** Destructor */
+  virtual ~CommandLineStringTestCase ()
+  {}
+
+private:
   virtual void DoRun (void);                 /**< Run the test */
 
 };
 
 CommandLineStringTestCase::CommandLineStringTestCase ()
   : CommandLineTestCaseBase ("string")
-{
-}
+{}
 
 void
 CommandLineStringTestCase::DoRun (void)
@@ -284,7 +287,9 @@ class CommandLineOrderTestCase : public CommandLineTestCaseBase
 {
 public:
   CommandLineOrderTestCase ();              /**< Constructor */
-  virtual ~CommandLineOrderTestCase () {}   /**< Destructor */
+  /** Destructor */
+  virtual ~CommandLineOrderTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);                 /**< Run the test */
@@ -293,8 +298,7 @@ private:
 
 CommandLineOrderTestCase::CommandLineOrderTestCase ()
   : CommandLineTestCaseBase ("order")
-{
-}
+{}
 
 void
 CommandLineOrderTestCase::DoRun (void)
@@ -317,7 +321,9 @@ class CommandLineInvalidTestCase : public CommandLineTestCaseBase
 {
 public:
   CommandLineInvalidTestCase ();              /**< Constructor */
-  virtual ~CommandLineInvalidTestCase () {}   /**< Destructor */
+  /** Destructor */
+  virtual ~CommandLineInvalidTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);                 /**< Run the test */
@@ -326,8 +332,7 @@ private:
 
 CommandLineInvalidTestCase::CommandLineInvalidTestCase ()
   : CommandLineTestCaseBase ("invalid")
-{
-}
+{}
 
 void
 CommandLineInvalidTestCase::DoRun (void)
@@ -350,7 +355,9 @@ class CommandLineNonOptionTestCase : public CommandLineTestCaseBase
 {
 public:
   CommandLineNonOptionTestCase ();              /**< Constructor */
-  virtual ~CommandLineNonOptionTestCase () {}   /**< Destructor */
+  /** Destructor */
+  virtual ~CommandLineNonOptionTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);                 /**< Run the test */
@@ -359,8 +366,7 @@ private:
 
 CommandLineNonOptionTestCase::CommandLineNonOptionTestCase ()
   : CommandLineTestCaseBase ("nonoption")
-{
-}
+{}
 
 void
 CommandLineNonOptionTestCase::DoRun (void)
@@ -381,10 +387,10 @@ CommandLineNonOptionTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (myStr, "MyStr", "CommandLine did not leave a non-option unmodified.");
 
   Parse (cmd, 5, "false", "6", "newValue", "extraVal1", "extraVal2");
-  
+
   NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly set a boolean non-option");
   NS_TEST_ASSERT_MSG_EQ (myInt
-, 6, "CommandLine did not correctly set an integer non-option value to 5");
+                         , 6, "CommandLine did not correctly set an integer non-option value to 5");
   NS_TEST_ASSERT_MSG_EQ (myStr, "newValue", "CommandLine did not leave a non-option unmodified.");
 
   NS_TEST_ASSERT_MSG_EQ (cmd.GetNExtraNonOptions (), 2, "CommandLine did not parse the correct number of extra non-options.");
@@ -421,7 +427,7 @@ CommandLineTestSuite::CommandLineTestSuite ()
 static CommandLineTestSuite g_commandLineTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3
-    
+

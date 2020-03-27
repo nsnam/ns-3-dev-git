@@ -46,23 +46,25 @@ namespace {
 
 class Timestamp
 {
- public:
+public:
   Timestamp () :
-    last(0),
-    diff(0)
+    last (0),
+    diff (0)
   {
     stamp ();
   }
-  
-  void stamp () {
+
+  void stamp ()
+  {
     time_t seconds  = time (NULL);
     diff = seconds - last;
     last  = seconds;
   }
 
-  std::string string () {
+  std::string string ()
+  {
     std::string now = ctime ( &last );
-    now.resize(now.length () - 1);  // trim trailing newline
+    now.resize (now.length () - 1);  // trim trailing newline
     return now;
   }
 
@@ -71,14 +73,14 @@ class Timestamp
 
 };  // class Timestamp
 
-  
+
 /**
  * Execute a function periodically.
  */
 class Hold : public SimpleRefCount<Hold>
 {
 public:
-  
+
   Hold (Time wait, Time interval)
   {
     m_wait = wait;
@@ -90,15 +92,14 @@ public:
 
   Hold (Ptr<RandomVariableStream> rng)
     : m_rng (rng)
-  {
-  }
+  {}
 
   void Event (void)
   {
     double delta = m_rng->GetValue ();
     Time delay = Seconds (delta);
     NS_LOG_LOGIC ("event delay: " << delay);
-    
+
     Simulator::Schedule (delay, &Hold::Event, this);
 
     // Switch work load every 10 * m_interval of simulation time
@@ -106,9 +107,9 @@ public:
     bool even = (ratio.GetHigh () % 2);
     Time work = m_wait * (even ? 3 : 1);
     m_condition.TimedWait ( work.GetNanoSeconds () );
-    
+
   }
-  
+
 private:
   Ptr<RandomVariableStream> m_rng;
   SystemCondition m_condition;
@@ -143,7 +144,7 @@ main (int argc, char ** argv)
             << "average event sleep time:  " << wait.As (Time::MS)    << "\n"
             << "total simulation run time: " << stop.As (Time::S)
             << std::endl;
-  
+
   Ptr<Hold> h = Create<Hold> (wait, interval);
   h->Event ();
 
@@ -158,13 +159,13 @@ main (int argc, char ** argv)
   std::cout << "Start wall clock:   " << ts.string ()
             << " (" << ts.last << ")"
             << std::endl;
-  
+
   Simulator::Run ();
 
   ts.stamp ();
   std::cout << "Elapsed wall clock: " << ts.diff << "s" << std::endl;
 
-  
+
   Simulator::Destroy ();
 
 }

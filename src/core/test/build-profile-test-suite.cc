@@ -36,8 +36,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup build-profile-tests
@@ -47,7 +47,8 @@ class BuildProfileTestCase : public TestCase
 {
 public:
   BuildProfileTestCase ();
-  virtual ~BuildProfileTestCase () {}
+  virtual ~BuildProfileTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -55,8 +56,7 @@ private:
 
 BuildProfileTestCase::BuildProfileTestCase (void)
   : TestCase ("Check build profile macros")
-{
-}
+{}
 
 void
 BuildProfileTestCase::DoRun (void)
@@ -64,6 +64,7 @@ BuildProfileTestCase::DoRun (void)
   int i = 0;
   int j = 0;
 
+  /* *NS_CHECK_STYLE_OFF* */
 #ifdef NS3_BUILD_PROFILE_DEBUG
   std::cout << GetName () << ": running in build profile debug" << std::endl;
   NS_BUILD_DEBUG (++i; ++j);
@@ -76,13 +77,18 @@ BuildProfileTestCase::DoRun (void)
 #else
   NS_TEST_ASSERT_MSG_EQ (0, 1, ": no build profile case executed");
 #endif
-  
+  /* *NS_CHECK_STYLE_ON* */
+
   if (i == 1)
-    std::cout << "build profile executed first statement." << std::endl;
+    {
+      std::cout << "build profile executed first statement." << std::endl;
+    }
   NS_TEST_ASSERT_MSG_EQ (i, 1,
                          "build profile failed to execute first statement");
   if (j == 1)
-    std::cout << "build profile executed second statement." << std::endl;
+    {
+      std::cout << "build profile executed second statement." << std::endl;
+    }
   NS_TEST_ASSERT_MSG_EQ (j, 1,
                          "build profile failed to execute second statement");
 }
@@ -110,6 +116,6 @@ BuildProfileTestSuite::BuildProfileTestSuite ()
 static BuildProfileTestSuite g_BuildProfileTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3

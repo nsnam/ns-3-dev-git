@@ -40,8 +40,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup hash-tests
@@ -54,10 +54,11 @@ public:
    * Constructor
    *
    * \param [in] name reference name
-   */ 
+   */
   HashTestCase (const std::string name);
   /** Destructor. */
   virtual ~HashTestCase ();
+
 protected:
   /**
    * Check function
@@ -71,7 +72,7 @@ protected:
    * \param [in] hash the hash value
    */
   void Check ( const std::string hashName, const uint64_t hash);
-  
+
   std::string key;           //!< The reference value to hash.
   uint32_t hash32Reference;  //!< The 32-bit hash of the reference.
   uint64_t hash64Reference;  //!< The 64-bit hash of the reference.
@@ -91,12 +92,10 @@ private:
 HashTestCase::HashTestCase (const std::string name)
   : TestCase (name),
     key ("The quick brown fox jumped over the lazy dogs.")
-{
-}
+{}
 
 HashTestCase::~HashTestCase ()
-{
-}
+{}
 
 void
 HashTestCase::Check ( const std::string hashName, const uint32_t hash)
@@ -135,9 +134,9 @@ HashTestCase::Check ( std::string hashName, int bits, uint64_t hash)
             << bits     << "-bit result...";
   NS_TEST_EXPECT_MSG_EQ (hash, hashRef,
                          hashName << " " << type
-                         << " produced "  << std::hex << std::setw (w) << hash
-                         << ", expected " << std::hex << std::setw (w) << hashRef
-                         << std::dec
+                                  << " produced "  << std::hex << std::setw (w) << hash
+                                  << ", expected " << std::hex << std::setw (w) << hashRef
+                                  << std::dec
                          );
   std::cout << std::hex << std::setw (w) << hash << ", ok"
             << std::dec << std::endl;
@@ -145,8 +144,7 @@ HashTestCase::Check ( std::string hashName, int bits, uint64_t hash)
 
 void
 HashTestCase::DoRun (void)
-{
-}
+{}
 
 
 /**
@@ -160,18 +158,17 @@ public:
   DefaultHashTestCase ();
   /** Destructor. */
   virtual ~DefaultHashTestCase ();
+
 private:
   virtual void DoRun (void);
 };
 
 DefaultHashTestCase::DefaultHashTestCase ()
   : HashTestCase ("DefaultHash: ")
-{
-}
+{}
 
 DefaultHashTestCase::~DefaultHashTestCase ()
-{
-}
+{}
 
 void
 DefaultHashTestCase::DoRun (void)
@@ -197,18 +194,17 @@ public:
   Fnv1aTestCase ();
   /** Destructor. */
   virtual ~Fnv1aTestCase ();
+
 private:
   virtual void DoRun (void);
 };
 
 Fnv1aTestCase::Fnv1aTestCase ()
   : HashTestCase ("Fnv1a: ")
-{
-}
+{}
 
 Fnv1aTestCase::~Fnv1aTestCase ()
-{
-}
+{}
 
 void
 Fnv1aTestCase::DoRun (void)
@@ -233,18 +229,17 @@ public:
   Murmur3TestCase ();
   /** Destructor. */
   virtual ~Murmur3TestCase ();
+
 private:
   virtual void DoRun (void);
 };
 
 Murmur3TestCase::Murmur3TestCase ()
   : HashTestCase ("Murmur3: ")
-{
-}
+{}
 
 Murmur3TestCase::~Murmur3TestCase ()
-{
-}
+{}
 
 void
 Murmur3TestCase::DoRun (void)
@@ -270,7 +265,7 @@ Murmur3TestCase::DoRun (void)
  * \param [in,out] buffer The data to hash.
  * \param [in] size The buffer size.
  * \returns The checksum of the buffer contents.
- */ 
+ */
 uint16_t
 gnu_sum (const char * buffer, const std::size_t size)
 {
@@ -322,18 +317,17 @@ public:
   Hash32FunctionPtrTestCase ();
   /** Destructor. */
   virtual ~Hash32FunctionPtrTestCase ();
+
 private:
   virtual void DoRun (void);
 };
 
 Hash32FunctionPtrTestCase::Hash32FunctionPtrTestCase ()
   : HashTestCase ("Hash32FunctionPtr: ")
-{
-}
+{}
 
 Hash32FunctionPtrTestCase::~Hash32FunctionPtrTestCase ()
-{
-}
+{}
 
 void
 Hash32FunctionPtrTestCase::DoRun (void)
@@ -354,18 +348,17 @@ public:
   Hash64FunctionPtrTestCase ();
   /** Destructor. */
   virtual ~Hash64FunctionPtrTestCase ();
+
 private:
   virtual void DoRun (void);
 };
 
 Hash64FunctionPtrTestCase::Hash64FunctionPtrTestCase ()
   : HashTestCase ("Hash64FunctionPtr: ")
-{
-}
+{}
 
 Hash64FunctionPtrTestCase::~Hash64FunctionPtrTestCase ()
-{
-}
+{}
 
 void
 Hash64FunctionPtrTestCase::DoRun (void)
@@ -378,7 +371,7 @@ Hash64FunctionPtrTestCase::DoRun (void)
 /**
  * \ingroup hash-tests
  * Test incremental hashing
- */  
+ */
 class IncrementalTestCase : public HashTestCase
 {
 public:
@@ -386,6 +379,7 @@ public:
   IncrementalTestCase ();
   /** Destructor. */
   virtual ~IncrementalTestCase ();
+
 private:
   virtual void DoRun (void);
   /**
@@ -401,12 +395,10 @@ private:
 
 IncrementalTestCase::IncrementalTestCase ()
   : HashTestCase ("Incremental: ")
-{
-}
+{}
 
 IncrementalTestCase::~IncrementalTestCase ()
-{
-}
+{}
 
 void
 IncrementalTestCase::DoHash (const std::string name, Hasher hasher)
@@ -468,6 +460,6 @@ HashTestSuite::HashTestSuite ()
 static HashTestSuite g_hashTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3

@@ -26,7 +26,8 @@ class BasicTracedCallbackTestCase : public TestCase
 {
 public:
   BasicTracedCallbackTestCase ();
-  virtual ~BasicTracedCallbackTestCase () {}
+  virtual ~BasicTracedCallbackTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -40,8 +41,7 @@ private:
 
 BasicTracedCallbackTestCase::BasicTracedCallbackTestCase ()
   : TestCase ("Check basic TracedCallback operation")
-{
-}
+{}
 
 void
 BasicTracedCallbackTestCase::CbOne (uint8_t a, double b)
@@ -69,7 +69,7 @@ BasicTracedCallbackTestCase::DoRun (void)
   TracedCallback<uint8_t, double> trace;
 
   //
-  // Connect both callbacks to their respective test methods.  If we hit the 
+  // Connect both callbacks to their respective test methods.  If we hit the
   // trace, both callbacks should be called and the two variables  should be set
   // to true.
   //

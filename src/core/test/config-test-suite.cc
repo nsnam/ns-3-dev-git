@@ -50,8 +50,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup config-tests
@@ -71,7 +71,7 @@ public:
    * \param a test object a
    */
   void AddNodeA (Ptr<ConfigTestObject> a);
-  /** 
+  /**
    * Add node B function
    * \param b test object b
    */
@@ -161,25 +161,25 @@ ConfigTestObject::SetNodeB (Ptr<ConfigTestObject> b)
   m_nodeB = b;
 }
 
-void 
+void
 ConfigTestObject::AddNodeA (Ptr<ConfigTestObject> a)
 {
   m_nodesA.push_back (a);
 }
 
-void 
+void
 ConfigTestObject::AddNodeB (Ptr<ConfigTestObject> b)
 {
   m_nodesB.push_back (b);
 }
 
-int8_t 
+int8_t
 ConfigTestObject::GetA (void) const
 {
   return m_a;
 }
 
-int8_t 
+int8_t
 ConfigTestObject::GetB (void) const
 {
   return m_b;
@@ -198,9 +198,11 @@ public:
    */
   static TypeId GetTypeId (void);
   /** Constructor. */
-  DerivedConfigTestObject (void) {}
+  DerivedConfigTestObject (void)
+  {}
   /** Destructor */
-  virtual ~DerivedConfigTestObject (void) {}
+  virtual ~DerivedConfigTestObject (void)
+  {}
 };
 
 TypeId
@@ -208,7 +210,7 @@ DerivedConfigTestObject::GetTypeId (void)
 {
   static TypeId tid = TypeId ("DerivedConfigTestObject")
     .SetParent<ConfigTestObject> ()
-    ;
+  ;
   return tid;
 }
 
@@ -225,13 +227,19 @@ public:
    */
   static TypeId GetTypeId (void);
   /** Constructor. */
-  BaseConfigObject (void) : m_x(15) {}
+  BaseConfigObject (void) : m_x (15)
+  {}
   /** Destructor. */
-  virtual ~BaseConfigObject (void) {}
+  virtual ~BaseConfigObject (void)
+  {}
+
 private:
   int8_t m_x; //!< X attribute target.
   /** Silence unused variable warning. */
-  void Increment (void) { m_x++; } 
+  void Increment (void)
+  {
+    m_x++;
+  }
 };
 
 TypeId
@@ -243,7 +251,7 @@ BaseConfigObject::GetTypeId (void)
                    IntegerValue (10),
                    MakeIntegerAccessor (&BaseConfigObject::m_x),
                    MakeIntegerChecker<int8_t> ())
-    ;
+  ;
   return tid;
 }
 
@@ -260,9 +268,11 @@ public:
    */
   static TypeId GetTypeId (void);
   /** Constructor. */
-  DerivedConfigObject (void) {}
+  DerivedConfigObject (void)
+  {}
   /** Destructor. */
-  virtual ~DerivedConfigObject (void) {}
+  virtual ~DerivedConfigObject (void)
+  {}
 };
 
 TypeId
@@ -270,7 +280,7 @@ DerivedConfigObject::GetTypeId (void)
 {
   static TypeId tid = TypeId ("DerivedConfigObject")
     .SetParent<BaseConfigObject> ()
-    ;
+  ;
   return tid;
 }
 
@@ -285,7 +295,8 @@ public:
   /** Constructor. */
   RootNamespaceConfigTestCase ();
   /** Destructor. */
-  virtual ~RootNamespaceConfigTestCase () {}
+  virtual ~RootNamespaceConfigTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -293,15 +304,14 @@ private:
 
 RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
   : TestCase ("Check ability to register a root namespace and use it")
-{
-}
+{}
 
 void
 RootNamespaceConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
   //
-  // Create an object and register its attributes directly in the root 
+  // Create an object and register its attributes directly in the root
   // namespace.
   //
   Ptr<ConfigTestObject> root = CreateObject<ConfigTestObject> ();
@@ -346,7 +356,8 @@ public:
   /** Constructor. */
   UnderRootNamespaceConfigTestCase ();
   /** Destructor. */
-  virtual ~UnderRootNamespaceConfigTestCase () {}
+  virtual ~UnderRootNamespaceConfigTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -354,15 +365,14 @@ private:
 
 UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
   : TestCase ("Check ability to register an object under the root namespace and use it")
-{
-}
+{}
 
 void
 UnderRootNamespaceConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
   //
-  // Create an object and register its attributes directly in the root 
+  // Create an object and register its attributes directly in the root
   // namespace.
   //
   Ptr<ConfigTestObject> root = CreateObject<ConfigTestObject> ();
@@ -458,7 +468,8 @@ public:
   /** Constructor. */
   ObjectVectorConfigTestCase ();
   /** Destructor. */
-  virtual ~ObjectVectorConfigTestCase () {}
+  virtual ~ObjectVectorConfigTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -466,8 +477,7 @@ private:
 
 ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
   : TestCase ("Check ability to configure vectors of Object using regular expressions")
-{
-}
+{}
 
 void
 ObjectVectorConfigTestCase::DoRun (void)
@@ -493,7 +503,7 @@ ObjectVectorConfigTestCase::DoRun (void)
   a->SetNodeB (b);
 
   //
-  // Add four objects to the ObjectVector Attribute at the bottom of the 
+  // Add four objects to the ObjectVector Attribute at the bottom of the
   // object hierarchy.  By this point, we believe that the Attributes
   // will be initialized correctly.
   //
@@ -615,17 +625,18 @@ public:
   /** Constructor. */
   ObjectVectorTraceConfigTestCase ();
   /** Destructor. */
-  virtual ~ObjectVectorTraceConfigTestCase () {}
+  virtual ~ObjectVectorTraceConfigTestCase ()
+  {}
 
   /**
    * Trace callback without context.
    * \param oldValue The old value.
    * \param newValue The new value.
    */
-  void Trace (int16_t oldValue, int16_t newValue) 
-  { 
-    NS_UNUSED (oldValue); 
-    m_newValue = newValue; 
+  void Trace (int16_t oldValue, int16_t newValue)
+  {
+    NS_UNUSED (oldValue);
+    m_newValue = newValue;
   }
   /**
    * Trace callback with context path.
@@ -634,10 +645,10 @@ public:
    * \param newValue The new value.
    */
   void TraceWithPath (std::string path, int16_t old, int16_t newValue)
-  { 
-    NS_UNUSED (old); 
-    m_newValue = newValue; 
-    m_path = path; 
+  {
+    NS_UNUSED (old);
+    m_newValue = newValue;
+    m_path = path;
   }
 
 private:
@@ -649,8 +660,7 @@ private:
 
 ObjectVectorTraceConfigTestCase::ObjectVectorTraceConfigTestCase ()
   : TestCase ("Check ability to trace connect through vectors of Object using regular expressions")
-{
-}
+{}
 
 void
 ObjectVectorTraceConfigTestCase::DoRun (void)
@@ -676,7 +686,7 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   a->SetNodeB (b);
 
   //
-  // Add four objects to the ObjectVector Attribute at the bottom of the 
+  // Add four objects to the ObjectVector Attribute at the bottom of the
   // object hierarchy.  By this point, we believe that the Attributes
   // will be initialized correctly.
   //
@@ -691,29 +701,29 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
 
   //
   // Do a trace connect to some of the sources.  We already checked parsing of
-  // the regular expressions, so we'll concentrate on the tracing part of the 
+  // the regular expressions, so we'll concentrate on the tracing part of the
   // puzzle here.
   //
-  Config::ConnectWithoutContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::ConnectWithoutContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source",
                                  MakeCallback (&ObjectVectorTraceConfigTestCase::Trace, this));
 
-  // 
-  // If we bug the trace source referred to by index '0' above, we should see 
+  //
+  // If we bug the trace source referred to by index '0' above, we should see
   // the trace fire.
   //
   m_newValue = 0;
   obj0->SetAttribute ("Source", IntegerValue (-1));
   NS_TEST_ASSERT_MSG_EQ (m_newValue, -1, "Trace 0 did not fire as expected");
 
-  // 
-  // If we bug the trace source referred to by index '1' above, we should see 
+  //
+  // If we bug the trace source referred to by index '1' above, we should see
   // the trace fire.
   //
   m_newValue = 0;
   obj1->SetAttribute ("Source", IntegerValue (-2));
   NS_TEST_ASSERT_MSG_EQ (m_newValue, -2, "Trace 1 did not fire as expected");
 
-  // 
+  //
   // If we bug the trace source referred to by index '2' which is skipped above,
   // we should not see the trace fire.
   //
@@ -721,8 +731,8 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   obj2->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_MSG_EQ (m_newValue, 0, "Trace 2 fired unexpectedly");
 
-  // 
-  // If we bug the trace source referred to by index '3' above, we should see 
+  //
+  // If we bug the trace source referred to by index '3' above, we should see
   // the trace fire.
   //
   m_newValue = 0;
@@ -732,11 +742,11 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   //
   // Do a trace connect (with context) to some of the sources.
   //
-  Config::Connect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::Connect ("/NodeA/NodeB/NodesB/[0-1]|3/Source",
                    MakeCallback (&ObjectVectorTraceConfigTestCase::TraceWithPath, this));
 
-  // 
-  // If we bug the trace source referred to by index '0' above, we should see 
+  //
+  // If we bug the trace source referred to by index '0' above, we should see
   // the trace fire with the expected context path.
   //
   m_newValue = 0;
@@ -745,8 +755,8 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_newValue, -1, "Trace 0 did not fire as expected");
   NS_TEST_ASSERT_MSG_EQ (m_path, "/NodeA/NodeB/NodesB/0/Source", "Trace 0 did not provide expected context");
 
-  // 
-  // If we bug the trace source referred to by index '1' above, we should see 
+  //
+  // If we bug the trace source referred to by index '1' above, we should see
   // the trace fire with the expected context path.
   //
   m_newValue = 0;
@@ -755,7 +765,7 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_newValue, -2, "Trace 1 did not fire as expected");
   NS_TEST_ASSERT_MSG_EQ (m_path, "/NodeA/NodeB/NodesB/1/Source", "Trace 1 did not provide expected context");
 
-  // 
+  //
   // If we bug the trace source referred to by index '2' which is skipped above,
   // we should not see the trace fire.
   //
@@ -764,8 +774,8 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   obj2->SetAttribute ("Source", IntegerValue (-3));
   NS_TEST_ASSERT_MSG_EQ (m_newValue, 0, "Trace 2 fired unexpectedly");
 
-  // 
-  // If we bug the trace source referred to by index '3' above, we should see 
+  //
+  // If we bug the trace source referred to by index '3' above, we should see
   // the trace fire with the expected context path.
   //
   m_newValue = 0;
@@ -789,7 +799,8 @@ public:
   /** Constructor. */
   SearchAttributesOfParentObjectsTestCase ();
   /** Destructor. */
-  virtual ~SearchAttributesOfParentObjectsTestCase () {}
+  virtual ~SearchAttributesOfParentObjectsTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -798,8 +809,7 @@ private:
 
 SearchAttributesOfParentObjectsTestCase::SearchAttributesOfParentObjectsTestCase ()
   : TestCase ("Check that attributes of base class are searchable from paths including objects of derived class")
-{
-}
+{}
 
 void
 SearchAttributesOfParentObjectsTestCase::DoRun (void)
@@ -819,7 +829,7 @@ SearchAttributesOfParentObjectsTestCase::DoRun (void)
   root->SetNodeA (a);
 
   //
-  // BaseConfigObject has attribute X, but we aggregate DerivedConfigObject 
+  // BaseConfigObject has attribute X, but we aggregate DerivedConfigObject
   // instead
   //
   Ptr<DerivedConfigObject> derived = CreateObject<DerivedConfigObject> ();
@@ -857,7 +867,7 @@ ConfigTestSuite::ConfigTestSuite ()
 static ConfigTestSuite g_configTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3
-    
+

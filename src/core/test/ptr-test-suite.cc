@@ -36,8 +36,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 class PtrTestCase;
 
@@ -56,6 +56,7 @@ public:
   void Ref (void) const;
   /** Decrement the reference count, and delete if necessary. */
   void Unref (void) const;
+
 private:
   mutable uint32_t m_count; //!< The reference count.
 };
@@ -81,6 +82,7 @@ public:
   ~NoCount ();
   /** Noop function. */
   void Nothing (void) const;
+
 private:
   PtrTestCase *m_test; //!< The object being tracked.
 };
@@ -97,6 +99,7 @@ public:
   PtrTestCase ();
   /** Count the destruction of an object. */
   void DestroyNotify (void);
+
 private:
   virtual void DoRun (void);
   /**
@@ -113,11 +116,9 @@ private:
 
 PtrTestBase::PtrTestBase ()
   : m_count (1)
-{
-}
+{}
 PtrTestBase::~PtrTestBase ()
-{
-}
+{}
 void
 PtrTestBase::Ref (void) const
 {
@@ -135,8 +136,7 @@ PtrTestBase::Unref (void) const
 
 NoCount::NoCount (PtrTestCase *test)
   : m_test (test)
-{
-}
+{}
 NoCount::~NoCount ()
 {
   m_test->DestroyNotify ();
@@ -149,8 +149,7 @@ NoCount::Nothing () const
 
 PtrTestCase::PtrTestCase (void)
   : TestCase ("Sanity checking of Ptr<>")
-{
-}
+{}
 void
 PtrTestCase::DestroyNotify (void)
 {
@@ -183,14 +182,14 @@ PtrTestCase::DoRun (void)
     Ptr<NoCount> p;
     p = Create<NoCount> (this);
 #if defined(__clang__)
-  #if __has_warning("-Wself-assign-overloaded")
+  #if __has_warning ("-Wself-assign-overloaded")
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wself-assign-overloaded"
   #endif
 #endif
     p = p;
 #if defined(__clang__)
-  #if __has_warning("-Wself-assign-overloaded")
+  #if __has_warning ("-Wself-assign-overloaded")
     #pragma clang diagnostic pop
   #endif
 #endif
@@ -336,7 +335,7 @@ public:
   PtrTestSuite ()
     : TestSuite ("ptr")
   {
-    AddTestCase (new PtrTestCase ());  
+    AddTestCase (new PtrTestCase ());
   }
 };
 
@@ -344,9 +343,9 @@ public:
  * \ingroup ptr-tests
  * PtrTestSuite instance variable.
  */
-static PtrTestSuite g_ptrTestSuite;  
+static PtrTestSuite g_ptrTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3

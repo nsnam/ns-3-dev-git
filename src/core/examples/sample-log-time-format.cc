@@ -25,7 +25,7 @@
  * Example program that demonstrates how to replace the time printer.
  *
  * This program creates a sample object and schedules some methods to
- * occur at future times.  When run with no arguments, it prints out 
+ * occur at future times.  When run with no arguments, it prints out
  * something like this:
  * \code
  * $ ./waf --run sample-log-time-format
@@ -56,7 +56,7 @@
  * once the simulator object is instantiated (after Simulator::Run ()
  * is called).
  *
- * To change the format, one can schedule (at simulation time 0) a 
+ * To change the format, one can schedule (at simulation time 0) a
  * replacement function for printing time.  This can be demonstrated
  * by setting the 'replace-time-printer' parameter to true:
  * \code
@@ -77,10 +77,10 @@
  * (which was the default for ns-3 versions 3.26 and earlier).
  *
  * In addition, the 'resolution' program argument allows one to experiment
- * with changing ns-3's time resolution from its default of Time::NS, such 
+ * with changing ns-3's time resolution from its default of Time::NS, such
  * as Time::PS or Time::FS; the precision changes accordingly.
  *
- * The maximum useful precision is 20 decimal digits, since Time is 
+ * The maximum useful precision is 20 decimal digits, since Time is
  * signed 64 bits.
  */
 
@@ -93,10 +93,10 @@
 using namespace ns3;
 
 namespace {
-  
+
 /**
  * Pre-ns-3.26 TimePrinter equivalent (was called LogTimePrinter).
- * 
+ *
  * Prior to ns-3.26, the time printer used default C++ iostream precision
  * This function sets it back to the format used before ns-3.26
  *

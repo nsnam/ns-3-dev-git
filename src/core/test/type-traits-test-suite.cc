@@ -29,8 +29,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup object-tests
@@ -42,7 +42,8 @@ public:
   /** Constructor. */
   TypeTraitsTestCase ();
   /** Destructor. */
-  virtual ~TypeTraitsTestCase () {}
+  virtual ~TypeTraitsTestCase ()
+  {}
 
 private:
   virtual void DoRun (void);
@@ -50,30 +51,29 @@ private:
 
 TypeTraitsTestCase::TypeTraitsTestCase (void)
   : TestCase ("Check type traits")
-{
-}
+{}
 
 void
 TypeTraitsTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (void)>::IsPointerToMember, 1,
-     "Check pointer to member function (void)");
+    (TypeTraits<void (TypeTraitsTestCase::*)(void)>::IsPointerToMember, 1,
+    "Check pointer to member function (void)");
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (void) const>::IsPointerToMember, 1,
-     "Check pointer to member function (void) const");
+    (TypeTraits<void (TypeTraitsTestCase::*)(void) const>::IsPointerToMember, 1,
+    "Check pointer to member function (void) const");
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (int)>::IsPointerToMember, 1,
-     "Check pointer to member function (int)");
+    (TypeTraits<void (TypeTraitsTestCase::*)(int)>::IsPointerToMember, 1,
+    "Check pointer to member function (int)");
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::IsPointerToMember, 1,
-     "Check pointer to member function (int) const");
+    (TypeTraits<void (TypeTraitsTestCase::*)(int) const>::IsPointerToMember, 1,
+    "Check pointer to member function (int) const");
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (void) const>::PointerToMemberTraits::nArgs, 0,
-     "Check number of arguments for pointer to member function (void) const");
+    (TypeTraits<void (TypeTraitsTestCase::*)(void) const>::PointerToMemberTraits::nArgs, 0,
+    "Check number of arguments for pointer to member function (void) const");
   NS_TEST_ASSERT_MSG_EQ
-    (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::PointerToMemberTraits::nArgs, 1,
-     "Check number of arguments for pointer to member function (int) const");
+    (TypeTraits<void (TypeTraitsTestCase::*)(int) const>::PointerToMemberTraits::nArgs, 1,
+    "Check number of arguments for pointer to member function (int) const");
 }
 
 /**
@@ -99,7 +99,7 @@ TypeTraitsTestSuite::TypeTraitsTestSuite ()
  */
 static TypeTraitsTestSuite g_typeTraitsTestSuite;
 
-    
-  }  // namespace tests
+
+}    // namespace tests
 
 }  // namespace ns3

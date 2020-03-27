@@ -63,7 +63,7 @@ bool seedSet = false;
 // values so that the distributions can be evaluated with chi-squared
 // tests.  To enable this, normal invocation of this test suite will
 // result in a seed value corresponding to the seconds since epoch
-// (time (0) from ctime).  Note: this is not a recommended practice for 
+// (time (0) from ctime).  Note: this is not a recommended practice for
 // seeding normal simulations, as described in the ns-3 manual, but
 // suits our purposes here.
 //
@@ -72,11 +72,11 @@ bool seedSet = false;
 // to a specific value.  Therefore, we adopt the following policy.  When
 // the test program is being run with the default global values for seed
 // and run number, this function will instead pick a random, time-based
-// seed for use within this test suite.  If the global values for seed or 
+// seed for use within this test suite.  If the global values for seed or
 // run number have been configured differently from the default values,
 // the global seed value will be used instead of the time-based one.
-// 
-// For example, this command will cause this test suite to use the 
+//
+// For example, this command will cause this test suite to use the
 // deterministic value of seed=3 every time:
 //   NS_GLOBAL_VALUE="RngSeed=3" ./test.py -s random-variable-stream-generators
 // or equivalently (to see log output):
@@ -95,7 +95,7 @@ SetTestSuiteSeed (void)
           seed = static_cast<uint32_t> (time (0));
           seedSet = true;
           NS_LOG_DEBUG ("Global seed and run number are default; seeding with time of day: " << seed);
-          
+
         }
       else
         {
@@ -135,12 +135,10 @@ private:
 
 RandomVariableStreamUniformTestCase::RandomVariableStreamUniformTestCase ()
   : TestCase ("Uniform Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamUniformTestCase::~RandomVariableStreamUniformTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamUniformTestCase::ChiSquaredTest (Ptr<UniformRandomVariable> u)
@@ -186,7 +184,7 @@ RandomVariableStreamUniformTestCase::DoRun (void)
   SetTestSuiteSeed ();
 
   double confidence = 0.99;
-  double maxStatistic = gsl_cdf_chisq_Pinv (confidence, (N_BINS-1));
+  double maxStatistic = gsl_cdf_chisq_Pinv (confidence, (N_BINS - 1));
   NS_LOG_DEBUG ("Chi square required at " << confidence << " confidence for " << N_BINS << " bins is " << maxStatistic);
 
   double result = maxStatistic;
@@ -213,7 +211,7 @@ RandomVariableStreamUniformTestCase::DoRun (void)
 
   x->SetAttribute ("Min", DoubleValue (min));
   x->SetAttribute ("Max", DoubleValue (max));
- 
+
   // Test that values are always within the range:
   //
   //     [min, max)
@@ -283,12 +281,10 @@ private:
 
 RandomVariableStreamUniformAntitheticTestCase::RandomVariableStreamUniformAntitheticTestCase ()
   : TestCase ("Antithetic Uniform Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamUniformAntitheticTestCase::~RandomVariableStreamUniformAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamUniformAntitheticTestCase::ChiSquaredTest (Ptr<UniformRandomVariable> u)
@@ -363,7 +359,7 @@ RandomVariableStreamUniformAntitheticTestCase::DoRun (void)
 
   x->SetAttribute ("Min", DoubleValue (min));
   x->SetAttribute ("Max", DoubleValue (max));
- 
+
   // Test that values are always within the range:
   //
   //     [min, max)
@@ -398,12 +394,10 @@ const double RandomVariableStreamConstantTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamConstantTestCase::RandomVariableStreamConstantTestCase ()
   : TestCase ("Constant Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamConstantTestCase::~RandomVariableStreamConstantTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamConstantTestCase::DoRun (void)
@@ -448,12 +442,10 @@ const double RandomVariableStreamSequentialTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamSequentialTestCase::RandomVariableStreamSequentialTestCase ()
   : TestCase ("Sequential Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamSequentialTestCase::~RandomVariableStreamSequentialTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamSequentialTestCase::DoRun (void)
@@ -468,24 +460,24 @@ RandomVariableStreamSequentialTestCase::DoRun (void)
   //
   s->SetAttribute ("Min", DoubleValue (4));
   s->SetAttribute ("Max", DoubleValue (11));
-  s->SetAttribute ("Increment", StringValue("ns3::UniformRandomVariable[Min=3.0|Max=3.0]"));
+  s->SetAttribute ("Increment", StringValue ("ns3::UniformRandomVariable[Min=3.0|Max=3.0]"));
   s->SetAttribute ("Consecutive", IntegerValue (2));
 
   double value;
 
   // Test that the sequencet is correct.
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence value 1 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence value 2 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence value 3 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence value 4 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence value 5 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence value 6 wrong."); 
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence value 1 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence value 2 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence value 3 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence value 4 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence value 5 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence value 6 wrong.");
 
 }
 
@@ -510,12 +502,10 @@ private:
 
 RandomVariableStreamNormalTestCase::RandomVariableStreamNormalTestCase ()
   : TestCase ("Normal Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamNormalTestCase::~RandomVariableStreamNormalTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamNormalTestCase::ChiSquaredTest (Ptr<NormalRandomVariable> n)
@@ -612,7 +602,7 @@ RandomVariableStreamNormalTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -636,12 +626,10 @@ private:
 
 RandomVariableStreamNormalAntitheticTestCase::RandomVariableStreamNormalAntitheticTestCase ()
   : TestCase ("Antithetic Normal Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamNormalAntitheticTestCase::~RandomVariableStreamNormalAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamNormalAntitheticTestCase::ChiSquaredTest (Ptr<NormalRandomVariable> n)
@@ -745,7 +733,7 @@ RandomVariableStreamNormalAntitheticTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -769,12 +757,10 @@ private:
 
 RandomVariableStreamExponentialTestCase::RandomVariableStreamExponentialTestCase ()
   : TestCase ("Exponential Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamExponentialTestCase::~RandomVariableStreamExponentialTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamExponentialTestCase::ChiSquaredTest (Ptr<ExponentialRandomVariable> e)
@@ -865,7 +851,7 @@ RandomVariableStreamExponentialTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = mean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, mean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, mean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -889,12 +875,10 @@ private:
 
 RandomVariableStreamExponentialAntitheticTestCase::RandomVariableStreamExponentialAntitheticTestCase ()
   : TestCase ("Antithetic Exponential Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamExponentialAntitheticTestCase::~RandomVariableStreamExponentialAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamExponentialAntitheticTestCase::ChiSquaredTest (Ptr<ExponentialRandomVariable> e)
@@ -992,7 +976,7 @@ RandomVariableStreamExponentialAntitheticTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = mean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, mean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, mean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1016,12 +1000,10 @@ private:
 
 RandomVariableStreamParetoTestCase::RandomVariableStreamParetoTestCase ()
   : TestCase ("Pareto Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamParetoTestCase::~RandomVariableStreamParetoTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamParetoTestCase::ChiSquaredTest (Ptr<ParetoRandomVariable> p)
@@ -1114,15 +1096,15 @@ RandomVariableStreamParetoTestCase::DoRun (void)
   //                   shape * scale
   //     E[value]  =  ---------------  ,
   //                     shape - 1
-  // 
+  //
   // where
-  // 
+  //
   //     scale  =  mean * (shape - 1.0) / shape .
   double expectedMean = (shape * scale) / (shape - 1.0);
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1146,12 +1128,10 @@ private:
 
 RandomVariableStreamParetoAntitheticTestCase::RandomVariableStreamParetoAntitheticTestCase ()
   : TestCase ("Antithetic Pareto Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamParetoAntitheticTestCase::~RandomVariableStreamParetoAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamParetoAntitheticTestCase::ChiSquaredTest (Ptr<ParetoRandomVariable> p)
@@ -1251,16 +1231,16 @@ RandomVariableStreamParetoAntitheticTestCase::DoRun (void)
   //                   shape * scale
   //     E[value]  =  ---------------  ,
   //                     shape - 1
-  // 
+  //
   // where
-  // 
+  //
   //     scale  =  mean * (shape - 1.0) / shape .
   //
   double expectedMean = (shape * scale) / (shape - 1.0);
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1284,12 +1264,10 @@ private:
 
 RandomVariableStreamWeibullTestCase::RandomVariableStreamWeibullTestCase ()
   : TestCase ("Weibull Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamWeibullTestCase::~RandomVariableStreamWeibullTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamWeibullTestCase::ChiSquaredTest (Ptr<WeibullRandomVariable> p)
@@ -1384,11 +1362,11 @@ RandomVariableStreamWeibullTestCase::DoRun (void)
   // Weibull distributed random variable is
   //
   //     E[value]  =  scale * Gamma(1 + 1 / shape)  ,
-  //               
-  // where Gamma() is the Gamma function.  Note that 
-  //               
+  //
+  // where Gamma() is the Gamma function.  Note that
+  //
   //     Gamma(n)  =  (n - 1)!
-  //               
+  //
   // if n is a positive integer.
   //
   // For this test,
@@ -1401,12 +1379,12 @@ RandomVariableStreamWeibullTestCase::DoRun (void)
   // which means
   //
   //     E[value]  =  scale  .
-  //               
+  //
   double expectedMean = scale;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1430,12 +1408,10 @@ private:
 
 RandomVariableStreamWeibullAntitheticTestCase::RandomVariableStreamWeibullAntitheticTestCase ()
   : TestCase ("Antithetic Weibull Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamWeibullAntitheticTestCase::~RandomVariableStreamWeibullAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamWeibullAntitheticTestCase::ChiSquaredTest (Ptr<WeibullRandomVariable> p)
@@ -1537,11 +1513,11 @@ RandomVariableStreamWeibullAntitheticTestCase::DoRun (void)
   // Weibull distributed random variable is
   //
   //     E[value]  =  scale * Gamma(1 + 1 / shape)  ,
-  //               
-  // where Gamma() is the Gamma function.  Note that 
-  //               
+  //
+  // where Gamma() is the Gamma function.  Note that
+  //
   //     Gamma(n)  =  (n - 1)!
-  //               
+  //
   // if n is a positive integer.
   //
   // For this test,
@@ -1554,12 +1530,12 @@ RandomVariableStreamWeibullAntitheticTestCase::DoRun (void)
   // which means
   //
   //     E[value]  =  scale  .
-  //               
+  //
   double expectedMean = scale;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1583,12 +1559,10 @@ private:
 
 RandomVariableStreamLogNormalTestCase::RandomVariableStreamLogNormalTestCase ()
   : TestCase ("Log-Normal Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamLogNormalTestCase::~RandomVariableStreamLogNormalTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamLogNormalTestCase::ChiSquaredTest (Ptr<LogNormalRandomVariable> n)
@@ -1680,13 +1654,13 @@ RandomVariableStreamLogNormalTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // log-normally distributed random variable is equal to 
+  // log-normally distributed random variable is equal to
   //
   //                             2
   //                   mu + sigma  / 2
   //     E[value]  =  e                 .
   //
-  double expectedMean = std::exp(mu + sigma * sigma / 2.0);
+  double expectedMean = std::exp (mu + sigma * sigma / 2.0);
 
   // Test that values have approximately the right mean value.
   //
@@ -1695,7 +1669,7 @@ RandomVariableStreamLogNormalTestCase::DoRun (void)
   /// implementation or that the mean of this distribution is more
   /// sensitive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1719,12 +1693,10 @@ private:
 
 RandomVariableStreamLogNormalAntitheticTestCase::RandomVariableStreamLogNormalAntitheticTestCase ()
   : TestCase ("Antithetic Log-Normal Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamLogNormalAntitheticTestCase::~RandomVariableStreamLogNormalAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamLogNormalAntitheticTestCase::ChiSquaredTest (Ptr<LogNormalRandomVariable> n)
@@ -1823,13 +1795,13 @@ RandomVariableStreamLogNormalAntitheticTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // log-normally distributed random variable is equal to 
+  // log-normally distributed random variable is equal to
   //
   //                             2
   //                   mu + sigma  / 2
   //     E[value]  =  e                 .
   //
-  double expectedMean = std::exp(mu + sigma * sigma / 2.0);
+  double expectedMean = std::exp (mu + sigma * sigma / 2.0);
 
   // Test that values have approximately the right mean value.
   //
@@ -1838,7 +1810,7 @@ RandomVariableStreamLogNormalAntitheticTestCase::DoRun (void)
   /// implementation or that the mean of this distribution is more
   /// sensitive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1862,12 +1834,10 @@ private:
 
 RandomVariableStreamGammaTestCase::RandomVariableStreamGammaTestCase ()
   : TestCase ("Gamma Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamGammaTestCase::~RandomVariableStreamGammaTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamGammaTestCase::ChiSquaredTest (Ptr<GammaRandomVariable> n)
@@ -1959,7 +1929,7 @@ RandomVariableStreamGammaTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // gammaly distributed random variable is equal to 
+  // gammaly distributed random variable is equal to
   //
   //     E[value]  =  alpha * beta  .
   //
@@ -1967,7 +1937,7 @@ RandomVariableStreamGammaTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -1991,12 +1961,10 @@ private:
 
 RandomVariableStreamGammaAntitheticTestCase::RandomVariableStreamGammaAntitheticTestCase ()
   : TestCase ("Antithetic Gamma Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamGammaAntitheticTestCase::~RandomVariableStreamGammaAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamGammaAntitheticTestCase::ChiSquaredTest (Ptr<GammaRandomVariable> n)
@@ -2096,7 +2064,7 @@ RandomVariableStreamGammaAntitheticTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // gammaly distributed random variable is equal to 
+  // gammaly distributed random variable is equal to
   //
   //     E[value]  =  alpha * beta  .
   //
@@ -2104,7 +2072,7 @@ RandomVariableStreamGammaAntitheticTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2128,12 +2096,10 @@ private:
 
 RandomVariableStreamErlangTestCase::RandomVariableStreamErlangTestCase ()
   : TestCase ("Erlang Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamErlangTestCase::~RandomVariableStreamErlangTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamErlangTestCase::ChiSquaredTest (Ptr<ErlangRandomVariable> n)
@@ -2228,7 +2194,7 @@ RandomVariableStreamErlangTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // Erlangly distributed random variable is equal to 
+  // Erlangly distributed random variable is equal to
   //
   //     E[value]  =  k * lambda  .
   //
@@ -2236,7 +2202,7 @@ RandomVariableStreamErlangTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2260,12 +2226,10 @@ private:
 
 RandomVariableStreamErlangAntitheticTestCase::RandomVariableStreamErlangAntitheticTestCase ()
   : TestCase ("Antithetic Erlang Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamErlangAntitheticTestCase::~RandomVariableStreamErlangAntitheticTestCase ()
-{
-}
+{}
 
 double
 RandomVariableStreamErlangAntitheticTestCase::ChiSquaredTest (Ptr<ErlangRandomVariable> n)
@@ -2368,7 +2332,7 @@ RandomVariableStreamErlangAntitheticTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // Erlangly distributed random variable is equal to 
+  // Erlangly distributed random variable is equal to
   //
   //     E[value]  =  k * lambda  .
   //
@@ -2376,7 +2340,7 @@ RandomVariableStreamErlangAntitheticTestCase::DoRun (void)
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2396,12 +2360,10 @@ private:
 
 RandomVariableStreamZipfTestCase::RandomVariableStreamZipfTestCase ()
   : TestCase ("Zipf Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamZipfTestCase::~RandomVariableStreamZipfTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamZipfTestCase::DoRun (void)
@@ -2427,23 +2389,23 @@ RandomVariableStreamZipfTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // Zipfly distributed random variable is equal to 
+  // Zipfly distributed random variable is equal to
   //
   //                   H
   //                    N, alpha - 1
   //     E[value]  =  ---------------
   //                     H
   //                      N, alpha
-  //                          
+  //
   // where
   //
-  //                    N   
-  //                   ---    
+  //                    N
+  //                   ---
   //                   \     -alpha
   //     H          =  /    m        .
   //      N, alpha     ---
-  //                   m=1    
-  //                 
+  //                   m=1
+  //
   // For this test,
   //
   //                      -(alpha - 1)
@@ -2453,12 +2415,12 @@ RandomVariableStreamZipfTestCase::DoRun (void)
   //                     1
   //
   //               =  1  .
-  //               
+  //
   double expectedMean = 1.0;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2478,12 +2440,10 @@ private:
 
 RandomVariableStreamZipfAntitheticTestCase::RandomVariableStreamZipfAntitheticTestCase ()
   : TestCase ("Antithetic Zipf Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamZipfAntitheticTestCase::~RandomVariableStreamZipfAntitheticTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamZipfAntitheticTestCase::DoRun (void)
@@ -2512,23 +2472,23 @@ RandomVariableStreamZipfAntitheticTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // Zipfly distributed random variable is equal to 
+  // Zipfly distributed random variable is equal to
   //
   //                   H
   //                    N, alpha - 1
   //     E[value]  =  ---------------
   //                     H
   //                      N, alpha
-  //                          
+  //
   // where
   //
-  //                    N   
-  //                   ---    
+  //                    N
+  //                   ---
   //                   \     -alpha
   //     H          =  /    m        .
   //      N, alpha     ---
-  //                   m=1    
-  //                 
+  //                   m=1
+  //
   // For this test,
   //
   //                      -(alpha - 1)
@@ -2538,12 +2498,12 @@ RandomVariableStreamZipfAntitheticTestCase::DoRun (void)
   //                     1
   //
   //               =  1  .
-  //               
+  //
   double expectedMean = 1.0;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2563,12 +2523,10 @@ private:
 
 RandomVariableStreamZetaTestCase::RandomVariableStreamZetaTestCase ()
   : TestCase ("Zeta Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamZetaTestCase::~RandomVariableStreamZetaTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamZetaTestCase::DoRun (void)
@@ -2592,24 +2550,24 @@ RandomVariableStreamZetaTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // zetaly distributed random variable is equal to 
+  // zetaly distributed random variable is equal to
   //
   //                   zeta(alpha - 1)
   //     E[value]  =  ---------------   for alpha > 2 ,
   //                     zeta(alpha)
-  //                          
+  //
   // where zeta(alpha) is the Riemann zeta function.
-  //                 
+  //
   // There are no simple analytic forms for the Riemann zeta function,
   // which is why the gsl library is used in this test to calculate
   // the known mean of the values.
-  double expectedMean = 
-    gsl_sf_zeta_int (static_cast<int> (alpha - 1)) / 
+  double expectedMean =
+    gsl_sf_zeta_int (static_cast<int> (alpha - 1)) /
     gsl_sf_zeta_int (static_cast<int> (alpha)       );
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2629,12 +2587,10 @@ private:
 
 RandomVariableStreamZetaAntitheticTestCase::RandomVariableStreamZetaAntitheticTestCase ()
   : TestCase ("Antithetic Zeta Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamZetaAntitheticTestCase::~RandomVariableStreamZetaAntitheticTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamZetaAntitheticTestCase::DoRun (void)
@@ -2661,24 +2617,24 @@ RandomVariableStreamZetaAntitheticTestCase::DoRun (void)
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by a
-  // zetaly distributed random variable is equal to 
+  // zetaly distributed random variable is equal to
   //
   //                   zeta(alpha - 1)
   //     E[value]  =  ---------------   for alpha > 2 ,
   //                     zeta(alpha)
-  //                          
+  //
   // where zeta(alpha) is the Riemann zeta function.
-  //                 
+  //
   // There are no simple analytic forms for the Riemann zeta function,
   // which is why the gsl library is used in this test to calculate
   // the known mean of the values.
-  double expectedMean = 
-    gsl_sf_zeta_int (static_cast<int> (alpha) - 1) / 
+  double expectedMean =
+    gsl_sf_zeta_int (static_cast<int> (alpha) - 1) /
     gsl_sf_zeta_int (static_cast<int> (alpha)       );
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 // ===========================================================================
@@ -2700,12 +2656,10 @@ const double RandomVariableStreamDeterministicTestCase::TOLERANCE = 1e-8;
 
 RandomVariableStreamDeterministicTestCase::RandomVariableStreamDeterministicTestCase ()
   : TestCase ("Deterministic Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamDeterministicTestCase::~RandomVariableStreamDeterministicTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamDeterministicTestCase::DoRun (void)
@@ -2725,18 +2679,18 @@ RandomVariableStreamDeterministicTestCase::DoRun (void)
   double value;
 
   // Test that the first sequence is correct.
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence 1 value 1 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence 1 value 2 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence 1 value 3 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence 1 value 4 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence 1 value 5 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence 1 value 6 wrong."); 
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence 1 value 1 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4, TOLERANCE, "Sequence 1 value 2 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence 1 value 3 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 7, TOLERANCE, "Sequence 1 value 4 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence 1 value 5 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 10, TOLERANCE, "Sequence 1 value 6 wrong.");
 
   // The following array should give the sequence
   //
@@ -2747,15 +2701,15 @@ RandomVariableStreamDeterministicTestCase::DoRun (void)
   s->SetValueArray (array2, count2);
 
   // Test that the second sequence is correct.
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 1000, TOLERANCE, "Sequence 2 value 1 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 2000, TOLERANCE, "Sequence 2 value 2 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 3000, TOLERANCE, "Sequence 2 value 3 wrong."); 
-  value = s->GetValue (); 
-  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4000, TOLERANCE, "Sequence 2 value 4 wrong."); 
-  value = s->GetValue (); 
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 1000, TOLERANCE, "Sequence 2 value 1 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 2000, TOLERANCE, "Sequence 2 value 2 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 3000, TOLERANCE, "Sequence 2 value 3 wrong.");
+  value = s->GetValue ();
+  NS_TEST_ASSERT_MSG_EQ_TOL (value, 4000, TOLERANCE, "Sequence 2 value 4 wrong.");
+  value = s->GetValue ();
 }
 
 // ===========================================================================
@@ -2775,12 +2729,10 @@ private:
 
 RandomVariableStreamEmpiricalTestCase::RandomVariableStreamEmpiricalTestCase ()
   : TestCase ("Empirical Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamEmpiricalTestCase::~RandomVariableStreamEmpiricalTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamEmpiricalTestCase::DoRun (void)
@@ -2807,12 +2759,12 @@ RandomVariableStreamEmpiricalTestCase::DoRun (void)
   // empirical distribution is the midpoint of the distribution
   //
   //     E[value]  =  5 .
-  //                          
+  //
   double expectedMean = 5.0;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 
   // Bug 2082: Create the RNG with a uniform distribution between -1 and 1.
   Ptr<EmpiricalRandomVariable> y = CreateObject<EmpiricalRandomVariable> ();
@@ -2839,12 +2791,10 @@ private:
 
 RandomVariableStreamEmpiricalAntitheticTestCase::RandomVariableStreamEmpiricalAntitheticTestCase ()
   : TestCase ("EmpiricalAntithetic Random Variable Stream Generator")
-{
-}
+{}
 
 RandomVariableStreamEmpiricalAntitheticTestCase::~RandomVariableStreamEmpiricalAntitheticTestCase ()
-{
-}
+{}
 
 void
 RandomVariableStreamEmpiricalAntitheticTestCase::DoRun (void)
@@ -2874,12 +2824,12 @@ RandomVariableStreamEmpiricalAntitheticTestCase::DoRun (void)
   // empirical distribution is the midpoint of the distribution
   //
   //     E[value]  =  5 .
-  //                          
+  //
   double expectedMean = 5.0;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
-  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
+  NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value.");
 }
 
 class RandomVariableStreamTestSuite : public TestSuite

@@ -36,8 +36,8 @@
 
 namespace ns3 {
 
-  namespace tests {
-    
+namespace tests {
+
 
 /**
  * \ingroup event-garbage-tests
@@ -62,12 +62,10 @@ public:
 
 EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()
   : TestCase ("EventGarbageCollector"), m_counter (0), m_events (0)
-{
-}
+{}
 
 EventGarbageCollectorTestCase::~EventGarbageCollectorTestCase ()
-{
-}
+{}
 
 void
 EventGarbageCollectorTestCase::EventGarbageCollectorCallback ()
@@ -106,7 +104,7 @@ class EventGarbageCollectorTestSuite : public TestSuite
 {
 public:
   EventGarbageCollectorTestSuite ()
-    : TestSuite ("event-garbage-collector") 
+    : TestSuite ("event-garbage-collector")
   {
     AddTestCase (new EventGarbageCollectorTestCase ());
   }
@@ -119,7 +117,7 @@ public:
 static EventGarbageCollectorTestSuite g_eventGarbageCollectorTestSuite;
 
 
-  }  // namespace tests
+}    // namespace tests
 
 }  // namespace ns3
-    
+

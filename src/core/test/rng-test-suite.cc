@@ -62,17 +62,15 @@ private:
 
 RngUniformTestCase::RngUniformTestCase ()
   : TestCase ("Uniform Random Number Generator")
-{
-}
+{}
 
 RngUniformTestCase::~RngUniformTestCase ()
-{
-}
+{}
 
 double
 RngUniformTestCase::ChiSquaredTest (Ptr<UniformRandomVariable> u)
 {
- gsl_histogram * h = gsl_histogram_alloc (N_BINS);
+  gsl_histogram * h = gsl_histogram_alloc (N_BINS);
   gsl_histogram_set_ranges_uniform (h, 0., 1.);
 
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
@@ -145,12 +143,10 @@ private:
 
 RngNormalTestCase::RngNormalTestCase ()
   : TestCase ("Normal Random Number Generator")
-{
-}
+{}
 
 RngNormalTestCase::~RngNormalTestCase ()
-{
-}
+{}
 
 double
 RngNormalTestCase::ChiSquaredTest (Ptr<NormalRandomVariable> n)
@@ -242,12 +238,10 @@ private:
 
 RngExponentialTestCase::RngExponentialTestCase ()
   : TestCase ("Exponential Random Number Generator")
-{
-}
+{}
 
 RngExponentialTestCase::~RngExponentialTestCase ()
-{
-}
+{}
 
 double
 RngExponentialTestCase::ChiSquaredTest (Ptr<ExponentialRandomVariable> e)
@@ -338,12 +332,10 @@ private:
 
 RngParetoTestCase::RngParetoTestCase ()
   : TestCase ("Pareto Random Number Generator")
-{
-}
+{}
 
 RngParetoTestCase::~RngParetoTestCase ()
-{
-}
+{}
 
 double
 RngParetoTestCase::ChiSquaredTest (Ptr<ParetoRandomVariable> p)

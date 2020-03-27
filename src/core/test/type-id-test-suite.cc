@@ -36,8 +36,8 @@ using namespace std;
 using namespace ns3;
 
 
-const std::string suite("type-id: ");
-  
+const std::string suite ("type-id: ");
+
 //----------------------------
 //
 // Test for uniqueness of all TypeIds
@@ -47,39 +47,41 @@ class UniqueTypeIdTestCase : public TestCase
 public:
   UniqueTypeIdTestCase ();
   virtual ~UniqueTypeIdTestCase ();
+
 private:
   virtual void DoRun (void);
-  enum { HashChainFlag = 0x80000000};
+  enum
+  {
+    HashChainFlag = 0x80000000
+  };
 };
 
 UniqueTypeIdTestCase::UniqueTypeIdTestCase ()
   : TestCase ("Check uniqueness of all TypeIds")
-{
-}
+{}
 
 UniqueTypeIdTestCase::~UniqueTypeIdTestCase ()
-{
-}
+{}
 
 void
 UniqueTypeIdTestCase::DoRun (void)
 {
   cout << suite << endl;
   cout << suite << GetName () << endl;
-  
+
   // Use same custom hasher as TypeId
   ns3::Hasher hasher = ns3::Hasher ( Create<Hash::Function::Murmur3> () );
-  
+
   uint32_t nids = TypeId::GetRegisteredN ();
 
   cout << suite << "UniqueTypeIdTestCase: nids: " << nids << endl;
   cout << suite << "TypeId list:" << endl;
   cout << suite << "TypeId  Chain  hash          Name" << endl;
-  
+
   for (uint16_t i = 0; i < nids; ++i)
     {
       const TypeId tid = TypeId::GetRegistered (i);
-      cout << suite << "" << std::setw(6) << tid.GetUid ();
+      cout << suite << "" << std::setw (6) << tid.GetUid ();
       if (tid.GetHash () & HashChainFlag)
         {
           cout << "  chain";
@@ -108,7 +110,7 @@ UniqueTypeIdTestCase::DoRun (void)
                              TypeId::LookupByHash (tid.GetHash ()).GetUid (),
                              "LookupByHash returned different TypeId for "
                              << tid.GetName ());
-      
+
     }
 
   cout << suite << "<-- end TypeId list -->" << endl;
@@ -124,26 +126,28 @@ class CollisionTestCase : public TestCase
 public:
   CollisionTestCase ();
   virtual ~CollisionTestCase ();
+
 private:
   virtual void DoRun (void);
-  enum { HashChainFlag = 0x80000000};
+  enum
+  {
+    HashChainFlag = 0x80000000
+  };
 };
 
 CollisionTestCase::CollisionTestCase ()
   : TestCase ("Check behavior when type names collide")
-{
-}
+{}
 
 CollisionTestCase::~CollisionTestCase ()
-{
-}
+{}
 
 void
 CollisionTestCase::DoRun (void)
 {
   cout << suite << endl;
   cout << suite << GetName () << endl;
-  
+
   // Register two types whose hashes collide, in alphabetical order
   // Murmur3 collision from /usr/share/dict/web2
   string t1Name = "daemon";
@@ -157,11 +161,11 @@ CollisionTestCase::DoRun (void)
 
   // Check that they are alphabetical: t1 name < t2 name
   NS_TEST_ASSERT_MSG_EQ ( (t1.GetHash () & HashChainFlag), 0,
-                         "First and lesser TypeId has HashChainFlag set");
+                          "First and lesser TypeId has HashChainFlag set");
   cout << suite << "collision: first,lesser  not chained: OK" << endl;
 
   NS_TEST_ASSERT_MSG_NE ( (t2.GetHash () & HashChainFlag), 0,
-                         "Second and greater TypeId does not have HashChainFlag set");
+                          "Second and greater TypeId does not have HashChainFlag set");
   cout << suite << "collision: second,greater    chained: OK" << endl;
 
 
@@ -189,7 +193,7 @@ CollisionTestCase::DoRun (void)
    *
    *  None found in /usr/share/dict/web2
    */
-  
+
 }
 
 
@@ -209,15 +213,20 @@ private:
   TracedValue<double> m_trace;
 
 public:
-  DeprecatedAttribute () : m_attr (0) { NS_UNUSED (m_attr); };
-  virtual ~DeprecatedAttribute () { };
+  DeprecatedAttribute ()
+    : m_attr (0)
+  {
+    NS_UNUSED (m_attr);
+  }
+  virtual ~DeprecatedAttribute ()
+  {}
 
   // Register a type with a deprecated Attribute and TraceSource
   static TypeId GetTypeId (void)
   {
     static TypeId tid = TypeId ("DeprecatedAttribute")
       .SetParent<Object> ()
-      
+
       // The new attribute
       .AddAttribute ("attribute",
                      "the Attribute",
@@ -260,7 +269,7 @@ public:
                        "ns3::TracedValueCallback::Void",
                        TypeId::OBSOLETE,
                        "refactor to use 'trace'");
-    
+
     return tid;
   }
 
@@ -272,6 +281,7 @@ class DeprecatedAttributeTestCase : public TestCase
 public:
   DeprecatedAttributeTestCase ();
   virtual ~DeprecatedAttributeTestCase ();
+
 private:
   virtual void DoRun (void);
 
@@ -279,12 +289,10 @@ private:
 
 DeprecatedAttributeTestCase::DeprecatedAttributeTestCase ()
   : TestCase ("Check deprecated Attributes and TraceSources")
-{
-}
+{}
 
 DeprecatedAttributeTestCase::~DeprecatedAttributeTestCase ()
-{
-}
+{}
 
 void
 DeprecatedAttributeTestCase::DoRun (void)
@@ -294,17 +302,17 @@ DeprecatedAttributeTestCase::DoRun (void)
 
   TypeId tid = DeprecatedAttribute::GetTypeId ();
   cerr << suite << "DeprecatedAttribute TypeId: " << tid.GetUid () << endl;
-  
+
   //  Try the lookups
   struct TypeId::AttributeInformation ainfo;
   NS_TEST_ASSERT_MSG_EQ (tid.LookupAttributeByName ("attribute", &ainfo), true,
-                      "lookup new attribute");
+                         "lookup new attribute");
   cerr << suite << "lookup new attribute:"
        << (ainfo.supportLevel == TypeId::SUPPORTED ? "supported" : "error")
        << endl;
 
   NS_TEST_ASSERT_MSG_EQ (tid.LookupAttributeByName ("oldAttribute", &ainfo), true,
-                      "lookup old attribute");
+                         "lookup old attribute");
   cerr << suite << "lookup old attribute:"
        << (ainfo.supportLevel == TypeId::DEPRECATED ? "deprecated" : "error")
        << endl;
@@ -325,7 +333,7 @@ DeprecatedAttributeTestCase::DoRun (void)
        << endl;
 }
 
-  
+
 //----------------------------
 //
 // Performance test
@@ -335,29 +343,31 @@ class LookupTimeTestCase : public TestCase
 public:
   LookupTimeTestCase ();
   virtual ~LookupTimeTestCase ();
+
 private:
   void DoRun (void);
   void DoSetup (void);
-  void Report (const std::string how, const uint32_t delta) const ;
+  void Report (const std::string how, const uint32_t delta) const;
 
-  enum { REPETITIONS = 100000 };
+  enum
+  {
+    REPETITIONS = 100000
+  };
 };
 
 LookupTimeTestCase::LookupTimeTestCase ()
   : TestCase ("Measure average lookup time")
-{
-}
+{}
 
 LookupTimeTestCase::~LookupTimeTestCase ()
-{
-}
+{}
 
 void
 LookupTimeTestCase::DoRun (void)
 {
   cout << suite << endl;
   cout << suite << GetName () << endl;
-  
+
   uint32_t nids = TypeId::GetRegisteredN ();
 
   int start = clock ();
@@ -368,7 +378,7 @@ LookupTimeTestCase::DoRun (void)
           const TypeId tid = TypeId::GetRegistered (i);
           const TypeId sid = TypeId::LookupByName (tid.GetName ());
         }
-  }
+    }
   int stop = clock ();
   Report ("name", stop - start);
 
@@ -380,17 +390,17 @@ LookupTimeTestCase::DoRun (void)
           const TypeId tid = TypeId::GetRegistered (i);
           const TypeId sid = TypeId::LookupByHash (tid.GetHash ());
         }
-  }
+    }
   stop = clock ();
   Report ("hash", stop - start);
-  
+
 }
 
 void
 LookupTimeTestCase::DoSetup (void)
 {
   uint32_t nids = TypeId::GetRegisteredN ();
-  
+
   cout << suite << "Lookup time: reps: " << REPETITIONS
        << ", num TypeId's: " << nids
        << endl;
@@ -403,14 +413,14 @@ LookupTimeTestCase::Report (const std::string how,
 {
   double nids = TypeId::GetRegisteredN ();
   double reps = nids * REPETITIONS;
-  
+
   double per = 1E6 * double(delta) / (reps * double(CLOCKS_PER_SEC));
-  
+
   cout << suite << "Lookup time: by " << how << ": "
        << "ticks: " << delta
        << "\tper: "   << per
        << " microsec/lookup"
-       << endl;					
+       << endl;
 }
 
 
@@ -423,13 +433,13 @@ class TypeIdTestSuite : public TestSuite
 public:
   TypeIdTestSuite ();
 };
-  
+
 TypeIdTestSuite::TypeIdTestSuite ()
   : TestSuite ("type-id", UNIT)
 {
   // Turn on logging, so we see the result of collisions
-  LogComponentEnable ("TypeId", ns3::LogLevel(LOG_ERROR|LOG_PREFIX_FUNC));
-  
+  LogComponentEnable ("TypeId", ns3::LogLevel (LOG_ERROR | LOG_PREFIX_FUNC));
+
   // If the CollisionTestCase is performed before the
   // UniqueIdTestCase, the artificial collisions added by
   // CollisionTestCase will show up in the list of TypeIds
@@ -439,15 +449,15 @@ TypeIdTestSuite::TypeIdTestSuite ()
   AddTestCase (new DeprecatedAttributeTestCase, QUICK);
 }
 
-static TypeIdTestSuite g_TypeIdTestSuite;  
-  
+static TypeIdTestSuite g_TypeIdTestSuite;
+
 
 class TypeIdPerformanceSuite : public TestSuite
 {
 public:
   TypeIdPerformanceSuite ();
 };
-  
+
 TypeIdPerformanceSuite::TypeIdPerformanceSuite ()
   : TestSuite ("type-id-perf", PERFORMANCE)
 {

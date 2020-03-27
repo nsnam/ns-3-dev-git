@@ -32,15 +32,16 @@ namespace ns3 {
 EventGarbageCollector::EventGarbageCollector ()
   : m_nextCleanupSize (CHUNK_INIT_SIZE),
     m_events ()
-{
-}
+{}
 
 void
 EventGarbageCollector::Track (EventId event)
 {
   m_events.insert (event);
   if (m_events.size () >= m_nextCleanupSize)
-    Cleanup ();
+    {
+      Cleanup ();
+    }
 }
 
 void
@@ -54,7 +55,9 @@ void
 EventGarbageCollector::Shrink ()
 {
   while (m_nextCleanupSize > m_events.size ())
-    m_nextCleanupSize >>= 1;
+    {
+      m_nextCleanupSize >>= 1;
+    }
   Grow ();
 }
 
@@ -70,14 +73,20 @@ EventGarbageCollector::Cleanup ()
           m_events.erase (iter++);
         }
       else
-        break;  // EventIds are sorted by timestamp => further events are not expired for sure
+        {
+          break; // EventIds are sorted by timestamp => further events are not expired for sure
+        }
     }
 
   // If after cleanup we are still over the limit, increase the limit.
   if (m_events.size () >= m_nextCleanupSize)
-    Grow ();
+    {
+      Grow ();
+    }
   else
-    Shrink ();
+    {
+      Shrink ();
+    }
 }
 
 

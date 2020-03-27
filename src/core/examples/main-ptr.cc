@@ -48,7 +48,7 @@ PtrExample::PtrExample ()
 {
   std::cout << "PtrExample constructor" << std::endl;
 }
-PtrExample::~PtrExample()
+PtrExample::~PtrExample ()
 {
   std::cout << "PtrExample destructor" << std::endl;
 }
@@ -94,10 +94,10 @@ ClearPtr (void)
 int main (int argc, char *argv[])
 {
   CommandLine cmd;
-  cmd.Parse(argc, argv);
-  
+  cmd.Parse (argc, argv);
+
   {
-    // Create a new object of type PtrExample, store it in global 
+    // Create a new object of type PtrExample, store it in global
     // variable g_ptr
     Ptr<PtrExample> p = CreateObject<PtrExample> ();
     p->Method ();
@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
   }
 
   {
-    // Create a new object of type PtrExample, store it in global 
+    // Create a new object of type PtrExample, store it in global
     // variable g_ptr, get a hold on the previous PtrExample object.
     Ptr<PtrExample> p = CreateObject<PtrExample> ();
     Ptr<PtrExample> prev = StorePtr (p);

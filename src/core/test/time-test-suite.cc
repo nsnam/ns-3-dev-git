@@ -35,6 +35,7 @@ class TimeSimpleTestCase : public TestCase
 {
 public:
   TimeSimpleTestCase ();
+
 private:
   virtual void DoSetup (void);
   virtual void DoRun (void);
@@ -43,13 +44,11 @@ private:
 
 TimeSimpleTestCase::TimeSimpleTestCase ()
   : TestCase ("Sanity check of common time operations")
-{
-}
+{}
 
 void
 TimeSimpleTestCase::DoSetup (void)
-{
-}
+{}
 
 void
 TimeSimpleTestCase::DoRun (void)
@@ -70,22 +69,22 @@ TimeSimpleTestCase::DoRun (void)
                              "is 1 really 1 ?");
   NS_TEST_ASSERT_MSG_EQ_TOL (Minutes (10.0).GetMinutes (), 10.0, Minutes (1).GetMinutes (),
                              "is 10 really 10 ?");
-  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (), 
+  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (1.0).GetSeconds (), 1.0, TimeStep (1).GetSeconds (),
                              "is 1 really 1 ?");
-  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (10.0).GetSeconds (), 10.0, TimeStep (1).GetSeconds (), 
+  NS_TEST_ASSERT_MSG_EQ_TOL (Seconds (10.0).GetSeconds (), 10.0, TimeStep (1).GetSeconds (),
                              "is 10 really 10 ?");
-  NS_TEST_ASSERT_MSG_EQ (MilliSeconds (1).GetMilliSeconds (), 1, 
+  NS_TEST_ASSERT_MSG_EQ (MilliSeconds (1).GetMilliSeconds (), 1,
                          "is 1ms really 1ms ?");
-  NS_TEST_ASSERT_MSG_EQ (MicroSeconds (1).GetMicroSeconds (), 1, 
+  NS_TEST_ASSERT_MSG_EQ (MicroSeconds (1).GetMicroSeconds (), 1,
                          "is 1us really 1us ?");
 #if 0
   Time ns = NanoSeconds (1);
   ns.GetNanoSeconds ();
-  NS_TEST_ASSERT_MSG_EQ (NanoSeconds (1).GetNanoSeconds (), 1, 
+  NS_TEST_ASSERT_MSG_EQ (NanoSeconds (1).GetNanoSeconds (), 1,
                          "is 1ns really 1ns ?");
-  NS_TEST_ASSERT_MSG_EQ (PicoSeconds (1).GetPicoSeconds (), 1, 
+  NS_TEST_ASSERT_MSG_EQ (PicoSeconds (1).GetPicoSeconds (), 1,
                          "is 1ps really 1ps ?");
-  NS_TEST_ASSERT_MSG_EQ (FemtoSeconds (1).GetFemtoSeconds (), 1, 
+  NS_TEST_ASSERT_MSG_EQ (FemtoSeconds (1).GetFemtoSeconds (), 1,
                          "is 1fs really 1fs ?");
 #endif
 
@@ -97,15 +96,15 @@ TimeSimpleTestCase::DoRun (void)
                          "change resolution to PS");
 }
 
-void 
+void
 TimeSimpleTestCase::DoTeardown (void)
-{
-}
+{}
 
 class TimeWithSignTestCase : public TestCase
 {
 public:
   TimeWithSignTestCase ();
+
 private:
   virtual void DoSetup (void);
   virtual void DoRun (void);
@@ -114,13 +113,11 @@ private:
 
 TimeWithSignTestCase::TimeWithSignTestCase ()
   : TestCase ("Checks times that have plus or minus signs")
-{
-}
+{}
 
 void
 TimeWithSignTestCase::DoSetup (void)
-{
-}
+{}
 
 void
 TimeWithSignTestCase::DoRun (void)
@@ -152,16 +149,16 @@ TimeWithSignTestCase::DoRun (void)
                              "Negative time with units not parsed correctly.");
 }
 
-void 
+void
 TimeWithSignTestCase::DoTeardown (void)
-{
-}
+{}
 
 
 class TimeInputOutputTestCase : public TestCase
 {
 public:
   TimeInputOutputTestCase ();
+
 private:
   virtual void DoRun (void);
   void Check (const std::string & str);
@@ -169,8 +166,7 @@ private:
 
 TimeInputOutputTestCase::TimeInputOutputTestCase ()
   : TestCase ("Input,output from,to strings")
-{
-}
+{}
 
 void
 TimeInputOutputTestCase::Check (const std::string & str)
@@ -179,7 +175,7 @@ TimeInputOutputTestCase::Check (const std::string & str)
   Time time;
   ss >> time;
   ss << time;
-  bool pass = (str == ss.str ()); 
+  bool pass = (str == ss.str ());
 
   std::cout << GetParent ()->GetName () << " InputOutput: "
             << (pass ? "pass " : "FAIL ")
@@ -196,8 +192,8 @@ TimeInputOutputTestCase::DoRun (void)
 {
   std::cout << std::endl;
   std::cout << GetParent ()->GetName () << " InputOutput: " << GetName ()
-	    << std::endl;
-  
+            << std::endl;
+
   Check ("2ns");
   Check ("+3.1us");
   Check ("-4.2ms");
@@ -208,16 +204,16 @@ TimeInputOutputTestCase::DoRun (void)
   Check ("10.8y");
 
   Time t (3.141592654e9);  // Pi seconds
-  
+
   std::cout << GetParent ()->GetName () << " InputOutput: "
             << "example: raw:   " << t
             << std::endl;
-  
+
   std::cout << GetParent ()->GetName () << " InputOutput: "
             << std::fixed << std::setprecision (9)
             << "example: in s:  " << t.As (Time::S)
             << std::endl;
-    
+
   std::cout << GetParent ()->GetName () << " InputOutput: "
             << std::setprecision (6)
             << "example: in ms: " << t.As (Time::MS)
@@ -229,7 +225,7 @@ TimeInputOutputTestCase::DoRun (void)
 
   std::cout << std::endl;
 }
-    
+
 static class TimeTestSuite : public TestSuite
 {
 public:

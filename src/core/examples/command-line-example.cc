@@ -70,7 +70,7 @@ int main (int argc, char *argv[])
   // Non-option arguments
   int         nonOpt1 = 1;
   int         nonOpt2 = 1;
-   
+
   // Cache the initial values.  Normally one wouldn't do this,
   // but we want to demonstrate that CommandLine has changed them.
   const int intDef = intArg;
@@ -87,8 +87,8 @@ int main (int argc, char *argv[])
   }
   const int nonOpt1Def = nonOpt1;
   const int nonOpt2Def = nonOpt2;
-  
-  
+
+
   CommandLine cmd;
   cmd.Usage ("CommandLine example program.\n"
              "\n"
@@ -106,14 +106,14 @@ int main (int argc, char *argv[])
   std::cout << std::endl;
   std::cout << cmd.GetName () << ":" << std::endl;
   std::cout << "Initial values:" << std::endl;
-  
+
   std::cout << std::left << std::setw (10) << "intArg:"
             <<                   intDef
             << std::endl;
   std::cout << std::setw (10)              << "boolArg:"
             << std::boolalpha << boolDef   << std::noboolalpha
             << std::endl;
-  
+
   std::cout << std::setw (10)              << "strArg:"
             << "\""           << strDef    << "\""
             << std::endl;
@@ -140,7 +140,7 @@ int main (int argc, char *argv[])
   std::cout << std::setw (10)              << "boolArg:"
             << std::boolalpha << boolArg   << std::noboolalpha
             << std::endl;
-  
+
   std::cout << std::setw (10)              << "strArg:"
             << "\""           << strArg    << "\""
             << std::endl;
@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
   {
     struct TypeId::AttributeInformation info;
     tid.LookupAttributeByName (attrName, &info);
-  
+
     std::cout << std::setw (10)            << "anti:"
               << "\""
               << info.initialValue->SerializeToString (info.checker)
