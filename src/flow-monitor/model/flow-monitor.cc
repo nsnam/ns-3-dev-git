@@ -302,7 +302,7 @@ FlowMonitor::GetFlowStats () const
 void
 FlowMonitor::CheckForLostPackets (Time maxDelay)
 {
-  NS_LOG_FUNCTION (this << maxDelay.GetSeconds ());
+  NS_LOG_FUNCTION (this << maxDelay.As (Time::S));
   Time now = Simulator::Now ();
 
   for (TrackedPacketMap::iterator iter = m_trackedPackets.begin ();
@@ -362,23 +362,23 @@ FlowMonitor::GetAllProbes () const
 void
 FlowMonitor::Start (const Time &time)
 {
-  NS_LOG_FUNCTION (this << time.GetSeconds ());
+  NS_LOG_FUNCTION (this << time.As (Time::S));
   if (m_enabled)
     {
       NS_LOG_DEBUG ("FlowMonitor already enabled; returning");
       return;
     }
   Simulator::Cancel (m_startEvent);
-  NS_LOG_DEBUG ("Scheduling start at " << time.GetSeconds ());
+  NS_LOG_DEBUG ("Scheduling start at " << time.As (Time::S));
   m_startEvent = Simulator::Schedule (time, &FlowMonitor::StartRightNow, this);
 }
 
 void
 FlowMonitor::Stop (const Time &time)
 {
-  NS_LOG_FUNCTION (this << time.GetSeconds ());
+  NS_LOG_FUNCTION (this << time.As (Time::S));
   Simulator::Cancel (m_stopEvent);
-  NS_LOG_DEBUG ("Scheduling stop at " << time.GetSeconds ());
+  NS_LOG_DEBUG ("Scheduling stop at " << time.As (Time::S));
   m_stopEvent = Simulator::Schedule (time, &FlowMonitor::StopRightNow, this);
 }
 
