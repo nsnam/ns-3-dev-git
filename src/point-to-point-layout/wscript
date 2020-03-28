@@ -7,6 +7,7 @@ def build(bld):
         'model/point-to-point-dumbbell.cc',
         'model/point-to-point-grid.cc',
         'model/point-to-point-star.cc',
+        'model/jellyfish-helper.cc',
         ]
 
     headers = bld(features='ns3header')
@@ -15,6 +16,7 @@ def build(bld):
         'model/point-to-point-dumbbell.h',
         'model/point-to-point-grid.h',
         'model/point-to-point-star.h',
+        'model/jellyfish-helper.h',
         ]
 
     bld.ns3_python_bindings()
