@@ -137,7 +137,7 @@ are typically three main components to packet reception:
 base interface defined in the ``ns3::WifiPhy`` class.  The YansWifiPhy
 class has been the only physical layer model until recently; the model
 implemented there is described in a paper entitled
-`Yet Another Network Simulator <http://cutebugs.net/files/wns2-yans.pdf>`_
+`Yet Another Network Simulator <https://dl.acm.org/doi/pdf/10.1145/1190455.1190467?download=true>`_
 The acronym *Yans* derives from this paper title.  The SpectrumWifiPhy
 class is an alternative implementation based on the Spectrum framework
 used for other |ns3| wireless models.  Spectrum allows a fine-grained
@@ -706,7 +706,7 @@ is used for RTS frames only.  The rate of CTS and ACK frames are
 selected according to the 802.11 standard.  However, users can still
 manually add WifiMode to the basic rate set that will allow control
 response frames to be sent at other rates.  Please consult the
-`project wiki <http://www.nsnam.org/wiki>`_ on how to do this.
+`project wiki <https://www.nsnam.org/wiki/HOWTO_add_basic_rates_to_802.11>`_ on how to do this.
 
 Available attributes:
 

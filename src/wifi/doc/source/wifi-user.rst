@@ -91,7 +91,7 @@ YansWifiChannelHelper
 
 The YansWifiChannelHelper has an unusual name. Readers may wonder why it is
 named this way. The reference is to the `yans simulator
-<http://cutebugs.net/files/wns2-yans.pdf>`_ from which this model is taken. The
+<https://dl.acm.org/doi/pdf/10.1145/1190455.1190467?download=true>`_ from which this model is taken. The
 helper can be used to create a YansWifiChannel with a default PropagationLoss and
 PropagationDelay model.
 
