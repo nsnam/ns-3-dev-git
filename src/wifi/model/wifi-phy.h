@@ -54,7 +54,11 @@ enum WifiPhyRxfailureReason
 {
   UNKNOWN = 0,
   UNSUPPORTED_SETTINGS,
-  NOT_ALLOWED,
+  CHANNEL_SWITCHING,
+  RXING,
+  TXING,
+  SLEEPING,
+  BUSY_DECODING_PREAMBLE,
   ERRONEOUS_FRAME,
   MPDU_WITHOUT_PHY_HEADER,
   PREAMBLE_DETECT_FAILURE,
@@ -64,6 +68,53 @@ enum WifiPhyRxfailureReason
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET
 };
+
+/**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param reason the failure reason
+* \returns a reference to the stream
+*/
+inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason)
+{
+  switch (reason)
+    {
+    case UNSUPPORTED_SETTINGS:
+      return (os << "UNSUPPORTED_SETTINGS");
+    case CHANNEL_SWITCHING:
+      return (os << "CHANNEL_SWITCHING");
+    case RXING:
+      return (os << "RXING");
+    case TXING:
+      return (os << "TXING");
+    case SLEEPING:
+      return (os << "SLEEPING");
+    case BUSY_DECODING_PREAMBLE:
+      return (os << "BUSY_DECODING_PREAMBLE");
+    case ERRONEOUS_FRAME:
+      return (os << "ERRONEOUS_FRAME");
+    case MPDU_WITHOUT_PHY_HEADER:
+      return (os << "MPDU_WITHOUT_PHY_HEADER");
+    case PREAMBLE_DETECT_FAILURE:
+      return (os << "PREAMBLE_DETECT_FAILURE");
+    case L_SIG_FAILURE:
+      return (os << "L_SIG_FAILURE");
+    case SIG_A_FAILURE:
+      return (os << "SIG_A_FAILURE");
+    case PREAMBLE_DETECTION_PACKET_SWITCH:
+      return (os << "PREAMBLE_DETECTION_PACKET_SWITCH");
+    case FRAME_CAPTURE_PACKET_SWITCH:
+      return (os << "FRAME_CAPTURE_PACKET_SWITCH");
+    case OBSS_PD_CCA_RESET:
+      return (os << "OBSS_PD_CCA_RESET");
+    case UNKNOWN:
+    default:
+      NS_FATAL_ERROR ("Unknown reason");
+      return (os << "UNKNOWN");
+    }
+}
+
 
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm

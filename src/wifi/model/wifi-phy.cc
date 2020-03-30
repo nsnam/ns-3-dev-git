@@ -2751,7 +2751,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
     {
     case WifiPhyState::SWITCHING:
       NS_LOG_DEBUG ("drop packet because of channel switching");
-      NotifyRxDrop (psdu, NOT_ALLOWED);
+      NotifyRxDrop (psdu, CHANNEL_SWITCHING);
       /*
        * Packets received on the upcoming channel are added to the event list
        * during the switching state. This way the medium can be correctly sensed
@@ -2780,7 +2780,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
         {
           NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                         rxPowerW << "W)");
-          NotifyRxDrop (psdu, NOT_ALLOWED);
+          NotifyRxDrop (psdu, RXING);
           if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
             {
               //that packet will be noise _after_ the reception of the currently-received packet.
@@ -2791,7 +2791,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
     case WifiPhyState::TX:
       NS_LOG_DEBUG ("Drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
-      NotifyRxDrop (psdu, NOT_ALLOWED);
+      NotifyRxDrop (psdu, TXING);
       if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
           //that packet will be noise _after_ the transmission of the currently-transmitted packet.
@@ -2813,7 +2813,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
             {
               NS_LOG_DEBUG ("Drop packet because already in Rx (power=" <<
                             rxPowerW << "W)");
-              NotifyRxDrop (psdu, NOT_ALLOWED);
+              NotifyRxDrop (psdu, RXING);
               if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
                 {
                   //that packet will be noise _after_ the reception of the currently-received packet.
@@ -2831,7 +2831,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, double rxPowerW)
       break;
     case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("Drop packet because in sleep mode");
-      NotifyRxDrop (psdu, NOT_ALLOWED);
+      NotifyRxDrop (psdu, SLEEPING);
       if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
           //that packet will be noise _after_ the sleep period.
@@ -4201,7 +4201,7 @@ WifiPhy::StartRx (Ptr<Event> event, double rxPowerW)
   else
     {
       NS_LOG_DEBUG ("Drop packet because RX is already decoding preamble");
-      NotifyRxDrop (event->GetPsdu (), NOT_ALLOWED);
+      NotifyRxDrop (event->GetPsdu (), BUSY_DECODING_PREAMBLE);
       return;
     }
   m_currentEvent = event;
