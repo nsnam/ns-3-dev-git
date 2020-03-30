@@ -336,10 +336,7 @@ WifiPhy::GetTypeId (void)
                      "ns3::WifiPhy::PsduTxBeginCallback")
     .AddTraceSource ("PhyTxEnd",
                      "Trace source indicating a packet "
-                     "has been completely transmitted over the channel. "
-                     "NOTE: the only official WifiPhy implementation "
-                     "available to this date never fires "
-                     "this trace source.",
+                     "has been completely transmitted over the channel.",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace),
                      "ns3::Packet::TracedCallback")
     .AddTraceSource ("PhyTxDrop",
@@ -393,6 +390,7 @@ WifiPhy::WifiPhy ()
     m_endRxEvent (),
     m_endPhyRxEvent (),
     m_endPreambleDetectionEvent (),
+    m_endTxEvent (),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
     m_isConstructed (false),
     m_channelCenterFrequency (0),
@@ -423,6 +421,7 @@ void
 WifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_endTxEvent.Cancel ();
   m_endRxEvent.Cancel ();
   m_endPhyRxEvent.Cancel ();
   m_endPreambleDetectionEvent.Cancel ();
@@ -1710,6 +1709,7 @@ WifiPhy::SetOffMode (void)
   m_endPhyRxEvent.Cancel ();
   m_endRxEvent.Cancel ();
   m_endPreambleDetectionEvent.Cancel ();
+  m_endTxEvent.Cancel ();
   m_state->SwitchToOff ();
 }
 
@@ -2548,6 +2548,7 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
    *  - we are idle
    */
   NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
+  NS_ASSERT (m_endTxEvent.IsExpired ());
 
   if (txVector.GetNss () > GetMaxSupportedTxSpatialStreams ())
     {
@@ -2596,17 +2597,17 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
       NS_LOG_DEBUG ("Transmitting without power restriction");
     }
 
-  double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
-  NotifyTxBegin (psdu, txPowerW);
-  m_phyTxPsduBeginTrace (psdu, txVector, txPowerW);
-  NotifyMonitorSniffTx (psdu, GetFrequency (), txVector);
-  m_state->SwitchToTx (txDuration, psdu->GetPacket (), GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
-
   if (m_state->GetState () == WifiPhyState::OFF)
     {
       NS_LOG_DEBUG ("Transmission canceled because device is OFF");
       return;
     }
+
+  double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
+  NotifyTxBegin (psdu, txPowerW);
+  m_phyTxPsduBeginTrace (psdu, txVector, txPowerW);
+  NotifyMonitorSniffTx (psdu, GetFrequency (), txVector);
+  m_state->SwitchToTx (txDuration, psdu->GetPacket (), GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
   Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, GetFrequency ());
 
@@ -2614,6 +2615,8 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
     {
       ppdu->SetTruncatedTx ();
     }
+
+  m_endTxEvent = Simulator::Schedule (txDuration, &WifiPhy::NotifyTxEnd, this, psdu);
 
   StartTx (ppdu);
 

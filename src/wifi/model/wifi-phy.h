@@ -1694,6 +1694,7 @@ protected:
   EventId m_endPhyRxEvent;             //!< the end of PHY receive event
   EventId m_endPreambleDetectionEvent; //!< the end of preamble detection event
 
+  EventId m_endTxEvent;                //!< the end of transmit event
 
 private:
   /**
