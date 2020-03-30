@@ -23,3 +23,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-phy-configuration',
         ['wifi', 'config-store'])
     obj.source = 'wifi-phy-configuration.cc'
+
+    obj = bld.create_ns3_program('wifi-bianchi',
+        ['wifi', 'applications', 'internet-apps' ])
+    obj.source = 'wifi-bianchi.cc'
