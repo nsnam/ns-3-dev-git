@@ -1313,6 +1313,14 @@ public:
   typedef void (* EndOfHePreambleCallback)(HePreambleParameters params);
 
   /**
+   * TracedCallback signature for start of PSDU reception events.
+   *
+   * \param txVector the TXVECTOR decoded from the PHY header
+   * \param psduDuration the duration of the PSDU
+   */
+  typedef void (* PhyRxPayloadBeginTracedCallback)(WifiTxVector txVector, Time psduDuration);
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model. Return the number of streams (possibly zero) that
    * have been assigned.
@@ -1864,6 +1872,22 @@ private:
    * \see class CallBackTraceSource
    */
   TracedCallback<Ptr<const Packet> > m_phyRxBeginTrace;
+
+  /**
+   * The trace source fired when the reception of the PHY payload (PSDU) begins.
+   *
+   * This traced callback models the behavior of the PHY-RXSTART
+   * primitive which is launched upon correct decoding of
+   * the PHY header and support of modes within.
+   * We thus assume that it is sent just before starting
+   * the decoding of the payload, since it's there that
+   * support of the header's content is checked. In addition,
+   * it's also at that point that the correct decoding of
+   * HT-SIG, VHT-SIGs, and HE-SIGs are checked.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<WifiTxVector, Time> m_phyRxPayloadBeginTrace;
 
   /**
    * The trace source fired when a packet ends the reception process from

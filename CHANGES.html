@@ -74,6 +74,7 @@ allows to request an acknowledgment after a configurable number of MPDUs have be
 transmitted.</li>
 <li>The MaxSize attribute is removed from the QueueBase base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
 <li>The applications have now a "EnableE2EStats" attribute.</li>
+<li>Added a new trace source <b>PhyRxPayloadBegin</b> in WifiPhy for tracing begin of PSDU reception.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

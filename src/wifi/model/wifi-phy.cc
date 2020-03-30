@@ -353,6 +353,11 @@ WifiPhy::GetTypeId (void)
                      "by the device",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyRxBeginTrace),
                      "ns3::Packet::TracedCallback")
+    .AddTraceSource ("PhyRxPayloadBegin",
+                     "Trace source indicating the reception of the "
+                     "payload of a PPDU has begun",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyRxPayloadBeginTrace),
+                     "ns3::WifiPhy::PhyRxPayloadBeginTracedCallback")
     .AddTraceSource ("PhyRxEnd",
                      "Trace source indicating a packet "
                      "has been completely received from the channel medium "
@@ -2894,7 +2899,8 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
         {
           m_state->SwitchToRx (payloadDuration);
           m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event);
-          NS_LOG_DEBUG ("Receiving payload");
+          NS_LOG_DEBUG ("Receiving PSDU");
+          m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been correctly decoded and that the mode within is supported
           if (txMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
             {
               HePreambleParameters params;
