@@ -93,6 +93,7 @@ AlwaysLosChannelConditionModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::AlwaysLosChannelConditionModel")
     .SetParent<Object> ()
     .SetGroupName ("Propagation")
+    .AddConstructor<AlwaysLosChannelConditionModel> ()
   ;
   return tid;
 }
@@ -134,6 +135,7 @@ NeverLosChannelConditionModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::NeverLosChannelConditionModel")
     .SetParent<Object> ()
     .SetGroupName ("Propagation")
+    .AddConstructor<NeverLosChannelConditionModel> ()
   ;
   return tid;
 }
