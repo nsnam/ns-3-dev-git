@@ -40,8 +40,6 @@ NS_LOG_COMPONENT_DEFINE ("ThreeGppChannelModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ThreeGppChannelModel);
 
-static const double M_C = 3.0e8; // propagation velocity in free space
-
 //Table 7.5-3: Ray offset angles within a cluster, given for rms angle spread normalized to 1.
 static const double offSetAlpha[20] = {
   0.0447,-0.0447,0.1413,-0.1413,0.2492,-0.2492,0.3715,-0.3715,0.5129,-0.5129,0.6797,-0.6797,0.8844,-0.8844,1.1481,-1.1481,1.5195,-1.5195,2.1551,-2.1551
