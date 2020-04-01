@@ -60,7 +60,6 @@ enum WifiPhyRxfailureReason
   SLEEPING,
   BUSY_DECODING_PREAMBLE,
   ERRONEOUS_FRAME,
-  MPDU_WITHOUT_PHY_HEADER,
   PREAMBLE_DETECT_FAILURE,
   L_SIG_FAILURE,
   SIG_A_FAILURE,
@@ -94,8 +93,6 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason
       return (os << "BUSY_DECODING_PREAMBLE");
     case ERRONEOUS_FRAME:
       return (os << "ERRONEOUS_FRAME");
-    case MPDU_WITHOUT_PHY_HEADER:
-      return (os << "MPDU_WITHOUT_PHY_HEADER");
     case PREAMBLE_DETECT_FAILURE:
       return (os << "PREAMBLE_DETECT_FAILURE");
     case L_SIG_FAILURE:
