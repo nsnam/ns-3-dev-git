@@ -228,7 +228,7 @@ PointToPointNetDevice::SetDataRate (DataRate bps)
 void
 PointToPointNetDevice::SetInterframeGap (Time t)
 {
-  NS_LOG_FUNCTION (this << t.GetSeconds ());
+  NS_LOG_FUNCTION (this << t.As (Time::S));
   m_tInterframeGap = t;
 }
 
@@ -251,7 +251,7 @@ PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
   Time txTime = m_bps.CalculateBytesTxTime (p->GetSize ());
   Time txCompleteTime = txTime + m_tInterframeGap;
 
-  NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << txCompleteTime.GetSeconds () << "sec");
+  NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << txCompleteTime.As (Time::S));
   Simulator::Schedule (txCompleteTime, &PointToPointNetDevice::TransmitComplete, this);
 
   bool result = m_channel->TransmitStart (p, this, txTime);
