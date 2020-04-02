@@ -616,7 +616,7 @@ void Ipv6ExtensionFragment::HandleFragmentsTimeout (FragmentKey_t fragmentsId,
   Ptr<Packet> packet = fragments->GetPartialPacket ();
 
   // if we have at least 8 bytes, we can send an ICMP.
-  if ( packet->GetSize () > 8 )
+  if (packet && packet->GetSize () > 8)
     {
       Ptr<Packet> p = packet->Copy ();
       p->AddHeader (ipHeader);
