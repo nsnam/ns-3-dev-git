@@ -2741,26 +2741,39 @@ RandomVariableStreamEmpiricalTestCase::DoRun (void)
 
   // Create the RNG with a uniform distribution between 0 and 10.
   Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
+  x->SetInterpolate (false);
   x->CDF ( 0.0,  0.0);
-  x->CDF ( 5.0,  0.5);
+  x->CDF ( 5.0,  0.25);
   x->CDF (10.0,  1.0);
 
-  // Calculate the mean of these values.
-  double sum = 0.0;
-  double value;
+  // Check that only the correct values are returned
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      value = x->GetValue ();
+      double value = x->GetValue ();
+      NS_TEST_EXPECT_MSG_EQ ( (value == 5) || (value == 10), true,
+                              "Incorrect value returned, expected only 5 or 10.");
+    }
+
+  // Calculate the mean of the interpolated values.
+  double sum = 0.0;
+  for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
+    {
+      double value = x->Interpolate ();
       sum += value;
     }
   double valueMean = sum / N_MEASUREMENTS;
 
+  // The expected distribution (with interpolation) is
+  //     Domain     Probability
+  //     [0, 5)     25%
+  //     [5, 10)    75%
+  //
   // The expected value for the mean of the values returned by this
-  // empirical distribution is the midpoint of the distribution
+  // empirical distribution is
   //
-  //     E[value]  =  5 .
+  //     E[value]  =  2.5 * 25% + 7.5 * 75% = 6.25
   //
-  double expectedMean = 5.0;
+  double expectedMean = 6.25;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
@@ -2768,6 +2781,7 @@ RandomVariableStreamEmpiricalTestCase::DoRun (void)
 
   // Bug 2082: Create the RNG with a uniform distribution between -1 and 1.
   Ptr<EmpiricalRandomVariable> y = CreateObject<EmpiricalRandomVariable> ();
+  y->SetInterpolate (false);
   y->CDF (-1.0,  0.0);
   y->CDF (0.0,  0.5);
   y->CDF (1.0,  1.0);
@@ -2803,29 +2817,38 @@ RandomVariableStreamEmpiricalAntitheticTestCase::DoRun (void)
 
   // Create the RNG with a uniform distribution between 0 and 10.
   Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
+  x->SetInterpolate (false);
   x->CDF ( 0.0,  0.0);
-  x->CDF ( 5.0,  0.5);
+  x->CDF ( 5.0,  0.25);
   x->CDF (10.0,  1.0);
 
   // Make this generate antithetic values.
   x->SetAttribute ("Antithetic", BooleanValue (true));
+
+  // Check that only the correct values are returned
+  for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
+    {
+      double value = x->GetValue ();
+      NS_TEST_EXPECT_MSG_EQ ( (value == 5) || (value == 10), true,
+                              "Incorrect value returned, expected only 5 or 10.");
+    }
 
   // Calculate the mean of these values.
   double sum = 0.0;
   double value;
   for (uint32_t i = 0; i < N_MEASUREMENTS; ++i)
     {
-      value = x->GetValue ();
+      value = x->Interpolate ();
       sum += value;
     }
   double valueMean = sum / N_MEASUREMENTS;
 
   // The expected value for the mean of the values returned by this
-  // empirical distribution is the midpoint of the distribution
+  // empirical distribution is
   //
-  //     E[value]  =  5 .
+  //     E[value]  =  2.5 * 25% + 7.5 * 75% = 6.25
   //
-  double expectedMean = 5.0;
+  double expectedMean = 6.25;
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
@@ -2841,41 +2864,41 @@ public:
 RandomVariableStreamTestSuite::RandomVariableStreamTestSuite ()
   : TestSuite ("random-variable-stream-generators", UNIT)
 {
-  AddTestCase (new RandomVariableStreamUniformTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamUniformAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamConstantTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamSequentialTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamNormalTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamNormalAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamExponentialTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamExponentialAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamParetoTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamParetoAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamWeibullTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamWeibullAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamLogNormalTestCase, TestCase::QUICK);
+  AddTestCase (new RandomVariableStreamUniformTestCase);
+  AddTestCase (new RandomVariableStreamUniformAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamConstantTestCase);
+  AddTestCase (new RandomVariableStreamSequentialTestCase);
+  AddTestCase (new RandomVariableStreamNormalTestCase);
+  AddTestCase (new RandomVariableStreamNormalAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamExponentialTestCase);
+  AddTestCase (new RandomVariableStreamExponentialAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamParetoTestCase);
+  AddTestCase (new RandomVariableStreamParetoAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamWeibullTestCase);
+  AddTestCase (new RandomVariableStreamWeibullAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamLogNormalTestCase);
   /// \todo This test is currently disabled because it fails sometimes.
   /// A possible reason for the failure is that the antithetic code is
   /// not implemented properly for this log-normal case.
   /*
-  AddTestCase (new RandomVariableStreamLogNormalAntitheticTestCase, TestCase::QUICK);
+  AddTestCase (new RandomVariableStreamLogNormalAntitheticTestCase);
   */
-  AddTestCase (new RandomVariableStreamGammaTestCase, TestCase::QUICK);
+  AddTestCase (new RandomVariableStreamGammaTestCase);
   /// \todo This test is currently disabled because it fails sometimes.
   /// A possible reason for the failure is that the antithetic code is
   /// not implemented properly for this gamma case.
   /*
-  AddTestCase (new RandomVariableStreamGammaAntitheticTestCase, TestCase::QUICK);
+  AddTestCase (new RandomVariableStreamGammaAntitheticTestCase);
   */
-  AddTestCase (new RandomVariableStreamErlangTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamErlangAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamZipfTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamZipfAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamZetaTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamZetaAntitheticTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamDeterministicTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamEmpiricalTestCase, TestCase::QUICK);
-  AddTestCase (new RandomVariableStreamEmpiricalAntitheticTestCase, TestCase::QUICK);
+  AddTestCase (new RandomVariableStreamErlangTestCase);
+  AddTestCase (new RandomVariableStreamErlangAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamZipfTestCase);
+  AddTestCase (new RandomVariableStreamZipfAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamZetaTestCase);
+  AddTestCase (new RandomVariableStreamZetaAntitheticTestCase);
+  AddTestCase (new RandomVariableStreamDeterministicTestCase);
+  AddTestCase (new RandomVariableStreamEmpiricalTestCase);
+  AddTestCase (new RandomVariableStreamEmpiricalAntitheticTestCase);
 }
 
 static RandomVariableStreamTestSuite randomVariableStreamTestSuite;

@@ -2403,34 +2403,70 @@ private:
 
 /**
  * \ingroup randomvariable
- * \brief The Random Number Generator (RNG) that has a specified empirical distribution.
+ * \brief The Random Number Generator (RNG) that has a specified
+ * empirical distribution.
  *
  * Defines a random variable  that has a specified, empirical
  * distribution.  The distribution is specified by a
- * series of calls to the CDF member function, specifying a
+ * series of calls to the CDF() member function, specifying a
  * value and the probability that the function value is less than
- * the specified value.  When values are requested,
+ * the specified value.  When random values are requested,
  * a uniform random variable is used to select a probability,
- * and the return value is interpreted linearly between the
- * two appropriate points in the CDF.  The method is known
+ * and the return value is chosen from the largest input value with CDF
+ * less than the random value. The method is known
  * as inverse transform sampling:
  * (http://en.wikipedia.org/wiki/Inverse_transform_sampling).
  *
- * Here is an example of how to use this class:
- * \code
- *   // Create the RNG with a uniform distribution between 0 and 10.
- *   Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
- *   x->CDF ( 0.0,  0.0);
- *   x->CDF ( 5.0,  0.5);
- *   x->CDF (10.0,  1.0);
+ * This generator has two modes: *sampling* and *interpolating*.
+ * In *sampling* mode this random variable generator
+ * treats the CDF as an exact histogram and returns
+ * one of the histogram inputs exactly.  This is appropriate
+ * when the configured CDF represents the exact probability
+ * distribution, for a categorical variable, for example.
  *
- *   // The expected value for the mean of the values returned by this
- *   // empirical distribution is the midpoint of the distribution
- *   //
- *   //     E[value]  =  5 .
- *   //
- *   double value = x->GetValue ();
- * \endcode
+ * In *interpolating* mode this random variable generator linearly
+ * interpolates between the CDF values defining the histogram bins.
+ * This is appropriate when the configured CDF is an approximation
+ * to a continuous underlying probability distribution.
+ *
+ * For historical reasons the default is interpolating.
+ * To switch modes use the \c Interpolate Attribute, or call SetInterpolate().
+ * You can change modes at any time.
+ *
+ * If you find yourself switching frequently it could be simpler to
+ * set the mode to sampling, then use the GetValue() function for
+ * sampled values, and Interpolate() function for interpolated values.
+ *
+ * Here is an example of how to use this class:
+ *
+ *    // Create the RNG with a non-uniform distribution between 0 and 10.
+ *    // in sampling mode.
+ *    Ptr<EmpiricalRandomVariable> x = CreateObject<EmpiricalRandomVariable> ();
+ *    x->SetInterpolate (false);
+ *    x->CDF ( 0.0,  0.0);
+ *    x->CDF ( 5.0,  0.25);
+ *    x->CDF (10.0,  1.0);
+ *
+ *    double value = x->GetValue ();
+ *
+ * The expected values and probabilities returned by GetValue are
+ *
+ * Value | Probability
+ * ----: | ----------:
+ *  0.0  |  0
+ *  5.0  | 25%
+ * 10.0  | 75%
+ *
+ * The only two values ever returned are 5 and 10, with unequal probability.
+ *
+ * If instead you want linear interpolation between the points of the CDF
+ * use the Interpolate() function:
+ *
+ *     double interp = x->Interpolate ();
+ *
+ * This will return continuous values on the range [0,1).
+ *
+ * See empirical-random-variable-example.cc for an example.
  */
 class EmpiricalRandomVariable : public RandomVariableStream
 {
@@ -2443,14 +2479,16 @@ public:
 
   /**
    * \brief Creates an empirical RNG that has a specified, empirical
-   * distribution.
+   * distribution, and configured for interpolating mode.
    */
-  EmpiricalRandomVariable ();
+  EmpiricalRandomVariable (void);
 
   /**
    * \brief Specifies a point in the empirical distribution
+   * \note These *MUST* be inserted in ascending order of \p c
+   *
    * \param [in] v The function value for this point
-   * \param [in] c Probability that the function is less than or equal to v
+   * \param [in] c Probability that the function is less than or equal to \p v
    */
   void CDF (double v, double c);  // Value, prob <= Value
 
@@ -2460,6 +2498,7 @@ public:
    *
    * Note that this does not interpolate the CDF, but treats it as a
    * stepwise continuous function.
+   *
    * Also note that antithetic values are being generated if m_isAntithetic
    * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
    * and \f$x\f$ is a value that would be returned normally, then
@@ -2485,39 +2524,44 @@ public:
   virtual uint32_t GetInteger (void);
 
   /**
-   * \brief Returns the next value in the empirical distribution using linear interpolation.
-   * \return The floating point next value in the empirical distribution using linear interpolation.
+   * \brief Returns the next value in the empirical distribution using
+   * linear interpolation.
+   * \return The floating point next value in the empirical distribution
+   * using linear interpolation.
    */
     virtual double Interpolate (void);
 
+  /**
+   * \brief Switch the mode between sampling the CDF and interpolating.
+   * The default mode is sampling.
+   * \param [in] interpolate If \c true set to interpolation, otherwise sampling.
+   * \returns The previous interpolate flag value.
+   */
+  bool SetInterpolate (bool interpolate);
+
 private:
-  /** Helper to hold one point of the CDF. */
+  /** \brief Helper to hold one point of the CDF. */
   class ValueCDF
   {
   public:
-    /** Constructor. */
-    ValueCDF ();
+    /** \brief Constructor. */
+    ValueCDF (void);
     /**
-     * Construct from values.
+     * \brief Construct from values.
      *
      * \param [in] v The argument value.
      * \param [in] c The CDF at the argument value \pname{v}
      */
     ValueCDF (double v, double c);
-    /**
-     * Copy constructor.
-     *
-     * \param [in] c The other ValueCDF.
-     */
-    ValueCDF (const ValueCDF& c);
 
     /** The argument value. */
     double value;
     /** The CDF at \pname{value}  */
     double    cdf;
-  };
+  };  // class ValueCDF
+
   /**
-   * Check that the CDF is valid.
+   * \brief Check that the CDF is valid.
    *
    * A valid CDF has
    *
@@ -2526,25 +2570,54 @@ private:
    *
    * It is a fatal error to fail validation.
    */
-  virtual void Validate ();
+  void Validate (void);
+   /**
+   * \brief Do the initial rng draw and check against the extrema.
+   *
+   * If the extrema apply, \c value will have the extremal value
+   * and the return will be \c true.
+   *
+   * If the extrema do not apply \c value will have the URNG value
+   * and the return will be \c false.
+   *
+   * \param [out] value The extremal value, or the URNG.
+   * \returns \c true if \p value is the extremal result,
+   *          or \c false if \p value is the URNG value.
+   */
+  bool PreSample (double & value);
   /**
-   * Linear interpolation between two points on the CDF to estimate
+   * \brief Sample the CDF as a histogram (without interpolation).
+   * \param [in] r The CDF value at which to sample the CDF.
+   * \return The bin value corresponding to \c r.
+   */
+  double DoSampleCDF (double r);
+  /**
+   * \brief Linear interpolation between two points on the CDF to estimate
    * the value at \p r.
    *
-   * \param [in] c1 The first argument value.
-   * \param [in] c2 The second argument value.
-   * \param [in] v1 The first CDF value.
-   * \param [in] v2 The second CDF value.
    * \param [in] r  The argument value to interpolate to.
    * \returns The interpolated CDF at \pname{r}
    */
-  virtual double DoInterpolate (double c1, double c2,
-                                double v1, double v2, double r);
+  double DoInterpolate (double r);
+
+  /**
+   * \brief Comparison operator, for use by std::upper_bound
+   * \param a [in] the first value
+   * \param b [in] the second value
+   * \returns \c true if \c a.cdf < \c b.cdf
+   */
+  friend
+  bool operator < (ValueCDF a, ValueCDF b);
 
   /** \c true once the CDF has been validated. */
   bool m_validated;
   /** The vector of CDF points. */
   std::vector<ValueCDF> m_emp;
+  /**
+   * If \c true GetValue will interpolate,
+   * otherwise treat CDF as normal histogram.
+   */
+  bool m_interpolate;
 
 };  // class EmpiricalRandomVariable
 
