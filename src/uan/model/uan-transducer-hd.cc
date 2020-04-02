@@ -167,7 +167,7 @@ UanTransducerHd::Receive (Ptr<Packet> packet,
   m_arrivalList.push_back (arrival);
   Time txDelay = Seconds (packet->GetSize () * 8.0 / txMode.GetDataRateBps ());
   Simulator::Schedule (txDelay, &UanTransducerHd::RemoveArrival, this, arrival);
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Transducer in receive");
+  NS_LOG_DEBUG (Now ().As (Time::S) << " Transducer in receive");
   if (m_state == RX)
     {
       NS_LOG_DEBUG ("Transducer state = RX");

@@ -342,7 +342,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 
       if (ch.GetDest () == Mac8Address::ConvertFrom (GetAddress ()))
         {
-          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
+          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
                         " UanMacRc Receiving DATA packet from PHY");
           UanHeaderRcData dh;
           pkt->RemoveHeader (dh);
@@ -366,14 +366,14 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 
         Time winDelay = ctsg.GetWindowTime ();
 
-        if (winDelay.GetSeconds () > 0)
+        if (winDelay > 0)
           {
             m_rtsBlocked = false;
             Simulator::Schedule (winDelay, &UanMacRc::BlockRtsing, this);
           }
         else
           {
-            NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << 
+            NS_FATAL_ERROR (Now ().As (Time::S) << " Node " << 
                             Mac8Address::ConvertFrom (GetAddress ()) << " Received window period < 0");
           }
 
@@ -395,7 +395,7 @@ UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
                   }
                 else
                   {
-                    NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+                    NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
                                   Mac8Address::ConvertFrom (GetAddress ()) << 
                                   " received CTS while state != RTSSENT or GWPING");
                   }
@@ -437,12 +437,12 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
     }
   if (it == m_resList.end ())
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
                     Mac8Address::ConvertFrom (GetAddress ()) << 
                     " received CTS packet with no corresponding reservation!");
       return;
     }
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+  NS_LOG_DEBUG (Now ().As (Time::S) << 
                 " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
                 " received CTS packet.  Scheduling data");
   it->SetTransmitted ();
@@ -481,23 +481,23 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
 
       pkt->AddHeader (ch);
       Time eventTime = startDelay + frameDelay;
-      if (eventTime.GetSeconds () < 0)
+      if (eventTime < 0)
         {
-          if (eventTime.GetSeconds () > -0.001)
+          if (eventTime > -0.001)
             {
-              eventTime = Seconds (0);
+              eventTime = Time ();
             }
           else
             {
-              NS_FATAL_ERROR ("Scheduling error resulted in very negative data transmission time! eventTime = " << eventTime.GetSeconds ());
+              NS_FATAL_ERROR ("Scheduling error resulted in very negative data transmission time! eventTime = " << eventTime.As (Time::S));
             }
         }
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+      NS_LOG_DEBUG (Now ().As (Time::S) << 
                     " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
-                    " scheduling with delay " << eventTime.GetSeconds () << 
-                    " propDelay " << m_learnedProp.GetSeconds () << 
-                    " start delay " << startDelay.GetSeconds () << 
-                    " arrival time " << arrTime.GetSeconds ());
+                    " scheduling with delay " << eventTime.As (Time::S) << 
+                    " propDelay " << m_learnedProp.As (Time::S) << 
+                    " start delay " << startDelay.As (Time::S) << 
+                    " arrival time " << arrTime.As (Time::S));
       Simulator::Schedule (eventTime, &UanMacRc::SendPacket, this, pkt, m_currentRate);
       frameDelay = frameDelay + m_sifs + Seconds (pkt->GetSize () / currentBps);
     }
@@ -545,7 +545,7 @@ UanMacRc::SendPacket (Ptr<Packet> pkt, uint32_t rate)
       type = "UNKNOWN";
       break;
     }
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << 
+  NS_LOG_DEBUG (Now ().As (Time::S) << 
                 " Node " << Mac8Address::ConvertFrom (GetAddress ()) << 
                 " transmitting " << pkt->GetSize () << 
                 " byte packet of type " << type << " with rate " << rate << 
@@ -588,7 +588,7 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
       uint8_t pnum = 0;
       for (; nit != nacks.end (); nit++)
         {
-          NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+          NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
                         Mac8Address::ConvertFrom (GetAddress ()) << 
                         " Received NACK for " << (uint32_t) *nit);
           while (pnum < *nit)
@@ -603,7 +603,7 @@ UanMacRc::ProcessAck (Ptr<Packet> ack)
     }
   else
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Node " << 
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Node " << 
                     Mac8Address::ConvertFrom (GetAddress ()) << 
                     " received ACK for all frames");
     }
@@ -639,7 +639,7 @@ UanMacRc::Associate (void)
       Ptr<Packet> pkt = Create<Packet> (0);
       pkt->AddHeader (CreateRtsHeader (res));
       pkt->AddHeader (UanHeaderCommon (Mac8Address::ConvertFrom (GetAddress ()), Mac8Address::GetBroadcast (), static_cast<uint8_t>(TYPE_GWPING), 0));
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Sending first GWPING " << *pkt);
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Sending first GWPING " << *pkt);
       SendPacket (pkt,m_currentRate + m_numRates);
     }
   m_state = GWPSENT;
@@ -754,7 +754,7 @@ UanMacRc::RtsTimeout (void)
 
       if (m_resList.empty ())
         {
-          NS_FATAL_ERROR (Simulator::Now ().GetSeconds () << " Node " << 
+          NS_FATAL_ERROR (Now ().As (Time::S) << " Node " << 
                           Mac8Address::ConvertFrom (GetAddress ()) << 
                           " tried to retry RTS with empty reservation list");
         }

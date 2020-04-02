@@ -111,7 +111,7 @@ UanPhyCalcSinrDual::CalcSinrDb (Ptr<Packet> pkt,
 
   double totalIntDb = KpToDb (intKp + DbToKp (ambNoiseDb));
 
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Calculating SINR:  RxPower = " << rxPowerDb << " dB.  Number of interferers = " << arrivalList.size () << "  Interference + noise power = " << totalIntDb << " dB.  SINR = " << rxPowerDb - totalIntDb << " dB.");
+  NS_LOG_DEBUG (Now ().As (Time::S) << " Calculating SINR:  RxPower = " << rxPowerDb << " dB.  Number of interferers = " << arrivalList.size () << "  Interference + noise power = " << totalIntDb << " dB.  SINR = " << rxPowerDb - totalIntDb << " dB.");
   return rxPowerDb - totalIntDb;
 }
 
@@ -253,14 +253,14 @@ UanPhyDual::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 {
   if (modeNum <= m_phy1->GetNModes () - 1)
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Sending packet on Phy1 with mode number " << modeNum);
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Sending packet on Phy1 with mode number " << modeNum);
       m_txLogger (pkt, m_phy1->GetTxPowerDb (), m_phy1->GetMode (modeNum));
       m_phy1->SendPacket (pkt, modeNum);
 
     }
   else
     {
-      NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Sending packet on Phy2 with mode number " << modeNum - m_phy1->GetNModes ());
+      NS_LOG_DEBUG (Now ().As (Time::S) << " Sending packet on Phy2 with mode number " << modeNum - m_phy1->GetNModes ());
       m_txLogger (pkt, m_phy2->GetTxPowerDb (), m_phy2->GetMode (modeNum - m_phy1->GetNModes ()));
       m_phy2->SendPacket (pkt, modeNum - m_phy1->GetNModes ());
     }
@@ -613,7 +613,7 @@ UanPhyDual::SetSinrModelPhy2 (Ptr<UanPhyCalcSinr> sinr)
 void
 UanPhyDual::RxOkFromSubPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 {
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " Received packet");
+  NS_LOG_DEBUG (Now ().As (Time::S) << " Received packet");
   m_recOkCb (pkt, sinr, mode);
   m_rxOkLogger (pkt, sinr, mode);
 }

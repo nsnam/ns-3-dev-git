@@ -136,13 +136,13 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
       NS_FATAL_ERROR ("Calculating SINR for unsupported mode type");
     }
 
-  double ts = 1.0 / mode.GetPhyRateSps ();
-  double clearingTime = (m_hops - 1.0) * ts;
-  double csp = pdp.SumTapsFromMaxNc (Seconds (0), Seconds (ts));
+  Time ts = Seconds (1.0 / mode.GetPhyRateSps ());
+  Time clearingTime = (m_hops - 1.0) * ts;
+  double csp = pdp.SumTapsFromMaxNc (Time (), ts);
 
   // Get maximum arrival offset
   double maxAmp = -1;
-  double maxTapDelay = 0.0;
+  Time maxTapDelay (0);
   UanPdp::Iterator pit = pdp.GetBegin ();
   for (; pit != pdp.GetEnd (); pit++)
     {
@@ -151,7 +151,7 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
           maxAmp = std::abs (pit->GetAmp ());
           // Modified in order to subtract delay of first tap (maxTapDelay appears to be used later in code 
           // as delay from first reception, not from TX time)
-          maxTapDelay = pit->GetDelay ().GetSeconds () - pdp.GetTap(0).GetDelay().GetSeconds();
+          maxTapDelay = pit->GetDelay () - pdp.GetTap(0).GetDelay();
         }
     }
 
@@ -159,22 +159,22 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
   double effRxPowerDb = rxPowerDb + KpToDb (csp);
   //It appears to be just the first elements of the sum in Parrish paper, 
   // "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols", eq. 14
-  double isiUpa = DbToKp(rxPowerDb) * pdp.SumTapsFromMaxNc (Seconds (ts + clearingTime), Seconds (ts)); // added DpToKp()
+  double isiUpa = DbToKp(rxPowerDb) * pdp.SumTapsFromMaxNc (ts + clearingTime, ts); // added DpToKp()
   UanTransducer::ArrivalList::const_iterator it = arrivalList.begin ();
   double intKp = -DbToKp (effRxPowerDb);
   for (; it != arrivalList.end (); it++)
     {
       UanPdp intPdp = it->GetPdp ();
-      double tDelta = std::abs (arrTime.GetSeconds () + maxTapDelay - it->GetArrivalTime ().GetSeconds ());
+      Time tDelta = Abs (arrTime + maxTapDelay - it->GetArrivalTime ());
       // We want tDelta in terms of a single symbol (i.e. if tDelta = 7.3 symbol+clearing
       // times, the offset in terms of the arriving symbol power is
       // 0.3 symbol+clearing times.
 
-      int32_t syms = (uint32_t)( (double) tDelta / (ts + clearingTime));
+      int32_t syms = (uint32_t)(tDelta / (ts + clearingTime)).GetHigh ();
       tDelta = tDelta - syms * (ts + clearingTime);
 
       // Align to pktRx
-      if (arrTime + Seconds (maxTapDelay)  > it->GetArrivalTime ())
+      if (arrTime + maxTapDelay  > it->GetArrivalTime ())
         {
           tDelta = ts + clearingTime - tDelta;
         }
@@ -183,20 +183,20 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
       if (tDelta < ts) // Case where there is overlap of a symbol due to interferer arriving just after desired signal
         {
           //Appears to be just the first two elements of the sum in Parrish paper, eq. 14
-          intPower += intPdp.SumTapsNc (Seconds (0), Seconds (ts - tDelta));
-          intPower += intPdp.SumTapsNc (Seconds (ts - tDelta + clearingTime),
-                                        Seconds (2 * ts - tDelta + clearingTime));
+          intPower += intPdp.SumTapsNc (Time (), ts - tDelta);
+          intPower += intPdp.SumTapsNc (ts - tDelta + clearingTime,
+                                        2 * ts - tDelta + clearingTime);
         }
       else // Account for case where there's overlap of a symbol due to interferer arriving with a tDelta of a symbol + clearing time later
         {
           // Appears to be just the first two elements of the sum in Parrish paper, eq. 14
-          Time start = Seconds (ts + clearingTime - tDelta);
-          Time end = /*start +*/ Seconds (ts); // Should only sum over portion of ts that overlaps, not entire ts
+          Time start = ts + clearingTime - tDelta;
+          Time end = /*start +*/ ts; // Should only sum over portion of ts that overlaps, not entire ts
           intPower += intPdp.SumTapsNc (start, end);
 
-          start = start + Seconds (ts + clearingTime);
+          start = start + ts + clearingTime;
           //Should only sum over portion of ts that overlaps, not entire ts
-          end = end + Seconds (ts + clearingTime); //start + Seconds (ts);
+          end = end + ts + clearingTime; //start + Seconds (ts);
           intPower += intPdp.SumTapsNc (start, end);
         }
       intKp += DbToKp (it->GetRxPowerDb ()) * intPower;

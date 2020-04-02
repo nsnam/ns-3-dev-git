@@ -153,7 +153,7 @@ UanPdp::SetTap (std::complex<double> amp, uint32_t index)
       m_taps.resize (index + 1);
     }
 
-  Time delay = Seconds (index * m_resolution.GetSeconds ());
+  Time delay = index * m_resolution;
   m_taps[index] = Tap (delay, amp);
 }
 const Tap &
@@ -208,7 +208,7 @@ UanPdp::SumTapsFromMaxC (Time delay, Time duration) const
       return std::complex<double> (0.0, 0.0);
     }
 
-  uint32_t numTaps =  static_cast<uint32_t> (duration.GetSeconds () / m_resolution.GetSeconds () + 0.5);
+  uint32_t numTaps =  (duration / m_resolution + 0.5).GetHigh ();
   double maxAmp = -1;
   uint32_t maxTapIndex = 0;
 
