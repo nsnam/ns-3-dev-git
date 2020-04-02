@@ -36,6 +36,7 @@
 #include "unused.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>    // upper_bound
 
 /**
  * \file
@@ -1558,8 +1559,7 @@ double
 EmpiricalRandomVariable::GetValue (void)
 {
   NS_LOG_FUNCTION (this);
-  // Return a value from the empirical distribution
-  // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
+
   if (!m_validated)
     {
       Validate ();
@@ -1580,28 +1580,50 @@ EmpiricalRandomVariable::GetValue (void)
     {
       return m_emp.back ().value;  // Greater than last
     }
+  
   // Binary search
-  std::vector<ValueCDF>::size_type bottom = 0;
-  std::vector<ValueCDF>::size_type top = m_emp.size () - 1;
-  while (1)
+  auto bound = std::upper_bound (m_emp.begin (), m_emp.end (), r,
+                                 [] (double p, ValueCDF &it)
+                                   {
+                                     return p < it.cdf;
+                                   });
+  return bound->value;
+}
+
+double
+EmpiricalRandomVariable::Interpolate (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (!m_validated)
     {
-      std::vector<ValueCDF>::size_type c = (top + bottom) / 2;
-      if (r >= m_emp[c].cdf && r < m_emp[c + 1].cdf)
-        { // Found it
-          return Interpolate (m_emp[c].cdf, m_emp[c + 1].cdf,
-                              m_emp[c].value, m_emp[c + 1].value,
-                              r);
-        }
-      // Not here, adjust bounds
-      if (r < m_emp[c].cdf)
-        {
-          top    = c - 1;
-        }
-      else
-        {
-          bottom = c + 1;
-        }
+      Validate ();
     }
+  
+  // Get a uniform random variable in [0, 1].
+  double r = Peek ()->RandU01 ();
+  if (IsAntithetic ())
+    {
+      r = (1 - r);
+    }
+
+  if (r <= m_emp.front ().cdf)
+    {
+      return m_emp.front ().value; // Less than first
+    }
+  if (r >= m_emp.back ().cdf)
+    {
+      return m_emp.back ().value;  // Greater than last
+    }
+
+  // Binary search
+  auto bound = std::upper_bound (m_emp.begin (), m_emp.end (), r,
+                                 [] (double p, ValueCDF &it)
+                                 {
+                                   return p < it.cdf;
+                                   });
+  auto next = std::next(bound, 1);
+  return DoInterpolate (bound->cdf, next->cdf, bound->value, next->value, r);
 }
 
 uint32_t
@@ -1647,8 +1669,8 @@ void EmpiricalRandomVariable::Validate ()
   m_validated = true;
 }
 
-double EmpiricalRandomVariable::Interpolate (double c1, double c2,
-                                             double v1, double v2, double r)
+double EmpiricalRandomVariable::DoInterpolate (double c1, double c2,
+                                               double v1, double v2, double r)
 { // Interpolate random value in range [v1..v2) based on [c1 .. r .. c2)
   NS_LOG_FUNCTION (this << c1 << c2 << v1 << v2 << r);
   return (v1 + ((v2 - v1) / (c2 - c1)) * (r - c1));

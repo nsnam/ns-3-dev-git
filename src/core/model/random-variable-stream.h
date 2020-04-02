@@ -2458,7 +2458,9 @@ public:
    * \brief Returns the next value in the empirical distribution.
    * \return The floating point next value in the empirical distribution.
    *
-   * Note that antithetic values are being generated if m_isAntithetic
+   * Note that this does not interpolate the CDF, but treats it as a
+   * stepwise continuous function.
+   * Also note that antithetic values are being generated if m_isAntithetic
    * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
    * and \f$x\f$ is a value that would be returned normally, then
    * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
@@ -2471,7 +2473,9 @@ public:
    * \brief Returns the next value in the empirical distribution.
    * \return The integer next value in the empirical distribution.
    *
-   * Note that antithetic values are being generated if m_isAntithetic
+   * Note that this does not interpolate the CDF, but treats it as a
+   * stepwise continuous function.
+   * Also note that antithetic values are being generated if m_isAntithetic
    * is equal to true.  If \f$u\f$ is a uniform variable over [0,1]
    * and \f$x\f$ is a value that would be returned normally, then
    * \f$(1 - u\f$) is the distance that \f$u\f$ would be from \f$1\f$.
@@ -2479,6 +2483,12 @@ public:
    * which is the distance \f$u\f$ is from the 1.
    */
   virtual uint32_t GetInteger (void);
+
+  /**
+   * \brief Returns the next value in the empirical distribution using linear interpolation.
+   * \return The floating point next value in the empirical distribution using linear interpolation.
+   */
+    virtual double Interpolate (void);
 
 private:
   /** Helper to hold one point of the CDF. */
@@ -2518,18 +2528,18 @@ private:
    */
   virtual void Validate ();
   /**
-   * Linear nterpolation between two points on the CDF to estimate
-   * the value at \pname{r}
+   * Linear interpolation between two points on the CDF to estimate
+   * the value at \p r.
    *
    * \param [in] c1 The first argument value.
-   * \param [in] c2 The secong argument value.
+   * \param [in] c2 The second argument value.
    * \param [in] v1 The first CDF value.
-   * \param [in] v2 The secong CDF value.
+   * \param [in] v2 The second CDF value.
    * \param [in] r  The argument value to interpolate to.
    * \returns The interpolated CDF at \pname{r}
    */
-  virtual double Interpolate (double c1, double c2,
-                              double v1, double v2, double r);
+  virtual double DoInterpolate (double c1, double c2,
+                                double v1, double v2, double r);
 
   /** \c true once the CDF has been validated. */
   bool m_validated;
