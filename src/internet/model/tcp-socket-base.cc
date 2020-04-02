@@ -338,7 +338,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_isFirstPartialAck (sock.m_isFirstPartialAck),
     m_txTrace (sock.m_txTrace),
     m_rxTrace (sock.m_rxTrace),
-    m_pacingTimer (Timer::REMOVE_ON_DESTROY),
+    m_pacingTimer (Timer::CANCEL_ON_DESTROY),
     m_ecnEchoSeq (sock.m_ecnEchoSeq),
     m_ecnCESeq (sock.m_ecnCESeq),
     m_ecnCWRSeq (sock.m_ecnCWRSeq)

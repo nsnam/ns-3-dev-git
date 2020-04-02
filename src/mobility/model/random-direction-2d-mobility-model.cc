@@ -144,7 +144,6 @@ void
 RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);
-  Simulator::Remove (m_event);
   m_event.Cancel ();
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::DoInitializePrivate, this);
 }

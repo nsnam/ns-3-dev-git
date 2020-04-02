@@ -273,7 +273,7 @@ SteadyStateRandomWaypointMobilityModel::DoSetPosition (const Vector &position)
   if (alreadyStarted)
     {
       m_helper.SetPosition (position);
-      Simulator::Remove (m_event);
+      m_event.Cancel ();
       m_event = Simulator::ScheduleNow (&SteadyStateRandomWaypointMobilityModel::Start, this);
     }
 }

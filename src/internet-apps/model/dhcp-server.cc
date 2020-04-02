@@ -178,7 +178,7 @@ void DhcpServer::StopApplication ()
     }
 
   m_leasedAddresses.clear ();
-  Simulator::Remove (m_expiredEvent);
+  m_expiredEvent.Cancel ();
 }
 
 void DhcpServer::TimerHandler ()

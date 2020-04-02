@@ -105,7 +105,7 @@ ArpCache::DoDispose (void)
   m_interface = 0;
   if (!m_waitReplyTimer.IsRunning ())
     {
-      Simulator::Remove (m_waitReplyTimer);
+      m_waitReplyTimer.Cancel ();
     }
   Object::DoDispose ();
 }

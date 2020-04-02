@@ -188,7 +188,7 @@ UanTransducerHd::Transmit (Ptr<UanPhy> src,
 {
   if (m_state == TX)
     {
-      Simulator::Remove (m_endTxEvent);
+      m_endTxEvent.Cancel ();
       src->NotifyTxDrop(packet);           // traced source netanim
     }
   else

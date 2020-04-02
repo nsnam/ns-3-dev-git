@@ -194,12 +194,12 @@ DhcpClient::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  Simulator::Remove (m_discoverEvent);
-  Simulator::Remove (m_requestEvent);
-  Simulator::Remove (m_rebindEvent);
-  Simulator::Remove (m_refreshEvent);
-  Simulator::Remove (m_timeout);
-  Simulator::Remove (m_nextOfferEvent);
+  m_discoverEvent.Cancel ();
+  m_requestEvent.Cancel ();
+  m_rebindEvent.Cancel ();
+  m_refreshEvent.Cancel ();
+  m_timeout.Cancel ();
+  m_nextOfferEvent.Cancel ();
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
 
   int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
@@ -229,9 +229,9 @@ void DhcpClient::LinkStateHandler (void)
   else
     {
       NS_LOG_INFO ("Link down at " << Simulator::Now ().As (Time::S)); //reinitialization
-      Simulator::Remove (m_refreshEvent); //stop refresh timer!!!!
-      Simulator::Remove (m_rebindEvent);
-      Simulator::Remove (m_timeout);
+      m_refreshEvent.Cancel (); //stop refresh timer!!!!
+      m_rebindEvent.Cancel ();
+      m_timeout.Cancel ();
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());  //stop receiving on this socket !!!
 
       Ptr<Ipv4> ipv4MN = GetNode ()->GetObject<Ipv4> ();
@@ -281,12 +281,12 @@ void DhcpClient::NetHandler (Ptr<Socket> socket)
     }
   if (m_state == WAIT_ACK && header.GetType () == DhcpHeader::DHCPACK)
     {
-      Simulator::Remove (m_nextOfferEvent);
+      m_nextOfferEvent.Cancel ();
       AcceptAck (header,from);
     }
   if (m_state == WAIT_ACK && header.GetType () == DhcpHeader::DHCPNACK)
     {
-      Simulator::Remove (m_nextOfferEvent);
+      m_nextOfferEvent.Cancel ();
       Boot ();
     }
 }
@@ -326,7 +326,7 @@ void DhcpClient::OfferHandler (DhcpHeader header)
   m_offerList.push_back (header);
   if (m_offered == false)
     {
-      Simulator::Remove (m_discoverEvent);
+      m_discoverEvent.Cancel ();
       m_offered = true;
       Simulator::Schedule (m_collect, &DhcpClient::Select, this);
     }
@@ -405,9 +405,10 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
 {
   NS_LOG_FUNCTION (this << header << from);
 
-  Simulator::Remove (m_rebindEvent);
-  Simulator::Remove (m_refreshEvent);
-  Simulator::Remove (m_timeout);
+  m_rebindEvent.Cancel ();
+  m_refreshEvent.Cancel ();
+  m_timeout.Cancel ();
+
   NS_LOG_INFO ("DHCP ACK received");
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
   int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
@@ -459,10 +460,10 @@ void DhcpClient::RemoveAndStart ()
 {
   NS_LOG_FUNCTION (this);
 
-  Simulator::Remove (m_nextOfferEvent);
-  Simulator::Remove (m_refreshEvent);
-  Simulator::Remove (m_rebindEvent);
-  Simulator::Remove (m_timeout);
+  m_nextOfferEvent.Cancel ();
+  m_refreshEvent.Cancel ();
+  m_rebindEvent.Cancel ();
+  m_timeout.Cancel ();
 
   Ptr<Ipv4> ipv4MN = GetNode ()->GetObject<Ipv4> ();
   int32_t ifIndex = ipv4MN->GetInterfaceForDevice (m_device);

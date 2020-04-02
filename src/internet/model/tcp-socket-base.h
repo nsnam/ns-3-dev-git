@@ -1272,7 +1272,7 @@ protected:
                  Ptr<const TcpSocketBase> > m_rxTrace; //!< Trace of received packets
 
   // Pacing related variable
-  Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
+  Timer m_pacingTimer {Timer::CANCEL_ON_DESTROY}; //!< Pacing Event
 
   // Parameters related to Explicit Congestion Notification
   TracedValue<SequenceNumber32> m_ecnEchoSeq {0};      //!< Sequence number of the last received ECN Echo

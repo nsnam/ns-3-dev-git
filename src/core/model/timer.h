@@ -75,18 +75,26 @@ class Timer
 public:
   /**
    * The policy to use to manager the internal timer when an
-   * instance of the Timer class is destroyed.
+   * instance of the Timer class is destroyed or suspended.
+   *
+   * In the case of suspension, only `CANCEL_ON_DESTROY` and
+   * `REMOVE_ON_DESTROY` apply.
+   *
+   * These symbols have "Destroy" in their names
+   * for historical reasons.
    */
   enum DestroyPolicy
   {
     /**
      * This policy cancels the event from the destructor of the Timer
-     * to verify that the event has already expired.
+     * or from Suspend().  This is typically faster than `REMOVE_ON_DESTROY`
+     * but uses more memory.
      */
     CANCEL_ON_DESTROY = (1 << 3),
     /**
      * This policy removes the event from the simulation event list
-     * when the destructor of the Timer is invoked.
+     * when the destructor of the Timer is invoked, or the Timer is
+     * suspended.  This is typically slower than Cancel, but frees memory.
      */
     REMOVE_ON_DESTROY = (1 << 4),
     /**
@@ -250,8 +258,15 @@ public:
   void Schedule (Time delay);
 
   /**
-   * Cancel the timer and save the amount of time left until it was
+   * Pause the timer and save the amount of time left until it was
    * set to expire.
+   *
+   * Subsequently calling Resume() will restart the Timer with the
+   * remaining time.
+   *
+   * The DestroyPolicy set at construction determines
+   * whether the underlying Simulator::Event is cancelled or removed.
+   *
    * Calling Suspend on a non-running timer is an error.
    */
   void Suspend (void);

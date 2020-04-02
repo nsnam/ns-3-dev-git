@@ -41,7 +41,7 @@ class EventImpl;
  * Each EventId identifies a unique event scheduled with one
  * of the many Simulator::Schedule() methods. This EventId can
  * be used to cancel or remove events after they are scheduled
- * with Simulator::Cancel() or Simulator::Remove().
+ * with Cancel(), Remove(), or Simulator::Cancel() or Simulator::Remove().
  *
  * The important thing to remember about this class is that
  * every variable of this type is _always_ in a valid state,
@@ -69,6 +69,11 @@ public:
    * method.
    */
   void Cancel (void);
+  /**
+   * This method is syntactic sugar for the ns3::Simulator::Remove
+   * method.
+   */
+  void Remove (void);
   /**
    * This method is syntactic sugar for the ns3::Simulator::IsExpired
    * method.

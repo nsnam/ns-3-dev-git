@@ -55,6 +55,12 @@ EventId::Cancel (void)
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (*this);
 }
+void
+EventId::Remove (void)
+{
+  NS_LOG_FUNCTION (this);
+  Simulator::Remove (*this);
+}
 bool
 EventId::IsExpired (void) const
 {

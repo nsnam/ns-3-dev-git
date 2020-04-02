@@ -1089,7 +1089,7 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
       m_addressReqTimer[dst] = timer;
     }
   m_addressReqTimer[dst].SetFunction (&RoutingProtocol::RouteRequestTimerExpire, this);
-  m_addressReqTimer[dst].Remove ();
+  m_addressReqTimer[dst].Cancel ();
   m_addressReqTimer[dst].SetArguments (dst);
   RoutingTableEntry rt;
   m_routingTable.LookupRoute (dst, rt);
@@ -1584,7 +1584,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       if (toDst.GetFlag () == IN_SEARCH)
         {
           m_routingTable.Update (newEntry);
-          m_addressReqTimer[dst].Remove ();
+          m_addressReqTimer[dst].Cancel ();
           m_addressReqTimer.erase (dst);
         }
       m_routingTable.LookupRoute (dst, toDst);

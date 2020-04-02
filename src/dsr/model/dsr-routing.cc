@@ -2084,7 +2084,6 @@ DsrRouting::CancelLinkPacketTimer (DsrMaintainBuffEntry & mb)
        * Push back the nextHop, source, destination address
        */
       m_linkAckTimer[linkKey].Cancel ();
-      m_linkAckTimer[linkKey].Remove ();
       if (m_linkAckTimer[linkKey].IsRunning ())
         {
           NS_LOG_INFO ("Timer not canceled");
@@ -2136,7 +2135,6 @@ DsrRouting::CancelNetworkPacketTimer (DsrMaintainBuffEntry & mb)
        * Push back the nextHop, source, destination address
        */
       m_addressForwardTimer[networkKey].Cancel ();
-      m_addressForwardTimer[networkKey].Remove ();
       if (m_addressForwardTimer[networkKey].IsRunning ())
         {
           NS_LOG_INFO ("Timer not canceled");
@@ -2178,7 +2176,6 @@ DsrRouting::CancelPassivePacketTimer (DsrMaintainBuffEntry & mb)
        * Cancel passive acknowledgment timer
        */
       m_passiveAckTimer[passiveKey].Cancel ();
-      m_passiveAckTimer[passiveKey].Remove ();
       if (m_passiveAckTimer[passiveKey].IsRunning ())
         {
           NS_LOG_INFO ("Timer not canceled");
@@ -2384,7 +2381,7 @@ DsrRouting::ScheduleLinkPacketRetry (DsrMaintainBuffEntry & mb,
       m_linkAckTimer[linkKey] = timer;
     }
   m_linkAckTimer[linkKey].SetFunction (&DsrRouting::LinkScheduleTimerExpire, this);
-  m_linkAckTimer[linkKey].Remove ();
+  m_linkAckTimer[linkKey].Cancel ();
   m_linkAckTimer[linkKey].SetArguments (mb, protocol);
   m_linkAckTimer[linkKey].Schedule (m_linkAckTimeout);
 }
@@ -2415,7 +2412,7 @@ DsrRouting::SchedulePassivePacketRetry (DsrMaintainBuffEntry & mb,
     }
   NS_LOG_DEBUG ("The passive acknowledgment option for data packet");
   m_passiveAckTimer[passiveKey].SetFunction (&DsrRouting::PassiveScheduleTimerExpire, this);
-  m_passiveAckTimer[passiveKey].Remove ();
+  m_passiveAckTimer[passiveKey].Cancel ();
   m_passiveAckTimer[passiveKey].SetArguments (mb, protocol);
   m_passiveAckTimer[passiveKey].Schedule (m_passiveAckTimeout);
 }
@@ -2471,7 +2468,7 @@ DsrRouting::ScheduleNetworkPacketRetry (DsrMaintainBuffEntry & mb,
 
       // After m_tryPassiveAcks, schedule the packet retransmission using network acknowledgment option
       m_addressForwardTimer[networkKey].SetFunction (&DsrRouting::NetworkScheduleTimerExpire, this);
-      m_addressForwardTimer[networkKey].Remove ();
+      m_addressForwardTimer[networkKey].Cancel ();
       m_addressForwardTimer[networkKey].SetArguments (newEntry, protocol);
       NS_LOG_DEBUG ("The packet retries time for " << newEntry.GetAckId () << " is " << m_sendRetries
                                                    << " and the delay time is " << Time (2 * m_nodeTraversalTime).GetSeconds ());
@@ -2519,7 +2516,7 @@ DsrRouting::ScheduleNetworkPacketRetry (DsrMaintainBuffEntry & mb,
 
       // After m_tryPassiveAcks, schedule the packet retransmission using network acknowledgment option
       m_addressForwardTimer[networkKey].SetFunction (&DsrRouting::NetworkScheduleTimerExpire, this);
-      m_addressForwardTimer[networkKey].Remove ();
+      m_addressForwardTimer[networkKey].Cancel ();
       m_addressForwardTimer[networkKey].SetArguments (mb, protocol);
       NS_LOG_DEBUG ("The packet retries time for " << mb.GetAckId () << " is " << m_sendRetries
                                                    << " and the delay time is " << Time (2 * m_sendRetries *  m_nodeTraversalTime).GetSeconds ());
@@ -2546,7 +2543,6 @@ DsrRouting::LinkScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
 
   // Cancel passive ack timer
   m_linkAckTimer[lk].Cancel ();
-  m_linkAckTimer[lk].Remove ();
   if (m_linkAckTimer[lk].IsRunning ())
     {
       NS_LOG_DEBUG ("Timer not canceled");
@@ -2593,7 +2589,6 @@ DsrRouting::PassiveScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
 
   // Cancel passive ack timer
   m_passiveAckTimer[pk].Cancel ();
-  m_passiveAckTimer[pk].Remove ();
   if (m_passiveAckTimer[pk].IsRunning ())
     {
       NS_LOG_DEBUG ("Timer not canceled");
@@ -2906,7 +2901,6 @@ DsrRouting::CancelRreqTimer (Ipv4Address dst, bool isRemove)
       NS_LOG_DEBUG ("did find the non-propagation timer");
     }
   m_nonPropReqTimer[dst].Cancel ();
-  m_nonPropReqTimer[dst].Remove ();
 
   if (m_nonPropReqTimer[dst].IsRunning ())
     {
@@ -2924,7 +2918,6 @@ DsrRouting::CancelRreqTimer (Ipv4Address dst, bool isRemove)
       NS_LOG_DEBUG ("did find the propagation timer");
     }
   m_addressReqTimer[dst].Cancel ();
-  m_addressReqTimer[dst].Remove ();
   if (m_addressReqTimer[dst].IsRunning ())
     {
       NS_LOG_DEBUG ("Timer not canceled");
@@ -2959,7 +2952,7 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
       address.push_back (source);
       address.push_back (dst);
       m_nonPropReqTimer[dst].SetFunction (&DsrRouting::RouteRequestTimerExpire, this);
-      m_nonPropReqTimer[dst].Remove ();
+      m_nonPropReqTimer[dst].Cancel ();
       m_nonPropReqTimer[dst].SetArguments (packet, address, requestId, protocol);
       m_nonPropReqTimer[dst].Schedule (m_nonpropRequestTimeout);
     }
@@ -2967,7 +2960,6 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
     {
       // Cancel the non propagation request timer if found
       m_nonPropReqTimer[dst].Cancel ();
-      m_nonPropReqTimer[dst].Remove ();
       if (m_nonPropReqTimer[dst].IsRunning ())
         {
           NS_LOG_DEBUG ("Timer not canceled");
@@ -2983,7 +2975,7 @@ DsrRouting::ScheduleRreqRetry (Ptr<Packet> packet, std::vector<Ipv4Address> addr
       address.push_back (source);
       address.push_back (dst);
       m_addressReqTimer[dst].SetFunction (&DsrRouting::RouteRequestTimerExpire, this);
-      m_addressReqTimer[dst].Remove ();
+      m_addressReqTimer[dst].Cancel ();
       m_addressReqTimer[dst].SetArguments (packet, address, requestId, protocol);
       Time rreqDelay;
       // back off mechanism for sending route requests
