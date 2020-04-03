@@ -2407,11 +2407,12 @@ private:
  * empirical distribution.
  *
  * Defines a random variable  that has a specified, empirical
- * distribution.  The distribution is specified by a
+ * distribution.  The cumulative probability distribution function (CDF)
+ * is specified by a
  * series of calls to the CDF() member function, specifying a
- * value and the probability that the function value is less than
+ * value and the probability that the distribution is less than
  * the specified value.  When random values are requested,
- * a uniform random variable is used to select a probability,
+ * a uniform random variable `r` is used to select a probability,
  * and the return value is chosen from the largest input value with CDF
  * less than the random value. The method is known
  * as inverse transform sampling:
@@ -2437,6 +2438,14 @@ private:
  * set the mode to sampling, then use the GetValue() function for
  * sampled values, and Interpolate() function for interpolated values.
  *
+ * The CDF need not start with a probability of zero,
+ * nor end with a probability of 1.0.  If the selected uniform
+ * random value `r` is less than the first CDF point, that point
+ * is selected. If `r` is greater than the last CDF point the last
+ * point is selected.  In either case the interpolating mode will *not*
+ * interpolate (since there is no value beyond `r` to work with), but
+ * simply return the extremal CDF value, as in sampling.
+ * 
  * Here is an example of how to use this class:
  *
  *    // Create the RNG with a non-uniform distribution between 0 and 10.
