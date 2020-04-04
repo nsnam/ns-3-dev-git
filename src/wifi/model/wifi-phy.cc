@@ -2571,21 +2571,9 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
       MaybeCcaBusyDuration ();
     }
 
-  if (m_endPreambleDetectionEvent.IsRunning ())
+  if (m_currentEvent != 0)
     {
-      m_endPreambleDetectionEvent.Cancel ();
-    }
-  if (m_endPhyRxEvent.IsRunning ())
-    {
-      m_endPhyRxEvent.Cancel ();
-    }
-  if (m_endRxEvent.IsRunning ())
-    {
-      m_endRxEvent.Cancel ();
-    }
-  if (m_state->IsStateRx ())
-    {
-      m_interference.NotifyRxEnd ();
+      AbortCurrentReception (RECEPTION_ABORTED_BY_TX);
     }
 
   if (m_powerRestricted)
