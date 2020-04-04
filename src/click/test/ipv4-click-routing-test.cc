@@ -36,7 +36,7 @@ static void
 AddClickInternetStack (Ptr<Node> node)
 {
   ClickInternetStackHelper internet;
-  internet.SetClickFile (node, "src/click/examples/nsclick-lan-single-interface.click");
+  internet.SetClickFile (node, "src/click/test/nsclick-test-lan-single-interface.click");
   internet.Install (node);
 }
 

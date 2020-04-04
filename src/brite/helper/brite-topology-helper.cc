@@ -357,6 +357,7 @@ void BriteTopologyHelper::GenerateBriteTopology (void)
   if (generateSeedFile)
     {
       remove ("briteSeedFile.txt");
+      remove ("last_seed_file");
     }
 
 }
