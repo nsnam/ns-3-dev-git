@@ -51,8 +51,7 @@
 //    |     |
 //   n1     n2
 //
-//Packets in this simulation aren't marked with a QosTag so they are considered
-//belonging to BestEffort Access Class (AC_BE).
+//Packets in this simulation belong to BestEffort Access Class (AC_BE).
 
 using namespace ns3;
 
