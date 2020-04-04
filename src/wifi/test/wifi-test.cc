@@ -1922,10 +1922,10 @@ private:
   /**
    * Callback when packet is dropped
    * \param context node context
-   * \param p the dropped packet
-   * \param reason the reason
+   * \param p the failed packet
+   * \param snr the SNR of the failed packet in linear scale
    */
-  void RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason);
+  void RxErrorCallback (std::string context, Ptr<const Packet> p, double snr);
   /**
    * Triggers the arrival of a burst of 1000 Byte-long packets in the source device
    * \param numPackets number of packets in burst
@@ -1942,7 +1942,7 @@ private:
 
   uint16_t m_receivedNormalMpduCount; ///< Count received normal MPDU packets on STA
   uint16_t m_receivedAmpduCount;      ///< Count received A-MPDU packets on STA
-  uint16_t m_droppedActionCount;      ///< Count dropped ADDBA request/response
+  uint16_t m_failedActionCount;       ///< Count failed ADDBA request/response
   uint16_t m_addbaEstablishedCount;   ///< Count number of times ADDBA state machine is in established state
   uint16_t m_addbaPendingCount;       ///< Count number of times ADDBA state machine is in pending state
   uint16_t m_addbaRejectedCount;      ///< Count number of times ADDBA state machine is in rejected state
@@ -1954,7 +1954,7 @@ Bug2470TestCase::Bug2470TestCase ()
   : TestCase ("Test case for Bug 2470"),
     m_receivedNormalMpduCount (0),
     m_receivedAmpduCount (0),
-    m_droppedActionCount (0),
+    m_failedActionCount (0),
     m_addbaEstablishedCount (0),
     m_addbaPendingCount (0),
     m_addbaRejectedCount (0),
@@ -2010,14 +2010,14 @@ Bug2470TestCase::RxCallback (std::string context, Ptr<const Packet> p, uint16_t 
 }
 
 void
-Bug2470TestCase::RxDropCallback (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason reason)
+Bug2470TestCase::RxErrorCallback (std::string context, Ptr<const Packet> p, double snr)
 {
   Ptr<Packet> packet = p->Copy ();
   WifiMacHeader hdr;
   packet->RemoveHeader (hdr);
   if (hdr.IsAction ())
     {
-      m_droppedActionCount++;
+      m_failedActionCount++;
     }
 }
 
@@ -2079,7 +2079,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   mobility.Install (wifiStaNode);
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/MonitorSnifferRx", MakeCallback (&Bug2470TestCase::RxCallback, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxDrop", MakeCallback (&Bug2470TestCase::RxDropCallback, this));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&Bug2470TestCase::RxErrorCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::RegularWifiMac/BE_Txop/BlockAckManager/AgreementState", MakeCallback (&Bug2470TestCase::AddbaStateChangedCallback, this));
 
   Simulator::Schedule (Seconds (0.5), &Bug2470TestCase::SendPacketBurst, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
@@ -2112,9 +2112,9 @@ Bug2470TestCase::DoRun (void)
 
   {
     RunSubtest (PointerValue (), PointerValue (staPem));
-    NS_TEST_ASSERT_MSG_EQ (m_droppedActionCount, 6, "ADDBA request packet is not dropped correctly");
+    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 6, "ADDBA request packets are not failed");
     // There are two sets of 5 packets to be transmitted. The first 5 packets should be sent by normal
-    // MPDU because of failed ADDBA handshake.For the second set, the first packet should be sent by
+    // MPDU because of failed ADDBA handshake. For the second set, the first packet should be sent by
     // normal MPDU, and the rest with A-MPDU. In total we expect to receive 2 normal MPDU packets and
     // 8 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 2, "Receiving incorrect number of normal MPDU packet on subtest 1");
@@ -2129,7 +2129,7 @@ Bug2470TestCase::DoRun (void)
 
   m_receivedNormalMpduCount = 0;
   m_receivedAmpduCount = 0;
-  m_droppedActionCount = 0;
+  m_failedActionCount = 0;
   m_addbaEstablishedCount = 0;
   m_addbaPendingCount = 0;
   m_addbaRejectedCount = 0;
@@ -2146,7 +2146,7 @@ Bug2470TestCase::DoRun (void)
 
   {
     RunSubtest (PointerValue (apPem), PointerValue ());
-    NS_TEST_ASSERT_MSG_EQ (m_droppedActionCount, 3, "ADDBA response packet is not dropped correctly");
+    NS_TEST_ASSERT_MSG_EQ (m_failedActionCount, 3, "ADDBA response packets are not failed");
     // Similar to subtest 1, we also expect to receive 6 normal MPDU packets and 4 A-MPDU packets.
     NS_TEST_ASSERT_MSG_EQ (m_receivedNormalMpduCount, 6, "Receiving incorrect number of normal MPDU packet on subtest 2");
     NS_TEST_ASSERT_MSG_EQ (m_receivedAmpduCount, 4, "Receiving incorrect number of A-MPDU packet on subtest 2");

@@ -2980,6 +2980,8 @@ WifiPhy::EndReceive (Ptr<Event> event)
       receptionOkAtLeastForOneMpdu = rxInfo.first;
     }
 
+  NotifyRxEnd (psdu);
+
   if (receptionOkAtLeastForOneMpdu)
     {
       NotifyMonitorSniffRx (psdu, GetFrequency (), txVector, signalNoise, statusPerMpdu);
@@ -3017,13 +3019,11 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, Time re
       !(m_postReceptionErrorModel && m_postReceptionErrorModel->IsCorrupt (psdu->GetPacket ()->Copy ())))
     {
       NS_LOG_DEBUG ("Reception succeeded: " << psdu);
-      NotifyRxEnd (psdu);
       return std::make_pair (true, signalNoise);
     }
   else
     {
       NS_LOG_DEBUG ("Reception failed: " << psdu);
-      NotifyRxDrop (psdu, ERRONEOUS_FRAME);
       return std::make_pair (false, signalNoise);
     }
 }

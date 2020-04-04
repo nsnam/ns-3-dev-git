@@ -59,7 +59,6 @@ enum WifiPhyRxfailureReason
   TXING,
   SLEEPING,
   BUSY_DECODING_PREAMBLE,
-  ERRONEOUS_FRAME,
   PREAMBLE_DETECT_FAILURE,
   L_SIG_FAILURE,
   SIG_A_FAILURE,
@@ -91,8 +90,6 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason
       return (os << "SLEEPING");
     case BUSY_DECODING_PREAMBLE:
       return (os << "BUSY_DECODING_PREAMBLE");
-    case ERRONEOUS_FRAME:
-      return (os << "ERRONEOUS_FRAME");
     case PREAMBLE_DETECT_FAILURE:
       return (os << "PREAMBLE_DETECT_FAILURE");
     case L_SIG_FAILURE:

@@ -1942,7 +1942,7 @@ TestAmpduReception::DoRun (void)
   // All MPDUs of A-MPDU 2 should have been received with errors.
   Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
   Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu2, this, 0b00000111);
-  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu2, this, 0b00000111);
+  Simulator::Schedule (Seconds (9.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu2, this, 0b00000000);
 
   Simulator::Schedule (Seconds (9.2), &TestAmpduReception::ResetBitmaps, this);
 
@@ -1983,7 +1983,7 @@ TestAmpduReception::DoRun (void)
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
   Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
-  Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
+  Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000000);
 
   // All MPDUs of A-MPDU 2 should have been dropped.
   Simulator::Schedule (Seconds (11.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
@@ -2052,7 +2052,7 @@ TestAmpduReception::DoRun (void)
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (14.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
   Simulator::Schedule (Seconds (14.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
-  Simulator::Schedule (Seconds (14.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
+  Simulator::Schedule (Seconds (14.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000000);
 
   // All MPDUs of A-MPDU 2 should have been dropped.
   Simulator::Schedule (Seconds (14.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
@@ -2190,7 +2190,7 @@ TestAmpduReception::DoRun (void)
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (20.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
   Simulator::Schedule (Seconds (20.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
-  Simulator::Schedule (Seconds (20.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
+  Simulator::Schedule (Seconds (20.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000000);
 
   // All MPDUs of A-MPDU 2 should have been dropped (no reception switch, MPDUs dropped because PHY is already in RX state).
   Simulator::Schedule (Seconds (20.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
@@ -2236,7 +2236,7 @@ TestAmpduReception::DoRun (void)
   // All MPDUs of A-MPDU 1 should have been received with errors.
   Simulator::Schedule (Seconds (22.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000000);
   Simulator::Schedule (Seconds (22.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000111);
-  Simulator::Schedule (Seconds (22.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000111);
+  Simulator::Schedule (Seconds (22.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000000);
 
   // All MPDUs of A-MPDU 2 should have been dropped.
   Simulator::Schedule (Seconds (22.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu2, this, 0b00000000);
@@ -2260,7 +2260,7 @@ TestAmpduReception::DoRun (void)
   // The two other MPDUs failed due to interference and are marked as failure (and dropped).
   Simulator::Schedule (Seconds (23.1), &TestAmpduReception::CheckRxSuccessBitmapAmpdu1, this, 0b00000001);
   Simulator::Schedule (Seconds (23.1), &TestAmpduReception::CheckRxFailureBitmapAmpdu1, this, 0b00000110);
-  Simulator::Schedule (Seconds (23.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000110);
+  Simulator::Schedule (Seconds (23.1), &TestAmpduReception::CheckRxDroppedBitmapAmpdu1, this, 0b00000000);
 
   // The two first MPDUs of A-MPDU 2 are dropped because PHY is already in RX state (receiving A-MPDU 1).
   // The last MPDU of A-MPDU 2 is interference free (A-MPDU 1 transmission is finished) but is dropped because its PHY preamble and header were not received.
