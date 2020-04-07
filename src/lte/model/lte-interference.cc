@@ -151,7 +151,7 @@ LteInterference::AddSignal (Ptr<const SpectrumValue> spd, const Time duration)
 
 
 void
-LteInterference::DoAddSignal  (Ptr<const SpectrumValue> spd)
+LteInterference::DoAddSignal (Ptr<const SpectrumValue> spd)
 { 
   NS_LOG_FUNCTION (this << *spd);
   ConditionallyEvaluateChunk ();
@@ -159,7 +159,7 @@ LteInterference::DoAddSignal  (Ptr<const SpectrumValue> spd)
 }
 
 void
-LteInterference::DoSubtractSignal  (Ptr<const SpectrumValue> spd, uint32_t signalId)
+LteInterference::DoSubtractSignal (Ptr<const SpectrumValue> spd, uint32_t signalId)
 { 
   NS_LOG_FUNCTION (this << *spd);
   ConditionallyEvaluateChunk ();   
