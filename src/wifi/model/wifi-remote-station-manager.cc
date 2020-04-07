@@ -684,11 +684,10 @@ WifiRemoteStationManager::ReportRtsFailed (Mac48Address address, const WifiMacHe
 {
   NS_LOG_FUNCTION (this << address << *header);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
-  station->m_ssrc[ac]++;
+  m_ssrc[ac]++;
   m_macTxRtsFailed (address);
-  DoReportRtsFailed (station);
+  DoReportRtsFailed (Lookup (address));
 }
 
 void
@@ -697,19 +696,18 @@ WifiRemoteStationManager::ReportDataFailed (Mac48Address address, const WifiMacH
 {
   NS_LOG_FUNCTION (this << address << *header);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
   bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
   if (longMpdu)
     {
-      station->m_slrc[ac]++;
+      m_slrc[ac]++;
     }
   else
     {
-      station->m_ssrc[ac]++;
+      m_ssrc[ac]++;
     }
   m_macTxDataFailed (address);
-  DoReportDataFailed (station);
+  DoReportDataFailed (Lookup (address));
 }
 
 void
@@ -720,8 +718,8 @@ WifiRemoteStationManager::ReportRtsOk (Mac48Address address, const WifiMacHeader
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
-  station->m_state->m_info.NotifyTxSuccess (station->m_ssrc[ac]);
-  station->m_ssrc[ac] = 0;
+  station->m_state->m_info.NotifyTxSuccess (m_ssrc[ac]);
+  m_ssrc[ac] = 0;
   DoReportRtsOk (station, ctsSnr, ctsMode, rtsSnr);
 }
 
@@ -737,13 +735,13 @@ WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeade
   bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
   if (longMpdu)
     {
-      station->m_state->m_info.NotifyTxSuccess (station->m_slrc[ac]);
-      station->m_slrc[ac] = 0;
+      station->m_state->m_info.NotifyTxSuccess (m_slrc[ac]);
+      m_slrc[ac] = 0;
     }
   else
     {
-      station->m_state->m_info.NotifyTxSuccess (station->m_ssrc[ac]);
-      station->m_ssrc[ac] = 0;
+      station->m_state->m_info.NotifyTxSuccess (m_ssrc[ac]);
+      m_ssrc[ac] = 0;
     }
   DoReportDataOk (station, ackSnr, ackMode, dataSnr);
 }
@@ -756,7 +754,7 @@ WifiRemoteStationManager::ReportFinalRtsFailed (Mac48Address address, const Wifi
   WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
   station->m_state->m_info.NotifyTxFailed ();
-  station->m_ssrc[ac] = 0;
+  m_ssrc[ac] = 0;
   m_macTxFinalRtsFailed (address);
   DoReportFinalRtsFailed (station);
 }
@@ -773,11 +771,11 @@ WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const Wif
   bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
   if (longMpdu)
     {
-      station->m_slrc[ac] = 0;
+      m_slrc[ac] = 0;
     }
   else
     {
-      station->m_ssrc[ac] = 0;
+      m_ssrc[ac] = 0;
     }
   m_macTxFinalDataFailed (address);
   DoReportFinalDataFailed (station);
@@ -791,8 +789,7 @@ WifiRemoteStationManager::ReportRxOk (Mac48Address address, double rxSnr, WifiMo
     {
       return;
     }
-  WifiRemoteStation *station = Lookup (address);
-  DoReportRxOk (station, rxSnr, txMode);
+  DoReportRxOk (Lookup (address), rxSnr, txMode);
 }
 
 void
@@ -802,12 +799,11 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address,
 {
   NS_LOG_FUNCTION (this << address << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
   for (uint8_t i = 0; i < nFailedMpdus; i++)
     {
       m_macTxDataFailed (address);
     }
-  DoReportAmpduTxStatus (station, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
+  DoReportAmpduTxStatus (Lookup (address), nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
 }
 
 bool
@@ -942,23 +938,22 @@ WifiRemoteStationManager::NeedRetransmission (Mac48Address address, const WifiMa
 {
   NS_LOG_FUNCTION (this << address << packet << *header);
   NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
   bool longMpdu = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
   uint32_t retryCount, maxRetryCount;
   if (longMpdu)
     {
-      retryCount = station->m_slrc[ac];
+      retryCount = m_slrc[ac];
       maxRetryCount = m_maxSlrc;
     }
   else
     {
-      retryCount = station->m_ssrc[ac];
+      retryCount = m_ssrc[ac];
       maxRetryCount = m_maxSsrc;
     }
   bool normally = retryCount < maxRetryCount;
   NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRetransmission count: " << retryCount << " result: " << std::boolalpha << normally);
-  return DoNeedRetransmission (station, packet, normally);
+  return DoNeedRetransmission (Lookup (address), packet, normally);
 }
 
 bool
@@ -970,10 +965,9 @@ WifiRemoteStationManager::NeedFragmentation (Mac48Address address, const WifiMac
     {
       return false;
     }
-  WifiRemoteStation *station = Lookup (address);
   bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetFragmentationThreshold ();
   NS_LOG_DEBUG ("WifiRemoteStationManager::NeedFragmentation result: " << std::boolalpha << normally);
-  return DoNeedFragmentation (station, packet, normally);
+  return DoNeedFragmentation (Lookup (address), packet, normally);
 }
 
 void
@@ -1143,8 +1137,6 @@ WifiRemoteStationManager::Lookup (Mac48Address address) const
 
   WifiRemoteStation *station = DoCreateStation ();
   station->m_state = state;
-  station->m_ssrc.fill (0);
-  station->m_slrc.fill (0);
   const_cast<WifiRemoteStationManager *> (this)->m_stations.push_back (station);
   return station;
 }
@@ -1337,6 +1329,8 @@ WifiRemoteStationManager::Reset (void)
   m_stations.clear ();
   m_bssBasicRateSet.clear ();
   m_bssBasicMcsSet.clear ();
+  m_ssrc.fill (0);
+  m_slrc.fill (0);
 }
 
 void

@@ -59,8 +59,6 @@ struct WifiRemoteStation
 {
   virtual ~WifiRemoteStation () {};
   WifiRemoteStationState *m_state;  //!< Remote station state
-  std::array<uint32_t, AC_BE_NQOS> m_ssrc; //!< STA short retry count per AC
-  std::array<uint32_t, AC_BE_NQOS> m_slrc; //!< STA long retry count per AC
 };
 
 /**
@@ -1315,6 +1313,9 @@ private:
   bool m_rifsPermitted;           //!< flag if RIFS is enabled
   ProtectionMode m_erpProtectionMode; //!< Protection mode for ERP stations when non-ERP stations are detected
   ProtectionMode m_htProtectionMode;  //!< Protection mode for HT stations when non-HT stations are detected
+
+  std::array<uint32_t, AC_BE_NQOS> m_ssrc; //!< short retry count per AC
+  std::array<uint32_t, AC_BE_NQOS> m_slrc; //!< long retry count per AC
 
   /**
    * The trace source fired when the transmission of a single RTS has failed
