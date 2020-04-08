@@ -15,12 +15,12 @@ user code can swap out implementations with minimal changes to the scripts.
 
 There are two important abstract base classes:
 
-* class :cpp:class:`TcpSocket`:  This is defined in
+* class :cpp:class:`TcpSocket`: This is defined in
   ``src/internet/model/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
   attributes that can be reused across different implementations. For instance,
   the attribute ``InitialCwnd`` can be used for any of the implementations
   that derive from class :cpp:class:`TcpSocket`.
-* class :cpp:class:`TcpSocketFactory`:  This is used by the layer-4 protocol
+* class :cpp:class:`TcpSocketFactory`: This is used by the layer-4 protocol
   instance to create TCP sockets of the right type.
 
 There are presently two active and one legacy implementations of TCP available for |ns3|.
@@ -40,7 +40,7 @@ ns-3 TCP
 ********
 
 In brief, the native |ns3| TCP model supports a full bidirectional TCP with
-connection setup and close logic.  Several congestion control algorithms
+connection setup and close logic. Several congestion control algorithms
 are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
@@ -79,7 +79,7 @@ Acknowledgments
 +++++++++++++++
 
 As mentioned above, |ns3| TCP has had multiple authors and maintainers over
-the years.  Several publications exist on aspects of |ns3| TCP, and users 
+the years. Several publications exist on aspects of |ns3| TCP, and users
 of |ns3| TCP are requested to cite one of the applicable papers when 
 publishing new work.
 
@@ -117,17 +117,17 @@ TCP::
 
 The careful reader will note above that we have specified the TypeId of an
 abstract base class :cpp:class:`TcpSocketFactory`. How does the script tell
-|ns3| that it wants the native |ns3| TCP vs. some other one?  Well, when
+|ns3| that it wants the native |ns3| TCP vs. some other one? Well, when
 internet stacks are added to the node, the default TCP implementation that is
-aggregated to the node is the |ns3| TCP.  This can be overridden as we show
+aggregated to the node is the |ns3| TCP. This can be overridden as we show
 below when using Network Simulation Cradle. So, by default, when using the |ns3|
 helper API, the TCP that is aggregated to nodes with an Internet stack is the
 native |ns3| TCP.
 
 To configure behavior of TCP, a number of parameters are exported through the
 |ns3| attribute system. These are documented in the `Doxygen
-<http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>` for class
-:cpp:class:`TcpSocket`.  For example, the maximum segment size is a
+<http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>`_ for class
+:cpp:class:`TcpSocket`. For example, the maximum segment size is a
 settable attribute.
 
 To set the default socket type before any internet stack-related objects are
@@ -139,11 +139,11 @@ program::
 For users who wish to have a pointer to the actual socket (so that
 socket operations like Bind(), setting socket options, etc. can be
 done on a per-socket basis), Tcp sockets can be created by using the 
-``Socket::CreateSocket()`` method.  The TypeId passed to CreateSocket()
+``Socket::CreateSocket()`` method. The TypeId passed to CreateSocket()
 must be of type :cpp:class:`ns3::SocketFactory`, so configuring the underlying 
 socket type must be done by twiddling the attribute associated with the
-underlying TcpL4Protocol object.  The easiest way to get at this would be 
-through the attribute configuration system.  In the below example,
+underlying TcpL4Protocol object. The easiest way to get at this would be
+through the attribute configuration system. In the below example,
 the Node container "n0n1" is accessed to get the zeroth element, and a socket is
 created on this node::
 
@@ -155,7 +155,7 @@ created on this node::
 
 Above, the "*" wild card for node number is passed to the attribute
 configuration system, so that all future sockets on all nodes are set to 
-NewReno, not just on node 'n0n1.Get (0)'.  If one wants to limit it to just 
+NewReno, not just on node 'n0n1.Get (0)'. If one wants to limit it to just
 the specified node, one would have to do something like::
 
   // Create and bind the socket...
@@ -171,7 +171,7 @@ Once a TCP socket is created, one will want to follow conventional socket logic
 and either connect() and send() (for a TCP client) or bind(), listen(), and
 accept() (for a TCP server).
 Please note that applications usually create the sockets they use automatically,
-and so is not straightforward to connect direcly to them using pointers. Please
+and so is not straightforward to connect directly to them using pointers. Please
 refer to the source code of your preferred application to discover how and when
 it creates the socket.
 
@@ -239,7 +239,7 @@ Figure :ref:`fig-tcp-state-machine`.
   *NotifyNewConnectionCreated*.
 
 *ShutdownSend()*
-  Signal a termination of send, or in other words revents data from being added
+  Signal a termination of send, or in other words prevents data from being added
   to the buffer. After this call, if buffer is already empty, the socket
   will send a FIN, otherwise FIN will go when buffer empties. Please note
   that this is useful only for modeling "Sink" applications. If you have
@@ -310,14 +310,14 @@ callback as well.
 
 *NotifyConnectionSucceeded*: *SetConnectCallback*, 1st argument
   Called in the SYN_SENT state, before moving to ESTABLISHED. In other words, we
-  have sent the SYN, and we received the SYN-ACK: the socket prepare the
-  sequence numbers, send the ACK for the SYN-ACK, try to send out more data (in
-  another segment) and then invoke this callback. After this callback, it
+  have sent the SYN, and we received the SYN-ACK: the socket prepares the
+  sequence numbers, sends the ACK for the SYN-ACK, tries to send out more data (in
+  another segment) and then invokes this callback. After this callback, it
   invokes the NotifySend callback.
 
 *NotifyConnectionFailed*: *SetConnectCallback*, 2nd argument
   Called after the SYN retransmission count goes to 0. SYN packet is lost
-  multiple time, and the socket give up.
+  multiple times, and the socket gives up.
 
 *NotifyNormalClose*: *SetCloseCallbacks*, 1st argument
   A normal close is invoked. A rare case is when we receive an RST segment (or a
@@ -339,24 +339,24 @@ callback as well.
 
 *NotifyNewConnectionCreated*: *SetAcceptCallback*, 2nd argument
   Invoked when from SYN_RCVD the socket passes to ESTABLISHED, and after setting
-  up the congestion control, the sequence numbers, and processed the incoming
+  up the congestion control, the sequence numbers, and processing the incoming
   ACK. If there is some space in the buffer, *NotifySend* is called shortly
   after this callback. The Socket pointer, passed with this callback, is the
   newly created socket, after a Fork().
 
 *NotifyDataSent*: *SetDataSentCallback*
-  The Socket notifies the application that some bytes has been transmitted on
+  The Socket notifies the application that some bytes have been transmitted on
   the IP level. These bytes could still be lost in the node (traffic control
   layer) or in the network.
 
 *NotifySend*: *SetSendCallback*
   Invoked if there is some space in the tx buffer when entering the ESTABLISHED
   state (e.g. after the ACK for SYN-ACK is received), after the connection
-  succeeds (e.g. after the SYN-ACK is received) and after each new ack (i.e.
+  succeeds (e.g. after the SYN-ACK is received) and after each new ACK (i.e.
   that advances SND.UNA).
 
 *NotifyDataRecv*: *SetRecvCallback*
-  Called when in the receiver buffere there are in-order bytes, and when in
+  Called when in the receiver buffer there are in-order bytes, and when in
   FIN_WAIT_1 or FIN_WAIT_2 the socket receive a in-sequence FIN (that can carry
   data).
 
@@ -367,17 +367,17 @@ Here follows a list of supported TCP congestion control algorithms. For an
 academic peer-reviewed paper on these congestion control algorithms, see
 http://dl.acm.org/citation.cfm?id=2756518 .
 
-New Reno
+NewReno
 ^^^^^^^^
-New Reno algorithm introduces partial ACKs inside the well-established Reno
+NewReno algorithm introduces partial ACKs inside the well-established Reno
 algorithm. This and other modifications are described in RFC 6582. We have two
 possible congestion window increment strategy: slow start and congestion
 avoidance. Taken from RFC 5681:
 
   During slow start, a TCP increments cwnd by at most SMSS bytes for
-  each ACK received that cumulatively acknowledges new data.  Slow
+  each ACK received that cumulatively acknowledges new data. Slow
   start ends when cwnd exceeds ssthresh (or, optionally, when it
-  reaches it, as noted above) or when congestion is observed.  While
+  reaches it, as noted above) or when congestion is observed. While
   traditionally TCP implementations have increased cwnd by precisely
   SMSS bytes upon receipt of an ACK covering new data, we RECOMMEND
   that TCP implementations increase cwnd, per Equation :eq:`newrenocongavoid`,
@@ -391,7 +391,7 @@ During congestion avoidance, cwnd is incremented by roughly 1 full-sized
 segment per round-trip time (RTT), and for each congestion event, the slow
 start threshold is halved.
 
-High Speed
+HighSpeed
 ^^^^^^^^^^
 TCP HighSpeed is designed for high-capacity channels or, in general, for
 TCP connections with large congestion windows.
@@ -399,13 +399,14 @@ Conceptually, with respect to the standard TCP, HighSpeed makes the
 cWnd grow faster during the probing phases and accelerates the
 cWnd recovery from losses.
 This behavior is executed only when the window grows beyond a
-certain threshold, which allows TCP Highspeed to be friendly with standard
+certain threshold, which allows TCP HighSpeed to be friendly with standard
 TCP in environments with heavy congestion, without introducing new dangers
 of congestion collapse.
 
 Mathematically:
 
 .. math::  cWnd = cWnd + \frac{a(cWnd)}{cWnd}
+   :label: highspeedcwndincrement
 
 The function a() is calculated using a fixed RTT the value 100 ms (the
 lookup table for this function is taken from RFC 3649). For each congestion
@@ -414,6 +415,7 @@ size of the slow start threshold itself. Then, the congestion window is set
 to such value.
 
 .. math::   cWnd = (1-b(cWnd)) \cdot cWnd
+   :label: highspeedcwnddecrement
 
 The lookup table for the function b() is taken from the same RFC.
 More information at: http://dl.acm.org/citation.cfm?id=2756518
@@ -449,19 +451,22 @@ Vegas
 TCP Vegas is a pure delay-based congestion control algorithm implementing a
 proactive scheme that tries to prevent packet drops by maintaining a small
 backlog at the bottleneck queue. Vegas continuously samples the RTT and computes
-the actual throughput a connection achieves using Equation (1) and compares it
-with the expected throughput calculated in Equation (2). The difference between
-these 2 sending rates in Equation (3) reflects the amount of extra packets being
+the actual throughput a connection achieves using Equation :eq:`vegasactual` and compares it
+with the expected throughput calculated in Equation :eq:`vegasexpected`. The difference between
+these 2 sending rates in Equation :eq:`vegasdiff` reflects the amount of extra packets being
 queued at the bottleneck.
 
 .. math::
 
    actual &= \frac{cWnd}{RTT}        \\
+   :label: vegasactual
    expected &= \frac{cWnd}{BaseRTT}  \\
+   :label: vegasexpected
    diff &= expected - actual
+   :label: vegasdiff
 
 To avoid congestion, Vegas linearly increases/decreases its congestion window
-to ensure the diff value fall between the two predefined thresholds, alpha and
+to ensure the diff value falls between the two predefined thresholds, alpha and
 beta. diff and another threshold, gamma, are used to determine when Vegas
 should change from its slow-start mode to linear increase/decrease mode.
 Following the implementation of Vegas in Linux, we use 2, 4, and 1 as the
@@ -474,10 +479,11 @@ Scalable
 ^^^^^^^^
 Scalable improves TCP performance to better utilize the available bandwidth of
 a highspeed wide area network by altering NewReno congestion window adjustment
-algorithm.  When congestion has not been detected, for each ACK received in an
+algorithm. When congestion has not been detected, for each ACK received in an
 RTT, Scalable increases its cwnd per:
 
 .. math::  cwnd = cwnd + 0.01
+   :label: scalablecwndincrement
 
 Following Linux implementation of Scalable, we use 50 instead of 100 to account
 for delayed ACK.
@@ -486,6 +492,7 @@ On the first detection of congestion in a given RTT, cwnd is reduced based on
 the following equation:
 
 .. math::  cwnd = cwnd - ceil(0.125 \cdot cwnd)
+   :label: scalablecwnddecrement
 
 More information at: http://dl.acm.org/citation.cfm?id=956989
 
@@ -498,17 +505,19 @@ estimating the backlog at the bottleneck queue to distinguish between
 congestive and non-congestive states.
 
 The backlog (the number of packets accumulated at the bottleneck queue) is
-calculated using Equation (1):
+calculated using Equation :eq:`venoN`:
 
 .. math::
    N &= Actual \cdot (RTT - BaseRTT) \\
      &= Diff \cdot BaseRTT
+   :label: venoN
 
 where:
 
 .. math::
    Diff &= Expected - Actual \\
         &= \frac{cWnd}{BaseRTT} - \frac{cWnd}{RTT}
+   :label: venoDiff
 
 Veno makes decision on cwnd modification based on the calculated N and its
 predefined threshold beta.
@@ -516,21 +525,21 @@ predefined threshold beta.
 Specifically, it refines the additive increase algorithm of Reno so that the
 connection can stay longer in the stable state by incrementing cwnd by
 1/cwnd for every other new ACK received after the available bandwidth has
-been fully utilized, i.e. when N exceeds beta.  Otherwise, Veno increases
+been fully utilized, i.e. when N exceeds beta. Otherwise, Veno increases
 its cwnd by 1/cwnd upon every new ACK receipt as in Reno.
 
 In the multiplicative decrease algorithm, when Veno is in the non-congestive
 state, i.e. when N is less than beta, Veno decrements its cwnd by only 1/5
 because the loss encountered is more likely a corruption-based loss than a
-congestion-based.  Only when N is greater than beta, Veno halves its sending
+congestion-based. Only when N is greater than beta, Veno halves its sending
 rate as in Reno.
 
 More information at: http://dx.doi.org/10.1109/JSAC.2002.807336
 
-Bic
+BIC
 ^^^
 
-In TCP Bic the congestion control problem is viewed as a search
+In TCP BIC the congestion control problem is viewed as a search
 problem. Taking as a starting point the current window value
 and as a target point the last maximum window value
 (i.e. the cWnd value just before the loss event) a binary search
@@ -563,12 +572,12 @@ requirements of a state-of-the-art congestion control algorithm:
 4. robust to random losses
 5. achieve high performance regardless of buffer size
 
-YeAH operates between 2 modes: Fast and Slow mode.  In the Fast mode when the queue
+YeAH operates between 2 modes: Fast and Slow mode. In the Fast mode when the queue
 occupancy is small and the network congestion level is low, YeAH increments
-its congestion window according to the aggressive STCP rule.  When the number of packets
+its congestion window according to the aggressive HSTCP rule. When the number of packets
 in the queue grows beyond a threshold and the network congestion level is high, YeAH enters
-its Slow mode, acting as Reno with a decongestion algorithm.  YeAH employs Vegas' mechanism
-for calculating the backlog as in Equation :eq:`q_yeah`.  The estimation of the network congestion
+its Slow mode, acting as Reno with a decongestion algorithm. YeAH employs Vegas' mechanism
+for calculating the backlog as in Equation :eq:`q_yeah`. The estimation of the network congestion
 level is shown in Equation :eq:`l_yeah`.
 
 .. math::  Q = (RTT - BaseRTT) \cdot \frac{cWnd}{RTT}
@@ -578,11 +587,12 @@ level is shown in Equation :eq:`l_yeah`.
    :label: l_yeah
 
 To ensure TCP friendliness, YeAH also implements an algorithm to detect the presence of legacy
-Reno flows.  Upon the receipt of 3 duplicate ACKs, YeAH decreases its slow start threshold
-according to Equation (3) if it's not competing with Reno flows.  Otherwise,  the ssthresh is
+Reno flows. Upon the receipt of 3 duplicate ACKs, YeAH decreases its slow start threshold
+according to Equation :eq:`yeahssthresh` if it's not competing with Reno flows. Otherwise, the ssthresh is
 halved as in Reno:
 
 .. math::  ssthresh = min(max(\frac{cWnd}{8}, Q), \frac{cWnd}{2})
+   :label: yeahssthresh
 
 More information: http://www.csc.lsu.edu/~sjpark/cs7601/4-YeAH_TCP.pdf
 
@@ -590,14 +600,14 @@ Illinois
 ^^^^^^^^
 
 TCP Illinois is a hybrid congestion control algorithm designed for
-high-speed networks.  Illinois implements a Concave-AIMD (or C-AIMD)
+high-speed networks. Illinois implements a Concave-AIMD (or C-AIMD)
 algorithm that uses packet loss as the primary congestion signal to
 determine the direction of window update and queueing delay as the
 secondary congestion signal to determine the amount of change.
 
 The additive increase and multiplicative decrease factors (denoted as
 alpha and beta, respectively) are functions of the current average queueing
-delay da as shown in Equations (1) and (2).  To improve the protocol
+delay da as shown in Equations :eq:`illinoisalpha` and :eq:`illinoisbeta`. To improve the protocol
 robustness against sudden fluctuations in its delay sampling,
 Illinois allows the increment of alpha to alphaMax
 only if da stays below d1 for a some (theta) amount of time.
@@ -609,12 +619,14 @@ only if da stays below d1 for a some (theta) amount of time.
       \quad k1 / (k2 + da)        & \quad \text{otherwise} \\
    \end{cases} \\
    \\
+   :label: illinoisalpha
    beta &=
    \begin{cases}
       \quad betaMin               & \quad \text{if } da <= d2 \\
       \quad k3 + k4 \, da         & \quad \text{if } d2 < da < d3 \\
       \quad betaMax               & \quad \text{otherwise}
    \end{cases}
+   :label: illinoisbeta
 			     
 where the calculations of k1, k2, k3, and k4 are shown in the following:
 
@@ -622,11 +634,15 @@ where the calculations of k1, k2, k3, and k4 are shown in the following:
 
    k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin} \\
    \\
+   :label: illinoisk1
    k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1 \\
    \\
+   :label: illinoisk2
    k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2} \\
    \\
+   :label: illinoisk3
    k4 &= \frac{alphaMax - alphaMin}{d3 - d2}
+   :label: illinoisk4
 
 Other parameters include da (the current average queueing delay), and
 Ta (the average RTT, calculated as sumRtt / cntRtt in the implementation) and
@@ -637,10 +653,11 @@ implementation) is the maximum RTT ever seen.
 .. math::
 
    da &= Ta - Tmin
-
+   :label: illinoisda
    dm &= Tmax - Tmin
-
+   :label: illinoisdm
    d_i &= eta_i \cdot dm
+   :label: illinoisdi
 
 Illinois only executes its adaptation of alpha and beta when cwnd exceeds a threshold
 called winThresh. Otherwise, it sets alpha and beta to the base values of 1 and 0.5,
@@ -673,16 +690,17 @@ function in the following:
 
 .. math::
 
-        alpha(delta)=1+10(delta-deltal)+0.5(delta-deltal)^2 
+        alpha(delta)=1+10(delta-deltal)+0.5(delta-deltal)^2
+   :label: htcpalpha
 
 where ``deltal`` is a threshold in seconds for switching between the modes and 
 ``delta`` is the elapsed time from the last congestion. During congestion, 
 it reduces the window size by multiplying by beta function provided 
-in the reference paper.  The calculated throughput between the last two 
+in the reference paper. The calculated throughput between the last two
 consecutive congestion events is considered for beta calculation. 
 
 The transport ``TcpHtcp`` can be selected in the program 
-``examples/tcp/tcp-variants/comparison`` to perform an experiment with H-TCP,
+``examples/tcp/tcp-variants-comparison.cc`` to perform an experiment with H-TCP,
 although it is useful to increase the bandwidth in this example (e.g.
 to 20 Mb/s) to create a higher BDP link, such as
 
@@ -690,9 +708,9 @@ to 20 Mb/s) to create a higher BDP link, such as
 
   ./waf --run "tcp-variants-comparison --transport_prot=TcpHtcp --bandwidth=20Mbps --duration=10"
 
-More information (paper):  http://www.hamilton.ie/net/htcp3.pdf
+More information (paper): http://www.hamilton.ie/net/htcp3.pdf
 
-More information (Internet Draft):  https://tools.ietf.org/html/draft-leith-tcp-htcp-06
+More information (Internet Draft): https://tools.ietf.org/html/draft-leith-tcp-htcp-06
 
 LEDBAT
 ^^^^^^
@@ -705,7 +723,7 @@ congestion that the flow itself induces in the network.
 
 As a first approximation, the LEDBAT sender operates as shown below:
 
-on receipt of an ACK:
+On receipt of an ACK:
 
 .. math::
        currentdelay = acknowledgement.delay
@@ -716,7 +734,7 @@ on receipt of an ACK:
 
 ``TARGET`` is the maximum queueing delay that LEDBAT itself may introduce in the
 network, and ``GAIN`` determines the rate at which the cwnd responds to changes in 
-queueing delay;  ``offtarget`` is a normalized value representing the difference between
+queueing delay; ``offtarget`` is a normalized value representing the difference between
 the measured current queueing delay and the predetermined TARGET delay. offtarget can 
 be positive or negative; consequently, cwnd increases or decreases in proportion to 
 offtarget.
@@ -758,12 +776,12 @@ More information about LEDBAT is available in RFC 6817: https://tools.ietf.org/h
 TCP-LP
 ^^^^^^
 
-TCP-Low priority is a delay based congestion control protocol in which the low
+TCP-Low Priority (TCP-LP) is a delay based congestion control protocol in which the low
 priority data utilizes only the excess bandwidth available on an end-to-end path.
 TCP-LP uses one way delay measurements as an indicator of congestion as it does
 not influence cross-traffic in the reverse direction.
 
-On acknowledgement:
+On receipt of an ACK:
 
 .. math::
 
@@ -793,14 +811,9 @@ detecting that the congestion has occurred. DCTCP then scales the congestion
 window based on this estimate. This approach achieves high burst tolerance, low
 latency, and high throughput with shallow-buffered switches.
 
-* Receiver functionality: If CE is set in IP header of incoming packet, send
-  congestion notification to the sender by setting ECE in TCP header.
-  This processing is different from standard ECN processing
-  which sets ECE bit for every ACK until it observes CWR
+* Receiver functionality: If CE is set in IP header of incoming packet, send congestion notification to the sender by setting ECE in TCP header. This processing is different from standard ECN processing which sets ECE bit for every ACK until it observes CWR
 
-* Sender functionality: The sender makes use of the modified
-  receiver ECE semantics to maintain an average of fraction of packets
-  marked (α) by using the exponential weighted moving average as shown below:
+* Sender functionality: The sender makes use of the modified receiver ECE semantics to maintain an average of fraction of packets marked (α) by using the exponential weighted moving average as shown below:
 
 ::
 
@@ -864,7 +877,7 @@ The following unit tests have been written to validate the implementation of DCT
 * ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
 * ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
 * ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
-* DCTCP follows New Reno behavior for slow start
+* DCTCP follows NewReno behavior for slow start
 * Test to validate cwnd decrement in DCTCP
 
 An example program based on an experimental topology found in the original
@@ -875,7 +888,7 @@ fairness, and queue delay properties of the network.
 
 This implementation was tested extensively against a version of DCTCP in
 the Linux kernel version 4.4 using the ns-3 direct code execution (DCE)
-environment.  Some differences were noted:
+environment. Some differences were noted:
 
 * Linux maintains its congestion window in segments and not bytes, and
   the arithmetic is not floating point, so some differences in the
@@ -930,7 +943,9 @@ The following enum represents the mode of ECN:
       DctcpEcn,    //!< ECN functionality as described in RFC 8257. Note: this mode is specific to DCTCP.
     } EcnMode_t;
 
-The following are some important ECN parameters
+The following are some important ECN parameters:
+
+::
   // ECN parameters
   EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
   UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
@@ -938,9 +953,9 @@ The following are some important ECN parameters
 Enabling ECN
 ^^^^^^^^^^^^
 
-By default, support for ECN is disabled in TCP sockets.  To enable, change
+By default, support for ECN is disabled in TCP sockets. To enable, change
 the value of the attribute ``ns3::TcpSocketBase::UseEcn`` to ``On``.
-Following are supported value for the same, this functionality is aligned with
+Following are supported values for the same, this functionality is aligned with
 Linux: https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
 
 ::
@@ -1008,7 +1023,7 @@ ECN capability is negotiated during the three-way TCP handshake:
 Once the ECN-negotiation is successful, the sender sends data packets with ECT
 bits set in the IP header.
 
-Note: As mentioned in Section 6.1.1 of RFC 3168, ECT bits should not be set
+Note: As mentioned in `Section 6.1.1 of RFC 3168 <https://tools.ietf.org/html/rfc3168#section-6.1.1>`_, ECT bits should not be set
 during ECN negotiation. The ECN negotiation implemented in |ns3| follows
 this guideline.
 
@@ -1026,7 +1041,7 @@ ECN State Transitions
 5. The sender's state changes to ECN_CWR_SENT when it sends a packet with
    CWR bit set. It remains in this state until an ACK with valid ECE is received
    (i.e., ECE is received for a packet that belongs to a new window),
-   following which, it's state changes to ECN_ECE_RCVD.
+   following which, its state changes to ECN_ECE_RCVD.
 
 RFC 3168 compliance
 ^^^^^^^^^^^^^^^^^^^
@@ -1034,27 +1049,27 @@ RFC 3168 compliance
 Based on the suggestions provided in RFC 3168, the following behavior has
 been implemented:
 
-1. Pure ACK packets should not have the ECT bit set (Section 6.1.4).
+1. Pure ACK packets should not have the ECT bit set (`Section 6.1.4 <https://tools.ietf.org/html/rfc3168#section-6.1.4>`_).
 2. In the current implementation, the sender only sends ECT(0) in the IP header.
 3. The sender should should reduce the congestion window only once in each
-   window (Section 6.1.2).
+   window (`Section 6.1.2 <https://tools.ietf.org/html/rfc3168#section-6.1.2>`_).
 4. The receiver should ignore the CE bits set in a packet arriving out of
-   window (Section 6.1.5).
+   window (`Section 6.1.5 <https://tools.ietf.org/html/rfc3168#section-6.1.5>`_).
 5. The sender should ignore the ECE bits set in the packet arriving out of
-   window (Section 6.1.2).
+   window (`Section 6.1.2 <https://tools.ietf.org/html/rfc3168#section-6.1.2>`_).
 
 Open issues
 ^^^^^^^^^^^
 
 The following issues are yet to be addressed:
 
-1. Retransmitted packets should not have the CWR bit set (Section 6.1.5).
+1. Retransmitted packets should not have the CWR bit set (`Section 6.1.5 <https://tools.ietf.org/html/rfc3168#section-6.1.5>`_).
 
 2. Despite the congestion window size being 1 MSS, the sender should reduce its
    congestion window by half when it receives a packet with the ECE bit set. The
    sender must reset the retransmit timer on receiving the ECN-Echo packet when
-   the congestion window is one.  The sending TCP will then be able to send a
-   new packet only when the retransmit timer expires (Section 6.1.2).
+   the congestion window is one. The sending TCP will then be able to send a
+   new packet only when the retransmit timer expires (`Section 6.1.2 <https://tools.ietf.org/html/rfc3168#section-6.1.2>`_).
 
 3. Support for separately handling the enabling of ECN on the incoming and
    outgoing TCP sessions (e.g. a TCP may perform ECN echoing but not set the
@@ -1063,10 +1078,10 @@ The following issues are yet to be addressed:
 Validation
 ++++++++++
 
-The following tests are found in the ``src/internet/test`` directory.  In
+The following tests are found in the ``src/internet/test`` directory. In
 general, TCP tests inherit from a class called :cpp:class:`TcpGeneralTest`,
 which provides common operations to set up test scenarios involving TCP
-objects.  For more information on how to write new tests, see the
+objects. For more information on how to write new tests, see the
 section below on :ref:`Writing-tcp-tests`.
 
 * **tcp:** Basic transmission of string of data from client to server
@@ -1076,7 +1091,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-endpoint-bug2211-test:** A test for an issue that was causing stack overflow
 * **tcp-fast-retr-test:** Fast Retransmit testing
 * **tcp-header:** Unit tests on the TCP header
-* **tcp-highspeed-test:** Unit tests on the Highspeed congestion control
+* **tcp-highspeed-test:** Unit tests on the HighSpeed congestion control
 * **tcp-htcp-test:** Unit tests on the H-TCP congestion control
 * **tcp-hybla-test:** Unit tests on the Hybla congestion control
 * **tcp-vegas-test:** Unit tests on the Vegas congestion control
@@ -1087,19 +1102,20 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-illinois-test:** Unit tests on the Illinois congestion control
 * **tcp-ledbat-test:** Unit tests on the LEDBAT congestion control
 * **tcp-lp-test:** Unit tests on the TCP-LP congestion control
+* **tcp-dctcp-test:** Unit tests on the DCTCP congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
-* **tcp-rto-test:** Unit test behavior after a RTO timeout occurs
+* **tcp-rto-test:** Unit test behavior after a RTO occurs
 * **tcp-rtt-estimation-test:** Check RTT calculations, including retransmission cases
 * **tcp-slow-start-test:** Check behavior of slow start
 * **tcp-timestamp:** Unit test on the timestamp option
 * **tcp-wscaling:** Unit test on the window scaling option
 * **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
 * **tcp-close-test:** Unit test on the socket closing: both receiver and sender have to close their socket when all bytes are transferred
-* **tcp-ecn-test:** Unit tests on explicit congestion notification
+* **tcp-ecn-test:** Unit tests on Explicit Congestion Notification
 
 Several tests have dependencies outside of the ``internet`` module, so they
-are located in a system test directory called ``src/test/ns3tcp``.  Three
+are located in a system test directory called ``src/test/ns3tcp``. Three
 of these six tests involve use of the Network Simulation Cradle, and are
 disabled if NSC is not enabled in the build.  
 
@@ -1107,7 +1123,7 @@ disabled if NSC is not enabled in the build.
 * **ns3-tcp-interoperability:** Check to see that ns-3 TCP interoperates with liblinux2.6.26.so implementation
 * **ns3-tcp-loss:** Check behavior of ns-3 TCP upon packet losses
 * **nsc-tcp-loss:** Check behavior of NSC TCP upon packet losses
-* **ns3-tcp-no-delay:** Check that ns-3 TCP Nagle"s algorithm works correctly and that it can be disabled
+* **ns3-tcp-no-delay:** Check that ns-3 TCP Nagle's algorithm works correctly and that it can be disabled
 * **ns3-tcp-socket:** Check that ns-3 TCP successfully transfers an application data write of various sizes
 * **ns3-tcp-state:** Check the operation of the TCP state machine for several cases
  
@@ -1201,7 +1217,7 @@ same when SACK based loss recovery is used.
 
 Proportional Rate Reduction
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Proportional Rate Reduction (PRR) is the fast recovery algorithm described in
+Proportional Rate Reduction (PRR) is a loss recovery algorithm described in
 RFC 6937 and currently used in Linux. The design of PRR helps in avoiding
 excess window adjustments and aims to keep the congestion window as close as
 possible to ssThresh.
@@ -1237,9 +1253,9 @@ After limit calculation, the cWnd is updated as given below:
 .. math::  sndcnt = MIN (ssThresh - pipe, limit)
 .. math::  cWnd = pipe + sndcnt
 
-More information (paper):  https://dl.acm.org/citation.cfm?id=2068832
+More information (paper): https://dl.acm.org/citation.cfm?id=2068832
 
-More information (RFC):  https://tools.ietf.org/html/rfc6937
+More information (RFC): https://tools.ietf.org/html/rfc6937
 
 Adding a new loss recovery algorithm in ns-3
 ++++++++++++++++++++++++++++++++++++++++++++
@@ -1295,7 +1311,7 @@ to a congestion avoidance algorithm:
 
 
 The implementation to estimate delivery rate is a joint work between TcpTxBuffer and TcpRateOps.
-For more information, please take a look at their doxygen documentation.
+For more information, please take a look at their Doxygen documentation.
 
 The implementation follows the Internet draft (Delivery Rate Estimation):
 https://tools.ietf.org/html/draft-cheng-iccrg-delivery-rate-estimation-00
@@ -1313,10 +1329,10 @@ Writing TCP tests
 The TCP subsystem supports automated test
 cases on both socket functions and congestion control algorithms. To show
 how to write tests for TCP, here we explain the process of creating a test
-case that reproduces a bug (#1571 in the project bug tracker).
+case that reproduces the `Bug #1571<https://www.nsnam.org/bugzilla/show_bug.cgi?id=1571>`_.
 
-The bug concerns the zero window situation, which happens when the receiver can
-not handle more data. In this case, it advertises a zero window, which causes
+The bug concerns the zero window situation, which happens when the receiver
+cannot handle more data. In this case, it advertises a zero window, which causes
 the sender to pause transmission and wait for the receiver to increase the
 window.
 
@@ -1339,7 +1355,7 @@ necessary because window updates can be lost.
    the interesting values inside the method. To get a list of available methods,
    please check the Doxygen documentation.
 
-We describe the writing of two test case, covering both situations: the
+We describe the writing of two test cases, covering both situations: the
 sender's zero-window probing and the receiver "active" window update. Our focus
 will be on dealing with the reported problems, which are:
 
@@ -1384,7 +1400,7 @@ not work for every combination of propagation delay and sender application behav
 
 To define the properties of the environment (e.g. properties which should be
 set before the object creation, such as propagation delay) one next implements
-ehe method ConfigureEnvironment:
+the method ConfigureEnvironment:
 
 .. code-block:: c++
 
@@ -1403,7 +1419,7 @@ ConfigureProperties ().
 The difference is that some values, such as initial congestion window
 or initial slow start threshold, are applicable only to a single instance, not
 to every instance we have. Usually, methods that requires an id and a value
-are meant to be called inside ConfigureProperties (). Please see the doxygen
+are meant to be called inside ConfigureProperties (). Please see the Doxygen
 documentation for an exhaustive list of the tunable properties.
 
 .. code-block:: c++
@@ -1748,19 +1764,19 @@ framework for wrapping real-world network code into simulators, allowing
 simulation of real-world behavior at little extra cost. This work has been
 validated by comparing situations using a test network with the same situations
 in the simulator. To date, it has been shown that the NSC is able to produce
-extremely accurate results.  NSC supports four real world stacks: FreeBSD,
+extremely accurate results. NSC supports four real world stacks: FreeBSD,
 OpenBSD, lwIP and Linux. Emphasis has been placed on not changing any of the
 network stacks by hand. Not a single line of code has been changed in the
 network protocol implementations of any of the above four stacks. However, a
 custom C parser was built to programmatically change source code.
 
 NSC has previously been ported to |ns2| and OMNeT++, and was 
-was added to |ns3| in September 2008 (ns-3.2 release).  This section 
+was added to |ns3| in September 2008 (ns-3.2 release). This section
 describes the |ns3| port of NSC and how to use it.
 
 NSC has been obsoleted by the Linux kernel support within 
-`Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`__.  However, NSC is still available through the bake build
-system.  NSC supports Linux kernels 2.6.18 and 2.6.26, and an experimental
+`Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`__. However, NSC is still available through the bake build
+system. NSC supports Linux kernels 2.6.18 and 2.6.26, and an experimental
 version of 2.6.29 exists on ns-3's code server
 (http://code.nsnam.org/fw/nsc-linux-2.6.29/), but newer
 versions of the kernel have not been ported.  
@@ -1769,7 +1785,7 @@ Prerequisites
 +++++++++++++
 
 Presently, NSC has been tested and shown to work on these platforms:
-Linux i386 and Linux x86-64.  NSC does not support powerpc.  Use on
+Linux i386 and Linux x86-64. NSC does not support powerpc. Use on
 FreeBSD or OS X is unsupported (although it may be able to work).
 
 Building NSC requires the packages flex and bison.  
@@ -1783,7 +1799,7 @@ Configuring and Downloading
 NSC must either be downloaded separately from
 its own repository, or downloading when using the 
 `bake build system <http://www.nsnam.org/docs/tutorial/html/getting-started.html#downloading-ns3-using-bake>`_ of 
-|ns3|.  
+|ns3|.
 
 For ns-3.17 through ns-3.28 releases, when using bake, one obtains NSC implicitly as part of an "allinone" configuration, such as:
 
@@ -1866,7 +1882,7 @@ type:
   $ ./waf configure --enable-examples --enable-tests --disable-nsc
 
 If waf detects NSC, then building |ns3| with NSC is performed the same way
-with waf as without it.  Once |ns3| is built, try running the following 
+with waf as without it. Once |ns3| is built, try running the following
 test suite:
 
 .. sourcecode:: bash
@@ -1885,7 +1901,7 @@ This confirms that NSC is ready to use.
 Usage
 +++++
 
-There are a few example files.  Try:
+There are a few example files. Try:
 
 .. sourcecode:: bash
 
@@ -1908,9 +1924,9 @@ set::
   internetStack.Install (n.Get(1));
 
 
-The key line is the ``SetNscStack``.  This tells the InternetStack
+The key line is the ``SetNscStack``. This tells the InternetStack
 helper to aggregate instances of NSC TCP instead of native |ns3| TCP
-to the remaining nodes.  It is important that this function be called
+to the remaining nodes. It is important that this function be called
 **before** calling the ``Install()`` function, as shown above.
 
 Which stacks are available to use? Presently, the focus has been on
@@ -1950,12 +1966,12 @@ can see the following configuration::
 
 These additional configuration variables are not available to native |ns3| TCP.
 
-Also note that default values for TCP attributes in |ns3| TCP may differ from the nsc TCP implementation.  Specifically in |ns3|:
+Also note that default values for TCP attributes in |ns3| TCP may differ from the NSC TCP implementation. Specifically in |ns3|:
 
   1) TCP default MSS is 536
-  2) TCP Delayed Ack count is 2 
+  2) TCP Delayed ACK count is 2
 		
-Therefore when making comparisons between results obtained using nsc and |ns3| TCP, care must be taken to ensure these values are set appropriately.  See /examples/tcp/tcp-nsc-comparision.cc for an example.
+Therefore when making comparisons between results obtained using NSC and |ns3| TCP, care must be taken to ensure these values are set appropriately. See /examples/tcp/tcp-nsc-comparison.cc for an example.
 
 NSC API
 +++++++
@@ -1966,17 +1982,17 @@ defined in ``sim/sim_interface.h`` in the nsc directory.
 
 * **INetStack** INetStack contains the 'low level' operations for the operating
   system network stack, e.g. in and output functions from and to the network
-  stack (think of this as the 'network driver interface'. There are also
+  stack (think of this as the 'network driver interface'). There are also
   functions to create new TCP or UDP sockets.
 * **ISendCallback** This is called by NSC when a packet should be sent out to
   the network. This simulator should use this callback to re-inject the packet
   into the simulator so the actual data can be delivered/routed to its
   destination, where it will eventually be handed into Receive() (and eventually
-  back to the receivers NSC instance via INetStack->if_receive() ).
+  back to the receivers NSC instance via INetStack->if_receive()).
 * **INetStreamSocket** This is the structure defining a particular connection
   endpoint (file descriptor). It contains methods to operate on this endpoint,
   e.g. connect, disconnect, accept, listen, send_data/read_data, ...
-* **IInterruptCallback** This contains the wakeup callback, which is called by
+* **IInterruptCallback** This contains the wakeup() callback, which is called by
   NSC whenever something of interest happens. Think of wakeup() as a replacement
   of the operating systems wakeup function: Whenever the operating system would
   wake up a process that has been waiting for an operation to complete (for
@@ -1991,48 +2007,48 @@ follows.
 
 The three main parts are:
 
-* :cpp:class:`ns3::NscTcpL4Protocol`:  a subclass of Ipv4L4Protocol (and two nsc
+* :cpp:class:`ns3::NscTcpL4Protocol`: a subclass of Ipv4L4Protocol (and two NSC
   classes: ISendCallback and IInterruptCallback)
 * :cpp:class:`ns3::NscTcpSocketImpl`: a subclass of TcpSocket 
-* :cpp:class:`ns3::NscTcpSocketFactoryImpl`:  a factory to create new NSC
+* :cpp:class:`ns3::NscTcpSocketFactoryImpl`: a factory to create new NSC
   sockets
 
 ``src/internet/model/nsc-tcp-l4-protocol`` is the main class. Upon
-Initialization, it loads an nsc network stack to use (via dlopen()). Each
+Initialization, it loads an NSC network stack to use (via dlopen()). Each
 instance of this class may use a different stack. The stack (=shared library) to
 use is set using the SetNscLibrary() method (at this time its called indirectly
-via the internet stack helper). The nsc stack is then set up accordingly (timers
+via the internet stack helper). The NSC stack is then set up accordingly (timers
 etc). The NscTcpL4Protocol::Receive() function hands the packet it receives
-(must be a complete tcp/ip packet) to the nsc stack for further processing.  To
-be able to send packets, this class implements the nsc send_callback method.
-This method is called by nsc whenever the nsc stack wishes to send a packet out
+(must be a complete TCP/IP packet) to the NSC stack for further processing. To
+be able to send packets, this class implements the NSC send_callback() method.
+This method is called by NSC whenever the NSC stack wishes to send a packet out
 to the network. Its arguments are a raw buffer, containing a complete TCP/IP
 packet, and a length value. This method therefore has to convert the raw data to
-a Ptr<Packet> usable by |ns3|. In order to avoid various ipv4 header issues,
-the nsc ip header is not included. Instead, the tcp header and the actual
+a Ptr<Packet> usable by |ns3|. In order to avoid various IPv4 header issues,
+the NSC IP header is not included. Instead, the TCP header and the actual
 payload are put into the Ptr<Packet>, after this the Packet is passed down to
 layer 3 for sending the packet out (no further special treatment is needed in
 the send code path).
 
-This class calls ``ns3::NscTcpSocketImpl`` both from the nsc wakeup() callback
-and from the Receive path (to ensure that possibly queued data is scheduled for
+This class calls ``ns3::NscTcpSocketImpl`` both from the NSC wakeup() callback
+and from the receive path (to ensure that possibly queued data is scheduled for
 sending).
 
-``src/internet/model/nsc-tcp-socket-impl`` implements the nsc socket interface.
-Each instance has its own nscTcpSocket. Data that is Send() will be handed to
-the nsc stack via m_nscTcpSocket->send_data(). (and not to nsc-tcp-l4, this is
-the major difference compared to |ns3| TCP). The class also queues up data that
-is Send() before the underlying descriptor has entered an ESTABLISHED state.
-This class is called from the nsc-tcp-l4 class, when the nsc-tcp-l4 wakeup()
-callback is invoked by nsc. nsc-tcp-socket-impl then checks the current
+``src/internet/model/nsc-tcp-socket-impl`` implements the NSC socket interface.
+Each instance has its own m_nscTcpSocket. Data that is sent will be handed to
+the NSC stack via m_nscTcpSocket->send_data() (and not to NscTcpL4Protocol, this
+is the major difference compared to |ns3| TCP). The class also queues up data
+that is sent before the underlying descriptor has entered an ESTABLISHED state.
+This class is called from the NscTcpL4Protocol class, when the NscTcpL4Protocol
+wakeup() callback is invoked by NSC. NscTcpSocketImpl then checks the current
 connection state (SYN_SENT, ESTABLISHED, LISTEN...) and schedules appropriate
-callbacks as needed, e.g. a LISTEN socket will schedule Accept to see if a new
+callbacks as needed, e.g. a LISTEN socket will schedule accept() to see if a new
 connection must be accepted, an ESTABLISHED socket schedules any pending data
-for writing, schedule a read callback, etc.
+for writing, schedule a read() callback, etc.
 
-Note that ``ns3::NscTcpSocketImpl`` does not interact with nsc-tcp directly:
-instead, data is redirected to nsc. nsc-tcp calls the nsc-tcp-sockets of a node
-when its wakeup callback is invoked by nsc. 
+Note that ``ns3::NscTcpSocketImpl`` does not interact with NSC TCP directly:
+instead, data is redirected to NSC. NSC TCP calls the NSC TCP sockets of a node
+when its wakeup() callback is invoked by NSC.
 
 Limitations
 +++++++++++
