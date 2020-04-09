@@ -468,7 +468,7 @@ create and transmit the signal on the channel.
    :align: center
 
    8K COFDM signal spectrum generated from ``TvSpectrumTransmitter`` (Left) and
-   theoretical COFDM signal spectrum [KoppCOFDM] (Right)
+   theoretical COFDM signal spectrum [KoppCOFDM]_ (Right)
 
 One of the user-configurable attributes is the type of modulation for the TV
 transmitter to use. The options are 8-VSB (Eight-Level Vestigial Sideband
@@ -480,8 +480,8 @@ technology but is still being used by some countries today. To accomplish
 realistic PSD models for these modulation types, the signals’ PSDs were
 approximated from real standards and developed into models that are scalable by
 frequency and power. The COFDM PSD is approximated from Figure 12 (8k mode) of
-[KoppCOFDM], the 8-VSB PSD is approximated from Figure 3 of [Baron8VSB], and the
-analog PSD is approximated from Figure 4 of [QualcommAnalog]. Note that the
+[KoppCOFDM]_, the 8-VSB PSD is approximated from Figure 3 of [Baron8VSB]_, and the
+analog PSD is approximated from Figure 4 of [QualcommAnalog]_. Note that the
 analog model is approximated from the NTSC standard, but other analog modulation
 standards such as PAL have similar signals. The approximated COFDM PSD model is
 in 8K mode. The other configurable attributes are the start frequency,
@@ -515,7 +515,7 @@ is also provided to easily simulate real-world scenarios.
 
    North America ATSC channel 19 & 20 signals generated using
    ``TvSpectrumTransmitterHelper`` (Left) and theoretical 8-VSB signal
-   [Baron8VSB] (Right). Note that the theoretical signal is not shown in dB
+   [Baron8VSB]_ (Right). Note that the theoretical signal is not shown in dB
    while the ns-3 generated signals are.
 
 Using this helper class, users can easily set up TV transmitters right after
@@ -580,7 +580,7 @@ correspond to TV transmitter positions. The first method converts Earth
 geographic coordinates to Earth-Centered Earth-Fixed (ECEF) Cartesian
 coordinates, and is tested in the ``geo-to-cartesian`` test suite by comparing
 (with 10 meter tolerance) its output with the output of the geographic to ECEF
-conversion function [MatlabGeo] of the MATLAB Mapping Toolbox for numerous
+conversion function [MatlabGeo]_ of the MATLAB Mapping Toolbox for numerous
 test cases. The other used method generates random ECEF Cartesian points around
 the given geographic origin point, and is tested in the ``rand-cart-around-geo``
 test suite by verifying that the generated points do not exceed the given
@@ -623,18 +623,21 @@ ThreeGppChannelModel and ThreeGppSpectrumPropagationLossModel.
 **Note:**
 
   * Currently, no error model is provided; a link-to-system campaign may be
-  needed to incorporate it in existing modules.
+    needed to incorporate it in existing modules.
 
   * The model does not include any spatial consistency update procedure
-  (see [TR38901]_, Sec. 7.6.1). The implementation of this feature is left
-  as future work.
+    (see [TR38901]_, Sec. 7.6.1). The implementation of this feature is left
+    as future work.
 
   * Issue regarding the blockage model: according to 3GPP TR 38.901 v15.0.0
-  (2018-06) section 7.6.4.1, the blocking region for self-blocking is provided
-  in LCS.
-  However, here, clusterAOA and clusterZOA are in GCS and blocking check is
-  performed for self-blocking similar to non-self blocking, that is in GCS.
-  One would expect the angles to be transposed to LCS before checking self-blockage.
+    (2018-06) section 7.6.4.1, the blocking region for self-blocking is provided
+    in LCS.
+  
+    However, here, clusterAOA and clusterZOA are in GCS and blocking check is
+    performed for self-blocking similar to non-self blocking, that is in GCS.
+    One would expect the angles to be transposed to LCS before checking
+    self-blockage.
+  
 
 ThreeGppSpectrumPropagationLossModel
 ####################################
@@ -739,17 +742,22 @@ Testing
 The test suite ThreeGppChannelTestSuite includes three test cases:
 
 * ThreeGppChannelMatrixComputationTest checks if the channel matrix has the
-correct dimensions and if it correctly normalized
+  correct dimensions and if it correctly normalized
 
-* ThreeGppChannelMatrixUpdateTest, which checks if the channel matrix is correctly
-updated when the coherence time exceeds
+* ThreeGppChannelMatrixUpdateTest, which checks if the channel matrix
+  is correctly updated when the coherence time exceeds
 
-* ThreeGppSpectrumPropagationLossModelTest, which tests the functionalities of the
-class ThreeGppSpectrumPropagationLossModel. It builds a simple network composed of two
-nodes, computes the power spectral density received by the
-receiving node, and (i) checks if the long term components for the direct and the reverse link
-are the same, (ii) checks if the long term component is updated when changing the beamforming
-vectors, (iii) checks if the long term is updated when changing the channel matrix
+* ThreeGppSpectrumPropagationLossModelTest, which tests the functionalities
+  of the class ThreeGppSpectrumPropagationLossModel. It builds a simple
+  network composed of two nodes, computes the power spectral density
+  received by the receiving node, and
+  
+    1. Checks if the long term components for the direct and
+       the reverse link are the same,
+    2. Checks if the long term component is updated when changing
+       the beamforming vectors,
+    3. Checks if the long term is updated when changing the channel matrix
+
 
 **Note:** TR 38.901 includes a calibration procedure that can be used to validate
 the model, but it requires some additional features which are not currently

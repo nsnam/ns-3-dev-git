@@ -7,7 +7,7 @@
 
 This chapter describes the implementation of |ns3| model for the
 compression of IPv6 packets over IEEE 802.15.4-Based Networks
-as specified by :rfc:`4944` and :rfc:`6282`.
+as specified by :rfc:`4944` ([RFC4944]_) and :rfc:`6282` ([RFC6282]_).
 
 Model Description
 *****************
@@ -30,7 +30,7 @@ following exceptions:
 The HC2 encoding is not supported, as it has been superseded by IPHC and NHC
 compression type (\ :rfc:`6282`).
 
-IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` for full
+IPHC SAC and DAC are not yet supported, as they do require :rfc:`6775` ([RFC6775]_) for full
 compliance. It is planned to support them in the future.
 
 NetDevice
@@ -47,7 +47,7 @@ GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minimum
 The module does provide some attributes and some tracesources.
 The attributes are:
 
-* Rfc6282 (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
+* :rfc:`6282` (boolean, default true), used to activate HC1 (:rfc:`4944`) or IPHC (:rfc:`6282`) compression.
 * OmitUdpChecksum (boolean, default true), used to activate UDP checksum compression in IPHC.
 * FragmentReassemblyListSize (integer, default 0), indicating the number of packets that can be reassembled at the same time. If the limit is reached, the oldest packet is discarded. Zero means infinite.
 * FragmentExpirationTimeout (Time, default 60 seconds), being the timeout to wait for further fragments before discarding a partial packet.

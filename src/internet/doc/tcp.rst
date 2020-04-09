@@ -794,13 +794,13 @@ window based on this estimate. This approach achieves high burst tolerance, low
 latency, and high throughput with shallow-buffered switches.
 
 * Receiver functionality: If CE is set in IP header of incoming packet, send
-congestion notification to the sender by setting ECE in TCP header. This processing
-is different from standard ECN processing which sets ECE bit for every ACK untill
-it observes CWR
+  congestion notification to the sender by setting ECE in TCP header.
+  This processing is different from standard ECN processing
+  which sets ECE bit for every ACK until it observes CWR
 
-* Sender functionality: The sender makes use of the modified receiver ECE semantics
-to maintain an average of fraction of packets marked (α) by using the exponential
- weighted moving average as shown below:
+* Sender functionality: The sender makes use of the modified
+  receiver ECE semantics to maintain an average of fraction of packets
+  marked (α) by using the exponential weighted moving average as shown below:
 
 ::
 

@@ -6,9 +6,9 @@ model a variety of underwater network scenarios.  The UAN model
 is broken into four main parts:  The channel, PHY, MAC and
 Autonomous Underwater Vehicle (AUV) models.
 
-The need for underwater wireless communications exists in applications such as remote control in offshore oil industry [1]_, pollution monitoring in environmental systems, speech transmission between divers, mapping of the ocean floor, mine counter measures [4]_, seismic monitoring of ocean faults as well as climate changes monitoring. Unfortunately, making on-field measurements is very expensive and there are no commonly accepted standard to base on. Hence, the priority to make research work going on, it is to realize a complete simulation framework that researchers can use to experiment, make tests and make performance evaluation and comparison.
+The need for underwater wireless communications exists in applications such as remote control in offshore oil industry [1]_, pollution monitoring in environmental systems, speech transmission between divers, mapping of the ocean floor, mine counter measures [2]_ [4]_, seismic monitoring of ocean faults as well as climate changes monitoring. Unfortunately, making on-field measurements is very expensive and there are no commonly accepted standard to base on. Hence, the priority to make research work going on, it is to realize a complete simulation framework that researchers can use to experiment, make tests and make performance evaluation and comparison.
 
-The NS-3 UAN module is a first step in this direction, trying to offer a reliable and realistic tool. In fact, the UAN module offers accurate modelling of the underwater acoustic channel, a model of the WHOI acoustic modem (one of the widely used acoustic modems)[6]_ and its communications performance, and some MAC protocols.
+The NS-3 UAN module is a first step in this direction, trying to offer a reliable and realistic tool. In fact, the UAN module offers accurate modelling of the underwater acoustic channel, a model of the WHOI acoustic modem (one of the widely used acoustic modems) [6]_ and its communications performance, and some MAC protocols.
 
 
 Model Description
@@ -261,7 +261,7 @@ Acoustic modem energy model
 
 Basing on the Device Energy Model interface, has been implemented a generic energy model for acoustic modem. The model allows to trace four modem's power-states: Sleep, Idle, Receiving, Transmitting. The default parameters for the energy model are set to fit those of the WHOI μmodem. The class follows pretty closely the RadioEnergyModel class as the transducer behaviour is pretty close to that of a Wi-Fi radio.
 
-The default power consumption values implemented into the model are as follows [6]:
+The default power consumption values implemented into the model are as follows [6]_:
 
 +--------------+---------------------+
 | Modem State  | Power Consumption   |
@@ -290,7 +290,7 @@ Li-Ion batteries model
 A generic Li-Ion battery model has been implemented based on [7][8]. The model can be fitted to any type of Li-Ion battery simply changing the model's parameters The default values are fitted for the Panasonic CGR18650DA Li-Ion Battery [9].
 [TODO insert figure]
 As shown in figure the model approximates very well the Li-Ion cells.
-Regarding Seagliders, the batteries used into the AUV are Electrochem 3B36 Lithium / Sulfuryl Chloride cells [10]. Also with this cell type, the model seems to approximates the different discharge curves pretty well, as shown in the figure.
+Regarding Seagliders, the batteries used into the AUV are Electrochem 3B36 Lithium / Sulfuryl Chloride cells [10]_. Also with this cell type, the model seems to approximates the different discharge curves pretty well, as shown in the figure.
 
 .. note::
 
