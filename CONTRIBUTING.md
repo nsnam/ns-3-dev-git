@@ -6,7 +6,7 @@ The following is a set of guidelines for contributing to ns-3, which are hosted 
 
 #### Table Of Contents
 
-[I don't want to read this whole thing, I just have a question!!!](#i-dont-want-to-read-this-whole-thing-i-just-have-a-question)
+[I do not want to read this whole thing, I just have a question!!!](#i-do-not-want-to-read-this-whole-thing-i-just-have-a-question)
 
 [What should I know before I get started?](#what-should-i-know-before-i-get-started)
   * [ns-3 Documentation](#ns-3-documentation)
@@ -16,7 +16,7 @@ The following is a set of guidelines for contributing to ns-3, which are hosted 
   * [Reporting Bugs](#reporting-bugs)
   * [Suggesting Enhancements](#suggesting-enhancements)
   * [Your First Code Contribution](#your-first-code-contribution)
-  * [Pull Requests](#pull-requests)
+  * [Merge Requests](#merge-requests)
 
 [Styleguides](#styleguides)
   * [Git Commit Messages](#git-commit-messages)
@@ -27,7 +27,7 @@ The following is a set of guidelines for contributing to ns-3, which are hosted 
   * [Issue and Pull Request Labels](#issue-and-pull-request-labels)
 
 
-## I don't want to read this whole thing I just have a question!!!
+## I do not want to read this whole thing I just have a question!!!
 
 > **Note:** Please don't file an issue to ask a question.
             You'll get faster results by using the resources below.
@@ -73,7 +73,7 @@ When we make a significant decision in how we maintain the project and what we c
 
 This section guides you through submitting a bug report for ns-3. Following these guidelines helps maintainers and the community understand your report :pencil:, reproduce the behavior :computer: :computer:, and find related reports :mag_right:.
 
-Before creating bug reports, please check [this list](#before-submitting-a-bug-report) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report).
+Before creating bug reports, please check [this list](#before-submitting-a-bug-report-to-be-completed) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report).
 
 > **Note:** If you find a **Closed** issue that seems like it is the same thing that you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
 

@@ -6,7 +6,7 @@ The Network Simulator, Version 3
 
 1) [An overview](#an-open-source-project)
 2) [Building ns-3](#building-ns-3)
-3) [Running ns-3](#running-ns3)
+3) [Running ns-3](#running-ns-3)
 4) [Getting access to the ns-3 documentation](#getting-access-to-the-ns-3-documentation)
 5) [Working with the development version of ns-3](#working-with-the-development-version-of-ns-3)
 
@@ -16,7 +16,7 @@ http://www.nsnam.org
 ## An Open Source project
 
 ns-3 is a free open source project aiming to build a discrete-event
-network simulator targeted for simulation research and education.   
+network simulator targeted for simulation research and education.
 This is a collaborative project; we hope that
 the missing pieces of the models we have not yet implemented
 will be contributed by the community in an open collaboration
