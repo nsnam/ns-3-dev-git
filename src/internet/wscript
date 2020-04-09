@@ -420,6 +420,7 @@ def build(bld):
         'model/tcp-htcp.h',
         'model/tcp-lp.h',
         'model/tcp-dctcp.h',
+        'model/windowed-filter.h',
         'model/tcp-ledbat.h',
         'model/tcp-socket-base.h',
         'model/tcp-socket-state.h',
