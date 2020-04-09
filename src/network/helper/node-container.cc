@@ -36,6 +36,11 @@ NodeContainer::NodeContainer (std::string nodeName)
   Ptr<Node> node = Names::Find<Node> (nodeName);
   m_nodes.push_back (node);
 }
+NodeContainer::NodeContainer (uint32_t n, uint32_t systemId /* = 0 */)
+{
+  m_nodes.reserve (n);
+  Create (n, systemId);
+}
 NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
 {
   Add (a);

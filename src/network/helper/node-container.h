@@ -64,6 +64,20 @@ public:
   NodeContainer (std::string nodeName);
 
   /**
+   * Create a NodeContainer with the requested number of Nodes.
+   *
+   * This is syntatic sugar for
+   *
+   *     NodeContainer nodes;
+   *     nodes.Create (size);
+   *     // or nodes.Create (size, systemId);
+   *
+   * \param [in] n The number of nodes to create.
+   * \param [in] systemId The system id or rank associated with this node
+   */
+  NodeContainer (uint32_t n, uint32_t systemId = 0);
+  
+  /**
    * Create a node container which is a concatenation of two input
    * NodeContainers.
    *
