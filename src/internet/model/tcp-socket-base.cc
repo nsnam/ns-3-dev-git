@@ -1811,6 +1811,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   m_txBuffer->DiscardUpTo (ackNumber, MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
 
   uint32_t currentDelivered = static_cast<uint32_t> (m_rateOps->GetConnectionRate ().m_delivered - previousDelivered);
+  m_tcb->m_lastAckedSackedBytes = currentDelivered;
 
   if (m_tcb->m_congState == TcpSocketState::CA_CWR && (ackNumber > m_recover))
     {
