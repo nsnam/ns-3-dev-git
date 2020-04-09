@@ -24,7 +24,7 @@ The following is a set of guidelines for contributing to ns-3, which are hosted 
   * [Documentation Styleguide](#documentation-styleguide)
 
 [Additional Notes](#additional-notes)
-  * [Issue and Pull Request Labels](#issue-and-pull-request-labels)
+  * [Issue and Merge Request Labels](#issue-and-merge-request-labels)
 
 
 ## I do not want to read this whole thing I just have a question!!!
@@ -127,10 +127,10 @@ Enhancement suggestions are tracked as [Gitlab issues](https://docs.gitlab.com/e
 
 ### Your First Code Contribution
 
-Unsure where to begin contributing to ns-3? You can start by looking through these `beginner` and `help-wanted` issues:
+Unsure where to begin contributing to ns-3? You can start by looking through these `good first issue` and `project ideas` issues:
 
-* [Beginner issues][beginner] - issues which should only require a few lines of code, and a test or two.
-* [Help wanted issues][help-wanted] - issues which should be a bit more involved than `beginner` issues.
+* [Good first issue](https://gitlab.com/nsnam/ns-3-dev/-/issues?label_name%5B%5D=good+first+issue) - issues which should only require a few lines of code, and a test or two.
+* [Project ideas](https://gitlab.com/nsnam/ns-3-dev/-/issues?label_name%5B%5D=project+ideas) - issues which should be a bit more involved than `good first issue`.
 
 Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
 
@@ -154,7 +154,7 @@ Please follow these steps to have your contribution considered by the maintainer
 1. Follow the [styleguides](#styleguides)
 2. After you submit your merge request, verify that all status checks are passing <details><summary>What if the status checks are failing?</summary>If a status check is failing, and you believe that the failure is unrelated to your change, please leave a comment on the merge request explaining why you believe the failure is unrelated. A maintainer will re-run the status check for you. If we conclude that the failure was a false positive, then we will open an issue to track that problem with our status check suite.</details>
 
-While the prerequisites above must be satisfied prior to having your merge request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
+While the prerequisites above must be satisfied prior to having your merge request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your merge request can be ultimately accepted.
 
 ## Styleguides
 
@@ -176,9 +176,9 @@ We maintain our code style through the webpage [Code Style](https://www.nsnam.or
 
 ## Additional Notes
 
-### Issue and Pull Request Labels
+### Issue and Merge Request Labels
 
-This section lists the labels we use to help us track and manage issues and pull requests.
+This section lists the labels we use to help us track and manage issues and merge requests.
 
 The labels are loosely grouped by their purpose, but it's not required that every issue have a label from every group or that an issue can't have more than one label from the same group.
 
@@ -213,15 +213,15 @@ Please open an issue on `infrastructure` if you have suggestions for new labels,
 | `infrastructure` | Related to gitlab infrastructure. |
 | `utils` | Related to scripts and various utils for ns-3 repository or code maintenance. |
 
-#### Pull Request Labels
+#### Merge Request Labels
 
 | Label name | Description
 | --- | --- |
-| `work-in-progress` | Pull requests which are still being worked on, more changes will follow. |
-| `needs-review` | Pull requests which need code review, and approval from maintainers or ns-3 core team. |
-| `under-review` | Pull requests being reviewed by maintainers or ns-3 core team. |
-| `requires-changes` | Pull requests which need to be updated based on review comments and then reviewed again. |
-| `needs-testing` | Pull requests which need manual testing. |
+| `work-in-progress` | Merge requests which are still being worked on, more changes will follow. |
+| `needs-review` | Merge requests which need code review, and approval from maintainers or ns-3 core team. |
+| `under-review` | Merge requests being reviewed by maintainers or ns-3 core team. |
+| `requires-changes` | Merge requests which need to be updated based on review comments and then reviewed again. |
+| `needs-testing` | Merge requests which need manual testing. |
 
 ### Module Labels
 
