@@ -442,6 +442,7 @@ IidManager::AllocateUid (std::string name)
   information.size = (std::size_t)(-1);
   information.hasConstructor = false;
   information.mustHideFromDocumentation = false;
+  information.supportLevel = TypeId::SUPPORTED;
   m_information.push_back (information);
   std::size_t tuid = m_information.size ();
   NS_ASSERT (tuid <= 0xffff);
