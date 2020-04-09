@@ -135,10 +135,12 @@ int main (int argc, char *argv[])
   PointToPointHelper accessLink;
   accessLink.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
   accessLink.SetChannelAttribute ("Delay", StringValue ("0.1ms"));
+  accessLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("100p"));
 
   PointToPointHelper bottleneckLink;
   bottleneckLink.SetDeviceAttribute ("DataRate", StringValue (bandwidth));
   bottleneckLink.SetChannelAttribute ("Delay", StringValue (delay));
+  bottleneckLink.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue (std::to_string (netdevicesQueueSize) + "p"));
 
   InternetStackHelper stack;
   stack.InstallAll ();
@@ -198,16 +200,12 @@ int main (int argc, char *argv[])
       tchBottleneck.SetQueueLimits ("ns3::DynamicQueueLimits");
     }
 
-  Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("100p"));
-
   NetDeviceContainer devicesAccessLink = accessLink.Install (n1.Get (0), n2.Get (0));
   tchPfifoFastAccess.Install (devicesAccessLink);
   Ipv4AddressHelper address;
   address.SetBase ("192.168.0.0", "255.255.255.0");
   address.NewNetwork ();
   Ipv4InterfaceContainer interfacesAccess = address.Assign (devicesAccessLink);
-
-  Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue (std::to_string (netdevicesQueueSize) + "p"));
 
   NetDeviceContainer devicesBottleneckLink = bottleneckLink.Install (n2.Get (0), n3.Get (0));
   QueueDiscContainer qdiscs;
