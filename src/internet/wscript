@@ -308,6 +308,7 @@ def build(bld):
         'test/tcp-dctcp-test.cc',
         'test/tcp-syn-connection-failed-test.cc',
         'test/tcp-pacing-test.cc',
+        'test/tcp-bbr-test.cc',
         ]
     # Tests encapsulating example programs should be listed here
     if (bld.env['ENABLE_EXAMPLES']):
