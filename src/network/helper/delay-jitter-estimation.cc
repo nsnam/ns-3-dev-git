@@ -53,11 +53,11 @@ public:
    */
   Time GetTxTime (void) const;
 private:
-  uint64_t m_creationTime; //!< The time stored in the tag
+  Time m_creationTime; //!< The time stored in the tag
 };
 
 DelayJitterEstimationTimestampTag::DelayJitterEstimationTimestampTag ()
-  : m_creationTime (Simulator::Now ().GetTimeStep ())
+  : m_creationTime (Simulator::Now ())
 {
 }
 
@@ -70,8 +70,8 @@ DelayJitterEstimationTimestampTag::GetTypeId (void)
     .AddConstructor<DelayJitterEstimationTimestampTag> ()
     .AddAttribute ("CreationTime",
                    "The time at which the timestamp was created",
-                   StringValue ("0.0s"),
-                   MakeTimeAccessor (&DelayJitterEstimationTimestampTag::GetTxTime),
+                   TimeValue (Time (0)),
+                   MakeTimeAccessor (&DelayJitterEstimationTimestampTag::m_creationTime),
                    MakeTimeChecker ())
   ;
   return tid;
@@ -90,12 +90,12 @@ DelayJitterEstimationTimestampTag::GetSerializedSize (void) const
 void
 DelayJitterEstimationTimestampTag::Serialize (TagBuffer i) const
 {
-  i.WriteU64 (m_creationTime);
+  i.WriteU64 (m_creationTime.GetTimeStep ());
 }
 void
 DelayJitterEstimationTimestampTag::Deserialize (TagBuffer i)
 {
-  m_creationTime = i.ReadU64 ();
+  m_creationTime = TimeStep (i.ReadU64 ());
 }
 void
 DelayJitterEstimationTimestampTag::Print (std::ostream &os) const
@@ -105,14 +105,12 @@ DelayJitterEstimationTimestampTag::Print (std::ostream &os) const
 Time
 DelayJitterEstimationTimestampTag::GetTxTime (void) const
 {
-  return TimeStep (m_creationTime);
+  return m_creationTime;
 }
 
 DelayJitterEstimation::DelayJitterEstimation ()
-  : m_previousRx (Simulator::Now ()),
-    m_previousRxTx (Simulator::Now ()),
-    m_jitter (0),
-    m_delay (Seconds (0.0))
+  : m_jitter (Time (0)),
+    m_transit (Time (0))
 {
 }
 void
@@ -131,24 +129,37 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
     {
       return;
     }
-  tag.GetTxTime ();
 
-  Time delta = (Simulator::Now () - m_previousRx) - (tag.GetTxTime () - m_previousRxTx);
-  m_jitter += (Abs (delta) - m_jitter) / (int64x64_t)16;
-  m_previousRx = Simulator::Now ();
-  m_previousRxTx = tag.GetTxTime ();
-  m_delay = Simulator::Now () - tag.GetTxTime ();
+  // Variable names from
+  // RFC 1889 Appendix A.8 ,p. 71,
+  // RFC 3550 Appendix A.8, p. 94
+  
+  Time r_ts = tag.GetTxTime ();
+  Time arrival = Simulator::Now ();
+  Time transit = arrival - r_ts;
+  Time delta = transit - m_transit;
+  m_transit = transit;
+
+  // floating jitter version
+  //  m_jitter += (Abs (delta) - m_jitter) / 16;
+  
+  // int variant
+  m_jitter += Abs (delta) - ( (m_jitter + TimeStep (8)) / 16 );
 }
 
 Time 
 DelayJitterEstimation::GetLastDelay (void) const
 {
-  return m_delay;
+  return m_transit;
 }
 uint64_t
 DelayJitterEstimation::GetLastJitter (void) const
 {
-  return m_jitter.GetHigh ();
+  // floating jitter version
+  // return m_jitter.GetTimeStep ();
+
+  // int variant
+  return (m_jitter / 16).GetTimeStep ();
 }
 
 } // namespace ns3
