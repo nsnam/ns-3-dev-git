@@ -200,6 +200,15 @@ public:
    * \return  the floor where the position falls
    */
   uint16_t GetFloor (Vector position) const;
+  /**
+   * \brief Checks if a line-segment between position l1 and position l2
+   *        intersects a building.
+   *
+   * \param l1 position
+   * \param l2 position
+   * \return true if there is a intersection, false otherwise
+   */
+  bool IsIntersect (const Vector &l1, const Vector &l2) const;
 
 
 

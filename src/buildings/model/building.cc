@@ -284,5 +284,11 @@ Building::GetFloor (Vector position) const
   return n;
 }
 
+bool
+Building::IsIntersect (const Vector &l1, const Vector &l2) const
+{
+  return m_buildingBounds.IsIntersect (l1, l2);
+}
+
 
 } // namespace ns3

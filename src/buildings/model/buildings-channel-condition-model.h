@@ -79,19 +79,14 @@ public:
 
 private:
   /**
-   * Checks if the is a building in between position L1 and position L2.
-   * This function was developed by NYU Wireless and is based on the algorithm
-   * described here http://www.3dkingdoms.com/weekly/weekly.php?a=21.
-   * Reference: Menglei Zhang, Michele Polese, Marco Mezzavilla, Sundeep Rangan,
-   * Michele Zorzi. "ns-3 Implementation of the 3GPP MIMO Channel Model for
-   * Frequency Spectrum above 6 GHz". In Proceedings of the Workshop on ns-3
-   * (WNS3 '17). 2017.
+   * \brief Checks if the line of sight between position l1 and position l2 is
+   *        blocked by a building.
    *
    * \param l1 position
    * \param l2 position
-   * \return true if there is a building in between L1 and L2, false otherwise
+   * \return true if the line of sight is blocked, false otherwise
    */
-  bool IsWithinLineOfSight (const Vector &l1, const Vector &l2) const;
+  bool IsLineOfSightBlocked (const Vector &l1, const Vector &l2) const;
 };
 
 } // end ns3 namespace

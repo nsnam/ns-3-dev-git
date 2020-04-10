@@ -69,9 +69,10 @@ BuildingsChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   if (!isAIndoor && !isBIndoor) // a and b are outdoor
     {
       // The outdoor case, determine LOS/NLOS
-      // The channel condition should be NLOS if the line intersect one of the buildings, otherwise LOS
-      bool intersect = IsWithinLineOfSight (a->GetPosition (), b->GetPosition ());
-      if (!intersect)
+      // The channel condition should be LOS if the line of sight is not blocked,
+      // otherwise NLOS
+      bool blocked = IsLineOfSightBlocked (a->GetPosition (), b->GetPosition ());
+      if (!blocked)
         {
           cond->SetLosCondition (ChannelCondition::LosConditionValue::LOS);
         }
@@ -103,61 +104,20 @@ BuildingsChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
 }
 
 bool
-BuildingsChannelConditionModel::IsWithinLineOfSight (const ns3::Vector &l1, const ns3::Vector &l2) const
+BuildingsChannelConditionModel::IsLineOfSightBlocked (const ns3::Vector &l1, const ns3::Vector &l2) const
 {
   for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
     {
-      Box boundaries = (*bit)->GetBoundaries ();
-
-      Vector boxSize (0.5 * (boundaries.xMax - boundaries.xMin),
-                      0.5 * (boundaries.yMax - boundaries.yMin),
-                      0.5 * (boundaries.zMax - boundaries.zMin));
-      Vector boxCenter (boundaries.xMin + boxSize.x,
-                        boundaries.yMin + boxSize.y,
-                        boundaries.zMin + boxSize.z);
-
-      // Put line in box space
-      Vector lB1 (l1.x - boxCenter.x, l1.y - boxCenter.y, l1.z - boxCenter.z);
-      Vector lB2 (l2.x - boxCenter.x, l2.y - boxCenter.y, l2.z - boxCenter.z);
-
-      // Get line midpoint and extent
-      Vector lMid (0.5 * (lB1.x + lB2.x), 0.5 * (lB1.y + lB2.y), 0.5 * (lB1.z + lB2.z));
-      Vector l (lB1.x - lMid.x, lB1.y - lMid.y, lB1.z - lMid.z);
-      Vector lExt (std::abs (l.x), std::abs (l.y), std::abs (l.z));
-
-      // Use Separating Axis Test
-      // Separation vector from box center to line center is lMid, since the line is in box space
-      // If the line did not intersect this building, jump to the next building.
-      if (std::abs(lMid.x) > boxSize.x + lExt.x)
+      if ((*bit)->IsIntersect (l1, l2))
         {
-          continue;
+          // The line of sight should be blocked if the line-segment between
+          // l1 and l2 intersects one of the buildings.
+          return true;
         }
-      if (std::abs(lMid.y) > boxSize.y + lExt.y)
-        {
-          continue;
-        }
-      if (std::abs(lMid.z) > boxSize.z + lExt.z)
-        {
-          continue;
-        }
-      // Crossproducts of line and each axis
-      if (std::abs(lMid.y * l.z - lMid.z * l.y)  >  (boxSize.y * lExt.z + boxSize.z * lExt.y))
-        {
-          continue;
-        }
-      if (std::abs(lMid.x * l.z - lMid.z * l.x)  >  (boxSize.x * lExt.z + boxSize.z * lExt.x))
-        {
-          continue;
-        }
-      if (std::abs(lMid.x * l.y - lMid.y * l.x)  >  (boxSize.x * lExt.y + boxSize.y * lExt.x))
-        {
-          continue;
-        }
-
-      // No separating axis, the line intersects
-      // If the line intersect this building, return true.
-      return true;
     }
+
+  // The line of sight should not be blocked if the line-segment between
+  // l1 and l2 did not intersect any building.
   return false;
 }
 

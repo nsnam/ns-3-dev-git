@@ -143,6 +143,67 @@ Box::CalculateIntersection (const Vector &current, const Vector &speed) const
 
 }
 
+bool
+Box::IsIntersect (const Vector &l1, const Vector &l2) const
+{
+  // If any of the position falls inside the box,
+  // return true.
+  if ((IsInside (l1) || IsInside (l2)))
+    {
+      return true;
+    }
+
+  Vector boxSize (0.5 * (this->xMax - this->xMin),
+                  0.5 * (this->yMax - this->yMin),
+                  0.5 * (this->zMax - this->zMin));
+  Vector boxCenter (this->xMin + boxSize.x,
+                    this->yMin + boxSize.y,
+                    this->zMin + boxSize.z);
+
+  // Put line-segment in box space
+  Vector lB1 (l1.x - boxCenter.x, l1.y - boxCenter.y, l1.z - boxCenter.z);
+  Vector lB2 (l2.x - boxCenter.x, l2.y - boxCenter.y, l2.z - boxCenter.z);
+
+  // Get line-segment midpoint and extent
+  Vector lMid (0.5 * (lB1.x + lB2.x), 0.5 * (lB1.y + lB2.y), 0.5 * (lB1.z + lB2.z));
+  Vector l (lB1.x - lMid.x, lB1.y - lMid.y, lB1.z - lMid.z);
+  Vector lExt (std::abs (l.x), std::abs (l.y), std::abs (l.z));
+
+  // Use Separating Axis Test
+  // Separation vector from box center to line-segment center is lMid, since the
+  // line is in box space, if any dimension of the line-segment did not intersect
+  // the box, return false, which means the whole line-segment didn't
+  // intersect the box.
+  if (std::abs (lMid.x) > boxSize.x + lExt.x)
+    {
+      return false;
+    }
+  if (std::abs (lMid.y) > boxSize.y + lExt.y)
+    {
+      return false;
+    }
+  if (std::abs (lMid.z) > boxSize.z + lExt.z)
+    {
+      return false;
+    }
+  // Cross-products of line and each axis
+  if (std::abs (lMid.y * l.z - lMid.z * l.y) > (boxSize.y * lExt.z + boxSize.z * lExt.y))
+    {
+      return false;
+    }
+  if (std::abs (lMid.x * l.z - lMid.z * l.x) > (boxSize.x * lExt.z + boxSize.z * lExt.x))
+    {
+      return false;
+    }
+  if (std::abs (lMid.x * l.y - lMid.y * l.x) > (boxSize.x * lExt.y + boxSize.y * lExt.x))
+    {
+      return false;
+    }
+
+  // No separating axis, the line-segment intersect this box, return true.
+  return true;
+}
+
 ATTRIBUTE_HELPER_CPP (Box);
 
 /**

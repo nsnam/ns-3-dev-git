@@ -88,6 +88,23 @@ public:
    * and speed. It ignores the z coordinate.
    */
   Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
+  /**
+   * \brief Checks if a line-segment between position l1 and position l2
+   *        intersects a box.
+   *
+   * This method considers all the three coordinates, i.e., x, y, and z.
+   * This function was developed by NYU Wireless and is based on the algorithm
+   * described here http://www.3dkingdoms.com/weekly/weekly.php?a=21.
+   * Reference: Menglei Zhang, Michele Polese, Marco Mezzavilla, Sundeep Rangan,
+   * Michele Zorzi. "ns-3 Implementation of the 3GPP MIMO Channel Model for
+   * Frequency Spectrum above 6 GHz". In Proceedings of the Workshop on ns-3
+   * (WNS3 '17). 2017.
+   *
+   * \param l1 position
+   * \param l2 position
+   * \return true if there is a intersection, false otherwise
+   */
+  bool IsIntersect (const Vector &l1, const Vector &l2) const;
 
   /** The x coordinate of the left bound of the box */
   double xMin;
