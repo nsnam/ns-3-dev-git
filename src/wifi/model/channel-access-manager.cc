@@ -25,6 +25,7 @@
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
 #include "mac-low.h"
+#include "frame-exchange-manager.h"
 
 namespace ns3 {
 
@@ -136,6 +137,7 @@ ChannelAccessManager::DoDispose (void)
       i = 0;
     }
   m_phy = 0;
+  m_feManager = 0;
 }
 
 void
@@ -166,6 +168,14 @@ ChannelAccessManager::SetupLow (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
   low->RegisterChannelAccessManager (this);
+}
+
+void
+ChannelAccessManager::SetupFrameExchangeManager (Ptr<FrameExchangeManager> feManager)
+{
+  NS_LOG_FUNCTION (this << feManager);
+  m_feManager = feManager;
+  m_feManager->SetChannelAccessManager (this);
 }
 
 Time
@@ -372,18 +382,37 @@ ChannelAccessManager::DoGrantDcfAccess (void)
             }
 
           /**
-           * Now, we notify all of these changes in one go. It is necessary to
+           * Now, we notify all of these changes in one go if the EDCAF winning
+           * the contention actually transmitted a frame. It is necessary to
            * perform first the calculations of which Txops are colliding and then
            * only apply the changes because applying the changes through notification
            * could change the global state of the manager, and, thus, could change
            * the result of the calculations.
            */
-          txop->NotifyAccessGranted ();
-          for (auto collidingTxop : internalCollisionTxops)
-            {
-              collidingTxop->NotifyInternalCollision ();
+          bool transmitted = true;
+          if (m_feManager != 0)
+            {          
+              transmitted = m_feManager->StartTransmission (txop);
             }
-          break;
+          else
+            {
+              txop->NotifyAccessGranted ();
+            }
+          if (transmitted)
+            {
+              for (auto& collidingTxop : internalCollisionTxops)
+                {
+                  collidingTxop->NotifyInternalCollision ();
+                }
+              break;
+            }
+          else
+            {
+              // reset the current state to the EDCAF that won the contention
+              // but did not transmit anything
+              i--;
+              k = std::distance (m_txops.begin (), i);
+            }
         }
       i++;
     }

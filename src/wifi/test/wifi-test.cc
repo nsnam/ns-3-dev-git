@@ -1580,10 +1580,10 @@ private:
   Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
   Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
 
-  uint8_t m_reassocReqCount; ///< count number of reassociation requests
-  uint8_t m_reassocRespCount; ///< count number of reassociation responses
-  uint8_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
-  uint8_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
+  uint16_t m_reassocReqCount; ///< count number of reassociation requests
+  uint16_t m_reassocRespCount; ///< count number of reassociation responses
+  uint16_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
+  uint16_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
 };
 
 Bug2831TestCase::Bug2831TestCase ()
@@ -1658,6 +1658,7 @@ Bug2831TestCase::DoRun (void)
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
   Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
   apMac->SetDevice (apDev);
+  apMac->SetAddress (Mac48Address::Allocate ());
   apMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
 
   Ptr<Node> staNode = CreateObject<Node> ();
@@ -1667,6 +1668,7 @@ Bug2831TestCase::DoRun (void)
   mac.SetTypeId ("ns3::StaWifiMac");
   Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
   staMac->SetDevice (staDev);
+  staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
 
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -1696,7 +1698,6 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannelNumber (36);
   m_staPhy->SetChannelWidth (20);
 
-  apMac->SetAddress (Mac48Address::Allocate ());
   apDev->SetMac (apMac);
   apDev->SetPhy (m_apPhy);
   ObjectFactory manager;
@@ -1704,7 +1705,6 @@ Bug2831TestCase::DoRun (void)
   apDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
   apNode->AddDevice (apDev);
 
-  staMac->SetAddress (Mac48Address::Allocate ());
   staDev->SetMac (staMac);
   staDev->SetPhy (m_staPhy);
   staDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());

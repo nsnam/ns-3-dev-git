@@ -36,6 +36,7 @@
 #include "he-configuration.h"
 #include <algorithm>
 #include <cmath>
+#include "frame-exchange-manager.h"
 
 namespace ns3 {
 
@@ -108,6 +109,11 @@ RegularWifiMac::DoDispose ()
 
   m_phy = 0;
   m_stationManager = 0;
+  if (m_feManager != 0)
+    {
+      m_feManager->Dispose ();
+    }
+  m_feManager = 0;
 
   m_txop->Dispose ();
   m_txop = 0;
@@ -122,6 +128,49 @@ RegularWifiMac::DoDispose ()
   m_channelAccessManager = 0;
   
   WifiMac::DoDispose ();
+}
+
+void
+RegularWifiMac::SetupFrameExchangeManager (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (GetHeSupported ())
+    {
+      // TODO create an HE Frame Exchange Manager
+    }
+  else if (GetVhtSupported ())
+    {
+      // TODO create a VHT Frame Exchange Manager
+    }
+  else if (GetHtSupported ())
+    {
+      // TODO create an HT Frame Exchange Manager
+    }
+  else if (GetQosSupported ())
+    {
+      // TODO create a QoS Frame Exchange Manager
+    }
+  else
+    {
+      m_feManager = CreateObject<FrameExchangeManager> ();
+    }
+
+  if (m_feManager != 0)
+    {
+      m_feManager->SetWifiMac (this);
+      m_feManager->SetMacTxMiddle (m_txMiddle);
+      m_feManager->SetMacRxMiddle (m_rxMiddle);
+      m_feManager->SetAddress (GetAddress ());
+      m_feManager->SetBssid (GetBssid ());
+      m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+    }
+}
+
+Ptr<FrameExchangeManager>
+RegularWifiMac::GetFrameExchangeManager (void) const
+{
+  return m_feManager;
 }
 
 void
@@ -499,6 +548,14 @@ RegularWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
   m_phy = phy;
   m_channelAccessManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
+  if (m_feManager != 0)
+    {
+      m_feManager->SetWifiPhy (phy);
+    }
+  else
+    {
+      m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::DeaggregateAmpduAndReceive, m_low));
+    }
 }
 
 Ptr<WifiPhy>
@@ -649,6 +706,10 @@ RegularWifiMac::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
   m_low->SetBssid (bssid);
+  if (m_feManager)
+    {
+      m_feManager->SetBssid (bssid);
+    }
 }
 
 Mac48Address
@@ -1091,6 +1152,7 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
       NS_FATAL_ERROR ("Unsupported WifiPhyStandard in RegularWifiMac::FinishConfigureStandard ()");
     }
 
+  SetupFrameExchangeManager ();
   ConfigureContentionWindow (cwmin, cwmax);
 }
 

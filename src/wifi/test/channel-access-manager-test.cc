@@ -21,6 +21,7 @@
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/channel-access-manager.h"
+#include "ns3/frame-exchange-manager.h"
 #include "ns3/qos-txop.h"
 #include "ns3/mac-low.h"
 
@@ -60,6 +61,7 @@ private:
 
   /// Inherited
   void DoDispose (void);
+  void NotifyChannelAccessed (void);
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
@@ -75,19 +77,6 @@ private:
   ExpectedBackoffs m_expectedBackoff; //!< expected backoff (not due to an internal collision)
   ExpectedGrants m_expectedGrants; //!< expected grants
 
-  /**
-   * \returns true if access has been requested for this function and
-   *          has not been granted already, false otherwise.
-   */
-  bool IsAccessRequested (void) const;
-  /**
-   * Notify that access request has been received.
-   */
-  void NotifyAccessRequested (void);
-  /**
-   * Notify the Txop that access has been granted.
-   */
-  void NotifyAccessGranted (void);
   /**
    * Notify the Txop that internal collision has occurred.
    */
@@ -117,7 +106,6 @@ private:
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
   uint32_t m_i; //!< the index of the Txop
-  bool m_accessRequested; //!< true if access requested
 };
 
 /**
@@ -204,6 +192,32 @@ private:
   Time m_slot;        // slot duration
   Time m_sifs;        // SIFS duration
   Time m_eifsNoDifs;  // EIFS duration minus a DIFS
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Frame Exchange Manager Stub
+ */
+class FrameExchangeManagerStub : public FrameExchangeManager
+{
+public:
+  FrameExchangeManagerStub ()
+  {
+  }
+  /**
+   * Request the FrameExchangeManager to start a frame exchange sequence.
+   *
+   * \param dcf the channel access function that gained channel access. It is
+   *            the DCF on non-QoS stations and an EDCA on QoS stations.
+   * \return true if a frame exchange sequence was started, false otherwise
+   */
+  bool StartTransmission (Ptr<Txop> dcf)
+  {
+    dcf->NotifyChannelAccessed ();
+    return true;
+  }
 };
 
 /**
@@ -387,6 +401,7 @@ private:
   typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
   Ptr<MacLowStub> m_low; //!< the MAC low stubbed
+  Ptr<FrameExchangeManagerStub> m_feManager; //!< the Frame Exchange Manager stubbed
   Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
   TxopTests m_txop; //!< the vector of Txop test instances
   uint32_t m_ackTimeoutValue; //!< the Ack timeout value
@@ -402,8 +417,7 @@ TxopTest<TxopType>::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
 template <typename TxopType>
 TxopTest<TxopType>::TxopTest (ChannelAccessManagerTest<TxopType> *test, uint32_t i)
   : m_test (test),
-    m_i (i),
-    m_accessRequested (false)
+    m_i (i)
 {
 }
 
@@ -416,24 +430,10 @@ TxopTest<TxopType>::DoDispose (void)
 }
 
 template <typename TxopType>
-bool
-TxopTest<TxopType>::IsAccessRequested (void) const
-{
-  return m_accessRequested;
-}
-
-template <typename TxopType>
 void
-TxopTest<TxopType>::NotifyAccessRequested (void)
+TxopTest<TxopType>::NotifyChannelAccessed (void)
 {
-  m_accessRequested = true;
-}
-
-template <typename TxopType>
-void
-TxopTest<TxopType>::NotifyAccessGranted (void)
-{
-  m_accessRequested = false;
+  Txop::m_access = Txop::NOT_REQUESTED;
   m_test->NotifyAccessGranted (m_i);
 }
 
@@ -549,7 +549,7 @@ ChannelAccessManagerTest<TxopType>::NotifyChannelSwitching (uint32_t i)
       state->m_expectedGrants.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
     }
-  state->m_accessRequested = false;
+  state->Txop::m_access = Txop::NOT_REQUESTED;
 }
 
 template <typename TxopType>
@@ -596,6 +596,8 @@ ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs,
   m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub> ();
   m_low = CreateObject<MacLowStub> ();
   m_ChannelAccessManager->SetupLow (m_low);
+  m_feManager = CreateObject<FrameExchangeManagerStub> ();
+  m_ChannelAccessManager->SetupFrameExchangeManager (m_feManager);
   m_ChannelAccessManager->SetSlot (MicroSeconds (slotTime));
   m_ChannelAccessManager->SetSifs (MicroSeconds (sifs));
   m_ChannelAccessManager->SetEifsNoDifs (MicroSeconds (eifsNoDifsNoSifs + sifs));
@@ -633,6 +635,7 @@ ChannelAccessManagerTest<TxopType>::EndTest (void)
 
   m_ChannelAccessManager = 0;
   m_low = 0;
+  m_feManager = 0;
 }
 
 template <typename TxopType>

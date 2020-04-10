@@ -254,7 +254,6 @@ MacLow::SetPhy (const Ptr<WifiPhy> phy)
 {
   m_phy = phy;
   m_phy->TraceConnectWithoutContext ("PhyRxPayloadBegin", MakeCallback (&MacLow::RxStartIndication, this));
-  m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::DeaggregateAmpduAndReceive, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
   SetupPhyMacLowListener (phy);
 }

@@ -32,6 +32,7 @@ class WifiPhy;
 class PhyListener;
 class Txop;
 class MacLow;
+class FrameExchangeManager;
 
 /**
  * \brief Manage a set of ns3::Txop
@@ -72,6 +73,12 @@ public:
    * \param low the MacLow to listen to
    */
   void SetupLow (Ptr<MacLow> low);
+  /**
+   * Set up the Frame Exchange Manager.
+   *
+   * \param feManager the Frame Exchange Manager
+   */
+  void SetupFrameExchangeManager (Ptr<FrameExchangeManager> feManager);
 
   /**
    * \param txop a new Txop.
@@ -291,28 +298,29 @@ private:
    */
   typedef std::vector<Ptr<Txop>> Txops;
 
-  Txops m_txops;                //!< the vector of managed Txops
-  Time m_lastAckTimeoutEnd;     //!< the last Ack timeout end time
-  Time m_lastCtsTimeoutEnd;     //!< the last CTS timeout end time
-  Time m_lastNavStart;          //!< the last NAV start time
-  Time m_lastNavDuration;       //!< the last NAV duration time
-  Time m_lastRxStart;           //!< the last receive start time
-  Time m_lastRxDuration;        //!< the last receive duration time
-  bool m_lastRxReceivedOk;      //!< the last receive OK
-  Time m_lastTxStart;           //!< the last transmit start time
-  Time m_lastTxDuration;        //!< the last transmit duration time
-  Time m_lastBusyStart;         //!< the last busy start time
-  Time m_lastBusyDuration;      //!< the last busy duration time
-  Time m_lastSwitchingStart;    //!< the last switching start time
-  Time m_lastSwitchingDuration; //!< the last switching duration time
-  bool m_sleeping;              //!< flag whether it is in sleeping state
-  bool m_off;                   //!< flag whether it is in off state
-  Time m_eifsNoDifs;            //!< EIFS no DIFS time
-  EventId m_accessTimeout;      //!< the access timeout ID
-  Time m_slot;                  //!< the slot time
-  Time m_sifs;                  //!< the SIFS time
-  PhyListener* m_phyListener;   //!< the PHY listener
-  Ptr<WifiPhy> m_phy;           //!< pointer to the PHY
+  Txops m_txops;                         //!< the vector of managed Txops
+  Time m_lastAckTimeoutEnd;              //!< the last Ack timeout end time
+  Time m_lastCtsTimeoutEnd;              //!< the last CTS timeout end time
+  Time m_lastNavStart;                   //!< the last NAV start time
+  Time m_lastNavDuration;                //!< the last NAV duration time
+  Time m_lastRxStart;                    //!< the last receive start time
+  Time m_lastRxDuration;                 //!< the last receive duration time
+  bool m_lastRxReceivedOk;               //!< the last receive OK
+  Time m_lastTxStart;                    //!< the last transmit start time
+  Time m_lastTxDuration;                 //!< the last transmit duration time
+  Time m_lastBusyStart;                  //!< the last busy start time
+  Time m_lastBusyDuration;               //!< the last busy duration time
+  Time m_lastSwitchingStart;             //!< the last switching start time
+  Time m_lastSwitchingDuration;          //!< the last switching duration time
+  bool m_sleeping;                       //!< flag whether it is in sleeping state
+  bool m_off;                            //!< flag whether it is in off state
+  Time m_eifsNoDifs;                     //!< EIFS no DIFS time
+  EventId m_accessTimeout;               //!< the access timeout ID
+  Time m_slot;                           //!< the slot time
+  Time m_sifs;                           //!< the SIFS time
+  PhyListener* m_phyListener;            //!< the PHY listener
+  Ptr<WifiPhy> m_phy;                    //!< pointer to the PHY
+  Ptr<FrameExchangeManager> m_feManager; //!< pointer to the Frame Exchange Manager
 };
 
 } //namespace ns3

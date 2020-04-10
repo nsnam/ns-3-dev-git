@@ -32,6 +32,7 @@ class MacRxMiddle;
 class MacTxMiddle;
 class ChannelAccessManager;
 class ExtendedCapabilities;
+class FrameExchangeManager;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -103,6 +104,13 @@ public:
   virtual void TxFailed (const WifiMacHeader &hdr);
 
   /**
+   * Get the Frame Exchange Manager
+   *
+   * \return the Frame Exchange Manager
+   */
+  Ptr<FrameExchangeManager> GetFrameExchangeManager (void) const;
+
+  /**
    * Enable or disable CTS-to-self feature.
    *
    * \param enable true if CTS-to-self is to be supported,
@@ -169,11 +177,12 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (defragmentation etc.)
-  Ptr<MacTxMiddle> m_txMiddle;  //!< TX middle (aggregation etc.)
-  Ptr<MacLow> m_low;            //!< MacLow (RTS, CTS, Data, Ack etc.)
+  Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
+  Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
+  Ptr<MacLow> m_low;                                //!< MacLow (RTS, CTS, Data, Ack etc.)
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< channel access manager
-  Ptr<WifiPhy> m_phy;           //!< Wifi PHY
+  Ptr<WifiPhy> m_phy;                               //!< Wifi PHY
+  Ptr<FrameExchangeManager> m_feManager;            //!< Frame Exchange Manager
 
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
 
@@ -293,6 +302,12 @@ protected:
    * \return true if QoS is supported, false otherwise
    */
   bool GetQosSupported () const;
+
+  /**
+   * Create a Frame Exchange Manager depending on the supported version
+   * of the standard.
+   */
+  void SetupFrameExchangeManager (void);
 
   /**
    * Return whether the device supports HT.
