@@ -1,4 +1,6 @@
 #!/bin/bash
+# -*- indent-tabs-mode:nil; -*- 
+
 
 # Process doxygen log to generate sorted list of top offenders.
 #
@@ -21,51 +23,65 @@ VERBLOG="$DIR/doxygen.verbose.log"
 # Options ------------------------------
 #
 
+# One line sysnopsis, continue
+function synopsis_short
+{
+    echo "Usage: $me [-beithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]"
+}
+
+# Two line synopsis, then exit with error
+function synopsis
+{
+    synopsis_short
+    echo "    -h  For detailed usage"
+    exit 1
+}
+
+# Full help, then exit with no error
 function usage
 {
+    synopsis_short
     cat <<-EOF
-	
-	Usage: $me [-beithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]
-	
-	Run doxygen to generate all errors; report error counts
-	by module and file.
-	
-	-i  Skip build and print-introspected-doxygen.
-	
-	-s  Skip doxygen run; use existing <log-file>.
-	-w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
-	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
+    
+    Run doxygen to generate all errors; report error counts
+    by module and file.
+    
+    -i  Skip build and print-introspected-doxygen.
+    
+    -s  Skip doxygen run; use existing <log-file>.
+    -w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
+    -l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
 
-	-b  Omit the blacklist filter of files whose warnings we ignore
-	-e  Filter out warnings from */examples/*
-	-t  Filter out warnings from */test/*
-	-m  Only include files matching src/<module>
-	-f  Only include files matching the <regex>
-	-F  Exclude files matching the <regex>
+    -b  Omit the blacklist filter of files whose warnings we ignore
+    -e  Filter out warnings from */examples/*
+    -t  Filter out warnings from */test/*
+    -m  Only include files matching src/<module>
+    -f  Only include files matching the <regex>
+    -F  Exclude files matching the <regex>
 
-	-v  Show detailed output from each step. Multiple allowed.
-	-h  Print this usage message
-	    
-	The default behavior is to modify doxygen.conf temporarily to
-	report all undocumented elements, and to reduce the run time.
-	The output of this special run is kept in doc/$WARNINGSLOGFILE.
-	To further reduce the run time, the -i option also skips
-	print-introspected-doxygen, so waf doesn\'t have to compile
-	any modified files at all.
+    -v  Show detailed output from each step.
+    -h  Print this usage message
+        
+    The default behavior is to modify doxygen.conf temporarily to
+    report all undocumented elements, and to reduce the run time.
+    The output of this special run is kept in doc/$WARNINGSLOGFILE.
+    To further reduce the run time, the -i option also skips
+    print-introspected-doxygen, so waf doesn\'t have to compile
+    any modified files at all.
 
-	The -f, -l, and -s options skip the doxygen run altogether.
-	The first two use a specified or the standard log file;
-	the -s option uses the warnings log from a prior run.
-	Only the first of -f <log-file>, -s, or -l will have effect.
-		
-	The -e and -t options exclude examples and test directories
-	from the counts.  The -m option only includes a specific module.
-	The -F option only includes files (or warnings) matching the <regex>.
-	The -m and -F options append the relevant warnings after the
-	numerical report.  These can be used in any combination.
-	
+    The -f, -l, and -s options skip the doxygen run altogether.
+    The first two use a specified or the standard log file;
+    the -s option uses the warnings log from a prior run.
+    Only the first of -f <log-file>, -s, or -l will have effect.
+            
+    The -e and -t options exclude examples and test directories
+    from the counts.  The -m option only includes a specific module.
+    The -F option only includes files (or warnings) matching the <regex>.
+    The -m and -F options append the relevant warnings after the
+    numerical report.  These can be used in any combination.
+    
 EOF
-    exit 1
+    exit 0
 }
 
 # Messaging ----------------------------
@@ -77,11 +93,15 @@ verbosity=0
 function verbose
 {
     if [ "$1" == "-n" ]; then
-	echo -n "$2"
+        if [ $verbosity -eq 1 ]; then
+            echo "$me:  ${2}..."
+        else
+            echo -n "${2}..."
+        fi
     elif [ $verbosity -eq 1 ]; then
-	echo "$1 $2"
+        echo "$me:  $1 $2"
     else
-	echo "$2"
+        echo "$2"
     fi
 }
 
@@ -95,18 +115,18 @@ function status_report
     local long_msg="$2"
     local exitonerr="${3:-yes}"
     if [ $status -eq 0 ]; then
-	verbose "$long_msg "  "done."
-	rm -f $VERBLOG
+        [[ $verbosity -eq 1 && -e $VERBLOG ]] && cat $VERBLOG
+        verbose "$long_msg "  "done."
+        [[ -e $VERBLOG ]] && rm -f $VERBLOG
     else
-	if [ $exitonerr == "yes" ]; then
-	    verbose "$long_msg "  "FAILED.  Details:"
-	    cat $VERBLOG
-	    rm -f $VERBLOG
-	    exit 1
-	else
-	    verbose "$long_msg "  "FAILED, continuing"
-	    rm -f $VERBLOG
-	fi
+        if [ $exitonerr == "yes" ]; then
+            verbose "$long_msg "  "FAILED.  Details:"
+            [[ -e $VERBLOG ]] && cat $VERBLOG && rm -f $VERBLOG
+            exit 1
+        else
+            verbose "$long_msg "  "FAILED, continuing"
+            [[ -e $VERBLOG ]] && cat $VERBLOG && rm -f $VERBLOG
+        fi
     fi
 }
    
@@ -132,109 +152,64 @@ filter_module=""
 filter_in=""
 filter_out=""
 
-echo
-echo "$me:"
-
 while getopts :bef:F:hilm:s:tvw option ; do
 
     case $option in
-	(b)  filter_blacklist=0       ;;
-	
-	(e)  filter_examples=1        ;;
+    (b)  filter_blacklist=0       ;;
+    
+    (e)  filter_examples=1        ;;
 
-	(f)  filter_in="$OPTARG"      ;;
+    (f)  filter_in="$OPTARG"      ;;
 
-	(F)  filter_out="$OPTARG"     ;;
+    (F)  filter_out="$OPTARG"     ;;
 
-	(h)  usage                    ;;
-	
-	(i)  skip_intro=1             ;;
-	
-	(l)  use_standard=1           ;;
+    (h)  usage                    ;;
+    
+    (i)  skip_intro=1             ;;
+    
+    (l)  use_standard=1           ;;
 
-	(m)  filter_module="$OPTARG"  ;;
+    (m)  filter_module="$OPTARG"  ;;
 
-	(s)  use_filearg=1
-	     logfile_arg="$OPTARG"
-	     ;;
+    (s)  use_filearg=1
+         logfile_arg="$OPTARG"
+         ;;
 
-	(t)  filter_test=1            ;;
+    (t)  filter_test=1            ;;
 
-	(v)  verbosity=1
-	     exec 6>&1
-	     ;;
+    (v)  verbosity=1
+         exec 6>&1
+         ;;
 
-	(w)  use_filearg=1
-	     logfile_arg="$DIR/$WARNINGSLOGFILE"
-	     ;;
-	     
-	(:)  echo "$me: Missing argument to -$OPTARG" ; usage ;;
-	
-	(\?) echo "$me: Invalid option: -$OPTARG"     ; usage ;;
-	
+    (w)  use_filearg=1
+         logfile_arg="$DIR/$WARNINGSLOGFILE"
+         ;;
+         
+    (:)  echo "$me: Missing argument to -$OPTARG" ; synopsis ;;
+    
+    (\?) echo "$me: Invalid option: -$OPTARG"     ; synopsis ;;
+        
     esac
 done
 
 function checklogfile
 {
     if [ -e "$1" ] ; then
-	skip_doxy=1
-	LOG="$1"
+        skip_doxy=1
+        LOG="$1"
     else
-	echo "$me: log file $1 does not exist."
-	exit 1
+        echo "$me: log file $1 does not exist."
+        synopsis
     fi
 }
     
-# Which log file
+# Log file -----------------------------
+#
+
 if [[ $use_filearg -eq 1 && "${logfile_arg:-}" != "" ]] ; then
     checklogfile "$logfile_arg"
 elif [ $use_standard -eq 1 ]; then
     checklogfile "$DIR/$STANDARDLOGFILE"
-fi
-
-#  Run doxygen -------------------------
-#
-
-if [ $skip_doxy -eq 1 ]; then
-    echo
-    echo "Skipping doxygen run, using existing log file $LOG"
-else
-
-    if [ $skip_intro -eq 1 ]; then
-	verbose "" "Skipping ./waf build"
-	verbose -n "Trying print-introspected-doxygen..."
-	(cd "$ROOT" && ./waf --run-no-build print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
-	status_report $? "./waf --run print-introspected-doxygen" noexit
-	
-    else
-        # Run introspection, which may require a build
-	verbose -n "Building..."
-	(cd "$ROOT" && ./waf build >&6 2>&6 )
-	status_report $? "./waf build"
-	verbose -n "Running print-introspected-doxygen..."
-	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
-	status_report $? "./waf --run print-introspected-doxygen"	
-    fi
-
-    # Modify doxygen.conf to generate all the warnings
-    # (We also suppress dot graphs, so shorten the run time.)
-
-    conf=$DIR/doxygen.conf
-
-    sed -i.bak -E '/^(EXTRACT_ALL|HAVE_DOT|CLASS_DIAGRAMS|WARNINGS|SOURCE_BROWSER) /s/(YES|yes)/no/;/^HTML_OUTPUT /s/html/html-warn/' $conf
-
-    verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
-    (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
-    status=$?
-
-    rm -f $conf
-    mv -f $conf.bak $conf
-
-    status_report $status "Doxygen run"
-
-    cp -f "$DIR/$STANDARDLOGFILE" "$DIR/$WARNINGSLOGFILE"
-
 fi
 
 # Log filters --------------------------
@@ -252,12 +227,8 @@ function REappend
 
 # Filter in regular expression for -m and -f
 filter_inRE=""
-if [ "$filter_module" != "" ] ; then
-    REappend filter_inRE src/$filter_module
-fi
-if [ "$filter_in" != "" ] ; then
-    REappend filter_inRE "$filter_in"
-fi
+[[ "$filter_module" != "" ]] && REappend filter_inRE src/$filter_module
+[[ "$filter_in"     != "" ]] && REappend filter_inRE "$filter_in"
 
 # Blacklist filter of files whose warnings we ignore
 filter_blacklistRE=""
@@ -275,30 +246,102 @@ REappend filter_blacklistRE "Schedule\\(Now\\|Destroy\\)(\\(MEM\\|void\\)"
 #   ATTRIBUTE_HELPER_CPP( and _HEADER(
 REappend filter_blacklistRE "ATTRIBUTE_HELPER_\\(CPP\\|HEADER\\)("
 
+# Filter out regular expression for black list, -e, -t and -F
 filter_outRE=""
-if [ $filter_blacklist -eq 1 ]; then
-    echo "Filtering out blacklist: \"$filter_blacklistRE\""
-    REappend filter_outRE "$filter_blacklistRE"
-fi
-# Filter out regular expression for -e, -t and -F
-if [ $filter_examples -eq 1 ]; then
-    REappend filter_outRE "/examples/"
-fi
-if [ $filter_test -eq 1 ]; then
-    REappend filter_outRE "/test/"
-fi
-if [ "$filter_out" != "" ] ; then
-    REappend filter_outRE "$filter_out"
+[[ $filter_blacklist -eq 1 ]] && REappend filter_outRE "$filter_blacklistRE"
+[[ $filter_examples  -eq 1 ]] && REappend filter_outRE "/examples/"
+[[ $filter_test      -eq 1 ]] && REappend filter_outRE "/test/"
+[[ "$filter_out"     != "" ]] && REappend filter_outRE "$filter_out"
+
+
+# Configuration ------------------------
+#
+
+function on_off
+{
+    if [[ "${!1:-}" != "" && "${!1}" != "0" ]] ; then
+        echo "ON"
+    else
+        echo "off"
+    fi
+}
+
+if [ $verbosity -eq 1 ]; then
+    echo
+    echo "$me:"
+    echo "    Verbose:          $(on_off verbosity)"
+    echo "    Skip build:       $(on_off skip_intro)"
+    echo "    Log file to use:  $LOG"
+    echo "    Module filter:    $(on_off filter_module)  $filter_module"
+    echo "    Examples filter:  $(on_off filter_examples)"
+    echo "    Tests filter:     $(on_off filter_test)"
+    echo "    Blacklist filter: $(on_off filter_blacklist)"
+    echo "    Filter in:        $(on_off filter_in)  $filter_in"
+    echo "    Filter out:       $(on_off filter_out)  $filter_out"
+    echo
+
+    #  Show the resulting filters here, in addition to below
+    echo "    Net result of all filters:"
+    [[ "${filter_inRE:-}"  != "" ]] && echo "      Filtering in:   \"$filter_inRE\""
+    [[ "${filter_outRE:-}" != "" ]] && echo "      Filtering out:  \"$filter_outRE\""
+
+    echo
 fi
 
-#  Show the resulting filters
-echo
-echo "Net result of all filters:"
-if [ "${filter_inRE:-}" != "" ] ; then
-    echo "Filtering in \"$filter_inRE\""
-fi
-if [ "${filter_outRE:-}" != "" ] ; then
-    echo "Filtering out \"$filter_outRE\""
+
+#  Run doxygen -------------------------
+#
+
+if [ $skip_doxy -eq 1 ]; then
+    echo
+    echo "Skipping doxygen run, using existing log file $LOG"
+
+else
+
+    # Modify doxygen.conf to generate all the warnings
+    # (We also suppress dot graphs, so shorten the run time.)
+
+    conf=doxygen.conf
+    cp $conf ${conf}.bak
+    cat <<-EOF >> $conf
+    
+    # doxygen.warnings.report.sh:
+    EXTRACT_ALL = no
+    HAVE_DOT = no
+    CLASS_DIAGRAMS = no
+    WARNINGS = no
+    SOURCE_BROWSER = no
+    HTML_OUTPUT html-warn
+    WARN_LOGFILE = doc/$WARNINGSLOGFILE
+EOF
+
+
+    intro_h="introspected-doxygen.h"
+    if [ $skip_intro -eq 1 ]; then
+        verbose "" "Skipping ./waf build"
+        verbose -n "Trying print-introspected-doxygen with doxygen build"
+        (cd "$ROOT" && ./waf --run-no-build print-introspected-doxygen >doc/$intro_h 2>&6 )
+        status_report $? "./waf --run print-introspected-doxygen" noexit
+    else
+        # Run introspection, which may require a build
+        verbose -n "Building"
+        (cd "$ROOT" && ./waf build >&6 2>&6 )
+        status_report $? "./waf build"
+        verbose -n "Running print-introspected-doxygen with doxygen build"
+        (cd "$ROOT" && ./waf --run-no-build print-introspected-doxygen >doc/$intro_h 2>&6 )
+        status_report $? "./waf --run print-introspected-doxygen"
+    fi
+
+    # Waf insists on writing cruft to stdout
+    sed -i -E '/^Waf:/d' $intro_h
+
+    verbose -n "Rebuilding doxygen docs with full errors"
+    (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
+    status_report $? "./waf --doxygen-no-build"
+    
+    # Swap back to original config
+    rm -f $conf
+    mv -f $conf.bak $conf
 fi
 
 # Filter log file
@@ -307,26 +350,27 @@ function filter_log
     local flog;
     flog=$( cat "$LOG" | grep "^$ROOT" )
 
-    if [ "${filter_inRE:-}" != "" ] ; then
-	flog=$( echo "$flog" | grep "$filter_inRE" )
-    fi
-
-    if [ "${filter_outRE:-}" != "" ] ; then
-	flog=$( echo "$flog" | grep -v "$filter_outRE" )
-    fi
+    [[ "${filter_inRE:-}"  != "" ]] && flog=$( echo "$flog" | grep "$filter_inRE" )
+    [[ "${filter_outRE:-}" != "" ]] && flog=$( echo "$flog" | grep -v "$filter_outRE" )
 
     flog=$(                         \
-	echo "$flog"              | \
-	sort -t ':' -k1,1 -k2,2n  | \
-	uniq                        \
-	)
+        echo "$flog"              | \
+        sort -t ':' -k1,1 -k2,2n  | \
+        uniq                        \
+        )
 
     echo "$flog"
 }
 
 # Analyze the log ----------------------
 #
-verbose -n "Filtering the doxygen log..."
+#  Show the resulting filters
+echo
+echo "Net result of all filters:"
+[[ "${filter_inRE:-}"  != "" ]] && echo "Filtering in \"$filter_inRE\""
+[[ "${filter_outRE:-}" != "" ]] && echo "Filtering out \"$filter_outRE\""
+
+verbose -n "Filtering the doxygen log"
 
 # List of module directories (e.g, "src/core/model")
 undocmods=$(                \
@@ -389,9 +433,9 @@ filecount=$(                        \
 filterin=
 if [ "${filter_inRE:-}" != "" ] ; then
     filterin=$(              \
-	filter_log         | \
-	sed "s|$ROOT/||g"    \
-	)
+        filter_log         | \
+        sed "s|$ROOT/||g"    \
+        )
 fi
 
 status_report 0 "Filter"
@@ -449,3 +493,5 @@ if [ "$filterin" != "" ] ; then
     echo "========================================"
     echo "$filterin"
 fi
+
+status_report 0 $me
