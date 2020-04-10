@@ -20,6 +20,7 @@
 #include "enum.h"
 #include "fatal-error.h"
 #include "log.h"
+#include <algorithm>  // find_if
 #include <sstream>
 
 /**
@@ -66,17 +67,8 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
   NS_LOG_FUNCTION (this << checker);
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
-  for (EnumChecker::ValueSet::const_iterator i = p->m_valueSet.begin (); i != p->m_valueSet.end (); i++)
-    {
-      if (i->first == m_value)
-        {
-          return i->second;
-        }
-    }
-
-  NS_FATAL_ERROR ("The user has set an invalid C++ value in this Enum");
-  // quiet compiler.
-  return "";
+  std::string name = p->GetName (m_value);
+  return name;
 }
 bool
 EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
@@ -84,15 +76,8 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
   NS_LOG_FUNCTION (this << value << checker);
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
-  for (EnumChecker::ValueSet::const_iterator i = p->m_valueSet.begin (); i != p->m_valueSet.end (); i++)
-    {
-      if (i->second == value)
-        {
-          m_value = i->first;
-          return true;
-        }
-    }
-  return false;
+  m_value = p->GetValue (value);
+  return true;
 }
 
 EnumChecker::EnumChecker ()
@@ -112,6 +97,24 @@ EnumChecker::Add (int value, std::string name)
   NS_LOG_FUNCTION (this << value << name);
   m_valueSet.push_back (std::make_pair (value, name));
 }
+std::string
+EnumChecker::GetName (int value) const
+{
+  auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
+                          [value] (Value v) { return v.first == value; } );
+  NS_ASSERT_MSG (it != m_valueSet.end (),
+                 "invalid enum value " << value << "! Missed entry in MakeEnumChecker?");
+  return it->second;
+}
+int
+EnumChecker::GetValue (const std::string name) const
+{
+  auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
+                          [name] (Value v) { return v.second == name; } );
+  NS_ASSERT_MSG (it != m_valueSet.end (),
+                 "name " << name << "not a valid enum value. Missed entry in MakeEnumChecker?");
+  return it->first;
+}
 bool
 EnumChecker::Check (const AttributeValue &value) const
 {
@@ -121,14 +124,10 @@ EnumChecker::Check (const AttributeValue &value) const
     {
       return false;
     }
-  for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end (); i++)
-    {
-      if (i->first == p->Get ())
-        {
-          return true;
-        }
-    }
-  return false;
+  auto pvalue = p->Get ();
+  auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
+                          [pvalue] (Value v) { return v.first == pvalue; } );
+  return (it != m_valueSet.end ()) ? true : false;
 }
 std::string
 EnumChecker::GetValueTypeName (void) const
@@ -147,14 +146,11 @@ EnumChecker::GetUnderlyingTypeInformation (void) const
 {
   NS_LOG_FUNCTION (this);
   std::ostringstream oss;
-  for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end ();)
+  bool moreValues = false;
+  for (const auto i : m_valueSet)
     {
-      oss << i->second;
-      i++;
-      if (i != m_valueSet.end ())
-        {
-          oss << "|";
-        }
+      oss << (moreValues ? "|" : "") << i.second;
+      moreValues = true;
     }
   return oss.str ();
 }
