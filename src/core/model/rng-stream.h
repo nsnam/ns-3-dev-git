@@ -73,10 +73,10 @@ public:
 
 private:
   /**
-   * Advance \p state of the RNG by leaps and bounds.
+   * Advance \pname{state} of the RNG by leaps and bounds.
    *
    * \param [in] nth The stream or substream index.
-   * \param [in] by The log2 base of \p nth.
+   * \param [in] by The log2 base of \pname{nth}.
    * \param [in] state The state vector to advance.
    */
   void AdvanceNthBy (uint64_t nth, int by, double state[6]);

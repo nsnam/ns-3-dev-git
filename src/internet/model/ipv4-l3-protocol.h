@@ -605,7 +605,7 @@ private:
   /**
    * Registers duplicate entry, return false if new
    * \param [in] p Possibly duplicate packet.
-   * \param [in] header Packet \p p header.
+   * \param [in] header Packet \pname{p} header.
    * \return True if this packet is a duplicate
    */
   bool UpdateDuplicate (Ptr<const Packet> p, const Ipv4Header &header);

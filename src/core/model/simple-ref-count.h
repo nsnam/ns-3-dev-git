@@ -89,7 +89,7 @@ public:
   /**
    * Assignment operator
    * \param [in] o The object to copy
-   * \returns The copy of \p o
+   * \returns The copy of \pname{o}
    */
   SimpleRefCount &operator = (const SimpleRefCount &o)
   {

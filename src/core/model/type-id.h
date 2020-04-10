@@ -255,14 +255,14 @@ public:
    * Get Attribute information by index.
    *
    * \param [in] i Index into attribute array
-   * \returns The information associated to attribute whose index is \p i.
+   * \returns The information associated to attribute whose index is \pname{i}.
    */
   struct TypeId::AttributeInformation GetAttribute (std::size_t i) const;
   /**
    * Get the Attribute name by index.
    *
    * \param [in] i Index into attribute array
-   * \returns The full name associated to the attribute whose index is \p i.
+   * \returns The full name associated to the attribute whose index is \pname{i}.
    */
   std::string GetAttributeFullName (std::size_t i) const;
 

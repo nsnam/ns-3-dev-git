@@ -372,7 +372,7 @@ public:
   /**
    * TracedCallback signature for state changes.
    *
-   * \param [in] now Time when the \p state changed.
+   * \param [in] now Time when the \pname{state} changed.
    * \param [in] recipient MAC address of the recipient.
    * \param [in] tid the TID.
    * \param [in] state The state.

@@ -44,7 +44,7 @@ namespace {
  * and `dround(0.257, 0.1) = 0.3`
  * \param [in] number The number to round.
  * \param [in] precision The least significant digit to keep in the rounding.
- * \returns \p number rounded to \p precision.
+ * \returns \pname{number} rounded to \pname{precision}.
  */
 double dround (double number, double precision)
 {

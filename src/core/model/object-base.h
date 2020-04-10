@@ -268,13 +268,13 @@ protected:
 
 private:
   /**
-   * Attempt to set the value referenced by the accessor \p spec
-   * to a valid value according to the \c checker, based on \p value.
+   * Attempt to set the value referenced by the accessor \pname{spec}
+   * to a valid value according to the \c checker, based on \pname{value}.
    *
    * \param [in] spec The accessor for the storage location.
    * \param [in] checker The checker to use in validating the value.
    * \param [in] value The value to attempt to store.
-   * \returns \c true if the \c value could be validated by the \p checker
+   * \returns \c true if the \c value could be validated by the \pname{checker}
    *          and written to the storage location.
    */
   bool DoSet (Ptr<const AttributeAccessor> spec,

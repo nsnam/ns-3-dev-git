@@ -45,7 +45,7 @@ std::string g_cbArg = "cbArg default";
  * Function to illustrate command line arguments handled by a
  * Callback function.
  *
- * \param [in] val New value for \p g_cbArg.
+ * \param [in] val New value for \pname{g_cbArg}.
  * \returns \c true.
  */
 bool SetCbArg (std::string val)

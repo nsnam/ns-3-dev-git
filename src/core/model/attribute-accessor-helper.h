@@ -42,7 +42,7 @@ namespace ns3 {
  * \code
  *   typedef U (T::*getter)(void) const
  * \endcode
- * where \p T is the class and \p U is the type of
+ * where \pname{T} is the class and \pname{U} is the type of
  * the return value.
  *
  * The set method should have one of these signatures:
@@ -50,16 +50,16 @@ namespace ns3 {
  *   typedef void (T::*setter)(U)
  *   typedef bool (T::*setter)(U)
  * \endcode
- * where \p T is the class and \p U is the type of the value to set
+ * where \pname{T} is the class and \pname{U} is the type of the value to set
  * the attribute to, which should be compatible with the
- * specific AttributeValue type \p V which holds the value
+ * specific AttributeValue type \pname{V} which holds the value
  * (or the type implied by the name \c Make<V>Accessor of this function.)
- * In the case of a \p setter returning \p bool, the return value
+ * In the case of a \pname{setter} returning \pname{bool,} the return value
  * should be \c true if the value could be set successfully.
  *
  * \tparam V  \explicit (If present) The specific AttributeValue type
  *            to use to represent the Attribute.  (If not present,
- *            the type \p V is implicit in the name of this function,
+ *            the type \pname{V} is implicit in the name of this function,
  *            as "Make<V>Accessor"
  * \tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
@@ -83,7 +83,7 @@ MakeAccessorHelper (T1 a1);
  * \code
  *   typedef U (T::*getter)(void) const
  * \endcode
- * where \p T is the class and \p U is the type of
+ * where \pname{T} is the class and \pname{U} is the type of
  * the return value.
  *
  * The set method should have one of these signatures:
@@ -91,18 +91,18 @@ MakeAccessorHelper (T1 a1);
  *   typedef void (T::*setter)(U)
  *   typedef bool (T::*setter)(U)
  * \endcode
- * where \p T is the class and \p U is the type of the value to set
+ * where \pname{T} is the class and \pname{U} is the type of the value to set
  * the attribute to, which should be compatible with the
- * specific AttributeValue type \p V which holds the value
+ * specific AttributeValue type \pname{V} which holds the value
  * (or the type implied by the name \c Make<V>Accessor of this function.)
- * In the case of a \p setter returning \p bool, the return value
+ * In the case of a \pname{setter} returning \pname{bool,} the return value
  * should be true if the value could be set successfully.
  *
  * In practice the setter and getter arguments can appear in either order,
  * but setter first is preferred.
  *
  * \tparam V  \explicit (If present) The specific AttributeValue type to use to represent
- *            the Attribute.  (If not present, the type \p V is implicit
+ *            the Attribute.  (If not present, the type \pname{V} is implicit
  *            in the name of this function as "Make<V>Accessor"
  * \tparam T1 \deduced The type of the class data member,
  *            or the type of the class get functor or set method.
@@ -134,7 +134,7 @@ namespace ns3 {
 /**
  * \ingroup attributeimpl
  *
- * The non-const and non-reference type equivalent to \p T.
+ * The non-const and non-reference type equivalent to \pname{T}.
  *
  * \tparam T \explicit The original (possibly qualified) type.
  */
@@ -172,8 +172,8 @@ public:
    *
    * Forwards to DoSet method.
    *
-   * \param [in] object Generic object pointer, to upcast to \p T.
-   * \param [in] val Generic AttributeValue, to upcast to \p U.
+   * \param [in] object Generic object pointer, to upcast to \pname{T}.
+   * \param [in] val Generic AttributeValue, to upcast to \pname{U}.
    * \returns true if the member was set successfully.
    */
   virtual bool Set (ObjectBase * object, const AttributeValue & val) const
@@ -199,8 +199,8 @@ public:
    *
    * Forwards to DoGet method.
    *
-   * \param [out] object Generic object pointer, to upcast to \p T.
-   * \param [out] val Generic AttributeValue, to upcast to \p U.
+   * \param [out] object Generic object pointer, to upcast to \pname{T}.
+   * \param [out] val Generic AttributeValue, to upcast to \pname{U}.
    * \returns true if the member value could be retrieved successfully
    */
   virtual bool Get (const ObjectBase * object, AttributeValue &val) const
@@ -426,7 +426,7 @@ DoMakeAccessorHelperOne (void (T::*setter)(U))
  * \ingroup attributeimpl
  *
  * MakeAccessorHelper implementation with a class get functor method
- * and a class set method returning \p void.
+ * and a class set method returning \pname{void}.
  *
  * The two versions of this function differ only in argument order.
  *
@@ -514,7 +514,7 @@ DoMakeAccessorHelperTwo (V (T::*getter)(void) const,
  * \ingroup attributeimpl
  *
  * MakeAccessorHelper implementation with a class get functor method
- * and a class set method returning \p bool.
+ * and a class set method returning \pname{bool}.
  *
  * The two versions of this function differ only in argument order.
  *

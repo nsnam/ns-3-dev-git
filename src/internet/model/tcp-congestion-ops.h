@@ -104,7 +104,7 @@ public:
   /**
    * \brief Congestion avoidance algorithm implementation
    *
-   * Mimic the function \p cong_avoid in Linux. New segments have been ACKed,
+   * Mimic the function \pname{cong_avoid} in Linux. New segments have been ACKed,
    * and the congestion control duty is to update the window.
    *
    * The function is allowed to change directly cWnd and/or ssThresh.
@@ -132,7 +132,7 @@ public:
   /**
    * \brief Trigger events/calculations specific to a congestion state
    *
-   * This function mimics the notification function \p set_state in Linux.
+   * This function mimics the notification function \pname{set_state} in Linux.
    * The function does not change the congestion state in the tcb; it notifies
    * the congestion control algorithm that this state is about to be changed.
    * The tcb->m_congState variable must be separately set; for example:
@@ -151,7 +151,7 @@ public:
   /**
    * \brief Trigger events/calculations on occurrence of congestion window event
    *
-   * This function mimics the function \p cwnd_event in Linux.
+   * This function mimics the function \pname{cwnd_event} in Linux.
    * The function is called in case of congestion window events.
    *
    * \param tcb internal congestion state

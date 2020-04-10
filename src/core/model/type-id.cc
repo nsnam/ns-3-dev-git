@@ -116,13 +116,13 @@ public:
   /**
    * Get a type id by name.
    * \param [in] name The type id to find.
-   * \returns The type id.  A type id of 0 means \p name wasn't found.
+   * \returns The type id.  A type id of 0 means \pname{name} wasn't found.
    */
   uint16_t GetUid (std::string name) const;
   /**
    * Get a type id by hash value.
    * \param [in] hash The type id to find.
-   * \returns The type id.  A type id of 0 means \p hash wasn't found.
+   * \returns The type id.  A type id of 0 means \pname{hash} wasn't found.
    */
   uint16_t GetUid (TypeId::hash_t hash) const;
   /**
@@ -226,7 +226,7 @@ public:
    * Get Attribute information by index.
    * \param [in] uid The id.
    * \param [in] i Index into attribute array
-   * \returns The information associated to attribute whose index is \p i.
+   * \returns The information associated to attribute whose index is \pname{i}.
    */
   struct TypeId::AttributeInformation GetAttribute (uint16_t uid, std::size_t i) const;
   /**
@@ -276,20 +276,20 @@ private:
    * Check if a type id has a given TraceSource.
    * \param [in] uid The id.
    * \param [in] name The TraceSource name.
-   * \returns \c true if \p uid has the TraceSource \p name.
+   * \returns \c true if \pname{uid} has the TraceSource \pname{name}.
    */
   bool HasTraceSource (uint16_t uid, std::string name);
   /**
    * Check if a type id has a given Attribute.
    * \param [in] uid The id.
    * \param [in] name The Attribute name.
-   * \returns \c true if \p uid has the Attribute \p name.
+   * \returns \c true if \pname{uid} has the Attribute \pname{name}.
    */
   bool HasAttribute (uint16_t uid, std::string name);
   /**
    * Hashing function.
    * \param [in] name The type id name.
-   * \returns The hashed value of \p name.
+   * \returns The hashed value of \pname{name}.
    */
   static TypeId::hash_t Hasher (const std::string name);
 

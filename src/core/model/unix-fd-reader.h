@@ -42,7 +42,7 @@ namespace ns3 {
  * This class can be used to start a system thread that reads from a
  * given file descriptor and invokes a given callback when data is
  * received.  This class handles thread management automatically but
- * the \p DoRead() method must be implemented by a subclass.
+ * the \pname{DoRead()} method must be implemented by a subclass.
  */
 class FdReader : public SimpleRefCount<FdReader>
 {
@@ -95,12 +95,12 @@ protected:
   /**
    * \brief The read implementation.
    *
-   * The value of \p m_len returned controls further processing.  The
-   * callback function is only invoked when \p m_len is positive; any
-   * data read is not processed when \p m_len is negative; reading
-   * stops when \p m_len is zero.
+   * The value of \pname{m_len} returned controls further processing.  The
+   * callback function is only invoked when \pname{m_len} is positive; any
+   * data read is not processed when \pname{m_len} is negative; reading
+   * stops when \pname{m_len} is zero.
    *
-   * The management of memory associated with \p m_buf must be
+   * The management of memory associated with \pname{m_buf} must be
    * compatible with the read callback.
    *
    * \return A structure representing what was read.

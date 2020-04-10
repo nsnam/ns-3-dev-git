@@ -87,9 +87,9 @@ namespace ns3 {
  *
  * \tparam T    \explicit The specific AttributeValue type used to represent
  *              the Attribute.
- * \tparam BASE \explicit The AttributeChecker type corresponding to \p T.
+ * \tparam BASE \explicit The AttributeChecker type corresponding to \pname{T}.
  * \param [in] name  The name of the AttributeValue type, essentially the
- *              string form of \p T.
+ *              string form of \pname{T}.
  * \param [in] underlying Underlying type name.
  * \return Ptr to AttributeChecker.
  */
@@ -148,7 +148,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the attribute accessor functions \c MakeTypeAccessor
- * for class \p type.
+ * for class \pname{type}.
  *
  * \param [in] type The name of the class
  *
@@ -173,8 +173,8 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the attribute value class \p nameValue
- * for underlying class \p type.
+ * Declare the attribute value class \pname{nameValue}
+ * for underlying class \pname{type}.
  *
  * \param [in] type The underlying type name token
  * \param [in] name The token to use in defining the accessor name.
@@ -214,8 +214,8 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the attribute value class \p nameValue
- * for the class \p name
+ * Declare the attribute value class \pname{nameValue}
+ * for the class \pname{name}
  *
  * \param [in] name The name of the class.
  *
@@ -229,7 +229,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Define the conversion operators class \p type and
+ * Define the conversion operators class \pname{type} and
  * Attribute instances.
  *
  * \param [in] type The name of the class
@@ -246,15 +246,15 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the AttributeChecker class \p typeChecker
- * and the \c MaketypeChecker function for class \p type.
+ * Declare the AttributeChecker class \pname{typeChecker}
+ * and the \c MaketypeChecker function for class \pname{type}.
  *
  * \param [in] type The name of the class
  *
- * This macro declares the \p typeChecker class and the associated
+ * This macro declares the \pname{typeChecker} class and the associated
  * \c MaketypeChecker function.
  *
- * (Note that the \p typeChecker class needs no implementation
+ * (Note that the \pname{typeChecker} class needs no implementation
  * since it just inherits all its implementation from AttributeChecker.)
  *
  * Typically invoked in the class header file.
@@ -268,15 +268,15 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the class methods belonging to
- * the attribute value class \p nameValue
- * of the underlying class \p type.
+ * the attribute value class \pname{nameValue}
+ * of the underlying class \pname{type}.
  *
  * \param [in] type The underlying type name
  * \param [in] name The token to use in defining the accessor name.
  *
- * This macro implements the \p typeValue class methods
- * (including the \p typeValue::SerializeToString
- * and \p typeValue::DeserializeFromString methods).
+ * This macro implements the \pname{typeValue} class methods
+ * (including the \pname{typeValue}%::%SerializeToString
+ * and \pname{typeValue}%::%DeserializeFromString methods).
  *
  * Typically invoked in the source file
  */
@@ -316,13 +316,13 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  * \ingroup attributehelper
  *
  * Define the class methods belonging to
- * attribute value class \p typeValue for class \p type.
+ * attribute value class \pname{typeValue} for class \pname{type}.
  *
  * \param [in] type The name of the class.
  *
- * This macro implements the \p typeValue class methods
- * (including the \p typeValue::SerializeToString
- * and \p typeValue::DeserializeFromString methods).
+ * This macro implements the \pname{typeValue} class methods
+ * (including the \pname{typeValue}%::%SerializeToString
+ * and \pname{typeValue}%::%DeserializeFromString methods).
  *
  * Typically invoked in the source file.
  */
@@ -333,7 +333,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Define the \c MaketypeChecker function for class \p type.
+ * Define the \c MaketypeChecker function for class \pname{type}.
  *
  * \param [in] type The name of the class
  *
@@ -350,13 +350,13 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Define the \c MaketypeChecker function for class \p type.
+ * Define the \c MaketypeChecker function for class \pname{type}.
  *
  * \param [in] type The name of the class.
  * \param [in] name The string name of the underlying type.
  *
  * This macro implements the \c MaketypeChecker function
- * for class \p type.
+ * for class \pname{type}.
  *
  * Typically invoked in the source file..
  */
@@ -369,20 +369,20 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Declare the attribute value, accessor and checkers for class \p type
+ * Declare the attribute value, accessor and checkers for class \pname{type}
  *
  * \param [in] type The name of the class
  *
  * This macro declares:
  *
- *   - The attribute value class \p typeValue,
+ *   - The attribute value class \pname{typeValue},
  *
  *   - The attribute accessor functions \c MaketypeAccessor,
  *
- *   - The AttributeChecker class \p typeChecker
+ *   - The AttributeChecker class \pname{typeChecker},
  *     and the \c MaketypeChecker function,
  *
- * for class \p type.
+ * for class \pname{type}.
  *
  * This macro should be invoked outside of the class
  * declaration in its public header.
@@ -395,17 +395,17 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
 /**
  * \ingroup attributehelper
  *
- * Define the attribute value, accessor and checkers for class \p type
+ * Define the attribute value, accessor and checkers for class \pname{type}
  *
  * \param [in] type The name of the class
  *
  * This macro implements
  *
- *   - The \p typeValue class methods,
+ *   - The \pname{typeValue} class methods,
  *
  *   - The \c MaketypeChecker function,
  *
- * for class \p type.
+ * for class \pname{type}.
  *
  * This macro should be invoked from the class implementation file.
  */

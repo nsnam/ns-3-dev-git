@@ -103,21 +103,21 @@ public:
    * Test if two EventId's are equal.
    * \param [in] a The first EventId.
    * \param [in] b The second EventId.
-   * \return \c true if the \p a and \p b represent the same event.
+   * \return \c true if the \pname{a} and \pname{b} represent the same event.
    */
   friend bool operator == (const EventId &a, const EventId &b);
   /**
    * Test if two EventId's are not equal.
    * \param [in] a The first EventId.
    * \param [in] b The second EventId.
-   * \return \c true if the \p a and \p b are not the same event.
+   * \return \c true if the \pname{a} and \pname{b} are not the same event.
    */
   friend bool operator != (const EventId &a, const EventId &b);
   /**
    * Less than operator for two EventId's, based on time stamps.
    * \param [in] a The first EventId.
    * \param [in] b The second EventId.
-   * \return \c true if \p a occurs before \p b.
+   * \return \c true if \pname{a} occurs before \pname{b}.
    */
   friend bool operator <  (const EventId &a, const EventId &b);
 

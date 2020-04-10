@@ -1287,7 +1287,7 @@ PrintAttributeValueSection (std::ostream & os,
 /**
  * Print the AttributeValue documentation for a class.
  *
- * This will print documentation for the \p AttributeValue class and methods.
+ * This will print documentation for the \pname{AttributeValue} class and methods.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1376,7 +1376,7 @@ PrintAttributeValueWithName (std::ostream & os,
 /**
  * Print the AttributeValue MakeAccessor documentation for a class.
  *
- * This will print documentation for the \p Make<name>Accessor functions.
+ * This will print documentation for the \pname{Make<name>Accessor} functions.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.
@@ -1411,7 +1411,7 @@ PrintMakeAccessors (std::ostream & os, const std::string & name)
 /**
  * Print the AttributeValue MakeChecker documentation for a class.
  *
- * This will print documentation for the \p Make<name>Checker function.
+ * This will print documentation for the \pname{Make<name>Checker} function.
  *
  * \param [in,out] os The output stream.
  * \param [in] name The token to use in defining the accessor name.

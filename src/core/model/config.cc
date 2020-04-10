@@ -612,9 +612,9 @@ private:
   /**
    * Break a Config path into the leading path and the last leaf token.
    * \param [in] path The Config path.
-   * \param [in,out] root The leading part of the \p path,
+   * \param [in,out] root The leading part of the \pname{path},
    *   up to the final slash.
-   * \param [in,out] leaf The trailing part of the \p path.
+   * \param [in,out] leaf The trailing part of the \pname{path}.
    */
   void ParsePath (std::string path, std::string *root, std::string *leaf) const;
 

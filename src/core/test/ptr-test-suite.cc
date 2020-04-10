@@ -103,7 +103,7 @@ public:
 private:
   virtual void DoRun (void);
   /**
-   * Test that \p p is a valid object, by calling a member function.
+   * Test that \pname{p} is a valid object, by calling a member function.
    * \param [in] p The object pointer to test.
    * \returns The object pointer.
    */

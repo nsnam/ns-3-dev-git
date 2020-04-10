@@ -179,7 +179,7 @@ std::istream &operator >> (std::istream &is, int64x64_t &value);
  * \ingroup highprec
  * Absolute value.
  * \param [in] value The value to operate on.
- * \return The absolute value of \p value.
+ * \return The absolute value of \pname{value}.
  */
 inline int64x64_t Abs (const int64x64_t &value)
 {

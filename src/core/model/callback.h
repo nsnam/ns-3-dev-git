@@ -165,7 +165,7 @@ protected:
    * Helper to get the C++ typeid as a string.
    *
    * \tparam T The type of the argument.
-   * \returns The result of applying typeid to the template type \p T.
+   * \returns The result of applying typeid to the template type \pname{T}.
    */
   template <typename T>
   static std::string GetCppTypeid (void)
@@ -1523,7 +1523,7 @@ public:
    * Adopt the other's implementation, if type compatible
    *
    * \param [in] other Callback
-   * \returns \c true if \p other was type-compatible and could be adopted.
+   * \returns \c true if \pname{other} was type-compatible and could be adopted.
    */
   bool Assign (const CallbackBase &other)
   {

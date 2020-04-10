@@ -1240,7 +1240,7 @@ protected:
    * \param [in] limit Expected value of the test.
    * \param [in] message Message indicating the type of failure.
    * \param [in] file The file where the test failed.
-   * \param [in] line The line number in \p file where the test failed.
+   * \param [in] line The line number in \pname{file} where the test failed.
    */
   void ReportTestFailure (std::string cond, std::string actual,
                           std::string limit, std::string message,
@@ -1263,7 +1263,7 @@ protected:
    * The data directory is configured by SetDataDirectory().
    *
    * \param [in] filename The bare (no path) file name
-   * \return The full path to \p filename in the data directory
+   * \return The full path to \pname{filename} in the data directory
    */
   std::string CreateDataDirFilename (std::string filename);
   /**
@@ -1273,7 +1273,7 @@ protected:
    *  the data directory instead.
    *
    * \param [in] filename The bare (no path) file name
-   * \return The full path to \p filename in the temporary directory.
+   * \return The full path to \pname{filename} in the temporary directory.
    */
   std::string CreateTempDirFilename (std::string filename);
   /**@}*/

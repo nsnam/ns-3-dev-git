@@ -232,9 +232,9 @@ public:
   /**
    * TracedCallback signature for state changes.
    *
-   * \param [in] start Time when the \p state started.
+   * \param [in] start Time when the \pname{state} started.
    * \param [in] duration Amount of time we've been in (or will be in)
-   *             the \p state.
+   *             the \pname{state}.
    * \param [in] state The state.
    */
   typedef void (* StateTracedCallback)(Time start, Time duration, WifiPhyState state);

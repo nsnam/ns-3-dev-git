@@ -473,7 +473,7 @@ private:
    * Callback function to handle attributes.
    *
    * \param [in] name The full name of the Attribute.
-   * \param [in] value The value to assign to \p name.
+   * \param [in] value The value to assign to \pname{name}.
    * \return \c true if the value was set successfully, false otherwise.
    */
   static bool HandleAttribute (const std::string name, const std::string value);

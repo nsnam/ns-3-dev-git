@@ -70,7 +70,7 @@ public:
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
    * \param [in] b Another point
-   * \returns The distance between \p a and \p b.
+   * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector3D &a, const Vector3D &b);
 
@@ -99,7 +99,7 @@ public:
    * Less than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than \p b
+   * \returns \c true if \pname{a} is less than \pname{b}
    */
   friend bool operator < (const Vector3D &a, const Vector3D &b);
 
@@ -107,7 +107,7 @@ public:
    * Less than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than or equal to \p b.
+   * \returns \c true if \pname{a} is less than or equal to \pname{b}.
    */
   friend bool operator <= (const Vector3D &a, const Vector3D &b);
 
@@ -115,7 +115,7 @@ public:
    * Greater than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than \p b.
+   * \returns \c true if \pname{a} is greater than \pname{b}.
    */
   friend bool operator > (const Vector3D &a, const Vector3D &b);
 
@@ -123,7 +123,7 @@ public:
    * Greater than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than or equal to \p b.
+   * \returns \c true if \pname{a} is greater than or equal to \pname{b}.
    */
   friend bool operator >= (const Vector3D &a, const Vector3D &b);
 
@@ -131,7 +131,7 @@ public:
    * Equality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is equal to \p b.
+   * \returns \c true if \pname{a} is equal to \pname{b}.
    */
   friend bool operator == (const Vector3D &a, const Vector3D &b);
 
@@ -139,7 +139,7 @@ public:
    * Inequality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is not equal to \p b.
+   * \returns \c true if \pname{a} is not equal to \pname{b}.
    */
   friend bool operator != (const Vector3D &a, const Vector3D &b);
 
@@ -147,7 +147,7 @@ public:
    * Addition operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector sum of \p a and \p b.
+   * \returns The vector sum of \pname{a} and \pname{b}.
    */
   friend Vector3D operator + (const Vector3D &a, const Vector3D &b);
 
@@ -155,7 +155,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector difference of \p a and \p b.
+   * \returns The vector difference of \pname{a} and \pname{b}.
    */
   friend Vector3D operator - (const Vector3D &a, const Vector3D &b);
 };
@@ -188,7 +188,7 @@ public:
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
    * \param [in] b Another point
-   * \returns The distance between \p a and \p b.
+   * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector2D &a, const Vector2D &b);
 
@@ -217,7 +217,7 @@ public:
    * Less than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than \p b
+   * \returns \c true if \pname{a} is less than \pname{b}
    */
   friend bool operator < (const Vector2D &a, const Vector2D &b);
 
@@ -225,7 +225,7 @@ public:
    * Less than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is less than or equal to \p b.
+   * \returns \c true if \pname{a} is less than or equal to \pname{b}.
    */
   friend bool operator <= (const Vector2D &a, const Vector2D &b);
 
@@ -233,7 +233,7 @@ public:
    * Greater than comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than \p b.
+   * \returns \c true if \pname{a} is greater than \pname{b}.
    */
   friend bool operator > (const Vector2D &a, const Vector2D &b);
 
@@ -241,7 +241,7 @@ public:
    * Greater than or equal to comparison operator
    * \param [in] a lhs vector
    * \param [in] b rhs vector
-   * \returns \c true if \p a is greater than or equal to \p b.
+   * \returns \c true if \pname{a} is greater than or equal to \pname{b}.
    */
   friend bool operator >= (const Vector2D &a, const Vector2D &b);
 
@@ -249,7 +249,7 @@ public:
    * Equality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is equal to \p b.
+   * \returns \c true if \pname{a} is equal to \pname{b}.
    */
   friend bool operator == (const Vector2D &a, const Vector2D &b);
 
@@ -257,7 +257,7 @@ public:
    * Inequality operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns \c true if \p a is not equal to \p b.
+   * \returns \c true if \pname{a} is not equal to \pname{b}.
    */
   friend bool operator != (const Vector2D &a, const Vector2D &b);
 
@@ -265,7 +265,7 @@ public:
    * Addition operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector sum of \p a and \p b.
+   * \returns The vector sum of \pname{a} and \pname{b}.
    */
   friend Vector2D operator + (const Vector2D &a, const Vector2D &b);
 
@@ -273,7 +273,7 @@ public:
    * Subtraction operator.
    * \param [in] a lhs vector.
    * \param [in] b rhs vector.
-   * \returns The vector difference of \p a and \p b.
+   * \returns The vector difference of \pname{a} and \pname{b}.
    */
   friend Vector2D operator - (const Vector2D &a, const Vector2D &b);
 };

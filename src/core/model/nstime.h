@@ -310,7 +310,7 @@ public:
     return m_data > 0;
   }
   /**
-   *  Compare \p this to another Time
+   *  Compare \pname{this} to another Time
    *
    *  \param [in] o The other Time
    *  \return -1,0,+1 if `this < o`, `this == o`, or `this > o`
@@ -421,7 +421,7 @@ public:
    *  Create a Time in the current unit.
    *
    *  \param [in] value The value of the new Time.
-   *  \return A Time with \p value in the current time unit.
+   *  \return A Time with \pname{value} in the current time unit.
    */
   inline static Time From (const int64x64_t & value)
   {
@@ -434,11 +434,11 @@ public:
    * @{
    */
   /**
-   *  Create a Time equal to \p value  in unit \c unit
+   *  Create a Time equal to \pname{value}  in unit \c unit
    *
    *  \param [in] value The new Time value, expressed in \c unit
-   *  \param [in] unit The unit of \p value
-   *  \return The Time representing \p value in \c unit
+   *  \param [in] unit The unit of \pname{value}
+   *  \return The Time representing \pname{value} in \c unit
    */
   inline static Time FromInteger (uint64_t value, enum Unit unit)
   {
@@ -486,7 +486,7 @@ public:
    *  Get the Time value expressed in a particular unit.
    *
    *  \param [in] unit The desired unit
-   *  \return The Time expressed in \p unit
+   *  \return The Time expressed in \pname{unit}
    */
   inline int64_t ToInteger (enum Unit unit) const
   {
@@ -580,10 +580,10 @@ private:
     return &resolution;
   }
   /**
-   *  Get the Information record for \p timeUnit for the current Resolution
+   *  Get the Information record for \pname{timeUnit} for the current Resolution
    *
    *  \param [in] timeUnit The Unit to get Information for
-   *  \return The Information for \p timeUnit
+   *  \return The Information for \pname{timeUnit}
    */
   static inline struct Information * PeekInformation (enum Unit timeUnit)
   {

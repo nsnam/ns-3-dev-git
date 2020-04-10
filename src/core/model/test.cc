@@ -177,7 +177,7 @@ private:
   /**
    * Check if this is the root of the source tree.
    * \param [in] path The path to test.
-   * \returns \c true if \p path is the root.
+   * \returns \c true if \pname{path} is the root.
    */
   bool IsTopLevelSourceDir (std::string path) const;
   /**

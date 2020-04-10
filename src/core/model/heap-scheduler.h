@@ -79,14 +79,14 @@ private:
    * Get the parent index of a given entry.
    *
    * \param [in] id The child index.
-   * \return The index of the parent of \p id.
+   * \return The index of the parent of \pname{id}.
    */
   inline std::size_t Parent (std::size_t id) const;
   /**
    * Get the next sibling of a given entry.
    *
    * \param [in] id The starting index.
-   * \returns The next sibling of \p id.
+   * \returns The next sibling of \pname{id}.
    */
   std::size_t Sibling (std::size_t id) const;
   /**
@@ -118,7 +118,7 @@ private:
    * Test if an index is the root.
    *
    * \param [in] id The index to test.
-   * \returns \c true if the \p id is the root.
+   * \returns \c true if the \pname{id} is the root.
    */
   inline bool IsRoot (std::size_t id) const;
   /**
