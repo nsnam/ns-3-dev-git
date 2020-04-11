@@ -46,7 +46,7 @@ function usage
     Run doxygen to generate all errors; report error counts
     by module and file.
     
-    -i  Skip build and print-introspected-doxygen.
+    -i  Skip the build, try print-introspected-doxygen anyway.
     
     -s  Skip doxygen run; use existing <log-file>.
     -w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE

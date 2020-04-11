@@ -271,7 +271,7 @@ public:
 
   /**
    * \brief Get the next random value, as an unsigned integer in the
-   * specified range \f$[min, max]/f$.
+   * specified range \f$[min, max]\f$.
    *
    * \note The upper limit is included in the output range.
    *
@@ -2497,8 +2497,8 @@ private:
     /**
      * Construct from values.
      *
-     * \param [in] v The argumetn value.
-     * \param [in] c The CDF at the argument value \p v.
+     * \param [in] v The argument value.
+     * \param [in] c The CDF at the argument value \pname{v}
      */
     ValueCDF (double v, double c);
     /**
@@ -2510,7 +2510,7 @@ private:
 
     /** The argument value. */
     double value;
-    /** The CDF at \p value. */
+    /** The CDF at \pname{value}  */
     double    cdf;
   };
   /**
@@ -2526,14 +2526,14 @@ private:
   virtual void Validate ();
   /**
    * Linear nterpolation between two points on the CDF to estimate
-   * the value at \p r.
+   * the value at \pname{r}
    *
    * \param [in] c1 The first argument value.
    * \param [in] c2 The secong argument value.
    * \param [in] v1 The first CDF value.
    * \param [in] v2 The secong CDF value.
    * \param [in] r  The argument value to interpolate to.
-   * \returns The interpolated CDF at \p r.
+   * \returns The interpolated CDF at \pname{r}
    */
   virtual double Interpolate (double c1, double c2,
                               double v1, double v2, double r);

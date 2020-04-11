@@ -183,6 +183,7 @@ public:
    * Assignment.
    *
    * \param [in] o Value to assign to this int64x64_t.
+   * \returns a copy of \pname{o}
    */
   inline int64x64_t & operator = (const int64x64_t & o)
   {
@@ -251,6 +252,18 @@ public:
   static int64x64_t Invert (const uint64_t v);
 
 private:
+
+  /**
+   * \name Arithmetic Operators
+   * Arithmetic operators for int64x64_t.
+   */
+  /**
+   * @{
+   *  Arithmetic operator.
+   *  \param [in] lhs Left hand argument
+   *  \param [in] rhs Right hand argument
+   *  \return The result of the operator.
+   */
   friend bool         operator == (const int64x64_t & lhs, const int64x64_t & rhs);
 
   friend bool         operator <  (const int64x64_t & lhs, const int64x64_t & rhs);
@@ -260,9 +273,21 @@ private:
   friend int64x64_t & operator -= (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator *= (      int64x64_t & lhs, const int64x64_t & rhs);
   friend int64x64_t & operator /= (      int64x64_t & lhs, const int64x64_t & rhs);
+  /**@}*/
 
+  /**
+   * \name Unary Operators
+   * Unary operators for int64x64_t.
+   */
+  /**
+   * @{
+   *  Unary operator.
+   *  \param [in] lhs Left hand argument
+   *  \return The result of the operator.
+   */
   friend int64x64_t   operator -  (const int64x64_t & lhs);
   friend int64x64_t   operator !  (const int64x64_t & lhs);
+  /**@}*/
 
   /**
    * Implement `*=`.
@@ -328,6 +353,9 @@ private:
 /**
  * \ingroup highprec
  * Equality operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -336,6 +364,9 @@ inline bool operator == (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Less than operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -344,6 +375,9 @@ inline bool operator < (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Greater operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -353,6 +387,9 @@ inline bool operator > (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Compound addition operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -362,6 +399,9 @@ inline int64x64_t & operator += (int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Compound subtraction operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -371,6 +411,9 @@ inline int64x64_t & operator -= (int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Compound multiplication operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -380,6 +423,9 @@ inline int64x64_t & operator *= (int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Compound division operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -390,6 +436,8 @@ inline int64x64_t & operator /= (int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Unary plus operator
+ * \param [in] lhs Left hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t operator + (const int64x64_t & lhs)
 {
@@ -398,6 +446,8 @@ inline int64x64_t operator + (const int64x64_t & lhs)
 /**
  * \ingroup highprec
  * Unary negation operator (change sign operator)
+ * \param [in] lhs Left hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t operator - (const int64x64_t & lhs)
 {
@@ -408,6 +458,8 @@ inline int64x64_t operator - (const int64x64_t & lhs)
 /**
  * \ingroup highprec
  * Logical not operator
+ * \param [in] lhs Left hand argument
+ * \return The result of the operator.
  */
 inline int64x64_t operator ! (const int64x64_t & lhs)
 {

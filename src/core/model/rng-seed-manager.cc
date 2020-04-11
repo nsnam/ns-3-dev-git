@@ -42,6 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("RngSeedManager");
 static uint64_t g_nextStreamIndex = 0;
 /**
  * \relates RngSeedManager
+ * \anchor GlobalValueRngSeed
  * The random number generator seed number global value.  This is used to
  * generate an new master PRNG sequence.  It is typically not modified
  * by user programs; the variable RngRun is preferred for independent
@@ -55,6 +56,7 @@ static ns3::GlobalValue g_rngSeed ("RngSeed",
                                    ns3::MakeUintegerChecker<uint32_t> ());
 /**
  * \relates RngSeedManager
+ * \anchor GlobalValueRngRun
  * The random number generator substream index.  This is used to generate
  * new PRNG sequences for all streams (random variables) in such a manner
  * that the streams remain uncorrelated.  Incrementing this variable can

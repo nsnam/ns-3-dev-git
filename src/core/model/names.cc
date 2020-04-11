@@ -249,8 +249,7 @@ public:
   Ptr<Object> Find (Ptr<Object> context, std::string name);
 
 private:
-  friend class Names;
-
+  
   /**
    * Check if an object has a name.
    *

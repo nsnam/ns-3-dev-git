@@ -264,12 +264,18 @@ public:
    */
   explicit Time (const std::string & s);
 
-  /** Minimum representable Time */
+  /**
+   * Minimum representable Time
+   * \returns the minimum representable Time.
+   */
   static Time Min ()
   {
     return Time (std::numeric_limits<int64_t>::min ());
   }
-  /** Maximum representable Time */
+  /**
+   * Maximum representable Time
+   * \returns the maximum representable Time.
+   */
   static Time Max ()
   {
     return Time (std::numeric_limits<int64_t>::max ());
@@ -652,7 +658,7 @@ public:
 
 private:
 
-  /* Friend the Simulator class so it can call the private function
+  /** Friend the Simulator class so it can call the private function
      ClearMarkedTimes ()
   */
   friend class Simulator;

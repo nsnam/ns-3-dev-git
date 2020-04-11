@@ -102,6 +102,7 @@ public:
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
 private:
+  /** ObjectPtrContainerAccessor::Get() needs access. */
   friend class ObjectPtrContainerAccessor;
   /** The container implementation. */
   std::map<std::size_t, Ptr<Object> > m_objects;

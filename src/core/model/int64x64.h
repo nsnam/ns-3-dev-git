@@ -81,6 +81,9 @@ namespace ns3 {
 /**
  * \ingroup highprec
  * Addition operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline
 int64x64_t operator + (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -92,6 +95,9 @@ int64x64_t operator + (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Subtraction operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline
 int64x64_t operator - (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -103,6 +109,9 @@ int64x64_t operator - (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Multiplication operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline
 int64x64_t operator * (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -114,6 +123,9 @@ int64x64_t operator * (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Division operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline
 int64x64_t operator / (const int64x64_t & lhs, const int64x64_t & rhs)
@@ -125,6 +137,9 @@ int64x64_t operator / (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Inequality operator
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -133,6 +148,9 @@ inline bool operator != (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Less or equal operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
 {
@@ -141,6 +159,9 @@ inline bool operator <= (const int64x64_t & lhs, const int64x64_t & rhs)
 /**
  * \ingroup highprec
  * Greater or equal operator.
+ * \param [in] lhs Left hand argument
+ * \param [in] rhs Right hand argument
+ * \return The result of the operator.
  */
 inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
 {

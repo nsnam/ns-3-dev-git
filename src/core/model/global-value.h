@@ -183,7 +183,7 @@ public:
   static void GetValueByName (std::string name, AttributeValue &value);
 
 private:
-  // Test case needs direct access to GetVector()
+  /** Test case needs direct access to GetVector() */
   friend class tests::GlobalValueTestCase;
 
   /**

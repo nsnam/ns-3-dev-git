@@ -44,9 +44,13 @@ NS_LOG_COMPONENT_DEFINE ("SampleShowProgress");
 
 namespace {
 
+/**
+ * Utility class to record the difference between to wall-clock times.
+ */
 class Timestamp
 {
 public:
+  /** Constructor */
   Timestamp () :
     last (0),
     diff (0)
@@ -54,6 +58,7 @@ public:
     stamp ();
   }
 
+  /** Record the current wall-clock time and delta since the last stamp(). */
   void stamp ()
   {
     time_t seconds  = time (NULL);
@@ -61,6 +66,10 @@ public:
     last  = seconds;
   }
 
+  /**
+   * Get the last time stamp as a string.
+   * \return The last time stamp.
+   */
   std::string string ()
   {
     std::string now = ctime ( &last );
@@ -68,32 +77,48 @@ public:
     return now;
   }
 
-  time_t last;
-  time_t diff;
+  time_t last;    /**< The last time stamp. */
+  time_t diff;    /**< Difference between the two previous time stamps. */
 
 };  // class Timestamp
 
 
 /**
- * Execute a function periodically.
+ * Execute a function periodically,
+ * which takes more or less time to run.
+ *
+ * Inspired by PHOLD.
  */
 class Hold : public SimpleRefCount<Hold>
 {
 public:
 
+  /**
+   * Create a Hold with mean inter-event time \pname{wait},
+   * changing workload every \pname{interval}.
+   * \param wait The mean inter-event time.
+   * \param interval How often to change work load.  This
+   *                 should be an order of magnitude larger than \pname{wait}.
+   */
   Hold (Time wait, Time interval)
   {
     m_wait = wait;
     m_interval = interval;
 
     m_rng = CreateObject<ExponentialRandomVariable> ();
-    m_rng->SetAttribute ("Mean", DoubleValue (wait.GetSeconds ()));
+    m_rng->SetAttribute ("Mean", DoubleValue (m_wait.GetSeconds ()));
   }
 
+  /**
+   * Create a hold with a specified random number generator for the
+   * \pname{wait} time.  The RNG value will be interpreted as seconds.
+   * \param rng The random variable generator to use for the inter-event time.
+   */
   Hold (Ptr<RandomVariableStream> rng)
     : m_rng (rng)
   {}
 
+  /** The Hold event. */
   void Event (void)
   {
     double delta = m_rng->GetValue ();
@@ -111,9 +136,13 @@ public:
   }
 
 private:
+  /** The random number generator for the interval between events. */
   Ptr<RandomVariableStream> m_rng;
+  /** Timer to represent workload. */
   SystemCondition m_condition;
+  /** Mean inter-event time. */
   Time m_wait;
+  /** Time between switching workloads. */
   Time m_interval;
 
 };  // class HOLD
@@ -125,7 +154,7 @@ int
 main (int argc, char ** argv)
 {
   Time stop = Seconds (100);
-  Time interval = Seconds (1);
+  Time interval = Seconds (10);
   Time wait = MilliSeconds (10);
   bool verbose = false;
 

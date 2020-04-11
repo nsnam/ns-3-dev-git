@@ -1279,6 +1279,8 @@ protected:
   /**@}*/
 
 private:
+
+  /** Needs access to the TestCase data members. */
   friend class TestRunnerImpl;
 
   /**

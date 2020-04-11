@@ -416,6 +416,9 @@ private:
     std::string m_default;    /**< String representation of default value */
   };  // class UserItem
 
+  /**
+   * Extension of Item for strings.
+   */
   class StringItem : public Item
   {
   public:

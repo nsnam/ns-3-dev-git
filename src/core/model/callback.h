@@ -204,7 +204,7 @@ class CallbackImpl<R,empty,empty,empty,empty,empty,empty,empty,empty,empty> : pu
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (void) = 0;      //!< Abstract operator
+  virtual R operator() (void) = 0;      //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -225,7 +225,7 @@ class CallbackImpl<R,T1,empty,empty,empty,empty,empty,empty,empty,empty> : publi
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1) = 0;        //!< Abstract operator
+  virtual R operator() (T1) = 0;        //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -247,7 +247,7 @@ class CallbackImpl<R,T1,T2,empty,empty,empty,empty,empty,empty,empty> : public C
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2) = 0;    //!< Abstract operator
+  virtual R operator() (T1, T2) = 0;    //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -270,7 +270,7 @@ class CallbackImpl<R,T1,T2,T3,empty,empty,empty,empty,empty,empty> : public Call
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -294,7 +294,7 @@ class CallbackImpl<R,T1,T2,T3,T4,empty,empty,empty,empty,empty> : public Callbac
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -319,7 +319,7 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,empty,empty,empty,empty> : public CallbackIm
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4, T5) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4, T5) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -345,7 +345,7 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty> : public CallbackImplB
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4, T5, T6) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4, T5, T6) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -372,7 +372,7 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,empty,empty> : public CallbackImplBase
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4, T5, T6, T7) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4, T5, T6, T7) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -400,7 +400,7 @@ class CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,empty> : public CallbackImplBase
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();
@@ -429,7 +429,7 @@ class CallbackImpl : public CallbackImplBase
 public:
   virtual ~CallbackImpl ()
   {}
-  virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8, T9) = 0;  //!< Abstract operator
+  virtual R operator() (T1, T2, T3, T4, T5, T6, T7, T8, T9) = 0;  //!< \return Callback value
   virtual std::string GetTypeid (void) const
   {
     return DoGetTypeid ();

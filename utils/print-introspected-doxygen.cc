@@ -560,7 +560,6 @@ typedef NameMap::const_iterator         NameMapIterator; ///< NameMap iterator
  * Create a map from the class names to their index in the vector of
  * TypeId's so that the names will end up in alphabetical order.
  *
- * \param info type names withut type ids
  * \returns NameMap
  */
 NameMap
@@ -618,7 +617,6 @@ GetNameMap (void)
 /**
  * Print config paths
  * \param os the output stream
- * \param info the information
  * \param tid the type ID
  */
 void
@@ -1478,6 +1476,7 @@ PrintAttributeHelper (std::ostream & os,
 
 /**
  * Print documentation for Attribute implementations.
+ * \param os The stream to print on.
  */
 void
 PrintAttributeImplementations (std::ostream & os)
@@ -1520,6 +1519,7 @@ PrintAttributeImplementations (std::ostream & os)
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
       // { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      { "Vector",         "Vector",         true,  "vector.h"           },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
       { "HeOperation",    "HeOperation",    true,  "he-operation.h"    },
@@ -1595,10 +1595,8 @@ int main (int argc, char *argv[])
   if (!outputText)
     {
       std::cout << "/* -*- Mode:C++; c-file-style:\"gnu\"; "
-	           "indent-tabs-mode:nil; -*- */\n"
+	           "indent-tabs-mode:nil; -*- */"
 		<< std::endl;
-      std::cout << "#include \"ns3/log.h\""
-                << std::endl;
     }
 
   // Doxygen file header

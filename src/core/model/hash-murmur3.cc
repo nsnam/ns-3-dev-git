@@ -126,7 +126,7 @@ inline uint32_t getblock ( const uint32_t * p, std::size_t i )
 {
   return p[i];
 }
-/** \copydoc getblock(const uint32_t*,int) */
+/** \copydoc getblock(const uint32_t*,std::size_t) */
 inline uint64_t getblock ( const uint64_t * p, std::size_t i )
 {
   return p[i];

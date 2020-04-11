@@ -123,6 +123,7 @@ public:
     Ptr<const Object> Next (void);
 
   private:
+    /** Object needs access. */
     friend class Object;
     /**
      * Construct from an Object.
@@ -220,7 +221,7 @@ public:
   /**
    * Check if the object has been initialized.
    *
-   * \brief returns true if the object has been initialized.
+   * \returns true if the object has been initialized.
    */
   bool IsInitialized (void) const;
 
@@ -317,9 +318,11 @@ private:
   template <typename T>
   friend Ptr<T> CompleteConstruct (T *object);
 
+  /** Friends. @{*/
   friend class ObjectFactory;
   friend class AggregateIterator;
   friend struct ObjectDeleter;
+  /**@}*/
 
   /**
    * The list of Objects aggregated to this one.
