@@ -88,6 +88,7 @@ transmitted.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
+<li> Attempting to deserialize an enum name which wasn't registered with MakeEnumChecker now causes a fatal error, rather failing silently. (This can be triggered by setting an enum Attribute from a StringValue.)</li>
 <li> As a result of the above API changes in <b> MobilityBuildingInfo </b> 
 and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g., 
 <b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 

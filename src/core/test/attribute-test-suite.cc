@@ -740,11 +740,11 @@ AttributeTestCase<EnumValue>::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by SetAttributeFailSafe() via StringValue");
 
   //
-  // Try to set the Attribute to a bogus enum using the StringValue type and
-  // make sure the underlying value doesn't change.
+  // Try to set the Attribute to a bogus enum using the StringValue type
+  // throws a fatal error.
   //
-  ok = p->SetAttributeFailSafe ("TestEnum", StringValue ("TestD"));
-  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to TEST_D"); //
+  //  ok = p->SetAttributeFailSafe ("TestEnum", StringValue ("TestD"));
+  //  NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() to TEST_D"); //
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Error in SetAttributeFailSafe() but value changes");
