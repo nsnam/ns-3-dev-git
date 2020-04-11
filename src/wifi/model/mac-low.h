@@ -368,6 +368,19 @@ public:
                                   Ptr<Txop> txop);
 
   /**
+   * \param txVector the TXVECTOR decoded from PHY header.
+   * \param psduDuration the duration of the PSDU that is about to be received.
+   *
+   * This method is typically invoked by the lower PHY layer to notify
+   * the MAC layer that the reception of a PSDU is starting.
+   * This is equivalent to the PHY-RXSTART primitive.
+   * If the reception is correct for at least one MPDU of the PSDU
+   * the DeaggregateAmpduAndReceive will be called after \p psduDuration.
+   * Otherwise, ReceiveError will be called after the same duration.
+   */
+  void RxStartIndication (WifiTxVector txVector, Time psduDuration);
+
+  /**
    * \param mpdu MPDU received
    * \param rxSnr snr of MPDU received in linear scale
    * \param txVector TXVECTOR of MPDU received

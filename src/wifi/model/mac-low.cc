@@ -47,6 +47,11 @@
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
 
+// Time (in nanoseconds) to be added to the PSDU duration to yield the duration
+// of the timer that is started when the PHY indicates the start of the reception
+// of a frame and we are waiting for a response.
+#define PSDU_DURATION_SAFEGUARD 400
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
@@ -248,6 +253,7 @@ void
 MacLow::SetPhy (const Ptr<WifiPhy> phy)
 {
   m_phy = phy;
+  m_phy->TraceConnectWithoutContext ("PhyRxPayloadBegin", MakeCallback (&MacLow::RxStartIndication, this));
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::DeaggregateAmpduAndReceive, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
   SetupPhyMacLowListener (phy);
@@ -262,6 +268,7 @@ MacLow::GetPhy (void) const
 void
 MacLow::ResetPhy (void)
 {
+  m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin", MakeCallback (&MacLow::RxStartIndication, this));
   m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, double, WifiTxVector, std::vector<bool>> ());
   m_phy->SetReceiveErrorCallback (MakeNullCallback<void, Ptr<WifiPsdu>> ());
   RemovePhyMacLowListener (m_phy);
@@ -716,6 +723,48 @@ MacLow::IsWithinSizeAndTimeLimits (uint32_t mpduSize, Mac48Address receiver, uin
 }
 
 void
+MacLow::RxStartIndication (WifiTxVector txVector, Time psduDuration)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("PSDU reception started for " << psduDuration.ToDouble (Time::US)
+                << " us (txVector: " << txVector << ")");
+  NS_ASSERT (psduDuration.IsStrictlyPositive ());
+
+  if (m_normalAckTimeoutEvent.IsRunning ())
+    {
+      // we are waiting for a Normal Ack and something arrived
+      NS_LOG_DEBUG ("Rescheduling Normal Ack timeout");
+      m_normalAckTimeoutEvent.Cancel ();
+      NotifyAckTimeoutResetNow ();
+      m_normalAckTimeoutEvent = Simulator::Schedule (psduDuration + NanoSeconds (PSDU_DURATION_SAFEGUARD),
+                                                     &MacLow::NormalAckTimeout, this);
+    }
+  else if (m_blockAckTimeoutEvent.IsRunning ())
+    {
+      // we are waiting for a BlockAck and something arrived
+      NS_LOG_DEBUG ("Rescheduling Block Ack timeout");
+      m_blockAckTimeoutEvent.Cancel ();
+      NotifyAckTimeoutResetNow ();
+      m_blockAckTimeoutEvent = Simulator::Schedule (psduDuration + NanoSeconds (PSDU_DURATION_SAFEGUARD),
+                                                    &MacLow::BlockAckTimeout, this);
+    }
+  else if (m_ctsTimeoutEvent.IsRunning ())
+    {
+      // we are waiting for a CTS and something arrived
+      NS_LOG_DEBUG ("Rescheduling CTS timeout");
+      m_ctsTimeoutEvent.Cancel ();
+      NotifyCtsTimeoutResetNow ();
+      m_ctsTimeoutEvent = Simulator::Schedule (psduDuration + NanoSeconds (PSDU_DURATION_SAFEGUARD),
+                                               &MacLow::CtsTimeout, this);
+    }
+  else if (m_navCounterResetCtsMissed.IsRunning ())
+    {
+      NS_LOG_DEBUG ("Cannot reset NAV");
+      m_navCounterResetCtsMissed.Cancel ();
+    }
+}
+
+void
 MacLow::ReceiveError (Ptr<WifiPsdu> psdu)
 {
   NS_LOG_FUNCTION (this << *psdu);
@@ -874,18 +923,11 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
                                           rxSnr, txVector.GetMode (), tag.Get (),
                                           m_currentPacket->GetSize ());
         }
-      bool gotAck = false;
-      if (m_txParams.MustWaitNormalAck ()
-          && m_normalAckTimeoutEvent.IsRunning ())
-        {
-          m_normalAckTimeoutEvent.Cancel ();
-          NotifyAckTimeoutResetNow ();
-          gotAck = true;
-        }
-      if (gotAck)
-        {
-          m_currentTxop->GotAck ();
-        }
+      // cancel the Normal Ack timer
+      m_normalAckTimeoutEvent.Cancel ();
+      NotifyAckTimeoutResetNow ();
+      m_currentTxop->GotAck ();
+
       if (m_txParams.HasNextPacket ())
         {
           if (m_stationManager->GetRifsPermitted ())
@@ -1565,20 +1607,21 @@ MacLow::NotifyNav (Ptr<const Packet> packet, const WifiMacHeader &hdr)
           /**
            * A STA that used information from an RTS frame as the most recent basis to update its NAV setting
            * is permitted to reset its NAV if no PHY-RXSTART.indication is detected from the PHY during a
-           * period with a duration of (2 * aSIFSTime) + (CTS_Time) + (2 * aSlotTime) starting at the
-           * PHY-RXEND.indication corresponding to the detection of the RTS frame. The “CTS_Time” shall
-           * be calculated using the length of the CTS frame and the data rate at which the RTS frame
-           * used for the most recent NAV update was received.
+           * period with a duration of (2 * aSIFSTime) + (CTS_Time) + aRxPHYStartDelay + (2 * aSlotTime)
+           * starting at the PHY-RXEND.indication corresponding to the detection of the RTS frame. The
+           * “CTS_Time” shall be calculated using the length of the CTS frame and the data rate at which
+           * the RTS frame used for the most recent NAV update was received.
            */
           WifiMacHeader cts;
           cts.SetType (WIFI_MAC_CTL_CTS);
           WifiTxVector txVector = GetRtsTxVector (Create<const WifiMacQueueItem> (packet, hdr));
           Time navCounterResetCtsMissedDelay =
             m_phy->CalculateTxDuration (cts.GetSerializedSize (), txVector, m_phy->GetFrequency ()) +
-            Time (2 * GetSifs ()) + Time (2 * GetSlotTime ());
+            Time (2 * GetSifs ()) + Time (2 * GetSlotTime ()) +
+            m_phy->CalculatePhyPreambleAndHeaderDuration (txVector);
           m_navCounterResetCtsMissed = Simulator::Schedule (navCounterResetCtsMissedDelay,
-                                                            &MacLow::NavCounterResetCtsMissed, this,
-                                                            Simulator::Now ());
+                                                            &MacLow::DoNavResetNow, this,
+                                                            Seconds (0));
         }
     }
 }
@@ -1818,8 +1861,11 @@ MacLow::SendRtsForPacket (void)
   rts.SetDuration (duration);
 
   Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxVector, m_phy->GetFrequency ());
-  Time timerDelay = txDuration + GetCtsTimeout ();
-
+  // After transmitting an RTS frame, the STA shall wait for a CTSTimeout interval with
+  // a value of aSIFSTime + aSlotTime + aRxPHYStartDelay (IEEE 802.11-2016 sec. 10.3.2.7).
+  // aRxPHYStartDelay equals the time to transmit the PHY header.
+  Time timerDelay = txDuration + GetSifs () + GetSlotTime ()
+                    + m_phy->CalculatePhyPreambleAndHeaderDuration (rtsTxVector);
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   NotifyCtsTimeoutStartNow (timerDelay);
   m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
@@ -1833,23 +1879,26 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
   Time txDuration = m_phy->CalculateTxDuration (m_currentPacket->GetSize (), dataTxVector, m_phy->GetFrequency ());
   if (m_txParams.MustWaitNormalAck () && !IsCfPeriod ())
     {
-      Time timerDelay = txDuration + GetAckTimeout ();
+      // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
+      // at the PHY-TXEND.confirm primitive" (section 10.3.2.9 or 10.22.2.2 of 802.11-2016).
+      // aRxPHYStartDelay equals the time to transmit the PHY header.
+      WifiTxVector ackTxVector = GetAckTxVector (m_currentPacket->GetAddr1 (),
+                                                 dataTxVector.GetMode ());
+      Time timerDelay = txDuration + GetSifs () + GetSlotTime ()
+                        + m_phy->CalculatePhyPreambleAndHeaderDuration (ackTxVector);
       NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (timerDelay);
       m_normalAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::NormalAckTimeout, this);
     }
-  else if (m_txParams.MustWaitBlockAck () && m_txParams.GetBlockAckType () == BlockAckType::BASIC_BLOCK_ACK)
+  else if (m_txParams.MustWaitBlockAck ())
     {
-      Time timerDelay = txDuration + GetBasicBlockAckTimeout ();
-      NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
-      NotifyAckTimeoutStartNow (timerDelay);
-      m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
-    }
-  else if (m_txParams.MustWaitBlockAck () &&
-           (m_txParams.GetBlockAckType () == BlockAckType::COMPRESSED_BLOCK_ACK
-            || m_txParams.GetBlockAckType () == BlockAckType::EXTENDED_COMPRESSED_BLOCK_ACK))
-    {
-      Time timerDelay = txDuration + GetCompressedBlockAckTimeout ();
+      // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
+      // at the PHY-TXEND.confirm primitive" (section 10.3.2.9 or 10.22.2.2 of 802.11-2016).
+      // aRxPHYStartDelay equals the time to transmit the PHY header.
+      WifiTxVector blockAckTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr1 (),
+                                                           dataTxVector.GetMode ());
+      Time timerDelay = txDuration + GetSifs () + GetSlotTime ()
+                        + m_phy->CalculatePhyPreambleAndHeaderDuration (blockAckTxVector);
       NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (timerDelay);
       m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);

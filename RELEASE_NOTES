@@ -36,6 +36,7 @@ Bugs fixed
 - Bug 2636 - Add to doxygen a list of all registered TypeIds
 - Bug 2928 - BlockAckManager::NeedBarRetransmission returns "true" infinitely
 - Bug 2985 - PhyTxEnd tracecallback not implemented
+- Bug 1909, Issue #41 - wifi: Implementation of ACK timeout
 - Issue #22 - wifi: Station long retry counter is incremented twice if BlockAck was not received
 - Issue #40 - IdealWifiManager not working if stations are moving
 - Issue #84 - Wi-Fi removing wrong header due to copy-paste error
