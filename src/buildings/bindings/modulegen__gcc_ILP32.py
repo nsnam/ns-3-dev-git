@@ -31,7 +31,7 @@ def register_types(module):
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList [class]
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
-    module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    module.add_class('Item', outer_class=root_module['ns3::AttributeConstructionList'], import_from_module='ns.core')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator', 'ns3::AttributeConstructionList::CIterator')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator*', 'ns3::AttributeConstructionList::CIterator*')
     typehandlers.add_type_alias('std::list< ns3::AttributeConstructionList::Item > const_iterator&', 'ns3::AttributeConstructionList::CIterator&')
@@ -42,7 +42,7 @@ def register_types(module):
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::Buffer'])
+    module.add_class('Iterator', outer_class=root_module['ns3::Buffer'], import_from_module='ns.network')
     ## building-container.h (module 'buildings'): ns3::BuildingContainer [class]
     module.add_class('BuildingContainer')
     typehandlers.add_type_alias('std::vector< ns3::Ptr< ns3::Building > > const_iterator', 'ns3::BuildingContainer::Iterator')
@@ -58,13 +58,13 @@ def register_types(module):
     ## packet.h (module 'network'): ns3::ByteTagIterator [class]
     module.add_class('ByteTagIterator', import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::ByteTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagIterator'])
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagIterator'], import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList [class]
     module.add_class('ByteTagList', import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator [class]
-    module.add_class('Iterator', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList'])
+    module.add_class('Iterator', outer_class=root_module['ns3::ByteTagList'], import_from_module='ns.network')
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
+    module.add_class('Item', outer_class=root_module['ns3::ByteTagList::Iterator'], import_from_module='ns.network')
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## constant-velocity-helper.h (module 'mobility'): ns3::ConstantVelocityHelper [class]
@@ -124,21 +124,21 @@ def register_types(module):
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata [class]
     module.add_class('PacketMetadata', import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item [struct]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
+    module.add_class('Item', outer_class=root_module['ns3::PacketMetadata'], import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::Item::ItemType [enumeration]
     module.add_enum('ItemType', ['PAYLOAD', 'HEADER', 'TRAILER'], outer_class=root_module['ns3::PacketMetadata::Item'], import_from_module='ns.network')
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator [class]
-    module.add_class('ItemIterator', import_from_module='ns.network', outer_class=root_module['ns3::PacketMetadata'])
+    module.add_class('ItemIterator', outer_class=root_module['ns3::PacketMetadata'], import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::PacketTagIterator [class]
     module.add_class('PacketTagIterator', import_from_module='ns.network')
     ## packet.h (module 'network'): ns3::PacketTagIterator::Item [class]
-    module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagIterator'])
+    module.add_class('Item', outer_class=root_module['ns3::PacketTagIterator'], import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList [class]
     module.add_class('PacketTagList', import_from_module='ns.network')
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData [struct]
-    module.add_class('TagData', import_from_module='ns.network', outer_class=root_module['ns3::PacketTagList'])
+    module.add_class('TagData', outer_class=root_module['ns3::PacketTagList'], import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::ObjectBase'], template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## tag.h (module 'network'): ns3::Tag [class]
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
@@ -152,9 +152,9 @@ def register_types(module):
     ## type-id.h (module 'core'): ns3::TypeId::SupportLevel [enumeration]
     module.add_enum('SupportLevel', ['SUPPORTED', 'DEPRECATED', 'OBSOLETE'], outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation [struct]
-    module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    module.add_class('AttributeInformation', outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
-    module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    module.add_class('TraceSourceInformation', outer_class=root_module['ns3::TypeId'], import_from_module='ns.core')
     typehandlers.add_type_alias('uint32_t', 'ns3::TypeId::hash_t')
     typehandlers.add_type_alias('uint32_t*', 'ns3::TypeId::hash_t*')
     typehandlers.add_type_alias('uint32_t&', 'ns3::TypeId::hash_t&')
@@ -175,7 +175,7 @@ def register_types(module):
     ## object.h (module 'core'): ns3::Object [class]
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
-    module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
+    module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'], import_from_module='ns.core')
     ## position-allocator.h (module 'mobility'): ns3::PositionAllocator [class]
     module.add_class('PositionAllocator', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel [class]
@@ -201,21 +201,21 @@ def register_types(module):
     ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
     module.add_class('SequentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
-    module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', automatic_type_narrowing=True)
     ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
     module.add_class('ThreeLogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## nstime.h (module 'core'): ns3::Time [class]
@@ -248,9 +248,9 @@ def register_types(module):
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
+    module.add_class('AttributeChecker', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], allow_subclassing=False, automatic_type_narrowing=True)
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
-    module.add_class('AttributeValue', import_from_module='ns.core', automatic_type_narrowing=True, allow_subclassing=False, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
+    module.add_class('AttributeValue', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], allow_subclassing=False, automatic_type_narrowing=True)
     ## box.h (module 'mobility'): ns3::BoxChecker [class]
     module.add_class('BoxChecker', import_from_module='ns.mobility', parent=root_module['ns3::AttributeChecker'])
     ## box.h (module 'mobility'): ns3::BoxValue [class]
@@ -269,6 +269,12 @@ def register_types(module):
     module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     ## callback.h (module 'core'): ns3::CallbackValue [class]
     module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition [class]
+    module.add_class('ChannelCondition', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::LosConditionValue [enumeration]
+    module.add_enum('LosConditionValue', ['LOS', 'NLOS'], outer_class=root_module['ns3::ChannelCondition'], import_from_module='ns.propagation')
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelConditionModel [class]
+    module.add_class('ChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
     module.add_class('ConstantRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
@@ -353,6 +359,8 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'ns3::NetDevice::PromiscReceiveCallback')
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::NetDevice::PromiscReceiveCallback*')
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::NetDevice::PromiscReceiveCallback&')
+    ## channel-condition-model.h (module 'propagation'): ns3::NeverLosChannelConditionModel [class]
+    module.add_class('NeverLosChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
@@ -395,6 +403,18 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', 'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppChannelConditionModel [class]
+    module.add_class('ThreeGppChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorMixedOfficeChannelConditionModel [class]
+    module.add_class('ThreeGppIndoorMixedOfficeChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorOpenOfficeChannelConditionModel [class]
+    module.add_class('ThreeGppIndoorOpenOfficeChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppRmaChannelConditionModel [class]
+    module.add_class('ThreeGppRmaChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppUmaChannelConditionModel [class]
+    module.add_class('ThreeGppUmaChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppUmiStreetCanyonChannelConditionModel [class]
+    module.add_class('ThreeGppUmiStreetCanyonChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -413,14 +433,18 @@ def register_types(module):
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
     module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## channel-condition-model.h (module 'propagation'): ns3::AlwaysLosChannelConditionModel [class]
+    module.add_class('AlwaysLosChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
+    ## buildings-channel-condition-model.h (module 'buildings'): ns3::BuildingsChannelConditionModel [class]
+    module.add_class('BuildingsChannelConditionModel', parent=root_module['ns3::ChannelConditionModel'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<const ns3::MobilityModel>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'], import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'])
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
@@ -592,6 +616,8 @@ def register_methods(root_module):
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
     register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
+    register_Ns3ChannelCondition_methods(root_module, root_module['ns3::ChannelCondition'])
+    register_Ns3ChannelConditionModel_methods(root_module, root_module['ns3::ChannelConditionModel'])
     register_Ns3ConstantRandomVariable_methods(root_module, root_module['ns3::ConstantRandomVariable'])
     register_Ns3DeterministicRandomVariable_methods(root_module, root_module['ns3::DeterministicRandomVariable'])
     register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
@@ -626,6 +652,7 @@ def register_methods(root_module):
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
+    register_Ns3NeverLosChannelConditionModel_methods(root_module, root_module['ns3::NeverLosChannelConditionModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3NormalRandomVariable_methods(root_module, root_module['ns3::NormalRandomVariable'])
@@ -635,6 +662,12 @@ def register_methods(root_module):
     register_Ns3OutdoorPositionAllocator_methods(root_module, root_module['ns3::OutdoorPositionAllocator'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
+    register_Ns3ThreeGppChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppChannelConditionModel'])
+    register_Ns3ThreeGppIndoorMixedOfficeChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppIndoorMixedOfficeChannelConditionModel'])
+    register_Ns3ThreeGppIndoorOpenOfficeChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppIndoorOpenOfficeChannelConditionModel'])
+    register_Ns3ThreeGppRmaChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppRmaChannelConditionModel'])
+    register_Ns3ThreeGppUmaChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppUmaChannelConditionModel'])
+    register_Ns3ThreeGppUmiStreetCanyonChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppUmiStreetCanyonChannelConditionModel'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
@@ -644,6 +677,8 @@ def register_methods(root_module):
     register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
     register_Ns3AddressChecker_methods(root_module, root_module['ns3::AddressChecker'])
     register_Ns3AddressValue_methods(root_module, root_module['ns3::AddressValue'])
+    register_Ns3AlwaysLosChannelConditionModel_methods(root_module, root_module['ns3::AlwaysLosChannelConditionModel'])
+    register_Ns3BuildingsChannelConditionModel_methods(root_module, root_module['ns3::BuildingsChannelConditionModel'])
     register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
@@ -786,6 +821,11 @@ def register_Ns3Box_methods(root_module, cls):
     cls.add_method('IsInside', 
                    'bool', 
                    [param('ns3::Vector const &', 'position')], 
+                   is_const=True)
+    ## box.h (module 'mobility'): bool ns3::Box::IsIntersect(ns3::Vector const & l1, ns3::Vector const & l2) const [member function]
+    cls.add_method('IsIntersect', 
+                   'bool', 
+                   [param('ns3::Vector const &', 'l1'), param('ns3::Vector const &', 'l2')], 
                    is_const=True)
     ## box.h (module 'mobility'): ns3::Box::xMax [variable]
     cls.add_instance_attribute('xMax', 'double', is_const=False)
@@ -1144,12 +1184,12 @@ def register_Ns3BuildingsHelper_methods(root_module, cls):
     cls.add_method('MakeConsistent', 
                    'void', 
                    [param('ns3::Ptr< ns3::MobilityModel >', 'mm')], 
-                   is_static=True, deprecated=True)
+                   deprecated=True, is_static=True)
     ## buildings-helper.h (module 'buildings'): static void ns3::BuildingsHelper::MakeMobilityModelConsistent() [member function]
     cls.add_method('MakeMobilityModelConsistent', 
                    'void', 
                    [], 
-                   is_static=True, deprecated=True)
+                   deprecated=True, is_static=True)
     return
 
 def register_Ns3ByteTagIterator_methods(root_module, cls):
@@ -2173,7 +2213,7 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     cls.add_method('NotifyConstructionCompleted', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ObjectDeleter_methods(root_module, cls):
@@ -2984,17 +3024,17 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## object.h (module 'core'): void ns3::Object::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## object.h (module 'core'): void ns3::Object::NotifyNewAggregate() [member function]
     cls.add_method('NotifyNewAggregate', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
@@ -3064,12 +3104,12 @@ def register_Ns3PropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True, is_pure_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::PropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3RandomBoxPositionAllocator_methods(root_module, cls):
@@ -3182,12 +3222,12 @@ def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RandomPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
@@ -3301,12 +3341,12 @@ def register_Ns3RangePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::RangePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3SameRoomPositionAllocator_methods(root_module, cls):
@@ -3441,12 +3481,12 @@ def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::ThreeLogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -3801,12 +3841,12 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::TwoRayGroundPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3UniformDiscPositionAllocator_methods(root_module, cls):
@@ -4202,6 +4242,11 @@ def register_Ns3Building_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Vector3D', 'position')], 
                    is_const=True)
+    ## building.h (module 'buildings'): bool ns3::Building::IsIntersect(ns3::Vector const & l1, ns3::Vector const & l2) const [member function]
+    cls.add_method('IsIntersect', 
+                   'bool', 
+                   [param('ns3::Vector const &', 'l1'), param('ns3::Vector const &', 'l2')], 
+                   is_const=True)
     ## building.h (module 'buildings'): void ns3::Building::SetBoundaries(ns3::Box box) [member function]
     cls.add_method('SetBoundaries', 
                    'void', 
@@ -4250,7 +4295,7 @@ def register_Ns3BuildingsPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## buildings-propagation-loss-model.h (module 'buildings'): double ns3::BuildingsPropagationLossModel::EvaluateSigma(ns3::Ptr<ns3::MobilityBuildingInfo> a, ns3::Ptr<ns3::MobilityBuildingInfo> b) const [member function]
     cls.add_method('EvaluateSigma', 
                    'double', 
@@ -4304,47 +4349,47 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('Demangle', 
                    'std::string', 
                    [param('std::string const &', 'mangled')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::ObjectBase*'], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::ObjectBase*'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['void'], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['void'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::NetDevice> '], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::Ptr<ns3::NetDevice> '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::Packet const> '], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::Ptr<ns3::Packet const> '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned short'], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['unsigned short'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Address const&'], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::Address const&'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::NetDevice::PacketType'], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::NetDevice::PacketType'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::Ptr<ns3::MobilityModel const> '], visibility='protected')
+                   visibility='protected', is_static=True, template_parameters=['ns3::Ptr<ns3::MobilityModel const> '])
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -4373,6 +4418,47 @@ def register_Ns3CallbackValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::CallbackBase', 'base')])
+    return
+
+def register_Ns3ChannelCondition_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::ChannelCondition(ns3::ChannelCondition const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ChannelCondition const &', 'arg0')])
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::ChannelCondition() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::LosConditionValue ns3::ChannelCondition::GetLosCondition() const [member function]
+    cls.add_method('GetLosCondition', 
+                   'ns3::ChannelCondition::LosConditionValue', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ChannelCondition::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): void ns3::ChannelCondition::SetLosCondition(ns3::ChannelCondition::LosConditionValue losCondition) [member function]
+    cls.add_method('SetLosCondition', 
+                   'void', 
+                   [param('ns3::ChannelCondition::LosConditionValue', 'losCondition')])
+    return
+
+def register_Ns3ChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelConditionModel::ChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::Ptr<ns3::ChannelCondition> ns3::ChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True, is_pure_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): int64_t ns3::ChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3ConstantRandomVariable_methods(root_module, cls):
@@ -4458,12 +4544,12 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
     cls.add_method('Interpolate', 
                    'double', 
                    [param('double', 'c1'), param('double', 'c2'), param('double', 'v1'), param('double', 'v2'), param('double', 'r')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
     cls.add_method('Validate', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
@@ -4539,17 +4625,17 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## attribute.h (module 'core'): std::string ns3::EmptyAttributeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3ErlangRandomVariable_methods(root_module, cls):
@@ -4666,12 +4752,12 @@ def register_Ns3FixedRssLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FixedRssLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
@@ -4713,12 +4799,12 @@ def register_Ns3FriisPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::FriisPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3GammaRandomVariable_methods(root_module, cls):
@@ -5068,12 +5154,12 @@ def register_Ns3ItuR1238PropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## itu-r-1238-propagation-loss-model.h (module 'buildings'): int64_t ns3::ItuR1238PropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ListPositionAllocator_methods(root_module, cls):
@@ -5132,12 +5218,12 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::LogDistancePropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
@@ -5238,12 +5324,12 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::MatrixPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3MobilityBuildingInfo_methods(root_module, cls):
@@ -5303,7 +5389,7 @@ def register_Ns3MobilityBuildingInfo_methods(root_module, cls):
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3MobilityModel_methods(root_module, cls):
@@ -5353,22 +5439,22 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'start')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True, is_pure_virtual=True)
     ## mobility-model.h (module 'mobility'): ns3::Vector ns3::MobilityModel::DoGetVelocity() const [member function]
     cls.add_method('DoGetVelocity', 
                    'ns3::Vector', 
                    [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True, is_pure_virtual=True)
     ## mobility-model.h (module 'mobility'): void ns3::MobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
     cls.add_method('DoSetPosition', 
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
-                   is_virtual=True, is_pure_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
@@ -5383,12 +5469,12 @@ def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, is_virtual=True, visibility='private')
+                   is_const=True, visibility='private', is_virtual=True)
     ## propagation-loss-model.h (module 'propagation'): int64_t ns3::NakagamiPropagationLossModel::DoAssignStreams(int64_t stream) [member function]
     cls.add_method('DoAssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')], 
-                   is_virtual=True, visibility='private')
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
@@ -5523,6 +5609,26 @@ def register_Ns3NetDevice_methods(root_module, cls):
                    is_const=True, is_virtual=True, is_pure_virtual=True)
     return
 
+def register_Ns3NeverLosChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::NeverLosChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::NeverLosChannelConditionModel::NeverLosChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::Ptr<ns3::ChannelCondition> ns3::NeverLosChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): int64_t ns3::NeverLosChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3NixVector_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## nix-vector.h (module 'network'): ns3::NixVector::NixVector() [constructor]
@@ -5647,12 +5753,12 @@ def register_Ns3Node_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     ## node.h (module 'network'): void ns3::Node::DoInitialize() [member function]
     cls.add_method('DoInitialize', 
                    'void', 
                    [], 
-                   is_virtual=True, visibility='protected')
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3NormalRandomVariable_methods(root_module, cls):
@@ -6036,6 +6142,111 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3ThreeGppChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppChannelConditionModel::ThreeGppChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): int64_t ns3::ThreeGppChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::Ptr<ns3::ChannelCondition> ns3::ThreeGppChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): static double ns3::ThreeGppChannelConditionModel::Calculate2dDistance(ns3::Vector const & a, ns3::Vector const & b) [member function]
+    cls.add_method('Calculate2dDistance', 
+                   'double', 
+                   [param('ns3::Vector const &', 'a'), param('ns3::Vector const &', 'b')], 
+                   visibility='protected', is_static=True)
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True, is_pure_virtual=True)
+    return
+
+def register_Ns3ThreeGppIndoorMixedOfficeChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppIndoorMixedOfficeChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorMixedOfficeChannelConditionModel::ThreeGppIndoorMixedOfficeChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppIndoorMixedOfficeChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppIndoorOpenOfficeChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppIndoorOpenOfficeChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorOpenOfficeChannelConditionModel::ThreeGppIndoorOpenOfficeChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppIndoorOpenOfficeChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppRmaChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppRmaChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppRmaChannelConditionModel::ThreeGppRmaChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppRmaChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppUmaChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppUmaChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppUmaChannelConditionModel::ThreeGppUmaChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppUmaChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppUmiStreetCanyonChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ThreeGppUmiStreetCanyonChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppUmiStreetCanyonChannelConditionModel::ThreeGppUmiStreetCanyonChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppUmiStreetCanyonChannelConditionModel::ComputePlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3TimeValue_methods(root_module, cls):
     ## nstime.h (module 'core'): ns3::TimeValue::TimeValue() [constructor]
     cls.add_constructor([])
@@ -6227,6 +6438,46 @@ def register_Ns3AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Address const &', 'value')])
+    return
+
+def register_Ns3AlwaysLosChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::AlwaysLosChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::AlwaysLosChannelConditionModel::AlwaysLosChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::Ptr<ns3::ChannelCondition> ns3::AlwaysLosChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): int64_t ns3::AlwaysLosChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3BuildingsChannelConditionModel_methods(root_module, cls):
+    ## buildings-channel-condition-model.h (module 'buildings'): static ns3::TypeId ns3::BuildingsChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## buildings-channel-condition-model.h (module 'buildings'): ns3::BuildingsChannelConditionModel::BuildingsChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## buildings-channel-condition-model.h (module 'buildings'): ns3::Ptr<ns3::ChannelCondition> ns3::BuildingsChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## buildings-channel-condition-model.h (module 'buildings'): int64_t ns3::BuildingsChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
