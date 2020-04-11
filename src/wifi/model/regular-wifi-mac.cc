@@ -704,19 +704,6 @@ RegularWifiMac::GetAckTimeout (void) const
 }
 
 void
-RegularWifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  NS_LOG_FUNCTION (this << ctsTimeout);
-  m_low->SetCtsTimeout (ctsTimeout);
-}
-
-Time
-RegularWifiMac::GetCtsTimeout (void) const
-{
-  return m_low->GetCtsTimeout ();
-}
-
-void
 RegularWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
 {
   NS_LOG_FUNCTION (this << blockAckTimeout);

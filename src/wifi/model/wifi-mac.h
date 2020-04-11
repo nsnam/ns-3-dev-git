@@ -91,10 +91,6 @@ public:
    */
   virtual void SetRifs (Time rifs) = 0;
   /**
-   * \param ctsTimeout the duration of a CTS timeout.
-   */
-  virtual void SetCtsTimeout (Time ctsTimeout) = 0;
-  /**
    * \param ackTimeout the duration of an Ack timeout.
    */
   virtual void SetAckTimeout (Time ackTimeout) = 0;
@@ -144,10 +140,6 @@ public:
    * \return the current EIFS minus DIFS duration
    */
   virtual Time GetEifsNoDifs (void) const = 0;
-  /**
-   * \return the current CTS timeout duration.
-   */
-  virtual Time GetCtsTimeout (void) const = 0;
   /**
    * \return the current Ack timeout duration.
    */

@@ -358,12 +358,6 @@ MacLow::GetCtsToSelfSupported (void) const
 }
 
 void
-MacLow::SetCtsTimeout (Time ctsTimeout)
-{
-  m_ctsTimeout = ctsTimeout;
-}
-
-void
 MacLow::SetSifs (Time sifs)
 {
   m_sifs = sifs;
@@ -433,12 +427,6 @@ Time
 MacLow::GetCompressedBlockAckTimeout (void) const
 {
   return m_compressedBlockAckTimeout;
-}
-
-Time
-MacLow::GetCtsTimeout (void) const
-{
-  return m_ctsTimeout;
 }
 
 Time
@@ -1623,15 +1611,6 @@ MacLow::NotifyNav (Ptr<const Packet> packet, const WifiMacHeader &hdr)
                                                             &MacLow::DoNavResetNow, this,
                                                             Seconds (0));
         }
-    }
-}
-
-void
-MacLow::NavCounterResetCtsMissed (Time rtsEndRxTime)
-{
-  if (m_phy->GetLastRxStartTime () < rtsEndRxTime)
-    {
-      DoNavResetNow (Seconds (0));
     }
 }
 

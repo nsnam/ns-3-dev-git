@@ -136,12 +136,6 @@ public:
    */
   void SetCtsToSelfSupported (bool enable);
   /**
-   * Set CTS timeout of this MacLow.
-   *
-   * \param ctsTimeout CTS timeout of this MacLow
-   */
-  void SetCtsTimeout (Time ctsTimeout);
-  /**
    * Set Short Interframe Space (SIFS) of this MacLow.
    *
    * \param sifs SIFS of this MacLow
@@ -213,12 +207,6 @@ public:
    * \return Compressed BlockAck timeout
    */
   Time GetCompressedBlockAckTimeout (void) const;
-  /**
-   * Return CTS timeout of this MacLow.
-   *
-   * \return CTS timeout
-   */
-  Time GetCtsTimeout (void) const;
   /**
    * Return Short Interframe Space (SIFS) of this MacLow.
    *
@@ -722,13 +710,6 @@ private:
    * Notify ChannelAccessManager that CTS timer should be reset.
    */
   void NotifyCtsTimeoutResetNow (void);
-  /**
-   * Reset NAV after CTS was missed when the NAV was
-   * set with RTS.
-   *
-   * \param rtsEndRxTime the time at which RTS ended
-   */
-  void NavCounterResetCtsMissed (Time rtsEndRxTime);
   /* Event handlers */
   /**
    * Event handler when normal Ack timeout occurs.
@@ -955,7 +936,6 @@ private:
   Time m_ackTimeout;                        //!< Ack timeout duration
   Time m_basicBlockAckTimeout;              //!< Basic BlockAck timeout duration
   Time m_compressedBlockAckTimeout;         //!< Compressed BlockAck timeout duration
-  Time m_ctsTimeout;                        //!< CTS timeout duration
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slotTime;                          //!< Slot duration
   Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration

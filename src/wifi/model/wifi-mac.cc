@@ -130,11 +130,6 @@ WifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("CtsTimeout", "When this timeout expires, the RTS/CTS handshake has failed.",
-                   TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::SetCtsTimeout,
-                                     &WifiMac::GetCtsTimeout),
-                   MakeTimeChecker ())
     .AddAttribute ("AckTimeout", "When this timeout expires, the Data/Ack handshake has failed.",
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::GetAckTimeout,
@@ -321,7 +316,6 @@ WifiMac::Configure80211a (void)
   SetSlot (MicroSeconds (9));
   SetEifsNoDifs (MicroSeconds (16 + 44));
   SetPifs (MicroSeconds (16 + 9));
-  SetCtsTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
@@ -333,7 +327,6 @@ WifiMac::Configure80211b (void)
   SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
-  SetCtsTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
@@ -349,7 +342,6 @@ WifiMac::Configure80211g (void)
   SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
-  SetCtsTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
@@ -361,7 +353,6 @@ WifiMac::Configure80211_10Mhz (void)
   SetSlot (MicroSeconds (13));
   SetEifsNoDifs (MicroSeconds (32 + 88));
   SetPifs (MicroSeconds (32 + 13));
-  SetCtsTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
@@ -373,7 +364,6 @@ WifiMac::Configure80211_5Mhz (void)
   SetSlot (MicroSeconds (21));
   SetEifsNoDifs (MicroSeconds (64 + 176));
   SetPifs (MicroSeconds (64 + 21));
-  SetCtsTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
   SetAckTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 

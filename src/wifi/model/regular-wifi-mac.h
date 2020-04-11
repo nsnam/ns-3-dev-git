@@ -59,7 +59,6 @@ public:
   void SetEifsNoDifs (Time eifsNoDifs);
   void SetPifs (Time pifs);
   void SetRifs (Time rifs);
-  void SetCtsTimeout (Time ctsTimeout);
   void SetAckTimeout (Time ackTimeout);
   void SetShortSlotTimeSupported (bool enable);
   void SetSsid (Ssid ssid);
@@ -70,7 +69,6 @@ public:
   Time GetSifs (void) const;
   Time GetSlot (void) const;
   Time GetEifsNoDifs (void) const;
-  Time GetCtsTimeout (void) const;
   Time GetAckTimeout (void) const;
   bool GetShortSlotTimeSupported (void) const;
   Ssid GetSsid (void) const;
