@@ -245,7 +245,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   : TestSuite ("wifi-transmit-mask", UNIT)
 {
 //  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
-//  LogComponentEnable ("WifiTransmitMaskTestSuite", logLevel);
+//  LogComponentEnable ("WifiTransmitMaskTest", logLevel);
 //  LogComponentEnable ("WifiSpectrumValueHelper", logLevel);
 
   NS_LOG_INFO ("Creating WifiTransmitMaskTestSuite");

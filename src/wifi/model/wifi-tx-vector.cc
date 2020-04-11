@@ -377,6 +377,11 @@ WifiTxVector::GetHeMuUserInfoMap (void) const
 
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
+  if (!v.IsValid ())
+    {
+      os << "TXVECTOR not valid";
+      return os;
+    }
   os << "txpwrlvl: " << +v.GetTxPowerLevel ()
      << " preamble: " << v.GetPreambleType ()
      << " channel width: " << v.GetChannelWidth ()

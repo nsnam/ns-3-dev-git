@@ -120,7 +120,7 @@ public:
    *         for all SpectrumValues that are passed to StartRx. If 0 is
    *         returned, it means that any model will be accepted.
    */
-  Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  Ptr<const SpectrumModel> GetRxSpectrumModel ();
 
   /**
    * \return the width of each band (Hz)
@@ -158,10 +158,21 @@ public:
   virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
 
 
+
 protected:
   // Inherited
   void DoDispose (void);
   void DoInitialize (void);
+
+  /**
+   * Get the start band index and the stop band index for a given band
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   * \param bandIndex the index of the band to be returned
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
 
 private:
@@ -181,6 +192,10 @@ private:
    * Perform run-time spectrum model change
    */
   void ResetSpectrumModel (void);
+  /**
+   * This function is called to update the bands handled by the InterferenceHelper.
+   */
+  void UpdateInterferenceHelperBands (void);
 
   Ptr<SpectrumChannel> m_channel;        //!< SpectrumChannel that this SpectrumWifiPhy is connected to
 

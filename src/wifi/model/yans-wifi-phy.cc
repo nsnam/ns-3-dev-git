@@ -45,6 +45,11 @@ YansWifiPhy::GetTypeId (void)
 YansWifiPhy::YansWifiPhy ()
 {
   NS_LOG_FUNCTION (this);
+  //add dummy band for Yans
+  WifiSpectrumBand band;
+  band.first = 0;
+  band.second = 0;
+  m_interference.AddBand (band);
 }
 
 YansWifiPhy::~YansWifiPhy ()

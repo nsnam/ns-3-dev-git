@@ -981,6 +981,9 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("YansErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
+
+  //From Spectrum
+  LogComponentEnable ("WifiSpectrumValueHelper", LOG_LEVEL_ALL);
 }
 
 int64_t

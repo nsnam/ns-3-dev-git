@@ -515,7 +515,7 @@ TestInterBssConstantObssPdAlgo::DoRun (void)
   m_bssColor3 = 3;
   RunOne ();
 
-  //Test case 3: CCA CS Threshold = < m_obssPdLevelDbm = m_obssRxPowerDbm
+  //Test case 3: CCA CS Threshold < m_obssPdLevelDbm = m_obssRxPowerDbm
   m_obssPdLevelDbm = -72;
   m_obssRxPowerDbm = -72;
   m_bssColor1 = 1;

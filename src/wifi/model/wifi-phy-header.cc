@@ -195,13 +195,10 @@ LSigHeader::GetSerializedSize (void) const
 void
 LSigHeader::SetRate (uint64_t rate, uint16_t channelWidth)
 {
-  if (channelWidth == 5)
+  if (channelWidth < 20)
     {
-      rate *= 4; //corresponding 20 MHz rate if 5 MHz is used
-    }
-  else if (channelWidth == 10)
-    {
-      rate *= 2; //corresponding 20 MHz rate if 10 MHz is used
+      //conversion for 5 MHz and 10 MHz
+      rate *= (20 / channelWidth);
     }
   /* Here is the binary representation for a given rate:
    * 6 Mbit/s: 1101
