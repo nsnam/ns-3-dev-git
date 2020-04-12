@@ -227,7 +227,24 @@ and the config path of the second internal queue is:
 
 For this helper's configuration to take effect, it should be added to the ns-3 program after
 ``InternetStackHelper::Install()`` is called, but before IP addresses are configured using 
-``Ipv{4,6}AddressHelper``.
+``Ipv{4,6}AddressHelper``. For an example program, see examples/traffic-control/traffic-control.cc.
+
+If it is desired to install no queue disc on a device, it is necessary to use the Uninstall
+method of the TrafficControlHelper:
+
+.. sourcecode:: cpp
+
+  TrafficControlHelper tch;
+  tch.Uninstall (device);
+
+Note that the Uninstall method must be called after ``InternetStackHelper::Install()`` is called
+and after that IP addresses are configured using ``Ipv{4,6}AddressHelper``. For an example program,
+see src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc (look at the ``Ns3TcpCwndTestCase2::DoRun`` method).
+Note also that this method does not uninstall the traffic control layer but instead
+removes the root queue disc on the device but keeps the traffic control layer present.
+Also, note that removing the root queue disc on a device supporting flow control does not disable
+the flow control. As mentioned above, this requires to call the DisableFlowControl method of the
+device helper, so that the device is created without support for the flow control.
 
 Implementation details
 **********************
