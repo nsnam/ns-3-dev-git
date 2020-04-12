@@ -44,6 +44,12 @@ TrafficControlLayer::GetTypeId (void)
                    MakeObjectMapAccessor (&TrafficControlLayer::GetNDevices,
                                           &TrafficControlLayer::GetRootQueueDiscOnDeviceByIndex),
                    MakeObjectMapChecker<QueueDisc> ())
+    .AddTraceSource ("TcDrop",
+                     "Trace source indicating a packet has been dropped by the Traffic "
+                     "Control layer because no queue disc is installed on the device, the "
+                     "device supports flow control and the device queue is stopped",
+                     MakeTraceSourceAccessor (&TrafficControlLayer::m_dropped),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
@@ -373,9 +379,9 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
     {
       // The device has no attached queue disc, thus add the header to the packet and
       // send it directly to the device if the selected queue is not stopped
+      item->AddHeader ();
       if (!devQueueIface || !devQueueIface->GetTxQueue (txq)->IsStopped ())
         {
-          item->AddHeader ();
           // a single queue device makes no use of the priority tag
           if (!devQueueIface || devQueueIface->GetNTxQueues () == 1)
             {
@@ -383,6 +389,10 @@ TrafficControlLayer::Send (Ptr<NetDevice> device, Ptr<QueueDiscItem> item)
               item->GetPacket ()->RemovePacketTag (priorityTag);
             }
           device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
+        }
+      else
+        {
+          m_dropped (item->GetPacket ());
         }
     }
   else

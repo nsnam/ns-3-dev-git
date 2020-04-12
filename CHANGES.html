@@ -55,6 +55,7 @@ us a note on ns-developers mailing list.</p>
 <h2>New API:</h2>
 <ul>
 <li>The helpers of the NetDevices supporting flow control (PointToPointHelper, CsmaHelper, SimpleNetDeviceHelper, WifiHelper) now provide a <b>DisableFlowControl</b> method to disable flow control. If flow control is disabled, the Traffic Control layer forwards packets down to the NetDevice even if there is no room for them in the NetDevice queue(s)</li>
+<li>Added a new trace source <b>TcDrop</b> in TrafficControlLayer for tracing packets that have been dropped because no queue disc is installed on the device, the device supports flow control and the device queue is full.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
