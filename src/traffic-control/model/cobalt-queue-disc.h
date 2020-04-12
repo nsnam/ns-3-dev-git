@@ -214,8 +214,6 @@ private:
   // Common to CoDel and Blue
   // Maintained by Cobalt
   Stats m_stats;                          //!< Cobalt statistics
-  // Supplied by user
-  uint32_t m_minBytes;                    //!< Minimum bytes in queue to allow a packet drop
 
   // Codel parameters
   // Maintained by Cobalt

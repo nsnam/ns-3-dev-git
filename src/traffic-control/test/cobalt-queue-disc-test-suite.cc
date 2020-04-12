@@ -140,8 +140,6 @@ CobaltQueueDiscBasicEnqueueDequeue::DoRun (void)
 
   Address dest;
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinBytes", UintegerValue (pktSize)), true,
-                         "Verify that we can actually set the attribute MinBytes");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Interval", StringValue ("50ms")), true,
                          "Verify that we can actually set the attribute Interval");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Target", StringValue ("4ms")), true,

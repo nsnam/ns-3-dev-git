@@ -86,8 +86,6 @@ Attributes
 The key attributes that the CobaltQueue Disc class holds include the following:
 
 * ``MaxSize:`` The maximum number of packets/bytes accepted by this queue disc.
-* ``MinBytes:`` The Cobalt algorithm minbytes parameter. The default value is
-1500 bytes.
 * ``Interval:`` The sliding-minimum window. The default value is 100 ms.
 * ``Target:`` The Cobalt algorithm target queue delay. The default value is
 5 ms.

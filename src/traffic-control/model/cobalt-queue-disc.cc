@@ -54,11 +54,6 @@ TypeId CobaltQueueDisc::GetTypeId (void)
                    MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
                                           &QueueDisc::GetMaxSize),
                    MakeQueueSizeChecker ())
-    .AddAttribute ("MinBytes",
-                   "The Cobalt algorithm minbytes parameter.",
-                   UintegerValue (1500),
-                   MakeUintegerAccessor (&CobaltQueueDisc::m_minBytes),
-                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Interval",
                    "The Cobalt algorithm interval",
                    StringValue ("100ms"),
