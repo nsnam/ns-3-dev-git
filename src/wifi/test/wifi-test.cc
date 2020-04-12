@@ -35,6 +35,7 @@
 #include "ns3/rng-seed-manager.h"
 #include "ns3/config.h"
 #include "ns3/error-model.h"
+#include "ns3/socket.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
@@ -2353,6 +2354,135 @@ Issue40TestCase::DoRun (void)
   RunOne (true);
 }
 
+//-----------------------------------------------------------------------------
+/**
+ * Make sure that Ideal rate manager is able to handle non best-effort traffic.
+ *
+ * The scenario considers an access point and a fixed station.
+ * The station first sends a best-effort packet to the access point,
+ * for which Ideal rate manager should select a VHT rate. Then,
+ * the station sends a non best-effort (voice) packet to the access point,
+ * and since SNR is unchanged, the same VHT rate should be used.
+ *
+ * See \issueid{169}
+ */
+
+class Issue169TestCase : public TestCase
+{
+public:
+  Issue169TestCase ();
+  virtual ~Issue169TestCase ();
+  virtual void DoRun (void);
+
+private:
+  /**
+   * Triggers the arrival of 1000 Byte-long packets in the source device
+   * \param numPackets number of packets in burst
+   * \param sourceDevice pointer to the source NetDevice
+   * \param destination address of the destination device
+   * \param priority the priority of the packets to send
+   */
+   void SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination, uint8_t priority);
+
+  /**
+   * Callback that indicates a PSDU is being transmitted
+   * \param context the context
+   * \param psdu the PSDU to transmit
+   * \param txVector the TX vector
+   * \param txPowerW the TX power (W)
+   */
+  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+};
+
+Issue169TestCase::Issue169TestCase ()
+  : TestCase ("Test case for issue #169")
+{
+}
+
+Issue169TestCase::~Issue169TestCase ()
+{
+}
+
+void
+Issue169TestCase::SendPackets (uint8_t numPackets, Ptr<NetDevice> sourceDevice, Address& destination, uint8_t priority)
+{
+  SocketPriorityTag priorityTag;
+  priorityTag.SetPriority (priority);
+  for (uint8_t i = 0; i < numPackets; i++)
+    {
+      Ptr<Packet> packet = Create<Packet> (1000); // 1000 dummy bytes of data
+      packet->AddPacketTag (priorityTag);
+      sourceDevice->Send (packet, destination, 0);
+    }
+}
+
+void
+Issue169TestCase::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+{
+  if (psdu->GetSize () >= 1000)
+    {
+      NS_TEST_ASSERT_MSG_EQ (txVector.GetMode ().GetModulationClass (), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Ideal rate manager selected incorrect modulation class");
+    }
+}
+
+void
+Issue169TestCase::DoRun (void)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 100;
+
+  NodeContainer wifiApNode, wifiStaNode;
+  wifiApNode.Create (1);
+  wifiStaNode.Create (1);
+
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  NetDeviceContainer apDevice;
+  mac.SetType ("ns3::ApWifiMac");
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  NetDeviceContainer staDevice;
+  mac.SetType ("ns3::StaWifiMac");
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (apDevice, streamNumber);
+  wifi.AssignStreams (staDevice, streamNumber);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+  mobility.Install (wifiStaNode);
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20)); //see issue #159
+
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxPsduBegin", MakeCallback (&Issue169TestCase::TxCallback, this));
+
+  //Send best-effort packet (i.e. priority 0)
+  Simulator::Schedule (Seconds (0.5), &Issue169TestCase::SendPackets, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress (), 0);
+
+  //Send non best-effort (voice) packet (i.e. priority 6)
+  Simulator::Schedule (Seconds (1.0), &Issue169TestCase::SendPackets, this, 1, apDevice.Get (0), staDevice.Get (0)->GetAddress (), 6);
+
+  Simulator::Stop (Seconds (2.0));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+}
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -2381,6 +2511,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new StaWifiMacScanningTestCase, TestCase::QUICK); //Bug 2399
   AddTestCase (new Bug2470TestCase, TestCase::QUICK); //Bug 2470
   AddTestCase (new Issue40TestCase, TestCase::QUICK); //Issue #40
+  AddTestCase (new Issue169TestCase, TestCase::QUICK); //Issue #169
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite

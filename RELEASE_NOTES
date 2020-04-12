@@ -43,6 +43,7 @@ Bugs fixed
 - Issue #110 - Wi-Fi: PCAP trace file gives unexpected results
 - Issue #116 - Wi-Fi: Incorrect state when receiving A-MPDU in WifiPhy
 - Issue #119 - Waf --lcov-report option was broken
+- Issue #169 - Ideal rate manager does not work when non best-effort traffic is used
 
 Known issues
 ------------
