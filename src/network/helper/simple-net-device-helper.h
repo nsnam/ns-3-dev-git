@@ -121,6 +121,16 @@ public:
   void SetNetDevicePointToPointMode (bool pointToPointMode);
 
   /**
+   * Disable flow control only if you know what you are doing. By disabling
+   * flow control, this NetDevice will be sent packets even if there is no
+   * room for them (such packets will be likely dropped by this NetDevice).
+   * Also, any queue disc installed on this NetDevice will have no effect,
+   * as every packet enqueued to the traffic control layer queue disc will
+   * be immediately dequeued.
+   */
+  void DisableFlowControl (void);
+
+  /**
    * This method creates an ns3::SimpleChannel with the attributes configured by
    * SimpleNetDeviceHelper::SetChannelAttribute, an ns3::SimpleNetDevice with the attributes
    * configured by SimpleNetDeviceHelper::SetDeviceAttribute and then adds the device
@@ -182,7 +192,7 @@ private:
   ObjectFactory m_deviceFactory; //!< NetDevice factory
   ObjectFactory m_channelFactory; //!< Channel factory
   bool m_pointToPointMode; //!< Install PointToPoint SimpleNetDevice or Broadcast ones
-
+  bool m_enableFlowControl; //!< whether to enable flow control
 };
 
 } // namespace ns3

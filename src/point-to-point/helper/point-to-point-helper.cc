@@ -47,6 +47,7 @@ PointToPointHelper::PointToPointHelper ()
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
+  m_enableFlowControl = true;
 }
 
 void 
@@ -75,6 +76,12 @@ void
 PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
+}
+
+void
+PointToPointHelper::DisableFlowControl (void)
+{
+  m_enableFlowControl = false;
 }
 
 void 
@@ -240,13 +247,16 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   b->AddDevice (devB);
   Ptr<Queue<Packet> > queueB = m_queueFactory.Create<Queue<Packet> > ();
   devB->SetQueue (queueB);
-  // Aggregate NetDeviceQueueInterface objects
-  Ptr<NetDeviceQueueInterface> ndqiA = CreateObject<NetDeviceQueueInterface> ();
-  ndqiA->GetTxQueue (0)->ConnectQueueTraces (queueA);
-  devA->AggregateObject (ndqiA);
-  Ptr<NetDeviceQueueInterface> ndqiB = CreateObject<NetDeviceQueueInterface> ();
-  ndqiB->GetTxQueue (0)->ConnectQueueTraces (queueB);
-  devB->AggregateObject (ndqiB);
+  if (m_enableFlowControl)
+    {
+      // Aggregate NetDeviceQueueInterface objects
+      Ptr<NetDeviceQueueInterface> ndqiA = CreateObject<NetDeviceQueueInterface> ();
+      ndqiA->GetTxQueue (0)->ConnectQueueTraces (queueA);
+      devA->AggregateObject (ndqiA);
+      Ptr<NetDeviceQueueInterface> ndqiB = CreateObject<NetDeviceQueueInterface> ();
+      ndqiB->GetTxQueue (0)->ConnectQueueTraces (queueB);
+      devB->AggregateObject (ndqiB);
+    }
 
   Ptr<PointToPointChannel> channel = 0;
 

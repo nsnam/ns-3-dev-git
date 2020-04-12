@@ -712,7 +712,8 @@ WifiHelper::~WifiHelper ()
 
 WifiHelper::WifiHelper ()
   : m_standard (WIFI_STANDARD_80211a),
-    m_selectQueueCallback (&SelectQueueByDSField)
+    m_selectQueueCallback (&SelectQueueByDSField),
+    m_enableFlowControl (true)
 {
   SetRemoteStationManager ("ns3::ArfWifiManager");
 }
@@ -767,6 +768,12 @@ void
 WifiHelper::SetStandard (WifiStandard standard)
 {
   m_standard = standard;
+}
+
+void
+WifiHelper::DisableFlowControl (void)
+{
+  m_enableFlowControl = false;
 }
 
 void
@@ -825,7 +832,7 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
       // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
       Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
-      if (rmac)
+      if (rmac && m_enableFlowControl)
         {
           Ptr<NetDeviceQueueInterface> ndqi;
           BooleanValue qosSupported;

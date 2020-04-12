@@ -46,6 +46,7 @@ SimpleNetDeviceHelper::SimpleNetDeviceHelper ()
   m_deviceFactory.SetTypeId ("ns3::SimpleNetDevice");
   m_channelFactory.SetTypeId ("ns3::SimpleChannel");
   m_pointToPointMode = false;
+  m_enableFlowControl = true;
 }
 
 void 
@@ -96,6 +97,12 @@ SimpleNetDeviceHelper::SetNetDevicePointToPointMode (bool pointToPointMode)
   m_pointToPointMode = pointToPointMode;
 }
 
+void
+SimpleNetDeviceHelper::DisableFlowControl (void)
+{
+  m_enableFlowControl = false;
+}
+
 NetDeviceContainer
 SimpleNetDeviceHelper::Install (Ptr<Node> node) const
 {
@@ -141,10 +148,13 @@ SimpleNetDeviceHelper::InstallPriv (Ptr<Node> node, Ptr<SimpleChannel> channel) 
   Ptr<Queue<Packet> > queue = m_queueFactory.Create<Queue<Packet> > ();
   device->SetQueue (queue);
   NS_ASSERT_MSG (!m_pointToPointMode || (channel->GetNDevices () <= 2), "Device set to PointToPoint and more than 2 devices on the channel.");
-  // Aggregate a NetDeviceQueueInterface object
-  Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
-  ndqi->GetTxQueue (0)->ConnectQueueTraces (queue);
-  device->AggregateObject (ndqi);
+  if (m_enableFlowControl)
+    {
+      // Aggregate a NetDeviceQueueInterface object
+      Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
+      ndqi->GetTxQueue (0)->ConnectQueueTraces (queue);
+      device->AggregateObject (ndqi);
+    }
   return device;
 }
 

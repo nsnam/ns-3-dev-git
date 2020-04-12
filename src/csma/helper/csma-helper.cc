@@ -44,6 +44,7 @@ CsmaHelper::CsmaHelper ()
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::CsmaNetDevice");
   m_channelFactory.SetTypeId ("ns3::CsmaChannel");
+  m_enableFlowControl = true;
 }
 
 void 
@@ -72,6 +73,12 @@ void
 CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
+}
+
+void
+CsmaHelper::DisableFlowControl (void)
+{
+  m_enableFlowControl = false;
 }
 
 void 
@@ -310,11 +317,13 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
   Ptr<Queue<Packet> > queue = m_queueFactory.Create<Queue<Packet> > ();
   device->SetQueue (queue);
   device->Attach (channel);
-  // Aggregate a NetDeviceQueueInterface object
-  Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
-  ndqi->GetTxQueue (0)->ConnectQueueTraces (queue);
-  device->AggregateObject (ndqi);
-
+  if (m_enableFlowControl)
+    {
+      // Aggregate a NetDeviceQueueInterface object
+      Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
+      ndqi->GetTxQueue (0)->ConnectQueueTraces (queue);
+      device->AggregateObject (ndqi);
+    }
   return device;
 }
 

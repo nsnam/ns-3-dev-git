@@ -187,6 +187,20 @@ Uninstall method of the TrafficControlHelper C++ class, and then installing a di
 queue disc on the device.  By uninstalling without adding a new queue disc, it is also possible
 to have no queue disc installed on a device.
 
+Note that if no queue disc is installed on an underlying device, the traffic
+control layer will still respect flow control signals provided by the device, if
+any.  Specifically, if no queue disc is installed on a device, and the device is
+stopped, then any packet for that device will be dropped in the traffic control
+layer, and the device's drop trace will not record the drop -- instead, the TcDrop
+drop trace in the traffic control layer will record the drop.
+
+Flow control can be disabled for the devices that support it by using the
+``DisableFlowControl`` method of their helpers.  If there is no queue disc
+installed on the device, and the device is not performing flow control, then
+packets will immediately transit the traffic control layer and be sent to the
+device, regardless or not of whether the device's internal queue can accept it,
+and the traffic control layer's TcDrop trace will not be called.
+
 Helpers
 =======
 

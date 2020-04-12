@@ -408,6 +408,17 @@ public:
    * to the WifiNetDevice, in case RegularWifiMac with QoS enabled is used
    */
   void SetSelectQueueCallback (SelectQueueCallback f);
+
+  /**
+   * Disable flow control only if you know what you are doing. By disabling
+   * flow control, this NetDevice will be sent packets even if there is no
+   * room for them (such packets will be likely dropped by this NetDevice).
+   * Also, any queue disc installed on this NetDevice will have no effect,
+   * as every packet enqueued to the traffic control layer queue disc will
+   * be immediately dequeued.
+   */
+  void DisableFlowControl (void);
+
   /**
    * \param phy the PHY helper to create PHY objects
    * \param mac the MAC helper to create MAC objects
@@ -498,6 +509,7 @@ protected:
   WifiStandard m_standard;                   ///< wifi standard
   SelectQueueCallback m_selectQueueCallback; ///< select queue callback
   ObjectFactory m_obssPdAlgorithm;           ///< OBSS_PD algorithm
+  bool m_enableFlowControl;                  //!< whether to enable flow control
 };
 
 } //namespace ns3

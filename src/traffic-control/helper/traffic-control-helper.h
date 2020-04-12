@@ -273,6 +273,12 @@ public:
    *
    * This method removes the root queue discs (and associated filters, classes
    * and queues) installed on the given devices.
+   * Note that the traffic control layer will continue to perform flow control
+   * if the device has an aggregated NetDeviceQueueInterface. If you really
+   * want that the Traffic Control layer forwards packets down to the NetDevice
+   * even if there is no room for them in the NetDevice queue(s), then disable
+   * the flow control by using the DisableFlowControl method of the NetDevice
+   * helper.
    */
   void Uninstall (NetDeviceContainer c);
 
@@ -281,6 +287,12 @@ public:
    *
    * This method removes the root queue disc (and associated filters, classes
    * and queues) installed on the given device.
+   * Note that the traffic control layer will continue to perform flow control
+   * if the device has an aggregated NetDeviceQueueInterface. If you really
+   * want that the Traffic Control layer forwards packets down to the NetDevice
+   * even if there is no room for them in the NetDevice queue(s), then disable
+   * the flow control by using the DisableFlowControl method of the NetDevice
+   * helper.
    */
   void Uninstall (Ptr<NetDevice> d);
 

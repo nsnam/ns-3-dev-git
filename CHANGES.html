@@ -54,7 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.35 to ns-3.36</h1>
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li>The helpers of the NetDevices supporting flow control (PointToPointHelper, CsmaHelper, SimpleNetDeviceHelper, WifiHelper) now provide a <b>DisableFlowControl</b> method to disable flow control. If flow control is disabled, the Traffic Control layer forwards packets down to the NetDevice even if there is no room for them in the NetDevice queue(s)</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

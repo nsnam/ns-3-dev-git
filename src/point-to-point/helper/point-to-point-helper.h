@@ -100,6 +100,16 @@ public:
   void SetChannelAttribute (std::string name, const AttributeValue &value);
 
   /**
+   * Disable flow control only if you know what you are doing. By disabling
+   * flow control, this NetDevice will be sent packets even if there is no
+   * room for them (such packets will be likely dropped by this NetDevice).
+   * Also, any queue disc installed on this NetDevice will have no effect,
+   * as every packet enqueued to the traffic control layer queue disc will
+   * be immediately dequeued.
+   */
+  void DisableFlowControl (void);
+
+  /**
    * \param c a set of nodes
    * \return a NetDeviceContainer for nodes
    *
@@ -184,6 +194,7 @@ private:
   ObjectFactory m_queueFactory;         //!< Queue Factory
   ObjectFactory m_channelFactory;       //!< Channel Factory
   ObjectFactory m_deviceFactory;        //!< Device Factory
+  bool m_enableFlowControl;             //!< whether to enable flow control
 };
 
 } // namespace ns3

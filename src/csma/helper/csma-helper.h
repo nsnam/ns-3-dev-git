@@ -91,6 +91,16 @@ public:
   void SetChannelAttribute (std::string n1, const AttributeValue &v1);
 
   /**
+   * Disable flow control only if you know what you are doing. By disabling
+   * flow control, this NetDevice will be sent packets even if there is no
+   * room for them (such packets will be likely dropped by this NetDevice).
+   * Also, any queue disc installed on this NetDevice will have no effect,
+   * as every packet enqueued to the traffic control layer queue disc will
+   * be immediately dequeued.
+   */
+  void DisableFlowControl (void);
+
+  /**
    * This method creates an ns3::CsmaChannel with the attributes configured by
    * CsmaHelper::SetChannelAttribute, an ns3::CsmaNetDevice with the attributes
    * configured by CsmaHelper::SetDeviceAttribute and then adds the device
@@ -250,6 +260,7 @@ private:
   ObjectFactory m_queueFactory;   //!< factory for the queues
   ObjectFactory m_deviceFactory;  //!< factory for the NetDevices
   ObjectFactory m_channelFactory; //!< factory for the channel
+  bool m_enableFlowControl;       //!< whether to enable flow control
 };
 
 } // namespace ns3
