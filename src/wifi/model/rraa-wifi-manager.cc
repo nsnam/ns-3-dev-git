@@ -324,9 +324,10 @@ RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 
 void
 RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+                                 double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   RraaWifiRemoteStation *station = static_cast<RraaWifiRemoteStation*> (st);
   station->m_lastFrameFail = false;
   CheckTimeout (station);

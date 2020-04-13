@@ -519,9 +519,11 @@ MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 }
 
 void
-MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode, double dataSnr)
+MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                       double ackSnr, WifiMode ackMode,
+                                       double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);

@@ -255,10 +255,11 @@ AparfWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr,
 }
 
 void
-AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
-                                  WifiMode ackMode, double dataSnr)
+AparfWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                  double ackSnr, WifiMode ackMode,
+                                  double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   AparfWifiRemoteStation *station = static_cast<AparfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nSuccess++;

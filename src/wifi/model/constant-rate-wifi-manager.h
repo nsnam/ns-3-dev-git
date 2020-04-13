@@ -54,7 +54,8 @@ private:
   void DoReportRtsOk (WifiRemoteStation *station,
                       double ctsSnr, WifiMode ctsMode, double rtsSnr);
   void DoReportDataOk (WifiRemoteStation *station,
-                       double ackSnr, WifiMode ackMode, double dataSnr);
+                       double ackSnr, WifiMode ackMode,
+                       double dataSnr, uint16_t dataChannelWidth);
   void DoReportFinalRtsFailed (WifiRemoteStation *station);
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);

@@ -367,9 +367,10 @@ RrpaaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 
 void
 RrpaaWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                  double ackSnr, WifiMode ackMode, double dataSnr)
+                                  double ackSnr, WifiMode ackMode,
+                                  double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   RrpaaWifiRemoteStation *station = static_cast<RrpaaWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_lastFrameFail = false;

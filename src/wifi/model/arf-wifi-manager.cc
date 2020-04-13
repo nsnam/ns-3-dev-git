@@ -190,9 +190,10 @@ void ArfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
 }
 
 void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                     double ackSnr, WifiMode ackMode, double dataSnr)
+                                     double ackSnr, WifiMode ackMode,
+                                     double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   ArfWifiRemoteStation *station = static_cast<ArfWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;

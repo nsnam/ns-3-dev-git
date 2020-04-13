@@ -163,9 +163,10 @@ CaraWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 
 void
 CaraWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+                                 double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;

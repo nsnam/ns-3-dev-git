@@ -108,7 +108,8 @@ private:
   virtual void DoReportRtsOk (WifiRemoteStation *station,
                               double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void DoReportDataOk (WifiRemoteStation *station,
-                               double ackSnr, WifiMode ackMode, double dataSnr);
+                               double ackSnr, WifiMode ackMode,
+                               double dataSnr, uint16_t dataChannelWidth);
   virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
   virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
   virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);

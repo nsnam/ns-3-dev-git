@@ -259,9 +259,10 @@ IdealWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 
 void
 IdealWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                  double ackSnr, WifiMode ackMode, double dataSnr)
+                                  double ackSnr, WifiMode ackMode,
+                                  double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode.GetUniqueName () << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode.GetUniqueName () << dataSnr << dataChannelWidth);
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   if (dataSnr == 0)
     {

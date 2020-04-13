@@ -726,9 +726,9 @@ WifiRemoteStationManager::ReportRtsOk (Mac48Address address, const WifiMacHeader
 void
 WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeader *header,
                                         double ackSnr, WifiMode ackMode, double dataSnr,
-                                        uint32_t packetSize)
+                                        uint16_t dataChannelWidth, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << address << *header << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << address << *header << ackSnr << ackMode << dataSnr << dataChannelWidth << packetSize);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address);
   AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
@@ -743,7 +743,7 @@ WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeade
       station->m_state->m_info.NotifyTxSuccess (m_ssrc[ac]);
       m_ssrc[ac] = 0;
     }
-  DoReportDataOk (station, ackSnr, ackMode, dataSnr);
+  DoReportDataOk (station, ackSnr, ackMode, dataSnr, dataChannelWidth);
 }
 
 void

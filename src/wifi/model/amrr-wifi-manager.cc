@@ -169,9 +169,10 @@ AmrrWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 
 void
 AmrrWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+                                 double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
   AmrrWifiRemoteStation *station = static_cast<AmrrWifiRemoteStation*> (st);
   station->m_retry = 0;
   station->m_tx_ok++;

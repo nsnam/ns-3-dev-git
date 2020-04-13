@@ -739,10 +739,12 @@ public:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param dataChannelWidth the channel width (in MHz) of the DATA we sent
    * \param packetSize the size of the DATA packet
    */
   void ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                     double ackSnr, WifiMode ackMode, double dataSnr,
+                     double ackSnr, WifiMode ackMode,
+                     double dataSnr, uint16_t dataChannelWidth,
                      uint32_t packetSize);
   /**
    * Should be invoked after calling ReportRtsFailed if
@@ -1181,9 +1183,11 @@ private:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param dataChannelWidth the channel width (in MHz) of the DATA we sent
    */
   virtual void DoReportDataOk (WifiRemoteStation *station,
-                               double ackSnr, WifiMode ackMode, double dataSnr) = 0;
+                               double ackSnr, WifiMode ackMode,
+                               double dataSnr, uint16_t dataChannelWidth) = 0;
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
    * This allows different types of WifiRemoteStationManager to respond differently,
