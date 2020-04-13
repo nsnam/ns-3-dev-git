@@ -456,13 +456,13 @@ with the expected throughput calculated in Equation :eq:`vegasexpected`. The dif
 these 2 sending rates in Equation :eq:`vegasdiff` reflects the amount of extra packets being
 queued at the bottleneck.
 
-.. math::
-
-   actual &= \frac{cWnd}{RTT}        \\
+.. math::   actual &= \frac{cWnd}{RTT}
    :label: vegasactual
-   expected &= \frac{cWnd}{BaseRTT}  \\
+
+.. math::   expected &= \frac{cWnd}{BaseRTT}
    :label: vegasexpected
-   diff &= expected - actual
+
+.. math::   diff &= expected - actual
    :label: vegasdiff
 
 To avoid congestion, Vegas linearly increases/decreases its congestion window
@@ -617,9 +617,10 @@ only if da stays below d1 for a some (theta) amount of time.
    \begin{cases}
       \quad alphaMax              & \quad \text{if } da <= d1 \\
       \quad k1 / (k2 + da)        & \quad \text{otherwise} \\
-   \end{cases} \\
-   \\
+   \end{cases}
    :label: illinoisalpha
+
+.. math::
    beta &=
    \begin{cases}
       \quad betaMin               & \quad \text{if } da <= d2 \\
@@ -630,18 +631,16 @@ only if da stays below d1 for a some (theta) amount of time.
 			     
 where the calculations of k1, k2, k3, and k4 are shown in the following:
 
-.. math::
-
-   k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin} \\
-   \\
+.. math::   k1 &= \frac{(dm - d1) \cdot alphaMin \cdot alphaMax}{alphaMax - alphaMin}
    :label: illinoisk1
-   k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1 \\
-   \\
+
+.. math::   k2 &= \frac{(dm - d1) \cdot alphaMin}{alphaMax - alphaMin} - d1
    :label: illinoisk2
-   k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2} \\
-   \\
+
+.. math::   k3 &= \frac{alphaMin \cdot d3 - alphaMax \cdot d2}{d3 - d2}
    :label: illinoisk3
-   k4 &= \frac{alphaMax - alphaMin}{d3 - d2}
+
+.. math::   k4 &= \frac{alphaMax - alphaMin}{d3 - d2}
    :label: illinoisk4
 
 Other parameters include da (the current average queueing delay), and
@@ -650,13 +649,13 @@ Tmin (baseRtt in the implementation) which is the minimum RTT ever seen.
 dm is the maximum (average) queueing delay, and Tmax (maxRtt in the
 implementation) is the maximum RTT ever seen.
 
-.. math::
-
-   da &= Ta - Tmin
+.. math::   da &= Ta - Tmin
    :label: illinoisda
-   dm &= Tmax - Tmin
+
+.. math::   dm &= Tmax - Tmin
    :label: illinoisdm
-   d_i &= eta_i \cdot dm
+
+.. math::   d_i &= eta_i \cdot dm
    :label: illinoisdi
 
 Illinois only executes its adaptation of alpha and beta when cwnd exceeds a threshold
@@ -688,9 +687,7 @@ However, in high BDP networks, when it finds no congestion on the path
 after ``deltal`` seconds, it increases the window size based on the alpha 
 function in the following:
 
-.. math::
-
-        alpha(delta)=1+10(delta-deltal)+0.5(delta-deltal)^2
+.. math::   alpha(delta)=1+10(delta-deltal)+0.5(delta-deltal)^2
    :label: htcpalpha
 
 where ``deltal`` is a threshold in seconds for switching between the modes and 
