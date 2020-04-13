@@ -1489,11 +1489,11 @@ QosTxop::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient)
 }
 
 void
-QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr);
   NS_LOG_DEBUG ("got block ack from=" << recipient);
-  m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, txMode, dataSnr);
+  m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, dataSnr);
   if (!m_txOkCallback.IsNull ())
     {
       m_txOkCallback (m_currentHdr);

@@ -460,9 +460,9 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << txMode.GetUniqueName () << dataSnr);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr);
   if (!blockAck->IsMultiTid ())
     {
       uint8_t tid = blockAck->GetTidInfo ();

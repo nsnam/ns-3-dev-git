@@ -186,7 +186,6 @@ public:
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
    * \param rxSnr received SNR of the BlockAck frame itself
-   * \param txMode mode of BlockAck frame.
    * \param dataSnr data SNR reported by remote station
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
@@ -194,7 +193,7 @@ public:
    * with Ack Policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
+  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.

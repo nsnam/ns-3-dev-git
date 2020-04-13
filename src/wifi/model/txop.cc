@@ -869,7 +869,7 @@ Txop::StartNextPacket (void)
 }
 
 void
-Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr)
+Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr)
 {
   NS_LOG_WARN ("GotBlockAck should not be called for non QoS!");
 }
