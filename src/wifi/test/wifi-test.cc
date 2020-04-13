@@ -2293,7 +2293,7 @@ Issue40TestCase::RunOne (bool useAmpdu)
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
-  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (10.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -2304,10 +2304,9 @@ Issue40TestCase::RunOne (bool useAmpdu)
 
   Config::Connect ("/NodeList/*/DeviceList/*/RemoteStationManager/MacTxFinalDataFailed", MakeCallback (&Issue40TestCase::TxFinalDataFailedCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/$ns3::WifiMac/MacRx", MakeCallback (&Issue40TestCase::RxSuccessCallback, this));
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20)); //see issue #159
               
   Ptr<WaypointMobilityModel> staWaypointMobility = DynamicCast<WaypointMobilityModel>(wifiStaNode.Get(0)->GetObject<MobilityModel>());
-  staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.0), Vector (1.0, 0.0, 0.0)));
+  staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.0), Vector (10.0, 0.0, 0.0)));
   staWaypointMobility->AddWaypoint (Waypoint (Seconds(1.5), Vector (50.0, 0.0, 0.0)));
 
   if (useAmpdu)
@@ -2376,7 +2375,7 @@ public:
 
 private:
   /**
-   * Triggers the arrival of 1000 Byte-long packets in the source device
+   * Triggers the transmission of a 1000 Byte-long data packet from the source device
    * \param numPackets number of packets in burst
    * \param sourceDevice pointer to the source NetDevice
    * \param destination address of the destination device
@@ -2466,8 +2465,6 @@ Issue169TestCase::DoRun (void)
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
   mobility.Install (wifiStaNode);
-
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20)); //see issue #159
 
   Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxPsduBegin", MakeCallback (&Issue169TestCase::TxCallback, this));
 
