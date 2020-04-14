@@ -46,14 +46,7 @@ Ptr<SpectrumSignalParameters>
 LteSpectrumSignalParameters::Copy ()
 {
   NS_LOG_FUNCTION (this);
-  // Ideally we would use:
-  //   return Copy<LteSpectrumSignalParameters> (*this);
-  // but for some reason it doesn't work. Another alternative is 
-  //   return Copy<LteSpectrumSignalParameters> (this);
-  // but it causes a double creation of the object, hence it is less efficient.
-  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
-  Ptr<LteSpectrumSignalParameters> lssp (new LteSpectrumSignalParameters (*this), false);  
-  return lssp;
+  return Create<LteSpectrumSignalParameters> (*this);
 }
 
 
@@ -79,14 +72,7 @@ Ptr<SpectrumSignalParameters>
 LteSpectrumSignalParametersDataFrame::Copy ()
 {
   NS_LOG_FUNCTION (this);
-  // Ideally we would use:
-  //   return Copy<LteSpectrumSignalParametersDataFrame> (*this);
-  // but for some reason it doesn't work. Another alternative is 
-  //   return Copy<LteSpectrumSignalParametersDataFrame> (this);
-  // but it causes a double creation of the object, hence it is less efficient.
-  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
-  Ptr<LteSpectrumSignalParametersDataFrame> lssp (new LteSpectrumSignalParametersDataFrame (*this), false);  
-  return lssp;
+  return Create<LteSpectrumSignalParametersDataFrame> (*this);
 }
 
 
@@ -109,14 +95,7 @@ Ptr<SpectrumSignalParameters>
 LteSpectrumSignalParametersDlCtrlFrame::Copy ()
 {
   NS_LOG_FUNCTION (this);
-  // Ideally we would use:
-  //   return Copy<LteSpectrumSignalParametersDlCtrlFrame> (*this);
-  // but for some reason it doesn't work. Another alternative is 
-  //   return Copy<LteSpectrumSignalParametersDlCtrlFrame> (this);
-  // but it causes a double creation of the object, hence it is less efficient.
-  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
-  Ptr<LteSpectrumSignalParametersDlCtrlFrame> lssp (new LteSpectrumSignalParametersDlCtrlFrame (*this), false);  
-  return lssp;
+  return Create<LteSpectrumSignalParametersDlCtrlFrame> (*this);
 }
 
 
@@ -136,14 +115,7 @@ Ptr<SpectrumSignalParameters>
 LteSpectrumSignalParametersUlSrsFrame::Copy ()
 {
   NS_LOG_FUNCTION (this);
-  // Ideally we would use:
-  //   return Copy<LteSpectrumSignalParametersUlSrsFrame> (*this);
-  // but for some reason it doesn't work. Another alternative is 
-  //   return Copy<LteSpectrumSignalParametersUlSrsFrame> (this);
-  // but it causes a double creation of the object, hence it is less efficient.
-  // The solution below is copied from the implementation of Copy<> (Ptr<>) in ptr.h
-  Ptr<LteSpectrumSignalParametersUlSrsFrame> lssp (new LteSpectrumSignalParametersUlSrsFrame (*this), false);  
-  return lssp;
+  return Create<LteSpectrumSignalParametersUlSrsFrame> (*this);
 }
 
 
