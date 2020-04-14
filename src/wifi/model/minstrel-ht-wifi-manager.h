@@ -238,7 +238,7 @@ private:
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   void DoReportAmpduTxStatus (WifiRemoteStation *station,
                               uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                              double rxSnr, double dataSnr);
+                              double rxSnr, double dataSnr, uint16_t dataChannelWidth);
   bool IsLowLatency (void) const;
   bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
 

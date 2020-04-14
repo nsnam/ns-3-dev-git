@@ -934,7 +934,7 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
     {
       if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
         {
-          m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), 0, nMpdus, 0, 0);
+          m_stationManager->ReportAmpduTxStatus (m_currentHdr.GetAddr1 (), 0, nMpdus, 0, 0, 0);
         }
       // implicit BAR and do not use BAR after missed BlockAck, hence try to retransmit data frames
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
@@ -1489,11 +1489,11 @@ QosTxop::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient)
 }
 
 void
-QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr)
+QosTxop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataChannelWidth);
   NS_LOG_DEBUG ("got block ack from=" << recipient);
-  m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, dataSnr);
+  m_baManager->NotifyGotBlockAck (blockAck, recipient, rxSnr, dataSnr, dataChannelWidth);
   if (!m_txOkCallback.IsNull ())
     {
       m_txOkCallback (m_currentHdr);

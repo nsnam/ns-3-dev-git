@@ -70,7 +70,7 @@ private:
                        double dataSnr, uint16_t dataChannelWidth);
   void DoReportAmpduTxStatus (WifiRemoteStation *station,
                               uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                              double rxSnr, double dataSnr);
+                              double rxSnr, double dataSnr, uint16_t dataChannelWidth);
   void DoReportFinalRtsFailed (WifiRemoteStation *station);
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);

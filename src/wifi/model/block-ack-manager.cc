@@ -460,9 +460,9 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr)
+BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataChannelWidth);
   if (!blockAck->IsMultiTid ())
     {
       uint8_t tid = blockAck->GetTidInfo ();
@@ -546,7 +546,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   queueIt = it->second.second.erase (queueIt);
                 }
             }
-          m_stationManager->ReportAmpduTxStatus (recipient, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
+          m_stationManager->ReportAmpduTxStatus (recipient, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataChannelWidth);
         }
     }
   else

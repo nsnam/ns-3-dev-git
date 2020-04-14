@@ -117,7 +117,8 @@ public:
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void GotAck (void);
-  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr);
+  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
+                    double rxSnr, double dataSnr, uint16_t dataChannelWidth);
   void MissedBlockAck (uint8_t nMpdus);
   void MissedAck (void);
   void StartNextPacket (void);

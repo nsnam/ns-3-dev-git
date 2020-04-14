@@ -795,15 +795,15 @@ WifiRemoteStationManager::ReportRxOk (Mac48Address address, double rxSnr, WifiMo
 void
 WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address,
                                                uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                                               double rxSnr, double dataSnr)
+                                               double rxSnr, double dataSnr, uint16_t dataChannelWidth)
 {
-  NS_LOG_FUNCTION (this << address << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr);
+  NS_LOG_FUNCTION (this << address << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr << dataChannelWidth);
   NS_ASSERT (!address.IsGroup ());
   for (uint8_t i = 0; i < nFailedMpdus; i++)
     {
       m_macTxDataFailed (address);
     }
-  DoReportAmpduTxStatus (Lookup (address), nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr);
+  DoReportAmpduTxStatus (Lookup (address), nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataChannelWidth);
 }
 
 bool
@@ -1473,7 +1473,7 @@ WifiRemoteStationManager::DoNeedFragmentation (WifiRemoteStation *station,
 }
 
 void
-WifiRemoteStationManager::DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr)
+WifiRemoteStationManager::DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr, uint16_t dataChannelWidth)
 {
   NS_LOG_DEBUG ("DoReportAmpduTxStatus received but the manager does not handle A-MPDUs!");
 }

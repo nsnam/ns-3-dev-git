@@ -769,18 +769,20 @@ public:
    * received or when a BlockAckTimeout has elapsed.
    *
    * \param address the address of the receiver
-   * \param nSuccessfulMpdus number of successfully transmitted MPDUs.
+   * \param nSuccessfulMpdus number of successfully transmitted MPDUs
    * A value of 0 means that the Block ACK was missed.
-   * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
+   * \param nFailedMpdus number of unsuccessfully transmitted MPDUs
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
+   * \param dataChannelWidth the channel width (in MHz) of the A-MPDU initially sent to the remote station
    */
-  void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr);
+  void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                            double rxSnr, double dataSnr, uint16_t dataChannelWidth);
 
   /**
    * \param address remote address
    * \param rxSnr the SNR of the packet received
-   * \param txMode the transmission mode used for the packet received.
+   * \param txMode the transmission mode used for the packet received
    *
    * Should be invoked whenever a packet is successfully received.
    */
@@ -1224,8 +1226,10 @@ private:
    * \param nFailedMpdus number of unsuccessfully transmitted MPDUs.
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
+   * \param dataChannelWidth the channel width (in MHz) of the A-MPDU we sent
    */
-  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus, double rxSnr, double dataSnr);
+  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                                      double rxSnr, double dataSnr, uint16_t dataChannelWidth);
 
   /**
    * Return the state of the station associated with the given address.
