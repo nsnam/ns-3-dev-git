@@ -5759,11 +5759,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True, is_pure_virtual=True)
-    ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetCtsTimeout() const [member function]
-    cls.add_method('GetCtsTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True, is_pure_virtual=True)
     ## wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::NetDevice> ns3::WifiMac::GetDevice() const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -5878,11 +5873,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('SetCompressedBlockAckTimeout', 
                    'void', 
                    [param('ns3::Time', 'blockAckTimeout')], 
-                   is_virtual=True, is_pure_virtual=True)
-    ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetCtsTimeout(ns3::Time ctsTimeout) [member function]
-    cls.add_method('SetCtsTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'ctsTimeout')], 
                    is_virtual=True, is_pure_virtual=True)
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetDevice(ns3::Ptr<ns3::NetDevice> const device) [member function]
     cls.add_method('SetDevice', 
@@ -10300,11 +10290,6 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'rifs')], 
                    is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCtsTimeout(ns3::Time ctsTimeout) [member function]
-    cls.add_method('SetCtsTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'ctsTimeout')], 
-                   is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetAckTimeout(ns3::Time ackTimeout) [member function]
     cls.add_method('SetAckTimeout', 
                    'void', 
@@ -10352,11 +10337,6 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetEifsNoDifs() const [member function]
     cls.add_method('GetEifsNoDifs', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetCtsTimeout() const [member function]
-    cls.add_method('GetCtsTimeout', 
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
