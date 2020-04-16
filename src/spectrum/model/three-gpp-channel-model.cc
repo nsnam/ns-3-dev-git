@@ -733,7 +733,7 @@ ThreeGppChannelModel::ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix>
   // if the coherence time is over the channel has to be updated
   if (!m_updatePeriod.IsZero () && Simulator::Now() - channelMatrix->m_generatedTime > m_updatePeriod)
   {
-    NS_LOG_DEBUG ("Generation time " << channelMatrix->m_generatedTime.GetNanoSeconds () << " now " << Simulator::Now ().GetNanoSeconds ());
+    NS_LOG_DEBUG ("Generation time " << channelMatrix->m_generatedTime.As (Time::NS) << " now " << Now ().As (Time::NS));
     update = true;
   }
 
