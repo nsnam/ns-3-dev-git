@@ -46,9 +46,9 @@ public:
    * \param ssThresh Slow Start Threshold.
    * \param unAckDataCount Unacknowledged data at the start of recovery.
    * \param bytesInFlight Current bytes in flight.
-   * \para m_deliveredBytes Bytes SACKed on last acknowledgment.
-   * \para bytesSent Bytes sent while in recovery phase.
-   * \para reductionBound Type of reduction bound to be used.
+   * \param m_deliveredBytes Bytes SACKed on last acknowledgment.
+   * \param bytesSent Bytes sent while in recovery phase.
+   * \param reductionBound Type of reduction bound to be used.
    * \param name Test description.
    */
   PrrRecoveryTest (uint32_t cWnd,
