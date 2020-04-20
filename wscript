@@ -1085,7 +1085,6 @@ def _cleandocs():
     _cleandir('doc/manual/build')
     _cleandir('doc/manual/source-temp')
     _cleandir('doc/tutorial/build')
-    _cleandir('doc/tutorial-pt-br/build')
     _cleandir('doc/models/build')
     _cleandir('doc/models/source-temp')
 
@@ -1373,7 +1372,7 @@ class Ns3SphinxContext(Context.Context):
 
     def execute(self):
         _getVersion()
-        for sphinxdir in ["manual", "models", "tutorial", "tutorial-pt-br"] :
+        for sphinxdir in ["manual", "models", "tutorial"] :
             self.sphinx_build(os.path.join("doc", sphinxdir))
      
 
