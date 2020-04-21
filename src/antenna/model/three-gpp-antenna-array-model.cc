@@ -126,14 +126,11 @@ ThreeGppAntennaArrayModel::GetElementFieldPattern (Angles a) const
   NS_LOG_FUNCTION (this);
 
   // normalize phi (if needed)
-  while (a.phi >= M_PI)
-    {
-      a.phi -= 2 * M_PI;
-    }
-  while (a.phi < -M_PI)
-    {
-      a.phi += 2 * M_PI;
-    }
+  a.phi = fmod (a.phi + M_PI, 2 * M_PI);
+  if (a.phi < 0)
+      a.phi += M_PI;
+  else 
+      a.phi -= M_PI;
 
   NS_ASSERT_MSG (a.theta >= 0 && a.theta <= M_PI, "The vertical angle should be between 0 and M_PI");
   NS_ASSERT_MSG (a.phi >= -M_PI && a.phi <= M_PI, "The horizontal angle should be between -M_PI and M_PI");
