@@ -29,7 +29,10 @@ namespace ns3 {
 /**
  * \ingroup antenna
  *
- * \brief Class implementing the antenna model defined in 3GPP TR 38.901
+ * \brief Class implementing the antenna model defined in 3GPP TR 38.901 V15.0.0
+ * 
+ * \note the current implementation supports the modeling of antenna arrays 
+ * composed of a single panel and with single (vertical) polarization.
  */
 class ThreeGppAntennaArrayModel : public Object
 {
@@ -52,7 +55,7 @@ public:
 
   /**
    * Returns the horizontal and vertical components of the antenna element field
-   * pattern at the specified direction
+   * pattern at the specified direction. Only vertical polarization is considered.
    * \param a the angle indicating the interested direction
    * \return a pair in which the first element is the horizontal component
    *         of the field pattern and the second element is the vertical
@@ -61,8 +64,16 @@ public:
   std::pair<double, double> GetElementFieldPattern (Angles a) const;
 
   /**
-   * Returns the normalized location of the antenna element
-   * with specified index assuming the left bottom corner is (0,0,0).
+   * Returns the location of the antenna element with the specified
+   * index assuming the left bottom corner is (0,0,0), normalized
+   * with respect to the wavelength.
+   * Antenna elements are scanned row by row, left to right and bottom to top.
+   * For example, an antenna with 2 rows and 3 columns will be ordered as follows:
+   * ^ z
+   * |  3 4 5
+   * |  0 1 2
+   * ----------> y
+   *
    * \param index index of the antenna element
    * \return the 3D vector that represents the position of the element
    */
