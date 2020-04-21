@@ -147,14 +147,15 @@ ThreeGppAntennaArrayModel::GetElementFieldPattern (Angles a) const
   double aPrimeDb = GetRadiationPattern (thetaPrime, phiPrime);
   double aPrime = pow (10, aPrimeDb / 10); // convert to linear
 
-  // compute psi using eq. 7.1-15 in 3GPP TR 38.901
+  // compute psi using eq. 7.1-15 in 3GPP TR 38.901, assuming that the slant 
+  // angle (gamma) is 0
   double psi = std::arg (std::complex<double> (cos (m_beta) * sin (a.theta) - sin (m_beta) * cos (a.theta)* cos (a.phi - m_alpha), sin (m_beta)* sin (a.phi-m_alpha)));
   NS_LOG_DEBUG ("psi " << psi);
 
   // compute the antenna element field pattern in the vertical polarization using
   // eq. 7.3-4 in 3GPP TR 38.901
   // NOTE we assume vertical polarization, hence the field pattern in the
-  // vertical polarization is 0
+  // horizontal polarization is 0
   double fieldThetaPrime = std::sqrt (aPrime);
 
   // convert the antenna element field pattern to GCS using eq. 7.1-11
