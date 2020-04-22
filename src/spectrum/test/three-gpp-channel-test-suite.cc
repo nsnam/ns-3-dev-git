@@ -34,7 +34,6 @@
 #include "ns3/channel-condition-model.h"
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/wifi-spectrum-value-helper.h"
-#include "ns3/buildings-channel-condition-model.h"
 
 using namespace ns3;
 
