@@ -30,8 +30,6 @@ namespace ns3 {
  * \ingroup wifi
  *
  * This class knows how to serialise and deserialise the Extended Capabilities Information Element
- *
- * \see attribute_ExtendedCapabilities
  */
 class ExtendedCapabilities : public WifiInformationElement
 {

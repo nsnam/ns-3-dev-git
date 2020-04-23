@@ -31,8 +31,6 @@ namespace ns3 {
  *
  * This class knows how to serialise and deserialise
  * the HE Operation Information Element
- *
- * \see attribute_HeOperation
  */
 class HeOperation : public WifiInformationElement
 {

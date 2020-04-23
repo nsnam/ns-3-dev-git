@@ -110,6 +110,22 @@ std::list<std::string> ReadFiles (std::string path);
  * Call ns3::SystemPath::MakeDirectories to create it. Yes, there is a
  * well-known security race in this API but we don't care in ns-3.
  *
+ * The final path to the directory is going to look something like
+ *
+ *     /tmp/ns3.14.30.29.32767
+ *
+ * The first part, "/tmp/" is the absolute path found by inspecting
+ * the environment variables `TMP`and `TEMP`, in order. If neither
+ * exists the hard-codes root path `/tmp/` is used.
+ *
+ * The directory name itself starts with the "ns3" identifier telling folks
+ * who is making all of the temp directories.
+ *
+ * The next three number give the hour, minute and second, separated by
+ * periods.
+ *
+ * The final number is randomly generated, to avoid name collisions.
+ *
  * \return A path which identifies a temporary directory.
  */
 std::string MakeTemporaryDirectoryName (void);

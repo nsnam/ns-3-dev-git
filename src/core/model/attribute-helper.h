@@ -34,7 +34,7 @@
 namespace ns3 {
 
 /**
- * \ingroup attribute
+ * \ingroup attributes
  * \defgroup attributehelper Attribute Helper
  *
  * All these macros can be used to generate automatically the code

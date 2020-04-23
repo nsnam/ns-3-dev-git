@@ -46,8 +46,6 @@ enum HtProtectionType
  *
  * This class knows how to serialise and deserialise
  * the HT Operation Information Element
- *
- * \see attribute_HtOperation
  */
 class HtOperation : public WifiInformationElement
 {

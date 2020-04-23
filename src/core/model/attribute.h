@@ -42,7 +42,7 @@ class ObjectBase;
 /**
  *
  * \ingroup core
- * \defgroup attribute Attributes
+ * \defgroup attributes Attributes
  *
  * The \c ns-3 attribute system is the mechanism used in \c ns-3 to
  * organize, document, and modify the *values* used by the various
@@ -57,7 +57,7 @@ class ObjectBase;
 
 /**
  *
- * \ingroup attribute
+ * \ingroup attributes
  *
  * \brief Hold a value for an Attribute.
  *
@@ -104,7 +104,7 @@ public:
 /**
  * \brief allow setting and getting the value of an attribute.
  *
- * \ingroup attribute
+ * \ingroup attributes
  *
  * The goal of this class is to hide from the user how an attribute
  * is actually set or get to or from a class instance. Implementations
@@ -152,7 +152,7 @@ public:
 /**
  * \brief Represent the type of an attribute
  *
- * \ingroup attribute
+ * \ingroup attributes
  *
  * Each type of attribute has an associated unique AttributeChecker
  * subclass. The type of the subclass can be safely used by users
@@ -227,7 +227,7 @@ public:
 /**
  * \brief A class for an empty attribute value.
  *
- * \ingroup attribute
+ * \ingroup attributes
  */
 class EmptyAttributeValue : public AttributeValue
 {
@@ -275,7 +275,7 @@ public:
 };
 
 /**
- * \ingroup attribute
+ * \ingroup attributes
  *
  * \brief Create an empty AttributeAccessor.
  *
@@ -307,7 +307,7 @@ public:
 };
 
 /**
- * \ingroup attribute
+ * \ingroup attributes
  *
  * \brief Create an empty AttributeChecker.
  *

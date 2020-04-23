@@ -31,8 +31,6 @@ namespace ns3 {
  *
  * This class knows how to serialise and deserialise
  * the VHT Operation Information Element
- *
- * \see attribute_VhtOperation
  */
 class VhtOperation : public WifiInformationElement
 {

@@ -310,7 +310,7 @@ MakeTemporaryDirectoryName (void)
   //
   // The final path to the directory is going to look something like
   //
-  //   /tmp/ns3-14.30.29.32767
+  //   /tmp/ns3.14.30.29.32767
   //
   // The first segment comes from one of the temporary directory env
   // variables or /tmp if not found.  The directory name starts with an

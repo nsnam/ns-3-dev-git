@@ -112,7 +112,7 @@ EnumChecker::GetValue (const std::string name) const
   auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
                           [name] (Value v) { return v.second == name; } );
   NS_ASSERT_MSG (it != m_valueSet.end (),
-                 "name " << name << "not a valid enum value. Missed entry in MakeEnumChecker?");
+                 "name " << name << " not a valid enum value. Missed entry in MakeEnumChecker?");
   return it->first;
 }
 bool

@@ -55,6 +55,7 @@ NS_LOG_COMPONENT_DEFINE ("Simulator");
 
 /**
  * \ingroup simulator
+ * \anchor GlobalValueSimulatorImplementationType
  * The specific simulator implementation to use.
  *
  * Must be derived from SimulatorImpl.
@@ -67,6 +68,7 @@ static GlobalValue g_simTypeImpl = GlobalValue
 
 /**
  * \ingroup scheduler
+ * \anchor GlobalValueSchedulerType
  * The specific event scheduler implementation to use.
  *
  * Must be derived from Scheduler.
