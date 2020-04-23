@@ -1,7 +1,5 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2015, NYU WIRELESS, Tandon School of Engineering,
- * New York University
  * Copyright (c) 2020 SIGNET Lab, Department of Information Engineering,
  * University of Padova
  *
@@ -56,8 +54,7 @@ public:
 
 
   /**
-   * Data structure that stores a channel realization, plus some other information
-   * that can be useful when handling channel matrices
+   * Data structure that stores a channel realization
    */
   struct ChannelMatrix : public SimpleRefCount<ChannelMatrix>
   {
@@ -66,7 +63,6 @@ public:
     Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(aoa), 1(zoa), 2(aod), 3(zod) in degree.
     Time               m_generatedTime; //!< generation time
     std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID, the second element is the u-node ID
-    bool m_los; //!< true if LOS, false if NLOS
 
     /**
      * Returns true if the ChannelMatrix object was generated

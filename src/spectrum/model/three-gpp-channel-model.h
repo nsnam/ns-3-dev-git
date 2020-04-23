@@ -37,8 +37,14 @@ namespace ns3 {
 class MobilityModel;
 class ThreeGppAntennaArrayModel;
 
+/**
+ * Extends the struct ChannelMatrix by including information that are used 
+ * withing the class ThreeGppChannelModel
+ */
 struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
 {
+  bool m_los; //!< true if LOS, false if NLOS
+  
   // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
   /*The following parameters are stored for spatial consistent updating. The notation is 
   that of 3GPP technical reports, but it can apply also to other channel realizations*/
@@ -215,10 +221,10 @@ private:
    * \return the channel realization
    */
   Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, bool los, bool o2i,
-                                    Ptr<const ThreeGppAntennaArrayModel> sAntenna,
-                                    Ptr<const ThreeGppAntennaArrayModel> uAntenna,
-                                    Angles &uAngle, Angles &sAngle,
-                                    double dis2D, double hBS, double hUT) const;
+                                            Ptr<const ThreeGppAntennaArrayModel> sAntenna,
+                                            Ptr<const ThreeGppAntennaArrayModel> uAntenna,
+                                            Angles &uAngle, Angles &sAngle,
+                                            double dis2D, double hBS, double hUT) const;
 
   /**
    * Applies the blockage model A described in 3GPP TR 38.901
