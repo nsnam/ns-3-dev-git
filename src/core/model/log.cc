@@ -27,13 +27,8 @@
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
-#ifdef HAVE_GETENV
-#include <cstring>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <cstdlib>
-#endif
+#include <cstdlib>    // getenv
+#include <cstring>    // strlen
 
 /**
  * \file
@@ -86,9 +81,8 @@ LogComponent::GetComponentList (void)
 
 PrintList::PrintList ()
 {
-#ifdef HAVE_GETENV
-  char *envVar = getenv ("NS_LOG");
-  if (envVar == 0)
+  const char *envVar = std::getenv ("NS_LOG");
+  if (envVar == 0 || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -107,7 +101,6 @@ PrintList::PrintList ()
         }
       cur = next + 1;
     }
-#endif
 }
 
 
@@ -151,9 +144,8 @@ GetLogComponent (const std::string name)
 void
 LogComponent::EnvVarCheck (void)
 {
-#ifdef HAVE_GETENV
-  char *envVar = getenv ("NS_LOG");
-  if (envVar == 0)
+  const char *envVar = std::getenv ("NS_LOG");
+  if (envVar == 0 || std::strlen (envVar) == 0)
     {
       return;
     }
@@ -283,7 +275,6 @@ LogComponent::EnvVarCheck (void)
         }
       cur = next + 1;
     }
-#endif
 }
 
 
@@ -536,14 +527,13 @@ static bool ComponentExists (std::string componentName)
  */
 static void CheckEnvironmentVariables (void)
 {
-#ifdef HAVE_GETENV
-  char *envVar = getenv ("NS_LOG");
+  const char *envVar = std::getenv ("NS_LOG");
   if (envVar == 0 || std::strlen (envVar) == 0)
     {
       return;
     }
-  std::string env = envVar;
 
+  std::string env = envVar;
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
 
@@ -626,7 +616,6 @@ static void CheckEnvironmentVariables (void)
         }
       cur = next + 1;   // parse next component
     }
-#endif
 }
 void LogSetTimePrinter (TimePrinter printer)
 {

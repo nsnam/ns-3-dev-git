@@ -22,9 +22,10 @@
 #include "assert.h"
 #include "log.h"
 #include "ns3/core-config.h"
-#include <cstdlib>
+
+#include <cstdlib>  // getenv
 #include <cerrno>
-#include <cstring>
+#include <cstring>  // strlen
 
 
 #if defined (HAVE_DIRENT_H) && defined (HAVE_SYS_TYPES_H)
@@ -284,11 +285,11 @@ MakeTemporaryDirectoryName (void)
   NS_LOG_FUNCTION_NOARGS ();
   char *path = NULL;
 
-  path = getenv ("TMP");
-  if (path == NULL)
+  path = std::getenv ("TMP");
+  if (path == NULL || std::strlen (path) == 0)
     {
-      path = getenv ("TEMP");
-      if (path == NULL)
+      path = std::getenv ("TEMP");
+      if (path == NULL || std::strlen (path) == 0)
         {
           path = const_cast<char *> ("/tmp");
         }

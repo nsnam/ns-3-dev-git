@@ -23,9 +23,9 @@
 #include "attribute-construction-list.h"
 #include "string.h"
 #include "ns3/core-config.h"
-#ifdef HAVE_STDLIB_H
-#include <cstdlib>
-#endif
+
+#include <cstdlib>  // getenv
+#include <cstring>  // strlen
 
 /**
  * \file
@@ -125,12 +125,11 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                 }
             }
 
-#ifdef HAVE_GETENV
           // No matching attribute value so we try to look at the env var.
-          char *envVar = getenv ("NS_ATTRIBUTE_DEFAULT");
-          if (envVar != 0)
+          const char *envVar = getenv ("NS_ATTRIBUTE_DEFAULT");
+          if (envVar != 0 && std::strlen (envVar) > 0)
             {
-              std::string env = std::string (envVar);
+              std::string env = envVar;
               std::string::size_type cur = 0;
               std::string::size_type next = 0;
               while (next != std::string::npos)
@@ -155,7 +154,6 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                   cur = next + 1;
                 }
             }
-#endif /* HAVE_GETENV */
 
           // No matching attribute value so we try to set the default value.
           DoSet (info.accessor, info.checker, *info.initialValue);

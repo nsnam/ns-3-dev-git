@@ -25,9 +25,10 @@
 #include "log.h"
 
 #include "ns3/core-config.h"
-#ifdef HAVE_STDLIB_H
-#include <cstdlib>
-#endif
+
+#include <cstdlib>  // getenv
+#include <cstring>  // strlen
+
 
 /**
  * \file
@@ -67,13 +68,13 @@ void
 GlobalValue::InitializeFromEnv (void)
 {
   NS_LOG_FUNCTION (this);
-#ifdef HAVE_GETENV
-  char *envVar = getenv ("NS_GLOBAL_VALUE");
-  if (envVar == 0)
+
+  const char *envVar = getenv ("NS_GLOBAL_VALUE");
+  if (envVar == 0 || std::strlen (envVar) == 0)
     {
       return;
     }
-  std::string env = std::string (envVar);
+  std::string env = envVar;
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
   while (next != std::string::npos)
@@ -98,7 +99,6 @@ GlobalValue::InitializeFromEnv (void)
         }
       cur = next + 1;
     }
-#endif /* HAVE_GETENV */
 }
 
 std::string
