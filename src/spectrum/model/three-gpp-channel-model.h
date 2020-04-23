@@ -35,32 +35,6 @@
 namespace ns3 {
 
 class MobilityModel;
-class ThreeGppAntennaArrayModel;
-
-/**
- * Extends the struct ChannelMatrix by including information that are used 
- * withing the class ThreeGppChannelModel
- */
-struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
-{
-  bool m_los; //!< true if LOS, false if NLOS
-  
-  // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
-  /*The following parameters are stored for spatial consistent updating. The notation is 
-  that of 3GPP technical reports, but it can apply also to other channel realizations*/
-  MatrixBasedChannelModel::Double2DVector m_nonSelfBlocking; //!< store the blockages
-  Vector m_preLocUT; //!< location of UT when generating the previous channel
-  Vector m_locUT; //!< location of UT
-  MatrixBasedChannelModel::Double2DVector m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id] generated for equation (7.6-11)-(7.6-14), where id = 0(aoa),1(zoa),2(aod),3(zod)
-  double m_DS; //!< delay spread
-  double m_K; //!< K factor
-  uint8_t m_numCluster; //!< reduced cluster number;
-  MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
-  bool m_o2i; //!< true if O2I
-  Vector m_speed; //!< velocity
-  double m_dis2D; //!< 2D distance between tx and rx
-  double m_dis3D; //!< 3D distance between tx and rx
-};
 
 /**
  * \ingroup spectrum
@@ -133,14 +107,6 @@ public:
    * be updated, it generates a new uncorrelated channel matrix using the
    * method GetNewChannel and updates m_channelMap.
    *
-   * We assume channel reciprocity between each node pair (i.e., H_ab = H_ba^T),
-   * therefore GetChannel (a, b) and GetChannel (b, a) will return the same
-   * ChannelMatrix object.
-   * To understand if the channel matrix corresponds to H_ab or H_ba, we provide
-   * the method ChannelMatrix::IsReverse. For instance, if the channel
-   * matrix corresponds to H_ab, a call to IsReverse (idA, idB) will return
-   * false, conversely, IsReverse (idB, idA) will return true.
-   *
    * \param aMob mobility model of the a device
    * \param bMob mobility model of the b device
    * \param aAntenna antenna of the a device
@@ -161,6 +127,31 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
+  /**
+   * Extends the struct ChannelMatrix by including information that are used 
+   * within the class ThreeGppChannelModel
+   */
+  struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
+  {
+    bool m_los; //!< true if LOS, false if NLOS
+    
+    // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
+    /*The following parameters are stored for spatial consistent updating. The notation is 
+    that of 3GPP technical reports, but it can apply also to other channel realizations*/
+    MatrixBasedChannelModel::Double2DVector m_nonSelfBlocking; //!< store the blockages
+    Vector m_preLocUT; //!< location of UT when generating the previous channel
+    Vector m_locUT; //!< location of UT
+    MatrixBasedChannelModel::Double2DVector m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id] generated for equation (7.6-11)-(7.6-14), where id = 0(aoa),1(zoa),2(aod),3(zod)
+    double m_DS; //!< delay spread
+    double m_K; //!< K factor
+    uint8_t m_numCluster; //!< reduced cluster number;
+    MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
+    bool m_o2i; //!< true if O2I
+    Vector m_speed; //!< velocity
+    double m_dis2D; //!< 2D distance between tx and rx
+    double m_dis3D; //!< 3D distance between tx and rx
+  };
+
   /**
    * Data structure that stores the parameters of 3GPP TR 38.901, Table 7.5-6,
    * for a certain scenario
@@ -258,6 +249,12 @@ private:
   uint16_t m_numNonSelfBlocking; //!< number of non-self-blocking regions
   bool m_portraitMode; //!< true if potrait mode, false if landscape
   double m_blockerSpeed; //!< the blocker speed
+
+  static const uint8_t PHI_INDEX = 0; //!< index of the PHI value in the m_nonSelfBlocking array
+  static const uint8_t X_INDEX = 1; //!< index of the X value in the m_nonSelfBlocking array
+  static const uint8_t THETA_INDEX = 2; //!< index of the THETA value in the m_nonSelfBlocking array
+  static const uint8_t Y_INDEX = 3; //!< index of the Y value in the m_nonSelfBlocking array
+  static const uint8_t R_INDEX = 4; //!< index of the R value in the m_nonSelfBlocking array
 };
 } // namespace ns3
 

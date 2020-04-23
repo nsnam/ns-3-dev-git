@@ -2,6 +2,8 @@
 /*
  * Copyright (c) 2020 SIGNET Lab, Department of Information Engineering,
  * University of Padova
+ * Copyright (c) 2020 Institute for the Wireless Internet of Things,
+ * Northeastern University
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -59,16 +61,16 @@ public:
   struct ChannelMatrix : public SimpleRefCount<ChannelMatrix>
   {
     Complex3DVector    m_channel; //!< channel matrix H[u][s][n].
-    DoubleVector       m_delay; //!< cluster delay.
-    Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(aoa), 1(zoa), 2(aod), 3(zod) in degree.
+    DoubleVector       m_delay; //!< cluster delay in nanoseconds.
+    Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD), 3(ZOD) in degree.
     Time               m_generatedTime; //!< generation time
-    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID, the second element is the u-node ID
+    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID (the transmitter when the channel was generated), the second element is the u-node ID (the receiver when the channel was generated)
 
     /**
      * Returns true if the ChannelMatrix object was generated
      * considering node b as transmitter and node a as receiver.
-     * \param aid id of the a node
-     * \param bid id of the b node
+     * \param aId id of the a node
+     * \param bId id of the b node
      * \return true if b is the rx and a is the tx, false otherwise
      */
     bool IsReverse (const uint32_t aId, const uint32_t bId) const
@@ -119,12 +121,6 @@ public:
   static const uint8_t ZOA_INDEX = 1; //!< index of the ZOA value in the m_angle array
   static const uint8_t AOD_INDEX = 2; //!< index of the AOD value in the m_angle array
   static const uint8_t ZOD_INDEX = 3; //!< index of the ZOD value in the m_angle array
-
-  static const uint8_t PHI_INDEX = 0; //!< index of the PHI value in the m_nonSelfBlocking array
-  static const uint8_t X_INDEX = 1; //!< index of the X value in the m_nonSelfBlocking array
-  static const uint8_t THETA_INDEX = 2; //!< index of the THETA value in the m_nonSelfBlocking array
-  static const uint8_t Y_INDEX = 3; //!< index of the Y value in the m_nonSelfBlocking array
-  static const uint8_t R_INDEX = 4; //!< index of the R value in the m_nonSelfBlocking array
 
 };
 

@@ -56,10 +56,10 @@ ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
     .SetGroupName ("Spectrum")
     .AddConstructor<ThreeGppSpectrumPropagationLossModel> ()
     .AddAttribute("ChannelModel", 
-      "The channel model. It needs to implement the MatrixBasedChannelModel interface",
-      StringValue("ns3::ThreeGppChannelModel"),
-      MakePointerAccessor (&ThreeGppSpectrumPropagationLossModel::SetChannelModel,
-                           &ThreeGppSpectrumPropagationLossModel::GetChannelModel),
+                  "The channel model. It needs to implement the MatrixBasedChannelModel interface",
+                  StringValue("ns3::ThreeGppChannelModel"),
+                  MakePointerAccessor (&ThreeGppSpectrumPropagationLossModel::SetChannelModel,
+                                       &ThreeGppSpectrumPropagationLossModel::GetChannelModel),
       MakePointerChecker<MatrixBasedChannelModel> ())
     ;
   return tid;
