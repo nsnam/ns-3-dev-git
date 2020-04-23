@@ -181,6 +181,7 @@ ThreeGppChannelModel::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::ThreeGppChannelModel")
     .SetParent<Object> ()
     .SetGroupName ("Spectrum")
+    .SetParent<MatrixBasedChannelModel>()
     .AddConstructor<ThreeGppChannelModel> ()
     .AddAttribute ("Frequency",
                    "The operating Frequency in Hz",
@@ -730,7 +731,7 @@ ThreeGppChannelModel::ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix>
   return update;
 }
 
-Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix>
+Ptr<const MatrixBasedChannelModel::ChannelMatrix>
 ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
                                   Ptr<const MobilityModel> bMob,
                                   Ptr<const ThreeGppAntennaArrayModel> aAntenna,
@@ -801,7 +802,7 @@ ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
   return channelMatrix;
 }
 
-Ptr<ThreeGppChannelModel::ThreeGppChannelMatrix>
+Ptr<ThreeGppChannelMatrix>
 ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
                                      Ptr<const ThreeGppAntennaArrayModel> sAntenna,
                                      Ptr<const ThreeGppAntennaArrayModel> uAntenna,
@@ -1577,7 +1578,7 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
   return channelParams;
 }
 
-ThreeGppChannelModel::DoubleVector
+MatrixBasedChannelModel::DoubleVector
 ThreeGppChannelModel::CalcAttenuationOfBlockage (Ptr<ThreeGppChannelMatrix> params,
                                                  const DoubleVector &clusterAOA,
                                                  const DoubleVector &clusterZOA) const

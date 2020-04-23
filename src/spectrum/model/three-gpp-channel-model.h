@@ -28,13 +28,33 @@
 #include <ns3/nstime.h>
 #include <ns3/random-variable-stream.h>
 #include <ns3/boolean.h>
-#include <ns3/three-gpp-antenna-array-model.h>
 #include <unordered_map>
 #include <ns3/channel-condition-model.h>
+#include <ns3/matrix-based-channel-model.h>
 
 namespace ns3 {
 
 class MobilityModel;
+class ThreeGppAntennaArrayModel;
+
+struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
+{
+  // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
+  /*The following parameters are stored for spatial consistent updating. The notation is 
+  that of 3GPP technical reports, but it can apply also to other channel realizations*/
+  MatrixBasedChannelModel::Double2DVector m_nonSelfBlocking; //!< store the blockages
+  Vector m_preLocUT; //!< location of UT when generating the previous channel
+  Vector m_locUT; //!< location of UT
+  MatrixBasedChannelModel::Double2DVector m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id] generated for equation (7.6-11)-(7.6-14), where id = 0(aoa),1(zoa),2(aod),3(zod)
+  double m_DS; //!< delay spread
+  double m_K; //!< K factor
+  uint8_t m_numCluster; //!< reduced cluster number;
+  MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
+  bool m_o2i; //!< true if O2I
+  Vector m_speed; //!< velocity
+  double m_dis2D; //!< 2D distance between tx and rx
+  double m_dis3D; //!< 3D distance between tx and rx
+};
 
 /**
  * \ingroup spectrum
@@ -45,7 +65,7 @@ class MobilityModel;
  *
  * \see GetChannel
  */
-class ThreeGppChannelModel : public Object
+class ThreeGppChannelModel : public MatrixBasedChannelModel
 {
 public:
   /**
@@ -64,55 +84,6 @@ public:
    */
   static TypeId GetTypeId ();
 
-  typedef std::vector<double> DoubleVector; //!< type definition for vectors of doubles
-  typedef std::vector<DoubleVector> Double2DVector; //!< type definition for matrices of doubles
-  typedef std::vector<Double2DVector> Double3DVector; //!< type definition for 3D matrices of doubles
-  typedef std::vector<ThreeGppAntennaArrayModel::ComplexVector> Complex2DVector; //!< type definition for complex matrices
-  typedef std::vector<Complex2DVector> Complex3DVector; //!< type definition for complex 3D matrices
-
-  /**
-   * Data structure that stores a channel realization
-   */
-  struct ThreeGppChannelMatrix : public SimpleRefCount<ThreeGppChannelMatrix>
-  {
-    Complex3DVector    m_channel; //!< channel matrix H[u][s][n].
-    DoubleVector       m_delay; //!< cluster delay.
-    Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(aoa), 1(zoa), 2(aod), 3(zod) in degree.
-    Double2DVector     m_nonSelfBlocking; //!< store the blockages
-    Time               m_generatedTime; //!< generation time
-    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID, the second element is the u-node ID
-    bool m_los; //!< true if LOS, false if NLOS
-
-    // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
-    /*The following parameters are stored for spatial consistent updating*/
-    Vector m_preLocUT; //!< location of UT when generating the previous channel
-    Vector m_locUT; //!< location of UT
-    Double2DVector m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id] generated for equation (7.6-11)-(7.6-14), where id = 0(aoa),1(zoa),2(aod),3(zod)
-    double m_DS; //!< delay spread
-    double m_K; //!< K factor
-    uint8_t m_numCluster; //!< reduced cluster number;
-    Double3DVector m_clusterPhase; //!< the initial random phases
-    bool m_o2i; //!< true if O2I
-    Vector m_speed; //!< velocity
-    double m_dis2D; //!< 2D distance between tx and rx
-    double m_dis3D; //!< 3D distance between tx and rx
-
-    /**
-     * Returns true if the ThreeGppChannelMatrix object was generated
-     * considering node b as transmitter and node a as receiver.
-     * \param aid id of the a node
-     * \param bid id of the b node
-     * \return true if b is the rx and a is the tx, false otherwise
-     */
-    bool IsReverse (const uint32_t aId, const uint32_t bId) const
-    {
-      uint32_t sId, uId;
-      std::tie (sId, uId) = m_nodeIds;
-      NS_ASSERT_MSG ((sId == aId && uId == bId) || (sId == bId && uId == aId),
-                      "This matrix represents the channel between " << sId << " and " << uId);
-      return (sId == bId && uId == aId);
-    }
-  };
 
   /**
    * Set the channel condition model
@@ -158,9 +129,9 @@ public:
    *
    * We assume channel reciprocity between each node pair (i.e., H_ab = H_ba^T),
    * therefore GetChannel (a, b) and GetChannel (b, a) will return the same
-   * ThreeGppChannelMatrix object.
+   * ChannelMatrix object.
    * To understand if the channel matrix corresponds to H_ab or H_ba, we provide
-   * the method ThreeGppChannelMatrix::IsReverse. For instance, if the channel
+   * the method ChannelMatrix::IsReverse. For instance, if the channel
    * matrix corresponds to H_ab, a call to IsReverse (idA, idB) will return
    * false, conversely, IsReverse (idB, idA) will return true.
    *
@@ -170,10 +141,10 @@ public:
    * \param bAntenna antenna of the b device
    * \return the channel matrix
    */
-  Ptr<const ThreeGppChannelMatrix> GetChannel (Ptr<const MobilityModel> aMob,
-                                               Ptr<const MobilityModel> bMob,
-                                               Ptr<const ThreeGppAntennaArrayModel> aAntenna,
-                                               Ptr<const ThreeGppAntennaArrayModel> bAntenna);
+  Ptr<const ChannelMatrix> GetChannel (Ptr<const MobilityModel> aMob,
+                                       Ptr<const MobilityModel> bMob,
+                                       Ptr<const ThreeGppAntennaArrayModel> aAntenna,
+                                       Ptr<const ThreeGppAntennaArrayModel> bAntenna) override;
   /**
    * \brief Assign a fixed random variable stream number to the random variables
    * used by this model.
@@ -182,28 +153,6 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
-
-  static const uint8_t AOA_INDEX = 0; //!< index of the AOA value in the m_angle array
-  static const uint8_t ZOA_INDEX = 1; //!< index of the ZOA value in the m_angle array
-  static const uint8_t AOD_INDEX = 2; //!< index of the AOD value in the m_angle array
-  static const uint8_t ZOD_INDEX = 3; //!< index of the ZOD value in the m_angle array
-
-  static const uint8_t PHI_INDEX = 0; //!< index of the PHI value in the m_nonSelfBlocking array
-  static const uint8_t X_INDEX = 1; //!< index of the X value in the m_nonSelfBlocking array
-  static const uint8_t THETA_INDEX = 2; //!< index of the THETA value in the m_nonSelfBlocking array
-  static const uint8_t Y_INDEX = 3; //!< index of the Y value in the m_nonSelfBlocking array
-  static const uint8_t R_INDEX = 4; //!< index of the R value in the m_nonSelfBlocking array
-
- /**
-  * Calculate the channel key using the Cantor function
-  * \param x1 first value
-  * \param x2 second value
-  * \return \f$ (((x1 + x2) * (x1 + x2 + 1))/2) + x2; \f$
-  */
- static constexpr uint32_t GetKey (uint32_t x1, uint32_t x2)
- {
-   return (((x1 + x2) * (x1 + x2 + 1)) / 2) + x2;
- }
 
 private:
   /**
@@ -266,10 +215,10 @@ private:
    * \return the channel realization
    */
   Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, bool los, bool o2i,
-                                            Ptr<const ThreeGppAntennaArrayModel> sAntenna,
-                                            Ptr<const ThreeGppAntennaArrayModel> uAntenna,
-                                            Angles &uAngle, Angles &sAngle,
-                                            double dis2D, double hBS, double hUT) const;
+                                    Ptr<const ThreeGppAntennaArrayModel> sAntenna,
+                                    Ptr<const ThreeGppAntennaArrayModel> uAntenna,
+                                    Angles &uAngle, Angles &sAngle,
+                                    double dis2D, double hBS, double hUT) const;
 
   /**
    * Applies the blockage model A described in 3GPP TR 38.901

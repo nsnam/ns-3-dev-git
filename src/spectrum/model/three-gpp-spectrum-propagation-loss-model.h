@@ -25,7 +25,8 @@
 #include "ns3/spectrum-propagation-loss-model.h"
 #include <complex.h>
 #include <map>
-#include "ns3/three-gpp-channel-model.h"
+#include <unordered_map>
+#include "ns3/matrix-based-channel-model.h"
 
 namespace ns3 {
 
@@ -43,7 +44,7 @@ class ChannelCondition;
  * the mobility models of the transmitting node and receiving node, and
  * returns the PSD of the received signal.
  *
- * \see ThreeGppChannelModel
+ * \see MatrixBasedChannelModel
  * \see ThreeGppAntennaArrayModel
  * \see ChannelCondition
  */
@@ -67,6 +68,18 @@ public:
   static TypeId GetTypeId ();
 
   /**
+   * Set the channel model object
+   * \param channel a pointer to an object implementing the MatrixBasedChannelModel interface
+   */
+  void SetChannelModel (Ptr<MatrixBasedChannelModel> channel);
+
+  /**
+   * Get the channel model object
+   * \return a pointer to the object implementing the MatrixBasedChannelModel interface
+   */
+  Ptr<MatrixBasedChannelModel> GetChannelModel() const;
+
+  /**
    * Add a device-antenna pair
    * \param n a pointer to the NetDevice
    * \param a a pointer to the associated ThreeGppAntennaArrayModel
@@ -76,7 +89,7 @@ public:
 
   /**
    * Sets the value of an attribute belonging to the associated
-   * ThreeGppChannelModel instance
+   * MatrixBasedChannelModel instance
    * \param name name of the attribute
    * \param value the attribute value
    */
@@ -84,7 +97,7 @@ public:
 
   /**
    * Returns the value of an attribute belonging to the associated
-   * ThreeGppChannelModel instance
+   * MatrixBasedChannelModel instance
    * \param name name of the attribute
    * \param where the result should be stored
    */
@@ -121,7 +134,7 @@ private:
   struct LongTerm : public SimpleRefCount<LongTerm>
   {
     ThreeGppAntennaArrayModel::ComplexVector m_longTerm; //!< vector containing the long term component for each cluster
-    Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> m_channel; //!< pointer to the channel matrix used to compute the long term
+    Ptr<const MatrixBasedChannelModel::ChannelMatrix> m_channel; //!< pointer to the channel matrix used to compute the long term
     ThreeGppAntennaArrayModel::ComplexVector m_sW; //!< the beamforming vector for the node s used to compute the long term
     ThreeGppAntennaArrayModel::ComplexVector m_uW; //!< the beamforming vector for the node u used to compute the long term
   };
@@ -144,7 +157,7 @@ private:
    * \return vector containing the long term compoenent for each cluster
    */
   ThreeGppAntennaArrayModel::ComplexVector GetLongTerm (uint32_t aId, uint32_t bId,
-                                                        Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> channelMatrix,
+                                                        Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
                                                         const ThreeGppAntennaArrayModel::ComplexVector &aW,
                                                         const ThreeGppAntennaArrayModel::ComplexVector &bW) const;
   /**
@@ -154,7 +167,7 @@ private:
    * \param uW the beamforming vector of the u device
    * \return the long term component
    */
-  ThreeGppAntennaArrayModel::ComplexVector CalcLongTerm (Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> channelMatrix,
+  ThreeGppAntennaArrayModel::ComplexVector CalcLongTerm (Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
                                                          const ThreeGppAntennaArrayModel::ComplexVector &sW,
                                                          const ThreeGppAntennaArrayModel::ComplexVector &uW) const;
 
@@ -169,12 +182,12 @@ private:
    */
   Ptr<SpectrumValue> CalcBeamformingGain (Ptr<SpectrumValue> txPsd,
                                           ThreeGppAntennaArrayModel::ComplexVector longTerm,
-                                          Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> params,
+                                          Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
                                           const Vector &sSpeed, const Vector &uSpeed) const;
 
   std::unordered_map <uint32_t, Ptr<const ThreeGppAntennaArrayModel> > m_deviceAntennaMap; //!< map containig the <node, antenna> associations
   mutable std::unordered_map < uint32_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
-  Ptr<ThreeGppChannelModel> m_channelModel; //!< the model to generate the channel matrix
+  Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
 };
 } // namespace ns3
 

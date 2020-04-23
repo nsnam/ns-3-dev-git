@@ -91,7 +91,7 @@ ThreeGppChannelMatrixComputationTest::DoComputeNorm (Ptr<ThreeGppChannelModel> c
   uint64_t txAntennaElements = txAntenna->GetNumberOfElements ();
   uint64_t rxAntennaElements = rxAntenna->GetNumberOfElements ();
 
-  Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
+  Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
 
   double channelNorm = 0;
   uint8_t numTotClusters = channelMatrix->m_channel.at (0).at (0).size ();
@@ -157,7 +157,7 @@ ThreeGppChannelMatrixComputationTest::DoRun (void)
   Ptr<ThreeGppAntennaArrayModel> rxAntenna = CreateObjectWithAttributes<ThreeGppAntennaArrayModel> ("NumColumns", UintegerValue (rxAntennaElements [0]), "NumRows", UintegerValue (rxAntennaElements [1]), "IsotropicElements", BooleanValue (true));
 
   // generate the channel matrix
-  Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
+  Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
 
   // check the channel matrix dimensions
   NS_TEST_ASSERT_MSG_EQ (channelMatrix->m_channel.at (0).size (), txAntennaElements [0] * txAntennaElements [1], "The second dimension of H should be equal to the number of tx antenna elements");
@@ -237,7 +237,7 @@ private:
    */
   void DoGetChannel (Ptr<ThreeGppChannelModel> channelModel, Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, Ptr<ThreeGppAntennaArrayModel> txAntenna, Ptr<ThreeGppAntennaArrayModel> rxAntenna, bool update);
 
-  Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> m_currentChannel; //!< used by DoGetChannel to store the current channel matrix
+  Ptr<const ThreeGppChannelModel::ChannelMatrix> m_currentChannel; //!< used by DoGetChannel to store the current channel matrix
 };
 
 ThreeGppChannelMatrixUpdateTest::ThreeGppChannelMatrixUpdateTest ()
@@ -253,7 +253,7 @@ void
 ThreeGppChannelMatrixUpdateTest::DoGetChannel (Ptr<ThreeGppChannelModel> channelModel, Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, Ptr<ThreeGppAntennaArrayModel> txAntenna, Ptr<ThreeGppAntennaArrayModel> rxAntenna, bool update)
 {
   // retrieve the channel matrix
-  Ptr<const ThreeGppChannelModel::ThreeGppChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
+  Ptr<const ThreeGppChannelModel::ChannelMatrix> channelMatrix = channelModel->GetChannel (txMob, rxMob, txAntenna, rxAntenna);
 
   if (m_currentChannel == 0)
   {

@@ -666,7 +666,7 @@ pairs using the method AddDevice.
 2. Retrieve the channel matrix
 The ThreeGppSpectrumPropagationLossModel relies on the ThreeGppChannelModel class
 to obtain the channel matrix. In particular, it makes use of the method GetChannel,
-which returns a ThreeGppChannelMatrix object containing the channel
+which returns a ChannelMatrix object containing the channel
 matrix and other channel parameters.
 The ThreeGppChannelModel instance is automatically
 created in the the ThreeGppSpectrumPropagationLossModel constructor and it can
@@ -696,7 +696,7 @@ The class ThreeGppChannelModel implements the channel matrix generation procedur
 described in Sec. of [TR38901]_.
 The main method is GetChannel, which takes as input the mobility models of
 the transmitter and receiver nodes, the associated antenna objects,
-and returns a ThreeGppChannelMatrix object containing:
+and returns a ChannelMatrix object containing:
 
 * the channel matrix of size UxSxN, where U is the number of receiving antenna elements, S is the number of transmitting antenna elements and N is the number of clusters
 
@@ -710,7 +710,7 @@ and returns a ThreeGppChannelMatrix object containing:
 
 * other channel parameters
 
-The ThreeGppChannelMatrix objects are saved
+The ChannelMatrix objects are saved
 in the map m_channelMap and updated when the coherence time
 expires, or in case the LOS/NLOS channel condition changes.
 The coherence time can be configured through
