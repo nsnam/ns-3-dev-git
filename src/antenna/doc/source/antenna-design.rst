@@ -131,7 +131,7 @@ the attributes "AntennaHorizontalSpacing" and "AntennaVerticalSpacing".
 **Note:**
 
   * Currently, the model does not support multi-panel antennas, i.e., 
-    :math:`N_{g} = N_{g} = 1`.
+    :math:`N_{g} = M_{g} = 1`.
 
   * Currently, the model supports only single polarized (i.e., P = 1) antenna 
     panels with vertical polarization (i.e., :math:`{\zeta = 0}`)
