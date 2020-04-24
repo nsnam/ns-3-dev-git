@@ -1,0 +1,5 @@
+# Ignore everything on scratch by default, except the provided examples
+/*
+!.gitignore
+!subdir/
+!scratch-simulator.cc
