@@ -12,6 +12,7 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
             "environment": [
                 {
                     "name": "LD_LIBRARY_PATH",
