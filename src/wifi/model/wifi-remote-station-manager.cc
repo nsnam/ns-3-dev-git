@@ -27,6 +27,7 @@
 #include "wifi-phy.h"
 #include "wifi-mac.h"
 #include "wifi-mac-header.h"
+#include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
 #include "ht-configuration.h"
 #include "vht-configuration.h"
@@ -799,24 +800,23 @@ WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode) const
 }
 
 void
-WifiRemoteStationManager::ReportRtsFailed (Mac48Address address, const WifiMacHeader *header)
+WifiRemoteStationManager::ReportRtsFailed (const WifiMacHeader& header)
 {
-  NS_LOG_FUNCTION (this << address << *header);
-  NS_ASSERT (!address.IsGroup ());
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
+  NS_LOG_FUNCTION (this << header);
+  NS_ASSERT (!header.GetAddr1 ().IsGroup ());
+  AcIndex ac = QosUtilsMapTidToAc ((header.IsQosData ()) ? header.GetQosTid () : 0);
   m_ssrc[ac]++;
-  m_macTxRtsFailed (address);
-  DoReportRtsFailed (Lookup (address));
+  m_macTxRtsFailed (header.GetAddr1 ());
+  DoReportRtsFailed (Lookup (header.GetAddr1 ()));
 }
 
 void
-WifiRemoteStationManager::ReportDataFailed (Mac48Address address, const WifiMacHeader *header,
-                                            uint32_t packetSize)
+WifiRemoteStationManager::ReportDataFailed (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << address << *header);
-  NS_ASSERT (!address.IsGroup ());
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
-  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  NS_LOG_FUNCTION (this << *mpdu);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  AcIndex ac = QosUtilsMapTidToAc ((mpdu->GetHeader ().IsQosData ()) ? mpdu->GetHeader ().GetQosTid () : 0);
+  bool longMpdu = (mpdu->GetSize () > m_rtsCtsThreshold);
   if (longMpdu)
     {
       m_slrc[ac]++;
@@ -825,33 +825,33 @@ WifiRemoteStationManager::ReportDataFailed (Mac48Address address, const WifiMacH
     {
       m_ssrc[ac]++;
     }
-  m_macTxDataFailed (address);
-  DoReportDataFailed (Lookup (address));
+  m_macTxDataFailed (mpdu->GetHeader ().GetAddr1 ());
+  DoReportDataFailed (Lookup (mpdu->GetHeader ().GetAddr1 ()));
 }
 
 void
-WifiRemoteStationManager::ReportRtsOk (Mac48Address address, const WifiMacHeader *header,
+WifiRemoteStationManager::ReportRtsOk (const WifiMacHeader& header,
                                        double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  NS_LOG_FUNCTION (this << address << *header << ctsSnr << ctsMode << rtsSnr);
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
+  NS_LOG_FUNCTION (this << header << ctsSnr << ctsMode << rtsSnr);
+  NS_ASSERT (!header.GetAddr1 ().IsGroup ());
+  WifiRemoteStation *station = Lookup (header.GetAddr1 ());
+  AcIndex ac = QosUtilsMapTidToAc ((header.IsQosData ()) ? header.GetQosTid () : 0);
   station->m_state->m_info.NotifyTxSuccess (m_ssrc[ac]);
   m_ssrc[ac] = 0;
   DoReportRtsOk (station, ctsSnr, ctsMode, rtsSnr);
 }
 
 void
-WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                                        double ackSnr, WifiMode ackMode, double dataSnr,
-                                        WifiTxVector dataTxVector, uint32_t packetSize)
+WifiRemoteStationManager::ReportDataOk (Ptr<const WifiMacQueueItem> mpdu, double ackSnr,
+                                        WifiMode ackMode, double dataSnr, WifiTxVector dataTxVector)
 {
-  NS_LOG_FUNCTION (this << address << *header << ackSnr << ackMode << dataSnr << dataTxVector << packetSize);
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
-  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  NS_LOG_FUNCTION (this << *mpdu << ackSnr << ackMode << dataSnr << dataTxVector);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
+  NS_ASSERT (!hdr.GetAddr1 ().IsGroup ());
+  WifiRemoteStation *station = Lookup (hdr.GetAddr1 ());
+  AcIndex ac = QosUtilsMapTidToAc ((hdr.IsQosData ()) ? hdr.GetQosTid () : 0);
+  bool longMpdu = (mpdu->GetSize () > m_rtsCtsThreshold);
   if (longMpdu)
     {
       station->m_state->m_info.NotifyTxSuccess (m_slrc[ac]);
@@ -866,28 +866,27 @@ WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeade
 }
 
 void
-WifiRemoteStationManager::ReportFinalRtsFailed (Mac48Address address, const WifiMacHeader *header)
+WifiRemoteStationManager::ReportFinalRtsFailed (const WifiMacHeader& header)
 {
-  NS_LOG_FUNCTION (this << address << *header);
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
+  NS_LOG_FUNCTION (this << header);
+  NS_ASSERT (!header.GetAddr1 ().IsGroup ());
+  WifiRemoteStation *station = Lookup (header.GetAddr1 ());
+  AcIndex ac = QosUtilsMapTidToAc ((header.IsQosData ()) ? header.GetQosTid () : 0);
   station->m_state->m_info.NotifyTxFailed ();
   m_ssrc[ac] = 0;
-  m_macTxFinalRtsFailed (address);
+  m_macTxFinalRtsFailed (header.GetAddr1 ());
   DoReportFinalRtsFailed (station);
 }
 
 void
-WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header,
-                                                 uint32_t packetSize)
+WifiRemoteStationManager::ReportFinalDataFailed (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << address << *header);
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address);
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
+  NS_LOG_FUNCTION (this << *mpdu);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  WifiRemoteStation *station = Lookup (mpdu->GetHeader ().GetAddr1 ());
+  AcIndex ac = QosUtilsMapTidToAc ((mpdu->GetHeader ().IsQosData ()) ? mpdu->GetHeader ().GetQosTid () : 0);
   station->m_state->m_info.NotifyTxFailed ();
-  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  bool longMpdu = (mpdu->GetSize () > m_rtsCtsThreshold);
   if (longMpdu)
     {
       m_slrc[ac] = 0;
@@ -896,7 +895,7 @@ WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const Wif
     {
       m_ssrc[ac] = 0;
     }
-  m_macTxFinalDataFailed (address);
+  m_macTxFinalDataFailed (mpdu->GetHeader ().GetAddr1 ());
   DoReportFinalDataFailed (station);
 }
 
@@ -1052,13 +1051,12 @@ WifiRemoteStationManager::GetUseGreenfieldProtection (void) const
 }
 
 bool
-WifiRemoteStationManager::NeedRetransmission (Mac48Address address, const WifiMacHeader *header,
-                                              Ptr<const Packet> packet)
+WifiRemoteStationManager::NeedRetransmission (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << address << packet << *header);
-  NS_ASSERT (!address.IsGroup ());
-  AcIndex ac = QosUtilsMapTidToAc ((header->IsQosData ()) ? header->GetQosTid () : 0);
-  bool longMpdu = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  NS_LOG_FUNCTION (this << *mpdu);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  AcIndex ac = QosUtilsMapTidToAc ((mpdu->GetHeader ().IsQosData ()) ? mpdu->GetHeader ().GetQosTid () : 0);
+  bool longMpdu = (mpdu->GetSize () > m_rtsCtsThreshold);
   uint32_t retryCount, maxRetryCount;
   if (longMpdu)
     {
@@ -1072,21 +1070,20 @@ WifiRemoteStationManager::NeedRetransmission (Mac48Address address, const WifiMa
     }
   bool normally = retryCount < maxRetryCount;
   NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRetransmission count: " << retryCount << " result: " << std::boolalpha << normally);
-  return DoNeedRetransmission (Lookup (address), packet, normally);
+  return DoNeedRetransmission (Lookup (mpdu->GetHeader ().GetAddr1 ()), mpdu->GetPacket (), normally);
 }
 
 bool
-WifiRemoteStationManager::NeedFragmentation (Mac48Address address, const WifiMacHeader *header,
-                                             Ptr<const Packet> packet)
+WifiRemoteStationManager::NeedFragmentation (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << address << packet << *header);
-  if (address.IsGroup ())
+  NS_LOG_FUNCTION (this << *mpdu);
+  if (mpdu->GetHeader ().GetAddr1 ().IsGroup ())
     {
       return false;
     }
-  bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetFragmentationThreshold ();
+  bool normally = mpdu->GetSize () > GetFragmentationThreshold ();
   NS_LOG_DEBUG ("WifiRemoteStationManager::NeedFragmentation result: " << std::boolalpha << normally);
-  return DoNeedFragmentation (Lookup (address), packet, normally);
+  return DoNeedFragmentation (Lookup (mpdu->GetHeader ().GetAddr1 ()), mpdu->GetPacket (), normally);
 }
 
 void
@@ -1132,14 +1129,14 @@ WifiRemoteStationManager::DoGetFragmentationThreshold (void) const
 }
 
 uint32_t
-WifiRemoteStationManager::GetNFragments (const WifiMacHeader *header, Ptr<const Packet> packet)
+WifiRemoteStationManager::GetNFragments (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this << *header << packet);
+  NS_LOG_FUNCTION (this << *mpdu);
   //The number of bytes a fragment can support is (Threshold - WIFI_HEADER_SIZE - WIFI_FCS).
-  uint32_t nFragments = (packet->GetSize () / (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH));
+  uint32_t nFragments = (mpdu->GetPacket ()->GetSize () / (GetFragmentationThreshold () - mpdu->GetHeader ().GetSize () - WIFI_MAC_FCS_LENGTH));
 
   //If the size of the last fragment is not 0.
-  if ((packet->GetSize () % (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH)) > 0)
+  if ((mpdu->GetPacket ()->GetSize () % (GetFragmentationThreshold () - mpdu->GetHeader ().GetSize () - WIFI_MAC_FCS_LENGTH)) > 0)
     {
       nFragments++;
     }
@@ -1148,12 +1145,11 @@ WifiRemoteStationManager::GetNFragments (const WifiMacHeader *header, Ptr<const 
 }
 
 uint32_t
-WifiRemoteStationManager::GetFragmentSize (Mac48Address address, const WifiMacHeader *header,
-                                           Ptr<const Packet> packet, uint32_t fragmentNumber)
+WifiRemoteStationManager::GetFragmentSize (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet << fragmentNumber);
-  NS_ASSERT (!address.IsGroup ());
-  uint32_t nFragment = GetNFragments (header, packet);
+  NS_LOG_FUNCTION (this << *mpdu << fragmentNumber);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  uint32_t nFragment = GetNFragments (mpdu);
   if (fragmentNumber >= nFragment)
     {
       NS_LOG_DEBUG ("WifiRemoteStationManager::GetFragmentSize returning 0");
@@ -1162,38 +1158,36 @@ WifiRemoteStationManager::GetFragmentSize (Mac48Address address, const WifiMacHe
   //Last fragment
   if (fragmentNumber == nFragment - 1)
     {
-      uint32_t lastFragmentSize = packet->GetSize () - (fragmentNumber * (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH));
+      uint32_t lastFragmentSize = mpdu->GetPacket ()->GetSize () - (fragmentNumber * (GetFragmentationThreshold () - mpdu->GetHeader ().GetSize () - WIFI_MAC_FCS_LENGTH));
       NS_LOG_DEBUG ("WifiRemoteStationManager::GetFragmentSize returning " << lastFragmentSize);
       return lastFragmentSize;
     }
   //All fragments but the last, the number of bytes is (Threshold - WIFI_HEADER_SIZE - WIFI_FCS).
   else
     {
-      uint32_t fragmentSize = GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH;
+      uint32_t fragmentSize = GetFragmentationThreshold () - mpdu->GetHeader ().GetSize () - WIFI_MAC_FCS_LENGTH;
       NS_LOG_DEBUG ("WifiRemoteStationManager::GetFragmentSize returning " << fragmentSize);
       return fragmentSize;
     }
 }
 
 uint32_t
-WifiRemoteStationManager::GetFragmentOffset (Mac48Address address, const WifiMacHeader *header,
-                                             Ptr<const Packet> packet, uint32_t fragmentNumber)
+WifiRemoteStationManager::GetFragmentOffset (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet << fragmentNumber);
-  NS_ASSERT (!address.IsGroup ());
-  NS_ASSERT (fragmentNumber < GetNFragments (header, packet));
-  uint32_t fragmentOffset = fragmentNumber * (GetFragmentationThreshold () - header->GetSize () - WIFI_MAC_FCS_LENGTH);
+  NS_LOG_FUNCTION (this << *mpdu << fragmentNumber);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  NS_ASSERT (fragmentNumber < GetNFragments (mpdu));
+  uint32_t fragmentOffset = fragmentNumber * (GetFragmentationThreshold () - mpdu->GetHeader ().GetSize () - WIFI_MAC_FCS_LENGTH);
   NS_LOG_DEBUG ("WifiRemoteStationManager::GetFragmentOffset returning " << fragmentOffset);
   return fragmentOffset;
 }
 
 bool
-WifiRemoteStationManager::IsLastFragment (Mac48Address address, const WifiMacHeader *header,
-                                          Ptr<const Packet> packet, uint32_t fragmentNumber)
+WifiRemoteStationManager::IsLastFragment (Ptr<const WifiMacQueueItem> mpdu, uint32_t fragmentNumber)
 {
-  NS_LOG_FUNCTION (this << address << *header << packet << fragmentNumber);
-  NS_ASSERT (!address.IsGroup ());
-  bool isLast = fragmentNumber == (GetNFragments (header, packet) - 1);
+  NS_LOG_FUNCTION (this << *mpdu << fragmentNumber);
+  NS_ASSERT (!mpdu->GetHeader ().GetAddr1 ().IsGroup ());
+  bool isLast = fragmentNumber == (GetNFragments (mpdu) - 1);
   NS_LOG_DEBUG ("WifiRemoteStationManager::IsLastFragment returning " << std::boolalpha << isLast);
   return isLast;
 }

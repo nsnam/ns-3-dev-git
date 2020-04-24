@@ -823,7 +823,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
       packet->RemovePacketTag (tag);
       m_stationManager->ReportRxOk (m_currentPacket->GetAddr1 (),
                                     rxSnr, txVector.GetMode ());
-      m_stationManager->ReportRtsOk (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
+      m_stationManager->ReportRtsOk (m_currentPacket->GetHeader (0),
                                      rxSnr, txVector.GetMode (), tag.Get ());
 
       m_ctsTimeoutEvent.Cancel ();
@@ -846,9 +846,9 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
         {
           m_stationManager->ReportRxOk (m_currentPacket->GetAddr1 (),
                                         rxSnr, txVector.GetMode ());
-          m_stationManager->ReportDataOk (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
+          m_stationManager->ReportDataOk (*m_currentPacket->begin (),
                                           rxSnr, txVector.GetMode (), tag.Get (),
-                                          m_currentTxVector, m_currentPacket->GetSize ());
+                                          m_currentTxVector);
         }
       // cancel the Normal Ack timer
       m_normalAckTimeoutEvent.Cancel ();
@@ -1500,7 +1500,7 @@ MacLow::CtsTimeout (void)
   /// \todo should check that there was no RX start before now.
   /// we should restart a new CTS timeout now until the expected
   /// end of RX if there was a RX start before now.
-  m_stationManager->ReportRtsFailed (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0));
+  m_stationManager->ReportRtsFailed (m_currentPacket->GetHeader (0));
 
   Ptr<QosTxop> qosTxop = DynamicCast<QosTxop> (m_currentTxop);
   if (qosTxop != 0)
