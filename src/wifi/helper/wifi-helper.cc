@@ -899,51 +899,29 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         {
           Ptr<NetDeviceQueueInterface> ndqi;
           BooleanValue qosSupported;
-          PointerValue ptr;
           Ptr<WifiMacQueue> wmq;
-          Ptr<WifiAckPolicySelector> ackSelector;
 
           rmac->GetAttributeFailSafe ("QosSupported", qosSupported);
           if (qosSupported.Get ())
             {
               ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> ("NTxQueues",
                                                                           UintegerValue (4));
-
-              rmac->GetAttributeFailSafe ("BE_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_BE].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
-
-              rmac->GetAttributeFailSafe ("BK_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_BK].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->GetTxQueue (1)->ConnectQueueTraces (wmq);
-
-              rmac->GetAttributeFailSafe ("VI_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_VI].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->GetTxQueue (2)->ConnectQueueTraces (wmq);
-
-              rmac->GetAttributeFailSafe ("VO_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_VO].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
-              ndqi->GetTxQueue (3)->ConnectQueueTraces (wmq);
+              for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
+                {
+                  Ptr<QosTxop> qosTxop = rmac->GetQosTxop (ac);
+                  auto ackSelector = m_ackPolicySelector[ac].Create<WifiAckPolicySelector> ();
+                  ackSelector->SetQosTxop (qosTxop);
+                  qosTxop->SetAckPolicySelector (ackSelector);
+                  wmq = qosTxop->GetWifiMacQueue ();
+                  ndqi->GetTxQueue (static_cast<std::size_t> (ac))->ConnectQueueTraces (wmq);
+                }
               ndqi->SetSelectQueueCallback (m_selectQueueCallback);
             }
           else
             {
               ndqi = CreateObject<NetDeviceQueueInterface> ();
 
-              rmac->GetAttributeFailSafe ("Txop", ptr);
-              wmq = ptr.Get<Txop> ()->GetWifiMacQueue ();
+              wmq = rmac->GetTxop ()->GetWifiMacQueue ();
               ndqi->GetTxQueue (0)->ConnectQueueTraces (wmq);
             }
           device->AggregateObject (ndqi);

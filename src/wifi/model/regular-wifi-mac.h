@@ -103,6 +103,28 @@ public:
    * \return the station manager attached to this MAC.
    */
   Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
+
+  /**
+   * Accessor for the DCF object
+   *
+   * \return a smart pointer to Txop
+   */
+  Ptr<Txop> GetTxop (void) const;
+  /**
+   * Accessor for a specified EDCA object
+   *
+   * \param ac the Access Category
+   * \return a smart pointer to a QosTxop
+   */
+  Ptr<QosTxop> GetQosTxop (AcIndex ac) const;
+  /**
+   * Accessor for a specified EDCA object
+   *
+   * \param tid the Traffic ID
+   * \return a smart pointer to a QosTxop
+   */
+  Ptr<QosTxop> GetQosTxop (uint8_t tid) const;
+
   /**
    * Return the extended capabilities of the device.
    *
@@ -157,13 +179,6 @@ protected:
   /** This is a map from Access Category index to the corresponding
   channel access function */
   EdcaQueues m_edca;
-
-  /**
-   * Accessor for the DCF object
-   *
-   * \return a smart pointer to Txop
-   */
-  Ptr<Txop> GetTxop (void) const;
 
   /**
    * Accessor for the AC_VO channel access function

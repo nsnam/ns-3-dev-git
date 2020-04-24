@@ -457,6 +457,18 @@ RegularWifiMac::GetTxop () const
 }
 
 Ptr<QosTxop>
+RegularWifiMac::GetQosTxop (AcIndex ac) const
+{
+  return m_edca.find (ac)->second;
+}
+
+Ptr<QosTxop>
+RegularWifiMac::GetQosTxop (uint8_t tid) const
+{
+  return GetQosTxop (QosUtilsMapTidToAc (tid));
+}
+
+Ptr<QosTxop>
 RegularWifiMac::GetVOQueue () const
 {
   return m_edca.find (AC_VO)->second;
