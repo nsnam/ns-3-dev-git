@@ -37,7 +37,7 @@ using std::vector;
 int
 main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   ConfigStore inputConfig;

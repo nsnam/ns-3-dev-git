@@ -175,7 +175,7 @@ int main (int argc, char *argv[])
   modes.push_back ("DsssRate5_5Mbps");
   modes.push_back ("DsssRate11Mbps");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("clear-channel.eps");

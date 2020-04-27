@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   double startTime = 0.0;       // seconds
   double distanceToRx = 100.0;  // meters
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("Prss", "Intended primary RSS (dBm)", Prss);
   cmd.AddValue ("PpacketSize", "size of application packet sent", PpacketSize);

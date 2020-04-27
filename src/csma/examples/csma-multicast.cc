@@ -59,7 +59,7 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults at
   // run-time, via command-line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");

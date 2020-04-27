@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   // Configuration and command line parameter parsing
   // Will only save in the directory if enable opts below
   pathOut = "."; // Current directory
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("pathOut", "Path to save results from --writeForPlot/--writePcap/--writeFlowMonitor", pathOut);
   cmd.AddValue ("writeForPlot", "<0/1> to write results for plot (gnuplot)", writeForPlot);
   cmd.AddValue ("writePcap", "<0/1> to write results in pcapfile", writePcap);

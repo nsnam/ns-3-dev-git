@@ -57,7 +57,7 @@ int main (int argc, char** argv)
   int bw = 20;
   double pow = 23; //dBm
   bool verbose = false;
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("standard",
                 "OFDM-based Wi-Fi standard [11a, 11_10MHZ, 11_5MHZ, 11n_2_4GHZ, 11n_5GHZ, 11ac, 11ax_2_4GHZ, 11ax_5GHZ]",
                 standard);

@@ -82,7 +82,7 @@ NS_LOG_COMPONENT_DEFINE ("TapWifiVirtualMachineExample");
 int 
 main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   //

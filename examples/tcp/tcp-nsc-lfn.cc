@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
   // the name of the NSC stack library that should be used
   std::string nscStack = "liblinux2.6.26.so";
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   // Here, we define additional command line options.
   // This allows a user to override the defaults set above from the command line.
   cmd.AddValue ("TCP_CONGESTION", "Linux 2.6.26 Tcp Congestion control algorithm to use", tcpCong);

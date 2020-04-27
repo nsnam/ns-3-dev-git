@@ -133,7 +133,7 @@ int main (int argc, char *argv[])
   uint64_t cfpMaxDurationUs = 65536; //microseconds
   double simulationTime = 10; //seconds
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
   cmd.AddValue ("enablePcf", "Enable/disable PCF mode", enablePcf);
   cmd.AddValue ("withData", "Enable/disable UDP data packets generation", withData);

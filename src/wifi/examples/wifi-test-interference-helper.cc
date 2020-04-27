@@ -307,7 +307,7 @@ int main (int argc, char *argv[])
   std::string str_preamble = "WIFI_PREAMBLE_LONG";
   uint64_t delay = 0; //microseconds
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("delay", "Delay in microseconds between frame transmission from sender A and frame transmission from sender B", delay);
   cmd.AddValue ("xA", "The position of transmitter A (< 0)", input.xA);
   cmd.AddValue ("xB", "The position of transmitter B (> 0)", input.xB);

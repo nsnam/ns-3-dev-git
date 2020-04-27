@@ -41,7 +41,7 @@ main (int argc, char *argv[])
   double hUe = 1.0;
   bool enbIndoor = false;
   bool ueIndoor = false;
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   
   cmd.AddValue("hEnb", "Height of the eNB", hEnb);
   cmd.AddValue("hUe", "Height of UE", hUe);

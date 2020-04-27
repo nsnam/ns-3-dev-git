@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
   bool sendIp = true;
   bool writeMobility = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nWifis", "Number of wifi networks", nWifis);
   cmd.AddValue ("nStas", "Number of stations per wifi network", nStas);
   cmd.AddValue ("SendIp", "Send Ipv4 or raw packets", sendIp);

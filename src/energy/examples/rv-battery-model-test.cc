@@ -637,7 +637,7 @@ BatteryLifetimeTest::CreateLoadProfiles (void)
 int
 main (int argc, char **argv)
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
   
   NS_LOG_DEBUG ("Constant load run.");

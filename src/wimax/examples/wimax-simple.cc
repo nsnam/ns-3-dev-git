@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
   int duration = 7, schedType = 0;
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("scheduler", "type of scheduler to use with the network devices", schedType);
   cmd.AddValue ("duration", "duration of the simulation in seconds", duration);
   cmd.AddValue ("verbose", "turn on all WimaxNetDevice log components", verbose);

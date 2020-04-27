@@ -249,7 +249,7 @@ UanExperiment::Teardown ()
 int
 main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   UanExperiment experiment;

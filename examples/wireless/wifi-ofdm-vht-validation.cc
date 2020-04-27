@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
   modes.push_back ("VhtMcs7");
   modes.push_back ("VhtMcs8");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
   cmd.Parse (argc, argv);
 

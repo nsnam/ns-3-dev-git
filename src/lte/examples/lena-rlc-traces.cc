@@ -31,7 +31,7 @@ using namespace ns3;
 int main (int argc, char *argv[])
 {
   // Command line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   ConfigStore inputConfig;

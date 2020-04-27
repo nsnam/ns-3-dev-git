@@ -106,7 +106,7 @@ main (int argc, char *argv[])
   std::string macClient ("00:00:00:00:00:01");
   std::string macServer ("00:00:00:00:00:02");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("deviceName", "Device name", deviceName);
   cmd.AddValue ("client", "Local IP address (dotted decimal only please)", client);
   cmd.AddValue ("server", "Remote IP address (dotted decimal only please)", server);

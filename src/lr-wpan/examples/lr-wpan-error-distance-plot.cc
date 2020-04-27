@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
   double txPower = 0;
   uint32_t channelNumber = 11;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
 
   cmd.AddValue ("txPower", "transmit power (dBm)", txPower);
   cmd.AddValue ("packetSize", "packet (MSDU) size (bytes)", packetSize);

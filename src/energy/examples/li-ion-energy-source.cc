@@ -61,7 +61,7 @@ PrintCellInfo (Ptr<LiIonEnergySource> es)
 int
 main (int argc, char **argv)
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
   
     // uncomment below to see the energy consumption details

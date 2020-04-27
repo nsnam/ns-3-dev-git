@@ -48,7 +48,7 @@ main (int argc, char *argv[])
 // Allow the user to override any of the defaults at
 // run-time, via command-line arguments
 //
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("tracing", "Flag to enable/disable tracing", tracing);
   cmd.AddValue ("maxBytes",
                 "Total number of bytes for application to send", maxBytes);

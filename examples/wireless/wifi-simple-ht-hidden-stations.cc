@@ -63,7 +63,7 @@ int main (int argc, char *argv[])
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nMpdus", "Number of aggregated MPDUs", nMpdus);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("enableRts", "Enable RTS/CTS", enableRts);

@@ -52,7 +52,7 @@ main (int argc, char *argv[])
   bool isSack = false;
   uint32_t maxPackets = 0;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("tracing", "Flag to enable/disable tracing", tracing);
   cmd.AddValue ("maxBytes",
                 "Total number of bytes for application to send", maxBytes);

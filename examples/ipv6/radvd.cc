@@ -49,7 +49,7 @@ int main (int argc, char** argv)
 {
   bool verbose = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("verbose", "turn on log components", verbose);
   cmd.Parse (argc, argv);
 

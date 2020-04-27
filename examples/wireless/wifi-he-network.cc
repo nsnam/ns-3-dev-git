@@ -69,7 +69,7 @@ int main (int argc, char *argv[])
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);

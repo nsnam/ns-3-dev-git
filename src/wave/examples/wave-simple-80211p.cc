@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   double interval = 1.0; // seconds
   bool verbose = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
 
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);

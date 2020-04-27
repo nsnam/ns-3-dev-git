@@ -77,7 +77,7 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // Config::SetDefault()s at run-time, via command-line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nNodes", "Number of nodes to place in the star", N);
   cmd.Parse (argc, argv);
 

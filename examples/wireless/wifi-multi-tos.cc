@@ -55,7 +55,7 @@ int main (int argc, char *argv[])
   bool useShortGuardInterval = false;
   bool useRts = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nWifi", "Number of stations", nWifi);
   cmd.AddValue ("distance", "Distance in meters between the stations and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);

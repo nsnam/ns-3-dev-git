@@ -61,7 +61,7 @@ main (int argc, char *argv[])
   // Command-line arguments
   //
   bool tcpMode = false;
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("tcpMode", "1:true, 0:false, default mode UDP",tcpMode);
   cmd.Parse (argc, argv);
    

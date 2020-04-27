@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
   modes.push_back ("OfdmRate48Mbps");
   modes.push_back ("OfdmRate54Mbps");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
   cmd.Parse (argc, argv);
 

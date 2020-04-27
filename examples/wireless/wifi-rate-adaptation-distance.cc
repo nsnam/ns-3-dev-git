@@ -163,7 +163,7 @@ int main (int argc, char *argv[])
   int stepsSize = 1;
   int stepsTime = 1;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("staManager", "PRC Manager of the STA", staManager);
   cmd.AddValue ("apManager", "PRC Manager of the AP", apManager);
   cmd.AddValue ("standard", "Wifi Phy Standard", standard);

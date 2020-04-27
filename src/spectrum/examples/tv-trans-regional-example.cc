@@ -41,7 +41,7 @@ using namespace ns3;
  */
 int main (int argc, char** argv)
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
   
   /* random seed and run number; adjust these to change random draws */

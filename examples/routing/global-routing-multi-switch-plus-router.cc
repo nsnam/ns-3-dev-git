@@ -282,7 +282,7 @@ main (int argc, char *argv[])
   // ----------------------------------------------------------------------
   // Create command line options and get them
   // ----------------------------------------------------------------------
-  CommandLine cmd;
+  COMMANDLINE (cmd);
 
   cmd.Usage    ("NOTE: valid --pcap arguments are: 't2,t3,b2,b3,trlan,trwan,brlan,brwan'");
 

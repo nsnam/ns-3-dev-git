@@ -33,7 +33,7 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {	
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 	
   // to save a template default attribute file run it like this:

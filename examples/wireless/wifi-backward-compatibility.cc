@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
   bool apHasTraffic = false;
   bool staHasTraffic = true;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("apVersion", "The standard version used by the AP: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, holland, 80211n_2_4GHZ, 80211n_5GHZ or 80211ac", apVersion);
   cmd.AddValue ("staVersion", "The standard version used by the station: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, holland, 80211n_2_4GHZ, 80211n_5GHZ or 80211ac", staVersion);

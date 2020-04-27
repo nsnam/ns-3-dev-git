@@ -103,7 +103,7 @@ int main (int argc, char *argv[])
   double txCurrent = 0.380; // Ampere
   bool verbose = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("dataRate", "Data rate", dataRate);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("duration", "duration (seconds) of the experiment", duration);

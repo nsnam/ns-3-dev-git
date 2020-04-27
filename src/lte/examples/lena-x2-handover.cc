@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
 
   // Command line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("numberOfUes", "Number of UEs", numberOfUes);
   cmd.AddValue ("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);

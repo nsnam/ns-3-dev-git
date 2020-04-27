@@ -28,7 +28,7 @@
  * \file
  * \ingroup core-examples
  * \ingroup commandline
- * Example program illustrating use of ns3::CommandLine.
+ * \brief Example program illustrating use of ns3::CommandLine.
  */
 
 using namespace ns3;
@@ -89,7 +89,7 @@ int main (int argc, char *argv[])
   const int nonOpt2Def = nonOpt2;
 
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Usage ("CommandLine example program.\n"
              "\n"
              "This little program demonstrates how to use CommandLine.");
@@ -98,13 +98,13 @@ int main (int argc, char *argv[])
   cmd.AddValue ("strArg",  "a string argument",     strArg);
   cmd.AddValue ("anti",    attrPath);
   cmd.AddValue ("cbArg",   "a string via callback", MakeCallback (SetCbArg));
-  cmd.AddNonOption ("nonOpt1", "first non-option", nonOpt1);
-  cmd.AddNonOption ("nonOpt2", "first non-option", nonOpt2);
+  cmd.AddNonOption ("nonOpt1", "first non-option",  nonOpt1);
+  cmd.AddNonOption ("nonOpt2", "second non-option", nonOpt2);
   cmd.Parse (argc, argv);
 
   // Show initial values:
   std::cout << std::endl;
-  std::cout << cmd.GetName () << ":" << std::endl;
+  std::cout << cmd.GetName () << std::endl;
   std::cout << "Initial values:" << std::endl;
 
   std::cout << std::left << std::setw (10) << "intArg:"

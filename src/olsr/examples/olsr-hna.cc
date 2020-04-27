@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
   bool assocMethod1 = false;
   bool assocMethod2 = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
 
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("rss", "received signal strength", rss);

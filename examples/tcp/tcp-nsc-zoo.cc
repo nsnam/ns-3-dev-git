@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (2048));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("8kbps"));
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   // this allows the user to raise the number of nodes using --nodes=X command-line argument.
   cmd.AddValue ("nodes", "Number of nodes in the network (must be > 1)", MaxNodes);
   cmd.AddValue ("runtime", "How long the applications should send data (default 3 seconds)", runtime);

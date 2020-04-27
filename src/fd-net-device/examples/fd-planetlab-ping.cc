@@ -90,7 +90,7 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults at run-time, via
   // command-line arguments
   //
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("remote", "Remote IP address (dotted decimal only please)", remote);
   cmd.AddValue ("tapNetwork", "Network address to assign the TAP device IP address (dotted decimal only please). Note that the network address must be that from the vsys_vnet tag which must exist in your PlanetLab slice.", network);
   cmd.AddValue ("tapMask", "Network mask for configure the TAP device (dotted decimal only please)", mask);

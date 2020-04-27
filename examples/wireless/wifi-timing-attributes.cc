@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
   uint32_t compressedBlockAckTimeout = 112; //Compressed BlockAck timeout duration in microseconds
   double simulationTime = 10; //simulation time in seconds
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("slot", "Slot time in microseconds", slot);
   cmd.AddValue ("sifs", "SIFS duration in microseconds", sifs);
   cmd.AddValue ("ackTimeout", "Ack timeout duration in microseconds", ackTimeout);

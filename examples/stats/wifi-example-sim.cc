@@ -76,7 +76,7 @@ int main (int argc, char *argv[]) {
   }
 
   // Set up command line parameters used to control the experiment.
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("distance", "Distance apart to place nodes (in meters).",
                 distance);
   cmd.AddValue ("format", "Format to use for data output.",

@@ -363,7 +363,7 @@ int main (int argc, char *argv[])
   uint32_t minIterations = 1;
   bool enablePrinting = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Usage ("Benchmark Packet class");
   cmd.AddValue ("n", "number of iterations", n);
   cmd.AddValue ("min-iterations", "number of subiterations to minimize iteration time over", minIterations);

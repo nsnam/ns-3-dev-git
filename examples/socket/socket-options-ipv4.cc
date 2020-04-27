@@ -82,7 +82,7 @@ main (int argc, char *argv[])
   uint32_t ipTtl = 0;
   bool ipRecvTtl = true;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("PacketSize", "Packet size in bytes", packetSize);
   cmd.AddValue ("PacketCount", "Number of packets to send", packetCount);
   cmd.AddValue ("Interval", "Interval between packets", packetInterval);

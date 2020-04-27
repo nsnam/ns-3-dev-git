@@ -180,7 +180,7 @@ void experiment (bool enableCtsRts, std::string wifiManager)
 int main (int argc, char **argv)
 {
   std::string wifiManager ("Arf");
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("wifiManager", "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, Onoe, Rraa)", wifiManager);
   cmd.Parse (argc, argv);
 

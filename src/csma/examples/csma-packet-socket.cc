@@ -56,7 +56,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("CsmaPacketSocketExample", LOG_LEVEL_INFO);
 #endif
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   g_os.open ("csma-packet-socket-sink.tr",std::ios_base::binary | std::ios_base::out);

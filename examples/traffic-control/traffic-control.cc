@@ -91,7 +91,7 @@ main (int argc, char *argv[])
   std::string transportProt = "Tcp";
   std::string socketType;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("transportProt", "Transport protocol to use: Tcp, Udp", transportProt);
   cmd.Parse (argc, argv);
 

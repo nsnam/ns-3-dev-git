@@ -59,7 +59,7 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   // SeedManager::SetRun (3);

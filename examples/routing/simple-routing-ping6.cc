@@ -101,7 +101,7 @@ int main (int argc, char** argv)
   LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
 #endif
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   StackHelper stackHelper;

@@ -554,7 +554,7 @@ bool
 Experiment::CommandSetup (int argc, char **argv)
 {
   // for commandline input
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("packetSize", "packet size", packetSize);
   cmd.AddValue ("totalTime", "simulation time", totalTime);
   // according to totalTime, select an appropriate samplingPeriod automatically.

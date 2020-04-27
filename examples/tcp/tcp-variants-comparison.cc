@@ -226,7 +226,7 @@ int main (int argc, char *argv[])
   std::string recovery = "ns3::TcpClassicRecovery";
 
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "

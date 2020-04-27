@@ -91,7 +91,7 @@ main (int argc, char *argv[])
   int nBytes = 500000; // Bytes for each on/off app
   bool nix = true;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
   cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("single", "1 if use single flow", single);

@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
   modes.push_back ("DsssRate5_5Mbps");
   modes.push_back ("DsssRate11Mbps");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
   cmd.Parse (argc, argv);
 

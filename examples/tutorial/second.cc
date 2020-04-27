@@ -41,7 +41,7 @@ main (int argc, char *argv[])
   bool verbose = true;
   uint32_t nCsma = 3;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
 

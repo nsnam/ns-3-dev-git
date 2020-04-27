@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults at run-time, via command-line
   // arguments
   //
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("client", "client mode", clientMode);
   cmd.AddValue ("server", "server mode", serverMode);
   cmd.AddValue ("deviceName", "device name", deviceName);

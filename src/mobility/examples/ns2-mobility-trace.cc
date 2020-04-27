@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
   LogComponentEnable ("Ns2MobilityHelper",LOG_LEVEL_DEBUG);
 
   // Parse command line attribute
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("traceFile", "Ns2 movement trace file", traceFile);
   cmd.AddValue ("nodeNum", "Number of nodes", nodeNum);
   cmd.AddValue ("duration", "Duration of Simulation", duration);

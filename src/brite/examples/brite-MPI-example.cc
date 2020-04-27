@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   bool tracing = false;
   bool nix = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("confFile", "BRITE conf file", confFile);
   cmd.AddValue ("tracing", "Enable or disable ascii tracing", tracing);
   cmd.AddValue ("nix", "Enable or disable nix-vector routing", nix);

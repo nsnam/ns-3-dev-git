@@ -152,7 +152,7 @@ how to do it using input files together with the ns-3 ConfigStore.
 First of all, you need to put the following in your simulation
 program, right after ``main ()`` starts::
 
-      CommandLine cmd;
+      COMMANDLINE (cmd);
       cmd.Parse (argc, argv);
       ConfigStore inputConfig;
       inputConfig.ConfigureDefaults ();

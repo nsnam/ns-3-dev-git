@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
   uint32_t    nLeaf = 0; // If non-zero, number of both left and right
   std::string animFile = "dumbbell-animation.xml" ;  // Name of file for animation output
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nLeftLeaf", "Number of left side leaf nodes", nLeftLeaf);
   cmd.AddValue ("nRightLeaf","Number of right side leaf nodes", nRightLeaf);
   cmd.AddValue ("nLeaf",     "Number of left and right side leaf nodes", nLeaf);

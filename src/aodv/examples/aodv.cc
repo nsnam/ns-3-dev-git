@@ -129,7 +129,7 @@ AodvExample::Configure (int argc, char **argv)
   // LogComponentEnable("AodvRoutingProtocol", LOG_LEVEL_ALL);
 
   SeedManager::SetSeed (12345);
-  CommandLine cmd;
+  COMMANDLINE (cmd);
 
   cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
   cmd.AddValue ("printRoutes", "Print routing table dumps.", printRoutes);

@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
   modes.push_back ("HeMcs10");
   modes.push_back ("HeMcs11");
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);
   cmd.Parse (argc, argv);
 

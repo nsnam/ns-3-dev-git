@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
   LogComponentEnable ("UdpServer", LOG_LEVEL_INFO);
 
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nbSS", "number of subscriber station to create", nbSS);
   cmd.AddValue ("scheduler", "type of scheduler to use with the network devices", schedType);
   cmd.AddValue ("duration", "duration of the simulation in seconds", duration);

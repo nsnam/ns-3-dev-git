@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 // Allow the user to override any of the defaults at
 // run-time, via command-line arguments
 //
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("tracing", "Flag to enable tracing", tracing);
   cmd.AddValue ("nanosec",  "Flag to use nanosecond timestamps for pcap as default", nanosec);
   cmd.AddValue ("maxBytes",

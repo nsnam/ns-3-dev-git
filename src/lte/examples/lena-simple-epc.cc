@@ -51,7 +51,7 @@ main (int argc, char *argv[])
   bool disablePl = false;
 
   // Command line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("numNodePairs", "Number of eNodeBs + UE pairs", numNodePairs);
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("distance", "Distance between eNBs [m]", distance);

@@ -56,7 +56,7 @@ NS_LOG_COMPONENT_DEFINE ("RealtimeFdNetDeviceSaturationExample");
 int
 main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
   
   uint16_t sinkPort = 8000;

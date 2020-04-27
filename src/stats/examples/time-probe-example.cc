@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   double stopTime = 100.0;
   bool verbose = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("stopTime", "Time (seconds) to terminate simulation", stopTime);
   cmd.AddValue ("verbose", "Whether to enable verbose output", verbose);
   cmd.Parse (argc, argv);

@@ -115,7 +115,7 @@ main (int argc, char *argv[])
   bool enableObssPd = true;
   double obssPdThreshold = -72.0; // dBm
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("duration", "Duration of simulation (s)", duration);
   cmd.AddValue ("interval", "Inter packet interval (s)", interval);
   cmd.AddValue ("enableObssPd", "Enable/disable OBSS_PD", enableObssPd);

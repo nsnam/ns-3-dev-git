@@ -354,7 +354,7 @@ int main (int argc, char *argv[])
   int sta2_y = 0;
   uint32_t simuTime = 100;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("manager", "PRC Manager", manager);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
   cmd.AddValue ("outputFileName", "Output filename", outputFileName);

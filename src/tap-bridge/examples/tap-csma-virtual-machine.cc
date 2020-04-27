@@ -73,7 +73,7 @@ NS_LOG_COMPONENT_DEFINE ("TapCsmaVirtualMachineExample");
 int 
 main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   //

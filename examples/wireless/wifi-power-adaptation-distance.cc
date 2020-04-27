@@ -304,7 +304,7 @@ int main (int argc, char *argv[])
   uint32_t stepsSize = 1;
   uint32_t stepsTime = 1;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("manager", "PRC Manager", manager);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
   cmd.AddValue ("outputFileName", "Output filename", outputFileName);

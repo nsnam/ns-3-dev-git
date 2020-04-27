@@ -32,7 +32,7 @@ CourseChange (std::string context, Ptr<const MobilityModel> position)
 
 int main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
 

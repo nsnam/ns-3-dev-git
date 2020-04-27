@@ -70,7 +70,7 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue("errorModelType", "TypeId of the error model to use", errorModelType);
   cmd.Parse (argc, argv);
 

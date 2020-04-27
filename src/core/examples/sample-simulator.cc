@@ -102,7 +102,7 @@ CancelledEvent (void)
 
 int main (int argc, char *argv[])
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Parse (argc, argv);
 
   MyModel model;

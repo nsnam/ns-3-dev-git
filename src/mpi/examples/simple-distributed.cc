@@ -70,7 +70,7 @@ main (int argc, char *argv[])
   bool tracing = false;
 
   // Parse command line
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
   cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);

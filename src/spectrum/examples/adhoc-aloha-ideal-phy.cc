@@ -119,7 +119,7 @@ SetupPacketReceive (Ptr<Node> node)
 
 int main (int argc, char** argv)
 {
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
   cmd.Parse (argc, argv);
 

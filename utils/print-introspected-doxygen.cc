@@ -1107,6 +1107,7 @@ PrintAllGlobals (std::ostream & os)
   os << commentStart << page << "GlobalValueList All GlobalValues\n"
      << std::endl;
   os << "This is a list of all" << reference << "ns3::GlobalValue instances.\n"
+     << "See ns3::GlobalValue for how to set these."
      << std::endl;
   
   os << listStart << std::endl;
@@ -1582,7 +1583,7 @@ int main (int argc, char *argv[])
   NS_LOG_FUNCTION_NOARGS ();
   bool outputText = false;
 
-  CommandLine cmd;
+  COMMANDLINE (cmd);
   cmd.Usage ("Generate documentation for all ns-3 registered types, "
 	     "trace sources, attributes and global variables.");
   cmd.AddValue ("output-text", "format output as plain text", outputText);
