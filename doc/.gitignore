@@ -5,6 +5,7 @@
 latex/
 ns3-object.txt
 introspected-doxygen.h
+introspected-command-line.h
 doxygen.docset.conf
 doxygen.log
 doxygen.warnings.log

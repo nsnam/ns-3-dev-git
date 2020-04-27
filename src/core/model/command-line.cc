@@ -18,12 +18,6 @@
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <algorithm>  // for transform
-#include <cctype>     // for tolower
-#include <cstdlib>    // for exit
-#include <iomanip>    // for setw, boolalpha
-#include <set>
-#include <sstream>
 
 #include "command-line.h"
 #include "des-metrics.h"
@@ -33,6 +27,14 @@
 #include "system-path.h"
 #include "type-id.h"
 #include "string.h"
+
+#include <algorithm>  // transform
+#include <cctype>     // tolower
+#include <cstdlib>    // exit, getenv
+#include <cstring>    // strlen
+#include <iomanip>    // setw, boolalpha
+#include <set>
+#include <sstream>
 
 
 /**
@@ -47,10 +49,22 @@ NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
 CommandLine::CommandLine ()
   : m_NNonOptions (0),
-    m_nonOptionCount (0)
+    m_nonOptionCount (0),
+    m_usage (),
+    m_shortName ()
 {
   NS_LOG_FUNCTION (this);
 }
+CommandLine::CommandLine (const std::string filename)
+  : m_NNonOptions (0),
+    m_nonOptionCount (0),
+    m_usage ()
+{
+  NS_LOG_FUNCTION (this << filename);
+  std::string basename = SystemPath::Split (filename).back ();
+  m_shortName = basename.substr (0, basename.rfind (".cc"));
+}
+  
 CommandLine::CommandLine (const CommandLine &cmd)
 {
   Copy (cmd);
@@ -76,8 +90,9 @@ CommandLine::Copy (const CommandLine &cmd)
   std::copy (cmd.m_nonOptions.begin (), cmd.m_nonOptions.end (), m_nonOptions.end ());
 
   m_NNonOptions = cmd.m_NNonOptions;
-  m_usage = cmd.m_usage;
-  m_name  = cmd.m_name;
+  m_nonOptionCount = 0;
+  m_usage       = cmd.m_usage;
+  m_shortName   = cmd.m_shortName;
 }
 void
 CommandLine::Clear (void)
@@ -95,8 +110,8 @@ CommandLine::Clear (void)
   m_options.clear ();
   m_nonOptions.clear ();
   m_NNonOptions = 0;
-  m_usage = "";
-  m_name  = "";
+  m_usage       = "";
+  m_shortName   = "";
 }
 
 void
@@ -108,7 +123,7 @@ CommandLine::Usage (const std::string usage)
 std::string
 CommandLine::GetName () const
 {
-  return m_name;
+  return m_shortName;
 }
 
 CommandLine::Item::~Item ()
@@ -121,12 +136,12 @@ CommandLine::Parse (std::vector<std::string> args)
 {
   NS_LOG_FUNCTION (this << args.size () << args);
 
+  PrintDoxygenUsage ();
+  
   m_nonOptionCount = 0;
-  m_name = "";
 
   if (args.size () > 0)
     {
-      m_name = SystemPath::Split (args[0]).back ();
       args.erase (args.begin ());  // discard the program name
 
       for (auto param : args)
@@ -218,6 +233,7 @@ CommandLine::HandleNonOption (const std::string &value)
       std::cerr << "Invalid non-option argument value "
                 << value << " for " << i->m_name
                 << std::endl;
+      PrintHelp (std::cerr);
       std::exit (1);
     }
   ++m_nonOptionCount;
@@ -242,7 +258,7 @@ CommandLine::PrintHelp (std::ostream &os) const
   // Hack to show just the declared non-options
   Items nonOptions (m_nonOptions.begin (),
                     m_nonOptions.begin () + m_NNonOptions);
-  os << m_name
+  os << m_shortName
      << (m_options.size ()  ? " [Program Options]" : "")
      << (nonOptions.size () ? " [Program Arguments]" : "")
      << " [General Arguments]"
@@ -314,6 +330,98 @@ CommandLine::PrintHelp (std::ostream &os) const
     << "    --PrintAttributes=[typeid]:  Print all attributes of typeid.\n"
     << "    --PrintHelp:                 Print this help message.\n"
     << std::endl;
+}
+
+#include <unistd.h>  // getcwd
+
+void
+CommandLine::PrintDoxygenUsage (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  {
+    char buf[1024];
+    std::string cwd= getcwd (buf, 1024);
+  }
+  
+  const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
+  if (envVar == 0 || std::strlen (envVar) == 0)
+    {
+      return;
+    }
+ 
+  if (m_shortName.size () == 0)
+    {
+      NS_FATAL_ERROR ("No file name on example-to-run; forgot to use COMMANDLINE (var)?");
+      return;
+    }
+
+  // Hack to show just the declared non-options
+  Items nonOptions (m_nonOptions.begin (),
+                    m_nonOptions.begin () + m_NNonOptions);
+
+  std::string outf = SystemPath::Append (std::string (envVar), m_shortName + ".command-line");
+  
+  NS_LOG_INFO ("Writing CommandLine doxy to " << outf);
+  
+  std::fstream os (outf, std::fstream::out);
+
+  
+  os << "/**\n \\file " << m_shortName << ".cc\n"
+     << "<h3>Usage</h3>\n"
+     << "<code>$ ./waf --run \"" << m_shortName
+     << (m_options.size ()  ? " [Program Options]" : "")
+     << (nonOptions.size () ? " [Program Arguments]" : "")
+     << "\"</code>\n";
+    
+  if (m_usage.length ())
+    {
+      os << m_usage << std::endl;
+    }
+
+  if (!m_options.empty ())
+    {
+      os << std::endl;
+      os << "<h3>Program Options</h3>\n"
+         << "<dl>\n";
+      for (auto i : m_options)
+        {
+          os << "  <dt>\\c --" << i->m_name << "</dt>\n"
+             << "    <dd>" << i->m_help;
+
+          if ( i->HasDefault ())
+            {
+              os << " [" << i->GetDefault () << "]";
+            }
+          os << "</dd>\n";
+        }
+      os << "</dl>\n";
+    }
+
+  if (!nonOptions.empty ())
+    {
+      os << std::endl;
+      os << "<h3>Program Arguments</h3>\n"
+         << "<dl>\n";
+      for (auto i : nonOptions)
+        {
+          os << "  <dt> \\c " << i->m_name << "</dt>\n"
+             << "    <dd>" << i->m_help;
+
+          if ( i->HasDefault ())
+            {
+              os << " [" << i->GetDefault () << "]";
+            }
+          os << "</dd>\n";
+        }
+      os << "</dl>\n";
+    }
+
+  os << "*/" << std::endl;
+
+  // All done, don't need to actually run the example
+  os.close ();
+  std::exit (0);
 }
 
 void
@@ -514,6 +622,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
                 {
                   std::cerr << "Invalid argument value: "
                             << name << "=" << value << std::endl;
+                  PrintHelp (std::cerr);
                   std::exit (1);
                 }
               else

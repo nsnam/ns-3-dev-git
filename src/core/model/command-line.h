@@ -45,6 +45,17 @@ namespace ns3 {
  *
  * The main entry point is CommandLine
  */
+
+/**
+ * \ingroup commandline
+ * \brief Declare a CommandLine instance.
+ *
+ * This form is preferred since it supports creating Doxygen
+ * documentation for programs from the CommandLine configuration.
+ */
+#define COMMANDLINE(var) \
+    CommandLine var ( __FILE__ )
+    
 /**
  * \ingroup commandline
  * \brief Parse command-line arguments
@@ -105,7 +116,6 @@ namespace ns3 {
  * Suggested best practice is for scripts to report the values of all items
  * settable through CommandLine, as done by the example below.
  *
- *
  * CommandLine can set the initial value of every attribute in the system
  * with the \c --TypeIdName::AttributeName=value syntax, for example
  * \verbatim
@@ -133,7 +143,7 @@ namespace ns3 {
  *    bool        boolArg = false;
  *    std::string strArg  = "strArg default";
  *
- *    CommandLine cmd;
+ *    COMMANDLINE (cmd);
  *    cmd.Usage ("CommandLine example program.\n"
  *               "\n"
  *               "This little program demonstrates how to use CommandLine.");
@@ -194,7 +204,7 @@ namespace ns3 {
  *   int value1;
  *   int value2;
  *
- *   CommandLine cmd;
+ *   COMMANDLINE (cmd);
  *   cmd.Usage ("...");
  *   cmd.AddValue ("value1", "first value", value1);
  *   cmd.AddValue ("value2", "second value", value1);
@@ -208,12 +218,33 @@ namespace ns3 {
  *       exit (-1);
  *     }
  * \endcode
+ *
+ * Finally, note that for examples which will be run by \c test.py
+ * the preferred declaration of a CommandLine instance is
+ * to use the \c COMMANDLINE macro to declare the instance name:
+ *
+ * \code
+ *     COMMANDLINE (cmd);
+ * \endcode
+ * This will ensure that the program usage and arguments can be added to
+ * the Doxygen documentation automatically.
  */
 class CommandLine
 {
 public:
   /** Constructor */
-  CommandLine ();
+  CommandLine (void);
+  /**
+   * Construct and register the source file name.
+   * This would typically be called by using the \c COMMANDLINE macro:
+   *     COMMANDLINE (cmd);
+   *
+   * This is just syntactic sugar for
+   *     COMMANDLINE cmd (__FILE__);
+   * This form is required to generate Doxygen documentation of the
+   * arguments and options.
+   */
+  CommandLine (const std::string filename);
   /**
    * Copy constructor
    *
@@ -359,7 +390,7 @@ public:
    *
    * Alternatively, an overloaded operator << can be used:
    * \code
-   *       CommandLine cmd;
+   *       COMMANDLINE (cmd);
    *       cmd.Parse (argc, argv);
    *     ...
    *
@@ -520,6 +551,11 @@ private:
   void Copy (const CommandLine &cmd);
   /** Remove all arguments, Usage(), name */
   void Clear (void);
+  /**
+   * Append usage message in Doxygen format to the file indicated
+   * by the NS_COMMANDLINE_INTROSPECTION environment variable.
+   */
+  void PrintDoxygenUsage (void) const;
 
   typedef std::vector<Item *> Items;    /**< Argument list container */
   Items m_options;                      /**< The list of option arguments */
@@ -527,7 +563,7 @@ private:
   std::size_t m_NNonOptions;            /**< The expected number of non-option arguments */
   std::size_t m_nonOptionCount;         /**< The number of actual non-option arguments seen so far. */
   std::string m_usage;                  /**< The Usage string */
-  std::string m_name;                   /**< The program name */
+  std::string m_shortName;              /**< The source file name (without `.cc`), as would be given to `waf --run` */
 
 };  // class CommandLine
 
@@ -669,7 +705,7 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
  *
  * Example usage:
  * \code
- *    CommandLine cmd;
+ *    COMMANDLINE (cmd);
  *    cmd.Parse (argc, argv);
  *    ...
  *

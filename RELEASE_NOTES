@@ -28,6 +28,7 @@ New user-visible features
 - (propagation) 3GPP TR 38.901 pathloss and channel condition models added
 - (spectrum) Addition three-gpp-channel-model (part of Integration of the 3GPP TR 38.901 fast fading model)
 - (antenna) Addition of three-gpp-antenna-array-model (part of Integration of the 3GPP TR 38.901 fast fading model)
+- (core) CommandLine can now add the Usage message to the Doxygen for the program; see CommandLine for details.
 
 Bugs fixed
 ----------
