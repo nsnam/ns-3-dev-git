@@ -712,7 +712,7 @@ implementing the 3GPP propagation loss models.
 The test cases :cpp:class:`ThreeGppRmaPropagationLossModelTestCase`,
 :cpp:class:`ThreeGppUmaPropagationLossModelTestCase`,
 :cpp:class:`ThreeGppUmiPropagationLossModelTestCase` and
-:cpp:class:`ThreeGppIndoorOfficePropagationLossModelTestCas`e compute the path loss between two nodes and compares it with the value obtained using the formulas in 3GPP TR 38.901 [38901]_, Table 7.4.1-1.
+:cpp:class:`ThreeGppIndoorOfficePropagationLossModelTestCase` compute the path loss between two nodes and compares it with the value obtained using the formulas in 3GPP TR 38.901 [38901]_, Table 7.4.1-1.
 The test case :cpp:class:`ThreeGppShadowingTestCase` checks if the shadowing is correctly computed by testing the deviation of the overall propagation loss from the path loss. The test is carried out for all the scenarios, both in LOS and NLOS condition.
 
 ChannelConditionModel

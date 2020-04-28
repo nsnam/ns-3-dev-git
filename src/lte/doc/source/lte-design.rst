@@ -4714,7 +4714,7 @@ various components. These objects are:
    the implementation is delegated to the child classes in order to allow for different 
    EPC network models.
 
-A third helper object is used to configure the :ref:`_sec-carrier-aggregation` functionality:
+A third helper object is used to configure the :ref:`sec-carrier-aggregation` functionality:
 
  * ``CcHelper``, which takes care of the configuration of the ``LteEnbComponentCarrierMap``, 
    basically, it creates a user specified number of ``LteEnbComponentCarrier``. 

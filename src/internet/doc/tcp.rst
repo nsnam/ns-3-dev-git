@@ -722,7 +722,7 @@ As a first approximation, the LEDBAT sender operates as shown below:
 
 On receipt of an ACK:
 
-.. math::
+::
        currentdelay = acknowledgement.delay
        basedelay = min (basedelay, currentdelay)
        queuingdelay = currentdelay - basedelay
@@ -812,7 +812,7 @@ latency, and high throughput with shallow-buffered switches.
 
 * Sender functionality: The sender makes use of the modified receiver ECE semantics to maintain an average of fraction of packets marked (α) by using the exponential weighted moving average as shown below:
 
-::
+.. math::
 
                α = (1 - g) x α + g x F
 
@@ -825,13 +825,13 @@ For windows in which at least one ACK was received with ECE set,
 the sender should respond by reducing the congestion
 window as follows, once for every window of data:
 
-::
+.. math::
 
                cwnd = cwnd * (1 - α / 2)
 
 Following the recommendation of RFC 8257, the default values of the parameters are:
 
-::
+.. math::
 
   g = 0.0625 (i.e., 1/16)
 
@@ -1326,7 +1326,7 @@ Writing TCP tests
 The TCP subsystem supports automated test
 cases on both socket functions and congestion control algorithms. To show
 how to write tests for TCP, here we explain the process of creating a test
-case that reproduces the `Bug #1571<https://www.nsnam.org/bugzilla/show_bug.cgi?id=1571>`_.
+case that reproduces the `Bug #1571 <https://www.nsnam.org/bugzilla/show_bug.cgi?id=1571>`_.
 
 The bug concerns the zero window situation, which happens when the receiver
 cannot handle more data. In this case, it advertises a zero window, which causes

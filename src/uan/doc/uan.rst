@@ -287,7 +287,7 @@ A user should take into account that, if the power consumption handling is enabl
 Li-Ion batteries model
 ^^^^^^^^^^^^^^^^^^^^^^
 
-A generic Li-Ion battery model has been implemented based on [7][8]. The model can be fitted to any type of Li-Ion battery simply changing the model's parameters The default values are fitted for the Panasonic CGR18650DA Li-Ion Battery [9].
+A generic Li-Ion battery model has been implemented based on [7]_ [8]_. The model can be fitted to any type of Li-Ion battery simply changing the model's parameters The default values are fitted for the Panasonic CGR18650DA Li-Ion Battery [9]_.
 [TODO insert figure]
 As shown in figure the model approximates very well the Li-Ion cells.
 Regarding Seagliders, the batteries used into the AUV are Electrochem 3B36 Lithium / Sulfuryl Chloride cells [10]_. Also with this cell type, the model seems to approximates the different discharge curves pretty well, as shown in the figure.
@@ -304,8 +304,8 @@ The communications stack, associated with the AUV, can be modified depending on 
 
 Regarding the AUV energy consumption, the user should be aware that the level of accuracy differs for the two classes:
 
-* Seaglider, high level of accuracy, thanks to the availability of detailed information on AUV's components and behaviour [5] [10]. Have been modeled both the navigation power consumption and the Li battery packs (according to [5]).
-* REMUS, medium level of accuracy, due to the lack of publicly available information on AUV's components. We have approximated the power consumption of the AUV's motor with a linear behaviour and, the energy source uses an ideal model (BasicEnergySource) with a power capacity equal to that specified in [4].
+* Seaglider, high level of accuracy, thanks to the availability of detailed information on AUV's components and behaviour [5]_ [10]_. Have been modeled both the navigation power consumption and the Li battery packs (according to [5]_).
+* REMUS, medium level of accuracy, due to the lack of publicly available information on AUV's components. We have approximated the power consumption of the AUV's motor with a linear behaviour and, the energy source uses an ideal model (BasicEnergySource) with a power capacity equal to that specified in [4]_.
 
 Future Work
 ===========
@@ -392,7 +392,7 @@ UAN Examples
 * ``li-ion-energy-source``
     In this simple example, we show how to create and drain energy from a LiIonEnergySource.
     We make a series of discharge calls to the energy source class, with different current drain and durations, until all the energy is depleted from the cell (i.e. the voltage of the cell goes below the threshold level).
-    Every 20 seconds we print out the actual cell voltage to verify that it follows the discharge curve [9].
+    Every 20 seconds we print out the actual cell voltage to verify that it follows the discharge curve [9]_.
     At the end of the example it is verified that after the energy depletion call, the cell voltage is below the threshold voltage.
 
 
@@ -435,7 +435,7 @@ The glider mobility model is the GliderMobilityModel with default parameters.
 The glider energy model is the GliderEnergyModel with default parameters.
 
 Regarding the energy source, the Seaglider features two battery packs, one for motor power and one for digital-analog power.
-Each pack is composed of 12 (10V) and 42 (24V) lithium chloride DD-cell batteries, respectively [5]. The total power capacity is around 17.5 MJ (3.9 MJ + 13.6 MJ).
+Each pack is composed of 12 (10V) and 42 (24V) lithium chloride DD-cell batteries, respectively [5]_. The total power capacity is around 17.5 MJ (3.9 MJ + 13.6 MJ).
 In the original version of the Seaglider there was 18 + 63 D-cell with a total power capacity of 10MJ.
 
 The packs design is as follows:
@@ -465,7 +465,7 @@ Install into a node (or set of nodes) the REMUS features:
 The REMUS mobility model is the RemusMobilityModel with default parameters.
 The REMUS energy model is the RemusEnergyModel with default parameters.
 
-Regarding the energy source, the REMUS features a rechargeable lithium ion battery pack rated 1.1 kWh @ 27 V (40 Ah) in operating conditions (specifications from [3] and Hydroinc European salesman).
+Regarding the energy source, the REMUS features a rechargeable lithium ion battery pack rated 1.1 kWh @ 27 V (40 Ah) in operating conditions (specifications from [3]_ and Hydroinc European salesman).
 Since more detailed information about battery pack were not publicly available, the energy source used is a BasicEnergySource.
 
 The micro modem energy model is the MicroModemEnergyModel with default parameters.
@@ -566,5 +566,5 @@ Li-Ion Energy Source
 Includes test case for Li-Ion energy source.
 The unit test can be found in ``src/energy/test/li-ion-energy-source-test.cc``.
 
-The test case verify that after a well-known discharge time with constant current drain, the cell voltage has followed the datasheet discharge curve [9].
+The test case verify that after a well-known discharge time with constant current drain, the cell voltage has followed the datasheet discharge curve [9]_.
 
