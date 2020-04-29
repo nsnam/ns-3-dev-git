@@ -205,6 +205,19 @@ public:
    * \return the TXOP limit.
    */
   Time GetTxopLimit (void) const;
+  /**
+   * Update the value of the CW variable to take into account
+   * a transmission success or a transmission abort (stop transmission
+   * of a packet after the maximum number of retransmissions has been
+   * reached). By default, this resets the CW variable to minCW.
+   */
+  void ResetCw (void);
+  /**
+   * Update the value of the CW variable to take into account
+   * a transmission failure. By default, this triggers a doubling
+   * of CW (capped by maxCW).
+   */
+  void UpdateFailedCw (void);
 
   /**
    * When a channel switching occurs, enqueued packets are removed.
@@ -394,19 +407,6 @@ protected:
    *          minCW.
    */
   uint32_t GetCw (void) const;
-  /**
-   * Update the value of the CW variable to take into account
-   * a transmission success or a transmission abort (stop transmission
-   * of a packet after the maximum number of retransmissions has been
-   * reached). By default, this resets the CW variable to minCW.
-   */
-  void ResetCw (void);
-  /**
-   * Update the value of the CW variable to take into account
-   * a transmission failure. By default, this triggers a doubling
-   * of CW (capped by maxCW).
-   */
-  void UpdateFailedCw (void);
   /**
    * Return the current number of backoff slots.
    *

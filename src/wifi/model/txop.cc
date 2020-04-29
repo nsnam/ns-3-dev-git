@@ -191,7 +191,6 @@ Txop::SetMinCw (uint32_t minCw)
   if (changed == true)
     {
       ResetCw ();
-      m_cwTrace = GetCw ();
     }
 }
 
@@ -204,7 +203,6 @@ Txop::SetMaxCw (uint32_t maxCw)
   if (changed == true)
     {
       ResetCw ();
-      m_cwTrace = GetCw ();
     }
 }
 
@@ -219,6 +217,7 @@ Txop::ResetCw (void)
 {
   NS_LOG_FUNCTION (this);
   m_cw = m_cwMin;
+  m_cwTrace = m_cw;
 }
 
 void
@@ -227,6 +226,7 @@ Txop::UpdateFailedCw (void)
   NS_LOG_FUNCTION (this);
   //see 802.11-2012, section 9.19.2.5
   m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
+  m_cwTrace = m_cw;
 }
 
 uint32_t
@@ -373,7 +373,6 @@ Txop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   ResetCw ();
-  m_cwTrace = GetCw ();
   GenerateBackoff ();
 }
 
@@ -622,12 +621,10 @@ Txop::MissedCts (void)
       //to reset the Txop.
       m_currentPacket = 0;
       ResetCw ();
-      m_cwTrace = GetCw ();
     }
   else
     {
       UpdateFailedCw ();
-      m_cwTrace = GetCw ();
     }
   GenerateBackoff ();
   RestartAccessIfNeeded ();
@@ -651,7 +648,6 @@ Txop::GotAck (void)
        */
       m_currentPacket = 0;
       ResetCw ();
-      m_cwTrace = GetCw ();
       GenerateBackoff ();
       RestartAccessIfNeeded ();
     }
@@ -678,7 +674,6 @@ Txop::MissedAck (void)
       //to reset the Txop.
       m_currentPacket = 0;
       ResetCw ();
-      m_cwTrace = GetCw ();
     }
   else
     {
@@ -687,7 +682,6 @@ Txop::MissedAck (void)
                                           m_currentHdr));
       m_currentHdr.SetRetry ();
       UpdateFailedCw ();
-      m_cwTrace = GetCw ();
     }
   GenerateBackoff ();
   RestartAccessIfNeeded ();
@@ -769,7 +763,6 @@ Txop::EndTxNoAck (void)
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
   m_currentPacket = 0;
   ResetCw ();
-  m_cwTrace = GetCw ();
   GenerateBackoff ();
   if (!m_txOkCallback.IsNull ())
     {

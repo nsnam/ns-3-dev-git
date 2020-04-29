@@ -88,6 +88,21 @@ public:
   virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
 
   /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we received an Ack from the receiver).
+   *
+   * \param hdr the header of the packet that we successfully sent
+   */
+  virtual void TxOk (const WifiMacHeader &hdr);
+  /**
+   * The packet we sent was successfully received by the receiver
+   * (i.e. we did not receive an Ack from the receiver).
+   *
+   * \param hdr the header of the packet that we failed to sent
+   */
+  virtual void TxFailed (const WifiMacHeader &hdr);
+
+  /**
    * Enable or disable CTS-to-self feature.
    *
    * \param enable true if CTS-to-self is to be supported,
@@ -238,20 +253,6 @@ protected:
    * \param mpdu the MPDU that has been received.
    */
   virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
-  /**
-   * The packet we sent was successfully received by the receiver
-   * (i.e. we received an Ack from the receiver).
-   *
-   * \param hdr the header of the packet that we successfully sent
-   */
-  virtual void TxOk (const WifiMacHeader &hdr);
-  /**
-   * The packet we sent was successfully received by the receiver
-   * (i.e. we did not receive an Ack from the receiver).
-   *
-   * \param hdr the header of the packet that we failed to sent
-   */
-  virtual void TxFailed (const WifiMacHeader &hdr);
 
   /**
    * Forward the packet up to the device.

@@ -729,12 +729,10 @@ QosTxop::NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList)
       //to reset the Txop.
       m_currentPacket = 0;
       ResetCw ();
-      m_cwTrace = GetCw ();
     }
   else
     {
       UpdateFailedCw ();
-      m_cwTrace = GetCw ();
       // if a BA agreement is established, store the MPDUs in the block ack manager
       // retransmission queue. Otherwise, this QosTxop will handle the retransmission
       // of the (single) frame
@@ -1680,7 +1678,6 @@ QosTxop::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   ResetCw ();
-  m_cwTrace = GetCw ();
   GenerateBackoff ();
 }
 
