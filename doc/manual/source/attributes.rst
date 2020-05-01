@@ -463,7 +463,15 @@ default values.::
 
 At this point, we have created a single :cpp:class:`Node` (``n0``)
 and a single :cpp:class:`PointToPointNetDevice` (``net0``),
-and added a :cpp:class:`DropTailQueue` (``q``) to ``net0``.
+added a :cpp:class:`DropTailQueue` (``q``) to ``net0``,
+which will be configured with a queue size limit of 80 packets.
+
+As a final note, the :cpp:func:`Config::Set...()` functions
+will throw an error if the targeted Attribute does not exist at the path
+given.  There are also "fail-safe" versions,
+:cpp:func:`Config::Set...FailSafe()`, if you can't be sure the Attribute
+exists.  The fail-safe versions return `true` if at least one instance
+could be set.
 
 Constructors, Helpers and ObjectFactory
 =======================================

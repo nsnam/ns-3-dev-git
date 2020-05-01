@@ -48,8 +48,8 @@ MatchContainer::MatchContainer (const std::vector<Ptr<Object> > &objects,
                                 const std::vector<std::string> &contexts,
                                 std::string path)
   : m_objects (objects),
-    m_contexts (contexts),
-    m_path (path)
+  m_contexts (contexts),
+  m_path (path)
 {
   NS_LOG_FUNCTION (this << &objects << &contexts << path);
 }
@@ -97,31 +97,63 @@ MatchContainer::Set (std::string name, const AttributeValue &value)
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
     {
       Ptr<Object> object = *tmp;
+      // Let ObjectBase::SetAttribute raise any errors
       object->SetAttribute (name, value);
     }
+}
+bool
+MatchContainer::SetFailSafe (std::string name, const AttributeValue &value)
+{
+  NS_LOG_FUNCTION (this << name << &value);
+  bool ok = false;
+  for (Iterator tmp = Begin (); tmp != End (); ++tmp)
+    {
+      Ptr<Object> object = *tmp;
+      ok |= object->SetAttributeFailSafe (name, value);
+    }
+  return ok;
 }
 void
 MatchContainer::Connect (std::string name, const CallbackBase &cb)
 {
+  if (!ConnectFailSafe (name, cb))
+    {
+      NS_FATAL_ERROR ("Cound not connect callback to " << name);
+    }
+}
+bool
+MatchContainer::ConnectFailSafe (std::string name, const CallbackBase &cb)
+{
   NS_LOG_FUNCTION (this << name << &cb);
   NS_ASSERT (m_objects.size () == m_contexts.size ());
+  bool ok = false;
   for (uint32_t i = 0; i < m_objects.size (); ++i)
     {
       Ptr<Object> object = m_objects[i];
       std::string ctx = m_contexts[i] + name;
-      object->TraceConnect (name, ctx, cb);
+      ok |= object->TraceConnect (name, ctx, cb);
     }
+  return ok;
 }
 void
 MatchContainer::ConnectWithoutContext (std::string name, const CallbackBase &cb)
 {
+  if (!ConnectWithoutContextFailSafe (name, cb))
+    {
+      NS_FATAL_ERROR ("Could not connect callback to " << name);
+    }
+}
+bool
+MatchContainer::ConnectWithoutContextFailSafe (std::string name, const CallbackBase &cb)
+{
   NS_LOG_FUNCTION (this << name << &cb);
-
+  bool ok = false;
   for (Iterator tmp = Begin (); tmp != End (); ++tmp)
     {
       Ptr<Object> object = *tmp;
-      object->TraceConnectWithoutContext (name, cb);
+      ok |= object->TraceConnectWithoutContext (name, cb);
     }
+  return ok;
 }
 void
 MatchContainer::Disconnect (std::string name, const CallbackBase &cb)
@@ -585,12 +617,16 @@ Resolver::DoArrayResolve (std::string path, const ObjectPtrContainerValue &conta
 class ConfigImpl : public Singleton<ConfigImpl>
 {
 public:
+  // Keep Set and SetFailSafe since their errors are triggered
+  // by the underlying ObjecBase functions.
   /** \copydoc Config::Set() */
   void Set (std::string path, const AttributeValue &value);
-  /** \copydoc Config::ConnectWithoutContext() */
-  void ConnectWithoutContext (std::string path, const CallbackBase &cb);
-  /** \copydoc Config::Connect() */
-  void Connect (std::string path, const CallbackBase &cb);
+  /** \copydoc Config::SetFailSafe() */
+  bool SetFailSafe (std::string path, const AttributeValue &value);
+  /** \copydoc Config::ConnectWithoutContextFailSafe() */
+  bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb);
+  /** \copydoc Config::ConnectFailSafe() */
+  bool ConnectFailSafe (std::string path, const CallbackBase &cb);
   /** \copydoc Config::DisconnectWithoutContext() */
   void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
   /** \copydoc Config::Disconnect() */
@@ -648,21 +684,24 @@ ConfigImpl::Set (std::string path, const AttributeValue &value)
   MatchContainer container = LookupMatches (root);
   container.Set (leaf, value);
 }
-void
-ConfigImpl::ConnectWithoutContext (std::string path, const CallbackBase &cb)
+bool
+ConfigImpl::SetFailSafe (std::string path, const AttributeValue &value)
+{
+  NS_LOG_FUNCTION (this << path << &value);
+
+  std::string root, leaf;
+  ParsePath (path, &root, &leaf);
+  MatchContainer container = LookupMatches (root);
+  return container.SetFailSafe (leaf, value);
+}
+bool
+ConfigImpl::ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
-  if (container.GetN () == 0)
-    {
-      std::size_t lastFwdSlash = root.rfind ("/");
-      NS_LOG_WARN ("Failed to connect " << leaf <<
-                   ", the Requested object name = " << root.substr (lastFwdSlash + 1) <<
-                   " does not exits on path " << root.substr (0, lastFwdSlash));
-    }
-  container.ConnectWithoutContext (leaf, cb);
+  return container.ConnectWithoutContextFailSafe (leaf, cb);
 }
 void
 ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
@@ -674,28 +713,21 @@ ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
   if (container.GetN () == 0)
     {
       std::size_t lastFwdSlash = root.rfind ("/");
-      NS_LOG_WARN ("Failed to disconnect " << leaf <<
-                   ", the Requested object name = " << root.substr (lastFwdSlash + 1) <<
-                   " does not exits on path " << root.substr (0, lastFwdSlash));
+      NS_LOG_WARN ("Failed to disconnect " << leaf
+                                           << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                                           << " does not exits on path " << root.substr (0, lastFwdSlash));
     }
   container.DisconnectWithoutContext (leaf, cb);
 }
-void
-ConfigImpl::Connect (std::string path, const CallbackBase &cb)
+bool
+ConfigImpl::ConnectFailSafe (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (this << path << &cb);
 
   std::string root, leaf;
   ParsePath (path, &root, &leaf);
   MatchContainer container = LookupMatches (root);
-  if (container.GetN () == 0)
-    {
-      std::size_t lastFwdSlash = root.rfind ("/");
-      NS_LOG_WARN ("Failed to connect " << leaf <<
-                   ", the Requested object name = " << root.substr (lastFwdSlash + 1) <<
-                   " does not exits on path " << root.substr (0, lastFwdSlash));
-    }
-  container.Connect (leaf, cb);
+  return container.ConnectFailSafe (leaf, cb);
 }
 void
 ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
@@ -708,9 +740,9 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
   if (container.GetN () == 0)
     {
       std::size_t lastFwdSlash = root.rfind ("/");
-      NS_LOG_WARN ("Failed to disconnect " << leaf <<
-                   ", the Requested object name = " << root.substr (lastFwdSlash + 1) <<
-                   " does not exits on path " << root.substr (0, lastFwdSlash));
+      NS_LOG_WARN ("Failed to disconnect " << leaf
+                                           << ", the Requested object name = " << root.substr (lastFwdSlash + 1)
+                                           << " does not exits on path " << root.substr (0, lastFwdSlash));
     }
   container.Disconnect (leaf, cb);
 }
@@ -721,10 +753,11 @@ ConfigImpl::LookupMatches (std::string path)
   NS_LOG_FUNCTION (this << path);
   class LookupMatchesResolver : public Resolver
   {
-  public:
+public:
     LookupMatchesResolver (std::string path)
       : Resolver (path)
-    {}
+    {
+    }
     virtual void DoOne (Ptr<Object> object, std::string path)
     {
       m_objects.push_back (object);
@@ -803,11 +836,15 @@ void Reset (void)
       (*i)->ResetInitialValue ();
     }
 }
-
 void Set (std::string path, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (path << &value);
   ConfigImpl::Get ()->Set (path, value);
+}
+bool SetFailSafe (std::string path, const AttributeValue &value)
+{
+  NS_LOG_FUNCTION (path << &value);
+  return ConfigImpl::Get ()->SetFailSafe (path, value);
 }
 void SetDefault (std::string name, const AttributeValue &value)
 {
@@ -862,7 +899,12 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value)
 void ConnectWithoutContext (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (path << &cb);
-  ConfigImpl::Get ()->ConnectWithoutContext (path, cb);
+  ConnectWithoutContextFailSafe (path, cb);
+}
+bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb)
+{
+  NS_LOG_FUNCTION (path << &cb);
+  return ConfigImpl::Get ()->ConnectWithoutContextFailSafe (path, cb);
 }
 void DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 {
@@ -873,7 +915,16 @@ void
 Connect (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (path << &cb);
-  ConfigImpl::Get ()->Connect (path, cb);
+  if (!ConnectFailSafe (path, cb))
+    {
+      NS_FATAL_ERROR ("Could not connect callback to " << name);
+    }
+}
+bool
+ConnectFailSafe (std::string path, const CallbackBase &cb)
+{
+  NS_LOG_FUNCTION (path << &cb);
+  return ConfigImpl::Get ()->ConnectFailSafe (path, cb);
 }
 void
 Disconnect (std::string path, const CallbackBase &cb)

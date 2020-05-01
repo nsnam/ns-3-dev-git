@@ -66,6 +66,11 @@ void Reset (void);
  */
 void Set (std::string path, const AttributeValue &value);
 /**
+ * \copydoc Set()
+ * \return \c true if any matching attributes could be set.
+ */
+bool SetFailSafe (std::string path, const AttributeValue &value);
+/**
  * \ingroup config
  * \param [in] name The full name of the attribute
  * \param [in] value The value to set.
@@ -113,6 +118,11 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
  */
 void ConnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
+ * \copydoc ConnectWithoutContext()
+ * \returns \c true if any trace sources could be connected.
+ */
+bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb);
+/**
  * \ingroup config
  * \param [in] path A path to match trace sources.
  * \param [in] cb The callback to disconnect to the matching trace sources.
@@ -131,6 +141,11 @@ void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
  * context string upon trace event notification.
  */
 void Connect (std::string path, const CallbackBase &cb);
+/**
+ * \copydoc Connect()
+ * \returns \c true if any trace sources could be connected.
+ */
+bool ConnectFailSafe (std::string path, const CallbackBase &cb);
 /**
  * \ingroup config
  * \param [in] path A path to match trace sources.
@@ -205,6 +220,11 @@ public:
    */
   void Set (std::string name, const AttributeValue &value);
   /**
+   * \copydoc Set()
+   * \returns \c true if any attributes could be set.
+   */
+  bool SetFailSafe (std::string name, const AttributeValue &value);
+  /**
    * \param [in] name The name of the trace source to connect to
    * \param [in] cb The sink to connect to the trace source
    *
@@ -214,6 +234,11 @@ public:
    */
   void Connect (std::string name, const CallbackBase &cb);
   /**
+   * \copydoc Connect()
+   * \returns \c true if any trace sources could be connected.
+   */
+  bool ConnectFailSafe (std::string name, const CallbackBase &cb);
+  /**
    * \param [in] name The name of the trace source to connect to
    * \param [in] cb The sink to connect to the trace source
    *
@@ -222,6 +247,11 @@ public:
    * \sa ns3::Config::ConnectWithoutContext
    */
   void ConnectWithoutContext (std::string name, const CallbackBase &cb);
+  /**
+   * \copydoc ConnectWithoutContext()
+   * \returns \c true if any trace sources could be connected.
+   */
+  bool ConnectWithoutContextFailSafe (std::string name, const CallbackBase &cb);
   /**
    * \param [in] name The name of the trace source to disconnect from
    * \param [in] cb The sink to disconnect from the trace source

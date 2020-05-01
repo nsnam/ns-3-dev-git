@@ -1626,109 +1626,109 @@ void
 AnimationInterface::ConnectCallbacks ()
 {
   // Connect the callbacks
-  Config::Connect ("/ChannelList/*/TxRxPointToPoint",
-                   MakeCallback (&AnimationInterface::DevTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
-                   MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
-                   MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
-  Config::ConnectWithoutContext ("/NodeList/*/$ns3::MobilityModel/CourseChange",
-                                 MakeCallback (&AnimationInterface::MobilityCourseChangeTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
-                   MakeCallback (&AnimationInterface::WimaxTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
-                   MakeCallback (&AnimationInterface::WimaxRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
-                   MakeCallback (&AnimationInterface::LteTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
-                   MakeCallback (&AnimationInterface::LteRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxBegin",
-                   MakeCallback (&AnimationInterface::CsmaPhyTxBeginTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxEnd",
-                   MakeCallback (&AnimationInterface::CsmaPhyTxEndTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyRxEnd",
-                   MakeCallback (&AnimationInterface::CsmaPhyRxEndTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
-                   MakeCallback (&AnimationInterface::CsmaMacRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyTxBegin",
-                   MakeCallback (&AnimationInterface::UanPhyGenTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyRxBegin",
-                   MakeCallback (&AnimationInterface::UanPhyGenRxTrace, this));
-  Config::Connect ("/NodeList/*/$ns3::BasicEnergySource/RemainingEnergy",
-                   MakeCallback (&AnimationInterface::RemainingEnergyTrace, this));
-
+  Config::ConnectFailSafe ("/ChannelList/*/TxRxPointToPoint",
+                           MakeCallback (&AnimationInterface::DevTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
+                           MakeCallback (&AnimationInterface::WifiPhyTxBeginTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxBegin",
+                           MakeCallback (&AnimationInterface::WifiPhyRxBeginTrace, this));
+  Config::ConnectWithoutContextFailSafe ("/NodeList/*/$ns3::MobilityModel/CourseChange",
+                                         MakeCallback (&AnimationInterface::MobilityCourseChangeTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
+                           MakeCallback (&AnimationInterface::WimaxTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
+                           MakeCallback (&AnimationInterface::WimaxRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
+                           MakeCallback (&AnimationInterface::LteTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
+                           MakeCallback (&AnimationInterface::LteRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxBegin",
+                           MakeCallback (&AnimationInterface::CsmaPhyTxBeginTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyTxEnd",
+                           MakeCallback (&AnimationInterface::CsmaPhyTxEndTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/PhyRxEnd",
+                           MakeCallback (&AnimationInterface::CsmaPhyRxEndTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
+                           MakeCallback (&AnimationInterface::CsmaMacRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyTxBegin",
+                           MakeCallback (&AnimationInterface::UanPhyGenTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::UanNetDevice/Phy/PhyRxBegin",
+                           MakeCallback (&AnimationInterface::UanPhyGenRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/$ns3::BasicEnergySource/RemainingEnergy",
+                           MakeCallback (&AnimationInterface::RemainingEnergyTrace, this));
+  
   ConnectLte ();
-
-  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
-                   MakeCallback (&AnimationInterface::Ipv4TxTrace, this));
-  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
-                   MakeCallback (&AnimationInterface::Ipv4RxTrace, this));
-  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Drop",
-                   MakeCallback (&AnimationInterface::Ipv4DropTrace, this));
-
+  
+  Config::ConnectFailSafe ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
+                           MakeCallback (&AnimationInterface::Ipv4TxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
+                           MakeCallback (&AnimationInterface::Ipv4RxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/$ns3::Ipv4L3Protocol/Drop",
+                           MakeCallback (&AnimationInterface::Ipv4DropTrace, this));
+  
   // Queue Enqueues
-
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Enqueue",
-                   MakeCallback (&AnimationInterface::EnqueueTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Enqueue",
-                   MakeCallback (&AnimationInterface::EnqueueTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Enqueue",
-                   MakeCallback (&AnimationInterface::EnqueueTrace, this));
-
+  
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Enqueue",
+                           MakeCallback (&AnimationInterface::EnqueueTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Enqueue",
+                           MakeCallback (&AnimationInterface::EnqueueTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Enqueue",
+                           MakeCallback (&AnimationInterface::EnqueueTrace, this));
+  
   // Queue Dequeues
-
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Dequeue",
-                   MakeCallback (&AnimationInterface::DequeueTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Dequeue",
-                   MakeCallback (&AnimationInterface::DequeueTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Dequeue",
-                   MakeCallback (&AnimationInterface::DequeueTrace, this));
-
+  
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Dequeue",
+                           MakeCallback (&AnimationInterface::DequeueTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Dequeue",
+                           MakeCallback (&AnimationInterface::DequeueTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Dequeue",
+                           MakeCallback (&AnimationInterface::DequeueTrace, this));
+  
   // Queue Drops
-
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Drop",
-                   MakeCallback (&AnimationInterface::QueueDropTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Drop",
-                   MakeCallback (&AnimationInterface::QueueDropTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Drop",
-                   MakeCallback (&AnimationInterface::QueueDropTrace, this));
-
-
+  
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::AlohaNoackNetDevice/Queue/Drop",
+                           MakeCallback (&AnimationInterface::QueueDropTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/TxQueue/Drop",
+                           MakeCallback (&AnimationInterface::QueueDropTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/TxQueue/Drop",
+                           MakeCallback (&AnimationInterface::QueueDropTrace, this));
+  
+  
   // Wifi Mac
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
-                   MakeCallback (&AnimationInterface::WifiMacTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTxDrop",
-                   MakeCallback (&AnimationInterface::WifiMacTxDropTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
-                   MakeCallback (&AnimationInterface::WifiMacRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRxDrop",
-                   MakeCallback (&AnimationInterface::WifiMacRxDropTrace, this));
-
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
+                           MakeCallback (&AnimationInterface::WifiMacTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTxDrop",
+                           MakeCallback (&AnimationInterface::WifiMacTxDropTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
+                           MakeCallback (&AnimationInterface::WifiMacRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRxDrop",
+                           MakeCallback (&AnimationInterface::WifiMacRxDropTrace, this));
+  
   // Wifi Phy
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxDrop",
-                   MakeCallback (&AnimationInterface::WifiPhyTxDropTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop",
-                   MakeCallback (&AnimationInterface::WifiPhyRxDropTrace, this));
-
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxDrop",
+                           MakeCallback (&AnimationInterface::WifiPhyTxDropTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop",
+                           MakeCallback (&AnimationInterface::WifiPhyRxDropTrace, this));
+  
   // LrWpan
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyTxBegin",
-                   MakeCallback (&AnimationInterface::LrWpanPhyTxBeginTrace, this));
-  Config::Connect ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyRxBegin",
-                   MakeCallback (&AnimationInterface::LrWpanPhyRxBeginTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTx",
-                   MakeCallback (&AnimationInterface::LrWpanMacTxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTxDrop",
-                   MakeCallback (&AnimationInterface::LrWpanMacTxDropTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRx",
-                   MakeCallback (&AnimationInterface::LrWpanMacRxTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
-                   MakeCallback (&AnimationInterface::LrWpanMacRxDropTrace, this));
-
+  Config::ConnectFailSafe ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyTxBegin",
+                           MakeCallback (&AnimationInterface::LrWpanPhyTxBeginTrace, this));
+  Config::ConnectFailSafe ("NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Phy/PhyRxBegin",
+                           MakeCallback (&AnimationInterface::LrWpanPhyRxBeginTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTx",
+                           MakeCallback (&AnimationInterface::LrWpanMacTxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacTxDrop",
+                           MakeCallback (&AnimationInterface::LrWpanMacTxDropTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRx",
+                           MakeCallback (&AnimationInterface::LrWpanMacRxTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LrWpanNetDevice/Mac/MacRxDrop",
+                           MakeCallback (&AnimationInterface::LrWpanMacRxDropTrace, this));
+  
   // Wave
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyTxBegin",
-                   MakeCallback (&AnimationInterface::WavePhyTxBeginTrace, this));
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyRxBegin",
-                   MakeCallback (&AnimationInterface::WavePhyRxBeginTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyTxBegin",
+                           MakeCallback (&AnimationInterface::WavePhyTxBeginTrace, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/$ns3::WifiPhy/PhyRxBegin",
+                           MakeCallback (&AnimationInterface::WavePhyRxBeginTrace, this));
 }
 
 Vector

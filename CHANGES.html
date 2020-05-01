@@ -54,6 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.30 to ns-3.31</h1>
 <h2>New API:</h2>
 <ul>
+<li> New <b>...FailSafe ()</b> variants of the <b> Config </b> and <b>Config::MatchContainer</b> functions which set Attributes or connect TraceSources.  These all return a boolean indicating if any attributes could be set (or trace sources connected).  These are useful if you are not sure that the requested objects exist, for example in AnimationInterface.</li>
 <li> New attributes for <b> Ipv4L3Protocol</b> have been added to enable RFC 6621-based duplicate packet detection (DPD) (<b>EnableDuplicatePacketDetection</b>) and to control the cache expiration time (<b>DuplicateExpire</b>).</li>
 <li><b> MakeConsistent </b> method of <b> BuildingsHelper </b> class is 
 deprecated and moved to <b> MobilityBuildingInfo </b> class. <b> DoInitialize </b> 
@@ -78,6 +79,7 @@ transmitted.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+<li> Previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
 <li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
 <li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
 <li>Now on, instead of <b>uint8_t</b>, <b>uint16_t</b> would be used to store a bandwidth value in LTE.</li>
