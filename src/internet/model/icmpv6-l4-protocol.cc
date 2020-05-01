@@ -572,7 +572,10 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
     }
 
   hardwareAddress = interface->GetDevice ()->GetAddress ();
-  NdiscCache::Ipv6PayloadHeaderPair p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (), src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src, &hardwareAddress, flags );
+  NdiscCache::Ipv6PayloadHeaderPair p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (),
+                                                 src.IsAny () ? dst : src, // DAD replies must go to the multicast group it was sent to.
+                                                 &hardwareAddress,
+                                                 flags );
   interface->Send (p.first, p.second, src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src);
 
   /* not a NS for us discard it */
@@ -1252,12 +1255,6 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ip
   Ipv6Header ipHeader;
   Icmpv6NS ns (target);
   Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
-
-  /* if the source is unspec, multicast the NA to all-nodes multicast */
-  if (src == Ipv6Address::GetAny ())
-    {
-      dst = Ipv6Address::GetAllNodesMulticast ();
-    }
 
   NS_LOG_LOGIC ("Send NS ( from " << src << " to " << dst << " target " << target << ")");
 

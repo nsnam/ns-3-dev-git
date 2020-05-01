@@ -251,6 +251,7 @@ def build(bld):
         'test/ipv6-packet-info-tag-test-suite.cc',
         'test/ipv6-test.cc',
         'test/ipv6-raw-test.cc',
+        'test/ipv6-address-duplication-test.cc',
         'test/tcp-test.cc',
         'test/tcp-timestamp-test.cc',
         'test/tcp-sack-permitted-test.cc',
