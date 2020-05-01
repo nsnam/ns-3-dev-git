@@ -31,8 +31,10 @@
 
 #include <iostream>
 
+#include "event-id.h"
 #include "nstime.h"
 #include "system-wall-clock-ms.h"
+#include "time-printer.h"
 
 namespace ns3 {
 
