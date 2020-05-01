@@ -548,7 +548,7 @@ main (int argc, char *argv[])
   bool timing = false;
   DictFiles files;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Usage ("Find hash collisions in the dictionary.");
   cmd.AddValue ("dict", "Dictionary file to hash",
                 MakeCallback (&DictFiles::Add,

@@ -158,7 +158,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
   // Command line arguments
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.AddValue ("speed", "Speed of the UE (default = 20 m/s)", speed);
   cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (default = 46.0)", enbTxPowerDbm);

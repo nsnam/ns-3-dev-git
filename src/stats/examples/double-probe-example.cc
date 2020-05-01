@@ -120,7 +120,7 @@ NotifyViaProbe (std::string context, double oldVal, double newVal)
 
 int main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   bool connected;
 

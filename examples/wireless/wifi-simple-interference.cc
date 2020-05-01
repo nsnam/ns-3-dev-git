@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
 
   double offset = 91;  // This is a magic number used to set the
                        // transmit power, based on other configuration
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("Prss", "Intended primary received signal strength (dBm)", Prss);
   cmd.AddValue ("Irss", "Intended interfering received signal strength (dBm)", Irss);

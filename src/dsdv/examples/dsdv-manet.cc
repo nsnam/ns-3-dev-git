@@ -152,7 +152,7 @@ int main (int argc, char **argv)
   bool printRoutingTable = true;
   std::string CSVfileName = "DsdvManetExample.csv";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nWifis", "Number of wifi nodes[Default:30]", nWifis);
   cmd.AddValue ("nSinks", "Number of wifi sink nodes[Default:10]", nSinks);
   cmd.AddValue ("totalTime", "Total Simulation time[Default:100]", totalTime);

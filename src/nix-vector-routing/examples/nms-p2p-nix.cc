@@ -158,7 +158,7 @@ main (int argc, char *argv[])
   int nCN = 2, nLANClients = 42;
   bool nix = true;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
   cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("NIX", "Toggle nix-vector routing", nix);

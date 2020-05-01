@@ -323,7 +323,7 @@ static void PrintPsr (int argc, char *argv[])
   PsrExperiment experiment;
   struct PsrExperiment::Input input;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("Distance", "The distance between two phys", input.distance);
   cmd.AddValue ("PacketSize", "The size of each packet sent", input.packetSize);
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
@@ -350,7 +350,7 @@ double CalcPsr (struct PsrExperiment::Output output, struct PsrExperiment::Input
 static void PrintPsrVsDistance (int argc, char *argv[])
 {
   struct PsrExperiment::Input input;
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
@@ -403,7 +403,7 @@ static void PrintSizeVsRange (int argc, char *argv[])
 {
   double targetPsr = 0.05;
   struct PsrExperiment::Input input;
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("TxPowerLevel", "The power level index to use to send each packet", input.txPowerLevel);
   cmd.AddValue ("TxMode", "The mode to use to send each packet", input.txMode);
   cmd.AddValue ("NPackets", "The number of packets to send", input.nPackets);
@@ -440,7 +440,7 @@ static void PrintPsrVsCollisionInterval (int argc, char *argv[])
 {
   CollisionExperiment::Input input;
   input.nPackets = 100;
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("NPackets", "The number of packets to send for each transmitter", input.nPackets);
   cmd.AddValue ("xA", "the position of transmitter A", input.xA);
   cmd.AddValue ("xB", "the position of transmitter B", input.xB);

@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   bool pcapTracing = false;                          /* PCAP Tracing is enabled or not. */
 
   /* Command line argument parser setup. */
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("dataRate", "Application data ate", dataRate);
   cmd.AddValue ("tcpVariant", "Transport protocol to use: TcpNewReno, "

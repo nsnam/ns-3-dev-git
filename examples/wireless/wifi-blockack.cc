@@ -63,7 +63,7 @@ NS_LOG_COMPONENT_DEFINE ("Test-block-ack");
 
 int main (int argc, char * argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   LogComponentEnable ("QosTxop", LOG_LEVEL_DEBUG);

@@ -55,7 +55,7 @@ void SendOnePacket (Ptr<LrWpanPhy> sender, Ptr<LrWpanPhy> receiver)
 
 int main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   LogComponentEnableAll (LOG_PREFIX_FUNC);

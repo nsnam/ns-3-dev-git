@@ -84,7 +84,7 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults and the above Bind() at
   // run-time, via command-line arguments
   //
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("v", "Verbose (turns on logging).", MakeCallback (&SetVerbose));
   cmd.AddValue ("verbose", "Verbose (turns on logging).", MakeCallback (&SetVerbose));
   cmd.AddValue ("d", "Use Drop Controller (Learning if not specified).", MakeCallback (&SetDrop));

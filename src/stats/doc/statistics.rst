@@ -108,7 +108,7 @@ The first thing to do in implementing this experiment is developing the simulati
     string strategy ("wifi-default");
     string runID;
 
-    COMMANDLINE (cmd);
+    CommandLine cmd (__FILE__);
     cmd.AddValue("distance",   "Distance apart to place nodes (in meters).", distance);
     cmd.AddValue("format",     "Format to use for data output.",             format);
     cmd.AddValue("experiment", "Identifier for experiment.",                 experiment);

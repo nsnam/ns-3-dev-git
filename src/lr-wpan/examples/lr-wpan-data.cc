@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
   bool verbose = false;
   bool extended = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
 
   cmd.AddValue ("verbose", "turn on all log components", verbose);
   cmd.AddValue ("extended", "use extended addressing", extended);

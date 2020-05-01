@@ -352,7 +352,7 @@ CommandLine::PrintDoxygenUsage (void) const
  
   if (m_shortName.size () == 0)
     {
-      NS_FATAL_ERROR ("No file name on example-to-run; forgot to use COMMANDLINE (var)?");
+      NS_FATAL_ERROR ("No file name on example-to-run; forgot to use CommandLine var (__FILE__)?");
       return;
     }
 

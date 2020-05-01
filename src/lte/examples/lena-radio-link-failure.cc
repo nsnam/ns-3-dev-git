@@ -276,7 +276,7 @@ main (int argc, char *argv[])
   bool enableDataErrorModel = true;
   bool enableNsLogs = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.AddValue ("numberOfEnbs", "Number of eNBs", numberOfEnbs);
   cmd.AddValue ("n311", "Number of in-synch indication", n311);

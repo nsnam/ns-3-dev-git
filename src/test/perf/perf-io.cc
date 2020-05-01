@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   bool binmode = true;
  
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("n", "How many times to write (defaults to 100000", n);
   cmd.AddValue ("iter", "How many times to run the test looking for a min (defaults to 50)", iter);
   cmd.AddValue ("doStream", "Run the C++ I/O benchmark otherwise the C I/O ", doStream);

@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
   uint32_t maxSlrc = 7;
   uint32_t maxSsrc = 7;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("maxSsrc", "The maximum number of retransmission attempts for a RTS packet", maxSsrc);
   cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a Data packet", maxSlrc);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);

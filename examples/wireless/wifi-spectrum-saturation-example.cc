@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   std::string errorModelType = "ns3::NistErrorRateModel";
   bool enablePcap = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("distance", "meters separation between nodes", distance);
   cmd.AddValue ("index", "restrict index to single value between 0 and 63", index);

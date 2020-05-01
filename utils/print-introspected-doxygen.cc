@@ -1583,7 +1583,7 @@ int main (int argc, char *argv[])
   NS_LOG_FUNCTION_NOARGS ();
   bool outputText = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Usage ("Generate documentation for all ns-3 registered types, "
 	     "trace sources, attributes and global variables.");
   cmd.AddValue ("output-text", "format output as plain text", outputText);

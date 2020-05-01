@@ -65,7 +65,7 @@ main (int argc, char *argv[])
   // The below metric, if set to 3 or higher, will cause packets between
   // n1 and n3 to take the 2-hop route through n2
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   // 
   // Additionally, we plumb this metric into the default value / command 
   // line argument system as well, for exemplary purposes.  This means 

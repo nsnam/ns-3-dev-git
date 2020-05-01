@@ -213,7 +213,7 @@ int main (int argc, char *argv[])
   uint32_t runs  =       1;
   std::string filename = "";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Usage ("Benchmark the simulator scheduler.\n"
              "\n"
              "Event intervals are taken from one of:\n"

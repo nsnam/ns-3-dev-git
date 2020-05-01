@@ -48,16 +48,6 @@ namespace ns3 {
 
 /**
  * \ingroup commandline
- * \brief Declare a CommandLine instance.
- *
- * This form is preferred since it supports creating Doxygen
- * documentation for programs from the CommandLine configuration.
- */
-#define COMMANDLINE(var) \
-    CommandLine var ( __FILE__ )
-    
-/**
- * \ingroup commandline
  * \brief Parse command-line arguments
  *
  * Instances of this class can be used to parse command-line
@@ -143,7 +133,7 @@ namespace ns3 {
  *    bool        boolArg = false;
  *    std::string strArg  = "strArg default";
  *
- *    COMMANDLINE (cmd);
+ *    CommandLine cmd (__FILE__);
  *    cmd.Usage ("CommandLine example program.\n"
  *               "\n"
  *               "This little program demonstrates how to use CommandLine.");
@@ -204,7 +194,7 @@ namespace ns3 {
  *   int value1;
  *   int value2;
  *
- *   COMMANDLINE (cmd);
+ *   CommandLine cmd (__FILE__);
  *   cmd.Usage ("...");
  *   cmd.AddValue ("value1", "first value", value1);
  *   cmd.AddValue ("value2", "second value", value1);
@@ -221,10 +211,9 @@ namespace ns3 {
  *
  * Finally, note that for examples which will be run by \c test.py
  * the preferred declaration of a CommandLine instance is
- * to use the \c COMMANDLINE macro to declare the instance name:
  *
  * \code
- *     COMMANDLINE (cmd);
+ *     CommandLine cmd (__FILE__);
  * \endcode
  * This will ensure that the program usage and arguments can be added to
  * the Doxygen documentation automatically.
@@ -236,11 +225,9 @@ public:
   CommandLine (void);
   /**
    * Construct and register the source file name.
-   * This would typically be called by using the \c COMMANDLINE macro:
-   *     COMMANDLINE (cmd);
+   * This would typically be called by 
+   *     CommandLine cmd (__FILE__);
    *
-   * This is just syntactic sugar for
-   *     COMMANDLINE cmd (__FILE__);
    * This form is required to generate Doxygen documentation of the
    * arguments and options.
    */
@@ -390,7 +377,7 @@ public:
    *
    * Alternatively, an overloaded operator << can be used:
    * \code
-   *       COMMANDLINE (cmd);
+   *       CommandLine cmd (__FILE__);
    *       cmd.Parse (argc, argv);
    *     ...
    *
@@ -705,7 +692,7 @@ CommandLineHelper::UserItemParse (const std::string value, T & val)
  *
  * Example usage:
  * \code
- *    COMMANDLINE (cmd);
+ *    CommandLine cmd (__FILE__);
  *    cmd.Parse (argc, argv);
  *    ...
  *

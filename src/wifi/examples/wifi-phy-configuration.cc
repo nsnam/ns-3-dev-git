@@ -62,7 +62,7 @@ int main (int argc, char *argv[])
   uint32_t testCase = 0;
   bool printAttributes = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("testCase", "Test case", testCase);
   cmd.AddValue ("printAttributes", "If true, print out attributes", printAttributes);
   cmd.Parse (argc, argv);

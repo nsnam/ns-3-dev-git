@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   Time::SetResolution (Time::NS);

@@ -56,7 +56,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("CsmaPacketSocketExample", LOG_LEVEL_INFO);
 #endif
   uint32_t dataRate = 10;
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("dataRate", "application dataRate (Kb/s)", dataRate);
   cmd.Parse (argc, argv);
 

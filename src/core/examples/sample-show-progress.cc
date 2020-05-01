@@ -158,7 +158,7 @@ main (int argc, char ** argv)
   Time wait = MilliSeconds (10);
   bool verbose = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("stop", "Simulation duration in virtual time.", stop);
   cmd.AddValue ("interval", "Approximate reporting interval, in wall clock time.", interval);
   cmd.AddValue ("wait", "Wallclock time to burn on each event.", wait);

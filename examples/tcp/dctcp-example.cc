@@ -275,7 +275,7 @@ int main (int argc, char *argv[])
   bool enableSwitchEcn = true;
   Time progressInterval = MilliSeconds (100);
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("tcpTypeId", "ns-3 TCP TypeId", tcpTypeId);
   cmd.AddValue ("flowStartupWindow", "startup time window (TCP staggered starts)", flowStartupWindow);
   cmd.AddValue ("convergenceTime", "convergence time", convergenceTime);

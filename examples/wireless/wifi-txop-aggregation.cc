@@ -102,7 +102,7 @@ int main (int argc, char *argv[])
   bool enablePcap = 0;
   bool verifyResults = 0; //used for regression
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("payloadSize", "Payload size in bytes", payloadSize);
   cmd.AddValue ("enableRts", "Enable or disable RTS/CTS", enableRts);
   cmd.AddValue ("txopLimit", "TXOP duration in microseconds", txopLimit);

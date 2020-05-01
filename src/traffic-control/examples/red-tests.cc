@@ -279,7 +279,7 @@ main (int argc, char *argv[])
   redTest = 1;
   // Will only save in the directory if enable opts below
   pathOut = "."; // Current directory
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("testNumber", "Run test 1, 3, 4 or 5", redTest);
   cmd.AddValue ("pathOut", "Path to save results from --writeForPlot/--writePcap/--writeFlowMonitor", pathOut);
   cmd.AddValue ("writeForPlot", "<0/1> to write results for plot (gnuplot)", writeForPlot);

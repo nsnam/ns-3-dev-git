@@ -187,7 +187,7 @@ RoutingExperiment::SetupPacketReceive (Ipv4Address addr, Ptr<Node> node)
 std::string
 RoutingExperiment::CommandSetup (int argc, char **argv)
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
   cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR", m_protocol);

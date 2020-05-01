@@ -418,7 +418,7 @@ int main (int argc, char *argv[])
 
   bool verifyResults = 0; //used for regression
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("payloadSize", "Payload size in bytes", params.payloadSize);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", params.simulationTime);
   cmd.AddValue ("isUdp", "UDP if set to 1, TCP otherwise", params.isUdp);

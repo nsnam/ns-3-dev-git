@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1448));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("stack", "choose network stack", m_stack);
   cmd.AddValue ("seed", "randomize seed", m_seed);
   cmd.AddValue ("nNodes", "the number of source and sink nodes", m_nNodes);

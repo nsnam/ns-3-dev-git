@@ -167,7 +167,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
 int main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("reference-rates.png");

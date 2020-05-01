@@ -382,7 +382,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::UdpClient::MaxPackets", UintegerValue (1000000));
   Config::SetDefault ("ns3::LteRlcUm::MaxTxBufferSize", UintegerValue (10 * 1024));
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();

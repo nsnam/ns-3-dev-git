@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
   std::string cwndTrFileName = "cwndPfifoFast.tr";
   bool logging = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("bottleneckBandwidth", "Bottleneck bandwidth", bottleneckBandwidth);
   cmd.AddValue ("bottleneckDelay", "Bottleneck delay", bottleneckDelay);
   cmd.AddValue ("accessBandwidth", "Access link bandwidth", accessBandwidth);

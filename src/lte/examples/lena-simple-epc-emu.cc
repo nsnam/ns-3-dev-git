@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   double interPacketInterval = 1000;
 
   // Command line arguments
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue("nEnbs", "Number of eNBs", nEnbs);
   cmd.AddValue("nUesPerEnb", "Number of UEs per eNB", nUesPerEnb);
   cmd.AddValue("simTime", "Total duration of the simulation [s])", simTime);

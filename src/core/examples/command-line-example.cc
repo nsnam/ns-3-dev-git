@@ -89,7 +89,7 @@ int main (int argc, char *argv[])
   const int nonOpt2Def = nonOpt2;
 
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Usage ("CommandLine example program.\n"
              "\n"
              "This little program demonstrates how to use CommandLine.");

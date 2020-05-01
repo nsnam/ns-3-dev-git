@@ -35,7 +35,7 @@ NS_LOG_COMPONENT_DEFINE ("DummyNetworkExample");
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   NodeContainer nodes;

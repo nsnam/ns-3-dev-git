@@ -2005,7 +2005,7 @@ VanetRoutingExperiment::SetGlobalsFromConfig ()
 void
 VanetRoutingExperiment::CommandSetup (int argc, char **argv)
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   double txDist1 = 50.0;
   double txDist2 = 100.0;
   double txDist3 = 150.0;

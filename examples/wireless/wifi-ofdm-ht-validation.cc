@@ -48,7 +48,7 @@ int main (int argc, char *argv[])
   modes.push_back ("HtMcs7");
 
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
   cmd.Parse (argc, argv);
 

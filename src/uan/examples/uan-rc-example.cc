@@ -254,7 +254,7 @@ main (int argc, char *argv[])
   Experiment exp;
   bool quiet = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("TotalRate", "Total channel capacity", exp.m_totalRate);
   cmd.AddValue ("NumberRates", "Number of divided rates ( (NumberRates+1)%TotalRate should be 0)", exp.m_numRates);
   cmd.AddValue ("MaxRange", "Maximum range between gateway and acoustic node", exp.m_maxRange);

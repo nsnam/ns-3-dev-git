@@ -32,7 +32,7 @@ void Print ( ComponentCarrier cc);
 
 int main (int argc, char *argv[])
 {	
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 	
   Config::SetDefault ("ns3::ComponentCarrier::UlBandwidth", UintegerValue (50));

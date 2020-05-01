@@ -67,7 +67,7 @@ int main (int argc, char *argv[])
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);

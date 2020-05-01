@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
   std::string bottleNeckLinkBw = "1Mbps";
   std::string bottleNeckLinkDelay = "50ms";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nLeaf",     "Number of left and right side leaf nodes", nLeaf);
   cmd.AddValue ("maxPackets","Max Packets allowed in the device queue", maxPackets);
   cmd.AddValue ("queueDiscLimitPackets","Max Packets allowed in the queue disc", queueDiscLimitPackets);

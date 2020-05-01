@@ -55,7 +55,7 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");

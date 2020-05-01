@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   DataRate rate = DataRate ("1Mbps");
   DataRate peakRate = DataRate ("0bps");
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("burst", "Size of first bucket in bytes", burst);
   cmd.AddValue ("mtu", "Size of second bucket in bytes", mtu);
   cmd.AddValue ("rate", "Rate of tokens arriving in first bucket", rate);

@@ -56,7 +56,7 @@ main (int argc, char *argv[])
   //
   uint32_t nSpokes = 8;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nSpokes", "Number of nodes to place in the star", nSpokes);
   cmd.Parse (argc, argv);
 

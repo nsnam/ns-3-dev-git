@@ -36,7 +36,7 @@ NS_LOG_COMPONENT_DEFINE ("DhcpExample");
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
 
   bool verbose = false;
   bool tracing = false;

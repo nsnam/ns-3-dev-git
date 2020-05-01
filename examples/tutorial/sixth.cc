@@ -192,7 +192,7 @@ RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   NodeContainer nodes;

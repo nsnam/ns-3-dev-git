@@ -116,7 +116,7 @@ main (int argc, char *argv[])
   // system so that they can be overridden with flags such as
   // "--backboneNodes=20"
   //
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("backboneNodes", "number of backbone nodes", backboneNodes);
   cmd.AddValue ("infraNodes", "number of leaf nodes", infraNodes);
   cmd.AddValue ("lanNodes", "number of LAN nodes", lanNodes);

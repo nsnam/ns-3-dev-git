@@ -107,7 +107,7 @@ Histogram (Ptr<RandomVariableStream> rndvar,
 
 int main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   unsigned int probes = 1000000;

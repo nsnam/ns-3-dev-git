@@ -273,7 +273,7 @@ main (int argc, char **argv)
   std::string perModel = "ns3::UanPhyPerGenDefault";
   std::string sinrModel = "ns3::UanPhyCalcSinrDefault";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("NumNodes", "Number of transmitting nodes", exp.m_numNodes);
   cmd.AddValue ("Depth", "Depth of transmitting and sink nodes", exp.m_depth);
   cmd.AddValue ("RegionSize", "Size of boundary in meters", exp.m_boundary);

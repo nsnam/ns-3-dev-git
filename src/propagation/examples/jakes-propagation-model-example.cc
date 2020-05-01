@@ -69,7 +69,7 @@ void JakesPropagationExample::Next ()
 int main (int argc, char *argv[])
 {
   Config::SetDefault ("ns3::JakesProcess::NumberOfOscillators", UintegerValue (100));
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   JakesPropagationExample example;
   Simulator::Stop (Seconds (1000));

@@ -44,7 +44,7 @@ NS_LOG_COMPONENT_DEFINE ("EpcSecondExampleForIpv6");
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();

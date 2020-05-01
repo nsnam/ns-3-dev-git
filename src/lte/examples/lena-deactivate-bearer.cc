@@ -50,7 +50,7 @@ main (int argc, char *argv[])
   double interPacketInterval = 100;
 
   // Command line arguments
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("numberOfNodes", "Number of eNodeBs + UE pairs", numberOfNodes);
   cmd.AddValue ("simTime", "Total duration of the simulation [s])", simTime);
   cmd.AddValue ("distance", "Distance between eNBs [m]", distance);

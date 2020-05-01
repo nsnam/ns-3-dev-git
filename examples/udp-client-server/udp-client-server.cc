@@ -45,7 +45,7 @@ main (int argc, char *argv[])
   bool useV6 = false;
   Address serverAddress;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("useIpv6", "Use Ipv6", useV6);
   cmd.Parse (argc, argv);
 

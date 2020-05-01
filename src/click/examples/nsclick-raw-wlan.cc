@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
   double rss = -80;
   std::string clickConfigFolder = "src/click/examples";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("clickConfigFolder", "Base folder for click configuration files", clickConfigFolder);
   cmd.Parse (argc, argv);
 

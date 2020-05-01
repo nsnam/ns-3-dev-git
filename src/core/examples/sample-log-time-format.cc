@@ -129,7 +129,7 @@ int main (int argc, char *argv[])
 
   std::map<std::string, Time::Unit> resolutionMap = {{"Time::US", Time::US}, {"Time::NS", Time::NS}, {"Time::PS", Time::PS}, {"Time::FS", Time::FS}};
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("replaceTimePrinter", "replace time printing function", replaceTimePrinter);
   cmd.AddValue ("resolution", "time resolution", resolution);
   cmd.Parse (argc, argv);

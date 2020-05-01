@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
   Box macroUeBox = Box (-distance * 0.5, distance * 1.5, -distance * 0.5, distance * 1.5, 1.5, 1.5);
 
   // Command line arguments
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("numberOfUes", "Number of random UEs", numberOfRandomUes);
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.AddValue ("generateSpectrumTrace", "if true, will generate a Spectrum Analyzer trace", generateSpectrumTrace);

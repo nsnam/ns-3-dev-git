@@ -123,7 +123,7 @@ GlobalPathlossDatabase::Print ()
 
 int main (int argc, char** argv)
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   double lossDb = 130;
   double txPowerW = 0.1; 
   uint64_t phyRate = 500000;

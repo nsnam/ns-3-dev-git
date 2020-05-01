@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteUePowerControl::AccumulationEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteUePowerControl::Alpha", DoubleValue (1.0));
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();

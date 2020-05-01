@@ -40,7 +40,7 @@ NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
 // 
 int main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));

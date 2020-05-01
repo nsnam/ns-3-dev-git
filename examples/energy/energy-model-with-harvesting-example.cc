@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   // Energy Harvester variables
   double harvestingUpdateInterval = 1;  // seconds
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("Prss", "Intended primary RSS (dBm)", Prss);
   cmd.AddValue ("PacketSize", "size of application packet sent", PacketSize);

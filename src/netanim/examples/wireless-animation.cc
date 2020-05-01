@@ -38,7 +38,7 @@ int
 main (int argc, char *argv[])
 {
   uint32_t nWifi = 20;
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
 
   cmd.Parse (argc,argv);

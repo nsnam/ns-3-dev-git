@@ -126,7 +126,7 @@ int main (int argc, char *argv[])
   bool verbose = false;
   bool tracing = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("distance", "distance (m)", distance);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);

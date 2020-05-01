@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
   std::string input ("src/topology-read/examples/Inet_small_toposample.txt");
 
   // Set up command line parameters used to control the experiment.
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("format", "Format to use for data input [Orbis|Inet|Rocketfuel].",
                 format);
   cmd.AddValue ("input", "Name of the input file.",

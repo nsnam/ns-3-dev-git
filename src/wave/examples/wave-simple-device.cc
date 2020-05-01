@@ -278,7 +278,7 @@ WaveNetDeviceExample::SendWsaExample ()
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   WaveNetDeviceExample example;

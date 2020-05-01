@@ -44,7 +44,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("ObjectNamesExample", LOG_LEVEL_INFO);
 #endif
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
 
   NodeContainer n;

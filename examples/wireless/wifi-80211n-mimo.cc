@@ -97,7 +97,7 @@ int main (int argc, char *argv[])
   bool shortGuardInterval = false;
   bool channelBonding = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("step", "Granularity of the results to be plotted in meters", step);
   cmd.AddValue ("simulationTime", "Simulation time per step (in seconds)", simulationTime);
   cmd.AddValue ("channelBonding", "Enable/disable channel bonding (channel width = 20 MHz if false, channel width = 40 MHz if true)", channelBonding);

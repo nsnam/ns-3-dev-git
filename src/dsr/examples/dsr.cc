@@ -94,7 +94,7 @@ main (int argc, char *argv[])
   std::string phyMode ("DsssRate11Mbps");
 
   //Allow users to override the default parameters and set it to new ones from CommandLine.
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("nWifis", "Number of wifi nodes", nWifis);
   cmd.AddValue ("nSinks", "Number of SINK traffic nodes", nSinks);
   cmd.AddValue ("rate", "CBR traffic rate(in kbps), Default:8", rate);

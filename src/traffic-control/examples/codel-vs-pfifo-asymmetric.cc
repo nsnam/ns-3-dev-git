@@ -238,7 +238,7 @@ int main (int argc, char *argv[])
   std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";
   bool logging = true;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("serverCmtsDelay", "Link delay between server and CMTS", serverCmtsDelay);
   cmd.AddValue ("cmtsRouterDelay", "Link delay between CMTS and rounter", cmtsRouterDelay);
   cmd.AddValue ("routerHostDelay", "Link delay between router and host", routerHostDelay);

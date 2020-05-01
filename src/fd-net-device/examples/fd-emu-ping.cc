@@ -98,7 +98,7 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults at run-time, via
   // command-line arguments
   //
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("deviceName", "Device name", deviceName);
   cmd.AddValue ("remote", "Remote IP address (dotted decimal only please)", remote);
   cmd.Parse (argc, argv);

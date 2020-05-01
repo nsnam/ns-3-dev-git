@@ -125,7 +125,7 @@ main (int argc, char *argv[])
 {
   bool verbose = true;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("verbose", "Tell application to log if true", verbose);
 
   cmd.Parse (argc,argv);

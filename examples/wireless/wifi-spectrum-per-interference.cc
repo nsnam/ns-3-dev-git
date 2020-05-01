@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
   const uint32_t tcpPacketSize = 1448;
   double waveformPower = 0;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.AddValue ("distance", "meters separation between nodes", distance);

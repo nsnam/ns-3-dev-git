@@ -45,7 +45,7 @@ NS_LOG_COMPONENT_DEFINE ("NixSimpleExample");
 int
 main (int argc, char *argv[])
 {
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
   
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);

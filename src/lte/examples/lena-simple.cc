@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
   Time simTime = MilliSeconds (1050);
   bool useCa = false;
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);
   cmd.AddValue ("useCa", "Whether to use carrier aggregation.", useCa);
   cmd.Parse (argc, argv);

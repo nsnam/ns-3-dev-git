@@ -120,7 +120,7 @@ main (int argc, char *argv[])
   std::string mode = "ConfigureLocal";
   std::string tapName = "thetap";
 
-  COMMANDLINE (cmd);
+  CommandLine cmd (__FILE__);
   cmd.AddValue ("mode", "Mode setting of TapBridge", mode);
   cmd.AddValue ("tapName", "Name of the OS tap device", tapName);
   cmd.Parse (argc, argv);
