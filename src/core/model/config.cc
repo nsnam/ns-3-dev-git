@@ -917,7 +917,7 @@ Connect (std::string path, const CallbackBase &cb)
   NS_LOG_FUNCTION (path << &cb);
   if (!ConnectFailSafe (path, cb))
     {
-      NS_FATAL_ERROR ("Could not connect callback to " << name);
+      NS_FATAL_ERROR ("Could not connect callback to " << path);
     }
 }
 bool
