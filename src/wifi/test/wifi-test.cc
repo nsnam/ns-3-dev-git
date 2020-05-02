@@ -2480,6 +2480,166 @@ Issue169TestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+
+//-----------------------------------------------------------------------------
+/**
+ * Make sure that Ideal rate manager properly selects MCS based on the configured channel width.
+ *
+ * The scenario considers an access point and a fixed station.
+ * The station first sends a 80 MHz PPDU to the access point,
+ * for which Ideal rate manager should select VH-MCS 0 based
+ * on the distance (no interference generatd in this test). Then,
+ * the station sends a 20 MHz PPDU to the access point,
+ * which corresponds to a SNR 6 dB higher than previously, hence
+ * VHT-MCS 2 should be selected. Finally, the station sends a 40 MHz
+ * PPDU to the access point, which means corresponds to a SNR 3 dB
+ * lower than previously, hence VHT-MCS 1 should be selected.
+ */
+
+class IdealRateManagerChannelWidthTest : public TestCase
+{
+public:
+  IdealRateManagerChannelWidthTest ();
+  virtual ~IdealRateManagerChannelWidthTest ();
+  virtual void DoRun (void);
+
+private:
+  /**
+   * Change the configured channel width for all nodes
+   * \param channelWidth the channel width (in MHz)
+   */
+  void ChangeChannelWidth (uint16_t channelWidth);
+
+  /**
+   * Triggers the transmission of a 1000 Byte-long data packet from the source device
+   * \param sourceDevice pointer to the source NetDevice
+   * \param destination address of the destination device
+   */
+   void SendPacket (Ptr<NetDevice> sourceDevice, Address& destination);
+
+  /**
+   * Callback that indicates a PSDU is being transmitted
+   * \param context the context
+   * \param psdu the PSDU to transmit
+   * \param txVector the TX vector
+   * \param txPowerW the TX power (W)
+   */
+  void TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW);
+
+  /**
+   * Check if the selected WifiMode is correct
+   * \param expectedMode the expected WifiMode
+   */
+  void CheckLastSelectedMode (WifiMode expectedMode);
+
+  WifiMode m_txMode; ///< Store the last selected mode to send data packet
+};
+
+IdealRateManagerChannelWidthTest::IdealRateManagerChannelWidthTest ()
+  : TestCase ("Test case for use of channel bonding with Ideal rate manager")
+{
+}
+
+IdealRateManagerChannelWidthTest::~IdealRateManagerChannelWidthTest ()
+{
+}
+
+void
+IdealRateManagerChannelWidthTest::ChangeChannelWidth (uint16_t channelWidth)
+{
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+}
+
+void
+IdealRateManagerChannelWidthTest::SendPacket (Ptr<NetDevice> sourceDevice, Address& destination)
+{
+  Ptr<Packet> packet = Create<Packet> (1000);
+  sourceDevice->Send (packet, destination, 0);
+}
+
+void
+IdealRateManagerChannelWidthTest::TxCallback (std::string context, Ptr<const WifiPsdu> psdu, WifiTxVector txVector, double txPowerW)
+{
+  if (psdu->GetSize () >= 1000)
+    {
+      m_txMode = txVector.GetMode ();
+    }
+}
+
+void
+IdealRateManagerChannelWidthTest::CheckLastSelectedMode (WifiMode expectedMode)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_txMode, expectedMode, "Last selected WifiMode " << m_txMode << " does not match expected WifiMode " << expectedMode);
+}
+
+void
+IdealRateManagerChannelWidthTest::DoRun (void)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 100;
+
+  NodeContainer wifiApNode, wifiStaNode;
+  wifiApNode.Create (1);
+  wifiStaNode.Create (1);
+
+  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+  phy.SetChannel (channel.Create ());
+
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  NetDeviceContainer apDevice;
+  mac.SetType ("ns3::ApWifiMac");
+  apDevice = wifi.Install (phy, mac, wifiApNode);
+
+  NetDeviceContainer staDevice;
+  mac.SetType ("ns3::StaWifiMac");
+  staDevice = wifi.Install (phy, mac, wifiStaNode);
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (apDevice, streamNumber);
+  wifi.AssignStreams (staDevice, streamNumber);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (50.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+  mobility.Install (wifiStaNode);
+
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyTxPsduBegin", MakeCallback (&IdealRateManagerChannelWidthTest::TxCallback, this));
+
+  //Set channel width to 80 MHz & send packet
+  Simulator::Schedule (Seconds (0.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 80);
+  Simulator::Schedule (Seconds (1.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  //Selected rate should be VHT-MCS 0
+  Simulator::Schedule (Seconds (1.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs0 ());
+
+  //Set channel width to 20 MHz & send packet
+  Simulator::Schedule (Seconds (1.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 20);
+  Simulator::Schedule (Seconds (2.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  //Selected rate should be VHT-MCS 2 since SNR should be 6 dB higher than previously
+  Simulator::Schedule (Seconds (2.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs2 ());
+
+  //Set channel width to 40 MHz & send packet
+  Simulator::Schedule (Seconds (2.5), &IdealRateManagerChannelWidthTest::ChangeChannelWidth, this, 40);
+  Simulator::Schedule (Seconds (3.0), &IdealRateManagerChannelWidthTest::SendPacket, this, apDevice.Get (0), staDevice.Get (0)->GetAddress ());
+  //Selected rate should be VHT-MCS 1 since SNR should be 3 dB lower than previously
+  Simulator::Schedule (Seconds (3.1), &IdealRateManagerChannelWidthTest::CheckLastSelectedMode, this, WifiPhy::GetVhtMcs1 ());
+
+  Simulator::Stop (Seconds (3.2));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+}
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -2509,6 +2669,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new Bug2470TestCase, TestCase::QUICK); //Bug 2470
   AddTestCase (new Issue40TestCase, TestCase::QUICK); //Issue #40
   AddTestCase (new Issue169TestCase, TestCase::QUICK); //Issue #169
+  AddTestCase (new IdealRateManagerChannelWidthTest, TestCase::QUICK);
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite
