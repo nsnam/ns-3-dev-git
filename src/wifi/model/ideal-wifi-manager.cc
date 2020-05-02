@@ -37,6 +37,7 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
   double m_lastSnrCached;            //!< SNR most recently used to select a rate
   uint8_t m_nss;                     //!< Number of spatial streams
   WifiMode m_lastMode;               //!< Mode most recently used to the remote station
+  uint16_t m_lastChannelWidth;       //!< channel with (in MHz) most recently used to the remote station
 };
 
 /// To avoid using the cache before a valid value has been cached
@@ -229,6 +230,7 @@ IdealWifiManager::Reset (WifiRemoteStation *station) const
   st->m_lastChannelWidthObserved = 0;
   st->m_lastSnrCached = CACHE_INITIAL_VALUE;
   st->m_lastMode = GetDefaultMode ();
+  st->m_lastChannelWidth = 0;
   st->m_nss = 1;
 }
 
@@ -321,7 +323,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   uint16_t guardInterval;
   uint16_t channelWidth = std::min (GetChannelWidth (station), GetPhy ()->GetChannelWidth ());
   txVector.SetChannelWidth (channelWidth);
-  if (station->m_lastSnrCached != CACHE_INITIAL_VALUE && station->m_lastSnrObserved == station->m_lastSnrCached)
+  if ((station->m_lastSnrCached != CACHE_INITIAL_VALUE) && (station->m_lastSnrObserved == station->m_lastSnrCached) && (channelWidth == station->m_lastChannelWidth))
     {
       // SNR has not changed, so skip the search and use the last
       // mode selected
@@ -506,6 +508,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       station->m_nss = selectedNss;
     }
   NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << channelWidth);
+  station->m_lastChannelWidth = channelWidth;
   if (maxMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       guardInterval = std::max (GetGuardInterval (station), GetGuardInterval ());
@@ -563,6 +566,8 @@ IdealWifiManager::GetLastObservedSnrForChannelWidth (IdealWifiRemoteStation *sta
   if (channelWidth != station->m_lastChannelWidthObserved)
     {
       snr /= (static_cast<double> (channelWidth) / station->m_lastChannelWidthObserved);
+      NS_LOG_DEBUG ("Last observed SNR is " << station->m_lastSnrObserved <<" for channel width " << station->m_lastChannelWidthObserved <<
+                    "; computed SNR is " << snr << " for channel width " << channelWidth);
     }
   return snr;
 }
