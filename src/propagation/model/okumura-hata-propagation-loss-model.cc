@@ -136,7 +136,7 @@ OkumuraHataPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<MobilityMode
         }
       else
         {
-          log_bHeight = 1.1 * log_f - 0.7 * hm - (1.56 * log_f - 0.8);
+          log_bHeight = (1.1 * log_f - 0.7) * hm - (1.56 * log_f - 0.8);
         }
 
       loss = 46.3 + (33.9 * log_f) - log_aHeight + (((44.9 - (6.55 * std::log10 (hb)) )) * std::log10 (dist)) - log_bHeight + C;
