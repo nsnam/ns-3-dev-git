@@ -38,6 +38,7 @@
 
 #define BURST_RESET_TIMEOUT 1.5
 
+class PieQueueDiscTestCase;  // Forward declaration for unit test
 namespace ns3 {
 
 class TraceContainer;
@@ -105,6 +106,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  friend class::PieQueueDiscTestCase;         // Test code
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
   virtual Ptr<QueueDiscItem> DoDequeue (void);
   virtual bool CheckConfig (void);
@@ -140,6 +142,7 @@ private:
   double m_a;                                   //!< Parameter to pie controller
   double m_b;                                   //!< Parameter to pie controller
   uint32_t m_dqThreshold;                       //!< Minimum queue size in bytes before dequeue rate is measured
+  bool m_useDqRateEstimator;                    //!< Enable/Disable usage of dequeue rate estimator for queue delay calculation
 
   // ** Variables maintained by PIE
   double m_dropProb;                            //!< Variable used in calculation of drop probability

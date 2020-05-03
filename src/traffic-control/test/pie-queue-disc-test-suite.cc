@@ -220,14 +220,8 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   pktSize = 1000;  // pktSize != 0 because DequeueThreshold always works in bytes
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
-                         "Verify that we can actually set the attribute A");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
-                         "Verify that we can actually set the attribute B");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
                          "Verify that we can actually set the attribute Tupdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Supdate", TimeValue (Seconds (0.0))), true,
-                         "Verify that we can actually set the attribute Supdate");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("DequeueThreshold", UintegerValue (10000)), true,
                          "Verify that we can actually set the attribute DequeueThreshold");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueDelayReference", TimeValue (Seconds (0.02))), true,
@@ -249,14 +243,8 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   queue = CreateObject<PieQueueDisc> ();
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
-                         "Verify that we can actually set the attribute A");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
-                         "Verify that we can actually set the attribute B");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
                          "Verify that we can actually set the attribute Tupdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Supdate", TimeValue (Seconds (0.0))), true,
-                         "Verify that we can actually set the attribute Supdate");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("DequeueThreshold", UintegerValue (10000)), true,
                          "Verify that we can actually set the attribute DequeueThreshold");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueDelayReference", TimeValue (Seconds (0.08))), true,
@@ -278,14 +266,8 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   queue = CreateObject<PieQueueDisc> ();
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
-                         "Verify that we can actually set the attribute A");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
-                         "Verify that we can actually set the attribute B");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
                          "Verify that we can actually set the attribute Tupdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Supdate", TimeValue (Seconds (0.0))), true,
-                         "Verify that we can actually set the attribute Supdate");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("DequeueThreshold", UintegerValue (10000)), true,
                          "Verify that we can actually set the attribute DequeueThreshold");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueDelayReference", TimeValue (Seconds (0.02))), true,
@@ -307,14 +289,8 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   queue = CreateObject<PieQueueDisc> ();
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
-                         "Verify that we can actually set the attribute A");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
-                         "Verify that we can actually set the attribute B");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.09))), true,
                          "Verify that we can actually set the attribute Tupdate");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Supdate", TimeValue (Seconds (0.0))), true,
-                         "Verify that we can actually set the attribute Supdate");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("DequeueThreshold", UintegerValue (10000)), true,
                          "Verify that we can actually set the attribute DequeueThreshold");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueDelayReference", TimeValue (Seconds (0.02))), true,
@@ -329,6 +305,23 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   st = queue->GetStats ();
   uint32_t test5 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
   NS_TEST_EXPECT_MSG_LT (test5, test4, "Test 5 should have less unforced drops than test 4");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 6: same as test 2, but with UseDequeueRateEstimator enabled
+  queue = CreateObject<PieQueueDisc> ();
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseDequeueRateEstimator", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseTimestamp");
+  queue->Initialize ();
+  EnqueueWithDelay (queue, pktSize, 400);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test6 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_NE (test6, 0, "There should be some unforced drops");
   NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 }
 

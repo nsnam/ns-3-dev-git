@@ -29,7 +29,7 @@ and Takashi Hayakawa.
 
   * ``PieQueueDisc::CalculateP ()``: This routine is called at a regular interval of `m_tUpdate` and updates the drop probability, which is required by ``PieQueueDisc::DropEarly()``
 
-  * ``PieQueueDisc::DoDequeue ()``: This routine calculates the average departure rate which is required for updating the drop probability in ``PieQueueDisc::CalculateP ()``  
+  * ``PieQueueDisc::DoDequeue ()``: This routine calulates `m_qDelay` using timestamp by default or optionally with `UseDqRateEstimator` enabled calculates the average departure rate which is required for updating the drop probability in ``PieQueueDisc::CalculateP ()``
 
 References
 ==========
@@ -56,7 +56,7 @@ The key attributes that the PieQueue class holds include the following:
 * ``MaxBurstAllowance:`` Current max burst allowance in seconds before random drop. The default value is 0.1 seconds.
 * ``A:`` Value of alpha. The default value is 0.125.
 * ``B:`` Value of beta. The default value is 1.25.
-
+* ``UseDequeueRateEstimator:`` Enable/Disable usage of Dequeue Rate Estimator (Default: false).
 Examples
 ========
 
@@ -80,6 +80,7 @@ The PIE model is tested using :cpp:class:`PieQueueDiscTestSuite` class defined i
 * Test 3: same as test 2, but with higher QueueDelayReference
 * Test 4: same as test 2, but with reduced dequeue rate
 * Test 5: same dequeue rate as test 4, but with higher Tupdate
+* Test 6: same as test 2, but with UseDequeueRateEstimator enabled
 
 The test suite can be run using the following commands: 
 

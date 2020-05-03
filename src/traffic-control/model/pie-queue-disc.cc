@@ -92,6 +92,11 @@ TypeId PieQueueDisc::GetTypeId (void)
                    TimeValue (Seconds (0.1)),
                    MakeTimeAccessor (&PieQueueDisc::m_maxBurst),
                    MakeTimeChecker ())
+    .AddAttribute ("UseDequeueRateEstimator",
+                   "Enable/Disable usage of Dequeue Rate Estimator",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&PieQueueDisc::m_useDqRateEstimator),
+                   MakeBooleanChecker ())
   ;
 
   return tid;
@@ -122,7 +127,6 @@ PieQueueDisc::DoDispose (void)
 Time
 PieQueueDisc::GetQueueDelay (void)
 {
-  NS_LOG_FUNCTION (this);
   return m_qDelay;
 }
 
@@ -236,17 +240,25 @@ void PieQueueDisc::CalculateP ()
   Time qDelay;
   double p = 0.0;
   bool missingInitFlag = false;
-  if (m_avgDqRate > 0)
+
+  if (m_useDqRateEstimator)
     {
-      qDelay = Time (Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate));
+      if (m_avgDqRate > 0)
+        {
+          qDelay = Time (Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate));
+        }
+      else
+        {
+          qDelay = Time (Seconds (0));
+          missingInitFlag = true;
+        }
+      m_qDelay = qDelay;
     }
   else
     {
-      qDelay = Time (Seconds (0));
-      missingInitFlag = true;
+      qDelay = m_qDelay;
     }
-
-  m_qDelay = qDelay;
+  NS_LOG_DEBUG ("Queue delay while calculating probability: " << qDelay.GetMilliSeconds () << "ms");
 
   if (m_burstAllowance.GetSeconds () > 0)
     {
@@ -357,51 +369,62 @@ PieQueueDisc::DoDequeue ()
 
   // if not in a measurement cycle and the queue has built up to dq_threshold,
   // start the measurement cycle
-
-  if ( (GetInternalQueue (0)->GetNBytes () >= m_dqThreshold) && (!m_inMeasurement) )
+  if (m_useDqRateEstimator)
     {
-      m_dqStart = now;
-      m_dqCount = 0;
-      m_inMeasurement = true;
-    }
-
-  if (m_inMeasurement)
-    {
-      m_dqCount += pktSize;
-
-      // done with a measurement cycle
-      if (m_dqCount >= m_dqThreshold)
+      if ( (GetInternalQueue (0)->GetNBytes () >= m_dqThreshold) && (!m_inMeasurement) )
         {
+          m_dqStart = now;
+          m_dqCount = 0;
+          m_inMeasurement = true;
+        }
 
-          double tmp = now - m_dqStart;
+      if (m_inMeasurement)
+        {
+          m_dqCount += pktSize;
 
-          if (tmp > 0)
+          // done with a measurement cycle
+          if (m_dqCount >= m_dqThreshold)
             {
-              if (m_avgDqRate == 0)
+
+              double tmp = now - m_dqStart;
+
+              if (tmp > 0)
                 {
-                  m_avgDqRate = m_dqCount / tmp;
+                  if (m_avgDqRate == 0)
+                    {
+                      m_avgDqRate = m_dqCount / tmp;
+                    }
+                  else
+                    {
+                      m_avgDqRate = (0.5 * m_avgDqRate) + (0.5 * (m_dqCount / tmp));
+                    }
+                }
+              NS_LOG_DEBUG ("Average Dequeue Rate after Dequeue: " << m_avgDqRate);
+
+              // restart a measurement cycle if there is enough data
+              if (GetInternalQueue (0)->GetNBytes () > m_dqThreshold)
+                {
+                  m_dqStart = now;
+                  m_dqCount = 0;
+                  m_inMeasurement = true;
                 }
               else
                 {
-                  m_avgDqRate = (0.5 * m_avgDqRate) + (0.5 * (m_dqCount / tmp));
+                  m_dqCount = 0;
+                  m_inMeasurement = false;
                 }
-            }
-
-          // restart a measurement cycle if there is enough data
-          if (GetInternalQueue (0)->GetNBytes () > m_dqThreshold)
-            {
-              m_dqStart = now;
-              m_dqCount = 0;
-              m_inMeasurement = true;
-            }
-          else
-            {
-              m_dqCount = 0;
-              m_inMeasurement = false;
             }
         }
     }
+  else
+    {
+      m_qDelay = Time (Seconds (now - item->GetTimeStamp ().GetSeconds ()));
 
+      if (GetInternalQueue (0)->GetNBytes () == 0)
+        {
+          m_qDelay = Time (Seconds (0));
+        }
+    }
   return item;
 }
 
