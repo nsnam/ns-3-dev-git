@@ -198,12 +198,12 @@ LteUeMeasurementsTestCase::DoRun (void)
   lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
 
 
-  Config::Connect ("/NodeList/2/DeviceList/0/LteUePhy/ReportUeMeasurements",
+  Config::Connect ("/NodeList/2/DeviceList/0/ComponentCarrierMapUe/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeBoundCallback (&RecvMeasurementReportCallback, this));
 
-  Config::Connect ("/NodeList/3/DeviceList/0/LteUePhy/ReportUeMeasurements",
+  Config::Connect ("/NodeList/3/DeviceList/0/ComponentCarrierMapUe/0/LteUePhy/ReportUeMeasurements",
                    MakeBoundCallback (&ReportUeMeasurementsCallback, this));
   Config::Connect ("/NodeList/1/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
                    MakeBoundCallback (&RecvMeasurementReportCallback, this));

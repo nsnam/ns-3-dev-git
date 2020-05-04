@@ -170,8 +170,6 @@ LteLinkAdaptationTestCase::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
 //   lteHelper->EnableLogComponents ();
-  lteHelper->EnableMacTraces ();
-  lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::ConstantSpectrumPropagationLossModel"));
   NS_LOG_INFO ("SNR = " << m_snrDb << "  LOSS = " << m_loss);
   lteHelper->SetPathlossModelAttribute ("Loss", DoubleValue (m_loss));
@@ -213,6 +211,9 @@ LteLinkAdaptationTestCase::DoRun (void)
 
   Config::Connect ("/NodeList/0/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
+
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
 
   Simulator::Stop (Seconds (0.040));
   Simulator::Run ();

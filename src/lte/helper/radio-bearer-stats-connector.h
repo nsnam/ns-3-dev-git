@@ -117,8 +117,9 @@ public:
    * \param cellid
    * \param rnti
    * \param lcid
+   * \param rlcType
    */
-  static void CreatedDrbEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint8_t lcid);
+  static void CreatedDrbEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint8_t lcid, std::string rlcType);
 
   /**
    * Function hooked to DrbCreated trace source at UE RRC,
@@ -130,8 +131,9 @@ public:
    * \param cellid
    * \param rnti
    * \param lcid
+   * \param rlcType
    */
-  static void CreatedDrbUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint8_t lcid);
+  static void CreatedDrbUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellid, uint16_t rnti, uint8_t lcid, std::string rlcType);
 
   /**
    * Disconnects all trace sources at eNB to RLC and PDCP calculators.
@@ -188,8 +190,9 @@ private:
    * \param cellId
    * \param rnti
    * \param lcid
+   * \param rlcType
    */
-  void ConnectTracesDrbEnb (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid);
+  void ConnectTracesDrbEnb (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType);
 
   /**
    * Connects DRB trace sources at UE to RLC and PDCP calculators
@@ -198,8 +201,9 @@ private:
    * \param cellId
    * \param rnti
    * \param lcid
+   * \param rlcType
    */
-  void ConnectTracesDrbUe (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid);
+  void ConnectTracesDrbUe (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType);
 
   Ptr<RadioBearerStatsCalculator> m_rlcStats; //!< Calculator for RLC Statistics
   Ptr<RadioBearerStatsCalculator> m_pdcpStats; //!< Calculator for PDCP Statistics

@@ -201,8 +201,6 @@ LtePathlossModelSystemTestCase::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   //   lteHelper->EnableLogComponents ();
-  lteHelper->EnableMacTraces ();
-  lteHelper->EnableRlcTraces ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::HybridBuildingsPropagationLossModel"));
 
   // set frequency. This is important because it changes the behavior of the path loss model
@@ -270,6 +268,9 @@ LtePathlossModelSystemTestCase::DoRun (void)
    
 //   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
 //                    MakeBoundCallback (&LteTestPathlossDlSchedCallback, this));
+
+  lteHelper->EnableMacTraces ();
+  lteHelper->EnableRlcTraces ();
                    
   Simulator::Stop (Seconds (0.035));
   Simulator::Run ();

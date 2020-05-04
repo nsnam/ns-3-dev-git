@@ -917,9 +917,10 @@ private:
   /**
    * The `DrbCreated` trace source. Fired when DRB is created, i.e.
    * the RLC and PDCP entities are created for one logical channel.
-   * Exporting IMSI, cell ID, RNTI, and LCID
+   * Exporting IMSI, cell ID, RNTI, LCID, and the TypeId of the RLC
+   * entity.
    */
-  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t> m_drbCreatedTrace;
+  TracedCallback<uint64_t, uint16_t, uint16_t, uint8_t, std::string> m_drbCreatedTrace;
   /**
    * The 'PhySyncDetection' trace source. Fired when UE RRC
    * receives in-sync or out-of-sync indications from UE PHY
