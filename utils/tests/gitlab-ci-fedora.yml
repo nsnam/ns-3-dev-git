@@ -75,24 +75,24 @@ weekly-build-fedora-29-optimized:
   variables:
     MODE: optimized
 
-# Fedora 30
-weekly-build-fedora-30-debug:
-  extends: .weekly-build-fedora
-  image: fedora:30
-  variables:
-    MODE: debug
+# Fedora 30 -- DISABLED BECAUSE OF MISSING iphyton
+#weekly-build-fedora-30-debug:
+#  extends: .weekly-build-fedora
+#  image: fedora:30
+#  variables:
+#    MODE: debug
 
-weekly-build-fedora-30-release:
-  extends: .weekly-build-fedora
-  image: fedora:30
-  variables:
-    MODE: release
+#weekly-build-fedora-30-release:
+#  extends: .weekly-build-fedora
+#  image: fedora:30
+#  variables:
+#    MODE: release
 
-weekly-build-fedora-30-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:30
-  variables:
-    MODE: optimized
+#weekly-build-fedora-30-optimized:
+#  extends: .weekly-build-fedora
+#  image: fedora:30
+#  variables:
+#    MODE: optimized
 
 # Fedora 31
 weekly-build-fedora-31-debug:
