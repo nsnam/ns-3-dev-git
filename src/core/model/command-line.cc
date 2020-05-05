@@ -798,7 +798,7 @@ CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
       val = true;
       return true;
     }
-  else if ( (src == "false") || (src == "f"))
+  else if ( (src == "false") || (src == "f") )
     {
       val = false;
       return true;
@@ -811,6 +811,38 @@ CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
       return !iss.bad () && !iss.fail ();
     }
 }
+
+template <>
+bool
+CommandLineHelper::UserItemParse<uint8_t> (const std::string value, uint8_t & val)
+{
+  uint8_t oldVal = val;
+  long newVal;
+
+  try
+    {
+      newVal = std::stoi (value);
+    }
+  catch (std::invalid_argument & ia)
+    {
+      NS_LOG_WARN ("invalid argument: " << ia.what ());
+      val = oldVal;
+      return false;
+    }
+  catch (std::out_of_range & oor)
+    {
+      NS_LOG_WARN ("out of range: " << oor.what ());
+      val = oldVal;
+      return false;
+    }
+  if (newVal < 0 || newVal > 255)
+    {
+      return false;
+    }
+  val = newVal;
+  return true;
+}
+
 
 std::ostream &
 operator << (std::ostream & os, const CommandLine & cmd)

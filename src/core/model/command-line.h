@@ -566,18 +566,34 @@ namespace CommandLineHelper {
 
 /**
  * \ingroup commandlinehelper
- * \brief Helpers to specialize CommandLine::UserItem::Parse() on bool
+ * \brief Helpers to specialize CommandLine::UserItem::Parse()
  *
  * \param [in] value The argument name
  * \param [out] val The argument location
+ * \tparam \deduced T The type being specialized
  * \return \c true if parsing was successful
- * @{
  */
 template <typename T>
 bool UserItemParse (const std::string value, T & val);
+/**
+ * \brief Specialization of CommandLine::UserItem to \c bool
+ *
+ * \param [in] value The argument name
+ * \param [out] val The boolean variable to set
+ * \return \c true if parsing was successful
+ */
 template <>
 bool UserItemParse<bool> (const std::string value, bool & val);
-/**@}*/
+/**
+ * \brief Specialization of CommandLine::UserItem to \c uint8_t
+ * to distinguish from \c char
+ *
+ * \param [in] value The argument name
+ * \param [out] val The \c uint8_t variable to set
+ * \return \c true if parsing was successful
+ */
+template <>
+bool UserItemParse<uint8_t> (const std::string value, uint8_t & val);
 
 /**
  * \ingroup commandlinehelper
@@ -594,7 +610,6 @@ std::string GetDefault<bool> (const bool & val);
 /**@}*/
 
 }  // namespace CommandLineHelper
-
 
 
 } // namespace ns3

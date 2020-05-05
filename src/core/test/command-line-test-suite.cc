@@ -123,13 +123,15 @@ CommandLineTestCaseBase::Parse (CommandLine &cmd, int n, ...)
 class CommandLineBooleanTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineBooleanTestCase ();             /**< Constructor */
+  /** Constructor */
+  CommandLineBooleanTestCase ();
   /** Destructor */
   virtual ~CommandLineBooleanTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -168,18 +170,55 @@ CommandLineBooleanTestCase::DoRun (void)
 
 /**
  * \ingroup commandline-tests
+ * Test \c uint8_t Command Line processing
+ */
+class CommandLineUint8tTestCase : public CommandLineTestCaseBase
+{
+public:
+  /** Constructor */
+  CommandLineUint8tTestCase ();             
+  /** Destructor */
+  virtual ~CommandLineUint8tTestCase ()
+  {}                                        
+
+private:
+  /** Run the test */
+  virtual void DoRun (void);
+
+};
+
+CommandLineUint8tTestCase::CommandLineUint8tTestCase ()
+  : CommandLineTestCaseBase ("uint8_t")
+{}
+
+void
+CommandLineUint8tTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  uint8_t myUint8 = 10;
+
+  cmd.AddValue ("my-uint8", "help", myUint8);
+
+  Parse (cmd, 1, "--my-uint8=1");
+  NS_TEST_ASSERT_MSG_EQ (myUint8, 1, "CommandLine did not correctly set a uint8_t value to 1, given 1");
+}
+
+/**
+ * \ingroup commandline-tests
  * Test int Command Line processing
  */
 class CommandLineIntTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineIntTestCase ();                 /**< Constructor */
+  /** Constructor */
+  CommandLineIntTestCase ();
   /** Destructor */
   virtual ~CommandLineIntTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -213,12 +252,15 @@ CommandLineIntTestCase::DoRun (void)
 class CommandLineUnsignedIntTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineUnsignedIntTestCase ();              /**< Constructor */
+  /** Constructor */
+  CommandLineUnsignedIntTestCase ();
+  /** Destructor */
   virtual ~CommandLineUnsignedIntTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                      /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -249,13 +291,15 @@ CommandLineUnsignedIntTestCase::DoRun (void)
 class CommandLineStringTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineStringTestCase ();              /**< Constructor */
+  /** Constructor */
+  CommandLineStringTestCase ();
   /** Destructor */
   virtual ~CommandLineStringTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -286,13 +330,15 @@ CommandLineStringTestCase::DoRun (void)
 class CommandLineOrderTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineOrderTestCase ();              /**< Constructor */
+  /** Constructor */
+  CommandLineOrderTestCase ();
   /** Destructor */
   virtual ~CommandLineOrderTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -320,13 +366,15 @@ CommandLineOrderTestCase::DoRun (void)
 class CommandLineInvalidTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineInvalidTestCase ();              /**< Constructor */
+  /** Constructor */
+  CommandLineInvalidTestCase ();
   /** Destructor */
   virtual ~CommandLineInvalidTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -354,13 +402,15 @@ CommandLineInvalidTestCase::DoRun (void)
 class CommandLineNonOptionTestCase : public CommandLineTestCaseBase
 {
 public:
-  CommandLineNonOptionTestCase ();              /**< Constructor */
+  /** Constructor */
+  CommandLineNonOptionTestCase ();
   /** Destructor */
   virtual ~CommandLineNonOptionTestCase ()
   {}
 
 private:
-  virtual void DoRun (void);                 /**< Run the test */
+  /** Run the test */
+  virtual void DoRun (void);
 
 };
 
@@ -405,13 +455,15 @@ CommandLineNonOptionTestCase::DoRun (void)
 class CommandLineTestSuite : public TestSuite
 {
 public:
-  CommandLineTestSuite ();                   /**< Constructor */
+  /** Constructor */
+  CommandLineTestSuite ();
 };
 
 CommandLineTestSuite::CommandLineTestSuite ()
   : TestSuite ("command-line")
 {
   AddTestCase (new CommandLineBooleanTestCase);
+  AddTestCase (new CommandLineUint8tTestCase);
   AddTestCase (new CommandLineIntTestCase);
   AddTestCase (new CommandLineUnsignedIntTestCase);
   AddTestCase (new CommandLineStringTestCase);
