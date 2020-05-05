@@ -810,11 +810,11 @@ latency, and high throughput with shallow-buffered switches.
 
 * Receiver functionality: If CE is set in IP header of incoming packet, send congestion notification to the sender by setting ECE in TCP header. This processing is different from standard ECN processing which sets ECE bit for every ACK until it observes CWR
 
-* Sender functionality: The sender makes use of the modified receiver ECE semantics to maintain an average of fraction of packets marked (α) by using the exponential weighted moving average as shown below:
+* Sender functionality: The sender makes use of the modified receiver ECE semantics to maintain an average of fraction of packets marked (:math:`\alpha`) by using the exponential weighted moving average as shown below:
 
 .. math::
 
-               α = (1 - g) x α + g x F
+               \alpha = (1 - g) x \alpha + g x F
 
 where
 
@@ -827,7 +827,7 @@ window as follows, once for every window of data:
 
 .. math::
 
-               cwnd = cwnd * (1 - α / 2)
+               cwnd = cwnd * (1 - \alpha / 2)
 
 Following the recommendation of RFC 8257, the default values of the parameters are:
 
@@ -835,7 +835,7 @@ Following the recommendation of RFC 8257, the default values of the parameters a
 
   g = 0.0625 (i.e., 1/16)
 
-  initial alpha (α) = 1
+  initial alpha (\alpha) = 1
 
 
 
