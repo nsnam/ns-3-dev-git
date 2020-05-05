@@ -353,7 +353,11 @@ OcbWifiMacTestCase::PostDeviceConfiguration (Ptr<Node> static_node, Ptr<Node> mo
   phytx_time = macassoc_time = phyrx_time = Time ();
   phytx_pos = macassoc_pos = phyrx_pos = Vector ();
 
-  Config::Connect ("/NodeList/1/DeviceList/*/Mac/Assoc", MakeCallback (&OcbWifiMacTestCase::MacAssoc, this));
+  if ( DynamicCast<StaWifiMac> (mobile_device->GetMac () ) )
+    {
+      // This trace is available only in a StaWifiMac
+      Config::Connect ("/NodeList/1/DeviceList/*/Mac/Assoc", MakeCallback (&OcbWifiMacTestCase::MacAssoc, this));
+    }
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/RxOk", MakeCallback (&OcbWifiMacTestCase::PhyRxOkTrace, this));
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/Tx", MakeCallback (&OcbWifiMacTestCase::PhyTxTrace, this));
 }
