@@ -149,5 +149,11 @@ SpectrumChannel::GetSpectrumPropagationLossModel (void)
   return m_spectrumPropagationLoss;
 }
 
+Ptr<PropagationLossModel>
+SpectrumChannel::GetPropagationLossModel ()
+{
+  return m_propagationLoss;
+}
+
 
 } // namespace
