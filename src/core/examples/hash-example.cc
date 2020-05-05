@@ -209,17 +209,15 @@ public:
 
     std::cout << GetName () << ": " << m_coll.size () << " collisions:"
               << std::endl;
-    for (collision_t::const_iterator it = m_coll.begin ();
-         it != m_coll.end ();
-         ++it)
+    for (auto collision : m_coll)
       {
-        uint64_t h = it->first;
+        uint64_t h = collision.first;
 
         std::cout << std::setfill ('0') << std::hex << std::setw (8) << h
                   << std::dec << std::setfill (' ')  << "  "
                   << std::setw (20) << std::left
                   << m_dict.find (h)->second
-                  << it->second
+                  << collision.second
                   << std::right
                   << std::endl;
       }
@@ -303,11 +301,9 @@ public:
       }
 
     int newPhrases = 0;
-    for (std::vector <Collider>::iterator it = m_hashes.begin ();
-         it != m_hashes.end ();
-         ++it)
+    for (auto & collider : m_hashes)
       {
-        newPhrases += it->Add (phrase);
+        newPhrases += collider.Add (phrase);
       }
 
     if (newPhrases)
@@ -381,11 +377,9 @@ public:
   {
     ReportExpectedCollisions ();
 
-    for (std::vector <Collider>::const_iterator it = m_hashes.begin ();
-         it != m_hashes.end ();
-         ++it)
+    for (auto collider : m_hashes)
       {
-        it->Report ();
+        collider.Report ();
       }
   }  // Report ()
 
@@ -394,19 +388,17 @@ public:
    *
    * \param [in] hindex Index of the hash Collider to use.
    */
-  void TimeOne (const int hindex)
+  void TimeOne (const Collider & collider)
   {
     // Hashing speed
     uint32_t reps = 100;
-    Hasher h = m_hashes[hindex].m_hash;
+    Hasher h = collider.m_hash;
     int start = clock ();
-    for (std::vector<std::string>::const_iterator w = m_words.begin ();
-         w != m_words.end ();
-         ++w)
+    for (auto const & word : m_words)
       {
         for (uint32_t i = 0; i < reps; ++i)
           {
-            h.clear ().GetHash32 (*w);
+            h.clear ().GetHash32 (word);
           }
       }
     int stop = clock ();
@@ -414,7 +406,7 @@ public:
     double per = 1e9 * delta / (m_nphrases * reps * CLOCKS_PER_SEC);
 
     std::cout << std::left
-              << std::setw (32) << m_hashes[hindex].GetName ()
+              << std::setw (32) << collider.GetName ()
               << std::right
               << std::setw (10) << m_nphrases
               << std::setw (10) << reps
@@ -437,9 +429,9 @@ public:
               << std::setw (12) << "ns/hash"
               << std::endl;
 
-    for (unsigned int i = 0; i < m_hashes.size (); ++i)
+    for (auto const & collider : m_hashes)
       {
-        TimeOne (i);
+        TimeOne (collider);
       }
   }  // Time ()
 
@@ -491,11 +483,8 @@ public:
               << (m_files.size () == 1 ? "y" : "ies")
               << std::endl;
 
-    for (std::vector <std::string>::const_iterator it = m_files.begin ();
-         it != m_files.end ();
-         ++it)
+    for (auto dictFile : m_files)
       {
-        std::string dictFile = *it;
         std::cout << "Dictionary file: " << dictFile << std::endl;
 
         // Find collisions

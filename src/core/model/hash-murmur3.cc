@@ -30,6 +30,7 @@
  * In addition comment blocks have been converted to Doxygen format.
  * Function arguments for buffer length which were originally
  * "int len" or "int i" have been changed to "std::size_t".
+ * In the _x86 versions the main loop used negative indexes, as shown.
  * Other conversions to std::size_t are marked.
  */
 
@@ -210,9 +211,11 @@ void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
   //----------
   // body
 
-  const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
+  //PDB: const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
+  const uint32_t * blocks = (const uint32_t *)(data);
 
-  for(std::size_t i = -nblocks; i; i++)  //PDB: was int i
+  //PDB: for(int i = -nblocks; i; i++)
+  for(std::size_t i = 0; i < nblocks; i++)
   {
     uint32_t k1 = getblock(blocks,i);
 
@@ -320,9 +323,11 @@ void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
   //----------
   // body
 
-  const uint32_t * blocks = (const uint32_t *)(data + nblocks*16);
+  //PDB: const uint32_t * blocks = (const uint32_t *)(data + nblocks*16);
+  const uint32_t * blocks = (const uint32_t *)(data);
 
-  for(std::size_t i = -nblocks; i; i++)  //PDB: was int i
+  //PDB: for(int i = -nblocks; i; i++)
+  for(std::size_t i = 0; i < nblocks; i++)
   {
     uint32_t k1 = getblock(blocks,i*4+0);
     uint32_t k2 = getblock(blocks,i*4+1);
