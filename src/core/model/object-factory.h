@@ -57,9 +57,15 @@ public:
   /**
    * Construct a factory for a specific TypeId by name.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs
    * \param [in] typeId The name of the TypeId this factory should create.
+   * \param [in] args A sequence of name-value pairs of additional attributes to set.
+   *
+   * The args sequence can be made of any number of pairs, each consisting of a
+   * name (of std::string type) followed by a value (of const AttributeValue & type).
    */
-  ObjectFactory (std::string typeId);
+  template <typename... Args>
+  ObjectFactory (const std::string& typeId, Args&&... args);
 
   /**@{*/
   /**
@@ -82,10 +88,22 @@ public:
   /**
    * Set an attribute to be set during construction.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs
    * \param [in] name The name of the attribute to set.
    * \param [in] value The value of the attribute to set.
+   * \param [in] args A sequence of name-value pairs of additional attributes to set.
+   *
+   * The args sequence can be made of any number of pairs, each consisting of a
+   * name (of std::string type) followed by a value (of const AttributeValue & type).
    */
-  void Set (std::string name, const AttributeValue &value);
+  template <typename... Args>
+  void Set (const std::string &name, const AttributeValue &value, Args&&... args);
+
+  /**
+   * Base case to stop the recursion performed by the templated version of this
+   * method.
+   */
+  void Set (void);
 
   /**
    * Get the TypeId which will be created by this ObjectFactory.
@@ -113,6 +131,13 @@ public:
   Ptr<T> Create (void) const;
 
 private:
+  /**
+   * Set an attribute to be set during construction.
+   *
+   * \param [in] name The name of the attribute to set.
+   * \param [in] value The value of the attribute to set.
+   */
+  void DoSet (const std::string &name, const AttributeValue &value);
   /**
    * Print the factory configuration on an output stream.
    *
@@ -154,38 +179,16 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory);
  * Allocate an Object on the heap and initialize with a set of attributes.
  *
  * \tparam T \explicit The requested Object type.
- * \param [in] n1 Name of attribute
- * \param [in] v1 Value of attribute
- * \param [in] n2 Name of attribute
- * \param [in] v2 Value of attribute
- * \param [in] n3 Name of attribute
- * \param [in] v3 Value of attribute
- * \param [in] n4 Name of attribute
- * \param [in] v4 Value of attribute
- * \param [in] n5 Name of attribute
- * \param [in] v5 Value of attribute
- * \param [in] n6 Name of attribute
- * \param [in] v6 Value of attribute
- * \param [in] n7 Name of attribute
- * \param [in] v7 Value of attribute
- * \param [in] n8 Name of attribute
- * \param [in] v8 Value of attribute
- * \param [in] n9 Name of attribute
- * \param [in] v9 Value of attribute
+ * \tparam Args \deduced The type of the sequence of name-value pairs.
+ * \param [in] args A sequence of name-value pairs of the attributes to set.
  * \returns A pointer to a newly allocated object.
+ *
+ * The args sequence can be made of any number of pairs, each consisting of a
+ * name (of std::string type) followed by a value (of const AttributeValue & type).
  */
-template <typename T>
+template <typename T, typename... Args>
 Ptr<T>
-CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = EmptyAttributeValue (),
-                            std::string n2 = "", const AttributeValue & v2 = EmptyAttributeValue (),
-                            std::string n3 = "", const AttributeValue & v3 = EmptyAttributeValue (),
-                            std::string n4 = "", const AttributeValue & v4 = EmptyAttributeValue (),
-                            std::string n5 = "", const AttributeValue & v5 = EmptyAttributeValue (),
-                            std::string n6 = "", const AttributeValue & v6 = EmptyAttributeValue (),
-                            std::string n7 = "", const AttributeValue & v7 = EmptyAttributeValue (),
-                            std::string n8 = "", const AttributeValue & v8 = EmptyAttributeValue (),
-                            std::string n9 = "", const AttributeValue & v9 = EmptyAttributeValue ()
-                            );
+CreateObjectWithAttributes (Args... args);
 
 
 ATTRIBUTE_HELPER_HEADER (ObjectFactory);
@@ -207,29 +210,28 @@ ObjectFactory::Create (void) const
   return object->GetObject<T> ();
 }
 
-template <typename T>
+template <typename... Args>
+ObjectFactory::ObjectFactory (const std::string& typeId, Args&&... args)
+{
+  SetTypeId (typeId);
+  Set (args...);
+}
+
+template <typename... Args>
+void
+ObjectFactory::Set (const std::string &name, const AttributeValue & value, Args&&... args)
+{
+  DoSet (name, value);
+  Set (args...);
+}
+
+template <typename T, typename... Args>
 Ptr<T>
-CreateObjectWithAttributes (std::string n1, const AttributeValue & v1,
-                            std::string n2, const AttributeValue & v2,
-                            std::string n3, const AttributeValue & v3,
-                            std::string n4, const AttributeValue & v4,
-                            std::string n5, const AttributeValue & v5,
-                            std::string n6, const AttributeValue & v6,
-                            std::string n7, const AttributeValue & v7,
-                            std::string n8, const AttributeValue & v8,
-                            std::string n9, const AttributeValue & v9)
+CreateObjectWithAttributes (Args... args)
 {
   ObjectFactory factory;
   factory.SetTypeId (T::GetTypeId ());
-  factory.Set (n1, v1);
-  factory.Set (n2, v2);
-  factory.Set (n3, v3);
-  factory.Set (n4, v4);
-  factory.Set (n5, v5);
-  factory.Set (n6, v6);
-  factory.Set (n7, v7);
-  factory.Set (n8, v8);
-  factory.Set (n9, v9);
+  factory.Set (args...);
   return factory.Create<T> ();
 }
 

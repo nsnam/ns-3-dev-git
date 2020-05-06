@@ -36,12 +36,6 @@ ObjectFactory::ObjectFactory ()
   NS_LOG_FUNCTION (this);
 }
 
-ObjectFactory::ObjectFactory (std::string typeId)
-{
-  NS_LOG_FUNCTION (this << typeId);
-  SetTypeId (typeId);
-}
-
 void
 ObjectFactory::SetTypeId (TypeId tid)
 {
@@ -70,7 +64,7 @@ ObjectFactory::IsTypeIdSet (void) const
   return false;
 }
 void
-ObjectFactory::Set (std::string name, const AttributeValue &value)
+ObjectFactory::DoSet (const std::string &name, const AttributeValue &value)
 {
   NS_LOG_FUNCTION (this << name << &value);
   if (name == "")
@@ -91,6 +85,10 @@ ObjectFactory::Set (std::string name, const AttributeValue &value)
       return;
     }
   m_parameters.Add (name, info.checker, value.Copy ());
+}
+void
+ObjectFactory::Set (void)
+{
 }
 
 TypeId
