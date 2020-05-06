@@ -21,6 +21,8 @@
 //       =================
 //              LAN
 //
+// This program demonstrates some basic use of the Object names capability
+//
 
 #include "ns3/core-module.h"
 #include "ns3/csma-module.h"
@@ -31,18 +33,19 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ObjectNamesExample");
 
+uint32_t bytesReceived = 0;
+
 void 
 RxEvent (std::string context, Ptr<const Packet> packet)
 {
-  NS_LOG_INFO (context << " packet " << packet);
+  std::cout << Simulator::Now ().GetSeconds () << "s " << context << " packet size " << packet->GetSize () << std::endl;
+  bytesReceived += packet->GetSize ();
 }
 
 int 
 main (int argc, char *argv[])
 {
-#if 1
-  LogComponentEnable ("ObjectNamesExample", LOG_LEVEL_INFO);
-#endif
+  bool outputValidated = true;
 
   CommandLine cmd (__FILE__);
   cmd.Parse (argc, argv);
@@ -103,7 +106,22 @@ main (int argc, char *argv[])
   // in this case, the "/Names" prefix is always required since the _Config_ 
   // system always expects to see a fully qualified path name.
   //
+
+  Ptr<CsmaNetDevice> csmaNetDevice = d.Get (0)->GetObject<CsmaNetDevice> ();
+  UintegerValue val;
+  csmaNetDevice->GetAttribute ("Mtu", val);
+  std::cout << "MTU on device 0 before configuration is " << val.Get () << std::endl;
+  
   Config::Set ("/Names/client/eth0/Mtu", UintegerValue (1234));
+
+  // Check the attribute again
+  csmaNetDevice->GetAttribute ("Mtu", val);
+  std::cout << "MTU on device 0 after configuration is " << val.Get () << std::endl;
+
+  if (val.Get () != 1234)
+    {
+      outputValidated = false;
+    }
 
   //
   // You can mix and match names and Attributes in calls to the Config system.
@@ -178,6 +196,24 @@ main (int argc, char *argv[])
   //
   csma.EnablePcap ("client-device.pcap", d.Get (0), false, true);
 
+  std::cout << "Running simulation..." << std::endl;
   Simulator::Run ();
   Simulator::Destroy ();
+
+  // Expected to see ARP exchange and one packet
+  // 64 bytes (minimum Ethernet frame size) x 2, plus (1024 + 8 + 20 + 18)
+  if (bytesReceived != (64 + 64 + 1070))
+    {
+      outputValidated = false;
+    }
+
+  if (outputValidated)
+    {
+      exit (0);
+    }
+  else
+    {
+      std::cerr << "Program internal checking failed; exiting with error" << std::endl; 
+      exit (1);
+    }
 }
