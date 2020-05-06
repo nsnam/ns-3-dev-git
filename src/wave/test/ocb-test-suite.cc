@@ -28,6 +28,7 @@
 #include "ns3/packet-socket-address.h"
 #include "ns3/mobility-model.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/sta-wifi-mac.h"
 #include "ns3/position-allocator.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/mobility-helper.h"
