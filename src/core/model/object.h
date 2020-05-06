@@ -146,19 +146,21 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
-   * Get a pointer to the requested aggregated Object.
+   * Get a pointer to the requested aggregated Object.  If the type of object
+   * requested is ns3::Object, a Ptr to the calling object is returned.
    *
-   * \returns A pointer to the requested Object, or zero
-   *          if it could not be found.
+   * \returns A pointer to the requested aggregated Object matching the
+   *          type requested, or zero if it could not be found.
    */
   template <typename T>
   inline Ptr<T> GetObject (void) const;
   /**
-   * Get a pointer to the requested aggregated Object by TypeId.
+   * Get a pointer to the requested aggregated Object by TypeId.  If the
+   * TypeId argument is ns3::Object, a Ptr to the calling object is returned.
    *
    * \param [in] tid The TypeId of the requested Object.
-   * \returns A pointer to the requested Object, or zero
-   *          if it could not be found.
+   * \returns A pointer to the requested Object with the specified TypeId,
+   *          or zero if it could not be found.
    */
   template <typename T>
   Ptr<T> GetObject (TypeId tid) const;
@@ -479,6 +481,14 @@ Object::GetObject () const
   return 0;
 }
 
+template
+<>
+inline Ptr<Object>
+Object::GetObject () const
+{
+  return Ptr<Object> (const_cast<Object *> (this));
+}
+
 template <typename T>
 Ptr<T>
 Object::GetObject (TypeId tid) const
@@ -489,6 +499,21 @@ Object::GetObject (TypeId tid) const
       return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
   return 0;
+}
+
+template
+<>
+inline Ptr<Object>
+Object::GetObject (TypeId tid) const
+{
+  if (tid == Object::GetTypeId ())
+    {
+      return Ptr<Object> (const_cast<Object *> (this));
+    }
+  else
+    {
+      return DoGetObject (tid);
+    }
 }
 
 /*************************************************************************
