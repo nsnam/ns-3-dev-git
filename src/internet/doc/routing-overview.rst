@@ -438,29 +438,16 @@ A multicast route must specify an origin IP address, a multicast group and an
 input network interface index as conditions and provide a vector of output
 network interface indices over which packets matching the conditions are sent.
 
-Typically there are two main types of multicast routes:  routes of the first
-kind are used during forwarding. All of the conditions must be explicitly
-provided. The second kind of routes are used to get packets off of a local node.
-The difference is in the input interface. Routes for forwarding will always
-have an explicit input interface specified. Routes off of a node will always
-set the input interface to a wildcard specified by the index
-Ipv4RoutingProtocol::IF\_INDEX\_ANY.
+Typically there are two main types of multicast routes: 
 
-For routes off of a local node wildcards may be used in the origin and multicast
-group addresses. The wildcard used for Ipv4Adresses is that address returned by
-Ipv4Address::GetAny () -- typically "0.0.0.0". Usage of a wildcard allows one to
-specify default behavior to varying degrees.
+* Routes used during forwarding, and
+* Routes used in the originator node.
 
-For example, making the origin address a wildcard, but leaving the multicast
-group specific allows one (in the case of a node with multiple interfaces) to
-create different routes using different output interfaces for each multicast
-group.
+In the first case all the conditions must be explicitly
+provided. 
 
-If the origin and multicast addresses are made wildcards, you have created
-essentially a default multicast address that can forward to multiple 
-interfaces. Compare this to the actual default multicast address that is
-limited to specifying a single output interface for compatibility with
-existing functionality in other systems.
+In the second case, the route is equivalent to a unicast route, and must be added
+through `Ipv4StaticRouting::AddHostRouteTo`.
 
 Another command sets the default multicast route::
 

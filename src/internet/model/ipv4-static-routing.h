@@ -238,37 +238,18 @@ public:
  * output network interface indices over which packets matching the conditions
  * are sent.
  *
- * Typically there are two main types of multicast routes:  routes of the 
- * first kind are used during forwarding.  All of the conditions must be
- * explicitly provided.  The second kind of routes are used to get packets off
- * of a local node.  The difference is in the input interface.  Routes for
- * forwarding will always have an explicit input interface specified.  Routes
- * off of a node will always set the input interface to a wildcard specified
- * by the index Ipv4RoutingProtocol::INTERFACE_ANY.
- *
- * For routes off of a local node wildcards may be used in the origin and
- * multicast group addresses.  The wildcard used for Ipv4Adresses is that 
- * address returned by Ipv4Address::GetAny () -- typically "0.0.0.0".  Usage
- * of a wildcard allows one to specify default behavior to varying degrees.
- *
- * For example, making the origin address a wildcard, but leaving the 
- * multicast group specific allows one (in the case of a node with multiple
- * interfaces) to create different routes using different output interfaces
- * for each multicast group.
- *
- * If the origin and multicast addresses are made wildcards, you have created
- * essentially a default multicast address that can forward to multiple 
- * interfaces.  Compare this to the actual default multicast address that is
- * limited to specifying a single output interface for compatibility with
- * existing functionality in other systems.
+ * Typically there are two main types of multicast routes:  routes used during
+ * forwarding, and routes used in the originator node.
+ * For forwarding, all of the conditions must be explicitly provided.
+ * For originator nodes, the route is equivalent to a unicast route, and
+ * must be added through `AddHostRouteTo`.
  * 
  * \param origin The Ipv4Address of the origin of packets for this route.  May
  * be Ipv4Address:GetAny for open groups.
  * \param group The Ipv4Address of the multicast group or this route.
  * \param inputInterface The input network interface index over which to 
- * expect packets destined for this route.  May be
- * Ipv4RoutingProtocol::INTERFACE_ANY for packets of local origin.
- * \param outputInterfaces A vector of network interface indices used to specify
+ * expect packets destined for this route.
+ * \param outputInterfaces A vector of network interface indexes used to specify
  * how to send packets to the destination(s).
  *
  * \see Ipv4Address
