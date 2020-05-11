@@ -226,12 +226,6 @@ bool DataRate::operator != (const DataRate& rhs) const
   return m_bps!=rhs.m_bps;
 }
 
-double DataRate::CalculateTxTime (uint32_t bytes) const
-{
-  NS_LOG_FUNCTION (this << bytes);
-  return static_cast<double>(bytes)*8/m_bps;
-}
-
 Time DataRate::CalculateBytesTxTime (uint32_t bytes) const
 {
   NS_LOG_FUNCTION (this << bytes);

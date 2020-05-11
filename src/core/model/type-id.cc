@@ -1110,14 +1110,6 @@ TypeId::GetTraceSource (std::size_t i) const
 TypeId
 TypeId::AddTraceSource (std::string name,
                         std::string help,
-                        Ptr<const TraceSourceAccessor> accessor)
-{
-  return AddTraceSource (name, help, accessor, "(not yet documented)");
-}
-
-TypeId
-TypeId::AddTraceSource (std::string name,
-                        std::string help,
                         Ptr<const TraceSourceAccessor> accessor,
                         std::string callback,
                         SupportLevel supportLevel,

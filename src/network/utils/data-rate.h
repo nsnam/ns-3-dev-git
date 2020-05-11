@@ -179,19 +179,6 @@ public:
   Time CalculateBitsTxTime (uint32_t bits) const;
 
   /**
-   * \brief Calculate transmission time
-   *
-   * Calculates the transmission time at this data rate
-   * \param bytes The number of bytes (not bits) for which to calculate
-   * \return The transmission time in seconds for the number of bytes specified
-   *
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead CalculateBytesTxTime()
-   */
-  NS_DEPRECATED
-  double CalculateTxTime (uint32_t bytes) const;
-
-  /**
    * Get the underlying bitrate
    * \return The underlying bitrate in bits per second
    */

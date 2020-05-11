@@ -58,7 +58,7 @@ public:
   * \c MobilityBuildingInfo class.
   *
   */
-  NS_DEPRECATED
+  NS_DEPRECATED_3_31
   static void MakeMobilityModelConsistent ();
   /**
    * \brief Make the given mobility model consistent, by determining whether

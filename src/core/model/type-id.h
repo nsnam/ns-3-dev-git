@@ -435,22 +435,6 @@ public:
    *             trace source.
    * \param [in] accessor A pointer to a TraceSourceAccessor which can be
    *             used to connect/disconnect sinks to this trace source.
-   * \returns this TypeId instance.
-   * \deprecated
-   */
-  NS_DEPRECATED
-  TypeId AddTraceSource (std::string name,
-                         std::string help,
-                         Ptr<const TraceSourceAccessor> accessor);
-
-  /**
-   * Record a new TraceSource.
-   *
-   * \param [in] name The name of the new trace source
-   * \param [in] help Some help text which describes the purpose of this
-   *             trace source.
-   * \param [in] accessor A pointer to a TraceSourceAccessor which can be
-   *             used to connect/disconnect sinks to this trace source.
    * \param [in] callback Fully qualified typedef name for the callback
    *             signature.  Generally this should begin with the
    *             "ns3::" namespace qualifier.

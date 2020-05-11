@@ -39,13 +39,10 @@
  *
  * For example,
  * \snippet src/core/doc/deprecated-example.h doxygen snippet
+ *
+ * To ease future maintenance please use the versioned forms:
+ * `NS_DEPRECATED_3_XX`, not the generic `NS_DEPRECATED`
  */
-/**
- * \ingroup core
- * \def NS_DEPRECATED_3_31
- * Tag for things deprecated in version ns-3.31.
- */
-
 #if defined(__GNUC__)
 /* Test for GCC >= 4.1 */
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100)
@@ -65,8 +62,22 @@
 #define NS_DEPRECATED
 #endif
 
+/**
+ * \ingroup core
+ * \def NS_DEPRECATED_3_31
+ * Tag for things deprecated in version ns-3.31.
+ */
 #ifdef NS_DEPRECATED
 #define NS_DEPRECATED_3_31 NS_DEPRECATED
+#endif
+
+/**
+ * \ingroup core
+ * \def NS_DEPRECATED_3_30
+ * Tag for things deprecated in version ns-3.30.
+ */
+#ifdef NS_DEPRECATED
+#define NS_DEPRECATED_3_30 NS_DEPRECATED
 #endif
 
 #endif /* NS3_DEPRECATED_H */

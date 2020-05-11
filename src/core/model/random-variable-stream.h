@@ -653,13 +653,6 @@ public:
   ParetoRandomVariable ();
 
   /**
-   * \brief Returns the mean parameter for the Pareto distribution returned by this RNG stream.
-   * \return The mean parameter for the Pareto distribution returned by this RNG stream.
-   */
-  NS_DEPRECATED
-  double GetMean (void) const;
-
-  /**
    * \brief Returns the scale parameter for the Pareto distribution returned by this RNG stream.
    * \return The scale parameter for the Pareto distribution returned by this RNG stream.
    */

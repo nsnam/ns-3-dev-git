@@ -81,7 +81,7 @@ public:
    *  will satisfy the need to determine if a node is inside or outside
    *  a building.
    */
-  NS_DEPRECATED
+  NS_DEPRECATED_3_31
   bool IsOutdoor (void);
 
   /** 

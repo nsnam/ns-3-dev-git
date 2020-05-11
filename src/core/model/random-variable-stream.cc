@@ -484,21 +484,6 @@ ParetoRandomVariable::ParetoRandomVariable ()
 }
 
 double
-ParetoRandomVariable::GetMean (void) const
-{
-  NS_LOG_FUNCTION (this);
-
-  double mean = std::numeric_limits<double>::infinity ();
-
-  if (m_shape > 1)
-    {
-      mean = m_shape * m_scale / (m_shape - 1);
-    }
-
-  return mean;
-}
-
-double
 ParetoRandomVariable::GetScale (void) const
 {
   NS_LOG_FUNCTION (this);
