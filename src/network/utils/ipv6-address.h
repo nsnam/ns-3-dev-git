@@ -281,16 +281,6 @@ public:
   bool IsAllRoutersMulticast () const;
 
   /**
-   * \brief If the IPv6 address is "all hosts multicast" (ff02::3/8).
-   *
-   * \deprecated This function is deprecated because the address has been removed from RFCs.
-   *
-   * \return true if "all hosts multicast", false otherwise
-   */
-  NS_DEPRECATED
-  bool IsAllHostsMulticast () const;
-
-  /**
    * \brief If the IPv6 address is a link-local address (fe80::/64).
    * \return true if the address is link-local, false otherwise
    */

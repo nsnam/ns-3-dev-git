@@ -785,13 +785,6 @@ bool Ipv6Address::IsAllRoutersMulticast () const
   return (*this == allroutersI || *this == allroutersL || *this == allroutersR || *this == allroutersS);
 }
 
-bool Ipv6Address::IsAllHostsMulticast () const
-{
-  NS_LOG_FUNCTION (this);
-  static Ipv6Address allhosts ("ff02::3");
-  return (*this == allhosts);
-}
-
 bool Ipv6Address::IsAny () const
 {
   NS_LOG_FUNCTION (this);
