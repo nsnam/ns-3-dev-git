@@ -234,11 +234,11 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
     {
       return false;
     }
-  if (GetErpSupported () == true && GetShortSlotTimeSupported () == true)
+  if (GetErpSupported () && GetShortSlotTimeSupported ())
     {
       for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
         {
-          if (m_stationManager->GetShortSlotTimeSupported (i->second) == false)
+          if (!m_stationManager->GetShortSlotTimeSupported (i->second))
             {
               return false;
             }
@@ -251,11 +251,11 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
 bool
 ApWifiMac::GetShortPreambleEnabled (void) const
 {
-  if (GetErpSupported () || m_phy->GetShortPhyPreambleSupported ())
+  if (GetErpSupported () && m_phy->GetShortPhyPreambleSupported ())
     {
       for (std::list<Mac48Address>::const_iterator i = m_nonErpStations.begin (); i != m_nonErpStations.end (); i++)
         {
-          if (m_stationManager->GetShortPreambleSupported (*i) == false)
+          if (!m_stationManager->GetShortPreambleSupported (*i))
             {
               return false;
             }
@@ -271,7 +271,7 @@ ApWifiMac::IsNonGfHtStasPresent (void) const
   bool isNonGfHtStasPresent = false;
   for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
     {
-      if (m_stationManager->GetGreenfieldSupported (i->second) == false)
+      if (!m_stationManager->GetGreenfieldSupported (i->second))
         {
           isNonGfHtStasPresent = true;
           break;
