@@ -230,6 +230,8 @@ public:
    *
    * This form is required to generate Doxygen documentation of the
    * arguments and options.
+   *
+   * \param [in] filename The source file name.
    */
   CommandLine (const std::string filename);
   /**

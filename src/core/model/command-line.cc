@@ -339,11 +339,6 @@ CommandLine::PrintDoxygenUsage (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  {
-    char buf[1024];
-    std::string cwd= getcwd (buf, 1024);
-  }
-  
   const char * envVar = std::getenv ("NS_COMMANDLINE_INTROSPECTION");
   if (envVar == 0 || std::strlen (envVar) == 0)
     {

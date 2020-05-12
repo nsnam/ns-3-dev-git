@@ -301,7 +301,7 @@ else
     # Modify doxygen.conf to generate all the warnings
     # (We also suppress dot graphs, so shorten the run time.)
 
-    conf=doxygen.conf
+    conf=doc/doxygen.conf
     cp $conf ${conf}.bak
     cat <<-EOF >> $conf
     
@@ -333,7 +333,7 @@ EOF
     fi
 
     # Waf insists on writing cruft to stdout
-    sed -i -E '/^Waf:/d' $intro_h
+    sed -i -E '/^Waf:/d' doc/$intro_h
 
     verbose -n "Rebuilding doxygen docs with full errors"
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
