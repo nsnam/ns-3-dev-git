@@ -2,15 +2,19 @@
 
 
 def build(bld):
-    module = bld.create_ns3_module('point-to-point', ['network', 'mpi'])
+    if bld.env['ENABLE_MPI']:
+        module = bld.create_ns3_module('point-to-point', ['network', 'mpi'])
+    else:
+        module = bld.create_ns3_module('point-to-point', ['network'])
     module.source = [
         'model/point-to-point-net-device.cc',
         'model/point-to-point-channel.cc',
-        'model/point-to-point-remote-channel.cc',
         'model/ppp-header.cc',
         'helper/point-to-point-helper.cc',
         ]
-
+    if bld.env['ENABLE_MPI']:
+        module.source.append('model/point-to-point-remote-channel.cc')
+    
     module_test = bld.create_ns3_module_test_library('point-to-point')
     module_test.source = [
         'test/point-to-point-test.cc',
@@ -21,10 +25,11 @@ def build(bld):
     headers.source = [
         'model/point-to-point-net-device.h',
         'model/point-to-point-channel.h',
-        'model/point-to-point-remote-channel.h',
         'model/ppp-header.h',
         'helper/point-to-point-helper.h',
         ]
+    if bld.env['ENABLE_MPI']:
+        headers.source.append('model/point-to-point-remote-channel.h')
 
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')

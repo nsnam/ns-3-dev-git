@@ -67,7 +67,6 @@ NullMessageSimulatorImpl::GetTypeId (void)
 
 NullMessageSimulatorImpl::NullMessageSimulatorImpl ()
 {
-#ifdef NS3_MPI
   NS_LOG_FUNCTION (this);
 
   m_myId = MpiInterface::GetSystemId ();
@@ -91,10 +90,6 @@ NullMessageSimulatorImpl::NullMessageSimulatorImpl ()
 
   NS_ASSERT (g_instance == 0);
   g_instance = this;
-
-#else
-  NS_FATAL_ERROR ("Can't use Null Message simulator without MPI compiled in");
-#endif
 }
 
 NullMessageSimulatorImpl::~NullMessageSimulatorImpl ()

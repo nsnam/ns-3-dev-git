@@ -27,12 +27,7 @@
 #include <ns3/nstime.h>
 #include <ns3/buffer.h>
 
-#ifdef NS3_MPI
 #include "mpi.h"
-#else
-typedef void* MPI_Request;
-#endif
-
 #include <list>
 
 namespace ns3 {

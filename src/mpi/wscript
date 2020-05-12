@@ -31,12 +31,17 @@ def configure(conf):
             conf.report_optional_feature("mpi", "MPI Support", True, '')            
         else:
             conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+            conf.env['MODULES_NOT_BUILT'].append('mpi')
     else:
         conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+        conf.env['MODULES_NOT_BUILT'].append('mpi')
 
 
 def build(bld):
-    env = bld.env
+    # Don't do anything for this module if mpi's not enabled.
+    if 'mpi' in bld.env['MODULES_NOT_BUILT']:
+        return
+
     sim = bld.create_ns3_module('mpi', ['core', 'network'])
     sim.source = [
         'model/distributed-simulator-impl.cc',
@@ -57,7 +62,7 @@ def build(bld):
         'model/parallel-communication-interface.h', 
         ]
 
-    if env['ENABLE_MPI']:
+    if bld.env['ENABLE_MPI']:
         sim.use.append('MPI')
 
     if bld.env['ENABLE_EXAMPLES']:

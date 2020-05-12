@@ -67,13 +67,9 @@ PointToPointRemoteChannel::TransmitStart (
   uint32_t wire = src == GetSource (0) ? 0 : 1;
   Ptr<PointToPointNetDevice> dst = GetDestination (wire);
 
-#ifdef NS3_MPI
   // Calculate the rxTime (absolute)
   Time rxTime = Simulator::Now () + txTime + GetDelay ();
   MpiInterface::SendPacket (p->Copy (), rxTime, dst->GetNode ()->GetId (), dst->GetIfIndex ());
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
   return true;
 }
 

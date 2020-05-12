@@ -36,9 +36,7 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 
-#ifdef NS3_MPI
 #include <mpi.h>
-#endif
 
 namespace ns3 {
 
@@ -67,13 +65,11 @@ SentBuffer::SetBuffer (uint8_t* buffer)
   m_buffer = buffer;
 }
 
-#ifdef NS3_MPI
 MPI_Request*
 SentBuffer::GetRequest ()
 {
   return &m_request;
 }
-#endif
 
 uint32_t              GrantedTimeWindowMpiInterface::m_sid = 0;
 uint32_t              GrantedTimeWindowMpiInterface::m_size = 1;
@@ -83,10 +79,8 @@ uint32_t              GrantedTimeWindowMpiInterface::m_rxCount = 0;
 uint32_t              GrantedTimeWindowMpiInterface::m_txCount = 0;
 std::list<SentBuffer> GrantedTimeWindowMpiInterface::m_pendingTx;
 
-#ifdef NS3_MPI
 MPI_Request* GrantedTimeWindowMpiInterface::m_requests;
 char**       GrantedTimeWindowMpiInterface::m_pRxBuffers;
-#endif
 
 TypeId 
 GrantedTimeWindowMpiInterface::GetTypeId (void)
@@ -103,7 +97,6 @@ GrantedTimeWindowMpiInterface::Destroy ()
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_MPI
   for (uint32_t i = 0; i < GetSize (); ++i)
     {
       delete [] m_pRxBuffers[i];
@@ -112,7 +105,6 @@ GrantedTimeWindowMpiInterface::Destroy ()
   delete [] m_requests;
 
   m_pendingTx.clear ();
-#endif
 }
 
 uint32_t
@@ -165,7 +157,6 @@ GrantedTimeWindowMpiInterface::Enable (int* pargc, char*** pargv)
 {
   NS_LOG_FUNCTION (this << pargc << pargv); 
 
-#ifdef NS3_MPI
   // Initialize the MPI interface
   MPI_Init (pargc, pargv);
   MPI_Barrier (MPI_COMM_WORLD);
@@ -182,9 +173,6 @@ GrantedTimeWindowMpiInterface::Enable (int* pargc, char*** pargv)
       MPI_Irecv (m_pRxBuffers[i], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
                  MPI_COMM_WORLD, &m_requests[i]);
     }
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void
@@ -192,7 +180,6 @@ GrantedTimeWindowMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, ui
 {
   NS_LOG_FUNCTION (this << p << rxTime.GetTimeStep () << node << dev);
 
-#ifdef NS3_MPI
   SentBuffer sendBuf;
   m_pendingTx.push_back (sendBuf);
   std::list<SentBuffer>::reverse_iterator i = m_pendingTx.rbegin (); // Points to the last element
@@ -217,9 +204,6 @@ GrantedTimeWindowMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, ui
   MPI_Isend (reinterpret_cast<void *> (i->GetBuffer ()), serializedSize + 16, MPI_CHAR, nodeSysId,
              0, MPI_COMM_WORLD, (i->GetRequest ()));
   m_txCount++;
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void
@@ -227,7 +211,6 @@ GrantedTimeWindowMpiInterface::ReceiveMessages ()
 { 
   NS_LOG_FUNCTION_NOARGS ();
 
-#ifdef NS3_MPI
   // Poll the non-block reads to see if data arrived
   while (true)
     {
@@ -281,9 +264,6 @@ GrantedTimeWindowMpiInterface::ReceiveMessages ()
       MPI_Irecv (m_pRxBuffers[index], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
                  MPI_COMM_WORLD, &m_requests[index]);
     }
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void
@@ -291,7 +271,6 @@ GrantedTimeWindowMpiInterface::TestSendComplete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-#ifdef NS3_MPI
   std::list<SentBuffer>::iterator i = m_pendingTx.begin ();
   while (i != m_pendingTx.end ())
     {
@@ -305,9 +284,6 @@ GrantedTimeWindowMpiInterface::TestSendComplete ()
           m_pendingTx.erase (current);
         }
     }
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void
@@ -315,7 +291,6 @@ GrantedTimeWindowMpiInterface::Disable ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-#ifdef NS3_MPI
   int flag = 0;
   MPI_Initialized (&flag);
   if (flag)
@@ -328,9 +303,6 @@ GrantedTimeWindowMpiInterface::Disable ()
     {
       NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
     }
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 

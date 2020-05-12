@@ -31,11 +31,8 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-#include <cmath>
-
-#ifdef NS3_MPI
 #include <mpi.h>
-#endif
+#include <cmath>
 
 namespace ns3 {
 
@@ -93,17 +90,12 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_MPI
   m_myId = MpiInterface::GetSystemId ();
   m_systemCount = MpiInterface::GetSize ();
 
   // Allocate the LBTS message buffer
   m_pLBTS = new LbtsMessage[m_systemCount];
   m_grantedTime = Seconds (0);
-#else
-  NS_UNUSED (m_systemCount);
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 
   m_stop = false;
   m_globalFinished = false;
@@ -166,7 +158,6 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_MPI
   if (MpiInterface::GetSize () <= 1)
     {
       m_lookAhead = Seconds (0);
@@ -276,10 +267,6 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
       m_lookAhead = Time (recvbuf);
       m_grantedTime = m_lookAhead;
     }
-
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void
@@ -372,7 +359,6 @@ DistributedSimulatorImpl::Run (void)
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_MPI
   CalculateLookAhead ();
   m_stop = false;
   m_globalFinished = false;
@@ -446,9 +432,6 @@ DistributedSimulatorImpl::Run (void)
   // If the simulator stopped naturally by lack of events, make a
   // consistency test to check that we didn't lose any events along the way.
   NS_ASSERT (!m_events->IsEmpty () || m_unscheduledEvents == 0);
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 uint32_t DistributedSimulatorImpl::GetSystemId () const

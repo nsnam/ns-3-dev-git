@@ -30,9 +30,7 @@
 #include <ns3/buffer.h>
 #include <ns3/packet.h>
 
-#if defined(NS3_MPI)
 #include "mpi.h"
-#endif
 
 namespace ns3 {
 

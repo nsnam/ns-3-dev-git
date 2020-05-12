@@ -23,14 +23,17 @@
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-remote-channel.h"
 #include "ns3/queue.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
+
+#ifdef NS3_MPI
 #include "ns3/mpi-interface.h"
 #include "ns3/mpi-receiver.h"
+#include "ns3/point-to-point-remote-channel.h"
+#endif
 
 #include "ns3/trace-helper.h"
 #include "point-to-point-helper.h"
@@ -44,7 +47,9 @@ PointToPointHelper::PointToPointHelper ()
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
+#ifdef NS3_MPI
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
+#endif
 }
 
 void 
@@ -73,7 +78,9 @@ void
 PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
+#ifdef NS3_MPI
   m_remoteChannelFactory.Set (n1, v1);
+#endif
 }
 
 void 
@@ -247,12 +254,13 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   ndqiB->GetTxQueue (0)->ConnectQueueTraces (queueB);
   devB->AggregateObject (ndqiB);
 
-  // If MPI is enabled, we need to see if both nodes have the same system id 
-  // (rank), and the rank is the same as this instance.  If both are true, 
-  //use a normal p2p channel, otherwise use a remote channel
-  bool useNormalChannel = true;
   Ptr<PointToPointChannel> channel = 0;
 
+  // If MPI is enabled, we need to see if both nodes have the same system id 
+  // (rank), and the rank is the same as this instance.  If both are true, 
+  // use a normal p2p channel, otherwise use a remote channel
+#ifdef NS3_MPI
+  bool useNormalChannel = true;
   if (MpiInterface::IsEnabled ())
     {
       uint32_t n1SystemId = a->GetSystemId ();
@@ -277,6 +285,9 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       devA->AggregateObject (mpiRecA);
       devB->AggregateObject (mpiRecB);
     }
+#else
+  channel = m_channelFactory.Create<PointToPointChannel> ();
+#endif
 
   devA->Attach (channel);
   devB->Attach (channel);

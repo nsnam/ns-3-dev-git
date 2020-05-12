@@ -551,8 +551,6 @@ def configure(conf):
         elif not_built_name in conf.env['NS3_ENABLED_CONTRIBUTED_MODULES']:
             conf.env['NS3_ENABLED_CONTRIBUTED_MODULES'].remove(not_built_name)
 
-    conf.recurse('src/mpi')
-
     # for suid bits
     try:
         conf.find_program('sudo', var='SUDO')

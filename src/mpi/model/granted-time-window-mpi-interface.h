@@ -31,11 +31,7 @@
 
 #include "parallel-communication-interface.h"
 
-#ifdef NS3_MPI
 #include "mpi.h"
-#else
-typedef void* MPI_Request;
-#endif
 
 namespace ns3 {
 

@@ -33,9 +33,7 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
-#ifdef NS3_MPI
 #include <mpi.h>
-#endif
 
 #include <iostream>
 #include <iomanip>
@@ -49,9 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("NullMessageMpiInterface");
  * maximum MPI message size for easy
  * buffer creation
  */
-#ifdef NS3_MPI
 const uint32_t NULL_MESSAGE_MAX_MPI_MSG_SIZE = 2000;
-#endif
 
 NullMessageSentBuffer::NullMessageSentBuffer ()
 {
@@ -95,14 +91,6 @@ char**       NullMessageMpiInterface::g_pRxBuffers;
 NullMessageMpiInterface::NullMessageMpiInterface ()
 {
   NS_LOG_FUNCTION (this);
-
-#ifndef NS3_MPI
-  /*
-   * This class can only be constructed if MPI is available.  Fail if an 
-   * attempt is made to instantiate this class without MPI.
-   */
-  NS_FATAL_ERROR ("Must compile with MPI if Null Message simulator is used, see --enable-mpi option for waf");
-#endif
 }
 
 NullMessageMpiInterface::~NullMessageMpiInterface ()
@@ -146,10 +134,6 @@ NullMessageMpiInterface::Enable (int* pargc, char*** pargv)
 {
   NS_LOG_FUNCTION (this << *pargc);
 
-#ifndef NS3_MPI
-  NS_UNUSED(pargv);
-#else
-
   // Initialize the MPI interface
   MPI_Init (pargc, pargv);
   MPI_Barrier (MPI_COMM_WORLD);
@@ -165,15 +149,12 @@ NullMessageMpiInterface::Enable (int* pargc, char*** pargv)
 
   g_enabled = true;
   g_initialized = true;
-
-#endif
 }
 
 void 
 NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-#ifdef NS3_MPI
   NS_ASSERT (g_enabled);
 
   g_numNeighbors = RemoteChannelBundleManager::Size();
@@ -193,7 +174,6 @@ NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
           ++index;
         }
     }
-#endif
 }
 
 void
@@ -202,8 +182,6 @@ NullMessageMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t
   NS_LOG_FUNCTION (this << p << rxTime.GetTimeStep () << node << dev);
 
   NS_ASSERT (g_enabled);
-
-#ifdef NS3_MPI
 
   // Find the system id for the destination node
   Ptr<Node> destNode = NodeList::GetNode (node);
@@ -235,8 +213,6 @@ NullMessageMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t
              0, MPI_COMM_WORLD, (iter->GetRequest ()));
 
   NullMessageSimulatorImpl::GetInstance ()->RescheduleNullMessageEvent (nodeSysId);
-
-#endif
 }
 
 void
@@ -245,8 +221,6 @@ NullMessageMpiInterface::SendNullMessage (const Time& guarantee_update, Ptr<Remo
   NS_LOG_FUNCTION (guarantee_update.GetTimeStep () << bundle);
 
   NS_ASSERT (g_enabled);
-
-#ifdef NS3_MPI
 
   NullMessageSentBuffer sendBuf;
   g_pendingTx.push_back (sendBuf);
@@ -268,7 +242,6 @@ NullMessageMpiInterface::SendNullMessage (const Time& guarantee_update, Ptr<Remo
 
   MPI_Isend (reinterpret_cast<void *> (iter->GetBuffer ()), bufferSize, MPI_CHAR, nodeSysId,
              0, MPI_COMM_WORLD, (iter->GetRequest ()));
-#endif
 }
 
 void
@@ -295,8 +268,6 @@ NullMessageMpiInterface::ReceiveMessages (bool blocking)
   NS_LOG_FUNCTION (blocking);
 
   NS_ASSERT (g_enabled);
-
-#ifdef NS3_MPI
 
   // stop flag set to true when no more messages are found to
   // process.
@@ -387,7 +358,6 @@ NullMessageMpiInterface::ReceiveMessages (bool blocking)
         }
     }
   while (!stop);
-#endif
 }
 
 void
@@ -397,7 +367,6 @@ NullMessageMpiInterface::TestSendComplete ()
 
   NS_ASSERT (g_enabled);
 
-#ifdef NS3_MPI
   std::list<NullMessageSentBuffer>::iterator iter = g_pendingTx.begin ();
   while (iter != g_pendingTx.end ())
     {
@@ -411,7 +380,6 @@ NullMessageMpiInterface::TestSendComplete ()
           g_pendingTx.erase (current);
         }
     }
-#endif
 }
 
 void
@@ -419,7 +387,6 @@ NullMessageMpiInterface::Disable ()
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_MPI
   int flag = 0;
   MPI_Initialized (&flag);
   if (flag)
@@ -458,7 +425,6 @@ NullMessageMpiInterface::Disable ()
     {
       NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
     }
-#endif
 }
 
 } // namespace ns3

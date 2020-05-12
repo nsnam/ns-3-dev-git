@@ -60,8 +60,6 @@ NS_LOG_COMPONENT_DEFINE ("CampusNetworkModelDistributed");
 int
 main (int argc, char *argv[])
 {
-#ifdef NS3_MPI
-
   typedef std::vector<NodeContainer> vectorOfNodeContainer;
   typedef std::vector<vectorOfNodeContainer> vectorOfVectorOfNodeContainer;
   typedef std::vector<vectorOfVectorOfNodeContainer> vectorOfVectorOfVectorOfNodeContainer;  
@@ -624,8 +622,5 @@ main (int argc, char *argv[])
   std::cout << "Simulator run time: " << d2 << std::endl;
   std::cout << "Total elapsed time: " << d1 + d2 << std::endl;
   return 0;
-#else
-  NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
