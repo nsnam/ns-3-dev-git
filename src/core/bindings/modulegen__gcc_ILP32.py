@@ -33,6 +33,9 @@ def register_types(module):
     module.add_class('CallbackBase')
     ## command-line.h (module 'core'): ns3::CommandLine [class]
     module.add_class('CommandLine', allow_subclassing=True)
+    typehandlers.add_type_alias('bool ( * ) ( std::string const )', 'ns3::CommandLine::Callback')
+    typehandlers.add_type_alias('bool ( * ) ( std::string const )*', 'ns3::CommandLine::Callback*')
+    typehandlers.add_type_alias('bool ( * ) ( std::string const )&', 'ns3::CommandLine::Callback&')
     ## system-mutex.h (module 'core'): ns3::CriticalSection [class]
     module.add_class('CriticalSection')
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::AttributeAccessor> [struct]
@@ -311,6 +314,8 @@ def register_types(module):
     module.add_class('PointerChecker', parent=root_module['ns3::AttributeChecker'])
     ## pointer.h (module 'core'): ns3::PointerValue [class]
     module.add_class('PointerValue', parent=root_module['ns3::AttributeValue'])
+    ## priority-queue-scheduler.h (module 'core'): ns3::PriorityQueueScheduler [class]
+    module.add_class('PriorityQueueScheduler', parent=root_module['ns3::Scheduler'])
     ## realtime-simulator-impl.h (module 'core'): ns3::RealtimeSimulatorImpl [class]
     module.add_class('RealtimeSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## realtime-simulator-impl.h (module 'core'): ns3::RealtimeSimulatorImpl::SynchronizationMode [enumeration]
@@ -641,6 +646,7 @@ def register_methods(root_module):
     register_Ns3ParetoRandomVariable_methods(root_module, root_module['ns3::ParetoRandomVariable'])
     register_Ns3PointerChecker_methods(root_module, root_module['ns3::PointerChecker'])
     register_Ns3PointerValue_methods(root_module, root_module['ns3::PointerValue'])
+    register_Ns3PriorityQueueScheduler_methods(root_module, root_module['ns3::PriorityQueueScheduler'])
     register_Ns3RealtimeSimulatorImpl_methods(root_module, root_module['ns3::RealtimeSimulatorImpl'])
     register_Ns3RefCountBase_methods(root_module, root_module['ns3::RefCountBase'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
@@ -723,6 +729,8 @@ def register_Ns3CommandLine_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## command-line.h (module 'core'): ns3::CommandLine::CommandLine() [constructor]
     cls.add_constructor([])
+    ## command-line.h (module 'core'): ns3::CommandLine::CommandLine(std::string const filename) [constructor]
+    cls.add_constructor([param('std::string const', 'filename')])
     ## command-line.h (module 'core'): ns3::CommandLine::CommandLine(ns3::CommandLine const & cmd) [constructor]
     cls.add_constructor([param('ns3::CommandLine const &', 'cmd')])
     ## command-line.h (module 'core'): void ns3::CommandLine::AddValue(std::string const & name, std::string const & help, ns3::Callback<bool, std::basic_string<char>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
@@ -1669,11 +1677,6 @@ def register_Ns3TypeId_methods(root_module, cls):
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
                    [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SupportLevel::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
-    ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
-    cls.add_method('AddTraceSource', 
-                   'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
-                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -2047,6 +2050,11 @@ def register_Ns3Object_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject() const [member function]
+    cls.add_method('GetObject', 
+                   'ns3::Ptr< ns3::Object >', 
+                   [], 
+                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
     ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
@@ -2183,7 +2191,10 @@ def register_Ns3Scheduler_methods(root_module, cls):
     return
 
 def register_Ns3SchedulerEvent_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
     cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
     ## scheduler.h (module 'core'): ns3::Scheduler::Event::Event() [constructor]
     cls.add_constructor([])
     ## scheduler.h (module 'core'): ns3::Scheduler::Event::Event(ns3::Scheduler::Event const & arg0) [constructor]
@@ -2195,8 +2206,9 @@ def register_Ns3SchedulerEvent_methods(root_module, cls):
     return
 
 def register_Ns3SchedulerEventKey_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
     ## scheduler.h (module 'core'): ns3::Scheduler::EventKey::EventKey() [constructor]
     cls.add_constructor([])
@@ -3681,11 +3693,21 @@ def register_Ns3EnumChecker_methods(root_module, cls):
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): std::string ns3::EnumChecker::GetName(int value) const [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [param('int', 'value')], 
+                   is_const=True)
     ## enum.h (module 'core'): std::string ns3::EnumChecker::GetUnderlyingTypeInformation() const [member function]
     cls.add_method('GetUnderlyingTypeInformation', 
                    'std::string', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## enum.h (module 'core'): int ns3::EnumChecker::GetValue(std::string const name) const [member function]
+    cls.add_method('GetValue', 
+                   'int', 
+                   [param('std::string const', 'name')], 
+                   is_const=True)
     ## enum.h (module 'core'): std::string ns3::EnumChecker::GetValueTypeName() const [member function]
     cls.add_method('GetValueTypeName', 
                    'std::string', 
@@ -4255,11 +4277,6 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
                    is_static=True)
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable::ParetoRandomVariable() [constructor]
     cls.add_constructor([])
-    ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetMean() const [member function]
-    cls.add_method('GetMean', 
-                   'double', 
-                   [], 
-                   is_const=True, deprecated=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -4338,6 +4355,43 @@ def register_Ns3PointerValue_methods(root_module, cls):
     cls.add_method('SetObject', 
                    'void', 
                    [param('ns3::Ptr< ns3::Object >', 'object')])
+    return
+
+def register_Ns3PriorityQueueScheduler_methods(root_module, cls):
+    ## priority-queue-scheduler.h (module 'core'): ns3::PriorityQueueScheduler::PriorityQueueScheduler(ns3::PriorityQueueScheduler const & arg0) [constructor]
+    cls.add_constructor([param('ns3::PriorityQueueScheduler const &', 'arg0')])
+    ## priority-queue-scheduler.h (module 'core'): ns3::PriorityQueueScheduler::PriorityQueueScheduler() [constructor]
+    cls.add_constructor([])
+    ## priority-queue-scheduler.h (module 'core'): static ns3::TypeId ns3::PriorityQueueScheduler::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## priority-queue-scheduler.h (module 'core'): void ns3::PriorityQueueScheduler::Insert(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    ## priority-queue-scheduler.h (module 'core'): bool ns3::PriorityQueueScheduler::IsEmpty() const [member function]
+    cls.add_method('IsEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## priority-queue-scheduler.h (module 'core'): ns3::Scheduler::Event ns3::PriorityQueueScheduler::PeekNext() const [member function]
+    cls.add_method('PeekNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## priority-queue-scheduler.h (module 'core'): void ns3::PriorityQueueScheduler::Remove(ns3::Scheduler::Event const & ev) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::Scheduler::Event const &', 'ev')], 
+                   is_virtual=True)
+    ## priority-queue-scheduler.h (module 'core'): ns3::Scheduler::Event ns3::PriorityQueueScheduler::RemoveNext() [member function]
+    cls.add_method('RemoveNext', 
+                   'ns3::Scheduler::Event', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
@@ -4828,9 +4882,17 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
     cls.add_method('Connect', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h (module 'core'): bool ns3::Config::MatchContainer::ConnectFailSafe(std::string name, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectFailSafe', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h (module 'core'): void ns3::Config::MatchContainer::ConnectWithoutContext(std::string name, ns3::CallbackBase const & cb) [member function]
     cls.add_method('ConnectWithoutContext', 
                    'void', 
+                   [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h (module 'core'): bool ns3::Config::MatchContainer::ConnectWithoutContextFailSafe(std::string name, ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContextFailSafe', 
+                   'bool', 
                    [param('std::string', 'name'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h (module 'core'): void ns3::Config::MatchContainer::Disconnect(std::string name, ns3::CallbackBase const & cb) [member function]
     cls.add_method('Disconnect', 
@@ -4868,6 +4930,10 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
     ## config.h (module 'core'): void ns3::Config::MatchContainer::Set(std::string name, ns3::AttributeValue const & value) [member function]
     cls.add_method('Set', 
                    'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h (module 'core'): bool ns3::Config::MatchContainer::SetFailSafe(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetFailSafe', 
+                   'bool', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
@@ -5315,6 +5381,11 @@ def register_functions_ns3_CommandLineHelper(module, root_module):
                         'bool', 
                         [param('std::string const', 'value'), param('bool &', 'val')], 
                         template_parameters=['bool'])
+    ## command-line.h (module 'core'): bool ns3::CommandLineHelper::UserItemParse(std::string const value, unsigned char & val) [free function]
+    module.add_function('UserItemParse', 
+                        'bool', 
+                        [param('std::string const', 'value'), param('unsigned char &', 'val')], 
+                        template_parameters=['unsigned char'])
     return
 
 def register_functions_ns3_Config(module, root_module):
@@ -5322,9 +5393,17 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('Connect', 
                         'void', 
                         [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h (module 'core'): bool ns3::Config::ConnectFailSafe(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('ConnectFailSafe', 
+                        'bool', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h (module 'core'): void ns3::Config::ConnectWithoutContext(std::string path, ns3::CallbackBase const & cb) [free function]
     module.add_function('ConnectWithoutContext', 
                         'void', 
+                        [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
+    ## config.h (module 'core'): bool ns3::Config::ConnectWithoutContextFailSafe(std::string path, ns3::CallbackBase const & cb) [free function]
+    module.add_function('ConnectWithoutContextFailSafe', 
+                        'bool', 
                         [param('std::string', 'path'), param('ns3::CallbackBase const &', 'cb')])
     ## config.h (module 'core'): void ns3::Config::Disconnect(std::string path, ns3::CallbackBase const & cb) [free function]
     module.add_function('Disconnect', 
@@ -5366,6 +5445,10 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('SetDefaultFailSafe', 
                         'bool', 
                         [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    ## config.h (module 'core'): bool ns3::Config::SetFailSafe(std::string path, ns3::AttributeValue const & value) [free function]
+    module.add_function('SetFailSafe', 
+                        'bool', 
+                        [param('std::string', 'path'), param('ns3::AttributeValue const &', 'value')])
     ## config.h (module 'core'): void ns3::Config::SetGlobal(std::string name, ns3::AttributeValue const & value) [free function]
     module.add_function('SetGlobal', 
                         'void', 
