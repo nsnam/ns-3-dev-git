@@ -282,24 +282,28 @@ Ipv6Address::Ipv6Address ()
 {
   NS_LOG_FUNCTION (this);
   memset (m_address, 0x00, 16);
+  m_initialized = false;
 }
 
 Ipv6Address::Ipv6Address (Ipv6Address const& addr)
 {
   // Do not add function logging here, to avoid stack overflow
   memcpy (m_address, addr.m_address, 16);
+  m_initialized = true;
 }
 
 Ipv6Address::Ipv6Address (Ipv6Address const* addr)
 {
   // Do not add function logging here, to avoid stack overflow
   memcpy (m_address, addr->m_address, 16);
+  m_initialized = true;
 }
 
 Ipv6Address::Ipv6Address (char const* address)
 {
   NS_LOG_FUNCTION (this << address);
   AsciiToIpv6Host (address, m_address);
+  m_initialized = true;
 }
 
 Ipv6Address::Ipv6Address (uint8_t address[16])
@@ -307,6 +311,7 @@ Ipv6Address::Ipv6Address (uint8_t address[16])
   NS_LOG_FUNCTION (this << &address);
   /* 128 bit => 16 bytes */
   memcpy (m_address, address, 16);
+  m_initialized = true;
 }
 
 Ipv6Address::~Ipv6Address ()
@@ -319,6 +324,7 @@ void Ipv6Address::Set (char const* address)
 {
   NS_LOG_FUNCTION (this << address);
   AsciiToIpv6Host (address, m_address);
+  m_initialized = true;
 }
 
 void Ipv6Address::Set (uint8_t address[16])
@@ -326,6 +332,7 @@ void Ipv6Address::Set (uint8_t address[16])
   /* 128 bit => 16 bytes */
   NS_LOG_FUNCTION (this << &address);
   memcpy (m_address, address, 16);
+  m_initialized = true;
 }
 
 void Ipv6Address::Serialize (uint8_t buf[16]) const
@@ -338,6 +345,7 @@ Ipv6Address Ipv6Address::Deserialize (const uint8_t buf[16])
 {
   NS_LOG_FUNCTION (&buf);
   Ipv6Address ipv6 ((uint8_t*)buf);
+  ipv6.m_initialized = true;
   return ipv6;
 }
 
@@ -353,12 +361,12 @@ Ipv6Address Ipv6Address::MakeIpv4MappedAddress(Ipv4Address addr)
 Ipv4Address Ipv6Address::GetIpv4MappedAddress() const
 {
   NS_LOG_FUNCTION (this);
-    uint8_t buf[16];
-    Ipv4Address v4Addr;
+  uint8_t buf[16];
+  Ipv4Address v4Addr;
 
-    Serialize (buf);
-    v4Addr = Ipv4Address::Deserialize (&buf[12]);
-    return (v4Addr);
+  Serialize (buf);
+  v4Addr = Ipv4Address::Deserialize (&buf[12]);
+  return (v4Addr);
 }
 
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Address addr, Ipv6Address prefix)

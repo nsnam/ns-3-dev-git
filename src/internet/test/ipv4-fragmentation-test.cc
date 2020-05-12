@@ -109,10 +109,11 @@ class Ipv4FragmentationTest: public TestCase
   uint8_t *m_data;        //!< Data.
   uint32_t m_size;        //!< packet size.
   uint8_t m_icmpType;     //!< ICMP type.
+  bool m_broadcast;       //!< broadcast packets
 
 public:
   virtual void DoRun (void);
-  Ipv4FragmentationTest ();
+  Ipv4FragmentationTest (bool broadcast);
   ~Ipv4FragmentationTest ();
 
   // server part
@@ -167,14 +168,16 @@ public:
 
 };
 
-Ipv4FragmentationTest::Ipv4FragmentationTest ()
-  : TestCase ("Verify the IPv4 layer 3 protocol fragmentation and reassembly")
+Ipv4FragmentationTest::Ipv4FragmentationTest (bool broadcast)
+  : TestCase (std::string ("Verify the IPv4 layer 3 protocol fragmentation and reassembly: ") +
+              (broadcast? "broadcast": "unicast"))
 {
   m_socketServer = 0;
   m_data = 0;
   m_dataSize = 0;
   m_size = 0;
   m_icmpType = 0;
+  m_broadcast = broadcast;
 }
 
 Ipv4FragmentationTest::~Ipv4FragmentationTest ()
@@ -235,6 +238,7 @@ Ipv4FragmentationTest::StartClient (Ptr<Node> ClientNode)
       m_socketClient->Connect (InetSocketAddress (Ipv4Address ("10.0.0.1"), 9));
       CallbackValue cbValue = MakeCallback(&Ipv4FragmentationTest::HandleReadIcmpClient, this);
       m_socketClient->SetAttribute ("IcmpCallback", cbValue);
+      m_socketClient->SetAllowBroadcast (m_broadcast);
     }
 
   m_socketClient->SetRecvCallback(MakeCallback(&Ipv4FragmentationTest::HandleReadClient, this));
@@ -306,7 +310,18 @@ Ptr<Packet> Ipv4FragmentationTest::SendClient (void)
   p->AddPacketTag (tag);
   p->AddByteTag (tag);
 
-  m_socketClient->Send (p);
+  if (m_broadcast)
+    {
+      Address address;
+      m_socketClient->GetPeerName (address);
+      InetSocketAddress saddress = InetSocketAddress::ConvertFrom (address);
+      saddress.SetIpv4 (Ipv4Address::GetBroadcast ());
+      m_socketClient->SendTo (p, 0, saddress);
+    }
+  else
+    {
+      m_socketClient->Send (p);
+    }
 
   return p;
 }
@@ -527,7 +542,8 @@ public:
 Ipv4FragmentationTestSuite::Ipv4FragmentationTestSuite ()
   : TestSuite ("ipv4-fragmentation", UNIT)
 {
-  AddTestCase (new Ipv4FragmentationTest, TestCase::QUICK);
+  AddTestCase (new Ipv4FragmentationTest(false), TestCase::QUICK);
+  AddTestCase (new Ipv4FragmentationTest(true), TestCase::QUICK);
 }
 
 static Ipv4FragmentationTestSuite g_ipv4fragmentationTestSuite; //!< Static variable for test initialization

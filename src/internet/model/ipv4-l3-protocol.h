@@ -298,6 +298,16 @@ private:
   virtual bool GetWeakEsModel (void) const;
 
   /**
+   * \brief Decrease the identification value for a dropped or recursed packet
+   * \param source source IPv4 address
+   * \param destination destination IPv4 address
+   * \param protocol L4 protocol
+   */
+  void DecreaseIdentification (Ipv4Address source,
+                               Ipv4Address destination,
+                               uint8_t protocol);
+
+  /**
    * \brief Construct an IPv4 header.
    * \param source source IPv4 address
    * \param destination destination IPv4 address
@@ -463,6 +473,8 @@ private:
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
   /// Trace of unicast forwarded packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+  /// Trace of multicast forwarded packets
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_multicastForwardTrace;
   /// Trace of locally delivered packets
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 

@@ -110,6 +110,11 @@ public:
    * \param os The output stream to which this Ipv4Address is printed
    */
   void Print (std::ostream &os) const;
+
+  /**
+   * \return true if address is initialized (i.e., set to something), false otherwise
+   */
+  bool IsInitialized (void) const;
   /**
     * \return true if address is 0.0.0.0; false otherwise
     */
@@ -220,6 +225,7 @@ private:
    */
   static uint8_t GetType (void);
   uint32_t m_address; //!< IPv4 address
+  bool m_initialized; //!< IPv4 address has been explicitly initialized to a valid value.
 
   /**
    * \brief Equal to operator.

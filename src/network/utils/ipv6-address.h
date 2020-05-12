@@ -345,6 +345,11 @@ public:
   static Ipv6Address ConvertFrom (const Address& address);
 
   /**
+   * \return true if address is initialized (i.e., set to something), false otherwise
+   */
+  bool IsInitialized (void) const;
+
+  /**
    * \brief Get the 0 (::) Ipv6Address.
    * \return the :: Ipv6Address representation
    */
@@ -410,6 +415,7 @@ private:
    * \brief The address representation on 128 bits (16 bytes).
    */
   uint8_t m_address[16];
+  bool m_initialized; //!< IPv6 address has been explicitly initialized to a valid value.
 
   /**
    * \brief Equal to operator.
