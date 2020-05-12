@@ -50,3 +50,7 @@ def build(bld):
     obj = bld.create_ns3_program('global-routing-multi-switch-plus-router',
                                  ['core', 'network', 'applications', 'internet', 'bridge', 'csma', 'point-to-point', 'csma', 'internet'])
     obj.source = 'global-routing-multi-switch-plus-router.cc'
+
+    obj = bld.create_ns3_program('simple-multicast-flooding',
+                                 ['core', 'network', 'applications', 'internet'])
+    obj.source = 'simple-multicast-flooding.cc'
