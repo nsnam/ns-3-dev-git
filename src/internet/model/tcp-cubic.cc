@@ -41,11 +41,11 @@ TcpCubic::GetTypeId (void)
                    MakeBooleanAccessor (&TcpCubic::m_fastConvergence),
                    MakeBooleanChecker ())
     .AddAttribute ("Beta", "Beta for multiplicative decrease",
-                   DoubleValue (0.8),
+                   DoubleValue (0.7),
                    MakeDoubleAccessor (&TcpCubic::m_beta),
                    MakeDoubleChecker <double> (0.0))
     .AddAttribute ("HyStart", "Enable (true) or disable (false) hybrid slow start algorithm",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&TcpCubic::m_hystart),
                    MakeBooleanChecker ())
     .AddAttribute ("HyStartLowWindow", "Lower bound cWnd for hybrid slow start (segments)",
