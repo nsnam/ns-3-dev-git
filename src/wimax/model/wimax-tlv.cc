@@ -890,7 +890,7 @@ PortRangeTlvValue::~PortRangeTlvValue ()
 uint32_t
 PortRangeTlvValue::GetSerializedSize (void) const
 {
-  return m_portRange->size () * sizeof(struct PortRange);
+  return m_portRange->size () * 4; // a port range is defined by 2 ports, each using 2 bytes
 }
 void
 PortRangeTlvValue::Serialize (Buffer::Iterator i) const
@@ -1037,7 +1037,7 @@ Ipv4AddressTlvValue::~Ipv4AddressTlvValue ()
 uint32_t
 Ipv4AddressTlvValue::GetSerializedSize (void) const
 {
-  return m_ipv4Addr->size () * sizeof(struct ipv4Addr);
+  return m_ipv4Addr->size () * 8; // IPv4 address and mask are 4 bytes each
 }
 
 void
