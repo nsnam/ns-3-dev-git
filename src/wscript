@@ -40,7 +40,7 @@ def options(opt):
                          " --run and --shell; moreover, only works in some"
                          " specific platforms, such as Linux and Solaris)"),
                    action="store_true", dest='enable_rpath', default=False)
-    
+
     opt.add_option('--enable-modules',
                    help=("Build only these modules (and dependencies)"),
                    dest='enable_modules')
@@ -110,7 +110,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.is_static = static
     module.vnum = wutils.VNUM
     # Add the proper path to the module's name.
-    # Set the libraries this module depends on.  
+    # Set the libraries this module depends on.
     module.module_deps = list(dependencies)
 
     module.install_path = "${LIBDIR}"
@@ -129,7 +129,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     
     module.pcfilegen = bld(features='ns3pcfile')
     module.pcfilegen.module = module.name
-    
+
     return module
 
 @TaskGen.feature("ns3testlib")
@@ -157,7 +157,7 @@ def create_ns3_module_test_library(bld, name):
     # Add this module and test library to the list.
     bld.env.append_value('NS3_MODULES_WITH_TEST_LIBRARIES', [(library.module_name, library.name)])
 
-    # Set the include path from the build directory to modules. 
+    # Set the include path from the build directory to modules.
     relative_path_from_build_to_here = bld.path.path_from(bld.bldnode)
     include_flag = '-I' + relative_path_from_build_to_here
     library.env.append_value('CXXFLAGS', include_flag)
@@ -235,7 +235,7 @@ def ns3_python_bindings(bld):
             '${PYTHON}']
     #if debug:
     #    argv.extend(["-m", "pdb"])
-    
+
     argv.extend(['${SRC[0]}', module_abs_src_path, apidefs, extension_name, '${TGT[0]}'])
 
     argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
@@ -301,7 +301,7 @@ def build(bld):
     bld.create_ns3_module_test_library = types.MethodType(create_ns3_module_test_library, bld)
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
-    
+
     # Remove these modules from the list of all modules.
     for not_built in bld.env['MODULES_NOT_BUILT']:
 
@@ -373,14 +373,13 @@ class ns3pcfile(Task.Task):
         return self._listify(self.env['CXXFLAGS_%s' % dep])
 
     def _defines(self, dep):
-        return [self.env['DEFINES_ST'] % define for define in self.env['DEFINES_%s' % dep]] 
+        return [self.env['DEFINES_ST'] % define for define in self.env['DEFINES_%s' % dep]]
 
     def _includes(self, dep):
         includes = self.env['INCLUDES_%s' % dep]
         return [self.env['CPPPATH_ST'] % include for include in Utils.to_list(includes)]
 
     def _generate_pcfile(self, name, use, env, outfilename, module):
-        outfile = open(outfilename, 'wt')
         prefix = env.PREFIX
         includedir = Utils.subst_vars('${INCLUDEDIR}/%s%s' % (wutils.APPNAME, wutils.VERSION), env)
         libdir = env.LIBDIR
@@ -401,7 +400,9 @@ class ns3pcfile(Task.Task):
             if dep.startswith('ns3-'):
                 dep_name = dep[4:]
                 requires.append("libns%s-%s%s" % (wutils.VERSION, dep_name, env.BUILD_SUFFIX))
-        print("""\
+
+        with open(outfilename, 'wt') as outfile:
+            print("""\
 prefix=%s
 libdir=%s
 includedir=%s
@@ -414,11 +415,10 @@ Cflags: %s
 Requires: %s\
 """ % (prefix, libdir, includedir,
        name, name, wutils.VERSION, ' '.join(libs), ' '.join(cflags), ' '.join(requires)), file=outfile)
-        outfile.close()
 
     def run(self):
         output_filename = self.outputs[0].abspath()
-        self._generate_pcfile(self.module.name, 
+        self._generate_pcfile(self.module.name,
                               self.module.to_list(self.module.use),
                               self.env, output_filename, self.module)
 
@@ -661,10 +661,10 @@ class gen_ns3_module_header(Task.Task):
         assert len(self.outputs) == 1
         out_file_name = self.outputs[0].get_bld().abspath()#self.env)
         header_files = [os.path.basename(node.abspath()) for node in self.inputs]
-        outfile = open(out_file_name, "w")
         header_files.sort()
 
-        print("""
+        with open(out_file_name, "w") as outfile:
+            print("""
 #ifdef NS3_MODULE_COMPILATION
 # error "Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts."
 #endif
@@ -677,14 +677,13 @@ class gen_ns3_module_header(Task.Task):
     #     for dep in self.module_deps:
     #         print >> outfile, "#include \"%s-module.h\"" % dep
 
-        print(file=outfile)
-        print("// Module headers:", file=outfile)
-        for header in header_files:
-            print("#include \"%s\"" % (header,), file=outfile)
+            print(file=outfile)
+            print("// Module headers:", file=outfile)
+            for header in header_files:
+                print("#include \"%s\"" % (header,), file=outfile)
 
-        print("#endif", file=outfile)
+            print("#endif", file=outfile)
 
-        outfile.close()
         return 0
 
     def sig_explicit_deps(self):

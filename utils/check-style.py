@@ -24,12 +24,9 @@ def git_modified_files():
 
 def copy_file(filename):
     [tmp,pathname] = tempfile.mkstemp()
-    src = open(filename, 'r')
-    dst = open(pathname, 'w')
-    for line in src:
-        dst.write(line)
-    dst.close()
-    src.close()
+    with open(filename, 'r') as src, open(pathname, 'w') as dst:
+        for line in src:
+            dst.write(line)
     return pathname
 
 # generate a temporary configuration file
@@ -136,13 +133,12 @@ disable_processing_cmt= " *NS_CHECK_STYLE_OFF*"
 enable_processing_cmt=  " *NS_CHECK_STYLE_ON*"
 """
     [tmp,pathname] = tempfile.mkstemp()
-    dst = open(pathname, 'w')
-    dst.write(level0)
-    if level >= 1:
-        dst.write(level1)
-    if level >= 2:
-        dst.write(level2)
-    dst.close()
+    with open(pathname, 'w') as dst:
+        dst.write(level0)
+        if level >= 1:
+            dst.write(level1)
+        if level >= 2:
+            dst.write(level2)
     return pathname
 
 ## PatchChunkLine class
@@ -184,7 +180,7 @@ class PatchChunkLine:
         self.__type = self.DST
         self.__line = line
     def set_both(self,line):
-        """! Set both 
+        """! Set both
         @param self The current class
         @param line
         @return none
@@ -220,7 +216,7 @@ class PatchChunkLine:
         """! Write to file
         @param self The current class
         @param f file
-        @return exception if invalid type 
+        @return exception if invalid type
         """
         if self.__type == self.SRC:
             f.write('-%s\n' % self.__line)
@@ -230,7 +226,7 @@ class PatchChunkLine:
             f.write(' %s\n' % self.__line)
         else:
             raise Exception('invalid patch')
-    
+
 ## PatchChunk class
 class PatchChunk:
     ## @var __lines
@@ -457,31 +453,25 @@ def indent(source, debug, level):
     except OSError:
         raise Exception ('uncrustify not installed')
     # generate a diff file
-    src = open(source, 'r')
-    dst = open(output, 'r')
-    diff = difflib.unified_diff(src.readlines(), dst.readlines(), 
-                                fromfile=source, tofile=output)
-    src.close()
-    dst.close()
+    with open(source, 'r') as src, open(output, 'r') as dst:
+        diff = difflib.unified_diff(src.readlines(), dst.readlines(),
+                                    fromfile=source, tofile=output)
     if debug:
         initial_diff = tempfile.mkstemp()[1]
         sys.stderr.write('initial diff file=' + initial_diff + '\n')
-        tmp = open(initial_diff, 'w')
-        tmp.writelines(diff)
-        tmp.close()
+        with open(initial_diff, 'w') as tmp:
+            tmp.writelines(diff)
     final_diff = tempfile.mkstemp()[1]
     if level < 3:
-        patchset = remove_trailing_whitespace_changes(diff);
-        dst = open(final_diff, 'w')
+        patchset = remove_trailing_whitespace_changes(diff)
         if len(patchset) != 0:
-            patchset[0].write(dst)
-        dst.close()
+            with open(final_diff, 'w') as dst:
+                patchset[0].write(dst)
     else:
-        dst = open(final_diff, 'w')
-        dst.writelines(diff)
-        dst.close()
-            
-            
+        with open(final_diff, 'w') as dst:
+            dst.writelines(diff)
+
+
     # apply diff file
     if debug:
         sys.stderr.write('final diff file=' + final_diff + '\n')
@@ -496,7 +486,7 @@ def indent(source, debug, level):
         sys.stderr.write(out)
         sys.stderr.write(err)
     return output
- 
+
 
 
 def indent_files(files, diff=False, debug=False, level=0, inplace=False):
@@ -523,10 +513,11 @@ def indent_files(files, diff=False, debug=False, level=0, inplace=False):
                 print('  ' + src)
         else:
             for src,dst in failed:
-                s = open(src, 'r').readlines()
-                d = open(dst, 'r').readlines()
-                for line in difflib.unified_diff(s, d, fromfile=src, tofile=dst):
-                    sys.stdout.write(line)
+                with open(src, 'r') as f_src, open(dst, 'r') as f_dst:
+                    s = f_src.readlines()
+                    d = f_dst.readlines()
+                    for line in difflib.unified_diff(s, d, fromfile=src, tofile=dst):
+                        sys.stdout.write(line)
         return False
     return True
 

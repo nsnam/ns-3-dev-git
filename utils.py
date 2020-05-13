@@ -20,32 +20,29 @@ def get_list_from_file(file_path, list_name):
 
     # Read in the file if it exists.
     if os.path.exists(file_path):
-        file_in = open(file_path, "r")
+        with open(file_path, "r") as file_in:
 
-        # Look for the list.
-        list_string = ""
-        parsing_multiline_list = False
-        for line in file_in:
+            # Look for the list.
+            list_string = ""
+            parsing_multiline_list = False
+            for line in file_in:
 
-            # Remove any comments.
-            if '#' in line:
-                (line, comment) = line.split('#', 1)
+                # Remove any comments.
+                if '#' in line:
+                    (line, comment) = line.split('#', 1)
 
-            # Parse the line.
-            if list_name in line or parsing_multiline_list:
-                list_string += line
+                # Parse the line.
+                if list_name in line or parsing_multiline_list:
+                    list_string += line
 
-                # Handle multiline lists.
-                if ']' not in list_string:
-                    parsing_multiline_list = True
-                else:
-                    # Evaluate the list once its end is reached.
-                    # Make the split function only split it once.
-                    list = eval(list_string.split('=', 1)[1].strip())
-                    break
-
-        # Close the file
-        file_in.close()
+                    # Handle multiline lists.
+                    if ']' not in list_string:
+                        parsing_multiline_list = True
+                    else:
+                        # Evaluate the list once its end is reached.
+                        # Make the split function only split it once.
+                        list = eval(list_string.split('=', 1)[1].strip())
+                        break
 
     return list
 
@@ -61,26 +58,23 @@ def get_bool_from_file(file_path, bool_name, value_if_missing):
 
     # Read in the file if it exists.
     if os.path.exists(file_path):
-        file_in = open(file_path, "r")
+        with open(file_path, "r") as file_in:
 
-        # Look for the boolean variable.
-        bool_found = False
-        for line in file_in:
+            # Look for the boolean variable.
+            bool_found = False
+            for line in file_in:
 
-            # Remove any comments.
-            if '#' in line:
-                (line, comment) = line.split('#', 1)
+                # Remove any comments.
+                if '#' in line:
+                    (line, comment) = line.split('#', 1)
 
-            # Parse the line.
-            if bool_name in line:
-                # Evaluate the variable's line once it is found.  Make
-                # the split function only split it once.
-                bool = eval(line.split('=', 1)[1].strip())
-                bool_found = True
-                break
-
-        # Close the file
-        file_in.close()
+                # Parse the line.
+                if bool_name in line:
+                    # Evaluate the variable's line once it is found.  Make
+                    # the split function only split it once.
+                    bool = eval(line.split('=', 1)[1].strip())
+                    bool_found = True
+                    break
 
     if bool_found:
         return bool
