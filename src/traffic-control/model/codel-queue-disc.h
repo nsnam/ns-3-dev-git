@@ -101,6 +101,9 @@ public:
   // Reasons for dropping packets
   static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
+  // Reasons for marking packets
+  static constexpr const char* TARGET_EXCEEDED_MARK = "Target exceeded mark";  //!< Sojourn time above target
+  static constexpr const char* CE_THRESHOLD_EXCEEDED_MARK = "CE threshold exceeded mark";  //!< Sojourn time above CE threshold
 
 private:
   friend class::CoDelQueueDiscNewtonStepTest;  // Test code
@@ -198,9 +201,11 @@ private:
 
   virtual void InitializeParams (void);
 
+  bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
   uint32_t m_minBytes;                    //!< Minimum bytes in queue to allow a packet drop
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay
+  Time m_ceThreshold;                     //!< Threshold above which to CE mark
   TracedValue<uint32_t> m_count;          //!< Number of packets dropped since entering drop state
   TracedValue<uint32_t> m_lastCount;      //!< Last number of packets dropped since entering drop state
   TracedValue<bool> m_dropping;           //!< True if in dropping state
