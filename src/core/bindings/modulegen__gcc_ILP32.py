@@ -933,6 +933,10 @@ def register_Ns3EventId_methods(root_module, cls):
                    'ns3::EventImpl *', 
                    [], 
                    is_const=True)
+    ## event-id.h (module 'core'): void ns3::EventId::Remove() [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3GlobalValue_methods(root_module, cls):
@@ -3567,16 +3571,15 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_virtual=True)
-    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double c1, double c2, double v1, double v2, double r) [member function]
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate() [member function]
     cls.add_method('Interpolate', 
                    'double', 
-                   [param('double', 'c1'), param('double', 'c2'), param('double', 'v1'), param('double', 'v2'), param('double', 'r')], 
-                   is_virtual=True, visibility='private')
-    ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
-    cls.add_method('Validate', 
-                   'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): bool ns3::EmpiricalRandomVariable::SetInterpolate(bool interpolate) [member function]
+    cls.add_method('SetInterpolate', 
+                   'bool', 
+                   [param('bool', 'interpolate')])
     return
 
 def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
