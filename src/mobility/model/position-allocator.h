@@ -294,13 +294,13 @@ public:
   virtual ~RandomDiscPositionAllocator ();
 
   /**
-   * \brief Set the random variable that generates position radius
-   * \param theta random variable that represents the radius of a position in a random disc.
+   * \brief Set the random variable that generates position angle, in radians.
+   * \param theta Random variable that represents the angle in radians of a position in a random disc.
    */
   void SetTheta (Ptr<RandomVariableStream> theta);
   /**
-   * \brief Set the random variable that generates position angle
-   * \param rho random variable that represents the angle (gradients) of a position in a random disc.
+   * \brief Set the random variable that generates position radius, in meters
+   * \param rho Random variable that represents the radius of a position, in meters, in a random disc.
    */
   void SetRho (Ptr<RandomVariableStream> rho);
   /** 
