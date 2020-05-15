@@ -279,8 +279,16 @@ private:
 
 /**
  * \ingroup mobility
- * \brief Allocate random positions within a disc according to a given distribution for the polar coordinates of each node 
-          with respect to the provided center of the disc 
+ * \brief Allocate random positions within a disc according to
+ * a given distribution for the polar coordinates of each node 
+ * with respect to the provided center of the disc.
+ *
+ * \note With the default uniform distribution over \f$2 \pi\f$ in \c theta and a
+ * uniform distribution for \c rho this position allocator will *not*
+ * uniformly populate the disc.  The radial distribution will be proportional
+ * to \f$\frac{1}{r^2}\f$.
+ *
+ * To get a uniform distribution over a circle use the UniformDiscPositionAllocator.
  */
 class RandomDiscPositionAllocator : public PositionAllocator
 {
@@ -329,7 +337,7 @@ private:
 
 /**
  * \ingroup mobility
- * \brief Allocate the positions uniformely (with constant density) randomly within a disc.
+ * \brief Allocate the positions uniformly (with constant density) randomly within a disc.
  *
  * UniformDiscPositionAllocator allocates the positions randomly within a disc \f$ D \f$ lying on the
  * plane \f$ z\f$ and having center at coordinates \f$ (x,y,z) \f$
