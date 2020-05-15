@@ -84,6 +84,13 @@ private:
   void Reset (WifiRemoteStation *station) const;
 
   /**
+   * Construct the vector of minimum SNRs needed to successfully transmit for
+   * all possible combinations (rate, channel width, nss) based on PHY capabilities.
+   * This is called at initialization and if PHY capabilities changed.
+   */
+  void BuildSnrThresholds (void);
+
+  /**
    * Return the minimum SNR needed to successfully transmit
    * data with this WifiTxVector at the specified BER.
    *
@@ -91,7 +98,7 @@ private:
    *
    * \return the minimum SNR for the given WifiTxVector in linear scale
    */
-  double GetSnrThreshold (WifiTxVector txVector) const;
+  double GetSnrThreshold (WifiTxVector txVector);
   /**
    * Adds a pair of WifiTxVector and the minimum SNR for that given vector
    * to the list.

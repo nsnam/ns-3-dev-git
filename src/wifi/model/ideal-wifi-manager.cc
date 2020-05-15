@@ -106,6 +106,13 @@ void
 IdealWifiManager::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
+  BuildSnrThresholds ();
+}
+
+void
+IdealWifiManager::BuildSnrThresholds (void)
+{
+  m_thresholds.clear ();
   WifiMode mode;
   WifiTxVector txVector;
   uint8_t nss = 1;
@@ -116,7 +123,7 @@ IdealWifiManager::DoInitialize ()
       txVector.SetChannelWidth (GetChannelWidthForNonHtMode (mode));
       txVector.SetNss (nss);
       txVector.SetMode (mode);
-      NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName ());
+      NS_LOG_DEBUG ("Adding mode = " << mode.GetUniqueName ());
       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
     }
   // Add all MCSes
@@ -135,11 +142,10 @@ IdealWifiManager::DoInitialize ()
                   txVector.SetGuardInterval (guardInterval);
                   //derive NSS from the MCS index
                   nss = (mode.GetMcsValue () / 8) + 1;
-                  NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
+                  NS_LOG_DEBUG ("Adding mode = " << mode.GetUniqueName () <<
                                 " channel width " << j <<
                                 " nss " << +nss <<
                                 " GI " << guardInterval);
-                  NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
                   txVector.SetNss (nss);
                   txVector.SetMode (mode);
                   AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
@@ -158,20 +164,19 @@ IdealWifiManager::DoInitialize ()
                   txVector.SetGuardInterval (guardInterval);
                   for (uint8_t k = 1; k <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); k++)
                     {
-                      NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
-                                    " channel width " << j <<
-                                    " nss " << +k <<
-                                    " GI " << guardInterval);
                       if (mode.IsAllowed (j, k))
                         {
-                          NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
+                          NS_LOG_DEBUG ("Adding mode = " << mode.GetUniqueName () <<
+                                        " channel width " << j <<
+                                        " nss " << +k <<
+                                        " GI " << guardInterval);
                           txVector.SetNss (k);
                           txVector.SetMode (mode);
                           AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
                         }
                       else
                         {
-                          NS_LOG_DEBUG ("In SetupPhy, mode = " << mode.GetUniqueName () << " disallowed");
+                          NS_LOG_DEBUG ("Mode = " << mode.GetUniqueName () << " disallowed");
                         }
                     }
                 }
@@ -181,28 +186,26 @@ IdealWifiManager::DoInitialize ()
 }
 
 double
-IdealWifiManager::GetSnrThreshold (WifiTxVector txVector) const
+IdealWifiManager::GetSnrThreshold (WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << txVector.GetMode ().GetUniqueName ());
-  for (Thresholds::const_iterator i = m_thresholds.begin (); i != m_thresholds.end (); i++)
+  NS_LOG_FUNCTION (this << txVector);
+  auto it = std::find_if (m_thresholds.begin (), m_thresholds.end (),
+      [&txVector] (const std::pair<double, WifiTxVector>& p) -> bool {
+          return ((txVector.GetMode () == p.second.GetMode ()) && (txVector.GetNss () == p.second.GetNss ()) && (txVector.GetChannelWidth () == p.second.GetChannelWidth ()));
+      }
+  );
+  if (it == m_thresholds.end ())
     {
-      NS_LOG_DEBUG ("Checking " << i->second.GetMode ().GetUniqueName () <<
-                    " nss " << +i->second.GetNss () <<
-                    " GI " << i->second.GetGuardInterval () <<
-                    " width " << i->second.GetChannelWidth ());
-      NS_LOG_DEBUG ("against TxVector " << txVector.GetMode ().GetUniqueName () <<
-                    " nss " << +txVector.GetNss () <<
-                    " GI " << txVector.GetGuardInterval () <<
-                    " width " << txVector.GetChannelWidth ());
-      if (txVector.GetMode () == i->second.GetMode ()
-          && txVector.GetNss () == i->second.GetNss ()
-          && txVector.GetChannelWidth () == i->second.GetChannelWidth ())
-        {
-          return i->first;
-        }
-    }
-  NS_ASSERT (false);
-  return 0.0;
+      //This means capabilities have changed in runtime, hence rebuild SNR thresholds
+      BuildSnrThresholds ();
+      it = std::find_if (m_thresholds.begin (), m_thresholds.end (),
+          [&txVector] (const std::pair<double, WifiTxVector>& p) -> bool {
+              return ((txVector.GetMode () == p.second.GetMode ()) && (txVector.GetNss () == p.second.GetNss ()) && (txVector.GetChannelWidth () == p.second.GetChannelWidth ()));
+          }
+      );
+      NS_ASSERT_MSG (it != m_thresholds.end (), "SNR threshold not found");
+  }
+  return it->first;
 }
 
 void
