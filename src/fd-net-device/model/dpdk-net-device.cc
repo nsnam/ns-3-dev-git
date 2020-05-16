@@ -286,7 +286,7 @@ DpdkNetDevice::InitDpdk (int argc, char** argv)
   signal (SIGINT, SignalHandler);
   signal (SIGTERM, SignalHandler);
 
-  unsigned nbPorts = rte_eth_dev_count ();
+  unsigned nbPorts = rte_eth_dev_count_avail ();
   if (nbPorts == 0)
     {
       rte_exit (EXIT_FAILURE, "No Ethernet ports - bye\n");
@@ -321,8 +321,6 @@ DpdkNetDevice::InitDpdk (int argc, char** argv)
   static struct rte_eth_conf portConf = {};
   portConf.rxmode = {};
   portConf.rxmode.split_hdr_size = 0;
-  portConf.rxmode.ignore_offload_bitfield = 1;
-  portConf.rxmode.offloads = DEV_RX_OFFLOAD_CRC_STRIP;
   portConf.txmode = {};
   portConf.txmode.mq_mode = ETH_MQ_TX_NONE;
 
@@ -370,7 +368,6 @@ DpdkNetDevice::InitDpdk (int argc, char** argv)
   NS_LOG_INFO ("Initialize one Tx queue per port");
   fflush (stdout);
   txqConf = devInfo.default_txconf;
-  txqConf.txq_flags = ETH_TXQ_FLAGS_IGNORE;
   txqConf.offloads = localPortConf.txmode.offloads;
   ret = rte_eth_tx_queue_setup (m_portId, 0, m_nbTxDesc,
                                 rte_eth_dev_socket_id (m_portId),

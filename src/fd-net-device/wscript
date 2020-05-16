@@ -63,7 +63,7 @@ def configure(conf):
             conf.env.append_value('CXXFLAGS', ['-I' + os.path.join(dpdk_build, 'include'), '-mssse3'])
             conf.env.append_value('LINKFLAGS', ['-I' + os.path.join(dpdk_build, 'include')])
             conf.env.append_value('LINKFLAGS', ['-L' + os.path.join(dpdk_build, 'lib')])
-            conf.env.SHLIB_MARKER += ',-lrte_eal,-lrte_ethdev,-lrte_pmd_virtio,-lrte_pmd_e1000,-lrte_pmd_ixgbe,-lrte_pmd_i40e,-lnuma,-ldl,-lrte_mempool,-lrte_mbuf,-lrte_ring'
+            conf.env.SHLIB_MARKER += ',-lrte_eal,-lrte_ethdev,-lrte_pmd_virtio,-lrte_pmd_e1000,-lrte_pmd_ixgbe,-lrte_pmd_i40e,-lnuma,-ldl,-lrte_mempool,-lrte_mbuf,-lrte_ring,-lrte_kvargs,-lrte_net'
         else:
             # Add this module to the list of modules that won't be built
             # if they are enabled.
