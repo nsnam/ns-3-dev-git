@@ -28,9 +28,20 @@ def configure(conf):
                                          "File descriptor NetDevice",
                                          True,
                                          "FdNetDevice module enabled")
-            conf.env['ENABLE_DPDKNETDEV'] = os.environ.get('RTE_SDK', '') != '' and \
-                                            os.environ.get('RTE_TARGET', '') != ''
+
+            # Check if libdpdk is installed as package
+            have_dpdk_pkg = conf.check_cfg(package='libdpdk', uselib_store='DPDK',
+                                  args=['--cflags', '--libs'], mandatory=False)
+            # Check if dpdk environment variables are set
+            have_dpdk_src = os.environ.get('RTE_SDK', '') != '' and \
+                            os.environ.get('RTE_TARGET', '') != ''
+
+            conf.env['ENABLE_DPDKNETDEV'] = have_dpdk_pkg or have_dpdk_src
+
             if conf.env['ENABLE_DPDKNETDEV']:
+                # Set DPDK Lib Mode. pkg if the package if installed or src if built from source.
+                dpdk_lib_mode = 'pkg' if have_dpdk_pkg else 'src'
+                conf.env.append_value('DPDK_LIB_MODE', dpdk_lib_mode)
                 conf.env.append_value('DEFINES', 'NS3_DPDK')
                 conf.report_optional_feature("DpdkNetDevice",
                                             "DPDK NetDevice",
@@ -40,7 +51,7 @@ def configure(conf):
                 conf.report_optional_feature("DpdkNetDevice",
                                             "DPDK NetDevice",
                                             False,
-                                            "$RTE_SDK and/or $RTE_TARGET environment variable not set")
+                                            "libdpdk not found, $RTE_SDK and/or $RTE_TARGET environment variable not set")
         else:
             conf.report_optional_feature("FdNetDevice", 
                                          "File descriptor NetDevice",
@@ -59,11 +70,12 @@ def configure(conf):
         conf.env.append_value('NS3_EXECUTABLE_PATH', dir)
 
         if conf.env['ENABLE_DPDKNETDEV']:
-            dpdk_build = os.path.join(os.environ['RTE_SDK'], os.environ['RTE_TARGET'])
-            conf.env.append_value('CXXFLAGS', ['-I' + os.path.join(dpdk_build, 'include'), '-mssse3'])
-            conf.env.append_value('LINKFLAGS', ['-I' + os.path.join(dpdk_build, 'include')])
-            conf.env.append_value('LINKFLAGS', ['-L' + os.path.join(dpdk_build, 'lib')])
-            conf.env.SHLIB_MARKER += ',-lrte_eal,-lrte_ethdev,-lrte_pmd_virtio,-lrte_pmd_e1000,-lrte_pmd_ixgbe,-lrte_pmd_i40e,-lnuma,-ldl,-lrte_mempool,-lrte_mbuf,-lrte_ring,-lrte_kvargs,-lrte_net'
+            if conf.env['DPDK_LIB_MODE'] == 'src':
+                dpdk_build = os.path.join(os.environ['RTE_SDK'], os.environ['RTE_TARGET'])
+                conf.env.append_value('CXXFLAGS', ['-I' + os.path.join(dpdk_build, 'include'), '-mssse3'])
+                conf.env.append_value('LINKFLAGS', ['-I' + os.path.join(dpdk_build, 'include')])
+                conf.env.append_value('LINKFLAGS', ['-L' + os.path.join(dpdk_build, 'lib')])
+                conf.env.SHLIB_MARKER += ',-lrte_eal,-lrte_ethdev,-lrte_pmd_virtio,-lrte_pmd_e1000,-lrte_pmd_ixgbe,-lrte_pmd_i40e,-lnuma,-ldl,-lrte_mempool,-lrte_mbuf,-lrte_ring'
         else:
             # Add this module to the list of modules that won't be built
             # if they are enabled.
@@ -167,17 +179,25 @@ def build(bld):
            "TAP_DEV_CREATOR=\"%s\"" % (creator.target,))
 
     if bld.env['ENABLE_DPDKNETDEV']:
+        module.use.append('DPDK')
         module.source.extend([
             'model/dpdk-net-device.cc'
         ])
         headers.source.extend([
             'model/dpdk-net-device.h'
         ])
-        dpdk_build = os.path.join(os.environ['RTE_SDK'], os.environ['RTE_TARGET'])
-        if os.environ.get('LD_LIBRARY_PATH', '') == '':
-            os.environ['LD_LIBRARY_PATH'] = os.path.join(dpdk_build, 'lib')
-        else:
-            os.environ['LD_LIBRARY_PATH'] += ':' + os.path.join(dpdk_build, 'lib')
+        if bld.env['DPDK_LIB_MODE'] == 'src':
+            # Add DPDK libraries to library path
+            dpdk_build = os.path.join(os.environ['RTE_SDK'], os.environ['RTE_TARGET'])
+            if os.environ.get('LD_LIBRARY_PATH', '') == '':
+                os.environ['LD_LIBRARY_PATH'] = os.path.join(dpdk_build, 'lib')
+            else:
+                os.environ['LD_LIBRARY_PATH'] += ':' + os.path.join(dpdk_build, 'lib')
+            # Add $RTE_SDK/usertools to PATH env
+            if os.environ.get('PATH', '') == '':
+                os.environ['PATH'] = os.path.join(os.environ['RTE_SDK'], 'usertools')
+            else:
+                os.environ['PATH'] += ':' + os.path.join(os.environ['RTE_SDK'], 'usertools')
 
     if bld.env['ENABLE_EMU']:
         module.source.extend([

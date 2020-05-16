@@ -263,7 +263,7 @@ DpdkNetDevice::InitDpdk (int argc, char** argv)
 
   NS_LOG_INFO ("Binding device to DPDK");
   std::string command;
-  command.append ("$RTE_SDK/usertools/dpdk-devbind.py --force ");
+  command.append ("dpdk-devbind.py --force ");
   command.append ("--bind=uio_pci_generic ");
   command.append (m_deviceName.c_str ());
   printf ("Executing: %s\n", command.c_str ());
