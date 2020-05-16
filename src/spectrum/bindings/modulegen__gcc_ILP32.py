@@ -71,6 +71,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::EventImpl'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Hash::Implementation> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> [struct]
+    module.add_class('DefaultDeleter', template_parameters=['ns3::MatrixBasedChannelModel::ChannelMatrix'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::NixVector> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::NixVector'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet> [struct]
@@ -83,8 +85,6 @@ def register_types(module):
     module.add_class('DefaultDeleter', template_parameters=['ns3::SpectrumSignalParameters'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumValue> [struct]
     module.add_class('DefaultDeleter', template_parameters=['ns3::SpectrumValue'])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> [struct]
-    module.add_class('DefaultDeleter', template_parameters=['ns3::ThreeGppChannelModel::ThreeGppChannelMatrix'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## event-id.h (module 'core'): ns3::EventId [class]
@@ -263,6 +263,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> > [class]
+    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::MatrixBasedChannelModel::ChannelMatrix', 'ns3::empty', 'ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
@@ -277,8 +279,6 @@ def register_types(module):
     module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumSignalParameters', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumSignalParameters>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > [class]
     module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::SpectrumValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumValue>'])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::ThreeGppChannelModel::ThreeGppChannelMatrix', 'ns3::empty', 'ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
     module.add_class('SimpleRefCount', import_from_module='ns.core', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
     ## spectrum-converter.h (module 'spectrum'): ns3::SpectrumConverter [class]
@@ -305,25 +305,6 @@ def register_types(module):
     typehandlers.add_type_alias('std::vector< std::complex< double > >', 'ns3::ThreeGppAntennaArrayModel::ComplexVector')
     typehandlers.add_type_alias('std::vector< std::complex< double > >*', 'ns3::ThreeGppAntennaArrayModel::ComplexVector*')
     typehandlers.add_type_alias('std::vector< std::complex< double > >&', 'ns3::ThreeGppAntennaArrayModel::ComplexVector&')
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel [class]
-    module.add_class('ThreeGppChannelModel', parent=root_module['ns3::Object'])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix [struct]
-    module.add_class('ThreeGppChannelMatrix', parent=root_module['ns3::SimpleRefCount< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> >'], outer_class=root_module['ns3::ThreeGppChannelModel'])
-    typehandlers.add_type_alias('std::vector< double >', 'ns3::ThreeGppChannelModel::DoubleVector')
-    typehandlers.add_type_alias('std::vector< double >*', 'ns3::ThreeGppChannelModel::DoubleVector*')
-    typehandlers.add_type_alias('std::vector< double >&', 'ns3::ThreeGppChannelModel::DoubleVector&')
-    typehandlers.add_type_alias('std::vector< std::vector< double > >', 'ns3::ThreeGppChannelModel::Double2DVector')
-    typehandlers.add_type_alias('std::vector< std::vector< double > >*', 'ns3::ThreeGppChannelModel::Double2DVector*')
-    typehandlers.add_type_alias('std::vector< std::vector< double > >&', 'ns3::ThreeGppChannelModel::Double2DVector&')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >', 'ns3::ThreeGppChannelModel::Double3DVector')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >*', 'ns3::ThreeGppChannelModel::Double3DVector*')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >&', 'ns3::ThreeGppChannelModel::Double3DVector&')
-    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >', 'ns3::ThreeGppChannelModel::Complex2DVector')
-    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >*', 'ns3::ThreeGppChannelModel::Complex2DVector*')
-    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >&', 'ns3::ThreeGppChannelModel::Complex2DVector&')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >', 'ns3::ThreeGppChannelModel::Complex3DVector')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >*', 'ns3::ThreeGppChannelModel::Complex3DVector*')
-    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >&', 'ns3::ThreeGppChannelModel::Complex3DVector&')
     ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::ThreeGppSpectrumPropagationLossModel [class]
     module.add_class('ThreeGppSpectrumPropagationLossModel', parent=root_module['ns3::SpectrumPropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
@@ -472,6 +453,25 @@ def register_types(module):
     module.add_class('Mac64AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac64-address.h (module 'network'): ns3::Mac64AddressValue [class]
     module.add_class('Mac64AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel [class]
+    module.add_class('MatrixBasedChannelModel', parent=root_module['ns3::Object'])
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix [struct]
+    module.add_class('ChannelMatrix', parent=root_module['ns3::SimpleRefCount< ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> >'], outer_class=root_module['ns3::MatrixBasedChannelModel'])
+    typehandlers.add_type_alias('std::vector< double >', 'ns3::MatrixBasedChannelModel::DoubleVector')
+    typehandlers.add_type_alias('std::vector< double >*', 'ns3::MatrixBasedChannelModel::DoubleVector*')
+    typehandlers.add_type_alias('std::vector< double >&', 'ns3::MatrixBasedChannelModel::DoubleVector&')
+    typehandlers.add_type_alias('std::vector< std::vector< double > >', 'ns3::MatrixBasedChannelModel::Double2DVector')
+    typehandlers.add_type_alias('std::vector< std::vector< double > >*', 'ns3::MatrixBasedChannelModel::Double2DVector*')
+    typehandlers.add_type_alias('std::vector< std::vector< double > >&', 'ns3::MatrixBasedChannelModel::Double2DVector&')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >', 'ns3::MatrixBasedChannelModel::Double3DVector')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >*', 'ns3::MatrixBasedChannelModel::Double3DVector*')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< double > > >&', 'ns3::MatrixBasedChannelModel::Double3DVector&')
+    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >', 'ns3::MatrixBasedChannelModel::Complex2DVector')
+    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >*', 'ns3::MatrixBasedChannelModel::Complex2DVector*')
+    typehandlers.add_type_alias('std::vector< std::vector< std::complex< double > > >&', 'ns3::MatrixBasedChannelModel::Complex2DVector&')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >', 'ns3::MatrixBasedChannelModel::Complex3DVector')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >*', 'ns3::MatrixBasedChannelModel::Complex3DVector*')
+    typehandlers.add_type_alias('std::vector< std::vector< std::vector< std::complex< double > > > >&', 'ns3::MatrixBasedChannelModel::Complex3DVector&')
     ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel [class]
     module.add_class('MatrixPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
@@ -575,6 +575,8 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )&', 'ns3::SpectrumChannel::SignalParametersTracedCallback&')
     ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppChannelConditionModel [class]
     module.add_class('ThreeGppChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel [class]
+    module.add_class('ThreeGppChannelModel', parent=root_module['ns3::MatrixBasedChannelModel'])
     ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorMixedOfficeChannelConditionModel [class]
     module.add_class('ThreeGppIndoorMixedOfficeChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ThreeGppChannelConditionModel'])
     ## channel-condition-model.h (module 'propagation'): ns3::ThreeGppIndoorOpenOfficeChannelConditionModel [class]
@@ -661,10 +663,9 @@ def register_types(module):
     module.add_container('std::vector< std::vector< std::vector< double > > >', 'std::vector< std::vector< double > >', container_type='vector')
     module.add_container('std::vector< std::vector< std::complex< double > > >', 'std::vector< std::complex< double > >', container_type='vector')
     module.add_container('std::vector< std::vector< std::vector< std::complex< double > > > >', 'std::vector< std::vector< std::complex< double > > >', container_type='vector')
-    module.add_container('ns3::ThreeGppChannelModel::Complex3DVector', 'std::vector< std::vector< std::complex< double > > >', container_type='vector')
-    module.add_container('ns3::ThreeGppChannelModel::DoubleVector', 'double', container_type='vector')
-    module.add_container('ns3::ThreeGppChannelModel::Double2DVector', 'std::vector< double >', container_type='vector')
-    module.add_container('ns3::ThreeGppChannelModel::Double3DVector', 'std::vector< std::vector< double > >', container_type='vector')
+    module.add_container('ns3::MatrixBasedChannelModel::Complex3DVector', 'std::vector< std::vector< std::complex< double > > >', container_type='vector')
+    module.add_container('ns3::MatrixBasedChannelModel::DoubleVector', 'double', container_type='vector')
+    module.add_container('ns3::MatrixBasedChannelModel::Double2DVector', 'std::vector< double >', container_type='vector')
     typehandlers.add_type_alias('std::map< unsigned int, ns3::SpectrumConverter >', 'ns3::SpectrumConverterMap_t')
     typehandlers.add_type_alias('std::map< unsigned int, ns3::SpectrumConverter >*', 'ns3::SpectrumConverterMap_t*')
     typehandlers.add_type_alias('std::map< unsigned int, ns3::SpectrumConverter >&', 'ns3::SpectrumConverterMap_t&')
@@ -855,13 +856,13 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3CallbackImplBase_methods(root_module, root_module['ns3::DefaultDeleter< ns3::CallbackImplBase >'])
     register_Ns3DefaultDeleter__Ns3EventImpl_methods(root_module, root_module['ns3::DefaultDeleter< ns3::EventImpl >'])
     register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Hash::Implementation >'])
+    register_Ns3DefaultDeleter__Ns3MatrixBasedChannelModelChannelMatrix_methods(root_module, root_module['ns3::DefaultDeleter< ns3::MatrixBasedChannelModel::ChannelMatrix >'])
     register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, root_module['ns3::DefaultDeleter< ns3::NixVector >'])
     register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Packet >'])
     register_Ns3DefaultDeleter__Ns3QueueItem_methods(root_module, root_module['ns3::DefaultDeleter< ns3::QueueItem >'])
     register_Ns3DefaultDeleter__Ns3SpectrumModel_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumModel >'])
     register_Ns3DefaultDeleter__Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumSignalParameters >'])
     register_Ns3DefaultDeleter__Ns3SpectrumValue_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumValue >'])
-    register_Ns3DefaultDeleter__Ns3ThreeGppChannelModelThreeGppChannelMatrix_methods(root_module, root_module['ns3::DefaultDeleter< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
@@ -930,6 +931,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_Ns3DefaultDeleter__lt__ns3CallbackImplBase__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
     register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_Ns3DefaultDeleter__lt__ns3EventImpl__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter__lt__ns3HashImplementation__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
+    register_Ns3SimpleRefCount__Ns3MatrixBasedChannelModelChannelMatrix_Ns3Empty_Ns3DefaultDeleter__lt__ns3MatrixBasedChannelModelChannelMatrix__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> >'])
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3QueueItem__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
@@ -937,7 +939,6 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumModel__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
-    register_Ns3SimpleRefCount__Ns3ThreeGppChannelModelThreeGppChannelMatrix_Ns3Empty_Ns3DefaultDeleter__lt__ns3ThreeGppChannelModelThreeGppChannelMatrix__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SpectrumConverter_methods(root_module, root_module['ns3::SpectrumConverter'])
     register_Ns3SpectrumErrorModel_methods(root_module, root_module['ns3::SpectrumErrorModel'])
@@ -948,8 +949,6 @@ def register_methods(root_module):
     register_Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::SpectrumSignalParameters'])
     register_Ns3SpectrumValue_methods(root_module, root_module['ns3::SpectrumValue'])
     register_Ns3ThreeGppAntennaArrayModel_methods(root_module, root_module['ns3::ThreeGppAntennaArrayModel'])
-    register_Ns3ThreeGppChannelModel_methods(root_module, root_module['ns3::ThreeGppChannelModel'])
-    register_Ns3ThreeGppChannelModelThreeGppChannelMatrix_methods(root_module, root_module['ns3::ThreeGppChannelModel::ThreeGppChannelMatrix'])
     register_Ns3ThreeGppSpectrumPropagationLossModel_methods(root_module, root_module['ns3::ThreeGppSpectrumPropagationLossModel'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
@@ -1016,6 +1015,8 @@ def register_methods(root_module):
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
     register_Ns3Mac64AddressChecker_methods(root_module, root_module['ns3::Mac64AddressChecker'])
     register_Ns3Mac64AddressValue_methods(root_module, root_module['ns3::Mac64AddressValue'])
+    register_Ns3MatrixBasedChannelModel_methods(root_module, root_module['ns3::MatrixBasedChannelModel'])
+    register_Ns3MatrixBasedChannelModelChannelMatrix_methods(root_module, root_module['ns3::MatrixBasedChannelModel::ChannelMatrix'])
     register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
@@ -1038,6 +1039,7 @@ def register_methods(root_module):
     register_Ns3SpectrumAnalyzer_methods(root_module, root_module['ns3::SpectrumAnalyzer'])
     register_Ns3SpectrumChannel_methods(root_module, root_module['ns3::SpectrumChannel'])
     register_Ns3ThreeGppChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppChannelConditionModel'])
+    register_Ns3ThreeGppChannelModel_methods(root_module, root_module['ns3::ThreeGppChannelModel'])
     register_Ns3ThreeGppIndoorMixedOfficeChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppIndoorMixedOfficeChannelConditionModel'])
     register_Ns3ThreeGppIndoorOpenOfficeChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppIndoorOpenOfficeChannelConditionModel'])
     register_Ns3ThreeGppRmaChannelConditionModel_methods(root_module, root_module['ns3::ThreeGppRmaChannelConditionModel'])
@@ -1741,6 +1743,18 @@ def register_Ns3DefaultDeleter__Ns3HashImplementation_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3DefaultDeleter__Ns3MatrixBasedChannelModelChannelMatrix_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix>::DefaultDeleter(ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::MatrixBasedChannelModel::ChannelMatrix > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix>::Delete(ns3::MatrixBasedChannelModel::ChannelMatrix * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::MatrixBasedChannelModel::ChannelMatrix *', 'object')], 
+                   is_static=True)
+    return
+
 def register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, cls):
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::NixVector>::DefaultDeleter() [constructor]
     cls.add_constructor([])
@@ -1813,18 +1827,6 @@ def register_Ns3DefaultDeleter__Ns3SpectrumValue_methods(root_module, cls):
                    is_static=True)
     return
 
-def register_Ns3DefaultDeleter__Ns3ThreeGppChannelModelThreeGppChannelMatrix_methods(root_module, cls):
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix>::DefaultDeleter() [constructor]
-    cls.add_constructor([])
-    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix>::DefaultDeleter(ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DefaultDeleter< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix > const &', 'arg0')])
-    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix>::Delete(ns3::ThreeGppChannelModel::ThreeGppChannelMatrix * object) [member function]
-    cls.add_method('Delete', 
-                   'void', 
-                   [param('ns3::ThreeGppChannelModel::ThreeGppChannelMatrix *', 'object')], 
-                   is_static=True)
-    return
-
 def register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, cls):
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor>::DefaultDeleter() [constructor]
     cls.add_constructor([])
@@ -1881,6 +1883,10 @@ def register_Ns3EventId_methods(root_module, cls):
                    'ns3::EventImpl *', 
                    [], 
                    is_const=True)
+    ## event-id.h (module 'core'): void ns3::EventId::Remove() [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3Hasher_methods(root_module, cls):
@@ -1985,6 +1991,11 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv4Address const &', 'other')], 
                    is_const=True, deprecated=True)
+    ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsInitialized() const [member function]
+    cls.add_method('IsInitialized', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ipv4-address.h (module 'network'): bool ns3::Ipv4Address::IsLocalMulticast() const [member function]
     cls.add_method('IsLocalMulticast', 
                    'bool', 
@@ -2198,6 +2209,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ipv6Address const &', 'other')], 
                    is_const=True, deprecated=True)
+    ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsInitialized() const [member function]
+    cls.add_method('IsInitialized', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsIpv4MappedAddress() const [member function]
     cls.add_method('IsIpv4MappedAddress', 
                    'bool', 
@@ -4441,6 +4457,13 @@ def register_Ns3SimpleRefCount__Ns3HashImplementation_Ns3Empty_Ns3DefaultDeleter
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter< ns3::Hash::Implementation > > const &', 'o')])
     return
 
+def register_Ns3SimpleRefCount__Ns3MatrixBasedChannelModelChannelMatrix_Ns3Empty_Ns3DefaultDeleter__lt__ns3MatrixBasedChannelModelChannelMatrix__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> >::SimpleRefCount(ns3::SimpleRefCount<ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::MatrixBasedChannelModel::ChannelMatrix> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::MatrixBasedChannelModel::ChannelMatrix, ns3::empty, ns3::DefaultDeleter< ns3::MatrixBasedChannelModel::ChannelMatrix > > const &', 'o')])
+    return
+
 def register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -4488,13 +4511,6 @@ def register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt_
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >::SimpleRefCount(ns3::SimpleRefCount<ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> > const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter< ns3::SpectrumValue > > const &', 'o')])
-    return
-
-def register_Ns3SimpleRefCount__Ns3ThreeGppChannelModelThreeGppChannelMatrix_Ns3Empty_Ns3DefaultDeleter__lt__ns3ThreeGppChannelModelThreeGppChannelMatrix__gt___methods(root_module, cls):
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> >::SimpleRefCount() [constructor]
-    cls.add_constructor([])
-    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> >::SimpleRefCount(ns3::SimpleRefCount<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> > const & o) [constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix, ns3::empty, ns3::DefaultDeleter< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
@@ -4847,124 +4863,6 @@ def register_Ns3ThreeGppAntennaArrayModel_methods(root_module, cls):
                    [param('ns3::ThreeGppAntennaArrayModel::ComplexVector const &', 'beamformingVector')])
     return
 
-def register_Ns3ThreeGppChannelModel_methods(root_module, cls):
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelModel(ns3::ThreeGppChannelModel const & arg0) [constructor]
-    cls.add_constructor([param('ns3::ThreeGppChannelModel const &', 'arg0')])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelModel() [constructor]
-    cls.add_constructor([])
-    ## three-gpp-channel-model.h (module 'spectrum'): int64_t ns3::ThreeGppChannelModel::AssignStreams(int64_t stream) [member function]
-    cls.add_method('AssignStreams', 
-                   'int64_t', 
-                   [param('int64_t', 'stream')])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::Ptr<const ns3::ThreeGppChannelModel::ThreeGppChannelMatrix> ns3::ThreeGppChannelModel::GetChannel(ns3::Ptr<const ns3::MobilityModel> aMob, ns3::Ptr<const ns3::MobilityModel> bMob, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> aAntenna, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> bAntenna) [member function]
-    cls.add_method('GetChannel', 
-                   'ns3::Ptr< ns3::ThreeGppChannelModel::ThreeGppChannelMatrix const >', 
-                   [param('ns3::Ptr< ns3::MobilityModel const >', 'aMob'), param('ns3::Ptr< ns3::MobilityModel const >', 'bMob'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'aAntenna'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'bAntenna')])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::Ptr<ns3::ChannelConditionModel> ns3::ThreeGppChannelModel::GetChannelConditionModel() const [member function]
-    cls.add_method('GetChannelConditionModel', 
-                   'ns3::Ptr< ns3::ChannelConditionModel >', 
-                   [], 
-                   is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): double ns3::ThreeGppChannelModel::GetFrequency() const [member function]
-    cls.add_method('GetFrequency', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): static uint32_t ns3::ThreeGppChannelModel::GetKey(uint32_t x1, uint32_t x2) [member function]
-    cls.add_method('GetKey', 
-                   'uint32_t', 
-                   [param('uint32_t', 'x1'), param('uint32_t', 'x2')], 
-                   is_static=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): std::string ns3::ThreeGppChannelModel::GetScenario() const [member function]
-    cls.add_method('GetScenario', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): static ns3::TypeId ns3::ThreeGppChannelModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetChannelConditionModel(ns3::Ptr<ns3::ChannelConditionModel> model) [member function]
-    cls.add_method('SetChannelConditionModel', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::ChannelConditionModel >', 'model')])
-    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetFrequency(double f) [member function]
-    cls.add_method('SetFrequency', 
-                   'void', 
-                   [param('double', 'f')])
-    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetScenario(std::string const & scenario) [member function]
-    cls.add_method('SetScenario', 
-                   'void', 
-                   [param('std::string const &', 'scenario')])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::AOA_INDEX [variable]
-    cls.add_static_attribute('AOA_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::AOD_INDEX [variable]
-    cls.add_static_attribute('AOD_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::PHI_INDEX [variable]
-    cls.add_static_attribute('PHI_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::R_INDEX [variable]
-    cls.add_static_attribute('R_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::THETA_INDEX [variable]
-    cls.add_static_attribute('THETA_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::X_INDEX [variable]
-    cls.add_static_attribute('X_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::Y_INDEX [variable]
-    cls.add_static_attribute('Y_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ZOA_INDEX [variable]
-    cls.add_static_attribute('ZOA_INDEX', 'uint8_t const', is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ZOD_INDEX [variable]
-    cls.add_static_attribute('ZOD_INDEX', 'uint8_t const', is_const=True)
-    return
-
-def register_Ns3ThreeGppChannelModelThreeGppChannelMatrix_methods(root_module, cls):
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::ThreeGppChannelMatrix() [constructor]
-    cls.add_constructor([])
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::ThreeGppChannelMatrix(ns3::ThreeGppChannelModel::ThreeGppChannelMatrix const & arg0) [constructor]
-    cls.add_constructor([param('ns3::ThreeGppChannelModel::ThreeGppChannelMatrix const &', 'arg0')])
-    ## three-gpp-channel-model.h (module 'spectrum'): bool ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::IsReverse(uint32_t const aId, uint32_t const bId) const [member function]
-    cls.add_method('IsReverse', 
-                   'bool', 
-                   [param('uint32_t const', 'aId'), param('uint32_t const', 'bId')], 
-                   is_const=True)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_DS [variable]
-    cls.add_instance_attribute('m_DS', 'double', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_K [variable]
-    cls.add_instance_attribute('m_K', 'double', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_angle [variable]
-    cls.add_instance_attribute('m_angle', 'ns3::ThreeGppChannelModel::Double2DVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_channel [variable]
-    cls.add_instance_attribute('m_channel', 'ns3::ThreeGppChannelModel::Complex3DVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_clusterPhase [variable]
-    cls.add_instance_attribute('m_clusterPhase', 'ns3::ThreeGppChannelModel::Double3DVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_delay [variable]
-    cls.add_instance_attribute('m_delay', 'ns3::ThreeGppChannelModel::DoubleVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_dis2D [variable]
-    cls.add_instance_attribute('m_dis2D', 'double', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_dis3D [variable]
-    cls.add_instance_attribute('m_dis3D', 'double', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_generatedTime [variable]
-    cls.add_instance_attribute('m_generatedTime', 'ns3::Time', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_locUT [variable]
-    cls.add_instance_attribute('m_locUT', 'ns3::Vector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_los [variable]
-    cls.add_instance_attribute('m_los', 'bool', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_nodeIds [variable]
-    cls.add_instance_attribute('m_nodeIds', 'std::pair< unsigned int, unsigned int >', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_nonSelfBlocking [variable]
-    cls.add_instance_attribute('m_nonSelfBlocking', 'ns3::ThreeGppChannelModel::Double2DVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_norRvAngles [variable]
-    cls.add_instance_attribute('m_norRvAngles', 'ns3::ThreeGppChannelModel::Double2DVector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_numCluster [variable]
-    cls.add_instance_attribute('m_numCluster', 'uint8_t', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_o2i [variable]
-    cls.add_instance_attribute('m_o2i', 'bool', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_preLocUT [variable]
-    cls.add_instance_attribute('m_preLocUT', 'ns3::Vector', is_const=False)
-    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelMatrix::m_speed [variable]
-    cls.add_instance_attribute('m_speed', 'ns3::Vector', is_const=False)
-    return
-
 def register_Ns3ThreeGppSpectrumPropagationLossModel_methods(root_module, cls):
     ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::ThreeGppSpectrumPropagationLossModel::ThreeGppSpectrumPropagationLossModel(ns3::ThreeGppSpectrumPropagationLossModel const & arg0) [constructor]
     cls.add_constructor([param('ns3::ThreeGppSpectrumPropagationLossModel const &', 'arg0')])
@@ -4979,6 +4877,11 @@ def register_Ns3ThreeGppSpectrumPropagationLossModel_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_const=True, is_virtual=True)
+    ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): ns3::Ptr<ns3::MatrixBasedChannelModel> ns3::ThreeGppSpectrumPropagationLossModel::GetChannelModel() const [member function]
+    cls.add_method('GetChannelModel', 
+                   'ns3::Ptr< ns3::MatrixBasedChannelModel >', 
+                   [], 
+                   is_const=True)
     ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): void ns3::ThreeGppSpectrumPropagationLossModel::GetChannelModelAttribute(std::string const & name, ns3::AttributeValue & value) const [member function]
     cls.add_method('GetChannelModelAttribute', 
                    'void', 
@@ -4989,6 +4892,10 @@ def register_Ns3ThreeGppSpectrumPropagationLossModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): void ns3::ThreeGppSpectrumPropagationLossModel::SetChannelModel(ns3::Ptr<ns3::MatrixBasedChannelModel> channel) [member function]
+    cls.add_method('SetChannelModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MatrixBasedChannelModel >', 'channel')])
     ## three-gpp-spectrum-propagation-loss-model.h (module 'spectrum'): void ns3::ThreeGppSpectrumPropagationLossModel::SetChannelModelAttribute(std::string const & name, ns3::AttributeValue const & value) [member function]
     cls.add_method('SetChannelModelAttribute', 
                    'void', 
@@ -6347,16 +6254,15 @@ def register_Ns3EmpiricalRandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_virtual=True)
-    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate(double c1, double c2, double v1, double v2, double r) [member function]
+    ## random-variable-stream.h (module 'core'): double ns3::EmpiricalRandomVariable::Interpolate() [member function]
     cls.add_method('Interpolate', 
                    'double', 
-                   [param('double', 'c1'), param('double', 'c2'), param('double', 'v1'), param('double', 'v2'), param('double', 'r')], 
-                   is_virtual=True, visibility='private')
-    ## random-variable-stream.h (module 'core'): void ns3::EmpiricalRandomVariable::Validate() [member function]
-    cls.add_method('Validate', 
-                   'void', 
                    [], 
-                   is_virtual=True, visibility='private')
+                   is_virtual=True)
+    ## random-variable-stream.h (module 'core'): bool ns3::EmpiricalRandomVariable::SetInterpolate(bool interpolate) [member function]
+    cls.add_method('SetInterpolate', 
+                   'bool', 
+                   [param('bool', 'interpolate')])
     return
 
 def register_Ns3EmptyAttributeAccessor_methods(root_module, cls):
@@ -7256,6 +7162,53 @@ def register_Ns3Mac64AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Mac64Address const &', 'value')])
+    return
+
+def register_Ns3MatrixBasedChannelModel_methods(root_module, cls):
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::MatrixBasedChannelModel() [constructor]
+    cls.add_constructor([])
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::MatrixBasedChannelModel(ns3::MatrixBasedChannelModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MatrixBasedChannelModel const &', 'arg0')])
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::Ptr<const ns3::MatrixBasedChannelModel::ChannelMatrix> ns3::MatrixBasedChannelModel::GetChannel(ns3::Ptr<const ns3::MobilityModel> aMob, ns3::Ptr<const ns3::MobilityModel> bMob, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> aAntenna, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> bAntenna) [member function]
+    cls.add_method('GetChannel', 
+                   'ns3::Ptr< ns3::MatrixBasedChannelModel::ChannelMatrix const >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'aMob'), param('ns3::Ptr< ns3::MobilityModel const >', 'bMob'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'aAntenna'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'bAntenna')], 
+                   is_virtual=True, is_pure_virtual=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): static uint32_t ns3::MatrixBasedChannelModel::GetKey(uint32_t x1, uint32_t x2) [member function]
+    cls.add_method('GetKey', 
+                   'uint32_t', 
+                   [param('uint32_t', 'x1'), param('uint32_t', 'x2')], 
+                   is_static=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::AOA_INDEX [variable]
+    cls.add_static_attribute('AOA_INDEX', 'uint8_t const', is_const=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::AOD_INDEX [variable]
+    cls.add_static_attribute('AOD_INDEX', 'uint8_t const', is_const=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ZOA_INDEX [variable]
+    cls.add_static_attribute('ZOA_INDEX', 'uint8_t const', is_const=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ZOD_INDEX [variable]
+    cls.add_static_attribute('ZOD_INDEX', 'uint8_t const', is_const=True)
+    return
+
+def register_Ns3MatrixBasedChannelModelChannelMatrix_methods(root_module, cls):
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::ChannelMatrix() [constructor]
+    cls.add_constructor([])
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::ChannelMatrix(ns3::MatrixBasedChannelModel::ChannelMatrix const & arg0) [constructor]
+    cls.add_constructor([param('ns3::MatrixBasedChannelModel::ChannelMatrix const &', 'arg0')])
+    ## matrix-based-channel-model.h (module 'spectrum'): bool ns3::MatrixBasedChannelModel::ChannelMatrix::IsReverse(uint32_t const aId, uint32_t const bId) const [member function]
+    cls.add_method('IsReverse', 
+                   'bool', 
+                   [param('uint32_t const', 'aId'), param('uint32_t const', 'bId')], 
+                   is_const=True)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::m_angle [variable]
+    cls.add_instance_attribute('m_angle', 'ns3::MatrixBasedChannelModel::Double2DVector', is_const=False)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::m_channel [variable]
+    cls.add_instance_attribute('m_channel', 'ns3::MatrixBasedChannelModel::Complex3DVector', is_const=False)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::m_delay [variable]
+    cls.add_instance_attribute('m_delay', 'ns3::MatrixBasedChannelModel::DoubleVector', is_const=False)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::m_generatedTime [variable]
+    cls.add_instance_attribute('m_generatedTime', 'ns3::Time', is_const=False)
+    ## matrix-based-channel-model.h (module 'spectrum'): ns3::MatrixBasedChannelModel::ChannelMatrix::m_nodeIds [variable]
+    cls.add_instance_attribute('m_nodeIds', 'std::pair< unsigned int, unsigned int >', is_const=False)
     return
 
 def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
@@ -8555,6 +8508,54 @@ def register_Ns3ThreeGppChannelConditionModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_const=True, is_virtual=True, is_pure_virtual=True, visibility='private')
+    return
+
+def register_Ns3ThreeGppChannelModel_methods(root_module, cls):
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelModel(ns3::ThreeGppChannelModel const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppChannelModel const &', 'arg0')])
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::ThreeGppChannelModel::ThreeGppChannelModel() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-channel-model.h (module 'spectrum'): int64_t ns3::ThreeGppChannelModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::Ptr<const ns3::MatrixBasedChannelModel::ChannelMatrix> ns3::ThreeGppChannelModel::GetChannel(ns3::Ptr<const ns3::MobilityModel> aMob, ns3::Ptr<const ns3::MobilityModel> bMob, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> aAntenna, ns3::Ptr<const ns3::ThreeGppAntennaArrayModel> bAntenna) [member function]
+    cls.add_method('GetChannel', 
+                   'ns3::Ptr< ns3::MatrixBasedChannelModel::ChannelMatrix const >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'aMob'), param('ns3::Ptr< ns3::MobilityModel const >', 'bMob'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'aAntenna'), param('ns3::Ptr< ns3::ThreeGppAntennaArrayModel const >', 'bAntenna')], 
+                   is_virtual=True)
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::Ptr<ns3::ChannelConditionModel> ns3::ThreeGppChannelModel::GetChannelConditionModel() const [member function]
+    cls.add_method('GetChannelConditionModel', 
+                   'ns3::Ptr< ns3::ChannelConditionModel >', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-channel-model.h (module 'spectrum'): double ns3::ThreeGppChannelModel::GetFrequency() const [member function]
+    cls.add_method('GetFrequency', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-channel-model.h (module 'spectrum'): std::string ns3::ThreeGppChannelModel::GetScenario() const [member function]
+    cls.add_method('GetScenario', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-channel-model.h (module 'spectrum'): static ns3::TypeId ns3::ThreeGppChannelModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetChannelConditionModel(ns3::Ptr<ns3::ChannelConditionModel> model) [member function]
+    cls.add_method('SetChannelConditionModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ChannelConditionModel >', 'model')])
+    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetFrequency(double f) [member function]
+    cls.add_method('SetFrequency', 
+                   'void', 
+                   [param('double', 'f')])
+    ## three-gpp-channel-model.h (module 'spectrum'): void ns3::ThreeGppChannelModel::SetScenario(std::string const & scenario) [member function]
+    cls.add_method('SetScenario', 
+                   'void', 
+                   [param('std::string const &', 'scenario')])
     return
 
 def register_Ns3ThreeGppIndoorMixedOfficeChannelConditionModel_methods(root_module, cls):
