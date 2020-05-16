@@ -17,7 +17,7 @@ def build(bld):
 
     bld.register_ns3_script('wifi-ap.py', ['wifi', 'applications'])
 
-    obj = bld.create_ns3_program('wifi-wired-bridging', ['wifi', 'csma', 'bridge', 'applications', 'netanim'])
+    obj = bld.create_ns3_program('wifi-wired-bridging', ['wifi', 'csma', 'bridge', 'applications'])
     obj.source = 'wifi-wired-bridging.cc'
 
     obj = bld.create_ns3_program('wifi-multirate', ['wifi', 'flow-monitor', 'olsr', 'applications'])
