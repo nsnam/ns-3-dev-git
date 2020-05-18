@@ -60,6 +60,8 @@ public:
    * Destructor
    */
   ~ThreeGppSpectrumPropagationLossModel ();
+  
+  void DoDispose () override;
 
   /**
    * Get the type ID.

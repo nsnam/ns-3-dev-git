@@ -48,6 +48,15 @@ ThreeGppSpectrumPropagationLossModel::~ThreeGppSpectrumPropagationLossModel ()
   NS_LOG_FUNCTION (this);
 }
 
+void
+ThreeGppSpectrumPropagationLossModel::DoDispose ()
+{
+  m_deviceAntennaMap.clear ();
+  m_longTermMap.clear ();
+  m_channelModel->Dispose ();
+  m_channelModel = nullptr;
+}
+
 TypeId
 ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
 {

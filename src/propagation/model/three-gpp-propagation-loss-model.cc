@@ -79,6 +79,14 @@ ThreeGppPropagationLossModel::~ThreeGppPropagationLossModel ()
 }
 
 void
+ThreeGppPropagationLossModel::DoDispose ()
+{
+  m_channelConditionModel->Dispose ();
+  m_channelConditionModel = nullptr;
+  m_shadowingMap.clear ();
+}
+
+void
 ThreeGppPropagationLossModel::SetChannelConditionModel (Ptr<ChannelConditionModel> model)
 {
   NS_LOG_FUNCTION (this);

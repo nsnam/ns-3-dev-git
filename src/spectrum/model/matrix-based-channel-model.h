@@ -46,7 +46,7 @@ public:
   /**
    * Destructor for MatrixBasedChannelModel
    */
-  virtual ~MatrixBasedChannelModel();
+  virtual ~MatrixBasedChannelModel ();
 
   typedef std::vector<double> DoubleVector; //!< type definition for vectors of doubles
   typedef std::vector<DoubleVector> Double2DVector; //!< type definition for matrices of doubles
@@ -66,6 +66,11 @@ public:
     Time               m_generatedTime; //!< generation time
     std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID (the transmitter when the channel was generated), the second element is the u-node ID (the receiver when the channel was generated)
 
+    /**
+     * Destructor for ChannelMatrix
+     */
+    virtual ~ChannelMatrix () = default;
+    
     /**
      * Returns true if the ChannelMatrix object was generated
      * considering node b as transmitter and node a as receiver.

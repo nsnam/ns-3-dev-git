@@ -175,6 +175,14 @@ ThreeGppChannelModel::~ThreeGppChannelModel ()
   NS_LOG_FUNCTION (this);
 }
 
+void
+ThreeGppChannelModel::DoDispose ()
+{
+  m_channelMap.clear ();
+  m_channelConditionModel->Dispose ();
+  m_channelConditionModel = nullptr;
+}
+
 TypeId
 ThreeGppChannelModel::GetTypeId (void)
 {

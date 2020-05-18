@@ -197,6 +197,12 @@ ThreeGppChannelConditionModel::~ThreeGppChannelConditionModel ()
 {
 }
 
+void ThreeGppChannelConditionModel::DoDispose ()
+{
+  m_channelConditionMap.clear ();
+  m_updatePeriod = Seconds (0.0);
+}
+
 Ptr<ChannelCondition>
 ThreeGppChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
                                                     Ptr<const MobilityModel> b) const

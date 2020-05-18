@@ -199,6 +199,8 @@ private:
   static Vector GetVectorDifference (Ptr<MobilityModel> a, Ptr<MobilityModel> b);
 
 protected:
+  virtual void DoDispose () override; 
+  
   /**
   * \brief Computes the 2D distance between two 3D vectors
   * \param a the first 3D vector

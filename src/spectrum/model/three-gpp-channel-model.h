@@ -57,6 +57,8 @@ public:
    * Destructor
    */
   ~ThreeGppChannelModel ();
+  
+  void DoDispose () override;
 
   /**
    * Get the type ID

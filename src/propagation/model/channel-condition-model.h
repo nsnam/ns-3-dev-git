@@ -327,6 +327,8 @@ public:
   virtual int64_t AssignStreams (int64_t stream) override;
 
 protected:
+  virtual void DoDispose () override;
+  
   /**
   * \brief Computes the 2D distance between two 3D vectors
   * \param a the first 3D vector
