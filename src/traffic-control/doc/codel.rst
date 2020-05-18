@@ -32,18 +32,18 @@ Andrew McGregor based on Linux kernel code implemented by Dave Täht and Eric Du
 
   * ``CoDelQueueDisc::ShouldDrop ()``: This routine is ``CoDelQueueDisc::DoDequeue()``'s helper routine that determines whether a packet should be dropped or not based on its sojourn time.  If the sojourn time goes above `m_target` and remains above continuously for at least `m_interval`, the routine returns ``true`` indicating that it is OK to drop the packet. Otherwise, it returns ``false``. 
 
-  * ``CoDelQueueDisc::DoDequeue ()``: This routine performs the actual packet drop based on ``CoDelQueueDisc::ShouldDrop ()``'s return value and schedules the next drop. 
-* class :cpp:class:`CoDelTimestampTag`: This class implements the timestamp tagging for a packet.  This tag is used to compute the packet's sojourn time (the difference between the time the packet is dequeued and the time it is pushed into the queue). 
+  * ``CoDelQueueDisc::DoDequeue ()``: This routine performs the actual packet drop based on ``CoDelQueueDisc::ShouldDrop ()``'s return value and schedules the next drop/mark.
+* class :cpp:class:`CoDelTimestampTag`: This class implements the timestamp tagging for a packet.  This tag is used to compute the packet's sojourn time (the difference between the time the packet is dequeued and the time it is pushed into the queue).
 
 There are 2 branches to ``CoDelQueueDisc::DoDequeue ()``: 
 
-1. If the queue is currently in the dropping state, which means the sojourn time has remained above `m_target` for more than `m_interval`, the routine determines if it's OK to leave the dropping state or it's time for the next drop. When ``CoDelQueueDisc::ShouldDrop ()`` returns ``false``, the queue can move out of the dropping state (set `m_dropping` to ``false``).  Otherwise, the queue continuously drops packets and updates the time for next drop (`m_dropNext`) until one of the following conditions is met: 
+1. If the queue is currently in the dropping state, which means the sojourn time has remained above `m_target` for more than `m_interval`, the routine determines if it's OK to leave the dropping state or it's time for the next drop/mark. When ``CoDelQueueDisc::ShouldDrop ()`` returns ``false``, the queue can move out of the dropping state (set `m_dropping` to ``false``).  Otherwise, the queue continuously drops/marks packets and updates the time for next drop (`m_dropNext`) until one of the following conditions is met:
 
     1. The queue is empty, upon which the queue leaves the dropping state and exits ``CoDelQueueDisc::ShouldDrop ()`` routine; 
     2. ``CoDelQueueDisc::ShouldDrop ()`` returns ``false`` (meaning the sojourn time goes below `m_target`) upon which the queue leaves the dropping state; 
-    3. It is not yet time for next drop (`m_dropNext` is less than current time) upon which the queue waits for the next packet dequeue to check the condition again. 
+    3. It is not yet time for next drop/mark (`m_dropNext` is less than current time) upon which the queue waits for the next packet dequeue to check the condition again.
 
-2. If the queue is not in the dropping state, the routine enters the dropping state and drop the first packet if ``CoDelQueueDisc::ShouldDrop ()`` returns ``true`` (meaning the sojourn time has gone above `m_target` for at least `m_interval` for the first time or it has gone above again after the queue leaves the dropping state). 
+2. If the queue is not in the dropping state, the routine enters the dropping state and drop/mark the first packet if ``CoDelQueueDisc::ShouldDrop ()`` returns ``true`` (meaning the sojourn time has gone above `m_target` for at least `m_interval` for the first time or it has gone above again after the queue leaves the dropping state).
 
 The CoDel queue disc does not require packet filters, does not admit
 child queue discs and uses a single internal queue. If not provided by
@@ -71,6 +71,8 @@ The key attributes that the CoDelQueue class holds include the following:
 * ``MinBytes:`` The CoDel algorithm minbytes parameter. The default value is 1500 bytes. 
 * ``Interval:`` The sliding-minimum window. The default value is 100 ms. 
 * ``Target:`` The CoDel algorithm target queue delay. The default value is 5 ms. 
+* ``UseEcn:`` True to use ECN (packets are marked instead of being dropped). The default value is false.
+* ``CeThreshold:`` The CoDel CE threshold for marking packets. Disabled by default.
 
 Examples
 ========
@@ -129,6 +131,7 @@ The CoDel model is tested using :cpp:class:`CoDelQueueDiscTestSuite` class defin
 * Test 3: The third test checks the NewtonStep() arithmetic against explicit port of Linux implementation
 * Test 4: The fourth test checks the ControlLaw() against explicit port of Linux implementation
 * Test 5: The fifth test checks the enqueue/dequeue with drops according to CoDel algorithm
+* Test 6: The sixth test checks the enqueue/dequeue with marks according to CoDel algorithm
 
 The test suite can be run using the following commands: 
 
