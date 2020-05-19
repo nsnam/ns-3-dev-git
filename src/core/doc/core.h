@@ -81,3 +81,19 @@
  * \defgroup core-tests Core module tests
  * TestSuites for the Core module
  */
+
+/**
+ * \ingroup core
+ * \defgroup system System Services
+ *
+ * System-independent interfaces to operating system services:
+ * environment variables, files system, threading, wall clock time.
+ *
+ * Services provided:
+ *
+ *   - Environment variables
+ *   - File and directory paths.
+ *   - Thread primitives:  threads, conditional waits, mutex, critical sections.
+ *   - Asynchronous input from a file descriptor.
+ *   - Wall clock time.
+ */

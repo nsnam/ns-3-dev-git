@@ -2,6 +2,7 @@
  * \file
  * Main page of the Doxygen-generated documentation.
  */
+
 /**
  * \mainpage ns-3 Documentation
  *
@@ -70,6 +71,7 @@
  *     - wimax
  *
  */
+
 /**
  * \namespace ns3
  * \brief Every class exported by the ns3 library is enclosed in the
@@ -107,3 +109,12 @@
 #define NS3_LOG_ENABLE
 
 /**@}*/
+
+/**
+ * \page EnvironVar All Environment Variables
+ *
+ * All environment variables used by ns-3 are documented by module.
+ *
+ * \section environcore Core Enviroment Variables
+ * See \ref core-environ
+ */
