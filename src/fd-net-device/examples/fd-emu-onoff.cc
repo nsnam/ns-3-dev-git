@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2012 University of Washington, 2012 INRIA
+ *               2017 Università' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Alina Quereilhac <alina.quereilhac@inria.fr>
+ * Extended by: Pasquale Imputato <p.imputato@gmail.com>
  *
  */
 
@@ -28,10 +30,11 @@
 // |  +----------------+  |     |   +----------------+  |
 // |  |    ns-3 IPv4   |  |     |   |    ns-3 IPv4   |  |
 // |  +----------------+  |     |   +----------------+  |
-// |  |   FdNetDevice  |  |     |   |   FdNetDevice  |  |
+// |  | FdNetDevice or |  |     |   | FdNetDevice or |  |
+// |  | NetmapNetDevice|  |     |   | NetmapNetDevice|  |
 // |  |    10.1.1.1    |  |     |   |    10.1.1.2    |  |
 // |  +----------------+  |     |   +----------------+  |
-// |  |   raw socket   |  |     |   |   raw socket   |  |
+// |  |       fd       |  |     |   |       fd       |  |
 // |  +----------------+  |     |   +----------------+  |
 // |       | eth0 |       |     |        | eth0 |       |
 // +-------+------+-------+     +--------+------+-------+
@@ -41,9 +44,9 @@
 //             |                            |
 //             +----------------------------+
 //
-// This example is aimed at measuring the throughput of the FdNetDevice
-// when using the EmuFdNetDeviceHelper. This is achieved by saturating
-// the channel with TCP traffic. Then the throughput can be obtained from
+// This example is aimed at measuring the throughput of the FdNetDevice (NetmapNetDevice)
+// when using the EmuFdNetDeviceHelper (NetmapNetDeviceHelper). This is achieved by saturating
+// the channel with TCP or UDP traffic. Then the throughput can be obtained from 
 // the generated .pcap files.
 //
 // To run this example you will need two hosts (client & server).
@@ -59,12 +62,19 @@
 //
 // both machines: $ sudo ip link set eth0 promisc on
 //
-// 4 - Give root suid to the raw socket creator binary.
+// 3' - If you run emulation in netmap mode, you need before to load the netmap.ko module.
+//      The user is in charge to configure and build netmap separately.
+//
+// 4 - Give root suid to the raw or netmap socket creator binary.
 //     If the --enable-sudo option was used to configure ns-3 with waf, then the following
 //     step will not be necessary.
 //
 // both hosts: $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
 // both hosts: $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
+//
+// or (if you run emulation in netmap mode):
+// both hosts: $ sudo chown root.root build/src/fd-net-device/ns3-dev-netmap-device-creator
+// both hosts: $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-netmap-device-creator
 //
 // 5 - Run the server side:
 //
@@ -95,8 +105,8 @@ int
 main (int argc, char *argv[])
 {
   uint16_t sinkPort = 8000;
-  uint32_t packetSize = 10000; // bytes
-  std::string dataRate ("1000Mb/s");
+  uint32_t packetSize = 1400; // bytes
+  std::string dataRate("1000Mb/s");
   bool serverMode = false;
 
   std::string deviceName ("eth0");
@@ -105,6 +115,13 @@ main (int argc, char *argv[])
   std::string netmask ("255.255.255.0");
   std::string macClient ("00:00:00:00:00:01");
   std::string macServer ("00:00:00:00:00:02");
+  std::string transportProt = "Tcp";
+  std::string socketType;
+#ifdef HAVE_PACKET_H
+  std::string emuMode ("raw");
+#else        // HAVE_NETMAP_USER_H is true (otherwise this example is not compiled)
+  std::string emuMode ("netmap");
+#endif
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("deviceName", "Device name", deviceName);
@@ -115,7 +132,18 @@ main (int argc, char *argv[])
   cmd.AddValue ("mac-client", "Mac Address for Server Client : 00:00:00:00:00:01", macClient);
   cmd.AddValue ("mac-server", "Mac Address for Server Default : 00:00:00:00:00:02", macServer);
   cmd.AddValue ("data-rate", "Data rate defaults to 1000Mb/s", dataRate);
+  cmd.AddValue ("transportProt", "Transport protocol to use: Tcp, Udp", transportProt);
+  cmd.AddValue ("emuMode", "Emulation mode in {raw, netmap}", emuMode);
   cmd.Parse (argc, argv);
+
+  if (transportProt.compare ("Tcp") == 0)
+    {
+      socketType = "ns3::TcpSocketFactory";
+    }
+  else
+    {
+      socketType = "ns3::UdpSocketFactory";
+    }
 
   Ipv4Address remoteIp;
   Ipv4Address localIp;
@@ -144,9 +172,31 @@ main (int argc, char *argv[])
   Ptr<Node> node = CreateObject<Node> ();
 
   NS_LOG_INFO ("Create Device");
-  EmuFdNetDeviceHelper emu;
-  emu.SetDeviceName (deviceName);
-  NetDeviceContainer devices = emu.Install (node);
+  FdNetDeviceHelper* helper = nullptr;
+
+#ifdef HAVE_PACKET_H
+  if (emuMode == "raw")
+    {
+      EmuFdNetDeviceHelper* raw = new EmuFdNetDeviceHelper;
+      raw->SetDeviceName (deviceName);
+      helper = raw;
+    }
+#endif
+#ifdef HAVE_NETMAP_USER_H
+  if (emuMode == "netmap")
+    {
+      NetmapNetDeviceHelper* netmap = new NetmapNetDeviceHelper;
+      netmap->SetDeviceName (deviceName);
+      helper = netmap;
+    }
+#endif
+
+  if (helper == nullptr)
+    {
+      NS_ABORT_MSG (emuMode << " not supported.");
+    }
+
+  NetDeviceContainer devices = helper->Install (node);
   Ptr<NetDevice> device = devices.Get (0);
   device->SetAttribute ("Address", localMac);
 
@@ -193,6 +243,7 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (61.0));
   Simulator::Run ();
   Simulator::Destroy ();
+  delete helper;
 
   return 0;
 }

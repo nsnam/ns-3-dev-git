@@ -29,6 +29,17 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NetDeviceQueueInterface");
 
+TypeId
+NetDeviceQueue::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NetDeviceQueue")
+    .SetParent<Object> ()
+    .SetGroupName("Network")
+    .AddConstructor<NetDeviceQueue> ()
+  ;
+  return tid;
+}
+
 NetDeviceQueue::NetDeviceQueue ()
   : m_stoppedByDevice (false),
     m_stoppedByQueueLimits (false),
@@ -170,6 +181,12 @@ NetDeviceQueueInterface::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName("Network")
     .AddConstructor<NetDeviceQueueInterface> ()
+    .AddAttribute ("TxQueuesType",
+                   "The type of transmission queues to be used",
+                   TypeId::ATTR_CONSTRUCT,
+                   TypeIdValue (NetDeviceQueue::GetTypeId ()),
+                   MakeTypeIdAccessor (&NetDeviceQueueInterface::SetTxQueuesType),
+                   MakeTypeIdChecker ())
     .AddAttribute ("NTxQueues", "The number of device transmission queues",
                    TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
                    UintegerValue (1),
@@ -229,6 +246,17 @@ NetDeviceQueueInterface::NotifyNewAggregate (void)
 }
 
 void
+NetDeviceQueueInterface::SetTxQueuesType (TypeId type)
+{
+  NS_LOG_FUNCTION (this << type);
+
+  NS_ABORT_MSG_IF (!m_txQueuesVector.empty (), "Cannot call SetTxQueuesType after creating device queues");
+
+  m_txQueues = ObjectFactory ();
+  m_txQueues.SetTypeId (type);
+}
+
+void
 NetDeviceQueueInterface::SetNTxQueues (std::size_t numTxQueues)
 {
   NS_LOG_FUNCTION (this << numTxQueues);
@@ -239,7 +267,7 @@ NetDeviceQueueInterface::SetNTxQueues (std::size_t numTxQueues)
   // create the netdevice queues
   for (std::size_t i = 0; i < numTxQueues; i++)
     {
-      m_txQueuesVector.push_back (Create<NetDeviceQueue> ());
+      m_txQueuesVector.push_back (m_txQueues.Create ()->GetObject<NetDeviceQueue> ());
     }
 }
 

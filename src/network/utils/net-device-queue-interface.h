@@ -27,6 +27,7 @@
 #include "ns3/ptr.h"
 #include "ns3/log.h"
 #include "ns3/net-device.h"
+#include "ns3/object-factory.h"
 
 namespace ns3 {
 
@@ -52,9 +53,15 @@ class QueueItem;
  *
  * This class roughly models the struct netdev_queue of Linux.
  */
-class NetDeviceQueue : public SimpleRefCount<NetDeviceQueue>
+class NetDeviceQueue : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
   NetDeviceQueue ();
   virtual ~NetDeviceQueue();
 
@@ -84,7 +91,7 @@ public:
    * Called by queue discs to enquire about the status of a given transmission queue.
    * This is the analogous to the netif_xmit_stopped function of the Linux kernel.
    */
-  bool IsStopped (void) const;
+  virtual bool IsStopped (void) const;
 
   /**
    * \brief Notify this NetDeviceQueue that the NetDeviceQueueInterface was
@@ -116,13 +123,13 @@ public:
    * \brief Called by the netdevice to report the number of bytes queued to the device queue
    * \param bytes number of bytes queued to the device queue
    */
-  void NotifyQueuedBytes (uint32_t bytes);
+  virtual void NotifyQueuedBytes (uint32_t bytes);
 
   /**
    * \brief Called by the netdevice to report the number of bytes it is going to transmit
    * \param bytes number of bytes the device is going to transmit
    */
-  void NotifyTransmittedBytes (uint32_t bytes);
+  virtual void NotifyTransmittedBytes (uint32_t bytes);
 
   /**
    * \brief Reset queue limits state
@@ -252,6 +259,16 @@ public:
   std::size_t GetNTxQueues (void) const;
 
   /**
+   * \brief Set the type of device transmission queues to create.
+   * \param type type of device transmission queues to create.
+   *
+   * This method is called when the TxQueuesType attribute is set to create
+   * the corresponding type of device transmission queues. It cannot be
+   * called again afterwards.
+   */
+  void SetTxQueuesType (TypeId type);
+
+  /**
    * \brief Set the number of device transmission queues to create.
    * \param numTxQueues number of device transmission queues to create.
    *
@@ -293,6 +310,7 @@ protected:
   virtual void NotifyNewAggregate (void);
 
 private:
+  ObjectFactory m_txQueues;   //!< Device transmission queues TypeId
   std::vector< Ptr<NetDeviceQueue> > m_txQueuesVector;   //!< Device transmission queues
   SelectQueueCallback m_selectQueueCallback;   //!< Select queue callback
 };

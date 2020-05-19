@@ -43,6 +43,12 @@ FdNetDeviceHelper::FdNetDeviceHelper ()
 }
 
 void
+FdNetDeviceHelper::SetTypeId (std::string type)
+{
+  m_deviceFactory.SetTypeId (type);
+}
+
+void
 FdNetDeviceHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 {
   NS_LOG_FUNCTION (this);

@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 University of Washington, 2012 INRIA 
+ * Copyright (c) 2012 University of Washington, 2012 INRIA
+ *               2017 Università' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -29,7 +30,8 @@
 //   |  +----------------+  |              
 //   |  |    ns-3 IPv4   |  |                 
 //   |  +----------------+  |                 
-//   |  |   FdNetDevice  |  |                
+//   |  | FdNetDevice or |  |
+//   |  | NetmapNetDevice|  |
 //   |--+----------------+--+     
 //   |       | eth0 |       |                
 //   |       +------+       |    
@@ -46,6 +48,8 @@
 //     device name in as a command-line argument
 //  2) The host device must be set to promiscuous mode
 //     (e.g. "sudo ifconfig eth0 promisc")
+//  2') If you run emulation in netmap mode, you need before to load the netmap.ko module.
+//      The user is in charge to configure and build netmap separately.
 //  3) Be aware that ns-3 will generate a fake mac address, and that in
 //     some enterprise networks, this may be considered bad form to be
 //     sending packets out of your device with "unauthorized" mac addresses
@@ -59,12 +63,16 @@
 //     'netstat -rn' command and find the IP address of the default gateway
 //     on your host.  Search for "Ipv4Address gateway" and replace the string
 //     "1.2.3.4" string with the gateway IP address.
-/// 6) Give root suid to the raw socket creator binary.
+/// 6) Give root suid to the raw or netmap socket creator binary.
 //     If the --enable-sudo option was used to configure ns-3 with waf, then the following
 //     step will not be necessary.
 //
 //     $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
 //     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
+// 
+//     or (if you run emulation in netmap mode):
+//     $ sudo chown root.root build/src/fd-net-device/ns3-dev-netmap-device-creator
+//     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-netmap-device-creator
 //
 
 #include "ns3/abort.h"
@@ -92,7 +100,14 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Ping Emulation Example");
 
   std::string deviceName ("eth0");
-  std::string remote ("173.194.34.51"); // example.com
+  std::string remote ("8.8.8.8");
+  std::string localAddress ("1.2.3.4");
+  std::string localGateway ("1.2.3.4");
+#ifdef HAVE_PACKET_H
+  std::string emuMode ("raw");
+#else        // HAVE_NETMAP_USER_H is true (otherwise this example is not compiled)
+  std::string emuMode ("netmap");
+#endif
 
   //
   // Allow the user to override any of the defaults at run-time, via
@@ -101,10 +116,13 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.AddValue ("deviceName", "Device name", deviceName);
   cmd.AddValue ("remote", "Remote IP address (dotted decimal only please)", remote);
+  cmd.AddValue ("localIp", "Local IP address (dotted decimal only please)", localAddress);
+  cmd.AddValue ("gateway", "Gateway address (dotted decimal only please)", localGateway);
+  cmd.AddValue ("emuMode", "Emulation mode in {raw, netmap}", emuMode);
   cmd.Parse (argc, argv);
 
   Ipv4Address remoteIp (remote.c_str ());
-  Ipv4Address localIp ("1.2.3.4");
+  Ipv4Address localIp (localAddress.c_str ());
   NS_ABORT_MSG_IF (localIp == "1.2.3.4", "You must change the local IP address before running this example");
 
   Ipv4Mask localMask ("255.255.255.0");
@@ -149,9 +167,32 @@ main (int argc, char *argv[])
   // OUI flying around.  Be aware.
   //
   NS_LOG_INFO ("Create Device");
-  EmuFdNetDeviceHelper emu;
-  emu.SetDeviceName (deviceName);
-  NetDeviceContainer devices = emu.Install (node);
+
+  FdNetDeviceHelper* helper = nullptr;
+
+#ifdef HAVE_PACKET_H
+  if (emuMode == "raw")
+    {
+      EmuFdNetDeviceHelper* raw = new EmuFdNetDeviceHelper;
+      raw->SetDeviceName (deviceName);
+      helper = raw;
+    }
+#endif
+#ifdef HAVE_NETMAP_USER_H
+  if (emuMode == "netmap")
+    {
+      NetmapNetDeviceHelper* netmap = new NetmapNetDeviceHelper;
+      netmap->SetDeviceName (deviceName);
+      helper = netmap;
+    }
+#endif
+
+  if (helper == nullptr)
+    {
+      NS_ABORT_MSG (emuMode << " not supported.");
+    }
+
+  NetDeviceContainer devices = helper->Install (node);
   Ptr<NetDevice> device = devices.Get (0);
   device->SetAttribute ("Address", Mac48AddressValue (Mac48Address::Allocate ()));
 
@@ -188,7 +229,7 @@ main (int argc, char *argv[])
   // the default gateway on your host and add it below, replacing the
   // "1.2.3.4" string.
   //
-  Ipv4Address gateway ("1.2.3.4");
+  Ipv4Address gateway (localGateway.c_str ());
   NS_ABORT_MSG_IF (gateway == "1.2.3.4", "You must change the gateway IP address before running this example");
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
@@ -207,7 +248,7 @@ main (int argc, char *argv[])
   app->SetAttribute ("Verbose", BooleanValue (true) );
   node->AddApplication (app);
   app->SetStartTime (Seconds (1.0));
-  app->SetStopTime (Seconds (21.0));
+  app->SetStopTime (Seconds (22.0));
 
   //
   // Give the application a name.  This makes life much easier when constructing
@@ -223,14 +264,15 @@ main (int argc, char *argv[])
   //
   // Enable a promiscuous pcap trace to see what is coming and going on our device.
   //
-  emu.EnablePcap ("emu-ping", device, true);
+  helper->EnablePcap (emuMode + "-emu-ping", device, true);
 
   //
   // Now, do the actual emulation.
   //
-  NS_LOG_INFO ("Run Emulation.");
-  Simulator::Stop (Seconds (22.0));
+  NS_LOG_INFO ("Run Emulation in " << emuMode << " mode.");
+  Simulator::Stop (Seconds (23.0));
   Simulator::Run ();
   Simulator::Destroy ();
+  delete helper;
   NS_LOG_INFO ("Done.");
 }

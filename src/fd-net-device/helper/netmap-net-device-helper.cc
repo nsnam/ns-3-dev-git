@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 INRIA, 2012 University of Washington
+ * Copyright (c) 2017 Universita' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Pasquale Imputato <p.imputato@gmail.com>
  */
 
-#include "emu-fd-net-device-helper.h"
+#include "netmap-net-device-helper.h"
 #include "encode-decode.h"
 
 #include "ns3/abort.h"
@@ -28,22 +30,18 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/trace-helper.h"
-
-#ifdef NS3_DPDK
-#include "ns3/dpdk-net-device.h"
-#endif
+#include "ns3/netmap-net-device.h"
+#include "ns3/uinteger.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
 #include <iostream>
 #include <iomanip>
 #include <limits>
-#include <linux/if_tun.h>
 #include <memory>
 #include <net/ethernet.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <netpacket/packet.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -52,94 +50,75 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
 
 #include <string>
 
+#include <net/netmap_user.h>
+
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceHelper");
+NS_LOG_COMPONENT_DEFINE ("NetmapNetDeviceHelper");
 
 #define EMU_MAGIC 65867
 
-EmuFdNetDeviceHelper::EmuFdNetDeviceHelper ()
+NetmapNetDeviceHelper::NetmapNetDeviceHelper ()
 {
   m_deviceName = "undefined";
-  m_dpdkMode = false;
-  m_hostQdiscBypass = false;
-}
-
-void
-EmuFdNetDeviceHelper::SetDeviceName (std::string deviceName)
-{
-  m_deviceName = deviceName;
-}
-
-void
-EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
-{
-  NS_LOG_FUNCTION (this);
-
-#ifdef NS3_DPDK
-  FdNetDeviceHelper::SetTypeId ("ns3::DpdkNetDevice");
-  m_dpdkMode = true;
-  m_ealArgc = argc;
-  m_ealArgv = argv;
-
-  NS_LOG_LOGIC ("Set DPDK Mode");
-#else
-  NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetDpdkMode (): Attempted to set DPDK Mode without DPDK support enabled");
-#endif
-}
-
-void
-EmuFdNetDeviceHelper::HostQdiscBypass (bool hostQdiscBypass)
-{
-  m_hostQdiscBypass = hostQdiscBypass;
+  SetTypeId ("ns3::NetmapNetDevice");
 }
 
 std::string
-EmuFdNetDeviceHelper::GetDeviceName (void)
+NetmapNetDeviceHelper::GetDeviceName (void)
 {
   return m_deviceName;
 }
 
+void
+NetmapNetDeviceHelper::SetDeviceName (std::string deviceName)
+{
+  m_deviceName = deviceName;
+}
+
 Ptr<NetDevice>
-EmuFdNetDeviceHelper::InstallPriv (Ptr<Node> node) const
+NetmapNetDeviceHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<NetDevice> d = FdNetDeviceHelper::InstallPriv (node);
   Ptr<FdNetDevice> device = d->GetObject<FdNetDevice> ();
-  SetFileDescriptor (device);
+  
+  SetDeviceAttributes (device);
+
+  int fd = CreateFileDescriptor ();
+  Ptr<NetmapNetDevice> netmapDevice = DynamicCast<NetmapNetDevice> (device);
+  SwitchInNetmapMode (fd, netmapDevice);
+
+  // Aggregate NetDeviceQueueInterface object
+  Ptr<NetDeviceQueueInterface> ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> (
+                                      "TxQueuesType", TypeIdValue (NetDeviceQueueLock::GetTypeId ()),
+                                      "NTxQueues", UintegerValue (1));
+
+  device->AggregateObject (ndqi);
+  netmapDevice->SetNetDeviceQueue (ndqi->GetTxQueue (0));
+
   return device;
 }
 
 void
-EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
+NetmapNetDeviceHelper::SetDeviceAttributes (Ptr<FdNetDevice> device) const
 {
-  NS_LOG_LOGIC ("Creating EMU socket");
 
   if (m_deviceName == "undefined")
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): m_deviceName is not set");
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::SetFileDescriptor (): m_deviceName is not set");
     }
-
-#ifdef NS3_DPDK
-  if (m_dpdkMode)
-    {
-      Ptr<DpdkNetDevice> dpdkDevice = StaticCast<DpdkNetDevice> (device);
-      dpdkDevice->SetDeviceName (m_deviceName);
-      dpdkDevice->InitDpdk (m_ealArgc, m_ealArgv);
-      return;
-    }
-#endif
 
   //
   // Call out to a separate process running as suid root in order to get a raw
   // socket.  We do this to avoid having the entire simulation running as root.
   //
-  int fd = CreateFileDescriptor ();
-  device->SetFileDescriptor (fd);
+  int fd = socket (PF_INET, SOCK_DGRAM, 0);
 
   //
   // Figure out which interface index corresponds to the device name in the corresponding attribute.
@@ -152,43 +131,13 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
   int32_t rc = ioctl (fd, SIOCGIFINDEX, &ifr);
   if (rc == -1)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): Can't get interface index");
-    }
-
-  //
-  // Bind the socket to the interface we just found.
-  //
-  struct sockaddr_ll ll;
-  bzero (&ll, sizeof(ll));
-
-  ll.sll_family = AF_PACKET;
-  ll.sll_ifindex = ifr.ifr_ifindex;
-  ll.sll_protocol = htons (ETH_P_ALL);
-
-  NS_LOG_LOGIC ("Binding socket to interface");
-
-  rc = bind (fd, (struct sockaddr *)&ll, sizeof (ll));
-  if (rc == -1)
-    {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): Can't bind to specified interface");
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::SetFileDescriptor (): Can't get interface index");
     }
 
   rc = ioctl (fd, SIOCGIFFLAGS, &ifr);
   if (rc == -1)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): Can't get interface flags");
-    }
-
-  if (m_hostQdiscBypass)
-    {
-      static const int32_t sock_qdisc_bypass = 1;
-      int32_t sock_qdisc_ret = setsockopt (fd, SOL_PACKET, PACKET_QDISC_BYPASS, &sock_qdisc_bypass,
-                                           sizeof (sock_qdisc_bypass));
-
-      if (sock_qdisc_ret == -1)
-        {
-          NS_LOG_ERROR ("Cannot use the qdisc bypass option");
-        }
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::SetFileDescriptor (): Can't get interface flags");
     }
 
   //
@@ -204,7 +153,10 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
   //
   if ((ifr.ifr_flags & IFF_PROMISC) == 0)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): " << m_deviceName.c_str () << " is not in promiscuous mode");
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::SetFileDescriptor (): "
+                      << m_deviceName.c_str ()
+                      << " is not in promiscuous mode. Please config the interface in promiscuous "
+                         "mode before to run the simulation.");
     }
 
   if ((ifr.ifr_flags & IFF_BROADCAST) != IFF_BROADCAST)
@@ -223,25 +175,28 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
     }
 
   // Set the MTU of the device to the mtu of the associated network interface
-  struct ifreq ifr2;
+//   struct ifreq ifr2;
+//
+//   bzero (&ifr2, sizeof (ifr2));
+//   strcpy (ifr2.ifr_name, m_deviceName.c_str ());
 
-  bzero (&ifr2, sizeof (ifr2));
-  strcpy (ifr2.ifr_name, m_deviceName.c_str ());
+//   int32_t mtufd = socket (PF_INET, SOCK_DGRAM, IPPROTO_IP);
 
-  int32_t mtufd = socket (PF_INET, SOCK_DGRAM, IPPROTO_IP);
-
-  rc = ioctl (mtufd, SIOCGIFMTU, &ifr2);
+  rc = ioctl (fd, SIOCGIFMTU, &ifr);
   if (rc == -1)
     {
       NS_FATAL_ERROR ("FdNetDevice::SetFileDescriptor (): Can't ioctl SIOCGIFMTU");
     }
 
-  close (mtufd);
-  device->SetMtu (ifr2.ifr_mtu);
+  NS_LOG_DEBUG ("Device MTU " << ifr.ifr_mtu);
+  device->SetMtu (ifr.ifr_mtu);
+
+  close (fd);
+
 }
 
 int
-EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
+NetmapNetDeviceHelper::CreateFileDescriptor (void) const
 {
   NS_LOG_FUNCTION (this);
 
@@ -257,7 +212,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
   int sock = socket (PF_UNIX, SOCK_DGRAM, 0);
   if (sock == -1)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): Unix socket creation error, errno = " << strerror (errno));
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): Unix socket creation error, errno = " << strerror (errno));
     }
 
   //
@@ -269,7 +224,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
   int status = bind (sock, (struct sockaddr*)&un, sizeof (sa_family_t));
   if (status == -1)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): Could not bind(): errno = " << strerror (errno));
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): Could not bind(): errno = " << strerror (errno));
     }
 
   NS_LOG_INFO ("Created Unix socket");
@@ -286,7 +241,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
   status = getsockname (sock, (struct sockaddr*)&un, &len);
   if (status == -1)
     {
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): Could not getsockname(): errno = " << strerror (errno));
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): Could not getsockname(): errno = " << strerror (errno));
     }
 
   //
@@ -299,7 +254,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
   // we wait for the child (the socket creator) to complete and read the
   // socket it created using the ancillary data mechanism.
   //
-  // Tom Goff reports the possibility of a deadlock when trying to acquire the
+  // Tom Goff reports the possiblility of a deadlock when trying to acquire the
   // python GIL here.  He says that this might be due to trying to access Python
   // objects after fork() without calling PyOS_AfterFork() to properly reset
   // Python state (including the GIL).  There is no code to cause the problem
@@ -316,14 +271,18 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       // the (now) parent process.
       //
       std::ostringstream oss;
+
       oss << "-p" << path;
+
+
+
       NS_LOG_INFO ("Parameters set to \"" << oss.str () << "\"");
 
       //
       // Execute the socket creation process image.
       //
-      status = ::execlp (RAW_SOCK_CREATOR,
-                         RAW_SOCK_CREATOR,                            // argv[0] (filename)
+      status = ::execlp (NETMAP_DEV_CREATOR,
+                         NETMAP_DEV_CREATOR,                            // argv[0] (filename)
                          oss.str ().c_str (),                           // argv[1] (-p<path?
                          (char *)NULL);
 
@@ -331,7 +290,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): Back from execlp(), status = " <<
+      NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): Back from execlp(), status = " <<
                       status << ", errno = " << ::strerror (errno));
     }
   else
@@ -345,9 +304,9 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       pid_t waited = waitpid (pid, &st, 0);
       if (waited == -1)
         {
-          NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): waitpid() fails, errno = " << strerror (errno));
+          NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): waitpid() fails, errno = " << strerror (errno));
         }
-      NS_ASSERT_MSG (pid == waited, "EmuFdNetDeviceHelper::CreateFileDescriptor(): pid mismatch");
+      NS_ASSERT_MSG (pid == waited, "NetmapNetDeviceHelper::CreateFileDescriptor(): pid mismatch");
 
       //
       // Check to see if the socket creator exited normally and then take a
@@ -359,12 +318,12 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
           int exitStatus = WEXITSTATUS (st);
           if (exitStatus != 0)
             {
-              NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): socket creator exited normally with status " << exitStatus);
+              NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): socket creator exited normally with status " << exitStatus);
             }
         }
       else
         {
-          NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): socket creator exited abnormally");
+          NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): socket creator exited abnormally");
         }
 
       //
@@ -423,7 +382,7 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
       ssize_t bytesRead = recvmsg (sock, &msg, 0);
       if (bytesRead != sizeof(int))
         {
-          NS_FATAL_ERROR ("EmuFdNetDeviceHelper::CreateFileDescriptor(): Wrong byte count from socket creator");
+          NS_FATAL_ERROR ("NetmapNetDeviceHelper::CreateFileDescriptor(): Wrong byte count from socket creator");
         }
 
       //
@@ -457,6 +416,62 @@ EmuFdNetDeviceHelper::CreateFileDescriptor (void) const
         }
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
+}
+
+void
+NetmapNetDeviceHelper::SwitchInNetmapMode (int fd, Ptr<NetmapNetDevice> device) const
+{
+  NS_LOG_FUNCTION (this << fd << device);
+  NS_ASSERT (device);
+
+  if (m_deviceName == "undefined")
+    {
+      NS_FATAL_ERROR ("NetmapNetDevice: m_deviceName is not set");
+    }
+
+  if (fd == -1)
+    {
+      NS_FATAL_ERROR ("NetmapNetDevice: fd is not set");
+    }
+
+  struct nmreq nmr;
+  memset (&nmr, 0, sizeof (nmr));
+
+  nmr.nr_version = NETMAP_API;
+
+  // setting the interface name in the netmap request
+  strncpy (nmr.nr_name, m_deviceName.c_str (), m_deviceName.length ());
+
+  // switch the interface in netmap mode
+  int code = ioctl (fd, NIOCREGIF, &nmr);
+  if (code == -1)
+    {
+      NS_FATAL_ERROR ("Switching failed");
+    }
+
+  // memory mapping
+  uint8_t *memory = (uint8_t *) mmap (0, nmr.nr_memsize, PROT_WRITE | PROT_READ,
+                                      MAP_SHARED, fd, 0);
+
+  if (memory == MAP_FAILED)
+    {
+      NS_FATAL_ERROR ("Memory mapping failed");
+    }
+
+  // getting the base struct of the interface in netmap mode
+  struct netmap_if *nifp = NETMAP_IF (memory, nmr.nr_offset);
+
+  if (!nifp)
+    {
+      NS_FATAL_ERROR ("Failed getting the base struct of the interface in netmap mode");
+    }
+
+  device->SetNetmapInterfaceRepresentation (nifp);
+  device->SetTxRingsInfo (nifp->ni_tx_rings, nmr.nr_tx_slots);
+  device->SetRxRingsInfo (nifp->ni_rx_rings, nmr.nr_rx_slots);
+
+  device->SetFileDescriptor (fd);
+
 }
 
 } // namespace ns3

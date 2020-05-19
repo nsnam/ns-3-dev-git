@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2012 INRIA, 2012 University of Washington
+ * Copyright (c) 2017 Universita' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Author: Pasquale Imputato <p.imputato@gmail.com>
  */
 
-#ifndef EMU_FD_NET_DEVICE_HELPER_H
-#define EMU_FD_NET_DEVICE_HELPER_H
+#ifndef NETMAP_NET_DEVICE_HELPER_H
+#define NETMAP_NET_DEVICE_HELPER_H
 
 #include <string>
 
@@ -28,8 +29,11 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
+#include "ns3/netmap-net-device.h"
 
 namespace ns3 {
+
+class NetmapNetDevice;
 
 /**
  * \ingroup fd-net-device
@@ -37,90 +41,60 @@ namespace ns3 {
  * interface
  *
  */
-class EmuFdNetDeviceHelper : public FdNetDeviceHelper
+class NetmapNetDeviceHelper : public FdNetDeviceHelper
 {
 public:
-  /**
-   * Construct a EmuFdNetDeviceHelper.
-   */
-  EmuFdNetDeviceHelper ();
-  virtual ~EmuFdNetDeviceHelper ()
+
+  NetmapNetDeviceHelper ();
+  virtual ~NetmapNetDeviceHelper ()
   {
   }
 
   /**
-   * Get the device name of this device.
-   *
+   * \brief Get the device name of this device.
    * \returns The device name of this device.
    */
   std::string GetDeviceName (void);
 
   /**
-   * Set the device name of this device.
-   *
+   * \brief Set the device name of this device.
    * \param deviceName The device name of this device.
    */
   void SetDeviceName (std::string deviceName);
 
-  /**
-   * Set the device in Dpdk mode.
-   *
-   * \param argc Dpdk EAL args count.
-   * \param argv Dpdk EAL args list.
-   */
-  void SetDpdkMode (int argc, char **argv);
-
-  /**
-   * \brief Request host qdisc bypass
-   * \param hostQdiscBypass to enable host qdisc bypass
-   */
-  void HostQdiscBypass (bool hostQdiscBypass);
-
 protected:
+
   /**
-   * This method creates an ns3::FdNetDevice attached to a physical network
+   * \brief This method creates an ns3::FdNetDevice attached to a physical network
    * interface
-   *
    * \param node The node to install the device in
    * \returns A container holding the added net device.
    */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
 
   /**
-   * Sets a file descriptor on the FileDescriptorNetDevice.
+   * \brief Sets device flags and MTU.
+   * \param device the FdNetDevice
    */
-  virtual void SetFileDescriptor (Ptr<FdNetDevice> device) const;
+  virtual void SetDeviceAttributes (Ptr<FdNetDevice> device) const;
 
   /**
-   * Call out to a separate process running as suid root in order to get a raw
+   * \brief Call out to a separate process running as suid root in order to get a raw
    * socket.  We do this to avoid having the entire simulation running as root.
    * \return the rawSocket number
    */
   virtual int CreateFileDescriptor (void) const;
 
   /**
-   * The unix/linux name of the underlying device (e.g., eth0)
+   * \brief Switch the fd in netmap mode.
+   * \param fd the file descriptor
+   * \param device the NetmapNetDevice
    */
-  std::string m_deviceName;
+  void SwitchInNetmapMode (int fd, Ptr<NetmapNetDevice> device) const;
 
-  /**
-   * The dpdk mode of the device.
-   */
-  bool m_dpdkMode;
-
-  /**
-   * Dpdk EAL arguements count.
-   */
-  int m_ealArgc;
-
-  /**
-   * Dpdk EAL arguements list.
-   */
-  char **m_ealArgv;
-
-  bool m_hostQdiscBypass;
+  std::string m_deviceName; //!< The unix/linux name of the underlying device (e.g., eth0)
 };
 
 } // namespace ns3
 
-#endif /* EMU_FD_NET_DEVICE_HELPER_H */
+#endif /* NETMAP_NET_DEVICE_HELPER_H */

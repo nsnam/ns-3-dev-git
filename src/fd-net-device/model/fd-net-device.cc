@@ -247,12 +247,35 @@ FdNetDevice::StartDevice (void)
   //
   m_nodeId = GetNode ()->GetId ();
 
-  m_fdReader = Create<FdNetDeviceFdReader> ();
-  // 22 bytes covers 14 bytes Ethernet header with possible 8 bytes LLC/SNAP
-  m_fdReader->SetBufferSize (m_mtu + 22);
+  m_fdReader = DoCreateFdReader ();
   m_fdReader->Start (m_fd, MakeCallback (&FdNetDevice::ReceiveCallback, this));
 
+  DoFinishStartingDevice ();
+
   NotifyLinkUp ();
+}
+
+Ptr<FdReader>
+FdNetDevice::DoCreateFdReader (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<FdNetDeviceFdReader> fdReader = Create<FdNetDeviceFdReader> ();
+  // 22 bytes covers 14 bytes Ethernet header with possible 8 bytes LLC/SNAP
+  fdReader->SetBufferSize (m_mtu + 22);
+  return fdReader;
+}
+
+void
+FdNetDevice::DoFinishStartingDevice (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+FdNetDevice::DoFinishStoppingDevice (void)
+{
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -272,17 +295,7 @@ FdNetDevice::StopDevice (void)
       m_fd = -1;
     }
 
-  {
-    CriticalSection cs (m_pendingReadMutex);
-
-    while (!m_pendingQueue.empty ())
-      {
-        std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
-        m_pendingQueue.pop ();
-
-        FreeBuffer (next.first);
-      }
-  }
+  DoFinishStoppingDevice ();
 }
 
 void
@@ -605,7 +618,8 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
       AddPIHeader (buffer, len);
     }
 
-  ssize_t written = Write(buffer, len);
+  ssize_t written = Write (buffer, len);
+  free (buffer);
 
   if (written == -1 || (size_t) written != len)
     {
@@ -621,9 +635,7 @@ FdNetDevice::Write (uint8_t *buffer, size_t length)
 {
   NS_LOG_FUNCTION (this << buffer << length);
 
-  uint32_t ret = write (m_fd, buffer, length);
-  FreeBuffer (buffer);
-  return ret;
+  return write (m_fd, buffer, length);
 }
 
 void
@@ -633,6 +645,12 @@ FdNetDevice::SetFileDescriptor (int fd)
     {
       m_fd = fd;
     }
+}
+
+int
+FdNetDevice::GetFileDescriptor (void) const
+{
+  return m_fd;
 }
 
 void

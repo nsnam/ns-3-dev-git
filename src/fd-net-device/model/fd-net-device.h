@@ -212,6 +212,11 @@ protected:
    * Callback to invoke when a new frame is received
    */
   void ReceiveCallback (uint8_t *buf, ssize_t len);
+  /**
+   * Get the associated file descriptor.
+   * \return the associated file descriptor
+   */
+  int GetFileDescriptor (void) const;
 
 private:
   /**
@@ -231,6 +236,27 @@ private:
    * Tear down the device
    */
   void StopDevice (void);
+
+  /**
+   * Create the FdReader object
+   * \return the created FdReader object
+   */
+  virtual Ptr<FdReader> DoCreateFdReader (void);
+
+  /**
+   * Complete additional actions, if any, to spin up down the device
+   */
+  virtual void DoFinishStartingDevice (void);
+
+  /**
+   * Complete additional actions, if any, to tear down the device
+   */
+  virtual void DoFinishStoppingDevice (void);
+
+  /**
+   * Callback to invoke when a new frame is received
+   */
+  void ReceiveCallback (uint8_t *buf, ssize_t len);
 
   /**
    * Forward the frame to the appropriate callback for processing
@@ -279,7 +305,7 @@ private:
   /**
    * Reader for the file descriptor.
    */
-  Ptr<FdNetDeviceFdReader> m_fdReader;
+  Ptr<FdReader> m_fdReader;
 
   /**
    * The net device mac address.

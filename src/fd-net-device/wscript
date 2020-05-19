@@ -93,7 +93,7 @@ def configure(conf):
         conf.env['MODULES_NOT_BUILT'].append('fd-net-device')
 
     # Next, check for whether specialized FdNetDevice features are enabled
-    # such as tap device support, raw socket support, and planetlab
+    # such as tap device support, raw socket support, netmap support, and planetlab
     
     if conf.env['ENABLE_FDNETDEV']:
         conf.env['ENABLE_TAP'] = conf.check_nonfatal(
@@ -126,6 +126,22 @@ def configure(conf):
                 "Emulation FdNetDevice", 
                 False,
                 "needs netpacket/packet.h")
+
+        # Enable use of netmap EMU support
+        conf.env['ENABLE_NETMAP_EMU'] = conf.check_nonfatal(
+           header_name='net/netmap_user.h',
+           define_name='HAVE_NETMAP_USER_H') and have_sysioctl and have_netif
+
+        if conf.env['ENABLE_NETMAP_EMU']:
+            conf.report_optional_feature("NetmapFdNetDevice",
+                "Netmap emulation FdNetDevice",
+                True,
+                "Netmap emulation support enabled")
+        else:
+            conf.report_optional_feature("NetmapFdNetDevice",
+                "Netmap emulation FdNetDevice",
+                False,
+                "needs net/netmap_user.h")
 
         # Enable use of PlanetLab TAP helper
         # TODO: How to validate 
@@ -223,6 +239,27 @@ def build(bld):
 
         module.env.append_value("DEFINES", 
            "RAW_SOCK_CREATOR=\"%s\"" % (creator.target,))
+
+    if bld.env['ENABLE_NETMAP_EMU']:
+        module.source.extend([
+            'model/netmap-net-device.cc',
+            'helper/netmap-net-device-helper.cc',
+        ])
+
+        headers.source.extend([
+            'model/netmap-net-device.h',
+            'helper/netmap-net-device-helper.h',
+        ])
+
+        creator = bld.create_suid_program('netmap-device-creator')
+        creator.source = [
+           'helper/netmap-device-creator.cc',
+           'helper/encode-decode.cc',
+           'helper/creator-utils.cc',
+        ]
+
+        module.env.append_value("DEFINES",
+           "NETMAP_DEV_CREATOR=\"%s\"" % (creator.target,))
 
     if bld.env['ENABLE_PLANETLAB']:
         module.source.extend([
