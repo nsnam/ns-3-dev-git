@@ -294,10 +294,10 @@ congestion window in the TCP socket, the registered callback will be executed
 and the function ``CwndTracer`` will be called printing out the old and new
 values of the TCP congestion window.
 
-As a final note, the :cpp:func:`Config::Connect...()` functions
+As a final note, the `Config::Connect...()` functions
 will throw an error if the targeted TraceSource does not exist at the path
 given.  There are also "fail-safe" versions,
-:cpp:func:`Config::Connect...FailSafe()`, if you can't be sure the TraceSource
+`Config::Connect...FailSafe()`, if you can't be sure the TraceSource
 exists.  The fail-safe versions return `true` if at least one connection
 could be made.
 
