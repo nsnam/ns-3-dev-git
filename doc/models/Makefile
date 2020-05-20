@@ -313,6 +313,8 @@ SOURCEFIGS = \
 	$(SRC)/spectrum/doc/spectrum-tv-cofdm.png \
 	$(SRC)/traffic-control/doc/classful-queue-disc.dia \
 	$(SRC)/traffic-control/doc/multi-queue-aware-queue-disc.dia \
+	$(SRC)/traffic-control/doc/figures/collision_prob.jpeg \
+	$(SRC)/traffic-control/doc/figures/overlapped.jpeg \
 	$(SRC)/lr-wpan/doc/lr-wpan-arch.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-data-example.dia \
 	$(SRC)/lr-wpan/doc/lr-wpan-primitives.dia \
