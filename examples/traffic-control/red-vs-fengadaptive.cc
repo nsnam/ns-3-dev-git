@@ -55,7 +55,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("queueDiscType", "Set Queue disc type to RED or FengAdaptive", queueDiscType);
   cmd.AddValue ("appPktSize", "Set OnOff App Packet Size", pktSize);
   cmd.AddValue ("appDataRate", "Set OnOff App DataRate", appDataRate);
-  cmd.AddValue ("modeBytes", "Set Queue disc mode to Packets <false> or bytes <true>", modeBytes);
+  cmd.AddValue ("modeBytes", "Set Queue disc mode to Packets (false) or bytes (true)", modeBytes);
 
   cmd.AddValue ("redMinTh", "RED queue minimum threshold", minTh);
   cmd.AddValue ("redMaxTh", "RED queue maximum threshold", maxTh);

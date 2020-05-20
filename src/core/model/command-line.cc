@@ -381,14 +381,14 @@ CommandLine::PrintDoxygenUsage (void) const
          << "<dl>\n";
       for (auto i : m_options)
         {
-          os << "  <dt>\\c --" << i->m_name << "</dt>\n"
+          os << "  <dt>\\c --" << i->m_name << " </dt>\n"
              << "    <dd>" << i->m_help;
 
           if ( i->HasDefault ())
             {
               os << " [" << i->GetDefault () << "]";
             }
-          os << "</dd>\n";
+          os << " </dd>\n";
         }
       os << "</dl>\n";
     }
@@ -400,14 +400,14 @@ CommandLine::PrintDoxygenUsage (void) const
          << "<dl>\n";
       for (auto i : nonOptions)
         {
-          os << "  <dt> \\c " << i->m_name << "</dt>\n"
+          os << "  <dt> \\c " << i->m_name << " </dt>\n"
              << "    <dd>" << i->m_help;
 
           if ( i->HasDefault ())
             {
               os << " [" << i->GetDefault () << "]";
             }
-          os << "</dd>\n";
+          os << " </dd>\n";
         }
       os << "</dl>\n";
     }
