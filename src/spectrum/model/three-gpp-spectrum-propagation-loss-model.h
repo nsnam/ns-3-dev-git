@@ -125,9 +125,9 @@ public:
    *
    * \return the received PSD
    */
-  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
+  Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                            Ptr<const MobilityModel> a,
-                                                           Ptr<const MobilityModel> b) const;
+                                                           Ptr<const MobilityModel> b) const override;
 
 private:
   /**
