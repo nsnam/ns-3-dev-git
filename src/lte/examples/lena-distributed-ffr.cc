@@ -356,7 +356,7 @@ int main (int argc, char *argv[])
       uint32_t dlChannelId = dlChannel->GetId ();
       NS_LOG_INFO ("DL ChannelId: " << dlChannelId);
       remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/1"));
-      remHelper->SetAttribute ("OutputFile", StringValue ("lena-frequency-reuse.rem"));
+      remHelper->SetAttribute ("OutputFile", StringValue ("lena-distributed-ffr.rem"));
       remHelper->SetAttribute ("XMin", DoubleValue (macroUeBox.xMin));
       remHelper->SetAttribute ("XMax", DoubleValue (macroUeBox.xMax));
       remHelper->SetAttribute ("YMin", DoubleValue (macroUeBox.yMin));
