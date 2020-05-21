@@ -740,11 +740,11 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address,
 }
 
 bool
-WifiRemoteStationManager::NeedRts (const WifiMacHeader *header, Ptr<const Packet> packet)
+WifiRemoteStationManager::NeedRts (const WifiMacHeader &header, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << *header << packet);
-  Mac48Address address = header->GetAddr1 ();
-  WifiTxVector txVector = GetDataTxVector (*header);
+  NS_LOG_FUNCTION (this << header << size);
+  Mac48Address address = header.GetAddr1 ();
+  WifiTxVector txVector = GetDataTxVector (header);
   WifiMode mode = txVector.GetMode ();
   if (address.IsGroup ())
     {
@@ -769,8 +769,8 @@ WifiRemoteStationManager::NeedRts (const WifiMacHeader *header, Ptr<const Packet
       NS_LOG_DEBUG ("WifiRemoteStationManager::NeedRTS returning true to protect non-HT stations");
       return true;
     }
-  bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
-  return DoNeedRts (Lookup (address), packet, normally);
+  bool normally = (size > m_rtsCtsThreshold);
+  return DoNeedRts (Lookup (address), size, normally);
 }
 
 bool
@@ -1386,7 +1386,7 @@ WifiRemoteStationManager::GetNonUnicastMode (void) const
 
 bool
 WifiRemoteStationManager::DoNeedRts (WifiRemoteStation *station,
-                                     Ptr<const Packet> packet, bool normally)
+                                     uint32_t size, bool normally)
 {
   return normally;
 }

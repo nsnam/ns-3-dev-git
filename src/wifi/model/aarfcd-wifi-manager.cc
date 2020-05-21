@@ -362,9 +362,9 @@ AarfcdWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 
 bool
 AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
-                              Ptr<const Packet> packet, bool normally)
+                              uint32_t size, bool normally)
 {
-  NS_LOG_FUNCTION (this << st << packet << normally);
+  NS_LOG_FUNCTION (this << st << size << normally);
   AarfcdWifiRemoteStation *station = static_cast<AarfcdWifiRemoteStation*> (st);
   NS_LOG_INFO ("" << station << " rate=" << station->m_rate << " rts=" << (station->m_rtsOn ? "RTS" : "BASIC") <<
                " rtsCounter=" << station->m_rtsCounter);

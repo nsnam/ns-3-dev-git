@@ -90,7 +90,7 @@ private:
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool DoNeedRts (WifiRemoteStation *st,
-                  Ptr<const Packet> packet, bool normally);
+                  uint32_t size, bool normally);
 
   /**
    * Check for initializations.

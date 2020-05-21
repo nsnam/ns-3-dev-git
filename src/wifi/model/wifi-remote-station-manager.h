@@ -766,12 +766,12 @@ public:
 
   /**
    * \param header MAC header
-   * \param packet the packet to send
+   * \param size the size of the frame to send in bytes
    *
    * \return true if we want to use an RTS/CTS handshake for this
-   *         packet before sending it, false otherwise.
+   *         frame before sending it, false otherwise.
    */
-  bool NeedRts (const WifiMacHeader *header, Ptr<const Packet> packet);
+  bool NeedRts (const WifiMacHeader &header, uint32_t size);
   /**
    * Return if we need to do CTS-to-self before sending a DATA.
    *
@@ -1061,17 +1061,17 @@ protected:
 private:
   /**
    * \param station the station that we need to communicate
-   * \param packet the packet to send
+   * \param size the size of the frame to send in bytes
    * \param normally indicates whether the normal 802.11 RTS enable mechanism would
    *        request that the RTS is sent or not.
    *
-   * \return true if we want to use an RTS/CTS handshake for this packet before sending it,
+   * \return true if we want to use an RTS/CTS handshake for this frame before sending it,
    *         false otherwise.
    *
    * Note: This method is called before a unicast packet is sent on the medium.
    */
   virtual bool DoNeedRts (WifiRemoteStation *station,
-                          Ptr<const Packet> packet, bool normally);
+                          uint32_t size, bool normally);
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send

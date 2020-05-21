@@ -443,9 +443,9 @@ RrpaaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 
 bool
 RrpaaWifiManager::DoNeedRts (WifiRemoteStation *st,
-                             Ptr<const Packet> packet, bool normally)
+                             uint32_t size, bool normally)
 {
-  NS_LOG_FUNCTION (this << st << packet << normally);
+  NS_LOG_FUNCTION (this << st << size << normally);
   RrpaaWifiRemoteStation *station = static_cast<RrpaaWifiRemoteStation*> (st);
   CheckInit (station);
   if (m_basic)

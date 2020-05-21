@@ -244,9 +244,9 @@ CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 
 bool
 CaraWifiManager::DoNeedRts (WifiRemoteStation *st,
-                            Ptr<const Packet> packet, bool normally)
+                            uint32_t size, bool normally)
 {
-  NS_LOG_FUNCTION (this << st << normally);
+  NS_LOG_FUNCTION (this << st << size << normally);
   CaraWifiRemoteStation *station = static_cast<CaraWifiRemoteStation*> (st);
   return normally || station->m_failed >= m_probeThreshold;
 }

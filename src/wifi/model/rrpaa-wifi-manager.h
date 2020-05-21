@@ -115,7 +115,7 @@ private:
   virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   virtual bool DoNeedRts (WifiRemoteStation *st,
-                          Ptr<const Packet> packet, bool normally);
+                          uint32_t size, bool normally);
 
   /**
    * Check for initializations.

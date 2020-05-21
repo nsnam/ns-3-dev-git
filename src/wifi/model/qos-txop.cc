@@ -441,7 +441,7 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 
   // Enable/disable RTS
   if (!frame->GetHeader ().IsBlockAckReq ()
-      && m_stationManager->NeedRts (&frame->GetHeader (), frame->GetPacket ())
+      && m_stationManager->NeedRts (frame->GetHeader (), frame->GetSize ())
       && !m_low->IsCfPeriod ())
     {
       params.EnableRts ();
@@ -998,25 +998,18 @@ QosTxop::RestartAccessIfNeeded (void)
   if ((m_currentPacket != 0 || baManagerHasPackets || queueIsNotEmpty)
       && !IsAccessRequested ())
     {
-      Ptr<const Packet> packet;
-      WifiMacHeader hdr;
+      Ptr<const WifiMacQueueItem> item;
       if (m_currentPacket != 0)
         {
-          packet = m_currentPacket;
-          hdr = m_currentHdr;
+          item = Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr);
         }
       else
         {
-          Ptr<const WifiMacQueueItem> item = PeekNextFrame ();
-          if (item)
-            {
-              packet = item->GetPacket ();
-              hdr = item->GetHeader ();
-            }
+          item = PeekNextFrame ();
         }
-      if (packet != 0)
+      if (item != 0)
         {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (&hdr, packet);
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (item->GetHeader (), item->GetSize ());
         }
       else
         {
@@ -1042,17 +1035,10 @@ QosTxop::StartAccessIfNeeded (void)
       && (baManagerHasPackets || queueIsNotEmpty)
       && !IsAccessRequested ())
     {
-      Ptr<const Packet> packet;
-      WifiMacHeader hdr;
       Ptr<const WifiMacQueueItem> item = PeekNextFrame ();
-      if (item)
+      if (item != 0)
         {
-          packet = item->GetPacket ();
-          hdr = item->GetHeader ();
-        }
-      if (packet != 0)
-        {
-          m_isAccessRequestedForRts = m_stationManager->NeedRts (&hdr, packet);
+          m_isAccessRequestedForRts = m_stationManager->NeedRts (item->GetHeader (), item->GetSize ());
         }
       else
         {

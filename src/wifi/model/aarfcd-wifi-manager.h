@@ -83,7 +83,7 @@ private:
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool DoNeedRts (WifiRemoteStation *station,
-                  Ptr<const Packet> packet, bool normally);
+                  uint32_t size, bool normally);
 
   /**
    * Check if the use of RTS for the given station can be turned off.

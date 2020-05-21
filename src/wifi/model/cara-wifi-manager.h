@@ -71,7 +71,7 @@ private:
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool DoNeedRts (WifiRemoteStation *station,
-                  Ptr<const Packet> packet, bool normally);
+                  uint32_t size, bool normally);
 
   uint32_t m_timerTimeout;     ///< timer threshold
   uint32_t m_successThreshold; ///< success threshold
