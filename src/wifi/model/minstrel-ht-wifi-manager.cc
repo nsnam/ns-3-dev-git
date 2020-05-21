@@ -1000,12 +1000,6 @@ MinstrelHtWifiManager::CountRetries (MinstrelHtWifiRemoteStation *station)
     }
 }
 
-bool
-MinstrelHtWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 uint16_t
 MinstrelHtWifiManager::GetNextSample (MinstrelHtWifiRemoteStation *station)
 {

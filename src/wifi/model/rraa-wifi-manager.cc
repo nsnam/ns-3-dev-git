@@ -473,10 +473,4 @@ RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, uint8_t index) c
   return GetThresholds (station, mode);
 }
 
-bool
-RraaWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

@@ -275,7 +275,6 @@ private:
   bool DoNeedRetransmission (WifiRemoteStation *st,
                                  Ptr<const Packet> packet, bool normally);
 
-  bool IsLowLatency (void) const;
 
   /**
    * Estimate the TxTime of a packet with a given mode.

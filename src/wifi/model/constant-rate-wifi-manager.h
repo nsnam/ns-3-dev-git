@@ -60,7 +60,6 @@ private:
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  bool IsLowLatency (void) const;
 
   WifiMode m_dataMode; //!< Wifi mode for unicast Data frames
   WifiMode m_ctlMode;  //!< Wifi mode for RTS frames

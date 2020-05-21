@@ -74,7 +74,6 @@ private:
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  bool IsLowLatency (void) const;
 
   uint32_t m_timerThreshold;   ///< timer threshold
   uint32_t m_successThreshold; ///< success threshold

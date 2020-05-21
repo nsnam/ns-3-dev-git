@@ -371,12 +371,6 @@ AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
   return station->m_rtsOn;
 }
 
-bool
-AarfcdWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 void
 AarfcdWifiManager::CheckRts (AarfcdWifiRemoteStation *station)
 {

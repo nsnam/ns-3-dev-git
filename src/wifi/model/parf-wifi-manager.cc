@@ -363,10 +363,4 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   return rtsTxVector;
 }
 
-bool
-ParfWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

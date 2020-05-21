@@ -654,42 +654,18 @@ public:
   void RecordDisassociated (Mac48Address address);
 
   /**
-   * \param address remote address
-   * \param packet the packet to queue
-   *
-   * This method is typically invoked just before queuing a packet for transmission.
-   * It is a no-op unless the IsLowLatency attribute of the attached ns3::WifiRemoteStationManager
-   * is set to false, in which case, the TX parameters of the packet are calculated and stored in
-   * the packet as a tag. These TX parameters are later retrieved from GetDadaMode and GetRtsMode.
-   */
-  void PrepareForQueue (Mac48Address address, Ptr<const Packet> packet);
-
-  /**
-   * \param address remote address
    * \param header MAC header
-   * \param packet the packet to send
    *
    * \return the TXVECTOR to use to send this packet
    */
-  WifiTxVector GetDataTxVector (Mac48Address address, const WifiMacHeader *header,
-                                Ptr<const Packet> packet);
+  WifiTxVector GetDataTxVector (const WifiMacHeader &header);
   /**
    * \param address remote address
-   * \param packet the packet to send
    *
    * \return the TXVECTOR to use to send the RTS prior to the
    *         transmission of the data packet itself.
    */
-  WifiTxVector GetRtsTxVector (Mac48Address address, Ptr<const Packet> packet);
-  /**
-   * \param header MAC header
-   * \param packet the packet to send
-   *
-   * \return the transmission mode to use to send the CTS-to-self prior to the
-   *         transmission of the data packet itself.
-   */
-  WifiTxVector GetCtsToSelfTxVector (const WifiMacHeader *header,
-                                     Ptr<const Packet> packet);
+  WifiTxVector GetRtsTxVector (Mac48Address address);
   /**
    * Since CTS-to-self parameters are not dependent on the station,
    * it is implemented in wifi remote station manager
@@ -697,7 +673,7 @@ public:
    * \return the transmission mode to use to send the CTS-to-self prior to the
    *         transmission of the data packet itself.
    */
-  WifiTxVector DoGetCtsToSelfTxVector (void);
+  WifiTxVector GetCtsToSelfTxVector (void);
 
   /**
    * Should be invoked whenever the RtsTimeout associated to a transmission
@@ -1122,13 +1098,6 @@ private:
    */
   virtual bool DoNeedFragmentation (WifiRemoteStation *station,
                                     Ptr<const Packet> packet, bool normally);
-  /**
-   * \return whether this manager is a manager designed to work in low-latency environments.
-   *
-   * Note: In this context, low vs high latency is defined in <i>IEEE 802.11 Rate Adaptation:
-   * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and T. Turletti.
-   */
-  virtual bool IsLowLatency (void) const = 0;
   /**
    * \return a new station data structure
    */

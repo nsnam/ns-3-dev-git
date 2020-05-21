@@ -292,10 +292,4 @@ AarfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   return rtsTxVector;
 }
 
-bool
-AarfWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

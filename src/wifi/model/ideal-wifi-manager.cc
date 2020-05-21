@@ -572,10 +572,4 @@ IdealWifiManager::GetLastObservedSnrForChannelWidth (IdealWifiRemoteStation *sta
   return snr;
 }
 
-bool
-IdealWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

@@ -116,7 +116,6 @@ private:
   virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   virtual bool DoNeedRts (WifiRemoteStation *st,
                           Ptr<const Packet> packet, bool normally);
-  virtual bool IsLowLatency (void) const;
 
   /**
    * Check for initializations.

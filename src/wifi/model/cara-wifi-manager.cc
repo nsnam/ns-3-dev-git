@@ -251,10 +251,4 @@ CaraWifiManager::DoNeedRts (WifiRemoteStation *st,
   return normally || station->m_failed >= m_probeThreshold;
 }
 
-bool
-CaraWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

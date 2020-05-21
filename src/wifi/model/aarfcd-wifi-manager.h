@@ -84,7 +84,6 @@ private:
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool DoNeedRts (WifiRemoteStation *station,
                   Ptr<const Packet> packet, bool normally);
-  bool IsLowLatency (void) const;
 
   /**
    * Check if the use of RTS for the given station can be turned off.

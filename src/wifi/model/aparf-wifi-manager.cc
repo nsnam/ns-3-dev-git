@@ -391,10 +391,4 @@ AparfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   return rtsTxVector;
 }
 
-bool
-AparfWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

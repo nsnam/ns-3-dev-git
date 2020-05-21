@@ -891,12 +891,6 @@ MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Pack
     }
 }
 
-bool
-MinstrelWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 uint16_t
 MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
 {

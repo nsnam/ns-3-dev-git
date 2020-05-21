@@ -72,7 +72,6 @@ private:
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
   bool DoNeedRts (WifiRemoteStation *station,
                   Ptr<const Packet> packet, bool normally);
-  bool IsLowLatency (void) const;
 
   uint32_t m_timerTimeout;     ///< timer threshold
   uint32_t m_successThreshold; ///< success threshold

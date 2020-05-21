@@ -1275,15 +1275,13 @@ MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
 WifiTxVector
 MacLow::GetRtsTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = item->GetHeader ().GetAddr1 ();
-  return m_stationManager->GetRtsTxVector (to, item->GetPacket ());
+  return m_stationManager->GetRtsTxVector (item->GetHeader ().GetAddr1 ());
 }
 
 WifiTxVector
 MacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 {
-  Mac48Address to = item->GetHeader ().GetAddr1 ();
-  return m_stationManager->GetDataTxVector (to, &item->GetHeader (), item->GetPacket ());
+  return m_stationManager->GetDataTxVector (item->GetHeader ());
 }
 
 Time

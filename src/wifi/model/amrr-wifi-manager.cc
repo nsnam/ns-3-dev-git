@@ -403,10 +403,4 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   return rtsTxVector;
 }
 
-bool
-AmrrWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

@@ -134,10 +134,4 @@ ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_ctlMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (st))), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetChannelWidth (st)), GetAggregation (st), false);
 }
 
-bool
-ConstantRateWifiManager::IsLowLatency (void) const
-{
-  return true;
-}
-
 } //namespace ns3

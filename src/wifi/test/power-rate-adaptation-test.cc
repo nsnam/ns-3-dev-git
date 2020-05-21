@@ -136,6 +136,7 @@ PowerRateAdaptationTest::TestParf ()
    */
   Mac48Address remoteAddress = Mac48Address::Allocate ();
   WifiMacHeader packetHeader;
+  packetHeader.SetAddr1 (remoteAddress);
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
@@ -152,7 +153,7 @@ PowerRateAdaptationTest::TestParf ()
   /*
    * Parf initiates with maximal rate and power.
    */
-  WifiTxVector txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  WifiTxVector txVector = manager->GetDataTxVector (packetHeader);
   WifiMode mode = txVector.GetMode ();
   int power = (int) txVector.GetTxPowerLevel ();
 
@@ -170,7 +171,7 @@ PowerRateAdaptationTest::TestParf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -185,7 +186,7 @@ PowerRateAdaptationTest::TestParf ()
    */
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -205,7 +206,7 @@ PowerRateAdaptationTest::TestParf ()
     }
   manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -220,7 +221,7 @@ PowerRateAdaptationTest::TestParf ()
 
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -236,7 +237,7 @@ PowerRateAdaptationTest::TestParf ()
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -254,7 +255,7 @@ PowerRateAdaptationTest::TestParf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -269,7 +270,7 @@ PowerRateAdaptationTest::TestParf ()
 
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -287,7 +288,7 @@ PowerRateAdaptationTest::TestParf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -305,7 +306,7 @@ PowerRateAdaptationTest::TestParf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -325,7 +326,7 @@ PowerRateAdaptationTest::TestParf ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -356,6 +357,7 @@ PowerRateAdaptationTest::TestAparf ()
    */
   Mac48Address remoteAddress = Mac48Address::Allocate ();
   WifiMacHeader packetHeader;
+  packetHeader.SetAddr1 (remoteAddress);
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
@@ -372,7 +374,7 @@ PowerRateAdaptationTest::TestAparf ()
   /*
    * Aparf initiates with maximal rate and power.
    */
-  WifiTxVector txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  WifiTxVector txVector = manager->GetDataTxVector (packetHeader);
   WifiMode mode = txVector.GetMode ();
   int power = (int) txVector.GetTxPowerLevel ();
 
@@ -391,7 +393,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -406,7 +408,7 @@ PowerRateAdaptationTest::TestAparf ()
    */
   manager->ReportDataFailed (remoteAddress, &packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -425,7 +427,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -444,7 +446,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -462,7 +464,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -477,7 +479,7 @@ PowerRateAdaptationTest::TestAparf ()
    */
   manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -495,7 +497,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -511,7 +513,7 @@ PowerRateAdaptationTest::TestAparf ()
    */
   manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -529,7 +531,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -549,7 +551,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -561,7 +563,7 @@ PowerRateAdaptationTest::TestAparf ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -598,6 +600,7 @@ PowerRateAdaptationTest::TestRrpaa ()
    */
   Mac48Address remoteAddress = Mac48Address::Allocate ();
   WifiMacHeader packetHeader;
+  packetHeader.SetAddr1 (remoteAddress);
   packetHeader.SetType (WIFI_MAC_DATA);
   packetHeader.SetQosTid (0);
   Ptr<Packet> packet = Create<Packet> (10);
@@ -640,7 +643,7 @@ PowerRateAdaptationTest::TestRrpaa ()
   /*
    * RRPAA initiates with minimal rate and maximal power.
    */
-  WifiTxVector txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  WifiTxVector txVector = manager->GetDataTxVector (packetHeader);
   WifiMode mode = txVector.GetMode ();
   int power = (int) txVector.GetTxPowerLevel ();
 
@@ -662,7 +665,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -674,7 +677,7 @@ PowerRateAdaptationTest::TestRrpaa ()
    */
   manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -692,7 +695,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -701,7 +704,7 @@ PowerRateAdaptationTest::TestRrpaa ()
 
   manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -719,7 +722,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -731,7 +734,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -743,7 +746,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -755,7 +758,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -767,7 +770,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -779,7 +782,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -791,7 +794,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -811,7 +814,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -820,7 +823,7 @@ PowerRateAdaptationTest::TestRrpaa ()
 
   manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -839,7 +842,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -857,7 +860,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -875,7 +878,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -893,7 +896,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -909,7 +912,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -929,7 +932,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -941,7 +944,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -953,7 +956,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataFailed (remoteAddress,&packetHeader, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -965,7 +968,7 @@ PowerRateAdaptationTest::TestRrpaa ()
       manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0, 20, packet->GetSize ());
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
@@ -991,7 +994,7 @@ PowerRateAdaptationTest::TestRrpaa ()
         }
     }
 
-  txVector = manager->GetDataTxVector (remoteAddress, &packetHeader, packet);
+  txVector = manager->GetDataTxVector (packetHeader);
   mode = txVector.GetMode ();
   power = (int) txVector.GetTxPowerLevel ();
 
