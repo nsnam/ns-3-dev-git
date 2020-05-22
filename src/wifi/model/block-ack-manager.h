@@ -187,7 +187,7 @@ public:
    * \param recipient Sender of BlockAck frame.
    * \param rxSnr received SNR of the BlockAck frame itself
    * \param dataSnr data SNR reported by remote station
-   * \param dataChannelWidth channel width (in MHz) used to send the Data
+   * \param dataTxVector the TXVECTOR used to send the Data
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
    * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
@@ -195,7 +195,7 @@ public:
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                          double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+                          double rxSnr, double dataSnr, WifiTxVector dataTxVector);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.

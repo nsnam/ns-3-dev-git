@@ -37,6 +37,7 @@ class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class WifiRemoteStationManager;
+class WifiTxVector;
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -275,10 +276,10 @@ public:
    * \param recipient address of the recipient.
    * \param rxSnr SNR of the BlockAck itself in linear scale.
    * \param dataSnr reported data SNR from the peer in linear scale.
-   * \param dataChannelWidth channel width (in MHz) used to send the Data.
+   * \param dataTxVector TXVECTOR used to send the Data.
    */
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                            double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+                            double rxSnr, double dataSnr, WifiTxVector dataTxVector);
   /**
    * Event handler when a BlockAck timeout has occurred.
    * \param nMpdus the number of MPDUs sent in the A-MPDU transmission that results in a BlockAck timeout.

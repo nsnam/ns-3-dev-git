@@ -955,7 +955,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
       packet->RemoveHeader (blockAck);
       m_blockAckTimeoutEvent.Cancel ();
       NotifyAckTimeoutResetNow ();
-      m_currentTxop->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, tag.Get (), m_currentTxVector.GetChannelWidth ());
+      m_currentTxop->GotBlockAck (&blockAck, hdr.GetAddr2 (), rxSnr, tag.Get (), m_currentTxVector);
       // start next packet if TXOP remains, otherwise contend for accessing the channel again
       if (m_currentTxop->IsQosTxop () && m_currentTxop->GetTxopLimit ().IsStrictlyPositive ()
           && m_currentTxop->GetTxopRemaining () > GetSifs ())

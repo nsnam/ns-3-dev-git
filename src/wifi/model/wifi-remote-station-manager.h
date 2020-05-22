@@ -750,10 +750,10 @@ public:
    * \param nFailedMpdus number of unsuccessfully transmitted MPDUs
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
-   * \param dataChannelWidth the channel width (in MHz) of the A-MPDU initially sent to the remote station
+   * \param dataTxVector the TXVECTOR of the MPDUs we sent
    */
   void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                            double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+                            double rxSnr, double dataSnr, WifiTxVector dataTxVector);
 
   /**
    * \param address remote address
@@ -1196,9 +1196,10 @@ private:
    * \param rxSnr received SNR of the block ack frame itself
    * \param dataSnr data SNR reported by remote station
    * \param dataChannelWidth the channel width (in MHz) of the A-MPDU we sent
+   * \param dataNss the number of spatial streams used to send the A-MPDU
    */
   virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                                      double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+                                      double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
 
   /**
    * Return the state of the station associated with the given address.

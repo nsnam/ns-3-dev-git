@@ -27,6 +27,7 @@
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "qos-utils.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 
@@ -460,9 +461,9 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, uint16_t dataChannelWidth)
+BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, WifiTxVector dataTxVector)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataTxVector);
   if (!blockAck->IsMultiTid ())
     {
       uint8_t tid = blockAck->GetTidInfo ();
@@ -546,7 +547,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                   queueIt = it->second.second.erase (queueIt);
                 }
             }
-          m_stationManager->ReportAmpduTxStatus (recipient, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataChannelWidth);
+          m_stationManager->ReportAmpduTxStatus (recipient, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataTxVector);
         }
     }
   else

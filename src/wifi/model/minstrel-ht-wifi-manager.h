@@ -235,9 +235,8 @@ private:
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  void DoReportAmpduTxStatus (WifiRemoteStation *station,
-                              uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                              double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+  void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+                              double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
   bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
 
   /**

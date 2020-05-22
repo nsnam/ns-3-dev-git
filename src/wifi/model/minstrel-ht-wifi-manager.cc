@@ -628,9 +628,9 @@ MinstrelHtWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 
 void
 MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
-                                              double rxSnr, double dataSnr, uint16_t dataChannelWidth)
+                                              double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr << dataChannelWidth << +dataNss);
   MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);

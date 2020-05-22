@@ -118,7 +118,7 @@ public:
   void NotifyInternalCollision (void);
   void GotAck (void);
   void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                    double rxSnr, double dataSnr, uint16_t dataChannelWidth);
+                    double rxSnr, double dataSnr, WifiTxVector dataTxVector);
   void MissedBlockAck (uint8_t nMpdus);
   void MissedAck (void);
   void StartNextPacket (void);
