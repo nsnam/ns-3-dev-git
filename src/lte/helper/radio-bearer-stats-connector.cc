@@ -189,10 +189,10 @@ RadioBearerStatsConnector::NotifyRandomAccessSuccessfulUe (RadioBearerStatsConne
 }
 
 void
-RadioBearerStatsConnector::CreatedDrbEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType)
+RadioBearerStatsConnector::CreatedDrbEnb (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (c << context << imsi << cellId << rnti << (uint16_t)lcid << rlcType);
-  c->ConnectTracesDrbEnb (context, imsi, cellId, rnti, lcid, rlcType);
+  NS_LOG_FUNCTION (c << context << imsi << cellId << rnti << (uint16_t)lcid);
+  c->ConnectTracesDrbEnb (context, imsi, cellId, rnti, lcid);
 }
 
 void
@@ -203,10 +203,10 @@ RadioBearerStatsConnector::CreatedSrb1Ue (RadioBearerStatsConnector* c, std::str
 }
 
 void
-RadioBearerStatsConnector::CreatedDrbUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType)
+RadioBearerStatsConnector::CreatedDrbUe (RadioBearerStatsConnector* c, std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid)
 {
-  NS_LOG_FUNCTION (c << context << imsi << cellId << rnti << (uint16_t)lcid << rlcType);
-  c->ConnectTracesDrbUe (context, imsi, cellId, rnti, lcid, rlcType);
+  NS_LOG_FUNCTION (c << context << imsi << cellId << rnti << (uint16_t)lcid);
+  c->ConnectTracesDrbUe (context, imsi, cellId, rnti, lcid);
 }
 
 void
@@ -285,7 +285,7 @@ RadioBearerStatsConnector::ConnectTracesSrb1 (std::string context, uint64_t imsi
 }
 
 void
-RadioBearerStatsConnector::ConnectTracesDrbEnb (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType)
+RadioBearerStatsConnector::ConnectTracesDrbEnb (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << (uint16_t)lcid);
   NS_LOG_LOGIC ("expected context should match /NodeList/*/DeviceList/*/LteEnbRrc/");
@@ -303,21 +303,25 @@ RadioBearerStatsConnector::ConnectTracesDrbEnb (std::string context, uint64_t im
       Config::Connect (basePath + "/LteRlc/RxPDU",
                        MakeBoundCallback (&UlRxPduCallback, arg));
     }
-  if (m_pdcpStats && rlcType != "ns3::LteRlcSm")
+  if (m_pdcpStats)
     {
       Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument> ();
       arg->imsi = imsi;
       arg->cellId = cellId;
       arg->stats = m_pdcpStats;
-      Config::Connect (basePath + "/LtePdcp/TxPDU",
+      bool foundTxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/TxPDU",
                        MakeBoundCallback (&DlTxPduCallback, arg));
-      Config::Connect (basePath + "/LtePdcp/RxPDU",
+      bool foundRxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/RxPDU",
                        MakeBoundCallback (&UlRxPduCallback, arg));
+      if (!foundTxPdcp && !foundRxPdcp)
+        {
+          NS_LOG_WARN ("Unable to connect PDCP traces. This may happen if RlcSm is used");
+        }
     }
 }
 
 void
-RadioBearerStatsConnector::ConnectTracesDrbUe (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, std::string rlcType)
+RadioBearerStatsConnector::ConnectTracesDrbUe (std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << context << imsi << cellId << rnti << (uint16_t)lcid);
   NS_LOG_LOGIC ("expected context should match /NodeList/*/DeviceList/*/LteUeRrc/");
@@ -335,16 +339,20 @@ RadioBearerStatsConnector::ConnectTracesDrbUe (std::string context, uint64_t ims
       Config::Connect (basePath + "/LteRlc/RxPDU",
                        MakeBoundCallback (&DlRxPduCallback, arg));
     }
-  if (m_pdcpStats && rlcType != "ns3::LteRlcSm")
+  if (m_pdcpStats)
     {
       Ptr<BoundCallbackArgument> arg = Create<BoundCallbackArgument> ();
       arg->imsi = imsi;
       arg->cellId = cellId;
       arg->stats = m_pdcpStats;
-      Config::Connect (basePath + "/LtePdcp/TxPDU",
+      bool foundTxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/TxPDU",
                        MakeBoundCallback (&UlTxPduCallback, arg));
-      Config::Connect (basePath + "/LtePdcp/RxPDU",
+      bool foundRxPdcp = Config::ConnectFailSafe (basePath + "/LtePdcp/RxPDU",
                        MakeBoundCallback (&DlRxPduCallback, arg));
+      if (!foundTxPdcp && !foundRxPdcp)
+        {
+          NS_LOG_WARN ("Unable to connect PDCP traces. This may happen if RlcSm is used");
+        }
     }
 }
 

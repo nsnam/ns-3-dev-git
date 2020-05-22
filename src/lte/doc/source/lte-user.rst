@@ -342,6 +342,8 @@ for uplink and downlink):
   18. Maximum PDCP PDU size
 
 
+**Note:** The PDCP traces for data radio bearers are not generated when
+:ref:`sec-sm-rlc` is used.
 
 MAC KPIs are basically a trace of the resource allocation reported by
 the scheduler upon the start of every subframe. They are stored in

@@ -1832,6 +1832,7 @@ all packets in the transmission buffer, thus notifying to the MAC the
 exact buffer size.
 
 
+.. _sec-sm-rlc:
 
 SM RLC
 ++++++

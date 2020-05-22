@@ -1526,7 +1526,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
   
           m_drbMap.insert (std::pair<uint8_t, Ptr<LteDataRadioBearerInfo> > (dtamIt->drbIdentity, drbInfo));
 
-          m_drbCreatedTrace (m_imsi, m_cellId, m_rnti, dtamIt->drbIdentity, rlcTypeId.GetName ());
+          m_drbCreatedTrace (m_imsi, m_cellId, m_rnti, dtamIt->drbIdentity);
 
 
           struct LteUeCmacSapProvider::LogicalChannelConfig lcConfig;
