@@ -345,8 +345,8 @@ int main (int argc, char *argv[])
                    MakeCallback (&NodeStatistics::RxCallback, &atpCounter));
 
   //Callbacks to print every change of rate
-  Config::Connect ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$" + apManager + "/RateChange",
-                   MakeCallback (RateCallback));
+  Config::ConnectFailSafe ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$" + apManager + "/RateChange",
+                           MakeCallback (RateCallback));
 
   Simulator::Stop (Seconds (simuTime));
   Simulator::Run ();
