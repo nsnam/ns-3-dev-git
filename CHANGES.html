@@ -79,7 +79,7 @@ transmitted.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li> Previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
+<li> Previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
 <li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
 <li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
 <li>Now on, instead of <b>uint8_t</b>, <b>uint16_t</b> would be used to store a bandwidth value in LTE.</li>
