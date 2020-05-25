@@ -246,7 +246,7 @@ V4Ping::StartApplication (void)
   m_started = Simulator::Now ();
   if (m_verbose)
     {
-      std::cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
+      std::cout << "PING " << m_remote << " - " << m_size << " bytes of data - " << m_size + 28 << " bytes including ICMP and IPv4 headers.\n";
     }
 
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
