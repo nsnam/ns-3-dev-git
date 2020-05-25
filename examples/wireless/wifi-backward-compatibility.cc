@@ -62,13 +62,9 @@ WifiPhyStandard ConvertStringToStandard (std::string version)
     {
       standard = WIFI_PHY_STANDARD_80211g;
     }
-  else if (version == "80211_10MHZ")
+  else if (version == "80211p")
     {
-      standard = WIFI_PHY_STANDARD_80211_10MHZ;
-    }
-  else if (version == "80211_5MHZ")
-    {
-      standard = WIFI_PHY_STANDARD_80211_5MHZ;
+      standard = WIFI_PHY_STANDARD_80211p;
     }
   else if (version == "holland")
     {
@@ -106,7 +102,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
-  cmd.AddValue ("apVersion", "The standard version used by the AP: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, holland, 80211n_2_4GHZ, 80211n_5GHZ or 80211ac", apVersion);
+  cmd.AddValue ("apVersion", "The standard version used by the AP: 80211a, 80211b, 80211g, 80211p, holland, 80211n_2_4GHZ, 80211n_5GHZ or 80211ac", apVersion);
   cmd.AddValue ("staVersion", "The standard version used by the station: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, holland, 80211n_2_4GHZ, 80211n_5GHZ or 80211ac", staVersion);
   cmd.AddValue ("apRaa", "Rate adaptation algorithm used by the AP", apRaa);
   cmd.AddValue ("staRaa", "Rate adaptation algorithm used by the station", staRaa);

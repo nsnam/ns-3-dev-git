@@ -349,13 +349,17 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
       // Use OFDM subcarrier width of 312.5 KHz as band granularity
       bandBandwidth = 312500;
       break;
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-      // Use OFDM subcarrier width of 156.25 KHz as band granularity
-      bandBandwidth = 156250;
-      break;
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      // Use OFDM subcarrier width of 78.125 KHz as band granularity
-      bandBandwidth = 78125;
+    case WIFI_PHY_STANDARD_80211p:
+      if (GetChannelWidth () == 5)
+        {
+          // Use OFDM subcarrier width of 78.125 KHz as band granularity
+          bandBandwidth = 78125;
+        }
+      else
+        {
+          // Use OFDM subcarrier width of 156.25 KHz as band granularity
+          bandBandwidth = 156250;
+        }
       break;
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
     case WIFI_PHY_STANDARD_80211ax_5GHZ:

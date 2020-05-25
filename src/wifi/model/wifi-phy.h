@@ -1822,14 +1822,9 @@ private:
   void Configure80211g (void);
   /**
    * Configure WifiPhy with appropriate channel frequency and
-   * supported rates for 802.11a standard with 10MHz channel spacing.
+   * supported rates for 802.11p standard.
    */
-  void Configure80211_10Mhz (void);
-  /**
-   * Configure WifiPhy with appropriate channel frequency and
-   * supported rates for 802.11a standard with 5MHz channel spacing.
-   */
-  void Configure80211_5Mhz ();
+  void Configure80211p (void);
   /**
    * Configure WifiPhy with appropriate channel frequency and
    * supported rates for Holland.

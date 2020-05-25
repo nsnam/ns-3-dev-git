@@ -180,7 +180,8 @@ int main (int argc, char *argv[])
       PrintAttributesIfEnabled (printAttributes);
       break;
     case 7:
-      wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+      wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+      phy.Set ("ChannelWidth", UintegerValue (10));
       staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
       apDevice = wifi.Install (phy, macAp, wifiApNode.Get (0));
       phySta = GetYansWifiPhyPtr (staDevice);
@@ -191,13 +192,13 @@ int main (int argc, char *argv[])
       PrintAttributesIfEnabled (printAttributes);
       break;
     case 8:
-      wifi.SetStandard (WIFI_PHY_STANDARD_80211_5MHZ);
+      wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+      phy.Set ("ChannelWidth", UintegerValue (5));
       staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
       apDevice = wifi.Install (phy, macAp, wifiApNode.Get (0));
       phySta = GetYansWifiPhyPtr (staDevice);
-      // We expect channel 0, width 5, frequency 5860
-      // Channel 0 because 5MHz channels are not officially defined
-      NS_ASSERT (phySta->GetChannelNumber () == 0);
+      // We expect channel 171, width 5, frequency 5860
+      NS_ASSERT (phySta->GetChannelNumber () == 171);
       NS_ASSERT (phySta->GetChannelWidth () == 5);
       NS_ASSERT (phySta->GetFrequency () == 5860);
       PrintAttributesIfEnabled (printAttributes);

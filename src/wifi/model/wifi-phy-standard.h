@@ -35,10 +35,8 @@ enum WifiPhyStandard
   WIFI_PHY_STANDARD_80211b,
   /** ERP-OFDM PHY (Clause 19, Section 19.5) */
   WIFI_PHY_STANDARD_80211g,
-  /** OFDM PHY for the 5 GHz band (Clause 17 with 10 MHz channel bandwidth) */
-  WIFI_PHY_STANDARD_80211_10MHZ,
-  /** OFDM PHY for the 5 GHz band (Clause 17 with 5 MHz channel bandwidth) */
-  WIFI_PHY_STANDARD_80211_5MHZ,
+  /** OFDM PHY (Clause 17 - amendment for 10 MHz and 5 MHz channels) */
+  WIFI_PHY_STANDARD_80211p,
   /** This is intended to be the configuration used in this paper:
    *  Gavin Holland, Nitin Vaidya and Paramvir Bahl, "A Rate-Adaptive
    *  MAC Protocol for Multi-Hop Wireless Networks", in Proc. of

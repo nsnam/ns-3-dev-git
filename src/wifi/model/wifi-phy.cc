@@ -148,14 +148,23 @@ WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
   { std::make_pair (114, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5570, 160) },
   { std::make_pair (163, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5815, 160) },
 
-  // 802.11p (10 MHz channels at the 5.855-5.925 band
-  { std::make_pair (172, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5860, 10) },
-  { std::make_pair (174, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5870, 10) },
-  { std::make_pair (176, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5880, 10) },
-  { std::make_pair (178, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5890, 10) },
-  { std::make_pair (180, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5900, 10) },
-  { std::make_pair (182, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5910, 10) },
-  { std::make_pair (184, WIFI_PHY_STANDARD_80211_10MHZ), std::make_pair (5920, 10) }
+  // 802.11p 10 MHz channels at the 5.855-5.925 band
+  { std::make_pair (172, WIFI_PHY_STANDARD_80211p), std::make_pair (5860, 10) },
+  { std::make_pair (174, WIFI_PHY_STANDARD_80211p), std::make_pair (5870, 10) },
+  { std::make_pair (176, WIFI_PHY_STANDARD_80211p), std::make_pair (5880, 10) },
+  { std::make_pair (178, WIFI_PHY_STANDARD_80211p), std::make_pair (5890, 10) },
+  { std::make_pair (180, WIFI_PHY_STANDARD_80211p), std::make_pair (5900, 10) },
+  { std::make_pair (182, WIFI_PHY_STANDARD_80211p), std::make_pair (5910, 10) },
+  { std::make_pair (184, WIFI_PHY_STANDARD_80211p), std::make_pair (5920, 10) },
+
+  // 802.11p 5 MHz channels at the 5.855-5.925 band (for simplification, we consider the same center frequencies as the 10 MHz channels)
+  { std::make_pair (171, WIFI_PHY_STANDARD_80211p), std::make_pair (5860, 5) },
+  { std::make_pair (173, WIFI_PHY_STANDARD_80211p), std::make_pair (5870, 5) },
+  { std::make_pair (175, WIFI_PHY_STANDARD_80211p), std::make_pair (5880, 5) },
+  { std::make_pair (177, WIFI_PHY_STANDARD_80211p), std::make_pair (5890, 5) },
+  { std::make_pair (179, WIFI_PHY_STANDARD_80211p), std::make_pair (5900, 5) },
+  { std::make_pair (181, WIFI_PHY_STANDARD_80211p), std::make_pair (5910, 5) },
+  { std::make_pair (183, WIFI_PHY_STANDARD_80211p), std::make_pair (5920, 5) }
 };
 
 TypeId
@@ -882,17 +891,14 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
       // Channel number should be aligned by SetFrequency () to 1
       NS_ASSERT (GetChannelNumber () == 1);
       break;
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-      SetChannelWidth (10);
+    case WIFI_PHY_STANDARD_80211p:
+      if (GetChannelWidth () > 10)
+        {
+          SetChannelWidth (10);
+        }
       SetFrequency (5860);
-      // Channel number should be aligned by SetFrequency () to 172
-      NS_ASSERT (GetChannelNumber () == 172);
-      break;
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      SetChannelWidth (5);
-      SetFrequency (5860);
-      // Channel number should be aligned by SetFrequency () to 0
-      NS_ASSERT (GetChannelNumber () == 0);
+      // Channel number should be aligned by SetFrequency () to either 172 or 171
+      NS_ASSERT ((GetChannelWidth () == 10 && GetChannelNumber () == 172) || (GetChannelWidth () == 5 && GetChannelNumber () == 171)) ;
       break;
     case WIFI_PHY_STANDARD_holland:
       SetChannelWidth (20);
@@ -1049,45 +1055,47 @@ WifiPhy::Configure80211g (void)
 }
 
 void
-WifiPhy::Configure80211_10Mhz (void)
+WifiPhy::Configure80211p (void)
 {
   NS_LOG_FUNCTION (this);
+  if (GetChannelWidth () == 10)
+    {
+      // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
+      SetSifs (MicroSeconds (32));
+      SetSlot (MicroSeconds (13));
+      SetPifs (GetSifs () + GetSlot ());
+      m_ackTxTime = MicroSeconds (88);
 
-  // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
-  SetSifs (MicroSeconds (32));
-  SetSlot (MicroSeconds (13));
-  SetPifs (GetSifs () + GetSlot ());
-  m_ackTxTime = MicroSeconds (88);
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24MbpsBW10MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
+    }
+  else if (GetChannelWidth () == 5)
+    {
+      // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
+      SetSifs (MicroSeconds (64));
+      SetSlot (MicroSeconds (21));
+      SetPifs (GetSifs () + GetSlot ());
+      m_ackTxTime = MicroSeconds (176);
 
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate18MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate24MbpsBW10MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate27MbpsBW10MHz ());
-}
-
-void
-WifiPhy::Configure80211_5Mhz (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
-  SetSifs (MicroSeconds (64));
-  SetSlot (MicroSeconds (21));
-  SetPifs (GetSifs () + GetSlot ());
-  m_ackTxTime = MicroSeconds (176);
-
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW5MHz ());
-  m_deviceRateSet.push_back (WifiPhy::GetOfdmRate13_5MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12MbpsBW5MHz ());
+      m_deviceRateSet.push_back (WifiPhy::GetOfdmRate13_5MbpsBW5MHz ());
+    }
+  else
+    {
+      NS_FATAL_ERROR ("802.11p configured with a wrong channel width!");
+    }
 }
 
 void
@@ -1394,11 +1402,8 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211g:
       Configure80211g ();
       break;
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-      Configure80211_10Mhz ();
-      break;
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      Configure80211_5Mhz ();
+    case WIFI_PHY_STANDARD_80211p:
+      Configure80211p ();
       break;
     case WIFI_PHY_STANDARD_holland:
       ConfigureHolland ();

@@ -42,7 +42,7 @@ Wifi80211pHelper
 Wifi80211pHelper::Default (void)
 {
   Wifi80211pHelper helper;
-  helper.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+  helper.SetStandard (WIFI_PHY_STANDARD_80211p);
   helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                   "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                   "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"),
@@ -53,13 +53,13 @@ Wifi80211pHelper::Default (void)
 void
 Wifi80211pHelper::SetStandard (enum WifiPhyStandard standard)
 {
-  if ((standard == WIFI_PHY_STANDARD_80211a) || (standard == WIFI_PHY_STANDARD_80211_10MHZ))
+  if (standard == WIFI_PHY_STANDARD_80211p)
     {
       WifiHelper::SetStandard (standard);
     }
   else
     {
-      NS_FATAL_ERROR ("802.11p only use 802.11 standard with 10MHz or 20MHz");
+      NS_FATAL_ERROR ("wrong standard selected!");
     }
 }
 

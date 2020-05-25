@@ -412,7 +412,7 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
       for (uint32_t j = 0; j != m_physNumber; ++j)
         {
           Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-          phy->ConfigureStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+          phy->ConfigureStandard (WIFI_PHY_STANDARD_80211p);
           phy->SetChannelNumber (ChannelManager::GetCch ());
           device->AddPhy (phy);
         }
@@ -424,8 +424,8 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
           Ptr<OcbWifiMac> ocbMac = DynamicCast<OcbWifiMac> (wifiMac);
           // we use WaveMacLow to replace original MacLow
           ocbMac->EnableForWave (device);
-          ocbMac->SetWifiRemoteStationManager ( m_stationManager.Create<WifiRemoteStationManager> ());
-          ocbMac->ConfigureStandard (WIFI_PHY_STANDARD_80211_10MHZ);
+          ocbMac->SetWifiRemoteStationManager (m_stationManager.Create<WifiRemoteStationManager> ());
+          ocbMac->ConfigureStandard (WIFI_PHY_STANDARD_80211p);
           // Install ack policy selector
           BooleanValue qosSupported;
           PointerValue ptr;

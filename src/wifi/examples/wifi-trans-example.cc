@@ -59,7 +59,7 @@ int main (int argc, char** argv)
   bool verbose = false;
   CommandLine cmd (__FILE__);
   cmd.AddValue ("standard",
-                "OFDM-based Wi-Fi standard [11a, 11_10MHZ, 11_5MHZ, 11n_2_4GHZ, 11n_5GHZ, 11ac, 11ax_2_4GHZ, 11ax_5GHZ]",
+                "OFDM-based Wi-Fi standard [11a, 11p_10MHZ, 11p_5MHZ, 11n_2_4GHZ, 11n_5GHZ, 11ac, 11ax_2_4GHZ, 11ax_5GHZ]",
                 standard);
   cmd.AddValue ("bw", "Bandwidth (consistent with standard, in MHz)", bw);
   cmd.AddValue ("txPower", "Transmit power (dBm)", pow);
@@ -84,10 +84,10 @@ int main (int argc, char** argv)
           return 1;
         }
     }
-  else if (standard == "11_10MHZ")
+  else if (standard == "11p_10MHZ")
     {
-      wifi.SetStandard (WIFI_PHY_STANDARD_80211_10MHZ);
-      ssid = Ssid ("ns380211_10MHZ");
+      wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+      ssid = Ssid ("ns380211p_10MHZ");
       dataRate = "OfdmRate3MbpsBW10MHz";
       freq = 5860;
       dataStartTime = MicroSeconds (1400);
@@ -98,10 +98,10 @@ int main (int argc, char** argv)
           return 1;
         }
     }
-  else if (standard == "11_5MHZ")
+  else if (standard == "11p_5MHZ")
     {
-      wifi.SetStandard (WIFI_PHY_STANDARD_80211_5MHZ);
-      ssid = Ssid ("ns380211_5MHZ");
+      wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+      ssid = Ssid ("ns380211p_5MHZ");
       dataRate = "OfdmRate1_5MbpsBW5MHz";
       freq = 5860;
       dataStartTime = MicroSeconds (2500);
