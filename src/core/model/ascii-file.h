@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Mitch Watrous (watrous@u.washington.edu)
  *
  * This file is based on pcap-file.h by Craig Dowell (craigdo@ee.washington.edu)
@@ -65,23 +65,23 @@ public:
 
   /**
    * \brief Read next line from file
-   * 
+   *
    * \param line    [out] line from file
-   * 
+   *
    */
   void Read (std::string& line);
 
   /**
    * \brief Compare two ASCII files line-by-line
-   * 
+   *
    * \return true if files are different, false otherwise
-   * 
+   *
    * \param  f1         First ASCII file name
    * \param  f2         Second ASCII file name
    * \param  lineNumber   [out] Line number of first different line.
    */
   static bool Diff (std::string const & f1,
-		    std::string const & f2, 
+                    std::string const & f2,
                     uint64_t & lineNumber);
 
 private:

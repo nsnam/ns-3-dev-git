@@ -114,14 +114,99 @@ use the ``ASSERT`` variants.
 How to add an example program to the test suite
 ***********************************************
 
-One can "smoke test" that examples compile and run successfully
+There are two methods for adding an example program to the the test
+suite.  Normally an example is added using only one of these methods
+to avoid running the example twice.
+
+First, you can "smoke test" that examples compile and run successfully
 to completion (without memory leaks) using the ``examples-to-run.py``
 script located in your module's test directory.  Briefly, by including
 an instance of this file in your test directory, you can cause the
-test runner to execute the examples listed.  It is usually best to make 
-sure that you select examples that have reasonably short run times so as
-to not bog down the tests.  See the example in ``src/lte/test/`` 
-directory.
+test runner to execute the examples listed.  It is usually best to
+make sure that you select examples that have reasonably short run
+times so as to not bog down the tests.  See the example in
+``src/lte/test/`` directory.  The exit status of the example will be
+checked when run and a non-zero exit status can be used to indicate
+that the example has failed.  This is the easiest way to add an example
+to the test suite but has limited checks.
+
+The second method you can use to add an example to the test suite is
+more complicated but enables checking of the example output
+(``std::out`` and ``std::err``).  This approach uses the test suite
+framework with a specialized ``TestSuite`` or ``TestCase`` class
+designed to run an example and compare the output with a specified
+known "good" reference file.  To use an example program as a test you
+need to create a test suite file and add it to the appropriate list in
+your module wscript file. The "good" output reference file needs to be
+generated for detecting regressions.
+
+If you are thinking about using this class, strongly consider using a
+standard test instead.  The TestSuite class has better checking using
+the ``NS_TEST_*`` macros and in almost all cases is the better approach.
+If your test can be done with a TestSuite class you will be asked by
+the reviewers to rewrite the test when you do a pull request.
+
+Let's assume your module is called ``mymodule``, and the example
+program is ``mymodule/examples/mod-example.cc``.  First you should
+create a test file ``mymodule/test/mymodule-examples-test-suite.cc``
+which looks like this:
+
+::
+
+   #include "ns3/example-as-test.h"
+   static ns3::ExampleAsTestSuite g_modExampleOne ("mymodule-example-mod-example-one", "mod-example", NS_TEST_SOURCEDIR, "--arg-one");
+   static ns3::ExampleAsTestSuite g_modExampleTwo ("mymodule-example-mod-example-two", "mod-example", NS_TEST_SOURCEDIR, "--arg-two");
+
+The arguments to the constructor are the name of the test suite, the
+example to run, the directory that contains the "good" reference file
+(the macro ``NS_TEST_SOURCEDIR`` is normally the correct directory),
+and command line arguments for the example.  In the preceding code the
+same example is run twice with different arguments.
+
+You then need to add that newly created test suite file to the list of
+test sources in ``mymodule/wscript``.
+
+Since you modified a wscript file you need to reconfigure and rebuild
+everything.
+
+You just added new tests so you will need to generate the "good"
+output reference files that will be used to verify the example:
+
+.. sourcecode :: bash
+
+   ./test.py --suite="mymodule-example-*" --update
+
+This will run all tests starting with "mymodule-example-" and save new
+"good" reference files.  Updating the reference files should be done
+when you create the test and whenever output changes.  When updating
+the reference output you should inspect it to ensure that it is valid.
+The reference files should be committed with the new test.
+
+This completes the process of adding a new example.
+
+You can now run the test with the standard ``test.py`` script.  For
+example to run the suites you just added:
+
+.. sourcecode:: bash
+
+   ./test.py --suite="mymodule-example-*"
+
+This will run all ``mymodule-example-...`` tests and report whether they
+produce output matching the reference files.
+
+You can also add multiple examples as test cases to a ``TestSuite``
+using ``ExampleAsTestCase``.  See
+``src/core/test/examples-as-tests-test-suite.cc`` for examples of
+setting examples as tests.
+
+When setting up an example for use by this class you should be very
+careful about what output the example generates.  For example, writing
+output which includes simulation time (especially high resolution
+time) makes the test sensitive to potentially minor changes in event
+times.  This makes the reference output hard to verify and hard to
+keep up-to-date.  Output as little as needed for the example and
+include only behavioral state that is important for determining if the
+example has run correctly.
 
 Testing for boolean outcomes
 ****************************

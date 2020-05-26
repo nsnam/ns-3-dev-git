@@ -500,10 +500,11 @@ implementation.
 Examples
 ++++++++
 
-The examples are tested by the framework to make sure they built and will
-run.  Nothing is checked, and currently the pcap files are just written off
-into /tmp to be discarded.  If the examples run (don't crash) they pass this
-smoke test.
+The examples are tested by the framework to make sure they built and
+will run.  Limited checking is done on examples; currently the pcap
+files are just written off into /tmp to be discarded.  If the example
+runs (don't crash) and the exit status is zero, the example will pass
+the smoke test.
 
 Performance Tests
 +++++++++++++++++

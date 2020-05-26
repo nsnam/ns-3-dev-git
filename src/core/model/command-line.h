@@ -286,13 +286,16 @@ public:
    * \param [in] help The help text used by \c --help
    * \param [in] callback A Callback function that will be invoked to parse and
    *   store the value.
+   * \param [in] defaultValue Optional default value for argument.
    *
    * The callback should have the signature
    * CommandLine::Callback
    */
   void AddValue (const std::string &name,
                  const std::string &help,
-                 ns3::Callback<bool, std::string> callback);
+                 ns3::Callback<bool, std::string> callback,
+                 const std::string defaultValue = "");
+
 
   /**
    * Add a program argument as a shorthand for an Attribute.
@@ -437,7 +440,8 @@ private:
   };  // class UserItem
 
   /**
-   * Extension of Item for strings.
+   * \ingroup commandline
+   * \brief Extension of Item for strings.
    */
   class StringItem : public Item
   {
@@ -457,6 +461,10 @@ private:
   class CallbackItem : public Item
   {
   public:
+    // Inherited
+    bool HasDefault (void) const;
+    std::string GetDefault (void) const;
+
     /**
      * Parse from a string.
      *
@@ -465,6 +473,7 @@ private:
      */
     virtual bool Parse (const std::string value);
     ns3::Callback<bool, std::string> m_callback;  /**< The Callback */
+    std::string m_default;  /**< The default value, as a string, if it exists. */
   };  // class CallbackItem
 
 

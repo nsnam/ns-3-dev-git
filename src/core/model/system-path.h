@@ -138,6 +138,15 @@ std::string MakeTemporaryDirectoryName (void);
  */
 void MakeDirectories (std::string path);
 
+/**
+ * \ingroup systempath
+ * Check if a path exists.
+ * Path can be a file or directory.
+ * \param [in] path The path to check.
+ * \returns \c true if the \pname{path} exists.
+ */
+bool Exists (const std::string path);
+
 } // namespace SystemPath
 
 

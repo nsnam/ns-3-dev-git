@@ -769,6 +769,9 @@ def register_ns3_script(bld, name, dependencies=('core',)):
 def add_examples_programs(bld):
     env = bld.env
     if env['ENABLE_EXAMPLES']:
+        # Add a define, so this is testable from code
+        env.append_value('DEFINES', 'NS3_ENABLE_EXAMPLES')
+
         try:
             for dir in os.listdir('examples'):
                 if dir.startswith('.') or dir == 'CVS':

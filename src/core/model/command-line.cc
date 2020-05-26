@@ -639,6 +639,18 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
 }
 
 bool
+CommandLine::CallbackItem::HasDefault (void) const
+{
+  return m_default != "";
+}
+
+std::string
+CommandLine::CallbackItem::GetDefault (void) const
+{
+  return m_default;
+}
+
+bool
 CommandLine::CallbackItem::Parse (const std::string value)
 {
   NS_LOG_FUNCTION (this);
@@ -649,13 +661,16 @@ CommandLine::CallbackItem::Parse (const std::string value)
 void
 CommandLine::AddValue (const std::string &name,
                        const std::string &help,
-                       ns3::Callback<bool, std::string> callback)
+                       ns3::Callback<bool, std::string> callback,
+                       std::string defaultValue /* = "" */)
+
 {
   NS_LOG_FUNCTION (this << &name << &help << &callback);
   CallbackItem *item = new CallbackItem ();
   item->m_name = name;
   item->m_help = help;
   item->m_callback = callback;
+  item->m_default = defaultValue;
   m_options.push_back (item);
 }
 

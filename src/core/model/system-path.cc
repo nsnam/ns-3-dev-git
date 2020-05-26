@@ -23,10 +23,11 @@
 #include "log.h"
 #include "ns3/core-config.h"
 
+#include <algorithm>
 #include <cstdlib>  // getenv
 #include <cerrno>
 #include <cstring>  // strlen
-
+#include <tuple>
 
 #if defined (HAVE_DIRENT_H) && defined (HAVE_SYS_TYPES_H)
 /** Do we have an \c opendir function? */
@@ -73,6 +74,57 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("SystemPath");
+
+// unnamed namespace for internal linkage
+namespace {
+/**
+ * \ingroup systempath
+ * Get the list of files located in a file system directory with error.
+ *
+ * \param [in] path A path which identifies a directory
+ * \return Tuple with a list of the filenames which are located in the input directory or error flag \c true if directory doesn't exist.
+ */
+std::tuple<std::list<std::string>, bool> ReadFilesNoThrow (std::string path)
+{
+  NS_LOG_FUNCTION (path);
+  std::list<std::string> files;
+
+#if defined HAVE_OPENDIR
+  DIR *dp = opendir (path.c_str ());
+  if (dp == NULL)
+    {
+      return std::make_tuple (files, true);
+    }
+  struct dirent *de = readdir (dp);
+  while (de != 0)
+    {
+      files.push_back (de->d_name);
+      de = readdir (dp);
+    }
+  closedir (dp);
+#elif defined (HAVE_FIND_FIRST_FILE)
+  /** \todo untested */
+  HANDLE hFind;
+  WIN32_FIND_DATA fileData;
+
+  hFind = FindFirstFile (path.c_str (), &FindFileData);
+  if (hFind == INVALID_HANDLE_VALUE)
+    {
+      return std::make_tuple (files, true);
+    }
+  do
+    {
+      files.push_back (fileData.cFileName);
+    }
+  while (FindNextFile (hFind, &fileData));
+  FindClose (hFind);
+#else
+#error "No support for reading a directory on this platform"
+#endif
+  return std::make_tuple (files, false);
+}
+
+} // unnamed namespace
 
 namespace SystemPath {
 
@@ -224,11 +276,16 @@ std::list<std::string> Split (std::string path)
 std::string Join (std::list<std::string>::const_iterator begin,
                   std::list<std::string>::const_iterator end)
 {
-  NS_LOG_FUNCTION (&begin << &end);
+  NS_LOG_FUNCTION (*begin << *end);
   std::string retval = "";
   for (std::list<std::string>::const_iterator i = begin; i != end; i++)
     {
-      if (i == begin)
+      if (*i == "")
+        {
+          // skip empty strings in the path list
+          continue;
+        }
+      else if (i == begin)
         {
           retval = *i;
         }
@@ -243,39 +300,13 @@ std::string Join (std::list<std::string>::const_iterator begin,
 std::list<std::string> ReadFiles (std::string path)
 {
   NS_LOG_FUNCTION (path);
+  bool err;
   std::list<std::string> files;
-#if defined HAVE_OPENDIR
-  DIR *dp = opendir (path.c_str ());
-  if (dp == NULL)
+  std::tie (files, err) = ReadFilesNoThrow (path);
+  if (err)
     {
       NS_FATAL_ERROR ("Could not open directory=" << path);
     }
-  struct dirent *de = readdir (dp);
-  while (de != 0)
-    {
-      files.push_back (de->d_name);
-      de = readdir (dp);
-    }
-  closedir (dp);
-#elif defined (HAVE_FIND_FIRST_FILE)
-  /** \todo untested */
-  HANDLE hFind;
-  WIN32_FIND_DATA fileData;
-
-  hFind = FindFirstFile (path.c_str (), &FindFileData);
-  if (hFind == INVALID_HANDLE_VALUE)
-    {
-      NS_FATAL_ERROR ("Could not open directory=" << path);
-    }
-  do
-    {
-      files.push_back (fileData.cFileName);
-    }
-  while (FindNextFile (hFind, &fileData));
-  FindClose (hFind);
-#else
-#error "No support for reading a directory on this platform"
-#endif
   return files;
 }
 
@@ -357,6 +388,52 @@ MakeDirectories (std::string path)
         }
     }
 }
+
+bool
+Exists (const std::string path)
+{
+  NS_LOG_FUNCTION (path);
+
+  bool err;
+  auto dirpath = Dirname (path);
+  std::list<std::string> files;
+  tie (files, err) = ReadFilesNoThrow (dirpath);
+  if (err)
+    {
+      // Directory doesn't exist
+      NS_LOG_LOGIC ("directory doesn't exist: " << dirpath);
+      return false;
+    }
+  NS_LOG_LOGIC ("directory exists: " << dirpath);
+
+  // Check if the file itself exists
+  auto tokens = Split (path);
+  std::string file = tokens.back ();
+
+  if (file == "")
+    {
+      // Last component was a directory, not a file name
+      // We already checked that the directory exists,
+      // so return true
+      NS_LOG_LOGIC ("directory path exists: " << path);
+      return true;
+    }
+
+  files = ReadFiles (dirpath);
+
+  auto it = std::find (files.begin (), files.end (), file);
+  if (it == files.end ())
+    {
+      // File itself doesn't exist
+      NS_LOG_LOGIC ("file itself doesn't exist: " << file);
+      return false;
+    }
+
+  NS_LOG_LOGIC ("file itself exists: " << file);
+  return true;
+
+}  // Exists()
+
 
 } // namespace SystemPath
 

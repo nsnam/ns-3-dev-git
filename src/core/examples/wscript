@@ -46,6 +46,10 @@ def build(bld):
 
     obj = bld.create_ns3_program('empirical-random-variable-example', ['core', 'flow-monitor'])
     obj.source = 'empirical-random-variable-example.cc'
+    
+    obj = bld.create_ns3_program('system-path-examples',
+                                 ['core'])
+    obj.source = 'system-path-examples.cc'
 
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
         obj = bld.create_ns3_program('main-test-sync', ['network'])

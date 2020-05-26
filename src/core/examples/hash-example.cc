@@ -148,7 +148,7 @@ public:
    * Add a string to the Collider.
    *
    * \param [in] phrase The string to add.
-   * \return true If this was a new string.
+   * \return \c true If this was a new string.
    */
   bool Add (const std::string phrase)
   {
@@ -455,7 +455,7 @@ public:
    * CommandLine callback function to add a file argument to the list.
    *
    * \param [in] file The word file to add.
-   * \return true Tf the file is new to the list.
+   * \return \c true If the file is new to the list.
    */
   bool Add (const std::string file)
   {
@@ -467,6 +467,12 @@ public:
     return true;
   }
 
+  /** \return The default dictionary path. */
+  static std::string GetDefault (void)
+  {
+    return "/usr/share/dict/words";
+  }
+
   /**
    * Add phrases from the files into the dict.
    *
@@ -476,7 +482,7 @@ public:
   {
     if (m_files.size () == 0)
       {
-        Add ("/usr/share/dict/web2");
+        Add (GetDefault ());
       }
 
     std::cout << "Hashing the dictionar"
@@ -541,7 +547,9 @@ main (int argc, char *argv[])
   cmd.Usage ("Find hash collisions in the dictionary.");
   cmd.AddValue ("dict", "Dictionary file to hash",
                 MakeCallback (&DictFiles::Add,
-                              &files));
+                              &files),
+                DictFiles::GetDefault ());
+
   cmd.AddValue ("time", "Run timing test", timing);
   cmd.Parse (argc, argv);
 

@@ -14,20 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Mitch Watrous (watrous@u.washington.edu)
  *
  * This file is based on pcap-file.cc by Craig Dowell (craigdo@ee.washington.edu)
  */
 
+#include "ascii-file.h"
+#include "assert.h"
+#include "fatal-error.h"
+#include "fatal-impl.h"
 #include <iostream>
 #include <string>
-#include "ns3/assert.h"
-#include "ns3/fatal-error.h"
-#include "ns3/fatal-impl.h"
-#include "ascii-file.h"
+
 //
-// This file is used as part of the ns-3 test framework, so please refrain from 
+// This file is used as part of the ns-3 test framework, so please refrain from
 // adding any ns-3 specific constructs such as Packet to this file.
 //
 namespace ns3 {
@@ -44,12 +45,12 @@ AsciiFile::~AsciiFile ()
   Close ();
 }
 
-bool 
+bool
 AsciiFile::Fail (void) const
 {
   return m_file.fail ();
 }
-bool 
+bool
 AsciiFile::Eof (void) const
 {
   return m_file.eof ();
@@ -81,7 +82,7 @@ AsciiFile::Read (std::string& line)
 
 bool
 AsciiFile::Diff (std::string const & f1,
-                 std::string const & f2, 
+                 std::string const & f2,
                  uint64_t & lineNumber)
 {
   AsciiFile ascii1, ascii2;
