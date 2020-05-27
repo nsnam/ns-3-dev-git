@@ -214,11 +214,13 @@ Ipv6RawSocketImplTest::DoRun (void)
   ifIndex = ipv6->GetInterfaceForDevice (device);
   ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:db8::2"), Ipv6Prefix (64));
   ipv6->AddAddress (ifIndex, ipv6Addr);
+  ipv6->SetForwarding (ifIndex, true);
 
   device = net2.Get (1);
   ifIndex = ipv6->GetInterfaceForDevice (device);
   ipv6Addr = Ipv6InterfaceAddress (Ipv6Address ("2001:db8:1::4"), Ipv6Prefix (64));
   ipv6->AddAddress (ifIndex, ipv6Addr);
+  ipv6->SetForwarding (ifIndex, true);
 
   // Create the Ipv6 Raw sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Ipv6RawSocketFactory> ();
@@ -240,6 +242,7 @@ Ipv6RawSocketImplTest::DoRun (void)
 
   // Unicast test
   SendData (txSocket, "2001:db8::1");
+
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 163, "recv: 2001:db8::1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
 
