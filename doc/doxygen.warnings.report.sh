@@ -486,12 +486,23 @@ printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
 
-if [ "$filterin" != "" ] ; then
-    echo
-    echo
-    echo "Filtered Warnings"
-    echo "========================================"
-    echo "$filterin"
+
+# Return status based on warnings
+exit_status=$((warncount > 0))
+
+if [ "${filter_inRE:-}" != "" ] ; then
+    if [ "$filterin" != "" ] ; then
+        echo
+        echo
+        echo "Filtered Warnings"
+        echo "========================================"
+        echo "$filterin"
+        exit_status=1
+    else
+        exit_status=0    
+    fi
 fi
 
 status_report 0 $me
+
+exit $exit_status 
