@@ -20,11 +20,8 @@ doxygen:
   extends: .doc
   script:
 #    - mkdir -p public/doxygen
-     - doc/doxygen.warnings.report.sh
+    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
-  artifacts:
-    paths:
-      - doc/doxygen.warnings.log
 
 manual:
   extends: .doc
