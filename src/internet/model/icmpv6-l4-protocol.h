@@ -320,7 +320,7 @@ public:
    * \param interface the interface
    * \param addr the IPv6 address
    */
-  static void FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Interface* interface, Ipv6Address addr);
+  void FunctionDadTimeout (Ipv6Interface* interface, Ipv6Address addr);
 
   /**
    * \brief Lookup in the ND cache for the IPv6 address

@@ -219,7 +219,7 @@ void Ipv6Interface::SetForwarding (bool forwarding)
 
 bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << iface);
   Ipv6Address addr = iface.GetAddress ();
 
   /* DAD handling */
@@ -243,7 +243,7 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
           int32_t interfaceId = m_node->GetObject<Ipv6> ()->GetInterfaceForDevice (m_device);
           Ptr<Icmpv6L4Protocol> icmpv6 = DynamicCast<Icmpv6L4Protocol> (m_node->GetObject<Ipv6> ()->GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber (), interfaceId));
 
-          if (icmpv6 && icmpv6->IsAlwaysDad ())
+          if (icmpv6)
             {
               if (icmpv6->IsAlwaysDad ())
                 {
