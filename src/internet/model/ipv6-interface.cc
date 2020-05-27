@@ -68,12 +68,11 @@ Ipv6Interface::Ipv6Interface ()
 
 Ipv6Interface::~Ipv6Interface ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void Ipv6Interface::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_device = 0;
   m_tc = 0;
@@ -83,7 +82,7 @@ void Ipv6Interface::DoDispose ()
 
 void Ipv6Interface::DoSetup ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_node == 0 || m_device == 0)
     {
@@ -158,7 +157,7 @@ Ipv6Interface::SetTrafficControl (Ptr<TrafficControlLayer> tc)
 
 Ptr<NetDevice> Ipv6Interface::GetDevice () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_device;
 }
 
@@ -170,25 +169,25 @@ void Ipv6Interface::SetMetric (uint16_t metric)
 
 uint16_t Ipv6Interface::GetMetric () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_metric;
 }
 
 bool Ipv6Interface::IsUp () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_ifup;
 }
 
 bool Ipv6Interface::IsDown () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return !m_ifup;
 }
 
 void Ipv6Interface::SetUp ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_ifup)
     {
@@ -200,7 +199,7 @@ void Ipv6Interface::SetUp ()
 
 void Ipv6Interface::SetDown ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_ifup = false;
   m_addresses.clear ();
   m_ndCache->Flush ();
@@ -208,7 +207,7 @@ void Ipv6Interface::SetDown ()
 
 bool Ipv6Interface::IsForwarding () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_forwarding;
 }
 
@@ -220,7 +219,7 @@ void Ipv6Interface::SetForwarding (bool forwarding)
 
 bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ipv6Address addr = iface.GetAddress ();
 
   /* DAD handling */
@@ -267,7 +266,7 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
 Ipv6InterfaceAddress Ipv6Interface::GetLinkLocalAddress () const
 {
   /* IPv6 interface has always at least one IPv6 link-local address */
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   return m_linkLocalAddress;
 }
@@ -314,7 +313,7 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddress (uint32_t index) const
 
 uint32_t Ipv6Interface::GetNAddresses () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_addresses.size ();
 }
 
@@ -473,7 +472,7 @@ void Ipv6Interface::SetCurHopLimit (uint8_t curHopLimit)
 
 uint8_t Ipv6Interface::GetCurHopLimit () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_curHopLimit;
 }
 
@@ -485,7 +484,7 @@ void Ipv6Interface::SetBaseReachableTime (uint16_t baseReachableTime)
 
 uint16_t Ipv6Interface::GetBaseReachableTime () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_baseReachableTime;
 }
 
@@ -497,7 +496,7 @@ void Ipv6Interface::SetReachableTime (uint16_t reachableTime)
 
 uint16_t Ipv6Interface::GetReachableTime () const
 {
-  NS_LOG_FUNCTION_NOARGS (); 
+  NS_LOG_FUNCTION (this);
   return m_reachableTime;
 }
 
@@ -509,7 +508,7 @@ void Ipv6Interface::SetRetransTimer (uint16_t retransTimer)
 
 uint16_t Ipv6Interface::GetRetransTimer () const
 {
-  NS_LOG_FUNCTION_NOARGS (); 
+  NS_LOG_FUNCTION (this);
   return m_retransTimer;
 }
 
