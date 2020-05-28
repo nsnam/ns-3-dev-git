@@ -254,30 +254,6 @@ Simulator::DoScheduleDestroy (EventImpl *impl)
 }
 
 
-EventId
-Simulator::Schedule (Time const &delay, void (*f)(void))
-{
-  return DoSchedule (delay, MakeEvent (f));
-}
-
-void
-Simulator::ScheduleWithContext (uint32_t context, Time const &delay, void (*f)(void))
-{
-  return ScheduleWithContext (context, delay, MakeEvent (f));
-}
-
-EventId
-Simulator::ScheduleNow (void (*f)(void))
-{
-  return DoScheduleNow (MakeEvent (f));
-}
-
-EventId
-Simulator::ScheduleDestroy (void (*f)(void))
-{
-  return DoScheduleDestroy (MakeEvent (f));
-}
-
 void
 Simulator::Remove (const EventId &id)
 {

@@ -75,6 +75,7 @@ public:
   /**
    * Set the function to execute when the timer expires.
    *
+   * \tparam FN \deduced The type of the function.
    * \param [in] fn The function
    *
    * Store this function in this Timer for later use by Timer::Schedule.
@@ -101,71 +102,11 @@ public:
    */
   /**@{*/
   /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \param [in] a1 The first argument
+   * \tparam Ts \deduced Argument types.
+   * \param [in] args arguments
    */
-  template <typename T1>
-  void SetArguments (T1 a1);
-  /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \tparam T2 \deduced Type of the second argument.
-   * \param [in] a1 the first argument
-   * \param [in] a2 the second argument
-   */
-  template <typename T1, typename T2>
-  void SetArguments (T1 a1, T2 a2);
-  /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \tparam T2 \deduced Type of the second argument.
-   * \tparam T3 \deduced Type of the third argument.
-   * \param [in] a1 the first argument
-   * \param [in] a2 the second argument
-   * \param [in] a3 the third argument
-   */
-  template <typename T1, typename T2, typename T3>
-  void SetArguments (T1 a1, T2 a2, T3 a3);
-  /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \tparam T2 \deduced Type of the second argument.
-   * \tparam T3 \deduced Type of the third argument.
-   * \tparam T4 \deduced Type of the fourth argument.
-   * \param [in] a1 the first argument
-   * \param [in] a2 the second argument
-   * \param [in] a3 the third argument
-   * \param [in] a4 the fourth argument
-   */
-  template <typename T1, typename T2, typename T3, typename T4>
-  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4);
-  /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \tparam T2 \deduced Type of the second argument.
-   * \tparam T3 \deduced Type of the third argument.
-   * \tparam T4 \deduced Type of the fourth argument.
-   * \tparam T5 \deduced Type of the fifth argument.
-   * \param [in] a1 the first argument
-   * \param [in] a2 the second argument
-   * \param [in] a3 the third argument
-   * \param [in] a4 the fourth argument
-   * \param [in] a5 the fifth argument
-   */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
-  /**
-   * \tparam T1 \deduced Type of the first argument.
-   * \tparam T2 \deduced Type of the second argument.
-   * \tparam T3 \deduced Type of the third argument.
-   * \tparam T4 \deduced Type of the fourth argument.
-   * \tparam T5 \deduced Type of the fifth argument.
-   * \tparam T6 \deduced Type of the sixth argument.
-   * \param [in] a1 the first argument
-   * \param [in] a2 the second argument
-   * \param [in] a3 the third argument
-   * \param [in] a4 the fourth argument
-   * \param [in] a5 the fifth argument
-   * \param [in] a6 the sixth argument
-   */
-  template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+  template <typename... Ts>
+  void SetArguments (Ts&&... args);
   /**@}*/
 
 private:
@@ -209,75 +150,16 @@ Watchdog::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
   m_impl = MakeTimerImpl (memPtr, objPtr);
 }
 
-template <typename T1>
+template <typename... Ts>
 void
-Watchdog::SetArguments (T1 a1)
+Watchdog::SetArguments (Ts&&... args)
 {
   if (m_impl == 0)
     {
       NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
       return;
     }
-  m_impl->SetArgs (a1);
-}
-template <typename T1, typename T2>
-void
-Watchdog::SetArguments (T1 a1, T2 a2)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
-    }
-  m_impl->SetArgs (a1, a2);
-}
-
-template <typename T1, typename T2, typename T3>
-void
-Watchdog::SetArguments (T1 a1, T2 a2, T3 a3)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
-    }
-  m_impl->SetArgs (a1, a2, a3);
-}
-
-template <typename T1, typename T2, typename T3, typename T4>
-void
-Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
-    }
-  m_impl->SetArgs (a1, a2, a3, a4);
-}
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void
-Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
-    }
-  m_impl->SetArgs (a1, a2, a3, a4, a5);
-}
-
-template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-void
-Watchdog::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Watchdog before setting its function.");
-      return;
-    }
-  m_impl->SetArgs (a1, a2, a3, a4, a5, a6);
+  m_impl->SetArgs (std::forward<Ts>(args)...);
 }
 
 } // namespace ns3

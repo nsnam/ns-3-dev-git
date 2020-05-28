@@ -55,41 +55,7 @@ namespace ns3 {
  * Callback implementation classes
  */
 /**
- * \ingroup callback
- * \defgroup makecallbackmemptr MakeCallback from member function pointer
- *
- * Build Callbacks for class method members which take varying numbers
- * of arguments and potentially returning a value.
- *
- * Generally the \c MakeCallback functions are invoked with the
- * method function address first, followed by the \c this pointer:
- * \code
- *   MakeCallback ( & MyClass::Handler, this);
- * \endcode
- *
- * There is not a version with bound arguments.  You may be able to
- * get the same result by using \c MakeBoundCallback with a \c static
- * member function, as in:
- * \code
- *   MakeBoundCallback ( & MyClass::StaticHandler, this);
- * \endcode
- * This still leaves two argument slots available for binding.
- */
-/**
- * \ingroup callback
- * \defgroup makecallbackfnptr MakeCallback from function pointers
- *
- * Build Callbacks for functions which take varying numbers of arguments
- * and potentially returning a value.
- */
-/**
- * \ingroup callback
- * \defgroup makenullcallback MakeCallback with no arguments
- *
- * Define empty (Null) callbacks as placeholders for unset callback variables.
- */
-/**
- * \ingroup callback
+ * \ingroup callbackimpl
  * \defgroup makeboundcallback MakeBoundCallback from functions bound with up to three arguments.
  *
  * Build bound Callbacks which take varying numbers of arguments,
@@ -104,19 +70,21 @@ namespace ns3 {
 
 
 /**
- * \ingroup makecallbackmemptr
+ * \ingroup callbackimpl
  *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl
+ * \tparam T \deduced The type being converted.
  */
 template <typename T>
 struct CallbackTraits;
 
 /**
- * \ingroup makecallbackmemptr
+ * \ingroup callbackimpl
  *
  * Trait class to convert a pointer into a reference,
  * used by MemPtrCallBackImpl
+ * \tparam T \deduced The type being converted.
  */
 template <typename T>
 struct CallbackTraits<T *>
@@ -164,7 +132,7 @@ protected:
   /**
    * Helper to get the C++ typeid as a string.
    *
-   * \tparam T The type of the argument.
+   * \tparam T \explicit The type of the argument.
    * \returns The result of applying typeid to the template type \pname{T}.
    */
   template <typename T>
@@ -187,6 +155,9 @@ protected:
 /**
  * \ingroup callbackimpl
  * The unqualified CallbackImpl class
+ * \tparam R \explicit The return type of the Callback.
+ * The remaining template arguments are the types of any arguments
+ * to the Callback.
  */
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
 class CallbackImpl;
@@ -458,6 +429,7 @@ public:
 /**
  * \ingroup callbackimpl
  * CallbackImpl with functors
+ * \tparam T \deduced Function pointer type.
  */
 template <typename T, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8, typename T9>
 class FunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>
@@ -617,8 +589,10 @@ private:
 };
 
 /**
- * \ingroup makecallbackmemptr
+ * \ingroup callbackimpl
  * CallbackImpl for pointer to member functions
+ * \tparam OBJ_PTR \deduced Type of the target object, as a pointer.
+ * \tparam MEM_PTR \deduced Type of the class member function.
  */
 template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7, typename T8, typename T9>
 class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,T9>
@@ -783,6 +757,8 @@ private:
 /**
  * \ingroup callbackimpl
  * CallbackImpl for functors with first argument bound at construction
+ * \tparam T  \explicit Type of the functor.
+ * \tparam TX \explicit Type of the bound argument.
  */
 template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8>
 class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,empty>
@@ -790,6 +766,10 @@ class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,T8,e
 public:
   /**
    * Construct from functor and a bound argument
+   * \tparam FUNCTOR \deduced The actual type of the functor.
+   *         This must be convertible to \pname{T}.
+   * \tparam ARG \deduced The actual type of the bound argument.
+   *         This must be convertible to type \pname{TX}.
    * \param [in] functor The functor
    * \param [in] a The argument to bind
    */
@@ -931,6 +911,9 @@ private:
 /**
  * \ingroup callbackimpl
  * CallbackImpl for functors with first two arguments bound at construction
+ * \tparam T  \explicit Type of the functor.
+ * \tparam TX1 \explicit Type of the first bound argument.
+ * \tparam TX2 \explicit Type of the second bound argument.
  */
 template <typename T, typename R, typename TX1, typename TX2, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7>
 class TwoBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,empty,empty>
@@ -938,6 +921,12 @@ class TwoBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,T7,e
 public:
   /**
    * Construct from functor and two arguments
+   * \tparam FUNCTOR \deduced The actual type of the functor.
+   *         This must be convertible to \pname{T}.
+   * \tparam ARG1 \deduced The actual type of the first bound argument.
+   *         This must be convertible to type \pname{TX1}.
+   * \tparam ARG2 \deduced The actual type of the second bound argument.
+   *         This must be convertible to type \pname{TX2}.
    * \param [in] functor The functor
    * \param [in] arg1 The first argument to bind
    * \param [in] arg2 The second argument to bind
@@ -1066,6 +1055,10 @@ private:
 /**
  * \ingroup callbackimpl
  * CallbackImpl for functors with first three arguments bound at construction
+ * \tparam T  \explicit Type of the functor.
+ * \tparam TX1 \explicit Type of the first bound argument.
+ * \tparam TX2 \explicit Type of the second bound argument.
+ * \tparam TX3 \explicit Type of the third bound argument.
  */
 template <typename T, typename R, typename TX1, typename TX2, typename TX3, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
 class ThreeBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,empty,empty,empty>
@@ -1073,6 +1066,14 @@ class ThreeBoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6,em
 public:
   /**
    * Construct from functor and three arguments
+   * \tparam FUNCTOR \deduced The actual type of the functor.
+   *         This must be convertible to \pname{T}.
+   * \tparam ARG1 \deduced The actual type of the first bound argument.
+   *         This must be convertible to type \pname{TX1}.
+   * \tparam ARG2 \deduced The actual type of the second bound argument.
+   *         This must be convertible to type \pname{TX2}.
+   * \tparam ARG3 \deduced The actual type of the third bound argument.
+   *         This must be convertible to type \pname{TX3}.
    * \param [in] functor The functor
    * \param [in] arg1 The first argument to bind
    * \param [in] arg2 The second argument to bind
@@ -1263,6 +1264,10 @@ protected:
  * the pointer.
  *
  * \see attribute_Callback
+ *
+ * \tparam R \explicit The return type of the Callback.
+ * The remaining template arguments are the types of any arguments
+ * to the Callback.
  */
 template<typename R,
          typename T1 = empty, typename T2 = empty,
@@ -1284,6 +1289,7 @@ public:
    * \internal
    * There are two dummy args below to ensure that this constructor is
    * always properly disambiguated by the c++ compiler.
+   * \tparam FUNCTOR \deduced The actual type of the functor.
    */
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor, bool, bool)
@@ -1293,6 +1299,8 @@ public:
   /**
    * Construct a member function pointer call back.
    *
+   * \tparam OBJ_PTR \deduced Type of the target object, as a pointer.
+   * \tparam MEM_PTR \deduced Type of the class member function.
    * \param [in] objPtr Pointer to the object
    * \param [in] memPtr Pointer to the member function
    */
@@ -1313,6 +1321,7 @@ public:
   /**
    * Bind the first arguments
    *
+   * \tparam T \deduced The type of the bound argument.
    * \param [in] a Argument to bind
    * \return The bound callback
    */
@@ -1330,6 +1339,8 @@ public:
   /**
    * Bind the first two arguments
    *
+   * \tparam TX1 \deduced Type of the first bound argument.
+   * \tparam TX2 \deduced Type of the second bound argument.
    * \param [in] a1 First argument to bind
    * \param [in] a2 Second argument to bind
    * \return The bound callback
@@ -1348,6 +1359,9 @@ public:
   /**
    * Bind the first three arguments
    *
+   * \tparam TX1 \deduced The actual type of the first bound argument.
+   * \tparam TX2 \deduced The actual type of the second bound argument.
+   * \tparam TX3 \deduced The actual type of the third bound argument.
    * \param [in] a1 First argument to bind
    * \param [in] a2 Second argument to bind
    * \param [in] a3 Third argument to bind
@@ -1595,250 +1609,92 @@ bool operator != (Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> a, Callback<R,T1,T2,T3,
 }
 
 /**
- * \ingroup makecallbackmemptr
  * @{
  */
 /**
+ * Build Callbacks for class method members which take varying numbers
+ * of arguments and potentially returning a value.
+ *
+ * \tparam T   \deduced Type of the class having the member function.
+ * \tparam OBJ \deduced Type of the class instance.
+ * \tparam R   \deduced Return type of the callback.
+ * \tparam Ts  \deduced Type list of any arguments to the member function.
+ *
  * \param [in] memPtr Class method member pointer
  * \param [in] objPtr Class instance
  * \return A wrapper Callback
  *
- * Build Callbacks for class method members which take varying numbers of arguments
- * and potentially returning a value.
+ * This \c MakeCallback is invoked with the
+ * method function address first, followed by the \c this pointer:
+ * \code
+ *   MakeCallback ( & MyClass::Handler, this);
+ * \endcode
+ *
+ * There is not a version with bound arguments.  You may be able to
+ * get the same result by using \c MakeBoundCallback with a \c static
+ * member function, as in:
+ * \code
+ *   MakeBoundCallback ( & MyClass::StaticHandler, this);
+ * \endcode
+ * This still leaves two argument slots available for binding.
  */
-template <typename T, typename OBJ, typename R>
-Callback<R> MakeCallback (R (T::*memPtr)(void), OBJ objPtr)
+template <typename T, typename OBJ, typename R, typename... Ts>
+Callback<R,Ts...> MakeCallback (R (T::*memPtr)(Ts...), OBJ objPtr)
 {
-  return Callback<R> (objPtr, memPtr);
+  return Callback<R,Ts...> (objPtr, memPtr);
 }
-template <typename T, typename OBJ, typename R>
-Callback<R> MakeCallback (R (T::*memPtr)() const, OBJ objPtr)
+template <typename T, typename OBJ, typename R, typename... Ts>
+Callback<R,Ts...> MakeCallback (R (T::*memPtr)(Ts...) const, OBJ objPtr)
 {
-  return Callback<R> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (T::*memPtr)(T1), OBJ objPtr)
-{
-  return Callback<R,T1> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (T::*memPtr)(T1) const, OBJ objPtr)
-{
-  return Callback<R,T1> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (T::*memPtr)(T1,T2), OBJ objPtr)
-{
-  return Callback<R,T1,T2> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (T::*memPtr)(T1,T2) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (T::*memPtr)(T1,T2,T3), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (T::*memPtr)(T1,T2,T3) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5,typename T6>
-Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
-Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5,typename T6, typename T7>
-Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7>
-Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5,typename T6, typename T7, typename T8>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7,T8), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7,T8) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5,typename T6, typename T7, typename T8, typename T9>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7,T8,T9), OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (objPtr, memPtr);
-}
-template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6, typename T7, typename T8, typename T9>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (T::*memPtr)(T1,T2,T3,T4,T5,T6,T7,T8,T9) const, OBJ objPtr)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (objPtr, memPtr);
+  return Callback<R,Ts...> (objPtr, memPtr);
 }
 /**@}*/
 
 /**
- * \ingroup makecallbackfnptr
- * @{
- */
-/**
+ * \ingroup callback
  * \param [in] fnPtr Function pointer
  * \return A wrapper Callback
  *
  * Build Callbacks for functions which take varying numbers of arguments
  * and potentially returning a value.
+ *
+ * \tparam R   \deduced Return type of the callback function..
+ * \tparam Ts  \deduced Type list of any arguments to the member function.
  */
-template <typename R>
-Callback<R> MakeCallback (R (*fnPtr)())
+template <typename R, typename... Ts>
+Callback<R,Ts...> MakeCallback (R (*fnPtr)(Ts...))
 {
-  return Callback<R> (fnPtr, true, true);
+  return Callback<R,Ts...> (fnPtr, true, true);
 }
-template <typename R, typename T1>
-Callback<R,T1> MakeCallback (R (*fnPtr)(T1))
-{
-  return Callback<R,T1> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (*fnPtr)(T1,T2))
-{
-  return Callback<R,T1,T2> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (*fnPtr)(T1,T2,T3))
-{
-  return Callback<R,T1,T2,T3> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr)(T1,T2,T3,T4))
-{
-  return Callback<R,T1,T2,T3,T4> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5))
-{
-  return Callback<R,T1,T2,T3,T4,T5> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6>
-Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T6))
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7>
-Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T6,T7))
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7, typename T8>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T6,T7,T8))
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> (fnPtr, true, true);
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7, typename T8, typename T9>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeCallback (R (*fnPtr)(T1,T2,T3,T4,T5,T6,T7,T8,T9))
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> (fnPtr, true, true);
-}
-/**@}*/
 
 /**
- * \ingroup makenullcallback
- * @{
- */
-/**
+ * \ingroup callback
  * \return A wrapper Callback
  *
  * Build null Callbacks which take no arguments,
  * for varying number of template arguments,
  * and potentially returning a value.
+ *
+ * \tparam R   \deduced Return type of the callback function..
+ * \tparam Ts  \deduced Type list of any arguments to the member function.
  */
-template <typename R>
-Callback<R> MakeNullCallback (void)
+template <typename R, typename... Ts>
+Callback<R,Ts...> MakeNullCallback (void)
 {
-  return Callback<R> ();
+  return Callback<R,Ts...> ();
 }
-template <typename R, typename T1>
-Callback<R,T1> MakeNullCallback (void)
-{
-  return Callback<R,T1> ();
-}
-template <typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2> ();
-}
-template <typename R, typename T1, typename T2,typename T3>
-Callback<R,T1,T2,T3> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4>
-Callback<R,T1,T2,T3,T4> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4,T5> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6>
-Callback<R,T1,T2,T3,T4,T5,T6> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7>
-Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7, typename T8>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> ();
-}
-template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6, typename T7, typename T8, typename T9>
-Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> MakeNullCallback (void)
-{
-  return Callback<R,T1,T2,T3,T4,T5,T6,T7,T8,T9> ();
-}
-/**@}*/
 
 
 /**
  * \ingroup makeboundcallback
  * @{
  * Make Callbacks with one bound argument.
+ *
+ * \tparam R   \deduced Return type of the callback
+ * \tparam TX  \deduced Formal type of the first argument to the callback.
+ * \tparam ARG \deduced Actual type of the bound argument.
+ * Remaining template parameters are the types of remaining arguments
+ * to the callback.
  * \param [in] fnPtr Function pointer
  * \param [in] a1 First bound argument
  * \return A bound Callback
@@ -1920,6 +1776,13 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7,T8> MakeBoundCallback (R (*fnPtr)(TX,T1,T2,T3,T4
  * \ingroup makeboundcallback
  * @{
  * Make Callbacks with two bound arguments.
+ * \tparam R    \deduced Return type of the callback
+ * \tparam TX1  \deduced Formal type of the first argument to the callback.
+ * \tparam TX2  \deduced Formal type of the second argument to the callback.
+ * \tparam ARG1 \deduced Actual type of the first bound argument.
+ * \tparam ARG2 \deduced Actual type of the second bound argument.
+ * Remaining template parameters are the types of remaining arguments
+ * to the callback.
  * \param [in] fnPtr Function pointer
  * \param [in] a1 First bound argument
  * \param [in] a2 Second bound argument
@@ -1994,6 +1857,15 @@ Callback<R,T1,T2,T3,T4,T5,T6,T7> MakeBoundCallback (R (*fnPtr)(TX1,TX2,T1,T2,T3,
  * \ingroup makeboundcallback
  * @{
  * Make Callbacks with three bound arguments.
+ * \tparam R    \deduced Return type of the callback
+ * \tparam TX1  \deduced Formal type of the first argument to the callback.
+ * \tparam TX2  \deduced Formal type of the second argument to the callback.
+ * \tparam TX3  \deduced Formal type of the third argument to the callback.
+ * \tparam ARG1 \deduced Actual type of the first bound argument.
+ * \tparam ARG2 \deduced Actual type of the second bound argument.
+ * \tparam ARG3 \deduced Actual type of the third bound argument.
+ * Remaining template parameters are the types of remaining arguments
+ * to the callback.
  * \param [in] a1 First bound argument
  * \param [in] a2 Second bound argument
  * \param [in] a3 Third bound argument
@@ -2079,6 +1951,7 @@ public:
   /**
    * Give value my callback, if type compatible
    *
+   * \tparam T \deduced The type in which to retrieve the value.
    * \param [out] value Destination callback
    * \returns \c true if successful
    */
