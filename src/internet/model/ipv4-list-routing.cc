@@ -292,7 +292,7 @@ Ipv4ListRouting::GetRoutingProtocol (uint32_t index, int16_t& priority) const
 bool 
 Ipv4ListRouting::Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingProtocolEntry& b)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (a.first << a.second << b.first << b.second);
   return a.first > b.first;
 }
 

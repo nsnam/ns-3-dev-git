@@ -75,7 +75,7 @@ DhcpClient::GetTypeId (void)
 
 DhcpClient::DhcpClient ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_server = Ipv4Address::GetAny ();
   m_socket = 0;
   m_refreshEvent = EventId ();
@@ -88,7 +88,7 @@ DhcpClient::DhcpClient ()
 
 DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << netDevice);
   m_device = netDevice;
   m_server = Ipv4Address::GetAny ();
   m_socket = 0;
@@ -102,7 +102,7 @@ DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
 
 DhcpClient::~DhcpClient ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ptr<NetDevice> DhcpClient::GetDhcpClientNetDevice (void)

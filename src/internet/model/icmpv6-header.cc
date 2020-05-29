@@ -758,7 +758,7 @@ uint32_t Icmpv6RS::GetSerializedSize () const
 void Icmpv6RS::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this << &start);
-  NS_LOG_FUNCTION_NOARGS ();
+
   uint16_t checksum = 0;
   Buffer::Iterator i = start;
 
@@ -1494,7 +1494,7 @@ Icmpv6OptionHeader::~Icmpv6OptionHeader ()
 
 uint8_t Icmpv6OptionHeader::GetType () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_type;
 }
 

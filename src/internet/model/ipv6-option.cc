@@ -46,7 +46,7 @@ TypeId Ipv6Option::GetTypeId ()
 
 Ipv6Option::~Ipv6Option ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void Ipv6Option::SetNode (Ptr<Node> node)
@@ -70,17 +70,17 @@ TypeId Ipv6OptionPad1::GetTypeId ()
 
 Ipv6OptionPad1::Ipv6OptionPad1 ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6OptionPad1::~Ipv6OptionPad1 ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t Ipv6OptionPad1::GetOptionNumber () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   return OPT_NUMBER;
 }
@@ -115,17 +115,17 @@ TypeId Ipv6OptionPadn::GetTypeId ()
 
 Ipv6OptionPadn::Ipv6OptionPadn ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6OptionPadn::~Ipv6OptionPadn ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t Ipv6OptionPadn::GetOptionNumber () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   return OPT_NUMBER;
 }
@@ -160,17 +160,17 @@ TypeId Ipv6OptionJumbogram::GetTypeId ()
 
 Ipv6OptionJumbogram::Ipv6OptionJumbogram ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6OptionJumbogram::~Ipv6OptionJumbogram ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t Ipv6OptionJumbogram::GetOptionNumber () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   return OPT_NUMBER;
 }
@@ -205,17 +205,17 @@ TypeId Ipv6OptionRouterAlert::GetTypeId ()
 
 Ipv6OptionRouterAlert::Ipv6OptionRouterAlert ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6OptionRouterAlert::~Ipv6OptionRouterAlert ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 uint8_t Ipv6OptionRouterAlert::GetOptionNumber () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   return OPT_NUMBER;
 }

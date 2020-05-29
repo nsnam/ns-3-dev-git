@@ -49,12 +49,12 @@ TypeId Ipv6StaticRouting::GetTypeId ()
 Ipv6StaticRouting::Ipv6StaticRouting ()
   : m_ipv6 (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6StaticRouting::~Ipv6StaticRouting ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void Ipv6StaticRouting::SetIpv6 (Ptr<Ipv6> ipv6)
@@ -201,7 +201,7 @@ void Ipv6StaticRouting::SetDefaultMulticastRoute (uint32_t outputInterface)
 
 uint32_t Ipv6StaticRouting::GetNMulticastRoutes () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_multicastRoutes.size ();
 }
 
@@ -373,7 +373,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> 
 
 void Ipv6StaticRouting::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   for (NetworkRoutesI j = m_networkRoutes.begin ();  j != m_networkRoutes.end (); j = m_networkRoutes.erase (j))
     {
@@ -447,7 +447,7 @@ uint32_t Ipv6StaticRouting::GetNRoutes () const
 
 Ipv6RoutingTableEntry Ipv6StaticRouting::GetDefaultRoute ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ipv6Address dst ("::");
   uint32_t shortestMetric = 0xffffffff;
   Ipv6RoutingTableEntry* result = 0;
@@ -503,7 +503,7 @@ Ipv6RoutingTableEntry Ipv6StaticRouting::GetRoute (uint32_t index) const
 
 uint32_t Ipv6StaticRouting::GetMetric (uint32_t index) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << index);
   uint32_t tmp = 0;
 
   for (NetworkRoutesCI it = m_networkRoutes.begin (); it != m_networkRoutes.end (); it++)

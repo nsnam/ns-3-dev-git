@@ -124,7 +124,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_nscTcpSocket (0),
     m_sndBufSize (sock.m_sndBufSize)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Invoked the copy constructor");
   //copy the pending data if necessary
   if(!sock.m_txBuffer.empty () )
@@ -178,7 +178,7 @@ NscTcpSocketImpl::SetTcp (Ptr<NscTcpL4Protocol> tcp)
 enum Socket::SocketErrno
 NscTcpSocketImpl::GetErrno (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_errno;
 }
 
@@ -191,14 +191,14 @@ NscTcpSocketImpl::GetSocketType (void) const
 Ptr<Node>
 NscTcpSocketImpl::GetNode (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
 void 
 NscTcpSocketImpl::Destroy (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_endPoint = 0;
   m_tcp = 0;
@@ -206,7 +206,7 @@ NscTcpSocketImpl::Destroy (void)
 int
 NscTcpSocketImpl::FinishBind (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_endPoint == 0)
     {
       return -1;
@@ -221,7 +221,7 @@ NscTcpSocketImpl::FinishBind (void)
 int
 NscTcpSocketImpl::Bind (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_endPoint = m_tcp->Allocate ();
   return FinishBind ();
 }
@@ -284,14 +284,14 @@ NscTcpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 int 
 NscTcpSocketImpl::ShutdownSend (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_shutdownSend = true;
   return 0;
 }
 int 
 NscTcpSocketImpl::ShutdownRecv (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_shutdownRecv = true;
   return 0;
 }
@@ -399,7 +399,7 @@ NscTcpSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 uint32_t
 NscTcpSocketImpl::GetTxAvailable (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_txBufferSize != 0)
     {
       NS_ASSERT (m_txBufferSize <= m_sndBufSize);
@@ -456,9 +456,7 @@ NscTcpSocketImpl::NSCWakeup ()
 }
 
 Ptr<Packet>
-NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
-{
-  NS_LOG_FUNCTION_NOARGS ();
+NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_tNS_LOG_FUNCTION (this)ON_NOARGS ();
   if (m_deliveryQueue.empty () )
     {
       m_errno = ERROR_AGAIN;
@@ -491,7 +489,7 @@ NscTcpSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
 int
 NscTcpSocketImpl::GetSockName (Address &address) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << address);
   address = InetSocketAddress (m_localAddress, m_localPort);
   return 0;
 }
@@ -514,7 +512,7 @@ NscTcpSocketImpl::GetPeerName (Address &address) const
 uint32_t
 NscTcpSocketImpl::GetRxAvailable (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   // We separately maintain this state to avoid walking the queue 
   // every time this might be called
   return m_rxAvailable;

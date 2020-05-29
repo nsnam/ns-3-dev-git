@@ -57,7 +57,7 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
 
 Ipv6RawSocketImpl::Ipv6RawSocketImpl ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_err = Socket::ERROR_NOTERROR;
   m_node = 0;
   m_src = Ipv6Address::GetAny ();
@@ -74,7 +74,7 @@ Ipv6RawSocketImpl::~Ipv6RawSocketImpl ()
 
 void Ipv6RawSocketImpl::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   Socket::DoDispose ();
 }
@@ -92,7 +92,7 @@ Ptr<Node> Ipv6RawSocketImpl::GetNode () const
 
 enum Socket::SocketErrno Ipv6RawSocketImpl::GetErrno () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_err;
 }
 
@@ -117,7 +117,7 @@ int Ipv6RawSocketImpl::Bind (const Address& address)
 
 int Ipv6RawSocketImpl::Bind ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_src = Ipv6Address::GetAny ();
   return 0;
 }
@@ -129,7 +129,7 @@ int Ipv6RawSocketImpl::Bind6 ()
 
 int Ipv6RawSocketImpl::GetSockName (Address& address) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   address = Inet6SocketAddress (m_src, 0);
   return 0;
 }
@@ -152,7 +152,7 @@ Ipv6RawSocketImpl::GetPeerName (Address& address) const
 
 int Ipv6RawSocketImpl::Close ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
   Ipv6LeaveGroup ();
@@ -165,14 +165,14 @@ int Ipv6RawSocketImpl::Close ()
 
 int Ipv6RawSocketImpl::ShutdownSend ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_shutdownSend = true;
   return 0;
 }
 
 int Ipv6RawSocketImpl::ShutdownRecv ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_shutdownRecv = true;
   return 0;
 }
@@ -194,7 +194,7 @@ int Ipv6RawSocketImpl::Connect (const Address& address)
 
 int Ipv6RawSocketImpl::Listen ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_err = Socket::ERROR_OPNOTSUPP;
   return -1;
 }
@@ -377,13 +377,13 @@ Ipv6RawSocketImpl::Ipv6JoinGroup (Ipv6Address address, Socket::Ipv6MulticastFilt
 
 uint32_t Ipv6RawSocketImpl::GetTxAvailable () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return 0xffffffff;
 }
 
 uint32_t Ipv6RawSocketImpl::GetRxAvailable () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   uint32_t rx = 0;
 
   for (std::list<Data>::const_iterator it = m_data.begin (); it != m_data.end (); ++it)

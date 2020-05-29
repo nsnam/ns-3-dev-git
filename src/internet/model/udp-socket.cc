@@ -79,12 +79,12 @@ UdpSocket::GetTypeId (void)
 
 UdpSocket::UdpSocket ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 UdpSocket::~UdpSocket ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 } // namespace ns3

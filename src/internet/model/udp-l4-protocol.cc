@@ -67,12 +67,12 @@ UdpL4Protocol::GetTypeId (void)
 UdpL4Protocol::UdpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ()), m_endPoints6 (new Ipv6EndPointDemux ())
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 UdpL4Protocol::~UdpL4Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void 
@@ -133,7 +133,7 @@ UdpL4Protocol::GetProtocolNumber (void) const
 void
 UdpL4Protocol::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (std::vector<Ptr<UdpSocketImpl> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
     {
       *i = 0;
@@ -162,7 +162,7 @@ UdpL4Protocol::DoDispose (void)
 Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ptr<UdpSocketImpl> socket = CreateObject<UdpSocketImpl> ();
   socket->SetNode (m_node);
   socket->SetUdp (this);

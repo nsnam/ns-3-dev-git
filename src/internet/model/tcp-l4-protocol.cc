@@ -97,8 +97,7 @@ TcpL4Protocol::GetTypeId (void)
 TcpL4Protocol::TcpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ()), m_endPoints6 (new Ipv6EndPointDemux ())
 {
-  NS_LOG_FUNCTION_NOARGS ();
-  NS_LOG_LOGIC ("Made a TcpL4Protocol " << this);
+  NS_LOG_FUNCTION (this);
 }
 
 TcpL4Protocol::~TcpL4Protocol ()

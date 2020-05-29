@@ -4277,7 +4277,7 @@ TcpSocketBase::SafeSubtraction (uint32_t a, uint32_t b)
 void
 TcpSocketBase::NotifyPacingPerformed (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Performing Pacing");
   SendPendingData (m_connected);
 }

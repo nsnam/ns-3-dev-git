@@ -169,7 +169,7 @@ uint32_t OptionField::Deserialize (Buffer::Iterator start, uint32_t length)
 
 void OptionField::AddOption (Ipv6OptionHeader const& option)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (option);
 
   uint32_t pad = CalculatePad (option.GetAlignment ());
   NS_LOG_LOGIC ("need " << pad << " bytes padding");

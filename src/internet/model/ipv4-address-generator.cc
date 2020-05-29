@@ -544,7 +544,7 @@ Ipv4AddressGenerator::Init (
   const Ipv4Mask mask,
   const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (net << mask << addr);
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
   ->Init (net, mask, addr);
@@ -553,7 +553,7 @@ Ipv4AddressGenerator::Init (
 Ipv4Address
 Ipv4AddressGenerator::NextNetwork (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (mask);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->NextNetwork (mask);
@@ -562,7 +562,7 @@ Ipv4AddressGenerator::NextNetwork (const Ipv4Mask mask)
 Ipv4Address
 Ipv4AddressGenerator::GetNetwork (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (mask);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->GetNetwork (mask);
@@ -573,7 +573,7 @@ Ipv4AddressGenerator::InitAddress (
   const Ipv4Address addr,
   const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (addr << mask);
 
   SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
   ->InitAddress (addr, mask);
@@ -582,7 +582,7 @@ Ipv4AddressGenerator::InitAddress (
 Ipv4Address
 Ipv4AddressGenerator::GetAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (mask);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->GetAddress (mask);
@@ -591,7 +591,7 @@ Ipv4AddressGenerator::GetAddress (const Ipv4Mask mask)
 Ipv4Address
 Ipv4AddressGenerator::NextAddress (const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (mask);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->NextAddress (mask);
@@ -609,7 +609,7 @@ Ipv4AddressGenerator::Reset (void)
 bool
 Ipv4AddressGenerator::AddAllocated (const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (addr);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->AddAllocated (addr);
@@ -618,7 +618,7 @@ Ipv4AddressGenerator::AddAllocated (const Ipv4Address addr)
 bool
 Ipv4AddressGenerator::IsAddressAllocated (const Ipv4Address addr)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (addr);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->IsAddressAllocated (addr);
@@ -627,7 +627,7 @@ Ipv4AddressGenerator::IsAddressAllocated (const Ipv4Address addr)
 bool
 Ipv4AddressGenerator::IsNetworkAllocated (const Ipv4Address addr, const Ipv4Mask mask)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (addr << mask);
 
   return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()
          ->IsNetworkAllocated (addr, mask);

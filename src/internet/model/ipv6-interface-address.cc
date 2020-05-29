@@ -69,12 +69,12 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (const Ipv6InterfaceAddress& o)
 
 Ipv6InterfaceAddress::~Ipv6InterfaceAddress ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 Ipv6Address Ipv6InterfaceAddress::GetAddress () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_address;
 }
 
@@ -109,7 +109,7 @@ void Ipv6InterfaceAddress::SetAddress (Ipv6Address address)
 
 Ipv6Prefix Ipv6InterfaceAddress::GetPrefix () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_prefix;
 }
 
@@ -121,7 +121,7 @@ void Ipv6InterfaceAddress::SetState (Ipv6InterfaceAddress::State_e state)
 
 Ipv6InterfaceAddress::State_e Ipv6InterfaceAddress::GetState () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_state;
 }
 
@@ -133,13 +133,13 @@ void Ipv6InterfaceAddress::SetScope (Ipv6InterfaceAddress::Scope_e scope)
 
 Ipv6InterfaceAddress::Scope_e Ipv6InterfaceAddress::GetScope () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_scope;
 }
 
 bool Ipv6InterfaceAddress::IsInSameSubnet (Ipv6Address b) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   Ipv6Address aAddr = m_address;
   aAddr = aAddr.CombinePrefix (m_prefix);
@@ -183,7 +183,7 @@ std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr)
 
 uint32_t Ipv6InterfaceAddress::GetNsDadUid () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_nsDadUid;
 }
 
@@ -205,7 +205,7 @@ void Ipv6InterfaceAddress::StartDadTimer (Ptr<Ipv6Interface> interface)
 
 void Ipv6InterfaceAddress::StopDadTimer ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_dadTimer.Cancel ();
   Simulator::Cancel (m_dadId);
 }

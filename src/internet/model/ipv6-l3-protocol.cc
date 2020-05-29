@@ -126,7 +126,7 @@ TypeId Ipv6L3Protocol::GetTypeId ()
 Ipv6L3Protocol::Ipv6L3Protocol ()
   : m_nInterfaces (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_pmtuCache = CreateObject<Ipv6PmtuCache> ();
   
   Ptr<Ipv6RawSocketFactoryImpl> rawFactoryImpl = CreateObject<Ipv6RawSocketFactoryImpl> ();
@@ -135,12 +135,12 @@ Ipv6L3Protocol::Ipv6L3Protocol ()
 
 Ipv6L3Protocol::~Ipv6L3Protocol ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void Ipv6L3Protocol::DoDispose ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   /* clear protocol and interface list */
   for (L4List_t::iterator it = m_protocols.begin (); it != m_protocols.end (); ++it)
@@ -188,7 +188,7 @@ void Ipv6L3Protocol::SetRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtoco
 
 Ptr<Ipv6RoutingProtocol> Ipv6L3Protocol::GetRoutingProtocol () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_routingProtocol;
 }
 
@@ -238,7 +238,7 @@ Ptr<Ipv6Interface> Ipv6L3Protocol::GetInterface (uint32_t index) const
 
 uint32_t Ipv6L3Protocol::GetNInterfaces () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_nInterfaces;
 }
 
@@ -561,7 +561,7 @@ void Ipv6L3Protocol::SetDown (uint32_t i)
 
 void Ipv6L3Protocol::SetupLoopback ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ptr<Ipv6Interface> interface = CreateObject<Ipv6Interface> ();
   Ptr<LoopbackNetDevice> device = 0;
   uint32_t i = 0;
@@ -664,7 +664,7 @@ void Ipv6L3Protocol::SetIpForward (bool forward)
 
 bool Ipv6L3Protocol::GetIpForward () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_ipForward;
 }
 
@@ -688,13 +688,13 @@ void Ipv6L3Protocol::SetSendIcmpv6Redirect (bool sendIcmpv6Redirect)
 
 bool Ipv6L3Protocol::GetSendIcmpv6Redirect () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_sendIcmpv6Redirect;
 }
 
 void Ipv6L3Protocol::NotifyNewAggregate ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_node == 0)
     {
@@ -809,7 +809,7 @@ Ptr<IpL4Protocol> Ipv6L3Protocol::GetProtocol (int protocolNumber, int32_t inter
 
 Ptr<Socket> Ipv6L3Protocol::CreateRawSocket ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ptr<Ipv6RawSocketImpl> sock = CreateObject<Ipv6RawSocketImpl> ();
   sock->SetNode (m_node);
   m_sockets.push_back (sock);
@@ -832,7 +832,7 @@ void Ipv6L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 
 Ptr<Icmpv6L4Protocol> Ipv6L3Protocol::GetIcmpv6 () const
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Ptr<IpL4Protocol> protocol = GetProtocol (Icmpv6L4Protocol::GetStaticProtocolNumber ());
 
   if (protocol)
