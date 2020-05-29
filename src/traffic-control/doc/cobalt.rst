@@ -120,6 +120,7 @@ The suite includes 2 test cases:
 * Test 1: Simple enqueue/dequeue with no drops.
 * Test 2: Change of BLUE's drop probability upon queue full
   (Activation of Blue).
+* Test 3: Test for ECN marking of packets
 
 The test suite can be run using the following commands:
 
