@@ -312,24 +312,7 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
 
   if (flags & (1 << 6)) /* auto flag */
     {
-      // In case of new MacAddress types, remember to change Ipv6L3Protocol::RemoveAutoconfiguredAddress as well
-      if (Mac64Address::IsMatchingType (addr))
-        {
-          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network));
-        }
-      else if (Mac48Address::IsMatchingType (addr))
-        {
-          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network));
-        }
-      else if (Mac16Address::IsMatchingType (addr))
-        {
-          address = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network));
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Unknown method to make autoconfigured address for this kind of device.");
-          return;
-        }
+      address = Ipv6Address::MakeAutoconfiguredAddress (addr, network);
 
       /* see if we have already the prefix */
       for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin (); it != m_prefixes.end (); ++it)
@@ -369,29 +352,21 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
   Address addr = iface->GetDevice ()->GetAddress ();
   uint32_t max = iface->GetNAddresses ();
   uint32_t i = 0;
-  Ipv6Address toFound;
+  
+  Ipv6Address addressToFind = Ipv6Address::MakeAutoconfiguredAddress (addr, network);
 
-  if (Mac64Address::IsMatchingType (addr))
+  for (i = 0; i < max; i++)
     {
-      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), network);
-    }
-  else if (Mac48Address::IsMatchingType (addr))
-    {
-      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), network);
-    }
-  else if (Mac16Address::IsMatchingType (addr))
-    {
-      toFound = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), network);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Unknown method to make autoconfigured address for this kind of device.");
-      return;
+      if (iface->GetAddress (i).GetAddress () == addressToFind)
+        {
+          RemoveAddress (interface, i);
+          break;
+        }
     }
 
   for (i = 0; i < max; i++)
     {
-      if (iface->GetAddress (i).GetAddress () == toFound)
+      if (iface->GetAddress (i).GetAddress () == addressToFind)
         {
           RemoveAddress (interface, i);
           break;
