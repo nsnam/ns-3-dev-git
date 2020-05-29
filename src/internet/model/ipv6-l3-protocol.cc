@@ -350,12 +350,10 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
   NS_LOG_FUNCTION (this << interface << network << mask);
   Ptr<Ipv6Interface> iface = GetInterface (interface);
   Address addr = iface->GetDevice ()->GetAddress ();
-  uint32_t max = iface->GetNAddresses ();
-  uint32_t i = 0;
   
   Ipv6Address addressToFind = Ipv6Address::MakeAutoconfiguredAddress (addr, network);
 
-  for (i = 0; i < max; i++)
+  for (uint32_t i = 0; i < iface->GetNAddresses (); i++)
     {
       if (iface->GetAddress (i).GetAddress () == addressToFind)
         {
@@ -363,16 +361,7 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
           break;
         }
     }
-
-  for (i = 0; i < max; i++)
-    {
-      if (iface->GetAddress (i).GetAddress () == addressToFind)
-        {
-          RemoveAddress (interface, i);
-          break;
-        }
-    }
-
+  
   /* remove from list of autoconfigured address */
   for (Ipv6AutoconfiguredPrefixListI it = m_prefixes.begin (); it != m_prefixes.end (); ++it)
     {
