@@ -114,15 +114,16 @@ private:
   uint16_t GetChannelWidthForNonHtMode (WifiMode mode) const;
 
   /**
-   * Convenience function to get the last observed SNR from a given station for a given channel width.
-   * Since the previously received SNR information might be related to a different channel width than the
-   * requested one, the function does some computations to get the corresponding SNR.
+   * Convenience function to get the last observed SNR from a given station for a given channel width and a given NSS.
+   * Since the previously received SNR information might be related to a different channel width than the requested one,
+   * and/or a different NSS,  the function does some computations to get the corresponding SNR.
    *
    * \param station the station being queried
    * \param channelWidth the channel width (in MHz)
+   * \param nss the number of spatial streams
    * \return the SNR in linear scale
    */
-  double GetLastObservedSnrForChannelWidth (IdealWifiRemoteStation *station, uint16_t channelWidth) const;
+  double GetLastObservedSnr (IdealWifiRemoteStation *station, uint16_t channelWidth, uint8_t nss) const;
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the

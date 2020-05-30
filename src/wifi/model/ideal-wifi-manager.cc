@@ -34,8 +34,9 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
 {
   double m_lastSnrObserved;            //!< SNR of most recently reported packet sent to the remote station
   uint16_t m_lastChannelWidthObserved; //!< Channel width (in MHz) of most recently reported packet sent to the remote station
+  uint16_t m_lastNssObserved;          //!<  Number of spatial streams of most recently reported packet sent to the remote station
   double m_lastSnrCached;              //!< SNR most recently used to select a rate
-  uint8_t m_nss;                       //!< Number of spatial streams
+  uint8_t m_lastNss;                   //!< Number of spatial streams most recently used to the remote station
   WifiMode m_lastMode;                 //!< Mode most recently used to the remote station
   uint16_t m_lastChannelWidth;         //!< Channel width (in MHz) most recently used to the remote station
 };
@@ -231,10 +232,11 @@ IdealWifiManager::Reset (WifiRemoteStation *station) const
   IdealWifiRemoteStation *st = static_cast<IdealWifiRemoteStation*> (station);
   st->m_lastSnrObserved = 0.0;
   st->m_lastChannelWidthObserved = 0;
+  st->m_lastNssObserved = 1;
   st->m_lastSnrCached = CACHE_INITIAL_VALUE;
   st->m_lastMode = GetDefaultMode ();
   st->m_lastChannelWidth = 0;
-  st->m_nss = 1;
+  st->m_lastNss = 1;
 }
 
 void
@@ -263,6 +265,7 @@ IdealWifiManager::DoReportRtsOk (WifiRemoteStation *st,
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   station->m_lastSnrObserved = rtsSnr;
   station->m_lastChannelWidthObserved = GetPhy ()->GetChannelWidth () >= 40 ? 20 : GetPhy ()->GetChannelWidth ();
+  station->m_lastNssObserved = 1;
 }
 
 void
@@ -278,6 +281,7 @@ IdealWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode
     }
   station->m_lastSnrObserved = dataSnr;
   station->m_lastChannelWidthObserved = dataChannelWidth;
+  station->m_lastNssObserved = dataNss;
 }
 
 void
@@ -293,6 +297,7 @@ IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccess
     }
   station->m_lastSnrObserved = dataSnr;
   station->m_lastChannelWidthObserved = dataChannelWidth;
+  station->m_lastNssObserved = dataNss;
 }
 
 void
@@ -329,7 +334,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       // SNR has not changed, so skip the search and use the last mode selected
       maxMode = station->m_lastMode;
-      selectedNss = station->m_nss;
+      selectedNss = station->m_lastNss;
       NS_LOG_DEBUG ("Using cached mode = " << maxMode.GetUniqueName () <<
                     " last snr observed " << station->m_lastSnrObserved <<
                     " cached " << station->m_lastSnrCached <<
@@ -376,7 +381,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                                 " threshold " << threshold  << " last snr observed " <<
                                 station->m_lastSnrObserved << " cached " <<
                                 station->m_lastSnrCached);
-                  double snr = GetLastObservedSnrForChannelWidth (station, channelWidth);
+                  double snr = GetLastObservedSnr (station, channelWidth, nss);
                   if (dataRate > bestRate && threshold < snr)
                     {
                       NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
@@ -420,7 +425,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                                     " threshold " << threshold << " last snr observed " <<
                                     station->m_lastSnrObserved << " cached " <<
                                     station->m_lastSnrCached);
-                      double snr = GetLastObservedSnrForChannelWidth (station, channelWidth);
+                      double snr = GetLastObservedSnr (station, channelWidth, nss);
                       if (dataRate > bestRate && threshold < snr)
                         {
                           NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
@@ -459,7 +464,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                                     " threshold " << threshold  << " last snr observed " <<
                                     station->m_lastSnrObserved << " cached " <<
                                     station->m_lastSnrCached);
-                      double snr = GetLastObservedSnrForChannelWidth (station, channelWidth);
+                      double snr = GetLastObservedSnr (station, channelWidth, nss);
                       if (dataRate > bestRate && threshold < snr)
                         {
                           NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
@@ -492,7 +497,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                             " threshold " << threshold  <<
                             " last snr observed " <<
                             station->m_lastSnrObserved);
-              double snr = GetLastObservedSnrForChannelWidth (station, channelWidth);
+              double snr = GetLastObservedSnr (station, channelWidth, 1);
               if (dataRate > bestRate && threshold < snr)
                 {
                   NS_LOG_DEBUG ("Candidate mode = " << mode.GetUniqueName () <<
@@ -507,9 +512,9 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       NS_LOG_DEBUG ("Updating cached values for station to " <<  maxMode.GetUniqueName () << " snr " << station->m_lastSnrObserved);
       station->m_lastSnrCached = station->m_lastSnrObserved;
       station->m_lastMode = maxMode;
-      station->m_nss = selectedNss;
+      station->m_lastNss = selectedNss;
     }
-  NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << channelWidth);
+  NS_LOG_DEBUG ("Found maxMode: " << maxMode << " channelWidth: " << channelWidth << " nss: " << +selectedNss);
   station->m_lastChannelWidth = channelWidth;
   if (maxMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
@@ -562,15 +567,23 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 }
 
 double
-IdealWifiManager::GetLastObservedSnrForChannelWidth (IdealWifiRemoteStation *station, uint16_t channelWidth) const
+IdealWifiManager::GetLastObservedSnr (IdealWifiRemoteStation *station, uint16_t channelWidth, uint8_t nss) const
 {
   double snr = station->m_lastSnrObserved;
   if (channelWidth != station->m_lastChannelWidthObserved)
     {
       snr /= (static_cast<double> (channelWidth) / station->m_lastChannelWidthObserved);
-      NS_LOG_DEBUG ("Last observed SNR is " << station->m_lastSnrObserved <<" for channel width " << station->m_lastChannelWidthObserved <<
-                    "; computed SNR is " << snr << " for channel width " << channelWidth);
     }
+  if (nss != station->m_lastNssObserved)
+    {
+      snr /= (static_cast<double> (nss) / station->m_lastNssObserved);
+    }
+  NS_LOG_DEBUG ("Last observed SNR is " << station->m_lastSnrObserved <<
+                " for channel width " << station->m_lastChannelWidthObserved <<
+                " and nss " << +station->m_lastNssObserved <<
+                "; computed SNR is " << snr <<
+                " for channel width " << channelWidth <<
+                " and nss " << +nss);
   return snr;
 }
 
