@@ -14,7 +14,7 @@ def build(bld):
         'test/sixlowpan-hc1-test.cc',
         'test/sixlowpan-iphc-test.cc',
         'test/sixlowpan-fragmentation-test.cc',
-        
+        'test/sixlowpan-examples-test-suite.cc',
         ]
 
     headers = bld(features=['ns3header'])

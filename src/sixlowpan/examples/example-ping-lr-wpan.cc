@@ -36,9 +36,15 @@ using namespace ns3;
 int main (int argc, char** argv)
 {
   bool verbose = false;
+  bool disablePcap = false;
+  bool disableAsciiTrace = false;
+  bool enableLSixlowLogLevelInfo = false;
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("verbose", "turn on log components", verbose);
+  cmd.AddValue ("disable-pcap", "disable PCAP generation", disablePcap);
+  cmd.AddValue ("disable-asciitrace", "disable ascii trace generation", disableAsciiTrace);
+  cmd.AddValue ("enable-sixlowpan-loginfo", "enable sixlowpan LOG_LEVEL_INFO (used for tests)", enableLSixlowLogLevelInfo);
   cmd.Parse (argc, argv);
   
   if (verbose)
@@ -48,6 +54,11 @@ int main (int argc, char** argv)
       LogComponentEnable ("LrWpanPhy", LOG_LEVEL_ALL);
       LogComponentEnable ("LrWpanNetDevice", LOG_LEVEL_ALL);
       LogComponentEnable ("SixLowPanNetDevice", LOG_LEVEL_ALL);
+    }
+  if (enableLSixlowLogLevelInfo)
+    {
+      Packet::EnablePrinting ();
+      LogComponentEnable ("SixLowPanNetDevice", LOG_LEVEL_INFO);
     }
 
   NodeContainer nodes;
@@ -72,7 +83,7 @@ int main (int argc, char** argv)
   // Fake PAN association and short address assignment.
   // This is needed because the lr-wpan module does not provide (yet)
   // a full PAN association procedure.
-  lrWpanHelper.AssociateToPan (lrwpanDevices, 0);
+  lrWpanHelper.AssociateToPan (lrwpanDevices, 1);
 
   InternetStackHelper internetv6;
   internetv6.Install (nodes);
@@ -106,10 +117,16 @@ int main (int argc, char** argv)
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  AsciiTraceHelper ascii;
-  lrWpanHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan.tr"));
-  lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan"), true);
-  
+  if (!disableAsciiTrace)
+    {
+      AsciiTraceHelper ascii;
+      lrWpanHelper.EnableAsciiAll (ascii.CreateFileStream ("Ping-6LoW-lr-wpan.tr"));
+    }
+  if (!disablePcap)
+    {
+      lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan"), true);
+    }
+
   Simulator::Stop (Seconds (10));
   
   Simulator::Run ();
