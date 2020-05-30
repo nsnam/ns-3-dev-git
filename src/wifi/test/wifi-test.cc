@@ -2486,13 +2486,13 @@ Issue169TestCase::DoRun (void)
  * Make sure that Ideal rate manager properly selects MCS based on the configured channel width.
  *
  * The scenario considers an access point and a fixed station.
- * The station first sends a 80 MHz PPDU to the access point,
+ * The access point first sends a 80 MHz PPDU to the station,
  * for which Ideal rate manager should select VH-MCS 0 based
  * on the distance (no interference generatd in this test). Then,
- * the station sends a 20 MHz PPDU to the access point,
+ * the access point sends a 20 MHz PPDU to the station,
  * which corresponds to a SNR 6 dB higher than previously, hence
- * VHT-MCS 2 should be selected. Finally, the station sends a 40 MHz
- * PPDU to the access point, which means corresponds to a SNR 3 dB
+ * VHT-MCS 2 should be selected. Finally, the access point sends a
+ * 40 MHz PPDU to the station, which means corresponds to a SNR 3 dB
  * lower than previously, hence VHT-MCS 1 should be selected.
  */
 
