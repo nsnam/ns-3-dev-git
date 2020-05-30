@@ -474,7 +474,7 @@ LrWpanNetDevice::McpsDataIndication (McpsDataIndicationParams params, Ptr<Packet
 {
   NS_LOG_FUNCTION (this);
   // TODO: Use the PromiscReceiveCallback if the MAC is in promiscuous mode.
-  m_receiveCallback (this, pkt, 0, params.m_srcAddr);
+    m_receiveCallback (this, pkt, 0, BuildPseudoMacAddress (params.m_srcPanId, params.m_srcAddr));
 }
 
 bool
