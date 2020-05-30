@@ -32,12 +32,12 @@ namespace ns3 {
  */
 struct IdealWifiRemoteStation : public WifiRemoteStation
 {
-  double m_lastSnrObserved;          //!< SNR of most recently reported packet sent to the remote station
-  double m_lastChannelWidthObserved; //!< Channel width (in MHz) of most recently reported packet sent to the remote station
-  double m_lastSnrCached;            //!< SNR most recently used to select a rate
-  uint8_t m_nss;                     //!< Number of spatial streams
-  WifiMode m_lastMode;               //!< Mode most recently used to the remote station
-  uint16_t m_lastChannelWidth;       //!< channel with (in MHz) most recently used to the remote station
+  double m_lastSnrObserved;            //!< SNR of most recently reported packet sent to the remote station
+  uint16_t m_lastChannelWidthObserved; //!< Channel width (in MHz) of most recently reported packet sent to the remote station
+  double m_lastSnrCached;              //!< SNR most recently used to select a rate
+  uint8_t m_nss;                       //!< Number of spatial streams
+  WifiMode m_lastMode;                 //!< Mode most recently used to the remote station
+  uint16_t m_lastChannelWidth;         //!< Channel width (in MHz) most recently used to the remote station
 };
 
 /// To avoid using the cache before a valid value has been cached
@@ -325,13 +325,13 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   txVector.SetChannelWidth (channelWidth);
   if ((station->m_lastSnrCached != CACHE_INITIAL_VALUE) && (station->m_lastSnrObserved == station->m_lastSnrCached) && (channelWidth == station->m_lastChannelWidth))
     {
-      // SNR has not changed, so skip the search and use the last
-      // mode selected
+      // SNR has not changed, so skip the search and use the last mode selected
       maxMode = station->m_lastMode;
       selectedNss = station->m_nss;
       NS_LOG_DEBUG ("Using cached mode = " << maxMode.GetUniqueName () <<
                     " last snr observed " << station->m_lastSnrObserved <<
                     " cached " << station->m_lastSnrCached <<
+                    " channel width " << station->m_lastChannelWidth <<
                     " nss " << +selectedNss);
     }
   else
