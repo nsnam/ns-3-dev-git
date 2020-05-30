@@ -93,35 +93,9 @@ void Ipv6Interface::DoSetup ()
   if (!DynamicCast<LoopbackNetDevice> (m_device)) /* no autoconf for ip6-localhost */
     {
       Address addr = GetDevice ()->GetAddress ();
-
-      if (Mac64Address::IsMatchingType (addr))
-        {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address::ConvertFrom (addr)), Ipv6Prefix (64));
-          AddAddress (ifaddr);
-          m_linkLocalAddress = ifaddr;
-        }
-      else if (Mac48Address::IsMatchingType (addr))
-        {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
-          AddAddress (ifaddr);
-          m_linkLocalAddress = ifaddr;
-        }
-      else if (Mac16Address::IsMatchingType (addr))
-        {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr)), Ipv6Prefix (64));
-          AddAddress (ifaddr);
-          m_linkLocalAddress = ifaddr;
-        }
-      else if (Mac8Address::IsMatchingType (addr))
-        {
-          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr)), Ipv6Prefix (64));
-          AddAddress (ifaddr);
-          m_linkLocalAddress = ifaddr;
-        }
-      else
-        {
-          NS_FATAL_ERROR ("IPv6 autoconf for this kind of address not implemented.");
-        }
+      Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (addr), Ipv6Prefix (64));
+      AddAddress (ifaddr);
+      m_linkLocalAddress = ifaddr;
     }
   else
     {
