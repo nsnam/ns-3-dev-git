@@ -61,9 +61,9 @@ Packet received: ns3::SixLowPanIphc (Compression kind: 31547) ns3::Icmpv6RS (( t
 Packet length: 20
 Dispatches: 123 - 96
 removed 4 bytes - pkt is ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10363)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:02))
-Rebuilt packet: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::ff:fe00:2 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10363)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:02)) Size 56
+Rebuilt packet: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::1:ff:fe00:2 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10363)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:02)) Size 56
 Packet decompressed length: 56
-Packet decompressed received: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::ff:fe00:2 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10363)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:02))
+Packet decompressed received: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::1:ff:fe00:2 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10363)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:02))
 IPHC Compression - IPHC header size = 25
 IPHC Compression - packet size = 32
 Packet after IPHC compression: ns3::SixLowPanIphc (Compression kind: 31497) ns3::Icmpv6NS (( type = 135 (NS) code = 0 target = 2001:2::1:ff:fe00:2 checksum = 36921)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01))
@@ -73,9 +73,9 @@ Packet received: ns3::SixLowPanIphc (Compression kind: 31547) ns3::Icmpv6RS (( t
 Packet length: 20
 Dispatches: 123 - 96
 removed 4 bytes - pkt is ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10875)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01))
-Rebuilt packet: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::ff:fe00:1 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10875)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01)) Size 56
+Rebuilt packet: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::1:ff:fe00:1 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10875)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01)) Size 56
 Packet decompressed length: 56
-Packet decompressed received: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::ff:fe00:1 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10875)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01))
+Packet decompressed received: ns3::Ipv6Header ((Version 6 Traffic class 0x0 DSCP Default Flow Label 0x0 Payload Length 16 Next Header 58 Hop Limit 255 )fe80::1:ff:fe00:1 > ff02::2) ns3::Icmpv6RS (( type = 133 (RS) code = 0 checksum = 10875)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01))
 UID is 11
 Packet received: ns3::SixLowPanIphc (Compression kind: 31497) ns3::Icmpv6NS (( type = 135 (NS) code = 0 target = 2001:2::1:ff:fe00:2 checksum = 36921)) ns3::Icmpv6OptionLinkLayerAddress (( type = 1 length = 1 L2 Address = 00-06-02:01:00:00:00:01))
 Packet length: 57
