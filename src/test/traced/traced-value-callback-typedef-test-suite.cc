@@ -39,9 +39,11 @@ template <> inline std::string TypeName <bool>     (void) { return "Bool"    ; }
 template <> inline std::string TypeName <int8_t>   (void) { return "Int8_t"  ; }
 template <> inline std::string TypeName <int16_t>  (void) { return "Int16_t" ; }
 template <> inline std::string TypeName <int32_t>  (void) { return "Int32_t" ; }
+template <> inline std::string TypeName <int64_t>  (void) { return "Int64_t" ; }
 template <> inline std::string TypeName <uint8_t>  (void) { return "Uint8_t" ; }
 template <> inline std::string TypeName <uint16_t> (void) { return "Uint16_t"; }
 template <> inline std::string TypeName <uint32_t> (void) { return "Uint32_t"; }
+template <> inline std::string TypeName <uint64_t> (void) { return "Uint64_t"; }
 template <> inline std::string TypeName <double>   (void) { return "Double"  ; }
 template <> inline std::string TypeName <Time>     (void) { return "Time"    ; }
 template <> inline std::string TypeName <SequenceNumber32> (void) { return "SequenceNumber32" ; }
@@ -217,9 +219,11 @@ TracedValueCallbackTestCase::DoRun (void)
   CheckType< int8_t,   TracedValueCallback::Int8   > ();
   CheckType< int16_t,  TracedValueCallback::Int16  > ();
   CheckType< int32_t,  TracedValueCallback::Int32  > ();
+  CheckType< int64_t,  TracedValueCallback::Int64  > ();
   CheckType< uint8_t,  TracedValueCallback::Uint8  > ();
   CheckType< uint16_t, TracedValueCallback::Uint16 > ();
   CheckType< uint32_t, TracedValueCallback::Uint32 > ();
+  CheckType< uint64_t, TracedValueCallback::Uint64 > ();
   CheckType< double,   TracedValueCallback::Double > ();
   CheckType< Time,     TracedValueCallback::Time   > ();
   CheckType< SequenceNumber32, TracedValueCallback::SequenceNumber32 > ();

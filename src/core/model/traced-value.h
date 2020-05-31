@@ -86,6 +86,8 @@ typedef void (* Int16) (int16_t  oldValue, int16_t  newValue);
 typedef void (* Uint16)(uint16_t oldValue, uint16_t newValue);
 typedef void (* Int32) (int32_t  oldValue, int32_t  newValue);
 typedef void (* Uint32)(uint32_t oldValue, uint32_t newValue);
+typedef void (* Int64) (int64_t  oldValue, int64_t  newValue);
+typedef void (* Uint64)(uint64_t oldValue, uint64_t newValue);
 typedef void (* Double)(double   oldValue, double   newValue);
 typedef void (* Void)  (void);
 /**@}*/
