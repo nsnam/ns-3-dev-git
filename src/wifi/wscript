@@ -127,6 +127,7 @@ def build(bld):
         'test/tx-duration-test.cc',
         'test/power-rate-adaptation-test.cc',
         'test/wifi-test.cc',
+        'test/wifi-txop.cc',
         'test/spectrum-wifi-phy-test.cc',
         'test/wifi-aggregation-test.cc',
         'test/wifi-error-rate-models-test.cc',
