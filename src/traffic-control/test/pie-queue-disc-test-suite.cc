@@ -62,6 +62,15 @@ public:
   double m_maxDropProb = 0.0;       //!< Maximum value of drop probability
   bool m_ecnCapable = false;        //!< Enable/Disable ECN capability
 
+  // ** Variables for testing Derandomization
+  bool m_checkAccuProb = false;     //!< Enable/Disable accumulated drop probability checks
+  bool m_constAccuProb = false;     //!< Enable/Disable fixed accumulated drop probability
+  bool m_checkMaxAccuProb = false;  //!< Enable/Disable Maximum accumulated drop probability checks
+  double m_accuProbError = 0.0;     //!< Error in accumulated drop probability
+  double m_prevAccuProb = 0.0;      //!< Previous accumulated drop probability
+  double m_setAccuProb = 0.0;       //!< Value to be set for accumulated drop probability
+  uint32_t m_expectedDrops = 0;     //!< Number of expected unforced drops
+
 private:
   PieQueueDiscTestItem ();
   /**
@@ -154,6 +163,18 @@ private:
    * \param testAttributes attributes for testing
    */
   void CheckDropProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes);
+  /**
+   * \brief Check Accumulated Drop Probability
+   * \param queue the queue disc
+   * \param testAttributes attributes for testing
+   */
+  void CheckAccuProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes);
+  /**
+   * \brief Check Maximum Accumulated Drop Probability
+   * \param queue the queue disc
+   * \param testAttributes attributes for testing
+   */
+  void CheckMaxAccuProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes);
 };
 
 PieQueueDiscTestCase::PieQueueDiscTestCase ()
@@ -475,25 +496,99 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // Confirm that m_maxDropProb goes above 0.3 in this test
   NS_TEST_EXPECT_MSG_GT (testAttributes->m_maxDropProb, 0.3, "Maximum Drop probability should be greater than 0.3");
   NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 12: test with derandomization enabled
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseDerandomization", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseDerandomization");
+  queue->Initialize ();
+  testAttributes->m_checkAccuProb = true;
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test12 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_NE (test12, 0, "There should be some unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+  NS_TEST_EXPECT_MSG_EQ (testAttributes->m_accuProbError, 0.0, "There should not be any error in setting accuProb");
+
+
+  // test 13: same as test 11 but with accumulated drop probability set below the low threshold
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseDerandomization", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseDerandomization");
+  queue->Initialize ();
+  testAttributes->m_constAccuProb = true;
+  // Final value of accumulated drop probability to drop packet will be maximum 0.84 while threshold to drop packet is 0.85
+  testAttributes->m_setAccuProb = -0.16;
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test13 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_EQ (test13, 0, "There should be zero unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 14: same as test 12 but with accumulated drop probability set above the high threshold
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxBurstAllowance", TimeValue (Seconds (0.0))), true,
+                         "Verify that we can actually set the attribute MaxBurstAllowance");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseDerandomization", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseDerandomization");
+  queue->Initialize ();
+  testAttributes->m_constAccuProb = true;
+  testAttributes->m_checkMaxAccuProb = true;
+  // Final value of accumulated drop probability to drop packet will be minimum 8.6 while threshold to drop packet is 8.5
+  testAttributes->m_setAccuProb = 8.6;
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test14 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_EQ (test14, testAttributes->m_expectedDrops,
+                        "The number of unforced drops should be equal to number of expected unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 }
 
 void
 PieQueueDiscTestCase::Enqueue (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t nPkt, Ptr<PieQueueDiscTestItem> testAttributes)
 {
   Address dest;
-  if (testAttributes->m_checkProb)
+   for (uint32_t i = 0; i < nPkt; i++)
     {
-      for (uint32_t i = 0; i < nPkt; i++)
+      if (testAttributes->m_constAccuProb)
         {
-          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, testAttributes->m_ecnCapable));
+          queue->m_accuProb = testAttributes->m_setAccuProb;
+          if (testAttributes->m_checkMaxAccuProb)
+            {
+              CheckMaxAccuProb (queue, testAttributes);
+            }
+        }
+      queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, testAttributes->m_ecnCapable));
+      if (testAttributes->m_checkProb)
+        {
           CheckDropProb (queue, testAttributes);
         }
-    }
-  else
-    {
-      for (uint32_t i = 0; i < nPkt; i++)
+      if (testAttributes->m_checkAccuProb)
         {
-          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, testAttributes->m_ecnCapable));
+          CheckAccuProb (queue, testAttributes);
         }
     }
 }
@@ -515,6 +610,30 @@ PieQueueDiscTestCase::CheckDropProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTe
         }
     }
   testAttributes->m_prevDropProb = dropProb;
+}
+
+void
+PieQueueDiscTestCase::CheckAccuProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes)
+{
+  double dropProb = queue->m_dropProb;
+  double accuProb = queue->m_accuProb;
+  if (accuProb != 0)
+    {
+      double expectedAccuProb = testAttributes->m_prevAccuProb + dropProb;
+      testAttributes->m_accuProbError = accuProb - expectedAccuProb;
+    }
+  testAttributes->m_prevAccuProb = accuProb;
+}
+
+void
+PieQueueDiscTestCase::CheckMaxAccuProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes)
+{
+  queue->m_dropProb = 0.001;
+  QueueSize queueSize = queue->GetCurrentSize ();
+  if ((queueSize.GetUnit () == QueueSizeUnit::PACKETS && queueSize.GetValue () > 2) || (queueSize.GetUnit () == QueueSizeUnit::BYTES && queueSize.GetValue () > 2000))
+    {
+      testAttributes->m_expectedDrops = testAttributes->m_expectedDrops + 1;
+    }
 }
 
 void

@@ -84,7 +84,6 @@ public:
    * \returns The current queue delay.
    */
   Time GetQueueDelay (void);
-
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
