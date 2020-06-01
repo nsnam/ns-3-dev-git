@@ -46,8 +46,9 @@ public:
    *
    * \param p the packet
    * \param addr the address
+   * \param ecnCapable ECN capable flag
    */
-  PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
+  PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~PieQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark (void);
@@ -56,6 +57,10 @@ public:
   double m_maxDropProbDiff = 0.0;   //!< Maximum difference between two consecutive drop probability values
   double m_prevDropProb = 0.0;      //!< Previous drop probability
   bool m_checkProb = false;         //!< Enable/Disable drop probability checks
+
+  // ** Variable for testing ECN
+  double m_maxDropProb = 0.0;       //!< Maximum value of drop probability
+  bool m_ecnCapable = false;        //!< Enable/Disable ECN capability
 
 private:
   PieQueueDiscTestItem ();
@@ -70,10 +75,11 @@ private:
    * Disable default implementation to avoid misuse
    */
   PieQueueDiscTestItem &operator = (const PieQueueDiscTestItem &);
+  bool m_ecnCapablePacket; //!< ECN capable packet?
 };
 
-PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
-  : QueueDiscItem (p, addr, 0)
+PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable)
+  : QueueDiscItem (p, addr, 0), m_ecnCapablePacket (ecnCapable)
 {
 }
 
@@ -89,6 +95,10 @@ PieQueueDiscTestItem::AddHeader (void)
 bool
 PieQueueDiscTestItem::Mark (void)
 {
+  if (m_ecnCapablePacket)
+    {
+      return true;
+    }
   return false;
 }
 
@@ -166,7 +176,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 1: simple enqueue/dequeue with defaults, no drops
   Address dest;
   // PieQueueDiscItem pointer for attributes
-  Ptr<PieQueueDiscTestItem> testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  Ptr<PieQueueDiscTestItem> testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
 
   if (mode == QueueSizeUnit::BYTES)
     {
@@ -191,16 +201,16 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
 
   queue->Initialize ();
   NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p1, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p1, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p2, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p2, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p3, dest));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p4, dest));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p5, dest));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p6, dest));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p7, dest));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p8, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p3, dest, false));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p4, dest, false));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p5, dest, false));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p6, dest, false));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p7, dest, false));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p8, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 8 * modeSize, "There should be eight packets in there");
 
   Ptr<QueueDiscItem> item;
@@ -233,7 +243,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 2: more data with defaults, unforced drops but no forced drops
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   pktSize = 1000;  // pktSize != 0 because DequeueThreshold always works in bytes
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
@@ -259,7 +269,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 3: same as test 2, but with higher QueueDelayReference
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
@@ -284,7 +294,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 4: same as test 2, but with reduced dequeue rate
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.03))), true,
@@ -309,7 +319,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 5: same dequeue rate as test 4, but with higher Tupdate
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Tupdate", TimeValue (Seconds (0.09))), true,
@@ -333,6 +343,8 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
 
   // test 6: same as test 2, but with UseDequeueRateEstimator enabled
   queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseDequeueRateEstimator", BooleanValue (true)), true,
@@ -351,7 +363,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 7: test with CapDropAdjustment disabled
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseCapDropAdjustment", BooleanValue (false)), true,
@@ -373,7 +385,7 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   // test 8: test with CapDropAdjustment enabled
   queue = CreateObject<PieQueueDisc> ();
   // PieQueueDiscItem pointer for attributes
-  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest);
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
                          true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseCapDropAdjustment", BooleanValue (true)), true,
@@ -390,6 +402,79 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
   NS_TEST_EXPECT_MSG_LT (testAttributes->m_maxDropProbDiff, 0.0200000000000001,
                               "Maximum increase in drop probability should be less than or equal to 0.02");
+
+  
+  // test 9: PIE queue disc is ECN enabled, but packets are not ECN capable
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MarkEcnThreshold", DoubleValue (0.3)), true,
+                        "Verify that we can actually set the attribute MarkEcnThreshold");
+  queue->Initialize ();
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test9 = st.GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK);
+  NS_TEST_EXPECT_MSG_EQ (test9, 0, "There should be zero unforced marks");
+  NS_TEST_EXPECT_MSG_NE (st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "There should be some unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 10: Packets are ECN capable, but PIE queue disc is not ECN enabled
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (false)), true,
+                         "Verify that we can actually set the attribute UseEcn");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MarkEcnThreshold", DoubleValue (0.3)), true,
+                        "Verify that we can actually set the attribute MarkEcnThreshold");
+  queue->Initialize ();
+  testAttributes->m_ecnCapable = true;
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test10 = st.GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK);
+  NS_TEST_EXPECT_MSG_EQ (test10, 0, "There should be zero unforced marks");
+  NS_TEST_EXPECT_MSG_NE (st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "There should be some unforced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 11: Packets and PIE queue disc both are ECN capable
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("UseEcn", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute UseEcn");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MarkEcnThreshold", DoubleValue (0.3)), true,
+                        "Verify that we can actually set the attribute MarkEcnThreshold");
+  queue->Initialize ();
+  testAttributes->m_ecnCapable = true;
+  testAttributes->m_checkProb = true;
+  EnqueueWithDelay (queue, pktSize, 400, testAttributes);
+  DequeueWithDelay (queue, 0.014, 400);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test11 = st.GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK);
+  NS_TEST_EXPECT_MSG_NE (test11, 0, "There should be some unforced marks");
+  // There are unforced drops because the value of m_maxDropProb goes beyond 0.3 in this test.
+  // PIE drops the packets even when they are ECN capable if drop probability is more than 30%.
+  NS_TEST_EXPECT_MSG_NE (st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "There should be some unforced drops");
+  // Confirm that m_maxDropProb goes above 0.3 in this test
+  NS_TEST_EXPECT_MSG_GT (testAttributes->m_maxDropProb, 0.3, "Maximum Drop probability should be greater than 0.3");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 }
 
 void
@@ -400,7 +485,7 @@ PieQueueDiscTestCase::Enqueue (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t 
     {
       for (uint32_t i = 0; i < nPkt; i++)
         {
-          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest));
+          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, testAttributes->m_ecnCapable));
           CheckDropProb (queue, testAttributes);
         }
     }
@@ -408,7 +493,7 @@ PieQueueDiscTestCase::Enqueue (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t 
     {
       for (uint32_t i = 0; i < nPkt; i++)
         {
-          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest));
+          queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, testAttributes->m_ecnCapable));
         }
     }
 }
@@ -417,6 +502,10 @@ void
 PieQueueDiscTestCase::CheckDropProb (Ptr<PieQueueDisc> queue, Ptr<PieQueueDiscTestItem> testAttributes)
 {
   double dropProb = queue->m_dropProb;
+  if (testAttributes->m_maxDropProb < dropProb)
+    {
+      testAttributes->m_maxDropProb = dropProb;
+    }
   if (testAttributes->m_prevDropProb > 0.1)
     {
       double currentDiff = dropProb - testAttributes->m_prevDropProb;
