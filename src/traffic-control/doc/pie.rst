@@ -19,7 +19,10 @@ The source code for the PIE model is located in the directory ``src/traffic-cont
 and consists of 2 files `pie-queue-disc.h` and `pie-queue-disc.cc` defining a PieQueueDisc
 class. The code was ported to |ns3| by Mohit P. Tahiliani, Shravya K. S. and Smriti Murali
 based on ns-2 code implemented by Preethi Natarajan, Rong Pan, Chiara Piglione, Greg White
-and Takashi Hayakawa.  
+and Takashi Hayakawa. The implementation was aligned with RFC 8033 by Vivek Jain and Mohit
+P. Tahiliani after ns-3.32 release, and additional unit test cases were added for the same
+by Bhaskar Kataria during his GSoC 2020 project.
+
 
 * class :cpp:class:`PieQueueDisc`: This class implements the main PIE algorithm:
 
@@ -29,7 +32,7 @@ and Takashi Hayakawa.
 
   * ``PieQueueDisc::CalculateP ()``: This routine is called at a regular interval of `m_tUpdate` and updates the drop probability, which is required by ``PieQueueDisc::DropEarly()``
 
-  * ``PieQueueDisc::DoDequeue ()``: This routine calulates `m_qDelay` using timestamp by default or optionally with `UseDqRateEstimator` enabled calculates the average departure rate which is required for updating the drop probability in ``PieQueueDisc::CalculateP ()``
+  * ``PieQueueDisc::DoDequeue ()``: This routine calulates `m_qDelay` using timestamp by default or optionally with `UseDqRateEstimator` enabled calculates the average departure rate which is required for updating the drop probability in ``PieQueueDisc::CalculateP ()``. From ns-3.32 onwards, the default approach to calculate queue delay has been changed to use timestamps.
 
 References
 ==========
@@ -57,6 +60,11 @@ The key attributes that the PieQueue class holds include the following:
 * ``A:`` Value of alpha. The default value is 0.125.
 * ``B:`` Value of beta. The default value is 1.25.
 * ``UseDequeueRateEstimator:`` Enable/Disable usage of Dequeue Rate Estimator (Default: false).
+* ``UseEcn:`` True to use ECN. Packets are marked instead of being dropped (Default: false).
+* ``MarkEcnThreshold:`` ECN marking threshold (Default: 10% as suggested in RFC 8033).
+* ``UseDerandomization:`` Enable/Disable Derandomization feature mentioned in RFC 8033 (Default: false).
+* ``UseCapDropAdjustment:`` Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033 (Default: true).
+
 Examples
 ========
 
