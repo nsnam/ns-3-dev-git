@@ -343,6 +343,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
+  uint32_t pktSize = p->GetSize (); // device->Send() may modify the packet
   if (ad.IsSingleDevice ())
     {
       Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
@@ -366,7 +367,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
     }
   if (!error)
     {
-      NotifyDataSent (p->GetSize ());
+      NotifyDataSent (pktSize);
       NotifySend (GetTxAvailable ());
     }
 
@@ -378,7 +379,7 @@ PacketSocket::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
     }
   else
     {
-      return p->GetSize ();
+      return pktSize;
     }
 }
 
