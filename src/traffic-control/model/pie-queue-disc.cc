@@ -112,6 +112,11 @@ TypeId PieQueueDisc::GetTypeId (void)
                    DoubleValue (0.1),
                    MakeDoubleAccessor (&PieQueueDisc::m_markEcnTh),
                    MakeDoubleChecker<double> (0,1))
+    .AddAttribute ("UseDerandomization",
+                   "Enable/Disable Derandomization feature mentioned in RFC 8033",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&PieQueueDisc::m_useDerandomization),
+                   MakeBooleanChecker ())
   ;
 
   return tid;
@@ -164,6 +169,7 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
     {
       // Drops due to queue limit: reactive
       DropBeforeEnqueue (item, FORCED_DROP);
+      m_accuProb = 0;
       return false;
     }
   else if (DropEarly (item, nQueued.GetValue ()))
@@ -172,6 +178,7 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         {
           // Early probability drop: proactive
           DropBeforeEnqueue (item, UNFORCED_DROP);
+          m_accuProb = 0;
           return false;
         }
     }
@@ -199,6 +206,7 @@ PieQueueDisc::InitializeParams (void)
   m_dqStart = 0;
   m_burstState = NO_BURST;
   m_qDelayOld = Time (Seconds (0));
+  m_accuProb = 0.0;
 }
 
 bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
@@ -224,8 +232,6 @@ bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
     {
       p = p * packetSize / m_meanPktSize;
     }
-  bool earlyDrop = true;
-  double u =  m_uv->GetValue ();
 
   // Safeguard PIE to be work conserving (Section 4.1 of RFC 8033)
   if ((m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb < 0.2))
@@ -241,11 +247,25 @@ bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
       return false;
     }
 
-  if (u > p)
+  if (m_useDerandomization)
     {
-      earlyDrop = false;
+      if (m_dropProb == 0)
+        {
+          m_accuProb = 0;
+        }
+      m_accuProb += m_dropProb;
+      if (m_accuProb < 0.85)
+        {
+          return false;
+        }
+      else if (m_accuProb >= 8.5)
+        {
+          return true;
+        }
     }
-  if (!earlyDrop)
+    
+  double u =  m_uv->GetValue ();
+  if (u > p)
     {
       return false;
     }
