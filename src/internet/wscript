@@ -303,6 +303,12 @@ def build(bld):
         'test/tcp-dctcp-test.cc',
         'test/tcp-syn-connection-failed-test.cc',
         ]
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        internet_test.source.extend([
+        #   'test/internet-examples-test-suite.cc',
+            ])
+    
     privateheaders = bld(features='ns3privateheader')
     privateheaders.module = 'internet'
     privateheaders.source = [

@@ -36,6 +36,12 @@ def build(bld):
         'test/box-line-intersection-test.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        mobility_test.source.extend([
+        #   'test/mobility-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'mobility'
     headers.source = [

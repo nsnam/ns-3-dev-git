@@ -164,7 +164,13 @@ and command line arguments for the example.  In the preceding code the
 same example is run twice with different arguments.
 
 You then need to add that newly created test suite file to the list of
-test sources in ``mymodule/wscript``.
+test sources in ``mymodule/wscript``.  Building of examples
+is an option so you need to guard the inclusion of the test suite:
+
+.. sourcecode:: python
+
+   if (bld.env['ENABLE_EXAMPLES']):
+      module.source.append('model/mymodule-examples-test-suite.cc')
 
 Since you modified a wscript file you need to reconfigure and rebuild
 everything.

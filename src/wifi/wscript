@@ -125,6 +125,12 @@ def build(bld):
         'test/inter-bss-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        obj_test.source.extend([
+        #   'test/wifi-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'wifi'
     headers.source = [

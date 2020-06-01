@@ -30,6 +30,12 @@ def build(bld):
         'test/dhcp-test.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        applications_test.source.extend([
+        #   'test/internet-apps-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'internet-apps'
     headers.source = [

@@ -46,3 +46,10 @@ def build(bld):
         'traced/traced-value-callback-typedef-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        test_test.source.extend([
+        #   'test/test-examples-test-suite.cc',
+            ])
+    
+

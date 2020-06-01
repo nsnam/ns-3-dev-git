@@ -92,6 +92,12 @@ def build(bld):
     module_test.source = [
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/brite-examples-test-suite.cc',
+            ])
+    
     if bld.env['BRITE'] and bld.env['DL']:
         module.use.extend(['BRITE', 'DL'])
         module_test.use.extend(['BRITE', 'DL'])

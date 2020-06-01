@@ -33,6 +33,12 @@ def build(bld):
         'test/ocb-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/wave-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'wave'
     headers.source = [

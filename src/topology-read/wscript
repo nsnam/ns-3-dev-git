@@ -15,6 +15,12 @@ def build(bld):
         'test/rocketfuel-topology-reader-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/topology-examples-test-suite.cc',
+            ])
+        
     headers = bld(features='ns3header')
     headers.module = 'topology-read'
     headers.source = [

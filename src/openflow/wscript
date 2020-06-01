@@ -160,6 +160,12 @@ def build(bld):
     obj_test.source = [
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        obj_test.source.extend([
+        #   'test/openflow-examples-test-suite.cc',
+            ])
+    
     if bld.env['OPENFLOW'] and bld.env['DL'] and bld.env['XML2']:
         obj.use.extend('OPENFLOW DL XML2'.split())
         obj_test.use.extend('OPENFLOW DL XML2'.split())

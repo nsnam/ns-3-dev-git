@@ -197,6 +197,12 @@ def build(bld):
         'test/lte-test-radio-link-failure.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/lte-examples-test-suite.cc',
+            ])
+        
     headers = bld(features='ns3header')
     headers.module = 'lte'
     headers.source = [

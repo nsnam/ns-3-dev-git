@@ -20,6 +20,12 @@ def build(bld):
         'test/point-to-point-test.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/point-to-point-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'point-to-point'
     headers.source = [

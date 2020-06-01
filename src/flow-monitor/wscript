@@ -19,6 +19,12 @@ def build(bld):
         'test/histogram-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/flow-monitor-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'flow-monitor'
     headers.source = ["model/%s" % s for s in [

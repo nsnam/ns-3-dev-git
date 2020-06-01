@@ -28,6 +28,12 @@ def build(bld):
         'test/three-gpp-propagation-loss-model-test-suite.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/propagation-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'propagation'
     headers.source = [

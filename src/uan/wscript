@@ -33,6 +33,13 @@ def build(bld):
         'test/uan-test.cc',
         'test/uan-energy-model-test.cc',
         ]
+    
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/uan-examples-test-suite.cc',
+            ])
+    
     headers = bld(features='ns3header')
     headers.module = 'uan'
     headers.source = [

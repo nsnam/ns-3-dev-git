@@ -14,9 +14,15 @@ def build(bld):
         'test/sixlowpan-hc1-test.cc',
         'test/sixlowpan-iphc-test.cc',
         'test/sixlowpan-fragmentation-test.cc',
-        'test/sixlowpan-examples-test-suite.cc',
         ]
 
+    # This suite runs an example, only include if examples are built
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+            'test/sixlowpan-examples-test-suite.cc',
+            ])
+    
     headers = bld(features=['ns3header'])
     headers.module = 'sixlowpan'
     headers.source = [

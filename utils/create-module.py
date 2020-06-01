@@ -26,6 +26,11 @@ def build(bld):
     module_test.source = [
         'test/{MODULE}-test-suite.cc',
         ]
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #    'test/{MODULE}-examples-test-suite.cc',
+             ])
 
     headers = bld(features='ns3header')
     headers.module = {MODULE!r}

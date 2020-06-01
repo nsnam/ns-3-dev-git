@@ -113,6 +113,12 @@ def build(bld):
         'test/ipv4-click-routing-test.cc',
         ]
 
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #   'test/click-examples-test-suite.cc',
+            ])
+    
     if bld.env['NSCLICK'] and bld.env['DL']:
         module.use.extend(['NSCLICK', 'DL'])
         module_test.use.extend(['NSCLICK', 'DL'])
