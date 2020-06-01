@@ -63,7 +63,7 @@ TypeId PieQueueDisc::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Tupdate",
                    "Time period to calculate drop probability",
-                   TimeValue (Seconds (0.03)),
+                   TimeValue (Seconds (0.015)),
                    MakeTimeAccessor (&PieQueueDisc::m_tUpdate),
                    MakeTimeChecker ())
     .AddAttribute ("Supdate",
@@ -79,23 +79,28 @@ TypeId PieQueueDisc::GetTypeId (void)
                    MakeQueueSizeChecker ())
     .AddAttribute ("DequeueThreshold",
                    "Minimum queue size in bytes before dequeue rate is measured",
-                   UintegerValue (10000),
+                   UintegerValue (16384),
                    MakeUintegerAccessor (&PieQueueDisc::m_dqThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("QueueDelayReference",
                    "Desired queue delay",
-                   TimeValue (Seconds (0.02)),
+                   TimeValue (Seconds (0.015)),
                    MakeTimeAccessor (&PieQueueDisc::m_qDelayRef),
                    MakeTimeChecker ())
     .AddAttribute ("MaxBurstAllowance",
                    "Current max burst allowance in seconds before random drop",
-                   TimeValue (Seconds (0.1)),
+                   TimeValue (Seconds (0.15)),
                    MakeTimeAccessor (&PieQueueDisc::m_maxBurst),
                    MakeTimeChecker ())
     .AddAttribute ("UseDequeueRateEstimator",
                    "Enable/Disable usage of Dequeue Rate Estimator",
                    BooleanValue (false),
                    MakeBooleanAccessor (&PieQueueDisc::m_useDqRateEstimator),
+                   MakeBooleanChecker ())
+    .AddAttribute ("UseCapDropAdjustment",
+                   "Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&PieQueueDisc::m_isCapDropAdjustment),
                    MakeBooleanChecker ())
   ;
 
@@ -209,6 +214,7 @@ bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
   bool earlyDrop = true;
   double u =  m_uv->GetValue ();
 
+  // Safeguard PIE to be work conserving (Section 4.1 of RFC 8033)
   if ((m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb < 0.2))
     {
       return false;
@@ -267,7 +273,19 @@ void PieQueueDisc::CalculateP ()
   else
     {
       p = m_a * (qDelay.GetSeconds () - m_qDelayRef.GetSeconds ()) + m_b * (qDelay.GetSeconds () - m_qDelayOld.GetSeconds ());
-      if (m_dropProb < 0.001)
+      if (m_dropProb < 0.000001)
+        {
+          p /= 2048;
+        }
+      else if (m_dropProb < 0.00001)
+        {
+          p /= 512;
+        }
+      else if (m_dropProb < 0.0001)
+        {
+          p /= 128;
+        } 
+      else if (m_dropProb < 0.001)
         {
           p /= 32;
         }
@@ -279,19 +297,15 @@ void PieQueueDisc::CalculateP ()
         {
           p /= 2;
         }
-      else if (m_dropProb < 1)
-        {
-          p /= 0.5;
-        }
-      else if (m_dropProb < 10)
-        {
-          p /= 0.125;
-        }
       else
         {
-          p /= 0.03125;
+          // The pseudocode in Section 4.2 of RFC 8033 suggests to use this for
+          // assignment of p, but this assignment causes build failure on Mac OS
+          // p = p;
         }
-      if ((m_dropProb >= 0.1) && (p > 0.02))
+
+      // Cap Drop Adjustment (Section 5.5 of RFC 8033)
+      if (m_isCapDropAdjustment && (m_dropProb >= 0.1) && (p > 0.02))
         {
           p = 0.02;
         }
@@ -300,17 +314,27 @@ void PieQueueDisc::CalculateP ()
   p += m_dropProb;
 
   // For non-linear drop in prob
-
+  // Decay the drop probability exponentially (Section 4.2 of RFC 8033)
   if (qDelay.GetSeconds () == 0 && m_qDelayOld.GetSeconds () == 0)
     {
       p *= 0.98;
     }
-  else if (qDelay.GetSeconds () > 0.2)
+
+  // bound the drop probability (Section 4.2 of RFC 8033)
+  if (p < 0)
     {
-      p += 0.02;
+      m_dropProb = 0;
+    }
+  else if (p > 1)
+    {
+      m_dropProb = 1;
+    }
+  else
+    {
+      m_dropProb = p;
     }
 
-  m_dropProb = (p > 0) ? p : 0;
+  // Section 4.4 #2
   if (m_burstAllowance < m_tUpdate)
     {
       m_burstAllowance =  Time (Seconds (0));
