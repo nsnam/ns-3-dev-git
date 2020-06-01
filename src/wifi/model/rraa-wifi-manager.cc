@@ -131,8 +131,8 @@ RraaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
       txVector.SetMode (mode);
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
       /* Calculate the TX Time of the Data and the corresponding Ack */
-      Time dataTxTime = phy->CalculateTxDuration (m_frameLength, txVector, phy->GetFrequency ());
-      Time ackTxTime = phy->CalculateTxDuration (m_ackLength, txVector, phy->GetFrequency ());
+      Time dataTxTime = phy->CalculateTxDuration (m_frameLength, txVector, phy->GetPhyBand ());
+      Time ackTxTime = phy->CalculateTxDuration (m_ackLength, txVector, phy->GetPhyBand ());
       NS_LOG_DEBUG ("Calculating TX times: Mode= " << mode << " DataTxTime= " << dataTxTime << " AckTxTime= " << ackTxTime);
       AddCalcTxTime (mode, dataTxTime + ackTxTime);
     }

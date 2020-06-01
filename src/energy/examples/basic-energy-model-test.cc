@@ -355,7 +355,7 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
 
   // install YansWifiPhy
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   /*

@@ -155,7 +155,8 @@ public:
   virtual void SetChannelNumber (uint8_t id);
   virtual void SetFrequency (uint16_t freq);
   virtual void SetChannelWidth (uint16_t channelwidth);
-  virtual void ConfigureStandard (WifiPhyStandard standard);
+  virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
+
 
 protected:
   // Inherited

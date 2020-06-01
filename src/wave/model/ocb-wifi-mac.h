@@ -174,7 +174,7 @@ public:
   void Reset (void);
 
   // Inherited from base class
-  virtual void ConfigureStandard (enum WifiPhyStandard standard);
+  virtual void ConfigureStandard (enum WifiStandard standard);
 private:
   virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
 

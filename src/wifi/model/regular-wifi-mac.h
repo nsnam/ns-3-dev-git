@@ -68,7 +68,7 @@ public:
   Ptr<WifiPhy> GetWifiPhy (void) const;
   void ResetWifiPhy (void);
   virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-  void ConfigureStandard (WifiPhyStandard standard);
+  void ConfigureStandard (WifiStandard standard);
 
   /**
    * This type defines the callback of a higher layer that a

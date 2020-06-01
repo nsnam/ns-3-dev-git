@@ -42,7 +42,7 @@ Wifi80211pHelper
 Wifi80211pHelper::Default (void)
 {
   Wifi80211pHelper helper;
-  helper.SetStandard (WIFI_PHY_STANDARD_80211p);
+  helper.SetStandard (WIFI_STANDARD_80211p);
   helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                   "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                   "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"),
@@ -51,9 +51,9 @@ Wifi80211pHelper::Default (void)
 }
 
 void
-Wifi80211pHelper::SetStandard (enum WifiPhyStandard standard)
+Wifi80211pHelper::SetStandard (enum WifiStandard standard)
 {
-  if (standard == WIFI_PHY_STANDARD_80211p)
+  if (standard == WIFI_STANDARD_80211p)
     {
       WifiHelper::SetStandard (standard);
     }

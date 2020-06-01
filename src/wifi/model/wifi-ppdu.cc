@@ -29,12 +29,12 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 
-WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint16_t frequency)
+WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode ().GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_psdu (psdu),
     m_truncatedTx (false),
-    m_frequency (frequency),
+    m_band (band),
     m_channelWidth (txVector.GetChannelWidth ()),
     m_txPowerLevel (txVector.GetTxPowerLevel ())
 {
@@ -42,7 +42,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
     {
       return;
     }
-  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << frequency);
+  NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band);
   switch (m_modulation)
     {
       case WIFI_MOD_CLASS_DSSS:
@@ -63,7 +63,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_HT:
         {
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }
@@ -95,7 +95,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDu
       case WIFI_MOD_CLASS_HE:
         {
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }
@@ -539,10 +539,10 @@ WifiPpdu::GetTxDuration (void) const
           break;
       case WIFI_MOD_CLASS_OFDM:
       case WIFI_MOD_CLASS_ERP_OFDM:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, m_frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_lSig.GetLength (), txVector, m_band);
           break;
       case WIFI_MOD_CLASS_HT:
-          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_frequency);
+          ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_band);
           break;
       case WIFI_MOD_CLASS_VHT:
         {
@@ -562,7 +562,7 @@ WifiPpdu::GetTxDuration (void) const
           Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
           Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
           uint8_t sigExtension = 0;
-          if (Is2_4Ghz (m_frequency))
+          if (m_band == WIFI_PHY_BAND_2_4GHZ)
             {
               sigExtension = 6;
             }

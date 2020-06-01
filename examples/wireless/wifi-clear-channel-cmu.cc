@@ -191,7 +191,7 @@ int main (int argc, char *argv[])
           dataset.SetStyle (Gnuplot2dDataset::LINES);
 
           WifiHelper wifi;
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+          wifi.SetStandard (WIFI_STANDARD_80211b);
           WifiMacHelper wifiMac;
           Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
                               StringValue (modes[i]));

@@ -260,7 +260,7 @@ OcbWifiMacTestCase::ConfigureApStaMode (Ptr<Node> static_node, Ptr<Node> mobile_
   wifiApMac.SetType ("ns3::ApWifiMac","Ssid", SsidValue (ssid));
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                 "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));
@@ -279,7 +279,7 @@ OcbWifiMacTestCase::ConfigureAdhocMode (Ptr<Node> static_node, Ptr<Node> mobile_
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211p);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("OfdmRate6MbpsBW10MHz"),
                                 "ControlMode",StringValue ("OfdmRate6MbpsBW10MHz"));

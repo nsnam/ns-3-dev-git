@@ -167,7 +167,7 @@ main (int argc, char *argv[])
     {
       wifi.EnableLogComponents ();
     }
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
 
   /** Wifi PHY **/
   /***************************************************************************/

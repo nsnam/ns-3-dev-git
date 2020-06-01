@@ -105,7 +105,7 @@ main (int argc, char *argv[])
   // We're going to use 802.11 A so set up a wifi helper to reflect that.
   //
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+  wifi.SetStandard (WIFI_STANDARD_80211a);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate54Mbps"));
 
   //

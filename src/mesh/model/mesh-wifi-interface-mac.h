@@ -156,17 +156,11 @@ public:
    */
   void SetBeaconGeneration (bool enable);
   /**
-   * Get phy standard in use
+   * Finish configuration based on the WifiStandard being provided
    *
-   * \returns the wifi phy standard
+   * \param standard the WifiStandard being configured
    */
-  WifiPhyStandard GetPhyStandard () const;
-  /**
-   * Finish configuration based on the WifiPhyStandard being provided
-   *
-   * \param standard the WifiPhyStandard being configured
-   */
-  virtual void ConfigureStandard (enum WifiPhyStandard standard);
+  virtual void ConfigureStandard (enum WifiStandard standard);
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
@@ -248,8 +242,8 @@ private:
   };
   Statistics m_stats; ///< statistics
 
-  /// Current PHY standard: needed to configure metric
-  WifiPhyStandard m_standard;
+  /// Current standard: needed to configure metric
+  WifiStandard m_standard;
 
   /// Add randomness to beacon generation
   Ptr<UniformRandomVariable> m_coefficient;

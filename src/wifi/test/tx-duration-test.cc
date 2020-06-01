@@ -27,9 +27,6 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
-static const uint16_t CHANNEL_1_MHZ  = 2412; // a 2.4 GHz center frequency (MHz)
-static const uint16_t CHANNEL_36_MHZ = 5180; // a 5 GHz center frequency (MHz)
-
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -97,16 +94,16 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint1
   txVector.SetNss (1);
   txVector.SetStbc (0);
   txVector.SetNess (0);
-  uint16_t testedFrequency = CHANNEL_1_MHZ;
+  WifiPhyBand band = WIFI_PHY_BAND_2_4GHZ;
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
-      testedFrequency = CHANNEL_36_MHZ;
+      band = WIFI_PHY_BAND_5GHZ;
     }
-  Time calculatedDuration = phy->GetPayloadDuration (size, txVector, testedFrequency);
+  Time calculatedDuration = phy->GetPayloadDuration (size, txVector, band);
   if (calculatedDuration != knownDuration)
     {
       std::cerr << "size=" << size
@@ -122,8 +119,8 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint1
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
-      testedFrequency = CHANNEL_1_MHZ;
-      calculatedDuration = phy->GetPayloadDuration (size, txVector, testedFrequency);
+      band = WIFI_PHY_BAND_2_4GHZ;
+      calculatedDuration = phy->GetPayloadDuration (size, txVector, band);
       knownDuration += MicroSeconds (6);
       if (calculatedDuration != knownDuration)
         {
@@ -152,16 +149,16 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
   txVector.SetNss (1);
   txVector.SetStbc (0);
   txVector.SetNess (0);
-  uint16_t testedFrequency = CHANNEL_1_MHZ;
+  WifiPhyBand band = WIFI_PHY_BAND_2_4GHZ;
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
-      testedFrequency = CHANNEL_36_MHZ;
+      band = WIFI_PHY_BAND_5GHZ;
     }
-  Time calculatedDuration = phy->CalculateTxDuration (size, txVector, testedFrequency);
+  Time calculatedDuration = phy->CalculateTxDuration (size, txVector, band);
   if (calculatedDuration != knownDuration)
     {
       std::cerr << "size=" << size
@@ -178,8 +175,8 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t c
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       //Durations vary depending on frequency; test also 2.4 GHz (bug 1971)
-      testedFrequency = CHANNEL_1_MHZ;
-      calculatedDuration = phy->CalculateTxDuration (size, txVector, testedFrequency);
+      band = WIFI_PHY_BAND_2_4GHZ;
+      calculatedDuration = phy->CalculateTxDuration (size, txVector, band);
       knownDuration += MicroSeconds (6);
       if (calculatedDuration != knownDuration)
         {

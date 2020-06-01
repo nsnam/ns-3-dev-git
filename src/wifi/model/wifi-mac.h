@@ -22,7 +22,7 @@
 #define WIFI_MAC_H
 
 #include "ns3/net-device.h"
-#include "wifi-phy-standard.h"
+#include "wifi-standards.h"
 #include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
 
@@ -217,7 +217,7 @@ public:
    * Subclasses should implement this method to configure their DCF queues
    * according to the requested standard.
    */
-  virtual void ConfigureStandard (WifiPhyStandard standard) = 0;
+  virtual void ConfigureStandard (WifiStandard standard) = 0;
 
   /**
    * \return pointer to HtConfiguration if it exists

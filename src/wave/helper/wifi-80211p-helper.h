@@ -54,12 +54,10 @@ public:
   /**
    * \param standard the phy standard to configure during installation
    *
-   * Users can only configure 802.11a with 10MHz channel bandwidth indicated by
-   * WIFI_PHY_STANDARD_80211_10MHZ or 20MHz channel bandwidth indicated by
-   * WIFI_PHY_STANDARD_80211a, other standard types will be not allowed.
-   * The default standard is 10MHz.
+   * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
+   * The default 802.11p standard uses 10MHz.
    */
-  virtual void SetStandard (enum WifiPhyStandard standard);
+  virtual void SetStandard (enum WifiStandard standard);
 
   /**
    * \param phy the PHY helper to create PHY objects

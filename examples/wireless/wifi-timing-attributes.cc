@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
 
   //Default IEEE 802.11n (2.4 GHz)
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("HtMcs7"),
                                 "ControlMode", StringValue ("HtMcs0"));

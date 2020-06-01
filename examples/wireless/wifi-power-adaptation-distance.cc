@@ -182,7 +182,7 @@ NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
       txVector.SetChannelWidth (phy->GetChannelWidth ());
       DataRate dataRate = DataRate (mode.GetDataRate (phy->GetChannelWidth ()));
-      Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetFrequency ());
+      Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetPhyBand ());
       NS_LOG_DEBUG (i << " " << time.GetSeconds () << " " << dataRate);
       timeTable.push_back (std::make_pair (time, dataRate));
     }
@@ -337,7 +337,7 @@ int main (int argc, char *argv[])
   wifiStaNodes.Create (1);
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+  wifi.SetStandard (WIFI_STANDARD_80211a);
   WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();

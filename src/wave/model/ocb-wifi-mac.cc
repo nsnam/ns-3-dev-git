@@ -371,10 +371,10 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
 }
 
 void
-OcbWifiMac::ConfigureStandard (enum WifiPhyStandard standard)
+OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
-  NS_ASSERT (standard == WIFI_PHY_STANDARD_80211p);
+  NS_ASSERT (standard == WIFI_STANDARD_80211p);
 
   uint32_t cwmin = 15;
   uint32_t cwmax = 1023;

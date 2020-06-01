@@ -26,7 +26,6 @@
 #include "wifi-remote-station-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
-#include "wifi-utils.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 #include "ht-configuration.h"
@@ -1138,7 +1137,7 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
   NS_LOG_FUNCTION (this << from << heCapabilities);
   WifiRemoteStationState *state;
   state = LookupState (from);
-  if (Is5Ghz (m_wifiPhy->GetFrequency ()))
+  if (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_5GHZ)
     {
       if (heCapabilities.GetChannelWidthSet () & 0x04)
         {
@@ -1150,7 +1149,7 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
         }
       //For other cases at 5 GHz, the supported channel width is set by the VHT capabilities
     }
-  else if (Is2_4Ghz (m_wifiPhy->GetFrequency ()))
+  else if (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ)
     {
       if (heCapabilities.GetChannelWidthSet () & 0x01)
         {

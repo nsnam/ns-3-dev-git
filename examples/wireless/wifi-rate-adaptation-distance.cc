@@ -204,15 +204,15 @@ int main (int argc, char *argv[])
     {
       if (standard == "802.11a")
         {
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+          wifi.SetStandard (WIFI_STANDARD_80211a);
         }
       else if (standard == "802.11b")
         {
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+          wifi.SetStandard (WIFI_STANDARD_80211b);
         }
       else if (standard == "802.11g")
         {
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211g);
+          wifi.SetStandard (WIFI_STANDARD_80211g);
         }
       WifiMacHelper wifiMac;
 
@@ -236,11 +236,11 @@ int main (int argc, char *argv[])
     {
       if (standard == "802.11n-2.4GHz")
         {
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
         }
       else if (standard == "802.11n-5GHz")
         {
-          wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+          wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
         }
 
       WifiMacHelper wifiMac;
@@ -265,7 +265,7 @@ int main (int argc, char *argv[])
     }
   else if (standard == "802.11ac")
     {
-      wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+      wifi.SetStandard (WIFI_STANDARD_80211ac);
       WifiMacHelper wifiMac;
 
       //Configure the STA node

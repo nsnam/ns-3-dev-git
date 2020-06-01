@@ -456,7 +456,7 @@ public:
   virtual NetDeviceContainer Install (const WifiPhyHelper &phy,
                                       const WifiMacHelper &mac, std::string nodeName) const;
   /**
-   * \param standard the PHY standard to configure during installation
+   * \param standard the standard to configure during installation
    *
    * This method sets standards-compliant defaults for WifiMac
    * parameters such as SIFS time, slot time, timeout values, etc.,
@@ -479,7 +479,7 @@ public:
    * \sa WifiMac::ConfigureStandard
    * \sa Config::Set
    */
-  virtual void SetStandard (WifiPhyStandard standard);
+  virtual void SetStandard (WifiStandard standard);
 
   /**
    * Helper to enable all WifiNetDevice log components with one statement
@@ -506,7 +506,7 @@ public:
 protected:
   ObjectFactory m_stationManager;            ///< station manager
   ObjectFactory m_ackPolicySelector[4];      ///< ack policy selector for all ACs
-  WifiPhyStandard m_standard;                ///< wifi standard
+  WifiStandard m_standard;                   ///< wifi standard
   SelectQueueCallback m_selectQueueCallback; ///< select queue callback
   ObjectFactory m_obssPdAlgorithm;           ///< OBSS_PD algorithm
 };

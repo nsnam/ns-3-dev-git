@@ -179,10 +179,10 @@ SpectrumWifiPhy::SetChannelWidth (uint16_t channelwidth)
 }
 
 void
-SpectrumWifiPhy::ConfigureStandard (WifiPhyStandard standard)
+SpectrumWifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
 {
-  NS_LOG_FUNCTION (this << standard);
-  WifiPhy::ConfigureStandard (standard);
+  NS_LOG_FUNCTION (this << standard << band);
+  WifiPhy::ConfigureStandardAndBand (standard, band);
   if (IsInitialized ())
     {
       ResetSpectrumModel ();
@@ -337,14 +337,13 @@ uint32_t
 SpectrumWifiPhy::GetBandBandwidth (void) const
 {
   uint32_t bandBandwidth = 0;
-  switch (GetStandard ())
+  switch (GetPhyStandard ())
     {
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
     case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211b:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211n:
     case WIFI_PHY_STANDARD_80211ac:
       // Use OFDM subcarrier width of 312.5 KHz as band granularity
       bandBandwidth = 312500;
@@ -361,13 +360,12 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
           bandBandwidth = 156250;
         }
       break;
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+    case WIFI_PHY_STANDARD_80211ax:
       // Use OFDM subcarrier width of 78.125 KHz as band granularity
       bandBandwidth = 78125;
       break;
     default:
-      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
+      NS_FATAL_ERROR ("Standard unknown: " << GetPhyStandard ());
       break;
     }
   return bandBandwidth;

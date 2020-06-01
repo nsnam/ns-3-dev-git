@@ -28,7 +28,6 @@
 #include "mac-low.h"
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
-#include "wifi-utils.h"
 #include "mgt-headers.h"
 #include "amsdu-subframe-header.h"
 #include "wifi-net-device.h"
@@ -314,15 +313,15 @@ RegularWifiMac::GetHeCapabilities (void) const
       Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
       capabilities.SetHeSupported (1);
       uint8_t channelWidthSet = 0;
-      if (m_phy->GetChannelWidth () >= 40 && Is2_4Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 40) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
         {
           channelWidthSet |= 0x01;
         }
-      if (m_phy->GetChannelWidth () >= 80 && Is5Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 80) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ))
         {
           channelWidthSet |= 0x02;
         }
-      if (m_phy->GetChannelWidth () >= 160 && Is5Ghz (m_phy->GetFrequency ()))
+      if ((m_phy->GetChannelWidth () >= 160) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ))
         {
           channelWidthSet |= 0x04;
         }
@@ -1076,16 +1075,16 @@ RegularWifiMac::GetTypeId (void)
 }
 
 void
-RegularWifiMac::ConfigureStandard (WifiPhyStandard standard)
+RegularWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   uint32_t cwmin = 0;
   uint32_t cwmax = 0;
   switch (standard)
     {
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
-    case WIFI_PHY_STANDARD_80211ac:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_STANDARD_80211ax_5GHZ:
+    case WIFI_STANDARD_80211ac:
+    case WIFI_STANDARD_80211n_5GHZ:
       {
         EnableAggregation ();
         //To be removed once deprecated attributes are removed
@@ -1096,23 +1095,23 @@ RegularWifiMac::ConfigureStandard (WifiPhyStandard standard)
         cwmax = 1023;
         break;
       }
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_STANDARD_80211ax_2_4GHZ:
+    case WIFI_STANDARD_80211n_2_4GHZ:
       {
         EnableAggregation ();
         Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
         NS_ASSERT (htConfiguration);
         SetQosSupported (true);
       }
-    case WIFI_PHY_STANDARD_80211g:
+    case WIFI_STANDARD_80211g:
       SetErpSupported (true);
-    case WIFI_PHY_STANDARD_holland:
-    case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211p:
+    case WIFI_STANDARD_holland:
+    case WIFI_STANDARD_80211a:
+    case WIFI_STANDARD_80211p:
       cwmin = 15;
       cwmax = 1023;
       break;
-    case WIFI_PHY_STANDARD_80211b:
+    case WIFI_STANDARD_80211b:
       SetDsssSupported (true);
       cwmin = 31;
       cwmax = 1023;

@@ -35,7 +35,7 @@ MeshHelper::MeshHelper () :
   m_nInterfaces (1),
   m_spreadChannelPolicy (ZERO_CHANNEL),
   m_stack (0),
-  m_standard (WIFI_PHY_STANDARD_80211a)
+  m_standard (WIFI_STANDARD_80211a)
 {
 }
 MeshHelper::~MeshHelper ()
@@ -193,7 +193,7 @@ MeshHelper::SetAckPolicySelectorForAc (AcIndex ac, std::string type,
   m_ackPolicySelector[ac].Set (n7, v7);
 }
 void 
-MeshHelper::SetStandard (enum WifiPhyStandard standard)
+MeshHelper::SetStandard (enum WifiStandard standard)
 {
   m_standard = standard;
 }
@@ -202,6 +202,13 @@ Ptr<WifiNetDevice>
 MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const
 {
   Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+
+  auto it = wifiStandards.find (m_standard);
+  if (it == wifiStandards.end ())
+    {
+      NS_FATAL_ERROR ("Selected standard is not defined!");
+      return device;
+    }
 
   Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
   NS_ASSERT (mac != 0);
@@ -212,7 +219,7 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (m_standard);
-  phy->ConfigureStandard (m_standard);
+  phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);

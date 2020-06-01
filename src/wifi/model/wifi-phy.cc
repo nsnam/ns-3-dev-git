@@ -539,11 +539,11 @@ WifiPhy::InitializeFrequencyChannelNumber (void)
     {
       SetFrequency (m_initialFrequency);
     }
-  else if (m_initialChannelNumber != 0 && GetStandard () != WIFI_PHY_STANDARD_UNSPECIFIED)
+  else if (m_initialChannelNumber != 0 && GetPhyStandard () != WIFI_PHY_STANDARD_UNSPECIFIED)
     {
       SetChannelNumber (m_initialChannelNumber);
     }
-  else if (m_initialChannelNumber != 0 && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
+  else if (m_initialChannelNumber != 0 && GetPhyStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
     {
       NS_FATAL_ERROR ("Error, ChannelNumber " << +GetChannelNumber () << " was set by user, but neither a standard nor a frequency");
     }
@@ -868,10 +868,10 @@ WifiPhy::CalculateSnr (WifiTxVector txVector, double ber) const
 }
 
 void
-WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
+WifiPhy::ConfigureDefaultsForStandard (void)
 {
-  NS_LOG_FUNCTION (this << standard);
-  switch (standard)
+  NS_LOG_FUNCTION (this);
+  switch (m_standard)
     {
     case WIFI_PHY_STANDARD_80211a:
       SetChannelWidth (20);
@@ -906,17 +906,20 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
       // Channel number should be aligned by SetFrequency () to 36
       NS_ASSERT (GetChannelNumber () == 36);
       break;
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+    case WIFI_PHY_STANDARD_80211n:
       SetChannelWidth (20);
-      SetFrequency (2412);
-      // Channel number should be aligned by SetFrequency () to 1
-      NS_ASSERT (GetChannelNumber () == 1);
-      break;
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-      SetChannelWidth (20);
-      SetFrequency (5180);
-      // Channel number should be aligned by SetFrequency () to 36
-      NS_ASSERT (GetChannelNumber () == 36);
+      if (m_band == WIFI_PHY_BAND_2_4GHZ)
+        {
+          SetFrequency (2412);
+          // Channel number should be aligned by SetFrequency () to 1
+          NS_ASSERT (GetChannelNumber () == 1);
+        }
+      else
+        {
+          SetFrequency (5180);
+          // Channel number should be aligned by SetFrequency () to 36
+          NS_ASSERT (GetChannelNumber () == 36);
+        }
       break;
     case WIFI_PHY_STANDARD_80211ac:
       SetChannelWidth (80);
@@ -924,17 +927,21 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
       // Channel number should be aligned by SetFrequency () to 42
       NS_ASSERT (GetChannelNumber () == 42);
       break;
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-      SetChannelWidth (20);
-      SetFrequency (2412);
-      // Channel number should be aligned by SetFrequency () to 1
-      NS_ASSERT (GetChannelNumber () == 1);
-      break;
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
-      SetChannelWidth (80);
-      SetFrequency (5210);
-      // Channel number should be aligned by SetFrequency () to 42
-      NS_ASSERT (GetChannelNumber () == 42);
+    case WIFI_PHY_STANDARD_80211ax:
+      if (m_band == WIFI_PHY_BAND_2_4GHZ)
+        {
+          SetChannelWidth (20);
+          SetFrequency (2412);
+          // Channel number should be aligned by SetFrequency () to 1
+          NS_ASSERT (GetChannelNumber () == 1);
+        }
+      else
+        {
+          SetChannelWidth (80);
+          SetFrequency (5210);
+          // Channel number should be aligned by SetFrequency () to 42
+          NS_ASSERT (GetChannelNumber () == 42);
+        }
       break;
     case WIFI_PHY_STANDARD_UNSPECIFIED:
     default:
@@ -1213,11 +1220,11 @@ void
 WifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
-  if (Is2_4Ghz (GetFrequency ()))
+  if (m_band == WIFI_PHY_BAND_2_4GHZ)
     {
       Configure80211g ();
     }
-  if (Is5Ghz (GetFrequency ()))
+  else if (m_band == WIFI_PHY_BAND_5GHZ)
     {
       Configure80211a ();
     }
@@ -1252,13 +1259,13 @@ void
 WifiPhy::Configure80211ax (void)
 {
   NS_LOG_FUNCTION (this);
-  if (Is5Ghz (GetFrequency ()))
+  if (m_band == WIFI_PHY_BAND_2_4GHZ)
     {
-      Configure80211ac ();
+      Configure80211n ();
     }
   else
     {
-      Configure80211n ();
+      Configure80211ac ();
     }
 
   PushMcs (WifiPhy::GetHeMcs0 ());
@@ -1323,9 +1330,9 @@ WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width)
 }
 
 void
-WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
+WifiPhy::ConfigureChannelForStandard (void)
 {
-  NS_LOG_FUNCTION (this << standard);
+  NS_LOG_FUNCTION (this);
   // If the user has configured both Frequency and ChannelNumber, Frequency
   // takes precedence
   if (GetFrequency () != 0)
@@ -1352,7 +1359,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
       // the unspecified standard, configure using the known values;
       // otherwise, this is a configuration error
       NS_LOG_DEBUG ("Configuring for channel number " << +GetChannelNumber ());
-      FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), standard);
+      FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), m_standard);
       if (f.first == 0)
         {
           // the specific pair of number/standard is not known
@@ -1373,10 +1380,11 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
 }
 
 void
-WifiPhy::ConfigureStandard (WifiPhyStandard standard)
+WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
 {
-  NS_LOG_FUNCTION (this << standard);
+  NS_LOG_FUNCTION (this << standard << band);
   m_standard = standard;
+  m_band = band;
   m_isConstructed = true;
   if (m_frequencyChannelNumberInitialized == false)
     {
@@ -1384,12 +1392,12 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
     }
   if (GetFrequency () == 0 && GetChannelNumber () == 0)
     {
-      ConfigureDefaultsForStandard (standard);
+      ConfigureDefaultsForStandard ();
     }
   else
     {
       // The user has configured either (or both) Frequency or ChannelNumber
-      ConfigureChannelForStandard (standard);
+      ConfigureChannelForStandard ();
     }
   switch (standard)
     {
@@ -1408,15 +1416,13 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_holland:
       ConfigureHolland ();
       break;
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
+    case WIFI_PHY_STANDARD_80211n:
       Configure80211n ();
       break;
     case WIFI_PHY_STANDARD_80211ac:
       Configure80211ac ();
       break;
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
+    case WIFI_PHY_STANDARD_80211ax:
       Configure80211ax ();
       break;
     case WIFI_PHY_STANDARD_UNSPECIFIED:
@@ -1426,8 +1432,15 @@ WifiPhy::ConfigureStandard (WifiPhyStandard standard)
     }
 }
 
+WifiPhyBand
+WifiPhy::GetPhyBand (void) const
+{
+  return m_band;
+}
+
+
 WifiPhyStandard
-WifiPhy::GetStandard (void) const
+WifiPhy::GetPhyStandard (void) const
 {
   return m_standard;
 }
@@ -1635,7 +1648,7 @@ WifiPhy::SetChannelNumber (uint8_t nch)
 
   // First make sure that the channel number is defined for the standard
   // in use
-  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetStandard ());
+  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyStandard ());
   if (f.first == 0)
     {
       f = GetFrequencyWidthForChannelNumberStandard (nch, WIFI_PHY_STANDARD_UNSPECIFIED);
@@ -2243,15 +2256,15 @@ WifiPhy::GetPhyPreambleDuration (WifiTxVector txVector)
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype)
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype)
 {
   uint32_t totalAmpduSize;
   double totalAmpduNumSymbols;
-  return GetPayloadDuration (size, txVector, frequency, mpdutype, false, totalAmpduSize, totalAmpduNumSymbols);
+  return GetPayloadDuration (size, txVector, band, mpdutype, false, totalAmpduSize, totalAmpduNumSymbols);
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype,
+WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
                              bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols)
 {
   WifiMode payloadMode = txVector.GetMode ();
@@ -2489,7 +2502,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
     case WIFI_MOD_CLASS_HT:
     case WIFI_MOD_CLASS_VHT:
       {
-        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT && Is2_4Ghz (frequency)
+        if ((payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT) && (band == WIFI_PHY_BAND_2_4GHZ)
             && (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU || mpdutype == LAST_MPDU_IN_AGGREGATE)) //at 2.4 GHz
           {
             return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ())) + MicroSeconds (6);
@@ -2501,7 +2514,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
       }
     case WIFI_MOD_CLASS_HE:
       {
-        if (Is2_4Ghz (frequency)
+        if ((band == WIFI_PHY_BAND_2_4GHZ)
             && ((mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU || mpdutype == LAST_MPDU_IN_AGGREGATE))) //at 2.4 GHz
           {
             return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ())) + MicroSeconds (6);
@@ -2535,10 +2548,10 @@ WifiPhy::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector)
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency)
+WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band)
 {
   Time duration = CalculatePhyPreambleAndHeaderDuration (txVector)
-    + GetPayloadDuration (size, txVector, frequency);
+    + GetPayloadDuration (size, txVector, band);
   return duration;
 }
 
@@ -2683,7 +2696,7 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
       return;
     }
 
-  Time txDuration = CalculateTxDuration (psdu->GetSize (), txVector, GetFrequency ());
+  Time txDuration = CalculateTxDuration (psdu->GetSize (), txVector, GetPhyBand ());
   NS_ASSERT (txDuration.IsStrictlyPositive ());
 
   if ((m_currentEvent != 0) && (m_currentEvent->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ())))
@@ -2718,7 +2731,7 @@ WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
   NotifyMonitorSniffTx (psdu, GetFrequency (), txVector);
   m_state->SwitchToTx (txDuration, psdu->GetPacket (), GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, GetFrequency ());
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, GetPhyBand ());
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
@@ -3060,7 +3073,7 @@ WifiPhy::EndReceive (Ptr<Event> event)
       for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
         {
           Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
-                                                  GetFrequency (), mpdutype, true, totalAmpduSize, totalAmpduNumSymbols);
+                                                  GetPhyBand (), mpdutype, true, totalAmpduSize, totalAmpduNumSymbols);
           remainingAmpduDuration -= mpduDuration;
           if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
             {

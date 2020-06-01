@@ -71,7 +71,7 @@ default values in the simulator, and infrastructure mode::
   // and install Wifi devices.  Configure a Wifi standard to use, which
   // will align various parameters in the Phy and Mac to standard defaults.
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
   // Declare NetDeviceContainers to hold the container returned by the helper
   NetDeviceContainer wifiStaDevices;
   NetDeviceContainer wifiApDevice;
@@ -170,7 +170,7 @@ For example, this code configures a node with 3 antennas that supports 2 spatial
 ::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
+  wifi.SetStandard (WIFI_STANDARD_80211ac);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue ("VhtMcs9"),
                                 "ControlMode", StringValue ("VhtMcs0"));
@@ -223,7 +223,7 @@ in a number of ways:
   wifiPhyHelper.Set ("ChannelNumber", UintegerValue (3));
 
 
-* by setting the WifiHelper::SetStandard (enum WifiPhyStandard) method; and
+* by setting the WifiHelper::SetStandard (enum WifiStandard) method; and
 
 * by performing post-installation configuration of the option, either
   via a Ptr to the WifiPhy object, or through the Config namespace; e.g.:
@@ -241,7 +241,7 @@ WifiHelper::SetStandard()
 
 ``WifiHelper::SetStandard ()`` is a method to set various parameters
 in the Mac and Phy to standard values and some reasonable defaults.
-For example, ``SetStandard (WIFI_PHY_STANDARD_80211a)`` will set the
+For example, ``SetStandard (WIFI_STANDARD_80211a)`` will set the
 WifiPhy to Channel 36 in the 5 GHz band, among other settings appropriate
 for 802.11a.
 
@@ -400,7 +400,7 @@ such as:
 ::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
   ...
   Ptr<WifiPhy> wifiPhy = ...;
   wifiPhy->SetAttribute ("ChannelNumber", UintegerValue (14));
@@ -591,7 +591,7 @@ For example the following user code configures a MAC that will be a non-AP STA w
 in an infrastructure network where the AP has SSID ``ns-3-ssid``::
 
     WifiHelper wifi;
-    wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+    wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
 
     WifiMacHelper wifiMacHelper;
     Ssid ssid = Ssid ("ns-3-ssid");
@@ -707,7 +707,7 @@ The ``WifiHelper::SetStandard`` method sets various default timing parameters as
 In order to change parameters that are overwritten by ``WifiHelper::SetStandard``, this should be done post-install using ``Config::Set``::
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("HtMcs7"), "ControlMode", StringValue("HtMcs0"));
 
   //Install PHY and MAC
@@ -843,7 +843,7 @@ Finally, we manually place them by using the ``ns3::ListPositionAllocator``::
   c.Create (2);
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+  wifi.SetStandard (WIFI_STANDARD_80211a);
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11
@@ -890,7 +890,7 @@ Each node is equipped with 802.11b Wi-Fi device::
   sta.Create (2);
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default (); 
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11

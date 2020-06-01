@@ -25,6 +25,7 @@
 #include "ns3/nstime.h"
 #include "wifi-tx-vector.h"
 #include "wifi-phy-header.h"
+#include "wifi-phy-band.h"
 
 namespace ns3 {
 
@@ -45,9 +46,9 @@ public:
    * \param psdu the PHY payload (PSDU)
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
-   * \param frequency the frequency used for the transmission of this PPDU
+   * \param band the WifiPhyBand used for the transmission of this PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint16_t frequency);
+  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band);
 
   virtual ~WifiPpdu ();
 
@@ -92,7 +93,7 @@ private:
   WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
   Ptr<const WifiPsdu> m_psdu;       //!< the PSDU contained in this PPDU
   bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
-  uint16_t m_frequency;             //!< the frequency used to transmit that PPDU in MHz
+  WifiPhyBand m_band;               //!< the WifiPhyBand used to transmit that PPDU
   uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU in MHz
   uint8_t m_txPowerLevel;           //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
 };

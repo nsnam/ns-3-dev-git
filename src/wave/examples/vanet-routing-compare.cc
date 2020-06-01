@@ -2262,7 +2262,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   WifiHelper wifi;
 
   // Setup 802.11b stuff
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
 
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue (m_phyModeB),

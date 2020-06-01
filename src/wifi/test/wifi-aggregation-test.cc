@@ -84,7 +84,7 @@ AmpduAggregationTest::DoRun (void)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ);
   m_device->SetPhy (m_phy);
 
   /*
@@ -105,7 +105,7 @@ AmpduAggregationTest::DoRun (void)
   m_mac->SetWifiPhy (m_phy);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
-  m_mac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_mac->ConfigureStandard (WIFI_STANDARD_80211n_5GHZ);
   m_device->SetMac (m_mac);
 
   /*
@@ -290,7 +290,7 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ);
   m_device->SetPhy (m_phy);
 
   /*
@@ -311,7 +311,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_mac->SetWifiPhy (m_phy);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
-  m_mac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_mac->ConfigureStandard (WIFI_STANDARD_80211n_5GHZ);
   m_device->SetMac (m_mac);
 
   /*
@@ -511,7 +511,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
    */
   m_phy = CreateObject<YansWifiPhy> ();
   m_phy->SetDevice (m_device);
-  m_phy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
+  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
   m_device->SetPhy (m_phy);
 
   /*
@@ -532,7 +532,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   m_mac->SetWifiPhy (m_phy);
   m_mac->SetWifiRemoteStationManager (m_manager);
   m_mac->SetAddress (Mac48Address ("00:00:00:00:00:01"));
-  m_mac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
+  m_mac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
   m_device->SetMac (m_mac);
 
   /*
@@ -721,7 +721,7 @@ PreservePacketsInAmpdus::DoRun (void)
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
 
   WifiMacHelper mac;

@@ -72,7 +72,7 @@ struct Parameters
   std::string erpProtectionMode;
   bool enableShortSlotTime;
   bool enableShortPhyPreamble;
-  WifiPhyStandard apType;
+  WifiStandard apType;
   bool apSupportsGreenfield;
   uint32_t nWifiB;
   bool bHasTraffic;
@@ -102,13 +102,13 @@ double
 Experiment::Run (Parameters params)
 {
   std::string apTypeString;
-  if (params.apType == WIFI_PHY_STANDARD_80211g)
+  if (params.apType == WIFI_STANDARD_80211g)
     {
-      apTypeString = "WIFI_PHY_STANDARD_80211g";
+      apTypeString = "WIFI_STANDARD_80211g";
     }
-  else if (params.apType == WIFI_PHY_STANDARD_80211n_2_4GHZ)
+  else if (params.apType == WIFI_STANDARD_80211n_2_4GHZ)
     {
-      apTypeString = "WIFI_PHY_STANDARD_80211n_2_4GHZ";
+      apTypeString = "WIFI_STANDARD_80211n_2_4GHZ";
     }
 
   std::cout << "Run: " << params.testName
@@ -160,7 +160,7 @@ Experiment::Run (Parameters params)
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
 
   // 802.11b STA
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
 
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
@@ -176,12 +176,12 @@ Experiment::Run (Parameters params)
   bStaDevice = wifi.Install (phy, mac, wifiBStaNodes);
 
   // 802.11b/g STA
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211g);
+  wifi.SetStandard (WIFI_STANDARD_80211g);
   NetDeviceContainer gStaDevice;
   gStaDevice = wifi.Install (phy, mac, wifiGStaNodes);
 
   // 802.11b/g/n STA
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
   NetDeviceContainer nNGFStaDevice, nGFStaDevice;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
@@ -202,7 +202,7 @@ Experiment::Run (Parameters params)
   apDevice = wifi.Install (phy, mac, wifiApNode);
 
   // Set TXOP limit
-  if (params.apType == WIFI_PHY_STANDARD_80211n_2_4GHZ)
+  if (params.apType == WIFI_STANDARD_80211n_2_4GHZ)
     {
       Ptr<NetDevice> dev = wifiApNode.Get (0)->GetDevice (0);
       Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
@@ -388,7 +388,7 @@ int main (int argc, char *argv[])
   params.erpProtectionMode = "Cts-To-Self";
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211g;
+  params.apType = WIFI_STANDARD_80211g;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -520,7 +520,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -542,7 +542,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -564,7 +564,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -586,7 +586,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -608,7 +608,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = true;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -630,7 +630,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
@@ -652,7 +652,7 @@ int main (int argc, char *argv[])
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
-  params.apType = WIFI_PHY_STANDARD_80211n_2_4GHZ;
+  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
   params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;

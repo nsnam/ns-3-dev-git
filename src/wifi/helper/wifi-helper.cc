@@ -652,7 +652,7 @@ WifiHelper::~WifiHelper ()
 }
 
 WifiHelper::WifiHelper ()
-  : m_standard (WIFI_PHY_STANDARD_80211a),
+  : m_standard (WIFI_STANDARD_80211a),
     m_selectQueueCallback (&SelectQueueByDSField)
 {
   SetRemoteStationManager ("ns3::ArfWifiManager");
@@ -732,7 +732,7 @@ WifiHelper::SetAckPolicySelectorForAc (AcIndex ac, std::string type,
 }
 
 void
-WifiHelper::SetStandard (WifiPhyStandard standard)
+WifiHelper::SetStandard (WifiStandard standard)
 {
   m_standard = standard;
 }
@@ -754,17 +754,23 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
     {
       Ptr<Node> node = *i;
       Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
-      if (m_standard >= WIFI_PHY_STANDARD_80211n_2_4GHZ)
+      auto it = wifiStandards.find (m_standard);
+      if (it == wifiStandards.end ())
+        {
+          NS_FATAL_ERROR ("Selected standard is not defined!");
+          return devices;
+        }
+      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211n)
         {
           Ptr<HtConfiguration> htConfiguration = CreateObject<HtConfiguration> ();
           device->SetHtConfiguration (htConfiguration);
         }
-      if ((m_standard == WIFI_PHY_STANDARD_80211ac) || (m_standard == WIFI_PHY_STANDARD_80211ax_5GHZ))
+      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211ac)
         {
           Ptr<VhtConfiguration> vhtConfiguration = CreateObject<VhtConfiguration> ();
           device->SetVhtConfiguration (vhtConfiguration);
         }
-      if (m_standard >= WIFI_PHY_STANDARD_80211ax_2_4GHZ)
+      if (it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax)
         {
           Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
           device->SetHeConfiguration (heConfiguration);
@@ -774,12 +780,12 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       mac->SetAddress (Mac48Address::Allocate ());
       mac->ConfigureStandard (m_standard);
-      phy->ConfigureStandard (m_standard);
+      phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
       device->SetMac (mac);
       device->SetPhy (phy);
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
-      if ((m_standard >= WIFI_PHY_STANDARD_80211ax_2_4GHZ) && (m_obssPdAlgorithm.IsTypeIdSet ()))
+      if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {
           Ptr<ObssPdAlgorithm> obssPdAlgorithm = m_obssPdAlgorithm.Create<ObssPdAlgorithm> ();
           device->AggregateObject (obssPdAlgorithm);

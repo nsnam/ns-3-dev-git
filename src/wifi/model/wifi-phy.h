@@ -26,7 +26,7 @@
 #include "ns3/deprecated.h"
 #include "ns3/error-model.h"
 #include "wifi-mpdu-type.h"
-#include "wifi-phy-standard.h"
+#include "wifi-standards.h"
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 
@@ -321,11 +321,11 @@ public:
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
-   * \param frequency the channel center frequency (MHz)
+   * \param band the frequency band being used
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency);
+  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band);
 
   /**
    * \param txVector the transmission parameters used for this packet
@@ -402,16 +402,16 @@ public:
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
-   * \param frequency the channel center frequency (MHz)
+   * \param band the frequency band
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    *
    * \return the duration of the payload
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype = NORMAL_MPDU);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype = NORMAL_MPDU);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet
-   * \param frequency the channel center frequency (MHz)
+   * \param band the frequency band
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    * \param incFlag this flag is used to indicate that the variables need to be update or not
    * This function is called a couple of times for the same packet so variables should not be increased each time.
@@ -423,7 +423,7 @@ public:
    *
    * \return the duration of the payload
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t frequency, MpduType mpdutype, bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols);
+  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype, bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols);
   /**
    * \param txVector the transmission parameters used for this packet
    *
@@ -670,15 +670,23 @@ public:
    * Configure the PHY-level parameters for different Wi-Fi standard.
    *
    * \param standard the Wi-Fi standard
+   * \param band the Wi-Fi band
    */
-  virtual void ConfigureStandard (WifiPhyStandard standard);
+  virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band);
 
   /**
    * Get the configured Wi-Fi standard
    *
    * \return the Wi-Fi standard that has been configured
    */
-  WifiPhyStandard GetStandard (void) const;
+  WifiPhyStandard GetPhyStandard (void) const;
+
+  /**
+   * Get the configured Wi-Fi band
+   *
+   * \return the Wi-Fi band that has been configured
+   */
+  WifiPhyBand GetPhyBand (void) const;
 
   /**
    * Add a channel definition to the WifiPhy.  The pair (channelNumber,
@@ -1864,19 +1872,15 @@ private:
    * Configure the PHY-level parameters for different Wi-Fi standard.
    * This method is called when defaults for each standard must be
    * selected.
-   *
-   * \param standard the Wi-Fi standard
    */
-  void ConfigureDefaultsForStandard (WifiPhyStandard standard);
+  void ConfigureDefaultsForStandard (void);
   /**
    * Configure the PHY-level parameters for different Wi-Fi standard.
    * This method is called when the Frequency or ChannelNumber attributes
    * are set by the user.  If the Frequency or ChannelNumber are valid for
    * the standard, they are used instead.
-   *
-   * \param standard the Wi-Fi standard
    */
-  void ConfigureChannelForStandard (WifiPhyStandard standard);
+  void ConfigureChannelForStandard (void);
 
   /**
    * Look for channel number matching the frequency and width
@@ -2076,6 +2080,7 @@ private:
   std::vector<uint8_t> m_bssMembershipSelectorSet; //!< the BSS membership selector set
 
   WifiPhyStandard m_standard;               //!< WifiPhyStandard
+  WifiPhyBand m_band;                       //!< WifiPhyBand
   bool m_isConstructed;                     //!< true when ready to set frequency
   uint16_t m_channelCenterFrequency;        //!< Center frequency in MHz
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
@@ -2111,7 +2116,7 @@ private:
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams
 
-  typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap; //!< channel to frequency width map typedef
+  typedef std::map<ChannelNumberStandardPair, FrequencyWidthPair> ChannelToFrequencyWidthMap; //!< channel to frequency width map typedef
   static ChannelToFrequencyWidthMap m_channelToFrequencyWidth;                               //!< the channel to frequency width map
 
   std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)

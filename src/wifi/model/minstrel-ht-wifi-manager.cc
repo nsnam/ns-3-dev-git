@@ -320,7 +320,7 @@ MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t stream
   txvector.SetMode (mode);
   txvector.SetPreambleType (WIFI_PREAMBLE_HT_MF);
   return WifiPhy::CalculatePhyPreambleAndHeaderDuration (txvector)
-         + WifiPhy::GetPayloadDuration (m_frameLength, txvector, phy->GetFrequency (), mpduType);
+         + WifiPhy::GetPayloadDuration (m_frameLength, txvector, phy->GetPhyBand (), mpduType);
 }
 
 Time

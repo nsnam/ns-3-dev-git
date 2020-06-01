@@ -76,7 +76,7 @@ PowerRateAdaptationTest::ConfigureNode ()
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
   Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac> ();
   mac->SetDevice (dev);
-  mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  mac->ConfigureStandard (WIFI_STANDARD_80211a);
 
   /*
    * Create mobility model. Is needed by the phy layer for transmission.
@@ -90,7 +90,7 @@ PowerRateAdaptationTest::ConfigureNode ()
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (mobility);
-  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211a, WIFI_PHY_BAND_5GHZ);
 
   /*
    * Configure power control parameters.

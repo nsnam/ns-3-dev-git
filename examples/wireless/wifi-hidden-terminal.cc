@@ -77,7 +77,7 @@ void experiment (bool enableCtsRts, std::string wifiManager)
 
   // 5. Install wireless devices
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  wifi.SetStandard (WIFI_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::" + wifiManager + "WifiManager");
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel);
