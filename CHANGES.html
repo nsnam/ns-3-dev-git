@@ -58,6 +58,7 @@ us a note on ns-developers mailing list.</p>
 <li>Added, to <b>PIE queue disc</b>, <b>queue delay calculation using timestamp</b> feature (Linux default behavior), <b>cap drop adjustment</b> feature (Section 5.5 of RFC 8033), <b>ECN</b> (Section 5.1 of RFC 8033) and <b>derandomization</b> feature (Section 5.4 of RFC 8033).</li>
 <li>Added <b>L4S Mode</b> to FqCoDel and CoDel queue discs</li>
 <li> A model for <b>dynamic pacing</b> has been added to TCP.</li>
+<li>Added <b>Active/Inactive feature</b> to PIE queue disc</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -70,6 +71,7 @@ by including flow-monitor.h you will need to change that to stats-module.h.
 longer takes a WifiPhyStandard enum, but instead takes a similarly named 
 WifiStandard enum.  If before you specified a value such as WIFI_PHY_STANDARD_xxx, now you must specify WIFI_STANDARD_xxx.
 </li>
+<li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

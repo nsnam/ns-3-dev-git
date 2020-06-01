@@ -24,6 +24,7 @@ New user-visible features
 - (traffic-control) Add support for L4S mode to CoDel and FqCoDel queue discs
 - (tcp) Support for dynamic pacing in TCP.
 - (wifi) Support for 6 GHz channels when using 802.11ax
+- (traffic-control) Add Active/Inactive feature to PIE queue disc.
 
 Bugs fixed
 ----------

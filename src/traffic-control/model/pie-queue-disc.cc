@@ -117,6 +117,11 @@ TypeId PieQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&PieQueueDisc::m_useDerandomization),
                    MakeBooleanChecker ())
+    .AddAttribute ("ActiveThreshold",
+                   "Threshold for activating PIE (disabled by default)",
+                   TimeValue (Time::Max ()),
+                   MakeTimeAccessor (&PieQueueDisc::m_activeThreshold),
+                   MakeTimeChecker ())
   ;
 
   return tid;
@@ -172,7 +177,7 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_accuProb = 0;
       return false;
     }
-  else if (DropEarly (item, nQueued.GetValue ()))
+  else if ((m_activeThreshold == Time::Max () || m_active) && DropEarly (item, nQueued.GetValue ()))
     {
       if (!m_useEcn || m_dropProb >= m_markEcnTh || !Mark (item, UNFORCED_MARK))
         {
@@ -185,6 +190,28 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   // No drop
   bool retval = GetInternalQueue (0)->Enqueue (item);
+
+  // If the queue is over a certain threshold, Turn ON PIE
+  if (m_activeThreshold != Time::Max () && !m_active && m_qDelay >= m_activeThreshold)
+    {
+      m_active = true;
+      m_qDelayOld = Time (Seconds (0));
+      m_dropProb = 0;
+      m_inMeasurement = true;
+      m_dqCount = 0;
+      m_avgDqRate = 0;
+      m_burstAllowance = m_maxBurst;
+      m_accuProb = 0;
+      m_dqStart = Simulator::Now ().GetSeconds ();
+    }
+
+  // If queue has been Idle for a while, Turn OFF PIE
+  // Reset Counters when accessing the queue after some idle period if PIE was active before
+  if (m_activeThreshold != Time::Max () && m_dropProb == 0 && m_qDelayOld.GetMilliSeconds () == 0 && m_qDelay.GetMilliSeconds () == 0)
+    {
+      m_active = false;
+      m_inMeasurement = false ;
+    }
 
   // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
   // internal queue because QueueDisc::AddInternalQueue sets the trace callback
@@ -207,6 +234,7 @@ PieQueueDisc::InitializeParams (void)
   m_burstState = NO_BURST;
   m_qDelayOld = Time (Seconds (0));
   m_accuProb = 0.0;
+  m_active = false;
 }
 
 bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)

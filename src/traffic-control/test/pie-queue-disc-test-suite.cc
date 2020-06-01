@@ -565,6 +565,44 @@ PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
   NS_TEST_EXPECT_MSG_EQ (test14, testAttributes->m_expectedDrops,
                         "The number of unforced drops should be equal to number of expected unforced drops");
   NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
+
+
+  // test 15: tests Active/Inactive feature, ActiveThreshold set to a high value so PIE never starts and there should
+  // not be any drops
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize)));
+  queue->SetAttributeFailSafe ("ActiveThreshold", TimeValue (Seconds (1)));
+  queue->Initialize ();
+  
+  EnqueueWithDelay (queue, pktSize, 100, testAttributes);
+  DequeueWithDelay (queue, 0.02, 100);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test15 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_EQ (test15, 0, "There should not be any drops.");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should be zero marks");
+
+
+  // test 16: tests Active/Inactive feature, ActiveThreshold set to a low value so PIE starts early
+  // and some packets should be dropped.
+  queue = CreateObject<PieQueueDisc> ();
+  // PieQueueDiscItem pointer for attributes
+  testAttributes = Create<PieQueueDiscTestItem> (Create<Packet> (pktSize), dest, false);
+  queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize)));
+  queue->SetAttributeFailSafe ("ActiveThreshold", TimeValue (Seconds (0.001)));
+  queue->Initialize ();
+  
+  EnqueueWithDelay (queue, pktSize, 100, testAttributes);
+  DequeueWithDelay (queue, 0.02, 100);
+  Simulator::Stop (Seconds (8.0));
+  Simulator::Run ();
+  st = queue->GetStats ();
+  uint32_t test16 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
+  NS_TEST_EXPECT_MSG_NE (test16, 0, "There should be some drops.");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should be zero marks");
 }
 
 void

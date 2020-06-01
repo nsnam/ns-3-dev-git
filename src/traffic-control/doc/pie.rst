@@ -24,7 +24,7 @@ P. Tahiliani for the ns-3.32 release, with additional unit test cases contribute
 
 * class :cpp:class:`PieQueueDisc`: This class implements the main PIE algorithm:
 
-  * ``PieQueueDisc::DoEnqueue ()``: This routine checks whether the queue is full, and if so, drops the packets and records the number of drops due to queue overflow. If queue is not full, this routine calls ``PieQueueDisc::DropEarly()``, and depending on the value returned, the incoming packet is either enqueued or dropped.
+  * ``PieQueueDisc::DoEnqueue ()``: This routine checks whether the queue is full, and if so, drops the packets and records the number of drops due to queue overflow. If queue is not full then if ActiveThreshold is set then it checks if queue delay is higher than ActiveThreshold and if it is then, this routine calls ``PieQueueDisc::DropEarly()``, and depending on the value returned, the incoming packet is either enqueued or dropped.
 
   * ``PieQueueDisc::DropEarly ()``: The decision to enqueue or drop the packet is taken by invoking this routine, which returns a boolean value; false indicates enqueue and true indicates drop.
 
@@ -62,6 +62,7 @@ The key attributes that the PieQueue class holds include the following:
 * ``MarkEcnThreshold:`` ECN marking threshold (Default: 10% as suggested in RFC 8033).
 * ``UseDerandomization:`` Enable/Disable Derandomization feature mentioned in RFC 8033 (Default: false).
 * ``UseCapDropAdjustment:`` Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033 (Default: true).
+* ``ActiveThreshold:`` Threshold for activating PIE (disabled by default).
 
 Examples
 ========
@@ -95,6 +96,8 @@ The PIE model is tested using :cpp:class:`PieQueueDiscTestSuite` class defined i
 * Test 12: test with Derandomization enabled
 * Test 13: same as test 11 but with accumulated drop probability set below the low threshold
 * Test 14: same as test 12 but with accumulated drop probability set above the high threshold
+* Test 15: Tests Active/Inactive feature, ActiveThreshold set to a high value so PIE never starts.
+* Test 16: Tests Active/Inactive feature, ActiveThreshold set to a low value so PIE starts early.
 
 The test suite can be run using the following commands: 
 

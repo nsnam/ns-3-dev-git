@@ -147,6 +147,7 @@ private:
   bool m_useEcn;                                //!< Enable ECN Marking functionality
   bool m_useDerandomization;                    //!< Enable Derandomization feature mentioned in RFC 8033
   double m_markEcnTh;                           //!< ECN marking threshold (default 10% as suggested in RFC 8033)
+  Time m_activeThreshold;                       //!< Threshold for activating PIE (disabled by default)
 
   // ** Variables maintained by PIE
   double m_dropProb;                            //!< Variable used in calculation of drop probability
@@ -162,6 +163,7 @@ private:
   EventId m_rtrsEvent;                          //!< Event used to decide the decision of interval of drop probability calculation
   Ptr<UniformRandomVariable> m_uv;              //!< Rng stream
   double m_accuProb;                            //!< Accumulated drop probability
+  bool m_active;                                //!< Indicates whether PIE is in active state or not
 };
 
 };   // namespace ns3
