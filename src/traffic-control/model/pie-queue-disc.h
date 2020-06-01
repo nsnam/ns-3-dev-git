@@ -98,6 +98,7 @@ public:
   // Reasons for dropping packets
   static constexpr const char* UNFORCED_DROP = "Unforced drop";  //!< Early probability drops: proactive
   static constexpr const char* FORCED_DROP = "Forced drop";      //!< Drops due to queue limit: reactive
+  static constexpr const char* UNFORCED_MARK = "Unforced mark";  //!< Early probability marks: proactive
 
 protected:
   /**
@@ -144,6 +145,8 @@ private:
   uint32_t m_dqThreshold;                       //!< Minimum queue size in bytes before dequeue rate is measured
   bool m_useDqRateEstimator;                    //!< Enable/Disable usage of dequeue rate estimator for queue delay calculation
   bool  m_isCapDropAdjustment;                  //!< Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033
+  bool m_useEcn;                                //!< Enable ECN Marking functionality
+  double m_markEcnTh;                           //!< ECN marking threshold (default 10% as suggested in RFC 8033)
 
   // ** Variables maintained by PIE
   double m_dropProb;                            //!< Variable used in calculation of drop probability
