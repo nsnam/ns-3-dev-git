@@ -63,7 +63,7 @@ TypeId PieQueueDisc::GetTypeId (void)
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Tupdate",
                    "Time period to calculate drop probability",
-                   TimeValue (Seconds (0.015)),
+                   TimeValue (MilliSeconds (15)),
                    MakeTimeAccessor (&PieQueueDisc::m_tUpdate),
                    MakeTimeChecker ())
     .AddAttribute ("Supdate",
@@ -84,12 +84,12 @@ TypeId PieQueueDisc::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("QueueDelayReference",
                    "Desired queue delay",
-                   TimeValue (Seconds (0.015)),
+                   TimeValue (MilliSeconds (15)),
                    MakeTimeAccessor (&PieQueueDisc::m_qDelayRef),
                    MakeTimeChecker ())
     .AddAttribute ("MaxBurstAllowance",
                    "Current max burst allowance before random drop",
-                   TimeValue (Seconds (0.15)),
+                   TimeValue (MilliSeconds (15)),
                    MakeTimeAccessor (&PieQueueDisc::m_maxBurst),
                    MakeTimeChecker ())
     .AddAttribute ("UseDequeueRateEstimator",

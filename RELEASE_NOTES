@@ -17,6 +17,10 @@ New user-visible features
 - (build system) Added "--enable-asserts" and "--enable-logs" to waf configure,
    to selectively enable asserts and/or logs in release and optimized builds.
 - (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' congestion control).
+- (traffic-control) Added, to PIE queue disc, queue delay calculation using
+  timestamp feature (Linux default behavior), cap drop adjustment feature
+  (Section 5.5 of RFC 8033), ECN (Section 5.1 of RFC 8033) and derandomization
+  feature (Section 5.4 of RFC 8033).
 
 Bugs fixed
 ----------
