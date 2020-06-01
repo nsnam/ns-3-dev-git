@@ -39,8 +39,9 @@ public:
   /**
    * Constructor.
    * \param desc Test description.
+   * \param useEcn Whether to enable ECN.
    */
-  TcpSynConnectionFailedTest (std::string desc);
+  TcpSynConnectionFailedTest (std::string desc, bool useEcn);
 
   /**
    * \brief Handle a connection failure.
@@ -51,9 +52,10 @@ public:
 
 private:
   bool m_connectionFailed{false};
+  bool m_useEcn {false};
 };
 
-TcpSynConnectionFailedTest::TcpSynConnectionFailedTest (std::string desc) : TestCase (desc)
+TcpSynConnectionFailedTest::TcpSynConnectionFailedTest (std::string desc, bool useEcn) : TestCase (desc), m_useEcn (useEcn)
 {
 }
 
@@ -74,6 +76,11 @@ TcpSynConnectionFailedTest::DoRun ()
   TypeId tid = TcpSocketFactory::GetTypeId ();
 
   Ptr<Socket> socket = Socket::CreateSocket (node, tid);
+  if (m_useEcn)
+    {
+      Ptr<TcpSocketBase> tcpSocket = DynamicCast<TcpSocketBase> (socket);
+      tcpSocket->SetUseEcn (TcpSocketState::On);
+    }
   socket->Bind ();
   socket->SetConnectCallback (MakeNullCallback <void, Ptr<Socket>>(),
                               MakeCallback (&TcpSynConnectionFailedTest::HandleConnectionFailed, this));
@@ -96,7 +103,8 @@ class TcpSynConnectionFailedTestSuite : public TestSuite
 public:
   TcpSynConnectionFailedTestSuite () : TestSuite ("tcp-syn-connection-failed-test", UNIT)
   {
-    AddTestCase (new TcpSynConnectionFailedTest ("TCP SYN connection failed test"), TestCase::QUICK);
+    AddTestCase (new TcpSynConnectionFailedTest ("TCP SYN connection failed test no ECN", false), TestCase::QUICK);
+    AddTestCase (new TcpSynConnectionFailedTest ("TCP SYN connection failed test with ECN", true), TestCase::QUICK);
   }
 };
 
