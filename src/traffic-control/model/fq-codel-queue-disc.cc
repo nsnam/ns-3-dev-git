@@ -153,6 +153,16 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    TimeValue (Time::Max ()),
                    MakeTimeAccessor (&FqCoDelQueueDisc::m_ceThreshold),
                    MakeTimeChecker ())
+    .AddAttribute ("EnableSetAssociativeHash",
+                   "Enable/Disable Set Associative Hash",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&FqCoDelQueueDisc::m_enableSetAssociativeHash),
+                   MakeBooleanChecker ())
+    .AddAttribute ("SetWays",
+                   "The size of a set of queues (used by set associative hash)",
+                   UintegerValue (8),
+                   MakeUintegerAccessor (&FqCoDelQueueDisc::m_setWays),
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -182,16 +192,45 @@ FqCoDelQueueDisc::GetQuantum (void) const
   return m_quantum;
 }
 
+uint32_t
+FqCoDelQueueDisc::SetAssociativeHash (uint32_t flowHash)
+{
+  NS_LOG_FUNCTION (this << flowHash);
+
+  uint32_t h = (flowHash % m_flows);
+  uint32_t innerHash = h % m_setWays;
+  uint32_t outerHash = h - innerHash;
+
+  for (uint32_t i = outerHash; i < outerHash + m_setWays; i++)
+    {
+      auto it = m_flowsIndices.find (i);
+
+      if (it == m_flowsIndices.end ()
+          || (m_tags.find (i) != m_tags.end () && m_tags[i] == flowHash)
+          || StaticCast<FqCoDelFlow> (GetQueueDiscClass (it->second))->GetStatus () == FqCoDelFlow::INACTIVE)
+        {
+          // this queue has not been created yet or is associated with this flow
+          // or is inactive, hence we can use it
+          m_tags[i] = flowHash;
+          return i;
+        }
+    }
+
+  // all the queues of the set are used. Use the first queue of the set
+  m_tags[outerHash] = flowHash;
+  return outerHash;
+}
+
 bool
 FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  uint32_t h = 0;
+  uint32_t flowHash, h;
 
   if (GetNPacketFilters () == 0)
     {
-      h = item->Hash (m_perturbation) % m_flows;
+      flowHash = item->Hash (m_perturbation);
     }
   else
     {
@@ -199,7 +238,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
       if (ret != PacketFilter::PF_NO_MATCH)
         {
-          h = ret % m_flows;
+          flowHash = static_cast<uint32_t> (ret);
         }
       else
         {
@@ -207,6 +246,15 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
           DropBeforeEnqueue (item, UNCLASSIFIED_DROP);
           return false;
         }
+    }
+
+  if (m_enableSetAssociativeHash)
+    {
+      h = SetAssociativeHash (flowHash);
+    }
+  else
+    {
+      h = flowHash % m_flows;
     }
 
   Ptr<FqCoDelFlow> flow;
@@ -374,6 +422,13 @@ FqCoDelQueueDisc::CheckConfig (void)
         }
     }
 
+  if (m_enableSetAssociativeHash && (m_flows % m_setWays != 0))
+    {
+      NS_LOG_ERROR ("The number of queues must be an integer multiple of the size "
+                    "of the set of queues used by set associative hash");
+      return false;
+    }
+
   return true;
 }
 
@@ -427,3 +482,4 @@ FqCoDelQueueDisc::FqCoDelDrop (void)
 }
 
 } // namespace ns3
+

@@ -154,18 +154,30 @@ private:
   uint32_t FqCoDelDrop (void);
 
   bool m_useEcn;             //!< True if ECN is used (packets are marked instead of being dropped)
+  /**
+   * Compute the index of the queue for the flow having the given flowHash,
+   * according to the set associative hash approach.
+   *
+   * \param flowHash the hash of the flow 5-tuple
+   * \return the index of the queue for the given flow
+   */
+  uint32_t SetAssociativeHash (uint32_t flowHash);
+
   std::string m_interval;    //!< CoDel interval attribute
   std::string m_target;      //!< CoDel target attribute
   uint32_t m_quantum;        //!< Deficit assigned to flows at each round
   uint32_t m_flows;          //!< Number of flow queues
+  uint32_t m_setWays;        //!< size of a set of queues (used by set associative hash)
   uint32_t m_dropBatchSize;  //!< Max number of packets dropped from the fat flow
   uint32_t m_perturbation;   //!< hash perturbation value
   Time m_ceThreshold;        //!< Threshold above which to CE mark
+  bool m_enableSetAssociativeHash; //!< whether to enable set associative hash
 
   std::list<Ptr<FqCoDelFlow> > m_newFlows;    //!< The list of new flows
   std::list<Ptr<FqCoDelFlow> > m_oldFlows;    //!< The list of old flows
 
   std::map<uint32_t, uint32_t> m_flowsIndices;    //!< Map with the index of class for each flow
+  std::map<uint32_t, uint32_t> m_tags;            //!< Tags used by set associative hash
 
   ObjectFactory m_flowFactory;         //!< Factory to create a new flow
   ObjectFactory m_queueDiscFactory;    //!< Factory to create a new queue
@@ -174,3 +186,4 @@ private:
 } // namespace ns3
 
 #endif /* FQ_CODEL_QUEUE_DISC */
+
