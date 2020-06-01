@@ -55,11 +55,6 @@ int main (int argc, char** argv)
       LogComponentEnable ("LrWpanNetDevice", LOG_LEVEL_ALL);
       LogComponentEnable ("SixLowPanNetDevice", LOG_LEVEL_ALL);
     }
-  if (enableLSixlowLogLevelInfo)
-    {
-      Packet::EnablePrinting ();
-      LogComponentEnable ("SixLowPanNetDevice", LOG_LEVEL_INFO);
-    }
 
   NodeContainer nodes;
   nodes.Create(2);
@@ -95,11 +90,14 @@ int main (int argc, char** argv)
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer deviceInterfaces;
   deviceInterfaces = ipv6.Assign (devices);
-  // check if addresses are assigned
-  //std::cout<< deviceInterfaces.GetAddress(0,1)<<std::endl;
-  //std::cout<< deviceInterfaces.GetAddress(1,1)<<std::endl;
 
-
+  if (enableLSixlowLogLevelInfo)
+    {
+      std::cout << "Device 0: pseudo-Mac-48 " << Mac48Address::ConvertFrom (devices.Get (0)->GetAddress ())
+                << ", IPv6 Address " << deviceInterfaces.GetAddress (0,1) << std::endl;
+      std::cout << "Device 1: pseudo-Mac-48 " << Mac48Address::ConvertFrom (devices.Get (1)->GetAddress ())
+                << ", IPv6 Address " << deviceInterfaces.GetAddress (1,1) << std::endl;
+    }
    
   uint32_t packetSize = 10;
   uint32_t maxPacketCount = 5;
@@ -125,6 +123,11 @@ int main (int argc, char** argv)
   if (!disablePcap)
     {
       lrWpanHelper.EnablePcapAll (std::string ("Ping-6LoW-lr-wpan"), true);
+    }
+  if (enableLSixlowLogLevelInfo)
+    {
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> (&std::cout);
+      Ipv6RoutingHelper::PrintNeighborCacheAllAt (Seconds(9), routingStream);
     }
 
   Simulator::Stop (Seconds (10));
