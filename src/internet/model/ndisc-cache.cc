@@ -97,7 +97,8 @@ NdiscCache::Entry* NdiscCache::Lookup (Ipv6Address dst)
   if (m_ndCache.find (dst) != m_ndCache.end ())
     {
       NdiscCache::Entry* entry = m_ndCache[dst];
-      NS_LOG_LOGIC ("Found an entry:" << dst << " to " << entry->GetMacAddress ());
+      NS_LOG_LOGIC ("Found an entry: " << *entry);
+
       return entry;
     }
   NS_LOG_LOGIC ("Nothing found");
@@ -114,7 +115,7 @@ std::list<NdiscCache::Entry*> NdiscCache::LookupInverse (Address dst)
       NdiscCache::Entry *entry = (*i).second;
       if (entry->GetMacAddress () == dst)
         {
-          NS_LOG_LOGIC ("Found an entry:" << (*i).first << " to " << (*i).second);
+          NS_LOG_LOGIC ("Found an entry:" << (*entry));
           entryList.push_back (entry);
         }
     }
@@ -214,13 +215,13 @@ void NdiscCache::PrintNdiscCache (Ptr<OutputStreamWrapper> stream)
           *os << " STALE\n";
         }
       else if (i->second->IsPermanent ())
-	{
-	  *os << " PERMANENT\n";
-	}
+        {
+          *os << " PERMANENT\n";
+        }
       else
-	{
-	  NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
-	}
+        {
+          NS_FATAL_ERROR ("Test for possibly unreachable code-- please file a bug report, with a test case, if this is ever hit");
+        }
     }
 }
 
@@ -593,6 +594,38 @@ void NdiscCache::Entry::SetMacAddress (Address mac)
 {
   NS_LOG_FUNCTION (this << mac << int(m_state));
   m_macAddress = mac;
+}
+
+void NdiscCache::Entry::Print (std::ostream &os) const
+{
+  os << m_ipv6Address << " lladdr " << m_macAddress << " state ";
+  switch (m_state)
+  {
+    case INCOMPLETE:
+      os << "INCOMPLETE";
+      break;
+    case REACHABLE:
+      os << "REACHABLE";
+      break;
+    case STALE:
+      os << "STALE";
+      break;
+    case DELAY:
+      os << "DELAY";
+      break;
+    case PROBE:
+      os << "PROBE";
+      break;
+    case PERMANENT:
+      os << "PERMANENT";
+      break;
+  }
+}
+
+std::ostream& operator << (std::ostream& os, NdiscCache::Entry const& entry)
+{
+  entry.Print (os);
+  return os;
 }
 
 } /* namespace ns3 */
