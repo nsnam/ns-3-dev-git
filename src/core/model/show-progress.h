@@ -34,6 +34,7 @@
 #include "event-id.h"
 #include "nstime.h"
 #include "system-wall-clock-ms.h"
+#include "system-wall-clock-timestamp.h"
 #include "time-printer.h"
 
 namespace ns3 {
@@ -64,6 +65,21 @@ namespace ns3 {
  *     }
  * \endcode
  *
+ * This generates output similar to the following:
+ *
+ * \code
+ *     Start wall clock: Tue May 19 10:24:07 2020
+ *     +17.179869183s (   4.937x real time) 29559 events processed
+ *     +25.769803775s (   4.965x real time) 45179 events processed
+ *     +51.539607551s (   8.810x real time) 49421 events processed
+ *     +90.324463739s (   7.607x real time) 58021 events processed
+ *     +129.770882188s (   7.576x real time) 53850 events processed
+ *     +170.958751090s (   8.321x real time) 56473 events processed
+ *     +194.339562435s (  12.776x real time) 30957 events processed
+ *     End wall clock:  Tue May 19 10:24:23 2020
+ *     Elapsed wall clock: 16s
+ * \endcode
+ *
  * Based on a python version by Gustavo Carneiro <gjcarneiro@gmail.com>,
  * as released here:
  * http://mailman.isi.edu/pipermail/ns-developers/2009-January/005201.html
@@ -78,6 +94,9 @@ public:
    */
   ShowProgress (const Time interval = Seconds (1.0),
                 std::ostream & os = std::cout);
+
+  /** Destructor. */
+  ~ShowProgress (void);
 
   /**
    * Set the target update interval, in wallclock time.
@@ -101,9 +120,6 @@ public:
    */
   void SetStream (std::ostream & os);
 
-  /** Start the progress timer. */
-  void Start (void);
-
   /**
    * Set verbose mode to print real and virtual time intervals.
    *
@@ -112,21 +128,52 @@ public:
   void SetVerbose (bool verbose);
 
 private:
-  /** Show execution progress. */
-  void Feedback (void);
+  
+  /**
+   * Start the elapsed wallclock timestamp and print the start time.
+   * This is triggered by the constructor.
+   */
+  void Start (void);
+
+  /**
+   * Stop the elapsed wallclock timestamp and print the total elapsed time.
+   * This is triggered by the destructor.
+   */
+  void Stop (void);
+
+  /**
+   * Schedule the next CheckProgress.
+   */
+  void ScheduleCheckProgress (void);
+
+  /**
+   * Check on execution progress.
+   * This function is executed periodically, updates the internal
+   * state on rate of progress, and decides if it's time to generate
+   * output.
+   */
+  void CheckProgress (void);
+
+  /**
+   * Show execution progress.
+   * This function actually generates output, when directed by CheckProgress().
+   */
+  void GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed);
 
   /**
    * Hysteresis factor.
    * \see Feedback()
    */
-  const int64x64_t HYSTERESIS = 1.2;
+  static const int64x64_t HYSTERESIS;
   /**
    * Maximum growth factor.
    * \see Feedback()
    */
-  const int64x64_t MAXGAIN = 2.0;
+  static const int64x64_t MAXGAIN;
 
   SystemWallClockMs m_timer;  //!< Wallclock timer
+  SystemWallClockTimestamp m_stamp;  //!< Elapsed wallclock time.
+  Time m_elapsed;             //!< Total elapsed wallclock time since last update.
   Time m_interval;            //!< The target update interval, in wallclock time
   Time m_vtime;               //!< The virtual time interval.
   EventId m_event;            //!< The next progress event.
@@ -135,7 +182,7 @@ private:
   TimePrinter m_printer;      //!< The TimePrinter to use
   std::ostream *m_os;         //!< The output stream to use.
   bool m_verbose;             //!< Verbose mode flag
-  uint64_t m_repCount;        //!< Count of progress lines printed
+  uint64_t m_repCount;        //!< Number of CheckProgress events
 
 };  // class ShowProgress
 

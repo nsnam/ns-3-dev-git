@@ -213,6 +213,7 @@ def build(bld):
         'model/node-printer.cc',
         'model/time-printer.cc',
         'model/show-progress.cc',
+        'model/system-wall-clock-timestamp.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -270,6 +271,7 @@ def build(bld):
         'model/synchronizer.h',
         'model/make-event.h',
         'model/system-wall-clock-ms.h',
+        'model/system-wall-clock-timestamp.h',
         'model/empty.h',
         'model/callback.h',
         'model/object-base.h',

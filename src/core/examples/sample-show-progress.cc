@@ -45,45 +45,6 @@ NS_LOG_COMPONENT_DEFINE ("SampleShowProgress");
 namespace {
 
 /**
- * Utility class to record the difference between to wall-clock times.
- */
-class Timestamp
-{
-public:
-  /** Constructor */
-  Timestamp () :
-    last (0),
-    diff (0)
-  {
-    stamp ();
-  }
-
-  /** Record the current wall-clock time and delta since the last stamp(). */
-  void stamp ()
-  {
-    time_t seconds  = time (NULL);
-    diff = seconds - last;
-    last  = seconds;
-  }
-
-  /**
-   * Get the last time stamp as a string.
-   * \return The last time stamp.
-   */
-  std::string string ()
-  {
-    std::string now = ctime ( &last );
-    now.resize (now.length () - 1);  // trim trailing newline
-    return now;
-  }
-
-  time_t last;    /**< The last time stamp. */
-  time_t diff;    /**< Difference between the two previous time stamps. */
-
-};  // class Timestamp
-
-
-/**
  * Execute a function periodically,
  * which takes more or less time to run.
  *
@@ -181,20 +142,7 @@ main (int argc, char ** argv)
   ShowProgress spinner (interval);
   spinner.SetVerbose (verbose);
 
-  Timestamp ts;
-  ts.stamp ();
-
-  std::cout << std::endl;
-  std::cout << "Start wall clock:   " << ts.string ()
-            << " (" << ts.last << ")"
-            << std::endl;
-
   Simulator::Run ();
-
-  ts.stamp ();
-  std::cout << "Elapsed wall clock: " << ts.diff << "s" << std::endl;
-
-
   Simulator::Destroy ();
 
 }

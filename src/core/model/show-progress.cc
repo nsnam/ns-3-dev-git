@@ -25,25 +25,31 @@
  * ns3::ShowProgress implementation.
  */
 
-#include <iomanip>
-
+#include "show-progress.h"
 #include "event-id.h"
 #include "log.h"
 #include "nstime.h"
 #include "simulator.h"
-#include "singleton.h"
 
-#include "show-progress.h"
+#include <iomanip>
+
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ShowProgress");
 
+/* static */
+const int64x64_t ShowProgress::HYSTERESIS = 1.414;
+/* static */
+const int64x64_t ShowProgress::MAXGAIN = 2.0;
+  
 ShowProgress::ShowProgress (const Time interval /* = Seconds (1.0) */,
                             std::ostream & os /* = std::cout */)
   : m_timer (),
+    m_stamp (),
+    m_elapsed (),
     m_interval (interval),
-    m_vtime (Seconds (1.0)),
+    m_vtime (Time (1)),
     m_event (),
     m_eventCount (0),
     m_printer (DefaultTimePrinter),
@@ -52,8 +58,16 @@ ShowProgress::ShowProgress (const Time interval /* = Seconds (1.0) */,
     m_repCount (0)
 {
   NS_LOG_FUNCTION (this << interval);
+  ScheduleCheckProgress ();
   Start ();
 }
+
+
+ShowProgress::~ShowProgress (void)
+{
+  Stop ();
+}
+
 
 void
 ShowProgress::SetInterval (const Time interval)
@@ -61,7 +75,12 @@ ShowProgress::SetInterval (const Time interval)
   NS_LOG_FUNCTION (this << interval);
   const int64x64_t ratio = interval  / m_interval;
   m_interval = interval;
-  m_vtime = m_vtime * ratio;
+  // If we aren't at the initial value assume we have a reasonable
+  // update time m_vtime, so we should rescale it
+  if (m_vtime > Time (1))
+    {
+      m_vtime = m_vtime * ratio;
+    }
   Simulator::Cancel (m_event);
   Start ();
 
@@ -88,41 +107,77 @@ ShowProgress::SetStream (std::ostream & os)
 }
 
 void
-ShowProgress::Start (void)
+ShowProgress::ScheduleCheckProgress (void)
 {
   NS_LOG_FUNCTION (this);
-  m_event = Simulator::Schedule (m_vtime, &ShowProgress::Feedback, this);
+  m_event = Simulator::Schedule (m_vtime, &ShowProgress::CheckProgress, this);
   m_timer.Start ();
 
-}  // ShowProgress::Start
+}  // ShowProgress::ScheduleCheckProgress
 
 void
-ShowProgress::Feedback (void)
+ShowProgress::GiveFeedback (uint64_t nEvents, int64x64_t ratio, int64x64_t speed)
+{
+  // Save stream state
+  auto precision = m_os->precision ();
+  auto flags = m_os->flags ();
+
+  m_os->setf (std::ios::fixed, std:: ios::floatfield);
+
+  if (m_verbose)
+    {
+      (*m_os) << std::right << std::setw (5) << m_repCount << std::left
+              << (ratio > (1.0 / HYSTERESIS) ? "-->" : "   ")
+              << std::setprecision (9) 
+              << " [del: " << m_elapsed.As (Time::S)
+              << "/ int: " << m_interval.As (Time::S)
+              << " = rat: " << ratio
+              << (ratio > HYSTERESIS ? " dn" :
+          (ratio < 1.0 / HYSTERESIS ? " up" : " --"))
+              << ", vt: " << m_vtime.As (Time::S) << "] ";
+    }
+
+  // Print the current time
+  (*m_printer)(*m_os);
+
+  (*m_os) << " ("
+          << std::setprecision (3) << std::setw (8) << speed.GetDouble () << "x real time) "
+          << nEvents << " events processed"
+          << std::endl
+          << std::flush;
+
+  // Restore stream state
+  m_os->precision (precision);
+  m_os->flags (flags);
+
+}  // ShowProgress::GiveFeedback
+
+void
+ShowProgress::CheckProgress (void)
 {
   // Get elapsed wall clock time
-  Time elapsed = MilliSeconds (m_timer.End ());
-  NS_LOG_FUNCTION (this << elapsed);
+  m_elapsed += MilliSeconds (m_timer.End ());
+  NS_LOG_FUNCTION (this << m_elapsed);
 
   // Don't do anything unless the elapsed time is positive.
-  if (elapsed <= Time (0))
+  if (m_elapsed <= Time (0))
     {
       m_vtime = m_vtime * MAXGAIN;
-      Start ();
+      ++m_repCount;
+      ScheduleCheckProgress ();
       return;
     }
 
   // Speed: how fast are we compared to real time
-  const int64x64_t speed = m_vtime / elapsed;
+  const int64x64_t speed = m_vtime / m_elapsed;
 
   // Ratio: how much real time did we use,
   // compared to reporting interval target
-  const int64x64_t ratio = elapsed / m_interval;
+  const int64x64_t ratio = m_elapsed / m_interval;
 
   // Elapsed event count
   uint64_t events = Simulator::GetEventCount ();
   uint64_t nEvents = events - m_eventCount;
-  m_eventCount = events;
-
   /**
    * \internal Update algorithm
    *
@@ -145,11 +200,11 @@ ShowProgress::Feedback (void)
               ratio   |   vtime update
                       |
                       |
-                      |   *= MAXGAIN
+                      |   /= MAXGAIN
                       |
-            MAXGAIN  -|--------------    *= min (ratio, MAXGAIN)
+            MAXGAIN  -|--------------    /= min (ratio, MAXGAIN)
                       |
-                      |   *= ratio
+                      |   /= ratio
                       |
          HYSTERESIS  -|=============================================
                       |
@@ -161,62 +216,81 @@ ShowProgress::Feedback (void)
                       |
       1/ HYSTERESIS  -|==============================================
                       |
-                      |   *= ratio
+                      |   *= 1 / ratio
                       |
-         1/ MAXGAIN  -|---------------   *=  max (ratio, 1/ MAXGAIN)
+         1/ MAXGAIN  -|---------------   *=  min (1 / ratio, MAXGAIN)
                       |
-                      |   *= 1/MAXGAIN
+                      |   *= MAXGAIN
                       |
      \endverbatim
    *
    * As indicated, when ratio is outside the hysteresis band
    * it amounts to multiplying \c m_vtime by the min/max of the ratio
    * with the appropriate MAXGAIN factor.
+   *
+   * Finally, some experimentation suggests we further dampen
+   * movement between HYSTERESIS and MAXGAIN, so we only apply
+   * half the ratio.  This reduces "hunting" for a stable update
+   * period.
+   *
+   * \todo Evaluate if simple exponential averaging would be
+   * more effective, simpler.
    */
   if (ratio > HYSTERESIS)
     {
-      m_vtime = m_vtime / std::min (ratio, MAXGAIN);
+      int64x64_t f = 1 + (ratio - 1) / 2;
+      if (ratio > MAXGAIN)
+        {
+          f = MAXGAIN;
+        }
+
+      m_vtime = m_vtime / f;
     }
   else if (ratio < 1.0 / HYSTERESIS)
     {
-      m_vtime = m_vtime / std::max (ratio, 1.0 / MAXGAIN);
+      int64x64_t f = 1 + (1 / ratio - 1)/2;
+      if (1 / ratio > MAXGAIN)
+        {
+          f = MAXGAIN;
+        }
+      m_vtime = m_vtime * f;
     }
 
-  // Save stream state
-  auto precision = m_os->precision ();
-  auto flags = m_os->flags ();
-
-  m_os->setf (std::ios::fixed, std:: ios::floatfield);
-
-  if (m_verbose)
+  // Only give feedback if ratio is at least as big as 1/HYSTERESIS
+  if (ratio > (1.0 / HYSTERESIS))
     {
-      (*m_os) << m_repCount
-              << " [del: " << elapsed.As (Time::S)
-              << "/ int: " << m_interval.As (Time::S)
-              << " = rat: " << ratio
-              << (ratio > HYSTERESIS ? " up" :
-          (ratio < 1.0 / HYSTERESIS ? " dn" : " --"))
-              << ", vt: " << m_vtime.As (Time::S) << "] ";
+      GiveFeedback (nEvents, ratio, speed);
+      m_elapsed = Time (0);
+      m_eventCount = events;
     }
-  m_repCount++;
-
-  // Print the current time
-  (*m_printer)(*m_os);
-
-  (*m_os) << " ("
-          << std::setprecision (3) << std::setw (8) << speed.GetDouble () << "x real time) "
-          << nEvents << " events processed"
-          << std::endl
-          << std::flush;
-
-  // Restore stream state
-  m_os->precision (precision);
-  m_os->flags (flags);
-
+  else
+    {
+      NS_LOG_LOGIC ("skipping update: " << ratio);
+      // enable this line for debugging, with --verbose
+      // GiveFeedback (nEvents, ratio, speed);
+    }
+  ++m_repCount;
+  
   // And do it again
-  Start ();
+  ScheduleCheckProgress ();
 
-}  // ShowProgress::Feedback
+}  // ShowProgress::CheckProgress
 
+void
+ShowProgress::Start (void)
+{
+  m_stamp.Stamp ();
+  (*m_os) << "Start wall clock: " << m_stamp.ToString ()
+          << std::endl;
+}  // ShowProgress::Start
+
+void
+ShowProgress::Stop (void)
+{
+  m_stamp.Stamp ();
+  (*m_os) << "End wall clock:  " << m_stamp.ToString ()
+          << "\nElapsed wall clock: " << m_stamp.GetInterval () << "s"
+          << std::endl;
+}  // ShowProgress::Stop
 
 }  // namespace ns3
