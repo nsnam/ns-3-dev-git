@@ -934,6 +934,12 @@ bool Ipv6Address::IsEqual (const Ipv6Address& other) const
   return false;
 }
 
+bool Ipv6Address::IsInitialized (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return (m_initialized);
+}
+
 std::ostream& operator << (std::ostream& os, Ipv6Address const& address)
 {
   address.Print (os);
