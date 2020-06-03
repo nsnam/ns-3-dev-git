@@ -609,7 +609,8 @@ Ipv4DeduplicationPerformanceTest::DoRun (void)
 
   for (uint8_t i = 0; i<nodes.GetN (); i++)
     {
-      Simulator::ScheduleWithContext (m_sockets[i]->GetNode ()->GetId (), Seconds (4+Seconds(jitter->GetValue ())),
+      Simulator::ScheduleWithContext (m_sockets[i]->GetNode ()->GetId (),
+                                      Seconds (4+jitter->GetValue ()),
                                       &Ipv4DeduplicationPerformanceTest::DoSendData, this, m_sockets[i], to, i);
     }
 

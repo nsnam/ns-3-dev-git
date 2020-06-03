@@ -970,7 +970,7 @@ CoDelQueueDiscBasicMark::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize, 
                                         "There should be 1 CE threshold exceeded marked packet");
                 }
             }
-          else if (initialCeThreshMarkCount > 0 && currentTime.GetMicroSeconds () < queue->GetInterval ())
+          else if (initialCeThreshMarkCount > 0 && currentTime < queue->GetInterval ())
             { 
               if (initialCeThreshMarkCount < 2)
                 {

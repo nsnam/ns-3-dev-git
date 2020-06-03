@@ -432,6 +432,7 @@ public:
 
   /**
    * implement PLME SetAttribute confirm SAP
+   * bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
    * @param isData is true for data rate or false for symbol rate
    * @return the rate value of this PHY
    */
@@ -492,7 +493,8 @@ public:
 protected:
   /**
    * The data and symbol rates for the different PHY options.
-   * See Table 2 in section 6.1.2 IEEE 802.15.4-2006
+   * See Table 2 in section 6.1.2 IEEE 802.15.4-2006.
+   * Bit rate is in kbit/s.  Symbol rate is in ksymbol/s.
    */
   static const LrWpanPhyDataAndSymbolRates dataSymbolRates[7];
   /**

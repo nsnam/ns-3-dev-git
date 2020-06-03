@@ -449,8 +449,8 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
 
           //TODO:  check possible incorrect expire time here.
 
-          expireTime = MicroSeconds (Simulator::Now () + m_macTransactionPersistanceTime *
-                                     unitPeriodSymbols * 1000 * 1000 / m_phy->GetDataOrSymbolRate (false));
+          expireTime = Simulator::Now () + m_macTransactionPersistanceTime
+            * MicroSeconds (unitPeriodSymbols * 1000 * 1000 / m_phy->GetDataOrSymbolRate (false));
           indTxQElement->expireTime = expireTime;
           indTxQElement->txQMsduHandle = params.m_msduHandle;
           indTxQElement->txQPkt = p;
