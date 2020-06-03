@@ -39,7 +39,9 @@ namespace ns3 {
  *
  * This code started as a c++ translation of a Java-based code written in 2005
  * to implement a heap sort. So, this binary heap is really a pretty
- * straightforward implementation of the classic data structure. Not much to say
+ * straightforward implementation of the classic data structure,
+ * implemented on a `std::vector`.  This implementation does not make use
+ * of any of the heap functions from the STL.  Not much to say
  * about it.
  *
  * What is smart about this code ?
@@ -49,6 +51,23 @@ namespace ns3 {
  *    the index of the root is 1.
  *  - It uses a slightly non-standard while loop for top-down heapify
  *    to move one if statement out of the loop.
+ *
+ * \par Time Complexity
+ *
+ * Operation    | Amortized %Time | Reason
+ * :----------- | :-------------- | :-----
+ * Insert()     | Logarithmic     | Heapify
+ * IsEmpty()    | Constant        | Explicit queue size
+ * PeekNext()   | Constant        | Heap kept sorted
+ * Remove()     | Logarithmic     | Search, heapify
+ * RemoveNext() | Logarithmic     | Heapify
+ *
+ * \par Memory Complexity
+ *
+ * Category  | Memory                           | Reason
+ * :-------- | :------------------------------- | :-----
+ * Overhead  | 3 x `sizeof (*)`<br/>(24 bytes)  | `std::vector`
+ * Per Event | 0                                | Events stored in `std::vector` directly
  */
 class HeapScheduler : public Scheduler
 {

@@ -42,6 +42,24 @@ class EventImpl;
  *
  * This class implements an event scheduler using an std::list
  * data structure, that is, a double linked-list.
+ *
+ * \par Time Complexity
+ *
+ * Operation    | Amortized %Time | Reason
+ * :----------- | :-------------- | :-----
+ * Insert()     | Linear          | Linear search in `std::list`
+ * IsEmpty()    | Constant        | `std::list::size()`
+ * PeekNext()   | Constant        | `std::list::front()`
+ * Remove()     | Linear          | Linear search in `std::list`
+ * RemoveNext() | Constant        | `std::list::pop_front()`
+ *
+ * \par Memory Complexity
+ *
+ * Category  | Memory                           | Reason
+ * :-------- | :------------------------------- | :-----
+ * Overhead  | 2 x `sizeof (*)` + `size_t`<br/>(24 bytes) | `std::list`
+ * Per Event | 2 x `sizeof (*)`                 | `std::list`
+ *
  */
 class ListScheduler : public Scheduler
 {

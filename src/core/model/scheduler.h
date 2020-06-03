@@ -49,7 +49,96 @@ class EventImpl;
  * \ingroup scheduler
  * \brief Maintain the event list
  *
- * This base class specifies the interface used to maintain the
+ *
+ * In ns-3 the Scheduler manages the future event list.  There are several
+ * different Scheduler implementations with different time and space tradeoffs.
+ * Which one is "best" depends in part on the characteristics
+ * of the model being executed.  For optimized production work common
+ * practice is to benchmark each Scheduler on the model of interest.
+ * The utility program utils/bench-simulator.cc can do simple benchmarking
+ * of each SchedulerImpl against an exponential or user-provided
+ * event time distribution.
+ *
+ * The most important Scheduler functions for time performance are (usually)
+ * Scheduler::Insert (for new events) and Scheduler::RemoveNext (for pulling
+ * off the next event to execute).  Simulator::Cancel is usually
+ * implemented by simply setting a bit on the Event, but leaving it in the
+ * Scheduler; the Simulator just skips those events as they are encountered.
+ *
+ * For models which need a large event list the Scheduler overhead
+ * and per-event memory cost could also be important.  Some models
+ * rely heavily on Scheduler::Cancel, however, and these might benefit
+ * from using Scheduler::Remove instead, to reduce the size of the event
+ * list, at the time cost of actually removing events from the list.
+ *
+ * A summary of the main characteristics
+ * of each SchedulerImpl is provided below.  See the individual
+ * Scheduler pages for details on the complexity of the other API calls.
+ * (Memory overheads assume pointers and `std::size_t` are both 8 bytes.)
+ *
+ * <table class="markdownTable">
+ * <tr class="markdownTableHead">
+ *      <th class="markdownTableHeadCenter" colspan="2"> %Scheduler Type </th>
+ *      <th class="markdownTableHeadCenter" colspan="4">Complexity</th>
+ * </tr>
+ * <tr class="markdownTableHead">
+ *      <th class="markdownTableHeadLeft" rowspan="2"> %SchedulerImpl </th>
+ *      <th class="markdownTableHeadLeft" rowspan="2"> Method </th>
+ *      <th class="markdownTableHeadCenter" colspan="2"> %Time </th>
+ *      <th class="markdownTableHeadCenter" colspan="2"> Space</th>
+ * </tr>
+ * <tr class="markdownTableHead">
+ *      <th class="markdownTableHeadLeft"> %Insert()</th>
+ *      <th class="markdownTableHeadLeft"> %RemoveNext()</th>
+ *      <th class="markdownTableHeadLeft"> Overhead</th>
+ *      <th class="markdownTableHeadLeft"> Per %Event</th>
+ * </tr>
+ * <tr class="markdownTableBody">
+ *      <td class="markdownTableBodyLeft"> CalendarScheduler </td>
+ *      <td class="markdownTableBodyLeft"> `<std::list> []` </td>
+ *      <td class="markdownTableBodyLeft"> Constant </td>
+ *      <td class="markdownTableBodyLeft"> Constant </td>
+ *      <td class="markdownTableBodyLeft"> 24 bytes </td>
+ *      <td class="markdownTableBodyLeft"> 16 bytes </td>
+ * </tr>
+ * <tr class="markdownTableBody">
+ *      <td class="markdownTableBodyLeft"> HeapScheduler </td>
+ *      <td class="markdownTableBodyLeft"> Heap on `std::vector` </td>
+ *      <td class="markdownTableBodyLeft"> Logarithmic  </td>
+ *      <td class="markdownTableBodyLeft"> Logarithmic </td>
+ *      <td class="markdownTableBodyLeft"> 24 bytes </td>
+ *      <td class="markdownTableBodyLeft"> 0 </td>
+ * </tr>
+ * <tr class="markdownTableBody">
+ *      <td class="markdownTableBodyLeft"> ListScheduler </td>
+ *      <td class="markdownTableBodyLeft"> `std::list` </td>
+ *      <td class="markdownTableBodyLeft"> Linear </td>
+ *      <td class="markdownTableBodyLeft"> Constant </td>
+ *      <td class="markdownTableBodyLeft"> 24 bytes </td>
+ *      <td class="markdownTableBodyLeft"> 16 bytes </td>
+ * </tr>
+ * <tr class="markdownTableBody">
+ *      <td class="markdownTableBodyLeft"> MapScheduler </td>
+ *      <td class="markdownTableBodyLeft"> `std::map` </td>
+ *      <td class="markdownTableBodyLeft"> Logarithmic </td>
+ *      <td class="markdownTableBodyLeft"> Constant </td>
+ *      <td class="markdownTableBodyLeft"> 40 bytes </td>
+ *      <td class="markdownTableBodyLeft"> 32 bytes </td>
+ * </tr>
+ * <tr class="markdownTableBody">
+ *      <td class="markdownTableBodyLeft"> PriorityQueueScheduler </td>
+ *      <td class="markdownTableBodyLeft"> `std::priority_queue<,std::vector>` </td>
+ *      <td class="markdownTableBodyLeft"> Logarithmic  </td>
+ *      <td class="markdownTableBodyLeft"> Logarithmic </td>
+ *      <td class="markdownTableBodyLeft"> 24 bytes </td>
+ *      <td class="markdownTableBodyLeft"> 0 </td>
+ * </tr>
+ * </table>
+ *
+ * It is possible to change the Scheduler choice during a simulation,
+ * via Simulator::SetScheduler.
+ *
+ * The Scheduler base class specifies the interface used to maintain the
  * event list. If you want to provide a new event list scheduler,
  * you need to create a subclass of this base class and implement
  * all the pure virtual methods defined here.

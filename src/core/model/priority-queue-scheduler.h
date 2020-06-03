@@ -45,20 +45,20 @@ namespace ns3 {
  *
  * \par Time Complexity
  *
- * Operation    | Complexity  | Reason
- * ------------ | ----------- | ------
- * Insert()     | Logarithmic | `push_heap()`
- * IsEmpty()    | Constant    | `vector::empty()`
- * PeekNext()   | Constant    | `vector::front()`
- * Remove()     | Linear      | `find()` and `make_heap()`
- * RemoveNext() | Logarithmic | `pop_heap()`
+ * Operation    | Amortized %Time  | Reason
+ * :----------- | :--------------- | :-----
+ * Insert()     | Logarithmic      | `std::push_heap()`
+ * IsEmpty()    | Constant         | `std::vector::empty()`
+ * PeekNext()   | Constant         | `std::vector::front()`
+ * Remove()     | Linear           | `std::find()` and `std::make_heap()`
+ * RemoveNext() | Logarithmic      | `std::pop_heap()`
  *
  * \par Memory Complexity
  *
  * Category  | Memory                           | Reason
- * --------- | -------------------------------- | ------
- * Overhead  | 3 x `sizeof (*)`<br/>(24 bytes)  | `vector`
- * Per Event | 0                                | Events stored in `vector` directly
+ * :-------- | :------------------------------- | :-----
+ * Overhead  | 3 x `sizeof (*)`<br/>(24 bytes)  | `std::vector`
+ * Per Event | 0                                | Events stored in `std::vector` directly
  *
  */
 class PriorityQueueScheduler : public Scheduler

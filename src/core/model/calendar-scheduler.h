@@ -42,23 +42,39 @@ class EventImpl;
  *
  * This event scheduler is a direct implementation of the algorithm
  * known as a calendar queue, first published in 1988 in
- * "Calendar Queues: A Fast O(1) Priority Queue Implementation for
- * the Simulation Event Set Problem" by Randy Brown. There are many
+ * ["Calendar Queues: A Fast O(1) Priority Queue Implementation for
+ * the Simulation Event Set Problem" by Randy Brown][Brown]. There are many
  * refinements published later but this class implements
  * the original algorithm (to the best of my knowledge).
  *
- * The default behavior is to store events in each bucket in
- * increasing timestamp order.  This can be changed to reverse
- * timstamp order using the Attribute \c Reverse,
+ * [Brown]: https://doi.org/10.1145/63039.63045 "Brown"
  *
- * To change the ordering use the following pattern:
- * \code
- *   ObjectFactory factory ("ns3::CalendarScheduler");
- *   factory.SetAttribute ("Reverse", BooleanValue (true));
- *   Simulator::SetScheduler (factory);
- * \endcode
+ * This class uses a vector of buckets; each bucket covers a uniform
+ * time span.  The bucket index for an event with timestamp `ts` is
+ * `(ts / m_width) % m_nBuckets`.  This class automatically adjusts
+ * the number of buckets to keep the average occupancy around 2.
+ * Buckets themselves are implemented as a `std::list<>`, and events are
+ * kept sorted withing the buckets.
  *
- * \note This queue is much slower than I expected (much slower than the
+ * \par Time Complexity
+ *
+ * Operation    | Amortized %Time | Reason
+ * :----------- | :-------------- | :-----
+ * Insert()     | ~Constant       | Ordering within bucket; possible resize
+ * IsEmpty()    | Constant        | Explicit queue size
+ * PeekNext()   | ~Constant       | Search buckets
+ * Remove()     | ~Constant       | Search within bucket; possible resize
+ * RemoveNext() | ~Constant       | Search buckets; possible resize
+ *
+ * \par Memory Complexity
+ *
+ * Category  | Memory                           | Reason
+ * :-------- | :------------------------------- | :-----
+ * Overhead  | 2 x `sizeof (*)` + `size_t`<br/>(24 bytes) | `std::list`
+ * Per Event | 2 x `sizeof (*)`                 | `std::list`
+ *
+ * \note
+ * This queue is much slower than I expected (much slower than the
  * std::map queue) and this seems to be because the original resizing policy
  * is horribly bad.  This is most likely the reason why there have been
  * so many variations published which all slightly tweak the resizing
