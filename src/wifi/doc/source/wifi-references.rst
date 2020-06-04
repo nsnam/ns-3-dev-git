@@ -48,3 +48,7 @@ References
 .. [baldo2010] \ N. Baldo et al., "Validation of the ns-3 IEEE 802.11 model using the EXTREME testbed", Proceedings of SIMUTools Conference, March 2010.
 
 .. [lanante2019] \ L. Lanante Jr. et al., "Improved Abstraction for Clear Channel Assessment in ns-3 802.11 WLAN Model", Proceedings of the 2019 Workshop on ns-3, June 2019.
+
+.. [bianchi2000] \ G. Bianchi, "Performance analysis of the IEEE 802.11 distributed coordination function", IEEE Communications Letters, 18(3):535–547, 2000.
+
+.. [bianchi2005] \ G. Bianchi and I. Tinnirello. "Remarks on IEEE 802.11 DCF performance analysis", IEEE Communications Letters, 9(8):765–767, 2005.

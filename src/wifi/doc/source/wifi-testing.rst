@@ -245,3 +245,49 @@ The interference signal as received by the sending node is typically below
 the default -62 dBm CCA Mode 1 threshold in this example.  If it raises
 above, the sending node will suppress all transmissions.
 
+Bianchi validation
+******************
+
+The program ``src/wifi/examples/wifi-bianchi.cc`` allows user to
+compare ns-3 simulation results against the Bianchi model
+presented in [bianchi2000]_ and [bianchi2005]_.
+
+The MATLAB code used to generate the Bianchi model,
+as well as the generated outputs, are provided in
+the folder ``src/wifi/examples/reference``.
+User can regenerate Bianchi results by running
+``generate_bianchi.m`` in MATLAB.
+
+By default, the program ``src/wifi/examples/wifi-bianchi.cc``
+simulates an 802.11a adhoc ring scenario, with a PHY rate set to 
+54 Mbit/s, and loop from 5 stations to 50 stations, by a step of 
+5 stations. It generates a plt file, which allows user to quickly
+generate an eps file using gnuplot and vizualize the graph.
+
+::
+
+  ./waf --run "wifi-bianchi"
+
+.. _fig-wifi-bianchi-11a-54-adhoc:
+
+.. figure:: figures/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.*
+   :align: center
+
+   Bianchi throughput validation results for 802.11a 54 Mbps in adhoc configuration
+
+The user has the possibility to select the standard (only
+11a, 11b or 11g currently supported), to select the PHY rate (in Mbit/s),
+as well as to choose between an adhoc or an infrastructure configuration.
+
+When run for 802.11g 6 Mbit/s in infrastucture mode, the output is:
+
+::
+
+  ./waf --run "wifi-bianchi --standard=11g --phyRate=6 --duration=500 --infra"
+
+.. _fig-wifi-bianchi-11g-6-infra:
+
+.. figure:: figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.*
+   :align: center
+
+   Bianchi throughput validation results for 802.11g 6 Mbps in infrastructure configuration
