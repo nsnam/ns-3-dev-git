@@ -269,12 +269,12 @@ def read_test(test):
 # A simple example of writing a text file with a test result summary.  It is
 # expected that this output will be fine for developers looking for problems.
 #
-def node_to_text(test, f):
+def node_to_text(test, f, test_type='Suite'):
     (result, name, reason, time_real) = read_test(test)
     if reason:
         reason = " (%s)" % reason
 
-    output = "%s: Test Suite \"%s\" (%s)%s\n" % (result, name, time_real, reason)
+    output = "%s: Test %s \"%s\" (%s)%s\n" % (result, test_type, name, time_real, reason)
     f.write(output)
     for details in test.findall('FailureDetails'):
         f.write("    Details:\n")
@@ -285,7 +285,7 @@ def node_to_text(test, f):
         f.write("      File:      %s\n" % details.find('File').text)
         f.write("      Line:      %s\n" % details.find('Line').text)
     for child in test.findall('Test'):
-        node_to_text(child, f)
+        node_to_text(child, f, 'Case')
 
 def translate_to_text(results_file, text_file):
     text_file += '.txt'
@@ -2026,10 +2026,10 @@ def main(argv):
 
     # From waf/waflib/Options.py
     envcolor=os.environ.get('NOCOLOR','') and 'no' or 'auto' or 'yes'
-    
+
     if options.nocolor or envcolor == 'no':
         colors_lst['USE'] = False
-    
+
     return run_tests()
 
 if __name__ == '__main__':
