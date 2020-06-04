@@ -68,19 +68,11 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAnt
   // compute the azimuth and the elevation angles
   Angles completeAngle (bPos,aPos);
 
-  double posX = bPos.x - aPos.x;
-  double phiAngle = atan ((bPos.y - aPos.y) / posX);
-
-  if (posX < 0)
-    {
-      phiAngle = phiAngle + M_PI;
-    }
-  if (phiAngle < 0)
-    {
-      phiAngle = phiAngle + 2 * M_PI;
-    }
-
-  double hAngleRadian = fmod ((phiAngle + M_PI),2 * M_PI - M_PI); // the azimuth angle
+  double hAngleRadian = fmod (completeAngle.phi, 2.0 * M_PI); // the azimuth angle
+  if (hAngleRadian < 0)
+  {
+    hAngleRadian += 2.0 * M_PI;     
+  } 
   double vAngleRadian = completeAngle.theta; // the elevation angle
 
   // retrieve the number of antenna elements

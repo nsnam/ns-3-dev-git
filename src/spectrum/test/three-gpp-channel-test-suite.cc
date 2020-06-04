@@ -402,28 +402,20 @@ ThreeGppSpectrumPropagationLossModelTest::~ThreeGppSpectrumPropagationLossModelT
 void
 ThreeGppSpectrumPropagationLossModelTest::DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAntenna, Ptr<NetDevice> otherDevice, Ptr<ThreeGppAntennaArrayModel> otherAntenna)
 {
-  uint8_t noPlane = 1;
   ThreeGppAntennaArrayModel::ComplexVector antennaWeights;
 
   Vector aPos = thisDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
   Vector bPos = otherDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
 
+  // compute the azimuth and the elevation angles
   Angles completeAngle (bPos,aPos);
 
-  double posX = bPos.x - aPos.x;
-  double phiAngle = atan ((bPos.y - aPos.y) / posX);
-
-  if (posX < 0)
-    {
-      phiAngle = phiAngle + M_PI;
-    }
-  if (phiAngle < 0)
-    {
-      phiAngle = phiAngle + 2 * M_PI;
-    }
-
-  double hAngleRadian = fmod ((phiAngle + (M_PI / noPlane)),2 * M_PI / noPlane) - (M_PI / noPlane);
-  double vAngleRadian = completeAngle.theta;
+  double hAngleRadian = fmod (completeAngle.phi, 2.0 * M_PI); // the azimuth angle
+  if (hAngleRadian < 0)
+  {
+    hAngleRadian += 2.0 * M_PI;     
+  } 
+  double vAngleRadian = completeAngle.theta; // the elevation angle
 
   int totNoArrayElements = thisAntenna->GetNumberOfElements ();
   double power = 1 / sqrt (totNoArrayElements);
