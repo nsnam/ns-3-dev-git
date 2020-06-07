@@ -317,11 +317,11 @@ RegularWifiMac::GetHeCapabilities (void) const
         {
           channelWidthSet |= 0x01;
         }
-      if ((m_phy->GetChannelWidth () >= 80) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ))
+      if ((m_phy->GetChannelWidth () >= 80) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x02;
         }
-      if ((m_phy->GetChannelWidth () >= 160) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ))
+      if ((m_phy->GetChannelWidth () >= 160) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x04;
         }
@@ -1082,9 +1082,10 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
   uint32_t cwmax = 0;
   switch (standard)
     {
-    case WIFI_STANDARD_80211ax_5GHZ:
-    case WIFI_STANDARD_80211ac:
     case WIFI_STANDARD_80211n_5GHZ:
+    case WIFI_STANDARD_80211ac:
+    case WIFI_STANDARD_80211ax_5GHZ:
+    case WIFI_STANDARD_80211ax_6GHZ:
       {
         EnableAggregation ();
         //To be removed once deprecated attributes are removed

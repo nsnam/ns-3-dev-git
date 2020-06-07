@@ -1137,7 +1137,7 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
   NS_LOG_FUNCTION (this << from << heCapabilities);
   WifiRemoteStationState *state;
   state = LookupState (from);
-  if (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_5GHZ)
+  if ((m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_6GHZ))
     {
       if (heCapabilities.GetChannelWidthSet () & 0x04)
         {

@@ -57,6 +57,39 @@ enum WifiPhyStandard
 };
 
 /**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param standard the PHY standard
+* \returns a reference to the stream
+*/
+inline std::ostream& operator<< (std::ostream& os, WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      return (os << "802.11a");
+    case WIFI_PHY_STANDARD_80211b:
+      return (os << "802.11b");
+    case WIFI_PHY_STANDARD_80211g:
+      return (os << "802.11g");
+    case WIFI_PHY_STANDARD_80211p:
+      return (os << "802.11p");
+    case WIFI_PHY_STANDARD_holland:
+      return (os << "802.11a-holland");
+    case WIFI_PHY_STANDARD_80211n:
+      return (os << "802.11n");
+    case WIFI_PHY_STANDARD_80211ac:
+      return (os << "802.11ac");
+    case WIFI_PHY_STANDARD_80211ax:
+      return (os << "802.11ax");
+    case WIFI_PHY_STANDARD_UNSPECIFIED:
+    default:
+      return (os << "UNSPECIFIED");
+    }
+}
+
+/**
  * \ingroup wifi
  * Identifies the MAC specification that a Wifi device is configured to use.
  */
@@ -107,7 +140,8 @@ enum WifiStandard
   WIFI_STANDARD_80211n_5GHZ,
   WIFI_STANDARD_80211ac,
   WIFI_STANDARD_80211ax_2_4GHZ,
-  WIFI_STANDARD_80211ax_5GHZ
+  WIFI_STANDARD_80211ax_5GHZ,
+  WIFI_STANDARD_80211ax_6GHZ
 };
 
 /**
@@ -170,7 +204,8 @@ const std::map<WifiStandard, WifiStandardInfo> wifiStandards =
   { WIFI_STANDARD_80211n_5GHZ, { WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211n } },
   { WIFI_STANDARD_80211ac, { WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211ac } },
   { WIFI_STANDARD_80211ax_2_4GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_2_4GHZ, WIFI_MAC_STANDARD_80211ax } },
-  { WIFI_STANDARD_80211ax_5GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211ax } }
+  { WIFI_STANDARD_80211ax_5GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211ax } },
+  { WIFI_STANDARD_80211ax_6GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_6GHZ, WIFI_MAC_STANDARD_80211ax } }
 };
 
 } //namespace ns3

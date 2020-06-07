@@ -64,13 +64,13 @@ int main (int argc, char *argv[])
   bool useExtendedBlockAck = false;
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
-  double frequency = 5.0; //whether 2.4 or 5.0 GHz
+  double frequency = 5; //whether 2.4, 5 or 6 GHz
   int mcs = -1; // -1 indicates an unset value
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
   CommandLine cmd (__FILE__);
-  cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
+  cmd.AddValue ("frequency", "Whether working in the 2.4, 5 or 6 GHz band (other values gets rejected)", frequency);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
@@ -130,14 +130,19 @@ int main (int argc, char *argv[])
 
               WifiMacHelper mac;
               WifiHelper wifi;
-              if (frequency == 5.0)
+              if (frequency == 6)
+                {
+                  wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
+                  Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (48));
+                }
+              else if (frequency == 5)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
                 }
               else if (frequency == 2.4)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_2_4GHZ);
-                  Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40.046));
+                  Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40));
                 }
               else
                 {

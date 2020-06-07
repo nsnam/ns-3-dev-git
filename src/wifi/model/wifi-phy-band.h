@@ -33,6 +33,8 @@ enum WifiPhyBand
   WIFI_PHY_BAND_2_4GHZ,
   /** The 5 GHz band */
   WIFI_PHY_BAND_5GHZ,
+  /** The 6 GHz band */
+  WIFI_PHY_BAND_6GHZ,
   /** Unspecified */
   WIFI_PHY_BAND_UNSPECIFIED
 };
@@ -52,6 +54,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyBand band)
       return (os << "2.4GHz");
     case WIFI_PHY_BAND_5GHZ:
       return (os << "5GHz");
+    case WIFI_PHY_BAND_6GHZ:
+      return (os << "6GHz");
     default:
       NS_FATAL_ERROR ("Invalid band");
       return (os << "INVALID");
