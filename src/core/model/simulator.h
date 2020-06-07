@@ -216,13 +216,21 @@ public:
    * for the current simulation time plus the @p delay  passed as a
    * parameter.
    *
+   * We leverage SFINAE to discard this overload if the second argument is
+   * convertible to Ptr<EventImpl> or is a function pointer.
+   *
+   * @tparam FUNC @deduced Template type for the function to invoke.
    * @tparam Ts @deduced Argument types.
    * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke.
    * @param [in] args Arguments to pass to MakeEvent.
    * @returns The id for the scheduled event.
    */
-  template <typename... Ts>
-  static EventId Schedule (Time const &delay, Ts&&... args);
+  template <typename FUNC,
+            typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type = 0,
+            typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type = 0,
+            typename... Ts>
+  static EventId Schedule (Time const &delay, FUNC f, Ts&&... args);
 
   /**
    * Schedule an event to expire after @p delay.
@@ -254,13 +262,21 @@ public:
    * A context of 0xffffffff means no context is specified.
    * This method is thread-safe: it can be called from any thread.
    *
+   * We leverage SFINAE to discard this overload if the second argument is
+   * convertible to Ptr<EventImpl> or is a function pointer.
+   *
+   * @tparam FUNC @deduced Template type for the function to invoke.
    * @tparam Ts @deduced Argument types.
    * @param [in] context User-specified context parameter
    * @param [in] delay The relative expiration time of the event.
+   * @param [in] f The function to invoke.
    * @param [in] args Arguments to pass to MakeEvent.
    */
-  template <typename... Ts>
-  static void ScheduleWithContext (uint32_t context, Time const &delay, Ts&&... args);
+  template <typename FUNC,
+            typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type = 0,
+            typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type = 0,
+            typename... Ts>
+  static void ScheduleWithContext (uint32_t context, Time const &delay, FUNC f, Ts&&... args);
 
   /**
    * Schedule an event with the given context.
@@ -287,12 +303,20 @@ public:
    * to expire "Now" are scheduled FIFO, after all normal events
    * have expired.
    *
+   * We leverage SFINAE to discard this overload if the second argument is
+   * convertible to Ptr<EventImpl> or is a function pointer.
+   *
+   * @tparam FUNC @deduced Template type for the function to invoke.
    * @tparam Ts @deduced Actual function argument types.
+   * @param [in] f The function to invoke.
    * @param [in] args Arguments to pass to the invoked function.
    * @return The EventId of the scheduled event.
    */
-  template <typename... Ts>
-  static EventId ScheduleNow (Ts&&... args);
+  template <typename FUNC,
+            typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type = 0,
+            typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type = 0,
+            typename... Ts>
+  static EventId ScheduleNow (FUNC f, Ts&&... args);
 
   /**
    * Schedule an event to expire Now. All events scheduled to
@@ -320,12 +344,20 @@ public:
    * after all normal events have expired and only when
    * Simulator::Destroy is invoked.
    *
+   * We leverage SFINAE to discard this overload if the second argument is
+   * convertible to Ptr<EventImpl> or is a function pointer.
+   *
+   * @tparam FUNC @deduced Template type for the function to invoke.
    * @tparam Ts @deduced Actual function argument types.
+   * @param [in] f The function to invoke.
    * @param [in] args Arguments to pass to MakeEvent.
    * @return The EventId of the scheduled event.
    */
-  template <typename... Ts>
-  static EventId ScheduleDestroy (Ts&&... args);
+  template <typename FUNC,
+            typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type = 0,
+            typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type = 0,
+            typename... Ts>
+  static EventId ScheduleDestroy (FUNC f, Ts&&... args);
 
   /**
    * Schedule an event to run at the end of the simulation, when Simulator::Destroy() is called.
@@ -518,10 +550,13 @@ namespace ns3 {
 // it treats the in-class declaration as different from the
 // out of class definition, so makes two entries in the member list.  Ugh
 
-template <typename... Ts>
-EventId Simulator::Schedule (Time const &delay, Ts&&... args)
+template <typename FUNC,
+          typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type,
+          typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type,
+          typename... Ts>
+EventId Simulator::Schedule (Time const &delay, FUNC f, Ts&&... args)
 {
-  return DoSchedule (delay, MakeEvent (std::forward<Ts> (args)...));
+  return DoSchedule (delay, MakeEvent (f, std::forward<Ts> (args)...));
 }
 
 template <typename... Us, typename... Ts>
@@ -530,10 +565,13 @@ EventId Simulator::Schedule (Time const &delay, void (*f)(Us...), Ts&&... args)
   return DoSchedule (delay, MakeEvent (f, std::forward<Ts> (args)...));
 }
 
-template <typename... Ts>
-void Simulator::ScheduleWithContext (uint32_t context, Time const &delay, Ts&&... args)
+template <typename FUNC,
+          typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type,
+          typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type,
+          typename... Ts>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &delay, FUNC f, Ts&&... args)
 {
-  return ScheduleWithContext (context, delay, MakeEvent (std::forward<Ts> (args)...));
+  return ScheduleWithContext (context, delay, MakeEvent (f, std::forward<Ts> (args)...));
 }
 
 template <typename... Us, typename... Ts>
@@ -542,11 +580,14 @@ void Simulator::ScheduleWithContext (uint32_t context, Time const &delay, void (
   return ScheduleWithContext (context, delay, MakeEvent (f, std::forward<Ts> (args)...));
 }
 
-template <typename... Ts>
+template <typename FUNC,
+          typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type,
+          typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type,
+          typename... Ts>
 EventId
-Simulator::ScheduleNow (Ts&&... args)
+Simulator::ScheduleNow (FUNC f, Ts&&... args)
 {
-  return DoScheduleNow (MakeEvent (std::forward<Ts> (args)...));
+  return DoScheduleNow (MakeEvent (f, std::forward<Ts> (args)...));
 }
 
 template <typename... Us, typename... Ts>
@@ -557,11 +598,14 @@ Simulator::ScheduleNow (void (*f)(Us...), Ts&&... args)
 }
 
 
-template <typename... Ts>
+template <typename FUNC,
+          typename std::enable_if<!std::is_convertible<FUNC, Ptr<EventImpl>>::value,int>::type,
+          typename std::enable_if<!std::is_function<typename std::remove_pointer<FUNC>::type>::value,int>::type,
+          typename... Ts>
 EventId
-Simulator::ScheduleDestroy (Ts&&... args)
+Simulator::ScheduleDestroy (FUNC f, Ts&&... args)
 {
-  return DoScheduleDestroy (MakeEvent (std::forward<Ts> (args)...));
+  return DoScheduleDestroy (MakeEvent (f, std::forward<Ts> (args)...));
 }
 
 template <typename... Us, typename... Ts>
