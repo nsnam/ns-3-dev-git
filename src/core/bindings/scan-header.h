@@ -38,13 +38,6 @@ __dummy_function_to_force_template_instantiation_v2 ()
   s1 >= s2;
   s1 > s2;
   
-
-  
-
-  s3 = t1*s1;
-  s3 = t1/s1;
-  s3 = s1*t1;
-  s3 = t1/t2;
 }
 
 }
