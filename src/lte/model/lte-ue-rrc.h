@@ -1320,6 +1320,22 @@ private:
    */
   void DoResetSyncIndicationCounter ();
 
+  /**
+   * \brief Reset radio link failure parameters
+   *
+   * RLF timers and counters should be rest upon:
+   *
+   * - If the UE received N311 in Sync indications from the UE
+   *   PHY.
+   * - If the UE receives RRCConnectionReconfiguration including
+   *   the mobilityControlInfo (TS 36.331 sec 5.3.5.4)
+   *
+   * Inside this method the UE RRC also instructs the UE PHY to reset the
+   * RLF parameters so, it can start RLF detection again.
+   *
+   */
+  void ResetRlfParams ();
+
 public:
   /** 
    * The number of component carriers.
