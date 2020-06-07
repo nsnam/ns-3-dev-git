@@ -359,9 +359,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
         }
     }
 
-  // the packet has been peeked from the EDCA queue.
-  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&peekedItem->GetHeader ());
-
+  // The packet has been peeked from the EDCA queue.
   // If it is a QoS Data frame and it is not a broadcast frame, attempt A-MSDU
   // aggregation if aggregate is true
   if (peekedItem->GetHeader ().IsQosData ())
@@ -370,6 +368,8 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       testIt = m_queue->PeekByTidAndAddress (tid, recipient);
 
       NS_ASSERT (testIt != m_queue->end () && (*testIt)->GetPacket () == peekedItem->GetPacket ());
+
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&peekedItem->GetHeader ());
 
       // check if the peeked packet is within the transmit window
       if (GetBaAgreementEstablished (recipient, tid)
@@ -402,8 +402,10 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
       NS_ASSERT (item != 0 && item->GetPacket () == peekedItem->GetPacket ());
     }
 
-  // Assign a sequence number to the MSDU or A-MSDU dequeued from the EDCA queue
   NS_ASSERT (item != 0);
+
+  // Assign a sequence number to the MSDU or A-MSDU dequeued from the EDCA queue
+  uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&item->GetHeader ());
   item->GetHeader ().SetSequenceNumber (sequence);
   item->GetHeader ().SetFragmentNumber (0);
   item->GetHeader ().SetNoMoreFragments ();
