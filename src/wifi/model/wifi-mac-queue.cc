@@ -72,7 +72,9 @@ WifiMacQueue::~WifiMacQueue ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-const WifiMacQueue::ConstIterator WifiMacQueue::EMPTY = std::list<Ptr<WifiMacQueueItem>> ().end ();
+static std::list<Ptr<WifiMacQueueItem>> g_emptyWifiMacQueue;
+
+const WifiMacQueue::ConstIterator WifiMacQueue::EMPTY = g_emptyWifiMacQueue.end ();
 
 void
 WifiMacQueue::SetMaxDelay (Time delay)
