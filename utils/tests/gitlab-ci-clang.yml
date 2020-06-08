@@ -112,3 +112,25 @@ weekly-build-clang-9-optimized:
     CLANG: 9
     MODE: optimized
     EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+# CLANG 10
+weekly-build-clang-10-debug:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 10
+    MODE: debug
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-10-release:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 10
+    MODE: release
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
+
+weekly-build-clang-10-optimized:
+  extends: .weekly-build-clang
+  variables:
+    CLANG: 10
+    MODE: optimized
+    EXTRA: libc++-$CLANG-dev libc++abi-$CLANG-dev libomp-$CLANG-dev
