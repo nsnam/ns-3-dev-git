@@ -85,6 +85,7 @@ transmitted.</li>
 <li>Now on, instead of <b>uint8_t</b>, <b>uint16_t</b> would be used to store a bandwidth value in LTE.</li>
 <li>The preferred way to declare instances of <b>CommandLine</b> is now through a macro: <b>COMMANDLINE (cmd)</b>.  This enables us to add the <b>CommandLine::Usage()</b> message to the Doxygen for the program.</li>
 <li>New <b>...FailSafe ()</b> variants of the <b> Config </b> is used to connect PDCP TraceSources of eNB and UE in <b>RadioBearerStatsConnector</b> class. It is required for the simulations using RLC SM where PDCP objects are not created for data radio bearers.</li>
+<li><b>T310</b> timer in <b>LteUeRrc</b> class is stopped if the UE receives <b>RRCConnectionReconfiguration</b> including the <b>mobilityControlInfo</b>. This change is introduced following the 3GPP standard TS36331 sec 5.3.5.4.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
