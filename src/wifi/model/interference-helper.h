@@ -242,6 +242,31 @@ public:
   void EraseEvents (void);
 
 
+protected:
+  /**
+   * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
+   *
+   * \param signal signal power, W
+   * \param noiseInterference noise and interference power, W
+   * \param txVector the TXVECTOR
+   *
+   * \return SNR in linear scale
+   */
+  double CalculateSnr (double signal, double noiseInterference, WifiTxVector txVector) const;
+  /**
+   * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
+   * The duration and mode are used to calculate how many bits are present in the chunk.
+   *
+   * \param snir the SINR
+   * \param duration the duration of the chunk
+   * \param mode the WifiMode
+   * \param txVector the TXVECTOR
+   *
+   * \return the success rate
+   */
+  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
+
+
 private:
   /**
    * Noise and Interference (thus Ni) event.
@@ -301,28 +326,6 @@ private:
    * \return noise and interference power
    */
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChanges *ni) const;
-  /**
-   * Calculate SNR (linear ratio) from the given signal power and noise+interference power.
-   *
-   * \param signal signal power, W
-   * \param noiseInterference noise and interference power, W
-   * \param txVector the TXVECTOR
-   *
-   * \return SNR in linear scale
-   */
-  double CalculateSnr (double signal, double noiseInterference, WifiTxVector txVector) const;
-  /**
-   * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
-   * The duration and mode are used to calculate how many bits are present in the chunk.
-   *
-   * \param snir the SINR
-   * \param duration the duration of the chunk
-   * \param mode the WifiMode
-   * \param txVector the TXVECTOR
-   *
-   * \return the success rate
-   */
-  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
   /**
    * Calculate the success rate of the payload chunk given the SINR, duration, and Wi-Fi mode.
    * The duration and mode are used to calculate how many bits are present in the chunk.
