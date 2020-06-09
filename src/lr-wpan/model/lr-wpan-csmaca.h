@@ -161,8 +161,8 @@ public:
    */
   uint64_t GetUnitBackoffPeriod (void) const;
   /**
-   * Locates the time to the next backoff period boundary and returns the
-   * amount of time left (in symbols).
+   * Locates the time to the next backoff period boundary in the SUPERFRAME
+   * and returns the amount of time left to this moment.
    *
    * \return time offset to the next slot
    */
@@ -266,10 +266,10 @@ private:
 
   virtual void DoDispose (void);
   /**
-   *  \brief Get the periods left in the CAP portion of the Outgoing or Incoming frame.
-   *  \return num of backoff periods left in the CAP
+   *  \brief Get the time left in the CAP portion of the Outgoing or Incoming superframe.
+   *  \return the time left in the CAP
    */
-  uint32_t GetBackoffPeriodsLeftInCap ();
+  Time GetTimeLeftInCap ();
   /**
    * The callback to inform the cost of a transaction in slotted CSMA-CA.
    */

@@ -87,6 +87,7 @@ typedef enum
  */
 typedef enum
 {
+  BEACON,           //!< The Beacon transmission or reception Period
   CAP,              //!< Contention Access Period
   CFP,              //!< Contention Free Period
   INACTIVE          //!< Inactive Period or unslotted CSMA-CA
@@ -236,13 +237,12 @@ struct McpsDataRequestParams
 {
   McpsDataRequestParams ()
     : m_srcAddrMode (SHORT_ADDR),
-    m_dstAddrMode (SHORT_ADDR),
-    m_dstPanId (0),
-    m_dstAddr (),
-    m_msduHandle (0),
-    m_txOptions (0)
-  {
-  }
+      m_dstAddrMode (SHORT_ADDR),
+      m_dstPanId (0),
+      m_dstAddr (),
+      m_msduHandle (0),
+      m_txOptions (0)
+  {}
   LrWpanAddressMode m_srcAddrMode; //!< Source address mode
   LrWpanAddressMode m_dstAddrMode; //!< Destination address mode
   uint16_t m_dstPanId;             //!< Destination PAN identifier
@@ -289,16 +289,15 @@ struct MlmeStartRequestParams
 {
   MlmeStartRequestParams ()
     : m_PanId (0),
-    m_logCh (11),
-    m_logChPage (0),
-    m_startTime (0),
-    m_bcnOrd (15),
-    m_sfrmOrd (15),
-    m_panCoor (false),
-    m_battLifeExt (false),
-    m_coorRealgn (false)
-  {
-  }
+      m_logCh (11),
+      m_logChPage (0),
+      m_startTime (0),
+      m_bcnOrd (15),
+      m_sfrmOrd (15),
+      m_panCoor (false),
+      m_battLifeExt (false),
+      m_coorRealgn (false)
+  {}
   uint16_t m_PanId;                //!< Pan Identifier used by the device.
   uint8_t m_logCh;                 //!< Logical channel on which to start using the new superframe configuration.
   uint32_t m_logChPage;            //!< Logical channel page on which to start using the new superframe configuration.
@@ -318,9 +317,8 @@ struct MlmeSyncRequestParams
 {
   MlmeSyncRequestParams ()
     : m_logCh (),
-    m_trackBcn (false)
-  {
-  }
+      m_trackBcn (false)
+  {}
   uint8_t m_logCh;                //!< The channel number on which to attempt coordinator synchronization.
   bool m_trackBcn;                //!< True if the mlme sync with the next beacon and attempts to track future beacons. False if mlme sync only the next beacon.
 };
@@ -333,11 +331,10 @@ struct MlmePollRequestParams
 {
   MlmePollRequestParams ()
     : m_coorAddrMode (SHORT_ADDR),
-    m_coorPanId (0),
-    m_coorShortAddr (),
-    m_coorExtAddr ()
-  {
-  }
+      m_coorPanId (0),
+      m_coorShortAddr (),
+      m_coorExtAddr ()
+  {}
   LrWpanAddressMode m_coorAddrMode; //!< The addressing mode of the coordinator to which the pool is intended.
   uint16_t m_coorPanId;             //!< The PAN id of the coordinator to which the poll is intended.
   Mac16Address m_coorShortAddr;     //!< Coordintator short address.
@@ -731,16 +728,18 @@ public:
   //MAC PIB attributes
 
   /**
-   * The time that the device transmitted its last beacon frame, in symbol
-   * periods. Only 24 bits used.
-   * See IEEE 802.15.4-2006, section 7.4.2, Table 86.
+   * The time that the device transmitted its last beacon frame.
+   * It also indicates the start of the Active Period in the Outgoing superframe.
+   * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
-  uint64_t m_macBeaconTxTime;
+  Time m_macBeaconTxTime;
   /**
-   * The time that the device received its last beacon frame, in symbol
-   * periods. Only 24 bits used.
+   * The time that the device received its last bit of the beacon frame.
+   * It does not indicate the start of the Active Period in the Incoming superframe.
+   * Not explicitly listed by the standard but its use is implied.
+   * Its purpose is somehow similar to m_macBeaconTxTime
    */
-  uint64_t m_beaconRxTime;
+  Time m_macBeaconRxTime;
   /**
    * The short address of the coordinator through which the device is
    * associated.
@@ -780,6 +779,11 @@ public:
    * See IEEE 802.15.4-2011, section 6.4.2, Table 52.
    */
   uint16_t m_macTransactionPersistanceTime;
+  /**
+   * The total size of the received beacon in symbols.
+   * Its value is used to calculate the end CAP time of the incoming superframe.
+   */
+  uint64_t m_rxBeaconSymbols;
   /**
    * Indication of the Slot where the CAP portion of the OUTGOING Superframe ends.
    */
@@ -966,7 +970,6 @@ public:
    */
   typedef void (*StateTracedCallback)(LrWpanMacState oldState, LrWpanMacState newState);
 
-
 protected:
   // Inherited from Object.
   virtual void DoInitialize (void);
@@ -1016,6 +1019,11 @@ private:
    *
    */
   void StartInactivePeriod (SuperframeType superframeType);
+  /**
+   * Called after the end of an INCOMING superframe to start the moment a
+   * device waits for a new incoming beacon.
+   */
+  void AwaitBeacon (void);
   /**
    * Called if the device is unable to locate a beacon in the time set by MLME-SYNC.request.
    */

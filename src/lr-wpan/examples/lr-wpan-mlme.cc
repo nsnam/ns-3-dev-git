@@ -75,9 +75,9 @@ static void DataIndicationCoordinator (McpsDataIndicationParams params, Ptr<Pack
 static void StartConfirm (MlmeStartConfirmParams params)
 {
   if (params.m_status == MLMESTART_SUCCESS)
-  {
-    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "Beacon status SUCESSFUL");
-  }
+    {
+      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "Beacon status SUCESSFUL");
+    }
 }
 
 
@@ -187,13 +187,13 @@ int main (int argc, char *argv[])
   // Examples of time parameters for transmissions in the first incoming superframe. //
   /////////////////////////////////////////////////////////////////////////////////////
 
-  // 2.981 sec       No time to finish CCA in CAP, the transmission at this time will cause
-  //                 the packet to be deferred to the next superframe.
+  // 2.981 sec      No time to finish CCA in CAP, the transmission at this time will cause
+  //                the packet to be deferred to the next superframe.
 
-  // 2.98272 sec     No time to finish random backoff delay in CAP, the  transmission at this
-  //                 time will cause the packet to be deferred to the next superframe.
+  // 2.982 sec      No time to finish random backoff delay in CAP, the  transmission at this
+  //                time will cause the packet to be deferred to the next superframe.
 
-  // 2.93 sec        Enough time, the packet can be transmitted within the CAP of the first superframe
+  // 2.93 sec       Enough time, the packet can be transmitted within the CAP of the first superframe
 
 
   // MCPS-DATA.request Beacon enabled Direct Transmission (dev1)

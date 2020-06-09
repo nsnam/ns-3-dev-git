@@ -184,36 +184,55 @@ LrWpanCsmaCa::GetTimeToNextSlot (void) const
 {
   NS_LOG_FUNCTION (this);
 
-  // The reference for the beginning of the CAP changes depending
+  // The reference for the beginning of the SUPERFRAME (the active period) changes depending
   // on the data packet being sent from the Coordinator/outgoing frame (Tx beacon time reference)
-  // or other device/incoming frame (Rx beacon time reference).
+  // or other device/incoming frame (Rx beacon time reference ).
 
-  uint32_t elapsedSuperframe;
-  uint64_t currentTimeSymbols;
-  uint32_t symbolsToBoundary;
+  Time elapsedSuperframe;  // (i.e  The beacon + the elapsed CAP)
+  Time currentTime;
+  double symbolsToBoundary;
   Time nextBoundary;
+  uint64_t elapsedSuperframeSymbols;
+  uint64_t symbolRate;
+  Time timeAtBoundary;
+  Time elapsedCap;
+  Time beaconTime;
 
-  currentTimeSymbols = Simulator::Now ().GetSeconds () * m_mac->GetPhy ()->GetDataOrSymbolRate (false);
 
+  currentTime = Simulator::Now ();
+  symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (false); //symbols per second
 
   if (m_coorDest)
     {
       // Take the Incoming Frame Reference
-      elapsedSuperframe = currentTimeSymbols - m_mac->m_beaconRxTime;
+      elapsedSuperframe = currentTime - m_mac->m_macBeaconRxTime;
+
+      beaconTime = Seconds ((double) m_mac->m_rxBeaconSymbols / symbolRate);
+      elapsedCap = elapsedSuperframe - beaconTime;
+      NS_LOG_DEBUG ("Elapsed incoming CAP symbols: " << (elapsedCap.GetSeconds () * symbolRate)  << " (" << elapsedCap.As (Time::S) << ")");
+      NS_UNUSED (beaconTime);
+      NS_UNUSED (elapsedCap);
     }
   else
     {
       // Take the Outgoing Frame Reference
-      elapsedSuperframe = currentTimeSymbols - m_mac->m_macBeaconTxTime;
+      elapsedSuperframe = currentTime - m_mac->m_macBeaconTxTime;
     }
 
-  symbolsToBoundary = m_aUnitBackoffPeriod - std::fmod (elapsedSuperframe,m_aUnitBackoffPeriod);
-  nextBoundary = MicroSeconds (symbolsToBoundary * 1000 * 1000 / m_mac->GetPhy ()->GetDataOrSymbolRate (false));
+  // get a close value to the the boundary in symbols
+  elapsedSuperframeSymbols = elapsedSuperframe.GetSeconds () * symbolRate;
+  symbolsToBoundary = m_aUnitBackoffPeriod - std::fmod ((double) elapsedSuperframeSymbols,m_aUnitBackoffPeriod);
 
-  NS_LOG_DEBUG ("Elapsed symbols in CAP: " << elapsedSuperframe << "(" << elapsedSuperframe / m_aUnitBackoffPeriod << " backoff periods)");
-  NS_LOG_DEBUG ("Next backoff period boundary in " << symbolsToBoundary << " symbols ("
-                                                   << nextBoundary.GetSeconds () << " s)");
+  timeAtBoundary = Seconds ((double)(elapsedSuperframeSymbols + symbolsToBoundary) / symbolRate);
 
+  // get the exact time boundary
+  nextBoundary = timeAtBoundary - elapsedSuperframe;
+
+  NS_LOG_DEBUG ("Elapsed Superframe symbols: " << elapsedSuperframeSymbols << " ("
+                                               << elapsedSuperframe.As (Time::S) << ")");
+
+  NS_LOG_DEBUG ("Next backoff period boundary in approx. " << nextBoundary.GetSeconds () * symbolRate << " symbols ("
+                                                           << nextBoundary.As (Time::S) << ")");
 
   return nextBoundary;
 
@@ -279,7 +298,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
   uint64_t upperBound = (uint64_t) pow (2, m_BE) - 1;
   Time randomBackoff;
   uint64_t symbolRate;
-  uint32_t backoffPeriodsLeftInCap;
+  Time timeLeftInCap;
 
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (false); //symbols per second
 
@@ -290,32 +309,37 @@ LrWpanCsmaCa::RandomBackoffDelay ()
       m_randomBackoffPeriodsLeft = (uint64_t)m_random->GetValue (0, upperBound + 1);
     }
 
-  randomBackoff = MicroSeconds (m_randomBackoffPeriodsLeft * GetUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
+  randomBackoff = Seconds ((double) (m_randomBackoffPeriodsLeft * GetUnitBackoffPeriod ()) / symbolRate);
 
   if (IsUnSlottedCsmaCa ())
     {
       NS_LOG_DEBUG ("Unslotted CSMA-CA: requesting CCA after backoff of " << m_randomBackoffPeriodsLeft <<
-                    " periods (" << randomBackoff.GetSeconds () << " s)");
+                    " periods (" << randomBackoff.As (Time::S) << ")");
       m_requestCcaEvent = Simulator::Schedule (randomBackoff, &LrWpanCsmaCa::RequestCCA, this);
     }
   else
     {
-      // We must make sure there are enough backoff periods left in the CAP, otherwise we continue in
+      // We must make sure there is enough time left in the CAP, otherwise we continue in
       // the CAP of the next superframe after the transmission/reception of the beacon (and the IFS)
-      backoffPeriodsLeftInCap = GetBackoffPeriodsLeftInCap ();
+      timeLeftInCap = GetTimeLeftInCap ();
 
-      NS_LOG_DEBUG ("Slotted CSMA-CA: proceeding after backoff of " << m_randomBackoffPeriodsLeft <<
-                    " periods (" << randomBackoff.GetSeconds () << " s)");
+      NS_LOG_DEBUG ("Slotted CSMA-CA: proceeding after random backoff of " << m_randomBackoffPeriodsLeft <<
+                    " periods ("  << (randomBackoff.GetSeconds () * symbolRate) << " symbols or " << randomBackoff.As (Time::S) << ")");
 
-      Time rmnCapTime = MicroSeconds (backoffPeriodsLeftInCap * GetUnitBackoffPeriod () * 1000 * 1000 / symbolRate);
-      NS_LOG_DEBUG ("Backoff periods left in CAP: " << backoffPeriodsLeftInCap << " (" << rmnCapTime.GetSeconds () << " s)");
 
-      if (m_randomBackoffPeriodsLeft > backoffPeriodsLeftInCap)
+
+
+      NS_LOG_DEBUG ("Backoff periods left in CAP: " << ((timeLeftInCap.GetSeconds () *  symbolRate) / m_aUnitBackoffPeriod) << " ("
+                                                    << (timeLeftInCap.GetSeconds () *  symbolRate) << " symbols or "
+                                                    << timeLeftInCap.As (Time::S) << ")");
+
+
+      if (randomBackoff > timeLeftInCap)
         {
-          m_randomBackoffPeriodsLeft = m_randomBackoffPeriodsLeft - backoffPeriodsLeftInCap;
+          uint64_t usedBackoffs = (double)(timeLeftInCap.GetSeconds () *  symbolRate) / m_aUnitBackoffPeriod;
+          m_randomBackoffPeriodsLeft -= usedBackoffs;
           NS_LOG_DEBUG ("No time in CAP to complete backoff delay, deferring to the next CAP");
-
-          m_endCapEvent = Simulator::Schedule (rmnCapTime, &LrWpanCsmaCa::DeferCsmaTimeout, this);
+          m_endCapEvent = Simulator::Schedule (timeLeftInCap, &LrWpanCsmaCa::DeferCsmaTimeout, this);
         }
       else
         {
@@ -325,35 +349,38 @@ LrWpanCsmaCa::RandomBackoffDelay ()
 }
 
 
-uint32_t
-LrWpanCsmaCa::GetBackoffPeriodsLeftInCap ()
+Time
+LrWpanCsmaCa::GetTimeLeftInCap ()
 {
-  uint64_t currentTimeSymbols;
-  uint16_t capSymbols;
-  uint64_t endCapSymbols;
+  Time currentTime;
+  uint64_t capSymbols;
+  Time endCapTime;
   uint64_t activeSlot;
+  uint64_t symbolRate;
+  Time rxBeaconTime;
 
 
-  //At this point, the currentTime should be aligned on a backoff period boundary
+  // At this point, the currentTime should be aligned on a backoff period boundary
+  currentTime  = Simulator::Now ();
+  symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (false); //symbols per second
 
-
-  currentTimeSymbols = Simulator::Now ().GetMicroSeconds () * 1000 * 1000 *
-    m_mac->GetPhy ()->GetDataOrSymbolRate (false);
 
   if (m_coorDest)
     { // Take Incoming frame reference
       activeSlot = m_mac->m_incomingSuperframeDuration / 16;
       capSymbols = activeSlot * (m_mac->m_incomingFnlCapSlot + 1);
-      endCapSymbols = m_mac->m_beaconRxTime + capSymbols;
+      endCapTime = m_mac->m_macBeaconRxTime +
+        Seconds ((double) capSymbols / symbolRate);
     }
   else
-    {     // Take Outgoing frame reference
+    { // Take Outgoing frame reference
       activeSlot = m_mac->m_superframeDuration / 16;
       capSymbols = activeSlot * (m_mac->m_fnlCapSlot + 1);
-      endCapSymbols = m_mac->m_macBeaconTxTime + capSymbols;
+      endCapTime = m_mac->m_macBeaconTxTime +
+        Seconds ((double) capSymbols / symbolRate);
     }
 
-  return ((endCapSymbols - currentTimeSymbols) / m_aUnitBackoffPeriod);
+  return (endCapTime - currentTime);
 }
 
 
@@ -362,15 +389,16 @@ LrWpanCsmaCa::CanProceed ()
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t backoffPeriodsLeftInCap;
+  Time timeLeftInCap;
   uint16_t ccaSymbols;
   uint32_t transactionSymbols;
+  Time transactionTime;
   uint64_t symbolRate;
 
   ccaSymbols = 0;
   m_randomBackoffPeriodsLeft = 0;
   symbolRate = (uint64_t) m_mac->GetPhy ()->GetDataOrSymbolRate (false);
-  backoffPeriodsLeftInCap = GetBackoffPeriodsLeftInCap ();
+  timeLeftInCap = GetTimeLeftInCap ();
 
 
   // TODO: On the 950 Mhz Band (Japanese Band)
@@ -410,19 +438,20 @@ LrWpanCsmaCa::CanProceed ()
       m_lrWpanMacTransCostCallback (transactionSymbols);
     }
 
-  NS_LOG_DEBUG ("Total required transaction symbols: " << transactionSymbols);
+  transactionTime = Seconds ((double) transactionSymbols / symbolRate);
+  NS_LOG_DEBUG ("Total required transaction: " << transactionSymbols << " symbols (" << transactionTime.As (Time::S) << ")");
 
-  if (transactionSymbols > (backoffPeriodsLeftInCap * GetUnitBackoffPeriod ()))
+  if (transactionTime > timeLeftInCap)
     {
       NS_LOG_DEBUG ("Transaction of " << transactionSymbols << " symbols " <<
                     "cannot be completed in CAP, deferring transmission to the next CAP");
 
-      Time waitTime = MicroSeconds (backoffPeriodsLeftInCap * GetUnitBackoffPeriod () * 1000 * 10000 / symbolRate);
 
-      NS_LOG_DEBUG ("Symbols left in CAP: " << backoffPeriodsLeftInCap * GetUnitBackoffPeriod () <<
-                    " (" << waitTime.GetSeconds () << "s)");
 
-      m_endCapEvent = Simulator::Schedule (waitTime, &LrWpanCsmaCa::DeferCsmaTimeout, this);
+      NS_LOG_DEBUG ("Symbols left in CAP: " << (timeLeftInCap.GetSeconds () * symbolRate) <<
+                    " (" << timeLeftInCap.As (Time::S) << ")");
+
+      m_endCapEvent = Simulator::Schedule (timeLeftInCap, &LrWpanCsmaCa::DeferCsmaTimeout, this);
     }
   else
     {
