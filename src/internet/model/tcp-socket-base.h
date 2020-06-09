@@ -442,9 +442,10 @@ public:
   void SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery);
 
   /**
-   * \brief Mark ECT(0)
+   * \brief Mark ECT(0) codepoint
    *
-   * \return TOS with ECT(0)
+   * \param tos the TOS byte to modify
+   * \return TOS with ECT(0) codepoint set
    */
   inline uint8_t MarkEcnEct0 (uint8_t tos) const
     {
@@ -452,9 +453,10 @@ public:
     }
 
   /**
-   * \brief Mark ECT(1)
+   * \brief Mark ECT(1) codepoint
    *
-   * \return TOS with ECT(1)
+   * \param tos the TOS byte to modify
+   * \return TOS with ECT(1) codepoint set
    */
   inline uint8_t MarkEcnEct1 (uint8_t tos) const
     {
@@ -462,9 +464,10 @@ public:
     }
 
   /**
-   * \brief Mark CE
+   * \brief Mark CE codepoint
    *
-   * \return TOS with CE
+   * \param tos the TOS byte to modify
+   * \return TOS with CE codepoint set
    */
   inline uint8_t MarkEcnCe (uint8_t tos) const
     {
@@ -474,6 +477,7 @@ public:
   /**
    * \brief Clears ECN bits from TOS
    *
+   * \param tos the TOS byte to modify
    * \return TOS without ECN bits
    */
   inline uint8_t ClearEcnBits (uint8_t tos) const
@@ -482,48 +486,53 @@ public:
     }
 
   /**
-   * \brief Checks if TOS has no ECN bits
+   * \brief Checks if TOS has no ECN codepoints
    *
-   * \return true if TOS does not have any ECN bits set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS does not have any ECN codepoints set; otherwise false
    */
   inline bool CheckNoEcn (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x00);
+      return ((tos & 0x03) == 0x00);
     }
 
   /**
-   * \brief Checks for ECT(0) bits
+   * \brief Checks for ECT(0) codepoint
    *
-   * \return true if TOS has ECT(0) bit set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS has ECT(0) codepoint set; otherwise false
    */
   inline bool CheckEcnEct0 (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x02);
+      return ((tos & 0x03) == 0x02);
     }
 
   /**
-   * \brief Checks for ECT(1) bits
+   * \brief Checks for ECT(1) codepoint
    *
-   * \return true if TOS has ECT(1) bit set; otherwise false
+   * \param tos the TOS byte to check
+   * \return true if TOS has ECT(1) codepoint set; otherwise false
    */
   inline bool CheckEcnEct1 (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x01);
+      return ((tos & 0x03) == 0x01);
     }
 
   /**
-   * \brief Checks for CE bits
+   * \brief Checks for CE codepoint
    *
-   * \return true if TOS has CE bit set; otherwise false
+   * \return true if TOS has CE codepoint set; otherwise false
    */
   inline bool CheckEcnCe (uint8_t tos) const
     {
-      return ((tos & 0xfc) == 0x03);
+      return ((tos & 0x03) == 0x03);
     }
 
   /**
    * \brief mark ECN code point
    *
+   * \param tos the TOS byte to modify
+   * \param codePoint the codepoint to use
    * \return TOS with specified ECN code point
    */
   inline uint8_t MarkEcnCodePoint (const uint8_t tos, const TcpSocketState::EcnCodePoint_t codePoint) const
@@ -532,9 +541,9 @@ public:
     }
 
   /**
-   * \brief Set use of ECN on the socket
+   * \brief Set ECN mode of use on the socket
    *
-   * \param useEcn Use of ECN. Currently Off and On are supported.
+   * \param useEcn Mode of ECN to use.
    */
   void SetUseEcn (TcpSocketState::UseEcn_t useEcn);
 
