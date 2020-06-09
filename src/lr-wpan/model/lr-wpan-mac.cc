@@ -632,15 +632,12 @@ LrWpanMac::MlmePollRequest (MlmePollRequestParams params)
 {
   NS_LOG_FUNCTION (this);
 
-
   LrWpanMacHeader macHdr (LrWpanMacHeader::LRWPAN_MAC_COMMAND, m_macBsn.GetValue ());
   m_macBsn++;
 
   CommandPayloadHeader macPayload (CommandPayloadHeader::DATA_REQ);
 
   Ptr<Packet> beaconPacket = Create <Packet> ();
-
-
 }
 
 
@@ -671,20 +668,15 @@ LrWpanMac::SendOneBeacon ()
       macHdr.SetSrcAddrFields (GetPanId (), GetShortAddress ());
     }
 
-
   macHdr.SetSecDisable ();
   macHdr.SetNoAckReq ();
-
 
   macPayload.SetSuperframeSpecField (GetSuperframeField ());
   macPayload.SetGtsFields (GetGtsFields ());
   macPayload.SetPndAddrFields (GetPendingAddrFields ());
 
-
-
   beaconPacket->AddHeader (macPayload);
   beaconPacket->AddHeader (macHdr);
-
 
   // Calculate FCS if the global attribute ChecksumEnable is set.
   if (Node::ChecksumEnabled ())
@@ -698,14 +690,12 @@ LrWpanMac::SendOneBeacon ()
   //Set the Beacon packet to be transmitted
   m_txPkt = beaconPacket;
 
-
   m_outSuperframeStatus = BEACON;
 
   NS_LOG_DEBUG ("Outgoing superframe Active Portion (Beacon + CAP + CFP): " << m_superframeDuration << " symbols");
 
   ChangeMacState (MAC_SENDING);
   m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_TX_ON);
-
 }
 
 
@@ -888,13 +878,13 @@ LrWpanMac::CheckQueue ()
 {
   NS_LOG_FUNCTION (this);
   // Pull a packet from the queue and start sending if we are not already sending.
-  if (m_lrWpanMacState == MAC_IDLE && !m_txQueue.empty () && m_txPkt == 0 && !m_setMacState.IsRunning ())
+  if (m_lrWpanMacState == MAC_IDLE && !m_txQueue.empty () && !m_setMacState.IsRunning ())
     {
-      TxQueueElement *txQElement = m_txQueue.front ();
-      m_txPkt = txQElement->txQPkt;
       //TODO: this should check if the node is a coordinator and using the outcoming superframe not just the PAN coordinator
       if (m_csmaCa->IsUnSlottedCsmaCa () || (m_outSuperframeStatus == CAP && m_panCoor) || m_incSuperframeStatus == CAP)
         {
+          TxQueueElement *txQElement = m_txQueue.front ();
+          m_txPkt = txQElement->txQPkt;
           m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
         }
     }
@@ -1051,11 +1041,9 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
         {
           case SHORT_ADDR:
             params.m_srcAddr = receivedMacHdr.GetShortSrcAddr ();
-            NS_LOG_DEBUG ("Packet from " << params.m_srcAddr);
             break;
           case EXT_ADDR:
             params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr ();
-            NS_LOG_DEBUG ("Packet from " << params.m_srcExtAddr);
             break;
           default:
             break;
@@ -1066,11 +1054,9 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
         {
           case SHORT_ADDR:
             params.m_dstAddr = receivedMacHdr.GetShortDstAddr ();
-            NS_LOG_DEBUG ("Packet to " << params.m_dstAddr);
             break;
           case EXT_ADDR:
             params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr ();
-            NS_LOG_DEBUG ("Packet to " << params.m_dstExtAddr);
             break;
           default:
             break;
@@ -1079,6 +1065,17 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
       if (m_macPromiscuousMode)
         {
           //level 2 filtering
+          if (receivedMacHdr.GetDstAddrMode () == SHORT_ADDR)
+            {
+              NS_LOG_DEBUG ("Packet from " << params.m_srcAddr);
+              NS_LOG_DEBUG ("Packet to " << params.m_dstAddr);
+            }
+          else if (receivedMacHdr.GetDstAddrMode () == EXT_ADDR)
+            {
+              NS_LOG_DEBUG ("Packet from " << params.m_srcExtAddr);
+              NS_LOG_DEBUG ("Packet to " << params.m_dstExtAddr);
+            }
+
           //TODO: Fix here, this should trigger different Indication Callbacks
           //depending the type of frame received (data,command, beacon)
           if (!m_mcpsDataIndicationCallback.IsNull ())
@@ -1124,11 +1121,17 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
               else
                 {
                   // multicast
+                  // See RFC 4944, Section 12
+                  // Multicast address 16 bits: 100X XXXX XXXX XXXX
                   uint8_t buf[2];
                   receivedMacHdr.GetShortDstAddr ().CopyTo (buf);
                   if (buf[0] & 0x80)
                     {
                       acceptFrame = true;
+                    }
+                  else
+                    {
+                      acceptFrame = false;
                     }
                 }
             }
@@ -1196,6 +1199,19 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                   m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SendAck, this, receivedMacHdr.GetSeqNum ());
                 }
 
+
+              if (receivedMacHdr.GetDstAddrMode () == SHORT_ADDR)
+                {
+                  NS_LOG_DEBUG ("Packet from " << params.m_srcAddr);
+                  NS_LOG_DEBUG ("Packet to " << params.m_dstAddr);
+                }
+              else if (receivedMacHdr.GetDstAddrMode () == EXT_ADDR)
+                {
+                  NS_LOG_DEBUG ("Packet from " << params.m_srcExtAddr);
+                  NS_LOG_DEBUG ("Packet to " << params.m_dstExtAddr);
+                }
+
+
               if (receivedMacHdr.IsBeacon ())
                 {
 
@@ -1208,7 +1224,7 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                   // The start of Rx beacon time and start of the Incoming superframe Active Period
                   m_macBeaconRxTime = Simulator::Now () - Seconds (double(m_rxBeaconSymbols) / symbolRate);
 
-                  NS_LOG_DEBUG ("Beacon Received (m_macBeaconRxTime: " << m_macBeaconRxTime.As (Time::S) << ")");
+                  NS_LOG_DEBUG ("Beacon Received; forwarding up (m_macBeaconRxTime: " << m_macBeaconRxTime.As (Time::S) << ")");
 
 
                   //TODO: Handle mlme-scan.request here
@@ -1249,14 +1265,10 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                       m_csmaCa->SetBatteryLifeExtension (false);
                     }
 
-
-
                   if (m_incomingBeaconOrder  < 15  && !m_csmaCa->IsSlottedCsmaCa ())
                     {
                       m_csmaCa->SetSlottedCsmaCa ();
                     }
-
-
 
                   //TODO: get Incoming frame GTS Fields here
 
@@ -1309,15 +1321,13 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                           //      is in the short address pending list or in the extended address
                           //      pending list.
 
-
-
                         }
                     }
                 }
               else if (receivedMacHdr.IsData () && !m_mcpsDataIndicationCallback.IsNull ())
                 {
                   // If it is a data frame, push it up the stack.
-                  NS_LOG_DEBUG ("PdDataIndication():  Packet is for me; forwarding up");
+                  NS_LOG_DEBUG ("Data Packet is for me; forwarding up");
                   m_mcpsDataIndicationCallback (params, p);
                 }
               else if (receivedMacHdr.IsAcknowledgment () && m_txPkt && m_lrWpanMacState == MAC_ACK_PENDING)
@@ -1778,6 +1788,12 @@ uint8_t
 LrWpanMac::GetMacMaxFrameRetries (void) const
 {
   return m_macMaxFrameRetries;
+}
+
+void
+LrWpanMac::PrintTransmitQueueSize (void)
+{
+  NS_LOG_DEBUG("Transit Queue Size: "<<m_txQueue.size());
 }
 
 void

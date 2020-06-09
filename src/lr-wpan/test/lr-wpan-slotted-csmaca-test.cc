@@ -138,13 +138,13 @@ LrWpanSlottedCsmacaTestCase::TransEndIndication (LrWpanSlottedCsmacaTestCase *te
 void
 LrWpanSlottedCsmacaTestCase::DataIndicationCoordinator (LrWpanSlottedCsmacaTestCase *testcase, Ptr<LrWpanNetDevice> dev, McpsDataIndicationParams params, Ptr<Packet> p)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
+  NS_LOG_UNCOND (Simulator::Now ().As(Time::S) << "s Coordinator Received DATA packet (size " << p->GetSize () << " bytes)");
 }
 
 void
 LrWpanSlottedCsmacaTestCase::StartConfirm (LrWpanSlottedCsmacaTestCase *testcase, Ptr<LrWpanNetDevice> dev, MlmeStartConfirmParams params)
 {
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Beacon Sent");
+  NS_LOG_UNCOND (Simulator::Now ().As(Time::S) << "s Beacon Sent");
 }
 
 void
@@ -153,7 +153,7 @@ LrWpanSlottedCsmacaTestCase::IncomingSuperframeStatus (LrWpanSlottedCsmacaTestCa
   if (newValue == SuperframeStatus::CAP)
     {
       testcase->m_startCap = Simulator::Now ();
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Incoming superframe CAP starts");
+      NS_LOG_UNCOND (Simulator::Now ().As(Time::S) << "s Incoming superframe CAP starts");
     }
 }
 
@@ -162,7 +162,7 @@ LrWpanSlottedCsmacaTestCase::TransactionCost (LrWpanSlottedCsmacaTestCase *testc
 {
   testcase->m_apBoundary = Simulator::Now ();
   testcase->m_transCost = trans;
-  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "s Transaction Cost is:" << trans);
+  NS_LOG_UNCOND (Simulator::Now ().As(Time::S) << "s Transaction Cost is:" << trans);
 
 }
 
@@ -309,7 +309,20 @@ LrWpanSlottedCsmacaTestCase::DoRun ()
       ifsSize = 12;
     }
 
-  transactionTime = MicroSeconds ((m_transCost - ifsSize) * 1000 * 1000 / symbolRate);
+  // The transaction cost here includes the ifsSize and the turnAroundTime (Tx->Rx)
+  // therefore we subtract these before the final comparison
+  //
+  //  Transmission Start                     Transmission End
+  //     |                                     |
+  //     +-------+--------------------+--------+------------------------+------+
+  //     | 2 CCA |  TurnAround(Rx->Tx)| Data   |  TurnAround(Tx->Rx)    |  IFS |
+  //     +-------+--------------------+--------+------------------------+------+
+
+  // TODO: This test need some rework to make it more clear
+
+  transactionTime = Seconds ((double)(m_transCost-(ifsSize + 12))  / symbolRate);
+  NS_LOG_UNCOND ("Transmission start time(On a boundary): "<<m_apBoundary.As(Time::S));
+  NS_LOG_UNCOND ("Transmission End time (McpsData.confirm): "<<m_sentTime.As(Time::S));
 
   NS_TEST_EXPECT_MSG_EQ (m_sentTime,(m_apBoundary + transactionTime),"Error, the transaction time is not the expected value");
 

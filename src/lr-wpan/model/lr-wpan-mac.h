@@ -909,6 +909,10 @@ public:
    */
   uint8_t GetMacMaxFrameRetries (void) const;
   /**
+   * Print the number of elements in the packet transmit queue.
+   */
+  void PrintTransmitQueueSize (void);
+  /**
    * Set the macMaxFrameRetries attribute value.
    *
    * \param retries the maximum number of retries

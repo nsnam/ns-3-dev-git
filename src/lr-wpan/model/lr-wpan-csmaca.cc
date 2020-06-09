@@ -416,7 +416,7 @@ LrWpanCsmaCa::CanProceed ()
   // The MAC sublayer shall proceed if the remaining CSMA-CA algorithm steps
   // can be completed before the end of the CAP.
   // See IEEE 802.15.4-2011 (Sections 5.1.1.1 and 5.1.1.4)
-  // Transaction = 2 CCA + frame transmission (PPDU) + turnaroudtime or Ack time (optional) + IFS
+  // Transaction = 2 CCA + frame transmission (SHR+PHR+PPDU) + turnaroudtime*2 (Rx->Tx & Tx->Rx) + IFS (LIFS or SIFS) and Ack time (if ack flag true)
 
   transactionSymbols = ccaSymbols + m_mac->GetTxPacketSymbols ();
 
@@ -427,8 +427,8 @@ LrWpanCsmaCa::CanProceed ()
     }
   else
     {
-      //time the PHY takes to switch from TX to Rx or Rx to Tx
-      transactionSymbols += m_mac->GetPhy ()->aTurnaroundTime;
+      //time the PHY takes to switch from Rx to Tx and Tx to Rx
+      transactionSymbols += (m_mac->GetPhy ()->aTurnaroundTime *2);
     }
   transactionSymbols +=  m_mac->GetIfsSize ();
 
