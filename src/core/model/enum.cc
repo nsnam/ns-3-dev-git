@@ -147,7 +147,7 @@ EnumChecker::GetUnderlyingTypeInformation (void) const
   NS_LOG_FUNCTION (this);
   std::ostringstream oss;
   bool moreValues = false;
-  for (const auto i : m_valueSet)
+  for (const auto &i : m_valueSet)
     {
       oss << (moreValues ? "|" : "") << i.second;
       moreValues = true;

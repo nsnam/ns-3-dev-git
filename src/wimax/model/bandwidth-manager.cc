@@ -222,10 +222,10 @@ BandwidthManager::GetSymbolsPerFrameAllocated (void)
   uint32_t allocationPerFrame = 0;
 
   std::vector<SSRecord*> *ssRecords = bs->GetSSManager ()->GetSSRecords ();
-  for (std::vector<SSRecord*>::iterator iter1 = ssRecords->begin (); iter1 != ssRecords->end (); ++iter1)
+  for (std::vector<SSRecord*>::const_iterator iter1 = ssRecords->begin (); iter1 != ssRecords->end (); ++iter1)
     {
-      for (std::vector<ServiceFlow*>::iterator iter2 = (*iter1)->GetServiceFlows (ServiceFlow::SF_TYPE_ALL).begin ();
-           iter2 != (*iter1)->GetServiceFlows (ServiceFlow::SF_TYPE_ALL).end (); ++iter2)
+      std::vector<ServiceFlow*> ssServiceFlows = (*iter1)->GetServiceFlows (ServiceFlow::SF_TYPE_ALL);
+      for (std::vector<ServiceFlow*>::const_iterator iter2 = ssServiceFlows.begin (); iter2 != ssServiceFlows.end (); ++iter2)
         {
           allocationPerFrame += (*iter2)->GetRecord ()->GetGrantSize ();
         }
