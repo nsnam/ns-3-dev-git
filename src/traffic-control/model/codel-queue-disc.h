@@ -212,10 +212,6 @@ private:
   uint16_t m_recInvSqrt;                  //!< Reciprocal inverse square root
   uint32_t m_firstAboveTime;              //!< Time to declare sojourn time above target
   TracedValue<uint32_t> m_dropNext;       //!< Time to drop next packet
-  uint32_t m_state1;                      //!< Number of times packet sojourn goes above target for interval
-  uint32_t m_state2;                      //!< Number of times we perform next drop while in dropping state
-  uint32_t m_state3;                      //!< Number of times we enter drop state and drop the fist packet
-  uint32_t m_states;                      //!< Total number of times we are in state 1, state 2, or state 3
 };
 
 } // namespace ns3

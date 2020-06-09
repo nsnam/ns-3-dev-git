@@ -132,11 +132,7 @@ CoDelQueueDisc::CoDelQueueDisc ()
     m_dropping (false),
     m_recInvSqrt (~0U >> REC_INV_SQRT_SHIFT),
     m_firstAboveTime (0),
-    m_dropNext (0),
-    m_state1 (0),
-    m_state2 (0),
-    m_state3 (0),
-    m_states (0)
+    m_dropNext (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -226,7 +222,6 @@ CoDelQueueDisc::OkToDrop (Ptr<QueueDiscItem> item, uint32_t now)
     {
       NS_LOG_LOGIC ("Sojourn time has been above target for at least q->interval; it's OK to (possibly) drop packet.");
       okToDrop = true;
-      ++m_state1;
     }
   return okToDrop;
 }
@@ -265,7 +260,6 @@ CoDelQueueDisc::DoDequeue (void)
         }
       else if (CoDelTimeAfterEq (now, m_dropNext))
         {
-          m_state2++;
           while (m_dropping && CoDelTimeAfterEq (now, m_dropNext))
             {
               ++m_count;
@@ -338,7 +332,6 @@ CoDelQueueDisc::DoDequeue (void)
               OkToDrop (item, now);
             }
           m_dropping = true;
-          ++m_state3;
           /*
            * if min went above target close to when we last went below it
            * assume that the drop rate that controlled the queue on the
@@ -367,7 +360,6 @@ CoDelQueueDisc::DoDequeue (void)
     {
       NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
     }
-  ++m_states;
   return item;
 }
 
