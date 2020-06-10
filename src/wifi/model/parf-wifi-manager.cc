@@ -258,11 +258,10 @@ void ParfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
   NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
 }
 
-void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                      double ackSnr, WifiMode ackMode,
-                                      double dataSnr, uint16_t dataChannelWidth)
+void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                      double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   ParfWifiRemoteStation *station = static_cast<ParfWifiRemoteStation*> (st);
   CheckInit (station);
   station->m_nAttempt++;

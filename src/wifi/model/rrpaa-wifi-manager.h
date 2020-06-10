@@ -107,9 +107,8 @@ private:
   virtual void DoReportDataFailed (WifiRemoteStation *station);
   virtual void DoReportRtsOk (WifiRemoteStation *station,
                               double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (WifiRemoteStation *station,
-                               double ackSnr, WifiMode ackMode,
-                               double dataSnr, uint16_t dataChannelWidth);
+  virtual void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
+                               double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
   virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
   virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
   virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);

@@ -212,11 +212,10 @@ AarfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
 }
 
 void
-AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode,
-                                 double dataSnr, uint16_t dataChannelWidth)
+AarfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   AarfWifiRemoteStation *station = static_cast<AarfWifiRemoteStation*> (st);
   station->m_timer++;
   station->m_success++;

@@ -96,11 +96,10 @@ ConstantRateWifiManager::DoReportRtsOk (WifiRemoteStation *st,
 }
 
 void
-ConstantRateWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                         double ackSnr, WifiMode ackMode,
-                                         double dataSnr, uint16_t dataChannelWidth)
+ConstantRateWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                         double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
 }
 
 void

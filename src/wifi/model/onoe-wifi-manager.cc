@@ -158,11 +158,10 @@ OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *st, double ctsSnr, WifiMode c
 }
 
 void
-OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode,
-                                 double dataSnr, uint16_t dataChannelWidth)
+OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode,
+                                 double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr << dataChannelWidth << +dataNss);
   OnoeWifiRemoteStation *station = static_cast<OnoeWifiRemoteStation*> (st);
   UpdateRetry (station);
   station->m_tx_ok++;

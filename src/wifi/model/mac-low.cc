@@ -909,8 +909,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
                                         rxSnr, txVector.GetMode ());
           m_stationManager->ReportDataOk (m_currentPacket->GetAddr1 (), &m_currentPacket->GetHeader (0),
                                           rxSnr, txVector.GetMode (), tag.Get (),
-                                          m_currentTxVector.GetChannelWidth (),
-                                          m_currentPacket->GetSize ());
+                                          m_currentTxVector, m_currentPacket->GetSize ());
         }
       // cancel the Normal Ack timer
       m_normalAckTimeoutEvent.Cancel ();
