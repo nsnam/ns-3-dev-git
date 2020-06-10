@@ -23,7 +23,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/node-container.h"
 #include "ns3/application-container.h"
-#include "ns3/point-to-point-helper.h"
+#include "ns3/simple-net-device-helper.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
@@ -82,11 +82,11 @@ BulkSendBasicTestCase::DoRun (void)
   NodeContainer nodes;
   nodes.Add (sender);
   nodes.Add (receiver);
-  PointToPointHelper p2pHelper;
-  p2pHelper.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2pHelper.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  SimpleNetDeviceHelper simpleHelper;
+  simpleHelper.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  simpleHelper.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer devices;
-  devices = p2pHelper.Install (nodes);
+  devices = simpleHelper.Install (nodes);
   InternetStackHelper internet;
   internet.Install (nodes);
   Ipv4AddressHelper ipv4;
@@ -178,11 +178,11 @@ BulkSendSeqTsSizeTestCase::DoRun (void)
   NodeContainer nodes;
   nodes.Add (sender);
   nodes.Add (receiver);
-  PointToPointHelper p2pHelper;
-  p2pHelper.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
-  p2pHelper.SetChannelAttribute ("Delay", StringValue ("10ms"));
+  SimpleNetDeviceHelper simpleHelper;
+  simpleHelper.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
+  simpleHelper.SetChannelAttribute ("Delay", StringValue ("10ms"));
   NetDeviceContainer devices;
-  devices = p2pHelper.Install (nodes);
+  devices = simpleHelper.Install (nodes);
   InternetStackHelper internet;
   internet.Install (nodes);
   Ipv4AddressHelper ipv4;
