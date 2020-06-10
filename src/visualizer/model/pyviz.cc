@@ -134,46 +134,50 @@ PyViz::PyViz ()
   NS_ASSERT (g_visualizer == NULL);
   g_visualizer = this;
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
-                   MakeCallback (&PyViz::TraceNetDevTxWifi, this));
+  // WiFi
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
+                           MakeCallback (&PyViz::TraceNetDevTxWifi, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
-                   MakeCallback (&PyViz::TraceNetDevRxWifi, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
+                           MakeCallback (&PyViz::TraceNetDevRxWifi, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacTx",
-                   MakeCallback (&PyViz::TraceNetDevTxCsma, this));
+  // CSMA
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacTx",
+                           MakeCallback (&PyViz::TraceNetDevTxCsma, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
-                   MakeCallback (&PyViz::TraceNetDevRxCsma, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacRx",
+                           MakeCallback (&PyViz::TraceNetDevRxCsma, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacPromiscRx",
-                   MakeCallback (&PyViz::TraceNetDevPromiscRxCsma, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::CsmaNetDevice/MacPromiscRx",
+                           MakeCallback (&PyViz::TraceNetDevPromiscRxCsma, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/TxQueue/Drop",
-                   MakeCallback (&PyViz::TraceDevQueueDrop, this));
+  // Generic queue drop
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/TxQueue/Drop",
+                           MakeCallback (&PyViz::TraceDevQueueDrop, this));
+  // IPv4 drop
+  Config::ConnectFailSafe ("/NodeList/*/$ns3::Ipv4L3Protocol/Drop",
+                           MakeCallback (&PyViz::TraceIpv4Drop, this));
 
-  Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Drop",
-                   MakeCallback (&PyViz::TraceIpv4Drop, this));
+  // Point-to-Point
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/MacTx",
+                           MakeCallback (&PyViz::TraceNetDevTxPointToPoint, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/MacTx",
-                   MakeCallback (&PyViz::TraceNetDevTxPointToPoint, this));
-
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/MacRx",
-                   MakeCallback (&PyViz::TraceNetDevRxPointToPoint, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::PointToPointNetDevice/MacRx",
+                           MakeCallback (&PyViz::TraceNetDevRxPointToPoint, this));
 
   // WiMax
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
-                   MakeCallback (&PyViz::TraceNetDevTxWimax, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Tx",
+                           MakeCallback (&PyViz::TraceNetDevTxWimax, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
-                   MakeCallback (&PyViz::TraceNetDevRxWimax, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::WimaxNetDevice/Rx",
+                           MakeCallback (&PyViz::TraceNetDevRxWimax, this));
 
   // LTE
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
-                   MakeCallback (&PyViz::TraceNetDevTxLte, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Tx",
+                           MakeCallback (&PyViz::TraceNetDevTxLte, this));
 
-  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
-                   MakeCallback (&PyViz::TraceNetDevRxLte, this));
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/$ns3::LteNetDevice/Rx",
+                           MakeCallback (&PyViz::TraceNetDevRxLte, this));
 }
 
 void
