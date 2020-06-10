@@ -21,6 +21,7 @@
 #include "visual-simulator-impl.h"
 #include "ns3/default-simulator-impl.h"
 #include "ns3/log.h"
+#include "ns3/packet-metadata.h"
 
 namespace ns3 {
 
@@ -60,6 +61,7 @@ VisualSimulatorImpl::GetTypeId (void)
 
 VisualSimulatorImpl::VisualSimulatorImpl ()
 {
+  PacketMetadata::Enable ();
 }
 
 VisualSimulatorImpl::~VisualSimulatorImpl ()
