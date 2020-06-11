@@ -1273,7 +1273,7 @@ def _print_introspected_doxygen(bld):
     # NS_COMMANDLINE_INTROSPECTION=".." test.py --nowaf --constrain=example
     Logs.info("Running CommandLine introspection")
     proc_env['NS_COMMANDLINE_INTROSPECTION'] = '..'
-    subprocess.run(["test.py", "--nowaf", "--constrain=example"],
+    subprocess.run(["./test.py", "--nowaf", "--constrain=example"],
                    env=proc_env, stdout=subprocess.DEVNULL)
     
     doxygen_out = os.path.join('doc', 'introspected-command-line.h')

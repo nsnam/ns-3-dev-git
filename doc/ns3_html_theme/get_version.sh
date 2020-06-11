@@ -205,7 +205,7 @@ fi
 # This seems not always done automatically
 # by Sphinx when rebuilding
 cd doc 2>&1 >/dev/null
-for d in {manual,models,tutorial/build/{single,}html/_static/ ; do
+for d in {manual,models,tutorial}/build/{single,}html/_static/ ; do
     if [ ! -d $d ]; then
 	mkdir -p $d
     fi
