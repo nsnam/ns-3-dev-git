@@ -128,6 +128,8 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-n.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ac.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-ax.eps \
+	$(SRC)/wifi/doc/source/figures/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
+	$(SRC)/wifi/doc/source/figures/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
 	$(SRC)/wimax/doc/WimaxArchitecture.dia \
 	$(SRC)/lte/doc/source/figures/epc-ctrl-arch.dia \
 	$(SRC)/lte/doc/source/figures/epc-data-flow-dl.dia \
