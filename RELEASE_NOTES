@@ -50,6 +50,8 @@ Bugs fixed
 - Issue #116 - Wi-Fi: Incorrect state when receiving A-MPDU in WifiPhy
 - Issue #119 - Waf --lcov-report option was broken
 - Issue #169 - Ideal rate manager does not work when non best-effort traffic is used
+- Issue #172 (Bug 3011) - wifi: MIMO error rate model is incorrect
+- Issue #178 (Bug 2385) - IdealWifiManager can pick invalid WifiTxVector under certain MIMO conditions
 - Issue #196 - Remove LteSecondaryCellSelectionTestSuite from LTE module
 - Issue #221 - T310 is not cancelled upon receiving handover command
 - MR !269 - Fix okumura-hata propagation loss model when m_frequency > 1.500e9 and city == Medium or Small
