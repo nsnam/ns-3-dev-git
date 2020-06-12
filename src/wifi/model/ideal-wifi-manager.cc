@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include <algorithm>
 #include "ns3/log.h"
 #include "ideal-wifi-manager.h"
 #include "wifi-phy.h"
