@@ -172,7 +172,6 @@ The following details pertain to the physical layer and channel models:
 * 802.11 PCF implementation currently assumes a DTIM interval equal to the beacon interval
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* PHY_RXSTART is not supported
 * The current implementation assumes that secondary channels are always higher than primary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
 * Energy consumption model does not consider MIMO
@@ -413,6 +412,31 @@ the ``YansWifiPhy`` for a reception decision.
 From the SNIR function we can derive the Bit Error Rate (BER) and Packet 
 Error Rate (PER) for
 the modulation and coding scheme being used for the transmission.  
+
+If MIMO is used and the number of spatial streams is lower than the number
+of active antennas at the receiver, then a gain is applied to the calculated
+SNIR as follows (since STBC is not used):
+
+.. math::
+
+  gain (dB) = 10 \log(\frac{RX \ antennas}{spatial \ streams})
+
+Having more TX antennas can be safely ignored for AWGN. The resulting gain is:
+
+::
+
+  antennas   NSS    gain
+  2 x 1       1     0 dB
+  1 x 2       1     3 dB
+  2 x 2       1     3 dB
+  3 x 3       1   4.8 dB
+  3 x 3       2   1.8 dB
+  3 x 3       3     0 dB
+  4 x 4       1     6 dB
+  4 x 4       2     3 dB
+  4 x 4       3   1.2 dB
+  4 x 4       4     0 dB
+  ...
 
 ErrorModel
 ##########
