@@ -689,28 +689,33 @@ public:
   WifiPhyBand GetPhyBand (void) const;
 
   /**
-   * Add a channel definition to the WifiPhy.  The pair (channelNumber,
-   * WifiPhyStandard) may then be used to lookup a pair (frequency,
-   * channelWidth).
+   * Add a channel definition to the WifiPhy. The channelNumber, PHY
+   * band and PHY standard informations may then be used to lookup a
+   * pair (frequency, channelWidth).
    *
    * If the channel is not already defined for the standard, the method
    * should return true; otherwise false.
    *
    * \param channelNumber the channel number to define
+   * \param band the PHY band which the channel belongs to
    * \param standard the applicable WifiPhyStandard
    * \param frequency the frequency (MHz)
    * \param channelWidth the channel width (MHz)
    *
    * \return true if the channel definition succeeded
    */
-  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth);
+  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth);
 
   /**
-   * A pair of a ChannelNumber and WifiPhyStandard
+   * A pair of a channel number and a WifiPhyBand
    */
-  typedef std::pair<uint8_t, WifiPhyStandard> ChannelNumberStandardPair;
+  typedef std::pair<uint8_t, WifiPhyBand> ChannelNumberBandPair;
   /**
-   * A pair of a center Frequency (MHz) and a ChannelWidth (MHz)
+   * A pair of a ChannelNumberBandPair and a WifiPhyStandard
+   */
+  typedef std::pair<ChannelNumberBandPair, WifiPhyStandard> ChannelNumberStandardPair;
+  /**
+   * A pair of a center frequency (MHz) and a channel width (MHz)
    */
   typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
 
@@ -1892,10 +1897,11 @@ private:
   /**
    * Lookup frequency/width pair for channelNumber/standard pair
    * \param channelNumber The channel number to check
+   * \param band the PHY band to check
    * \param standard The WifiPhyStandard to check
    * \return the FrequencyWidthPair found
    */
-  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyStandard standard) const;
+  FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard) const;
 
   /**
    * Due to newly arrived signal, the current reception cannot be continued and has to be aborted

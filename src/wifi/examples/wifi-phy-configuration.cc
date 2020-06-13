@@ -315,7 +315,7 @@ int main (int argc, char *argv[])
       phySta = GetYansWifiPhyPtr (staDevice);
       // This case will error exit due to invalid channel number unless
       // we provide the DefineChannelNumber() below
-      phySta->DefineChannelNumber (99, WIFI_PHY_STANDARD_80211n, 5185, 40);
+      phySta->DefineChannelNumber (99, WIFI_PHY_BAND_5GHZ, WIFI_PHY_STANDARD_80211n, 5185, 40);
       phySta->SetAttribute ("ChannelNumber", UintegerValue (99));
       PrintAttributesIfEnabled (printAttributes);
       break;

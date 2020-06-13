@@ -294,7 +294,7 @@ void
 InterferenceHelperSequenceTest::SwitchCh (Ptr<WifiNetDevice> dev)
 {
   Ptr<WifiPhy> p = dev->GetPhy ();
-  p->SetChannelNumber (1);
+  p->SetChannelNumber (40);
 }
 
 Ptr<Node>
@@ -1043,27 +1043,31 @@ SetChannelFrequencyTest::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5220, "802.11 5GHz configuration");
   }
   {
-    // case 11
+    // case 17:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     phy.Set ("ChannelNumber", UintegerValue (44));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     // Post-install reconfiguration to channel number 40
-    Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelNumber", UintegerValue (40));
+    std::ostringstream path;
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelNumber";
+    Config::Set (path.str(), UintegerValue (40));
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 40, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelWidth (), 20, "802.11 5GHz configuration");
     NS_TEST_ASSERT_MSG_EQ (phySta->GetFrequency (), 5200, "802.11 5GHz configuration");
   }
   {
-    // case 12
+    // case 18:
     WifiHelper wifi;
     wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
     phy.Set ("ChannelNumber", UintegerValue (44));
     staDevice = wifi.Install (phy, macSta, wifiStaNode.Get (0));
     phySta = GetYansWifiPhyPtr (staDevice);
     // Post-install reconfiguration to channel width 40 MHz
-    Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelWidth", UintegerValue (40));
+    std::ostringstream path;
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelWidth";
+    Config::Set (path.str(), UintegerValue (40));
     // Although channel 44 is configured originally for 20 MHz, we
     // allow it to be used for 40 MHz here
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 44, "802.11 5GHz configuration");
@@ -1079,7 +1083,9 @@ SetChannelFrequencyTest::DoRun ()
     phySta = GetYansWifiPhyPtr (staDevice);
     phySta->SetAttribute ("ChannelNumber", UintegerValue (44));
     // Post-install reconfiguration to channel width 40 MHz
-    Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelWidth", UintegerValue (40));
+    std::ostringstream path;
+    path << "/NodeList/*/DeviceList/" << staDevice.Get(0)->GetIfIndex () << "/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/ChannelWidth";
+    Config::Set (path.str(), UintegerValue (40));
     // Although channel 44 is configured originally for 20 MHz, we
     // allow it to be used for 40 MHz here
     NS_TEST_ASSERT_MSG_EQ (phySta->GetChannelNumber (), 44, "802.11 5GHz configuration");
@@ -1125,7 +1131,7 @@ SetChannelFrequencyTest::DoRun ()
     phySta = GetYansWifiPhyPtr (staDevice);
     // This case will error exit due to invalid channel number unless
     // we provide the DefineChannelNumber() below
-    phySta->DefineChannelNumber (99, WIFI_PHY_STANDARD_80211n, 5185, 40);
+    phySta->DefineChannelNumber (99, WIFI_PHY_BAND_5GHZ, WIFI_PHY_STANDARD_80211n, 5185, 40);
     phySta->SetAttribute ("ChannelNumber", UintegerValue (99));
   }
   {

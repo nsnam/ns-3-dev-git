@@ -59,112 +59,113 @@ NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
  */
 WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
 {
+  //2.4 GHz channels
   // 802.11b uses width of 22, while OFDM modes use width of 20
-  { std::make_pair (1, WIFI_PHY_STANDARD_80211b), std::make_pair (2412, 22) },
-  { std::make_pair (1, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2412, 20) },
-  { std::make_pair (2, WIFI_PHY_STANDARD_80211b), std::make_pair (2417, 22) },
-  { std::make_pair (2, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2417, 20) },
-  { std::make_pair (3, WIFI_PHY_STANDARD_80211b), std::make_pair (2422, 22) },
-  { std::make_pair (3, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2422, 20) },
-  { std::make_pair (4, WIFI_PHY_STANDARD_80211b), std::make_pair (2427, 22) },
-  { std::make_pair (4, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2427, 20) },
-  { std::make_pair (5, WIFI_PHY_STANDARD_80211b), std::make_pair (2432, 22) },
-  { std::make_pair (5, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2432, 20) },
-  { std::make_pair (6, WIFI_PHY_STANDARD_80211b), std::make_pair (2437, 22) },
-  { std::make_pair (6, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2437, 20) },
-  { std::make_pair (7, WIFI_PHY_STANDARD_80211b), std::make_pair (2442, 22) },
-  { std::make_pair (7, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2442, 20) },
-  { std::make_pair (8, WIFI_PHY_STANDARD_80211b), std::make_pair (2447, 22) },
-  { std::make_pair (8, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2447, 20) },
-  { std::make_pair (9, WIFI_PHY_STANDARD_80211b), std::make_pair (2452, 22) },
-  { std::make_pair (9, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2452, 20) },
-  { std::make_pair (10, WIFI_PHY_STANDARD_80211b), std::make_pair (2457, 22) },
-  { std::make_pair (10, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2457, 20) },
-  { std::make_pair (11, WIFI_PHY_STANDARD_80211b), std::make_pair (2462, 22) },
-  { std::make_pair (11, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2462, 20) },
-  { std::make_pair (12, WIFI_PHY_STANDARD_80211b), std::make_pair (2467, 22) },
-  { std::make_pair (12, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2467, 20) },
-  { std::make_pair (13, WIFI_PHY_STANDARD_80211b), std::make_pair (2472, 22) },
-  { std::make_pair (13, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (2472, 20) },
+  { { {1, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2412, 22} },
+  { { {1, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2412, 20} },
+  { { {2, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2417, 22} },
+  { { {2, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2417, 20} },
+  { { {3, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2422, 22} },
+  { { {3, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2422, 20} },
+  { { {4, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2427, 22} },
+  { { {4, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2427, 20} },
+  { { {5, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2432, 22} },
+  { { {5, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2432, 20} },
+  { { {6, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2437, 22} },
+  { { {6, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2437, 20} },
+  { { {7, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2442, 22} },
+  { { {7, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2442, 20} },
+  { { {8, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2447, 22} },
+  { { {8, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2447, 20} },
+  { { {9, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2452, 22} },
+  { { {9, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2452, 20} },
+  { { {10, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2457, 22} },
+  { { {10, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2457, 20} },
+  { { {11, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2462, 22} },
+  { { {11, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2462, 20} },
+  { { {12, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2467, 22} },
+  { { {12, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2467, 20} },
+  { { {13, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2472, 22} },
+  { { {13, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {2472, 20} },
   // Only defined for 802.11b
-  { std::make_pair (14, WIFI_PHY_STANDARD_80211b), std::make_pair (2484, 22) },
+  { { {14, WIFI_PHY_BAND_2_4GHZ}, WIFI_PHY_STANDARD_80211b}, {2484, 22} },
 
-  // Now the 5GHz channels; UNSPECIFIED for 802.11a/n/ac/ax channels
+  // Now the 5 GHz channels; UNSPECIFIED for 802.11a/n/ac/ax channels
   // 20 MHz channels
-  { std::make_pair (36, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5180, 20) },
-  { std::make_pair (40, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5200, 20) },
-  { std::make_pair (44, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5220, 20) },
-  { std::make_pair (48, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5240, 20) },
-  { std::make_pair (52, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5260, 20) },
-  { std::make_pair (56, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5280, 20) },
-  { std::make_pair (60, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5300, 20) },
-  { std::make_pair (64, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5320, 20) },
-  { std::make_pair (100, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5500, 20) },
-  { std::make_pair (104, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5520, 20) },
-  { std::make_pair (108, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5540, 20) },
-  { std::make_pair (112, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5560, 20) },
-  { std::make_pair (116, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5580, 20) },
-  { std::make_pair (120, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5600, 20) },
-  { std::make_pair (124, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5620, 20) },
-  { std::make_pair (128, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5640, 20) },
-  { std::make_pair (132, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5660, 20) },
-  { std::make_pair (136, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5680, 20) },
-  { std::make_pair (140, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5700, 20) },
-  { std::make_pair (144, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5720, 20) },
-  { std::make_pair (149, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5745, 20) },
-  { std::make_pair (153, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5765, 20) },
-  { std::make_pair (157, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5785, 20) },
-  { std::make_pair (161, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5805, 20) },
-  { std::make_pair (165, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5825, 20) },
-  { std::make_pair (169, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5845, 20) },
-  { std::make_pair (173, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5865, 20) },
-  { std::make_pair (177, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5885, 20) },
-  { std::make_pair (181, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5905, 20) },
+  { { {36, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5180, 20} },
+  { { {40, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5200, 20} },
+  { { {44, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5220, 20} },
+  { { {48, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5240, 20} },
+  { { {52, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5260, 20} },
+  { { {56, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5280, 20} },
+  { { {60, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5300, 20} },
+  { { {64, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5320, 20} },
+  { { {100, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5500, 20} },
+  { { {104, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5520, 20} },
+  { { {108, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5540, 20} },
+  { { {112, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5560, 20} },
+  { { {116, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5580, 20} },
+  { { {120, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5600, 20} },
+  { { {124, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5620, 20} },
+  { { {128, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5640, 20} },
+  { { {132, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5660, 20} },
+  { { {136, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5680, 20} },
+  { { {140, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5700, 20} },
+  { { {144, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5720, 20} },
+  { { {149, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5745, 20} },
+  { { {153, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5765, 20} },
+  { { {157, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5785, 20} },
+  { { {161, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5805, 20} },
+  { { {165, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5825, 20} },
+  { { {169, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5845, 20} },
+  { { {173, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5865, 20} },
+  { { {177, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5885, 20} },
+  { { {181, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5905, 20} },
   // 40 MHz channels
-  { std::make_pair (38, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5190, 40) },
-  { std::make_pair (46, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5230, 40) },
-  { std::make_pair (54, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5270, 40) },
-  { std::make_pair (62, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5310, 40) },
-  { std::make_pair (102, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5510, 40) },
-  { std::make_pair (110, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5550, 40) },
-  { std::make_pair (118, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5590, 40) },
-  { std::make_pair (126, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5630, 40) },
-  { std::make_pair (134, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5670, 40) },
-  { std::make_pair (142, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5710, 40) },
-  { std::make_pair (151, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5755, 40) },
-  { std::make_pair (159, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5795, 40) },
-  { std::make_pair (167, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5835, 40) },
-  { std::make_pair (175, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5875, 40) },
+  { { {38, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5190, 40} },
+  { { {46, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5230, 40} },
+  { { {54, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5270, 40} },
+  { { {62, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5310, 40} },
+  { { {102, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5510, 40} },
+  { { {110, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5550, 40} },
+  { { {118, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5590, 40} },
+  { { {126, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5630, 40} },
+  { { {134, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5670, 40} },
+  { { {142, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5710, 40} },
+  { { {151, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5755, 40} },
+  { { {159, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5795, 40} },
+  { { {167, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5835, 40} },
+  { { {175, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5875, 40} },
   // 80 MHz channels
-  { std::make_pair (42, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5210, 80) },
-  { std::make_pair (58, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5290, 80) },
-  { std::make_pair (106, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5530, 80) },
-  { std::make_pair (122, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5610, 80) },
-  { std::make_pair (138, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5690, 80) },
-  { std::make_pair (155, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5775, 80) },
-  { std::make_pair (171, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5855, 80) },
+  { { {42, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5210, 80} },
+  { { {58, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5290, 80} },
+  { { {106, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5530, 80} },
+  { { {122, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5610, 80} },
+  { { {138, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5690, 80} },
+  { { {155, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5775, 80} },
+  { { {171, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5855, 80} },
   // 160 MHz channels
-  { std::make_pair (50, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5250, 160) },
-  { std::make_pair (114, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5570, 160) },
-  { std::make_pair (163, WIFI_PHY_STANDARD_UNSPECIFIED), std::make_pair (5815, 160) },
+  { { {50, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5250, 160} },
+  { { {114, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5570, 160} },
+  { { {163, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_UNSPECIFIED}, {5815, 160} },
 
   // 802.11p 10 MHz channels at the 5.855-5.925 band
-  { std::make_pair (172, WIFI_PHY_STANDARD_80211p), std::make_pair (5860, 10) },
-  { std::make_pair (174, WIFI_PHY_STANDARD_80211p), std::make_pair (5870, 10) },
-  { std::make_pair (176, WIFI_PHY_STANDARD_80211p), std::make_pair (5880, 10) },
-  { std::make_pair (178, WIFI_PHY_STANDARD_80211p), std::make_pair (5890, 10) },
-  { std::make_pair (180, WIFI_PHY_STANDARD_80211p), std::make_pair (5900, 10) },
-  { std::make_pair (182, WIFI_PHY_STANDARD_80211p), std::make_pair (5910, 10) },
-  { std::make_pair (184, WIFI_PHY_STANDARD_80211p), std::make_pair (5920, 10) },
+  { { {172, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5860, 10} },
+  { { {174, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5870, 10} },
+  { { {176, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5880, 10} },
+  { { {178, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5890, 10} },
+  { { {180, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5900, 10} },
+  { { {182, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5910, 10} },
+  { { {184, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5920, 10} },
 
   // 802.11p 5 MHz channels at the 5.855-5.925 band (for simplification, we consider the same center frequencies as the 10 MHz channels)
-  { std::make_pair (171, WIFI_PHY_STANDARD_80211p), std::make_pair (5860, 5) },
-  { std::make_pair (173, WIFI_PHY_STANDARD_80211p), std::make_pair (5870, 5) },
-  { std::make_pair (175, WIFI_PHY_STANDARD_80211p), std::make_pair (5880, 5) },
-  { std::make_pair (177, WIFI_PHY_STANDARD_80211p), std::make_pair (5890, 5) },
-  { std::make_pair (179, WIFI_PHY_STANDARD_80211p), std::make_pair (5900, 5) },
-  { std::make_pair (181, WIFI_PHY_STANDARD_80211p), std::make_pair (5910, 5) },
-  { std::make_pair (183, WIFI_PHY_STANDARD_80211p), std::make_pair (5920, 5) }
+  { { {171, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5860, 5} },
+  { { {173, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5870, 5} },
+  { { {175, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5880, 5} },
+  { { {177, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5890, 5} },
+  { { {179, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5900, 5} },
+  { { {181, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5910, 5} },
+  { { {183, WIFI_PHY_BAND_5GHZ}, WIFI_PHY_STANDARD_80211p}, {5920, 5} }
 };
 
 TypeId
@@ -1285,10 +1286,10 @@ WifiPhy::Configure80211ax (void)
 }
 
 bool
-WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth)
+WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth)
 {
-  NS_LOG_FUNCTION (this << +channelNumber << standard << frequency << channelWidth);
-  ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
+  NS_LOG_FUNCTION (this << +channelNumber << band << standard << frequency << channelWidth);
+  ChannelNumberStandardPair p = std::make_pair (std::make_pair (channelNumber, band), standard);
   ChannelToFrequencyWidthMap::const_iterator it;
   it = m_channelToFrequencyWidth.find (p);
   if (it != m_channelToFrequencyWidth.end ())
@@ -1319,8 +1320,8 @@ WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width)
     }
   if (found)
     {
-      NS_LOG_DEBUG ("Found, returning " << +it->first.first);
-      return (it->first.first);
+      NS_LOG_DEBUG ("Found, returning " << +it->first.first.first);
+      return (it->first.first.first);
     }
   else
     {
@@ -1359,12 +1360,12 @@ WifiPhy::ConfigureChannelForStandard (void)
       // the unspecified standard, configure using the known values;
       // otherwise, this is a configuration error
       NS_LOG_DEBUG ("Configuring for channel number " << +GetChannelNumber ());
-      FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), m_standard);
+      FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), GetPhyBand (), GetPhyStandard ());
       if (f.first == 0)
         {
           // the specific pair of number/standard is not known
           NS_LOG_DEBUG ("Falling back to check WIFI_PHY_STANDARD_UNSPECIFIED");
-          f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), WIFI_PHY_STANDARD_UNSPECIFIED);
+          f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), GetPhyBand (), WIFI_PHY_STANDARD_UNSPECIFIED);
         }
       if (f.first == 0)
         {
@@ -1613,9 +1614,9 @@ WifiPhy::GetSupportedChannelWidthSet (void) const
 }
 
 WifiPhy::FrequencyWidthPair
-WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyStandard standard) const
+WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyBand band, WifiPhyStandard standard) const
 {
-  ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
+  ChannelNumberStandardPair p = std::make_pair (std::make_pair (channelNumber, band), standard);
   FrequencyWidthPair f = m_channelToFrequencyWidth[p];
   return f;
 }
@@ -1646,12 +1647,11 @@ WifiPhy::SetChannelNumber (uint8_t nch)
       return;
     }
 
-  // First make sure that the channel number is defined for the standard
-  // in use
-  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyStandard ());
+  // First make sure that the channel number is defined for the standard in use
+  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyBand (), GetPhyStandard ());
   if (f.first == 0)
     {
-      f = GetFrequencyWidthForChannelNumberStandard (nch, WIFI_PHY_STANDARD_UNSPECIFIED);
+      f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyBand (), WIFI_PHY_STANDARD_UNSPECIFIED);
     }
   if (f.first != 0)
     {
