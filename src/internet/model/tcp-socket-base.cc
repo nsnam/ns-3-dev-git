@@ -243,6 +243,7 @@ TcpSocketBase::TcpSocketBase (void)
 {
   NS_LOG_FUNCTION (this);
   m_txBuffer = CreateObject<TcpTxBuffer> ();
+  m_txBuffer->SetRWndCallback (MakeCallback (&TcpSocketBase::GetRWnd, this));
   m_tcb      = CreateObject<TcpSocketState> ();
   m_rateOps  = CreateObject <TcpRateLinux> ();
 
@@ -360,6 +361,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
   SetSendCallback (vPSUI);
   SetRecvCallback (vPS);
   m_txBuffer = CopyObject (sock.m_txBuffer);
+  m_txBuffer->SetRWndCallback (MakeCallback (&TcpSocketBase::GetRWnd, this));
   m_tcb = CopyObject (sock.m_tcb);
   m_tcb->m_rxBuffer = CopyObject (sock.m_tcb->m_rxBuffer);
 
@@ -3116,8 +3118,9 @@ TcpSocketBase::SendPendingData (bool withAck)
       //       failure (no data to send), return without sending anything
       //       (i.e., terminate steps C.1 -- C.5).
       SequenceNumber32 next;
+      SequenceNumber32 nextHigh;
       bool enableRule3 = m_sackEnabled && m_tcb->m_congState == TcpSocketState::CA_RECOVERY;
-      if (!m_txBuffer->NextSeg (&next, enableRule3))
+      if (!m_txBuffer->NextSeg (&next, &nextHigh, enableRule3))
         {
           NS_LOG_INFO ("no valid seq to transmit, or no data available");
           break;
@@ -3152,6 +3155,9 @@ TcpSocketBase::SendPendingData (bool withAck)
             }
 
           uint32_t s = std::min (availableWindow, m_tcb->m_segmentSize);
+          // NextSeg () may have further constrained the segment size
+          uint32_t maxSizeToSend = static_cast<uint32_t> (nextHigh - next);
+          s = std::min (s, maxSizeToSend);
 
           // (C.2) If any of the data octets sent in (C.1) are below HighData,
           //       HighRxt MUST be set to the highest sequence number of the
@@ -3716,23 +3722,31 @@ TcpSocketBase::DoRetransmit ()
   NS_LOG_FUNCTION (this);
   bool res;
   SequenceNumber32 seq;
+  SequenceNumber32 seqHigh;
+  uint32_t maxSizeToSend;
 
   // Find the first segment marked as lost and not retransmitted. With Reno,
   // that should be the head
-  res = m_txBuffer->NextSeg (&seq, false);
+  res = m_txBuffer->NextSeg (&seq, &seqHigh, false);
   if (!res)
     {
       // We have already retransmitted the head. However, we still received
       // three dupacks, or the RTO expired, but no data to transmit.
       // Therefore, re-send again the head.
       seq = m_txBuffer->HeadSequence ();
+      maxSizeToSend = m_tcb->m_segmentSize;
+    }
+  else
+    {
+      // NextSeg() may constrain the segment size when res is true
+      maxSizeToSend = static_cast<uint32_t> (seqHigh - seq);
     }
   NS_ASSERT (m_sackEnabled || seq == m_txBuffer->HeadSequence ());
 
   NS_LOG_INFO ("Retransmitting " << seq);
   // Update the trace and retransmit the segment
   m_tcb->m_nextTxSequence = seq;
-  uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, m_tcb->m_segmentSize, true);
+  uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, maxSizeToSend, true);
 
   NS_ASSERT (sz > 0);
 }
@@ -4310,6 +4324,19 @@ TcpSocketBase::SetUseEcn (TcpSocketState::UseEcn_t useEcn)
   NS_LOG_FUNCTION (this << useEcn);
   m_tcb->m_useEcn = useEcn;
 }
+
+uint32_t
+TcpSocketBase::GetRWnd (void) const
+{
+  return m_rWnd.Get ();
+}
+
+SequenceNumber32
+TcpSocketBase::GetHighRxAck (void) const
+{
+  return m_highRxAckMark.Get ();
+}
+
 
 //RttHistory methods
 RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)

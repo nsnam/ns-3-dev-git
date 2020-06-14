@@ -1184,6 +1184,20 @@ protected:
    */
   void AddSocketTags (const Ptr<Packet> &p) const;
 
+  /**
+   * Get the current value of the receiver's offered window (RCV.WND)
+   * \note This method exists to expose the value to the TcpTxBuffer
+   * \return value of receiver's offered window
+   */
+  uint32_t GetRWnd (void) const;
+
+  /**
+   * Get the current value of the receiver's highest (in-sequence) sequence number acked.
+   * \note This method exists to expose the value to the TcpTxBuffer
+   * \return value of receiver's highest sequence number acked.
+   */
+  SequenceNumber32 GetHighRxAck (void) const;
+
 protected:
   // Counters and events
   EventId           m_retxEvent     {}; //!< Retransmission event

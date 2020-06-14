@@ -294,10 +294,11 @@ public:
    * \brief Get the next sequence number to transmit, according to RFC 6675
    *
    * \param seq Next sequence number to transmit, based on the scoreboard information
+   * \param seqHigh Maximum sequence number to transmit, based on SMSS and/or receiver window
    * \param isRecovery true if the socket congestion state is in recovery mode
    * \return true is seq is updated, false otherwise
    */
-  bool NextSeg (SequenceNumber32 *seq, bool isRecovery) const;
+  bool NextSeg (SequenceNumber32 *seq, SequenceNumber32 *seqHigh, bool isRecovery) const;
 
   /**
    * \brief Return total bytes in flight
@@ -380,6 +381,12 @@ public:
    * case the SACKs are set by the Update method.
    */
   void ResetRenoSack ();
+
+  /**
+   * \brief Set callback to obtain receiver window value
+   * \param rWndCallback receiver window callback
+   */
+  void SetRWndCallback (Callback<uint32_t> rWndCallback);
 
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
@@ -579,6 +586,7 @@ private:
   uint32_t m_maxBuffer;  //!< Max number of data bytes in buffer (SND.WND)
   uint32_t m_size;       //!< Size of all data in this buffer
   uint32_t m_sentSize;   //!< Size of sent (and not discarded) segments
+  Callback<uint32_t> m_rWndCallback; //!< Callback to obtain RCV.WND value
 
   TracedValue<SequenceNumber32> m_firstByteSeq; //!< Sequence number of the first byte in data (SND.UNA)
   std::pair <PacketList::const_iterator, SequenceNumber32> m_highestSack; //!< Highest SACK byte
