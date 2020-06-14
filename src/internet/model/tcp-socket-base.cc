@@ -2929,6 +2929,10 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
   uint8_t flags = withAck ? TcpHeader::ACK : 0;
   uint32_t remainingData = m_txBuffer->SizeFromSequence (seq + SequenceNumber32 (sz));
 
+  // TCP sender should not send data out of the window advertised by the
+  // peer when it is not retransmission.
+  NS_ASSERT (isRetransmission || ((m_highRxAckMark + SequenceNumber32 (m_rWnd)) >= (seq + SequenceNumber32 (maxSize))));
+
   if (m_tcb->m_pacing)
     {
       NS_LOG_INFO ("Pacing is enabled");
