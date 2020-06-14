@@ -192,10 +192,6 @@ def ns3_python_bindings(bld):
                       Warning, stacklevel=2)
         return
 
-    if ("ns3-%s" % (module,)) not in env.NS3_ENABLED_MODULES:
-        #print "bindings for module %s which is not enabled, skip" % module
-        return
-
     env.append_value('PYTHON_MODULES_BUILT', module)
     try:
         apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
@@ -253,14 +249,21 @@ def ns3_python_bindings(bld):
     bindgen.env['FEATURES'] = ','.join(features)
     bindgen.dep_vars = ['FEATURES', "GCC_RTTI_ABI_COMPLETE"]
     bindgen.name = "pybindgen(ns3 module %s)" % module
+    bindgen.module = module
     bindgen.install_path = None
+
+    # Retrieve the module dependencies
+    module_obj = bld.get_tgen_by_name('ns3-' + module)
+    module_deps = module_obj.use.copy()
+    module_deps.append('ns3-' + module)
 
     # generate the extension module
     pymod = bld(features='cxx cxxshlib pyext')
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (module_target_dir, extension_name)
     pymod.name = 'ns3module_%s' % module
-    pymod.use = ["%s" % mod for mod in pymod.env['NS3_ENABLED_MODULES']] #  Should be '"ns3-"+module', but see bug 1117
+    pymod.module= module
+    pymod.use =  module_deps #  Should be '"ns3-"+module', but see bug 1117
     if pymod.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')

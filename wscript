@@ -1012,6 +1012,14 @@ def build(bld):
                 if obj.module not in bld.env.NS3_ENABLED_MODULES and obj.module not in bld.env.NS3_ENABLED_CONTRIBUTED_MODULES:
                     bld.exclude_taskgen(obj)
 
+            # disable python bindings for disabled modules
+            if 'pybindgen' in obj.name:
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
+                    bld.exclude_taskgen(obj)
+            if 'pyext' in getattr(obj, "features", []):
+                if ("ns3-%s" % obj.module) not in modules and ("ns3-%s" % obj.module) not in contribModules:
+                    bld.exclude_taskgen(obj)
+
 
     if env['NS3_ENABLED_MODULES']:
         env['NS3_ENABLED_MODULES'] = list(modules)
