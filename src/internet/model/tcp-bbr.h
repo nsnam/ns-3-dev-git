@@ -99,7 +99,6 @@ public:
                           const TcpSocketState::TcpCAEvent_t event);
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
                                 uint32_t bytesInFlight);
-  virtual void ReduceCwnd (Ptr<TcpSocketState> tcb);
   virtual Ptr<TcpCongestionOps> Fork ();
 
 protected:
@@ -118,7 +117,7 @@ protected:
    * \brief Checks whether to advance pacing gain in BBR_PROBE_BW state,
    *  and if allowed calls AdvanceCyclePhase ()
    * \param tcb the socket state.
-   * \param rs  rate sample
+   * \param rs rate sample.
    */
   void CheckCyclePhase (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
@@ -130,7 +129,7 @@ protected:
 
   /**
    * \brief Identifies whether pipe or BDP is already full
-   * \param rs  rate sample
+   * \param rs rate sample.
    */
   void CheckFullPipe (const TcpRateOps::TcpRateSample &rs);
 
@@ -138,7 +137,7 @@ protected:
    * \brief This method handles the steps related to the ProbeRTT state
    * \param tcb the socket state.
    */
-  void CheckProbeRTT (Ptr<TcpSocketState> tcb);
+  void CheckProbeRTT (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Updates variables specific to BBR_DRAIN state
@@ -192,14 +191,14 @@ protected:
   /**
    * \brief Updates pacing rate if socket is restarting from idle state.
    * \param tcb the socket state.
-   * \param rs  rate sample
+   * \param rs rate sample.
    */
   void HandleRestartFromIdle (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Estimates the target value for congestion window
    * \param tcb  the socket state.
-   * \param gain cwnd gain
+   * \param gain cwnd gain.
    */
   uint32_t InFlight (Ptr<TcpSocketState> tcb, double gain);
 
@@ -222,23 +221,23 @@ protected:
   /**
    * \brief Checks whether to move to next value of pacing gain while in BBR_PROBE_BW.
    * \param tcb the socket state.
-   * \param rs  rate sample
+   * \param rs  rate sample.
    * \returns true if want to move to next value otherwise false.
    */
   bool IsNextCyclePhase (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Modulates congestion window in BBR_PROBE_RTT.
-   * \param tcb the socket state
+   * \param tcb the socket state.
    */
   void ModulateCwndForProbeRTT (Ptr<TcpSocketState> tcb);
 
   /**
    * \brief Modulates congestion window in CA_RECOVERY.
    * \param tcb the socket state.
-   * \param rs  rate sample
+   * \param rs rate sample.
    */
-  void ModulateCwndForRecovery (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
+  bool ModulateCwndForRecovery (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Helper to restore the last-known good congestion window
@@ -263,7 +262,7 @@ protected:
   /**
    * \brief Updates pacing rate based on network model.
    * \param tcb the socket state.
-   * \param gain pacing gain
+   * \param gain pacing gain.
    */
   void SetPacingRate (Ptr<TcpSocketState> tcb, double gain);
 
@@ -276,28 +275,28 @@ protected:
   /**
    * \brief Updates maximum bottleneck.
    * \param tcb the socket state.
-   * \param rs rate sample
+   * \param rs rate sample.
    */
   void UpdateBtlBw (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Updates control parameters congestion windowm, pacing rate, send quantum.
    * \param tcb the socket state.
-   * \param rs rate sample
+   * \param rs rate sample.
    */
   void UpdateControlParameters (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Updates BBR network model (Maximum bandwidth and minimum RTT).
    * \param tcb the socket state.
-   * \param rs rate sample
+   * \param rs rate sample.
    */
   void UpdateModelAndState (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
   /**
    * \brief Updates round counting related variables.
    * \param tcb the socket state.
-   * \param rs rate sample
+   * \param rs rate sample.
    */
   void UpdateRound (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
@@ -324,6 +323,19 @@ protected:
    * \return string translation of mode value.
    */
   std::string WhichState (BbrMode_t state) const;
+
+  /**
+  * \brief Find Cwnd increment based on ack aggregation.
+  * \return uint32_t aggregate cwnd.
+  */
+  uint32_t AckAggregationCwnd();
+
+  /**
+  * \brief Estimates max degree of aggregation.
+  * \param tcb the socket state.
+  * \param rs rate sample.
+  */
+  void UpdateAckAggregation(Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
 private:
   BbrMode_t   m_state        {BbrMode_t::BBR_STARTUP};           //!< Current state of BBR state machine
@@ -358,7 +370,16 @@ private:
   Ptr<UniformRandomVariable> m_uv           {nullptr};           //!< Uniform Random Variable
   uint64_t    m_delivered                   {0};                 //!< The total amount of data in bytes delivered so far
   uint32_t    m_appLimited                  {0};                 //!< The index of the last transmitted packet marked as application-limited
-  uint32_t    m_txItemDelivered             {0};
+  uint32_t    m_txItemDelivered             {0};                 //!< 
+  uint32_t    m_extraAckedGain              {1};                 //!< Gain factor for adding extra ack to cwnd
+  uint32_t    m_extraAcked[2]               {0, 0};              //!< Maximum excess data acked in epoch
+  uint32_t    m_extraAckedWinRtt            {0};                 //!< Age of extra acked in rtt
+  uint32_t    m_extraAckedWinRttLength      {5};                 //!< Window length of extra acked window
+  uint32_t    m_ackEpochAckedResetThresh    {1 << 17};           //!< Max allowed val for m_ackEpochAcked, after which sampling epoch is reset 
+  uint32_t    m_extraAckedIdx               {0};                 //!< Current index in extra acked array
+  Time        m_ackEpochTime                {Seconds(0)};        //!< Starting of ACK sampling epoch time
+  uint32_t    m_ackEpochAcked               {0};                 //!< Bytes ACked in sampling epoch
+  bool        m_hasSeenRtt                  {false};             //!< Have we seen RTT sample yet?
 };
 
 } // namespace ns3
