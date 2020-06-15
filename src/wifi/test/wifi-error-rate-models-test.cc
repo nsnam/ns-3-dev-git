@@ -328,6 +328,7 @@ void
 WifiErrorRateModelsTestCaseMimo::DoRun (void)
 {
   TestInterferenceHelper interference;
+  interference.SetNoiseFigure (0);
   WifiMode mode = WifiPhy::GetHtMcs0 ();
   WifiTxVector txVector;
 
