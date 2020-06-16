@@ -1061,16 +1061,16 @@ TcpSocketBase::DoClose (void)
       CloseAndNotify ();
       break;
     case LISTEN:
-    case LAST_ACK:
-      // In these three states, move to CLOSED and tear down the end point
+      // In this state, move to CLOSED and tear down the end point
       CloseAndNotify ();
       break;
+    case LAST_ACK:
     case CLOSED:
     case FIN_WAIT_1:
     case FIN_WAIT_2:
     case TIME_WAIT:
     default: /* mute compiler */
-      // Do nothing in these four states
+      // Do nothing in these five states
       break;
     }
   return 0;
@@ -1087,7 +1087,10 @@ TcpSocketBase::CloseAndNotify (void)
       NotifyNormalClose ();
       m_closeNotified = true;
     }
-
+  if (m_lastAckEvent.IsRunning ())
+    {
+      m_lastAckEvent.Cancel ();
+    }
   NS_LOG_DEBUG (TcpStateName[m_state] << " -> CLOSED");
   m_state = CLOSED;
   DeallocateEndPoint ();
@@ -2502,6 +2505,7 @@ TcpSocketBase::DoPeerClose (void)
     }
   if (m_state == LAST_ACK)
     {
+      m_dataRetrCount = m_dataRetries; // prevent endless FINs
       NS_LOG_LOGIC ("TcpSocketBase " << this << " scheduling LATO1");
       Time lastRto = m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4);
       m_lastAckEvent = Simulator::Schedule (lastRto, &TcpSocketBase::LastAckTimeout, this);
@@ -3657,11 +3661,18 @@ TcpSocketBase::LastAckTimeout (void)
   m_lastAckEvent.Cancel ();
   if (m_state == LAST_ACK)
     {
-      CloseAndNotify ();
-    }
-  if (!m_closeNotified)
-    {
-      m_closeNotified = true;
+      if (m_dataRetrCount == 0)
+        {
+          NS_LOG_INFO ("LAST-ACK: No more data retries available. Dropping connection");
+          NotifyErrorClose ();
+          DeallocateEndPoint ();
+          return;
+        }
+      m_dataRetrCount--;
+      SendEmptyPacket (TcpHeader::FIN | TcpHeader::ACK);
+      NS_LOG_LOGIC ("TcpSocketBase " << this << " rescheduling LATO1");
+      Time lastRto = m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4);
+      m_lastAckEvent = Simulator::Schedule (lastRto, &TcpSocketBase::LastAckTimeout, this);
     }
 }
 
