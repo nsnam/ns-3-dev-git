@@ -663,45 +663,6 @@ RegularWifiMac::GetPifs (void) const
 }
 
 void
-RegularWifiMac::SetAckTimeout (Time ackTimeout)
-{
-  NS_LOG_FUNCTION (this << ackTimeout);
-  m_low->SetAckTimeout (ackTimeout);
-}
-
-Time
-RegularWifiMac::GetAckTimeout (void) const
-{
-  return m_low->GetAckTimeout ();
-}
-
-void
-RegularWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
-{
-  NS_LOG_FUNCTION (this << blockAckTimeout);
-  m_low->SetBasicBlockAckTimeout (blockAckTimeout);
-}
-
-Time
-RegularWifiMac::GetBasicBlockAckTimeout (void) const
-{
-  return m_low->GetBasicBlockAckTimeout ();
-}
-
-void
-RegularWifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
-{
-  NS_LOG_FUNCTION (this << blockAckTimeout);
-  m_low->SetCompressedBlockAckTimeout (blockAckTimeout);
-}
-
-Time
-RegularWifiMac::GetCompressedBlockAckTimeout (void) const
-{
-  return m_low->GetCompressedBlockAckTimeout ();
-}
-
-void
 RegularWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);

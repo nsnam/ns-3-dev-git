@@ -57,7 +57,6 @@ public:
   void SetEifsNoDifs (Time eifsNoDifs);
   void SetPifs (Time pifs);
   void SetRifs (Time rifs);
-  void SetAckTimeout (Time ackTimeout);
   void SetShortSlotTimeSupported (bool enable);
   void SetSsid (Ssid ssid);
   void SetAddress (Mac48Address address);
@@ -65,7 +64,6 @@ public:
   Time GetRifs (void) const;
   Time GetPifs (void) const;
   Time GetEifsNoDifs (void) const;
-  Time GetAckTimeout (void) const;
   bool GetShortSlotTimeSupported (void) const;
   Ssid GetSsid (void) const;
   Mac48Address GetAddress (void) const;
@@ -90,14 +88,6 @@ public:
   void SetForwardUpCallback (ForwardUpCallback upCallback);
   void SetLinkUpCallback (Callback<void> linkUp);
   void SetLinkDownCallback (Callback<void> linkDown);
-
-  /* Next functions are not pure virtual so non-QoS WifiMacs are not
-   * forced to implement them.
-   */
-  void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  Time GetBasicBlockAckTimeout (void) const;
-  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  Time GetCompressedBlockAckTimeout (void) const;
 
   // Should be implemented by child classes
   virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;

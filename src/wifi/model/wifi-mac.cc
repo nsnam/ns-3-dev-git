@@ -35,13 +35,6 @@ NS_LOG_COMPONENT_DEFINE ("WifiMac");
 NS_OBJECT_ENSURE_REGISTERED (WifiMac);
 
 Time
-WifiMac::GetDefaultMaxPropagationDelay (void)
-{
-  //1000m
-  return Seconds (1000.0 / 300000000.0);
-}
-
-Time
 WifiMac::GetDefaultSlot (void)
 {
   //802.11-a specific
@@ -75,76 +68,12 @@ WifiMac::GetDefaultCtsAckDelay (void)
   return MicroSeconds (44);
 }
 
-Time
-WifiMac::GetDefaultCtsAckTimeout (void)
-{
-  /* Cts_Timeout and Ack_Timeout are specified in the Annex C
-     (Formal description of MAC operation, see details on the
-     Trsp timer setting at page 346)
-  */
-  Time ctsTimeout = GetDefaultSifs ();
-  ctsTimeout += GetDefaultCtsAckDelay ();
-  ctsTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
-  ctsTimeout += GetDefaultSlot ();
-  return ctsTimeout;
-}
-
-Time
-WifiMac::GetDefaultBasicBlockAckDelay (void)
-{
-  //This value must be revisited
-  return MicroSeconds (250);
-}
-
-Time
-WifiMac::GetDefaultCompressedBlockAckDelay (void)
-{
-  //This value must be revisited
-  //CompressedBlockAckSize 32 * 8 * time it takes to transfer at the lowest rate (at 6 Mbit/s) + aPhy-StartDelay (33)
-  return MicroSeconds (76);
-}
-
-Time
-WifiMac::GetDefaultBasicBlockAckTimeout (void)
-{
-  Time blockAckTimeout = GetDefaultSifs ();
-  blockAckTimeout += GetDefaultBasicBlockAckDelay ();
-  blockAckTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
-  blockAckTimeout += GetDefaultSlot ();
-  return blockAckTimeout;
-}
-
-Time
-WifiMac::GetDefaultCompressedBlockAckTimeout (void)
-{
-  Time blockAckTimeout = GetDefaultSifs ();
-  blockAckTimeout += GetDefaultCompressedBlockAckDelay ();
-  blockAckTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
-  blockAckTimeout += GetDefaultSlot ();
-  return blockAckTimeout;
-}
-
 TypeId
 WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("AckTimeout", "When this timeout expires, the Data/Ack handshake has failed.",
-                   TimeValue (GetDefaultCtsAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::GetAckTimeout,
-                                     &WifiMac::SetAckTimeout),
-                   MakeTimeChecker ())
-    .AddAttribute ("BasicBlockAckTimeout", "When this timeout expires, the BASIC_BLOCK_ACK_REQ/BASIC_BLOCK_ACK handshake has failed.",
-                   TimeValue (GetDefaultBasicBlockAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::GetBasicBlockAckTimeout,
-                                     &WifiMac::SetBasicBlockAckTimeout),
-                   MakeTimeChecker ())
-    .AddAttribute ("CompressedBlockAckTimeout", "When this timeout expires, the COMPRESSED_BLOCK_ACK_REQ/COMPRESSED_BLOCK_ACK handshake has failed.",
-                   TimeValue (GetDefaultCompressedBlockAckTimeout ()),
-                   MakeTimeAccessor (&WifiMac::GetCompressedBlockAckTimeout,
-                                     &WifiMac::SetCompressedBlockAckTimeout),
-                   MakeTimeChecker ())
     .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS.",
                    TimeValue (GetDefaultEifsNoDifs ()),
                    MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
@@ -159,10 +88,6 @@ WifiMac::GetTypeId (void)
                    TimeValue (GetDefaultRifs ()),
                    MakeTimeAccessor (&WifiMac::SetRifs,
                                      &WifiMac::GetRifs),
-                   MakeTimeChecker ())
-    .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
-                   TimeValue (GetDefaultMaxPropagationDelay ()),
-                   MakeTimeAccessor (&WifiMac::SetMaxPropagationDelay),
                    MakeTimeChecker ())
     .AddAttribute ("Ssid", "The ssid we want to belong to.",
                    SsidValue (Ssid ("default")),
@@ -212,13 +137,6 @@ Ptr<NetDevice>
 WifiMac::GetDevice (void) const
 {
   return m_device;
-}
-
-void
-WifiMac::SetMaxPropagationDelay (Time delay)
-{
-  NS_LOG_FUNCTION (this << delay);
-  m_maxPropagationDelay = delay;
 }
 
 void
@@ -304,7 +222,6 @@ WifiMac::Configure80211a (void)
   NS_LOG_FUNCTION (this);
   SetEifsNoDifs (MicroSeconds (16 + 44));
   SetPifs (MicroSeconds (16 + 9));
-  SetAckTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
@@ -313,7 +230,6 @@ WifiMac::Configure80211b (void)
   NS_LOG_FUNCTION (this);
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
-  SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
@@ -322,7 +238,6 @@ WifiMac::Configure80211g (void)
   NS_LOG_FUNCTION (this);
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
-  SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
@@ -331,7 +246,6 @@ WifiMac::Configure80211_10Mhz (void)
   NS_LOG_FUNCTION (this);
   SetEifsNoDifs (MicroSeconds (32 + 88));
   SetPifs (MicroSeconds (32 + 13));
-  SetAckTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
@@ -340,7 +254,6 @@ WifiMac::Configure80211_5Mhz (void)
   NS_LOG_FUNCTION (this);
   SetEifsNoDifs (MicroSeconds (64 + 176));
   SetPifs (MicroSeconds (64 + 21));
-  SetAckTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
 }
 
 void
@@ -349,8 +262,6 @@ WifiMac::Configure80211n_2_4Ghz (void)
   NS_LOG_FUNCTION (this);
   Configure80211g ();
   SetRifs (MicroSeconds (2));
-  SetBasicBlockAckTimeout (MicroSeconds (30) + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
-  SetCompressedBlockAckTimeout (MicroSeconds (30 + 448) + GetDefaultMaxPropagationDelay () * 2);
 }
 void
 WifiMac::Configure80211n_5Ghz (void)
@@ -358,8 +269,6 @@ WifiMac::Configure80211n_5Ghz (void)
   NS_LOG_FUNCTION (this);
   Configure80211a ();
   SetRifs (MicroSeconds (2));
-  SetBasicBlockAckTimeout (MicroSeconds (25) + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
-  SetCompressedBlockAckTimeout (MicroSeconds (25) + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void
@@ -381,7 +290,6 @@ WifiMac::Configure80211ax_5Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211ac ();
-  SetCompressedBlockAckTimeout (MicroSeconds (25 + 85) + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void

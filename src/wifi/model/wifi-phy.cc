@@ -415,6 +415,8 @@ WifiPhy::WifiPhy ()
     m_channelWidth (0),
     m_sifs (Seconds (0)),
     m_slot (Seconds (0)),
+    m_ackTxTime (Seconds (0)),
+    m_blockAckTxTime (Seconds (0)),
     m_powerRestricted (false),
     m_channelAccessRequested (false),
     m_txSpatialStreams (0),
@@ -950,6 +952,18 @@ WifiPhy::GetSlot (void) const
   return m_slot;
 }
 
+Time
+WifiPhy::GetAckTxTime (void) const
+{
+  return m_ackTxTime;
+}
+
+Time
+WifiPhy::GetBlockAckTxTime (void) const
+{
+  return m_blockAckTxTime;
+}
+
 void
 WifiPhy::Configure80211a (void)
 {
@@ -958,6 +972,9 @@ WifiPhy::Configure80211a (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (16));
   SetSlot (MicroSeconds (9));
+  // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
+  // of the PPDU causing the EIFS" of 802.11-2016
+  m_ackTxTime = MicroSeconds (44);
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
@@ -977,6 +994,9 @@ WifiPhy::Configure80211b (void)
   // See Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (10));
   SetSlot (MicroSeconds (20));
+  // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
+  // of the PPDU causing the EIFS" of 802.11-2016
+  m_ackTxTime = MicroSeconds (304);
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
@@ -1013,6 +1033,7 @@ WifiPhy::Configure80211_10Mhz (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (32));
   SetSlot (MicroSeconds (13));
+  m_ackTxTime = MicroSeconds (88);
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
@@ -1032,6 +1053,7 @@ WifiPhy::Configure80211_5Mhz (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (64));
   SetSlot (MicroSeconds (21));
+  m_ackTxTime = MicroSeconds (176);
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
@@ -1165,6 +1187,9 @@ WifiPhy::Configure80211n (void)
     {
       Configure80211a ();
     }
+  // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
+  // of the PPDU causing the EIFS" of 802.11-2016
+  m_blockAckTxTime = MicroSeconds (68);
   m_bssMembershipSelectorSet.push_back (HT_PHY);
   ConfigureHtDeviceMcsSet ();
 }

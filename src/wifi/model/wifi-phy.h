@@ -531,6 +531,18 @@ public:
    * \return the slot duration
    */
   Time GetSlot (void) const;
+  /**
+   * Return the estimated Ack TX time for this PHY.
+   *
+   * \return the estimated Ack TX time
+   */
+  Time GetAckTxTime (void) const;
+  /**
+   * Return the estimated BlockAck TX time for this PHY.
+   *
+   * \return the estimated BlockAck TX time
+   */
+  Time GetBlockAckTxTime (void) const;
 
   /**
   * The WifiPhy::NBssMembershipSelectors() method is used
@@ -2065,6 +2077,8 @@ private:
 
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slot;                              //!< Slot duration
+  Time m_ackTxTime;                         //!< estimated Ack TX time
+  Time m_blockAckTxTime;                    //!< estimated BlockAck TX time
 
   double   m_rxSensitivityW;      //!< Receive sensitivity threshold in watts
   double   m_ccaEdThresholdW;     //!< Clear channel assessment (CCA) threshold in watts

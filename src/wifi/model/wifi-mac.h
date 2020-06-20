@@ -83,16 +83,6 @@ public:
    */
   virtual void SetRifs (Time rifs) = 0;
   /**
-   * \param ackTimeout the duration of an Ack timeout.
-   */
-  virtual void SetAckTimeout (Time ackTimeout) = 0;
-  /**
-   * \param delay the max propagation delay.
-   *
-   * Unused for now.
-   */
-  void SetMaxPropagationDelay (Time delay);
-  /**
    * \param ssid the current SSID of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;
@@ -124,10 +114,6 @@ public:
    * \return the current EIFS minus DIFS duration
    */
   virtual Time GetEifsNoDifs (void) const = 0;
-  /**
-   * \return the current Ack timeout duration.
-   */
-  virtual Time GetAckTimeout (void) const = 0;
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -217,27 +203,6 @@ public:
    */
 
   /**
-   * \param blockAckTimeout the duration for basic BlockAck timeout.
-   *
-   * Sets the timeout for basic BlockAck.
-   */
-  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout) = 0;
-  /**
-   * \return the current basic BlockAck timeout duration.
-   */
-  virtual Time GetBasicBlockAckTimeout (void) const = 0;
-  /**
-   * \param blockAckTimeout the duration for compressed BlockAck timeout
-   *
-   * Sets the timeout for compressed BlockAck.
-   */
-  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout) = 0;
-  /**
-   * \return the current compressed BlockAck timeout duration.
-   */
-  virtual Time GetCompressedBlockAckTimeout (void) const = 0;
-
-  /**
    * \param packet the packet being enqueued
    *
    * Public method used to fire a MacTx trace. Implemented for encapsulation purposes.
@@ -321,13 +286,6 @@ protected:
 
 private:
   /**
-   * \return the default maximum propagation delay
-   *
-   * By default, we get the maximum propagation delay from 1000 m and speed of light
-   * (3e8 m/s).
-   */
-  static Time GetDefaultMaxPropagationDelay (void);
-  /**
    * \return the default slot duration
    *
    * Return a default slot value for 802.11a (9 microseconds).
@@ -358,41 +316,6 @@ private:
    * Return a default value for 802.11a at 6Mbps (44 microseconds)
    */
   static Time GetDefaultCtsAckDelay (void);
-  /**
-   * \return the default CTS and Ack timeout
-   *
-   * Return the default CTS and Ack timeout.
-   * Cts_Timeout and Ack_Timeout are specified in the Annex C
-   * (Formal description of MAC operation, see details on the
-   * Trsp timer setting at page 346)
-   */
-  static Time GetDefaultCtsAckTimeout (void);
-  /**
-   * Return the default basic BlockAck delay.
-   * Currently it returns 250 microseconds.
-   *
-   * \return the default basic BlockAck delay
-   */
-  static Time GetDefaultBasicBlockAckDelay (void);
-  /**
-   * Return the default basic BlockAck timeout.
-   *
-   * \return the default basic BlockAck timeout
-   */
-  static Time GetDefaultBasicBlockAckTimeout (void);
-  /**
-   * Return the default compressed BlockAck delay.
-   * Currently it returns 76 microseconds.
-   *
-   * \return the default compressed BlockAck delay
-   */
-  static Time GetDefaultCompressedBlockAckDelay (void);
-  /**
-   * Return the default compressed BlockAck timeout.
-   *
-   * \return the default compressed BlockAck timeout
-   */
-  static Time GetDefaultCompressedBlockAckTimeout (void);
 
   /**
    * \param standard the PHY standard to be used
@@ -404,7 +327,6 @@ private:
    */
   virtual void FinishConfigureStandard (WifiPhyStandard standard) = 0;
 
-  Time m_maxPropagationDelay; ///< maximum propagation delay
   Ptr<NetDevice> m_device;    ///< Pointer to the device
 
   /**

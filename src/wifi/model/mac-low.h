@@ -112,24 +112,6 @@ public:
    */
   void SetAddress (Mac48Address ad);
   /**
-   * Set Ack timeout of this MacLow.
-   *
-   * \param ackTimeout Ack timeout of this MacLow
-   */
-  void SetAckTimeout (Time ackTimeout);
-  /**
-   * Set Basic BlockAck timeout of this MacLow.
-   *
-   * \param blockAckTimeout Basic BlockAck timeout of this MacLow
-   */
-  void SetBasicBlockAckTimeout (Time blockAckTimeout);
-  /**
-   * Set Compressed BlockAck timeout of this MacLow.
-   *
-   * \param blockAckTimeout Compressed BlockAck timeout of this MacLow
-   */
-  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
-  /**
    * Enable or disable CTS-to-self capability.
    *
    * \param enable Enable or disable CTS-to-self capability
@@ -177,24 +159,6 @@ public:
    * \return Mac48Address of this MacLow
    */
   Mac48Address GetAddress (void) const;
-  /**
-   * Return Ack timeout of this MacLow.
-   *
-   * \return Ack timeout
-   */
-  Time GetAckTimeout (void) const;
-  /**
-   * Return Basic BlockAck timeout of this MacLow.
-   *
-   * \return Basic BlockAck timeout
-   */
-  Time GetBasicBlockAckTimeout (void) const;
-  /**
-   * Return Compressed BlockAck timeout of this MacLow.
-   *
-   * \return Compressed BlockAck timeout
-   */
-  Time GetCompressedBlockAckTimeout (void) const;
   /**
    * Return Short Interframe Space (SIFS) of this MacLow.
    *
@@ -921,9 +885,6 @@ private:
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
   Mac48Address m_bssid;                     //!< BSSID address (Mac48Address)
-  Time m_ackTimeout;                        //!< Ack timeout duration
-  Time m_basicBlockAckTimeout;              //!< Basic BlockAck timeout duration
-  Time m_compressedBlockAckTimeout;         //!< Compressed BlockAck timeout duration
   Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
   Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 

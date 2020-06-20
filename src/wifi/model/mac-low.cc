@@ -328,24 +328,6 @@ MacLow::SetAddress (Mac48Address ad)
 }
 
 void
-MacLow::SetAckTimeout (Time ackTimeout)
-{
-  m_ackTimeout = ackTimeout;
-}
-
-void
-MacLow::SetBasicBlockAckTimeout (Time blockAckTimeout)
-{
-  m_basicBlockAckTimeout = blockAckTimeout;
-}
-
-void
-MacLow::SetCompressedBlockAckTimeout (Time blockAckTimeout)
-{
-  m_compressedBlockAckTimeout = blockAckTimeout;
-}
-
-void
 MacLow::SetCtsToSelfSupported (bool enable)
 {
   m_ctsToSelfSupported = enable;
@@ -397,24 +379,6 @@ Mac48Address
 MacLow::GetAddress (void) const
 {
   return m_self;
-}
-
-Time
-MacLow::GetAckTimeout (void) const
-{
-  return m_ackTimeout;
-}
-
-Time
-MacLow::GetBasicBlockAckTimeout (void) const
-{
-  return m_basicBlockAckTimeout;
-}
-
-Time
-MacLow::GetCompressedBlockAckTimeout (void) const
-{
-  return m_compressedBlockAckTimeout;
 }
 
 Time

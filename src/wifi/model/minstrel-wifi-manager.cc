@@ -962,14 +962,14 @@ MinstrelWifiManager::CalculateTimeUnicastPacket (Time dataTransmissionTime, uint
   //See rc80211_minstrel.c
 
   //First transmission (Data + Ack timeout)
-  Time tt = dataTransmissionTime + GetMac ()->GetAckTimeout ();
+  Time tt = dataTransmissionTime + GetPhy ()->GetSifs () + GetPhy ()->GetAckTxTime ();
 
   uint32_t cwMax = 1023;
   uint32_t cw = 31;
   for (uint32_t retry = 0; retry < longRetries; retry++)
     {
       //Add one re-transmission (Data + Ack timeout)
-      tt += dataTransmissionTime + GetMac ()->GetAckTimeout ();
+      tt += dataTransmissionTime + GetPhy ()->GetSifs () + GetPhy ()->GetAckTxTime ();
 
       //Add average back off (half the current contention window)
       tt += (cw / 2.0) * GetPhy ()->GetSlot ();
