@@ -180,18 +180,10 @@ ChannelAccessManager::GetSifs (void) const
   return m_phy->GetSifs ();
 }
 
-void
-ChannelAccessManager::SetEifsNoDifs (Time eifsNoDifs)
-{
-  NS_LOG_FUNCTION (this << eifsNoDifs);
-  m_eifsNoDifs = eifsNoDifs;
-}
-
 Time
 ChannelAccessManager::GetEifsNoDifs () const
 {
-  NS_LOG_FUNCTION (this);
-  return m_eifsNoDifs;
+  return m_phy->GetSifs () + m_phy->GetAckTxTime ();
 }
 
 void
@@ -413,7 +405,7 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
   Time rxAccessStart = lastRxEnd + GetSifs ();
   if ((lastRxEnd <= Simulator::Now ()) && !m_lastRxReceivedOk)
     {
-      rxAccessStart += m_eifsNoDifs;
+      rxAccessStart += GetEifsNoDifs ();
     }
   Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + GetSifs ();
   Time txAccessStart = m_lastTxStart + m_lastTxDuration + GetSifs ();

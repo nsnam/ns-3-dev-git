@@ -68,13 +68,6 @@ public:
   Ptr<NetDevice> GetDevice (void) const;
 
   /**
-   * \param eifsNoDifs the duration of an EIFS minus DIFS.
-   *
-   * This value is used to calculate the EIFS depending
-   * on AIFSN.
-   */
-  virtual void SetEifsNoDifs (Time eifsNoDifs) = 0;
-  /**
    * \param pifs the PIFS duration.
    */
   virtual void SetPifs (Time pifs) = 0;
@@ -110,10 +103,6 @@ public:
    * \return the current PIFS duration.
    */
   virtual Time GetPifs (void) const = 0;
-  /**
-   * \return the current EIFS minus DIFS duration
-   */
-  virtual Time GetEifsNoDifs (void) const = 0;
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -303,19 +292,6 @@ private:
    * Return a default RIFS value for 802.11n (2 microseconds).
    */
   static Time GetDefaultRifs (void);
-  /**
-   * \return the default extended interframe space (EIFS) without
-   *         DCF interframe space (DIFS)
-   *
-   * Return default SIFS + default CTS-Ack delay
-   */
-  static Time GetDefaultEifsNoDifs (void);
-  /**
-   * \return the default CTS-Ack delay
-   *
-   * Return a default value for 802.11a at 6Mbps (44 microseconds)
-   */
-  static Time GetDefaultCtsAckDelay (void);
 
   /**
    * \param standard the PHY standard to be used

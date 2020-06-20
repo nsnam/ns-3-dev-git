@@ -174,6 +174,15 @@ public:
   {
     m_slot = slot;
   }
+  /**
+   * Set the duration of EIFS - DIFS
+   *
+   * \param eifsNoDifs the duration of EIFS - DIFS
+   */
+  void SetEifsNoDifs (Time eifsNoDifs)
+  {
+    m_eifsNoDifs = eifsNoDifs;
+  }
 
 private:
   // Inherited from base class
@@ -187,8 +196,14 @@ private:
     return m_slot;
   }
 
-  Time m_slot;   // slot duration
-  Time m_sifs;   // SIFS duration
+  Time GetEifsNoDifs (void) const
+  {
+    return m_eifsNoDifs;
+  }
+
+  Time m_slot;        // slot duration
+  Time m_sifs;        // SIFS duration
+  Time m_eifsNoDifs;  // EIFS duration minus a DIFS
 };
 
 /**

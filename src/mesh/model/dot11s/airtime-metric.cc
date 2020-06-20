@@ -94,8 +94,10 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
   txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
   //calculate metric
   uint32_t metric = (uint32_t)((double)( /*Overhead + payload*/
-                                 mac->GetPifs () + mac->GetWifiPhy ()->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
-                                 mac->GetWifiPhy ()->CalculateTxDuration (m_testFrame->GetSize (), txVector, mac->GetWifiPhy ()->GetFrequency())
+                                 //DIFS + SIFS + AckTxTime = 2 * SIFS + 2 * SLOT + AckTxTime
+                                 2 * mac->GetWifiPhy ()->GetSifs () + 2 * mac->GetWifiPhy ()->GetSlot ()
+                                 + mac->GetWifiPhy ()->GetAckTxTime ()
+                                 + mac->GetWifiPhy ()->CalculateTxDuration (m_testFrame->GetSize (), txVector, mac->GetWifiPhy ()->GetFrequency())
                                  ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
   return metric;
 }

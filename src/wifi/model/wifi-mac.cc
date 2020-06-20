@@ -55,30 +55,12 @@ WifiMac::GetDefaultRifs (void)
   return MicroSeconds (2);
 }
 
-Time
-WifiMac::GetDefaultEifsNoDifs (void)
-{
-  return GetDefaultSifs () + GetDefaultCtsAckDelay ();
-}
-
-Time
-WifiMac::GetDefaultCtsAckDelay (void)
-{
-  //802.11-a specific: at 6 Mbit/s
-  return MicroSeconds (44);
-}
-
 TypeId
 WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS.",
-                   TimeValue (GetDefaultEifsNoDifs ()),
-                   MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
-                                     &WifiMac::GetEifsNoDifs),
-                   MakeTimeChecker ())
     .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
                    MakeTimeAccessor (&WifiMac::SetPifs,
@@ -220,7 +202,6 @@ void
 WifiMac::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  SetEifsNoDifs (MicroSeconds (16 + 44));
   SetPifs (MicroSeconds (16 + 9));
 }
 
@@ -228,7 +209,6 @@ void
 WifiMac::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
 }
 
@@ -236,7 +216,6 @@ void
 WifiMac::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
-  SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
 }
 
@@ -244,7 +223,6 @@ void
 WifiMac::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetEifsNoDifs (MicroSeconds (32 + 88));
   SetPifs (MicroSeconds (32 + 13));
 }
 
@@ -252,7 +230,6 @@ void
 WifiMac::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetEifsNoDifs (MicroSeconds (64 + 176));
   SetPifs (MicroSeconds (64 + 21));
 }
 

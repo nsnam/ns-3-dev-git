@@ -74,19 +74,6 @@ public:
   void SetupLow (Ptr<MacLow> low);
 
   /**
-   * \param eifsNoDifs the duration of a EIFS minus the duration of DIFS.
-   *
-   * It is a bad idea to call this method after RequestAccess or
-   * one of the Notify methods has been invoked.
-   */
-  void SetEifsNoDifs (Time eifsNoDifs);
-
-  /**
-   * \return value set previously using SetEifsNoDifs.
-   */
-  Time GetEifsNoDifs (void) const;
-
-  /**
    * \param txop a new Txop.
    *
    * The ChannelAccessManager does not take ownership of this pointer so, the callee
@@ -292,6 +279,12 @@ private:
    * \return the slot duration
    */
   virtual Time GetSlot (void) const;
+  /**
+   * Return the EIFS duration minus a DIFS.
+   *
+   * \return the EIFS duration minus a DIFS
+   */
+  virtual Time GetEifsNoDifs (void) const;
 
   /**
    * typedef for a vector of Txops

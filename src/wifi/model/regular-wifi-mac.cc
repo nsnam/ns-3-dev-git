@@ -624,19 +624,6 @@ RegularWifiMac::SetCtsToSelfSupported (bool enable)
 }
 
 void
-RegularWifiMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  NS_LOG_FUNCTION (this << eifsNoDifs);
-  m_channelAccessManager->SetEifsNoDifs (eifsNoDifs);
-}
-
-Time
-RegularWifiMac::GetEifsNoDifs (void) const
-{
-  return m_channelAccessManager->GetEifsNoDifs ();
-}
-
-void
 RegularWifiMac::SetRifs (Time rifs)
 {
   NS_LOG_FUNCTION (this << rifs);
