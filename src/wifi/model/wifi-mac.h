@@ -213,22 +213,11 @@ public:
   /**
    * \param standard the wifi standard to be configured
    *
-   * This method sets standards-compliant defaults for WifiMac
-   * parameters such as SIFS time, slot time, timeout values, etc.,
-   * based on the standard selected.
-   *
-   * \sa WifiMac::Configure80211a
-   * \sa WifiMac::Configure80211b
-   * \sa WifiMac::Configure80211g
-   * \sa WifiMac::Configure80211_10Mhz
-   * \sa WifiMac::Configure80211_5Mhz
-   * \sa WifiMac::Configure80211n_2_4Ghz
-   * \sa WifiMac::Configure80211n_5Ghz
-   * \sa WifiMac::Configure80211ac
-   * \sa WifiMac::Configure80211ax_2_4Ghz
-   * \sa WifiMac::Configure80211ax_5Ghz
+   * This method completes the configuration process for a requested PHY standard.
+   * Subclasses should implement this method to configure their DCF queues
+   * according to the requested standard.
    */
-  void ConfigureStandard (WifiPhyStandard standard);
+  virtual void ConfigureStandard (WifiPhyStandard standard) = 0;
 
   /**
    * \return pointer to HtConfiguration if it exists
@@ -258,71 +247,7 @@ protected:
 
 
 private:
-  /**
-   * \param standard the PHY standard to be used
-   *
-   * This method is called by ns3::WifiMac::ConfigureStandard to complete
-   * the configuration process for a requested PHY standard. Subclasses should
-   * implement this method to configure their DCF queues according to the
-   * requested standard.
-   */
-  virtual void FinishConfigureStandard (WifiPhyStandard standard) = 0;
-
   Ptr<NetDevice> m_device;    ///< Pointer to the device
-
-  /**
-   * This method sets 802.11a standards-compliant defaults for following attributes:
-   * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211a (void);
-  /**
-   * This method sets 802.11b standards-compliant defaults for following attributes:
-   * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211b (void);
-  /**
-   * This method sets 802.11g standards-compliant defaults for following attributes:
-   * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   * There is no support for short slot time.
-   */
-  void Configure80211g (void);
-  /**
-   * This method sets 802.11 with 10 MHz channel spacing standards-compliant defaults
-   * for following attributes: SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211_10Mhz (void);
-  /**
-   * This method sets 802.11 with 5 MHz channel spacing standards-compliant defaults
-   * for following attributes: SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211_5Mhz ();
-  /**
-   * This method sets 802.11n 2.4 GHz standards-compliant defaults for following attributes:
-   * SIFS, RIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   * There is no support for short slot time.
-   */
-  void Configure80211n_2_4Ghz (void);
-  /**
-   * This method sets 802.11n 5 GHz standards-compliant defaults for following attributes:
-   * SIFS, RIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211n_5Ghz (void);
-  /**
-  * This method sets 802.11ac standards-compliant defaults for following attributes:
-  * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-  */
-  void Configure80211ac (void);
-  /**
-   * This method sets 802.11ax 2.4 GHz standards-compliant defaults for following attributes:
-   * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   * There is no support for short slot time.
-   */
-  void Configure80211ax_2_4Ghz (void);
-  /**
-   * This method sets 802.11ax 5 GHz standards-compliant defaults for following attributes:
-   * SIFS, Slot, EifsNoDifs, PIFS, CtsTimeout, and AckTimeout.
-   */
-  void Configure80211ax_5Ghz (void);
 
   /**
    * The trace source fired when packets come into the "top" of the device

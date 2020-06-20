@@ -68,6 +68,7 @@ public:
   Ptr<WifiPhy> GetWifiPhy (void) const;
   void ResetWifiPhy (void);
   virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
+  void ConfigureStandard (WifiPhyStandard standard);
 
   /**
    * This type defines the callback of a higher layer that a
@@ -188,20 +189,6 @@ protected:
    * \return a smart pointer to QosTxop
    */
   Ptr<QosTxop> GetBKQueue (void) const;
-
-  /**
-   * \param standard the PHY standard to be used
-   *
-   * This method is called by ns3::WifiMac::ConfigureStandard to
-   * complete the configuration process for a requested PHY standard.
-   *
-   * This method may be overridden by a derived class (e.g., in order
-   * to apply DCF or EDCA parameters specific to the usage model it is
-   * dealing with), in which case the reimplementation may choose to
-   * deal with certain values in the WifiPhyStandard enumeration, and
-   * chain up to this implementation to deal with the remainder.
-   */
-  void FinishConfigureStandard (WifiPhyStandard standard);
 
   /**
    * \param cwMin the minimum contention window size

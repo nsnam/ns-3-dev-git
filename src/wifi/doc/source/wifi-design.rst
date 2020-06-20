@@ -168,6 +168,7 @@ The following details pertain to the physical layer and channel models:
 * 802.11ax only supports SU PPDU format
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
+* 802.11n RIFS is not supported
 * 802.11 HCF/HCCA are not implemented
 * 802.11 PCF implementation currently assumes a DTIM interval equal to the beacon interval
 * Authentication and encryption are missing

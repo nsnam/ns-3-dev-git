@@ -166,7 +166,7 @@ public:
    *
    * \param standard the WifiPhyStandard being configured
    */
-  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  virtual void ConfigureStandard (enum WifiPhyStandard standard);
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that

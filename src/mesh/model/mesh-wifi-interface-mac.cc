@@ -548,9 +548,9 @@ MeshWifiInterfaceMac::ResetStats ()
 }
 
 void
-MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
+MeshWifiInterfaceMac::ConfigureStandard (enum WifiPhyStandard standard)
 {
-  RegularWifiMac::FinishConfigureStandard (standard);
+  RegularWifiMac::ConfigureStandard (standard);
   m_standard = standard;
 
   // We use the single DCF provided by WifiMac for the purpose of

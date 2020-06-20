@@ -1076,7 +1076,7 @@ RegularWifiMac::GetTypeId (void)
 }
 
 void
-RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
+RegularWifiMac::ConfigureStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   uint32_t cwmin = 0;

@@ -173,8 +173,8 @@ public:
    */
   void Reset (void);
 
-protected:
-  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  // Inherited from base class
+  virtual void ConfigureStandard (enum WifiPhyStandard standard);
 private:
   virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
 
