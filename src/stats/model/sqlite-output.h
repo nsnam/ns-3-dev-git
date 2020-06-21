@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#pragma once
+#ifndef SQLITE_OUTPUT_H
+#define SQLITE_OUTPUT_H
 
 #include "ns3/stats-config.h"
 #include "ns3/simple-ref-count.h"
@@ -31,8 +32,7 @@
 namespace ns3 {
 
 /**
- * \ingroup internet-test
- * \ingroup tests
+ * \ingroup stats
  *
  * \brief A C++ interface towards an SQLITE database
  *
@@ -227,3 +227,4 @@ private:
 };
 
 } // namespace ns3
+#endif
