@@ -148,6 +148,53 @@ public:
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief ChannelAccessManager Stub
+ */
+class ChannelAccessManagerStub : public ChannelAccessManager
+{
+public:
+  ChannelAccessManagerStub ()
+  {
+  }
+  /**
+   * Set the Short Interframe Space (SIFS).
+   *
+   * \param sifs the SIFS duration
+   */
+  void SetSifs (Time sifs)
+  {
+    m_sifs = sifs;
+  }
+  /**
+   * Set the slot duration.
+   *
+   * \param slot the slot duration
+   */
+  void SetSlot (Time slot)
+  {
+    m_slot = slot;
+  }
+
+private:
+  // Inherited from base class
+  Time GetSifs (void) const
+  {
+    return m_sifs;
+  }
+
+  Time GetSlot (void) const
+  {
+    return m_slot;
+  }
+
+  Time m_slot;   // slot duration
+  Time m_sifs;   // SIFS duration
+};
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief Channel Access Manager Test
  */
 template <typename TxopType>
@@ -325,7 +372,7 @@ private:
   typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
   Ptr<MacLowStub> m_low; //!< the MAC low stubbed
-  Ptr<ChannelAccessManager> m_ChannelAccessManager; //!< the channel access manager
+  Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
   TxopTests m_txop; //!< the vector of Txop test instances
   uint32_t m_ackTimeoutValue; //!< the Ack timeout value
 };
@@ -531,10 +578,8 @@ template <typename TxopType>
 void
 ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
-  m_ChannelAccessManager = CreateObject<ChannelAccessManager> ();
+  m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub> ();
   m_low = CreateObject<MacLowStub> ();
-  m_low->SetSlotTime (MicroSeconds (slotTime));
-  m_low->SetSifs (MicroSeconds (sifs));
   m_ChannelAccessManager->SetupLow (m_low);
   m_ChannelAccessManager->SetSlot (MicroSeconds (slotTime));
   m_ChannelAccessManager->SetSifs (MicroSeconds (sifs));

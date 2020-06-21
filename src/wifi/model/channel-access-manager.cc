@@ -114,8 +114,6 @@ ChannelAccessManager::ChannelAccessManager ()
     m_lastSwitchingDuration (MicroSeconds (0)),
     m_sleeping (false),
     m_off (false),
-    m_slot (Seconds (0.0)),
-    m_sifs (Seconds (0.0)),
     m_phyListener (0)
 {
   NS_LOG_FUNCTION (this);
@@ -170,18 +168,16 @@ ChannelAccessManager::SetupLow (Ptr<MacLow> low)
   low->RegisterChannelAccessManager (this);
 }
 
-void
-ChannelAccessManager::SetSlot (Time slotTime)
+Time
+ChannelAccessManager::GetSlot (void) const
 {
-  NS_LOG_FUNCTION (this << slotTime);
-  m_slot = slotTime;
+  return m_phy->GetSlot ();
 }
 
-void
-ChannelAccessManager::SetSifs (Time sifs)
+Time
+ChannelAccessManager::GetSifs (void) const
 {
-  NS_LOG_FUNCTION (this << sifs);
-  m_sifs = sifs;
+  return m_phy->GetSifs ();
 }
 
 void
@@ -286,7 +282,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
           // to correctly align the backoff start time at the next slot boundary
           // (performed by the next call to ChannelAccessManager::RequestAccess())
           Time delay = (txop->IsQosTxop () ? Seconds (0)
-                                           : m_sifs + txop->GetAifsn () * m_slot);
+                                           : GetSifs () + txop->GetAifsn () * GetSlot ());
           txop->UpdateBackoffSlotsNow (0, Simulator::Now () + delay);
         }
       else
@@ -321,7 +317,7 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop, bool isCfPeriod)
   /*
    * EDCAF operations shall be performed at slot boundaries (Sec. 10.22.2.4 of 802.11-2016)
    */
-  Time accessGrantStart = GetAccessGrantStart () + (txop->GetAifsn () * m_slot);
+  Time accessGrantStart = GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ());
 
   if (txop->IsQosTxop () && txop->GetBackoffStart () > accessGrantStart)
     {
@@ -329,8 +325,8 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop, bool isCfPeriod)
       // time the medium was busy plus an AIFS, hence we need to align it to the
       // next slot boundary.
       Time diff = txop->GetBackoffStart () - accessGrantStart;
-      uint32_t nIntSlots = (diff / m_slot).GetHigh () + 1;
-      txop->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * m_slot));
+      uint32_t nIntSlots = (diff / GetSlot ()).GetHigh () + 1;
+      txop->UpdateBackoffSlotsNow (0, accessGrantStart + (nIntSlots * GetSlot ()));
     }
 
   UpdateBackoff ();
@@ -414,17 +410,17 @@ ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
 {
   NS_LOG_FUNCTION (this);
   Time lastRxEnd = m_lastRxStart + m_lastRxDuration;
-  Time rxAccessStart = lastRxEnd + m_sifs;
+  Time rxAccessStart = lastRxEnd + GetSifs ();
   if ((lastRxEnd <= Simulator::Now ()) && !m_lastRxReceivedOk)
     {
       rxAccessStart += m_eifsNoDifs;
     }
-  Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_sifs;
-  Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_sifs;
-  Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_sifs;
-  Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + m_sifs;
-  Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + m_sifs;
-  Time switchingAccessStart = m_lastSwitchingStart + m_lastSwitchingDuration + m_sifs;
+  Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + GetSifs ();
+  Time txAccessStart = m_lastTxStart + m_lastTxDuration + GetSifs ();
+  Time navAccessStart = m_lastNavStart + m_lastNavDuration + GetSifs ();
+  Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + GetSifs ();
+  Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + GetSifs ();
+  Time switchingAccessStart = m_lastSwitchingStart + m_lastSwitchingDuration + GetSifs ();
   Time accessGrantedStart;
   if (ignoreNav)
     {
@@ -460,7 +456,7 @@ ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
   Time mostRecentEvent = MostRecent ({txop->GetBackoffStart (),
-                                     GetAccessGrantStart () + (txop->GetAifsn () * m_slot)});
+                                     GetAccessGrantStart () + (txop->GetAifsn () * GetSlot ())});
   NS_LOG_DEBUG ("Backoff start: " << mostRecentEvent.As (Time::US));
 
   return mostRecentEvent;
@@ -470,7 +466,7 @@ Time
 ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
-  Time backoffEnd = GetBackoffStartFor (txop) + (txop->GetBackoffSlots () * m_slot);
+  Time backoffEnd = GetBackoffStartFor (txop) + (txop->GetBackoffSlots () * GetSlot ());
   NS_LOG_DEBUG ("Backoff end: " << backoffEnd.As (Time::US));
 
   return backoffEnd;
@@ -486,7 +482,7 @@ ChannelAccessManager::UpdateBackoff (void)
       Time backoffStart = GetBackoffStartFor (txop);
       if (backoffStart <= Simulator::Now ())
         {
-          uint32_t nIntSlots = ((Simulator::Now () - backoffStart) / m_slot).GetHigh ();
+          uint32_t nIntSlots = ((Simulator::Now () - backoffStart) / GetSlot ()).GetHigh ();
           /*
            * EDCA behaves slightly different to DCA. For EDCA we
            * decrement once at the slot boundary at the end of AIFS as
@@ -504,7 +500,7 @@ ChannelAccessManager::UpdateBackoff (void)
             }
           uint32_t n = std::min (nIntSlots, txop->GetBackoffSlots ());
           NS_LOG_DEBUG ("dcf " << k << " dec backoff slots=" << n);
-          Time backoffUpdateBound = backoffStart + (n * m_slot);
+          Time backoffUpdateBound = backoffStart + (n * GetSlot ());
           txop->UpdateBackoffSlotsNow (n, backoffUpdateBound);
         }
       ++k;
@@ -598,7 +594,7 @@ ChannelAccessManager::NotifyTxStartNow (Time duration)
     {
       //this may be caused only if PHY has started to receive a packet
       //inside SIFS, so, we check that lastRxStart was maximum a SIFS ago
-      NS_ASSERT (now - m_lastRxStart <= m_sifs);
+      NS_ASSERT (now - m_lastRxStart <= GetSifs ());
       m_lastRxDuration = now - m_lastRxStart;
     }
   NS_LOG_DEBUG ("tx start for " << duration);

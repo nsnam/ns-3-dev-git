@@ -972,7 +972,7 @@ MinstrelWifiManager::CalculateTimeUnicastPacket (Time dataTransmissionTime, uint
       tt += dataTransmissionTime + GetMac ()->GetAckTimeout ();
 
       //Add average back off (half the current contention window)
-      tt += (cw / 2.0) * GetMac ()->GetSlot ();
+      tt += (cw / 2.0) * GetPhy ()->GetSlot ();
 
       //Update contention window
       cw = std::min (cwMax, (cw + 1) * 2);

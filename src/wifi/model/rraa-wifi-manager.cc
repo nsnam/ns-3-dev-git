@@ -121,6 +121,8 @@ void
 RraaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
+  m_sifs = phy->GetSifs ();
+  m_difs = m_sifs + 2 * phy->GetSlot ();
   uint8_t nModes = phy->GetNModes ();
   for (uint8_t i = 0; i < nModes; i++)
     {
@@ -141,8 +143,6 @@ void
 RraaWifiManager::SetupMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this);
-  m_sifs = mac->GetSifs ();
-  m_difs = m_sifs + 2 * mac->GetSlot ();
   WifiRemoteStationManager::SetupMac (mac);
 }
 

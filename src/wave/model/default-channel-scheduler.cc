@@ -371,12 +371,12 @@ DefaultChannelScheduler::SwitchToNextChannel (uint32_t curChannelNumber, uint32_
   curMacEntity->ResetWifiPhy ();
   // third switch PHY device from current channel to next channel;
   m_phy->SetChannelNumber (nextChannelNumber);
+  // four attach next MAC entity to single PHY device
+  nextMacEntity->SetWifiPhy (m_phy);
   // Here channel switch time is required to notify next MAC entity
   // that channel access cannot be enabled in channel switch time.
   Time switchTime = m_phy->GetChannelSwitchDelay ();
   nextMacEntity->MakeVirtualBusy (switchTime);
-  // four attach next MAC entity to single PHY device
-  nextMacEntity->SetWifiPhy (m_phy);
   // finally resume next MAC entity from sleep mode
   nextMacEntity->Resume ();
 }

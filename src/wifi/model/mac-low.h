@@ -136,23 +136,11 @@ public:
    */
   void SetCtsToSelfSupported (bool enable);
   /**
-   * Set Short Interframe Space (SIFS) of this MacLow.
-   *
-   * \param sifs SIFS of this MacLow
-   */
-  void SetSifs (Time sifs);
-  /**
    * Set Reduced Interframe Space (RIFS) of this MacLow.
    *
    * \param rifs RIFS of this MacLow
    */
   void SetRifs (Time rifs);
-  /**
-   * Set slot duration of this MacLow.
-   *
-   * \param slotTime slot duration of this MacLow
-   */
-  void SetSlotTime (Time slotTime);
   /**
    * Set PCF Interframe Space (PIFS) of this MacLow.
    *
@@ -936,8 +924,6 @@ private:
   Time m_ackTimeout;                        //!< Ack timeout duration
   Time m_basicBlockAckTimeout;              //!< Basic BlockAck timeout duration
   Time m_compressedBlockAckTimeout;         //!< Compressed BlockAck timeout duration
-  Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
-  Time m_slotTime;                          //!< Slot duration
   Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
   Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 

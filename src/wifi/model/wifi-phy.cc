@@ -324,6 +324,22 @@ WifiPhy::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&WifiPhy::m_postReceptionErrorModel),
                    MakePointerChecker<ErrorModel> ())
+    .AddAttribute ("Sifs",
+                   "The duration of the Short Interframe Space. "
+                   "NOTE that the default value is overwritten by the value defined "
+                   "by the standard; if you want to set this attribute, you have to "
+                   "do it after that the PHY object is initialized.",
+                   TimeValue (MicroSeconds (0)),
+                   MakeTimeAccessor (&WifiPhy::m_sifs),
+                   MakeTimeChecker ())
+    .AddAttribute ("Slot",
+                   "The duration of a slot. "
+                   "NOTE that the default value is overwritten by the value defined "
+                   "by the standard; if you want to set this attribute, you have to "
+                   "do it after that the PHY object is initialized.",
+                   TimeValue (MicroSeconds (0)),
+                   MakeTimeAccessor (&WifiPhy::m_slot),
+                   MakeTimeChecker ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -397,6 +413,8 @@ WifiPhy::WifiPhy ()
     m_initialFrequency (0),
     m_frequencyChannelNumberInitialized (false),
     m_channelWidth (0),
+    m_sifs (Seconds (0)),
+    m_slot (Seconds (0)),
     m_powerRestricted (false),
     m_channelAccessRequested (false),
     m_txSpatialStreams (0),
@@ -909,9 +927,37 @@ WifiPhy::ConfigureDefaultsForStandard (WifiPhyStandard standard)
 }
 
 void
+WifiPhy::SetSifs (Time sifs)
+{
+  m_sifs = sifs;
+}
+
+Time
+WifiPhy::GetSifs (void) const
+{
+  return m_sifs;
+}
+
+void
+WifiPhy::SetSlot (Time slot)
+{
+  m_slot = slot;
+}
+
+Time
+WifiPhy::GetSlot (void) const
+{
+  return m_slot;
+}
+
+void
 WifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
+
+  // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
+  SetSifs (MicroSeconds (16));
+  SetSlot (MicroSeconds (9));
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate9Mbps ());
@@ -928,6 +974,10 @@ WifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
 
+  // See Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2016
+  SetSifs (MicroSeconds (10));
+  SetSlot (MicroSeconds (20));
+
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
@@ -938,6 +988,11 @@ void
 WifiPhy::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
+  // See Table 18-5 "ERP characteristics" of 802.11-2016
+  // Slot time defaults to the "long slot time" of 20 us in the standard
+  // according to mixed 802.11b/g deployments.  Short slot time is enabled
+  // if the user sets the ShortSlotTimeSupported flag to true and when the BSS
+  // consists of only ERP STAs capable of supporting this option.
   Configure80211b ();
 
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
@@ -955,6 +1010,10 @@ WifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
 
+  // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
+  SetSifs (MicroSeconds (32));
+  SetSlot (MicroSeconds (13));
+
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate4_5MbpsBW10MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6MbpsBW10MHz ());
@@ -970,6 +1029,10 @@ WifiPhy::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
 
+  // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
+  SetSifs (MicroSeconds (64));
+  SetSlot (MicroSeconds (21));
+
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate2_25MbpsBW5MHz ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW5MHz ());
@@ -984,6 +1047,9 @@ void
 WifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
+
+  SetSifs (MicroSeconds (16));
+  SetSlot (MicroSeconds (9));
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());
@@ -1093,7 +1159,6 @@ WifiPhy::Configure80211n (void)
   NS_LOG_FUNCTION (this);
   if (Is2_4Ghz (GetFrequency ()))
     {
-      Configure80211b ();
       Configure80211g ();
     }
   if (Is5Ghz (GetFrequency ()))

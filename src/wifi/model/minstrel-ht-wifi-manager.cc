@@ -1517,7 +1517,7 @@ MinstrelHtWifiManager::CalculateRetransmits (MinstrelHtWifiRemoteStation *statio
   uint32_t cw = 15;                     // Is an approximation.
   uint32_t cwMax = 1023;
   Time cwTime, txTime, dataTxTime;
-  Time slotTime = GetMac ()->GetSlot ();
+  Time slotTime = GetPhy ()->GetSlot ();
   Time ackTime = GetMac ()->GetBasicBlockAckTimeout ();
 
   if (station->m_groupsTable[groupId].m_ratesTable[rateId].ewmaProb < 1)

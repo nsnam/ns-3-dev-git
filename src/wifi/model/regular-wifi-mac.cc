@@ -624,34 +624,6 @@ RegularWifiMac::SetCtsToSelfSupported (bool enable)
 }
 
 void
-RegularWifiMac::SetSlot (Time slotTime)
-{
-  NS_LOG_FUNCTION (this << slotTime);
-  m_channelAccessManager->SetSlot (slotTime);
-  m_low->SetSlotTime (slotTime);
-}
-
-Time
-RegularWifiMac::GetSlot (void) const
-{
-  return m_low->GetSlotTime ();
-}
-
-void
-RegularWifiMac::SetSifs (Time sifs)
-{
-  NS_LOG_FUNCTION (this << sifs);
-  m_channelAccessManager->SetSifs (sifs);
-  m_low->SetSifs (sifs);
-}
-
-Time
-RegularWifiMac::GetSifs (void) const
-{
-  return m_low->GetSifs ();
-}
-
-void
 RegularWifiMac::SetEifsNoDifs (Time eifsNoDifs)
 {
   NS_LOG_FUNCTION (this << eifsNoDifs);

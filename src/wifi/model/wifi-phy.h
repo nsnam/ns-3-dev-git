@@ -508,6 +508,31 @@ public:
   double CalculateSnr (WifiTxVector txVector, double ber) const;
 
   /**
+   * Set the Short Interframe Space (SIFS) for this PHY.
+   *
+   * \param sifs the SIFS duration
+   */
+  void SetSifs (Time sifs);
+  /**
+   * Return the Short Interframe Space (SIFS) for this PHY.
+   *
+   * \return the SIFS duration
+   */
+  Time GetSifs (void) const;
+  /**
+   * Set the slot duration for this PHY.
+   *
+   * \param slot the slot duration
+   */
+  void SetSlot (Time slot);
+  /**
+   * Return the slot duration for this PHY.
+   *
+   * \return the slot duration
+   */
+  Time GetSlot (void) const;
+
+  /**
   * The WifiPhy::NBssMembershipSelectors() method is used
   * (e.g., by a WifiRemoteStationManager) to determine the set of
   * transmission/reception modes that this WifiPhy(-derived class)
@@ -2037,6 +2062,9 @@ private:
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
   uint16_t m_channelWidth;                  //!< Channel width (MHz)
+
+  Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
+  Time m_slot;                              //!< Slot duration
 
   double   m_rxSensitivityW;      //!< Receive sensitivity threshold in watts
   double   m_ccaEdThresholdW;     //!< Clear channel assessment (CCA) threshold in watts

@@ -145,20 +145,10 @@ WifiMac::GetTypeId (void)
                    MakeTimeAccessor (&WifiMac::GetCompressedBlockAckTimeout,
                                      &WifiMac::SetCompressedBlockAckTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("Sifs", "The value of the SIFS constant.",
-                   TimeValue (GetDefaultSifs ()),
-                   MakeTimeAccessor (&WifiMac::SetSifs,
-                                     &WifiMac::GetSifs),
-                   MakeTimeChecker ())
     .AddAttribute ("EifsNoDifs", "The value of EIFS-DIFS.",
                    TimeValue (GetDefaultEifsNoDifs ()),
                    MakeTimeAccessor (&WifiMac::SetEifsNoDifs,
                                      &WifiMac::GetEifsNoDifs),
-                   MakeTimeChecker ())
-    .AddAttribute ("Slot", "The duration of a Slot.",
-                   TimeValue (GetDefaultSlot ()),
-                   MakeTimeAccessor (&WifiMac::SetSlot,
-                                     &WifiMac::GetSlot),
                    MakeTimeChecker ())
     .AddAttribute ("Pifs", "The value of the PIFS constant.",
                    TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
@@ -312,8 +302,6 @@ void
 WifiMac::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  SetSifs (MicroSeconds (16));
-  SetSlot (MicroSeconds (9));
   SetEifsNoDifs (MicroSeconds (16 + 44));
   SetPifs (MicroSeconds (16 + 9));
   SetAckTimeout (MicroSeconds (16 + 44 + 9 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
@@ -323,8 +311,6 @@ void
 WifiMac::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  SetSifs (MicroSeconds (10));
-  SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
   SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
@@ -334,12 +320,6 @@ void
 WifiMac::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
-  SetSifs (MicroSeconds (10));
-  // Slot time defaults to the "long slot time" of 20 us in the standard
-  // according to mixed 802.11b/g deployments.  Short slot time is enabled
-  // if the user sets the ShortSlotTimeSupported flag to true and when the BSS
-  // consists of only ERP STAs capable of supporting this option.
-  SetSlot (MicroSeconds (20));
   SetEifsNoDifs (MicroSeconds (10 + 304));
   SetPifs (MicroSeconds (10 + 20));
   SetAckTimeout (MicroSeconds (10 + 304 + 20 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
@@ -349,8 +329,6 @@ void
 WifiMac::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetSifs (MicroSeconds (32));
-  SetSlot (MicroSeconds (13));
   SetEifsNoDifs (MicroSeconds (32 + 88));
   SetPifs (MicroSeconds (32 + 13));
   SetAckTimeout (MicroSeconds (32 + 88 + 13 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
@@ -360,8 +338,6 @@ void
 WifiMac::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetSifs (MicroSeconds (64));
-  SetSlot (MicroSeconds (21));
   SetEifsNoDifs (MicroSeconds (64 + 176));
   SetPifs (MicroSeconds (64 + 21));
   SetAckTimeout (MicroSeconds (64 + 176 + 21 + GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2));
@@ -373,8 +349,8 @@ WifiMac::Configure80211n_2_4Ghz (void)
   NS_LOG_FUNCTION (this);
   Configure80211g ();
   SetRifs (MicroSeconds (2));
-  SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
-  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + MicroSeconds (448) + GetDefaultMaxPropagationDelay () * 2);
+  SetBasicBlockAckTimeout (MicroSeconds (30) + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+  SetCompressedBlockAckTimeout (MicroSeconds (30 + 448) + GetDefaultMaxPropagationDelay () * 2);
 }
 void
 WifiMac::Configure80211n_5Ghz (void)
@@ -382,8 +358,8 @@ WifiMac::Configure80211n_5Ghz (void)
   NS_LOG_FUNCTION (this);
   Configure80211a ();
   SetRifs (MicroSeconds (2));
-  SetBasicBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
-  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+  SetBasicBlockAckTimeout (MicroSeconds (25) + GetDefaultBasicBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
+  SetCompressedBlockAckTimeout (MicroSeconds (25) + GetDefaultCompressedBlockAckDelay () + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void
@@ -405,7 +381,7 @@ WifiMac::Configure80211ax_5Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211ac ();
-  SetCompressedBlockAckTimeout (GetSifs () + GetSlot () + MicroSeconds (85) + GetDefaultMaxPropagationDelay () * 2);
+  SetCompressedBlockAckTimeout (MicroSeconds (25 + 85) + GetDefaultMaxPropagationDelay () * 2);
 }
 
 void

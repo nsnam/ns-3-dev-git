@@ -148,6 +148,8 @@ void
 RrpaaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
+  m_sifs = phy->GetSifs ();
+  m_difs = m_sifs + 2 * phy->GetSlot ();
   m_nPowerLevels = phy->GetNTxPower ();
   m_maxPowerLevel = m_nPowerLevels  - 1;
   m_minPowerLevel = 0;
@@ -171,8 +173,6 @@ void
 RrpaaWifiManager::SetupMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
-  m_sifs = mac->GetSifs ();
-  m_difs = m_sifs + 2 * mac->GetSlot ();
   WifiRemoteStationManager::SetupMac (mac);
 }
 

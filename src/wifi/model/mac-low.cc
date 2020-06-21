@@ -358,18 +358,6 @@ MacLow::GetCtsToSelfSupported (void) const
 }
 
 void
-MacLow::SetSifs (Time sifs)
-{
-  m_sifs = sifs;
-}
-
-void
-MacLow::SetSlotTime (Time slotTime)
-{
-  m_slotTime = slotTime;
-}
-
-void
 MacLow::SetPifs (Time pifs)
 {
   m_pifs = pifs;
@@ -432,7 +420,7 @@ MacLow::GetCompressedBlockAckTimeout (void) const
 Time
 MacLow::GetSifs (void) const
 {
-  return m_sifs;
+  return m_phy->GetSifs ();
 }
 
 Time
@@ -444,7 +432,7 @@ MacLow::GetRifs (void) const
 Time
 MacLow::GetSlotTime (void) const
 {
-  return m_slotTime;
+  return m_phy->GetSlot ();
 }
 
 Time

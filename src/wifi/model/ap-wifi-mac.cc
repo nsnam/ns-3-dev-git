@@ -927,12 +927,12 @@ ApWifiMac::SendOneBeacon (void)
       if (GetShortSlotTimeEnabled () == true)
         {
           //Enable short slot time
-          SetSlot (MicroSeconds (9));
+          m_phy->SetSlot (MicroSeconds (9));
         }
       else
         {
           //Disable short slot time
-          SetSlot (MicroSeconds (20));
+          m_phy->SetSlot (MicroSeconds (20));
         }
     }
 }

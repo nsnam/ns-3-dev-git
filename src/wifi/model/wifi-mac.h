@@ -68,14 +68,6 @@ public:
   Ptr<NetDevice> GetDevice (void) const;
 
   /**
-   * \param slotTime the slot duration
-   */
-  virtual void SetSlot (Time slotTime) = 0;
-  /**
-   * \param sifs the SIFS duration
-   */
-  virtual void SetSifs (Time sifs) = 0;
-  /**
    * \param eifsNoDifs the duration of an EIFS minus DIFS.
    *
    * This value is used to calculate the EIFS depending
@@ -128,14 +120,6 @@ public:
    * \return the current PIFS duration.
    */
   virtual Time GetPifs (void) const = 0;
-  /**
-   * \return the current SIFS duration.
-   */
-  virtual Time GetSifs (void) const = 0;
-  /**
-   * \return the current slot duration.
-   */
-  virtual Time GetSlot (void) const = 0;
   /**
    * \return the current EIFS minus DIFS duration
    */
