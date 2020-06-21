@@ -6,11 +6,11 @@ def configure(conf):
                                   mandatory=False)
 
     conf.env['SQLITE_STATS'] = have_sqlite3
-    conf.report_optional_feature("SqliteDataOutput", "SQlite stats data output",
-                                 conf.env['SQLITE_STATS'],
-                                 "library 'sqlite3' not found")
     have_sem = conf.check_nonfatal(header_name='semaphore.h', define_name='HAVE_SEMAPHORE_H')
     conf.env['SEMAPHORE_ENABLED'] = have_sem
+    conf.report_optional_feature("SQLiteStats", "SQLite stats support",
+                                 conf.env['SQLITE_STATS'] and conf.env['SEMAPHORE_ENABLED'],
+                                 "library 'sqlite3' and/or semaphore.h not found")
     conf.write_config_header('ns3/stats-config.h', top=True)
 
 def build(bld):
