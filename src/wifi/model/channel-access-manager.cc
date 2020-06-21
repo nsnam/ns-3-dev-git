@@ -247,6 +247,12 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
 
+  // No backoff needed if in sleep mode or off
+  if (m_sleeping || m_off)
+    {
+      return false;
+    }
+
   // the Txop might have a stale value of remaining backoff slots
   UpdateBackoff ();
 
