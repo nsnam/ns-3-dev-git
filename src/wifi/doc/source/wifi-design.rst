@@ -836,8 +836,16 @@ mode-specific SNR/BER curves.
 
 Available attribute:
 
-* BerThreshold (default 10e-6): The maximum Bit Error Rate
+* BerThreshold (default 1e-6): The maximum Bit Error Rate
   that is used to calculate the SNR threshold for each mode.
+
+Note that the BerThreshold has to be low enough to select a robust enough MCS
+(or mode) for a given SNR value, without being too restrictive on the target BER.
+Indeed we had noticed that the previous default value (i.e. 1e-5) led to the
+selection of HE MCS-11 which resulted in high PER.
+With this new default value (i.e. 1e-6), a HE STA moving away from a HE AP has
+smooth throughput decrease (whereas with 1e-5, better performance was seen further
+away, which is not "ideal").
 
 MinstrelWifiManager
 ###################
