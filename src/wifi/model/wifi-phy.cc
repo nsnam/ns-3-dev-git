@@ -3321,10 +3321,7 @@ WifiPhy::StartReceiveOfdmaPayload (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand
   if (isAp)
     {
       Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
-      if (psdu->GetNMpdus () > 1)
-        {
-          ScheduleEndOfMpdus (event);
-        }
+      ScheduleEndOfMpdus (event);
       m_endRxEvents.push_back (Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event));
       m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), SignalNoiseDbm ()});
       m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetStaId ()), std::vector<bool> ()});
@@ -3419,10 +3416,7 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
                     }
                   else
                     {
-                      if (psdu->GetNMpdus () > 1)
-                        {
-                          ScheduleEndOfMpdus (event);
-                        }
+                      ScheduleEndOfMpdus (event);
                       m_endRxEvents.push_back (Simulator::Schedule (payloadDuration, &WifiPhy::EndReceive, this, event));
                     }
                 }
@@ -3482,22 +3476,25 @@ WifiPhy::ScheduleEndOfMpdus (Ptr<Event> event)
   Time relativeStart = NanoSeconds (0);
   Time psduDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
   Time remainingAmpduDuration = psduDuration;
-  MpduType mpdutype = FIRST_MPDU_IN_AGGREGATE;
+  size_t nMpdus = psdu->GetNMpdus ();
+  MpduType mpduType = (nMpdus > 1) ? FIRST_MPDU_IN_AGGREGATE : (psdu->IsSingle () ? SINGLE_MPDU : NORMAL_MPDU);
   uint32_t totalAmpduSize = 0;
   double totalAmpduNumSymbols = 0.0;
-  size_t nMpdus = psdu->GetNMpdus ();
   auto mpdu = psdu->begin ();
   for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
     {
-      Time mpduDuration = GetPayloadDuration (psdu->GetAmpduSubframeSize (i), txVector,
-                                              GetPhyBand (), mpdutype, true,
-                                              totalAmpduSize, totalAmpduNumSymbols,
-                                              staId);
+      uint32_t size = (mpduType == NORMAL_MPDU) ? psdu->GetSize () : psdu->GetAmpduSubframeSize (i);
+      Time mpduDuration = GetPayloadDuration (size, txVector,
+                                              GetPhyBand (), mpduType, true, totalAmpduSize,
+                                              totalAmpduNumSymbols, staId);
 
       remainingAmpduDuration -= mpduDuration;
-      if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDU coming
+      if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDUs coming
         {
-          mpduDuration += remainingAmpduDuration; //apply a correction just in case rounding had induced slight shift
+          if (remainingAmpduDuration < NanoSeconds (txVector.GetGuardInterval ())) //enables to ignore padding
+            {
+              mpduDuration += remainingAmpduDuration; //apply a correction just in case rounding had induced slight shift
+            }
         }
 
       endOfMpduDuration += mpduDuration;
@@ -3506,7 +3503,7 @@ WifiPhy::ScheduleEndOfMpdus (Ptr<Event> event)
       //Prepare next iteration
       ++i;
       relativeStart += mpduDuration;
-      mpdutype = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
+      mpduType = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
     }
 }
 
@@ -3543,8 +3540,9 @@ WifiPhy::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex
   NS_ASSERT (statusPerMpduIt != m_statusPerMpduMap.end ());
   statusPerMpduIt->second.push_back (rxInfo.first);
 
-  if (rxInfo.first)
+  if (rxInfo.first && GetAddressedPsduInPpdu (ppdu)->GetNMpdus () > 1)
     {
+      //only done for correct MPDU that is part of an A-MPDU
       m_state->ContinueRxNextMpdu (Copy (psdu), snr, txVector);
     }
 }
@@ -3583,13 +3581,6 @@ WifiPhy::EndReceive (Ptr<Event> event)
   NS_ASSERT (signalNoiseIt != m_signalNoiseMap.end ());
   auto statusPerMpduIt = m_statusPerMpduMap.find (std::make_pair (ppdu->GetUid (), staId));
   NS_ASSERT (statusPerMpduIt != m_statusPerMpduMap.end ());
-  if (psdu->GetNMpdus () == 1)
-    {
-      //We do not enter here for A-MPDU since this is done in WifiPhy::EndOfMpdu
-      std::pair<bool, SignalNoiseDbm> rxInfo = GetReceptionStatus (psdu, event, staId, NanoSeconds (0), psduDuration);
-      signalNoiseIt->second = rxInfo.second;
-      statusPerMpduIt->second.push_back (rxInfo.first);
-    }
 
   if (std::count (statusPerMpduIt->second.begin (), statusPerMpduIt->second.end (), true))
    {
@@ -5025,6 +5016,11 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
     {
       m_endPhyRxEvent.Cancel ();
     }
+  for (auto & endMpduEvent : m_endOfMpduEvents)
+    {
+      endMpduEvent.Cancel ();
+    }
+  m_endOfMpduEvents.clear ();
   for (auto & endRxEvent : m_endRxEvents)
     {
       endRxEvent.Cancel ();
