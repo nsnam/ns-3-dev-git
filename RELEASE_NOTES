@@ -9,8 +9,8 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.31
+============
 
 Availability
 ------------
@@ -18,43 +18,91 @@ This release is not yet available.
 
 Supported platforms
 -------------------
-To be determined.
+This release is intended to work on systems with the following minimal
+requirements (Note:  not all ns-3 features available on all systems):
+- g++-4.9 or later
+- Xcode 10.1 or later
+- Python 3.5 or later
+
+Starting with ns-3.30, Python 3 has been the only supported Python version,
+and scripts default to Python 3 usage.
+
+This release has been tested on the following systems:
+- Fedora 32 with g++-10.1.1 and Python 3.8.3
+- Fedora 32 with clang-10.0.0 and Python 3.8.3
+- Fedora 29 with g++-8.3.1 and Python 3.7.5
+- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.2
+- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
+- Ubuntu 16.04.6 with g++-5.4.0 and Python 3.5.2
+- macOS 10.15.3 (Catalina) with Xcode 11.3
+- macOS 10.13.6 (High Sierra) with Xcode 10.1
 
 New user-visible features
 -------------------------
+- (antenna) Model for antenna arrays based on 3GPP model (part of Integration of the 3GPP TR 38.901 fast fading model)
+- (buildings) Random walk mobility model that does not allow nodes to enter buildings
+- (core) The CommandLine facility can now add the Usage message to the Doxygen for the program
+- (internet) TCP DCTCP model
 - (internet) An option to enable IPv4 hash-based multicast duplicate packet
-  detection (DPD) based on RFC 6621 has been added.
-- (stats) A new interface to SQLite has been added.
-- (propagation) 3GPP TR 38.901 pathloss and channel condition models added
-- (spectrum) Addition three-gpp-channel-model (part of Integration of the 3GPP TR 38.901 fast fading model)
-- (antenna) Addition of three-gpp-antenna-array-model (part of Integration of the 3GPP TR 38.901 fast fading model)
-- (buildings) added a random walk mobility model which does not enter in any building
-- (core) CommandLine can now add the Usage message to the Doxygen for the program; see CommandLine for details.
+  detection (DPD) based on RFC 6621
+- (lte) Trace sources for uplink PSD and RBs
+- (propagation) 3GPP TR 38.901 pathloss and channel condition models
+- (spectrum) Matrix-based channel model base class to support antenna arrays
+- (spectrum) 3GPP pathloss, channel and fast fading models
+- (stats) A new interface to SQLite
+- (tests) Capability to run an example program as a regression test
+- (traffic-control) Support for the Cake set-associative hash to the FqCoDel queue disc
+- (traffic-control) Support for ECN marking to CoDel and FqCoDel queue discs
+- (wifi) A Bianchi (saturation) example with a comparable MATLAB model
+- (wifi) The idealized wifi rate control includes better support for different MIMO modes and channel widths
 
 Bugs fixed
 ----------
-- core: Bug 143 EmpiricalRandomVariable should ensure that the CDF ends with 1.0
-- wifi: a zero value for the backoff timer might be discarded and a new value
+If available, the numbers below make reference to a Bugzilla bug number, GitLab 
+issue number (prefixed by '#'), or GitLab merge request number (prefixed by '!')
+- (build system) #119 - Waf --lcov-report option was broken
+- (buildings) #80 - Update indoor/outdoor status of a moving node
+- (core) Bug 2725 - EmpiricalRandomVariable should not interpolate
+- (documentation) Bug 2636 - Add to doxygen a list of all registered TypeIds
+- (internet) - Fix Ipv6Prefix length calc and add explicit prefix length constructors
+- (internet) - IPv6 Duplicate Address Detection (DAD) must use Solicited-Node multicast address
+- (internet) #111 - Rip and RipNg don't receive unicast packets
+- (internet:tcp) - call NotifyConnectionFailed on SYN timeout
+- (internet:tcp) #179 - Avoid incorrect exit of LAST-ACK state
+- (internet:tcp) #182 - Fix SACK list cleaning in TcpOptionSack::Deserialize()
+- (internet:tcp) !156 - Enable entering CA_RECOVERY despite large sequence number increase
+- (internet:tcp) !157 - Prevent sending outside receiver window
+- (lr-wpan) #212 - Rx callback must have both source mac and pan id
+- (lr-wpan) !283 - Beacon collisions and timings
+- (lr-wpan) !326 - Inactive Periods Queue fix
+- (lte) #106 - Inconsistent imsi representation in LTE module
+- (lte) #196 - Remove LteSecondaryCellSelectionTestSuite from LTE module
+- (lte) #221 - Stop T310 upon receving handover command
+- (network) #216 - Correct the return value for PacketSocket::SendTo()
+- (network) !239 - Refactor DelayJitterEstimation to more closely follow RFC 1889 and RFC 3550
+- (propagation) !269 - Fix Okumura-Hata propagation loss model for frequency > 1.5 Ghz and medium or small city
+- (wifi) - Keep the medium busy if reception is aborted ahead of scheduled time
+- (wifi) - Fix frame capture when signals arrive at the exact same time and add additional tests to verify these cases
+- (wifi) - Fix MCS selection in ideal rate manager for cases with unbalanced MIMO settings and/or RX diversity
+- (wifi) - Fix SNR computations for MIMO
+- (wifi) - Fix ReportAmpduTxStatus called two times when BAR is explicitely sent upon missed BACK
+- (wifi)  A zero value for the backoff timer might be discarded and a new value
   might be generated by an erroneous call to NotifyCollision().
-- Bug 2636 - Add to doxygen a list of all registered TypeIds
-- Bug 2928 - BlockAckManager::NeedBarRetransmission returns "true" infinitely
-- Bug 2985 - PhyTxEnd tracecallback not implemented
-- Bug 1909, Issue #41 - wifi: Implementation of ACK timeout
-- Issue #22 - wifi: Station long retry counter is incremented twice if BlockAck was not received
-- Issue #40 - IdealWifiManager not working if stations are moving
-- Issue #84 - Wi-Fi removing wrong header due to copy-paste error
-- Issue #94 - wifi retransmitted frames not marked as retransmits
-- Issue #107 - Wi-Fi: Frame capture model works incorrectly if two signals arrive at the same time
-- Issue #106 - Inconsistent imsi representation in LTE module
-- Issue #110 - Wi-Fi: PCAP trace file gives unexpected results
-- Issue #116 - Wi-Fi: Incorrect state when receiving A-MPDU in WifiPhy
-- Issue #119 - Waf --lcov-report option was broken
-- Issue #169 - Ideal rate manager does not work when non best-effort traffic is used
-- Issue #172 (Bug 3011) - wifi: MIMO error rate model is incorrect
-- Issue #178 (Bug 2385) - IdealWifiManager can pick invalid WifiTxVector under certain MIMO conditions
-- Issue #196 - Remove LteSecondaryCellSelectionTestSuite from LTE module
-- Issue #221 - T310 is not cancelled upon receiving handover command
-- MR !269 - Fix okumura-hata propagation loss model when m_frequency > 1.500e9 and city == Medium or Small
+- (wifi) Bug 1909, Issue #41 - Implementation of ACK timeout
+- (wifi) Bug 2385, Issue #178 - IdealWifiManager can pick invalid WifiTxVector under certain MIMO conditions
+- (wifi) Bug 2928 - BlockAckManager::NeedBarRetransmission returns "true" infinitely
+- (wifi) Bug 2985 - PhyTxEnd tracecallback not implemented
+- (wifi) Bug 3011, Issue #172 - MIMO error rate model is incorrect
+- (wifi) #22 - Station long retry counter is incremented twice if BlockAck was not received
+- (wifi) #40 - IdealWifiManager not working if stations are moving
+- (wifi) #84 - Wi-Fi removing wrong header due to copy-paste error
+- (wifi) #94 - Retransmitted frames not marked as retransmits
+- (wifi) #107 - Frame capture model works incorrectly if two signals arrive at the same time
+- (wifi) #110 - PCAP trace file gives unexpected results
+- (wifi) #116 - Incorrect state when receiving A-MPDU in WifiPhy
+- (wifi) #165 - Notify station manager when a BlockAck has not been received after the transmission of an A-MPDU
+- (wifi) #169 - Ideal rate manager does not work when non best-effort traffic is used
+- (wifi) #211 - Remove MSDUs with expired lifetime when (re)starting channel access
 
 Known issues
 ------------

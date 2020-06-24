@@ -54,6 +54,8 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.30 to ns-3.31</h1>
 <h2>New API:</h2>
 <ul>
+<li> A <b>TCP DCTCP</b> model has been added.</li>
+<li> <b>3GPP TR 38.901</b> pathloss, channel condition, antenna array, and fast fading models have been added.</li>
 <li> New <b>...FailSafe ()</b> variants of the <b> Config </b> and <b>Config::MatchContainer</b> functions which set Attributes or connect TraceSources.  These all return a boolean indicating if any attributes could be set (or trace sources connected).  These are useful if you are not sure that the requested objects exist, for example in AnimationInterface.</li>
 <li> New attributes for <b> Ipv4L3Protocol</b> have been added to enable RFC 6621-based duplicate packet detection (DPD) (<b>EnableDuplicatePacketDetection</b>) and to control the cache expiration time (<b>DuplicateExpire</b>).</li>
 <li><b> MakeConsistent </b> method of <b> BuildingsHelper </b> class is 
@@ -65,22 +67,31 @@ Therefore, there is no need for an explicit call to <b> MakeConsistent </b> in a
 to make the mobility model of a moving node consistent.</li>
 <li> The <b> IsOutside </b> method of <b> MobilityBuildingInfo </b> class is 
 deprecated. The <b> IsInside </b> method should be use to check the position of a node.</li>
-<li>A new abstract base class, WifiAckPolicySelector, is introduced to implement
+<li>A new abstract base class, <b>WifiAckPolicySelector</b>, is introduced to implement
 different techniques for selecting the acknowledgment policy for PSDUs containing
 QoS Data frames. Wifi, mesh and wave helpers provide a SetAckPolicySelectorForAc
 method to configure a specific ack policy selector for a given Access Category.</li>
-<li>The default ack policy selector is named ConstantWifiAckPolicySelector, which
+<ul>
+<li>The default ack policy selector is named <b>ConstantWifiAckPolicySelector</b>, which
 allows to choose between Block Ack policy and Implicit Block Ack Request policy and
 allows to request an acknowledgment after a configurable number of MPDUs have been
 transmitted.</li>
-<li>The MaxSize attribute is removed from the QueueBase base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
-<li> A new sequence and timestamp header variant for applications has been added.  The SeqTsEchoHeader contains an additional timestamp field for use in echoing a timestamp back to a sender.</li>
-<li> TCP-based applications (OnOffApplication, BulkSendApplication, and PacketSink) support a new header to convey sequence number, timestamp, and size data.  Use is controlled by the "EnableSeqTsSizeHeader" attribute.</li>
+</ul>
+<li>The <b>MaxSize</b> attribute is removed from the <b>QueueBase</b> base class and moved to subclasses. A new MaxSize attribute is therefore added to the DropTailQueue class, while the MaxQueueSize attribute of the WifiMacQueue class is renamed as MaxSize for API consistency.</li>
+<li> Two new <b>Application sequence number and timestamp</b> variants have been added, to support packet delivery tracing.
+<ul>
+<li> A new sequence and timestamp header variant for applications has been added.  The <b>SeqTsEchoHeader</b> contains an additional timestamp field for use in echoing a timestamp back to a sender.</li>
+<li> TCP-based applications (OnOffApplication, BulkSendApplication, and PacketSink) support a new header, <b>SeqTsSizeHeader</b>, to convey sequence number, timestamp, and size data.  Use is controlled by the "EnableSeqTsSizeHeader" attribute.</li>
+</ul>
 <li>Added a new trace source <b>PhyRxPayloadBegin</b> in WifiPhy for tracing begin of PSDU reception.</li>
 <li>Added the class <b>RandomWalk2dOutdoorMobilityModel</b> that models a random walk which does not enter any building.</li>
+<li>Added support for the <b>Cake set-associative hash</b> in the FqCoDel queue disc</li>
+<li>Added support for <b>ECN marking for CoDel and FqCoDel</b> queue discs</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+<li> The API for <b>enabling and disabling ECN</b> in TCP sockets has been refactored.</li>
+<li> The <b>LTE HARQ</b> related methods in LteEnbPhy and LteUePhy have been renamed, and the LteHelper updated.</li>
 <li> Previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
 <li>The internal TCP API for <b>TcpCongestionOps</b> has been extended to support the <b>CongControl</b> method to allow for delivery rate estimation feedback to the congestion control mechanism.</li>
 <li>Functions <b>LteEnbPhy::ReceiveUlHarqFeedback</b> and <b>LteUePhy::ReceiveLteDlHarqFeedback</b> are renamed to <b>LteEnbPhy::ReportUlHarqFeedback</b> and <b>LteUePhy::EnqueueDlHarqFeedback</b>, respectively to avoid confusion about their functionality. <b>LteHelper</b> is updated accordingly.</li>
@@ -88,27 +99,35 @@ transmitted.</li>
 <li>The preferred way to declare instances of <b>CommandLine</b> is now through a macro: <b>COMMANDLINE (cmd)</b>.  This enables us to add the <b>CommandLine::Usage()</b> message to the Doxygen for the program.</li>
 <li>New <b>...FailSafe ()</b> variants of the <b> Config </b> is used to connect PDCP TraceSources of eNB and UE in <b>RadioBearerStatsConnector</b> class. It is required for the simulations using RLC SM where PDCP objects are not created for data radio bearers.</li>
 <li><b>T310</b> timer in <b>LteUeRrc</b> class is stopped if the UE receives <b>RRCConnectionReconfiguration</b> including the <b>mobilityControlInfo</b>. This change is introduced following the 3GPP standard TS36331 sec 5.3.5.4.</li>
-<li>The wifi High Latency tags have been removed. They required quite some hacks and were not really needed. The only rate manager (Onoe) that was making use of them has been adjusted to get rid of them.</li>
-<li>The wifi MIMO diversity model has been changed to better fit with MRC theory for AWGN channels when STBC is not used (since STBC is currently not supported).</li>
+<li>The wifi <b>High Latency tags</b> have been removed.  The only rate manager (Onoe) that was making use of them has been refactored.</li>
+<li>The wifi <b>MIMO diversity model</b> has been changed to better fit with MRC theory for AWGN channels when STBC is not used (since STBC is currently not supported).</li>
+<li> The <b>BuildingsHelper::MakeMobilityModelConsistent()</b> method is deprecated in favor of MobilityBuildingInfo::MakeConsistent</li>
+<li> The <b>MobilityBuildingInfo::IsOutdoor ()</b> method is deprecated; use the result of IsIndoor() method instead</li>
+<li> IsEqual() methods of class <b>Ipv4Address, Ipv4Mask, Ipv6Address, and Ipv6Prefix</b> are deprecated.</li>
+<li> The API around the <b>wifi Txop class</b> was refactored.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
 <li>The <b>--lcov-report</b> option to Waf was fixed, and a new <b>--lcov-zerocounters</b> option was added to improve support for lcov.</li>
+<li>Python bindings were enabled for <b>netanim</b>.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
-<li> Attempting to deserialize an enum name which wasn't registered with MakeEnumChecker now causes a fatal error, rather failing silently. (This can be triggered by setting an enum Attribute from a StringValue.)</li>
+<li> The <b>EmpiricalRandomVariable</b> no longer linearly interpolates between values by default, but instead will default to treating the CDF as a histogram and return one of the specific inputs.  The previous interpolation mode can be configured by an attribute.</li>
+<li> (as reported above) previously the <b>Config::Connect</b> and <b>Config::Set</b> families of functions would fail silently if the attribute or trace source didn't exist on the path given (typically due to spelling errors). Now those functions will throw a fatal error.  If you need the old behavior use the new  <b>...FailSafe ()</b> variants.</li>
+<li> Attempting to deserialize an enum name which wasn't registered with <b>MakeEnumChecker</b> now causes a fatal error, rather failing silently. (This can be triggered by setting an enum Attribute from a StringValue.)</li>
 <li> As a result of the above API changes in <b> MobilityBuildingInfo </b> 
 and <b> BuildingsHelper </b> classes, a building aware pathloss models, e.g., 
 <b> HybridBuildingsPropagationLossModel </b> is now able to accurately compute 
 the pathloss for a node moving in and out of buildings in a simulation. See <a href=https://gitlab.com/nsnam/ns-3-dev/issues/80>issue 80</a> 
 for discussion.</li>
-<li> The implementation of the wifi channel access functions has been improved
-to make them more adherent to the IEEE 802.11-2016 standard. Concerning the DCF,
+<li> The implementation of the <b>Wi-Fi channel access</b> functions has been improved
+to make them more conformant to the IEEE 802.11-2016 standard. Concerning the DCF,
 the backoff procedure is no longer invoked when a packet is queued for transmission
 and the medium has not been idle for a DIFS, but it is invoked if the medium is busy
 or does not remain idle for a DIFS after the packet has been queued. Concerning the
 EDCAF, tranmissions are now correctly aligned at slot boundaries.</li>
+<li> Various wifi physical layer behavior around channel occupancy calculation, phy state calculation, and handling different channel widths has been updated.</li>
 </ul>
 
 <hr>
