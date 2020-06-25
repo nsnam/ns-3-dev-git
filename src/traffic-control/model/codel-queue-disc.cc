@@ -247,6 +247,7 @@ CoDelQueueDisc::DoDequeue (void)
 
   // Determine if item should be dropped
   bool okToDrop = OkToDrop (item, now);
+  bool isMarked = false;
 
   if (m_dropping)
     { // In the dropping state (sojourn time has gone above target and hasn't come down yet)
@@ -272,6 +273,7 @@ CoDelQueueDisc::DoDequeue (void)
               // hence the while loop.
               if (m_useEcn && Mark (item, TARGET_EXCEEDED_MARK))
                 {
+                  isMarked = true;
                   NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop or mark; marking " << item);
                   NS_LOG_LOGIC ("Running ControlLaw for input m_dropNext: " << (double)m_dropNext / 1000000);
                   m_dropNext = ControlLaw (now, Time2CoDel (m_interval), m_recInvSqrt);
@@ -315,6 +317,7 @@ CoDelQueueDisc::DoDequeue (void)
         {
           if (m_useEcn && Mark (item, TARGET_EXCEEDED_MARK))
             {
+              isMarked = true;
               NS_LOG_LOGIC ("Sojourn time goes above target, marking the first packet " << item << " and entering the dropping state");
             }
           else
@@ -356,7 +359,11 @@ CoDelQueueDisc::DoDequeue (void)
     }
   end:
   uint32_t ldelay = Time2CoDel (Simulator::Now () - item->GetTimeStamp ());
-  if (item && m_useEcn && CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+  // In Linux, this branch of code is executed even if the packet has been marked
+  // according to the target delay above. If the ns-3 code were to do the same here,
+  // it would result in two counts of mark in the queue statistics. Therefore, we
+  // use the isMarked flag to suppress a second attempt at marking.
+  if (!isMarked && item && m_useEcn && CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
     {
       NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
     }
