@@ -362,47 +362,42 @@ def make_test(moduledir, modname):
 
 
 def make_helper(moduledir, modname):
-    helperdir = os.path.join(moduledir, "helper")
-    os.mkdir(helperdir)
+    helperpath = Path(moduledir, "helper")
+    helperpath.mkdir(parents=True)
 
-    src_file_name = "{}-helper.cc".format(modname)
-    src_file_path = os.path.join(helperdir, src_file_name)
-    create_file(src_file_path, HELPER_CC_TEMPLATE, MODULE=modname)
+    srcfile_path = helperpath.joinpath(modname+'-helper').with_suffix('.cc')
+    create_file(srcfile_path, HELPER_CC_TEMPLATE, MODULE=modname)
 
-    header_file_name = "{}-helper.h".format(modname)
-    header_file_path = os.path.join(helperdir, header_file_name)
-    guard = '{}_HELPER_H'.format(modname.replace('-', '_').upper())
-    create_file(header_file_path, HELPER_H_TEMPLATE, 
-                MODULE=modname,
-                INCLUDE_GUARD=guard)
+    h_file_path = helperpath.joinpath(modname+'-helper').with_suffix('.h')
+    guard = "{}_HELPER_H".format(modname.replace('-', '_').upper())
+    create_file(h_file_path, HELPER_H_TEMPLATE, MODULE=modname, INCLUDE_GUARD=guard)
 
     return True 
 
 
 def make_examples(moduledir, modname):
-    examplesdir = os.path.join(moduledir, "examples")
-    os.mkdir(examplesdir)
+    examplespath = Path(moduledir, "examples")
+    examplespath.mkdir(parents=True)
 
-    wscript_path = os.path.join(examplesdir, 'wscript')
-    create_file(wscript_path, EXAMPLES_WSCRIPT_TEMPLATE, MODULE=modname)
+    wscriptpath = Path(examplespath, 'wscript')
+    create_file(wscriptpath, EXAMPLES_WSCRIPT_TEMPLATE, MODULE=modname)
 
-    file_name = '{}-example.cc'.format(modname)
-    file_path = os.path.join(examplesdir, file_name)
-    create_file(file_path, EXAMPLE_CC_TEMPLATE, MODULE=modname)
+    examplesfile_path = examplespath.joinpath(modname+'-example').with_suffix('.cc')
+    create_file(examplesfile_path, EXAMPLE_CC_TEMPLATE, MODULE=modname)
 
     return True 
 
 
 def make_doc(moduledir, modname):
-    docdir = os.path.join(moduledir, "doc")
-    os.mkdir(docdir)
+    docpath = Path(moduledir, "doc")
+    docpath.mkdir(parents=True)
 
     #the module_dir template parameter must be a relative path
     #instead of an absolute path
-    mod_relpath = os.path.relpath(moduledir)
+    mod_relpath = os.path.relpath(str(moduledir))
 
     file_name = '{}.rst'.format(modname)
-    file_path = os.path.join(docdir, file_name)
+    file_path = Path(docpath, file_name)
     create_file(file_path, DOC_RST_TEMPLATE, MODULE=modname,
                 MODULE_DIR=mod_relpath)
 
