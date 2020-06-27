@@ -448,7 +448,7 @@ def indent(source, debug, level):
                                    stdin = subprocess.PIPE,
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.PIPE,
-                                   text = True)
+                                   universal_newlines = True)
         (out, err) = uncrust.communicate('')
         if debug:
             sys.stderr.write(out)
@@ -489,7 +489,7 @@ def indent(source, debug, level):
                              stdin = subprocess.PIPE,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE,
-                             text = True)
+                             universal_newlines = True)
     (out, err) = patch.communicate('')
     if debug:
         sys.stderr.write(out)
