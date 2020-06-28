@@ -148,6 +148,7 @@ html_theme_path = ['../..']
 # "<project> v<release> documentation" by default.
 #
 # html_title = 'est vtest'
+html_title = 'Tutorial'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
