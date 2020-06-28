@@ -21,6 +21,8 @@ manager to try to maintain the following files with updated information:
 otherwise, this becomes painful to edit (and things are forgotten)
 when the release is imminent.
 
+Also, edit the tutorial "Getting Started" page to update the release number.
+
 2) preparing release candidates for testing
 -------------------------------------------
 
@@ -30,9 +32,9 @@ and/or the buildbots have been testing
    - try Python visualizer (not tested by buildbots)
       -- ./waf --pyrun src/flow-monitor/examples/wifi-olsr-flowmon.py --vis
    - ensure that tests pass (./test.py -g) and make sure that the buildbots
-     are reporting blue based on the tip of the repository
+     are reporting 'pass' state, based on the tip of the repository
    - revise and check in AUTHORS, RELEASE_NOTES, and CHANGES.html
-   - required versions for related libraries (nsc, netanim, pybindgen)
+   - required versions for related libraries (netanim, pybindgen)
      are correct
    - confirm that Doxygen builds cleanly (./waf doxygen), 
    - confirm that the new bake configurations for the release work correctly
@@ -43,27 +45,26 @@ Check out a clean ns-3-dev somewhere using ns-3-allinone
    - cd ns-3-allinone
    - ./download.py
    - cd ns-3-dev
-   - edit VERSION such as "ns-3.14.rc1" (DO NOT commit this change to ns-3-dev)
+   - edit VERSION such as "ns-3.31.rc1" (DO NOT commit this change to ns-3-dev)
    - cd ..
    - ./dist.py
 
-This should yield a compressed tarfile, such as:  ns-allinone-3.14.rc1.tar.bz2 
+This should yield a compressed tarfile, such as:  ns-allinone-3.31.rc1.tar.bz2 
 Test this, and when satisfied, upload it to
 www.nsnam.org:/var/www/html/releases/ (with apache:apache file ownership)
 
 Announce it to ns-developers as:
-https://www.nsnam.org/release/ns-allinone-3.14.rc1.tar.bz2
+https://www.nsnam.org/release/ns-allinone-3.31.rc1.tar.bz2
 
 Iterate the above as needed during the release testing phase.
 
-Note, in the past we have added mercurial tags to ns-3-dev to denote
-release candidates, but lately we have not been tagging release candidates.
+Do not add a git tag for a release candidate.
 
 3) making the release
 ---------------------
 
 Follow similar steps for creating the release candidate tarballs, except
-we will work off of a release repository.
+we will work off of a release branch.
 
 At this point, you are ready for final packaging and repository/site work
 
@@ -106,12 +107,10 @@ Note:  The below scripts currently presume mercurial and must be updated
 
 1. If final release, build release documentation
    - sudo bash; su nsnam; cd /home/nsnam/bin 
-   ./update-docs -r http://code.nsnam.org/ns-3.x -R
+   - ./update-docs -c -R -r ns-3.x 
 
-2. Check if these new files are available on the website
-
-3. In ns-3-dev, edit the tutorial "Getting Started" page to 
-   update the release version numbers.
+2. Check if these new files are available on the website; check that the
+   headers all say 'ns-3.x release' in the version, and that all links work
 
 preparing the Jekyll-based main website
 ---------------------------------------
@@ -164,13 +163,13 @@ start collecting inputs for the ns-3.(x+1) release.
 The project may decide to make incremental, bug-fix releases from
 time to time, with a minor version number (e.g. ns-3.7.1).  To do
 this, changesets may be cherry-picked from ns-3-dev and added to
-ns-3.x repository.  Do not move over changesets that pertain to 
+ns-3.x branch.  Do not move over changesets that pertain to 
 adding new features, but documentation fixes and bug fixes are good 
 changesets to make available in a minor release.  The same steps
 above for making a release are generally followed, although one
-does not need to create a separate repository, but instead just tags
-the existing ns-3-dev and ns-3.x repositories with a "ns-3.x.1" type
-of tag.
+does not need to create a separate branch, but instead just reopens
+the previous release branch, makes the changes, adds a minor version
+number as a tag, and merges the branch back with the master branch.
 
 Also, on the main website, make sure that "latest release" points to
 the right page.  See how it was handled for ns-3.12 (which made
