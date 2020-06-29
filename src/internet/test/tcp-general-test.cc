@@ -985,6 +985,40 @@ TcpGeneralTest::SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn)
 }
 
 void
+TcpGeneralTest::SetPacingStatus (SocketWho who, bool pacing)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetPacingStatus (pacing);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetPacingStatus (pacing);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
+TcpGeneralTest::SetPaceInitialWindow (SocketWho who, bool paceWindow)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetPaceInitialWindow (paceWindow);
+    }
+  else if (who == RECEIVER)
+    {
+      m_receiverSocket->SetPaceInitialWindow (paceWindow);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
+
+void
 TcpGeneralTest::SetInitialSsThresh (SocketWho who, uint32_t initialSsThresh)
 {
   if (who == SENDER)

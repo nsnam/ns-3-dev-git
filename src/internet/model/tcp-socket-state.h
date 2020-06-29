@@ -187,7 +187,10 @@ public:
   // Pacing related variables
   bool                   m_pacing            {false}; //!< Pacing status
   DataRate               m_maxPacingRate     {0};    //!< Max Pacing rate
-  DataRate               m_currentPacingRate {0};    //!< Current Pacing rate
+  TracedValue<DataRate>  m_pacingRate {0};           //!< Current Pacing rate
+  uint16_t               m_pacingSsRatio {0};        //!< SS pacing ratio
+  uint16_t               m_pacingCaRatio {0};        //!< CA pacing ratio
+  bool                   m_paceInitialWindow {false}; //!< Enable/Disable pacing for the initial window
 
   Time                   m_minRtt  {Time::Max ()};   //!< Minimum RTT observed throughout the connection
 

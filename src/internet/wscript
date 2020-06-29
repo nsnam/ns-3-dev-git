@@ -305,6 +305,7 @@ def build(bld):
         'test/ipv4-deduplication-test.cc',
         'test/tcp-dctcp-test.cc',
         'test/tcp-syn-connection-failed-test.cc',
+        'test/tcp-pacing-test.cc',
         ]
     # Tests encapsulating example programs should be listed here
     if (bld.env['ENABLE_EXAMPLES']):

@@ -608,6 +608,22 @@ protected:
   void SetUseEcn (SocketWho who, TcpSocketState::UseEcn_t useEcn);
 
   /**
+   * \brief Enable or disable pacing in the TCP socket
+   * 
+   * \param who socket
+   * \param pacing Boolean to enable or disable pacing
+   */
+  void SetPacingStatus (SocketWho who, bool pacing);
+
+  /**
+   * \brief Enable or disable pacing of the initial window
+   * 
+   * \param who socket
+   * \param pacing Boolean to enable or disable pacing of initial window
+   */
+  void SetPaceInitialWindow (SocketWho who, bool paceWindow);
+
+  /**
    * \brief Forcefully set the initial ssthresh
    *
    * \param who socket to force

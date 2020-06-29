@@ -36,6 +36,22 @@ TcpSocketState::GetTypeId (void)
                    DataRateValue (DataRate ("4Gb/s")),
                    MakeDataRateAccessor (&TcpSocketState::m_maxPacingRate),
                    MakeDataRateChecker ())
+    .AddAttribute ("PacingSsRatio", "Percent pacing rate increase for slow start conditions",
+                   UintegerValue (200),
+                   MakeUintegerAccessor (&TcpSocketState::m_pacingSsRatio),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("PacingCaRatio", "Percent pacing rate increase for congestion avoidance conditions",
+                   UintegerValue (120),
+                   MakeUintegerAccessor (&TcpSocketState::m_pacingCaRatio),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("PaceInitialWindow", "Perform pacing for initial window of data",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&TcpSocketState::m_paceInitialWindow),
+                   MakeBooleanChecker ())
+    .AddTraceSource ("PacingRate",
+                     "The current TCP pacing rate",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_pacingRate),
+                     "ns3::TracedValueCallback::DataRate")
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketState::m_cWnd),
@@ -92,7 +108,10 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_rcvTimestampEchoReply (other.m_rcvTimestampEchoReply),
     m_pacing (other.m_pacing),
     m_maxPacingRate (other.m_maxPacingRate),
-    m_currentPacingRate (other.m_currentPacingRate),
+    m_pacingRate (other.m_pacingRate),
+    m_pacingSsRatio (other.m_pacingSsRatio),
+    m_pacingCaRatio (other.m_pacingCaRatio),
+    m_paceInitialWindow (other.m_paceInitialWindow),
     m_minRtt (other.m_minRtt),
     m_bytesInFlight (other.m_bytesInFlight),
     m_lastRtt (other.m_lastRtt),
