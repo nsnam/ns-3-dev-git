@@ -77,8 +77,9 @@ public:
   virtual bool GetUint8Value (Uint8Values field, uint8_t &value) const;
 
   /**
-   * \brief Marks the packet by setting ECN_CE bits if the packet has ECN_ECT0 or ECN_ECT1 bits set
-   * \return true if the packet gets marked, false otherwise
+   * \brief Marks the packet by setting ECN_CE bits if the packet has 
+   * ECN_ECT0 or ECN_ECT1 set.  If ECN_CE is already set, returns true.
+   * \return true if the method results in a marked packet, false otherwise
    */
   virtual bool Mark (void);
 

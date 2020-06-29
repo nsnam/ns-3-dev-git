@@ -211,7 +211,7 @@ public:
   /**
    * \brief Marks the packet as a substitute for dropping it, such as for Explicit Congestion Notification
    *
-   * \return true if the packet gets marked, false otherwise
+   * \return true if the packet is marked by this method or is already marked, false otherwise
    */
   virtual bool Mark (void) = 0;
 
