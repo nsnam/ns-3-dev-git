@@ -340,12 +340,6 @@ MacLow::GetCtsToSelfSupported (void) const
 }
 
 void
-MacLow::SetPifs (Time pifs)
-{
-  m_pifs = pifs;
-}
-
-void
 MacLow::SetRifs (Time rifs)
 {
   m_rifs = rifs;
@@ -402,7 +396,7 @@ MacLow::GetSlotTime (void) const
 Time
 MacLow::GetPifs (void) const
 {
-  return m_pifs;
+  return m_phy->GetPifs ();
 }
 
 Mac48Address

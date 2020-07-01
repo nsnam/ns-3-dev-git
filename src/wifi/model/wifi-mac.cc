@@ -35,20 +35,6 @@ NS_LOG_COMPONENT_DEFINE ("WifiMac");
 NS_OBJECT_ENSURE_REGISTERED (WifiMac);
 
 Time
-WifiMac::GetDefaultSlot (void)
-{
-  //802.11-a specific
-  return MicroSeconds (9);
-}
-
-Time
-WifiMac::GetDefaultSifs (void)
-{
-  //802.11-a specific
-  return MicroSeconds (16);
-}
-
-Time
 WifiMac::GetDefaultRifs (void)
 {
   //802.11n specific
@@ -61,11 +47,6 @@ WifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("Pifs", "The value of the PIFS constant.",
-                   TimeValue (GetDefaultSifs () + GetDefaultSlot ()),
-                   MakeTimeAccessor (&WifiMac::SetPifs,
-                                     &WifiMac::GetPifs),
-                   MakeTimeChecker ())
     .AddAttribute ("Rifs", "The value of the RIFS constant.",
                    TimeValue (GetDefaultRifs ()),
                    MakeTimeAccessor (&WifiMac::SetRifs,
@@ -202,35 +183,30 @@ void
 WifiMac::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPifs (MicroSeconds (16 + 9));
 }
 
 void
 WifiMac::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPifs (MicroSeconds (10 + 20));
 }
 
 void
 WifiMac::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPifs (MicroSeconds (10 + 20));
 }
 
 void
 WifiMac::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPifs (MicroSeconds (32 + 13));
 }
 
 void
 WifiMac::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this);
-  SetPifs (MicroSeconds (64 + 21));
 }
 
 void

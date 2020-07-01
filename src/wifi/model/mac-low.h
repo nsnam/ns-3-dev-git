@@ -124,12 +124,6 @@ public:
    */
   void SetRifs (Time rifs);
   /**
-   * Set PCF Interframe Space (PIFS) of this MacLow.
-   *
-   * \param pifs PIFS of this MacLow
-   */
-  void SetPifs (Time pifs);
-  /**
    * \param interval the expected interval between two beacon transmissions.
    */
   void SetBeaconInterval (Time interval);
@@ -885,7 +879,6 @@ private:
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
   Mac48Address m_bssid;                     //!< BSSID address (Mac48Address)
-  Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
   Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 
   Time m_beaconInterval;   //!< Expected interval between two beacon transmissions

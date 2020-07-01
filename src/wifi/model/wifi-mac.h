@@ -68,10 +68,6 @@ public:
   Ptr<NetDevice> GetDevice (void) const;
 
   /**
-   * \param pifs the PIFS duration.
-   */
-  virtual void SetPifs (Time pifs) = 0;
-  /**
    * \param rifs the RIFS duration.
    */
   virtual void SetRifs (Time rifs) = 0;
@@ -99,10 +95,6 @@ public:
    * \return the current RIFS duration.
    */
   virtual Time GetRifs (void) const = 0;
-  /**
-   * \return the current PIFS duration.
-   */
-  virtual Time GetPifs (void) const = 0;
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -274,18 +266,6 @@ protected:
 
 
 private:
-  /**
-   * \return the default slot duration
-   *
-   * Return a default slot value for 802.11a (9 microseconds).
-   */
-  static Time GetDefaultSlot (void);
-  /**
-   * \return the default short interframe space (SIFS)
-   *
-   * Return a default SIFS value for 802.11a (16 microseconds).
-   */
-  static Time GetDefaultSifs (void);
   /**
    * \return the default reduced interframe space (RIFS)
    *

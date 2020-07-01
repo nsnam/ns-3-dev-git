@@ -532,6 +532,18 @@ public:
    */
   Time GetSlot (void) const;
   /**
+   * Set the PCF Interframe Space (PIFS) for this PHY.
+   *
+   * \param pifs the PIFS duration
+   */
+  void SetPifs (Time pifs);
+  /**
+   * Return the PCF Interframe Space (PIFS) for this PHY.
+   *
+   * \return the PIFS duration
+   */
+  Time GetPifs (void) const;
+  /**
    * Return the estimated Ack TX time for this PHY.
    *
    * \return the estimated Ack TX time
@@ -2077,6 +2089,7 @@ private:
 
   Time m_sifs;                              //!< Short Interframe Space (SIFS) duration
   Time m_slot;                              //!< Slot duration
+  Time m_pifs;                              //!< PCF Interframe Space (PIFS) duration
   Time m_ackTxTime;                         //!< estimated Ack TX time
   Time m_blockAckTxTime;                    //!< estimated BlockAck TX time
 

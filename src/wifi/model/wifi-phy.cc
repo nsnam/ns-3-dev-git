@@ -340,6 +340,14 @@ WifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (0)),
                    MakeTimeAccessor (&WifiPhy::m_slot),
                    MakeTimeChecker ())
+    .AddAttribute ("Pifs",
+                   "The duration of the PCF Interframe Space. "
+                   "NOTE that the default value is overwritten by the value defined "
+                   "by the standard; if you want to set this attribute, you have to "
+                   "do it after that the PHY object is initialized.",
+                   TimeValue (MicroSeconds (0)),
+                   MakeTimeAccessor (&WifiPhy::m_pifs),
+                   MakeTimeChecker ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -415,6 +423,7 @@ WifiPhy::WifiPhy ()
     m_channelWidth (0),
     m_sifs (Seconds (0)),
     m_slot (Seconds (0)),
+    m_pifs (Seconds (0)),
     m_ackTxTime (Seconds (0)),
     m_blockAckTxTime (Seconds (0)),
     m_powerRestricted (false),
@@ -952,6 +961,18 @@ WifiPhy::GetSlot (void) const
   return m_slot;
 }
 
+void
+WifiPhy::SetPifs (Time pifs)
+{
+  m_pifs = pifs;
+}
+
+Time
+WifiPhy::GetPifs (void) const
+{
+  return m_pifs;
+}
+
 Time
 WifiPhy::GetAckTxTime (void) const
 {
@@ -972,6 +993,7 @@ WifiPhy::Configure80211a (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (16));
   SetSlot (MicroSeconds (9));
+  SetPifs (GetSifs () + GetSlot ());
   // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
   // of the PPDU causing the EIFS" of 802.11-2016
   m_ackTxTime = MicroSeconds (44);
@@ -994,6 +1016,7 @@ WifiPhy::Configure80211b (void)
   // See Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (10));
   SetSlot (MicroSeconds (20));
+  SetPifs (GetSifs () + GetSlot ());
   // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
   // of the PPDU causing the EIFS" of 802.11-2016
   m_ackTxTime = MicroSeconds (304);
@@ -1033,6 +1056,7 @@ WifiPhy::Configure80211_10Mhz (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (32));
   SetSlot (MicroSeconds (13));
+  SetPifs (GetSifs () + GetSlot ());
   m_ackTxTime = MicroSeconds (88);
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate3MbpsBW10MHz ());
@@ -1053,6 +1077,7 @@ WifiPhy::Configure80211_5Mhz (void)
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (64));
   SetSlot (MicroSeconds (21));
+  SetPifs (GetSifs () + GetSlot ());
   m_ackTxTime = MicroSeconds (176);
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate1_5MbpsBW5MHz ());
@@ -1072,6 +1097,7 @@ WifiPhy::ConfigureHolland (void)
 
   SetSifs (MicroSeconds (16));
   SetSlot (MicroSeconds (9));
+  SetPifs (GetSifs () + GetSlot ());
 
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetOfdmRate12Mbps ());

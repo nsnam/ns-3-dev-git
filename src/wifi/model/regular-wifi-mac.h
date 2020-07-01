@@ -54,14 +54,12 @@ public:
   virtual ~RegularWifiMac ();
 
   // Implementations of pure virtual methods.
-  void SetPifs (Time pifs);
   void SetRifs (Time rifs);
   void SetShortSlotTimeSupported (bool enable);
   void SetSsid (Ssid ssid);
   void SetAddress (Mac48Address address);
   void SetPromisc (void);
   Time GetRifs (void) const;
-  Time GetPifs (void) const;
   bool GetShortSlotTimeSupported (void) const;
   Ssid GetSsid (void) const;
   Mac48Address GetAddress (void) const;

@@ -637,19 +637,6 @@ RegularWifiMac::GetRifs (void) const
 }
 
 void
-RegularWifiMac::SetPifs (Time pifs)
-{
-  NS_LOG_FUNCTION (this << pifs);
-  m_low->SetPifs (pifs);
-}
-
-Time
-RegularWifiMac::GetPifs (void) const
-{
-  return m_low->GetPifs ();
-}
-
-void
 RegularWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
