@@ -217,10 +217,10 @@ typedef struct _cairo_quorem64 {
   cairo_int64_t       rem;
 } cairo_quorem64_t;
 
-cairo_uquorem64_t I
+cairo_uquorem64_t cairo_I
 _cairo_uint64_divrem (cairo_uint64_t num, cairo_uint64_t den);
 
-cairo_quorem64_t I
+cairo_quorem64_t cairo_I
 _cairo_int64_divrem (cairo_int64_t num, cairo_int64_t den);
 
 /*
@@ -264,7 +264,7 @@ cairo_int128_t  cairo_I _cairo_int64_to_int128 (cairo_int64_t i);
 #define                 _cairo_int128_add(a,b)      _cairo_uint128_add (a,b)
 #define                 _cairo_int128_sub(a,b)      _cairo_uint128_sub (a,b)
 #define                 _cairo_int128_mul(a,b)      _cairo_uint128_mul (a,b)
-cairo_int128_t I _cairo_int64x64_128_mul (cairo_int64_t a, cairo_int64_t b);
+cairo_int128_t  cairo_I _cairo_int64x64_128_mul (cairo_int64_t a, cairo_int64_t b);
 #define                 _cairo_int128_lsl(a,b)      _cairo_uint128_lsl (a,b)
 #define                 _cairo_int128_rsl(a,b)      _cairo_uint128_rsl (a,b)
 #define                 _cairo_int128_rsa(a,b)      _cairo_uint128_rsa (a,b)
@@ -330,17 +330,17 @@ typedef struct _cairo_quorem128 {
   cairo_int128_t      rem;
 } cairo_quorem128_t;
 
-cairo_uquorem128_t I
+cairo_uquorem128_t cairo_I
 _cairo_uint128_divrem (cairo_uint128_t num, cairo_uint128_t den);
 
-cairo_quorem128_t I
+cairo_quorem128_t cairo_I
 _cairo_int128_divrem (cairo_int128_t num, cairo_int128_t den);
 
-cairo_uquorem64_t I
+cairo_uquorem64_t cairo_I
 _cairo_uint_96by64_32x64_divrem (cairo_uint128_t num,
                                  cairo_uint64_t  den);
 
-cairo_quorem64_t I
+cairo_quorem64_t cairo_I
 _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
                                 cairo_int64_t  den);
 
