@@ -818,14 +818,6 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
             {
               m_stationManager->SetUseGreenfieldProtection (false);
             }
-          if (!GetVhtSupported () && GetHtConfiguration ()->GetRifsSupported () && htOperation.GetRifsMode ())
-            {
-              m_stationManager->SetRifsPermitted (true);
-            }
-          else
-            {
-              m_stationManager->SetRifsPermitted (false);
-            }
         }
     }
   if (GetVhtSupported ())
@@ -1018,14 +1010,6 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           else
             {
               m_stationManager->SetUseGreenfieldProtection (false);
-            }
-          if (!GetVhtSupported () && GetHtConfiguration ()->GetRifsSupported () && htOperation.GetRifsMode ())
-            {
-              m_stationManager->SetRifsPermitted (true);
-            }
-          else
-            {
-              m_stationManager->SetRifsPermitted (false);
             }
         }
     }

@@ -118,12 +118,6 @@ public:
    */
   void SetCtsToSelfSupported (bool enable);
   /**
-   * Set Reduced Interframe Space (RIFS) of this MacLow.
-   *
-   * \param rifs RIFS of this MacLow
-   */
-  void SetRifs (Time rifs);
-  /**
    * \param interval the expected interval between two beacon transmissions.
    */
   void SetBeaconInterval (Time interval);
@@ -171,12 +165,6 @@ public:
    * \return PIFS
    */
   Time GetPifs (void) const;
-  /**
-   * Return Reduced Interframe Space (RIFS) of this MacLow.
-   *
-   * \return RIFS
-   */
-  Time GetRifs (void) const;
   /**
    * \return the expected interval between two beacon transmissions.
    */
@@ -879,7 +867,6 @@ private:
   MacLowTransmissionParameters m_txParams;  //!< Transmission parameters of the current packet
   Mac48Address m_self;                      //!< Address of this MacLow (Mac48Address)
   Mac48Address m_bssid;                     //!< BSSID address (Mac48Address)
-  Time m_rifs;                              //!< Reduced Interframe Space (RIFS) duration
 
   Time m_beaconInterval;   //!< Expected interval between two beacon transmissions
   Time m_cfpMaxDuration;   //!< CFP max duration

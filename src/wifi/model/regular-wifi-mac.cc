@@ -624,19 +624,6 @@ RegularWifiMac::SetCtsToSelfSupported (bool enable)
 }
 
 void
-RegularWifiMac::SetRifs (Time rifs)
-{
-  NS_LOG_FUNCTION (this << rifs);
-  m_low->SetRifs (rifs);
-}
-
-Time
-RegularWifiMac::GetRifs (void) const
-{
-  return m_low->GetRifs ();
-}
-
-void
 RegularWifiMac::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
@@ -692,37 +679,6 @@ bool
 RegularWifiMac::GetShortSlotTimeSupported (void) const
 {
   return m_shortSlotTimeSupported;
-}
-
-void
-RegularWifiMac::SetRifsSupported (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          htConfiguration->SetRifsSupported (enable);
-        }
-    }
-  m_rifsSupported = enable;
-}
-
-bool
-RegularWifiMac::GetRifsSupported (void) const
-{
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          return htConfiguration->GetRifsSupported ();
-        }
-    }
-  return m_rifsSupported;
 }
 
 void
@@ -1082,13 +1038,6 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetShortSlotTimeSupported,
                                         &RegularWifiMac::GetShortSlotTimeSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("RifsSupported",
-                   "Whether or not RIFS is supported (only used by HT APs or STAs).",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetRifsSupported,
-                                        &RegularWifiMac::GetRifsSupported),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Use the HtConfiguration instead")
     .AddAttribute ("Txop",
                    "The Txop object.",
                    PointerValue (),
@@ -1142,7 +1091,6 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
         //To be removed once deprecated attributes are removed
         Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
         NS_ASSERT (htConfiguration);
-        htConfiguration->SetRifsSupported (m_rifsSupported);
         SetQosSupported (true);
         cwmin = 15;
         cwmax = 1023;
@@ -1152,10 +1100,8 @@ RegularWifiMac::FinishConfigureStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       {
         EnableAggregation ();
-        //To be removed once deprecated RifsSupported attribute is removed
         Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
         NS_ASSERT (htConfiguration);
-        htConfiguration->SetRifsSupported (m_rifsSupported);
         SetQosSupported (true);
       }
     case WIFI_PHY_STANDARD_80211g:

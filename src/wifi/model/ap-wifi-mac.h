@@ -273,13 +273,6 @@ private:
    */
   bool GetUseNonErpProtection (void) const;
   /**
-   * Return whether RIFS is allowed in the BSS.
-   *
-   * \return true if RIFS is allowed in the BSS,
-   *         false otherwise
-   */
-  bool GetRifsMode (void) const;
-  /**
    * Increment the PCF polling list iterator to indicate
    * that the next polling station can be polled.
    */
@@ -305,7 +298,6 @@ private:
   std::list<Mac48Address> m_cfPollingList;   //!< List of all PCF stations currently associated to the AP
   std::list<Mac48Address>::iterator m_itCfPollingList; //!< Iterator to the list of all PCF stations currently associated to the AP
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
-  bool m_disableRifs;                        //!< Flag whether to force RIFS to be disabled within the BSS If non-HT STAs are detected
 };
 
 } //namespace ns3

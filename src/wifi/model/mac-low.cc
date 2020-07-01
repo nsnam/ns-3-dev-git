@@ -340,12 +340,6 @@ MacLow::GetCtsToSelfSupported (void) const
 }
 
 void
-MacLow::SetRifs (Time rifs)
-{
-  m_rifs = rifs;
-}
-
-void
 MacLow::SetBeaconInterval (Time interval)
 {
   m_beaconInterval = interval;
@@ -379,12 +373,6 @@ Time
 MacLow::GetSifs (void) const
 {
   return m_phy->GetSifs ();
-}
-
-Time
-MacLow::GetRifs (void) const
-{
-  return m_rifs;
 }
 
 Time
@@ -864,26 +852,12 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
 
       if (m_txParams.HasNextPacket ())
         {
-          if (m_stationManager->GetRifsPermitted ())
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
-            }
-          else
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
-            }
+          m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxFragment, this);
         }
       else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->IsQosTxop () &&
                m_currentTxop->GetTxopLimit ().IsStrictlyPositive () && m_currentTxop->GetTxopRemaining () > GetSifs ())
         {
-          if (m_stationManager->GetRifsPermitted ())
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
-            }
-          else
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
-            }
+          m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
         }
       else if (m_currentTxop->IsQosTxop ())
         {
@@ -906,14 +880,7 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
       if (m_currentTxop->IsQosTxop () && m_currentTxop->GetTxopLimit ().IsStrictlyPositive ()
           && m_currentTxop->GetTxopRemaining () > GetSifs ())
         {
-          if (m_stationManager->GetRifsPermitted ())
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetRifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
-            }
-          else
-            {
-              m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
-            }
+          m_waitIfsEvent = Simulator::Schedule (GetSifs (), &MacLow::WaitIfsAfterEndTxPacket, this);
         }
       else if (m_currentTxop->IsQosTxop ())
         {
@@ -1829,29 +1796,13 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
   else if (m_txParams.HasNextPacket ())
     {
       NS_ASSERT (m_waitIfsEvent.IsExpired ());
-      Time delay = txDuration;
-      if (m_stationManager->GetRifsPermitted ())
-        {
-          delay += GetRifs ();
-        }
-      else
-        {
-          delay += GetSifs ();
-        }
+      Time delay = txDuration + GetSifs ();
       m_waitIfsEvent = Simulator::Schedule (delay, &MacLow::WaitIfsAfterEndTxFragment, this);
     }
   else if (m_currentPacket->GetHeader (0).IsQosData () && m_currentTxop->IsQosTxop () &&
            m_currentTxop->GetTxopLimit ().IsStrictlyPositive () && m_currentTxop->GetTxopRemaining () > GetSifs ())
    {
-      Time delay = txDuration;
-      if (m_stationManager->GetRifsPermitted ())
-        {
-          delay += GetRifs ();
-        }
-      else
-        {
-          delay += GetSifs ();
-        }
+      Time delay = txDuration + GetSifs ();
       m_waitIfsEvent = Simulator::Schedule (delay, &MacLow::WaitIfsAfterEndTxPacket, this);
     }
   else
@@ -1873,14 +1824,7 @@ MacLow::SendDataPacket (void)
       Time duration = GetResponseDuration (m_txParams, m_currentTxVector, m_currentPacket->GetAddr1 ());
       if (m_txParams.HasNextPacket ())
         {
-          if (m_stationManager->GetRifsPermitted ())
-            {
-              duration += GetRifs ();
-            }
-          else
-            {
-              duration += GetSifs ();
-            }
+          duration += GetSifs ();
           duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
                                                   m_currentTxVector, m_phy->GetFrequency ());
           duration += GetResponseDuration (m_txParams, m_currentTxVector, m_currentPacket->GetAddr1 ());
@@ -2039,14 +1983,7 @@ MacLow::SendDataAfterCts (Time duration)
   Time newDuration = GetResponseDuration (m_txParams, m_currentTxVector, m_currentPacket->GetAddr1 ());
   if (m_txParams.HasNextPacket ())
     {
-      if (m_stationManager->GetRifsPermitted ())
-        {
-          newDuration += GetRifs ();
-        }
-      else
-        {
-          newDuration += GetSifs ();
-        }
+      newDuration += GetSifs ();
       newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
       newDuration += GetResponseDuration (m_txParams, m_currentTxVector, m_currentPacket->GetAddr1 ());
     }

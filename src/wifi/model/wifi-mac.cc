@@ -34,24 +34,12 @@ NS_LOG_COMPONENT_DEFINE ("WifiMac");
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMac);
 
-Time
-WifiMac::GetDefaultRifs (void)
-{
-  //802.11n specific
-  return MicroSeconds (2);
-}
-
 TypeId
 WifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("Rifs", "The value of the RIFS constant.",
-                   TimeValue (GetDefaultRifs ()),
-                   MakeTimeAccessor (&WifiMac::SetRifs,
-                                     &WifiMac::GetRifs),
-                   MakeTimeChecker ())
     .AddAttribute ("Ssid", "The ssid we want to belong to.",
                    SsidValue (Ssid ("default")),
                    MakeSsidAccessor (&WifiMac::GetSsid,
@@ -214,14 +202,12 @@ WifiMac::Configure80211n_2_4Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211g ();
-  SetRifs (MicroSeconds (2));
 }
 void
 WifiMac::Configure80211n_5Ghz (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211a ();
-  SetRifs (MicroSeconds (2));
 }
 
 void

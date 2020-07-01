@@ -58,12 +58,6 @@ HtConfiguration::GetTypeId (void)
                    MakeBooleanAccessor (&HtConfiguration::GetGreenfieldSupported,
                                         &HtConfiguration::SetGreenfieldSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("RifsSupported",
-                   "Whether or not RIFS is supported.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&HtConfiguration::SetRifsSupported,
-                                        &HtConfiguration::GetRifsSupported),
-                   MakeBooleanChecker ())
     ;
     return tid;
 }
@@ -92,19 +86,6 @@ bool
 HtConfiguration::GetGreenfieldSupported (void) const
 {
   return m_greenfieldSupported;
-}
-
-void
-HtConfiguration::SetRifsSupported (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  m_rifsSupported = enable;
-}
-
-bool
-HtConfiguration::GetRifsSupported (void) const
-{
-  return m_rifsSupported;
 }
 
 } //namespace ns3

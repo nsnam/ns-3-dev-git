@@ -83,11 +83,6 @@ ApWifiMac::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::m_enableNonErpProtection),
                    MakeBooleanChecker ())
-    .AddAttribute ("RifsMode", "If non-HT STAs are detected, whether to force RIFS to be disabled within the BSS."
-                   "This parameter is only used when HT is supported by the AP.",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&ApWifiMac::m_disableRifs),
-                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -571,7 +566,7 @@ ApWifiMac::GetHtOperation (void) const
     {
       operation.SetHtSupported (1);
       operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
-      operation.SetRifsMode (GetRifsMode ());
+      operation.SetRifsMode (false);
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_phy->GetChannelWidth () > 20)
         {
@@ -1591,28 +1586,6 @@ ApWifiMac::GetUseNonErpProtection (void) const
   bool useProtection = !m_nonErpStations.empty () && m_enableNonErpProtection;
   m_stationManager->SetUseNonErpProtection (useProtection);
   return useProtection;
-}
-
-bool
-ApWifiMac::GetRifsMode (void) const
-{
-  bool rifsMode = false;
-  if (GetHtSupported () && !GetVhtSupported ()) //RIFS mode is no longer allowed with 802.11ac or higher
-    {
-      if (m_nonHtStations.empty () || !m_disableRifs)
-        {
-          rifsMode = true;
-        }
-    }
-  if (GetHtSupported () && GetHtConfiguration ()->GetRifsSupported () && rifsMode)
-    {
-      m_stationManager->SetRifsPermitted (true);
-    }
-  else
-    {
-      m_stationManager->SetRifsPermitted (false);
-    }
-  return rifsMode;
 }
 
 uint16_t

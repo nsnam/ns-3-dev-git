@@ -121,8 +121,7 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
     m_useNonHtProtection (false),
     m_useGreenfieldProtection (false),
     m_shortPreambleEnabled (false),
-    m_shortSlotTimeEnabled (false),
-    m_rifsPermitted (false)
+    m_shortSlotTimeEnabled (false)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -210,13 +209,6 @@ WifiRemoteStationManager::SetShortSlotTimeEnabled (bool enable)
   m_shortSlotTimeEnabled = enable;
 }
 
-void
-WifiRemoteStationManager::SetRifsPermitted (bool allow)
-{
-  NS_LOG_FUNCTION (this << allow);
-  m_rifsPermitted = allow;
-}
-
 bool
 WifiRemoteStationManager::GetShortSlotTimeEnabled (void) const
 {
@@ -227,12 +219,6 @@ bool
 WifiRemoteStationManager::GetShortPreambleEnabled (void) const
 {
   return m_shortPreambleEnabled;
-}
-
-bool
-WifiRemoteStationManager::GetRifsPermitted (void) const
-{
-  return m_rifsPermitted;
 }
 
 bool

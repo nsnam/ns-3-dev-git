@@ -68,10 +68,6 @@ public:
   Ptr<NetDevice> GetDevice (void) const;
 
   /**
-   * \param rifs the RIFS duration.
-   */
-  virtual void SetRifs (Time rifs) = 0;
-  /**
    * \param ssid the current SSID of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;
@@ -91,10 +87,6 @@ public:
    */
   virtual void SetPromisc (void) = 0;
 
-  /**
-   * \return the current RIFS duration.
-   */
-  virtual Time GetRifs (void) const = 0;
   /**
    * \return the MAC address associated to this MAC layer.
    */
@@ -266,13 +258,6 @@ protected:
 
 
 private:
-  /**
-   * \return the default reduced interframe space (RIFS)
-   *
-   * Return a default RIFS value for 802.11n (2 microseconds).
-   */
-  static Time GetDefaultRifs (void);
-
   /**
    * \param standard the PHY standard to be used
    *

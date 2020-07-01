@@ -54,12 +54,10 @@ public:
   virtual ~RegularWifiMac ();
 
   // Implementations of pure virtual methods.
-  void SetRifs (Time rifs);
   void SetShortSlotTimeSupported (bool enable);
   void SetSsid (Ssid ssid);
   void SetAddress (Mac48Address address);
   void SetPromisc (void);
-  Time GetRifs (void) const;
   bool GetShortSlotTimeSupported (void) const;
   Ssid GetSsid (void) const;
   Mac48Address GetAddress (void) const;
@@ -95,22 +93,6 @@ public:
    *               false otherwise
    */
   void SetCtsToSelfSupported (bool enable);
-  /**
-   * Enable or disable RIFS feature.
-   *
-   * \param enable true if RIFS is to be supported,
-   *               false otherwise
-   * \deprecated
-   */
-  void SetRifsSupported (bool enable);
-  /**
-   * \return whether the device supports RIFS capability.
-   *
-   * \return true if short RIFS is supported,
-   *         false otherwise.
-   * \deprecated
-   */
-  bool GetRifsSupported (void) const;
   /**
    * \param bssid the BSSID of the network that this device belongs to.
    */
@@ -487,7 +469,6 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
-  bool m_rifsSupported; ///< flag whether RIFS is supported (deprecated)
 };
 
 } //namespace ns3
