@@ -259,6 +259,14 @@ def options(opt):
     opt.add_option('--cxx-standard',
                    help=('Compile NS-3 with the given C++ standard'),
                    type='string', default='-std=c++11', dest='cxx_standard')
+    opt.add_option('--enable-asserts',
+                   help=('Enable the asserts regardless of the compile mode'),
+                   action="store_true", default=False,
+                   dest='enable_asserts')
+    opt.add_option('--enable-logs',
+                   help=('Enable the logs regardless of the compile mode'),
+                   action="store_true", default=False,
+                   dest='enable_logs')
 
     # options provided in subdirectories
     opt.recurse('src')
@@ -395,6 +403,11 @@ def configure(conf):
 
     if Options.options.build_profile == 'optimized':
         env.append_value('DEFINES', 'NS3_BUILD_PROFILE_OPTIMIZED')
+
+    if Options.options.enable_logs:
+        env.append_value('DEFINES', 'NS3_LOG_ENABLE')
+    if Options.options.enable_asserts:
+        env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
