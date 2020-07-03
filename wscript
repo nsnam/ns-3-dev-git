@@ -405,9 +405,9 @@ def configure(conf):
         env.append_value('DEFINES', 'NS3_BUILD_PROFILE_OPTIMIZED')
 
     if Options.options.enable_logs:
-        env.append_value('DEFINES', 'NS3_LOG_ENABLE')
+        env.append_unique('DEFINES', 'NS3_LOG_ENABLE')
     if Options.options.enable_asserts:
-        env.append_value('DEFINES', 'NS3_ASSERT_ENABLE')
+        env.append_unique('DEFINES', 'NS3_ASSERT_ENABLE')
 
     env['PLATFORM'] = sys.platform
     env['BUILD_PROFILE'] = Options.options.build_profile
