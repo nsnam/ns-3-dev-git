@@ -64,7 +64,8 @@ enum WifiPhyRxfailureReason
   SIG_A_FAILURE,
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
-  OBSS_PD_CCA_RESET
+  OBSS_PD_CCA_RESET,
+  FILTERED
 };
 
 /**
@@ -104,6 +105,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyRxfailureReason reason
       return (os << "FRAME_CAPTURE_PACKET_SWITCH");
     case OBSS_PD_CCA_RESET:
       return (os << "OBSS_PD_CCA_RESET");
+    case FILTERED:
+      return (os << "FILTERED");
     case UNKNOWN:
     default:
       NS_FATAL_ERROR ("Unknown reason");

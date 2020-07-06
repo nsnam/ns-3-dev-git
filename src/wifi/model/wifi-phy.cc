@@ -3096,7 +3096,9 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
       else
         {
           NS_ASSERT (ppdu->IsMu ());
-          NS_LOG_DEBUG ("Receiving MU PPDU without any PSDU for this STA");
+          NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
+          payloadDuration = NanoSeconds (0); //so as to call AbortCurrentReception below
+          m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is also triggered for filtered PPDUs
         }
       if (modulation == WIFI_MOD_CLASS_HE)
         {
@@ -3109,11 +3111,22 @@ WifiPhy::StartReceivePayload (Ptr<Event> event)
   else //PHY reception failed
     {
       NS_LOG_DEBUG ("Drop packet because HT PHY header reception failed");
-      NotifyRxDrop (GetAddressedPsduInPpdu (event->GetPpdu ()), SIG_A_FAILURE);
+      NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), SIG_A_FAILURE);
     }
   if (!success)
     {
-      m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::ResetReceive, this, event);
+      if (payloadDuration.IsStrictlyPositive ())
+        {
+          m_endRxEvent = Simulator::Schedule (payloadDuration, &WifiPhy::ResetReceive, this, event);
+        }
+      else
+        {
+          AbortCurrentReception (FILTERED); //immediately followed by PHY-RXEND (Filtered)
+          if (event->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+            {
+              MaybeCcaBusyDuration ();
+            }
+        }
     }
 }
 
