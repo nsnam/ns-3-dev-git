@@ -185,11 +185,6 @@ public:
    * \param threshold the fragmentation threshold
    */
   void SetFragmentationThreshold (uint32_t threshold);
-  /**
-   * Typically called to update the fragmentation threshold at the start of a new transmission.
-   * This avoid that the fragmentation threshold gets changed during a transmission (see bug 730).
-   */
-  void UpdateFragmentationThreshold (void);
 
   /**
    * Records QoS support of the remote station.
@@ -1296,7 +1291,6 @@ private:
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
   uint32_t m_rtsCtsThreshold;             //!< Threshold for RTS/CTS
   uint32_t m_fragmentationThreshold;      //!< Current threshold for fragmentation
-  uint32_t m_nextFragmentationThreshold;  //!< Threshold for fragmentation that will be used for the next transmission
   uint8_t m_defaultTxPowerLevel;          //!< Default transmission power level
   WifiMode m_nonUnicastMode;      //!< Transmission mode for non-unicast Data frames
   bool m_useNonErpProtection;     //!< flag if protection for non-ERP stations against ERP transmissions is enabled

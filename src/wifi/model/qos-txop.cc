@@ -724,7 +724,6 @@ QosTxop::NotifyAccessGranted (void)
               return;
             }
 
-          m_stationManager->UpdateFragmentationThreshold ();
           Ptr<WifiMacQueueItem> item;
           // non-group addressed QoS Data frames may be sent in MU PPDUs. Given that at this stage
           // we do not know the bandwidth it would be given nor the selected acknowledgment
@@ -1306,7 +1305,6 @@ QosTxop::StartNextPacket (void)
           NS_ASSERT (m_currentPacket != 0);
 
           m_currentParams = params;
-          m_stationManager->UpdateFragmentationThreshold ();
           m_fragmentNumber = 0;
           GetLow ()->StartTransmission (item, m_currentParams, this);
           return;
@@ -1846,7 +1844,6 @@ QosTxop::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
 
   uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
   m_currentHdr.SetSequenceNumber (sequence);
-  m_stationManager->UpdateFragmentationThreshold ();
   m_currentHdr.SetFragmentNumber (0);
   m_currentHdr.SetNoMoreFragments ();
   m_currentHdr.SetNoRetry ();

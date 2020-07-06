@@ -280,8 +280,6 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
 
-  m_mac->GetWifiRemoteStationManager ()->UpdateFragmentationThreshold ();
-
   if (mpdu->IsFragment ())
     {
       // a fragment cannot be further fragmented
