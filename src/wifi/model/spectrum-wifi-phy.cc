@@ -29,7 +29,6 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "spectrum-wifi-phy.h"
-#include "wifi-spectrum-signal-parameters.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-utils.h"
 #include "wifi-ppdu.h"

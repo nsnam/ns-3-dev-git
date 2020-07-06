@@ -1299,6 +1299,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   rxParams->txPhy = 0;
   rxParams->duration = ppduDuration;
   rxParams->ppdu = ppdu;
+  rxParams->txPsdFlag = PSD_HE_TB_NON_OFDMA_PORTION;
 
   m_phy->StartRx (rxParams);
 }

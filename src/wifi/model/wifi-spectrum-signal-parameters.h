@@ -31,6 +31,44 @@ class WifiPpdu;
 /**
  * \ingroup wifi
  *
+ * The transmit power spectral density flag, namely used
+ * to correctly build PSD for HE TB PPDU non-OFDMA and
+ * OFDMA portions.
+ */
+enum TxPsdFlag
+{
+  PSD_NON_HE_TB = 0,           //!< non-HE TB PPDU transmissions
+  PSD_HE_TB_NON_OFDMA_PORTION, //!< preamble of HE TB PPDU, which should only be sent on minimum subset of 20 MHz channels containing RU
+  PSD_HE_TB_OFDMA_PORTION      //!< OFDMA portion of HE TB PPDU, which should only be sent on RU
+};
+
+/**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param flag the transmit power spectral density flag
+* \returns a reference to the stream
+*/
+inline std::ostream& operator<< (std::ostream& os, TxPsdFlag flag)
+{
+  switch (flag)
+    {
+    case PSD_NON_HE_TB:
+      return (os << "PSD_NON_HE_TB");
+    case PSD_HE_TB_NON_OFDMA_PORTION:
+      return (os << "PSD_HE_TB_NON_OFDMA_PORTION");
+    case PSD_HE_TB_OFDMA_PORTION:
+      return (os << "PSD_HE_TB_OFDMA_PORTION");
+    default:
+      NS_FATAL_ERROR ("Invalid PSD flag");
+      return (os << "INVALID");
+    }
+}
+
+
+/**
+ * \ingroup wifi
+ *
  * Signal parameters for wifi
  */
 struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
@@ -51,7 +89,8 @@ struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
    */
   WifiSpectrumSignalParameters (const WifiSpectrumSignalParameters& p);
 
-  Ptr<WifiPpdu> ppdu; ///< The PPDU being transmitted
+  Ptr<WifiPpdu> ppdu;                  ///< The PPDU being transmitted
+  TxPsdFlag txPsdFlag {PSD_NON_HE_TB}; ///< The transmit power spectral density flag
 };
 
 }  // namespace ns3

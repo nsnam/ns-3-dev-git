@@ -37,6 +37,7 @@ WifiSpectrumSignalParameters::WifiSpectrumSignalParameters (const WifiSpectrumSi
 {
   NS_LOG_FUNCTION (this << &p);
   ppdu = p.ppdu;
+  txPsdFlag = p.txPsdFlag;
 }
 
 Ptr<SpectrumSignalParameters>
