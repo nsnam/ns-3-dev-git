@@ -149,7 +149,7 @@ const HeRu::SubcarrierGroups HeRu::m_heRuSubcarrierGroups =
 
 
 std::size_t
-HeRu::GetNRus (uint8_t bw, RuType ruType)
+HeRu::GetNRus (uint16_t bw, RuType ruType)
 {
   if (bw == 160 && ruType == RU_2x996_TONE)
     {
@@ -169,7 +169,7 @@ HeRu::GetNRus (uint8_t bw, RuType ruType)
 }
 
 HeRu::SubcarrierGroup
-HeRu::GetSubcarrierGroup (uint8_t bw, RuType ruType, std::size_t index)
+HeRu::GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index)
 {
   if (ruType == HeRu::RU_2x996_TONE) //handle special case of RU covering 160 MHz channel
     {
@@ -208,7 +208,7 @@ HeRu::GetSubcarrierGroup (uint8_t bw, RuType ruType, std::size_t index)
 }
 
 bool
-HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v)
+HeRu::DoesOverlap (uint16_t bw, RuSpec ru, const std::vector<RuSpec> &v)
 {
   // A 2x996-tone RU spans 160 MHz, hence it overlaps with any other RU
   if (bw == 160 && ru.ruType == RU_2x996_TONE && !v.empty ())
@@ -233,7 +233,7 @@ HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v)
 }
 
 bool
-HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const SubcarrierGroup &toneRanges)
+HeRu::DoesOverlap (uint16_t bw, RuSpec ru, const SubcarrierGroup &toneRanges)
 {
   for (const auto & range : toneRanges)
     {
@@ -252,6 +252,44 @@ HeRu::DoesOverlap (uint8_t bw, RuSpec ru, const SubcarrierGroup &toneRanges)
         }
     }
   return false;
+}
+
+HeRu::RuSpec
+HeRu::FindOverlappingRu (uint16_t bw, RuSpec referenceRu, RuType searchedRuType)
+{
+  RuSpec searchedRu;
+  searchedRu.ruType = searchedRuType;
+  std::size_t numRus = HeRu::GetNRus (bw, searchedRuType);
+
+  std::size_t numRusPer80Mhz;
+  std::vector<bool> primary80MhzFlags;
+  if (bw == 160)
+    {
+      primary80MhzFlags.push_back (true);
+      primary80MhzFlags.push_back (false);
+      numRusPer80Mhz = numRus / 2;
+    }
+  else
+    {
+      primary80MhzFlags.push_back (referenceRu.primary80MHz);
+      numRusPer80Mhz = numRus;
+    }
+
+  std::size_t index = 1;
+  for (const auto primary80Mhz : primary80MhzFlags)
+    {
+      searchedRu.primary80MHz = primary80Mhz;
+      for (std::size_t indexPer80Mhz = 1; indexPer80Mhz <= numRusPer80Mhz; ++indexPer80Mhz, ++index)
+        {
+          searchedRu.index = index;
+          if (DoesOverlap (bw, referenceRu, {searchedRu}))
+            {
+              return searchedRu;
+            }
+        }
+    }
+  NS_ABORT_MSG ("The searched RU type " << searchedRuType << " was not found for bw=" << bw << " and referenceRu=" << referenceRu);
+  return searchedRu;
 }
 
 std::ostream& operator<< (std::ostream& os, const HeRu::RuType &ruType)
@@ -317,36 +355,28 @@ HeRu::GetBandwidth (RuType ruType)
 }
 
 HeRu::RuType
-HeRu::GetEqualSizedRusForStations (uint16_t bandwidth, std::size_t& nStations)
+HeRu::GetRuType (uint16_t bandwidth)
 {
-  RuType ruType;
-  uint8_t nRusAssigned = 0;
-
-  // iterate over all the available RU types
-  for (auto& ru : m_heRuSubcarrierGroups)
+  switch (bandwidth)
     {
-      if (ru.first.first == bandwidth && ru.second.size () <= nStations)
-        {
-          ruType = ru.first.second;
-          nRusAssigned = ru.second.size ();
-          break;
-        }
-      else if (bandwidth == 160 && ru.first.first == 80 && (2 * ru.second.size () <= nStations))
-        {
-          ruType = ru.first.second;
-          nRusAssigned = 2 * ru.second.size ();
-          break;
-        }
+      case 2:
+        return RU_26_TONE;
+      case 4:
+        return RU_52_TONE;
+      case 8:
+        return RU_106_TONE;
+      case 20:
+        return RU_242_TONE;
+      case 40:
+        return RU_484_TONE;
+      case 80:
+        return RU_996_TONE;
+      case 160:
+        return RU_2x996_TONE;
+      default:
+        NS_ABORT_MSG (bandwidth << " MHz bandwidth not found");
+        return RU_242_TONE;
     }
-  if (nRusAssigned == 0)
-    {
-      NS_ABORT_IF (bandwidth != 160 || nStations != 1);
-      nRusAssigned = 1;
-      ruType = RU_2x996_TONE;
-    }
-
-  nStations = nRusAssigned;
-  return ruType;
 }
 
 } //namespace ns3

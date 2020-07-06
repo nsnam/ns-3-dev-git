@@ -23,9 +23,9 @@
 
 #include <map>
 #include <vector>
-
 #include <cstdint>
 #include <ostream>
+
 namespace ns3 {
 
 
@@ -77,7 +77,7 @@ public:
    * \param ruType the RU type (number of tones)
    * \return the number of distinct RUs available
    */
-  static std::size_t GetNRus (uint8_t bw, RuType ruType);
+  static std::size_t GetNRus (uint16_t bw, RuType ruType);
 
   /**
    * Get the subcarrier group of the RU having the given index among all the
@@ -93,7 +93,7 @@ public:
    * \param index the index (starting at 1) of the RU
    * \return the subcarrier range of the specified RU
    */
-  static SubcarrierGroup GetSubcarrierGroup (uint8_t bw, RuType ruType, std::size_t index);
+  static SubcarrierGroup GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index);
 
   /**
    * Check whether the given RU overlaps with the given set of RUs.
@@ -105,7 +105,7 @@ public:
    * \param v the given set of RUs
    * \return true if the given RU overlaps with the given set of RUs.
    */
-  static bool DoesOverlap (uint8_t bw, RuSpec ru, const std::vector<RuSpec> &v);
+  static bool DoesOverlap (uint16_t bw, RuSpec ru, const std::vector<RuSpec> &v);
 
   /**
    * Check whether the given RU overlaps with the given tone ranges.
@@ -117,7 +117,19 @@ public:
    * \param toneRanges the given set of tone ranges
    * \return true if the given RU overlaps with the given set of tone ranges.
    */
-  static bool DoesOverlap (uint8_t bw, RuSpec ru, const SubcarrierGroup &toneRanges);
+  static bool DoesOverlap (uint16_t bw, RuSpec ru, const SubcarrierGroup &toneRanges);
+
+  /**
+   * Find the RU allocation of the given RU type overlapping the given
+   * reference RU allocation.
+   * Note that an assert is generated if the RU allocation is not found.
+   *
+   * \param bw the bandwidth (MHz) of the HE PPDU (20, 40, 80, 160)
+   * \param referenceRu the reference RU allocation
+   * \param searchedRuType the searched RU type
+   * \return the searched RU allocation.
+   */
+  static RuSpec FindOverlappingRu (uint16_t bw, RuSpec referenceRu, RuType searchedRuType);
 
   /**
    * Get the approximate bandwidth occupied by a RU.
@@ -128,17 +140,12 @@ public:
   static uint16_t GetBandwidth (RuType ruType);
 
   /**
-   * Given the channel bandwidth and the number of stations candidate for being
-   * assigned an RU, maximize the number of candidate stations that can be assigned
-   * an RU subject to the constraint that all the stations must be assigned an RU
-   * of the same size (in terms of number of tones).
+   * Get the RU corresponding to the approximate bandwidth.
    *
-   * \param bandwidth the channel bandwidth in MHz
-   * \param nStations the number of candidate stations. On return, it is set to
-   *                  the number of stations that are assigned an RU
+   * \param bandwidth the approximate bandwidth (in MHz) occupied by the RU
    * \return the RU type
    */
-  static RuType GetEqualSizedRusForStations (uint16_t bandwidth, std::size_t& nStations);
+  static RuType GetRuType (uint16_t bandwidth);
 
   /// (bandwidth, number of tones) pair
   typedef std::pair<uint8_t, RuType> BwTonesPair;
