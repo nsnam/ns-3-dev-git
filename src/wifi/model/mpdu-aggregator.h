@@ -33,6 +33,7 @@ class AmpduSubframeHeader;
 class WifiTxVector;
 class Packet;
 class WifiMacQueueItem;
+class RegularWifiMac;
 
 /**
  * \brief Aggregator used to construct A-MPDUs
@@ -120,11 +121,11 @@ public:
                                                    Time ppduDurationLimit = Time::Min ()) const;
 
   /**
-   * Set the map of EDCA queues.
+   * Set the MAC layer to use.
    *
-   * \param edcaQueues the map of EDCA queues.
+   * \param mac the MAC layer to use
    */
-  void SetEdcaQueues (EdcaQueues edcaQueues);
+  void SetWifiMac (const Ptr<RegularWifiMac> mac);
 
   /**
    * \param ampduSize the size of the A-MPDU that needs to be padded in bytes
@@ -145,8 +146,11 @@ public:
    */
   static AmpduSubframeHeader GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle);
 
+protected:
+  virtual void DoDispose ();
+
 private:
-  EdcaQueues m_edca;   //!< the map of EDCA queues
+  Ptr<RegularWifiMac> m_mac;   //!< the MAC of this station
 };
 
 }  //namespace ns3

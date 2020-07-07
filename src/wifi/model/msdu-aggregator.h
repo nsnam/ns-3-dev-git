@@ -33,6 +33,7 @@ namespace ns3 {
 class Packet;
 class QosTxop;
 class WifiTxVector;
+class RegularWifiMac;
 
 /**
  * \brief Aggregator used to construct A-MSDUs
@@ -117,11 +118,11 @@ public:
   static WifiMacQueueItem::DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 
   /**
-   * Set the map of EDCA queues.
+   * Set the MAC layer to use.
    *
-   * \param map the map of EDCA queues.
+   * \param mac the MAC layer to use
    */
-  void SetEdcaQueues (EdcaQueues map);
+  void SetWifiMac (const Ptr<RegularWifiMac> mac);
 
   /**
    * Calculate how much padding must be added to the end of an A-MSDU of the
@@ -134,8 +135,11 @@ public:
    */
   static uint8_t CalculatePadding (uint16_t amsduSize);
 
+protected:
+  virtual void DoDispose ();
+
 private:
-  EdcaQueues m_edca;   //!< the map of EDCA queues
+  Ptr<RegularWifiMac> m_mac;   //!< the MAC of this station
 };
 
 } //namespace ns3

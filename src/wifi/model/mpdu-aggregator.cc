@@ -34,7 +34,7 @@
 #include "ht-capabilities.h"
 #include "vht-capabilities.h"
 #include "he-capabilities.h"
-#include "wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include "ctrl-headers.h"
 #include "wifi-mac-trailer.h"
 
@@ -64,9 +64,17 @@ MpduAggregator::~MpduAggregator ()
 }
 
 void
-MpduAggregator::SetEdcaQueues (EdcaQueues edcaQueues)
+MpduAggregator::DoDispose ()
 {
-    m_edca = edcaQueues;
+  m_mac = 0;
+  Object::DoDispose ();
+}
+
+void
+MpduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
+{
+  NS_LOG_FUNCTION (this << mac);
+  m_mac = mac;
 }
 
 void
@@ -116,11 +124,6 @@ MpduAggregator::GetMaxAmpduSize (Mac48Address recipient, uint8_t tid,
   NS_LOG_FUNCTION (this << recipient << +tid << modulation);
 
   AcIndex ac = QosUtilsMapTidToAc (tid);
-  Ptr<QosTxop> qosTxop = m_edca.find (ac)->second;
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (qosTxop->GetLow ()->GetPhy ()->GetDevice ());
-  NS_ASSERT (device);
-  Ptr<WifiRemoteStationManager> stationManager = device->GetRemoteStationManager ();
-  NS_ASSERT (stationManager);
 
   // Find the A-MPDU max size configured on this device
   UintegerValue size;
@@ -128,16 +131,16 @@ MpduAggregator::GetMaxAmpduSize (Mac48Address recipient, uint8_t tid,
   switch (ac)
     {
       case AC_BE:
-        device->GetMac ()->GetAttribute ("BE_MaxAmpduSize", size);
+        m_mac->GetAttribute ("BE_MaxAmpduSize", size);
         break;
       case AC_BK:
-        device->GetMac ()->GetAttribute ("BK_MaxAmpduSize", size);
+        m_mac->GetAttribute ("BK_MaxAmpduSize", size);
         break;
       case AC_VI:
-        device->GetMac ()->GetAttribute ("VI_MaxAmpduSize", size);
+        m_mac->GetAttribute ("VI_MaxAmpduSize", size);
         break;
       case AC_VO:
-        device->GetMac ()->GetAttribute ("VO_MaxAmpduSize", size);
+        m_mac->GetAttribute ("VO_MaxAmpduSize", size);
         break;
       default:
         NS_ABORT_MSG ("Unknown AC " << ac);
@@ -151,6 +154,9 @@ MpduAggregator::GetMaxAmpduSize (Mac48Address recipient, uint8_t tid,
       NS_LOG_DEBUG ("A-MPDU Aggregation is disabled on this station for AC " << ac);
       return 0;
     }
+
+  Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager ();
+  NS_ASSERT (stationManager);
 
   // Retrieve the Capabilities elements advertised by the recipient
   Ptr<const HeCapabilities> heCapabilities = stationManager->GetStationHeCapabilities (recipient);
@@ -216,10 +222,10 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
   NS_ASSERT (mpdu->GetHeader ().IsQosData () && !recipient.IsGroup ());
 
   uint8_t tid = GetTid (mpdu->GetPacket (), mpdu->GetHeader ());
-  auto edcaIt = m_edca.find (QosUtilsMapTidToAc (tid));
-  NS_ASSERT (edcaIt != m_edca.end ());
+  Ptr<QosTxop> qosTxop = m_mac->GetQosTxop (tid);
+  NS_ASSERT (qosTxop != 0);
 
-  WifiModulationClass modulation = txVector.GetMode ().GetModulationClass ();
+  WifiModulationClass modulation = txVector.GetModulationClass ();
   uint32_t maxAmpduSize = GetMaxAmpduSize (recipient, tid, modulation);
 
   if (maxAmpduSize == 0)
@@ -229,16 +235,16 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
     }
 
   //Have to make sure that the block ack agreement is established before sending an A-MPDU
-  if (edcaIt->second->GetBaAgreementEstablished (recipient, tid))
+  if (qosTxop->GetBaAgreementEstablished (recipient, tid))
     {
       /* here is performed MPDU aggregation */
-      uint16_t startingSequenceNumber = edcaIt->second->GetBaStartingSequence (recipient, tid);
+      uint16_t startingSequenceNumber = qosTxop->GetBaStartingSequence (recipient, tid);
       Ptr<WifiMacQueueItem> nextMpdu;
-      uint16_t maxMpdus = edcaIt->second->GetBaBufferSize (recipient, tid);
+      uint16_t maxMpdus = qosTxop->GetBaBufferSize (recipient, tid);
       uint32_t currentAmpduSize = 0;
 
       // check if the received MPDU meets the size and duration constraints
-      if (edcaIt->second->GetLow ()->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
+      if (qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
         {
           // MPDU can be aggregated
           nextMpdu = Copy (mpdu);
@@ -271,7 +277,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
           nextMpdu = 0;
 
           Ptr<const WifiMacQueueItem> peekedMpdu;
-          peekedMpdu = edcaIt->second->PeekNextFrame (tid, recipient);
+          peekedMpdu = qosTxop->PeekNextFrame (tid, recipient);
           if (peekedMpdu != 0)
             {
               uint16_t currentSequenceNumber = peekedMpdu->GetHeader ().GetSequenceNumber ();
@@ -282,7 +288,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
                   // Note that the dequeued MPDU differs from the peeked MPDU if A-MSDU
                   // aggregation is performed during the dequeue
                   NS_LOG_DEBUG ("Trying to aggregate another MPDU");
-                  nextMpdu = edcaIt->second->DequeuePeekedFrame (peekedMpdu, txVector, true,
+                  nextMpdu = qosTxop->DequeuePeekedFrame (peekedMpdu, txVector, true,
                                                                  currentAmpduSize, ppduDurationLimit);
                 }
             }

@@ -29,7 +29,7 @@
 #include "wifi-phy.h"
 #include "wifi-net-device.h"
 #include "ht-capabilities.h"
-#include "wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
 #include <algorithm>
@@ -60,9 +60,17 @@ MsduAggregator::~MsduAggregator ()
 }
 
 void
-MsduAggregator::SetEdcaQueues (EdcaQueues map)
+MsduAggregator::DoDispose ()
 {
-    m_edca = map;
+  m_mac = 0;
+  Object::DoDispose ();
+}
+
+void
+MsduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
+{
+  NS_LOG_FUNCTION (this << mac);
+  m_mac = mac;
 }
 
 uint16_t
@@ -87,7 +95,7 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
    */
   NS_ABORT_MSG_IF (recipient.IsGroup (), "Recipient address is group addressed");
 
-  Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
+  Ptr<QosTxop> qosTxop = m_mac->GetQosTxop (tid);
   Ptr<WifiMacQueue> queue = qosTxop->GetWifiMacQueue ();
   WifiMacQueue::ConstIterator peekedIt = queue->PeekByTidAndAddress (tid, recipient);
 
@@ -104,7 +112,7 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
    */
   // No check required for now, as we always set the A-MSDU Supported field to 1
 
-  WifiModulationClass modulation = txVector.GetMode ().GetModulationClass ();
+  WifiModulationClass modulation = txVector.GetModulationClass ();
 
   // Get the maximum size of the A-MSDU we can send to the recipient
   uint16_t maxAmsduSize = GetMaxAmsduSize (recipient, tid, modulation);
@@ -189,11 +197,6 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   NS_LOG_FUNCTION (this << recipient << +tid << modulation);
 
   AcIndex ac = QosUtilsMapTidToAc (tid);
-  Ptr<QosTxop> qosTxop = m_edca.find (ac)->second;
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (qosTxop->GetLow ()->GetPhy ()->GetDevice ());
-  NS_ASSERT (device);
-  Ptr<WifiRemoteStationManager> stationManager = device->GetRemoteStationManager ();
-  NS_ASSERT (stationManager);
 
   // Find the A-MSDU max size configured on this device
   UintegerValue size;
@@ -201,16 +204,16 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   switch (ac)
     {
       case AC_BE:
-        device->GetMac ()->GetAttribute ("BE_MaxAmsduSize", size);
+        m_mac->GetAttribute ("BE_MaxAmsduSize", size);
         break;
       case AC_BK:
-        device->GetMac ()->GetAttribute ("BK_MaxAmsduSize", size);
+        m_mac->GetAttribute ("BK_MaxAmsduSize", size);
         break;
       case AC_VI:
-        device->GetMac ()->GetAttribute ("VI_MaxAmsduSize", size);
+        m_mac->GetAttribute ("VI_MaxAmsduSize", size);
         break;
       case AC_VO:
-        device->GetMac ()->GetAttribute ("VO_MaxAmsduSize", size);
+        m_mac->GetAttribute ("VO_MaxAmsduSize", size);
         break;
       default:
         NS_ABORT_MSG ("Unknown AC " << ac);
@@ -224,6 +227,9 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
       NS_LOG_DEBUG ("A-MSDU Aggregation is disabled on this station for AC " << ac);
       return 0;
     }
+
+  Ptr<WifiRemoteStationManager> stationManager = m_mac->GetWifiRemoteStationManager ();
+  NS_ASSERT (stationManager);
 
   // Retrieve the Capabilities elements advertised by the recipient
   Ptr<const VhtCapabilities> vhtCapabilities = stationManager->GetStationVhtCapabilities (recipient);

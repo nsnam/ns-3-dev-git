@@ -1199,13 +1199,13 @@ RegularWifiMac::EnableAggregation (void)
   if (m_low->GetMsduAggregator () == 0)
     {
       Ptr<MsduAggregator> msduAggregator = CreateObject<MsduAggregator> ();
-      msduAggregator->SetEdcaQueues (m_edca);
+      msduAggregator->SetWifiMac (this);
       m_low->SetMsduAggregator (msduAggregator);
     }
   if (m_low->GetMpduAggregator () == 0)
     {
       Ptr<MpduAggregator> mpduAggregator = CreateObject<MpduAggregator> ();
-      mpduAggregator->SetEdcaQueues (m_edca);
+      mpduAggregator->SetWifiMac (this);
       m_low->SetMpduAggregator (mpduAggregator);
     }
 }
