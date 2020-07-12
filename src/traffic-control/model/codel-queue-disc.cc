@@ -78,6 +78,11 @@ TypeId CoDelQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&CoDelQueueDisc::m_useEcn),
                    MakeBooleanChecker ())
+    .AddAttribute ("UseL4s",
+                   "True to use L4S (only ECT1 packets are marked at CE threshold)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&CoDelQueueDisc::m_useL4s),
+                   MakeBooleanChecker ())
     .AddAttribute ("MaxSize",
                    "The maximum number of packets/bytes accepted by this queue disc.",
                    QueueSizeValue (QueueSize (QueueSizeUnit::BYTES, 1500 * DEFAULT_CODEL_LIMIT)),
@@ -239,6 +244,21 @@ CoDelQueueDisc::DoDequeue (void)
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
+  uint32_t ldelay = Time2CoDel (Simulator::Now () - item->GetTimeStamp ());
+  if (item && m_useL4s)
+    {
+      uint8_t tosByte = 0;
+      if (item->GetUint8Value (QueueItem::IP_DSFIELD, tosByte) && ((tosByte & 0x3) == 1))
+        {
+          NS_LOG_DEBUG ("ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
+          if (CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+            {
+              NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
+            }
+          return item;
+        }
+    }
+
   uint32_t now = CoDelGetTime ();
 
   NS_LOG_LOGIC ("Popped " << item);
@@ -358,12 +378,12 @@ CoDelQueueDisc::DoDequeue (void)
         }
     }
   end:
-  uint32_t ldelay = Time2CoDel (Simulator::Now () - item->GetTimeStamp ());
+  ldelay = Time2CoDel (Simulator::Now () - item->GetTimeStamp ());
   // In Linux, this branch of code is executed even if the packet has been marked
   // according to the target delay above. If the ns-3 code were to do the same here,
   // it would result in two counts of mark in the queue statistics. Therefore, we
   // use the isMarked flag to suppress a second attempt at marking.
-  if (!isMarked && item && m_useEcn && CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+  if (!isMarked && item && !m_useL4s && m_useEcn && CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
     {
       NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
     }

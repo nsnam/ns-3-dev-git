@@ -21,6 +21,7 @@ New user-visible features
   timestamp feature (Linux default behavior), cap drop adjustment feature
   (Section 5.5 of RFC 8033), ECN (Section 5.1 of RFC 8033) and derandomization
   feature (Section 5.4 of RFC 8033).
+- (traffic-control) Add support for L4S mode to CoDel and FqCoDel queue discs
 
 Bugs fixed
 ----------

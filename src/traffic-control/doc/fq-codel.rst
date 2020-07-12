@@ -66,6 +66,15 @@ Neither internal queues nor classes can be configured for an FqCoDel
 queue disc.
 
 
+Possible next steps
+===================
+
+* what to do if ECT(1) and either/both ECT(0) and NotECT are in the same flow queue (hash collisions or tunnels)-- our L4S traffic flows will avoid this situation by supporting AccECN and ECN++ (and if it happens in practice, the CoDel logic will just apply two separate thresholds)
+* adding a ramp marking response instead of step threshold
+* adding a floor value (to suppress marks if the queue length is below a certain number of bytes or packets)
+* adding a heuristic such as in PIE to avoid marking a packet if it arrived to an empty flow queue (check on ingress, remember at egress time)
+
+
 References
 ==========
 
@@ -79,12 +88,15 @@ Attributes
 
 The key attributes that the FqCoDelQueue class holds include the following:
 
+* ``UseEcn:`` True to use ECN (packets are marked instead of being dropped)
 * ``Interval:`` The interval parameter to be used on the CoDel queues. The default value is 100 ms.
 * ``Target:`` The target parameter to be used on the CoDel queues. The default value is 5 ms.
 * ``MaxSize:`` The limit on the maximum number of packets stored by FqCoDel.
 * ``Flows:`` The number of flow queues managed by FqCoDel.
 * ``DropBatchSize:`` The maximum number of packets dropped from the fat flow.
 * ``Perturbation:`` The salt used as an additional input to the hash function used to classify packets.
+* ``CeThreshold`` The FqCoDel CE threshold for marking packets
+* ``UseL4s`` True to use L4S (only ECT1 packets are marked at CE threshold)
 * ``EnableSetAssociativeHash:`` The parameter used to enable set associative hash.
 
 Perturbation is an optional configuration attribute and can be used to generate
@@ -112,6 +124,13 @@ can be configured as follows:
                                                  "Perturbation", UintegerValue (256));
   QueueDiscContainer qdiscs = tch.Install (devices);
 
+The example for FqCoDel's L4S mode is `FqCoDel-L4S-example.cc` located in ``src/traffic-control/examples``.  To run the file (the first invocation below shows the available
+command-line options):
+.. sourcecode:: bash
+   $ ./waf --run "FqCoDel-L4S-example --PrintHelp"
+   $ ./waf --run "FqCoDel-L4S-example --scenarioNum=5" 
+The expected output from the previous command are .dat files.
+
 Validation
 **********
 
@@ -122,7 +141,9 @@ The FqCoDel model is tested using :cpp:class:`FqCoDelQueueDiscTestSuite` class d
 * Test 3: The third test checks the dequeue operation and the deficit round robin-based scheduler.
 * Test 4: The fourth test checks that TCP packets with distinct port numbers are enqueued into different flow queues.
 * Test 5: The fifth test checks that UDP packets with distinct port numbers are enqueued into different flow queues.
-* Test 6: The sixth test checks the working of set associative hashing and its linear probing capabilities by using TCP packets with different hashes enqueued into different sets and queues.
+* Test 6: The sixth test checks that the packets are marked correctly.
+* Test 7: The seventh test checks the working of set associative hashing and its linear probing capabilities by using TCP packets with different hashes enqueued into different sets and queues.
+* Test 8: The eighth test checks the L4S mode of FqCoDel where ECT1 packets are marked at CE threshold (target delay does not matter) while ECT0 packets continue to be marked at target delay (CE threshold does not matter).
 
 The test suite can be run using the following commands::
 

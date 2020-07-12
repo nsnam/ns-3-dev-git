@@ -202,6 +202,7 @@ private:
   virtual void InitializeParams (void);
 
   bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
+  bool m_useL4s;                          //!< True if L4S is used (ECT1 packets are marked at CE threshold)
   uint32_t m_minBytes;                    //!< Minimum bytes in queue to allow a packet drop
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay

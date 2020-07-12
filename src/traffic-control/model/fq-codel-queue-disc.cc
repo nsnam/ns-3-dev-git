@@ -163,6 +163,11 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    UintegerValue (8),
                    MakeUintegerAccessor (&FqCoDelQueueDisc::m_setWays),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("UseL4s",
+                   "True to use L4S (only ECT1 packets are marked at CE threshold)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&FqCoDelQueueDisc::m_useL4s),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -269,6 +274,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         {
           codel->SetAttribute ("UseEcn", BooleanValue (m_useEcn));
           codel->SetAttribute ("CeThreshold", TimeValue (m_ceThreshold));
+          codel->SetAttribute ("UseL4s", BooleanValue (m_useL4s));
         }
       qd->Initialize ();
       flow->SetQueueDisc (qd);
@@ -429,6 +435,14 @@ FqCoDelQueueDisc::CheckConfig (void)
       return false;
     }
 
+  if (m_useL4s)
+    {
+      NS_ABORT_MSG_IF (m_ceThreshold == Time::Max(), "CE threshold not set");
+      if (m_useEcn == false)
+        {
+          NS_LOG_WARN ("Enabling ECN as L4S mode is enabled");
+        }
+    }
   return true;
 }
 

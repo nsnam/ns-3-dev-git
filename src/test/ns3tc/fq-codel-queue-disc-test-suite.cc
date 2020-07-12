@@ -950,6 +950,162 @@ FqCoDelQueueDiscSetLinearProbing::DoRun (void)
   Simulator::Destroy ();
 }
 
+
+/**
+ * This class tests L4S mode
+ * Any future classifier options (e.g. SetAssociativeHash) should be disabled to prevent a hash collision on this test case.
+ */
+class FqCoDelQueueDiscL4sMode : public TestCase
+{
+public:
+  FqCoDelQueueDiscL4sMode ();
+  virtual ~FqCoDelQueueDiscL4sMode ();
+
+private:
+  virtual void DoRun (void);
+  void AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, u_int32_t nPkt);
+  void AddPacketWithDelay (Ptr<FqCoDelQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt);
+  void Dequeue (Ptr<FqCoDelQueueDisc> queue, uint32_t nPkt);
+  void DequeueWithDelay (Ptr<FqCoDelQueueDisc> queue, double delay, uint32_t nPkt);
+};
+
+FqCoDelQueueDiscL4sMode::FqCoDelQueueDiscL4sMode ()
+  : TestCase ("Test L4S mode")
+{
+}
+
+FqCoDelQueueDiscL4sMode::~FqCoDelQueueDiscL4sMode ()
+{
+}
+
+void
+FqCoDelQueueDiscL4sMode::AddPacket (Ptr<FqCoDelQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt)
+{
+  Address dest;
+  Ptr<Packet> p = Create<Packet> (100);
+  for (uint32_t i = 0; i < nPkt; i++)
+    {
+      Ptr<Ipv4QueueDiscItem> item = Create<Ipv4QueueDiscItem> (p, dest, 0, hdr);
+      queue->Enqueue (item);
+    }
+}
+
+void
+FqCoDelQueueDiscL4sMode::AddPacketWithDelay (Ptr<FqCoDelQueueDisc> queue,Ipv4Header hdr, double delay, uint32_t nPkt)
+{
+  for (uint32_t i = 0; i < nPkt; i++)
+    {
+      Simulator::Schedule (Time (Seconds ((i + 1) * delay)), &FqCoDelQueueDiscL4sMode::AddPacket, this, queue, hdr, 1);
+    }
+}
+
+void
+FqCoDelQueueDiscL4sMode::Dequeue (Ptr<FqCoDelQueueDisc> queue, uint32_t nPkt)
+{
+  for (uint32_t i = 0; i < nPkt; i++)
+    {
+      Ptr<QueueDiscItem> item = queue->Dequeue ();
+    }
+}
+
+void
+FqCoDelQueueDiscL4sMode::DequeueWithDelay (Ptr<FqCoDelQueueDisc> queue, double delay, uint32_t nPkt)
+{
+  for (uint32_t i = 0; i < nPkt; i++)
+    {
+      Simulator::Schedule (Time (Seconds ((i + 1) * delay)), &FqCoDelQueueDiscL4sMode::Dequeue, this, queue, 1);
+    }
+}
+
+void
+FqCoDelQueueDiscL4sMode::DoRun (void)
+{
+  // Test is divided into 2 sub test cases:
+  // 1) Without hash collisions
+  // 2) With hash collisions
+
+  // Test case 1, Without hash collisions
+  Ptr<FqCoDelQueueDisc> queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("MaxSize", StringValue ("10240p"), "UseEcn", BooleanValue (true),
+                                                                                  "Perturbation", UintegerValue (0), "UseL4s", BooleanValue (true),
+                                                                                  "CeThreshold", TimeValue (MilliSeconds (2)));
+
+  queueDisc->SetQuantum (1514);
+  queueDisc->Initialize ();
+  Ipv4Header hdr;
+  hdr.SetPayloadSize (100);
+  hdr.SetSource (Ipv4Address ("10.10.1.1"));
+  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
+  hdr.SetProtocol (7);
+  hdr.SetEcn (Ipv4Header::ECN_ECT1);
+
+  // Add 70 ECT1 (ECN capable) packets from the first flow
+  // Set delay = 0.5ms
+  double delay = 0.0005;
+  Simulator::Schedule (Time (Seconds (0)), &FqCoDelQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+
+  // Add 70 ECT0 (ECN capable) packets from second flow
+  hdr.SetEcn (Ipv4Header::ECN_ECT0);
+  hdr.SetDestination (Ipv4Address ("10.10.1.10"));
+  Simulator::Schedule (Time (Seconds (0)), &FqCoDelQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+
+  //Dequeue 140 packets with delay 1ms
+  delay = 0.001;
+  DequeueWithDelay (queueDisc, delay, 140);
+  Simulator::Run ();
+  Simulator::Stop (Seconds (8.0));
+  Ptr<CoDelQueueDisc> q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
+  Ptr<CoDelQueueDisc> q1 = queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
+
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 66, "There should be 66 marked packets"
+                        "4th packet is enqueued at 2ms and dequeued at 4ms hence the delay of 2ms which not greater than CE threshold"
+                        "5th packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
+                        "greater than CE threshold so all the packets after 4th packet are marked");
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 0, "There should not be any marked packets");
+  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 1, "There should be 1 marked packets");
+  NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
+
+  Simulator::Destroy ();
+
+  // Test case 2, With hash collisions
+  queueDisc = CreateObjectWithAttributes<FqCoDelQueueDisc> ("MaxSize", StringValue ("10240p"), "UseEcn", BooleanValue (true),
+                                                                                  "Perturbation", UintegerValue (0), "UseL4s", BooleanValue (true),
+                                                                                  "CeThreshold", TimeValue (MilliSeconds (2)));
+
+  queueDisc->SetQuantum (1514);
+  queueDisc->Initialize ();
+  hdr.SetPayloadSize (100);
+  hdr.SetSource (Ipv4Address ("10.10.1.1"));
+  hdr.SetDestination (Ipv4Address ("10.10.1.2"));
+  hdr.SetProtocol (7);
+  hdr.SetEcn (Ipv4Header::ECN_ECT1);
+
+  // Add 70 ECT1 (ECN capable) packets from the first flow
+  // Set delay = 1ms
+  delay = 0.001;
+  Simulator::Schedule (Time (Seconds (0.0005)), &FqCoDelQueueDiscL4sMode::AddPacket, this, queueDisc, hdr, 1);
+  Simulator::Schedule (Time (Seconds (0.0005)), &FqCoDelQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 69);
+
+  // Add 70 ECT0 (ECN capable) packets from first flow
+  hdr.SetEcn (Ipv4Header::ECN_ECT0);
+  Simulator::Schedule (Time (Seconds (0)), &FqCoDelQueueDiscL4sMode::AddPacketWithDelay, this, queueDisc, hdr, delay, 70);
+
+  //Dequeue 140 packets with delay 1ms
+  DequeueWithDelay (queueDisc, delay, 140);
+  Simulator::Run ();
+  Simulator::Stop (Seconds (8.0));
+  q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <CoDelQueueDisc> ();
+
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 68, "There should be 68 marked packets"
+                        "2nd ECT1 packet is enqueued at 1.5ms and dequeued at 3ms hence the delay of 1.5ms which not greater than CE threshold"
+                        "3rd packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
+                        "greater than CE threshold so all the packets after 2nd packet are marked");
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0, "There should not be any dropped packets");
+  NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (CoDelQueueDisc::TARGET_EXCEEDED_MARK), 1, "There should be 1 marked packets");
+
+  Simulator::Destroy ();
+
+}
 class FqCoDelQueueDiscTestSuite : public TestSuite
 {
 public:
@@ -966,6 +1122,7 @@ FqCoDelQueueDiscTestSuite::FqCoDelQueueDiscTestSuite ()
   AddTestCase (new FqCoDelQueueDiscUDPFlowsSeparation, TestCase::QUICK);
   AddTestCase (new FqCoDelQueueDiscECNMarking, TestCase::QUICK);
   AddTestCase (new FqCoDelQueueDiscSetLinearProbing, TestCase::QUICK);
+  AddTestCase (new FqCoDelQueueDiscL4sMode, TestCase::QUICK);
 }
 
 static FqCoDelQueueDiscTestSuite fqCoDelQueueDiscTestSuite;

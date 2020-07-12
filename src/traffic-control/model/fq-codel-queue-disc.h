@@ -172,6 +172,7 @@ private:
   uint32_t m_perturbation;   //!< hash perturbation value
   Time m_ceThreshold;        //!< Threshold above which to CE mark
   bool m_enableSetAssociativeHash; //!< whether to enable set associative hash
+  bool m_useL4s;             //!< True if L4S is used (ECT1 packets are marked at CE threshold)
 
   std::list<Ptr<FqCoDelFlow> > m_newFlows;    //!< The list of new flows
   std::list<Ptr<FqCoDelFlow> > m_oldFlows;    //!< The list of old flows
