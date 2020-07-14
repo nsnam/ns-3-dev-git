@@ -27,6 +27,7 @@
 #include "ns3/command-line.h"
 #include "ns3/yans-error-rate-model.h"
 #include "ns3/nist-error-rate-model.h"
+#include "ns3/table-based-error-rate-model.h"
 #include "ns3/wifi-tx-vector.h"
 
 using namespace ns3;
@@ -50,6 +51,7 @@ int main (int argc, char *argv[])
 
   Ptr <YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
   Ptr <NistErrorRateModel> nist = CreateObject<NistErrorRateModel> ();
+  Ptr <TableBasedErrorRateModel> table = CreateObject<TableBasedErrorRateModel> ();
   WifiTxVector txVector;
 
   for (uint32_t i = 0; i < modes.size (); i++)
@@ -60,13 +62,13 @@ int main (int argc, char *argv[])
 
       for (double snr = -10.0; snr <= 20.0; snr += 0.1)
         {
-          double psYans = yans->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
+          double psYans = yans->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0, snr / 10.0), FrameSize * 8);
           if (psYans < 0.0 || psYans > 1.0)
             {
               //error
               exit (1);
             }
-          double psNist = nist->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
+          double psNist = nist->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0, snr / 10.0), FrameSize * 8);
           if (psNist < 0.0 || psNist > 1.0)
             {
               std::cout<<psNist<<std::endl;
@@ -77,7 +79,18 @@ int main (int argc, char *argv[])
             {
               exit (1);
             }
-          dataset.Add (snr, psNist);
+          double psTable = table->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0, snr / 10.0), FrameSize * 8);
+          if (psTable < 0.0 || psTable > 1.0)
+            {
+              std::cout << psTable << std::endl;
+              //error
+              exit (1);
+            }
+          if (psTable != psYans)
+            {
+              exit (1);
+            }
+          dataset.Add (snr, psYans);
         }
 
       plot.AddDataset (dataset);
