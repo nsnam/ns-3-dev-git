@@ -620,7 +620,7 @@ Bug730TestCase::DoRun (void)
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -775,7 +775,7 @@ QosFragmentationTestCase::DoRun (void)
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -904,7 +904,7 @@ SetChannelFrequencyTest::DoRun ()
   wifiApNode.Create (1);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   // Configure and declare other generic components of this example
@@ -1300,7 +1300,7 @@ Bug2222TestCase::DoRun (void)
   wifiNodes.Create (2);
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
@@ -1481,7 +1481,7 @@ Bug2843TestCase::DoRun (void)
   NodeContainer wifiApNode;
   wifiApNode.Create (1);
 
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy;
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
   lossModel->SetFrequency (5.180e9);
@@ -1822,7 +1822,7 @@ StaWifiMacScanningTestCase::Setup (bool nearestApBeaconGeneration, bool staActiv
   Ptr<Node> apNodeNearest = CreateObject<Node> ();
   Ptr<Node> staNode = CreateObject<Node> ();
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2086,7 +2086,7 @@ Bug2470TestCase::RunSubtest (PointerValue apErrorModel, PointerValue staErrorMod
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2310,7 +2310,7 @@ Issue40TestCase::RunOne (bool useAmpdu)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2476,7 +2476,7 @@ Issue169TestCase::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2624,7 +2624,7 @@ IdealRateManagerChannelWidthTest::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 
@@ -2804,7 +2804,7 @@ IdealRateManagerMimoTest::DoRun (void)
   wifiApNode.Create (1);
   wifiStaNode.Create (1);
 
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   phy.SetChannel (channel.Create ());
 

@@ -734,7 +734,7 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211b);
 
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   /*
    * This is one parameter that matters when using FixedRssLossModel, set it to
    * zero; otherwise, gain will be added.
@@ -821,7 +821,7 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211b);
 
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   /*
    * This is one parameter that matters when using FixedRssLossModel, set it to
    * zero; otherwise, gain will be added.

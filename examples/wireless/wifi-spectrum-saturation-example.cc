@@ -140,8 +140,8 @@ int main (int argc, char *argv[])
       NodeContainer wifiApNode;
       wifiApNode.Create (1);
 
-      YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
-      SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+      YansWifiPhyHelper phy;
+      SpectrumWifiPhyHelper spectrumPhy;
       if (wifiType == "ns3::YansWifiPhy")
         {
           YansWifiChannelHelper channel;

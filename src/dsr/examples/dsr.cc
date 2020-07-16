@@ -120,7 +120,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("setting the default phy and channel parameters ");
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211b);
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
 
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");

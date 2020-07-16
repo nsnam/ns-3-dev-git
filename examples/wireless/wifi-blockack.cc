@@ -73,7 +73,7 @@ int main (int argc, char * argv[])
   Ptr<Node> ap = CreateObject<Node> ();
 
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper phy;
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;

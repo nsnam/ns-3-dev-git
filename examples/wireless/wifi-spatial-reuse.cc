@@ -139,7 +139,7 @@ main (int argc, char *argv[])
   NodeContainer wifiApNodes;
   wifiApNodes.Create (2);
 
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy;
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
   Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
   spectrumChannel->AddPropagationLossModel (lossModel);

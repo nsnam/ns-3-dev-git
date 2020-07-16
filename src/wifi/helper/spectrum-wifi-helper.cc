@@ -36,14 +36,7 @@ SpectrumWifiPhyHelper::SpectrumWifiPhyHelper ()
   : m_channel (0)
 {
   m_phy.SetTypeId ("ns3::SpectrumWifiPhy");
-}
-
-SpectrumWifiPhyHelper
-SpectrumWifiPhyHelper::Default (void)
-{
-  SpectrumWifiPhyHelper helper;
-  helper.SetErrorRateModel ("ns3::NistErrorRateModel");
-  return helper;
+  SetErrorRateModel ("ns3::NistErrorRateModel");
 }
 
 void

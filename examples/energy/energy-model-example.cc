@@ -171,7 +171,7 @@ main (int argc, char *argv[])
 
   /** Wifi PHY **/
   /***************************************************************************/
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
 
   /** wifi channel **/
   YansWifiChannelHelper wifiChannel;

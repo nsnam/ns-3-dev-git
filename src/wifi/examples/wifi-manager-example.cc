@@ -334,7 +334,7 @@ int main (int argc, char *argv[])
 
   WifiHelper wifi;
   wifi.SetStandard (serverSelectedStandard.m_standard);
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
 
   Ptr<YansWifiChannel> wifiChannel = CreateObject<YansWifiChannel> ();
   Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();

@@ -217,7 +217,7 @@ int main (int argc, char** argv)
 
   /* Wi-Fi transmitter setup */
 
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy;
   spectrumPhy.SetChannel (channel);
   spectrumPhy.SetErrorRateModel ("ns3::NistErrorRateModel");
   spectrumPhy.Set ("Frequency", UintegerValue (freq));

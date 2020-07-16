@@ -118,7 +118,7 @@ main (int argc, char *argv[])
   // Configure the physical layer.
   //
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   //

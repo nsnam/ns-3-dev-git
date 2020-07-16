@@ -596,7 +596,7 @@ int main (int argc, char *argv[])
 
   WifiHelper wifi;
   WifiMacHelper wifiMac;
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
 
   wifiMac.SetType ("ns3::AdhocWifiMac",

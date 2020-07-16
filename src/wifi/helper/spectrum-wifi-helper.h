@@ -38,16 +38,9 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
 {
 public:
   /**
-   * Create a PHY helper without any parameter set. The user must set
-   * them all to be able to call Install later.
+   * Create a PHY helper.
    */
   SpectrumWifiPhyHelper ();
-
-  /**
-   * Create a PHY helper in a default working state.
-   * \returns a default SpectrumWifPhyHelper
-   */
-  static SpectrumWifiPhyHelper Default (void);
 
   /**
    * \param channel the channel to associate to this helper

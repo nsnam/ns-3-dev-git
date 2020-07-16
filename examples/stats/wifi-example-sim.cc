@@ -121,7 +121,7 @@ int main (int argc, char *argv[]) {
   WifiHelper wifi;
   WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   NetDeviceContainer nodeDevices = wifi.Install (wifiPhy, wifiMac, nodes);

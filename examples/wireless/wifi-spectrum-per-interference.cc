@@ -198,8 +198,8 @@ int main (int argc, char *argv[])
       NodeContainer interferingNode;
       interferingNode.Create (1);
 
-      YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
-      SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+      YansWifiPhyHelper phy;
+      SpectrumWifiPhyHelper spectrumPhy;
       Ptr<MultiModelSpectrumChannel> spectrumChannel;
       if (wifiType == "ns3::YansWifiPhy")
         {

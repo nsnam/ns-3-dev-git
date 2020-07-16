@@ -62,7 +62,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiSimpleOcb");
  *  NodeContainer nodes;
  *  NetDeviceContainer devices;
  *  nodes.Create (2);
- *  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+ *  YansWifiPhyHelper wifiPhy;
  *  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
  *  wifiPhy.SetChannel (wifiChannel.Create ());
  *  NqosWaveMacHelper wifi80211pMac = NqosWave80211pMacHelper::Default();
@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   c.Create (2);
 
   // The below set of helpers will help us to put together the wifi NICs we want
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy;
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> channel = wifiChannel.Create ();
   wifiPhy.SetChannel (channel);

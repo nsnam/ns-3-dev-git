@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
           wifiApNode.Create (1);
 
           YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-          YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
+          YansWifiPhyHelper phy;
           phy.SetChannel (channel.Create ());
 
           // Set MIMO capabilities
