@@ -121,3 +121,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-spatial-reuse', ['wifi', 'applications'])
     obj.source = 'wifi-spatial-reuse.cc'
+
+    obj = bld.create_ns3_program('wifi-error-models-comparison', ['wifi'])
+    obj.source = 'wifi-error-models-comparison.cc'
