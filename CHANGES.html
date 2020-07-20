@@ -58,7 +58,8 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li></li>
+<li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
+<li>The <b>Sifs</b>, <b>Slot</b> and <b>Pifs</b> attributes have been moved from <b>WifiMac</b> to <b>WifiPhy</b> to better reflect that they are PHY characteristics, to decouple the MAC configuration from the PHY configuration and to ease the support for future standards.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -66,7 +67,6 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
-<li>The <b>Sifs</b>, <b>Slot</b> and <b>Pifs</b> attributes have been moved from <b>WifiMac</b> to <b>WifiPhy</b> to better reflect that they are PHY characteristics, to decouple the MAC configuration from the PHY configuration and to ease the support for future standards.</li>
 <li>Support for <b>RIFS</b> has been dropped from wifi. RIFS has been obsoleted by the 802.11 standard and support for it was not implemented according to the standard.</li>
 </ul>
 
