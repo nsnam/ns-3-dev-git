@@ -29,8 +29,8 @@ namespace ns3 {
 /**
  * \ingroup tcp
  *
- * \brief An implementation of DCTCP. This model implements all the functionalities mentioned
- * in the DCTCP SIGCOMM paper except dynamic buffer allocation in switches
+ * \brief An implementation of DCTCP. This model implements all of the
+ * endpoint capabilities mentioned in the DCTCP SIGCOMM paper.
  */
 
 class TcpDctcp : public TcpNewReno
@@ -58,11 +58,7 @@ public:
    */
   virtual ~TcpDctcp (void);
 
-  /**
-   * \brief Get the name of the TCP flavour
-   *
-   * \return The name of the TCP
-   */
+  // Documented in base class
   virtual std::string GetName () const;
 
   /**
@@ -71,34 +67,15 @@ public:
    *        either ECT(0) or ECT(1) (depending on the 'UseEct0' attribute),
    *        despite any other configuration in the base classes.
    *
-   * \param ecnMode ECN Mode
+   * \param tcb internal congestion state
    */
   virtual void Init (Ptr<TcpSocketState> tcb);
 
+  // Documented in base class
   virtual Ptr<TcpCongestionOps> Fork ();
-
-  /**
-   * \brief Reduce congestion window based on DCTCP algorithm
-   *
-   * \param tcb internal congestion state
-   */
   virtual void ReduceCwnd (Ptr<TcpSocketState> tcb);
-
-  /**
-   * \brief Get information from the acked packet
-   *
-   * \param tcb internal congestion state
-   * \param segmentsAcked count of segments ACKed
-   * \param rtt The estimated rtt
-   */
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
                           const Time &rtt);
-  /**
-   * \brief Trigger events/calculations on occurrence of congestion window event
-   *
-   * \param tcb internal state
-   * \param event congestion window event which triggered this function
-   */
   virtual void CwndEvent (Ptr<TcpSocketState> tcb,
                           const TcpSocketState::TcpCAEvent_t event);
 private:
