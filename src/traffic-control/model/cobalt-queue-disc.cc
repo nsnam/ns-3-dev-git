@@ -84,6 +84,21 @@ TypeId CobaltQueueDisc::GetTypeId (void)
                    DoubleValue (1. / 4096),
                    MakeDoubleAccessor (&CobaltQueueDisc::m_decrement),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("CeThreshold",
+                   "The CoDel CE threshold for marking packets",
+                   TimeValue (Time::Max ()),
+                   MakeTimeAccessor (&CobaltQueueDisc::m_ceThreshold),
+                   MakeTimeChecker ())
+    .AddAttribute ("UseL4s",
+                   "True to use L4S (only ECT1 packets are marked at CE threshold)",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&CobaltQueueDisc::m_useL4s),
+                   MakeBooleanChecker ())
+    .AddAttribute ("BlueThreshold",
+                   "The Threshold after which Blue is enabled",
+                   TimeValue (MilliSeconds (400)),
+                   MakeTimeAccessor (&CobaltQueueDisc::m_blueThreshold),
+                   MakeTimeChecker ())
     .AddTraceSource ("Count",
                      "Cobalt count",
                      MakeTraceSourceAccessor (&CobaltQueueDisc::m_count),
@@ -436,6 +451,31 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
   int64_t schedule = now - m_dropNext;
   bool over_target = CoDelTimeAfter (sojournTime, Time2CoDel (m_target));
   bool next_due = m_count && schedule >= 0;
+  bool isMarked = false;
+
+  // If L4S mode is enabled then check if the packet is ECT1 or CE and
+  // if sojourn time is greater than CE threshold then the packet is marked.
+  // If packet is marked succesfully then the CoDel steps can be skipped.
+  if (item && m_useL4s)
+    {
+      uint8_t tosByte = 0;
+      if (item->GetUint8Value (QueueItem::IP_DSFIELD, tosByte) && (((tosByte & 0x3) == 1) || (tosByte & 0x3) == 3))
+        {
+          if ((tosByte & 0x3) == 1)
+            {
+              NS_LOG_DEBUG ("ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
+            }
+          else
+            {
+              NS_LOG_DEBUG ("CE packet " << static_cast<uint16_t> (tosByte & 0x3));
+            }
+          if (CoDelTimeAfter (sojournTime, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+            {
+              NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
+            }
+          return false;
+        }
+    }
 
   if (over_target)
     {
@@ -458,7 +498,8 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
     {
       /* Check for marking possibility only if BLUE decides NOT to drop. */
       /* Check if router and packet, both have ECN enabled. Only if this is true, mark the packet. */
-      drop = !(m_useEcn && Mark (item, FORCED_MARK));
+      isMarked = (m_useEcn && Mark (item, FORCED_MARK));
+      drop = !isMarked;
 
       m_count = max (m_count, m_count + 1);
 
@@ -477,6 +518,22 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
           next_due = m_count && schedule >= 0;
         }
     }
+
+  // If CE threshold is enabled then isMarked flag is used to determine whether
+  // packet is marked and if the packet is marked then a second attempt at marking should be suppressed.
+  // If UseL4S attribute is enabled then ECT0 packets should not be marked.
+  if (!isMarked && !m_useL4s && m_useEcn && CoDelTimeAfter (sojournTime, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+    {
+      NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
+    }
+  
+  // Enable Blue Enhancement if sojourn time is greater than blueThreshold and its been m_target time until the last time blue was updated
+  if (CoDelTimeAfter (sojournTime, Time2CoDel (m_blueThreshold)) && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
+    {
+      m_Pdrop = min (m_Pdrop + m_increment, (double)1.0);
+      m_lastUpdateTimeBlue = now;
+    }
+
   /* Simple BLUE implementation. Lack of ECN is deliberate. */
   if (m_Pdrop)
     {

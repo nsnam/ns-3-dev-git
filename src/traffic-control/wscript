@@ -22,6 +22,7 @@ def build(bld):
       'model/mq-queue-disc.cc',
       'model/tbf-queue-disc.cc',
       'model/cobalt-queue-disc.cc',
+      'model/fq-cobalt-queue-disc.cc',
       'helper/traffic-control-helper.cc',
       'helper/queue-disc-container.cc'
         ]
@@ -62,6 +63,7 @@ def build(bld):
       'model/mq-queue-disc.h',
       'model/tbf-queue-disc.h',
       'model/cobalt-queue-disc.h',
+      'model/fq-cobalt-queue-disc.h',
       'helper/traffic-control-helper.h',
       'helper/queue-disc-container.h'
         ]

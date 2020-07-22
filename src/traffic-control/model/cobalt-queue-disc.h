@@ -103,6 +103,7 @@ public:
   static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
   static constexpr const char* FORCED_MARK = "forcedMark";  //!< forced marks by Codel on ECN-enabled
+  static constexpr const char* CE_THRESHOLD_EXCEEDED_MARK = "CE threshold exceeded mark";  //!< Sojourn time above CE threshold
 
   /**
    * \brief Get the drop probability of Blue
@@ -227,6 +228,9 @@ private:
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay
   bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
+  Time m_ceThreshold;                     //!< Threshold above which to CE mark
+  bool m_useL4s;                          //!< True if L4S is used (ECT1 packets are marked at CE threshold)
+  Time m_blueThreshold;                   //!< Threshold to enable blue enhancement
 
   // Blue parameters
   // Maintained by Cobalt

@@ -37,10 +37,14 @@ Linux model of COBALT is provided in ([Cobalt19]_).
   `m_stats.qLimDrop`.
 * ``CobaltQueueDisc::ShouldDrop ()``: This routine is
   ``CobaltQueueDisc::DoDequeue()``'s helper routine that determines whether a
-  packet should be dropped or not based on its sojourn time.  If the sojourn
-  time goes above `m_target` and remains above continuously for at least
-  `m_interval`, the routine returns ``true`` indicating that it is OK
-  to drop the packet. ``Otherwise, it returns ``false``. This routine
+  packet should be dropped or not based on its sojourn time. If L4S mode is 
+  enabled then if the packet is ECT1 is checked and if delay is greater than
+  CE threshold then the packet is marked and returns ``false``.
+  If the sojourn time goes above `m_target` and remains above continuously
+  for at least `m_interval`, the routine returns ``true`` indicating that it
+  is OK to drop the packet. ``Otherwise, it returns ``false``.  If L4S mode
+  is turned off and CE threshold marking is enabled, then if the delay is
+  greater than CE threshold, packet is marked. This routine
   decides if a packet should be dropped based on the dropping state of
   CoDel and drop probability of BLUE.  The idea is to have both algorithms
   running in parallel and their effectiveness is decided by their respective
@@ -53,10 +57,6 @@ Linux model of COBALT is provided in ([Cobalt19]_).
   Otherwise Cobalt will take the next packet from the queue and calculate
   its drop state by running CoDel and BLUE in parallel till there are none
   left to drop.
-* class :cpp:class:`CobaltTimestampTag`: This class implements the timestamp
-  tagging for a packet.  This tag is used to compute the packet's sojourn time
-  (the difference between the time the packet is dequeued and the time it is
-  pushed into the queue). 
 
 
 
@@ -94,6 +94,8 @@ The key attributes that the CobaltQueue Disc class holds include the following:
 * ``Pdrop:`` Value of drop probability.
 * ``Increment:`` Increment value of drop probability. Default value is 1./256 .
 * ``Decrement:`` Decrement value of drop probability. Default value is 1./4096 .
+* ``CeThreshold:`` The CoDel CE threshold for marking packets.
+* ``UseL4s:`` True to use L4S (only ECT1 packets are marked at CE threshold).
 * ``Count:`` Cobalt count.
 * ``DropState:`` Dropping state of Cobalt. Default value is false.
 * ``Sojourn:`` Per packet time spent in the queue.
@@ -120,7 +122,8 @@ The suite includes 2 test cases:
 * Test 1: Simple enqueue/dequeue with no drops.
 * Test 2: Change of BLUE's drop probability upon queue full
   (Activation of Blue).
-* Test 3: Test for ECN marking of packets
+* Test 3: This test verfies ECN marking.
+* Test 4: CE threshold marking test.
 
 The test suite can be run using the following commands:
 
