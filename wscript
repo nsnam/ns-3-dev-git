@@ -764,7 +764,8 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     # Each of the modules this program depends on has its own library.
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     program.includes = "#"
-    program.use = program.ns3_module_dependencies
+    #make a copy here to prevent additions to program.use from polluting program.ns3_module_dependencies
+    program.use = program.ns3_module_dependencies.copy()
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.STLIB_MARKER = '-Wl,-all_load'
