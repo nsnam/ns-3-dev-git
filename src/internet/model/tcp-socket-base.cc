@@ -3185,7 +3185,6 @@ TcpSocketBase::SendPendingData (bool withAck)
               m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_TX_START);
             }
           uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, s, withAck);
-          m_tcb->m_nextTxSequence += sz;
 
           NS_LOG_LOGIC (" rxwin " << m_rWnd <<
                         " segsize " << m_tcb->m_segmentSize <<
@@ -3197,6 +3196,7 @@ TcpSocketBase::SendPendingData (bool withAck)
                         " total unAck: " << UnAckDataCount () <<
                         " sent seq " << m_tcb->m_nextTxSequence <<
                         " size " << sz);
+          m_tcb->m_nextTxSequence += sz;
           ++nPacketsSent;
           if (m_tcb->m_pacing)
             {
