@@ -638,6 +638,23 @@ TcpTxBuffer::RemoveFromCounts (TcpTxItem *item, uint32_t size)
       m_lostOut -= size;
     }
 }
+
+bool
+TcpTxBuffer::IsRetransmittedDataAcked (const SequenceNumber32& ack) const
+{
+  NS_LOG_FUNCTION (this);
+  for (const auto &it : m_sentList)
+     {
+       TcpTxItem *item = it;
+       Ptr<Packet> p = item->m_packet;
+       if (item->m_startSeq + p->GetSize () == ack && !item->m_sacked && item->m_retrans)
+         {
+           return true;
+         }
+     }
+  return false;
+}
+
 void
 TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq,
                           const Callback<void, TcpTxItem *> &beforeDelCb)

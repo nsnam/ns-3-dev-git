@@ -257,6 +257,14 @@ public:
   void SetHeadSequence (const SequenceNumber32& seq);
 
   /**
+   * \brief Checks whether the ack corresponds to retransmitted data
+   *
+   * \param ack ACK number received
+   * \return true if retransmitted data was acked
+   */
+  bool IsRetransmittedDataAcked (const SequenceNumber32& ack) const;
+
+  /**
    * \brief Discard data up to but not including this sequence number.
    *
    * \param seq The first sequence number to maintain after discarding all the

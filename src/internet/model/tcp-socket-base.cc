@@ -1733,6 +1733,32 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   SequenceNumber32 ackNumber = tcpHeader.GetAckNumber ();
   SequenceNumber32 oldHeadSequence = m_txBuffer->HeadSequence ();
+
+  if (ackNumber < oldHeadSequence)
+    {
+      NS_LOG_DEBUG ("Possibly received a stale ACK (ack number < head sequence)");
+      // If there is any data piggybacked, store it into m_rxBuffer
+      if (packet->GetSize () > 0)
+        {
+          ReceivedData (packet, tcpHeader);
+        }
+      return;
+    }
+  if ((ackNumber > oldHeadSequence) && (ackNumber < m_recover)
+                                    && (m_tcb->m_congState == TcpSocketState::CA_RECOVERY))
+    {
+      uint32_t segAcked = (ackNumber - oldHeadSequence)/m_tcb->m_segmentSize;
+      for (uint32_t i = 0; i < segAcked; i++)
+        {
+          if (m_txBuffer->IsRetransmittedDataAcked (ackNumber - (i * m_tcb->m_segmentSize)))
+            {
+              m_tcb->m_isRetransDataAcked = true;
+              NS_LOG_DEBUG ("Ack Number " << ackNumber <<
+                            "is ACK of retransmitted packet.");
+            }
+        }
+    }
+
   m_txBuffer->DiscardUpTo (ackNumber, MakeCallback (&TcpRateOps::SkbDelivered, m_rateOps));
 
   uint32_t currentDelivered = static_cast<uint32_t> (m_rateOps->GetConnectionRate ().m_delivered - previousDelivered);
@@ -1759,6 +1785,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   // RFC 6675 Section 5: 2nd, 3rd paragraph and point (A), (B) implementation
   // are inside the function ProcessAck
   ProcessAck (ackNumber, (bytesSacked > 0), currentDelivered, oldHeadSequence);
+  m_tcb->m_isRetransDataAcked = false;
 
   if (m_congestionControl->HasCongControl ())
     {
@@ -1904,17 +1931,19 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
               NS_LOG_INFO ("Partial ACK. Manually setting head as lost");
               m_txBuffer->MarkHeadAsLost ();
             }
-          else
-            {
-              // We received a partial ACK, if we retransmitted this segment
-              // probably is better to retransmit it
-              m_txBuffer->DeleteRetransmittedFlagFromHead ();
-            }
-          DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
-          m_tcb->m_cWndInfl = SafeSubtraction (m_tcb->m_cWndInfl, bytesAcked);
+
+          // Before retransmitting the packet perform DoRecovery and check if
+          // there is available window
           if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
             {
               m_recoveryOps->DoRecovery (m_tcb, currentDelivered);
+            }
+
+          // If the packet is already retransmitted do not retransmit it
+          if (!m_txBuffer->IsRetransmittedDataAcked (ackNumber + m_tcb->m_segmentSize))
+            {
+              DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
+              m_tcb->m_cWndInfl = SafeSubtraction (m_tcb->m_cWndInfl, bytesAcked);
             }
 
           // This partial ACK acknowledge the fact that one segment has been
@@ -2004,7 +2033,8 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
               // Recalculate the segs acked, that are from m_recover to ackNumber
               // (which are the ones we have not passed to PktsAcked and that
               // can increase cWnd)
-              segsAcked = static_cast<uint32_t>(ackNumber - m_recover) / m_tcb->m_segmentSize;
+              // TODO:  check consistency for dynamic segment size
+              segsAcked = static_cast<uint32_t>(ackNumber - oldHeadSequence) / m_tcb->m_segmentSize;
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
               m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
@@ -2047,7 +2077,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
               NS_LOG_DEBUG ("Leaving Fast Recovery; BytesInFlight() = " <<
                             BytesInFlight () << "; cWnd = " << m_tcb->m_cWnd);
             }
-          else
+          if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
             {
               m_congestionControl->IncreaseWindow (m_tcb, segsAcked);
 

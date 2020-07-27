@@ -165,6 +165,11 @@ public:
   uint32_t               m_initialCWnd      {0}; //!< Initial cWnd value
   uint32_t               m_initialSsThresh  {0}; //!< Initial Slow Start Threshold value
 
+  // Recovery
+  // This variable is used for implementing following flag of Linux: FLAG_RETRANS_DATA_ACKED
+  // and is used only during a recovery phase to keep track of acknowledgement of retransmitted packet.
+  bool                   m_isRetransDataAcked  {false}; //!< Retransmitted data is ACKed if true
+
   // Segment
   uint32_t               m_segmentSize   {0}; //!< Segment size
   SequenceNumber32       m_lastAckedSeq  {0}; //!< Last sequence ACKed
