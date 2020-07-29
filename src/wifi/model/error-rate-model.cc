@@ -42,7 +42,7 @@ ErrorRateModel::CalculateSnr (WifiTxVector txVector, double ber) const
   double low, high, precision;
   low = 1e-25;
   high = 1e25;
-  precision = 1e-12;
+  precision = 2e-12;
   while (high - low > precision)
     {
       NS_ASSERT (high >= low);
