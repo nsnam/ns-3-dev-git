@@ -24,6 +24,7 @@
 #include <cmath>
 #include "ns3/node.h"
 #include "ns3/simulator.h"
+#include "ns3/string.h"
 
 namespace ns3 {
 
@@ -42,12 +43,18 @@ ChannelCondition::GetTypeId (void)
 }
 
 ChannelCondition::ChannelCondition ()
+  : m_losCondition (LosConditionValue::LC_ND),
+    m_o2iCondition (O2iConditionValue::O2I_ND)
+{}
+
+ChannelCondition::ChannelCondition (ChannelCondition::LosConditionValue losCondition, ChannelCondition::O2iConditionValue o2iCondition)
 {
+  m_losCondition = losCondition;
+  m_o2iCondition = o2iCondition;
 }
 
 ChannelCondition::~ChannelCondition ()
-{
-}
+{}
 
 ChannelCondition::LosConditionValue
 ChannelCondition::GetLosCondition () const
@@ -61,6 +68,78 @@ ChannelCondition::SetLosCondition (LosConditionValue cond)
   m_losCondition = cond;
 }
 
+ChannelCondition::O2iConditionValue
+ChannelCondition::GetO2iCondition () const
+{
+  return m_o2iCondition;
+}
+
+void
+ChannelCondition::SetO2iCondition (O2iConditionValue o2iCondition)
+{
+  m_o2iCondition = o2iCondition;
+}
+
+bool
+ChannelCondition::IsLos () const
+{
+  return (m_losCondition == ChannelCondition::LOS);
+}
+
+bool
+ChannelCondition::IsNlos () const
+{
+  return (m_losCondition == ChannelCondition::NLOS);
+}
+
+bool
+ChannelCondition::IsNlosv () const
+{
+  return (m_losCondition == ChannelCondition::NLOSv);
+}
+
+bool
+ChannelCondition::IsO2i () const
+{
+  return (m_o2iCondition == ChannelCondition::O2I);
+}
+
+bool
+ChannelCondition::IsO2o () const
+{
+  return (m_o2iCondition == ChannelCondition::O2O);
+}
+
+bool
+ChannelCondition::IsI2i () const
+{
+  return (m_o2iCondition == ChannelCondition::I2I);
+}
+
+bool
+ChannelCondition::IsEqual (Ptr<const ChannelCondition> otherCondition) const
+{
+  return (m_o2iCondition == otherCondition->GetO2iCondition ()
+          && m_losCondition == otherCondition->GetLosCondition ());
+}
+
+std::ostream& operator<< (std::ostream& os, ChannelCondition::LosConditionValue cond)
+{
+  if (cond == ChannelCondition::LosConditionValue::LOS)
+    {
+      os << "LOS";
+    }
+  else if (cond == ChannelCondition::LosConditionValue::NLOS)
+    {
+      os << "NLOS";
+    }
+  else if (cond == ChannelCondition::LosConditionValue::NLOSv)
+    {
+      os << "NLOSv";
+    }
+
+  return os;
+}
 // ------------------------------------------------------------------------- //
 
 NS_OBJECT_ENSURE_REGISTERED (ChannelConditionModel);
@@ -76,12 +155,10 @@ ChannelConditionModel::GetTypeId (void)
 }
 
 ChannelConditionModel::ChannelConditionModel ()
-{
-}
+{}
 
 ChannelConditionModel::~ChannelConditionModel ()
-{
-}
+{}
 
 // ------------------------------------------------------------------------- //
 
@@ -99,12 +176,10 @@ AlwaysLosChannelConditionModel::GetTypeId (void)
 }
 
 AlwaysLosChannelConditionModel::AlwaysLosChannelConditionModel ()
-{
-}
+{}
 
 AlwaysLosChannelConditionModel::~AlwaysLosChannelConditionModel ()
-{
-}
+{}
 
 Ptr<ChannelCondition>
 AlwaysLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
@@ -113,8 +188,7 @@ AlwaysLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   NS_UNUSED (a);
   NS_UNUSED (b);
 
-  Ptr<ChannelCondition> c = CreateObject<ChannelCondition> ();
-  c->SetLosCondition (ChannelCondition::LOS);
+  Ptr<ChannelCondition> c = CreateObject<ChannelCondition> (ChannelCondition::LOS);
 
   return c;
 }
@@ -141,12 +215,10 @@ NeverLosChannelConditionModel::GetTypeId (void)
 }
 
 NeverLosChannelConditionModel::NeverLosChannelConditionModel ()
-{
-}
+{}
 
 NeverLosChannelConditionModel::~NeverLosChannelConditionModel ()
-{
-}
+{}
 
 Ptr<ChannelCondition>
 NeverLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
@@ -155,14 +227,50 @@ NeverLosChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   NS_UNUSED (a);
   NS_UNUSED (b);
 
-  Ptr<ChannelCondition> c = CreateObject<ChannelCondition> ();
-  c->SetLosCondition (ChannelCondition::NLOS);
+  Ptr<ChannelCondition> c = CreateObject<ChannelCondition> (ChannelCondition::NLOS);
 
   return c;
 }
 
 int64_t
 NeverLosChannelConditionModel::AssignStreams (int64_t stream)
+{
+  return 0;
+}
+
+// ------------------------------------------------------------------------- //
+
+NS_OBJECT_ENSURE_REGISTERED (NeverLosVehicleChannelConditionModel);
+
+TypeId
+NeverLosVehicleChannelConditionModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NeverLosVehicleChannelConditionModel")
+    .SetParent<ChannelConditionModel> ()
+    .SetGroupName ("Propagation")
+    .AddConstructor<NeverLosVehicleChannelConditionModel> ()
+  ;
+  return tid;
+}
+
+NeverLosVehicleChannelConditionModel::NeverLosVehicleChannelConditionModel ()
+{}
+
+NeverLosVehicleChannelConditionModel::~NeverLosVehicleChannelConditionModel ()
+{}
+
+Ptr<ChannelCondition>
+NeverLosVehicleChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> /* a */,
+                                                           Ptr<const MobilityModel> /* b */) const
+{
+
+  Ptr<ChannelCondition> c = CreateObject<ChannelCondition> (ChannelCondition::NLOSv);
+
+  return c;
+}
+
+int64_t
+NeverLosVehicleChannelConditionModel::AssignStreams (int64_t /* stream */)
 {
   return 0;
 }
@@ -194,8 +302,7 @@ ThreeGppChannelConditionModel::ThreeGppChannelConditionModel ()
 }
 
 ThreeGppChannelConditionModel::~ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 void ThreeGppChannelConditionModel::DoDispose ()
 {
@@ -239,36 +346,61 @@ ThreeGppChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
   // generate a new channel condition
   if (notFound || update)
     {
-      // compute the LOS probability (see 3GPP TR 38.901, Sec. 7.4.2)
-      double pLos = ComputePlos (a, b);
-
-      // draw a random value
-      double pRef = m_uniformVar->GetValue ();
-
-      // get the channel condition
-      cond = CreateObject<ChannelCondition> ();
-      if (pRef <= pLos)
-        {
-          // LOS
-          cond->SetLosCondition (ChannelCondition::LosConditionValue::LOS);
-        }
-      else
-        {
-          // NLOS
-          cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOS);
-        }
-
-      {
-        // store the channel condition in m_channelConditionMap, used as cache.
-        // For this reason you see a const_cast.
-        Item mapItem;
-        mapItem.m_condition = cond;
-        mapItem.m_generatedTime = Simulator::Now ();
-        const_cast<ThreeGppChannelConditionModel*> (this)->m_channelConditionMap [key] = mapItem;
-      }
+      cond = ComputeChannelCondition (a, b);
+      // store the channel condition in m_channelConditionMap, used as cache.
+      // For this reason you see a const_cast.
+      Item mapItem;
+      mapItem.m_condition = cond;
+      mapItem.m_generatedTime = Simulator::Now ();
+      const_cast<ThreeGppChannelConditionModel*> (this)->m_channelConditionMap [key] = mapItem;
     }
 
   return cond;
+}
+
+Ptr<ChannelCondition>
+ThreeGppChannelConditionModel::ComputeChannelCondition (Ptr<const MobilityModel> a,
+                                                        Ptr<const MobilityModel> b) const
+{
+  NS_LOG_FUNCTION (this << a << b);
+  Ptr<ChannelCondition> cond = CreateObject<ChannelCondition> ();
+
+  // compute the LOS probability
+  double pLos = ComputePlos (a, b);
+  double pNlos = ComputePnlos (a, b);
+
+  // draw a random value
+  double pRef = m_uniformVar->GetValue ();
+
+  NS_LOG_DEBUG ("pRef " << pRef << " pLos " << pLos << " pNlos " << pNlos);
+
+  // get the channel condition
+  if (pRef <= pLos)
+    {
+      // LOS
+      cond->SetLosCondition (ChannelCondition::LosConditionValue::LOS);
+    }
+  else if (pRef <= pLos + pNlos)
+    {
+      // NLOS
+      cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOS);
+    }
+  else
+    {
+      // NLOSv (added to support vehicular scenarios)
+      cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOSv);
+    }
+
+  return cond;
+}
+
+double
+ThreeGppChannelConditionModel::ComputePnlos (Ptr<const MobilityModel> a,
+                                             Ptr<const MobilityModel> b) const
+{
+  NS_LOG_FUNCTION (this << a << b);
+  // by default returns 1 - PLOS
+  return (1 - ComputePlos (a, b));
 }
 
 int64_t
@@ -319,12 +451,10 @@ ThreeGppRmaChannelConditionModel::GetTypeId (void)
 
 ThreeGppRmaChannelConditionModel::ThreeGppRmaChannelConditionModel ()
   : ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 ThreeGppRmaChannelConditionModel::~ThreeGppRmaChannelConditionModel ()
-{
-}
+{}
 
 double
 ThreeGppRmaChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
@@ -367,12 +497,10 @@ ThreeGppUmaChannelConditionModel::GetTypeId (void)
 
 ThreeGppUmaChannelConditionModel::ThreeGppUmaChannelConditionModel ()
   : ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 ThreeGppUmaChannelConditionModel::~ThreeGppUmaChannelConditionModel ()
-{
-}
+{}
 
 double
 ThreeGppUmaChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
@@ -437,12 +565,10 @@ ThreeGppUmiStreetCanyonChannelConditionModel::GetTypeId (void)
 
 ThreeGppUmiStreetCanyonChannelConditionModel::ThreeGppUmiStreetCanyonChannelConditionModel ()
   : ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 ThreeGppUmiStreetCanyonChannelConditionModel::~ThreeGppUmiStreetCanyonChannelConditionModel ()
-{
-}
+{}
 
 double
 ThreeGppUmiStreetCanyonChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
@@ -492,12 +618,10 @@ ThreeGppIndoorMixedOfficeChannelConditionModel::GetTypeId (void)
 
 ThreeGppIndoorMixedOfficeChannelConditionModel::ThreeGppIndoorMixedOfficeChannelConditionModel ()
   : ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 ThreeGppIndoorMixedOfficeChannelConditionModel::~ThreeGppIndoorMixedOfficeChannelConditionModel ()
-{
-}
+{}
 
 double
 ThreeGppIndoorMixedOfficeChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,
@@ -551,12 +675,10 @@ ThreeGppIndoorOpenOfficeChannelConditionModel::GetTypeId (void)
 
 ThreeGppIndoorOpenOfficeChannelConditionModel::ThreeGppIndoorOpenOfficeChannelConditionModel ()
   : ThreeGppChannelConditionModel ()
-{
-}
+{}
 
 ThreeGppIndoorOpenOfficeChannelConditionModel::~ThreeGppIndoorOpenOfficeChannelConditionModel ()
-{
-}
+{}
 
 double
 ThreeGppIndoorOpenOfficeChannelConditionModel::ComputePlos (Ptr<const MobilityModel> a,

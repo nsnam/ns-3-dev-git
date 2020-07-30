@@ -25,6 +25,7 @@
 #include "ns3/boolean.h"
 #include "ns3/channel-condition-model.h"
 #include "ns3/three-gpp-propagation-loss-model.h"
+#include "ns3/three-gpp-v2v-propagation-loss-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/constant-velocity-mobility-model.h"
 #include "ns3/mobility-helper.h"
@@ -656,6 +657,312 @@ ThreeGppIndoorOfficePropagationLossModelTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * Test case for the class ThreeGppV2vUrbanPropagationLossModel.
+ * It computes the pathloss between two nodes and compares it with the value
+ * obtained using the formula in 3GPP TR 37.885 Table 6.2.1-1 for v2v
+ * communications (sidelink).
+ *
+ * Note that 3GPP TR 37.885 defines 3 different channel states for vehicular
+ * environments: LOS, NLOS, and NLOSv, the latter representing the case in which
+ * the LOS path is blocked by other vehicles in the scenario. However, for
+ * computing the pathloss, only the two states are considered: LOS/NLOSv or NLOS
+ * (see TR 37.885 Section 6.2.1). In case of NLOSv, an additional vehicle
+ * blockage loss may be added, according to a log-normal random variable.
+ * Here, we test both conditions: LOS/NLOSv (without vehicle blockage
+ * loss) and NLOS.
+ */
+class ThreeGppV2vUrbanPropagationLossModelTestCase : public TestCase
+{
+public:
+  /**
+   * Constructor
+   */
+  ThreeGppV2vUrbanPropagationLossModelTestCase ();
+
+  /**
+   * Destructor
+   */
+  virtual ~ThreeGppV2vUrbanPropagationLossModelTestCase ();
+
+private:
+  /**
+   * Build the simulation scenario and run the tests
+   */
+  virtual void DoRun (void);
+
+  /**
+   * Struct containing the parameters for each test
+   */
+  typedef struct
+  {
+    double m_distance; //!< 2D distance between UT and BS in meters
+    bool m_isLos; //!< if true LOS/NLOSv, if false NLOS
+    double m_frequency; //!< carrier frequency in Hz
+    double m_pt;  //!< transmitted power in dBm
+    double m_pr;  //!< received power in dBm
+  } TestVector;
+
+  TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
+  double m_tolerance; //!< tolerance
+};
+
+ThreeGppV2vUrbanPropagationLossModelTestCase::ThreeGppV2vUrbanPropagationLossModelTestCase ()
+  : TestCase ("Test for the ThreeGppV2vUrbanPropagationLossModel class."),
+  m_testVectors (),
+  m_tolerance (5e-2)
+{
+}
+
+ThreeGppV2vUrbanPropagationLossModelTestCase::~ThreeGppV2vUrbanPropagationLossModelTestCase ()
+{
+}
+
+void
+ThreeGppV2vUrbanPropagationLossModelTestCase::DoRun (void)
+{
+  TestVector testVector;
+
+  testVector.m_distance = 10.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -68.1913;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 100.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -84.8913;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 1000.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -101.5913;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 10.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -80.0605;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 100.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -110.0605;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 1000.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -140.0605;
+  m_testVectors.Add (testVector);
+
+  // Create the nodes for BS and UT
+  NodeContainer nodes;
+  nodes.Create (2);
+
+  // Create the mobility models
+  Ptr<MobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
+  nodes.Get (0)->AggregateObject (a);
+  Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
+  nodes.Get (1)->AggregateObject (b);
+
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
+
+  // Create the propagation loss model
+  Ptr<ThreeGppPropagationLossModel> lossModel = CreateObject<ThreeGppV2vUrbanPropagationLossModel> ();
+  lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
+
+  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+    {
+      TestVector testVector = m_testVectors.Get (i);
+
+      Vector posUe1 = Vector (0.0, 0.0, 1.6);
+      Vector posUe2 = Vector (testVector.m_distance, 0.0, 1.6);
+
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
+        {
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
+        }
+
+      a->SetPosition (posUe1);
+      b->SetPosition (posUe2);
+
+      lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
+      NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
+    }
+
+  Simulator::Destroy ();
+}
+
+/**
+ * Test case for the class ThreeGppV2vHighwayPropagationLossModel.
+ * It computes the pathloss between two nodes and compares it with the value
+ * obtained using the formula in 3GPP TR 37.885 Table 6.2.1-1 for v2v
+ * communications (sidelink).
+ *
+ * Note that 3GPP TR 37.885 defines 3 different channel states for vehicular
+ * environments: LOS, NLOS and NLOSv, the latter representing the case in which
+ * the LOS path is blocked by other vehicles in the scenario. However, for
+ * computing the pathloss, only two states are considered: LOS/NLOSv or NLOS
+ * (see TR 37.885 Section 6.2.1). In case of NLOSv, an additional vehicle
+ * blockage loss may be added, according to a log-normal random variable.
+ * Here, we test both conditions: LOS/NLOSv (without vehicle blockage
+ * loss) and NLOS.
+ */
+class ThreeGppV2vHighwayPropagationLossModelTestCase : public TestCase
+{
+public:
+  /**
+   * Constructor
+   */
+  ThreeGppV2vHighwayPropagationLossModelTestCase ();
+
+  /**
+   * Destructor
+   */
+  virtual ~ThreeGppV2vHighwayPropagationLossModelTestCase ();
+
+private:
+  /**
+   * Build the simulation scenario and run the tests
+   */
+  virtual void DoRun (void);
+
+  /**
+   * Struct containing the parameters for each test
+   */
+  typedef struct
+  {
+    double m_distance; //!< 2D distance between UT and BS in meters
+    bool m_isLos; //!< if true LOS/NLOSv, if false NLOS
+    double m_frequency; //!< carrier frequency in Hz
+    double m_pt;  //!< transmitted power in dBm
+    double m_pr;  //!< received power in dBm
+  } TestVector;
+
+  TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
+  double m_tolerance; //!< tolerance
+};
+
+ThreeGppV2vHighwayPropagationLossModelTestCase::ThreeGppV2vHighwayPropagationLossModelTestCase ()
+  : TestCase ("Test for the ThreeGppV2vHighwayPropagationLossModel"),
+  m_testVectors (),
+  m_tolerance (5e-2)
+{
+}
+
+ThreeGppV2vHighwayPropagationLossModelTestCase::~ThreeGppV2vHighwayPropagationLossModelTestCase ()
+{
+}
+
+void
+ThreeGppV2vHighwayPropagationLossModelTestCase::DoRun (void)
+{
+  TestVector testVector;
+
+  testVector.m_distance = 10.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -66.3794;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 100.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -86.3794;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 1000.0;
+  testVector.m_isLos = true;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -106.3794;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 10.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -80.0605;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 100.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -110.0605;
+  m_testVectors.Add (testVector);
+
+  testVector.m_distance = 1000.0;
+  testVector.m_isLos = false;
+  testVector.m_frequency = 5.0e9;
+  testVector.m_pt = 0.0;
+  testVector.m_pr = -140.0605;
+  m_testVectors.Add (testVector);
+
+  // Create the nodes for BS and UT
+  NodeContainer nodes;
+  nodes.Create (2);
+
+  // Create the mobility models
+  Ptr<MobilityModel> a = CreateObject<ConstantPositionMobilityModel> ();
+  nodes.Get (0)->AggregateObject (a);
+  Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> ();
+  nodes.Get (1)->AggregateObject (b);
+
+  // Use a deterministic channel condition model
+  Ptr<ChannelConditionModel> losCondModel = CreateObject<AlwaysLosChannelConditionModel> ();
+  Ptr<ChannelConditionModel> nlosCondModel = CreateObject<NeverLosChannelConditionModel> ();
+
+  // Create the propagation loss model
+  Ptr<ThreeGppPropagationLossModel> lossModel = CreateObject<ThreeGppV2vHighwayPropagationLossModel> ();
+  lossModel->SetAttribute ("ShadowingEnabled", BooleanValue (false)); // disable the shadow fading
+
+  for (uint32_t i = 0; i < m_testVectors.GetN (); i++)
+    {
+      TestVector testVector = m_testVectors.Get (i);
+
+      Vector posUe1 = Vector (0.0, 0.0, 1.6);
+      Vector posUe2 = Vector (testVector.m_distance, 0.0, 1.6);
+
+      // set the LOS or NLOS condition
+      if (testVector.m_isLos)
+        {
+          lossModel->SetChannelConditionModel (losCondModel);
+        }
+      else
+        {
+          lossModel->SetChannelConditionModel (nlosCondModel);
+        }
+
+      a->SetPosition (posUe1);
+      b->SetPosition (posUe2);
+
+      lossModel->SetAttribute ("Frequency", DoubleValue (testVector.m_frequency));
+      NS_TEST_EXPECT_MSG_EQ_TOL (lossModel->CalcRxPower (testVector.m_pt, a, b), testVector.m_pr, m_tolerance, "Got unexpected rcv power");
+    }
+
+  Simulator::Destroy ();
+}
+
 // Test to check if the shadowing fading is correctly computed
 class ThreeGppShadowingTestCase : public TestCase
 {
@@ -780,8 +1087,8 @@ ThreeGppShadowingTestCase::DoRun (void)
 {
   // The test scenario is composed of two nodes, one fixed
   // at position (0,0) and the other moving with constant velocity from
-  // position (0,50) to position (200,50). A building is placed in such a way
-  // that the channel condition changes from LOS to NLOS when the second node
+  // position (0,50) to position (200,50).
+  // The channel condition changes from LOS to NLOS when the second node
   // reaches position (100,50).
   // Each experiment computes the propagation loss between the two nodes
   // every second, until the final position is reached, and saves the
@@ -832,6 +1139,22 @@ ThreeGppShadowingTestCase::DoRun (void)
   testVector.m_distance = 50;
   testVector.m_shadowingStdLos = 3;
   testVector.m_shadowingStdNlos = 8.03;
+  m_testVectors.Add (testVector);
+  
+  testVector.m_propagationLossModelType = "ns3::ThreeGppV2vUrbanPropagationLossModel";
+  testVector.m_hBs = 1.6;
+  testVector.m_hUt = 1.6;
+  testVector.m_distance = 50;
+  testVector.m_shadowingStdLos = 3;
+  testVector.m_shadowingStdNlos = 4;
+  m_testVectors.Add (testVector);
+  
+  testVector.m_propagationLossModelType = "ns3::ThreeGppV2vHighwayPropagationLossModel";
+  testVector.m_hBs = 1.6;
+  testVector.m_hUt = 1.6;
+  testVector.m_distance = 50;
+  testVector.m_shadowingStdLos = 3;
+  testVector.m_shadowingStdNlos = 4;
   m_testVectors.Add (testVector);
 
   uint16_t numSamples = 250;
@@ -897,6 +1220,8 @@ ThreeGppPropagationLossModelsTestSuite::ThreeGppPropagationLossModelsTestSuite (
   AddTestCase (new ThreeGppUmaPropagationLossModelTestCase, TestCase::QUICK);
   AddTestCase (new ThreeGppUmiPropagationLossModelTestCase, TestCase::QUICK);
   AddTestCase (new ThreeGppIndoorOfficePropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new ThreeGppV2vUrbanPropagationLossModelTestCase, TestCase::QUICK);
+  AddTestCase (new ThreeGppV2vHighwayPropagationLossModelTestCase, TestCase::QUICK);
   AddTestCase (new ThreeGppShadowingTestCase, TestCase::QUICK);
 }
 

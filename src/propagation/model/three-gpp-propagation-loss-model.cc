@@ -139,27 +139,47 @@ ThreeGppPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   std::pair<double, double> heights = GetUtAndBsHeights (a->GetPosition ().z, b->GetPosition ().z);
 
   double rxPow = txPowerDbm;
-  if (cond->GetLosCondition () == ChannelCondition::LosConditionValue::LOS)
-    {
-      rxPow -= GetLossLos (distance2d, distance3d, heights.first, heights.second);
-      NS_LOG_DEBUG ("Channel codition is LOS, rxPower = " << rxPow);
-    }
-  else if (cond->GetLosCondition () == ChannelCondition::LosConditionValue::NLOS)
-    {
-      rxPow -= GetLossNlos (distance2d, distance3d, heights.first, heights.second);
-      NS_LOG_DEBUG ("Channel codition is NLOS, rxPower = " << rxPow);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Unknown channel condition");
-    }
-
+  rxPow -= GetLoss (cond, distance2d, distance3d, heights.first, heights.second); 
+  
   if (m_shadowingEnabled)
     {
       rxPow -= GetShadowing (a, b, cond->GetLosCondition ());
     }
 
   return rxPow;
+}
+
+double
+ThreeGppPropagationLossModel::GetLoss (Ptr<ChannelCondition> cond, double distance2d, double distance3d, double hUt, double hBs) const
+{
+  NS_LOG_FUNCTION (this);
+  
+  double loss = 0;
+  if (cond->GetLosCondition () == ChannelCondition::LosConditionValue::LOS)
+    {
+      loss = GetLossLos (distance2d, distance3d, hUt, hBs);
+    }
+  else if (cond->GetLosCondition () == ChannelCondition::LosConditionValue::NLOSv)
+    {
+      loss = GetLossNlosv (distance2d, distance3d, hUt, hBs);
+    }
+  else if (cond->GetLosCondition () == ChannelCondition::LosConditionValue::NLOS)
+    {
+      loss = GetLossNlos (distance2d, distance3d, hUt, hBs);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Unknown channel condition");
+    }
+  return loss;
+}
+
+double
+ThreeGppPropagationLossModel::GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const
+{
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("Unsupported channel condition (NLOSv)");
+  return 0;
 }
 
 double

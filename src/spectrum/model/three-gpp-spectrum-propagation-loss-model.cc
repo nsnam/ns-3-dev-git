@@ -41,6 +41,7 @@ NS_OBJECT_ENSURE_REGISTERED (ThreeGppSpectrumPropagationLossModel);
 ThreeGppSpectrumPropagationLossModel::ThreeGppSpectrumPropagationLossModel ()
 {
   NS_LOG_FUNCTION (this);
+  m_uniformRv = CreateObject<UniformRandomVariable> ();
 }
 
 ThreeGppSpectrumPropagationLossModel::~ThreeGppSpectrumPropagationLossModel ()
@@ -69,7 +70,14 @@ ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
                   StringValue("ns3::ThreeGppChannelModel"),
                   MakePointerAccessor (&ThreeGppSpectrumPropagationLossModel::SetChannelModel,
                                        &ThreeGppSpectrumPropagationLossModel::GetChannelModel),
-      MakePointerChecker<MatrixBasedChannelModel> ())
+                                       MakePointerChecker<MatrixBasedChannelModel> ())
+    .AddAttribute ("vScatt",
+                   "Maximum speed of the vehicle in the layout (see 3GPP TR 37.885 v15.3.0, Sec. 6.2.3)."
+                   "Used to compute the additional contribution for the Doppler of" 
+                   "delayed (reflected) paths",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&ThreeGppSpectrumPropagationLossModel::m_vScatt),
+                   MakeDoubleChecker<double> (0.0))
     ;
   return tid;
 }
@@ -166,15 +174,32 @@ ThreeGppSpectrumPropagationLossModel::CalcBeamformingGain (Ptr<SpectrumValue> tx
   ThreeGppAntennaArrayModel::ComplexVector doppler;
   for (uint8_t cIndex = 0; cIndex < numCluster; cIndex++)
     {
+      // Compute alpha and D as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3
+      // These terms account for an additional Doppler contribution due to the 
+      // presence of moving objects in the sorrounding environment, such as in 
+      // vehicular scenarios.
+      // This contribution is applied only to the delayed (reflected) paths and 
+      // must be properly configured by setting the value of 
+      // m_vScatt, which is defined as "maximum speed of the vehicle in the 
+      // layout". 
+      // By default, m_vScatt is set to 0, so there is no additional Doppler 
+      // contribution.
+      double alpha = 0; 
+      double D = 0; 
+      if (cIndex != 0)
+      {
+        alpha = m_uniformRv->GetValue (-1, 1);
+        D = m_uniformRv->GetValue (-m_vScatt, m_vScatt);
+      }
+      
       //cluster angle angle[direction][n],where, direction = 0(aoa), 1(zoa).
-      // TODO should I include the "alfa" term for the Doppler of delayed paths?
       double temp_doppler = 2 * M_PI * ((sin (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * cos (params->m_angle[MatrixBasedChannelModel::AOA_INDEX][cIndex] * M_PI / 180) * uSpeed.x
                                          + sin (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * sin (params->m_angle[MatrixBasedChannelModel::AOA_INDEX][cIndex] * M_PI / 180) * uSpeed.y
                                          + cos (params->m_angle[MatrixBasedChannelModel::ZOA_INDEX][cIndex] * M_PI / 180) * uSpeed.z)
                                          + (sin (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * cos (params->m_angle[MatrixBasedChannelModel::AOD_INDEX][cIndex] * M_PI / 180) * sSpeed.x
                                          + sin (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sin (params->m_angle[MatrixBasedChannelModel::AOD_INDEX][cIndex] * M_PI / 180) * sSpeed.y
-                                         + cos (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sSpeed.z))
-        * slotTime * GetFrequency () / 3e8;
+                                         + cos (params->m_angle[MatrixBasedChannelModel::ZOD_INDEX][cIndex] * M_PI / 180) * sSpeed.z) + 2 * alpha * D)
+                           * slotTime * GetFrequency () / 3e8;
       doppler.push_back (exp (std::complex<double> (0, temp_doppler)));
     }
 

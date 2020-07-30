@@ -16,7 +16,9 @@ The Buildings module provides:
  #. a container class with the definition of the most useful pathloss models and the correspondent variables called ``BuildingsPropagationLossModel``.
  #. a new propagation model (``HybridBuildingsPropagationLossModel``) working with the mobility model just introduced, that allows to model the phenomenon of indoor/outdoor propagation in the presence of buildings.
  #. a simplified model working only with Okumura Hata (``OhBuildingsPropagationLossModel``) considering the phenomenon of indoor/outdoor propagation in the presence of buildings.
-
+ #. a channel condition model (``BuildingsChannelConditionModel``) which determined the LOS/NLOS channel condition based on the ``Building`` objects deployed in the scenario.
+ #. hybrid channel condition models (``ThreeGppV2vUrbanChannelConditionModel`` and ``ThreeGppV2vHighwayChannelConditionModel``) specifically designed to model vehicular environments (more information can be found in the :ref:`documentation of the propagation module <sec-3gpp-v2v-ch-cond>`) 
+ 
 The models have been designed with LTE in mind, though their implementation is in fact independent from any LTE-specific code, and can be used with other ns-3 wireless technologies as well (e.g., wifi, wimax). 
 
 The ``HybridBuildingsPropagationLossModel`` pathloss model included is obtained through a combination of several well known pathloss models in order to mimic different environmental scenarios such as urban, suburban and open areas. Moreover, the model considers both outdoor and indoor indoor and outdoor communication has to be included since HeNB might be installed either within building and either outside. In case of indoor communication, the model has to consider also the type of building in outdoor <-> indoor communication according to some general criteria such as the wall penetration losses of the common materials; moreover it includes some general configuration for the internal walls in indoor communications. 
@@ -267,4 +269,3 @@ The following pseudo-code illustrates how the different pathloss model elements 
         L = OH + EWL
       
 We note that OhBuildingsPropagationLossModel is a significant simplification with respect to HybridBuildingsPropagationLossModel, due to the fact that OH is used always. While this gives a less accurate model in some scenarios (especially below rooftop and indoor), it effectively avoids the issue of pathloss discontinuities that affects HybridBuildingsPropagationLossModel. 
-

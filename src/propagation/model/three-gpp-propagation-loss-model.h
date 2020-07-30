@@ -111,6 +111,17 @@ private:
    * \return the number of stream indices assigned by this model
    */
   virtual int64_t DoAssignStreams (int64_t stream) override;
+  
+  /**
+   * \brief Computes the pathloss between a and b
+   * \param cond the channel condition
+   * \param distance2D the 2D distance between tx and rx in meters
+   * \param distance3D the 3D distance between tx and rx in meters
+   * \param hUt the height of the UT in meters
+   * \param hBs the height of the BS in meters
+   * \return pathloss value in dB
+   */
+  double GetLoss (Ptr<ChannelCondition> cond, double distance2D, double distance3D, double hUt, double hBs) const;
 
   /**
    * \brief Computes the pathloss between a and b considering that the line of
@@ -133,6 +144,18 @@ private:
    * \return pathloss value in dB
    */
   virtual double GetLossNlos (double distance2D, double distance3D, double hUt, double hBs) const = 0;
+  
+  /**
+   * \brief Computes the pathloss between a and b considering that the line of
+   *        sight is obstructed by a vehicle. By default it raises an error to 
+   *        avoid misuse.
+   * \param distance2D the 2D distance between tx and rx in meters
+   * \param distance3D the 3D distance between tx and rx in meters
+   * \param hUt the height of the UT in meters
+   * \param hBs the height of the BS in meters
+   * \return pathloss value in dB
+   */
+  virtual double GetLossNlosv (double distance2D, double distance3D, double hUt, double hBs) const;
 
   /**
    * \brief Determines hUT and hBS. The default implementation assumes that

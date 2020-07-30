@@ -107,6 +107,7 @@ beamwidth, and :math:`A_{max}` is the maximum attenuation in dB of the
 antenna. Note that this radiation pattern is independent of the inclination angle
 :math:`\theta`.
 
+.. _sec-3gpp-antenna-model:
 -------------------------
 ThreeGppAntennaArrayModel
 -------------------------

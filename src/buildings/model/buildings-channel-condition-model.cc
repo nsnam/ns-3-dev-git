@@ -55,6 +55,7 @@ Ptr<ChannelCondition>
 BuildingsChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
                                                      Ptr<const MobilityModel> b) const
 {
+  NS_LOG_FUNCTION (this);
   Ptr<MobilityBuildingInfo> a1 = a->GetObject<MobilityBuildingInfo> ();
   Ptr<MobilityBuildingInfo> b1 = b->GetObject<MobilityBuildingInfo> ();
   NS_ASSERT_MSG ((a1 != nullptr) && (b1 != nullptr),
@@ -68,35 +69,45 @@ BuildingsChannelConditionModel::GetChannelCondition (Ptr<const MobilityModel> a,
 
   if (!isAIndoor && !isBIndoor) // a and b are outdoor
     {
+      cond->SetO2iCondition (ChannelCondition::O2iConditionValue::O2O);
+      
       // The outdoor case, determine LOS/NLOS
       // The channel condition should be LOS if the line of sight is not blocked,
       // otherwise NLOS
       bool blocked = IsLineOfSightBlocked (a->GetPosition (), b->GetPosition ());
+      NS_LOG_DEBUG ("a and b are outdoor, blocked " << blocked);
       if (!blocked)
         {
+          NS_LOG_DEBUG ("Set LOS");
           cond->SetLosCondition (ChannelCondition::LosConditionValue::LOS);
         }
       else
         {
           cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOS);
         }
-
     }
   else if (isAIndoor && isBIndoor) // a and b are indoor
     {
+      cond->SetO2iCondition (ChannelCondition::O2iConditionValue::I2I);
+      
       // Indoor case, determine is the two nodes are inside the same building
       // or not
       if (a1->GetBuilding () == b1->GetBuilding ())
         {
+          NS_LOG_DEBUG ("a and b are indoor in the same building");
           cond->SetLosCondition (ChannelCondition::LosConditionValue::LOS);
         }
       else
         {
+          NS_LOG_DEBUG ("a and b are indoor in different buildings");
           cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOS);
         }
     }
   else //outdoor to indoor case
     {
+      cond->SetO2iCondition (ChannelCondition::O2iConditionValue::O2I);
+      
+      NS_LOG_DEBUG ("a is indoor and b outdoor or viceversa");
       cond->SetLosCondition (ChannelCondition::LosConditionValue::NLOS);
     }
 

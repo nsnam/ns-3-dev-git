@@ -168,13 +168,18 @@ for the wireless module that you are considering (lte, wifi, wimax,
 etc.), so please refer to the documentation of that model for specific
 instructions.
 
-Building-aware channel condition model
-**************************************
+Building-aware channel condition models
+***************************************
 
 The class BuildingsChannelConditionModel implements a `channel condition model <propagation.html#channelconditionmodel>`_
 which determines the LOS/NLOS channel state based on the buildings deployed in
 the scenario.
 
+The classes ``ThreeGppV2vUrbanChannelConditionModel`` and 
+``ThreeGppV2vHighwayChannelConditionModel`` implement hybrid channel condition 
+models, specifically designed to model vehicular environments. 
+More information can be found in the :ref:`documentation 
+of the propagation module <sec-3gpp-v2v-ch-cond>`.
 
 Main configurable attributes
 ============================

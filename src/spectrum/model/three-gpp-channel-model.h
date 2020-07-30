@@ -127,7 +127,7 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
-
+  
 private:
   /**
    * \brief Shuffle the elements of a simple sequence container of type double
@@ -141,7 +141,7 @@ private:
    */
   struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
   {
-    bool m_los; //!< true if LOS, false if NLOS
+    Ptr<const ChannelCondition> m_channelCondition; //!< the channel condition
     
     // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
     /*The following parameters are stored for spatial consistent updating. The notation is 
@@ -154,7 +154,6 @@ private:
     double m_K; //!< K factor
     uint8_t m_numCluster; //!< reduced cluster number;
     MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
-    bool m_o2i; //!< true if O2I
     Vector m_speed; //!< velocity
     double m_dis2D; //!< 2D distance between tx and rx
     double m_dis3D; //!< 3D distance between tx and rx
@@ -195,21 +194,19 @@ private:
 
   /**
    * Get the parameters needed to apply the channel generation procedure
-   * \param los the LOS/NLOS condition
-   * \param o2i whether if it is an outdoor to indoor transmission
+   * \param channelCondition the channel condition
    * \param hBS the height of the BS
    * \param hUT the height of the UT
    * \param distance2D the 2D distance between tx and rx
    * \return the parameters table
    */
-  Ptr<const ParamsTable> GetThreeGppTable (bool los, bool o2i, double hBS, double hUT, double distance2D) const;
+  virtual Ptr<const ParamsTable> GetThreeGppTable (Ptr<const ChannelCondition> channelCondition, double hBS, double hUT, double distance2D) const;
 
   /**
    * Compute the channel matrix between two devices using the procedure
    * described in 3GPP TR 38.901
    * \param locUT the location of the UT
-   * \param los the LOS/NLOS condition
-   * \param o2i whether if it is an outdoor to indoor transmission
+   * \param channelCondition the channel condition
    * \param sAntenna the s node antenna array
    * \param uAntenna the u node antenna array
    * \param uAngle the u node angle
@@ -219,7 +216,7 @@ private:
    * \param hUT the height of the UT
    * \return the channel realization
    */
-  Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, bool los, bool o2i,
+  Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, Ptr<const ChannelCondition> channelCondition,
                                             Ptr<const ThreeGppAntennaArrayModel> sAntenna,
                                             Ptr<const ThreeGppAntennaArrayModel> uAntenna,
                                             Angles &uAngle, Angles &sAngle,
@@ -239,10 +236,10 @@ private:
   /**
    * Check if the channel matrix has to be updated
    * \param channelMatrix channel matrix
-   * \param isLos the current los condition
+   * \param channelCondition the channel condition
    * \return true if the channel matrix has to be updated, false otherwise
    */
-  bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix> channelMatrix, bool isLos) const;
+  bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix> channelMatrix, Ptr<const ChannelCondition> channelCondition) const;
 
   std::unordered_map<uint32_t, Ptr<ThreeGppChannelMatrix> > m_channelMap; //!< map containing the channel realizations
   Time m_updatePeriod; //!< the channel update period

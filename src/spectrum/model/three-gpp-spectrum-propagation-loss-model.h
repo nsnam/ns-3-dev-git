@@ -27,6 +27,7 @@
 #include <map>
 #include <unordered_map>
 #include "ns3/matrix-based-channel-model.h"
+#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
@@ -190,6 +191,11 @@ private:
   std::unordered_map <uint32_t, Ptr<const ThreeGppAntennaArrayModel> > m_deviceAntennaMap; //!< map containig the <node, antenna> associations
   mutable std::unordered_map < uint32_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
   Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
+  
+  // Variable used to compute the additional Doppler contribution for the delayed 
+  // (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
+  double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed paths 
+  Ptr<UniformRandomVariable> m_uniformRv; //!< uniform random variable, used to compute the additional Doppler contribution
 };
 } // namespace ns3
 

@@ -14,7 +14,9 @@ def build(bld):
         'model/itu-r-1411-nlos-over-rooftop-propagation-loss-model.cc',
         'model/kun-2600-mhz-propagation-loss-model.cc',
         'model/channel-condition-model.cc',
+        'model/probabilistic-v2v-channel-condition-model.cc',
         'model/three-gpp-propagation-loss-model.cc',
+        'model/three-gpp-v2v-propagation-loss-model.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('propagation')
@@ -26,6 +28,7 @@ def build(bld):
         'test/itu-r-1411-nlos-over-rooftop-test-suite.cc',
         'test/channel-condition-model-test-suite.cc',
         'test/three-gpp-propagation-loss-model-test-suite.cc',
+        'test/probabilistic-v2v-channel-condition-model-test.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
@@ -49,7 +52,9 @@ def build(bld):
         'model/itu-r-1411-nlos-over-rooftop-propagation-loss-model.h',
         'model/kun-2600-mhz-propagation-loss-model.h',
         'model/channel-condition-model.h',
+        'model/probabilistic-v2v-channel-condition-model.h',
         'model/three-gpp-propagation-loss-model.h',
+        'model/three-gpp-v2v-propagation-loss-model.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

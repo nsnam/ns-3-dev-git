@@ -586,6 +586,8 @@ the given geographic origin point, and is tested in the ``rand-cart-around-geo``
 test suite by verifying that the generated points do not exceed the given
 maximum distance radius from the origin point.
 
+.. _sec-3gpp-fast-fading-model: 
+
 3GPP TR 38.901 fast fading model
 ================================
 The framework described by TR 38.901 [TR38901]_ is a 3D statistical Spatial
@@ -687,7 +689,14 @@ applies it to the PSD of the transmitted signal to obtain the received PSD.
 To compute the sub-band gain, it accounts for the Doppler phenomenon and the
 time dispersion effect on each cluster.
 In order to reduce the computational load, the Doppler component of each
-cluster is computed considering only the central ray.
+cluster is computed considering only the central ray. 
+Also, as specified :ref:`here <sec-3gpp-v2v-ff>`, it is possible to account for 
+the effect of environmental scattering following the model described in Sec. 6.2.3 
+of 3GPP TR 37.885. 
+This is done by deviating the Doppler frequency by a random value, whose 
+distribution depends on the parameter :math:`v_{scatt}`. 
+The value of :math:`v_{scatt}` can be configured using the attribute "vScatt" 
+(by default it is set to 0, so that the scattering effect is not considered). 
 
 ThreeGppChannelModel
 ####################
