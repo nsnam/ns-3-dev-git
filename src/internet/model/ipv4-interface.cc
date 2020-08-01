@@ -353,11 +353,6 @@ Ipv4Interface::RemoveAddress (uint32_t index)
         {
           Ipv4InterfaceAddress addr = *i;
           m_ifaddrs.erase (i);
-          if (m_ifaddrs.empty ())
-            {
-              NS_LOG_LOGIC ("Last address removed from Ipv4Interface - setting it to down");
-              m_ifup = false;
-            }
           return addr;
         }
       ++tmp;
@@ -385,11 +380,6 @@ Ipv4Interface::RemoveAddress(Ipv4Address address)
         {
           Ipv4InterfaceAddress ifAddr = *it;
           m_ifaddrs.erase(it);
-          if (m_ifaddrs.empty ())
-            {
-              NS_LOG_LOGIC ("Last address removed from Ipv4Interface - setting it to down");
-              m_ifup = false;
-            }
           return ifAddr;
         }
     }
