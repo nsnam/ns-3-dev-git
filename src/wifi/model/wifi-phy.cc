@@ -510,6 +510,7 @@ WifiPhy::WifiPhy ()
     m_endPreambleDetectionEvent (),
     m_endTxEvent (),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
+    m_band (WIFI_PHY_BAND_UNSPECIFIED),
     m_isConstructed (false),
     m_channelCenterFrequency (0),
     m_initialFrequency (0),
