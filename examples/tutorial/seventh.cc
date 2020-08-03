@@ -58,6 +58,9 @@ NS_LOG_COMPONENT_DEFINE ("SeventhScriptExample");
 // So first, we create a socket and do the trace connect on it; then we pass
 // this socket into the constructor of our simple application which we then
 // install in the source node.
+//
+// NOTE: If this example gets modified, do not forget to update the .png figure
+// in src/stats/docs/seventh-packet-byte-count.png
 // ===========================================================================
 //
 class MyApp : public Application
