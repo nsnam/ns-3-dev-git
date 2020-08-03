@@ -84,6 +84,8 @@ DhcpClient::DhcpClient ()
   m_rebindEvent = EventId ();
   m_nextOfferEvent = EventId ();
   m_timeout = EventId ();
+  m_collectEvent = EventId ();
+  m_firstBoot = true;
 }
 
 DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
@@ -98,6 +100,8 @@ DhcpClient::DhcpClient (Ptr<NetDevice> netDevice)
   m_rebindEvent = EventId ();
   m_nextOfferEvent = EventId ();
   m_timeout = EventId ();
+  m_collectEvent = EventId ();
+  m_firstBoot = true;
 }
 
 DhcpClient::~DhcpClient ()
@@ -127,6 +131,15 @@ DhcpClient::DoDispose (void)
   NS_LOG_FUNCTION (this);
 
   m_device = 0;
+
+  // Stop all the timers
+  m_refreshEvent.Cancel ();
+  m_requestEvent.Cancel ();
+  m_discoverEvent.Cancel ();
+  m_rebindEvent.Cancel ();
+  m_nextOfferEvent.Cancel ();
+  m_timeout.Cancel ();
+  m_collectEvent.Cancel ();
 
   Application::DoDispose ();
 }
@@ -184,7 +197,11 @@ DhcpClient::StartApplication (void)
     }
   m_socket->SetRecvCallback (MakeCallback (&DhcpClient::NetHandler, this));
 
-  m_device->AddLinkChangeCallback (MakeCallback (&DhcpClient::LinkStateHandler, this));
+  if (m_firstBoot)
+    {
+      m_device->AddLinkChangeCallback (MakeCallback (&DhcpClient::LinkStateHandler, this));
+      m_firstBoot = false;
+    }
   Boot ();
 
 }
@@ -194,12 +211,15 @@ DhcpClient::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_discoverEvent.Cancel ();
-  m_requestEvent.Cancel ();
-  m_rebindEvent.Cancel ();
+  // Stop all the timers
   m_refreshEvent.Cancel ();
-  m_timeout.Cancel ();
+  m_requestEvent.Cancel ();
+  m_discoverEvent.Cancel ();
+  m_rebindEvent.Cancel ();
   m_nextOfferEvent.Cancel ();
+  m_timeout.Cancel ();
+  m_collectEvent.Cancel ();
+
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
 
   int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
@@ -229,9 +249,16 @@ void DhcpClient::LinkStateHandler (void)
   else
     {
       NS_LOG_INFO ("Link down at " << Simulator::Now ().As (Time::S)); //reinitialization
-      m_refreshEvent.Cancel (); //stop refresh timer!!!!
+
+      // Stop all the timers
+      m_refreshEvent.Cancel ();
+      m_requestEvent.Cancel ();
+      m_discoverEvent.Cancel ();
       m_rebindEvent.Cancel ();
+      m_nextOfferEvent.Cancel ();
       m_timeout.Cancel ();
+      m_collectEvent.Cancel ();
+
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());  //stop receiving on this socket !!!
 
       Ptr<Ipv4> ipv4MN = GetNode ()->GetObject<Ipv4> ();
@@ -257,6 +284,10 @@ void DhcpClient::LinkStateHandler (void)
               break;
             }
         }
+
+      m_state = 0;
+      m_myAddress = Ipv4Address ("0.0.0.0");
+      m_gateway = Ipv4Address ("0.0.0.0");
     }
 }
 
@@ -328,7 +359,7 @@ void DhcpClient::OfferHandler (DhcpHeader header)
     {
       m_discoverEvent.Cancel ();
       m_offered = true;
-      Simulator::Schedule (m_collect, &DhcpClient::Select, this);
+      m_collectEvent = Simulator::Schedule (m_collect, &DhcpClient::Select, this);
     }
 }
 
@@ -413,18 +444,21 @@ void DhcpClient::AcceptAck (DhcpHeader header, Address from)
   Ptr<Ipv4> ipv4 = GetNode ()->GetObject<Ipv4> ();
   int32_t ifIndex = ipv4->GetInterfaceForDevice (m_device);
 
-  for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
+  if (m_myAddress != m_offeredAddress)
     {
-      if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
+      for (uint32_t i = 0; i < ipv4->GetNAddresses (ifIndex); i++)
         {
-          NS_LOG_LOGIC ("Got a new address, removing old one: " << m_myAddress);
-          ipv4->RemoveAddress (ifIndex, i);
-          break;
+          if (ipv4->GetAddress (ifIndex,i).GetLocal () == m_myAddress)
+            {
+              NS_LOG_LOGIC ("Got a new address (" << m_offeredAddress << "), removing old one: " << m_myAddress);
+              ipv4->RemoveAddress (ifIndex, i);
+              break;
+            }
         }
-    }
 
-  ipv4->AddAddress (ifIndex, Ipv4InterfaceAddress (m_offeredAddress, m_myMask));
-  ipv4->SetUp (ifIndex);
+      ipv4->AddAddress (ifIndex, Ipv4InterfaceAddress (m_offeredAddress, m_myMask));
+      ipv4->SetUp (ifIndex);
+    }
 
   InetSocketAddress remote = InetSocketAddress (InetSocketAddress::ConvertFrom (from).GetIpv4 (), DHCP_PEER_PORT);
   m_socket->Connect (remote);

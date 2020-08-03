@@ -159,6 +159,7 @@ private:
   void RemoveAndStart ();
 
   uint8_t m_state;                       //!< State of the DHCP client
+  bool m_firstBoot;                      //!< First boot (used to add the link state change callback)
   Ptr<NetDevice> m_device;               //!< NetDevice pointer
   Ptr<Socket> m_socket;                  //!< Socket for remote communication
   Ipv4Address m_remoteAddress;           //!< Initially set to 255.255.255.255 to start DHCP
@@ -174,6 +175,7 @@ private:
   EventId m_rebindEvent;                 //!< Message rebind event
   EventId m_nextOfferEvent;              //!< Message next offer event
   EventId m_timeout;                     //!< The timeout period
+  EventId m_collectEvent;                //!< Offer collection event
   Time m_lease;                          //!< Store the lease time of address
   Time m_renew;                          //!< Store the renew time of address
   Time m_rebind;                         //!< Store the rebind time of address
