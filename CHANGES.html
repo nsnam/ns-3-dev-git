@@ -81,6 +81,7 @@ local git repository (or a standalone file if a git repository is not present).
 <h2>Changed behavior:</h2>
 <ul>
 <li>Support for <b>RIFS</b> has been dropped from wifi. RIFS has been obsoleted by the 802.11 standard and support for it was not implemented according to the standard.</li>
+<li>The default loss recovery algorithm for TCP has been changed from Classic Recovery to Proportional Rate Reduction (PRR).</li>
 <li>The behavior of <b>TcpPrrRecovery</b> algorithm was aligned to that of Linux.</li>
 <li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 <li>TCP pacing, when enabled, now adjusts the rate dynamically based on the window size, rather than just enforcing a constant rate.</li>

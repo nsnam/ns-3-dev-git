@@ -1379,7 +1379,9 @@ please refer to https://dl.acm.org/citation.cfm?id=3067666.
 
 Loss Recovery Algorithms
 ++++++++++++++++++++++++
-The following loss recovery algorithms are supported in ns-3 TCP:
+The following loss recovery algorithms are supported in ns-3 TCP.  The current
+default (as of ns-3.32 release) is Proportional Rate Reduction (PRR), while
+the default for ns-3.31 and earlier was Classic Recovery.
 
 Classic Recovery
 ^^^^^^^^^^^^^^^^
