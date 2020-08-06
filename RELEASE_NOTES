@@ -16,6 +16,7 @@ New user-visible features
 -------------------------
 - (build system) Added "--enable-asserts" and "--enable-logs" to waf configure,
    to selectively enable asserts and/or logs in release and optimized builds.
+- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' congestion control).
 
 Bugs fixed
 ----------

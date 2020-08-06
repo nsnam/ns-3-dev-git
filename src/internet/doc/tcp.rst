@@ -393,17 +393,23 @@ start threshold is halved.
 
 Linux Reno
 ^^^^^^^^^^
-TCP Linux Reno is designed to provide users Linux like implementation of
-TCP New Reno. The current implementation of TCP New Reno in ns-3 follows
-RFC standards which increases cwnd more conservatively than Linux Reno.
+TCP Linux Reno (class :cpp:class:`TcpLinuxReno`) is designed to provide a
+Linux-like implementation of
+TCP NewReno. The implementation of class :cpp:class:`TcpNewReno1 in ns-3
+follows RFC standards, and increases cwnd more conservatively than does Linux Reno.
 Linux Reno modifies slow start and congestion avoidance algorithms to 
 increase cwnd based on the number of bytes being acknowledged by each 
-arriving ACK, rather than by the number of ACKs that arrive.
+arriving ACK, rather than by the number of ACKs that arrive.  Another major
+difference in implementation is that Linux maintains the congestion window
+in units of segments, while the RFCs define the congestion window in units of
+bytes.
 
 In slow start phase, on each incoming ACK at the TCP sender side cwnd 
 is increased by the number of previously unacknowledged bytes ACKed by the
-incoming acknowledgment. Whereas in default ns-3 New Reno, cwnd is increased
-one segment.
+incoming acknowledgment. In contrast, in ns-3 NewReno, cwnd is increased
+by one segment per acknowledgment.  In standards terminology, this
+difference is referred to as Appropriate Byte Counting (RFC 3465); Linux
+follows Appropriate Byte Counting while ns-3 NewReno does not.
 
 .. math:: cwnd += segAcked * segmentSize
    :label: linuxrenoslowstart
@@ -415,7 +421,7 @@ In congestion avoidance phase, the number of bytes that have been ACKed at
 the TCP sender side are stored in a 'bytes_acked' variable in the TCP control
 block. When 'bytes_acked' becomes greater than or equal to the value of the
 cwnd, 'bytes_acked' is reduced by the value of cwnd. Next, cwnd is incremented
-by a full-sized segment (SMSS). Whereas in ns-3 New Reno, cwnd is increased
+by a full-sized segment (SMSS).  In contrast, in ns-3 NewReno, cwnd is increased
 by (1/cwnd) with a rounding off due to type casting into int.
 
 .. code-block:: c++
@@ -444,23 +450,24 @@ by (1/cwnd) with a rounding off due to type casting into int.
 
    :label: newrenocongavoid
 
-So, there are two main difference between the TCP Linux Reno and TCP New Reno
+So, there are two main difference between the TCP Linux Reno and TCP NewReno
 in ns-3:
-1) In TCP Linux Reno absence or presence of delayed acknowledgement make no
-difference whereas in TCP New Reno it makes a difference.
+1) In TCP Linux Reno, delayed acknowledgement configuration does not affect
+congestion window growth, while in TCP NewReno, delayed acknowledgments cause
+a slower congestion window growth.
 2) In congestion avoidance phase, the arithmetic for counting the number of 
 segments acked and deciding when to increment the cwnd is different for TCP
-Linux Reno and TCP New Reno.
+Linux Reno and TCP NewReno.
 
 Following graphs shows the behavior of window growth in TCP Linux Reno and
-TCP New Reno with delayed acknowledgement of 2 segments:
+TCP NewReno with delayed acknowledgement of 2 segments:
 
 .. _fig-ns3-new-reno-vs-ns3-linux-reno:
 
 .. figure:: figures/ns3-new-reno-vs-ns3-linux-reno.*
    :align: center
 
-   ns-3 TCP New Reno v/s ns-3 TCP Linux Reno
+   ns-3 TCP NewReno v/s ns-3 TCP Linux Reno
 
 HighSpeed
 ^^^^^^^^^
@@ -1199,15 +1206,15 @@ Several TCP validation test results can also be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
 
-The ns-3 implementation of TCP Linux Reno was validated against the New Reno
+The ns-3 implementation of TCP Linux Reno was validated against the NewReno
 implementation of Linux kernel 4.4.0 using ns-3 Direct Code Execution (DCE).
 DCE is a framework which allows the users to run kernel space protocol inside
 ns-3 without changing the source code.
 
 In this validation, cwnd traces of DCE Linux Reno was compared to ns-3 Linux Reno
-and New Reno for delayed acknowledgement of 1 segment. And it was observed that
+and NewReno for delayed acknowledgement of 1 segment. And it was observed that
 cwnd traces for ns-3 Linux Reno was closely overlapping with DCE Linux Reno whereas
-for ns-3 New Reno there was deviation in congestion avoidance phase.
+for ns-3 NewReno there was deviation in congestion avoidance phase.
 
 .. _fig-dce-Linux-reno-vs-ns3-linux-reno:
 

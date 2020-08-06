@@ -54,7 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.31 to ns-3.32</h1>
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li>A new TCP congestion control, <b>TcpLinuxReno</b>, has been added.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -68,6 +68,7 @@ us a note on ns-developers mailing list.</p>
 <h2>Changed behavior:</h2>
 <ul>
 <li>Support for <b>RIFS</b> has been dropped from wifi. RIFS has been obsoleted by the 802.11 standard and support for it was not implemented according to the standard.</li>
+<li>The behavior of <b>TcpPrrRecovery</b> algorithm was aligned to that of Linux.</b>
 </ul>
 
 <hr>
