@@ -11,7 +11,7 @@ The Network Simulator, Version 3
 5) [Working with the development version of ns-3](#working-with-the-development-version-of-ns-3)
 
 Note:  Much more substantial information about ns-3 can be found at
-http://www.nsnam.org
+https://www.nsnam.org
 
 ## An Open Source project
 
@@ -26,11 +26,11 @@ The process of contributing to the ns-3 project varies with
 the people involved, the amount of time they can invest
 and the type of model they want to work on, but the current
 process that the project tries to follow is described here:
-http://www.nsnam.org/developers/contributing-code/
+https://www.nsnam.org/developers/contributing-code/
 
 This README excerpts some details from a more extensive
 tutorial that is maintained at:
-http://www.nsnam.org/documentation/latest/
+https://www.nsnam.org/documentation/latest/
 
 ## Building ns-3
 
@@ -89,7 +89,7 @@ quite likely that you will want to get started on reading
 some ns-3 documentation.
 
 All of that documentation should always be available from
-the ns-3 website: http:://www.nsnam.org/documentation/.
+the ns-3 website: https://www.nsnam.org/documentation/.
 
 This documentation includes:
 
@@ -99,12 +99,12 @@ This documentation includes:
 
   - models in the ns-3 model library
 
-  - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
+  - a wiki for user-contributed tips: https://www.nsnam.org/wiki/
 
   - API documentation generated using doxygen: this is
     a reference manual, most likely not very well suited
     as introductory text:
-    http://www.nsnam.org/doxygen/index.html
+    https://www.nsnam.org/doxygen/index.html
 
 ## Working with the development version of ns-3
 
@@ -123,4 +123,4 @@ git clone https://gitlab.com/nsnam/ns-3-dev.git
 However, we recommend to follow the Gitlab guidelines for starters,
 that includes creating a Gitlab account, forking the ns-3-dev project
 under the new account's name, and then cloning the forked repository.
-You can find more information in the manual [link].
+You can find more information in the [manual](https://www.nsnam.org/docs/manual/html/working-with-git.html).
