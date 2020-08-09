@@ -78,6 +78,11 @@ New user-visible features
 - (wifi) Add 6 GHz band support for 802.11ax
 - (wifi) RIFS support has been removed from the model
 
+- (wifi) A new OFDM error rate model has been added for WiFi (TableBasedErrorRateModel);
+  this model makes use of pre-generated tables using link simulators.
+  The default error rate model has been changed to this one for 802.11n and later standards.
+  YansErrorRateModel is now the default for non-HT.
+
 Bugs fixed
 ----------
 - (applications) Handle possible partial socket sends (during emulation)

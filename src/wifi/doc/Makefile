@@ -23,7 +23,9 @@ IMAGES_EPS = \
         $(FIGURES)/nist-frame-success-rate-ac.eps \
         $(FIGURES)/nist-frame-success-rate-ax.eps \
         $(FIGURES)/wifi-11a-p-1500-adhoc-r-54-min-5-max-50-step-5-throughput.eps \
-        $(FIGURES)/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps
+        $(FIGURES)/wifi-11g-p-1500-infrastructure-r-6-min-5-max-50-step-5-throughput.eps \
+        $(FIGURES)/default-table-based-error-model-validation.eps \
+        $(FIGURES)/error-models-comparison.eps
 
 # rescale pdf figures as necessary
 $(FIGURES)/snir.pdf_width = 3in
