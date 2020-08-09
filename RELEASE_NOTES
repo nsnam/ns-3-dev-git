@@ -32,6 +32,7 @@ New user-visible features
 - (wifi) HT Greenfield (HT_GF) preamble support has been removed from the model
 - (wifi) Some wifi/src/model files were moved to the relevant subfolders (non-ht, ht, vht, he, and rate-control)
 - (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
+- (traffic-control) Added FqPIE queue disc with L4S mode.
 
 Bugs fixed
 ----------

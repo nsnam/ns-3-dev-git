@@ -98,6 +98,7 @@ public:
   static constexpr const char* UNFORCED_DROP = "Unforced drop";  //!< Early probability drops: proactive
   static constexpr const char* FORCED_DROP = "Forced drop";      //!< Drops due to queue limit: reactive
   static constexpr const char* UNFORCED_MARK = "Unforced mark";  //!< Early probability marks: proactive
+  static constexpr const char* CE_THRESHOLD_EXCEEDED_MARK = "CE threshold exceeded mark";  //!< Early probability marks: proactive
 
 protected:
   /**
@@ -131,6 +132,7 @@ private:
    */
   void CalculateP ();
 
+
   static const uint64_t DQCOUNT_INVALID = std::numeric_limits<uint64_t>::max();  //!< Invalid dqCount value
 
   // ** Variables supplied by user
@@ -148,6 +150,8 @@ private:
   bool m_useDerandomization;                    //!< Enable Derandomization feature mentioned in RFC 8033
   double m_markEcnTh;                           //!< ECN marking threshold (default 10% as suggested in RFC 8033)
   Time m_activeThreshold;                       //!< Threshold for activating PIE (disabled by default)
+  Time m_ceThreshold;                           //!< Threshold above which to CE mark
+  bool m_useL4s;                                //!< True if L4S is used (ECT1 packets are marked at CE threshold)
 
   // ** Variables maintained by PIE
   double m_dropProb;                            //!< Variable used in calculation of drop probability
