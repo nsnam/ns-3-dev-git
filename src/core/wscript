@@ -1,7 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
+import re
 
-from waflib import Options, Utils
+from waflib import Context, Configure, Options, Utils
 import wutils
 
 int64x64 = {
@@ -41,9 +42,15 @@ def options(opt):
                    action="store_true", default=False,
                    dest='disable_pthread')
 
-
+    opt.add_option('--check-version',
+                    help=("Print the current build version"),
+                    action="store_true", default=False,
+                    dest='check_version')
 
 def configure(conf):
+
+    conf.load('versioning', ['waf-tools'])
+
     int64x64_impl = Options.options.int64x64_impl
     if int64x64_impl == 'default' or int64x64_impl == 'int128':
 
@@ -150,7 +157,25 @@ int main ()
     conf.write_config_header('ns3/core-config.h', top=True)
 
 def build(bld):
+
+
     bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/core-config.h')
+
+    version_template = bld.path.find_node('model/version-defines.h.in')
+    version_header = bld.bldnode.make_node('version-defines.h') 
+
+    vers_tg = bld(features='version-defines', 
+                  source=version_template, 
+                  target=version_header)
+
+    #silence errors about no mapping for version-defines.h.in
+    vers_tg.mappings['.h'] = lambda *a, **k: None
+    vers_tg.mappings['.h.in'] = lambda *a, **k: None
+
+    if Options.options.check_version:
+        print_version(bld, vers_tg)
+        raise SystemExit(0)
+        return
 
     core = bld.create_ns3_module('core')
     core.source = [
@@ -214,6 +239,7 @@ def build(bld):
         'model/time-printer.cc',
         'model/show-progress.cc',
         'model/system-wall-clock-timestamp.cc',
+        'model/version.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -342,6 +368,7 @@ def build(bld):
         'model/node-printer.h',
         'model/time-printer.h',
         'model/show-progress.h',
+        'model/version.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -415,3 +442,45 @@ def build(bld):
     pymod = bld.ns3_python_bindings()
     if pymod is not None:
         pymod.source += ['bindings/module_helpers.cc']
+
+def print_version(bld, tg):
+    tg.post()
+
+    found = False
+    for task in tg.tasks:
+        if task.__class__.__name__ == 'git_ns3_version_info':
+            found = True
+            #manually run task
+            task.run()
+            break
+
+    if not found:
+        print("Task to generate version information could not be found")
+        return
+
+    handlers = {
+        'VERSION_TAG': lambda s: s.strip('"'),
+        'CLOSEST_TAG': lambda s: s.strip('"'),
+        'VERSION_TAG_DISTANCE': lambda s: '' if s == '0' else "+" + s,
+        'VERSION_COMMIT_HASH': lambda s: "@" + s.strip('"'),
+        'VERSION_DIRTY_FLAG': lambda s: '' if s == '0' else '-dirty',
+        'BUILD_PROFILE': lambda s: "-" + s
+    }
+
+    fields=('VERSION_TAG', 'CLOSEST_TAG', 'VERSION_TAG_DISTANCE', 
+            'VERSION_COMMIT_HASH', 'VERSION_DIRTY_FLAG', 'BUILD_PROFILE') 
+
+    parts = dict()
+
+    for field in fields:
+        if field in bld.env:
+            parts[field] = handlers[field](bld.env[field])
+        else:
+            parts[field] = ''
+
+    if parts['CLOSEST_TAG'] != parts['VERSION_TAG']:
+        parts['CLOSEST_TAG'] = "+" + parts['CLOSEST_TAG']
+    else:
+        parts['CLOSEST_TAG'] = ""
+    
+    print(''.join([parts[f] for f in fields]))

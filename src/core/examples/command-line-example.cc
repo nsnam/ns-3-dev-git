@@ -28,7 +28,7 @@
  * \file
  * \ingroup core-examples
  * \ingroup commandline
- * \brief Example program illustrating use of ns3::CommandLine.
+ * Example program illustrating use of ns3::CommandLine.
  */
 
 using namespace ns3;
@@ -104,7 +104,13 @@ int main (int argc, char *argv[])
 
   // Show initial values:
   std::cout << std::endl;
-  std::cout << cmd.GetName () << std::endl;
+  std::cout << cmd.GetName () << ":" << std::endl;
+
+  //Print the source version used to build this example
+  std::cout << "Program Version: ";
+  cmd.PrintVersion (std::cout);
+  std::cout << std::endl;
+
   std::cout << "Initial values:" << std::endl;
 
   std::cout << std::left << std::setw (10) << "intArg:"

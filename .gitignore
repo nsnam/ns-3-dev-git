@@ -36,3 +36,5 @@ build-dir/
 build/
 /.cproject
 /.project
+
+version.cache
