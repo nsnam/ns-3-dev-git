@@ -258,7 +258,7 @@ QosTxop::PeekNextFrame (uint8_t tid, Mac48Address recipient)
   // lambda to peek the next frame
   auto peek = [this, &tid, &recipient, &it] (Ptr<WifiMacQueue> queue)
     {
-      if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
+      if (tid == 8 && recipient.IsGroup ())  // undefined TID and recipient
         {
           return queue->PeekFirstAvailable (m_qosBlockedDestinations, it);
         }
@@ -337,9 +337,9 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   // the packet can only have been peeked from the block ack manager retransmit
   // queue if:
   // - the peeked packet is a QoS Data frame AND
-  // - the peeked packet is not a broadcast frame AND
+  // - the peeked packet is not a group addressed frame AND
   // - an agreement has been established
-  if (peekedItem->GetHeader ().IsQosData () && !recipient.IsBroadcast ()
+  if (peekedItem->GetHeader ().IsQosData () && !recipient.IsGroup ()
       && GetBaAgreementEstablished (recipient, peekedItem->GetHeader ().GetQosTid ()))
     {
       uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
@@ -380,7 +380,7 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
         }
 
       // try A-MSDU aggregation
-      if (m_low->GetMsduAggregator () != 0 && !recipient.IsBroadcast () && aggregate)
+      if (m_low->GetMsduAggregator () != 0 && !recipient.IsGroup () && aggregate)
         {
           item = m_low->GetMsduAggregator ()->GetNextAmsdu (recipient, tid, txVector, ampduSize, ppduDurationLimit);
         }
@@ -425,8 +425,8 @@ QosTxop::GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const
 
   params.DisableNextData ();
 
-  // broadcast frames
-  if (recipient.IsBroadcast ())
+  // group addressed frames
+  if (recipient.IsGroup ())
     {
       params.DisableRts ();
       params.DisableAck ();
@@ -539,7 +539,7 @@ QosTxop::NotifyAccessGranted (void)
           // check if a block ack agreement needs to be established
           m_currentHdr = peekedItem->GetHeader ();
           m_currentPacket = peekedItem->GetPacket ();
-          if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
+          if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsGroup ()
               && m_stationManager->GetQosSupported (m_currentHdr.GetAddr1 ())
               && (!m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
                   || m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (), OriginatorBlockAckAgreement::RESET))
@@ -550,12 +550,12 @@ QosTxop::NotifyAccessGranted (void)
 
           m_stationManager->UpdateFragmentationThreshold ();
           Ptr<WifiMacQueueItem> item;
-          // non-broadcast QoS Data frames may be sent in MU PPDUs. Given that at this stage
+          // non-group addressed QoS Data frames may be sent in MU PPDUs. Given that at this stage
           // we do not know the bandwidth it would be given nor the selected acknowledgment
           // sequence, we cannot determine the constraints on size and duration limit. Hence,
-          // we only peek the non-broadcast QoS Data frame. MacLow will be in charge of
+          // we only peek the non-group addressed QoS Data frame. MacLow will be in charge of
           // computing the correct limits and dequeue the frame.
-          if (peekedItem->GetHeader ().IsQosData () && !peekedItem->GetHeader ().GetAddr1 ().IsBroadcast ()
+          if (peekedItem->GetHeader ().IsQosData () && !peekedItem->GetHeader ().GetAddr1 ().IsGroup ()
               && !NeedFragmentation ())
             {
               item = Copy (peekedItem);
@@ -1095,7 +1095,7 @@ QosTxop::StartNextPacket (void)
           // check if a block ack agreement needs to be established
           m_currentHdr = nextFrame->GetHeader ();
           m_currentPacket = nextFrame->GetPacket ();
-          if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsBroadcast ()
+          if (m_currentHdr.IsQosData () && !m_currentHdr.GetAddr1 ().IsGroup ()
               && m_stationManager->GetQosSupported (m_currentHdr.GetAddr1 ())
               && (!m_baManager->ExistsAgreement (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ())
                   || m_baManager->ExistsAgreementInState (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (), OriginatorBlockAckAgreement::RESET))
@@ -1109,12 +1109,12 @@ QosTxop::StartNextPacket (void)
             {
               item = Copy (m_baManager->GetBar ());
             }
-          // non-broadcast QoS Data frames may be sent in MU PPDUs. Given that at this stage
+          // non-group addressed QoS Data frames may be sent in MU PPDUs. Given that at this stage
           // we do not know the bandwidth it would be given nor the selected acknowledgment
           // sequence, we cannot determine the constraints on size and duration limit. Hence,
-          // we only peek the non-broadcast QoS Data frame. MacLow will be in charge of
+          // we only peek the non-group addressed QoS Data frame. MacLow will be in charge of
           // computing the correct limits and dequeue the frame.
-          else if (nextFrame->GetHeader ().IsQosData () && !nextFrame->GetHeader ().GetAddr1 ().IsBroadcast ())
+          else if (nextFrame->GetHeader ().IsQosData () && !nextFrame->GetHeader ().GetAddr1 ().IsGroup ())
             {
               item = Copy (nextFrame);
             }

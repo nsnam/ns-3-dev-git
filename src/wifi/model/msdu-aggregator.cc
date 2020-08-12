@@ -86,7 +86,7 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
    * individual address or to the GCR concealment address" (Section 10.12
    * of 802.11-2016)
    */
-  NS_ABORT_MSG_IF (recipient.IsBroadcast (), "Recipient address is broadcast");
+  NS_ABORT_MSG_IF (recipient.IsGroup (), "Recipient address is group addressed");
 
   Ptr<QosTxop> qosTxop = m_edca.find (QosUtilsMapTidToAc (tid))->second;
   Ptr<WifiMacQueue> queue = qosTxop->GetWifiMacQueue ();

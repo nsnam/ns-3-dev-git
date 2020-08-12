@@ -373,7 +373,7 @@ void
 ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (this << packet << to << from);
-  if (to.IsBroadcast () || m_stationManager->IsAssociated (to))
+  if (to.IsGroup () || m_stationManager->IsAssociated (to))
     {
       ForwardDown (packet, from, to);
     }

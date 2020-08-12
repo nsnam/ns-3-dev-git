@@ -213,7 +213,7 @@ MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txV
   std::vector<Ptr<WifiMacQueueItem>> mpduList;
   Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
 
-  NS_ASSERT (mpdu->GetHeader ().IsQosData () && !recipient.IsBroadcast ());
+  NS_ASSERT (mpdu->GetHeader ().IsQosData () && !recipient.IsGroup ());
 
   uint8_t tid = GetTid (mpdu->GetPacket (), mpdu->GetHeader ());
   auto edcaIt = m_edca.find (QosUtilsMapTidToAc (tid));

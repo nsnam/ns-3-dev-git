@@ -466,12 +466,12 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
   /* The packet received by this function can be any of the following:
    * (a) a management frame dequeued from the Txop
    * (b) a non-QoS data frame dequeued from the Txop
-   * (c) a non-broadcast QoS Data frame peeked or dequeued from a QosTxop
-   * (d) a broadcast QoS data or DELBA Request frame dequeued from a QosTxop
+   * (c) a non-group addressed QoS Data frame peeked or dequeued from a QosTxop
+   * (d) a group addressed QoS data or DELBA Request frame dequeued from a QosTxop
    * (e) a BlockAckReq or ADDBA Request frame
    * (f) a fragment of non-QoS/QoS Data frame dequeued from the Txop/QosTxop
    */
-  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsBroadcast ()
+  if (hdr.IsQosData () && !hdr.GetAddr1 ().IsGroup ()
       && !hdr.IsMoreFragments () && hdr.GetFragmentNumber () == 0)
     {
       // We get here if the received packet is a non-broadcast QoS data frame
