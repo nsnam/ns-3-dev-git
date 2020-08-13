@@ -8,6 +8,8 @@
 .base-test:
   stage: test
   script:
+    # Add a git tag so that build version works with the CI fetching shallow clones
+    - git tag ns-3-dev-ci-test
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
@@ -61,7 +63,7 @@ daily-test-optimized:
       - $RELEASE == "daily"
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind git --noconfirm
 
 ### Valgrind tests
 # Run the test.py script with files compiled in debug mode
@@ -111,7 +113,7 @@ weekly-test-optimized:
       - $RELEASE == "weekly"
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind git --noconfirm
 
 # Do a check for the TAKES_FOREVER jobs, only in optimized mode
 weekly-test-takes-forever-optimized:
@@ -126,4 +128,4 @@ weekly-test-takes-forever-optimized:
       - $RELEASE == "weekly"
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind git --noconfirm
