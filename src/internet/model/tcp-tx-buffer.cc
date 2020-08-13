@@ -312,8 +312,8 @@ TcpTxBuffer::GetTransmittedSegment (uint32_t numBytes, const SequenceNumber32 &s
           next++;
           if (next != m_sentList.end ())
             {
-              // Next is not sacked... there is the possibility to merge
-              if (! (*next)->m_sacked)
+              // Next is not sacked and have the same value for m_lost ... there is the possibility to merge
+              if ((! (*next)->m_sacked) && ((*it)->m_lost == (*next)->m_lost))
                 {
                   s = std::min(s, (*it)->m_packet->GetSize () + (*next)->m_packet->GetSize ());
                 }

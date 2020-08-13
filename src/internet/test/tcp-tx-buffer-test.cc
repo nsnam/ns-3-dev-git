@@ -50,6 +50,9 @@ private:
   void TestTransmittedBlock ();
   /** \brief Test the generation of the "next" block */
   void TestNextSeg ();
+  /** \brief Test the logic of merging items in GetTransmittedSegment()
+   * which is triggered by CopyFromSequence()*/
+  void TestMergeItemsWhenGetTransmittedSegment ();
   /** \brief Callback to provide a value of receiver window */
   uint32_t GetRWnd (void) const;
 };
@@ -84,6 +87,16 @@ TcpTxBufferTestCase::DoRun ()
                        &TcpTxBufferTestCase::TestTransmittedBlock, this);
   Simulator::Schedule (Seconds (0.0),
                        &TcpTxBufferTestCase::TestNextSeg, this);
+
+  /*
+   * Case for transmitted block:
+   *  -> transmitted packets are marked differently for m_lost under some scenarios
+   *  -> packets could be small than MSS when socket buffer is not a multiple of MSS.
+   *  -> during retransmission, the sender tries to send a full segment but it
+   *     should stop to merge items when they have different values for m_lost.
+   */
+  Simulator::Schedule (Seconds (0.0),
+                         &TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment, this);
 
   Simulator::Run ();
   Simulator::Destroy ();
@@ -349,6 +362,24 @@ TcpTxBufferTestCase::TestNewBlock ()
   txBuf->DiscardUpTo (SequenceNumber32 (381));
   NS_TEST_ASSERT_MSG_EQ (txBuf->Size (), 0,
                          "Size is different than expected");
+}
+
+void
+TcpTxBufferTestCase::TestMergeItemsWhenGetTransmittedSegment ()
+{
+  TcpTxBuffer txBuf;
+  SequenceNumber32 head (1);
+  txBuf.SetHeadSequence (head);
+  txBuf.SetSegmentSize (2000);
+
+  txBuf.Add(Create<Packet> (2000));
+  txBuf.CopyFromSequence (1000, SequenceNumber32(1));
+  txBuf.CopyFromSequence (1000, SequenceNumber32(1001));
+  txBuf.MarkHeadAsLost();
+
+  // GetTransmittedSegment() will be called and handle the case that two items
+  // have different m_lost value.
+  txBuf.CopyFromSequence (2000, SequenceNumber32(1));
 }
 
 void
