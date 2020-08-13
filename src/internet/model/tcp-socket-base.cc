@@ -1315,6 +1315,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
       else
         {
           m_sackEnabled = false;
+          m_txBuffer->SetSackEnabled (false);
         }
 
       // When receiving a <SYN> or <SYN-ACK> we should adapt TS to the other end

@@ -167,6 +167,18 @@ public:
   void SetMaxBufferSize (uint32_t n);
 
   /**
+   * \brief check whether SACK is used on the corresponding TCP socket
+   */
+  bool IsSackEnabled (void) const;
+
+  /**
+   * \brief tell tx-buffer whether SACK is used on this TCP socket
+   *
+   * \param enabled whether sack is used
+   */
+  void SetSackEnabled (bool enabled);
+
+  /**
    * \brief Returns the available capacity of this buffer
    * \returns available capacity in this Tx window
    */
@@ -606,6 +618,7 @@ private:
   uint32_t m_dupAckThresh {0}; //!< Duplicate Ack threshold from TcpSocketBase
   uint32_t m_segmentSize {0}; //!< Segment size from TcpSocketBase
   bool     m_renoSack {false}; //!< Indicates if AddRenoSack was called
+  bool     m_sackEnabled {true}; //!< Indicates if SACK is enabled on this connection
 
   static Callback<void, TcpTxItem *> m_nullCb; //!< Null callback for an item
 };

@@ -112,6 +112,18 @@ TcpTxBuffer::SetMaxBufferSize (uint32_t n)
   m_maxBuffer = n;
 }
 
+bool
+TcpTxBuffer::IsSackEnabled (void) const
+{
+  return m_sackEnabled;
+}
+
+void
+TcpTxBuffer::SetSackEnabled (bool enabled)
+{
+  m_sackEnabled = enabled;
+}
+
 uint32_t
 TcpTxBuffer::Available (void) const
 {
@@ -1379,7 +1391,15 @@ void
 TcpTxBuffer::AddRenoSack (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_sentList.size () > 1);
+
+  if (m_sackEnabled)
+    {
+      NS_ASSERT (m_sentList.size () > 1);
+    }
+  else
+    {
+      NS_ASSERT (m_sentList.size () > 0);
+    }
 
   m_renoSack = true;
 
