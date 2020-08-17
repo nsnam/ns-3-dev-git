@@ -94,21 +94,7 @@ std::string
 Version::ShortVersion (void)
 {
   std::ostringstream ostream;
-  ostream << "ns-" << Major ()
-          << "." << Minor ();
-
-  //only include patch if it is not 0
-  auto patch = Patch ();
-  if (patch > 0)
-    {
-      ostream << '.' << patch;
-    }
-
-  auto rc = ReleaseCandidate ();
-  if (!rc.empty ())
-    {
-      ostream << '-' << rc;
-    }
+  ostream << VersionTag (); 
 
   auto ancestorTag = ClosestAncestorTag ();
   if ( ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )
@@ -146,21 +132,7 @@ std::string
 Version::LongVersion (void)
 {
   std::ostringstream ostream;
-  ostream << "ns-" << Major ()
-          << "." << Minor ();
-
-  //only include patch if it is not 0
-  auto patch = Patch ();
-  if (patch > 0)
-    {
-      ostream << '.' << patch;
-    }
-
-  auto rc = ReleaseCandidate ();
-  if (!rc.empty ())
-    {
-      ostream << '-' << rc;
-    }
+  ostream << VersionTag (); 
 
   auto ancestorTag = ClosestAncestorTag ();
   if ( !ancestorTag.empty () && (ancestorTag != VersionTag ()) )

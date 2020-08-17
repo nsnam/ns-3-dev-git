@@ -446,17 +446,11 @@ def build(bld):
 def print_version(bld, tg):
     tg.post()
 
-    found = False
     for task in tg.tasks:
         if task.__class__.__name__ == 'git_ns3_version_info':
-            found = True
             #manually run task
             task.run()
             break
-
-    if not found:
-        print("Task to generate version information could not be found")
-        return
 
     handlers = {
         'VERSION_TAG': lambda s: s.strip('"'),

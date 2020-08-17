@@ -149,7 +149,7 @@ class git_ns3_version_info(ns3_version_info):
 
         if not result:
             raise ValueError("Closest ns3 tag found in git log"
-                             "does not match the expected format (tag='{}')"
+                             " does not match the expected format (tag='{}')"
                              .format(tag))
 
 @TaskGen.feature('version-defines')
@@ -159,7 +159,7 @@ def generate_version_defines(self):
     #from fields stored in env 
     subst_task = self.create_task('subst', self.source, self.target)
 
-    if self.env['HAVE_GIT_REPO']:
+    if self.env['HAVE_NS3_REPO']:
         #if a git repo is present, run the version task first to
         #populate the appropriate fields with data from the git repo
         version_task = self.create_task('git_ns3_version_info')
@@ -206,7 +206,7 @@ def check_git_repo_has_ns3_tags(self):
         '--tags',
         '--abbrev=0',
         '--match',
-        'ns-3*'
+        'ns-3.[0-9]*'
     ]
 
     try:
@@ -223,32 +223,45 @@ def check_git_repo_has_ns3_tags(self):
 
 def configure(ctx):
 
+    has_git_repo = False
     has_ns3_tags = False
 
     if ctx.check_git_repo():
+        has_git_repo = True
         has_ns3_tags = ctx.check_git_repo_has_ns3_tags()
 
-    ctx.env['HAVE_GIT_REPO'] = has_ns3_tags
+    ctx.env['HAVE_GIT_REPO'] = has_git_repo
+    ctx.env['HAVE_NS3_REPO'] = has_ns3_tags
 
     if not has_ns3_tags:
+        version_cache = ConfigSet.ConfigSet ()
+
         #no ns-3 repository, look for a cache file containing the version info
         ctx.start_msg('Searching for file {}'.format(CACHE_FILE))
 
         glob_pattern = '**/{}'.format(CACHE_FILE)
         cache_path = ctx.path.ant_glob(glob_pattern)
 
-        if len(cache_path) == 0:
+        if len(cache_path) > 0:
+            #Found cache file
+            #Load it and merge the information into the main context environment
+            src_path = cache_path[0].srcpath()
+            ctx.end_msg(src_path)
+
+            version_cache.load (src_path)
+        else:
             ctx.end_msg(False)
-            ctx.fatal("Could not find {} under {}.  This file must exist and contain "
-                        "version information when a git repository is not "
-                        "present.".format(CACHE_FILE, ctx.path))
 
-        #Found cache file
-        #Load it and merge the information into the main context environment
-        src_path = cache_path[0].srcpath()
-        ctx.end_msg(src_path)
+            #no version information, create dummy info
+            version_cache['CLOSEST_TAG'] = '"ns-3.xx"'
+            version_cache['VERSION_COMMIT_HASH'] = '"gxxxxxxx"'
+            version_cache['VERSION_DIRTY_FLAG'] = '0'
+            version_cache['VERSION_MAJOR'] = '3'
+            version_cache['VERSION_MINOR'] = '0'
+            version_cache['VERSION_PATCH'] = '0'
+            version_cache['VERSION_RELEASE_CANDIDATE'] = '""'
+            version_cache['VERSION_TAG'] = '"ns-3.xx"'
+            version_cache['VERSION_TAG_DISTANCE'] = '0'
 
-        version_cache = ConfigSet.ConfigSet ()
-        version_cache.load (src_path)
         ctx.env.update(version_cache)
 

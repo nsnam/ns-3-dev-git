@@ -34,8 +34,6 @@ stages:
 .base-build:
   stage: build
   script:
-    # Add a git tag so that build version works with the CI fetching shallow clones
-    - git tag ns-3-dev-ci
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
@@ -57,7 +55,7 @@ per-commit-compile-debug:
     MODE: debug
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost git --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-release:
   extends: .base-build
@@ -67,7 +65,7 @@ per-commit-compile-release:
     MODE: release
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost git --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 per-commit-compile-optimized:
   extends: .base-build
@@ -77,7 +75,7 @@ per-commit-compile-optimized:
     MODE: optimized
   before_script:
     - pacman -Syu --noconfirm
-    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost git --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
 
 # Weekly jobs for other distribution and compilers
 include:

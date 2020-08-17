@@ -16,7 +16,7 @@
       - $CLANG_BUILD_ENABLE == "True"
   before_script:
     - apt-get --quiet update --yes
-    - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk2.0-0 libgtk2.0-dev libboost-all-dev libgsl23 git --yes
+    - apt-get --quiet install gcc g++ python python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk2.0-0 libgtk2.0-dev libboost-all-dev libgsl23 --yes
     - apt-get --quiet install software-properties-common gnupg wget --yes
     - echo -en "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main \n deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-$CLANG main" > /etc/apt/sources.list.d/llvm.list
     - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
