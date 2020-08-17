@@ -176,17 +176,9 @@ MeshWifiInterfaceMac::GetFrequencyChannel () const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_phy != 0); // need PHY to set/get channel
-
-  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-  if (phy != 0)
-    {
-      return phy->GetChannelNumber ();
-    }
-  else
-    {
-      return 0;
-    }
+  return m_phy->GetChannelNumber ();
 }
+
 void
 MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
 {
@@ -203,8 +195,7 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
    *
    * Now we use dirty channel switch -- just change frequency
    */
-  Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
-  phy->SetChannelNumber (new_id);
+  m_phy->SetChannelNumber (new_id);
   // Don't know NAV on new channel
   m_channelAccessManager->NotifyNavResetNow (Seconds (0));
 }
