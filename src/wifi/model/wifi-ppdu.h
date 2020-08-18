@@ -125,18 +125,19 @@ private:
    */
   void SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand band);
 
-  DsssSigHeader m_dsssSig;          //!< the DSSS SIG PHY header
-  LSigHeader m_lSig;                //!< the L-SIG PHY header
-  HtSigHeader m_htSig;              //!< the HT-SIG PHY header
-  VhtSigHeader m_vhtSig;            //!< the VHT-SIG PHY header
-  HeSigHeader m_heSig;              //!< the HE-SIG PHY header
-  WifiPreamble m_preamble;          //!< the PHY preamble
-  WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
-  WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
-  bool m_truncatedTx;               //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
-  WifiPhyBand m_band;               //!< the WifiPhyBand used to transmit that PPDU
-  uint16_t m_channelWidth;          //!< the channel width used to transmit that PPDU in MHz
-  uint8_t m_txPowerLevel;           //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
+  DsssSigHeader m_dsssSig;                     //!< the DSSS SIG PHY header
+  LSigHeader m_lSig;                           //!< the L-SIG PHY header
+  HtSigHeader m_htSig;                         //!< the HT-SIG PHY header
+  VhtSigHeader m_vhtSig;                       //!< the VHT-SIG PHY header
+  HeSigHeader m_heSig;                         //!< the HE-SIG PHY header
+  WifiPreamble m_preamble;                     //!< the PHY preamble
+  WifiModulationClass m_modulation;            //!< the modulation used for the transmission of this PPDU
+  WifiConstPsduMap m_psdus;                    //!< the PSDUs contained in this PPDU
+  bool m_truncatedTx;                          //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
+  WifiPhyBand m_band;                          //!< the WifiPhyBand used to transmit that PPDU
+  uint16_t m_channelWidth;                     //!< the channel width used to transmit that PPDU in MHz
+  uint8_t m_txPowerLevel;                      //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
+  WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
 };
 
 /**

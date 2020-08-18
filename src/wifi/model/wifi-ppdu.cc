@@ -51,6 +51,10 @@ WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time 
     m_channelWidth (txVector.GetChannelWidth ())
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band);
+  if (m_preamble == WIFI_PREAMBLE_HE_MU)
+    {
+      m_muUserInfos = txVector.GetHeMuUserInfoMap ();
+    }
   SetPhyHeaders (txVector, ppduDuration, band);
 }
 
@@ -158,8 +162,8 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
           break;
         }
         default:
-        NS_FATAL_ERROR ("unsupported modulation class");
-        break;
+          NS_FATAL_ERROR ("unsupported modulation class");
+          break;
     }
 }
 
@@ -357,6 +361,10 @@ WifiPpdu::GetTxVector (void) const
     }
   txVector.SetTxPowerLevel (m_txPowerLevel);
   txVector.SetAggregation (m_psdus.size () > 1 || m_psdus.begin ()->second->IsAggregate ());
+  for (auto const& muUserInfo : m_muUserInfos)
+    {
+      txVector.SetMode (muUserInfo.second.mcs, muUserInfo.first);
+    }
   return txVector;
 }
 
