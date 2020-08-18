@@ -232,11 +232,10 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
 }
 
 double
-InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiTxVector txVector) const
+InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth, uint8_t nss) const
 {
   //thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
-  uint16_t channelWidth = txVector.GetChannelWidth ();
   //Nt is the power of thermal noise in W
   double Nt = BOLTZMANN * 290 * channelWidth * 1e6;
   //receiver noise Floor (W) which accounts for thermal noise and non-idealities of the receiver
@@ -245,9 +244,9 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiT
   double snr = signal / noise; //linear scale
   NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr=" << RatioToDb(snr) << "dB");
   double gain = 1;
-  if (m_numRxAntennas > txVector.GetNss ())
+  if (m_numRxAntennas > nss)
     {
-      gain = static_cast<double>(m_numRxAntennas) / txVector.GetNss (); //compute gain offered by diversity for AWGN
+      gain = static_cast<double>(m_numRxAntennas) / nss; //compute gain offered by diversity for AWGN
     }
   NS_LOG_DEBUG ("SNR improvement thanks to diversity: " << 10 * std::log10 (gain) << "dB");
   snr *= gain;
@@ -327,7 +326,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t staId,
       Time current = j->first;
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
-      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector);
+      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector.GetChannelWidth (), txVector.GetNss (staId));
       //Case 1: Both previous and current point to the windowed payload
       if (previous >= windowStart)
         {
@@ -373,7 +372,7 @@ InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChange
       Time current = j->first;
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
-      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector);
+      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector.GetChannelWidth (), 1);
       //Case 1: previous and current after payload start
       if (previous >= phyPayloadStart)
         {
@@ -502,7 +501,7 @@ InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChanges *
       Time current = j->first;
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
-      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector);
+      double snr = CalculateSnr (powerW, noiseInterferenceW, txVector.GetChannelWidth (), 1);
       //Case 1: previous and current after payload start: nothing to do
       if (previous >= phyPayloadStart)
         {
@@ -739,7 +738,8 @@ InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, uint16_t staId,
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             event->GetTxVector ());
+                             event->GetTxVector ().GetChannelWidth (),
+                             event->GetTxVector ().GetNss (staId));
 
   /* calculate the SNIR at the start of the MPDU (located through windowing) and accumulate
    * all SNIR changes in the SNIR vector.
@@ -753,13 +753,14 @@ InterferenceHelper::CalculatePayloadSnrPer (Ptr<Event> event, uint16_t staId,
 }
 
 double
-InterferenceHelper::CalculateSnr (Ptr<Event> event) const
+InterferenceHelper::CalculateSnr (Ptr<Event> event, uint8_t nss) const
 {
   NiChanges ni;
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             event->GetTxVector ());
+                             event->GetTxVector ().GetChannelWidth (),
+                             nss);
  return snr;
 }
 
@@ -770,7 +771,8 @@ InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event) const
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             event->GetTxVector ());
+                             event->GetTxVector ().GetChannelWidth (),
+                             1);
 
   /* calculate the SNIR at the start of the PHY header and accumulate
    * all SNIR changes in the SNIR vector.
@@ -790,7 +792,8 @@ InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event) const
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             event->GetTxVector ());
+                             event->GetTxVector ().GetChannelWidth (),
+                             1);
   
   /* calculate the SNIR at the start of the PHY header and accumulate
    * all SNIR changes in the SNIR vector.

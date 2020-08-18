@@ -201,10 +201,11 @@ public:
    * Calculate the SNIR for the event (starting from now until the event end).
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
+   * \param nss the number of spatial streams
    *
    * \return the SNR for the PPDU in linear scale
    */
-  double CalculateSnr (Ptr<Event> event) const;
+  double CalculateSnr (Ptr<Event> event, uint8_t nss) const;
   /**
    * Calculate the SNIR at the start of the non-HT PHY header and accumulate
    * all SNIR changes in the SNIR vector.
@@ -244,11 +245,12 @@ protected:
    *
    * \param signal signal power, W
    * \param noiseInterference noise and interference power, W
-   * \param txVector the TXVECTOR
+   * \param channelWidth signal width (MHz)
+   * \param nss the number of spatial streams
    *
    * \return SNR in linear scale
    */
-  double CalculateSnr (double signal, double noiseInterference, WifiTxVector txVector) const;
+  double CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth, uint8_t nss) const;
   /**
    * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
    * The duration and mode are used to calculate how many bits are present in the chunk.
