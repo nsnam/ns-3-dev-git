@@ -1258,3 +1258,13 @@ option which will print the full build version and exit.
   Waf: Entering directory `/g/g14/mdb/gitlab/mdb/ns-3-dev/build/debug'
   ns-3.31+28@gce1eb40-dirty-debug
 
+If information about the build version is absent from the ns-3 directory,
+the build system will print out a dummy build version such as follows:
+
+.. sourcecode:: text
+
+  $ ./waf --check-version
+  ns-3.xx@gxxxxxxx-debug
+
+An example situation that may lead to the lack of version information is
+if the ns-3 repository is cloned as a git shallow clone.
