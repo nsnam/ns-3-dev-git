@@ -248,9 +248,17 @@ CoDelQueueDisc::DoDequeue (void)
   if (item && m_useL4s)
     {
       uint8_t tosByte = 0;
-      if (item->GetUint8Value (QueueItem::IP_DSFIELD, tosByte) && ((tosByte & 0x3) == 1))
+      if (item->GetUint8Value (QueueItem::IP_DSFIELD, tosByte) && (((tosByte & 0x3) == 1) || (tosByte & 0x3) == 3))
         {
-          NS_LOG_DEBUG ("ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
+          if ((tosByte & 0x3) == 1)
+            {
+              NS_LOG_DEBUG ("ECT1 packet " << static_cast<uint16_t> (tosByte & 0x3));
+            }
+          else
+            {
+              NS_LOG_DEBUG ("CE packet " << static_cast<uint16_t> (tosByte & 0x3));
+            }
+
           if (CoDelTimeAfter (ldelay, Time2CoDel (m_ceThreshold)) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
             {
               NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
