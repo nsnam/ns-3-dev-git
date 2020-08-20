@@ -345,6 +345,7 @@ LrWpanCsmaCa::RandomBackoffDelay ()
         {
           m_canProceedEvent = Simulator::Schedule (randomBackoff, &LrWpanCsmaCa::CanProceed, this);
         }
+
     }
 }
 

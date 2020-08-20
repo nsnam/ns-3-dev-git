@@ -49,7 +49,6 @@ public:
   LrWpanCcaTestCase ();
 
 private:
-
   /**
    * \brief Function called when PlmeCcaConfirm is hit.
    * \param testcase The TestCase.
@@ -109,7 +108,7 @@ LrWpanCcaTestCase::LrWpanCcaTestCase ()
 void
 LrWpanCcaTestCase::PlmeCcaConfirm (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> device, LrWpanPhyEnumeration status)
 {
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PlmeCcaConfirm: " << LrWpanHelper::LrWpanPhyEnumerationPrinter (status) << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PlmeCcaConfirm: " << LrWpanHelper::LrWpanPhyEnumerationPrinter (status) << std::endl;
 
   testcase->m_status = status;
 }
@@ -119,7 +118,7 @@ LrWpanCcaTestCase::PhyTxBegin (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice>
 {
   std::ostringstream os;
   packet->Print (os);
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PhyTxBegin: " << os.str () << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PhyTxBegin: " << os.str () << std::endl;
 }
 
 void
@@ -127,7 +126,7 @@ LrWpanCcaTestCase::PhyTxEnd (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> d
 {
   std::ostringstream os;
   packet->Print (os);
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PhyTxEnd: " << os.str () << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PhyTxEnd: " << os.str () << std::endl;
 }
 
 void
@@ -135,7 +134,7 @@ LrWpanCcaTestCase::PhyRxBegin (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice>
 {
   std::ostringstream os;
   packet->Print (os);
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PhyRxBegin: " << os.str () << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PhyRxBegin: " << os.str () << std::endl;
 }
 
 void
@@ -143,7 +142,7 @@ LrWpanCcaTestCase::PhyRxEnd (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDevice> d
 {
   std::ostringstream os;
   packet->Print (os);
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PhyRxEnd (" << sinr << "): " << os.str () << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PhyRxEnd (" << sinr << "): " << os.str () << std::endl;
 
   // The first packet was received. Now start a CCA, to try to detect the second packet which is still being transmitted.
   device->GetPhy ()->PlmeCcaRequest ();
@@ -153,7 +152,7 @@ void LrWpanCcaTestCase::PhyRxDrop (LrWpanCcaTestCase *testcase, Ptr<LrWpanNetDev
 {
   std::ostringstream os;
   packet->Print (os);
-  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().GetSeconds () << "] " << device->GetMac ()->GetShortAddress () << " PhyRxDrop: " << os.str () << std::endl;
+  std::cout << std::setiosflags (std::ios::fixed) << std::setprecision (9) << "[" << Simulator::Now ().As (Time::S) << "] " << device->GetMac ()->GetShortAddress () << " PhyRxDrop: " << os.str () << std::endl;
 }
 
 void

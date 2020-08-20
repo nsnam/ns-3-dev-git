@@ -47,7 +47,7 @@ AsciiLrWpanMacTransmitSinkWithContext (
   std::string context,
   Ptr<const Packet> p)
 {
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().As (Time::S) << " " << context << " " << *p << std::endl;
 }
 
 /**
@@ -60,7 +60,7 @@ AsciiLrWpanMacTransmitSinkWithoutContext (
   Ptr<OutputStreamWrapper> stream,
   Ptr<const Packet> p)
 {
-  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+  *stream->GetStream () << "t " << Simulator::Now ().As (Time::S) << " " << *p << std::endl;
 }
 
 LrWpanHelper::LrWpanHelper (void)

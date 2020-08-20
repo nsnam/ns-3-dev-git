@@ -122,7 +122,7 @@ LrWpanPhy::GetTypeId (void)
 
 LrWpanPhy::LrWpanPhy (void)
   : m_edRequest (),
-    m_setTRXState ()
+  m_setTRXState ()
 {
   m_trxState = IEEE_802_15_4_PHY_TRX_OFF;
   m_trxStatePending = IEEE_802_15_4_PHY_IDLE;
@@ -330,7 +330,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
 
       // Add any incoming packet to the current interference before checking the
       // SINR.
-      NS_LOG_DEBUG (this << " receiving packet with power: " << 10 * log10(LrWpanSpectrumValueHelper::TotalAvgPower (lrWpanRxParams->psd, m_phyPIBAttributes.phyCurrentChannel)) + 30 << "dBm");
+      NS_LOG_DEBUG (this << " receiving packet with power: " << 10 * log10 (LrWpanSpectrumValueHelper::TotalAvgPower (lrWpanRxParams->psd, m_phyPIBAttributes.phyCurrentChannel)) + 30 << "dBm");
       m_signal->AddSignal (lrWpanRxParams->psd);
       Ptr<SpectrumValue> interferenceAndNoise = m_signal->GetSignalPsd ();
       *interferenceAndNoise -= *lrWpanRxParams->psd;
@@ -465,7 +465,7 @@ LrWpanPhy::EndRx (Ptr<SpectrumSignalParameters> par)
 
   if (params == 0)
     {
-      NS_LOG_LOGIC ("Node: " << m_device->GetAddress() << " Removing interferent: " << *(par->psd));
+      NS_LOG_LOGIC ("Node: " << m_device->GetAddress () << " Removing interferent: " << *(par->psd));
       return;
     }
 
