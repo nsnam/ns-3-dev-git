@@ -21,8 +21,6 @@
 #ifndef IPV4_NIX_VECTOR_ROUTING_H
 #define IPV4_NIX_VECTOR_ROUTING_H
 
-#include <map>
-
 #include "ns3/channel.h"
 #include "ns3/node-container.h"
 #include "ns3/node-list.h"
@@ -32,6 +30,9 @@
 #include "ns3/nix-vector.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/nstime.h"
+
+#include <map>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -228,6 +229,11 @@ private:
   void CheckCacheStateAndFlush (void) const;
 
   /**
+   * Build map from IPv4 Address to Node for faster lookup.
+   */
+  void BuildIpv4AddressToNodeMap (void);
+
+  /**
    * Flag to mark when caches are dirty and need to be flushed.  
    * Used for lazy cleanup of caches when there are many topology changes.
    */
@@ -244,6 +250,33 @@ private:
 
   /** Total neighbors used for nix-vector to determine number of bits */
   uint32_t m_totalNeighbors;
+
+
+  /**
+   * \brief Hashing for the ipv4Address class
+   */
+  struct Ipv4AddressHash
+  {
+    /**
+     * \brief operator ()
+     * \param address the IPv4 address to hash
+     * \return the hash of the address
+     */
+    size_t operator() (const Ipv4Address &address) const
+    {
+      return std::hash<uint32_t>()(address.Get ());
+    }
+  };
+
+  /**
+   * Mapping of IPv4 address to ns-3 node.
+   *
+   * Used to avoid linear searching of nodes/devices to find a node in
+   * GetNodeByIp() method.  NIX vector routing assumes IP addresses
+   * are unique so mapping can be done without duplication.
+   **/
+  typedef std::unordered_map<Ipv4Address, ns3::Ptr<ns3::Node>, Ipv4AddressHash > Ipv4AddressToNodeMap;
+  static Ipv4AddressToNodeMap g_ipv4AddressToNodeMap;
 };
 } // namespace ns3
 
