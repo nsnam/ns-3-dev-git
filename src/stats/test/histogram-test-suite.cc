@@ -24,15 +24,15 @@
 using namespace ns3;
 
 /**
- * \ingroup flow-monitor
- * \defgroup flow-monitor-test FlowMonitor module tests
+ * \ingroup stats
+ * \defgroup stats-test Stats module tests
  */
 
 /**
- * \ingroup flow-monitor-test
+ * \ingroup stats-test
  * \ingroup tests
  *
- * \brief FlowMonitor Histogram Test
+ * \brief Histogram Test
  */
 class HistogramTestCase : public ns3::TestCase {
 private:
@@ -81,10 +81,10 @@ HistogramTestCase::DoRun (void)
 }
 
 /**
- * \ingroup flow-monitor-test
+ * \ingroup stats-test
  * \ingroup tests
  *
- * \brief FlowMonitor Histogram TestSuite
+ * \brief Histogram TestSuite
  */
 class HistogramTestSuite : public TestSuite
 {

@@ -36,6 +36,7 @@ def build(bld):
         'model/file-aggregator.cc',
         'model/gnuplot-aggregator.cc',
         'model/get-wildcard-matches.cc', 
+        'model/histogram.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('stats')
@@ -43,6 +44,7 @@ def build(bld):
         'test/basic-data-calculators-test-suite.cc',
         'test/average-test-suite.cc',
         'test/double-probe-test-suite.cc',
+        'test/histogram-test-suite.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
@@ -76,6 +78,7 @@ def build(bld):
         'model/file-aggregator.h',
         'model/gnuplot-aggregator.h',
         'model/get-wildcard-matches.h',
+        'model/histogram.h',
         ]
 
     if bld.env['SQLITE_STATS']:

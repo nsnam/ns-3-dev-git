@@ -62,6 +62,9 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
 <li>The <b>Sifs</b>, <b>Slot</b> and <b>Pifs</b> attributes have been moved from <b>WifiMac</b> to <b>WifiPhy</b> to better reflect that they are PHY characteristics, to decouple the MAC configuration from the PHY configuration and to ease the support for future standards.</li>
+<li>The Histogram class was moved from the flow-monitor module to the stats
+module to make it more easily accessed.  If you previously used Histogram by
+by including flow-monitor.h you will need to change that to stats-module.h.
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

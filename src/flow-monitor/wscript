@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('flow-monitor', ['internet', 'config-store'])
+    obj = bld.create_ns3_module('flow-monitor', ['internet', 'config-store', 'stats'])
     obj.source = ["model/%s" % s for s in [
        'flow-monitor.cc',
        'flow-classifier.cc',
@@ -10,14 +10,11 @@ def build(bld):
        'ipv4-flow-probe.cc',
        'ipv6-flow-classifier.cc',
        'ipv6-flow-probe.cc',
-       'histogram.cc',
         ]]
     obj.source.append("helper/flow-monitor-helper.cc")
 
     module_test = bld.create_ns3_module_test_library('flow-monitor')
-    module_test.source = [
-        'test/histogram-test-suite.cc',
-        ]
+    module_test.source = [ ]
 
     # Tests encapsulating example programs should be listed here
     if (bld.env['ENABLE_EXAMPLES']):
@@ -35,7 +32,6 @@ def build(bld):
        'ipv4-flow-probe.h',
        'ipv6-flow-classifier.h',
        'ipv6-flow-probe.h',
-       'histogram.h',
         ]]
     headers.source.append("helper/flow-monitor-helper.h")
 
