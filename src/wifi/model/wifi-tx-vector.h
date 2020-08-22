@@ -88,6 +88,7 @@ public:
    * \param channelWidth the channel width in MHz
    * \param aggregation enable or disable MPDU aggregation
    * \param stbc enable or disable STBC
+   * \param ldpc enable or disable LDPC (BCC is used otherwise)
    * \param bssColor the BSS color
    */
   WifiTxVector (WifiMode mode,
@@ -99,7 +100,8 @@ public:
                 uint8_t ness,
                 uint16_t channelWidth,
                 bool aggregation,
-                bool stbc,
+                bool stbc = false,
+                bool ldpc = false,
                 uint8_t bssColor = 0);
   /**
    * Copy constructor
@@ -241,6 +243,19 @@ public:
    */
   void SetStbc (bool stbc);
   /**
+   * Check if LDPC FEC coding is used or not
+   *
+   * \returns true if LDPC is used,
+   *          false if BCC is used
+   */
+  bool IsLdpc (void) const;
+  /**
+   * Sets if LDPC FEC coding is being used
+   *
+   * \param ldpc enable or disable LDPC
+   */
+  void SetLdpc (bool ldpc);
+  /**
    * Set the BSS color
    * \param color the BSS color
    */
@@ -314,6 +329,7 @@ private:
   uint8_t  m_ness;               /**< number of spatial streams in beamforming */
   bool     m_aggregation;        /**< Flag whether the PSDU contains A-MPDU. */
   bool     m_stbc;               /**< STBC used or not */
+  bool     m_ldpc;               /**< LDPC FEC coding if true, BCC otherwise*/
   uint8_t  m_bssColor;           /**< BSS color */
 
   bool     m_modeInitialized;         /**< Internal initialization flag */

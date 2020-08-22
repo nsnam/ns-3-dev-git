@@ -426,6 +426,12 @@ HeCapabilities::SetChannelWidthSet (uint8_t channelWidthSet)
 }
 
 void
+HeCapabilities::SetLdpcCodingInPayload (uint8_t ldpcCodingInPayload)
+{
+  m_ldpcCodingInPayload = ldpcCodingInPayload;
+}
+
+void
 HeCapabilities::SetHeLtfAndGiForHePpdus (uint8_t heLtfAndGiForHePpdus)
 {
   NS_ASSERT (heLtfAndGiForHePpdus <= 0x03);
@@ -464,6 +470,12 @@ uint8_t
 HeCapabilities::GetChannelWidthSet (void) const
 {
   return m_channelWidthSet;
+}
+
+uint8_t
+HeCapabilities::GetLdpcCodingInPayload (void) const
+{
+  return m_ldpcCodingInPayload;
 }
 
 uint8_t

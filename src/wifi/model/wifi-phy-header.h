@@ -197,6 +197,18 @@ public:
    */
   bool GetAggregation (void) const;
   /**
+   * Fill the FEC coding field of HT-SIG.
+   *
+   * \param ldpc whether LDPC is used or not
+   */
+  void SetFecCoding (bool ldpc);
+  /**
+   * Return whether LDPC is used or not.
+   *
+   * \return whether LDPC is used or not
+   */
+  bool IsLdpcFecCoding (void) const;
+  /**
    * Fill the short guard interval field of HT-SIG.
    *
    * \param sgi whether short guard interval is used or not
@@ -227,6 +239,7 @@ private:
   uint8_t m_cbw20_40;    ///< CBW 20/40
   uint16_t m_htLength;   ///< HT length
   uint8_t m_aggregation; ///< Aggregation
+  uint8_t m_fecCoding;   ///< FEC coding (0 for BCC or 1 for LDPC)
   uint8_t m_sgi;         ///< Short Guard Interval
 };
 
@@ -310,6 +323,18 @@ public:
    */
   bool GetShortGuardIntervalDisambiguation (void) const;
   /**
+   * Fill the coding field of VHT-SIG-A2.
+   *
+   * \param ldpc whether LDPC is used or not
+   */
+  void SetCoding (bool ldpc);
+  /**
+   * Return whether LDPC is used or not.
+   *
+   * \return whether LDPC is used or not
+   */
+  bool IsLdpcCoding (void) const;
+  /**
    * Fill the SU VHT MCS field of VHT-SIG-A2.
    *
    * \param mcs the SU VHT MCS field of VHT-SIG-A2
@@ -331,6 +356,7 @@ private:
   //VHT-SIG-A2 fields
   uint8_t m_sgi;                ///< Short GI
   uint8_t m_sgi_disambiguation; ///< Short GI NSYM Disambiguation
+  uint8_t m_coding;             ///< SU/MU coding (0 for BCC, 1 for LDPC)
   uint8_t m_suMcs;              ///< SU VHT MCS
 
   /// This is used to decide whether MU SIG-B should be added or not
@@ -428,7 +454,18 @@ public:
    * \return the number of streams
    */
   uint8_t GetNStreams (void) const;
-
+  /**
+   * Fill the coding field of HE-SIG-A2.
+   *
+   * \param ldpc whether LDPC is used or not
+   */
+  void SetCoding (bool ldpc);
+  /**
+   * Return whether LDPC is used or not.
+   *
+   * \return whether LDPC is used or not
+   */
+  bool IsLdpcCoding (void) const;
 
 private:
   //HE-SIG-A1 fields
@@ -440,6 +477,9 @@ private:
   uint8_t m_bandwidth;    ///< Bandwidth field
   uint8_t m_gi_ltf_size;  ///< GI+LTF Size field
   uint8_t m_nsts;         ///< NSTS
+
+  //HE-SIG-A2 fields
+  uint8_t m_coding; ///< Coding (0 for BCC, 1 for LDPC)
 
   /// This is used to decide whether MU SIG-B should be added or not
   bool m_mu;

@@ -276,6 +276,12 @@ public:
    */
   bool GetGreenfieldSupported (void) const;
   /**
+   * Return whether the device has LDPC support enabled.
+   *
+   * \return true if LDPC support is enabled, false otherwise
+   */
+  bool GetLdpcSupported (void) const;
+  /**
    * Return whether the device has SGI support enabled.
    *
    * \return true if SGI support is enabled, false otherwise
@@ -409,6 +415,15 @@ public:
    *         false otherwise
    */
   bool GetGreenfieldSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports LDPC or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if LDPC is supported by the station,
+   *         false otherwise
+   */
+  bool GetLdpcSupported (Mac48Address address) const;
   /**
    * Return whether the station supports short PHY preamble or not.
    *
@@ -852,6 +867,14 @@ public:
    * \return whether HT greenfield should be used for a given destination address
    */
   bool UseGreenfieldForDestination (Mac48Address dest) const;
+  /**
+   * \returns whether LDPC should be used for a given destination address.
+   *
+   * \param dest the destination address
+   *
+   * \return whether LDPC should be used for a given destination address
+   */
+  bool UseLdpcForDestination (Mac48Address dest) const;
 
   /**
    * TracedCallback signature for power change events.

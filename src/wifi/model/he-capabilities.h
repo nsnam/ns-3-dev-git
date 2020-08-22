@@ -114,6 +114,12 @@ public:
    */
   void SetChannelWidthSet (uint8_t channelWidthSet);
   /**
+   * Set indication whether the transmission and reception of LDPC encoded packets is supported.
+   *
+   * \param ldpcCodingInPayload indication whether the transmission and reception of LDPC encoded packets is supported
+   */
+  void SetLdpcCodingInPayload (uint8_t ldpcCodingInPayload);
+  /**
    * Set HE LTF and GI for HE PDPUs.
    *
    * \param heLtfAndGiForHePpdus the HE LTF and GI
@@ -125,6 +131,12 @@ public:
    * \returns the channel width set
    */
   uint8_t GetChannelWidthSet (void) const;
+  /**
+   * Indicates support for the transmission and reception of LDPC encoded packets.
+   *
+   * \returns indication whether the transmission and reception of LDPC encoded packets is supported
+   */
+  uint8_t GetLdpcCodingInPayload (void) const;
   /**
    * Get HE LTF and GI for HE PDPUs.
    *

@@ -865,7 +865,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
           NS_LOG_DEBUG ("New datarate: " << dataRate);
           m_currentRate = dataRate;
         }
-      return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), group.sgi ? 400 : 800, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling, false);
+      return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), group.sgi ? 400 : 800, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling);
     }
 }
 
@@ -941,7 +941,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       NS_ASSERT (rateFound);
 
       return WifiTxVector (rtsRate, GetDefaultTxPowerLevel (), GetPreambleForTransmission (rtsRate.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))),
-                           800, 1, 1, 0, GetChannelWidthForTransmission (rtsRate, GetChannelWidth (station)), GetAggregation (station), false);
+                           800, 1, 1, 0, GetChannelWidthForTransmission (rtsRate, GetChannelWidth (station)), GetAggregation (station));
     }
 }
 

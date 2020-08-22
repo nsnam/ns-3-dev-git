@@ -58,6 +58,12 @@ HtConfiguration::GetTypeId (void)
                    MakeBooleanAccessor (&HtConfiguration::GetGreenfieldSupported,
                                         &HtConfiguration::SetGreenfieldSupported),
                    MakeBooleanChecker ())
+    .AddAttribute ("LdpcSupported",
+                   "Whether or not LDPC coding is supported.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&HtConfiguration::GetLdpcSupported,
+                                        &HtConfiguration::SetLdpcSupported),
+                   MakeBooleanChecker ())
     ;
     return tid;
 }
@@ -86,6 +92,19 @@ bool
 HtConfiguration::GetGreenfieldSupported (void) const
 {
   return m_greenfieldSupported;
+}
+
+void
+HtConfiguration::SetLdpcSupported (bool enable)
+{
+  NS_LOG_FUNCTION (this << enable);
+  m_ldpcSupported = enable;
+}
+
+bool
+HtConfiguration::GetLdpcSupported (void) const
+{
+  return m_ldpcSupported;
 }
 
 } //namespace ns3

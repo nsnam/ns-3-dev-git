@@ -33,6 +33,7 @@ WifiTxVector::WifiTxVector ()
     m_ness (0),
     m_aggregation (false),
     m_stbc (false),
+    m_ldpc (false),
     m_bssColor (0),
     m_modeInitialized (false)
 {
@@ -48,6 +49,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             uint16_t channelWidth,
                             bool aggregation,
                             bool stbc,
+                            bool ldpc,
                             uint8_t bssColor)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
@@ -59,6 +61,7 @@ WifiTxVector::WifiTxVector (WifiMode mode,
     m_ness (ness),
     m_aggregation (aggregation),
     m_stbc (stbc),
+    m_ldpc (ldpc),
     m_bssColor (bssColor),
     m_modeInitialized (true)
 {
@@ -75,6 +78,7 @@ WifiTxVector::WifiTxVector (const WifiTxVector& txVector)
     m_ness (txVector.m_ness),
     m_aggregation (txVector.m_aggregation),
     m_stbc (txVector.m_stbc),
+    m_ldpc (txVector.m_ldpc),
     m_bssColor (txVector.m_bssColor),
     m_modeInitialized (txVector.m_modeInitialized)
 {
@@ -193,6 +197,12 @@ WifiTxVector::IsStbc (void) const
   return m_stbc;
 }
 
+bool
+WifiTxVector::IsLdpc (void) const
+{
+  return m_ldpc;
+}
+
 void
 WifiTxVector::SetMode (WifiMode mode)
 {
@@ -261,6 +271,12 @@ void
 WifiTxVector::SetStbc (bool stbc)
 {
   m_stbc = stbc;
+}
+
+void
+WifiTxVector::SetLdpc (bool ldpc)
+{
+  m_ldpc = ldpc;
 }
 
 void
@@ -362,7 +378,8 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
      << " Nss: " << +v.GetNss ()
      << " Ness: " << +v.GetNess ()
      << " MPDU aggregation: " << v.IsAggregation ()
-     << " STBC: " << v.IsStbc ();
+     << " STBC: " << v.IsStbc ()
+     << " FEC coding: " << (v.IsLdpc () ? "LDPC" : "BCC");
   if (v.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
     {
       WifiTxVector::HeMuUserInfoMap userInfoMap = v.GetHeMuUserInfoMap ();

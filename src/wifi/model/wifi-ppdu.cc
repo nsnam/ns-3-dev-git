@@ -98,6 +98,7 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
           m_htSig.SetHtLength (m_psdus.at (SU_STA_ID)->GetSize ());
           m_htSig.SetAggregation (txVector.IsAggregation ());
           m_htSig.SetShortGuardInterval (txVector.GetGuardInterval () == 400);
+          m_htSig.SetFecCoding (txVector.IsLdpc ());
           break;
         }
       case WIFI_MOD_CLASS_VHT:
@@ -114,6 +115,7 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
             }
           m_vhtSig.SetSuMcs (txVector.GetMode ().GetMcsValue ());
           m_vhtSig.SetNStreams (txVector.GetNss ());
+          m_vhtSig.SetCoding (txVector.IsLdpc ());
           break;
         }
       case WIFI_MOD_CLASS_HE:
@@ -150,6 +152,7 @@ WifiPpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand b
           m_heSig.SetChannelWidth (m_channelWidth);
           m_heSig.SetGuardIntervalAndLtfSize (txVector.GetGuardInterval (), 2/*NLTF currently unused*/);
           m_heSig.SetNStreams (txVector.GetNss ());
+          m_heSig.SetCoding (txVector.IsLdpc ());
           break;
         }
         default:
@@ -324,6 +327,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetChannelWidth (m_htSig.GetChannelWidth ());
           txVector.SetNss (1 + (m_htSig.GetMcs () / 8));
           txVector.SetGuardInterval(m_htSig.GetShortGuardInterval () ? 400 : 800);
+          txVector.SetLdpc (m_htSig.IsLdpcFecCoding ());
           break;
         }
       case WIFI_MOD_CLASS_VHT:
@@ -332,6 +336,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetChannelWidth (m_vhtSig.GetChannelWidth ());
           txVector.SetNss (m_vhtSig.GetNStreams ());
           txVector.SetGuardInterval (m_vhtSig.GetShortGuardInterval () ? 400 : 800);
+          txVector.SetLdpc (m_vhtSig.IsLdpcCoding ());
           break;
         }
       case WIFI_MOD_CLASS_HE:
@@ -341,6 +346,7 @@ WifiPpdu::GetTxVector (void) const
           txVector.SetNss (m_heSig.GetNStreams ());
           txVector.SetGuardInterval (m_heSig.GetGuardInterval ());
           txVector.SetBssColor (m_heSig.GetBssColor ());
+          txVector.SetLdpc (m_heSig.IsLdpcCoding ());
           break;
         }
       default:
