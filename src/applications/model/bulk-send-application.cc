@@ -226,6 +226,7 @@ void BulkSendApplication::SendData (const Address &from, const Address &to)
       if (m_unsentPacket)
         {
           packet = m_unsentPacket;
+          toSend = packet->GetSize ();
         }
       else if (m_enableSeqTsSizeHeader)
         {
@@ -257,6 +258,19 @@ void BulkSendApplication::SendData (const Address &from, const Address &to)
           // some buffer space has freed up.
           NS_LOG_DEBUG ("Unable to send packet; caching for later attempt");
           m_unsentPacket = packet;
+          break;
+        }
+      else if (actual > 0 && (unsigned) actual < toSend)
+        {
+          // A Linux socket (non-blocking, such as in DCE) may return
+          // a quantity less than the packet size.  Split the packet
+          // into two, trace the sent packet, save the unsent packet
+          NS_LOG_DEBUG ("Packet size: " << packet->GetSize () << "; sent: " << actual << "; fragment saved: " << toSend - (unsigned) actual);
+          Ptr<Packet> sent = packet->CreateFragment (0, actual);
+          Ptr<Packet> unsent = packet->CreateFragment (actual, (toSend - (unsigned) actual));
+          m_totBytes += actual;
+          m_txTrace (sent);
+          m_unsentPacket = unsent;
           break;
         }
       else
