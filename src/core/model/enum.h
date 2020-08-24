@@ -113,7 +113,7 @@ public:
    * \returns The enum value.
    */
   int GetValue (const std::string name) const;
-  
+
   // Inherited
   virtual bool Check (const AttributeValue &value) const;
   virtual std::string GetValueTypeName (void) const;
@@ -145,81 +145,59 @@ Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2);
  * with matching names.  For example,
  * \c MakeEnumChecker (RipNg::SPLIT_HORIZON, "ns3::RipNg::SplitHorizon");
  *
+ * As many additional enum value, name pairs as desired can be passed
+ * as arguments.
+ *
  * \see AttributeChecker
  *
+ * \tparam Ts The type list of additional parameters. Additional parameters
+ *            should be int, string pairs.
  * \returns The AttributeChecker
- * \param [in] v1  An enum value
- * \param [in] n1  The corresponding name.
- * \param [in] v2  A enum value
- * \param [in] n2  The corresponding name.
- * \param [in] v3  A enum value
- * \param [in] n3  The corresponding name.
- * \param [in] v4  A enum value
- * \param [in] n4  The corresponding name.
- * \param [in] v5  A enum value
- * \param [in] n5  The corresponding name.
- * \param [in] v6  A enum value
- * \param [in] n6  The corresponding name.
- * \param [in] v7  A enum value
- * \param [in] n7  The corresponding name.
- * \param [in] v8  A enum value
- * \param [in] n8  The corresponding name.
- * \param [in] v9  A enum value
- * \param [in] n9  The corresponding name.
- * \param [in] v10 An enum value
- * \param [in] n10 The enum name.
- * \param [in] v11 An enum value
- * \param [in] n11 The corresponding name.
- * \param [in] v12 A enum value
- * \param [in] n12 The corresponding name.
- * \param [in] v13 A enum value
- * \param [in] n13 The corresponding name.
- * \param [in] v14 A enum value
- * \param [in] n14 The corresponding name.
- * \param [in] v15 A enum value
- * \param [in] n15 The corresponding name.
- * \param [in] v16 A enum value
- * \param [in] n16 The corresponding name.
- * \param [in] v17 A enum value
- * \param [in] n17 The corresponding name.
- * \param [in] v18 A enum value
- * \param [in] n18 The corresponding name.
- * \param [in] v19 A enum value
- * \param [in] n19 The corresponding name.
- * \param [in] v20 An enum value
- * \param [in] n20 The enum name.
- * \param [in] v21 An enum value
- * \param [in] n21 The corresponding name.
- * \param [in] v22 A enum value
- * \param [in] n22 The corresponding name.
+ * \param [in] v  The default enum value.
+ * \param [in] n  The corresponding name.
  */
-Ptr<const AttributeChecker> MakeEnumChecker (int v1, std::string n1,
-                                             int v2 = 0, std::string n2 = "",
-                                             int v3 = 0, std::string n3 = "",
-                                             int v4 = 0, std::string n4 = "",
-                                             int v5 = 0, std::string n5 = "",
-                                             int v6 = 0, std::string n6 = "",
-                                             int v7 = 0, std::string n7 = "",
-                                             int v8 = 0, std::string n8 = "",
-                                             int v9 = 0, std::string n9 = "",
-                                             int v10 = 0, std::string n10 = "",
-                                             int v11 = 0, std::string n11 = "",
-                                             int v12 = 0, std::string n12 = "",
-                                             int v13 = 0, std::string n13 = "",
-                                             int v14 = 0, std::string n14 = "",
-                                             int v15 = 0, std::string n15 = "",
-                                             int v16 = 0, std::string n16 = "",
-                                             int v17 = 0, std::string n17 = "",
-                                             int v18 = 0, std::string n18 = "",
-                                             int v19 = 0, std::string n19 = "",
-                                             int v20 = 0, std::string n20 = "",
-                                             int v21 = 0, std::string n21 = "",
-                                             int v22 = 0, std::string n22 = "");
+template <typename... Ts>
+Ptr<const AttributeChecker>
+MakeEnumChecker (int v, std::string n, Ts... args)
+{
+  Ptr<EnumChecker> checker = Create<EnumChecker> ();
+  checker->AddDefault (v, n);
+  return MakeEnumChecker (checker, args...);
+}
 
+/**
+ * Handler for enum value, name pairs other than the default.
+ *
+ * \tparam Ts The type list of additional parameters. Additional parameters
+ *            should be in int, string pairs.
+ * \returns The AttributeChecker
+ * \param [in] checker The AttributeChecker.
+ * \param [in] v  The next enum value.
+ * \param [in] n  The corresponding name.
+ */
 
-} // namespace ns3
+template <typename... Ts>
+Ptr<const AttributeChecker>
+MakeEnumChecker (Ptr<EnumChecker> checker, int v, std::string n, Ts... args)
+{
+  checker->Add (v, n);
+  return MakeEnumChecker (checker, args...);
+}
 
-namespace ns3 {
+/**
+ * Terminate the recursion of variadic arguments.
+ *
+ * \returns The \pname checker
+ * \param [in] checker The AttributeChecker.
+ */
+// inline to allow tail call optimization
+inline
+Ptr<const AttributeChecker>
+MakeEnumChecker (Ptr<EnumChecker> checker)
+{
+  return checker;
+}
+
 
 template <typename T1>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1)

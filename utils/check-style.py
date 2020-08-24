@@ -106,6 +106,7 @@ sp_func_def_paren=Add
 sp_func_call_paren=Add
 sp_after_semi_for=Ignore
 sp_before_sparen=Ignore
+sp_before_ellipsis=Remove
 sp_type_func=Ignore
 sp_after_type=Ignore
 nl_class_leave_one_liners=True
