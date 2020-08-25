@@ -36,7 +36,7 @@ def options(opt):
                          % ", ".join([repr(p) for p in list(int64x64.keys())])),
                    choices=list(int64x64.keys()),
                    dest='int64x64_impl')
-
+                   
     opt.add_option('--disable-pthread',
                    help=('Whether to enable the use of POSIX threads'),
                    action="store_true", default=False,
@@ -100,10 +100,6 @@ def configure(conf):
     conf.check_nonfatal(header_name='sys/types.h', define_name='HAVE_SYS_TYPES_H')
     conf.check_nonfatal(header_name='sys/stat.h', define_name='HAVE_SYS_STAT_H')
     conf.check_nonfatal(header_name='dirent.h', define_name='HAVE_DIRENT_H')
-
-    if conf.check_nonfatal(header_name='stdlib.h'):
-        conf.define('HAVE_STDLIB_H', 1)
-        conf.define('HAVE_GETENV', 1)
 
     conf.check_nonfatal(header_name='signal.h', define_name='HAVE_SIGNAL_H')
 
@@ -239,15 +235,11 @@ def build(bld):
         'model/hash.cc',
         'model/des-metrics.cc',
         'model/ascii-file.cc',
-        'model/attribute-container.cc',
-        'model/pair.cc',
         'model/node-printer.cc',
         'model/time-printer.cc',
         'model/show-progress.cc',
         'model/system-wall-clock-timestamp.cc',
         'model/version.cc',
-        'model/attribute-container.cc',
-        'model/pair.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -256,6 +248,7 @@ def build(bld):
     core_test = bld.create_ns3_module_test_library('core')
     core_test.source = [
         'test/attribute-test-suite.cc',
+        'test/attribute-container-test-suite.cc',
         'test/build-profile-test-suite.cc',
         'test/callback-test-suite.cc',
         'test/command-line-test-suite.cc',
@@ -268,6 +261,7 @@ def build(bld):
         'test/event-garbage-collector-test-suite.cc',
         'test/many-uniform-random-variables-one-get-value-call-test-suite.cc',
         'test/one-uniform-random-variable-many-get-value-calls-test-suite.cc',
+        'test/pair-value-test-suite.cc',
         'test/sample-test-suite.cc',
         'test/simulator-test-suite.cc',
         'test/time-test-suite.cc',
@@ -277,9 +271,12 @@ def build(bld):
         'test/watchdog-test-suite.cc',
         'test/hash-test-suite.cc',
         'test/type-id-test-suite.cc',
-        'test/pair-value-test-suite.cc',
-        'test/attribute-container-test-suite.cc',
         ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+        core_test.source.extend([
+            'test/examples-as-tests-test-suite.cc',
+            ])
 
     headers = bld(features='ns3header')
     headers.module = 'core'
@@ -295,6 +292,7 @@ def build(bld):
         'model/map-scheduler.h',
         'model/heap-scheduler.h',
         'model/calendar-scheduler.h',
+        'model/priority-queue-scheduler.h',
         'model/simulation-singleton.h',
         'model/singleton.h',
         'model/timer.h',
@@ -303,6 +301,7 @@ def build(bld):
         'model/synchronizer.h',
         'model/make-event.h',
         'model/system-wall-clock-ms.h',
+        'model/system-wall-clock-timestamp.h',
         'model/empty.h',
         'model/callback.h',
         'model/object-base.h',
@@ -339,6 +338,7 @@ def build(bld):
         'model/pointer.h',
         'model/object-factory.h',
         'model/attribute-helper.h',
+        'model/attribute-container.h',
         'model/global-value.h',
         'model/traced-callback.h',
         'model/traced-value.h',
@@ -347,6 +347,7 @@ def build(bld):
         'model/object-ptr-container.h',
         'model/object-vector.h',
         'model/object-map.h',
+        'model/pair.h',
         'model/deprecated.h',
         'model/abort.h',
         'model/names.h',
@@ -372,13 +373,6 @@ def build(bld):
         'model/time-printer.h',
         'model/show-progress.h',
         'model/version.h',
-        'model/pair.h',
-        'model/attribute-container-accessor-helper.h',
-        'model/attribute-container.h',
-        'model/extended-attribute-helper.h',
-        'model/node-printer.h',
-        'model/time-printer.h',
-        'model/show-progress.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -452,3 +446,39 @@ def build(bld):
     pymod = bld.ns3_python_bindings()
     if pymod is not None:
         pymod.source += ['bindings/module_helpers.cc']
+
+def print_version(bld, tg):
+    tg.post()
+
+    for task in tg.tasks:
+        if task.__class__.__name__ == 'git_ns3_version_info':
+            #manually run task
+            task.run()
+            break
+
+    handlers = {
+        'VERSION_TAG': lambda s: s.strip('"'),
+        'CLOSEST_TAG': lambda s: s.strip('"'),
+        'VERSION_TAG_DISTANCE': lambda s: '' if s == '0' else "+" + s,
+        'VERSION_COMMIT_HASH': lambda s: "@" + s.strip('"'),
+        'VERSION_DIRTY_FLAG': lambda s: '' if s == '0' else '-dirty',
+        'BUILD_PROFILE': lambda s: "-" + s
+    }
+
+    fields=('VERSION_TAG', 'CLOSEST_TAG', 'VERSION_TAG_DISTANCE', 
+            'VERSION_COMMIT_HASH', 'VERSION_DIRTY_FLAG', 'BUILD_PROFILE') 
+
+    parts = dict()
+
+    for field in fields:
+        if field in bld.env:
+            parts[field] = handlers[field](bld.env[field])
+        else:
+            parts[field] = ''
+
+    if parts['CLOSEST_TAG'] != parts['VERSION_TAG']:
+        parts['CLOSEST_TAG'] = "+" + parts['CLOSEST_TAG']
+    else:
+        parts['CLOSEST_TAG'] = ""
+    
+    print(''.join([parts[f] for f in fields]))

@@ -1570,7 +1570,14 @@ PrintAttributeImplementations (std::ostream & os)
   PrintAttributeValueSection  (os, "ObjectMap", false);
   PrintMakeAccessors          (os, "ObjectMap");
   PrintMakeChecker            (os, "ObjectMap", "object-map.h");
+
+  PrintAttributeValueSection  (os, "Pair", false);
+  PrintAttributeValueWithName (os, "Pair", "Pair", "pair.h");
+  PrintMakeChecker            (os, "Pair",  "pair.h");
   
+  PrintAttributeValueSection  (os, "AttributeContainer", false);
+  PrintAttributeValueWithName (os, "AttributeContainer", "AttributeContainer", "attribute-container.h");
+  PrintMakeChecker            (os, "AttributeContainer",  "attribute-container.h");
 }  // PrintAttributeImplementations ()
 
 

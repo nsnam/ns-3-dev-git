@@ -26,7 +26,7 @@
 #include <ns3/string.h>
 
 #include <sstream>
-#include <typeinfo>
+#include <typeinfo> // typeid
 #include <type_traits>
 #include <utility>
 
@@ -34,13 +34,12 @@ namespace ns3 {
 
 class AttributeChecker;
 
-// TODO(jared): useful to maybe define global to be the pair separator
-// for serialization / deserialization?
+// TODO: useful to maybe define some kind of configurable formatter?
 template <class A, class B>
 std::ostream &
 operator << (std::ostream &os, const std::pair<A, B> &p)
 {
-  os << p.first << " " << p.second;
+  os << "(" << p.first << "," << p.second << ")";
   return os;
 }
 
@@ -112,7 +111,7 @@ class PairChecker : public ns3::PairChecker<A, B>
 {
 public:
   PairChecker (void);
-  explicit PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
+  PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
   void SetCheckers (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker);
   typename ns3::PairChecker<A, B>::checker_pair_type GetCheckers (void) const;
 
@@ -123,19 +122,15 @@ private:
 
 template <class A, class B>
 PairChecker<A, B>::PairChecker (void)
-  : m_firstchecker (0)
-  , m_secondchecker (0)
-{
-
-}
+  : m_firstchecker (0),
+  m_secondchecker (0)
+{}
 
 template <class A, class B>
 PairChecker<A, B>::PairChecker (Ptr<const AttributeChecker> firstchecker, Ptr<const AttributeChecker> secondchecker)
-  : m_firstchecker (firstchecker)
-  , m_secondchecker (secondchecker)
-{
-
-}
+  : m_firstchecker (firstchecker),
+  m_secondchecker (secondchecker)
+{}
 
 template <class A, class B>
 void
@@ -174,14 +169,14 @@ template <class A, class B>
 Ptr<PairChecker<A, B> >
 MakePairChecker (void)
 {
-  std::string typeName, underlyingType;
+  std::string pairName, underlyingType;
   typedef PairValue<A, B> T;
   std::string first_type_name = typeid (typename T::value_type::first_type).name ();
   std::string second_type_name = typeid (typename T::value_type::second_type).name ();
   {
     std::ostringstream oss;
     oss << "ns3::PairValue<" << first_type_name << ", " << second_type_name << ">";
-    typeName = oss.str ();
+    pairName = oss.str ();
   }
 
   {
@@ -191,16 +186,14 @@ MakePairChecker (void)
   }
 
   return DynamicCast<PairChecker<A, B> > (
-    MakeSimpleAttributeChecker<T, internal::PairChecker<A, B> > (typeName, underlyingType)
-  );
+    MakeSimpleAttributeChecker<T, internal::PairChecker<A, B> > (pairName, underlyingType)
+    );
 }
 
 template <class A, class B>
 PairValue<A, B>::PairValue ()
   : m_value (std::make_pair (Create <A> (), Create <B> ()))
-{
-
-}
+{}
 
 template <class A, class B>
 PairValue<A, B>::PairValue (const typename PairValue<A, B>::result_type &value)
