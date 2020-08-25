@@ -248,6 +248,19 @@ double operator* (const DataRate& lhs, const Time& rhs);
  */
 double operator* (const Time& lhs, const DataRate& rhs);
 
+namespace TracedValueCallback {
+
+/**
+ * \ingroup network
+ * TracedValue callback signature for DataRate
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* DataRate)(DataRate oldValue,
+                          DataRate newValue);
+
+}  // namespace TracedValueCallback
 
 } // namespace ns3
 
