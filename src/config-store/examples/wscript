@@ -4,5 +4,3 @@ def build(bld):
 
     obj = bld.create_ns3_program('config-store-save', ['core', 'config-store'])
     obj.source = 'config-store-save.cc'
-    obj = bld.create_ns3_program('config-store-load', ['core', 'config-store'])
-    obj.source = 'config-store-load.cc'

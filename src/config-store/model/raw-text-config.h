@@ -35,8 +35,9 @@ namespace ns3 {
 class RawTextConfigSave : public FileConfig
 {
 public:
-  RawTextConfigSave ();
-  virtual ~RawTextConfigSave ();
+  RawTextConfigSave (); //!< default constructor
+  virtual ~RawTextConfigSave (); //!< destructor
+  // Inherited
   virtual void SetFilename (std::string filename);
   virtual void Default (void);
   virtual void Global (void);
@@ -54,13 +55,26 @@ private:
 class RawTextConfigLoad : public FileConfig
 {
 public:
-  RawTextConfigLoad ();
-  virtual ~RawTextConfigLoad ();
+  RawTextConfigLoad (); //!< default constructor
+  virtual ~RawTextConfigLoad (); //!< destructor
+  // Inherited
   virtual void SetFilename (std::string filename);
   virtual void Default (void);
   virtual void Global (void);
   virtual void Attributes (void);
 private:
+  /**
+   * Parse (potentially multi-) line configs into type, name, and values.
+   * This will return \c false for blank lines, comments (lines beginning with '#'),
+   * and incomplete entries. An entry is considered complete when a type and name
+   * have been found and the value contains two delimiting quotation marks '"'.
+   * \param line the config file line
+   * \param type the config type {default, global, value}
+   * \param name the config attribute name
+   * \param value the value to set
+   * \returns true if all of type, name, and value parsed; false otherwise
+   * 
+   */
   virtual bool ParseLine (const std::string &line, std::string &type, std::string &name, std::string &value);
 
   /**

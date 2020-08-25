@@ -145,8 +145,8 @@ RawTextConfigLoad::Strip (std::string value)
   NS_LOG_FUNCTION (this << value);
   std::string::size_type start = value.find ("\"");
   std::string::size_type end = value.find ("\"", 1);
-  NS_ABORT_MSG_IF (start == 0, "Ill-formed attribute value: " << value);
-  NS_ABORT_MSG_IF (end == value.size () - 1, "Ill-formed attribute value: " << value);
+  NS_ABORT_MSG_IF (start != 0, "Ill-formed attribute value: " << value);
+  NS_ABORT_MSG_IF (end != value.size () - 1, "Ill-formed attribute value: " << value);
   return value.substr (start+1, end-start-1);
 }
 
@@ -159,7 +159,10 @@ RawTextConfigLoad::Default (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) continue; // comment
+      if (!ParseLine (line, type, name, value)) 
+        {
+          continue;
+        }
 
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
@@ -169,6 +172,7 @@ RawTextConfigLoad::Default (void)
         }
       name.clear ();
       type.clear ();
+      value.clear ();
     }
 }
 void
@@ -182,7 +186,7 @@ RawTextConfigLoad::Global (void)
     {
       if (!ParseLine (line, type, name, value)) 
         {
-          continue; // comment
+          continue;
         }
 
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
@@ -193,6 +197,7 @@ RawTextConfigLoad::Global (void)
         }
       name.clear ();
       type.clear ();
+      value.clear ();
     }
 }
 void
@@ -204,7 +209,10 @@ RawTextConfigLoad::Attributes (void)
   std::string type, name, value;
   for (std::string line; std::getline (*m_is, line);)
     {
-      if (!ParseLine (line, type, name, value)) continue;
+      if (!ParseLine (line, type, name, value)) 
+        {
+          continue;
+        }
 
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
@@ -214,6 +222,7 @@ RawTextConfigLoad::Attributes (void)
         }
       name.clear ();
       type.clear ();
+      value.clear ();
     }
 }
 
@@ -249,7 +258,9 @@ RawTextConfigLoad::ParseLine (const std::string &line, std::string &type, std::s
       value.append (line);
     }
 
-  // look for two quotes
+  // two quotes in value signifies a completed (possibly multi-line)
+  // config-store entry, return True to signal load function to
+  // validate value (see Strip method) and set attribute
   return std::count (value.begin (), value.end (), '"') == 2;
 }
 

@@ -40,9 +40,36 @@ NS_OBJECT_ENSURE_REGISTERED (ConfigExample);
 // 
 int main (int argc, char *argv[])
 {
+  std::string loadfile;
+
   CommandLine cmd (__FILE__);
+  cmd.Usage ("Without arguments, write out ConfigStore defaults, globals, and\n"
+             "test object ConfigExample attributes to text file output-attributes.txt\n" 
+             "and (when XML supported) output-attributes.xml. Optionally set\n"
+             "attributes to write out using --load <filename> where <filename> is a\n"
+             "previously saved config-store file to load.\n"
+             "Observe load behavior by setting environment variable NS_LOG=RawTextConfig."
+            );
+  cmd.AddValue ("load", "Relative path to config-store input file", loadfile);
   cmd.Parse (argc, argv);
   
+  if (!loadfile.empty ())
+    {
+      Config::SetDefault ("ns3::ConfigStore::Filename", StringValue (loadfile));
+      if (loadfile.substr(loadfile.size() - 4) == ".xml")
+        {
+          Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+        }
+      else
+        {
+                Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("RawText"));
+        }
+      Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
+      ConfigStore loadConfig;
+      loadConfig.ConfigureDefaults();
+      loadConfig.ConfigureAttributes();
+    }
+
   Config::SetDefault ("ns3::ConfigExample::TestInt16", IntegerValue (-5));
 
   Ptr<ConfigExample> a_obj = CreateObject<ConfigExample> ();
