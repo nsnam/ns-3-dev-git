@@ -22,32 +22,32 @@
     FULLNESS: ""
 
 # Run the test.py script with files compiled in debug mode
-#daily-test-debug:
-#  extends: .base-test
-#  image: archlinux/base
-#  variables:
-#    COMPILER: g++
-#    MODE: debug
-#  only:
-#    variables:
-#      - $RELEASE == "daily"
-#  before_script:
-#    - pacman -Syu --noconfirm
-#    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+daily-test-debug:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: debug
+  only:
+    variables:
+      - $RELEASE == "daily"
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in release mode
-#daily-test-release:
-#  extends: .base-test
-#  image: archlinux/base
-#  variables:
-#    COMPILER: g++
-#    MODE: release
-#  only:
-#    variables:
-#      - $RELEASE == "daily"
-#  before_script:
-#    - pacman -Syu --noconfirm
-#    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+daily-test-release:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: release
+  only:
+    variables:
+      - $RELEASE == "daily"
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
@@ -65,38 +65,38 @@ daily-test-optimized:
 
 ### Valgrind tests
 # Run the test.py script with files compiled in debug mode
-#weekly-test-debug:
-#  extends: .base-test
-#  image: archlinux/base
-#  variables:
-#    COMPILER: g++
-#    MODE: debug
-#    VALGRIND: -g
-#  only:
-#    variables:
-#      - $RELEASE == "weekly"
-#  tags:
-#    - nsnam
-#  before_script:
-#    - pacman -Syu --noconfirm
-#    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+weekly-test-debug:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: debug
+    VALGRIND: -g
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  tags:
+    - nsnam
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in release mode
-#weekly-test-release:
-#  extends: .base-test
-#  image: archlinux/base
-#  variables:
-#    COMPILER: g++
-#    MODE: release
-#    VALGRIND: -g
-#  only:
-#    variables:
-#      - $RELEASE == "weekly"
-#  tags:
-#    - nsnam
-#  before_script:
-#    - pacman -Syu --noconfirm
-#    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
+weekly-test-release:
+  extends: .base-test
+  image: archlinux/base
+  variables:
+    COMPILER: g++
+    MODE: release
+    VALGRIND: -g
+  only:
+    variables:
+      - $RELEASE == "weekly"
+  tags:
+    - nsnam
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
 
 # Run the test.py script with files compiled in optimized mode
 weekly-test-optimized:
@@ -109,6 +109,8 @@ weekly-test-optimized:
   only:
     variables:
       - $RELEASE == "weekly"
+  tags:
+    - nsnam
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
@@ -124,6 +126,8 @@ weekly-test-takes-forever-optimized:
   only:
     variables:
       - $RELEASE == "weekly"
+  tags:
+    - nsnam
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
