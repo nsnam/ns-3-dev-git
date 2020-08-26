@@ -387,6 +387,7 @@ private:
    * multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event the event
+   * \param channelWidth the channel width used to transmit the PSDU (in MHz)
    * \param nis the NiChanges
    * \param band identify the band used by the PSDU
    * \param staId the station ID of the PSDU (only used for MU)
@@ -394,7 +395,7 @@ private:
    *
    * \return the error rate of the payload
    */
-  double CalculatePayloadPer (Ptr<const Event> event, NiChangesPerBand *nis, WifiSpectrumBand band, 
+  double CalculatePayloadPer (Ptr<const Event> event, uint16_t channelWidth, NiChangesPerBand *nis, WifiSpectrumBand band,
                               uint16_t staId, std::pair<Time, Time> window) const;
   /**
    * Calculate the error rate of the non-HT PHY header. The non-HT PHY header

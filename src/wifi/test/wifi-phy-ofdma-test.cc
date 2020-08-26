@@ -277,6 +277,7 @@ TestDlOfdmaReception::DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhySta
 void
 TestDlOfdmaReception::DoSetup (void)
 {
+  uint16_t channelWidth = 20; // MHz
   uint32_t frequency = 5180; // MHz
 
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
@@ -294,6 +295,7 @@ TestDlOfdmaReception::DoSetup (void)
   Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
   m_phyAp->SetErrorRateModel (error);
   m_phyAp->SetFrequency (frequency);
+  m_phyAp->SetChannelWidth (channelWidth);
   m_phyAp->SetDevice (apDev);
   m_phyAp->SetChannel (spectrumChannel);
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
@@ -309,6 +311,7 @@ TestDlOfdmaReception::DoSetup (void)
   m_phySta1->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
   m_phySta1->SetErrorRateModel (error);
   m_phySta1->SetFrequency (frequency);
+  m_phySta1->SetChannelWidth (channelWidth);
   m_phySta1->SetDevice (sta1Dev);
   m_phySta1->SetChannel (spectrumChannel);
   m_phySta1->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaReception::RxSuccessSta1, this));
@@ -325,6 +328,7 @@ TestDlOfdmaReception::DoSetup (void)
   m_phySta2->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
   m_phySta2->SetErrorRateModel (error);
   m_phySta2->SetFrequency (frequency);
+  m_phySta2->SetChannelWidth (channelWidth);
   m_phySta2->SetDevice (sta2Dev);
   m_phySta2->SetChannel (spectrumChannel);
   m_phySta2->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaReception::RxSuccessSta2, this));
@@ -341,6 +345,7 @@ TestDlOfdmaReception::DoSetup (void)
   m_phySta3->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
   m_phySta3->SetErrorRateModel (error);
   m_phySta3->SetFrequency (frequency);
+  m_phySta3->SetChannelWidth (channelWidth);
   m_phySta3->SetDevice (sta3Dev);
   m_phySta3->SetChannel (spectrumChannel);
   m_phySta3->SetReceiveOkCallback (MakeCallback (&TestDlOfdmaReception::RxSuccessSta3, this));

@@ -3239,7 +3239,17 @@ WifiPhy::EndReceive (Ptr<Event> event)
   NotifyRxEnd (psdu);
   WifiTxVector txVector = event->GetTxVector ();
   uint16_t channelWidth = std::min (GetChannelWidth (), txVector.GetChannelWidth ());
-  double snr = m_interference.CalculateSnr (event, channelWidth, txVector.GetNss (staId), GetBand (channelWidth));
+  WifiSpectrumBand band;
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      band = GetRuBand (txVector, staId);
+      channelWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+    }
+  else
+    {
+      band = GetBand (channelWidth);
+    }
+  double snr = m_interference.CalculateSnr (event, channelWidth, txVector.GetNss (staId), band);
   if (std::count (m_statusPerMpdu.begin (), m_statusPerMpdu.end (), true))
     {
       //At least one MPDU has been successfully received
@@ -3263,7 +3273,18 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
 {
   NS_LOG_FUNCTION (this << *psdu << *event << staId << relativeMpduStart << mpduDuration);
   uint16_t channelWidth = std::min (GetChannelWidth (), event->GetTxVector ().GetChannelWidth ());
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePayloadSnrPer (event, channelWidth, GetBand (channelWidth), staId, std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
+  WifiTxVector txVector = event->GetTxVector ();
+  WifiSpectrumBand band;
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      band = GetRuBand (txVector, staId);
+      channelWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+    }
+  else
+    {
+      band = GetBand (channelWidth);
+    }
+  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePayloadSnrPer (event, channelWidth, band, staId, std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
 
   WifiMode mode = event->GetTxVector ().GetMode (staId);
   NS_LOG_DEBUG ("mode=" << (mode.GetDataRate (event->GetTxVector (), staId)) <<
@@ -3275,8 +3296,8 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
   // Receive error model is optional, if we have an error model and
   // it indicates that the packet is corrupt, drop the packet.
   SignalNoiseDbm signalNoise;
-  signalNoise.signal = WToDbm (event->GetRxPowerW (GetBand (channelWidth)));
-  signalNoise.noise = WToDbm (event->GetRxPowerW (GetBand (channelWidth)) / snrPer.snr);
+  signalNoise.signal = WToDbm (event->GetRxPowerW (band));
+  signalNoise.noise = WToDbm (event->GetRxPowerW (band) / snrPer.snr);
   if (m_random->GetValue () > snrPer.per &&
       !(m_postReceptionErrorModel && m_postReceptionErrorModel->IsCorrupt (psdu->GetPacket ()->Copy ())))
     {
@@ -3288,6 +3309,28 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
       NS_LOG_DEBUG ("Reception failed: " << psdu);
       return std::make_pair (false, signalNoise);
     }
+}
+
+WifiSpectrumBand
+WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId)
+{
+  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU);
+  WifiSpectrumBand band;
+  HeRu::RuSpec ru = txVector.GetRu (staId);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  NS_ASSERT (channelWidth <= GetChannelWidth ());
+  HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ru.ruType, ru.index);
+  HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
+  band = ConvertHeRuSubcarriers (channelWidth, range);
+  return band;
+}
+
+WifiSpectrumBand
+WifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const
+{
+  NS_ASSERT_MSG (false, "802.11ax can only be used with SpectrumWifiPhy");
+  WifiSpectrumBand convertedSubcarriers;
+  return convertedSubcarriers;
 }
 
 void
