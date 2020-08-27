@@ -98,7 +98,7 @@ DsrLinkStab::~DsrLinkStab ()
 
 void DsrLinkStab::Print ( ) const
 {
-  NS_LOG_LOGIC ("LifeTime: " << GetLinkStability ().GetSeconds ());
+  NS_LOG_LOGIC ("LifeTime: " << GetLinkStability ().As (Time::S));
 }
 
 typedef std::list<DsrRouteCacheEntry>::value_type route_pair;
@@ -128,7 +128,7 @@ DsrRouteCacheEntry::Invalidate (Time badLinkLifetime)
 void
 DsrRouteCacheEntry::Print (std::ostream & os) const
 {
-  os << m_dst << "\t" << (m_expire - Simulator::Now ()).GetSeconds ()
+  os << m_dst << "\t" << (m_expire - Simulator::Now ()).As (Time::S)
      << "\t";
 }
 
@@ -467,7 +467,7 @@ DsrRouteCache::PurgeLinkNode ()
   NS_LOG_FUNCTION (this);
   for (std::map<Link, DsrLinkStab>::iterator i = m_linkCache.begin (); i != m_linkCache.end (); )
     {
-      NS_LOG_DEBUG ("The link stability " << i->second.GetLinkStability ().GetSeconds ());
+      NS_LOG_DEBUG ("The link stability " << i->second.GetLinkStability ().As (Time::S));
       std::map<Link, DsrLinkStab>::iterator itmp = i;
       if (i->second.GetLinkStability () <= Seconds (0))
         {
@@ -482,7 +482,7 @@ DsrRouteCache::PurgeLinkNode ()
   /// may need to remove them after verify
   for (std::map<Ipv4Address, DsrNodeStab>::iterator i = m_nodeCache.begin (); i != m_nodeCache.end (); )
     {
-      NS_LOG_DEBUG ("The node stability " << i->second.GetNodeStability ().GetSeconds ());
+      NS_LOG_DEBUG ("The node stability " << i->second.GetNodeStability ().As (Time::S));
       std::map<Ipv4Address, DsrNodeStab>::iterator itmp = i;
       if (i->second.GetNodeStability () <= Seconds (0))
         {
@@ -518,7 +518,7 @@ DsrRouteCache::IncStability (Ipv4Address node)
   std::map<Ipv4Address, DsrNodeStab>::const_iterator i = m_nodeCache.find (node);
   if (i == m_nodeCache.end ())
     {
-      NS_LOG_INFO ("The initial stability " << m_initStability.GetSeconds ());
+      NS_LOG_INFO ("The initial stability " << m_initStability.As (Time::S));
       DsrNodeStab ns (m_initStability);
       m_nodeCache[node] = ns;
       return false;
@@ -526,8 +526,8 @@ DsrRouteCache::IncStability (Ipv4Address node)
   else
     {
       /// \todo get rid of the debug here
-      NS_LOG_INFO ("The node stability " << i->second.GetNodeStability ().GetSeconds ());
-      NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () * m_stabilityIncrFactor).GetSeconds ());
+      NS_LOG_INFO ("The node stability " << i->second.GetNodeStability ().As (Time::S));
+      NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () * m_stabilityIncrFactor).As (Time::S));
       DsrNodeStab ns (Time (i->second.GetNodeStability () * m_stabilityIncrFactor));
       m_nodeCache[node] = ns;
       return true;
@@ -549,8 +549,8 @@ DsrRouteCache::DecStability (Ipv4Address node)
   else
     {
       /// \todo remove it here
-      NS_LOG_INFO ("The stability here " << i->second.GetNodeStability ().GetSeconds ());
-      NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () / m_stabilityDecrFactor).GetSeconds ());
+      NS_LOG_INFO ("The stability here " << i->second.GetNodeStability ().As (Time::S));
+      NS_LOG_INFO ("The stability here " << Time (i->second.GetNodeStability () / m_stabilityDecrFactor).As (Time::S));
       DsrNodeStab ns (Time (i->second.GetNodeStability () / m_stabilityDecrFactor));
       m_nodeCache[node] = ns;
       return true;
@@ -592,7 +592,7 @@ DsrRouteCache::AddRoute_Link (DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Addres
         }
       if (stab.GetLinkStability () < m_minLifeTime)
         {
-          NS_LOG_LOGIC ("Stability: " << stab.GetLinkStability ().GetSeconds ());
+          NS_LOG_LOGIC ("Stability: " << stab.GetLinkStability ().As (Time::S));
           /// Set the link stability as the m)minLifeTime, default is 1 second
           stab.SetLinkStability (m_minLifeTime);
         }
@@ -627,7 +627,7 @@ DsrRouteCache::UseExtends (DsrRouteCacheEntry::IP_VECTOR rt)
             {
               m_linkCache[link].SetLinkStability (m_useExtends);
               /// \todo remove after debug
-              NS_LOG_INFO ("The time of the link " << m_linkCache[link].GetLinkStability ().GetSeconds ());
+              NS_LOG_INFO ("The time of the link " << m_linkCache[link].GetLinkStability ().As (Time::S));
             }
         }
       else
@@ -703,8 +703,8 @@ DsrRouteCache::AddRoute (DsrRouteCacheEntry & rt)
               // This sort function will sort the route cache entries based on the size of route in each of the
               // route entries
               rtVector.sort (CompareRoutesExpire);
-              NS_LOG_DEBUG ("The first time" << rtVector.front ().GetExpireTime ().GetSeconds () << " The second time "
-                                             << rtVector.back ().GetExpireTime ().GetSeconds ());
+              NS_LOG_DEBUG ("The first time" << rtVector.front ().GetExpireTime ().As (Time::S) << " The second time "
+                                             << rtVector.back ().GetExpireTime ().As (Time::S));
               NS_LOG_DEBUG ("The first hop" << rtVector.front ().GetVector ().size () << " The second hop "
                                             << rtVector.back ().GetVector ().size ());
               m_sortedRoutes.erase (dst);               // erase the route entries for dst first
@@ -737,8 +737,8 @@ bool DsrRouteCache::FindSameRoute (DsrRouteCacheEntry & rt, std::list<DsrRouteCa
         {
           NS_LOG_DEBUG ("Found same routes in the route cache with the vector size "
                         << rt.GetDestination () << " " << rtVector.size ());
-          NS_LOG_DEBUG ("The new route expire time " << rt.GetExpireTime ().GetSeconds ()
-                                                     << " the original expire time " << i->GetExpireTime ().GetSeconds ());
+          NS_LOG_DEBUG ("The new route expire time " << rt.GetExpireTime ().As (Time::S)
+                                                     << " the original expire time " << i->GetExpireTime ().As (Time::S));
           if (rt.GetExpireTime () > i->GetExpireTime ())
             {
               i->SetExpireTime (rt.GetExpireTime ());
