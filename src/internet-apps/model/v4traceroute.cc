@@ -264,7 +264,7 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
               routeIpv4.str ("");
               routeIpv4.clear ();
               routeIpv4 << realFrom.GetIpv4 ();
-              osRoute << delta.GetMilliSeconds () << " ms ";
+              osRoute << delta.As (Time::MS);
               if (m_probeCount == m_maxProbes)
                 {
                   if (m_verbose)
@@ -326,7 +326,7 @@ V4TraceRoute::Receive (Ptr<Socket> socket)
                       routeIpv4.str ("");
                       routeIpv4.clear ();
                       routeIpv4 << realFrom.GetIpv4 ();
-                      osRoute << delta.GetMilliSeconds () << " ms ";
+                      osRoute << delta.As (Time::MS);
 
                       if (m_probeCount == m_maxProbes)
                         {

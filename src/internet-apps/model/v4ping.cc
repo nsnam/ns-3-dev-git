@@ -163,7 +163,7 @@ V4Ping::Receive (Ptr<Socket> socket)
                           std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
                                     << " icmp_seq=" << echo.GetSequenceNumber ()
                                     << " ttl=" << (unsigned)ipv4.GetTtl ()
-                                    << " time=" << delta.GetMilliSeconds () << " ms\n";
+                                    << " time=" << delta.As (Time::MS) << "\n";
                         }
                     }
                 }
@@ -284,7 +284,7 @@ V4Ping::StopApplication (void)
       os << "--- " << m_remote << " ping statistics ---\n" 
          << m_seq << " packets transmitted, " << m_recv << " received, "
          << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
-         << "time " << (Simulator::Now () - m_started).GetMilliSeconds () << "ms\n";
+         << "time " << (Simulator::Now () - m_started).As (Time::MS) << "\n";
 
       if (m_avgRtt.Count () > 0)
         os << "rtt min/avg/max/mdev = " << m_avgRtt.Min () << "/" << m_avgRtt.Avg () << "/"
