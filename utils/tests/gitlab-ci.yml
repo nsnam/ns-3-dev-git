@@ -85,3 +85,4 @@ include:
   - 'utils/tests/gitlab-ci-clang.yml'
   - 'utils/tests/gitlab-ci-test.yml'
   - 'utils/tests/gitlab-ci-doc.yml'
+  - 'utils/tests/gitlab-ci-pybindgen.yml'

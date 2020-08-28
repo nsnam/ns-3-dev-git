@@ -1,0 +1,24 @@
+pybindgen:
+  stage: build
+  image: archlinux/base
+  only:
+    variables:
+      - $PYBINDGEN == "True"
+  before_script:
+    - pacman -Syu --noconfirm
+    - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost wget git --noconfirm
+    - wget --no-check-certificate https://nat.onthewifi.net/ns3/castxml-git-0.3.4.r19.g8625aed-1-x86_64.pkg.tar
+    - wget --no-check-certificate https://nat.onthewifi.net/ns3/python-pybindgen-0.21.0-1-x86_64.pkg.tar
+    - wget --no-check-certificate https://nat.onthewifi.net/ns3/python-pygccxml-git-1.9.0.r104.g84be336-1-any.pkg.tar
+    - pacman -U --noconfirm python-pygccxml-git-1.9.0.r104.g84be336-1-any.pkg.tar python-pybindgen-0.21.0-1-x86_64.pkg.tar castxml-git-0.3.4.r19.g8625aed-1-x86_64.pkg.tar
+  script:
+    - git clone https://github.com/afq984/python-cxxfilt.git
+    - mv python-cxxfilt/cxxfilt bindings/python
+    - CXX="g++" ./waf configure --disable-examples --disable-tests -d debug
+    - ./waf --apiscan=$MODULE
+    - git diff src > pybindgen_new.patch
+  artifacts:
+    paths:
+      - pybindgen_new.patch
+  timeout: 9h
+
