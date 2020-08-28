@@ -2763,11 +2763,16 @@ LteUeRrc::VarMeasReportListAdd (uint8_t measId, ConcernedCells_t enteringCells)
     }
 
   NS_ASSERT (!measReportIt->second.cellsTriggeredList.empty ());
-  measReportIt->second.numberOfReportsSent = 0;
-  measReportIt->second.periodicReportTimer
-    = Simulator::Schedule (UE_MEASUREMENT_REPORT_DELAY,
-                           &LteUeRrc::SendMeasurementReport,
-                           this, measId);
+
+  // #issue 224, schedule only when there is no periodic event scheduled already
+  if (!measReportIt->second.periodicReportTimer.IsRunning ())
+    {
+      measReportIt->second.numberOfReportsSent = 0;
+      measReportIt->second.periodicReportTimer
+        = Simulator::Schedule (UE_MEASUREMENT_REPORT_DELAY,
+                               &LteUeRrc::SendMeasurementReport,
+                               this, measId);
+    }
 
   std::map<uint8_t, std::list<PendingTrigger_t> >::iterator
     enteringTriggerIt = m_enteringTriggerQueue.find (measId);
