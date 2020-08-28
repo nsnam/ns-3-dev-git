@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- *  Copyright 2013. Lawrence Livermore National Security, LLC.
+ *  Copyright 2018. Lawrence Livermore National Security, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -22,25 +22,15 @@
  * \file
  * \ingroup mpi
  *
- * This test is equivalent to simple-distributed but tests boundary cases
- * when one of the ranks has no Nodes on it.   When run on two tasks
- * rank 0 will have all the Nodes and rank 1 will be empty:
- * 
- *                 -------   -------
- *                  RANK 0    RANK 0
- *                 ------- | -------
- *                         |
- * n0 ---------|           |           |---------- n6
- *             |           |           |
- * n1 -------\ |           |           | /------- n7
- *            n4 ----------|---------- n5
- * n2 -------/ |           |           | \------- n8
- *             |           |           |
- * n3 ---------|           |           |---------- n9
+ * This test is equivalent to simple-distributed with the addition of 
+ * initialization of MPI by user code (this script) and providing
+ * a communicator to ns-3.  The ns-3 communicator is smaller than
+ * MPI Comm World as might be the case if ns-3 is run in parallel
+ * with another simulator.
  *
- *
- * When run on three tasks rank 1 has the left half of the Nodes and rank 2
- * will be empty.
+ * TestDistributed creates a dumbbell topology and logically splits it in
+ * half.  The left half is placed on logical processor 0 and the right half
+ * is placed on logical processor 1.
  *
  *                 -------   -------
  *                  RANK 0    RANK 1
@@ -53,6 +43,7 @@
  * n2 -------/ |           |           | \------- n8
  *             |           |           |
  * n3 ---------|           |           |---------- n9
+ *
  *
  * OnOff clients are placed on each left leaf node. Each right leaf node
  * is a packet sink for a left leaf node.  As a packet travels from one
@@ -70,17 +61,56 @@
 #include "ns3/network-module.h"
 #include "ns3/mpi-interface.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-nix-vector-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/on-off-helper.h"
+#include "ns3/packet-sink.h"
 #include "ns3/packet-sink-helper.h"
+
 #include "mpi.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("SimpleDistributedEmptyNode");
+NS_LOG_COMPONENT_DEFINE ("SimpleDistributedMpiComm");
+
+// Tag for whether this rank should go into a new communicator
+// ns-3 ranks will have color == 1.
+const int NS_COLOR = 1;
+const int NOT_NS_COLOR = NS_COLOR + 1;
+
+/**
+ * Report my rank, in both MPI_COMM_WORLD and the split communicator.
+ *
+ * \param [in] color My role, either ns-3 rank or other rank.
+ * \param [in] spitComm The split communicator.
+ */
+void
+ReportRank (int color, MPI_Comm splitComm)
+{
+  int otherId=0;
+  int otherSize=1;
+  
+  MPI_Comm_rank (splitComm, &otherId);
+  MPI_Comm_size (splitComm, &otherSize);
+  
+  if (color == NS_COLOR)
+    {
+      RANK0COUT ( "ns-3 rank:  ");
+    }
+  else
+    {
+      RANK0COUT ( "Other rank: ");
+    }
+  
+  RANK0COUTAPPEND ( "in MPI_COMM_WORLD: " << SinkTracer::GetWorldRank () << ":" << SinkTracer::GetWorldSize ()
+                    << ", in splitComm: "    << otherId   << ":" << otherSize
+                    << std::endl);
+  
+}  // ReportRank()
 
 int
 main (int argc, char *argv[])
@@ -88,18 +118,22 @@ main (int argc, char *argv[])
   bool nix = true;
   bool nullmsg = false;
   bool tracing = false;
-  bool testing = false;
+  bool init = false;
   bool verbose = false;
+  bool testing = false;
 
   // Parse command line
-  CommandLine cmd (__FILE__);
+  CommandLine cmd;
   cmd.AddValue ("nix", "Enable the use of nix-vector or global routing", nix);
-  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization (instead of granted time window)", nullmsg);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
+  cmd.AddValue ("init", "ns-3 should initialize MPI by calling MPI_Init", init);
   cmd.AddValue ("verbose", "verbose output", verbose);
   cmd.AddValue ("test", "Enable regression test output", testing);
   cmd.Parse (argc, argv);
 
+  // Defer reporting the configuration until we know the communicator
+  
   // Distributed simulation setup; by default use granted time window algorithm.
   if(nullmsg) 
     {
@@ -112,36 +146,172 @@ main (int argc, char *argv[])
                          StringValue ("ns3::DistributedSimulatorImpl"));
     }
 
-  MpiInterface::Enable (&argc, &argv);
+  // MPI_Init
 
-  SinkTracer::Init ();
-  
-  if (verbose)
+  if (init)
     {
-      LogComponentEnable ("PacketSink", (LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_NODE | LOG_PREFIX_TIME));
-    }
-    
-  uint32_t systemId = MpiInterface::GetSystemId ();
-  uint32_t systemCount = MpiInterface::GetSize ();
-
-  uint32_t rightHalfSystemId = 777;
-
-  // Check for valid distributed parameters.
-  // Must have 2 or 3 tasks.
-  if (systemCount == 2)
-    {
-      rightHalfSystemId = 0;
-    }
-  else if (systemCount == 3)
-    {
-      rightHalfSystemId = 1;
+      // Initialize MPI directly
+      MPI_Init(&argc, &argv);
     }
   else
     {
-      std::cout << "This simulation requires 2 or 3 logical processors." << std::endl;
+      // Let ns-3 call MPI_Init and MPI_Finalize
+      MpiInterface::Enable (&argc, &argv);
+    }
+
+  SinkTracer::Init ();
+
+  auto worldSize = SinkTracer::GetWorldSize ();
+  auto worldRank = SinkTracer::GetWorldRank ();
+
+  if ( (!init) && (worldSize != 2))
+    {
+      RANK0COUT ("This simulation requires exactly 2 logical processors if --init is not set." << std::endl);
       return 1;
     }
+
+  if (worldSize < 2)
+    {
+      RANK0COUT ("This simulation requires 2  or more logical processors." << std::endl);
+      return 1;
+    }
+
+  // Set up the MPI communicator for ns-3
+  //  Condition                         ns-3 Communicator
+  //  a.  worldSize = 2    copy of MPI_COMM_WORLD
+  //  b.  worldSize > 2    communicator of ranks 1-2
+
+  // Flag to record that we created a communicator so we can free it at the end.
+  bool freeComm = false;  
+  // The new communicator, if we create one
+  MPI_Comm splitComm = MPI_COMM_WORLD;
+  // The list of ranks assigned to ns-3
+  std::string ns3Ranks;
+  // Tag for whether this rank should go into a new communicator
+  int color = MPI_UNDEFINED;
+
+
+  if (worldSize == 2)
+    {
+      std::stringstream ss;
+      color = NS_COLOR;
+      ss << "MPI_COMM_WORLD (" << worldSize << " ranks)";
+      ns3Ranks = ss.str ();
+      splitComm = MPI_COMM_WORLD;
+      freeComm = false;
+    }
+  else
+    {
+      //  worldSize > 2    communicator of ranks 1-2
+      
+      // Put ranks 1-2 in the new communicator
+      if (worldRank == 1 || worldRank == 2)
+        {
+          color = NS_COLOR;
+        }
+      else
+        {
+          color = NOT_NS_COLOR;
+        }
+      std::stringstream ss;
+      ss << "Split [1-2] (out of " << worldSize << " ranks) from MPI_COMM_WORLD";
+      ns3Ranks = ss.str ();
+      
+      // Now create the new communicator
+      MPI_Comm_split (MPI_COMM_WORLD, color, worldRank, &splitComm);
+      freeComm = true;
+    }
+
+
+  if(init)
+    {
+      MpiInterface::Enable (splitComm);
+    }
+
+  // Report the configuration from rank 0 only
+  RANK0COUT (cmd.GetName () << "\n");
+  RANK0COUT ("\n" );
+  RANK0COUT ("Configuration:\n" );
+  RANK0COUT ("Routing:           " << (nix ? "nix-vector" : "global") << "\n");
+  RANK0COUT ("Synchronization:   " << (nullmsg ? "null-message" : "granted time window (YAWNS)") << "\n");
+  RANK0COUT ("MPI_Init called:   " << (init ? "explicitly by this program" : "implicitly by ns3::MpiInterface::Enable()") << "\n" );
+  RANK0COUT ("ns-3 Communicator: " << ns3Ranks << "\n");
+  RANK0COUT ("PCAP tracing:      " << (tracing ? "" : "not") << " enabled\n");
+  RANK0COUT ("\n");
+  RANK0COUT ("Rank assignments:" << std::endl);
+
+  if (worldRank == 0)
+    {
+      ReportRank (color, splitComm);
+    }
+
+  if(verbose)
+    {
+      // Circulate a token to have each rank report in turn
+      int token;
     
+      if (worldRank == 0)
+        {
+          token = 1;
+        }
+      else
+        {
+          MPI_Recv (&token, 1, MPI_INT, worldRank - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          ReportRank (color, splitComm);
+        }
+
+      MPI_Send (&token, 1, MPI_INT, (worldRank + 1) % worldSize, 0, MPI_COMM_WORLD);
+
+      if (worldRank == 0)
+        {
+          MPI_Recv (&token, 1, MPI_INT, worldSize - 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+    }  // circulate token to report rank
+
+  RANK0COUT (std::endl);
+
+  if (color != NS_COLOR)
+    {
+      // Do other work outside the ns-3 communicator
+      
+      // In real use of a separate communicator from ns-3
+      // the other tasks would be running another simulator
+      // or other desired work here..
+      
+      // Our work is done, just wait for everyone else to finish.
+
+      MpiInterface::Disable ();
+
+      if(init)
+        {
+          MPI_Finalize ();
+        }
+      
+      return 0;
+    }
+
+  // The code below here is essentially the same as simple-distributed.cc
+  // --------------------------------------------------------------------
+  
+  // We use a trace instead of relying on NS_LOG
+  
+  if (verbose)
+    {
+      LogComponentEnable ("PacketSink", LOG_LEVEL_INFO);
+    }
+
+  uint32_t systemId = MpiInterface::GetSystemId ();
+  uint32_t systemCount = MpiInterface::GetSize ();
+
+  // Check for valid distributed parameters.
+  // Both this script and simple-distributed.cc will work
+  // with arbitrary numbers of ranks, as long as there are at least 2.
+  if (systemCount < 2)
+    {
+      RANK0COUT ("This simulation requires at least 2 logical processors." << std::endl);
+      return 1;
+    }
+
   // Some default values
   Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (512));
   Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("1Mbps"));
@@ -151,18 +321,18 @@ main (int argc, char *argv[])
   NodeContainer leftLeafNodes;
   leftLeafNodes.Create (4, 0);
 
-  // Create router nodes.  Left router with system id 0, right router
-  // with system id dependent on number of processors using
-  // rightHalfSystemId
+  // Create router nodes.  Left router
+  // with system id 0, right router with
+  // system id 1
   NodeContainer routerNodes;
   Ptr<Node> routerNode1 = CreateObject<Node> (0);
-  Ptr<Node> routerNode2 = CreateObject<Node> (rightHalfSystemId);
+  Ptr<Node> routerNode2 = CreateObject<Node> (1);
   routerNodes.Add (routerNode1);
   routerNodes.Add (routerNode2);
 
-  // Create leaf nodes on left with system id rightHalfSystemId
+  // Create leaf nodes on left with system id 1
   NodeContainer rightLeafNodes;
-  rightLeafNodes.Create (4, rightHalfSystemId);
+  rightLeafNodes.Create (4, 1);
 
   PointToPointHelper routerLink;
   routerLink.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
@@ -197,10 +367,16 @@ main (int argc, char *argv[])
     }
 
   InternetStackHelper stack;
+  Ipv4NixVectorHelper nixRouting;
+  Ipv4StaticRoutingHelper staticRouting;
+
+  Ipv4ListRoutingHelper list;
+  list.Add (staticRouting, 0);
+  list.Add (nixRouting, 10);
+
   if (nix)
     {
-      Ipv4NixVectorHelper nixRouting;
-      stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
+      stack.SetRoutingHelper (list); // has effect on the next Install ()
     }
 
   stack.InstallAll ();
@@ -260,7 +436,7 @@ main (int argc, char *argv[])
           leafLink.EnablePcap("leaf-left", leftLeafDevices, true);
         }
       
-      if (systemId == rightHalfSystemId)
+      if (systemId == 1)
         {
           routerLink.EnablePcap("router-right", routerDevices, true);
           leafLink.EnablePcap("leaf-right", rightLeafDevices, true);
@@ -269,18 +445,21 @@ main (int argc, char *argv[])
 
   // Create a packet sink on the right leafs to receive packets from left leafs
   uint16_t port = 50000;
-  if (systemId == rightHalfSystemId)
+  if (systemId == 1)
     {
       Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
       PacketSinkHelper sinkHelper ("ns3::UdpSocketFactory", sinkLocalAddress);
       ApplicationContainer sinkApp;
       for (uint32_t i = 0; i < 4; ++i)
         {
-          sinkApp.Add (sinkHelper.Install (rightLeafNodes.Get (i)));
+          auto apps = sinkHelper.Install (rightLeafNodes.Get (i));
+          auto sink = DynamicCast<PacketSink> (apps.Get (0));
+          NS_ASSERT_MSG (sink, "Couldn't get PacketSink application.");
           if (testing)
             {
-              sinkApp.Get (i)->TraceConnectWithoutContext ("RxWithAddresses", MakeCallback (&SinkTracer::SinkTrace));
+              sink->TraceConnectWithoutContext ("RxWithAddresses",  MakeCallback(&SinkTracer::SinkTrace));
             }
+          sinkApp.Add (apps);
         }
       sinkApp.Start (Seconds (1.0));
       sinkApp.Stop (Seconds (5));
@@ -307,16 +486,35 @@ main (int argc, char *argv[])
       clientApps.Stop (Seconds (5));
     }
 
+  RANK0COUT (std::endl);
+
   Simulator::Stop (Seconds (5));
   Simulator::Run ();
   Simulator::Destroy ();
+
+  // --------------------------------------------------------------------
+  // Conditional cleanup based on whether we built a communicator
+  // and called MPI_Init
+  
+  if (freeComm)
+    {
+      MPI_Comm_free (&splitComm);
+    }
 
   if (testing)
     {
       SinkTracer::Verify (4);
     }
   
-  // Exit the MPI execution environment
+  // Clean up the ns-3 MPI execution environment
+  // This will call MPI_Finalize if MpiInterface::Initialize was called
   MpiInterface::Disable ();
+
+  if (init)
+    {
+      // We called MPI_Init, so we have to call MPI_Finalize
+      MPI_Finalize ();
+    }
+  
   return 0;
 }

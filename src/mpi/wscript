@@ -54,12 +54,19 @@ def build(bld):
         'model/mpi-interface.cc', 
         ]
 
+    # MPI tests are based on examples that are run as tests, only test when examples are built.
+    if bld.env['ENABLE_EXAMPLES']:
+        module_test = bld.create_ns3_module_test_library('mpi')
+        module_test.source = [
+            'test/mpi-test-suite.cc',
+        ]
+
     headers = bld(features='ns3header')
     headers.module = 'mpi'
     headers.source = [
         'model/mpi-receiver.h',
         'model/mpi-interface.h',
-        'model/parallel-communication-interface.h', 
+        'model/parallel-communication-interface.h',
         ]
 
     if bld.env['ENABLE_MPI']:

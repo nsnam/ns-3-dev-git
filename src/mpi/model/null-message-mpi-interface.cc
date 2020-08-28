@@ -19,6 +19,12 @@
  *
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ * Implementation of classes ns3::NullMessageSentBuffer and ns3::NullMessageMpiInterface.
+ */
+
 #include "null-message-mpi-interface.h"
 
 #include "null-message-simulator-impl.h"
@@ -42,6 +48,47 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NullMessageMpiInterface");
+  
+NS_OBJECT_ENSURE_REGISTERED (NullMessageMpiInterface);
+
+/**
+ * \ingroup mpi
+ *
+ * \brief Non-blocking send buffers for Null Message implementation.
+ * 
+ * One buffer is allocated for each non-blocking send.
+ */
+class NullMessageSentBuffer
+{
+public:
+  NullMessageSentBuffer ();
+  ~NullMessageSentBuffer ();
+
+  /**
+   * \return pointer to sent buffer
+   */
+  uint8_t* GetBuffer ();
+  /**
+   * \param buffer pointer to sent buffer
+   */
+  void SetBuffer (uint8_t* buffer);
+  /**
+   * \return MPI request
+   */
+  MPI_Request* GetRequest ();
+
+private:
+
+  /**
+   * Buffer for send.
+   */
+  uint8_t* m_buffer;
+
+  /**
+   * MPI request posted for the send.
+   */
+  MPI_Request m_request;
+};
 
 /**
  * maximum MPI message size for easy
@@ -81,12 +128,25 @@ NullMessageSentBuffer::GetRequest ()
 uint32_t              NullMessageMpiInterface::g_sid = 0;
 uint32_t              NullMessageMpiInterface::g_size = 1;
 uint32_t              NullMessageMpiInterface::g_numNeighbors = 0;
-bool                  NullMessageMpiInterface::g_initialized = false;
 bool                  NullMessageMpiInterface::g_enabled = false;
+bool                  NullMessageMpiInterface::g_mpiInitCalled = false;
+
 std::list<NullMessageSentBuffer> NullMessageMpiInterface::g_pendingTx;
 
+MPI_Comm     NullMessageMpiInterface::g_communicator = MPI_COMM_WORLD;
+bool         NullMessageMpiInterface::g_freeCommunicator = false;
 MPI_Request* NullMessageMpiInterface::g_requests;
 char**       NullMessageMpiInterface::g_pRxBuffers;
+
+TypeId 
+NullMessageMpiInterface::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NullMessageMpiInterface")
+    .SetParent<Object> ()
+    .SetGroupName ("Mpi")
+  ;
+  return tid;
+}
 
 NullMessageMpiInterface::NullMessageMpiInterface ()
 {
@@ -118,14 +178,16 @@ NullMessageMpiInterface::GetSize ()
   return g_size;
 }
 
+MPI_Comm 
+NullMessageMpiInterface::GetCommunicator() 
+{
+  NS_ASSERT (g_enabled);
+  return g_communicator;
+}
+
 bool
 NullMessageMpiInterface::IsEnabled ()
 {
-  if (!g_initialized)
-    {
-      Simulator::GetImplementation ();
-      g_initialized = true;
-    }
   return g_enabled;
 }
 
@@ -134,21 +196,39 @@ NullMessageMpiInterface::Enable (int* pargc, char*** pargv)
 {
   NS_LOG_FUNCTION (this << *pargc);
 
+  NS_ASSERT (g_enabled == false);
+
   // Initialize the MPI interface
   MPI_Init (pargc, pargv);
-  MPI_Barrier (MPI_COMM_WORLD);
+  Enable (MPI_COMM_WORLD);
+  g_mpiInitCalled = true;
+}
+
+void 
+NullMessageMpiInterface::Enable (MPI_Comm communicator)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT (g_enabled == false);
+
+  // Standard MPI practice is to duplicate the communicator for
+  // library to use.  Library communicates in isolated communication
+  // context.
+  MPI_Comm_dup (communicator, &g_communicator);
+  g_freeCommunicator = true;
 
   // SystemId and Size are unit32_t in interface but MPI uses int so convert.
   int mpiSystemId;
   int mpiSize;
-  MPI_Comm_rank (MPI_COMM_WORLD, &mpiSystemId);
-  MPI_Comm_size (MPI_COMM_WORLD, &mpiSize);
-
+  MPI_Comm_rank (g_communicator, &mpiSystemId);
+  MPI_Comm_size (g_communicator, &mpiSize);
+  
   g_sid = mpiSystemId;
   g_size = mpiSize;
 
   g_enabled = true;
-  g_initialized = true;
+
+  MPI_Barrier(g_communicator);
 }
 
 void 
@@ -170,7 +250,7 @@ NullMessageMpiInterface::InitializeSendReceiveBuffers(void)
         {
           g_pRxBuffers[index] = new char[NULL_MESSAGE_MAX_MPI_MSG_SIZE];
           MPI_Irecv (g_pRxBuffers[index], NULL_MESSAGE_MAX_MPI_MSG_SIZE, MPI_CHAR, rank, 0,
-                     MPI_COMM_WORLD, &g_requests[index]);
+                     g_communicator, &g_requests[index]);
           ++index;
         }
     }
@@ -210,7 +290,7 @@ NullMessageMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t
   p->Serialize (reinterpret_cast<uint8_t *> (pData), serializedSize);
 
   MPI_Isend (reinterpret_cast<void *> (iter->GetBuffer ()), bufferSize, MPI_CHAR, nodeSysId,
-             0, MPI_COMM_WORLD, (iter->GetRequest ()));
+             0, g_communicator, (iter->GetRequest ()));
 
   NullMessageSimulatorImpl::GetInstance ()->RescheduleNullMessageEvent (nodeSysId);
 }
@@ -241,7 +321,7 @@ NullMessageMpiInterface::SendNullMessage (const Time& guarantee_update, Ptr<Remo
   uint32_t nodeSysId = bundle->GetSystemId ();
 
   MPI_Isend (reinterpret_cast<void *> (iter->GetBuffer ()), bufferSize, MPI_CHAR, nodeSysId,
-             0, MPI_COMM_WORLD, (iter->GetRequest ()));
+             0, g_communicator, (iter->GetRequest ()));
 }
 
 void
@@ -260,7 +340,6 @@ NullMessageMpiInterface::ReceiveMessagesNonBlocking ()
 
   ReceiveMessages(false);
 }
-
 
 void
 NullMessageMpiInterface::ReceiveMessages (bool blocking)
@@ -348,7 +427,7 @@ NullMessageMpiInterface::ReceiveMessages (bool blocking)
 
           // Re-queue the next read
           MPI_Irecv (g_pRxBuffers[index], NULL_MESSAGE_MAX_MPI_MSG_SIZE, MPI_CHAR, status.MPI_SOURCE, 0,
-                     MPI_COMM_WORLD, &g_requests[index]);
+                     g_communicator, &g_requests[index]);
 
         }
       else
@@ -387,11 +466,8 @@ NullMessageMpiInterface::Disable ()
 {
   NS_LOG_FUNCTION (this);
 
-  int flag = 0;
-  MPI_Initialized (&flag);
-  if (flag)
+  if (g_enabled)
     {
-
       for (std::list<NullMessageSentBuffer>::iterator iter = g_pendingTx.begin ();
            iter != g_pendingTx.end ();
            ++iter)
@@ -406,7 +482,6 @@ NullMessageMpiInterface::Disable ()
           MPI_Request_free (&g_requests[i]);
         }
 
-      MPI_Finalize ();
 
       for (uint32_t i = 0; i < g_numNeighbors; ++i)
         {
@@ -417,9 +492,29 @@ NullMessageMpiInterface::Disable ()
 
       g_pendingTx.clear ();
 
-      g_enabled = false;
-      g_initialized = false;
 
+      if (g_freeCommunicator)
+        {
+          MPI_Comm_free (&g_communicator);
+          g_freeCommunicator = false;
+        }
+  
+      if (g_mpiInitCalled)
+        {
+          int flag = 0;
+          MPI_Initialized (&flag);
+          if (flag)
+            {
+              MPI_Finalize ();
+            }
+          else
+            {
+              NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
+            }
+        }
+
+      g_enabled = false;
+      g_mpiInitCalled = false;
     }
   else
     {

@@ -16,6 +16,13 @@
  * Author: George Riley <riley@ece.gatech.edu>
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ * ns3::MpiReciver implementation,
+ * provides an interface to aggregate to MPI-compatible NetDevices.
+ */
+
 #include "mpi-receiver.h"
 
 namespace ns3 {

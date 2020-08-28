@@ -14,7 +14,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
- *
+ */
+
+/**
+ * \file
+ * \ingroup mpi
+ * Declaration of classes ns3::SentBuffer and ns3::GrantedTimeWindowMpiInterface.
  */
 
 // This object contains static methods that provide an easy interface
@@ -69,11 +74,12 @@ public:
   MPI_Request* GetRequest ();
 
 private:
-  uint8_t* m_buffer;
-  MPI_Request m_request;
+  uint8_t* m_buffer;      /**< The buffer. */
+  MPI_Request m_request;  /**< The MPI request handle. */
 };
 
 class Packet;
+class DistributedSimulatorImpl;
 
 /**
  * \ingroup mpi
@@ -87,46 +93,33 @@ class Packet;
 class GrantedTimeWindowMpiInterface : public ParallelCommunicationInterface, Object
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
-  /**
-   * Delete all buffers
-   */
+  // Inherited
   virtual void Destroy ();
-  /**
-   * \return MPI rank
-   */
   virtual uint32_t GetSystemId ();
-  /**
-   * \return MPI size (number of systems)
-   */
   virtual uint32_t GetSize ();
-  /**
-   * \return true if using MPI
-   */
   virtual bool IsEnabled ();
-  /**
-   * \param pargc number of command line arguments
-   * \param pargv command line arguments
-   *
-   * Sets up MPI interface
-   */
   virtual void Enable (int* pargc, char*** pargv);
-  /**
-   * Terminates the MPI environment by calling MPI_Finalize
-   * This function must be called after Destroy ()
-   * It also resets m_initialized, m_enabled
-   */
-  virtual void Disable ();
-  /**
-   * \param p packet to send
-   * \param rxTime received time at destination node
-   * \param node destination node
-   * \param dev destination device
-   *
-   * Serialize and send a packet to the specified node and net device
-   */
+  virtual void Enable (MPI_Comm communicator);
+  virtual void Disable();
   virtual void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
+  virtual MPI_Comm GetCommunicator();
+
+private:
+
+  /*
+   * The granted time window implementation is a collaboration of several
+   * classes.  Methods that should be invoked only by the
+   * collaborators are private to restrict use.
+   * It is not intended for state to be shared.
+   */
+  friend ns3::DistributedSimulatorImpl;
+  
   /**
    * Check for received messages complete
    */
@@ -143,27 +136,41 @@ public:
    * \return transmitted count in packets
    */
   static uint32_t GetTxCount ();
+  
+  /** System ID (rank) for this task. */
+  static uint32_t g_sid;
+  /** Size of the MPI COM_WORLD group. */
+  static uint32_t g_size;
 
-private:
-  static uint32_t m_sid;
-  static uint32_t m_size;
+  /** Total packets received. */
+  static uint32_t g_rxCount;
 
-  // Total packets received
-  static uint32_t m_rxCount;
+  /** Total packets sent. */
+  static uint32_t g_txCount;
 
-  // Total packets sent
-  static uint32_t m_txCount;
-  static bool     m_initialized;
-  static bool     m_enabled;
+  /** Has this interface been enabled. */
+  static bool     g_enabled;
 
-  // Pending non-blocking receives
-  static MPI_Request* m_requests;
+  /**
+   * Has MPI Init been called by this interface.
+   * Alternatively user supplies a communicator.
+   */
+  static bool     g_mpiInitCalled;
 
-  // Data buffers for non-blocking reads
-  static char**   m_pRxBuffers;
+  /** Pending non-blocking receives. */
+  static MPI_Request* g_requests;
 
-  // List of pending non-blocking sends
-  static std::list<SentBuffer> m_pendingTx;
+  /** Data buffers for non-blocking reads. */
+  static char**   g_pRxBuffers;
+
+  /** List of pending non-blocking sends. */
+  static std::list<SentBuffer> g_pendingTx;
+
+  /** MPI communicator being used for ns-3 tasks. */
+  static MPI_Comm g_communicator;
+
+  /** Did ns-3 create the communicator?  Have to free it. */
+  static bool g_freeCommunicator;
 };
 
 } // namespace ns3

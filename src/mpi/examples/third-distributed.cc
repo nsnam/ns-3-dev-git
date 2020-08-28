@@ -14,6 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "mpi-test-fixtures.h"
+
 #include "ns3/core-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/network-module.h"
@@ -25,21 +27,30 @@
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/ssid.h"
 
-// Default Network Topology
-//
-// (same as third.cc from tutorial)
-// Distributed simulation, split across the p2p link
-//                          |
-//                 Rank 0   |   Rank 1
-// -------------------------|----------------------------
-//   Wifi 10.1.3.0
-//                 AP
-//  *    *    *    *
-//  |    |    |    |    10.1.1.0
-// n5   n6   n7   n0 -------------- n1   n2   n3   n4
-//                   point-to-point  |    |    |    |
-//                                   ================
-//                                     LAN 10.1.2.0
+#include <iomanip>
+
+/**
+ * \file
+ * \ingroup mpi
+ *
+ * Distributed version of third.cc from the tutorial.
+ *
+ *  Default Network Topology
+ *
+ * (same as third.cc from tutorial)
+ * Distributed simulation, split across the p2p link
+ *                          |
+ *                 Rank 0   |   Rank 1
+ * -------------------------|----------------------------
+ *   Wifi 10.1.3.0
+ *                 AP
+ *  *    *    *    *
+ *  |    |    |    |    10.1.1.0
+ * n5   n6   n7   n0 -------------- n1   n2   n3   n4
+ *                   point-to-point  |    |    |    |
+ *                                   ================
+ *                                    LAN 10.1.2.0
+ */
 
 using namespace ns3;
 
@@ -48,11 +59,12 @@ NS_LOG_COMPONENT_DEFINE ("ThirdExampleDistributed");
 int 
 main (int argc, char *argv[])
 {
-  bool verbose = true;
+  bool verbose = false;
   uint32_t nCsma = 3;
   uint32_t nWifi = 3;
   bool tracing = false;
   bool nullmsg = false;
+  bool testing = false;
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
@@ -60,6 +72,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
   cmd.AddValue ("tracing", "Enable pcap tracing", tracing);
   cmd.AddValue ("nullmsg", "Enable the use of null-message synchronization", nullmsg);
+  cmd.AddValue ("test", "Enable regression test output", testing);
 
   cmd.Parse (argc,argv);
 
@@ -74,8 +87,8 @@ main (int argc, char *argv[])
 
   if (verbose)
     {
-      LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
-      LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
+      LogComponentEnable ("UdpEchoClientApplication", (LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_NODE | LOG_PREFIX_TIME));
+      LogComponentEnable ("UdpEchoServerApplication", (LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_NODE | LOG_PREFIX_TIME));
     }
 
   // Sequential fallback values
@@ -95,6 +108,8 @@ main (int argc, char *argv[])
     }
 
   MpiInterface::Enable (&argc, &argv);
+
+  SinkTracer::Init ();
 
   systemId = MpiInterface::GetSystemId ();
   systemCount = MpiInterface::GetSize ();
@@ -212,6 +227,11 @@ main (int argc, char *argv[])
       ApplicationContainer serverApps = echoServer.Install (csmaNodes.Get (nCsma));
       serverApps.Start (Seconds (1.0));
       serverApps.Stop (Seconds (10.0));
+
+      if (testing)
+        {
+          serverApps.Get (0)->TraceConnectWithoutContext ("RxWithAddresses", MakeCallback (&SinkTracer::SinkTrace));
+        }
     }
 
   // If this rank is systemWifi
@@ -228,6 +248,11 @@ main (int argc, char *argv[])
         echoClient.Install (wifiStaNodes.Get (nWifi - 1));
       clientApps.Start (Seconds (2.0));
       clientApps.Stop (Seconds (10.0));
+
+      if (testing)
+        {
+          clientApps.Get (0)->TraceConnectWithoutContext ("RxWithAddresses", MakeCallback (&SinkTracer::SinkTrace));
+        }
     }
  
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
@@ -257,6 +282,11 @@ main (int argc, char *argv[])
 
   Simulator::Run ();
   Simulator::Destroy ();
+
+  if (testing)
+    {
+      SinkTracer::Verify (2);
+    }
 
   // Exit the MPI execution environment
   MpiInterface::Disable ();

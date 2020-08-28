@@ -16,8 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Steven Smith <smith84@llnl.gov>
- *
  */
+
+/**
+ * \file
+ * \ingroup mpi
+ * Declaration of class ns3::NullMessageSimulatorImpl. 
+ */
+
 
 #ifndef NULLMESSAGE_SIMULATOR_IMPL_H
 #define NULLMESSAGE_SIMULATOR_IMPL_H
@@ -45,10 +51,16 @@ class RemoteChannelBundle;
 class NullMessageSimulatorImpl : public SimulatorImpl
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
+  /** Default constructor. */
   NullMessageSimulatorImpl ();
 
+  /** Destructor. */
   ~NullMessageSimulatorImpl ();
 
   // virtual from SimulatorImpl
@@ -64,7 +76,7 @@ public:
   virtual void Cancel (const EventId &id);
   virtual bool IsExpired (const EventId &id) const;
   virtual void Run (void);
-  virtual void RunOneEvent (void);
+
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
@@ -98,7 +110,7 @@ private:
   virtual void DoDispose (void);
 
   /**
-   * Calculate the look ahead allowable for this MPI task.   Basically
+   * Calculate the lookahead allowable for this MPI task.   Basically
    * the minimum latency on links to neighbor MPI tasks.
    */
   void CalculateLookAhead (void);
@@ -168,31 +180,42 @@ private:
    */
   void NullMessageEventHandler(RemoteChannelBundle* bundle);
 
+  /** Container type for the events to run at Simulator::Destroy(). */
   typedef std::list<EventId> DestroyEvents;
 
+  /** The container of events to run at Destroy() */
   DestroyEvents m_destroyEvents;
+  /** Flag calling for the end of the simulation. */
   bool m_stop;
+  /** The event priority queue. */
   Ptr<Scheduler> m_events;
+
+  /** Next event unique id. */
   uint32_t m_uid;
+  /** Unique id of the current event. */
   uint32_t m_currentUid;
+  /** Timestamp of the current event. */
   uint64_t m_currentTs;
+  /** Execution context of the current event. */
   uint32_t m_currentContext;
   /** The event count. */
   uint64_t m_eventCount;
-  // number of events that have been inserted but not yet scheduled,
-  // not counting the "destroy" events; this is used for validation
+  /**
+   * Number of events that have been inserted but not yet scheduled,
+   * not counting the "destroy" events; this is used for validation.
+   */
   int m_unscheduledEvents;
 
-  uint32_t     m_myId;        // MPI Rank
-  uint32_t     m_systemCount; // MPI Size
+  uint32_t     m_myId;        /**< MPI rank. */
+  uint32_t     m_systemCount; /**< MPI communicator size. */
 
-  /*
+  /**
    * The time for which it is safe for this task to execute events
    * without danger of out-of-order events.
    */
   Time m_safeTime;
 
-  /*
+  /**
    * Null Message performance tuning parameter.  Controls when Null
    * messages are sent.  When value is 1 the minimum number of Null
    * messages are sent conserving bandwidth.  The delay in arrival of
@@ -204,9 +227,7 @@ private:
    */
   double m_schedulerTune;
 
-  /*
-   * Singleton instance.
-   */
+  /** Singleton instance. */
   static NullMessageSimulatorImpl* g_instance;
 };
 

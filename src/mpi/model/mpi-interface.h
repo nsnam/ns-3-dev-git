@@ -16,7 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Steven Smith <smith84@llnl.gov>
- *
+ */
+
+/**
+ * \file
+ * \ingroup mpi
+ * Declaration of class ns3::MpiInterface.
  */
 
 #ifndef NS3_MPI_INTERFACE_H
@@ -24,6 +29,8 @@
 
 #include <ns3/nstime.h>
 #include <ns3/packet.h>
+
+#include "mpi.h"
 
 namespace ns3 {
 /**
@@ -51,41 +58,78 @@ class MpiInterface
 {
 public:
   /**
-   * Deletes storage used by the parallel environment.
+   * \brief Deletes storage used by the parallel environment.
    */
   static void Destroy ();
   /**
-   * \return system identification
+   * \brief Get the id number of this rank.
    *
    * When running a sequential simulation this will return a systemID of 0.
+   *
+   * \return system identification
    */
   static uint32_t GetSystemId ();
   /**
-   * \return number of parallel tasks
+   * \brief Get the number of ranks used by ns-3.
    *
-   * When running a sequential simulation this will return a size of 1.
+   * Returns the size (number of MPI ranks) of the communicator used by
+   * ns-3.  When running a sequential simulation this will return a
+   * size of 1.
+   *
+   * \return number of parallel tasks
    */
   static uint32_t GetSize ();
   /**
+   * \brief Returns enabled state of parallel environment.
+   *
    * \return true if parallel communication is enabled
    */
   static bool IsEnabled ();
   /**
+   * \brief Setup the parallel communication interface.
+   *
+   * There are two ways to setup the communications interface.  This
+   * Enable method is the easiest method and should be used in most
+   * situations.
+   *
+   * Disable() must be invoked at end of an ns-3 application to 
+   * properly cleanup the parallel communication interface.
+   *
+   * This method will call MPI_Init and configure ns-3 to use the
+   * MPI_COMM_WORLD communicator.
+   *
+   * For more complex situations, such as embedding ns-3 with other
+   * MPI simulators or libraries, the Enable(MPI_Comm communcicator)
+   * may be used if MPI is initialized externally or if ns-3 needs to
+   * be run unique communicator.  For example if there are two
+   * parallel simulators and the goal is to run each simulator on a
+   * different set of ranks.
+   *
+   * \note The `SimulatorImplementationType attribute in
+   * ns3::GlobalValues must be set before calling Enable()
+   *
    * \param pargc number of command line arguments
    * \param pargv command line arguments
-   *
-   * \brief Sets up parallel communication interface.
-   *
-   * SimulatorImplementationType attribute in ns3::GlobalValues must be set before
-   * Enable is invoked.
    */
   static void Enable (int* pargc, char*** pargv);
   /**
-   * Terminates the parallel environment.
-   * This function must be called after Destroy ()
+   * \brief Setup the parallel communication interface using the specified communicator.
+   *
+   * See @ref Enable (int* pargc, char*** pargv) for additional information.
+   *
+   * \param communicator MPI Communicator that should be used by ns-3
+   */
+  static void Enable (MPI_Comm communicator);
+  /**
+   * \brief Clean up the ns-3 parallel communications interface.
+   *
+   * MPI_Finalize will be called only if Enable (int* pargc, char***
+   * pargv) was called.
    */
   static void Disable ();
   /**
+   * \brief Send a packet to a remote node.
+   *
    * \param p packet to send
    * \param rxTime received time at destination node
    * \param node destination node
@@ -94,7 +138,24 @@ public:
    * Serialize and send a packet to the specified node and net device
    */
   static void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
+
+  /**
+   * \brief Return the communicator used to run ns-3.
+   *
+   * The communicator returned will be MPI_COMM_WORLD if Enable (int*
+   * pargc, char*** pargv) is used to enable or the user specified
+   * communicator if Enable (MPI_Comm communicator) is used.
+   *
+   * \return The MPI Communicator.
+   */
+  static MPI_Comm GetCommunicator();
+
 private:
+
+  /**
+   * Common enable logic.
+   */
+  static void SetParallelSimulatorImpl (void);
 
   /**
    * Static instance of the instantiated parallel controller.

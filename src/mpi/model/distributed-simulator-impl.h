@@ -17,6 +17,12 @@
  *
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ *  Declaration of classes  ns3::LbtsMessage and ns3::DistributedSimulatorImpl.
+ */
+
 #ifndef NS3_DISTRIBUTED_SIMULATOR_IMPL_H
 #define NS3_DISTRIBUTED_SIMULATOR_IMPL_H
 
@@ -85,11 +91,11 @@ public:
   bool IsFinished ();
 
 private:
-  uint32_t m_txCount;
-  uint32_t m_rxCount;
-  uint32_t m_myId;
-  Time     m_smallestTime;
-  bool     m_isFinished;
+  uint32_t m_txCount;         /**< Count of transmitted messages. */ 
+  uint32_t m_rxCount;         /**< Count of received messages. */ 
+  uint32_t m_myId;            /**< System Id of the rank sending this LBTS. */
+  Time     m_smallestTime;    /**< Earliest next event timestamp. */
+  bool     m_isFinished;      /**< \c true when this rank has no more events. */
 };
 
 /**
@@ -101,9 +107,15 @@ private:
 class DistributedSimulatorImpl : public SimulatorImpl
 {
 public:
+  /**
+   *  Register this type.
+   *  \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
 
+  /** Default constructor. */
   DistributedSimulatorImpl ();
+  /** Destructor. */
   ~DistributedSimulatorImpl ();
 
   // virtual from SimulatorImpl
@@ -122,41 +134,101 @@ public:
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
-  virtual void SetMaximumLookAhead (const Time lookAhead);
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const;
   virtual uint32_t GetContext (void) const;
   virtual uint64_t GetEventCount (void) const;
 
+  /**
+   * Add additional bound to lookahead constraints.
+   *
+   * This may be used if there are additional constraints on lookahead
+   * in addition to the minimum inter rank latency time.  For example
+   * when running ns-3 in a co-simulation setting the other simulators
+   * may have tighter lookahead constraints.
+   * 
+   * The method may be invoked more than once, the minimum time will
+   * be used to constrain lookahead.
+   *
+   * \param [in] lookAhead The maximum lookahead; must be > 0.
+   */
+  virtual void BoundLookAhead (const Time lookAhead);
+  
 private:
+  // Inherited from Object
   virtual void DoDispose (void);
+
+  /**
+   * Calculate lookahead constraint based on network latency.
+   *
+   * The smallest cross-rank PointToPoint channel delay imposes
+   * a constraint on the conservative PDES time window.  The
+   * user may impose additional constraints on lookahead
+   * using the ConstrainLookAhead() method.
+   */
   void CalculateLookAhead (void);
+  /**
+   * Check if this rank is finished.  It's finished when there are
+   * no more events or stop has been requested.
+   *
+   * \returns \c true when this rank is finished.
+   */
   bool IsLocalFinished (void) const;
 
+  /** Process the next event. */
   void ProcessOneEvent (void);
+  /**
+   * Get the timestep of the next event.
+   *
+   * If there are no more events the timestep is infinity.
+   *
+   * \return The next event timestep.
+   */
   uint64_t NextTs (void) const;
+  /**
+   * Get the time of the next event, as returned by NextTs().
+   *
+   * \return The next event time stamp.
+   */
   Time Next (void) const;
+
+  /** Container type for the events to run at Simulator::Destroy(). */
   typedef std::list<EventId> DestroyEvents;
 
+  /** The container of events to run at Destroy() */
   DestroyEvents m_destroyEvents;
+  /** Flag calling for the end of the simulation. */
   bool m_stop;
-  bool m_globalFinished;     // Are all parallel instances completed.
+  /** Are all parallel instances completed. */
+  bool m_globalFinished;     
+  /** The event priority queue. */
   Ptr<Scheduler> m_events;
+  
+  /** Next event unique id. */
   uint32_t m_uid;
+  /** Unique id of the current event. */
   uint32_t m_currentUid;
+  /** Timestamp of the current event. */
   uint64_t m_currentTs;
+  /** Execution context of the current event. */
   uint32_t m_currentContext;
   /** The event count. */
   uint64_t m_eventCount;
-  // number of events that have been inserted but not yet scheduled,
-  // not counting the "destroy" events; this is used for validation
+  /**
+   * Number of events that have been inserted but not yet scheduled,
+   * not counting the "destroy" events; this is used for validation.
+   */
   int m_unscheduledEvents;
 
-  LbtsMessage* m_pLBTS;       // Allocated once we know how many systems
-  uint32_t     m_myId;        // MPI Rank
-  uint32_t     m_systemCount; // MPI Size
-  Time         m_grantedTime; // Last LBTS
-  static Time  m_lookAhead;   // Lookahead value
+  /**
+   * Container for Lbts messages, one per rank.
+   * Allocated once we know how many systems there are.
+   */
+  LbtsMessage* m_pLBTS;
+  uint32_t     m_myId;        /**< MPI rank. */
+  uint32_t     m_systemCount; /**< MPI communicator size. */
+  Time         m_grantedTime; /**< End of current window. */
+  static Time  m_lookAhead;   /**< Current window size. */
 
 };
 

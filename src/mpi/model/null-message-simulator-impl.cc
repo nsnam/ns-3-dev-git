@@ -16,8 +16,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Steven Smith <smith84@llnl.gov>
- *
  */
+
+/**
+ * \file
+ * \ingroup mpi
+ * Implementation of class ns3::NullMessageSimulatorImpl.
+ */
+
 
 #include "null-message-simulator-impl.h"
 
@@ -367,14 +373,6 @@ uint32_t
 NullMessageSimulatorImpl::GetSystemId () const
 {
   return m_myId;
-}
-
-void
-NullMessageSimulatorImpl::RunOneEvent (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  ProcessOneEvent ();
 }
 
 void

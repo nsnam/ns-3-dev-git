@@ -17,6 +17,12 @@
  *
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ *  Implementation of classes  ns3::LbtsMessage and ns3::DistributedSimulatorImpl.
+ */
+
 #include "distributed-simulator-impl.h"
 #include "granted-time-window-mpi-interface.h"
 #include "mpi-interface.h"
@@ -73,7 +79,12 @@ LbtsMessage::IsFinished ()
   return m_isFinished;
 }
 
-Time DistributedSimulatorImpl::m_lookAhead = Seconds (-1);
+/**
+ * Initialize m_lookAhead to maximum, it will be constrained by
+ * user supplied time via BoundLookAhead and the
+ * minimum latency network between ranks.
+ */
+Time DistributedSimulatorImpl::m_lookAhead = Time::Max();
 
 TypeId
 DistributedSimulatorImpl::GetTypeId (void)
@@ -158,18 +169,13 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 {
   NS_LOG_FUNCTION (this);
 
+  /* If runnning sequential simulation can ignore lookahead */
   if (MpiInterface::GetSize () <= 1)
     {
       m_lookAhead = Seconds (0);
     }
   else
     {
-      if (m_lookAhead == Seconds (-1))
-        {
-          m_lookAhead = GetMaximumSimulationTime ();
-        }
-      // else it was already set by SetLookAhead
-
       NodeContainer c = NodeContainer::GetGlobal ();
       for (NodeContainer::Iterator iter = c.Begin (); iter != c.End (); ++iter)
         {
@@ -254,7 +260,7 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
       sendbuf  = m_lookAhead.GetInteger ();
     }
 
-  MPI_Allreduce (&sendbuf, &recvbuf, 1, MPI_LONG, MPI_MAX, MPI_COMM_WORLD);
+  MPI_Allreduce (&sendbuf, &recvbuf, 1, MPI_LONG, MPI_MAX, MpiInterface::GetCommunicator ());
 
   /* For nodes that did not compute a lookahead use max from ranks
    * that did compute a value.  An edge case occurs if all nodes have
@@ -270,16 +276,16 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 }
 
 void
-DistributedSimulatorImpl::SetMaximumLookAhead (const Time lookAhead)
+DistributedSimulatorImpl::BoundLookAhead (const Time lookAhead)
 {
   if (lookAhead > Time (0))
     {
       NS_LOG_FUNCTION (this << lookAhead);
-      m_lookAhead = lookAhead;
+      m_lookAhead = Min(m_lookAhead, lookAhead);
     }
   else
     {
-      NS_LOG_WARN ("attempted to set look ahead negative: " << lookAhead);
+      NS_LOG_WARN ("attempted to set lookahead to a negative time: " << lookAhead);
     }
 }
 
@@ -385,7 +391,7 @@ DistributedSimulatorImpl::Run (void)
                             m_myId, IsLocalFinished (), nextTime);
           m_pLBTS[m_myId] = lMsg;
           MPI_Allgather (&lMsg, sizeof (LbtsMessage), MPI_BYTE, m_pLBTS,
-                         sizeof (LbtsMessage), MPI_BYTE, MPI_COMM_WORLD);
+                         sizeof (LbtsMessage), MPI_BYTE, MpiInterface::GetCommunicator ());
           Time smallestTime = m_pLBTS[0].GetSmallestTime ();
           // The totRx and totTx counts insure there are no transient
           // messages;  If totRx != totTx, there are transients,
@@ -404,6 +410,11 @@ DistributedSimulatorImpl::Run (void)
               totTx += m_pLBTS[i].GetTxCount ();
               m_globalFinished &= m_pLBTS[i].IsFinished ();
             }
+
+          // Global halting condition is all nodes have empty queue's and
+          // no messages are in-flight.
+          m_globalFinished &= totRx == totTx;
+          
           if (totRx == totTx)
             {
               // If lookahead is infinite then granted time should be as well.

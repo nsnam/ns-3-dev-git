@@ -19,6 +19,12 @@
  *
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ * Declaration of class ns3::ParallelCommunicationInterface.
+ */
+
 #ifndef NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 #define NS3_PARALLEL_COMMUNICATION_INTERFACE_H
 
@@ -40,11 +46,17 @@ namespace ns3 {
  * \brief Pure virtual base class for the interface between ns-3 and
  * the parallel communication layer being used.
  *
- * Each type of parallel communication layer is required to implement
- * this interface.  This interface is called through the
- * MpiInterface.
+ * This class is implemented for each of the parallel versions of
+ * SimulatorImpl to manage communication between process (ranks).
+ *
+ * This interface is called through the singleton MpiInterface class.
+ * MpiInterface has the same API as ParallelCommunicationInterface but
+ * being a singleton uses static methods to delegate to methods
+ * defined in classes that implement the
+ * ParallelCommunicationInterface.  For example, SendPacket is likely
+ * to be specialized for a specific parallel SimulatorImpl.
  */
-  class ParallelCommunicationInterface
+class ParallelCommunicationInterface
 {
 public:
   /**
@@ -52,43 +64,41 @@ public:
     */
   virtual ~ParallelCommunicationInterface() {}
   /**
-   * Deletes storage used by the parallel environment.
+   * \copydoc MpiInterface::Destroy
    */
   virtual void Destroy () = 0;
   /**
-   * \return system identification
+   * \copydoc MpiInterface::GetSystemId
    */
   virtual uint32_t GetSystemId () = 0;
   /**
-   * \return number of parallel tasks
+   * \copydoc MpiInterface::GetSize
    */
   virtual uint32_t GetSize () = 0;
   /**
-   * \return true if parallel communication is enabled
+   * \copydoc MpiInterface::IsEnabled
    */
   virtual bool IsEnabled () = 0;
   /**
-   * \param pargc number of command line arguments
-   * \param pargv command line arguments
-   *
-   * Sets up parallel communication interface
+   * \copydoc MpiInterface::Enable(int* pargc,char*** pargv)
    */
   virtual void Enable (int* pargc, char*** pargv) = 0;
   /**
-   * Terminates the parallel environment.
-   * This function must be called after Destroy ()
+   * \copydoc MpiInterface::Enable(MPI_Comm communicator)
+   */
+  virtual void Enable (MPI_Comm communicator) = 0;
+  /**
+   * \copydoc MpiInterface::Disable
    */
   virtual void Disable () = 0;
   /**
-   * \param p packet to send
-   * \param rxTime received time at destination node
-   * \param node destination node
-   * \param dev destination device
-   *
-   * Serialize and send a packet to the specified node and net device
+   * \copydoc MpiInterface::SendPacket
    */
   virtual void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev) = 0;
-
+  /**
+   * \copydoc MpiInterface::GetCommunicator
+   */
+  virtual MPI_Comm GetCommunicator () = 0;
 private:
 };
 

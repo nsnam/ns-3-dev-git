@@ -14,7 +14,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: George Riley <riley@ece.gatech.edu>
- *
+ */
+
+/**
+ * \file
+ * \ingroup mpi
+ * Implementation of classes ns3::SentBuffer and ns3::GrantedTimeWindowMpiInterface.
  */
 
 // This object contains static methods that provide an easy interface
@@ -41,6 +46,8 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("GrantedTimeWindowMpiInterface");
+
+NS_OBJECT_ENSURE_REGISTERED (GrantedTimeWindowMpiInterface);
 
 SentBuffer::SentBuffer ()
 {
@@ -71,16 +78,18 @@ SentBuffer::GetRequest ()
   return &m_request;
 }
 
-uint32_t              GrantedTimeWindowMpiInterface::m_sid = 0;
-uint32_t              GrantedTimeWindowMpiInterface::m_size = 1;
-bool                  GrantedTimeWindowMpiInterface::m_initialized = false;
-bool                  GrantedTimeWindowMpiInterface::m_enabled = false;
-uint32_t              GrantedTimeWindowMpiInterface::m_rxCount = 0;
-uint32_t              GrantedTimeWindowMpiInterface::m_txCount = 0;
-std::list<SentBuffer> GrantedTimeWindowMpiInterface::m_pendingTx;
+uint32_t              GrantedTimeWindowMpiInterface::g_sid = 0;
+uint32_t              GrantedTimeWindowMpiInterface::g_size = 1;
+bool                  GrantedTimeWindowMpiInterface::g_enabled = false;
+bool                  GrantedTimeWindowMpiInterface::g_mpiInitCalled = false;
+uint32_t              GrantedTimeWindowMpiInterface::g_rxCount = 0;
+uint32_t              GrantedTimeWindowMpiInterface::g_txCount = 0;
+std::list<SentBuffer> GrantedTimeWindowMpiInterface::g_pendingTx;
 
-MPI_Request* GrantedTimeWindowMpiInterface::m_requests;
-char**       GrantedTimeWindowMpiInterface::m_pRxBuffers;
+MPI_Request* GrantedTimeWindowMpiInterface::g_requests;
+char**       GrantedTimeWindowMpiInterface::g_pRxBuffers;
+MPI_Comm     GrantedTimeWindowMpiInterface::g_communicator = MPI_COMM_WORLD;
+bool         GrantedTimeWindowMpiInterface::g_freeCommunicator = false;;
 
 TypeId 
 GrantedTimeWindowMpiInterface::GetTypeId (void)
@@ -99,79 +108,100 @@ GrantedTimeWindowMpiInterface::Destroy ()
 
   for (uint32_t i = 0; i < GetSize (); ++i)
     {
-      delete [] m_pRxBuffers[i];
+      delete [] g_pRxBuffers[i];
     }
-  delete [] m_pRxBuffers;
-  delete [] m_requests;
+  delete [] g_pRxBuffers;
+  delete [] g_requests;
 
-  m_pendingTx.clear ();
+  g_pendingTx.clear ();
 }
 
 uint32_t
 GrantedTimeWindowMpiInterface::GetRxCount ()
 {
-  return m_rxCount;
+  NS_ASSERT (g_enabled);
+  return g_rxCount;
 }
 
 uint32_t
 GrantedTimeWindowMpiInterface::GetTxCount ()
 {
-  return m_txCount;
+  NS_ASSERT (g_enabled);
+  return g_txCount;
 }
 
 uint32_t
 GrantedTimeWindowMpiInterface::GetSystemId ()
 {
-  if (!m_initialized)
-    {
-      Simulator::GetImplementation ();
-      m_initialized = true;
-    }
-  return m_sid;
+  NS_ASSERT (g_enabled);
+  return g_sid;
 }
 
 uint32_t
 GrantedTimeWindowMpiInterface::GetSize ()
 {
-  if (!m_initialized)
-    {
-      Simulator::GetImplementation ();
-      m_initialized = true;
-    }
-  return m_size;
+  NS_ASSERT (g_enabled);
+  return g_size;
 }
 
 bool
 GrantedTimeWindowMpiInterface::IsEnabled ()
 {
-  if (!m_initialized)
-    {
-      Simulator::GetImplementation ();
-      m_initialized = true;
-    }
-  return m_enabled;
+  return g_enabled;
+}
+
+MPI_Comm 
+GrantedTimeWindowMpiInterface::GetCommunicator() 
+{
+  NS_ASSERT (g_enabled);
+  return g_communicator;
 }
 
 void
 GrantedTimeWindowMpiInterface::Enable (int* pargc, char*** pargv)
 {
-  NS_LOG_FUNCTION (this << pargc << pargv); 
+  NS_LOG_FUNCTION (this << pargc << pargv);
+
+  NS_ASSERT (g_enabled == false);
 
   // Initialize the MPI interface
   MPI_Init (pargc, pargv);
-  MPI_Barrier (MPI_COMM_WORLD);
-  MPI_Comm_rank (MPI_COMM_WORLD, reinterpret_cast <int *> (&m_sid));
-  MPI_Comm_size (MPI_COMM_WORLD, reinterpret_cast <int *> (&m_size));
-  m_enabled = true;
-  m_initialized = true;
+  Enable (MPI_COMM_WORLD);
+  g_mpiInitCalled = true;
+  g_enabled = true;
+}
+
+void
+GrantedTimeWindowMpiInterface::Enable (MPI_Comm communicator)
+{
+  NS_LOG_FUNCTION (this);
+
+  NS_ASSERT (g_enabled == false);
+
+  // Standard MPI practice is to duplicate the communicator for
+  // library to use.  Library communicates in isolated communication
+  // context.
+  MPI_Comm_dup (communicator, &g_communicator);
+  g_freeCommunicator = true;
+  
+  MPI_Barrier (g_communicator);
+  
+  int mpiSystemId;
+  int mpiSize;
+  MPI_Comm_rank (g_communicator, &mpiSystemId);
+  MPI_Comm_size (g_communicator, &mpiSize);
+  g_sid = mpiSystemId;
+  g_size = mpiSize;
+  
+  g_enabled = true;
   // Post a non-blocking receive for all peers
-  m_pRxBuffers = new char*[m_size];
-  m_requests = new MPI_Request[m_size];
+  g_pRxBuffers = new char*[g_size];
+  g_requests = new MPI_Request[g_size];
   for (uint32_t i = 0; i < GetSize (); ++i)
     {
-      m_pRxBuffers[i] = new char[MAX_MPI_MSG_SIZE];
-      MPI_Irecv (m_pRxBuffers[i], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
-                 MPI_COMM_WORLD, &m_requests[i]);
+      g_pRxBuffers[i] = new char[MAX_MPI_MSG_SIZE];
+      MPI_Irecv (g_pRxBuffers[i], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
+                 g_communicator, &g_requests[i]);
     }
 }
 
@@ -181,8 +211,8 @@ GrantedTimeWindowMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, ui
   NS_LOG_FUNCTION (this << p << rxTime.GetTimeStep () << node << dev);
 
   SentBuffer sendBuf;
-  m_pendingTx.push_back (sendBuf);
-  std::list<SentBuffer>::reverse_iterator i = m_pendingTx.rbegin (); // Points to the last element
+  g_pendingTx.push_back (sendBuf);
+  std::list<SentBuffer>::reverse_iterator i = g_pendingTx.rbegin (); // Points to the last element
 
   uint32_t serializedSize = p->GetSerializedSize ();
   uint8_t* buffer =  new uint8_t[serializedSize + 16];
@@ -202,8 +232,8 @@ GrantedTimeWindowMpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, ui
   uint32_t nodeSysId = destNode->GetSystemId ();
 
   MPI_Isend (reinterpret_cast<void *> (i->GetBuffer ()), serializedSize + 16, MPI_CHAR, nodeSysId,
-             0, MPI_COMM_WORLD, (i->GetRequest ()));
-  m_txCount++;
+             0, g_communicator, (i->GetRequest ()));
+  g_txCount++;
 }
 
 void
@@ -218,17 +248,17 @@ GrantedTimeWindowMpiInterface::ReceiveMessages ()
       int index = 0;
       MPI_Status status;
 
-      MPI_Testany (MpiInterface::GetSize (), m_requests, &index, &flag, &status);
+      MPI_Testany (MpiInterface::GetSize (), g_requests, &index, &flag, &status);
       if (!flag)
         {
           break;        // No more messages
         }
       int count;
       MPI_Get_count (&status, MPI_CHAR, &count);
-      m_rxCount++; // Count this receive
+      g_rxCount++; // Count this receive
 
       // Get the meta data first
-      uint64_t* pTime = reinterpret_cast<uint64_t *> (m_pRxBuffers[index]);
+      uint64_t* pTime = reinterpret_cast<uint64_t *> (g_pRxBuffers[index]);
       uint64_t time = *pTime++;
       uint32_t* pData = reinterpret_cast<uint32_t *> (pTime);
       uint32_t node = *pData++;
@@ -261,8 +291,8 @@ GrantedTimeWindowMpiInterface::ReceiveMessages ()
                                       &MpiReceiver::Receive, pMpiRec, p);
 
       // Re-queue the next read
-      MPI_Irecv (m_pRxBuffers[index], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
-                 MPI_COMM_WORLD, &m_requests[index]);
+      MPI_Irecv (g_pRxBuffers[index], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
+                 g_communicator, &g_requests[index]);
     }
 }
 
@@ -271,8 +301,8 @@ GrantedTimeWindowMpiInterface::TestSendComplete ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  std::list<SentBuffer>::iterator i = m_pendingTx.begin ();
-  while (i != m_pendingTx.end ())
+  std::list<SentBuffer>::iterator i = g_pendingTx.begin ();
+  while (i != g_pendingTx.end ())
     {
       MPI_Status status;
       int flag = 0;
@@ -281,7 +311,7 @@ GrantedTimeWindowMpiInterface::TestSendComplete ()
       i++;                                    // Advance to next
       if (flag)
         { // This message is complete
-          m_pendingTx.erase (current);
+          g_pendingTx.erase (current);
         }
     }
 }
@@ -291,18 +321,29 @@ GrantedTimeWindowMpiInterface::Disable ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  int flag = 0;
-  MPI_Initialized (&flag);
-  if (flag)
+  if (g_freeCommunicator)
     {
-      MPI_Finalize ();
-      m_enabled = false;
-      m_initialized = false;
+      MPI_Comm_free (&g_communicator);
+      g_freeCommunicator = false;
     }
-  else
+
+  // ns-3 should MPI finalize only if ns-3 was used to initialize
+  if (g_mpiInitCalled)
     {
-      NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
+      int flag = 0;
+      MPI_Initialized (&flag);
+      if (flag)
+        {
+          MPI_Finalize ();
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Cannot disable MPI environment without Initializing it first");
+        }
+      g_mpiInitCalled = false;
     }
+
+  g_enabled = false;
 }
 
 

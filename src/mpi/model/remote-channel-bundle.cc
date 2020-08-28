@@ -19,6 +19,12 @@
  *
  */
 
+/**
+ * \file
+ * \ingroup mpi
+ * Implementation of class ns3::RemoteChannelBundle.
+ */
+
 #include "remote-channel-bundle.h"
 
 #include "null-message-mpi-interface.h"
@@ -28,7 +34,6 @@
 
 namespace ns3 {
 
-#define NS_TIME_INFINITY ns3::Time (0x7fffffffffffffffLL)
 
 TypeId RemoteChannelBundle::GetTypeId (void)
 {
@@ -42,14 +47,14 @@ TypeId RemoteChannelBundle::GetTypeId (void)
 RemoteChannelBundle::RemoteChannelBundle ()
   : m_remoteSystemId (UINT32_MAX),
     m_guaranteeTime (0),
-    m_delay (NS_TIME_INFINITY)
+    m_delay (Time::Max ())
 {
 }
 
 RemoteChannelBundle::RemoteChannelBundle (const uint32_t remoteSystemId)
   : m_remoteSystemId (remoteSystemId),
     m_guaranteeTime (0),
-    m_delay (NS_TIME_INFINITY)
+    m_delay (Time::Max ())
 {
 }
 
@@ -115,12 +120,10 @@ std::ostream& operator<< (std::ostream& out, ns3::RemoteChannelBundle& bundle )
   out << "RemoteChannelBundle Rank = " << bundle.m_remoteSystemId
       << ", GuaranteeTime = "  << bundle.m_guaranteeTime
       << ", Delay = " << bundle.m_delay << std::endl;
-  
-  for (std::map < uint32_t, Ptr < Channel > > ::const_iterator pair = bundle.m_channels.begin ();
-       pair != bundle.m_channels.end ();
-       ++pair)
+
+  for (auto element : bundle.m_channels)
     {
-      out << "\t" << (*pair).second << std::endl;
+      out << "\t" << element.second << std::endl;
     }
   
   return out;
