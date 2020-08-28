@@ -609,7 +609,7 @@ int simclick_sim_send (simclick_node_t *simnode,
                        int ifid, int type, const unsigned char* data, int len,
                        simclick_simpacketinfo *pinfo)
 {
-  NS_LOG_DEBUG ("simclick_sim_send called at " << ns3::Simulator::Now ().GetSeconds () << ": " << ifid << " " << type << " " << data << " " << len);
+  NS_LOG_DEBUG ("simclick_sim_send called at " << ns3::Simulator::Now ().As (Time::S) << ": " << ifid << " " << type << " " << data << " " << len);
 
   if (simnode == NULL)
     {
