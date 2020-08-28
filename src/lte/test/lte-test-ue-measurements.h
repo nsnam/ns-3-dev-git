@@ -392,6 +392,143 @@ private:
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase2
 
+// ===== LTE-UE-MEASUREMENTS-PIECEWISE-3 TEST SUITE ======================== //
+
+
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Test suite for generating calls to UE measurements test case
+ *        ns3::LteUeMeasurementsPiecewiseTestCase3.
+ */
+class LteUeMeasurementsPiecewiseTestSuite3 : public TestSuite
+{
+public:
+  LteUeMeasurementsPiecewiseTestSuite3 ();
+};
+
+
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Testing UE measurements in LTE with simulation of 3 eNodeB and 1 UE in
+ *        piecewise configuration and 240 ms report interval.
+ *        This test is to cover a corner case using event A4, which is not
+ *        covered by LteUeMeasurementsPiecewiseTestCase1 and
+ *        LteUeMeasurementsPiecewiseTestCase2. In this case, we test that the UE
+ *        measurements at eNB are arriving 240 ms apart. Please note, the
+ *        scenario simulated is engineered to specifically test the corner case
+ *        in which whenever a new neighbour fulfils the entry condition
+ *        for event A4, the UE RRC calls VarMeasReportListAdd method to include
+ *        the new cell id in cellsTriggeredList, and then it schedules the
+ *        SendMeasurementReport for periodic reporting. However, if the UE has
+ *        already started the periodic reporting, scheduling the
+ *        SendMeasurementReport method again causes following buggy behaviors:
+ *
+ *        1. It generates an intermediate measurement event, which then leads
+ *        to parallel intermediate measurement reports from a UE to its eNB.
+ *
+ *        2. The old EvenId is overwritten by the new EventId stored in
+ *        VarMeasReportList. This makes us lose control over the old EventId
+ *        and it is impossible to cancel its events later on.
+ *
+ *        These buggy behaviors generated an issue reported in
+ *        https://gitlab.com/nsnam/ns-3-dev/-/issues/224, where a UE try to
+ *        send measurement reports after the RLF, even though all the measurement
+ *        events are properly cancelled upon detecting RLF.
+ *
+ *        The correct behaviour should be that if a UE has already started the
+ *        periodic reporting, and once a new neighbour fulfils the entry
+ *        condition, we just need to add its cell id in cellsTriggeredList,
+ *        without scheduling a new periodic event.
+ *
+ */
+class LteUeMeasurementsPiecewiseTestCase3 : public TestCase
+{
+public:
+  /**
+   * Constructor
+   *
+   * \param name the reference name
+   * \param config LteRrcSap::ReportConfigEutra
+   * \param expectedTime the expected time
+   */
+  LteUeMeasurementsPiecewiseTestCase3 (std::string name,
+                                       LteRrcSap::ReportConfigEutra config,
+                                       std::vector<Time> expectedTime);
+
+  virtual ~LteUeMeasurementsPiecewiseTestCase3 ();
+
+  /**
+   * \brief Triggers when eNodeB receives measurement report from UE, then
+   *        perform verification on it.
+   *
+   * The trigger is set up beforehand by connecting to the
+   * `LteUeRrc::RecvMeasurementReport` trace source.
+   *
+   * Verification consists of checking whether the report carries the right
+   * value of RSRP or not, and whether it occurs at the expected time or not.
+   *
+   * \param context the context
+   * \param imsi the IMSI
+   * \param cellId the cell ID
+   * \param rnti  the RNTI
+   * \param report LteRrcSap::MeasurementReport
+   */
+  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
+                                      uint16_t cellId, uint16_t rnti,
+                                      LteRrcSap::MeasurementReport report);
+
+private:
+  /**
+   * \brief Setup the simulation with the intended UE measurement reporting
+   *        configuration, run it, and connect the
+   *        `RecvMeasurementReportCallback` function to the
+   *        `LteUeRrc::RecvMeasurementReport` trace source.
+   */
+  virtual void DoRun ();
+
+  /**
+   * \brief Runs at the end of the simulation, verifying that all expected
+   *        measurement reports have been examined.
+   */
+  virtual void DoTeardown ();
+
+
+  /// Teleport the eNb near function
+  void TeleportEnbNear ();
+
+  /**
+   * \brief The active report triggering configuration.
+   */
+  LteRrcSap::ReportConfigEutra m_config;
+
+  /**
+   * \brief The list of expected time when measurement reports are received by
+   *        eNodeB.
+   */
+  std::vector<Time> m_expectedTime;
+
+  /**
+   * \brief Pointer to the element of `m_expectedTime` which is expected to
+   *        occur next in the simulation.
+   */
+  std::vector<Time>::iterator m_itExpectedTime;
+
+  /**
+   * \brief The measurement identity being tested. Measurement reports with
+   *        different measurement identity (e.g. from handover algorithm) will
+   *        be ignored.
+   */
+  uint8_t m_expectedMeasId;
+
+  Ptr<MobilityModel> m_enbMobility; ///< the mobility model
+
+}; // end of class LteUeMeasurementsPiecewiseTestCase3
+
+
 
 
 // ===== LTE-UE-MEASUREMENTS-HANDOVER TEST SUITE =========================== //

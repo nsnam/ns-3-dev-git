@@ -1357,6 +1357,253 @@ LteUeMeasurementsPiecewiseTestCase2::TeleportVeryFar ()
 }
 
 
+// ===== LTE-UE-MEASUREMENTS-PIECEWISE-3 TEST SUITE ======================== //
+
+/*
+ * Test Suite
+ */
+
+LteUeMeasurementsPiecewiseTestSuite3::LteUeMeasurementsPiecewiseTestSuite3 ()
+  : TestSuite ("lte-ue-measurements-piecewise-3", SYSTEM)
+{
+  std::vector<Time> expectedTime;
+
+  // === Event A4 (neighbor becomes better than threshold) ===
+
+  //The threshold value was chosen to achieve the following:
+  //1. Neighbor 1 (eNB2) RSRP would be above the chosen threshold, hence,
+  //the UE will include it in its reports to its eNB (eNB1) from the beginning
+  //of the simulation.
+  //2. When neighbor 2 (eNB3) is placed at a very far position, its RSRP would
+  //be less than the chosen threshold, hence, UE will not include it in its
+  //initial report(s) to its eNB.
+  //3. When neighbor 2 (eNB3) is placed at a near position, its RSRP would
+  //always be above the chosen threshold, hence, the UE will include it in its
+  //reports to its eNB (eNB1).
+  LteRrcSap::ReportConfigEutra config;
+  config.triggerType = LteRrcSap::ReportConfigEutra::EVENT;
+  config.eventId = LteRrcSap::ReportConfigEutra::EVENT_A4;
+  config.threshold1.choice = LteRrcSap::ThresholdEutra::THRESHOLD_RSRP;
+  config.threshold1.range = 6;
+  config.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
+  config.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
+  expectedTime.clear ();
+  expectedTime << 200 << 440 << 680 << 920 << 1160 << 1400 << 1640 << 1880 << 2120;
+
+  AddTestCase (new LteUeMeasurementsPiecewiseTestCase3 ("Piecewise test case 3 - Event A4",
+                                                        config, expectedTime),TestCase::QUICK);
+} // end of LteUeMeasurementsPiecewiseTestSuite3::LteUeMeasurementsPiecewiseTestSuite3
+
+static LteUeMeasurementsPiecewiseTestSuite3 lteUeMeasurementsPiecewiseTestSuite3;
+
+
+/*
+ * Test Case
+ */
+
+LteUeMeasurementsPiecewiseTestCase3::LteUeMeasurementsPiecewiseTestCase3 (
+  std::string name, LteRrcSap::ReportConfigEutra config,
+  std::vector<Time> expectedTime)
+  : TestCase (name),
+    m_config (config),
+    m_expectedTime (expectedTime)
+{
+  m_expectedMeasId = std::numeric_limits<uint8_t>::max ();
+
+  m_itExpectedTime = m_expectedTime.begin ();
+
+  NS_LOG_INFO (this << " name=" << name);
+}
+
+LteUeMeasurementsPiecewiseTestCase3::~LteUeMeasurementsPiecewiseTestCase3 ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+LteUeMeasurementsPiecewiseTestCase3::DoRun ()
+{
+  NS_LOG_INFO (this << " " << GetName ());
+
+  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
+  lteHelper->SetAttribute ("PathlossModel",
+                           StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+  lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (true));
+
+  //Disable Uplink Power Control
+  Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
+
+  // Create Nodes: eNodeB and UE
+  NodeContainer enbNodes;
+  NodeContainer ueNodes;
+  enbNodes.Create (3);
+  ueNodes.Create (1);
+
+  /*
+   * The topology is the following:
+   *
+   * We place the 3rd eNB initially very far so it does not fulfills
+   * the entry condition to be reported.
+   *
+   * eNodeB    UE              eNodeB                                  eNodeB
+   *    |      |                 |                                       |
+   *    x ---- x --------------- x -------------- x ---------------------x
+   *      50 m         100 m             500      |         1000000
+   *                                             Near
+   */
+
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0)); // Serving eNodeB
+  positionAlloc->Add (Vector (200.0, 0.0, 0.0)); // Neighbour eNodeB1
+  positionAlloc->Add (Vector (1000700.0, 0.0, 0.0)); // Neighbour eNodeB2
+  positionAlloc->Add (Vector (50.0, 0.0, 0.0)); // UE
+  MobilityHelper mobility;
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.Install (enbNodes);
+  mobility.Install (ueNodes);
+  m_enbMobility = enbNodes.Get (2)->GetObject<MobilityModel> ();
+
+  // Disable layer-3 filtering
+  Config::SetDefault ("ns3::LteEnbRrc::RsrpFilterCoefficient",
+                      UintegerValue (0));
+
+  // Create Devices and install them in the Nodes (eNB and UE)
+  NetDeviceContainer enbDevs;
+  NetDeviceContainer ueDevs;
+  lteHelper->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter",
+                                    EnumValue (FfMacScheduler::PUSCH_UL_CQI));
+  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  ueDevs = lteHelper->InstallUeDevice (ueNodes);
+
+  // Setup UE measurement configuration in serving cell
+  Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  m_expectedMeasId = enbRrc1->AddUeMeasReportConfig (m_config);
+
+  // Disable handover in neighbour cells
+  Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  enbRrc2->SetAttribute ("AdmitHandoverRequest", BooleanValue (false));
+  Ptr<LteEnbRrc> enbRrc3 = enbDevs.Get (2)->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  enbRrc3->SetAttribute ("AdmitHandoverRequest", BooleanValue (false));
+
+  // Attach UE to serving eNodeB
+  lteHelper->Attach (ueDevs.Get (0), enbDevs.Get (0));
+
+  // Activate an EPS bearer
+  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  EpsBearer bearer (q);
+  lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
+
+  // Connect to trace sources in serving eNodeB
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/RecvMeasurementReport",
+                   MakeCallback (&LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback,
+                                 this));
+  /*
+   * Schedule "teleport" for the 2nd neighbour
+   *
+   * We bring the 2nd neighbour near once the UE has already scheduled the periodic
+   * reporting after detecting the 1st neighbour, which ideally should be at
+   * 200 ms.
+   */
+  Simulator::Schedule (MilliSeconds (301),
+                       &LteUeMeasurementsPiecewiseTestCase3::TeleportEnbNear, this);
+
+  // Run simulation
+  Simulator::Stop (Seconds (2.201));
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+} // end of void LteUeMeasurementsPiecewiseTestCase3::DoRun ()
+
+void
+LteUeMeasurementsPiecewiseTestCase3::DoTeardown ()
+{
+  NS_LOG_FUNCTION (this);
+  bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
+  NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
+                         "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
+}
+
+void
+LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback (
+  std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
+  LteRrcSap::MeasurementReport report)
+{
+  NS_LOG_FUNCTION (this << context);
+  NS_ASSERT (rnti == 1);
+  NS_ASSERT (cellId == 1);
+
+  if (report.measResults.measId == m_expectedMeasId)
+    {
+      // verifying the report completeness
+      LteRrcSap::MeasResults measResults = report.measResults;
+      NS_LOG_DEBUG (this << " Serving cellId=" << cellId
+                         << " rsrp=" << (uint16_t) measResults.rsrpResult
+                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult) << " dBm)"
+                         << " rsrq=" << (uint16_t) measResults.rsrqResult
+                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult) << " dB)");
+
+      // verifying reported best cells
+      if (measResults.measResultListEutra.size () == 0)
+        {
+          NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, false,
+                                 "Unexpected report content");
+        }
+      else
+        {
+          NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, true,
+                                 "Unexpected report content");
+          std::list<LteRrcSap::MeasResultEutra>::iterator it = measResults.measResultListEutra.begin ();
+          NS_ASSERT (it != measResults.measResultListEutra.end ());
+          for (const auto &it:measResults.measResultListEutra)
+            {
+              NS_ASSERT (it.physCellId == 2 || it.physCellId == 3);
+              NS_TEST_ASSERT_MSG_EQ (it.haveCgiInfo, false,
+                                     "Report contains cgi-info, which is not supported");
+              NS_TEST_ASSERT_MSG_EQ (it.haveRsrpResult, true,
+                                     "Report does not contain measured RSRP result");
+              NS_TEST_ASSERT_MSG_EQ (it.haveRsrqResult, true,
+                                     "Report does not contain measured RSRQ result");
+              NS_LOG_DEBUG (this << " Neighbour cellId=" << it.physCellId
+                            << " rsrp=" << (uint16_t) it.rsrpResult
+                            << " (" << EutranMeasurementMapping::RsrpRange2Dbm (it.rsrpResult) << " dBm)"
+                            << " rsrq=" << (uint16_t) it.rsrqResult
+                            << " (" << EutranMeasurementMapping::RsrqRange2Db (it.rsrqResult) << " dB)");
+            }
+
+        } // end of else of if (measResults.measResultListEutra.size () == 0)
+
+      // verifying the report timing
+      bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
+      NS_TEST_ASSERT_MSG_EQ (hasEnded, false,
+                             "Reporting should not have occurred at "
+                             << Simulator::Now ().GetSeconds () << "s");
+      if (!hasEnded)
+        {
+          // using milliseconds to avoid floating-point comparison
+          uint64_t timeNowMs = Simulator::Now ().GetMilliSeconds ();
+          uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
+          m_itExpectedTime++;
+
+
+          NS_TEST_ASSERT_MSG_EQ (timeNowMs, timeExpectedMs,
+                                 "Reporting should not have occurred at this time");
+
+        } // end of if (!hasEnded)
+
+    } // end of if (report.measResults.measId == m_expectedMeasId)
+
+} // end of void LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback
+
+void
+LteUeMeasurementsPiecewiseTestCase3::TeleportEnbNear ()
+{
+  NS_LOG_FUNCTION (this);
+  m_enbMobility->SetPosition (Vector (700.0, 0.0, 0.0));
+}
+
+
 // ===== LTE-UE-MEASUREMENTS-HANDOVER TEST SUITE =========================== //
 
 /*
