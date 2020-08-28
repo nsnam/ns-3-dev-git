@@ -49,6 +49,9 @@ stages:
 # Defines the per-commit jobs. They are executed for any branch
 per-commit-compile-debug:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -59,6 +62,9 @@ per-commit-compile-debug:
 
 per-commit-compile-release:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -69,6 +75,9 @@ per-commit-compile-release:
 
 per-commit-compile-optimized:
   extends: .base-build
+  except:
+    variables:
+      - $PYBINDGEN == "True"
   image: archlinux/base
   variables:
     COMPILER: g++
