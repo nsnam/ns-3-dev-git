@@ -39,6 +39,7 @@ stages:
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
     - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests -d $MODE
     - ./waf
+    - ./test.py
   cache:
     paths:
       - $CCACHE_BASEDIR_VALUE/
@@ -52,6 +53,8 @@ per-commit-compile-debug:
   except:
     variables:
       - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -65,6 +68,8 @@ per-commit-compile-release:
   except:
     variables:
       - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
@@ -78,6 +83,8 @@ per-commit-compile-optimized:
   except:
     variables:
       - $PYBINDGEN == "True"
+      - $RELEASE == "weekly"
+      - $RELEASE == "daily"
   image: archlinux/base
   variables:
     COMPILER: g++
