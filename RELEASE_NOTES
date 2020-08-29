@@ -27,6 +27,7 @@ Bugs fixed
 ----------
 - (traffic-control) #225 - Do not mark packet twice within a CoDel queue
 - (mesh) - Enable possible use with SpectrumWifiPhy
+- (lte) #224 - The scheduled SendMeasurementReport() event doesn't cancel after link failure detection
 
 Release 3.31
 ============
