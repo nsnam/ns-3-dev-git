@@ -22,6 +22,38 @@
  *
  */
 
+/*
+ * Network layout:
+ *
+ * R0 is a DHCP server. The DHCP server announced R1 as the default router.
+ * Nodes N1 will send UDP Echo packets to node A.
+ *
+ *
+ *                ┌-------------------------------------------------┐
+ *                | DHCP Clients                                    |
+ *                |                                   172.30.0.14   |
+ *                |                                   DHCP static   |
+ *                |   ┌──────┐       ┌──────┐        ┌──────┐       |
+ *                |   │  N0  │       │  N1  │        │  N2  │       |            ┌──────┐
+ *                |   └──────┘       └──────┘        └──────┘       |       ┌────│  A   │
+ *                |       │              │               │          |       │    └──────┘
+ *                └-------│--------------│---------------│----------┘       │  172.30.1.2
+ *  DHCP Server           │              │               │                  │
+ *        ┌──────┐        │              │               │      ┌──────┐    │
+ *        │  R0  │────────┴──────────────┴───────────────┴──────│  R1  │────┘
+ *        └──────┘                                              └──────┘172.30.1.1
+ *          172.30.0.12                                  172.30.0.17
+ *
+ * Things to notice:
+ * 1) The routes in A are manually set to have R1 as the default router,
+ *    just because using a dynamic outing in this example is an overkill.
+ * 2) R1's address is set statically though the DHCP server helper interface.
+ *    This is useful to prevent address conflicts with the dynamic pool.
+ *    Not necessary if the DHCP pool is not conflicting with static addresses.
+ * 3) N2 has a dynamically-assigned, static address (i.e., a fixed address assigned via DHCP).
+ *
+ */
+
 #include "ns3/core-module.h"
 #include "ns3/internet-apps-module.h"
 #include "ns3/csma-module.h"
