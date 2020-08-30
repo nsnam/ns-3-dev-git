@@ -852,7 +852,7 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
           NS_ABORT_MSG_UNLESS (networkHere == networkThere,
                                "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion (" <<
                                addrLocal << "/" << maskLocal.GetPrefixLength () << ", " <<
-                               desigRtrTemp << "/" << maskLocal.GetPrefixLength () << ")");
+                               desigRtr << "/" << maskLocal.GetPrefixLength () << ")");
         }
       if (desigRtr == addrLocal)
         {
@@ -963,7 +963,7 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
               NS_ABORT_MSG_UNLESS (networkHere == networkThere, 
                                    "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion (" <<
                                    addrLocal << "/" << maskLocal.GetPrefixLength () << ", " <<
-                                   desigRtr << "/" << maskLocal.GetPrefixLength () << ")");
+                                   desigRtrTemp << "/" << maskLocal.GetPrefixLength () << ")");
             }
           if (desigRtrTemp < desigRtr)
             {
