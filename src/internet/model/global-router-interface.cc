@@ -850,7 +850,9 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
           Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
           Ipv4Address networkThere = desigRtr.CombineMask (maskLocal);
           NS_ABORT_MSG_UNLESS (networkHere == networkThere,
-                               "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion");
+                               "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion (" <<
+                               addrLocal << "/" << maskLocal.GetPrefixLength () << ", " <<
+                               desigRtrTemp << "/" << maskLocal.GetPrefixLength () << ")");
         }
       if (desigRtr == addrLocal)
         {
@@ -959,7 +961,9 @@ GlobalRouter::ProcessBridgedBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *
               Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
               Ipv4Address networkThere = desigRtrTemp.CombineMask (maskLocal);
               NS_ABORT_MSG_UNLESS (networkHere == networkThere, 
-                                   "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion");
+                                   "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion (" <<
+                                   addrLocal << "/" << maskLocal.GetPrefixLength () << ", " <<
+                                   desigRtr << "/" << maskLocal.GetPrefixLength () << ")");
             }
           if (desigRtrTemp < desigRtr)
             {
