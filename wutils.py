@@ -182,6 +182,11 @@ def get_run_program(program_string, command_template=None):
         try:
             program_obj = find_program(program_name, env)
         except ValueError as ex:
+            pass # try if the use passed the whole script name (i.e., including the '.cc' at the end)
+        try:
+            program_name = program_name.replace('.cc', '')
+            program_obj = find_program(program_name, env)
+        except ValueError as ex:
             raise WafError(str(ex))
 
         program_node = program_obj.path.find_or_declare(program_obj.target)
@@ -196,6 +201,11 @@ def get_run_program(program_string, command_template=None):
 
         program_name = program_string
         try:
+            program_obj = find_program(program_name, env)
+        except ValueError as ex:
+            pass # try if the use passed the whole script name (i.e., including the '.cc' at the end)
+        try:
+            program_name = program_name.replace('.cc', '')
             program_obj = find_program(program_name, env)
         except ValueError as ex:
             raise WafError(str(ex))
