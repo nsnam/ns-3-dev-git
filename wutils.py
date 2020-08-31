@@ -178,13 +178,12 @@ def get_run_program(program_string, command_template=None):
         argv = shlex.split(program_string)
         #print "%r ==shlex.split==> %r" % (program_string, argv)
         program_name = argv[0]
+        
+        # if the script name ends with .cc - strip it
+        if program_name.endswith('.cc'):
+            program_name = program_name.rsplit('.', 1)[0]
 
         try:
-            program_obj = find_program(program_name, env)
-        except ValueError as ex:
-            pass # try if the use passed the whole script name (i.e., including the '.cc' at the end)
-        try:
-            program_name = program_name.replace('.cc', '')
             program_obj = find_program(program_name, env)
         except ValueError as ex:
             raise WafError(str(ex))
@@ -200,12 +199,12 @@ def get_run_program(program_string, command_template=None):
     else:
 
         program_name = program_string
+        
+        # if the script name ends with .cc - strip it
+        if program_name.endswith('.cc'):
+            program_name = program_name.rsplit('.', 1)[0]
+
         try:
-            program_obj = find_program(program_name, env)
-        except ValueError as ex:
-            pass # try if the use passed the whole script name (i.e., including the '.cc' at the end)
-        try:
-            program_name = program_name.replace('.cc', '')
             program_obj = find_program(program_name, env)
         except ValueError as ex:
             raise WafError(str(ex))
