@@ -555,7 +555,7 @@ BaseStationNetDevice::StartDlSubFrame (void)
 {
   m_dlSubframeStartTime = Simulator::Now (); // same as m_frameStartTime
 
-  NS_LOG_DEBUG ("DL frame started : " << m_frameStartTime.GetSeconds ());
+  NS_LOG_DEBUG ("DL frame started : " << m_frameStartTime.As (Time::S));
 
   SetNrFrames (GetNrFrames () + 1);
   SetState (BS_STATE_DL_SUB_FRAME);
@@ -582,7 +582,7 @@ BaseStationNetDevice::StartUlSubFrame (void)
 {
   m_ulSubframeStartTime = Simulator::Now ();
 
-  NS_LOG_INFO ("UL frame started : " << m_ulSubframeStartTime.GetSeconds ());
+  NS_LOG_INFO ("UL frame started : " << m_ulSubframeStartTime.As (Time::S));
 
   SetState (BS_STATE_UL_SUB_FRAME);
   m_direction = DIRECTION_UPLINK;
@@ -1182,9 +1182,9 @@ BaseStationNetDevice::MarkUplinkAllocations (void)
         }
 
       symbolsToAllocation = uplinkAllocation.GetStartTime ();
-      MarkUplinkAllocationStart (Seconds (symbolsToAllocation * m_symbolDuration.GetSeconds ()));
-      MarkUplinkAllocationEnd (Seconds ((symbolsToAllocation + uplinkAllocation.GetDuration ())
-                                        * m_symbolDuration.GetSeconds ()), uplinkAllocation.GetCid (), uplinkAllocation.GetUiuc ());
+      MarkUplinkAllocationStart (symbolsToAllocation * m_symbolDuration);
+      MarkUplinkAllocationEnd ((symbolsToAllocation + uplinkAllocation.GetDuration ())
+                                        * m_symbolDuration, uplinkAllocation.GetCid (), uplinkAllocation.GetUiuc ());
     }
 }
 
@@ -1206,14 +1206,14 @@ BaseStationNetDevice::UplinkAllocationStart (void)
   m_ulAllocationNumber++;
 
   NS_LOG_DEBUG ("--UL allocation " << (uint32_t) m_ulAllocationNumber << " started : "
-                                   << Simulator::Now ().GetSeconds ());
+                                   << Simulator::Now ().As (Time::S));
 
 }
 
 void
 BaseStationNetDevice::UplinkAllocationEnd (Cid cid, uint8_t uiuc)
 {
-  NS_LOG_DEBUG ("--UL allocation " << (uint32_t) m_ulAllocationNumber << " ended : " << Simulator::Now ().GetSeconds ());
+  NS_LOG_DEBUG ("--UL allocation " << (uint32_t) m_ulAllocationNumber << " ended : " << Simulator::Now ().As (Time::S));
 
   if (m_cidFactory->IsBasic (cid))
     {
@@ -1232,7 +1232,7 @@ BaseStationNetDevice::RangingOppStart (void)
 {
   m_rangingOppNumber++;
 
-  NS_LOG_DEBUG ("Ranging TO " << (uint32_t) m_rangingOppNumber << ": " << Simulator::Now ().GetSeconds ());
+  NS_LOG_DEBUG ("Ranging TO " << (uint32_t) m_rangingOppNumber << ": " << Simulator::Now ().As (Time::S));
 }
 
 } // namespace ns3

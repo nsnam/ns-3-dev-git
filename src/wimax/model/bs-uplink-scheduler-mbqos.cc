@@ -162,7 +162,7 @@ void
 UplinkSchedulerMBQoS::UplinkSchedWindowTimer (void)
 {
 
-  NS_LOG (LOG_DEBUG, "Window Reset at " << (Simulator::Now ()).GetSeconds ());
+  NS_LOG (LOG_DEBUG, "Window Reset at " << (Simulator::Now ()).As (Time::S));
 
   uint32_t min_bw = 0;
 
@@ -304,7 +304,7 @@ UplinkSchedulerMBQoS::Schedule (void)
                    (grant has been referred by different names e.g. transmission opportunity, slot,         uplink allocation, etc)*/
                   if (ssRecord->GetHasServiceFlowUgs ())
                     {
-                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering be unicast polling");
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S) << " offering be unicast polling");
                       // Recover period interval information for UGS flow
                       Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
                       Time
@@ -330,14 +330,14 @@ UplinkSchedulerMBQoS::Schedule (void)
                   // enqueue allocate unicast polls for rtPS flows if bandwidth is available
                   if (ssRecord->GetHasServiceFlowRtps ())
                     {
-                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering rtps unicast polling");
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S) << " offering rtps unicast polling");
                       Ptr<UlJob> jobRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_RTPS, UNICAST_POLLING);
                       EnqueueJob (UlJob::HIGH, jobRTPSPoll);
                     }
 
                   if (ssRecord->GetHasServiceFlowNrtps ())
                     {
-                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering nrtps unicast polling");
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S) << " offering nrtps unicast polling");
                       // allocate unicast polls for nrtPS flows if bandwidth is available
                       Ptr<UlJob> jobNRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_NRTPS, UNICAST_POLLING);
                       EnqueueJob (UlJob::HIGH, jobNRTPSPoll);
@@ -345,7 +345,7 @@ UplinkSchedulerMBQoS::Schedule (void)
 
                   if (ssRecord->GetHasServiceFlowBe ())
                     {
-                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering be unicast polling");
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S) << " offering be unicast polling");
                       // finally allocate unicast polls for BE flows if bandwidth is available
                       Ptr<UlJob> jobBEPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_BE, UNICAST_POLLING);
                       EnqueueJob (UlJob::HIGH, jobBEPoll);
@@ -354,7 +354,7 @@ UplinkSchedulerMBQoS::Schedule (void)
             }
         }
     }
-  NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds ()<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs - after sched");
+  NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S)<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs - after sched");
 
   uint32_t availableSymbolsAux = availableSymbols;
   uint32_t symbolsUsed = 0;
@@ -369,7 +369,7 @@ UplinkSchedulerMBQoS::Schedule (void)
   CheckMinimumBandwidth (availableSymbolsAux);
 
   // Scheduling high priority queue
-  NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds ()<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs");
+  NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S)<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs");
   while ((availableSymbols) && (!m_uplinkJobs_high.empty ()))
     {
 
@@ -411,11 +411,11 @@ UplinkSchedulerMBQoS::Schedule (void)
       m_uplinkJobs_high.pop_front ();
     }
 
-  NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds ()<< " interqueue has " << m_uplinkJobs_inter.size ()<< " jobs");
+  NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S)<< " interqueue has " << m_uplinkJobs_inter.size ()<< " jobs");
   /* Scheduling intermediate priority queue */
   while ((availableSymbols) && (!m_uplinkJobs_inter.empty ()))
     {
-      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds ()<< " Scheduling interqueue");
+      NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S)<< " Scheduling interqueue");
       Ptr<UlJob> job = m_uplinkJobs_inter.front ();
       OfdmUlMapIe ulMapIe;
       SSRecord * ssRecord = job->GetSsRecord ();
@@ -515,7 +515,7 @@ bool UplinkSchedulerMBQoS::ServiceBandwidthRequestsBytes (ServiceFlow *serviceFl
       if (availableSymbols >= allocSizeSymbols)
         {
           NS_LOG_DEBUG (
-            "At " << Simulator::Now ().GetSeconds ()<<" BS uplink scheduler, "
+            "At " << Simulator::Now ().As (Time::S)<<" BS uplink scheduler, "
                   << serviceFlow->GetSchedulingTypeStr ()
                   << " allocation, size: " << allocSizeSymbols << " symbols"
                   << ", CID: "
@@ -665,9 +665,9 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
 
               int64_t frame = ((deadline - Simulator::Now ()) / frame_duration).GetHigh ();
 
-              NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " reserved traffic rate: "
+              NS_LOG_DEBUG ("At " << Simulator::Now ().As (Time::S) << " reserved traffic rate: "
                                   << job->GetServiceFlow ()->GetMinReservedTrafficRate ()
-                                  <<" deadline: "<<job->GetDeadline ().GetSeconds () << " frame start: "<<GetBs ()->m_frameStartTime.GetSeconds ()
+                                  <<" deadline: "<<job->GetDeadline ().As (Time::S) << " frame start: "<<GetBs ()->m_frameStartTime.As (Time::S)
                                   <<" frame duration: "<< frame_duration );
 
               // should be schedule in this frame to max latency
@@ -1108,8 +1108,8 @@ UplinkSchedulerMBQoS::ProcessBandwidthRequest (const BandwidthRequestHeader &bwR
   Time currentTime = Simulator::Now ();
   Time period = deadline; // So that deadline is properly updated..
 
-  NS_LOG_DEBUG ("At "<<Simulator::Now ().GetSeconds ()<<" at BS uplink scheduler, processing bandwidth request from." <<
-                ssRecord->GetMacAddress () << " and sf " << serviceFlow->GetSchedulingType () <<" with deadline in " << deadline.GetSeconds () << " and size " << size << " aggreg size " << bwRequestHdr.GetBr ());
+  NS_LOG_DEBUG ("At "<<Simulator::Now ().As (Time::S)<<" at BS uplink scheduler, processing bandwidth request from." <<
+                ssRecord->GetMacAddress () << " and sf " << serviceFlow->GetSchedulingType () <<" with deadline in " << deadline.As (Time::S) << " and size " << size << " aggreg size " << bwRequestHdr.GetBr ());
 
   // Record data in job
   job->SetSsRecord (ssRecord);
