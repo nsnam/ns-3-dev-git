@@ -512,28 +512,28 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
           switch (messageHeader.GetMessageType ())
             {
             case olsr::MessageHeader::HELLO_MESSAGE:
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                            << "s OLSR node " << m_mainAddress
+              NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                            << " OLSR node " << m_mainAddress
                             << " received HELLO message of size " << messageHeader.GetSerializedSize ());
               ProcessHello (messageHeader, receiverIfaceAddr, senderIfaceAddr);
               break;
 
             case olsr::MessageHeader::TC_MESSAGE:
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                            << "s OLSR node " << m_mainAddress
+              NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                            << " OLSR node " << m_mainAddress
                             << " received TC message of size " << messageHeader.GetSerializedSize ());
               ProcessTc (messageHeader, senderIfaceAddr);
               break;
 
             case olsr::MessageHeader::MID_MESSAGE:
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                            << "s OLSR node " << m_mainAddress
+              NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                            << " OLSR node " << m_mainAddress
                             <<  " received MID message of size " << messageHeader.GetSerializedSize ());
               ProcessMid (messageHeader, senderIfaceAddr);
               break;
             case olsr::MessageHeader::HNA_MESSAGE:
-              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                            << "s OLSR node " << m_mainAddress
+              NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                            << " OLSR node " << m_mainAddress
                             <<  " received HNA message of size " << messageHeader.GetSerializedSize ());
               ProcessHna (messageHeader, senderIfaceAddr);
               break;
@@ -954,8 +954,8 @@ RoutingProtocol::GetMainAddress (Ipv4Address iface_addr) const
 void
 RoutingProtocol::RoutingTableComputation ()
 {
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " s: Node " << m_mainAddress
-                                                << ": RoutingTableComputation begin...");
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S) << " : Node " << m_mainAddress
+                                               << ": RoutingTableComputation begin...");
 
   // 1. All the entries from the routing table are removed.
   Clear ();
@@ -1282,8 +1282,8 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
 #ifdef NS3_LOG_ENABLE
   {
     const LinkSet &links = m_state.GetLinks ();
-    NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                  << "s ** BEGIN dump Link Set for OLSR Node " << m_mainAddress);
+    NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                  << " ** BEGIN dump Link Set for OLSR Node " << m_mainAddress);
     for (LinkSet::const_iterator link = links.begin (); link != links.end (); link++)
       {
         NS_LOG_DEBUG (*link);
@@ -1291,8 +1291,8 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
     NS_LOG_DEBUG ("** END dump Link Set for OLSR Node " << m_mainAddress);
 
     const NeighborSet &neighbors = m_state.GetNeighbors ();
-    NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                  << "s ** BEGIN dump Neighbor Set for OLSR Node " << m_mainAddress);
+    NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                  << " ** BEGIN dump Neighbor Set for OLSR Node " << m_mainAddress);
     for (NeighborSet::const_iterator neighbor = neighbors.begin (); neighbor != neighbors.end (); neighbor++)
       {
         NS_LOG_DEBUG (*neighbor);
@@ -1307,8 +1307,8 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
 #ifdef NS3_LOG_ENABLE
   {
     const TwoHopNeighborSet &twoHopNeighbors = m_state.GetTwoHopNeighbors ();
-    NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                  << "s ** BEGIN dump TwoHopNeighbor Set for OLSR Node " << m_mainAddress);
+    NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                  << " ** BEGIN dump TwoHopNeighbor Set for OLSR Node " << m_mainAddress);
     for (TwoHopNeighborSet::const_iterator tuple = twoHopNeighbors.begin ();
          tuple != twoHopNeighbors.end (); tuple++)
       {
@@ -1400,8 +1400,8 @@ RoutingProtocol::ProcessTc (const olsr::MessageHeader &msg,
 #ifdef NS3_LOG_ENABLE
   {
     const TopologySet &topology = m_state.GetTopologySet ();
-    NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                  << "s ** BEGIN dump TopologySet for OLSR Node " << m_mainAddress);
+    NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                  << " ** BEGIN dump TopologySet for OLSR Node " << m_mainAddress);
     for (TopologySet::const_iterator tuple = topology.begin ();
          tuple != topology.end (); tuple++)
       {
@@ -1982,7 +1982,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
   Time now = Simulator::Now ();
   bool updated = false;
   bool created = false;
-  NS_LOG_DEBUG ("@" << now.GetSeconds () << ": Olsr node " << m_mainAddress
+  NS_LOG_DEBUG ("@" << now.As (Time::S) << ": Olsr node " << m_mainAddress
                     << ": LinkSensing(receiverIface=" << receiverIface
                     << ", senderIface=" << senderIface << ") BEGIN");
 
@@ -2031,8 +2031,9 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
         case OLSR_LOST_LINK:
           linkTypeName = "LOST_LINK";
           break;
-        default: linkTypeName = "(invalid value!)";
-          
+        default:
+          linkTypeName = "(invalid value!)";
+
         }
 
       const char *neighborTypeName;
@@ -2117,7 +2118,7 @@ RoutingProtocol::LinkSensing (const olsr::MessageHeader &msg,
                                            &RoutingProtocol::LinkTupleTimerExpire, this,
                                            link_tuple->neighborIfaceAddr));
     }
-  NS_LOG_DEBUG ("@" << now.GetSeconds () << ": Olsr node " << m_mainAddress
+  NS_LOG_DEBUG ("@" << now.As (Time::S) << ": Olsr node " << m_mainAddress
                     << ": LinkSensing END");
 }
 
@@ -2338,8 +2339,8 @@ OLSR::mac_failed (Ptr<Packet> p)
 void
 RoutingProtocol::NeighborLoss (const LinkTuple &tuple)
 {
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                << "s: OLSR Node " << m_mainAddress
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                << ": OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple.neighborIfaceAddr << " -> neighbor loss.");
   LinkTupleUpdated (tuple, OLSR_WILL_DEFAULT);
   m_state.EraseTwoHopNeighborTuples (GetMainAddress (tuple.neighborIfaceAddr));
@@ -2394,8 +2395,8 @@ RoutingProtocol::LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness)
 void
 RoutingProtocol::RemoveLinkTuple (const LinkTuple &tuple)
 {
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                << "s: OLSR Node " << m_mainAddress
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                << ": OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple << " REMOVED.");
 
   m_state.EraseNeighborTuple (GetMainAddress (tuple.neighborIfaceAddr));
@@ -2407,8 +2408,8 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 {
   // Each time a link tuple changes, the associated neighbor tuple must be recomputed
 
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                << "s: OLSR Node " << m_mainAddress
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                << ": OLSR Node " << m_mainAddress
                 << " LinkTuple " << tuple << " UPDATED.");
 
   NeighborTuple *nb_tuple =
