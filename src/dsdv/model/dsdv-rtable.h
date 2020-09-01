@@ -278,7 +278,7 @@ public:
    * \param stream the output stream
    */
   void
-  Print (Ptr<OutputStreamWrapper> stream) const;
+  Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
 private:
   // Fields
@@ -395,7 +395,7 @@ public:
    * \param stream the output stream
    */
   void
-  Print (Ptr<OutputStreamWrapper> stream) const;
+  Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
   /**
    * Provides the number of routes present in that nodes routing table.
    * \returns the number of routes

@@ -195,13 +195,13 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop,
 }
 
 void
-RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
+RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit /*= Time::S*/) const
 {
   *stream->GetStream () << std::setiosflags (std::ios::fixed) << m_ipv4Route->GetDestination () << "\t\t" << m_ipv4Route->GetGateway () << "\t\t"
                         << m_iface.GetLocal () << "\t\t" << std::setiosflags (std::ios::left)
                         << std::setw (10) << m_hops << "\t" << std::setw (10) << m_seqNo << "\t"
-                        << std::setprecision (3) << (Simulator::Now () - m_lifeTime).GetSeconds ()
-                        << "s\t\t" << m_settlingTime.GetSeconds () << "s\n";
+                        << std::setprecision (3) << (Simulator::Now () - m_lifeTime).As (unit)
+                        << "\t\t" << m_settlingTime.As (unit) << "\n";
 }
 
 void
@@ -249,13 +249,13 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses
 }
 
 void
-RoutingTable::Print (Ptr<OutputStreamWrapper> stream) const
+RoutingTable::Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit /*= Time::S*/) const
 {
   *stream->GetStream () << "\nDSDV Routing table\n" << "Destination\t\tGateway\t\tInterface\t\tHopCount\t\tSeqNum\t\tLifeTime\t\tSettlingTime\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i
        != m_ipv4AddressEntry.end (); ++i)
     {
-      i->second.Print (stream);
+      i->second.Print (stream, unit);
     }
   *stream->GetStream () << "\n";
 }
