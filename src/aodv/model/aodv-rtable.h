@@ -341,7 +341,7 @@ public:
    * Print packet to trace file
    * \param stream The output stream
    */
-  void Print (Ptr<OutputStreamWrapper> stream) const;
+  void Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
 private:
   /// Valid Destination Sequence Number flag
@@ -481,7 +481,7 @@ public:
    * Print routing table
    * \param stream the output stream
    */
-  void Print (Ptr<OutputStreamWrapper> stream) const;
+  void Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
 private:
   /// The routing table
