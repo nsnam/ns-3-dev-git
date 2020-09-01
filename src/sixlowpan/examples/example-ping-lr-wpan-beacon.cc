@@ -38,7 +38,7 @@ static void dataSentMacConfirm (McpsDataConfirmParams params)
   // successful if the Ack was received.
   if (params.m_status == LrWpanMcpsDataConfirmStatus::IEEE_802_15_4_SUCCESS)
     {
-      NS_LOG_UNCOND ("**********" << Simulator::Now ().GetSeconds () << " secs | Transmission successfully sent");
+      NS_LOG_UNCOND ("**********" << Simulator::Now ().As (Time::S) << " | Transmission successfully sent");
     }
 }
 
