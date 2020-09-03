@@ -50,6 +50,10 @@ def build(bld):
     obj = bld.create_ns3_program('system-path-examples',
                                  ['core'])
     obj.source = 'system-path-examples.cc'
+    
+    obj = bld.create_ns3_program('fatal-example',
+                                 ['core'])
+    obj.source = 'fatal-example.cc'
 
     obj = bld.create_ns3_program('build-version-example',
                                  ['core'])
