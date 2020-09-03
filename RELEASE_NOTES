@@ -23,6 +23,7 @@ New user-visible features
   feature (Section 5.4 of RFC 8033).
 - (traffic-control) Add support for L4S mode to CoDel and FqCoDel queue discs
 - (tcp) Support for dynamic pacing in TCP.
+- (wifi) Support for 6 GHz channels when using 802.11ax
 
 Bugs fixed
 ----------
