@@ -121,13 +121,13 @@ def register_types(module):
     ## show-progress.h (module 'core'): ns3::ShowProgress [class]
     module.add_class('ShowProgress')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::ObjectBase'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::ObjectBase'], template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
     module.add_enum('', ['NO_CONTEXT'], outer_class=root_module['ns3::Simulator'])
     ## singleton.h (module 'core'): ns3::Singleton<ns3::DesMetrics> [class]
-    module.add_class('Singleton', parent=root_module['ns3::NonCopyable'], template_parameters=['ns3::DesMetrics'])
+    module.add_class('Singleton', template_parameters=['ns3::DesMetrics'], parent=root_module['ns3::NonCopyable'])
     ## system-condition.h (module 'core'): ns3::SystemCondition [class]
     module.add_class('SystemCondition')
     ## system-mutex.h (module 'core'): ns3::SystemMutex [class]
@@ -170,6 +170,8 @@ def register_types(module):
     module.add_class('Vector2D')
     ## vector.h (module 'core'): ns3::Vector3D [class]
     module.add_class('Vector3D')
+    ## version.h (module 'core'): ns3::Version [class]
+    module.add_class('Version')
     ## watchdog.h (module 'core'): ns3::Watchdog [class]
     module.add_class('Watchdog')
     ## empty.h (module 'core'): ns3::empty [class]
@@ -195,25 +197,25 @@ def register_types(module):
     ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
     module.add_class('SequentialRandomVariable', parent=root_module['ns3::RandomVariableStream'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::FdReader', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FdReader>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::FdReader', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FdReader>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty, ns3::DefaultDeleter<ns3::RefCountBase> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::RefCountBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RefCountBase>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::RefCountBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RefCountBase>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::SystemThread', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SystemThread>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::SystemThread', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SystemThread>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
     ## simulator-impl.h (module 'core'): ns3::SimulatorImpl [class]
     module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
     ## synchronizer.h (module 'core'): ns3::Synchronizer [class]
@@ -240,9 +242,9 @@ def register_types(module):
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], automatic_type_narrowing=True, allow_subclassing=False)
+    module.add_class('AttributeChecker', automatic_type_narrowing=True, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], allow_subclassing=False)
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
-    module.add_class('AttributeValue', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], automatic_type_narrowing=True, allow_subclassing=False)
+    module.add_class('AttributeValue', automatic_type_narrowing=True, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], allow_subclassing=False)
     ## boolean.h (module 'core'): ns3::BooleanChecker [class]
     module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'])
     ## boolean.h (module 'core'): ns3::BooleanValue [class]
@@ -345,13 +347,13 @@ def register_types(module):
     ## vector.h (module 'core'): ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
     ## callback.h (module 'core'): ns3::CallbackImpl<bool, std::basic_string<char>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['bool', 'std::basic_string<char>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['bool', 'std::basic_string<char>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'unsigned char *', 'long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned char *', 'long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
@@ -587,6 +589,7 @@ def register_methods(root_module):
     register_Ns3TypeIdTraceSourceInformation_methods(root_module, root_module['ns3::TypeId::TraceSourceInformation'])
     register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
     register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
+    register_Ns3Version_methods(root_module, root_module['ns3::Version'])
     register_Ns3Watchdog_methods(root_module, root_module['ns3::Watchdog'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
@@ -798,6 +801,11 @@ def register_Ns3CommandLine_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
+    ## command-line.h (module 'core'): std::string ns3::CommandLine::GetVersion() const [member function]
+    cls.add_method('GetVersion', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## command-line.h (module 'core'): void ns3::CommandLine::Parse(int argc, char * * argv) [member function]
     cls.add_method('Parse', 
                    'void', 
@@ -808,6 +816,11 @@ def register_Ns3CommandLine_methods(root_module, cls):
                    [param('std::vector< std::string >', 'args')])
     ## command-line.h (module 'core'): void ns3::CommandLine::PrintHelp(std::ostream & os) const [member function]
     cls.add_method('PrintHelp', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## command-line.h (module 'core'): void ns3::CommandLine::PrintVersion(std::ostream & os) const [member function]
+    cls.add_method('PrintVersion', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
@@ -1250,7 +1263,7 @@ def register_Ns3ObjectBase_methods(root_module, cls):
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## object-base.h (module 'core'): static ns3::TypeId ns3::ObjectBase::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1643,10 +1656,8 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('>')
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', 'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', 'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
@@ -1919,12 +1930,12 @@ def register_Ns3TimerImpl_methods(root_module, cls):
     cls.add_method('Invoke', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## timer-impl.h (module 'core'): ns3::EventId ns3::TimerImpl::Schedule(ns3::Time const & delay) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
                    [param('ns3::Time const &', 'delay')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3TypeId_methods(root_module, cls):
@@ -2195,6 +2206,78 @@ def register_Ns3Vector3D_methods(root_module, cls):
     cls.add_instance_attribute('z', 'double', is_const=False)
     return
 
+def register_Ns3Version_methods(root_module, cls):
+    ## version.h (module 'core'): ns3::Version::Version() [constructor]
+    cls.add_constructor([])
+    ## version.h (module 'core'): ns3::Version::Version(ns3::Version const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Version const &', 'arg0')])
+    ## version.h (module 'core'): static std::string ns3::Version::BuildProfile() [member function]
+    cls.add_method('BuildProfile', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::BuildSummary() [member function]
+    cls.add_method('BuildSummary', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::ClosestAncestorTag() [member function]
+    cls.add_method('ClosestAncestorTag', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::CommitHash() [member function]
+    cls.add_method('CommitHash', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static bool ns3::Version::DirtyWorkingTree() [member function]
+    cls.add_method('DirtyWorkingTree', 
+                   'bool', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::LongVersion() [member function]
+    cls.add_method('LongVersion', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static uint32_t ns3::Version::Major() [member function]
+    cls.add_method('Major', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static uint32_t ns3::Version::Minor() [member function]
+    cls.add_method('Minor', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static uint32_t ns3::Version::Patch() [member function]
+    cls.add_method('Patch', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::ReleaseCandidate() [member function]
+    cls.add_method('ReleaseCandidate', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::ShortVersion() [member function]
+    cls.add_method('ShortVersion', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static uint32_t ns3::Version::TagDistance() [member function]
+    cls.add_method('TagDistance', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## version.h (module 'core'): static std::string ns3::Version::VersionTag() [member function]
+    cls.add_method('VersionTag', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    return
+
 def register_Ns3Watchdog_methods(root_module, cls):
     ## watchdog.h (module 'core'): ns3::Watchdog::Watchdog(ns3::Watchdog const & arg0) [constructor]
     cls.add_constructor([param('ns3::Watchdog const &', 'arg0')])
@@ -2323,12 +2406,12 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [], 
-                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
+                   is_const=True, custom_template_method_name='GetObject', template_parameters=['ns3::Object'])
     ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::TypeId', 'tid')], 
-                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
+                   is_const=True, custom_template_method_name='GetObject', template_parameters=['ns3::Object'])
     ## object.h (module 'core'): static ns3::TypeId ns3::Object::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2409,17 +2492,17 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
     cls.add_method('GetValue', 
                    'double', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## random-variable-stream.h (module 'core'): uint32_t ns3::RandomVariableStream::GetInteger() [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## random-variable-stream.h (module 'core'): ns3::RngStream * ns3::RandomVariableStream::Peek() const [member function]
     cls.add_method('Peek', 
                    'ns3::RngStream *', 
                    [], 
-                   is_const=True, visibility='protected')
+                   visibility='protected', is_const=True)
     return
 
 def register_Ns3Scheduler_methods(root_module, cls):
@@ -2436,27 +2519,27 @@ def register_Ns3Scheduler_methods(root_module, cls):
     cls.add_method('Insert', 
                    'void', 
                    [param('ns3::Scheduler::Event const &', 'ev')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## scheduler.h (module 'core'): bool ns3::Scheduler::IsEmpty() const [member function]
     cls.add_method('IsEmpty', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## scheduler.h (module 'core'): ns3::Scheduler::Event ns3::Scheduler::PeekNext() const [member function]
     cls.add_method('PeekNext', 
                    'ns3::Scheduler::Event', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## scheduler.h (module 'core'): void ns3::Scheduler::Remove(ns3::Scheduler::Event const & ev) [member function]
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::Scheduler::Event const &', 'ev')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## scheduler.h (module 'core'): ns3::Scheduler::Event ns3::Scheduler::RemoveNext() [member function]
     cls.add_method('RemoveNext', 
                    'ns3::Scheduler::Event', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3SchedulerEvent_methods(root_module, cls):
@@ -2610,37 +2693,37 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
     cls.add_method('Cancel', 
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Destroy() [member function]
     cls.add_method('Destroy', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): uint32_t ns3::SimulatorImpl::GetContext() const [member function]
     cls.add_method('GetContext', 
                    'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::GetDelayLeft(ns3::EventId const & id) const [member function]
     cls.add_method('GetDelayLeft', 
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): uint64_t ns3::SimulatorImpl::GetEventCount() const [member function]
     cls.add_method('GetEventCount', 
                    'uint64_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::GetMaximumSimulationTime() const [member function]
     cls.add_method('GetMaximumSimulationTime', 
                    'ns3::Time', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): uint32_t ns3::SimulatorImpl::GetSystemId() const [member function]
     cls.add_method('GetSystemId', 
                    'uint32_t', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): static ns3::TypeId ns3::SimulatorImpl::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2650,62 +2733,62 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
     cls.add_method('IsExpired', 
                    'bool', 
                    [param('ns3::EventId const &', 'id')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): bool ns3::SimulatorImpl::IsFinished() const [member function]
     cls.add_method('IsFinished', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::Time ns3::SimulatorImpl::Now() const [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Remove(ns3::EventId const & id) [member function]
     cls.add_method('Remove', 
                    'void', 
                    [param('ns3::EventId const &', 'id')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Run() [member function]
     cls.add_method('Run', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::Schedule(ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('Schedule', 
                    'ns3::EventId', 
                    [param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::ScheduleDestroy(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleDestroy', 
                    'ns3::EventId', 
                    [param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): ns3::EventId ns3::SimulatorImpl::ScheduleNow(ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleNow', 
                    'ns3::EventId', 
                    [param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
                    [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::SetScheduler(ns3::ObjectFactory schedulerFactory) [member function]
     cls.add_method('SetScheduler', 
                    'void', 
                    [param('ns3::ObjectFactory', 'schedulerFactory')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Stop() [member function]
     cls.add_method('Stop', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::Stop(ns3::Time const & delay) [member function]
     cls.add_method('Stop', 
                    'void', 
                    [param('ns3::Time const &', 'delay')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3Synchronizer_methods(root_module, cls):
@@ -2762,47 +2845,47 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     cls.add_method('DoEventEnd', 
                    'uint64_t', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoEventStart() [member function]
     cls.add_method('DoEventStart', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): uint64_t ns3::Synchronizer::DoGetCurrentRealtime() [member function]
     cls.add_method('DoGetCurrentRealtime', 
                    'uint64_t', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): int64_t ns3::Synchronizer::DoGetDrift(uint64_t ns) [member function]
     cls.add_method('DoGetDrift', 
                    'int64_t', 
                    [param('uint64_t', 'ns')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): bool ns3::Synchronizer::DoRealtime() [member function]
     cls.add_method('DoRealtime', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetCondition(bool arg0) [member function]
     cls.add_method('DoSetCondition', 
                    'void', 
                    [param('bool', 'arg0')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetOrigin(uint64_t ns) [member function]
     cls.add_method('DoSetOrigin', 
                    'void', 
                    [param('uint64_t', 'ns')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSignal() [member function]
     cls.add_method('DoSignal', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     ## synchronizer.h (module 'core'): bool ns3::Synchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay) [member function]
     cls.add_method('DoSynchronize', 
                    'bool', 
                    [param('uint64_t', 'nsCurrent'), param('uint64_t', 'nsDelay')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3SystemThread_methods(root_module, cls):
@@ -2839,22 +2922,22 @@ def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     cls.add_method('Connect', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('ConnectWithoutContext', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('Disconnect', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## trace-source-accessor.h (module 'core'): bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
     cls.add_method('DisconnectWithoutContext', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3TriangularRandomVariable_methods(root_module, cls):
@@ -3164,22 +3247,22 @@ def register_Ns3AttributeAccessor_methods(root_module, cls):
     cls.add_method('Get', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('ns3::AttributeValue &', 'attribute')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasGetter() const [member function]
     cls.add_method('HasGetter', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::HasSetter() const [member function]
     cls.add_method('HasSetter', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]
     cls.add_method('Set', 
                    'bool', 
                    [param('ns3::ObjectBase *', 'object', transfer_ownership=False), param('ns3::AttributeValue const &', 'value')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3AttributeChecker_methods(root_module, cls):
@@ -3191,17 +3274,17 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
     cls.add_method('Check', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'value')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeChecker::Copy(ns3::AttributeValue const & source, ns3::AttributeValue & destination) const [member function]
     cls.add_method('Copy', 
                    'bool', 
                    [param('ns3::AttributeValue const &', 'source'), param('ns3::AttributeValue &', 'destination')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::AttributeChecker::CreateValidValue(ns3::AttributeValue const & value) const [member function]
     cls.add_method('CreateValidValue', 
                    'ns3::Ptr< ns3::AttributeValue >', 
@@ -3211,17 +3294,17 @@ def register_Ns3AttributeChecker_methods(root_module, cls):
     cls.add_method('GetUnderlyingTypeInformation', 
                    'std::string', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): std::string ns3::AttributeChecker::GetValueTypeName() const [member function]
     cls.add_method('GetValueTypeName', 
                    'std::string', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeChecker::HasUnderlyingTypeInformation() const [member function]
     cls.add_method('HasUnderlyingTypeInformation', 
                    'bool', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3AttributeValue_methods(root_module, cls):
@@ -3233,17 +3316,17 @@ def register_Ns3AttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::AttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## attribute.h (module 'core'): std::string ns3::AttributeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3BooleanChecker_methods(root_module, cls):
@@ -3340,12 +3423,12 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetTypeid', 
                    'std::string', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## callback.h (module 'core'): bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<const ns3::CallbackImplBase> other) const [member function]
     cls.add_method('IsEqual', 
                    'bool', 
                    [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::Demangle(std::string const & mangled) [member function]
     cls.add_method('Demangle', 
                    'std::string', 
@@ -3355,32 +3438,32 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['ns3::ObjectBase*'], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['ns3::ObjectBase*'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['bool'], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['bool'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['std::__cxx11::basic_string<char', ' std::char_traits<char>', ' std::allocator<char> > '], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['std::__cxx11::basic_string<char', ' std::char_traits<char>', ' std::allocator<char> > '], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['void'], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['void'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['unsigned char*'], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['unsigned char*'], is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   template_parameters=['long'], visibility='protected', is_static=True)
+                   visibility='protected', template_parameters=['long'], is_static=True)
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -3719,7 +3802,7 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_const=True, is_virtual=True)
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -3729,7 +3812,7 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_const=True, is_virtual=True)
     return
 
 def register_Ns3EnumChecker_methods(root_module, cls):
@@ -3879,7 +3962,7 @@ def register_Ns3EventImpl_methods(root_module, cls):
     cls.add_method('Notify', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
@@ -3937,7 +4020,7 @@ def register_Ns3FdReader_methods(root_module, cls):
     cls.add_method('DoRead', 
                    'ns3::FdReader::Data', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3GammaRandomVariable_methods(root_module, cls):
@@ -4274,12 +4357,12 @@ def register_Ns3ObjectPtrContainerAccessor_methods(root_module, cls):
     cls.add_method('DoGet', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::ObjectBase const *', 'object'), param('std::size_t', 'i'), param('std::size_t *', 'index')], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_const=True, is_pure_virtual=True, is_virtual=True)
     ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::DoGetN(ns3::ObjectBase const * object, std::size_t * n) const [member function]
     cls.add_method('DoGetN', 
                    'bool', 
                    [param('ns3::ObjectBase const *', 'object'), param('std::size_t *', 'n')], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3ObjectPtrContainerChecker_methods(root_module, cls):
@@ -4291,7 +4374,7 @@ def register_Ns3ObjectPtrContainerChecker_methods(root_module, cls):
     cls.add_method('GetItemTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3ObjectPtrContainerValue_methods(root_module, cls):
@@ -4388,7 +4471,7 @@ def register_Ns3PointerChecker_methods(root_module, cls):
     cls.add_method('GetPointeeTypeId', 
                    'ns3::TypeId', 
                    [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3PointerValue_methods(root_module, cls):
@@ -4864,7 +4947,7 @@ def register_Ns3CallbackImpl__Bool_StdBasic_string__lt__char__gt___Ns3Empty_Ns3E
     cls.add_method('operator()', 
                    'bool', 
                    [param('std::string', 'arg0')], 
-                   is_pure_virtual=True, custom_name='__call__', is_virtual=True)
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -4886,7 +4969,7 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
-                   is_pure_virtual=True, custom_name='__call__', is_virtual=True)
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -4908,7 +4991,7 @@ def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, custom_name='__call__', is_virtual=True)
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_char___star___Long_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -4930,7 +5013,7 @@ def register_Ns3CallbackImpl__Void_Unsigned_char___star___Long_Ns3Empty_Ns3Empty
     cls.add_method('operator()', 
                    'void', 
                    [param('unsigned char *', 'arg0'), param('long int', 'arg1')], 
-                   is_pure_virtual=True, custom_name='__call__', is_virtual=True)
+                   custom_name='__call__', is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3ConfigMatchContainer_methods(root_module, cls):
@@ -5013,7 +5096,7 @@ def register_Ns3HashImplementation_methods(root_module, cls):
     cls.add_method('GetHash32', 
                    'uint32_t', 
                    [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
@@ -5023,7 +5106,7 @@ def register_Ns3HashImplementation_methods(root_module, cls):
     cls.add_method('clear', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True)
     return
 
 def register_Ns3HashFunctionFnv1a_methods(root_module, cls):
@@ -5131,6 +5214,11 @@ def register_functions(root_module):
     module.add_function('CalculateDistance', 
                         'double', 
                         [param('ns3::Vector3D const &', 'a'), param('ns3::Vector3D const &', 'b')])
+    ## ptr.h (module 'core'): ns3::Ptr<ns3::EnumChecker> ns3::Create() [free function]
+    module.add_function('Create', 
+                        'ns3::Ptr< ns3::EnumChecker >', 
+                        [], 
+                        template_parameters=['ns3::EnumChecker'])
     ## ptr.h (module 'core'): ns3::Ptr<ns3::ObjectPtrContainerValue> ns3::Create() [free function]
     module.add_function('Create', 
                         'ns3::Ptr< ns3::ObjectPtrContainerValue >', 
@@ -5157,6 +5245,10 @@ def register_functions(root_module):
     module.add_function('DefaultTimePrinter', 
                         'void', 
                         [param('std::ostream &', 'os')])
+    ## nstime.h (module 'core'): int64_t ns3::Div(ns3::Time const & lhs, ns3::Time const & rhs) [free function]
+    module.add_function('Div', 
+                        'int64_t', 
+                        [param('ns3::Time const &', 'lhs'), param('ns3::Time const &', 'rhs')])
     ## nstime.h (module 'core'): ns3::Time ns3::FemtoSeconds(ns3::int64x64_t value) [free function]
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
@@ -5249,10 +5341,10 @@ def register_functions(root_module):
     module.add_function('MakeEmptyTraceSourceAccessor', 
                         'ns3::Ptr< ns3::TraceSourceAccessor const >', 
                         [])
-    ## enum.h (module 'core'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeEnumChecker(int v1, std::string n1, int v2=0, std::string n2="", int v3=0, std::string n3="", int v4=0, std::string n4="", int v5=0, std::string n5="", int v6=0, std::string n6="", int v7=0, std::string n7="", int v8=0, std::string n8="", int v9=0, std::string n9="", int v10=0, std::string n10="", int v11=0, std::string n11="", int v12=0, std::string n12="", int v13=0, std::string n13="", int v14=0, std::string n14="", int v15=0, std::string n15="", int v16=0, std::string n16="", int v17=0, std::string n17="", int v18=0, std::string n18="", int v19=0, std::string n19="", int v20=0, std::string n20="", int v21=0, std::string n21="", int v22=0, std::string n22="") [free function]
+    ## enum.h (module 'core'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeEnumChecker(ns3::Ptr<ns3::EnumChecker> checker) [free function]
     module.add_function('MakeEnumChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [param('int', 'v1'), param('std::string', 'n1'), param('int', 'v2', default_value='0'), param('std::string', 'n2', default_value='""'), param('int', 'v3', default_value='0'), param('std::string', 'n3', default_value='""'), param('int', 'v4', default_value='0'), param('std::string', 'n4', default_value='""'), param('int', 'v5', default_value='0'), param('std::string', 'n5', default_value='""'), param('int', 'v6', default_value='0'), param('std::string', 'n6', default_value='""'), param('int', 'v7', default_value='0'), param('std::string', 'n7', default_value='""'), param('int', 'v8', default_value='0'), param('std::string', 'n8', default_value='""'), param('int', 'v9', default_value='0'), param('std::string', 'n9', default_value='""'), param('int', 'v10', default_value='0'), param('std::string', 'n10', default_value='""'), param('int', 'v11', default_value='0'), param('std::string', 'n11', default_value='""'), param('int', 'v12', default_value='0'), param('std::string', 'n12', default_value='""'), param('int', 'v13', default_value='0'), param('std::string', 'n13', default_value='""'), param('int', 'v14', default_value='0'), param('std::string', 'n14', default_value='""'), param('int', 'v15', default_value='0'), param('std::string', 'n15', default_value='""'), param('int', 'v16', default_value='0'), param('std::string', 'n16', default_value='""'), param('int', 'v17', default_value='0'), param('std::string', 'n17', default_value='""'), param('int', 'v18', default_value='0'), param('std::string', 'n18', default_value='""'), param('int', 'v19', default_value='0'), param('std::string', 'n19', default_value='""'), param('int', 'v20', default_value='0'), param('std::string', 'n20', default_value='""'), param('int', 'v21', default_value='0'), param('std::string', 'n21', default_value='""'), param('int', 'v22', default_value='0'), param('std::string', 'n22', default_value='""')])
+                        [param('ns3::Ptr< ns3::EnumChecker >', 'checker')])
     ## make-event.h (module 'core'): ns3::EventImpl * ns3::MakeEvent(void (*)(  ) f) [free function]
     module.add_function('MakeEvent', 
                         'ns3::EventImpl *', 
@@ -5293,10 +5385,10 @@ def register_functions(root_module):
     module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## nstime.h (module 'core'): ns3::Time ns3::Max(ns3::Time const & ta, ns3::Time const & tb) [free function]
+    ## nstime.h (module 'core'): ns3::Time ns3::Max(ns3::Time const & timeA, ns3::Time const & timeB) [free function]
     module.add_function('Max', 
                         'ns3::Time', 
-                        [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+                        [param('ns3::Time const &', 'timeA'), param('ns3::Time const &', 'timeB')])
     ## int64x64.h (module 'core'): ns3::int64x64_t ns3::Max(ns3::int64x64_t const & a, ns3::int64x64_t const & b) [free function]
     module.add_function('Max', 
                         'ns3::int64x64_t', 
@@ -5317,10 +5409,10 @@ def register_functions(root_module):
     module.add_function('MilliSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'value')])
-    ## nstime.h (module 'core'): ns3::Time ns3::Min(ns3::Time const & ta, ns3::Time const & tb) [free function]
+    ## nstime.h (module 'core'): ns3::Time ns3::Min(ns3::Time const & timeA, ns3::Time const & timeB) [free function]
     module.add_function('Min', 
                         'ns3::Time', 
-                        [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+                        [param('ns3::Time const &', 'timeA'), param('ns3::Time const &', 'timeB')])
     ## int64x64.h (module 'core'): ns3::int64x64_t ns3::Min(ns3::int64x64_t const & a, ns3::int64x64_t const & b) [free function]
     module.add_function('Min', 
                         'ns3::int64x64_t', 
@@ -5353,6 +5445,10 @@ def register_functions(root_module):
     module.add_function('PicoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'value')])
+    ## nstime.h (module 'core'): ns3::Time ns3::Rem(ns3::Time const & lhs, ns3::Time const & rhs) [free function]
+    module.add_function('Rem', 
+                        'ns3::Time', 
+                        [param('ns3::Time const &', 'lhs'), param('ns3::Time const &', 'rhs')])
     ## nstime.h (module 'core'): ns3::Time ns3::Seconds(ns3::int64x64_t value) [free function]
     module.add_function('Seconds', 
                         'ns3::Time', 
