@@ -191,6 +191,26 @@ a real (zeroed) buffer on the spot, and the efficiency will be lost there.
 
 .. _Socket-options:
 
+Use of Send() vs. SendTo()
+**************************
+
+There are two variants of methods used to send data to the socket::
+
+  virtual int Send (Ptr<Packet> p, uint32_t flags) = 0;
+
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags,
+                      const Address &toAddress) = 0;
+
+The first method is used if the socket has already been connected
+(``Socket::Connect()``) to a peer address.  In the case of stream-based
+sockets like TCP, the connect call is required to bind the socket to
+a peer address, and thereafter, ``Send()`` is typically used.  In the case of
+datagram-based sockets like UDP, the socket is not required to
+be connected to a peer address before sending, and the socket may be used to
+send data to different destination addresses; in this case, the
+``SendTo()`` method is used to specify the destination address for
+the datagram.
+
 Socket options
 **************
 
