@@ -61,15 +61,22 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
 <li>The <b>Sifs</b>, <b>Slot</b> and <b>Pifs</b> attributes have been moved from <b>WifiMac</b> to <b>WifiPhy</b> to better reflect that they are PHY characteristics, to decouple the MAC configuration from the PHY configuration and to ease the support for future standards.</li>
 <li>The Histogram class was moved from the flow-monitor module to the stats
 module to make it more easily accessed.  If you previously used Histogram by
 by including flow-monitor.h you will need to change that to stats-module.h.
+</li>
+<li>The <b>WifiHelper::SetStandard (WifiPhyStandard standard)</b> method no
+longer takes a WifiPhyStandard enum, but instead takes a similarly named 
+WifiStandard enum.  If before you specified a value such as WIFI_PHY_STANDARD_xxx, now you must specify WIFI_STANDARD_xxx.
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-<li></li>
+<li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
+<li>A build version reporting system has been added by extracting data from the 
+local git repository (or a standalone file if a git repository is not present).
+</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
