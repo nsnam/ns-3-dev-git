@@ -256,7 +256,7 @@ Bugs fixed from the GitLab.com issue tracker include:
 - Merge request !43 - traffic-control: Install FqCoDelQueueDisc by default
 - Merge request !55 - lte: Reset preamble transmission count before starting NC based RACH
 - Merge request !65 - tcp: Call BytesInFlight method before processing ack
-- Merge request !67 - wifi: Pass numbe of data bits instead of coded bits to error models
+- Merge request !67 - wifi: Pass number of data bits instead of coded bits to error models
 - Merge request !85 - uan: Fix MAC address variable shadowing in subclasses
 
 Other issues fixed:
