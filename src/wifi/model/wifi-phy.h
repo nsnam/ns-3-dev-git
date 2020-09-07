@@ -23,7 +23,6 @@
 #define WIFI_PHY_H
 
 #include "ns3/event-id.h"
-#include "ns3/deprecated.h"
 #include "ns3/error-model.h"
 #include "wifi-mpdu-type.h"
 #include "wifi-standards.h"
@@ -1441,16 +1440,6 @@ public:
   virtual int64_t AssignStreams (int64_t stream);
 
   /**
-   * Sets the energy detection threshold (dBm).
-   * The energy of a received signal should be higher than
-   * this threshold (dBm) to allow the PHY layer to detect the signal.
-   *
-   * \param threshold the energy detection threshold in dBm
-   *
-   * \deprecated
-   */
-  void SetEdThreshold (double threshold);
-  /**
    * Sets the receive sensitivity threshold (dBm).
    * The energy of a received signal should be higher than
    * this threshold to allow the PHY layer to detect the signal.
@@ -1613,50 +1602,6 @@ public:
    * \return the maximum number of supported RX spatial streams
    */
   uint8_t GetMaxSupportedRxSpatialStreams (void) const;
-  /**
-   * Enable or disable support for HT/VHT short guard interval.
-   *
-   * \param shortGuardInterval Enable or disable support for short guard interval
-   *
-   * \deprecated
-   */
-  void SetShortGuardInterval (bool shortGuardInterval);
-  /**
-   * Return whether short guard interval is supported.
-   *
-   * \return true if short guard interval is supported, false otherwise
-   *
-   * \deprecated
-   */
-  bool GetShortGuardInterval (void) const;
-  /**
-   * \param guardInterval the supported HE guard interval
-   *
-   * \deprecated
-   */
-  void SetGuardInterval (Time guardInterval);
-  /**
-   * \return the supported HE guard interval
-   *
-   * \deprecated
-   */
-  Time GetGuardInterval (void) const;
-  /**
-   * Enable or disable Greenfield support.
-   *
-   * \param greenfield Enable or disable Greenfield
-   *
-   * \deprecated
-   */
-  void SetGreenfield (bool greenfield);
-  /**
-   * Return whether Greenfield is supported.
-   *
-   * \return true if Greenfield is supported, false otherwise
-   *
-   * \deprecated
-   */
-  bool GetGreenfield (void) const;
   /**
    * Enable or disable short PHY preamble.
    *
@@ -2129,12 +2074,7 @@ private:
   double m_txPowerMaxMimo;       //!< MIMO maximum transmit power due to OBSS PD SR power restriction (dBm)
   bool m_channelAccessRequested; //!< Flag if channels access has been requested (used for OBSS_PD SR)
 
-  bool     m_greenfield;         //!< Flag if GreenField format is supported (deprecated)
-  bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported (deprecated)
-  bool     m_shortPreamble;      //!< Flag if short PHY preamble is supported
-
-  Time m_guardInterval; //!< Supported HE guard interval (deprecated)
-
+  bool m_shortPreamble;        //!< Flag if short PHY preamble is supported
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams

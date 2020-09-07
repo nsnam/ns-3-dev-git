@@ -32,6 +32,7 @@
 #include "ns3/double.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/socket.h"
+#include "ns3/wifi-net-device.h"
 
 namespace ns3 {
 
@@ -305,14 +306,14 @@ MeshWifiInterfaceMac::GetSupportedRates () const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
       rates.AddSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1));
     }
   // set the basic rates
   for (uint32_t j = 0; j < m_stationManager->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (j);
-      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
       rates.SetBasicRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1));
     }
   return rates;
@@ -323,7 +324,7 @@ MeshWifiInterfaceMac::CheckSupportedRates (SupportedRates rates) const
   for (uint32_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
     {
       WifiMode mode = m_stationManager->GetBasicMode (i);
-      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+      uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
       if (!rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1)))
         {
           return false;
@@ -433,7 +434,7 @@ MeshWifiInterfaceMac::Receive (Ptr<WifiMacQueueItem> mpdu)
           for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
             {
               WifiMode mode = m_phy->GetMode (i);
-              uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, m_phy->GetShortGuardInterval (), m_phy->GetGuardInterval ());
+              uint16_t gi = ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
               uint64_t rate = mode.GetDataRate (m_phy->GetChannelWidth (), gi, 1);
               if (rates.IsSupportedRate (rate))
                 {

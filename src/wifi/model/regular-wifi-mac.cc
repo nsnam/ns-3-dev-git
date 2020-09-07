@@ -537,24 +537,6 @@ RegularWifiMac::GetQosSupported () const
   return m_qosSupported;
 }
 
-void
-RegularWifiMac::SetVhtSupported (bool enable)
-{
-  //To be removed once deprecated API is cleaned up
-}
-
-void
-RegularWifiMac::SetHtSupported (bool enable)
-{
-  //To be removed once deprecated API is cleaned up
-}
-
-void
-RegularWifiMac::SetHeSupported (bool enable)
-{
-  //To be removed once deprecated API is cleaned up
-}
-
 bool
 RegularWifiMac::GetHtSupported () const
 {
@@ -889,27 +871,6 @@ RegularWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&RegularWifiMac::SetQosSupported,
                                         &RegularWifiMac::GetQosSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("HtSupported",
-                   "This Boolean attribute is set to enable 802.11n support at this STA.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetHtSupported,
-                                        &RegularWifiMac::GetHtSupported),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Not used anymore")
-    .AddAttribute ("VhtSupported",
-                   "This Boolean attribute is set to enable 802.11ac support at this STA.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetVhtSupported,
-                                        &RegularWifiMac::GetVhtSupported),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Not used anymore")
-    .AddAttribute ("HeSupported",
-                   "This Boolean attribute is set to enable 802.11ax support at this STA.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetHeSupported,
-                                        &RegularWifiMac::GetHeSupported),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Not used anymore")
     .AddAttribute ("CtsToSelfSupported",
                    "Use CTS to Self when using a rate that is not in the basic rate set.",
                    BooleanValue (false),
@@ -1088,9 +1049,6 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
     case WIFI_STANDARD_80211ax_6GHZ:
       {
         EnableAggregation ();
-        //To be removed once deprecated attributes are removed
-        Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
-        NS_ASSERT (htConfiguration);
         SetQosSupported (true);
         cwmin = 15;
         cwmax = 1023;
@@ -1100,8 +1058,6 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
     case WIFI_STANDARD_80211n_2_4GHZ:
       {
         EnableAggregation ();
-        Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
-        NS_ASSERT (htConfiguration);
         SetQosSupported (true);
       }
     case WIFI_STANDARD_80211g:

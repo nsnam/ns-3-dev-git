@@ -308,13 +308,6 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
                                          &WifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint8_t> (0, 196))
-    .AddAttribute ("EnergyDetectionThreshold",
-                   "The energy of a received signal should be higher than "
-                   "this threshold (dBm) to allow the PHY layer to detect the signal.",
-                   DoubleValue (-101.0),
-                   MakeDoubleAccessor (&WifiPhy::SetEdThreshold),
-                   MakeDoubleChecker<double> (),
-                   TypeId::DEPRECATED, "Replaced by RxSensitivity.")
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal.",
@@ -400,30 +393,6 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&WifiPhy::GetMaxSupportedRxSpatialStreams,
                                          &WifiPhy::SetMaxSupportedRxSpatialStreams),
                    MakeUintegerChecker<uint8_t> (1, 8))
-    .AddAttribute ("ShortGuardEnabled",
-                   "Whether or not short guard interval is enabled for HT/VHT transmissions."
-                   "This parameter is only valuable for 802.11n/ac/ax STAs and APs.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&WifiPhy::GetShortGuardInterval,
-                                        &WifiPhy::SetShortGuardInterval),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Use the HtConfiguration instead")
-    .AddAttribute ("GuardInterval",
-                   "Whether 800ns, 1600ns or 3200ns guard interval is used for HE transmissions."
-                   "This parameter is only valuable for 802.11ax STAs and APs.",
-                   TimeValue (NanoSeconds (3200)),
-                   MakeTimeAccessor (&WifiPhy::GetGuardInterval,
-                                     &WifiPhy::SetGuardInterval),
-                   MakeTimeChecker (NanoSeconds (800), NanoSeconds (3200)),
-                   TypeId::DEPRECATED, "Use the HeConfiguration instead")
-    .AddAttribute ("GreenfieldEnabled",
-                   "Whether or not Greenfield is enabled."
-                   "This parameter is only valuable for 802.11n STAs and APs.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&WifiPhy::GetGreenfield,
-                                        &WifiPhy::SetGreenfield),
-                   MakeBooleanChecker (),
-                   TypeId::DEPRECATED, "Use the HtConfiguration instead")
     .AddAttribute ("ShortPlcpPreambleSupported",
                    "Whether or not short PHY preamble is supported."
                    "This parameter is only valuable for 802.11b STAs and APs."
@@ -668,12 +637,6 @@ WifiPhy::InitializeFrequencyChannelNumber (void)
 }
 
 void
-WifiPhy::SetEdThreshold (double threshold)
-{
-  SetRxSensitivity (threshold);
-}
-
-void
 WifiPhy::SetRxSensitivity (double threshold)
 {
   NS_LOG_FUNCTION (this << threshold);
@@ -773,100 +736,6 @@ WifiPhy::GetRxGain (void) const
 }
 
 void
-WifiPhy::SetGreenfield (bool greenfield)
-{
-  NS_LOG_FUNCTION (this << greenfield);
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          htConfiguration->SetGreenfieldSupported (greenfield);
-        }
-    }
-  m_greenfield = greenfield;
-}
-
-bool
-WifiPhy::GetGreenfield (void) const
-{
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          return htConfiguration->GetGreenfieldSupported ();
-        }
-    }
-  return m_greenfield;
-}
-
-void
-WifiPhy::SetShortGuardInterval (bool shortGuardInterval)
-{
-  NS_LOG_FUNCTION (this << shortGuardInterval);
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          htConfiguration->SetShortGuardIntervalSupported (shortGuardInterval);
-        }
-    }
-  m_shortGuardInterval = shortGuardInterval;
-}
-
-bool
-WifiPhy::GetShortGuardInterval (void) const
-{
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      if (htConfiguration)
-        {
-          return htConfiguration->GetShortGuardIntervalSupported ();
-        }
-    }
-  return m_shortGuardInterval;
-}
-
-void
-WifiPhy::SetGuardInterval (Time guardInterval)
-{
-  NS_LOG_FUNCTION (this << guardInterval);
-  NS_ASSERT (guardInterval == NanoSeconds (800) || guardInterval == NanoSeconds (1600) || guardInterval == NanoSeconds (3200));
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
-      if (heConfiguration)
-        {
-          heConfiguration->SetGuardInterval (guardInterval);
-        }
-    }
-  m_guardInterval = guardInterval;
-}
-
-Time
-WifiPhy::GetGuardInterval (void) const
-{
-  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (GetDevice ());
-  if (device)
-    {
-      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
-      if (heConfiguration)
-        {
-          return heConfiguration->GetGuardInterval ();
-        }
-    }
-  return m_guardInterval;
-}
-
-void
 WifiPhy::SetShortPhyPreambleSupported (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
@@ -883,18 +752,6 @@ void
 WifiPhy::SetDevice (const Ptr<NetDevice> device)
 {
   m_device = device;
-  //TODO: to be removed once deprecated API is cleaned up
-  Ptr<HtConfiguration> htConfiguration = DynamicCast<WifiNetDevice> (device)->GetHtConfiguration ();
-  if (htConfiguration)
-    {
-      htConfiguration->SetShortGuardIntervalSupported (m_shortGuardInterval);
-      htConfiguration->SetGreenfieldSupported (m_greenfield);
-    }
-  Ptr<HeConfiguration> heConfiguration = DynamicCast<WifiNetDevice> (device)->GetHeConfiguration ();
-  if (heConfiguration)
-    {
-      heConfiguration->SetGuardInterval (m_guardInterval);
-    }
 }
 
 Ptr<NetDevice>
