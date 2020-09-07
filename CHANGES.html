@@ -84,6 +84,7 @@ local git repository (or a standalone file if a git repository is not present).
 <li>The behavior of <b>TcpPrrRecovery</b> algorithm was aligned to that of Linux.</li>
 <li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 <li>TCP pacing, when enabled, now adjusts the rate dynamically based on the window size, rather than just enforcing a constant rate.</li>
+<li>WifiPhy forwards up MPDUs from an A-MPDU under reception as long as they arrive at the PHY, instead of forwarding up the whole A-MPDU once its reception is completed.</li>
 </ul>
 
 <hr>
