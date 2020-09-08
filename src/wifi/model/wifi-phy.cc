@@ -19,6 +19,7 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <algorithm>
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
