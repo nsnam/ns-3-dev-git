@@ -55,9 +55,10 @@ def build(bld):
                                  ['core'])
     obj.source = 'fatal-example.cc'
 
-    obj = bld.create_ns3_program('build-version-example',
+    if bld.env['ENABLE_BUILD_VERSION']:
+        obj = bld.create_ns3_program('build-version-example',
                                  ['core'])
-    obj.source = 'build-version-example.cc'
+        obj.source = 'build-version-example.cc'
 
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
         obj = bld.create_ns3_program('main-test-sync', ['network'])

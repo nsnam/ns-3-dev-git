@@ -27,7 +27,10 @@
 #include "system-path.h"
 #include "type-id.h"
 #include "string.h"
+
+#if defined (ENABLE_BUILD_VERSION)
 #include "version.h"
+#endif
 
 #include <algorithm>  // transform
 #include <cctype>     // tolower
@@ -338,7 +341,12 @@ CommandLine::PrintHelp (std::ostream &os) const
 std::string
 CommandLine::GetVersion () const
 {
+#if defined (ENABLE_BUILD_VERSION)
   return Version::LongVersion ();
+#else
+  return std::string{"Build version support is not enabled, reconfigure with "
+         "--enable-build-version flag"};
+#endif
 }
 
 void

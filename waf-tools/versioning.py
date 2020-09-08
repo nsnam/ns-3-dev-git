@@ -2,7 +2,7 @@
 
 import re
 
-from waflib import ConfigSet, Configure, Context, Task, TaskGen
+from waflib import ConfigSet, Configure, Context, Options, Task, TaskGen
 
 CACHE_FILE = 'version.cache'
 
@@ -91,7 +91,7 @@ class ns3_version_info(Task.Task):
 
 class git_ns3_version_info(ns3_version_info):
     '''Task to generate version fields from an ns-3 git repository'''
-    always_run = True
+    always_run = True 
 
     def _find_closest_tag(self, ctx):
         cmd = [
@@ -226,6 +226,9 @@ def configure(ctx):
     has_git_repo = False
     has_ns3_tags = False
 
+    if not Options.options.enable_build_version:
+        return
+
     if ctx.check_git_repo():
         has_git_repo = True
         has_ns3_tags = ctx.check_git_repo_has_ns3_tags()
@@ -252,16 +255,8 @@ def configure(ctx):
         else:
             ctx.end_msg(False)
 
-            #no version information, create dummy info
-            version_cache['CLOSEST_TAG'] = '"ns-3.xx"'
-            version_cache['VERSION_COMMIT_HASH'] = '"gxxxxxxx"'
-            version_cache['VERSION_DIRTY_FLAG'] = '0'
-            version_cache['VERSION_MAJOR'] = '3'
-            version_cache['VERSION_MINOR'] = '0'
-            version_cache['VERSION_PATCH'] = '0'
-            version_cache['VERSION_RELEASE_CANDIDATE'] = '""'
-            version_cache['VERSION_TAG'] = '"ns-3.xx"'
-            version_cache['VERSION_TAG_DISTANCE'] = '0'
+            ctx.fatal('Unable to find ns3 git repository or version.cache file '
+                        'containing version information')
 
         ctx.env.update(version_cache)
 

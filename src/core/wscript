@@ -47,6 +47,12 @@ def options(opt):
                     action="store_true", default=False,
                     dest='check_version')
 
+    opt.add_option('--enable-build-version',
+                    help=("Check git repository for changes and update build version"
+                          "during waf build"),
+                    action="store_true", default=False,
+                    dest='enable_build_version')
+
 def configure(conf):
 
     conf.load('versioning', ['waf-tools'])
@@ -154,28 +160,18 @@ int main ()
                                      "threading not enabled")
         conf.env["ENABLE_REAL_TIME"] = conf.env['ENABLE_THREADING']
 
+    if Options.options.enable_build_version:
+        conf.env['ENABLE_BUILD_VERSION'] = True 
+        conf.env.append_value('DEFINES', 'ENABLE_BUILD_VERSION=1')
+    else:
+        conf.env['ENABLE_BUILD_VERSION'] = False 
+
     conf.write_config_header('ns3/core-config.h', top=True)
 
 def build(bld):
 
 
     bld.install_files('${INCLUDEDIR}/%s%s/ns3' % (wutils.APPNAME, wutils.VERSION), '../../ns3/core-config.h')
-
-    version_template = bld.path.find_node('model/version-defines.h.in')
-    version_header = bld.bldnode.make_node('version-defines.h') 
-
-    vers_tg = bld(features='version-defines', 
-                  source=version_template, 
-                  target=version_header)
-
-    #silence errors about no mapping for version-defines.h.in
-    vers_tg.mappings['.h'] = lambda *a, **k: None
-    vers_tg.mappings['.h.in'] = lambda *a, **k: None
-
-    if Options.options.check_version:
-        print_version(bld, vers_tg)
-        raise SystemExit(0)
-        return
 
     core = bld.create_ns3_module('core')
     core.source = [
@@ -239,7 +235,6 @@ def build(bld):
         'model/time-printer.cc',
         'model/show-progress.cc',
         'model/system-wall-clock-timestamp.cc',
-        'model/version.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -373,7 +368,6 @@ def build(bld):
         'model/node-printer.h',
         'model/time-printer.h',
         'model/show-progress.h',
-        'model/version.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -441,6 +435,28 @@ def build(bld):
                 'test/random-variable-stream-test-suite.cc'
                 ])
 
+    vers_tg = None
+    if env['ENABLE_BUILD_VERSION']:
+        version_template = bld.path.find_node('model/version-defines.h.in')
+        version_header = bld.bldnode.make_node('ns3/version-defines.h') 
+
+        vers_tg = bld(features='version-defines', 
+                      source=version_template, 
+                      target=version_header)
+
+        #silence errors about no mapping for version-defines.h.in
+        vers_tg.mappings['.h'] = lambda *a, **k: None
+        vers_tg.mappings['.h.in'] = lambda *a, **k: None
+
+        core.source.append('model/version.cc')
+
+        headers.source.append('model/version.h')
+
+    if Options.options.check_version:
+        print_version(bld, vers_tg)
+        raise SystemExit(0)
+        return
+
     if (bld.env['ENABLE_EXAMPLES']):
         bld.recurse('examples')
 
@@ -449,6 +465,11 @@ def build(bld):
         pymod.source += ['bindings/module_helpers.cc']
 
 def print_version(bld, tg):
+
+    if tg is None:
+        print ('Build version support is not enabled, reconfigure with --enable-build-version flag')
+        return
+
     tg.post()
 
     for task in tg.tasks:

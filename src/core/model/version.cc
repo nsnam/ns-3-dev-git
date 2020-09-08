@@ -19,7 +19,7 @@
  */
 
 #include "version.h"
-#include "version-defines.h"
+#include "ns3/version-defines.h"
 #include <sstream>
 
 /**
