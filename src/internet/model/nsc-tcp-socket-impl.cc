@@ -456,7 +456,9 @@ NscTcpSocketImpl::NSCWakeup ()
 }
 
 Ptr<Packet>
-NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_tNS_LOG_FUNCTION (this)ON_NOARGS ();
+NscTcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
+{
+  NS_LOG_FUNCTION (this << maxSize << flags);
   if (m_deliveryQueue.empty () )
     {
       m_errno = ERROR_AGAIN;
