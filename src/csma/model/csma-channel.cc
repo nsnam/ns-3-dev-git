@@ -217,7 +217,7 @@ CsmaChannel::TransmitEnd ()
       retVal = false;
     }
 
-  NS_LOG_LOGIC ("Schedule event in " << m_delay.GetSeconds () << " sec");
+  NS_LOG_LOGIC ("Schedule event in " << m_delay.As (Time::S));
 
 
   NS_LOG_LOGIC ("Receive");
