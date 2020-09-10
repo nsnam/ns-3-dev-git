@@ -534,3 +534,19 @@ HtPhy::GetHtMcs31 (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for HT modes
+ */
+static class ConstructorHt
+{
+public:
+  ConstructorHt ()
+  {
+    ns3::HtPhy::InitializeModes ();
+  }
+} g_constructor_ht; ///< the constructor for HT modes
+
+}

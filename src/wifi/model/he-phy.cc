@@ -274,3 +274,19 @@ HePhy::GetHeMcs11 (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for HE modes
+ */
+static class ConstructorHe
+{
+public:
+  ConstructorHe ()
+  {
+    ns3::HePhy::InitializeModes ();
+  }
+} g_constructor_he; ///< the constructor for HE modes
+
+}

@@ -240,3 +240,19 @@ VhtPhy::GetVhtMcs9 (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for VHT modes
+ */
+static class ConstructorVht
+{
+public:
+  ConstructorVht ()
+  {
+    ns3::VhtPhy::InitializeModes ();
+  }
+} g_constructor_vht; ///< the constructor for VHT modes
+
+}

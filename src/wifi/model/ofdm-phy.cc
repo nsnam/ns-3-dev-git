@@ -546,3 +546,19 @@ OfdmPhy::GetOfdmRate13_5MbpsBW5MHz (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for OFDM modes
+ */
+static class ConstructorOfdm
+{
+public:
+  ConstructorOfdm ()
+  {
+    ns3::OfdmPhy::InitializeModes ();
+  }
+} g_constructor_ofdm; ///< the constructor for OFDM modes
+
+}

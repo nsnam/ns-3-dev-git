@@ -185,3 +185,19 @@ DsssPhy::GetDsssRate11Mbps (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for DSSS modes
+ */
+static class ConstructorDsss
+{
+public:
+  ConstructorDsss ()
+  {
+    ns3::DsssPhy::InitializeModes ();
+  }
+} g_constructor_dsss; ///< the constructor for DSSS modes
+
+}

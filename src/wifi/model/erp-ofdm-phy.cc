@@ -195,3 +195,19 @@ ErpOfdmPhy::GetErpOfdmRate54Mbps (void)
 }
 
 } //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for ERP-OFDM modes
+ */
+static class ConstructorErpOfdm
+{
+public:
+  ConstructorErpOfdm ()
+  {
+    ns3::ErpOfdmPhy::InitializeModes ();
+  }
+} g_constructor_erp_ofdm; ///< the constructor for ERP-OFDM modes
+
+}
