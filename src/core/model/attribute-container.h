@@ -21,7 +21,7 @@
 #ifndef ATTRIBUTE_CONTAINER_H
 #define ATTRIBUTE_CONTAINER_H
 
-#include <ns3/ptr.h>
+#include <ns3/attribute-helper.h>
 #include <ns3/string.h>
 
 #include <list>
@@ -37,62 +37,151 @@ namespace ns3 {
 class AttributeChecker;
 
 // A = attribute value type, C = container type to return
+/**
+ * A container for one type of attribute.
+ * 
+ * The container uses \ref A to parse items into elements.
+ * Internally the container is always a list but an instance
+ * can return the items in a container specified by \ref C.
+ * 
+ * @tparam A AttributeValue type to be contained.
+ * @tparam C Possibly templated container class returned by Get.
+ */
 template <class A, template<class...> class C=std::list>
 class AttributeContainerValue : public AttributeValue
 {
 public:
+  /** AttributeValue (element) type. */
   typedef A attribute_type;
+  /** Type actually stored within the container. */
   typedef Ptr<A> value_type;
+  /** Internal container type. */
   typedef std::list<value_type> container_type;
+  /** stl-style Const iterator type. */
   typedef typename container_type::const_iterator const_iterator;
+  /** stl-style Non-const iterator type. */
   typedef typename container_type::iterator iterator;
+  /** Size type for container. */
   typedef typename container_type::size_type size_type;
+  /** NS3 style iterator type. */
   typedef typename AttributeContainerValue::const_iterator Iterator; // NS3 type
 
   // use underlying AttributeValue to get return element type
+  /** Item type of container returned by Get. */
   typedef typename std::result_of<decltype(&A::Get)(A)>::type item_type;
+  /** Type of container returned. */
   typedef C<item_type> result_type;
 
+  /**
+   * Default constructor.
+   * \param[in] sep Character separator between elements for parsing.
+   */
   AttributeContainerValue (char sep = ',');
 
+  /**
+   * Construct from another container.
+   * @tparam CONTAINER[deduced] type of container passed for initialization.
+   * \param c Instance of CONTAINER with which to initialize AttributeContainerValue.
+   */
   template <class CONTAINER>
   AttributeContainerValue (const CONTAINER &c);
 
+  /**
+   * Construct from iterators.
+   * @tparam ITER[deduced] type of iterator.
+   * \param[in] begin Iterator that points to first initialization item.
+   * \param[in] end Iterator that points ones past last initialization item.
+   */
   template <class ITER>
   AttributeContainerValue (const ITER begin, const ITER end);
 
+  /** Destructor. */
   ~AttributeContainerValue ();
 
+  // Inherited
   Ptr<AttributeValue> Copy (void) const;
-
-  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker > checker);
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
   std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
 
   // defacto pure virtuals to integrate with built-in accessor code
+  /**
+   * Return a container of items.
+   * \return Container of items.
+   */
   result_type Get (void) const;
+  /**
+   * Copy items from container c.
+   * 
+   * This method assumes \ref c has stl-style begin and end methods.
+   * The AttributeContainerValue value is cleared before copying from \ref c.
+   * @tparam T type of container.
+   * \param c Container from which to copy items.
+   */
   template <class T>
   void Set (const T &c);
 
   // NS3 interface
+  /**
+   * NS3-style Number of items.
+   * \return Number of items in container.
+   */
   size_type GetN (void) const;
+  /**
+   * NS3-style beginning of container.
+   * \return Iterator pointing to first time in container.
+   */
   Iterator Begin (void);
+  /**
+   * NS3-style ending of container.
+   * \return Iterator pointing one past last item of container.
+   */
   Iterator End (void);
 
+  // STL-interface
+  /**
+   * STL-style number of items in container
+   * \return number of items in container.
+   */
   size_type size (void) const;
+  /**
+   * STL-style beginning of container.
+   * \return Iterator pointing to first item in container.
+   */
   iterator begin (void);
+  /**
+   * STL-style end of container.
+   * \return Iterator pointing to one past last item in container.
+   */
   iterator end (void);
+  /**
+   * STL-style const beginning of container.
+   * \return Const iterator pointing to first item in container.
+   */
   const_iterator begin (void) const;
+  /**
+   * STL-style const end of container.
+   * \return Const iterator pointing to one past last item in container.
+   */
   const_iterator end (void) const;
 
 private:
+  /**
+   * Copy items from \ref begin to \ref end. 
+   * 
+   * The internal container is cleared before values are copied
+   * using the push_back method.
+   * @tparam ITER[deduced] iterator type
+   * \param[in] begin Points to first item to copy
+   * \param[in] end Points to one after last item to copy
+   * \return This object with items copied.
+   */
   template <class ITER>
   Ptr<AttributeContainerValue<A, C> > CopyFrom (const ITER begin, const ITER end);
 
-  char m_sep;
-  container_type m_container;
+  char m_sep;                 //!< Item separator
+  container_type m_container; //!< Internal container
 };
 
-template <class A, template <class...> class C>
 class AttributeContainerChecker : public AttributeChecker
 {
 public:
@@ -101,22 +190,35 @@ public:
 };
 
 /**
- * Return checker using attribute value to provide types
+ * Make AttributeContainerChecker from AttributeContainerValue.
+ * @tparam A[deduced] AttributeValue type in container.
+ * @tparam C[deduced] Container type returned by Get.
+ * \param value[in] AttributeContainerValue from which to deduce types.
+ * \return AttributeContainerChecker for \ref value.
  */
 template <class A, template <class...> class C>
-Ptr<AttributeContainerChecker<A, C> >
+Ptr<AttributeChecker>
 MakeAttributeContainerChecker (const AttributeContainerValue<A, C> &value);
 
 /**
- * Return checker give types explicitly, defaults same
- * as AttributeContainerValue defaults
+ * Make AttributeContainerChecker using explicit types, initialize item checker.
+ * @tparam A AttributeValue type in container.
+ * @tparam C Container type returned by Get.
+ * \param itemchecker[in] AttributeChecker used for each item in the container.
+ * \return AttributeContainerChecker.
  */
 template <class A, template <class...> class C=std::list>
-Ptr<AttributeContainerChecker<A, C> >
+Ptr<const AttributeChecker>
 MakeAttributeContainerChecker (Ptr<const AttributeChecker> itemchecker);
 
+/**
+ * Make unitialized AttributeContainerChecker using explicit types.
+ * @tparam A AttributeValue type in container.
+ * @tparam C Container type returned by Get.
+ * \return AttributeContainerChecker.
+ */
 template <class A, template <class...> class C=std::list>
-Ptr<AttributeContainerChecker<A, C> > MakeAttributeContainerChecker (void);
+Ptr<AttributeChecker> MakeAttributeContainerChecker (void);
 
 template <typename A, template <typename...> class C=std::list, typename T1>
 Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1);
@@ -129,10 +231,14 @@ Ptr<const AttributeAccessor> MakeAttributeContainerAccessor (T1 a1);
 
 namespace ns3 {
 
+// This internal class defines templated AttributeContainerChecker class that is instantiated
+// in MakeAttributeContainerChecker. The non-templated base ns3::AttributeContainerChecker
+// is returned from that function. This is the same pattern as ObjectPtrContainer.
+
 namespace internal {
 
 template <class A, template <class...> class C>
-class AttributeContainerChecker : public ns3::AttributeContainerChecker<A, C>
+class AttributeContainerChecker : public ns3::AttributeContainerChecker
 {
 public:
   AttributeContainerChecker (void);
@@ -171,32 +277,34 @@ AttributeContainerChecker<A, C>::GetItemChecker (void) const
 } // namespace internal
 
 template <class A, template <class...> class C>
-Ptr<AttributeContainerChecker<A, C> >
+Ptr<AttributeChecker>
 MakeAttributeContainerChecker (const AttributeContainerValue<A, C> &value)
 {
   return MakeAttributeContainerChecker <A, C> ();
 }
 
 template <class A, template <class...> class C>
-Ptr<AttributeContainerChecker<A, C> >
+Ptr<const AttributeChecker>
 MakeAttributeContainerChecker (Ptr<const AttributeChecker> itemchecker)
 {
   auto checker = MakeAttributeContainerChecker <A, C> ();
-  checker->SetItemChecker (itemchecker);
+  auto acchecker = DynamicCast<AttributeContainerChecker> (checker);
+  acchecker->SetItemChecker (itemchecker);
   return checker;
 }
 
 template <class A, template <class...> class C>
-Ptr<AttributeContainerChecker<A, C> >
+Ptr<AttributeChecker>
 MakeAttributeContainerChecker (void)
 {
-  std::string typeName, underlyingType;
+  std::string containerType;
+  std::string underlyingType;
   typedef AttributeContainerValue<A, C> T;
   {
     std::ostringstream oss;
     oss << "ns3::AttributeContainerValue<" << typeid (typename T::attribute_type).name ()
         << ", " << typeid (typename T::container_type).name () << ">";
-    typeName = oss.str ();
+    containerType = oss.str ();
   }
 
   {
@@ -205,9 +313,7 @@ MakeAttributeContainerChecker (void)
     underlyingType = oss.str ();
   }
 
-  return DynamicCast<AttributeContainerChecker<A, C> > (
-    MakeSimpleAttributeChecker<T, internal::AttributeContainerChecker<A, C> > (typeName, underlyingType)
-  );
+  return MakeSimpleAttributeChecker<T, internal::AttributeContainerChecker<A, C> > (containerType, underlyingType);
 }
 
 template <class A, template <class...> class C>
@@ -253,7 +359,7 @@ template <class A, template <class...> class C>
 bool
 AttributeContainerValue<A, C>::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
-  auto acchecker = DynamicCast<const AttributeContainerChecker<A, C> > (checker);
+  auto acchecker = DynamicCast<const AttributeContainerChecker> (checker);
   if (!acchecker) return false;
 
   std::istringstream iss (value); // copies value

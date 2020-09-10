@@ -339,6 +339,7 @@ def build(bld):
         'model/object-factory.h',
         'model/attribute-helper.h',
         'model/attribute-container.h',
+        'model/attribute-container-accessor-helper.h',
         'model/global-value.h',
         'model/traced-callback.h',
         'model/traced-value.h',

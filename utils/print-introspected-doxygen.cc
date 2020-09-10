@@ -1572,7 +1572,7 @@ PrintAttributeImplementations (std::ostream & os)
   PrintMakeChecker            (os, "ObjectMap", "object-map.h");
 
   PrintAttributeValueSection  (os, "Pair", false);
-  PrintAttributeValueWithName (os, "Pair", "Pair", "pair.h");
+  PrintAttributeValueWithName (os, "Pair", "std::pair<A, B>", "pair.h");
   PrintMakeChecker            (os, "Pair",  "pair.h");
   
   PrintAttributeValueSection  (os, "AttributeContainer", false);

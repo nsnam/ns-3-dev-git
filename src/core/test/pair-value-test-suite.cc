@@ -155,9 +155,10 @@ PairValueSettingsTestCase::DoRun ()
   p->SetAttribute ("StringPair", PairValue<StringValue, StringValue> (std::make_pair ("hello", "world")));
   p->SetAttribute ("AddressPair", PairValue<AddressValue, IntegerValue> (std::make_pair (addr, 31)));
 
-  std::ostringstream oss, ref;
+  std::ostringstream oss;
   oss << *p;
-
+  
+  std::ostringstream ref;
   ref << "StringPair = { (hello,world) } AddressPair = { (" << addr << ",31) }";
 
   NS_TEST_ASSERT_MSG_EQ ((oss.str ()), (ref.str ()), "Pairs not correctly set");

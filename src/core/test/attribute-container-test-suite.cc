@@ -258,8 +258,8 @@ AttributeContainerSerializationTestCase::DoRun (void)
 
     AttributeContainerValue<DoubleValue> attr;
     auto checker = MakeAttributeContainerChecker (attr);
-    //auto acchecker = DynamicCast<AttributeContainerChecker <DoubleValue, std::list> > (checker);
-    checker->SetItemChecker (MakeDoubleChecker<double> ());
+    auto acchecker = DynamicCast<AttributeContainerChecker> (checker);
+    acchecker->SetItemChecker (MakeDoubleChecker<double> ());
     NS_TEST_ASSERT_MSG_EQ (attr.DeserializeFromString (doubles, checker), true, "Deserialize failed");
     NS_TEST_ASSERT_MSG_EQ (attr.GetN (), 3, "Incorrect container size");
 
@@ -275,7 +275,8 @@ AttributeContainerSerializationTestCase::DoRun (void)
 
     AttributeContainerValue<IntegerValue> attr;
     auto checker = MakeAttributeContainerChecker (attr);
-    checker->SetItemChecker (MakeIntegerChecker<int> ());
+    auto acchecker = DynamicCast<AttributeContainerChecker> (checker);
+    acchecker->SetItemChecker (MakeIntegerChecker<int> ());
     NS_TEST_ASSERT_MSG_EQ (attr.DeserializeFromString (ints, checker), true, "Deserialize failed");
     NS_TEST_ASSERT_MSG_EQ (attr.GetN (), 4, "Incorrect container size");
 
@@ -290,7 +291,8 @@ AttributeContainerSerializationTestCase::DoRun (void)
 
     AttributeContainerValue<StringValue> attr (' ');
     auto checker = MakeAttributeContainerChecker (attr);
-    checker->SetItemChecker (MakeStringChecker ());
+    auto acchecker = DynamicCast<AttributeContainerChecker> (checker);
+    acchecker->SetItemChecker (MakeStringChecker ());
     NS_TEST_ASSERT_MSG_EQ (attr.DeserializeFromString (strings, checker), true, "Deserialize failed");
     NS_TEST_ASSERT_MSG_EQ (attr.GetN (), 6, "Incorrect container size");
 
@@ -303,7 +305,8 @@ AttributeContainerSerializationTestCase::DoRun (void)
     std::string pairs = "one 1,two 2,three 3";
     AttributeContainerValue<PairValue<StringValue, IntegerValue> > attr;
     auto checker = MakeAttributeContainerChecker (attr);
-    checker->SetItemChecker (MakePairChecker <StringValue, IntegerValue> (
+    auto acchecker = DynamicCast<AttributeContainerChecker> (checker);
+    acchecker->SetItemChecker (MakePairChecker <StringValue, IntegerValue> (
                                 MakeStringChecker (), MakeIntegerChecker<int> ()));
     NS_TEST_ASSERT_MSG_EQ (attr.DeserializeFromString (pairs, checker), true, "Deserialization failed");
     NS_TEST_ASSERT_MSG_EQ (attr.GetN (), 3, "Incorrect container size");
