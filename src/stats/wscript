@@ -11,7 +11,6 @@ def configure(conf):
     conf.report_optional_feature("SQLiteStats", "SQLite stats support",
                                  conf.env['SQLITE_STATS'] and conf.env['SEMAPHORE_ENABLED'],
                                  "library 'sqlite3' and/or semaphore.h not found")
-    conf.write_config_header('ns3/stats-config.h', top=True)
 
 def build(bld):
     obj = bld.create_ns3_module('stats', ['core'])

@@ -19,15 +19,10 @@
 #ifndef SQLITE_OUTPUT_H
 #define SQLITE_OUTPUT_H
 
-#include "ns3/stats-config.h"
 #include "ns3/simple-ref-count.h"
 #include <sqlite3.h>
 #include <string>
-#ifdef HAVE_SEMAPHORE_H
 #include <semaphore.h>
-#else
-#error "Can't compile this unit without <semaphore.h>"
-#endif
 
 namespace ns3 {
 
