@@ -26,6 +26,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/queue-disc-container.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
@@ -139,122 +140,38 @@ public:
    * given attributes. To set the InternalQueueList, PacketFilterList and ChildQueueDiscList
    * attributes, use the AddInternalQueue, AddPacketFilter and AddChildQueueDisc methods.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param type the type of queue disc
-   * \param n01 the name of the attribute to set on the queue disc
-   * \param v01 the value of the attribute to set on the queue disc
-   * \param n02 the name of the attribute to set on the queue disc
-   * \param v02 the value of the attribute to set on the queue disc
-   * \param n03 the name of the attribute to set on the queue disc
-   * \param v03 the value of the attribute to set on the queue disc
-   * \param n04 the name of the attribute to set on the queue disc
-   * \param v04 the value of the attribute to set on the queue disc
-   * \param n05 the name of the attribute to set on the queue disc
-   * \param v05 the value of the attribute to set on the queue disc
-   * \param n06 the name of the attribute to set on the queue disc
-   * \param v06 the value of the attribute to set on the queue disc
-   * \param n07 the name of the attribute to set on the queue disc
-   * \param v07 the value of the attribute to set on the queue disc
-   * \param n08 the name of the attribute to set on the queue disc
-   * \param v08 the value of the attribute to set on the queue disc
-   * \param n09 the name of the attribute to set on the queue disc
-   * \param v09 the value of the attribute to set on the queue disc
-   * \param n10 the name of the attribute to set on the queue disc
-   * \param v10 the value of the attribute to set on the queue disc
-   * \param n11 the name of the attribute to set on the queue disc
-   * \param v11 the value of the attribute to set on the queue disc
-   * \param n12 the name of the attribute to set on the queue disc
-   * \param v12 the value of the attribute to set on the queue disc
-   * \param n13 the name of the attribute to set on the queue disc
-   * \param v13 the value of the attribute to set on the queue disc
-   * \param n14 the name of the attribute to set on the queue disc
-   * \param v14 the value of the attribute to set on the queue disc
-   * \param n15 the name of the attribute to set on the queue disc
-   * \param v15 the value of the attribute to set on the queue disc
+   * \param args A sequence of name-value pairs of the attributes to set.
    * \return the handle of the root queue disc (zero)
    */
-  uint16_t SetRootQueueDisc (std::string type,
-                             std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                             std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                             std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                             std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                             std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                             std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                             std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                             std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue (),
-                             std::string n09 = "", const AttributeValue &v09 = EmptyAttributeValue (),
-                             std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue (),
-                             std::string n11 = "", const AttributeValue &v11 = EmptyAttributeValue (),
-                             std::string n12 = "", const AttributeValue &v12 = EmptyAttributeValue (),
-                             std::string n13 = "", const AttributeValue &v13 = EmptyAttributeValue (),
-                             std::string n14 = "", const AttributeValue &v14 = EmptyAttributeValue (),
-                             std::string n15 = "", const AttributeValue &v15 = EmptyAttributeValue ());
+  template <typename... Args>
+  uint16_t SetRootQueueDisc (const std::string& type, Args&&... args);
 
   /**
    * Helper function used to add the given number of internal queues (of the given
    * type and with the given attributes) to the queue disc having the given handle.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param handle the handle of the parent queue disc
    * \param count the number of queues to add
    * \param type the type of queue
-   * \param n01 the name of the attribute to set on the queue
-   * \param v01 the value of the attribute to set on the queue
-   * \param n02 the name of the attribute to set on the queue
-   * \param v02 the value of the attribute to set on the queue
-   * \param n03 the name of the attribute to set on the queue
-   * \param v03 the value of the attribute to set on the queue
-   * \param n04 the name of the attribute to set on the queue
-   * \param v04 the value of the attribute to set on the queue
-   * \param n05 the name of the attribute to set on the queue
-   * \param v05 the value of the attribute to set on the queue
-   * \param n06 the name of the attribute to set on the queue
-   * \param v06 the value of the attribute to set on the queue
-   * \param n07 the name of the attribute to set on the queue
-   * \param v07 the value of the attribute to set on the queue
-   * \param n08 the name of the attribute to set on the queue
-   * \param v08 the value of the attribute to set on the queue
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void AddInternalQueues (uint16_t handle, uint16_t count, std::string type,
-                          std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                          std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                          std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                          std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                          std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                          std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                          std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                          std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
+  template <typename... Args>
+  void AddInternalQueues (uint16_t handle, uint16_t count, std::string type, Args&&... args);
 
   /**
    * Helper function used to add a packet filter (of the given type and with
    * the given attributes) to the queue disc having the given handle.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param handle the handle of the parent queue disc
    * \param type the type of packet filter
-   * \param n01 the name of the attribute to set on the packet filter
-   * \param v01 the value of the attribute to set on the packet filter
-   * \param n02 the name of the attribute to set on the packet filter
-   * \param v02 the value of the attribute to set on the packet filter
-   * \param n03 the name of the attribute to set on the packet filter
-   * \param v03 the value of the attribute to set on the packet filter
-   * \param n04 the name of the attribute to set on the packet filter
-   * \param v04 the value of the attribute to set on the packet filter
-   * \param n05 the name of the attribute to set on the packet filter
-   * \param v05 the value of the attribute to set on the packet filter
-   * \param n06 the name of the attribute to set on the packet filter
-   * \param v06 the value of the attribute to set on the packet filter
-   * \param n07 the name of the attribute to set on the packet filter
-   * \param v07 the value of the attribute to set on the packet filter
-   * \param n08 the name of the attribute to set on the packet filter
-   * \param v08 the value of the attribute to set on the packet filter
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void AddPacketFilter (uint16_t handle, std::string type,
-                        std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                        std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                        std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                        std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                        std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                        std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                        std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                        std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
+  template <typename... Args>
+  void AddPacketFilter (uint16_t handle, const std::string& type, Args&&... args);
 
   /**
    * Container type for Class IDs
@@ -265,93 +182,30 @@ public:
    * Helper function used to add the given number of queue disc classes (of the given
    * type and with the given attributes) to the queue disc having the given handle.
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param handle the handle of the parent queue disc
    * \param count the number of queue disc classes to add
    * \param type the type of queue disc class
-   * \param n01 the name of the attribute to set on the queue disc class
-   * \param v01 the value of the attribute to set on the queue disc class
-   * \param n02 the name of the attribute to set on the queue disc class
-   * \param v02 the value of the attribute to set on the queue disc class
-   * \param n03 the name of the attribute to set on the queue disc class
-   * \param v03 the value of the attribute to set on the queue disc class
-   * \param n04 the name of the attribute to set on the queue disc class
-   * \param v04 the value of the attribute to set on the queue disc class
-   * \param n05 the name of the attribute to set on the queue disc class
-   * \param v05 the value of the attribute to set on the queue disc class
-   * \param n06 the name of the attribute to set on the queue disc class
-   * \param v06 the value of the attribute to set on the queue disc class
-   * \param n07 the name of the attribute to set on the queue disc class
-   * \param v07 the value of the attribute to set on the queue disc class
-   * \param n08 the name of the attribute to set on the queue disc class
-   * \param v08 the value of the attribute to set on the queue disc class
+   * \param args A sequence of name-value pairs of the attributes to set.
    * \return the list of class IDs
    */
-  ClassIdList AddQueueDiscClasses (uint16_t handle, uint16_t count, std::string type,
-                                   std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                                   std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                                   std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                                   std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                                   std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                                   std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                                   std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                                   std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
+  template <typename... Args>
+  ClassIdList AddQueueDiscClasses (uint16_t handle, uint16_t count, const std::string& type, Args&&... args);
 
   /**
    * Helper function used to attach a child queue disc (of the given type and with
    * the given attributes) to a given class (included in the queue disc
    * having the given handle).
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param handle the handle of the parent queue disc
    * \param classId the class ID of the class to attach the queue disc to
    * \param type the type of queue disc
-   * \param n01 the name of the attribute to set on the queue disc
-   * \param v01 the value of the attribute to set on the queue disc
-   * \param n02 the name of the attribute to set on the queue disc
-   * \param v02 the value of the attribute to set on the queue disc
-   * \param n03 the name of the attribute to set on the queue disc
-   * \param v03 the value of the attribute to set on the queue disc
-   * \param n04 the name of the attribute to set on the queue disc
-   * \param v04 the value of the attribute to set on the queue disc
-   * \param n05 the name of the attribute to set on the queue disc
-   * \param v05 the value of the attribute to set on the queue disc
-   * \param n06 the name of the attribute to set on the queue disc
-   * \param v06 the value of the attribute to set on the queue disc
-   * \param n07 the name of the attribute to set on the queue disc
-   * \param v07 the value of the attribute to set on the queue disc
-   * \param n08 the name of the attribute to set on the queue disc
-   * \param v08 the value of the attribute to set on the queue disc
-   * \param n09 the name of the attribute to set on the queue disc
-   * \param v09 the value of the attribute to set on the queue disc
-   * \param n10 the name of the attribute to set on the queue disc
-   * \param v10 the value of the attribute to set on the queue disc
-   * \param n11 the name of the attribute to set on the queue disc
-   * \param v11 the value of the attribute to set on the queue disc
-   * \param n12 the name of the attribute to set on the queue disc
-   * \param v12 the value of the attribute to set on the queue disc
-   * \param n13 the name of the attribute to set on the queue disc
-   * \param v13 the value of the attribute to set on the queue disc
-   * \param n14 the name of the attribute to set on the queue disc
-   * \param v14 the value of the attribute to set on the queue disc
-   * \param n15 the name of the attribute to set on the queue disc
-   * \param v15 the value of the attribute to set on the queue disc
+   * \param args A sequence of name-value pairs of the attributes to set.
    * \return the handle of the created child queue disc
    */
-  uint16_t AddChildQueueDisc (uint16_t handle, uint16_t classId, std::string type,
-                              std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                              std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                              std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                              std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                              std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                              std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                              std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                              std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue (),
-                              std::string n09 = "", const AttributeValue &v09 = EmptyAttributeValue (),
-                              std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue (),
-                              std::string n11 = "", const AttributeValue &v11 = EmptyAttributeValue (),
-                              std::string n12 = "", const AttributeValue &v12 = EmptyAttributeValue (),
-                              std::string n13 = "", const AttributeValue &v13 = EmptyAttributeValue (),
-                              std::string n14 = "", const AttributeValue &v14 = EmptyAttributeValue (),
-                              std::string n15 = "", const AttributeValue &v15 = EmptyAttributeValue ());
+  template <typename... Args>
+  uint16_t AddChildQueueDisc (uint16_t handle, uint16_t classId, const std::string& type, Args&&... args);
 
   /**
    * Container type for Handlers
@@ -363,89 +217,27 @@ public:
    * the given attributes) to each of the given classes (included in the queue disc
    * having the given handle).
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param handle the handle of the parent queue disc
    * \param classes the class IDs of the classes to attach a queue disc to
    * \param type the type of queue disc
-   * \param n01 the name of the attribute to set on the queue disc
-   * \param v01 the value of the attribute to set on the queue disc
-   * \param n02 the name of the attribute to set on the queue disc
-   * \param v02 the value of the attribute to set on the queue disc
-   * \param n03 the name of the attribute to set on the queue disc
-   * \param v03 the value of the attribute to set on the queue disc
-   * \param n04 the name of the attribute to set on the queue disc
-   * \param v04 the value of the attribute to set on the queue disc
-   * \param n05 the name of the attribute to set on the queue disc
-   * \param v05 the value of the attribute to set on the queue disc
-   * \param n06 the name of the attribute to set on the queue disc
-   * \param v06 the value of the attribute to set on the queue disc
-   * \param n07 the name of the attribute to set on the queue disc
-   * \param v07 the value of the attribute to set on the queue disc
-   * \param n08 the name of the attribute to set on the queue disc
-   * \param v08 the value of the attribute to set on the queue disc
-   * \param n09 the name of the attribute to set on the queue disc
-   * \param v09 the value of the attribute to set on the queue disc
-   * \param n10 the name of the attribute to set on the queue disc
-   * \param v10 the value of the attribute to set on the queue disc
-   * \param n11 the name of the attribute to set on the queue disc
-   * \param v11 the value of the attribute to set on the queue disc
-   * \param n12 the name of the attribute to set on the queue disc
-   * \param v12 the value of the attribute to set on the queue disc
-   * \param n13 the name of the attribute to set on the queue disc
-   * \param v13 the value of the attribute to set on the queue disc
-   * \param n14 the name of the attribute to set on the queue disc
-   * \param v14 the value of the attribute to set on the queue disc
-   * \param n15 the name of the attribute to set on the queue disc
-   * \param v15 the value of the attribute to set on the queue disc
+   * \param args A sequence of name-value pairs of the attributes to set.
    * \return the list of handles of the created child queue discs
    */
-  HandleList AddChildQueueDiscs (uint16_t handle, const ClassIdList &classes, std::string type,
-                                 std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                                 std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                                 std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                                 std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                                 std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                                 std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                                 std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                                 std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue (),
-                                 std::string n09 = "", const AttributeValue &v09 = EmptyAttributeValue (),
-                                 std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue (),
-                                 std::string n11 = "", const AttributeValue &v11 = EmptyAttributeValue (),
-                                 std::string n12 = "", const AttributeValue &v12 = EmptyAttributeValue (),
-                                 std::string n13 = "", const AttributeValue &v13 = EmptyAttributeValue (),
-                                 std::string n14 = "", const AttributeValue &v14 = EmptyAttributeValue (),
-                                 std::string n15 = "", const AttributeValue &v15 = EmptyAttributeValue ());
+  template <typename... Args>
+  HandleList AddChildQueueDiscs (uint16_t handle, const ClassIdList &classes,
+                                 const std::string& type, Args&&... args);
 
   /**
    * Helper function used to add a queue limits object to the transmission
    * queues of the devices
    *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param type the type of queue
-   * \param n01 the name of the attribute to set on the queue limits object
-   * \param v01 the value of the attribute to set on the queue limits object
-   * \param n02 the name of the attribute to set on the queue limits object
-   * \param v02 the value of the attribute to set on the queue limits object
-   * \param n03 the name of the attribute to set on the queue limits object
-   * \param v03 the value of the attribute to set on the queue limits object
-   * \param n04 the name of the attribute to set on the queue limits object
-   * \param v04 the value of the attribute to set on the queue limits object
-   * \param n05 the name of the attribute to set on the queue limits object
-   * \param v05 the value of the attribute to set on the queue limits object
-   * \param n06 the name of the attribute to set on the queue limits object
-   * \param v06 the value of the attribute to set on the queue limits object
-   * \param n07 the name of the attribute to set on the queue limits object
-   * \param v07 the value of the attribute to set on the queue limits object
-   * \param n08 the name of the attribute to set on the queue limits object
-   * \param v08 the value of the attribute to set on the queue limits object
+   * \param args A sequence of name-value pairs of the attributes to set.
    */
-  void SetQueueLimits (std::string type,
-                       std::string n01 = "", const AttributeValue &v01 = EmptyAttributeValue (),
-                       std::string n02 = "", const AttributeValue &v02 = EmptyAttributeValue (),
-                       std::string n03 = "", const AttributeValue &v03 = EmptyAttributeValue (),
-                       std::string n04 = "", const AttributeValue &v04 = EmptyAttributeValue (),
-                       std::string n05 = "", const AttributeValue &v05 = EmptyAttributeValue (),
-                       std::string n06 = "", const AttributeValue &v06 = EmptyAttributeValue (),
-                       std::string n07 = "", const AttributeValue &v07 = EmptyAttributeValue (),
-                       std::string n08 = "", const AttributeValue &v08 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetQueueLimits (std::string type, Args&&... args);
 
   /**
    * \param c set of devices
@@ -492,6 +284,60 @@ public:
   void Uninstall (Ptr<NetDevice> d);
 
 private:
+  /**
+   * Actual implementation of the SetRootQueueDisc method.
+   *
+   * \param factory the factory used to create the root queue disc
+   */
+  uint16_t DoSetRootQueueDisc (ObjectFactory factory);
+
+  /**
+   * Actual implementation of the AddInternalQueues method.
+   *
+   * \param handle the handle of the parent queue disc
+   * \param count the number of queues to add
+   * \param factory the factory used to add internal queues
+   */
+  void DoAddInternalQueues (uint16_t handle, uint16_t count, ObjectFactory factory);
+
+  /**
+   * Actual implementation of the AddPacketFilter method.
+   *
+   * \param handle the handle of the parent queue disc
+   * \param factory the factory used to add a packet filter
+   */
+  void DoAddPacketFilter (uint16_t handle, ObjectFactory factory);
+
+  /**
+   * Actual implementation of the AddQueueDiscClasses method.
+   *
+   * \param handle the handle of the parent queue disc
+   * \param count the number of queue disc classes to add
+   * \param factory the factory used to add queue disc classes
+   * \return the list of class IDs
+   */
+  ClassIdList DoAddQueueDiscClasses (uint16_t handle, uint16_t count, ObjectFactory factory);
+
+  /**
+   * Actual implementation of the AddChildQueueDisc method.
+   *
+   * \param handle the handle of the parent queue disc
+   * \param classId the class ID of the class to attach the queue disc to
+   * \param factory the factory used to add a child queue disc
+   * \return the handle of the created child queue disc
+   */
+  uint16_t DoAddChildQueueDisc (uint16_t handle, uint16_t classId, ObjectFactory factory);
+
+  /**
+   * Actual implementation of the AddChildQueueDiscs method.
+   *
+   * \param handle the handle of the parent queue disc
+   * \param classes the class IDs of the classes to attach a queue disc to
+   * \param factory the factory used to add child queue discs
+   * \return the list of handles of the created child queue discs
+   */
+  HandleList DoAddChildQueueDiscs (uint16_t handle, const ClassIdList &classes, ObjectFactory factory);
+
   /// QueueDisc factory, stores the configuration of all the queue discs
   std::vector<QueueDiscFactory> m_queueDiscFactory;
   /// Vector of all the created queue discs
@@ -499,6 +345,70 @@ private:
   /// Factory to create a queue limits object
   ObjectFactory m_queueLimitsFactory;
 };
+
+} // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
+
+template <typename... Args>
+uint16_t
+TrafficControlHelper::SetRootQueueDisc (const std::string& type, Args&&... args)
+{
+  return DoSetRootQueueDisc (ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+void
+TrafficControlHelper::AddInternalQueues (uint16_t handle, uint16_t count,
+                                         std::string type, Args&&... args)
+{
+  QueueBase::AppendItemTypeIfNotPresent (type, "QueueDiscItem");
+  DoAddInternalQueues (handle, count, ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+void
+TrafficControlHelper::AddPacketFilter (uint16_t handle, const std::string& type, Args&&... args)
+{
+  DoAddPacketFilter (handle, ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+TrafficControlHelper::ClassIdList
+TrafficControlHelper::AddQueueDiscClasses (uint16_t handle, uint16_t count,
+                                           const std::string& type, Args&&... args)
+{
+  return DoAddQueueDiscClasses (handle, count, ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+uint16_t
+TrafficControlHelper::AddChildQueueDisc (uint16_t handle, uint16_t classId,
+                                         const std::string& type, Args&&... args)
+{
+  return DoAddChildQueueDisc (handle, classId, ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+TrafficControlHelper::HandleList
+TrafficControlHelper::AddChildQueueDiscs (uint16_t handle, const ClassIdList &classes,
+                                          const std::string& type, Args&&... args)
+{
+  return DoAddChildQueueDiscs (handle, classes, ObjectFactory (type, args...));
+}
+
+template <typename... Args>
+void
+TrafficControlHelper::SetQueueLimits (std::string type, Args&&... args)
+{
+  m_queueLimitsFactory.SetTypeId (type);
+  m_queueLimitsFactory.Set (args...);
+}
 
 } // namespace ns3
 
