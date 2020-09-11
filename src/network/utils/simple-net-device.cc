@@ -488,15 +488,12 @@ SimpleNetDevice::TransmitComplete ()
 
   m_channel->Send (packet, proto, dst, src, this);
 
-  if (m_queue->GetNPackets ())
+  Time txTime = Time (0);
+  if (m_bps > DataRate (0))
     {
-      Time txTime = Time (0);
-      if (m_bps > DataRate (0))
-        {
-          txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
-        }
-      TransmitCompleteEvent = Simulator::Schedule (txTime, &SimpleNetDevice::TransmitComplete, this);
+      txTime = m_bps.CalculateBytesTxTime (packet->GetSize ());
     }
+  TransmitCompleteEvent = Simulator::Schedule (txTime, &SimpleNetDevice::TransmitComplete, this);
 
   return;
 }
