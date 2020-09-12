@@ -62,11 +62,14 @@ void Reset (void);
  *
  * This function will attempt to find attributes which
  * match the input path and will then set their value to the input
- * value.
+ * value.  If no such attributes are found, the function will throw
+ * a fatal error; use SetFailSafe if the lack of a match is to be permitted.
  */
 void Set (std::string path, const AttributeValue &value);
 /**
- * \copydoc Set()
+ * This function will attempt to find attributes which
+ * match the input path and will then set their value to the input
+ * value, and will return true if at least one such attribute is found.
  * \return \c true if any matching attributes could be set.
  */
 bool SetFailSafe (std::string path, const AttributeValue &value);
@@ -114,11 +117,16 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value);
  *
  * This function will attempt to find all trace sources which
  * match the input path and will then connect the input callback
- * to them.
+ * to them.  If no matching trace sources are found, this method will 
+ * throw a fatal error.  Use ConnectWithoutContextFailSafe if the absence
+ * of matching trace sources should not be fatal.
  */
 void ConnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
- * \copydoc ConnectWithoutContext()
+ * This function will attempt to find all trace sources which
+ * match the input path and will then connect the input callback
+ * to them.  If no matching trace sources are found, this method will 
+ * return false; otherwise true.
  * \returns \c true if any trace sources could be connected.
  */
 bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb);
@@ -139,10 +147,16 @@ void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
  * match the input path and will then connect the input callback
  * to them in such a way that the callback will receive an extra
  * context string upon trace event notification.
+ * If no matching trace sources are found, this method will 
+ * throw a fatal error.  Use ConnectFailSafe if the absence
+ * of matching trace sources should not be fatal.
  */
 void Connect (std::string path, const CallbackBase &cb);
 /**
- * \copydoc Connect()
+ * This function will attempt to find all trace sources which
+ * match the input path and will then connect the input callback
+ * to them in such a way that the callback will receive an extra
+ * context string upon trace event notification.
  * \returns \c true if any trace sources could be connected.
  */
 bool ConnectFailSafe (std::string path, const CallbackBase &cb);
@@ -215,12 +229,16 @@ public:
    * \param [in] value Value to set to the attribute
    *
    * Set the specified attribute value to all the objects stored in this
-   * container.
+   * container.  This method will raise a fatal error if no such attribute
+   * exists; use SetFailSafe if the absence of the attribute is to be
+   * permitted.  
    * \sa ns3::Config::Set
    */
   void Set (std::string name, const AttributeValue &value);
   /**
-   * \copydoc Set()
+   * Set the specified attribute value to all the objects stored in this
+   * container.  This method will return true if any attributes could be
+   * set, and false otherwise.
    * \returns \c true if any attributes could be set.
    */
   bool SetFailSafe (std::string name, const AttributeValue &value);
@@ -229,12 +247,16 @@ public:
    * \param [in] cb The sink to connect to the trace source
    *
    * Connect the specified sink to all the objects stored in this
-   * container.
+   * container.  This method will raise a fatal error if no objects could
+   * be connected; use ConnectFailSafe if no connections is a valid possible
+   * outcome.
    * \sa ns3::Config::Connect
    */
   void Connect (std::string name, const CallbackBase &cb);
   /**
-   * \copydoc Connect()
+   * Connect the specified sink to all the objects stored in this
+   * container.  This method will return true if any trace sources could be
+   * connected, and false otherwise.
    * \returns \c true if any trace sources could be connected.
    */
   bool ConnectFailSafe (std::string name, const CallbackBase &cb);
@@ -243,12 +265,16 @@ public:
    * \param [in] cb The sink to connect to the trace source
    *
    * Connect the specified sink to all the objects stored in this
-   * container.
+   * container.  This method will raise a fatal error if no objects could
+   * be connected; use ConnectWithoutContextFailSafe if no connections is
+   * a valid possible outcome.
    * \sa ns3::Config::ConnectWithoutContext
    */
   void ConnectWithoutContext (std::string name, const CallbackBase &cb);
   /**
-   * \copydoc ConnectWithoutContext()
+   * Connect the specified sink to all the objects stored in this
+   * container.  This method will return true if any trace sources could be
+   * connected, and false otherwise.
    * \returns \c true if any trace sources could be connected.
    */
   bool ConnectWithoutContextFailSafe (std::string name, const CallbackBase &cb);

@@ -899,7 +899,10 @@ bool SetGlobalFailSafe (std::string name, const AttributeValue &value)
 void ConnectWithoutContext (std::string path, const CallbackBase &cb)
 {
   NS_LOG_FUNCTION (path << &cb);
-  ConnectWithoutContextFailSafe (path, cb);
+  if (!ConnectWithoutContextFailSafe (path, cb))
+    {
+      NS_FATAL_ERROR ("Could not connect callback to " << path);
+    }
 }
 bool ConnectWithoutContextFailSafe (std::string path, const CallbackBase &cb)
 {
