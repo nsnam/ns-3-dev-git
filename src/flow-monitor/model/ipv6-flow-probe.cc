@@ -224,12 +224,12 @@ Ipv6FlowProbe::Ipv6FlowProbe (Ptr<FlowMonitor> monitor,
 
   std::ostringstream qd;
   qd << "/NodeList/" << node->GetId () << "/$ns3::TrafficControlLayer/RootQueueDiscList/*/Drop";
-  Config::ConnectWithoutContext (qd.str (), MakeCallback (&Ipv6FlowProbe::QueueDiscDropLogger, Ptr<Ipv6FlowProbe> (this)));
+  Config::ConnectWithoutContextFailSafe (qd.str (), MakeCallback (&Ipv6FlowProbe::QueueDiscDropLogger, Ptr<Ipv6FlowProbe> (this)));
 
   // code copied from point-to-point-helper.cc
   std::ostringstream oss;
   oss << "/NodeList/" << node->GetId () << "/DeviceList/*/TxQueue/Drop";
-  Config::ConnectWithoutContext (oss.str (), MakeCallback (&Ipv6FlowProbe::QueueDropLogger, Ptr<Ipv6FlowProbe> (this)));
+  Config::ConnectWithoutContextFailSafe (oss.str (), MakeCallback (&Ipv6FlowProbe::QueueDropLogger, Ptr<Ipv6FlowProbe> (this)));
 }
 
 /* static */

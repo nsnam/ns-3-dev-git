@@ -254,12 +254,12 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
 
   std::ostringstream qd;
   qd << "/NodeList/" << node->GetId () << "/$ns3::TrafficControlLayer/RootQueueDiscList/*/Drop";
-  Config::ConnectWithoutContext (qd.str (), MakeCallback (&Ipv4FlowProbe::QueueDiscDropLogger, Ptr<Ipv4FlowProbe> (this)));
+  Config::ConnectWithoutContextFailSafe (qd.str (), MakeCallback (&Ipv4FlowProbe::QueueDiscDropLogger, Ptr<Ipv4FlowProbe> (this)));
 
   // code copied from point-to-point-helper.cc
   std::ostringstream oss;
   oss << "/NodeList/" << node->GetId () << "/DeviceList/*/TxQueue/Drop";
-  Config::ConnectWithoutContext (oss.str (), MakeCallback (&Ipv4FlowProbe::QueueDropLogger, Ptr<Ipv4FlowProbe> (this)));
+  Config::ConnectWithoutContextFailSafe (oss.str (), MakeCallback (&Ipv4FlowProbe::QueueDropLogger, Ptr<Ipv4FlowProbe> (this)));
 }
 
 Ipv4FlowProbe::~Ipv4FlowProbe ()
