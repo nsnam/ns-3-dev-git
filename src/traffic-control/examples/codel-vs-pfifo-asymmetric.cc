@@ -92,9 +92,9 @@ TraceCwnd (std::string cwndTrFileName)
 }
 
 static void
-SojournTracer (Ptr<OutputStreamWrapper>stream, Time oldval, Time newval)
+SojournTracer (Ptr<OutputStreamWrapper>stream, Time newval)
 {
-  *stream->GetStream () << oldval << " " << newval << std::endl;
+  *stream->GetStream () << newval << std::endl;
 }
 
 static void
@@ -109,7 +109,7 @@ TraceSojourn (std::string sojournTrFileName)
   else
     {
       Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (sojournTrFileName.c_str ());
-      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/Sojourn", MakeBoundCallback (&SojournTracer, stream));
+      Config::ConnectWithoutContext ("/NodeList/2/$ns3::TrafficControlLayer/RootQueueDiscList/0/$ns3::CoDelQueueDisc/SojournTime", MakeBoundCallback (&SojournTracer, stream));
     }
 }
 
