@@ -525,7 +525,7 @@ main (int argc, char *argv[])
                                  MakeCallback (&NotifyRandomAccessErrorUe));
   Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionTimeout",
                                    MakeCallback (&NotifyConnectionTimeoutUe));
-  Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/LteUeMac/RaResponseTimeout",
+  Config::ConnectWithoutContext ("/NodeList/*/DeviceList/*/$ns3::LteUeNetDevice/ComponentCarrierMapUe/*/LteUeMac/RaResponseTimeout",
                                    MakeCallback (&NotifyRaResponseTimeoutUe));
 
   //Trace sink for the packet sink of UE
