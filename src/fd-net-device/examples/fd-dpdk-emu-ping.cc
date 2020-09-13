@@ -93,7 +93,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Dpdk Emulation Ping Example");
 
   std::string deviceName ("0000:00:1f.6");
-  std::string macClient("78:0c:b8:d8:e1:95");
+  std::string macClient ("78:0c:b8:d8:e1:95");
   // ping a real host connected back-to-back through the ethernet interfaces
   std::string remote ("192.168.43.2");
 

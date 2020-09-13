@@ -108,184 +108,184 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("EmuFdNetDeviceSaturationExample");
+NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceSaturationExample");
 
-int main(int argc, char *argv[])
+int main (int argc, char *argv[])
 {
-    uint16_t sinkPort = 8000;
-    uint32_t packetSize = 190; // bytes
-    std::string dataRate("950Mb/s");
-    bool serverMode = false;
+  uint16_t sinkPort = 8000;
+  uint32_t packetSize = 190;   // bytes
+  std::string dataRate ("950Mb/s");
+  bool serverMode = false;
 
-    std::string deviceName("eno1");
-    std::string client("10.0.1.11");
-    std::string server("10.0.1.22");
-    std::string netmask("255.255.255.0");
-    std::string macClient("00:00:00:00:00:01");
-    std::string macServer("00:00:00:00:00:02");
+  std::string deviceName ("eno1");
+  std::string client ("10.0.1.11");
+  std::string server ("10.0.1.22");
+  std::string netmask ("255.255.255.0");
+  std::string macClient ("00:00:00:00:00:01");
+  std::string macServer ("00:00:00:00:00:02");
 
-    std::string transportProt = "Udp";
-    std::string socketType;
+  std::string transportProt = "Udp";
+  std::string socketType;
 
-    bool dpdkMode = true;
-    bool ping = false;
-    int dpdkTimeout = 2000;
+  bool dpdkMode = true;
+  bool ping = false;
+  int dpdkTimeout = 2000;
 
-    double samplingPeriod = 0.5; // s
+  double samplingPeriod = 0.5;   // s
 
-    CommandLine cmd;
-    cmd.AddValue("deviceName", "Device name", deviceName);
-    cmd.AddValue("client", "Local IP address (dotted decimal only please)", client);
-    cmd.AddValue("server", "Remote IP address (dotted decimal only please)", server);
-    cmd.AddValue("localmask", "Local mask address (dotted decimal only please)", netmask);
-    cmd.AddValue("serverMode", "1:true, 0:false, default client", serverMode);
-    cmd.AddValue("macClient", "Mac Address for Client. Default : 00:00:00:00:00:01", macClient);
-    cmd.AddValue("macServer", "Mac Address for Server. Default : 00:00:00:00:00:02", macServer);
-    cmd.AddValue("dataRate", "Data rate defaults to 1000Mb/s", dataRate);
-    cmd.AddValue("transportPort", "Transport protocol to use: Tcp, Udp", transportProt);
-    cmd.AddValue("dpdkMode", "Enable the netmap emulation mode", dpdkMode);
-    cmd.AddValue("dpdkTimeout", "Tx Timeout to use in dpdkMode. (in microseconds)", dpdkTimeout);
-    cmd.AddValue("ping", "Enable server ping client side", ping);
-    cmd.AddValue("packetSize", "Size of the packet (without header) in bytes.", packetSize);
-    cmd.Parse(argc, argv);
+  CommandLine cmd;
+  cmd.AddValue ("deviceName", "Device name", deviceName);
+  cmd.AddValue ("client", "Local IP address (dotted decimal only please)", client);
+  cmd.AddValue ("server", "Remote IP address (dotted decimal only please)", server);
+  cmd.AddValue ("localmask", "Local mask address (dotted decimal only please)", netmask);
+  cmd.AddValue ("serverMode", "1:true, 0:false, default client", serverMode);
+  cmd.AddValue ("macClient", "Mac Address for Client. Default : 00:00:00:00:00:01", macClient);
+  cmd.AddValue ("macServer", "Mac Address for Server. Default : 00:00:00:00:00:02", macServer);
+  cmd.AddValue ("dataRate", "Data rate defaults to 1000Mb/s", dataRate);
+  cmd.AddValue ("transportPort", "Transport protocol to use: Tcp, Udp", transportProt);
+  cmd.AddValue ("dpdkMode", "Enable the netmap emulation mode", dpdkMode);
+  cmd.AddValue ("dpdkTimeout", "Tx Timeout to use in dpdkMode. (in microseconds)", dpdkTimeout);
+  cmd.AddValue ("ping", "Enable server ping client side", ping);
+  cmd.AddValue ("packetSize", "Size of the packet (without header) in bytes.", packetSize);
+  cmd.Parse (argc, argv);
 
-    Ipv4Address remoteIp;
-    Ipv4Address localIp;
-    Mac48AddressValue localMac;
+  Ipv4Address remoteIp;
+  Ipv4Address localIp;
+  Mac48AddressValue localMac;
 
-    if (serverMode)
+  if (serverMode)
     {
-        remoteIp = Ipv4Address(client.c_str());
-        localIp = Ipv4Address(server.c_str());
-        localMac = Mac48AddressValue(macServer.c_str());
+      remoteIp = Ipv4Address (client.c_str ());
+      localIp = Ipv4Address (server.c_str ());
+      localMac = Mac48AddressValue (macServer.c_str ());
     }
-    else
+  else
     {
-        remoteIp = Ipv4Address(server.c_str());
-        localIp = Ipv4Address(client.c_str());
-        localMac = Mac48AddressValue(macClient.c_str());
-    }
-
-    if (transportProt.compare("Tcp") == 0)
-    {
-        socketType = "ns3::TcpSocketFactory";
-    }
-    else
-    {
-        socketType = "ns3::UdpSocketFactory";
+      remoteIp = Ipv4Address (server.c_str ());
+      localIp = Ipv4Address (client.c_str ());
+      localMac = Mac48AddressValue (macClient.c_str ());
     }
 
-    Ipv4Mask localMask(netmask.c_str());
-
-    GlobalValue::Bind("SimulatorImplementationType", StringValue("ns3::RealtimeSimulatorImpl"));
-
-    GlobalValue::Bind("ChecksumEnabled", BooleanValue(true));
-
-    Config::SetDefault("ns3::TcpSocketBase::Sack", BooleanValue(true));
-
-    NS_LOG_INFO("Create Node");
-    Ptr<Node> node = CreateObject<Node>();
-
-    NS_LOG_INFO("Create Device");
-    EmuFdNetDeviceHelper emu;
-
-    // set the dpdk emulation mode
-    if (dpdkMode)
+  if (transportProt.compare ("Tcp") == 0)
     {
-        // set the dpdk emulation mode
-        char **ealArgv = new char*[20];
-        // arg[0] is program name (optional)
-        ealArgv[0] = new char[20];
-        strcpy (ealArgv[0], "");
-        // logical core usage
-        ealArgv[1] = new char[20];
-        strcpy (ealArgv[1], "-l");
-        // Use core 0 and 1
-        ealArgv[2] = new char[20];
-        strcpy (ealArgv[2], "0,1");
-        // Load library
-        ealArgv[3] = new char[20];
-        strcpy (ealArgv[3], "-d");
-        // Use e1000 driver library
-        ealArgv[4] = new char[20];
-        strcpy (ealArgv[4], "librte_pmd_e1000.so");
-        // Load library
-        ealArgv[5] = new char[20];
-        strcpy (ealArgv[5], "-d");
-        // Use mempool ring library
-        ealArgv[6] = new char[50];
-        strcpy (ealArgv[6], "librte_mempool_ring.so");
-        emu.SetDpdkMode(7, ealArgv);
+      socketType = "ns3::TcpSocketFactory";
+    }
+  else
+    {
+      socketType = "ns3::UdpSocketFactory";
     }
 
-    emu.SetDeviceName(deviceName);
-    NetDeviceContainer devices = emu.Install(node);
-    Ptr<NetDevice> device = devices.Get(0);
-    device->SetAttribute("Address", localMac);
-    if (dpdkMode)
-      {
-        device->SetAttribute("TxTimeout", UintegerValue (dpdkTimeout) );
-      }
+  Ipv4Mask localMask (netmask.c_str ());
 
-    NS_LOG_INFO("Add Internet Stack");
-    InternetStackHelper internetStackHelper;
-    internetStackHelper.SetIpv4StackInstall(true);
-    internetStackHelper.Install(node);
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
 
-    NS_LOG_INFO("Create IPv4 Interface");
-    Ptr<Ipv4> ipv4 = node->GetObject<Ipv4>();
-    uint32_t interface = ipv4->AddInterface(device);
-    Ipv4InterfaceAddress address = Ipv4InterfaceAddress(localIp, localMask);
-    ipv4->AddAddress(interface, address);
-    ipv4->SetMetric(interface, 1);
-    ipv4->SetUp(interface);
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
-    Config::SetDefault("ns3::TcpSocket::SegmentSize", UintegerValue(packetSize));
+  Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (true));
 
-    if (serverMode)
+  NS_LOG_INFO ("Create Node");
+  Ptr<Node> node = CreateObject<Node> ();
+
+  NS_LOG_INFO ("Create Device");
+  EmuFdNetDeviceHelper emu;
+
+  // set the dpdk emulation mode
+  if (dpdkMode)
     {
-        Address sinkLocalAddress(InetSocketAddress(localIp, sinkPort));
-        PacketSinkHelper sinkHelper(socketType, sinkLocalAddress);
-        ApplicationContainer sinkApp = sinkHelper.Install(node);
-        sinkApp.Start(Seconds(1));
-        sinkApp.Stop(Seconds(30.0));
-
-        emu.EnablePcap("fd-server", device);
+      // set the dpdk emulation mode
+      char **ealArgv = new char*[20];
+      // arg[0] is program name (optional)
+      ealArgv[0] = new char[20];
+      strcpy (ealArgv[0], "");
+      // logical core usage
+      ealArgv[1] = new char[20];
+      strcpy (ealArgv[1], "-l");
+      // Use core 0 and 1
+      ealArgv[2] = new char[20];
+      strcpy (ealArgv[2], "0,1");
+      // Load library
+      ealArgv[3] = new char[20];
+      strcpy (ealArgv[3], "-d");
+      // Use e1000 driver library
+      ealArgv[4] = new char[20];
+      strcpy (ealArgv[4], "librte_pmd_e1000.so");
+      // Load library
+      ealArgv[5] = new char[20];
+      strcpy (ealArgv[5], "-d");
+      // Use mempool ring library
+      ealArgv[6] = new char[50];
+      strcpy (ealArgv[6], "librte_mempool_ring.so");
+      emu.SetDpdkMode (7, ealArgv);
     }
-    else
+
+  emu.SetDeviceName (deviceName);
+  NetDeviceContainer devices = emu.Install (node);
+  Ptr<NetDevice> device = devices.Get (0);
+  device->SetAttribute ("Address", localMac);
+  if (dpdkMode)
     {
-        // add traffic generator
-        AddressValue remoteAddress(InetSocketAddress(remoteIp, sinkPort));
-        OnOffHelper onoff(socketType, Address());
-        onoff.SetAttribute("Remote", remoteAddress);
-        onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
-        onoff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-        onoff.SetAttribute("DataRate", DataRateValue(dataRate));
-        onoff.SetAttribute("PacketSize", UintegerValue(packetSize));
+      device->SetAttribute ("TxTimeout", UintegerValue (dpdkTimeout) );
+    }
 
-        ApplicationContainer clientApps = onoff.Install(node);
-        clientApps.Start(Seconds(6.0));
-        clientApps.Stop(Seconds(106.0));
+  NS_LOG_INFO ("Add Internet Stack");
+  InternetStackHelper internetStackHelper;
+  internetStackHelper.SetIpv4StackInstall (true);
+  internetStackHelper.Install (node);
 
-        if (ping)
+  NS_LOG_INFO ("Create IPv4 Interface");
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  uint32_t interface = ipv4->AddInterface (device);
+  Ipv4InterfaceAddress address = Ipv4InterfaceAddress (localIp, localMask);
+  ipv4->AddAddress (interface, address);
+  ipv4->SetMetric (interface, 1);
+  ipv4->SetUp (interface);
+
+  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (packetSize));
+
+  if (serverMode)
+    {
+      Address sinkLocalAddress (InetSocketAddress (localIp, sinkPort));
+      PacketSinkHelper sinkHelper (socketType, sinkLocalAddress);
+      ApplicationContainer sinkApp = sinkHelper.Install (node);
+      sinkApp.Start (Seconds (1));
+      sinkApp.Stop (Seconds (30.0));
+
+      emu.EnablePcap ("fd-server", device);
+    }
+  else
+    {
+      // add traffic generator
+      AddressValue remoteAddress (InetSocketAddress (remoteIp, sinkPort));
+      OnOffHelper onoff (socketType, Address ());
+      onoff.SetAttribute ("Remote", remoteAddress);
+      onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+      onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+      onoff.SetAttribute ("DataRate", DataRateValue (dataRate));
+      onoff.SetAttribute ("PacketSize", UintegerValue (packetSize));
+
+      ApplicationContainer clientApps = onoff.Install (node);
+      clientApps.Start (Seconds (6.0));
+      clientApps.Stop (Seconds (106.0));
+
+      if (ping)
         {
-            printf("Adding ping app\n");
-            // add ping application
-            Ptr<V4Ping> app = CreateObject<V4Ping>();
-            app->SetAttribute("Remote", Ipv4AddressValue(remoteIp));
-            app->SetAttribute("Verbose", BooleanValue(true));
-            app->SetAttribute("Interval", TimeValue(Seconds(samplingPeriod)));
-            node->AddApplication(app);
-            app->SetStartTime(Seconds(6.0));
-            app->SetStopTime(Seconds(106.0));
+          printf ("Adding ping app\n");
+          // add ping application
+          Ptr<V4Ping> app = CreateObject<V4Ping> ();
+          app->SetAttribute ("Remote", Ipv4AddressValue (remoteIp));
+          app->SetAttribute ("Verbose", BooleanValue (true));
+          app->SetAttribute ("Interval", TimeValue (Seconds (samplingPeriod)));
+          node->AddApplication (app);
+          app->SetStartTime (Seconds (6.0));
+          app->SetStopTime (Seconds (106.0));
         }
 
-        emu.EnablePcap("fd-client", device);
+      emu.EnablePcap ("fd-client", device);
     }
 
-    Simulator::Stop(Seconds(120));
-    Simulator::Run();
-    Simulator::Destroy();
+  Simulator::Stop (Seconds (120));
+  Simulator::Run ();
+  Simulator::Destroy ();
 
-    return 0;
+  return 0;
 }
