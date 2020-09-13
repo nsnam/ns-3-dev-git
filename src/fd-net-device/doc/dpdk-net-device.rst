@@ -146,7 +146,7 @@ For example:
 
 .. sourcecode:: text
 
- export RTE_SDK=/home/hrishi/dpdk/dpdk-stable-19.11.1
+ export RTE_SDK=/home/username/dpdk/dpdk-stable-19.11.1
  export RTE_TARGET=x86_64-native-linuxapp-gcc
 
 (Note: In case DPDK is moved, ns-3 needs to be reconfigured using ``./waf configure [options]``)
@@ -173,7 +173,13 @@ Configure hugepages
 
 Refer `System Requirements <https://doc.dpdk.org/guides/linux_gsg/sys_reqs.html>`_ for detailed instructions.
 
-To allocate hugepages at runtime, edit ``/etc/default/grub``, and following to ``GRUB_CMDLINE_LINUX_DEFAULT``:
+To allocate hugepages at runtime, write a value such as '256' to the following:
+
+.. sourcecode:: text
+
+ echo 256 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+
+To allocate hugepages at boot time, edit ``/etc/default/grub``, and following to ``GRUB_CMDLINE_LINUX_DEFAULT``:
 
 .. sourcecode:: text
 
@@ -204,7 +210,8 @@ To check allocation of hugepages, run:
 
 You will see the number of hugepages allocated, they should be equal to the number you used above.
 
-Once the hugepage memory is reserved, to make the memory available for DPDK use, perform the following steps:
+Once the hugepage memory is reserved (at either runtime or boot time), 
+to make the memory available for DPDK use, perform the following steps:
 
 .. sourcecode:: text
 
@@ -221,7 +228,17 @@ The mount point can be made permanent across reboots, by adding the following li
 Usage
 *****
 
-``DpdkNetDevice`` uses the ``EmuFdNetDeviceHelper`` class provided in the ``fd-net-device/helper`` directory. The ``EmuFdNetDeviceHelper`` will allows us to set ``dpdkMode`` which will launch the ``DpdkNetDevice`` instead of the ``FdNetDevice``.
+The status of DPDK support is shown in the output of ``./waf configure``.  If
+it is found, a user should see:
+
+.. sourcecode:: text
+
+  DPDK NetDevice                : enabled
+
+``DpdkNetDevice`` does not use a dedicated helper class, but reuses the 
+``EmuFdNetDeviceHelper`` class provided in the ``fd-net-device/helper`` 
+directory. The ``EmuFdNetDeviceHelper`` will allows us to set ``dpdkMode``
+which will launch the ``DpdkNetDevice`` instead of the ``FdNetDevice``.
 
 .. sourcecode:: text
 
@@ -301,7 +318,6 @@ Output
 ======
 
 As ``DpdkNetDevice`` is inherited from ``FdNetDevice``, all the output methods provided by ``FdNetDevice`` can be used directly.
-
 
 Examples
 ========

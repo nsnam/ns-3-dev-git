@@ -221,7 +221,7 @@ main (int argc, char *argv[])
       sinkApp.Start (Seconds (1.0));
       sinkApp.Stop (Seconds (60.0));
 
-      emu.EnablePcap ("fd-server", device);
+      helper->EnablePcap ("fd-server", device);
     }
   else
     {
@@ -237,7 +237,7 @@ main (int argc, char *argv[])
       clientApps.Start (Seconds (4.0));
       clientApps.Stop (Seconds (58.0));
 
-      emu.EnablePcap ("fd-client", device);
+      helper->EnablePcap ("fd-client", device);
     }
 
   Simulator::Stop (Seconds (61.0));

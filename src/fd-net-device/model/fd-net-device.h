@@ -218,6 +218,16 @@ protected:
    */
   int GetFileDescriptor (void) const;
 
+  /**
+   * Mutex to increase pending read counter.
+   */
+  SystemMutex m_pendingReadMutex;
+
+  /**
+   * Number of packets that were received and scheduled for read but not yet read.
+   */
+  std::queue< std::pair<uint8_t *, ssize_t> > m_pendingQueue;
+
 private:
   /**
    * \brief Copy constructor
@@ -252,11 +262,6 @@ private:
    * Complete additional actions, if any, to tear down the device
    */
   virtual void DoFinishStoppingDevice (void);
-
-  /**
-   * Callback to invoke when a new frame is received
-   */
-  void ReceiveCallback (uint8_t *buf, ssize_t len);
 
   /**
    * Forward the frame to the appropriate callback for processing
@@ -341,19 +346,9 @@ private:
   bool m_isMulticast;
 
   /**
-   * Number of packets that were received and scheduled for read but not yet read.
-   */
-  std::queue< std::pair<uint8_t *, ssize_t> > m_pendingQueue;
-
-  /**
    * Maximum number of packets that can be received and scheduled for read but not yet read.
    */
   uint32_t m_maxPendingReads;
-
-  /**
-   * Mutex to increase pending read counter.
-   */
-  SystemMutex m_pendingReadMutex;
 
   /**
    * Time to start spinning up the device

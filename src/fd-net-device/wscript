@@ -49,10 +49,16 @@ def configure(conf):
                 dpdk_lib_mode = 'pkg' if have_dpdk_pkg else 'src'
                 conf.env.append_value('DPDK_LIB_MODE', [dpdk_lib_mode])
                 conf.env.append_value('DEFINES', ['NS3_DPDK'])
-                conf.report_optional_feature("DpdkNetDevice",
-                                            "DPDK NetDevice (using {0} DPDK)".format("package" if have_dpdk_pkg else "source"),
-                                            True,
-                                            "DPDKNetDevice module enabled")
+                if have_dpdk_pkg:
+                    conf.report_optional_feature("DpdkNetDevice",
+                                                "DPDK NetDevice",
+                                                True,
+                                                "DPDKNetDevice module enabled (from libdpdk)")
+                else:
+                    conf.report_optional_feature("DpdkNetDevice",
+                                                "DPDK NetDevice",
+                                                True,
+                                                "DPDKNetDevice module enabled (from source)")
             else:
                 conf.report_optional_feature("DpdkNetDevice",
                                             "DPDK NetDevice",
