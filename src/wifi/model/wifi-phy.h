@@ -259,10 +259,9 @@ public:
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.
    * This function is called upon the RX event corresponding to the OFDMA part of the UL MU PPDU.
    *
-   * \param ppdu the arriving PPDU
-   * \param rxPowersW the receive power in W per band
+   * \param event the event holding incoming OFDMA part of the PPDU's information
    */
-  void StartReceiveOfdmaPayload (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW);
+  void StartReceiveOfdmaPayload (Ptr<Event> event);
 
   /**
    * The last symbol of the PPDU has arrived.
@@ -413,6 +412,12 @@ public:
    * \return the total amount of time this PHY will stay busy for the transmission of the PHY preamble and PHY header.
    */
   static Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector);
+  /**
+   * \param txVector the transmission parameters used for the HE TB PPDU
+   *
+   * \return the duration of the non-OFDMA portion of the HE TB PPDU.
+   */
+  static Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector);
   /**
    *
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
@@ -1798,6 +1803,16 @@ public:
    */
   void NotifyChannelAccessRequested (void);
 
+  /**
+   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the recipient
+   *
+   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   */
+  WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId);
+
 
 protected:
   // Inherited
@@ -1879,16 +1894,6 @@ protected:
   virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
 
   /**
-   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
-   *
-   * \param txVector the TXVECTOR used for the transmission
-   * \param staId the STA-ID of the recipient
-   *
-   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
-   */
-  WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId);
-
-  /**
    * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
    *
    * \param txVector the TXVECTOR used for the transmission
@@ -1910,6 +1915,9 @@ protected:
 
   std::vector <EventId> m_endRxEvents; //!< the end of receive events (only one unless UL MU reception)
   std::vector <EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
+
+  std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
+
   Ptr<Event> m_currentEvent; //!< Hold the current event
   std::map <std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event> > m_currentPreambleEvents; //!< store event associated to a PPDU (that has a unique ID and preamble combination) whose preamble is being received
 
@@ -2307,8 +2315,6 @@ private:
 
   std::map<UidStaIdPair, std::vector<bool> > m_statusPerMpduMap; //!< Map of the current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
   std::map<UidStaIdPair, SignalNoiseDbm> m_signalNoiseMap; //!< Map of the latest signal power and noise power in dBm (noise power includes the noise figure)
-
-  bool m_ofdmaStarted; //!< Flag whether the reception of the OFDMA part has started (only used for UL-OFDMA)
 
   Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };

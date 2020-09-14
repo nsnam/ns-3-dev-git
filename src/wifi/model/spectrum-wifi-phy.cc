@@ -357,19 +357,27 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<WifiPpdu> ppdu = Copy (wifiRxParams->ppdu);
-  if (ppdu->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HE_TB
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
       && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION)
     {
       if (m_currentHeTbPpduUid == ppdu->GetUid () && m_currentEvent != 0)
         {
-          //AP and STA already received non-OFDMA part, handle OFDMA payload reception
-          StartReceiveOfdmaPayload (ppdu, rxPowerW);
+          //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayloadStart)
+          bool ofdmaStarted = !m_beginOfdmaPayloadRxEvents.empty ();
+          NS_LOG_INFO ("Switch to OFDMA part (already started? " << (ofdmaStarted ? "Y" : "N") << ") "
+                       << "and schedule OFDMA payload reception in " << GetPhyTrainingSymbolDuration (txVector).As (Time::NS));
+          Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW, !ofdmaStarted);
+          uint16_t staId = GetStaId (ppdu);
+          NS_ASSERT (m_beginOfdmaPayloadRxEvents.find (staId) == m_beginOfdmaPayloadRxEvents.end ());
+          m_beginOfdmaPayloadRxEvents[staId] = Simulator::Schedule (GetPhyTrainingSymbolDuration (txVector),
+                                                                    &WifiPhy::StartReceiveOfdmaPayload, this, event);
         }
       else
         {
           //PHY receives the OFDMA payload while having dropped the preamble
-          NS_LOG_INFO ("Consider UL-OFDMA part of the HE TB PPDU as interference since device dropped the preamble");
-          m_interference.Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowerW);
+          NS_LOG_INFO ("Consider OFDMA part of the HE TB PPDU as interference since device dropped the preamble");
+          m_interference.Add (ppdu, txVector, rxDuration, rxPowerW);
           auto it = m_currentPreambleEvents.find (std::make_pair(ppdu->GetUid (), ppdu->GetPreamble ()));
           if (it != m_currentPreambleEvents.end ())
             {
@@ -516,7 +524,7 @@ SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
     {
       //non-OFDMA part
-      Time nonOfdmaDuration = CalculatePhyPreambleAndHeaderDuration (txVector); //consider that HE-STF and HE-LTFs are also part of the non-OFDMA part
+      Time nonOfdmaDuration = CalculateNonOfdmaDurationForHeTb (txVector);
       Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu, PSD_HE_TB_NON_OFDMA_PORTION);
       Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
       txParams->duration = nonOfdmaDuration;
@@ -555,7 +563,7 @@ SpectrumWifiPhy::StartOfdmaTx (Ptr<WifiPpdu> ppdu, double txPowerWatts)
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu, PSD_HE_TB_OFDMA_PORTION);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   WifiTxVector txVector = ppdu->GetTxVector ();
-  txParams->duration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  txParams->duration = ppdu->GetTxDuration () - CalculateNonOfdmaDurationForHeTb (txVector);
   txParams->psd = txPowerSpectrum;
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;

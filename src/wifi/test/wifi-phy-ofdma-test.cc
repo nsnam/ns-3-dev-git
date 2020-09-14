@@ -48,6 +48,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyOfdmaTest");
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
 static const uint16_t DEFAULT_CHANNEL_WIDTH = 20; // MHz
+static const uint16_t DEFAULT_GUARD_WIDTH = DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 {
@@ -1225,6 +1226,21 @@ private:
   void RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPowerWatts, size_t payloadSize);
 
   /**
+   * Receive OFDMA part of HE TB PPDU function.
+   * Immediately schedules DoRxHeTbPpduOfdmaPart.
+   *
+   * \param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
+   */
+  void RxHeTbPpduOfdmaPart (Ptr<WifiSpectrumSignalParameters> rxParamsOfdma);
+  /**
+   * Receive OFDMA part of HE TB PPDU function.
+   * Actual reception call.
+   *
+   * \param rxParamsOfdma the spectrum signal parameters to send for OFDMA part
+   */
+  void DoRxHeTbPpduOfdmaPart (Ptr<WifiSpectrumSignalParameters> rxParamsOfdma);
+
+  /**
    * RX dropped function
    * \param p the packet
    * \param reason the reason
@@ -1327,6 +1343,8 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Time ppduDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand (), staId);
   Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, ppduDuration, WIFI_PHY_BAND_5GHZ, uid);
 
+  //Send non-OFDMA part
+  Time nonOfdmaDuration = WifiPhy::CalculateNonOfdmaDurationForHeTb (txVector);
   uint32_t centerFrequency = m_phy->GetCenterFrequencyForNonOfdmaPart (txVector, staId);
   uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
   uint16_t channelWidth = ruWidth < 20 ? 20 : ruWidth;
@@ -1334,11 +1352,36 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Ptr<WifiSpectrumSignalParameters> rxParams = Create<WifiSpectrumSignalParameters> ();
   rxParams->psd = rxPsd;
   rxParams->txPhy = 0;
-  rxParams->duration = ppduDuration;
+  rxParams->duration = nonOfdmaDuration;
   rxParams->ppdu = ppdu;
   rxParams->txPsdFlag = PSD_HE_TB_NON_OFDMA_PORTION;
 
   m_phy->StartRx (rxParams);
+
+  //Schedule OFDMA part
+  WifiSpectrumBand band = m_phy->GetRuBand (txVector, staId);
+  Ptr<SpectrumValue> rxPsdOfdma = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH, band);
+  Ptr<WifiSpectrumSignalParameters> rxParamsOfdma = Create<WifiSpectrumSignalParameters> ();
+  rxParamsOfdma->psd = rxPsd;
+  rxParamsOfdma->txPhy = 0;
+  rxParamsOfdma->duration = ppduDuration - nonOfdmaDuration;
+  rxParamsOfdma->ppdu = ppdu;
+  rxParamsOfdma->txPsdFlag = PSD_HE_TB_OFDMA_PORTION;
+  Simulator::Schedule (nonOfdmaDuration, &TestMultipleHeTbPreambles::RxHeTbPpduOfdmaPart, this, rxParamsOfdma);
+}
+
+void
+TestMultipleHeTbPreambles::RxHeTbPpduOfdmaPart (Ptr<WifiSpectrumSignalParameters> rxParamsOfdma)
+{
+  Simulator::ScheduleNow (&TestMultipleHeTbPreambles::DoRxHeTbPpduOfdmaPart, this, rxParamsOfdma);
+}
+
+void
+TestMultipleHeTbPreambles::DoRxHeTbPpduOfdmaPart (Ptr<WifiSpectrumSignalParameters> rxParamsOfdma)
+{
+  //This is needed to make sure the OFDMA part is started as the last event since HE-SIG-A should end at the exact same time as the start
+  //For normal WifiNetDevices, this the reception of the OFDMA part is scheduled after end of HE-SIG-A decoding.
+  m_phy->StartRx (rxParamsOfdma);
 }
 
 void
