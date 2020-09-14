@@ -593,7 +593,7 @@ void
 WifiPhyStateHelper::SwitchFromRxAbort (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (IsStateRx () || IsStateCcaBusy ()); //because abort can happen before RX is set by payload start
   NotifyRxEndOk ();
   DoSwitchFromRx ();
   m_endCcaBusy = Simulator::Now ();

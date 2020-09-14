@@ -62,6 +62,7 @@ enum WifiPhyRxfailureReason
   RECEPTION_ABORTED_BY_TX,
   L_SIG_FAILURE,
   SIG_A_FAILURE,
+  SIG_B_FAILURE,
   PREAMBLE_DETECTION_PACKET_SWITCH,
   FRAME_CAPTURE_PACKET_SWITCH,
   OBSS_PD_CCA_RESET,
@@ -228,6 +229,24 @@ public:
    * \param event the event holding incoming PPDU's information
    */
   void ContinueReceiveHeader (Ptr<Event> event);
+
+  /**
+   * The last common PHY header of the current PPDU has been received.
+   *
+   * The last common PHY header is:
+   *  - the non-HT header if the PPDU is non-HT
+   *  - the HT or SIG-A header otherwise
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void EndReceiveCommonHeader (Ptr<Event> event);
+
+  /**
+   * The SIG-B of the current MU PPDU has been received.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void EndReceiveSigB (Ptr<Event> event);
 
   /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived).
@@ -2069,6 +2088,17 @@ private:
    * \param measurementChannelWidth the measurement width (in MHz) to consider for the PPDU
    */
   void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth);
+
+  /**
+   * Schedule StartReceivePayload if the mode in the SIG and the number of
+   * spatial streams are supported.
+   *
+   * \param event the event holding the incoming PPDU's information
+   * \param timeToPayloadStart the time left till payload start
+   * \return \c true if the reception of the payload has been scheduled,
+   *         \c false otherwise
+   */
+  bool ScheduleStartReceivePayload (Ptr<Event> event, Time timeToPayloadStart);
 
   /**
    * The trace source fired when a packet begins the transmission process on
