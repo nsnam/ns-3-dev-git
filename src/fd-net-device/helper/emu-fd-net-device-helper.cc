@@ -29,7 +29,7 @@
 #include "ns3/simulator.h"
 #include "ns3/trace-helper.h"
 
-#ifdef NS3_DPDK
+#ifdef HAVE_DPDK_USER_H
 #include "ns3/dpdk-net-device.h"
 #endif
 
@@ -81,7 +81,7 @@ EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
 {
   NS_LOG_FUNCTION (this);
 
-#ifdef NS3_DPDK
+#ifdef HAVE_DPDK_USER_H
   FdNetDeviceHelper::SetTypeId ("ns3::DpdkNetDevice");
   m_dpdkMode = true;
   m_ealArgc = argc;
@@ -124,7 +124,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
       NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): m_deviceName is not set");
     }
 
-#ifdef NS3_DPDK
+#ifdef HAVE_DPDK_USER_H
   if (m_dpdkMode)
     {
       Ptr<DpdkNetDevice> dpdkDevice = StaticCast<DpdkNetDevice> (device);

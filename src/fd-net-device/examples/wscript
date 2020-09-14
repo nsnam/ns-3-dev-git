@@ -16,7 +16,7 @@ def build(bld):
         obj = bld.create_ns3_program('realtime-fd2fd-onoff', ['fd-net-device', 'internet', 'applications'])
         obj.source = 'realtime-fd2fd-onoff.cc'
 
-    if bld.env['ENABLE_EMU' or 'ENABLE_NETMAP_EMU']:
+    if bld.env['ENABLE_EMU' or 'ENABLE_NETMAP_EMU' or 'ENABLE_DPDKNETDEV']:
         obj = bld.create_ns3_program('fd-emu-ping', ['fd-net-device', 'internet', 'internet-apps'])
         obj.source = 'fd-emu-ping.cc'
         obj = bld.create_ns3_program('fd-emu-onoff', ['fd-net-device', 'internet', 'applications'])
@@ -29,12 +29,6 @@ def build(bld):
     if bld.env['ENABLE_EMU']:
         obj = bld.create_ns3_program('fd-emu-udp-echo', ['fd-net-device', 'internet', 'applications'])
         obj.source = 'fd-emu-udp-echo.cc'
-
-    if bld.env['ENABLE_DPDKNETDEV']:
-        obj = bld.create_ns3_program('fd-dpdk-emu-ping', ['fd-net-device', 'internet', 'internet-apps', 'applications'])
-        obj.source = 'fd-dpdk-emu-ping.cc'
-        obj = bld.create_ns3_program('fd-dpdk-emu-onoff', ['fd-net-device', 'internet', 'internet-apps', 'applications'])
-        obj.source = 'fd-dpdk-emu-onoff.cc'
 
     if bld.env['ENABLE_TAP']:
         obj = bld.create_ns3_program('fd-tap-ping', ['fd-net-device', 'internet', 'internet-apps'])

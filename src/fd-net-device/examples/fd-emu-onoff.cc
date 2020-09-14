@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2012 University of Washington, 2012 INRIA
  *               2017 Università' degli Studi di Napoli Federico II
+ *               2019 NITK Surathkal
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +19,9 @@
  *
  * Author: Alina Quereilhac <alina.quereilhac@inria.fr>
  * Extended by: Pasquale Imputato <p.imputato@gmail.com>
+ *              Harsh Patel <thadodaharsh10@gmail.com>
+ *              Hrishikesh Hiraskar <hrishihiraskar@gmail.com>
+ *              Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  *
  */
 
@@ -30,14 +34,21 @@
 // |  +----------------+  |     |   +----------------+  |
 // |  |    ns-3 IPv4   |  |     |   |    ns-3 IPv4   |  |
 // |  +----------------+  |     |   +----------------+  |
-// |  | FdNetDevice or |  |     |   | FdNetDevice or |  |
+// |  |   FdNetDevice  |  |     |   |   FdNetDevice  |  |
+// |  |       or       |  |     |   |       or       |  |
 // |  | NetmapNetDevice|  |     |   | NetmapNetDevice|  |
+// |  |       or       |  |     |   |       or       |  |
+// |  |  DpdkNetDevice |  |     |   |  DpdkNetDevice |  |
 // |  |    10.1.1.1    |  |     |   |    10.1.1.2    |  |
 // |  +----------------+  |     |   +----------------+  |
 // |  |       fd       |  |     |   |       fd       |  |
+// |  |       or       |  |     |   |       or       |  |
+// |  |       EAL      |  |     |   |       EAL      |  |
 // |  +----------------+  |     |   +----------------+  |
-// |       | eth0 |       |     |        | eth0 |       |
-// +-------+------+-------+     +--------+------+-------+
+// |    |    eth0    |    |     |     |    eth0    |    |
+// |    |     or     |    |     |     |     or     |    |
+// |    | 0000:00.1f |    |     |     | 0000:00.1f |    |
+// +----+------------+----+     +-----+------------+----+
 //
 //         10.1.1.11                     10.1.1.12
 //
@@ -62,8 +73,9 @@
 //
 // both machines: $ sudo ip link set eth0 promisc on
 //
-// 3' - If you run emulation in netmap mode, you need before to load the netmap.ko module.
-//      The user is in charge to configure and build netmap separately.
+// 3' - If you run emulation in netmap or dpdk mode, you need before to load
+//      the netmap.ko or dpdk modules. The user is in charge to configure and
+//      build netmap/dpdk separately.
 //
 // 4 - Give root suid to the raw or netmap socket creator binary.
 //     If the --enable-sudo option was used to configure ns-3 with waf, then the following
@@ -76,11 +88,17 @@
 // both hosts: $ sudo chown root.root build/src/fd-net-device/ns3-dev-netmap-device-creator
 // both hosts: $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-netmap-device-creator
 //
-// 5 - Run the server side:
+// 4' - If you run emulation in dpdk mode, you will need to run example as root.
+//
+// 5 - In case of DpdkNetDevice, use device address instead of device name
+//
+// For example: 0000:00:1f.6 (can be obtained by lspci)
+//
+// 6 - Run the server side:
 //
 // server host: $ ./waf --run="fd-emu-onoff --serverMode=1"
 //
-// 6 - Run the client side:
+// 7 - Run the client side:
 //
 // client host: $ ./waf --run="fd-emu-onoff"
 //
@@ -119,12 +137,14 @@ main (int argc, char *argv[])
   std::string socketType;
 #ifdef HAVE_PACKET_H
   std::string emuMode ("raw");
-#else        // HAVE_NETMAP_USER_H is true (otherwise this example is not compiled)
+#elif HAVE_NETMAP_USER_H
   std::string emuMode ("netmap");
+#else        // HAVE_DPDK_USER_H is true (otherwise this example is not compiled)
+  std::string emuMode ("dpdk");
 #endif
 
   CommandLine cmd (__FILE__);
-  cmd.AddValue ("deviceName", "Device name", deviceName);
+  cmd.AddValue ("deviceName", "Device name (in raw, netmap mode) or Device address (in dpdk mode, eg: 0000:00:1f.6). Use `lspci` to find device address.", deviceName);
   cmd.AddValue ("client", "Local IP address (dotted decimal only please)", client);
   cmd.AddValue ("server", "Remote IP address (dotted decimal only please)", server);
   cmd.AddValue ("localmask", "Local mask address (dotted decimal only please)", netmask);
@@ -148,6 +168,8 @@ main (int argc, char *argv[])
   Ipv4Address remoteIp;
   Ipv4Address localIp;
   Mac48AddressValue localMac;
+
+  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (packetSize));
 
   if (serverMode)
     {
@@ -190,6 +212,41 @@ main (int argc, char *argv[])
       helper = netmap;
     }
 #endif
+#ifdef HAVE_DPDK_USER_H
+  if (emuMode == "dpdk")
+    {
+      EmuFdNetDeviceHelper* dpdk = new EmuFdNetDeviceHelper;
+      // set the dpdk emulation mode
+      char **ealArgv = new char*[20];
+      // arg[0] is program name (optional)
+      ealArgv[0] = new char[20];
+      strcpy (ealArgv[0], "");
+      // logical core usage
+      ealArgv[1] = new char[20];
+      strcpy (ealArgv[1], "-l");
+      // Use core 0 and 1
+      ealArgv[2] = new char[20];
+      strcpy (ealArgv[2], "0,1");
+      // Load library
+      ealArgv[3] = new char[20];
+      strcpy (ealArgv[3], "-d");
+      // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
+      // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
+      // based on your NIC. You just need to add it as a library using -d option as
+      // used below.
+      ealArgv[4] = new char[20];
+      strcpy (ealArgv[4], "librte_pmd_e1000.so");
+      // Load library
+      ealArgv[5] = new char[20];
+      strcpy (ealArgv[5], "-d");
+      // Use mempool ring library
+      ealArgv[6] = new char[50];
+      strcpy (ealArgv[6], "librte_mempool_ring.so");
+      dpdk->SetDpdkMode (7, ealArgv);
+      dpdk->SetDeviceName (deviceName);
+      helper = dpdk;
+    }
+#endif
 
   if (helper == nullptr)
     {
@@ -216,7 +273,7 @@ main (int argc, char *argv[])
   if (serverMode)
     {
       Address sinkLocalAddress (InetSocketAddress (localIp, sinkPort));
-      PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
+      PacketSinkHelper sinkHelper (socketType, sinkLocalAddress);
       ApplicationContainer sinkApp = sinkHelper.Install (node);
       sinkApp.Start (Seconds (1.0));
       sinkApp.Stop (Seconds (60.0));
@@ -226,7 +283,7 @@ main (int argc, char *argv[])
   else
     {
       AddressValue remoteAddress (InetSocketAddress (remoteIp, sinkPort));
-      OnOffHelper onoff ("ns3::TcpSocketFactory", Address ());
+      OnOffHelper onoff (socketType, Address ());
       onoff.SetAttribute ("Remote", remoteAddress);
       onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
       onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));

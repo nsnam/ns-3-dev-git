@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2012 University of Washington, 2012 INRIA
  *               2017 Università' degli Studi di Napoli Federico II
+ *               2019 NITK Surathkal
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,37 +20,41 @@
 
 // Allow ns-3 to ping a real host somewhere, using emulation mode
 //
-//   +----------------------+    
-//   |          host        |
-//   +----------------------+    
-//   |    ns-3 simulation   |                                      
-//   +----------------------+                  
-//   |      ns-3 Node       |                 
-//   |  +----------------+  |                 
-//   |  |    ns-3 TCP    |  |              
-//   |  +----------------+  |              
-//   |  |    ns-3 IPv4   |  |                 
-//   |  +----------------+  |                 
-//   |  | FdNetDevice or |  |
-//   |  | NetmapNetDevice|  |
-//   |--+----------------+--+     
-//   |       | eth0 |       |                
-//   |       +------+       |    
-//   |          |           |
-//   +----------|-----------+ 
-//              |
-//              |         +---------+
-//              .---------| GW host |--- (Internet) -----                             
-//                        +---------+ 
+//   +--------------------------+
+//   |           host           |
+//   +--------------------------+
+//   |      ns-3 simulation     |
+//   +--------------------------+
+//   |         ns-3 Node        |
+//   |  +--------------------+  |
+//   |  |      ns-3 TCP      |  |
+//   |  +--------------------+  |
+//   |  |      ns-3 IPv4     |  |
+//   |  +--------------------+  |
+//   |  |   FdNetDevice or   |  |
+//   |  | NetmapNetDevice or |  |
+//   |  |    DpdkNetDevice   |  |
+//   |--+--------------------+--+
+//   |         | eth0 |         |
+//   |         +------+         |
+//   |            |             |
+//   +------------|-------------+
+//                |
+//                |       +---------+
+//                .-------| GW host |--- (Internet) -----
+//                        +---------+
 //
 /// To use this example:
 //  1) You need to decide on a physical device on your real system, and either
 //     overwrite the hard-configured device name below (eth0) or pass this
 //     device name in as a command-line argument
+//  1') If you run emulation in dpdk mode, use device address (eg. 0000:00.1f.6) 
+//      as device name. This address can be obtained by running `lspci`
 //  2) The host device must be set to promiscuous mode
 //     (e.g. "sudo ifconfig eth0 promisc")
-//  2') If you run emulation in netmap mode, you need before to load the netmap.ko module.
-//      The user is in charge to configure and build netmap separately.
+//  2') If you run emulation in netmap or dpdk mode, you need before to load
+//      the netmap.ko or dpdk modules. The user is in charge to configure and
+//      build netmap/dpdk separately.
 //  3) Be aware that ns-3 will generate a fake mac address, and that in
 //     some enterprise networks, this may be considered bad form to be
 //     sending packets out of your device with "unauthorized" mac addresses
@@ -63,7 +68,7 @@
 //     'netstat -rn' command and find the IP address of the default gateway
 //     on your host.  Search for "Ipv4Address gateway" and replace the string
 //     "1.2.3.4" string with the gateway IP address.
-/// 6) Give root suid to the raw or netmap socket creator binary.
+//  6) Give root suid to the raw or netmap socket creator binary.
 //     If the --enable-sudo option was used to configure ns-3 with waf, then the following
 //     step will not be necessary.
 //
@@ -73,6 +78,7 @@
 //     or (if you run emulation in netmap mode):
 //     $ sudo chown root.root build/src/fd-net-device/ns3-dev-netmap-device-creator
 //     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-netmap-device-creator
+//  6') If you run emulation in dpdk mode, you will need to run example as root.
 //
 
 #include "ns3/abort.h"
@@ -105,8 +111,10 @@ main (int argc, char *argv[])
   std::string localGateway ("1.2.3.4");
 #ifdef HAVE_PACKET_H
   std::string emuMode ("raw");
-#else        // HAVE_NETMAP_USER_H is true (otherwise this example is not compiled)
+#elif HAVE_NETMAP_USER_H
   std::string emuMode ("netmap");
+#else        // HAVE_DPDK_USER_H is true (otherwise this example is not compiled)
+  std::string emuMode ("dpdk");
 #endif
 
   //
@@ -114,11 +122,11 @@ main (int argc, char *argv[])
   // command-line arguments
   //
   CommandLine cmd (__FILE__);
-  cmd.AddValue ("deviceName", "Device name", deviceName);
+  cmd.AddValue ("deviceName", "Device name (in raw, netmap mode) or Device address (in dpdk mode, eg: 0000:00:1f.6). Use `lspci` to find device address.", deviceName);
   cmd.AddValue ("remote", "Remote IP address (dotted decimal only please)", remote);
   cmd.AddValue ("localIp", "Local IP address (dotted decimal only please)", localAddress);
   cmd.AddValue ("gateway", "Gateway address (dotted decimal only please)", localGateway);
-  cmd.AddValue ("emuMode", "Emulation mode in {raw, netmap}", emuMode);
+  cmd.AddValue ("emuMode", "Emulation mode in {raw, netmap, dpdk}", emuMode);
   cmd.Parse (argc, argv);
 
   Ipv4Address remoteIp (remote.c_str ());
@@ -184,6 +192,41 @@ main (int argc, char *argv[])
       NetmapNetDeviceHelper* netmap = new NetmapNetDeviceHelper;
       netmap->SetDeviceName (deviceName);
       helper = netmap;
+    }
+#endif
+#ifdef HAVE_DPDK_USER_H
+  if (emuMode == "dpdk")
+    {
+      EmuFdNetDeviceHelper* dpdk = new EmuFdNetDeviceHelper;
+      // set the dpdk emulation mode
+      char **ealArgv = new char*[20];
+      // arg[0] is program name (optional)
+      ealArgv[0] = new char[20];
+      strcpy (ealArgv[0], "");
+      // logical core usage
+      ealArgv[1] = new char[20];
+      strcpy (ealArgv[1], "-l");
+      // Use core 0 and 1
+      ealArgv[2] = new char[20];
+      strcpy (ealArgv[2], "0,1");
+      // Load library
+      ealArgv[3] = new char[20];
+      strcpy (ealArgv[3], "-d");
+      // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
+      // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
+      // based on your NIC. You just need to add it as a library using -d option as
+      // used below.
+      ealArgv[4] = new char[20];
+      strcpy (ealArgv[4], "librte_pmd_e1000.so");
+      // Load library
+      ealArgv[5] = new char[20];
+      strcpy (ealArgv[5], "-d");
+      // Use mempool ring library
+      ealArgv[6] = new char[50];
+      strcpy (ealArgv[6], "librte_mempool_ring.so");
+      dpdk->SetDpdkMode (7, ealArgv);
+      dpdk->SetDeviceName (deviceName);
+      helper = dpdk;
     }
 #endif
 

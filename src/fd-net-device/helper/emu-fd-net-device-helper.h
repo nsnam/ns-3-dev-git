@@ -63,6 +63,12 @@ public:
   void SetDeviceName (std::string deviceName);
 
   /**
+   * \brief Request host qdisc bypass
+   * \param hostQdiscBypass to enable host qdisc bypass
+   */
+  void HostQdiscBypass (bool hostQdiscBypass);
+
+  /**
    * Set the device in Dpdk mode.
    *
    * \param argc Dpdk EAL args count.

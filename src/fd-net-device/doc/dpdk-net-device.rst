@@ -91,6 +91,8 @@ To install DPDK on Ubuntu, run the following command:
 
  apt-get install dpdk dpdk-dev libdpdk-dev
 
+Ubuntu 20.04 has packaged DPDK v19.11 LTS which is tested with this module and DpdkNetDevice will only be enabled if this version is available.
+
 Compile from Source
 ===================
 
@@ -99,9 +101,19 @@ To compile DPDK from source, you need to perform the following 4 steps:
 1. Download the source
 ######################
 
-Head over to `DPDK Downloads <https://core.dpdk.org/download/>`_ page to get the latest stable source. (This module has been tested with version 19.11 LTS and DpdkNetDevice will only be enabled if this version is available)
+Head over to `DPDK Downloads <https://core.dpdk.org/download/>`_ page to get the latest stable source. (This module has been tested with version 19.11 LTS and DpdkNetDevice will only be enabled if this version is available.)
 
-2. Install the source
+2. Configure DPDK as a shared library
+#####################################
+
+Goto the DPDK directory, edit ``config/common_base`` file to change following line to compile DPDK as a shared library:
+
+.. sourcecode:: text
+
+ # Compile to share library
+ CONFIG_RTE_BUILD_SHARED_LIB=y
+
+3. Install the source
 #####################
 
 Refer `Installation <https://doc.dpdk.org/guides/linux_gsg/build_dpdk.html>`_ for detailed instructions.
@@ -110,28 +122,7 @@ For a 64 bit linux machine with gcc, run:
 
 .. sourcecode:: text
 
- make install T=x86_64-native-linuxapp-gcc
-
-(Note: In case you get an error stating "Installation cannot run with T defined and DESTDIR undefined", you can append ``DESTDIR=install`` to this command)
-
-3. Build DPDK as a shared library
-#################################
-
-Goto the build directory. Build directory is the target(T) you used in previous make command.
-
-In build directory, edit ``.config`` file to change following line to compile DPDK as a shared library:
-
-.. sourcecode:: text
-
- # Compile to share library
- CONFIG_RTE_BUILD_SHARED_LIB=y
-
-
-Then inside target directory, compile dpdk again:
-
-.. sourcecode:: text
-
- make
+ make install T=x86_64-native-linuxapp-gcc DESTDIR=install
 
 4. Export DPDK Environment variables
 ####################################
@@ -185,8 +176,9 @@ To allocate hugepages at boot time, edit ``/etc/default/grub``, and following to
 
  hugepages=256
 
+We suggest minimum of number of ``256`` to run our applications. (This is to test an application run at 1 Gbps on a 1 Gbps NIC.) You can use any number of hugepages based on your system capacity and application requirements.
 
-We suggest minimum of number of ``256`` to run our applications. Then update the grub configurations using:
+Then update the grub configurations using:
 
 .. sourcecode:: text
 
@@ -284,7 +276,10 @@ Initialization of DPDK requires passing of EAL arguments. These are passed to ``
  // Load library
  ealArgv[3] = new char[20];
  strcpy (ealArgv[3], "-d");
- // Use e1000 driver library
+ // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
+ // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
+ // based on your NIC. You just need to add it as a library using -d option as
+ // used below.
  ealArgv[4] = new char[20];
  strcpy (ealArgv[4], "librte_pmd_e1000.so");
  // Load library
@@ -306,13 +301,14 @@ Attributes
 
 The ``DpdkNetDevice`` provides a number of attributes:
 
-* ``TxTimeout`` - The time to wait before transmitting burst from Tx Buffer (in us). (default - ``2000``)
-* ``MaxRxBurst`` - Size of Rx Burst. (default - ``64``)
-* ``MaxTxBurst`` - Size of Tx Burst. (default - ``64``)
-* ``MempoolCacheSize`` - Size of mempool cache. (default - ``256``)
-* ``NbRxDesc`` - Number of Rx descriptors. (default - ``1024``)
-* ``NbTxDesc`` - Number of Tx descriptors. (default - ``1024``)
+* ``TxTimeout`` - The time to wait before transmitting burst from Tx Buffer (in us). (default - ``2000``) This attribute is only used to flush out buffer in case it is not filled. This attribute can be decrease for low data rate traffic. For high data rate traffic, this attribute needs no change.
+* ``MaxRxBurst`` - Size of Rx Burst. (default - ``64``) This attribute can be increased for higher data rates.
+* ``MaxTxBurst`` - Size of Tx Burst. (default - ``64``) This attribute can be increased for higher data rates.
+* ``MempoolCacheSize`` - Size of mempool cache. (default - ``256``) This attribute can be increased for higher data rates.
+* ``NbRxDesc`` - Number of Rx descriptors. (default - ``1024``) This attribute can be increased for higher data rates.
+* ``NbTxDesc`` - Number of Tx descriptors. (default - ``1024``) This attribute can be increased for higher data rates.
 
+Note: Default values work well with 1Gbps traffic.
 
 Output
 ======
