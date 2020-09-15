@@ -110,8 +110,8 @@ ThreeGppHttpHeader::Print (std::ostream &os) const
   NS_LOG_FUNCTION (this << &os);
   os << "(Content-Type: " << m_contentType
      << " Content-Length: " << m_contentLength
-     << " Client TS: " << TimeStep (m_clientTs).GetSeconds ()
-     << " Server TS: " << TimeStep (m_serverTs).GetSeconds () << ")";
+     << " Client TS: " << TimeStep (m_clientTs).As (Time::S)
+     << " Server TS: " << TimeStep (m_serverTs).As (Time::S) << ")";
 }
 
 
@@ -188,7 +188,7 @@ ThreeGppHttpHeader::GetContentLength () const
 void
 ThreeGppHttpHeader::SetClientTs (Time clientTs)
 {
-  NS_LOG_FUNCTION (this << clientTs.GetSeconds ());
+  NS_LOG_FUNCTION (this << clientTs.As (Time::S));
   m_clientTs = clientTs.GetTimeStep ();
 }
 
@@ -203,7 +203,7 @@ ThreeGppHttpHeader::GetClientTs () const
 void
 ThreeGppHttpHeader::SetServerTs (Time serverTs)
 {
-  NS_LOG_FUNCTION (this << serverTs.GetSeconds ());
+  NS_LOG_FUNCTION (this << serverTs.As (Time::S));
   m_serverTs = serverTs.GetTimeStep ();
 }
 

@@ -354,8 +354,8 @@ void OnOffApplication::SendPacket ()
       m_socket->GetSockName (localAddress);
       if (InetSocketAddress::IsMatchingType (m_peer))
         {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                       << "s on-off application sent "
+          NS_LOG_INFO ("At time " << Simulator::Now ().As (Time::S)
+                       << " on-off application sent "
                        <<  packet->GetSize () << " bytes to "
                        << InetSocketAddress::ConvertFrom(m_peer).GetIpv4 ()
                        << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
@@ -364,8 +364,8 @@ void OnOffApplication::SendPacket ()
         }
       else if (Inet6SocketAddress::IsMatchingType (m_peer))
         {
-          NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
-                       << "s on-off application sent "
+          NS_LOG_INFO ("At time " << Simulator::Now ().As (Time::S)
+                       << " on-off application sent "
                        <<  packet->GetSize () << " bytes to "
                        << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6 ()
                        << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()

@@ -362,7 +362,7 @@ ThreeGppHttpVariables::SetRequestSize (uint32_t constant)
 void
 ThreeGppHttpVariables::SetMainObjectGenerationDelay (Time constant)
 {
-  NS_LOG_FUNCTION (this << constant.GetSeconds ());
+  NS_LOG_FUNCTION (this << constant.As (Time::S));
   m_mainObjectGenerationDelayRng->SetAttribute ("Constant",
                                                 DoubleValue (constant.GetSeconds ()));
 }
@@ -425,7 +425,7 @@ ThreeGppHttpVariables::SetMainObjectSizeStdDev (uint32_t stdDev)
 void
 ThreeGppHttpVariables::SetEmbeddedObjectGenerationDelay (Time constant)
 {
-  NS_LOG_FUNCTION (this << constant.GetSeconds ());
+  NS_LOG_FUNCTION (this << constant.As (Time::S));
   m_embeddedObjectGenerationDelayRng->SetAttribute ("Constant",
                                                     DoubleValue (constant.GetSeconds ()));
 }
@@ -490,7 +490,7 @@ ThreeGppHttpVariables::SetNumOfEmbeddedObjectsScale (uint32_t scale)
 void
 ThreeGppHttpVariables::SetReadingTimeMean (Time mean)
 {
-  NS_LOG_FUNCTION (this << mean.GetSeconds ());
+  NS_LOG_FUNCTION (this << mean.As (Time::S));
   m_readingTimeRng->SetAttribute ("Mean", DoubleValue (mean.GetSeconds ()));
 }
 
@@ -498,7 +498,7 @@ ThreeGppHttpVariables::SetReadingTimeMean (Time mean)
 void
 ThreeGppHttpVariables::SetParsingTimeMean (Time mean)
 {
-  NS_LOG_FUNCTION (this << mean.GetSeconds ());
+  NS_LOG_FUNCTION (this << mean.As (Time::S));
   m_parsingTimeRng->SetAttribute ("Mean", DoubleValue (mean.GetSeconds ()));
 }
 

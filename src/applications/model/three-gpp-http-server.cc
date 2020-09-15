@@ -455,7 +455,7 @@ ThreeGppHttpServer::ReceivedDataCallback (Ptr<Socket> socket)
         case ThreeGppHttpHeader::MAIN_OBJECT:
           processingDelay = m_httpVariables->GetMainObjectGenerationDelay ();
           NS_LOG_INFO (this << " Will finish generating a main object"
-                            << " in " << processingDelay.GetSeconds () << " seconds.");
+                            << " in " << processingDelay.As (Time::S) << ".");
           m_txBuffer->RecordNextServe (socket,
                                        Simulator::Schedule (processingDelay,
                                                             &ThreeGppHttpServer::ServeNewMainObject,
@@ -466,7 +466,7 @@ ThreeGppHttpServer::ReceivedDataCallback (Ptr<Socket> socket)
         case ThreeGppHttpHeader::EMBEDDED_OBJECT:
           processingDelay = m_httpVariables->GetEmbeddedObjectGenerationDelay ();
           NS_LOG_INFO (this << " Will finish generating an embedded object"
-                            << " in " << processingDelay.GetSeconds () << " seconds.");
+                            << " in " << processingDelay.As (Time::S) << ".");
           m_txBuffer->RecordNextServe (socket,
                                        Simulator::Schedule (processingDelay,
                                                             &ThreeGppHttpServer::ServeNewEmbeddedObject,
@@ -635,8 +635,8 @@ ThreeGppHttpServer::ServeFromTxBuffer (Ptr<Socket> socket)
       NS_LOG_INFO (this << " Created packet " << packet << " of "
                         << packetSize << " bytes."
                         << " The corresponding request came "
-                        << (Simulator::Now () - httpHeader.GetClientTs ()).GetSeconds ()
-                        << "s ago.");
+                        << (Simulator::Now () - httpHeader.GetClientTs ()).As (Time::S)
+                        << " ago.");
     }
   else
     {
@@ -731,8 +731,8 @@ ThreeGppHttpServerTxBuffer::RemoveSocket (Ptr<Socket> socket)
   if (!Simulator::IsExpired (it->second.nextServe))
     {
       NS_LOG_INFO (this << " Canceling a serving event which is due in "
-                        << Simulator::GetDelayLeft (it->second.nextServe).GetSeconds ()
-                        << " seconds.");
+                        << Simulator::GetDelayLeft (it->second.nextServe).As (Time::S)
+                        << ".");
       Simulator::Cancel (it->second.nextServe);
     }
 
@@ -758,8 +758,8 @@ ThreeGppHttpServerTxBuffer::CloseSocket (Ptr<Socket> socket)
   if (!Simulator::IsExpired (it->second.nextServe))
     {
       NS_LOG_INFO (this << " Canceling a serving event which is due in "
-                        << Simulator::GetDelayLeft (it->second.nextServe).GetSeconds ()
-                        << " seconds.");
+                        << Simulator::GetDelayLeft (it->second.nextServe).As (Time::S)
+                        << ".");
       Simulator::Cancel (it->second.nextServe);
     }
 
@@ -791,8 +791,8 @@ ThreeGppHttpServerTxBuffer::CloseAllSockets ()
       if (!Simulator::IsExpired (it->second.nextServe))
         {
           NS_LOG_INFO (this << " Canceling a serving event which is due in "
-                            << Simulator::GetDelayLeft (it->second.nextServe).GetSeconds ()
-                            << " seconds.");
+                            << Simulator::GetDelayLeft (it->second.nextServe).As (Time::S)
+                            << ".");
           Simulator::Cancel (it->second.nextServe);
         }
 
@@ -892,7 +892,7 @@ ThreeGppHttpServerTxBuffer::RecordNextServe (Ptr<Socket>    socket,
                                              const EventId  &eventId,
                                              const Time     &clientTs)
 {
-  NS_LOG_FUNCTION (this << socket << clientTs.GetSeconds ());
+  NS_LOG_FUNCTION (this << socket << clientTs.As (Time::S));
 
   std::map<Ptr<Socket>, TxBuffer_t>::iterator it;
   it = m_txBuffer.find (socket);
