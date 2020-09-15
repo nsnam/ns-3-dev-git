@@ -36,11 +36,14 @@ public:
   JakesPropagationExample ();
   ~JakesPropagationExample ();
 private:
-  Ptr<PropagationLossModel> m_loss;
-  Ptr<MobilityModel> m_firstMobility;
-  Ptr<MobilityModel> m_secondMobility;
-  Time m_step;
-  EventId m_nextEvent;
+  Ptr<PropagationLossModel> m_loss; //!< loss 
+  Ptr<MobilityModel> m_firstMobility; //!< first Mobility
+  Ptr<MobilityModel> m_secondMobility; //!<second Mobility
+  Time m_step;  //!< step
+  EventId m_nextEvent; //!< next event 
+  /**
+   * Next function
+   * */
   void Next ();
 
 };
@@ -63,7 +66,7 @@ JakesPropagationExample::~JakesPropagationExample ()
 void JakesPropagationExample::Next ()
 {
   m_nextEvent = Simulator::Schedule (m_step, &JakesPropagationExample::Next, this);
-  std::cout << Simulator::Now ().GetMilliSeconds () << " " << m_loss->CalcRxPower (0, m_firstMobility, m_secondMobility) << std::endl;
+  std::cout << Simulator::Now ().As (Time::MS) << " " << m_loss->CalcRxPower (0, m_firstMobility, m_secondMobility) << std::endl;
 }
 
 int main (int argc, char *argv[])
