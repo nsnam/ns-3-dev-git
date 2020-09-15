@@ -130,6 +130,12 @@ public:
 
 private:
   /**
+   * \brief Shuffle the elements of a simple sequence container of type double
+   * \param first Pointer to the first element among the elements to be shuffled
+   * \param last Pointer to the last element among the elements to be shuffled
+   */
+  void Shuffle (double * first, double * last) const;
+  /**
    * Extends the struct ChannelMatrix by including information that are used 
    * within the class ThreeGppChannelModel
    */
@@ -245,6 +251,7 @@ private:
   Ptr<ChannelConditionModel> m_channelConditionModel; //!< the channel condition model
   Ptr<UniformRandomVariable> m_uniformRv; //!< uniform random variable
   Ptr<NormalRandomVariable> m_normalRv; //!< normal random variable
+  Ptr<UniformRandomVariable> m_uniformRvShuffle; //!< uniform random variable used to shuffle array in GetNewChannel
 
   // parameters for the blockage model
   bool m_blockage; //!< enables the blockage model A

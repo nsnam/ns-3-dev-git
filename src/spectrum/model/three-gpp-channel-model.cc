@@ -164,6 +164,7 @@ ThreeGppChannelModel::ThreeGppChannelModel ()
 {
   NS_LOG_FUNCTION (this);
   m_uniformRv = CreateObject<UniformRandomVariable> ();
+  m_uniformRvShuffle = CreateObject<UniformRandomVariable> ();
 
   m_normalRv = CreateObject<NormalRandomVariable> ();
   m_normalRv->SetAttribute ("Mean", DoubleValue (0.0));
@@ -978,6 +979,8 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
           clusterDelay.erase (clusterDelay.begin () + cIndex - 1);
         }
     }
+
+  NS_ASSERT(clusterPower.size () < UINT8_MAX);
   uint8_t numReducedCluster = clusterPower.size ();
 
   channelParams->m_numCluster = numReducedCluster;
@@ -1032,7 +1035,7 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
       C_NLOS = 1.289;
       break;
     default:
-      NS_FATAL_ERROR ("Invalide cluster number");
+      NS_FATAL_ERROR ("Invalid cluster number");
     }
 
   if (los)
@@ -1069,7 +1072,7 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
       C_NLOS = 1.178;
       break;
     default:
-      NS_FATAL_ERROR ("Invalide cluster number");
+      NS_FATAL_ERROR ("Invalid cluster number");
     }
 
   if (los)
@@ -1290,10 +1293,10 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, bool los, bool o2i,
   //shuffle all the arrays to perform random coupling
   for (uint8_t cIndex = 0; cIndex < numReducedCluster; cIndex++)
     {
-      std::shuffle (&rayAod_radian[cIndex][0],&rayAod_radian[cIndex][raysPerCluster],std::default_random_engine (cIndex * 1000 + 100));
-      std::shuffle (&rayAoa_radian[cIndex][0],&rayAoa_radian[cIndex][raysPerCluster],std::default_random_engine (cIndex * 1000 + 200));
-      std::shuffle (&rayZod_radian[cIndex][0],&rayZod_radian[cIndex][raysPerCluster],std::default_random_engine (cIndex * 1000 + 300));
-      std::shuffle (&rayZoa_radian[cIndex][0],&rayZoa_radian[cIndex][raysPerCluster],std::default_random_engine (cIndex * 1000 + 400));
+      Shuffle (&rayAod_radian[cIndex][0], &rayAod_radian[cIndex][raysPerCluster]);
+      Shuffle (&rayAoa_radian[cIndex][0], &rayAoa_radian[cIndex][raysPerCluster]);
+      Shuffle (&rayZod_radian[cIndex][0], &rayZod_radian[cIndex][raysPerCluster]);
+      Shuffle (&rayZoa_radian[cIndex][0], &rayZoa_radian[cIndex][raysPerCluster]);
     }
 
   //Step 9: Generate the cross polarization power ratios
@@ -1806,13 +1809,24 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage (Ptr<ThreeGppChannelModel::Three
   return powerAttenuation;
 }
 
+
+void
+ThreeGppChannelModel::Shuffle (double * first, double * last) const
+{
+  for (auto i = (last-first) - 1 ; i > 0; --i)
+    {
+      std::swap (first[i], first[m_uniformRvShuffle->GetInteger (0, i)]);
+    }
+}
+
 int64_t
 ThreeGppChannelModel::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_normalRv->SetStream (stream);
   m_uniformRv->SetStream (stream + 1);
-  return 2;
+  m_uniformRvShuffle->SetStream (stream + 2);
+  return 3;
 }
 
 }  // namespace ns3
