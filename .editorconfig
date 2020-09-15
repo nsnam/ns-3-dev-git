@@ -1,0 +1,31 @@
+# EditorConfig
+#
+# This file configures indentation styles for source files in
+# supporting editors.
+#
+# See https://editorconfig.org/ for more.
+
+# Do not search for additional .editorconfig files above this
+# directory.
+root = true
+
+[*]
+end_of_line = lf # Unix-style newlines
+charset = utf-8 # All files are in UTF-8
+insert_final_newline = true # All files end with a newline
+
+[Makefile]
+indent_style = tab
+tab_width = 4
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[wscript]
+indent_style = space
+indent_size = 4
+
+[*.{cc,h}]
+indent_style = space
+indent_size = 2
