@@ -19,7 +19,7 @@ host networking stack and gains direct access to network device.
 netmap was developed by Luigi Rizzo [Rizzo2012]_ and is maintained as
 an open source project on GitHub at https://github.com/luigirizzo/netmap.
 
-The NetmapNetDevice for ns-3 [Imputato2019]_ was developed by Pasquale Imputato in the 2017-19 timeframe.  The use of NetmapNetDevice requires that the
+The ``NetmapNetDevice`` for |ns3| [Imputato2019]_ was developed by Pasquale Imputato in the 2017-19 timeframe.  The use of NetmapNetDevice requires that the
 host system has netmap support (and for best performance, the drivers
 must support netmap and must be using a netmap-enabled device driver).  Users
 can expect that emulation support using Netmap will support higher packets
@@ -46,7 +46,7 @@ read/write methods, which have to make use of the netmap API to coordinate
 the exchange of packets with the netmap rings.
 
 In the initialization stage, the network device is switched to netmap mode,
-so that ns-3 is able to send/receive packets to/from the
+so that |ns3| is able to send/receive packets to/from the
 real network device by writing/reading them to/from the netmap rings.
 Following the design of the ``FdNetDevice``, a separate reading thread is
 started during the initialization. The task of the reading thread is 
@@ -68,18 +68,18 @@ amount of bytes that have been transferred to the network device.
 
 The read method is called by the reading thread to retrieve new incoming
 packets stored in the netmap receiver ring and pass them to the appropriate
-ns-3 protocol handler for further processing within the simulator’s network
+|ns3| protocol handler for further processing within the simulator’s network
 stack. After retrieving packets, the reading thread also synchronizes
 the netmap receiver ring, so that the retrieved packets can be removed
 from the netmap receiver ring.
 
 The ``NetmapNetDevice`` also specializes the write method, i.e., the method
-used to transmit a packet received from the upper layer (the ns-3 traffic
+used to transmit a packet received from the upper layer (the |ns3| traffic
 control layer).  The write method uses the netmap API to write the packet to a
 free slot in the netmap
 transmission ring. After writing a packet, the write method checks whether 
 there is enough room in the netmap transmission ring for another packet. 
-If not, the ``NetmapNetDevice`` stops its queue so that the ns-3 traffic
+If not, the ``NetmapNetDevice`` stops its queue so that the |ns3| traffic
 control layer does not attempt to send a packet that could not be stored in 
 the netmap transmission ring.
 
@@ -90,7 +90,7 @@ transmission ring. In particular, the sync thread also checks the number of
 free slots in the netmap transmission ring in case the ``NetmapNetDevice``
 queue is stopped.  If the number of free slots exceeds a configurable value,
 the sync thread restarts the ``NetmapNetDevice``
-queue and wakes the associated ns-3 qdisc. The NetmapNetDevice also supports
+queue and wakes the associated |ns3| qdisc. The NetmapNetDevice also supports
 BQL: the write method notifies the BQL library of the amount of bytes that
 have been written to the netmap transmission ring, while the sync thread
 notifies the BQL library of the amount of bytes that have been removed from
@@ -110,10 +110,10 @@ Usage
 The installation of netmap itself on a host machine is out of scope for
 this document.  Refer to the `netmap GitHub README <https://github.com/luigirizzo/netmap>`_ for instructions.
 
-The ns-3 netmap code has only been tested on Linux; it is not clear whether
+The |ns3| netmap code has only been tested on Linux; it is not clear whether
 other operating systems can be supported.
 
-If ns-3 is able to detect the presence of netmap on the system, it will
+If |ns3| is able to detect the presence of netmap on the system, it will
 report that:
 
 .. sourcecode:: text
@@ -133,15 +133,21 @@ privileges.
 Helpers
 =======
 
-ns-3 netmap support uses a ``NetMapNetDeviceHelper`` helper object to
-install the NetmapNetDevice.  In other respects, the API and use is similar
+|ns3| netmap support uses a ``NetMapNetDeviceHelper`` helper object to
+install the ``NetmapNetDevice``.  In other respects, the API and use is similar
 to that of the ``EmuFdNetDeviceHelper``.
 
 Attributes
 ==========
 
-The ``NetmapNetDevice`` does not have any specialized attributes, but
-supports the ``FdNetDevice`` attributes (see the chapter on ``FdNetDevice``).
+There is one attribute specialized to ``NetmapNetDevice``, named
+``SyncAndNotifyQueuePeriod``.  This value takes an integer number of
+microseconds, and is used as the period of time after which the device
+syncs the netmap ring and notifies queue status.  The value should be
+close to the interrupt coalescence period of the real device.  Users
+may want to tune this parameter for their own system; it should be 
+a compromise between CPU usage and accuracy in the ring sync (if it is
+too high, the device goes into starvation and lower throughput occurs).
 
 Output
 ======

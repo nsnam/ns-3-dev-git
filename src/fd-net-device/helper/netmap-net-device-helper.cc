@@ -87,7 +87,7 @@ NetmapNetDeviceHelper::InstallPriv (Ptr<Node> node) const
 {
   Ptr<NetDevice> d = FdNetDeviceHelper::InstallPriv (node);
   Ptr<FdNetDevice> device = d->GetObject<FdNetDevice> ();
-  
+
   SetDeviceAttributes (device);
 
   int fd = CreateFileDescriptor ();
@@ -96,8 +96,8 @@ NetmapNetDeviceHelper::InstallPriv (Ptr<Node> node) const
 
   // Aggregate NetDeviceQueueInterface object
   Ptr<NetDeviceQueueInterface> ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> (
-                                      "TxQueuesType", TypeIdValue (NetDeviceQueueLock::GetTypeId ()),
-                                      "NTxQueues", UintegerValue (1));
+      "TxQueuesType", TypeIdValue (NetDeviceQueueLock::GetTypeId ()),
+      "NTxQueues", UintegerValue (1));
 
   device->AggregateObject (ndqi);
   netmapDevice->SetNetDeviceQueue (ndqi->GetTxQueue (0));
@@ -156,7 +156,7 @@ NetmapNetDeviceHelper::SetDeviceAttributes (Ptr<FdNetDevice> device) const
       NS_FATAL_ERROR ("NetmapNetDeviceHelper::SetFileDescriptor (): "
                       << m_deviceName.c_str ()
                       << " is not in promiscuous mode. Please config the interface in promiscuous "
-                         "mode before to run the simulation.");
+                      "mode before to run the simulation.");
     }
 
   if ((ifr.ifr_flags & IFF_BROADCAST) != IFF_BROADCAST)

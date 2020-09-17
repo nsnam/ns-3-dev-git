@@ -199,6 +199,12 @@ protected:
   virtual void DoDispose (void);
 
   /**
+   * Get the associated file descriptor.
+   * \return the associated file descriptor
+   */
+  int GetFileDescriptor (void) const;
+
+  /**
    * Allocate packet buffer.
    */
   virtual uint8_t* AllocateBuffer(size_t len);
@@ -212,11 +218,6 @@ protected:
    * Callback to invoke when a new frame is received
    */
   void ReceiveCallback (uint8_t *buf, ssize_t len);
-  /**
-   * Get the associated file descriptor.
-   * \return the associated file descriptor
-   */
-  int GetFileDescriptor (void) const;
 
   /**
    * Mutex to increase pending read counter.

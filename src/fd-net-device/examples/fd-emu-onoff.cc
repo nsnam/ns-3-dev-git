@@ -55,9 +55,9 @@
 //             |                            |
 //             +----------------------------+
 //
-// This example is aimed at measuring the throughput of the FdNetDevice (NetmapNetDevice)
-// when using the EmuFdNetDeviceHelper (NetmapNetDeviceHelper). This is achieved by saturating
-// the channel with TCP or UDP traffic. Then the throughput can be obtained from 
+// This example is aimed at measuring the throughput of the FdNetDevice
+// when using the EmuFdNetDeviceHelper. This is achieved by saturating
+// the channel with TCP traffic. Then the throughput can be obtained from
 // the generated .pcap files.
 //
 // To run this example you will need two hosts (client & server).

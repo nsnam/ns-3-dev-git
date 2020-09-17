@@ -18,14 +18,15 @@
  * Author: Pasquale Imputato <p.imputato@gmail.com>
  */
 
-/* 
+/*
  * This example builds a node with a device in emulation mode in {raw, netmap}.
- * The aim is to measure the maximum tx rate in pps achievable with NetmapNetDevice and FdNetDevice on a specific machine.
+ * The aim is to measure the maximum tx rate in pps achievable with 
+ * NetmapNetDevice and FdNetDevice on a specific machine.
  * The emulated device must be connected and in promiscuous mode.
- * 
- * If you run emulation in netmap mode, you need before to load the netmap.ko module.
- * The user is in charge to configure and build netmap separately.
  *
+ * If you run emulation in netmap mode, you need before to load the 
+ * netmap.ko module.  The user is responsible for configuring and building
+ * netmap separately.
  */
 
 #include "ns3/abort.h"
@@ -46,25 +47,24 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("NetmapEmulationSendExample");
 
-// this function sends a number packets by means the SendFrom method or
-// the Write method (depending from the level value) of a FdNetDevice or of a NetmapNetDevice
-// (depending from the emulation mode value).
+// This function sends a number of packets by means of the SendFrom method or
+// the Write method (depending on the level value) of a FdNetDevice or
+// of a NetmapNetDevice (depending on the emulation mode value).
 
 static void
 Send (Ptr<NetDevice> dev, int level, std::string emuMode)
 {
-
   Ptr<FdNetDevice> device = DynamicCast<FdNetDevice> (dev);
 
   int packets = 10000000;
 
-  Mac48Address sender = Mac48Address("00:00:00:aa:00:01");
-  Mac48Address receiver = Mac48Address("ff:ff:ff:ff:ff:ff");
+  Mac48Address sender = Mac48Address ("00:00:00:aa:00:01");
+  Mac48Address receiver = Mac48Address ("ff:ff:ff:ff:ff:ff");
 
   int packetsSize = 64;
   Ptr<Packet> packet = Create<Packet> (packetsSize);
   EthernetHeader header;
- 
+
   ssize_t len =  (size_t) packet->GetSize ();
   uint8_t *buffer = (uint8_t*)malloc (len);
   packet->CopyData (buffer, len);
@@ -79,13 +79,12 @@ Send (Ptr<NetDevice> dev, int level, std::string emuMode)
       ndq = ndqi->GetTxQueue (0);
     }
 
-
   std::cout << ((level == 0) ? "Writing" : "Sending") << std::endl;
 
   // period to print the stats
   std::chrono::milliseconds period (1000);
 
-  auto t1 = std::chrono::high_resolution_clock::now();
+  auto t1 = std::chrono::high_resolution_clock::now ();
 
   while (packets > 0)
     {
@@ -118,38 +117,27 @@ Send (Ptr<NetDevice> dev, int level, std::string emuMode)
           sent++;
         }
 
-      auto t2 = std::chrono::high_resolution_clock::now();
+      auto t2 = std::chrono::high_resolution_clock::now ();
 
       if (t2 - t1 >= period)
         {
-
           // print stats
           std::chrono::duration<double, std::milli> dur = (t2 - t1); // in ms
           double estimatedThr = ((sent - failed) * packetsSize * 8) / 1000000; // in Mbps
-
-          std::cout << sent << " packets sent in "<< dur.count () << " ms, failed " << failed <<" (" << estimatedThr << " Mbps estimanted throughput)" << std::endl ;
-
+          std::cout << sent << " packets sent in " << dur.count () << " ms, failed " << failed << " (" << estimatedThr << " Mbps estimated throughput)" << std::endl;
           sent = 0;
           failed = 0;
-          t1 = std::chrono::high_resolution_clock::now();
-
+          t1 = std::chrono::high_resolution_clock::now ();
         }
-
       packets--;
-
     }
-
 }
 
 int
 main (int argc, char *argv[])
 {
-  NS_LOG_INFO ("Emu Send Example");
-
   std::string deviceName ("eno1");
   int level = 0;
-  std::string localAddress ("1.2.3.4");
-  std::string localGateway ("1.2.3.4");
 
 #ifdef HAVE_PACKET_H
   std::string emuMode ("raw");
@@ -160,17 +148,9 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("deviceName", "Device name", deviceName);
   cmd.AddValue ("level", "Enable send (1) or write (0) level test", level);
-  cmd.AddValue ("localIp", "Local IP address (dotted decimal only please)", localAddress);
-  cmd.AddValue ("gateway", "Gateway address (dotted decimal only please)", localGateway);
   cmd.AddValue ("emuMode", "Emulation mode in {raw, netmap}", emuMode);
 
   cmd.Parse (argc, argv);
-
-  Ipv4Address localIp (localAddress.c_str ());
-  NS_ABORT_MSG_IF (localIp == "1.2.3.4", "You must change the local IP address before running this example");
-
-  Ipv4Mask localMask (localGateway.c_str ());
-  NS_ABORT_MSG_IF (localMask == "1.2.3.4", "You must change the local mask before running this example");
 
   GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
 
@@ -208,16 +188,6 @@ main (int argc, char *argv[])
   NetDeviceContainer devices = helper->Install (node);
   Ptr<NetDevice> device = devices.Get (0);
   device->SetAttribute ("Address", Mac48AddressValue (Mac48Address::Allocate ()));
-
-
-  // NS_LOG_INFO ("Add Internet Stack");
-  // InternetStackHelper internetStackHelper;
-  // internetStackHelper.Install (node);
-
-
-  //  TrafficControlHelper tch;
-  //  tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  //  tch.Install (devices);
 
   Simulator::Schedule (Seconds (3), &Send, device, level, emuMode);
 

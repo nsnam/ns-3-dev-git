@@ -473,4 +473,18 @@ DpdkNetDevice::Write (uint8_t *buffer, size_t length)
   return length;
 }
 
+void
+DpdkNetDevice::DoFinishStoppingDevice (void)
+{
+  CriticalSection cs (m_pendingReadMutex);
+
+  while (!m_pendingQueue.empty ())
+    {
+      std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
+      m_pendingQueue.pop ();
+
+      FreeBuffer (next.first);
+    }
+}
+
 } // namespace ns3

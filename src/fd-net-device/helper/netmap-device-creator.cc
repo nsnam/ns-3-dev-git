@@ -51,12 +51,12 @@ main (int argc, char *argv[])
     {
       switch (c)
         {
-        case 'v':
-          gVerbose = true;
-          break;
-        case 'p':
-          path = optarg;
-          break;
+          case 'v':
+            gVerbose = true;
+            break;
+          case 'p':
+            path = optarg;
+            break;
         }
     }
 

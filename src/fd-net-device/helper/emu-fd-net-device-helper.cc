@@ -66,8 +66,8 @@ NS_LOG_COMPONENT_DEFINE ("EmuFdNetDeviceHelper");
 EmuFdNetDeviceHelper::EmuFdNetDeviceHelper ()
 {
   m_deviceName = "undefined";
-  m_dpdkMode = false;
   m_hostQdiscBypass = false;
+  m_dpdkMode = false;
 }
 
 void
@@ -76,6 +76,11 @@ EmuFdNetDeviceHelper::SetDeviceName (std::string deviceName)
   m_deviceName = deviceName;
 }
 
+void
+EmuFdNetDeviceHelper::HostQdiscBypass (bool hostQdiscBypass)
+{
+  m_hostQdiscBypass = hostQdiscBypass;
+}
 void
 EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
 {
@@ -91,12 +96,6 @@ EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
 #else
   NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetDpdkMode (): Attempted to set DPDK Mode without DPDK support enabled");
 #endif
-}
-
-void
-EmuFdNetDeviceHelper::HostQdiscBypass (bool hostQdiscBypass)
-{
-  m_hostQdiscBypass = hostQdiscBypass;
 }
 
 std::string

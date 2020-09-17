@@ -618,8 +618,8 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
       AddPIHeader (buffer, len);
     }
 
-  ssize_t written = Write (buffer, len);
-  free (buffer);
+  ssize_t written = Write(buffer, len);
+  FreeBuffer (buffer);
 
   if (written == -1 || (size_t) written != len)
     {
@@ -635,7 +635,8 @@ FdNetDevice::Write (uint8_t *buffer, size_t length)
 {
   NS_LOG_FUNCTION (this << buffer << length);
 
-  return write (m_fd, buffer, length);
+  uint32_t ret = write (m_fd, buffer, length);
+  return ret;
 }
 
 void

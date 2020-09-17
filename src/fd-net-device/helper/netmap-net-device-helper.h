@@ -47,8 +47,7 @@ public:
 
   NetmapNetDeviceHelper ();
   virtual ~NetmapNetDeviceHelper ()
-  {
-  }
+  {}
 
   /**
    * \brief Get the device name of this device.

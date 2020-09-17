@@ -69,20 +69,15 @@ public:
   void HostQdiscBypass (bool hostQdiscBypass);
 
   /**
-   * Set the device in Dpdk mode.
+   * Set the device in DPDK mode.
    *
    * \param argc Dpdk EAL args count.
    * \param argv Dpdk EAL args list.
    */
   void SetDpdkMode (int argc, char **argv);
 
-  /**
-   * \brief Request host qdisc bypass
-   * \param hostQdiscBypass to enable host qdisc bypass
-   */
-  void HostQdiscBypass (bool hostQdiscBypass);
-
 protected:
+
   /**
    * This method creates an ns3::FdNetDevice attached to a physical network
    * interface
@@ -105,26 +100,25 @@ protected:
   virtual int CreateFileDescriptor (void) const;
 
   /**
-   * The unix/linux name of the underlying device (e.g., eth0)
+   * The Unix/Linux name of the underlying device (e.g., eth0)
    */
   std::string m_deviceName;
+  bool m_hostQdiscBypass;
 
   /**
-   * The dpdk mode of the device.
+   * The DPDK mode of the device.
    */
   bool m_dpdkMode;
 
   /**
-   * Dpdk EAL arguements count.
+   * DPDK EAL arguments count.
    */
   int m_ealArgc;
 
   /**
-   * Dpdk EAL arguements list.
+   * DPDK EAL arguments list.
    */
   char **m_ealArgv;
-
-  bool m_hostQdiscBypass;
 };
 
 } // namespace ns3

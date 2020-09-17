@@ -31,12 +31,13 @@
  *   1 Gbps access incoming link     |             |           100 Mbps bottleneck outgoing link
  * -----------------------------------             -----------------------------------
  *
- * This example builds a node with two interfaces in emulation mode in {raw, netmap}.
- * The aim is to explore different qdiscs behaviours on the backlog of a device emulated bottleneck side.
- * 
- * If you run emulation in netmap mode, you need before to load the netmap.ko module.
- * The user is in charge to configure and build netmap separately.
- * 
+ * This example builds a node with two interfaces in emulation mode in 
+ * either {raw, netmap}. The aim is to explore different qdiscs behaviours 
+ * on the backlog of a device emulated bottleneck side.
+ *
+ * If you run emulation in netmap mode, you need before to load the 
+ * netmap.ko module.  The user is responsible for configuring and building
+ * netmap separately.
  */
 
 #include "ns3/abort.h"
@@ -56,8 +57,8 @@ void
 TcPacketsInQueue (Ptr<QueueDisc> q, Ptr<OutputStreamWrapper> stream)
 {
   Simulator::Schedule (Seconds (0.001), &TcPacketsInQueue, q, stream);
-   *stream->GetStream () << Simulator::Now ().GetSeconds () << " backlog " << q->GetNPackets () << "p " << q->GetNBytes () << "b "<< " dropped " 
-  << q->GetStats ().nTotalDroppedPackets << "p " << q->GetStats ().nTotalDroppedBytes << "b " << std::endl;
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << " backlog " << q->GetNPackets () << "p " << q->GetNBytes () << "b " << " dropped "
+                        << q->GetStats ().nTotalDroppedPackets << "p " << q->GetStats ().nTotalDroppedBytes << "b " << std::endl;
 }
 
 #ifdef HAVE_NETMAP_USER_H
@@ -65,7 +66,7 @@ void
 Inflight (Ptr<NetmapNetDevice> dev, Ptr<OutputStreamWrapper> stream)
 {
   Simulator::Schedule (Seconds (0.001), &Inflight, dev, stream);
-   *stream->GetStream () << dev->GetBytesInNetmapTxRing () << std::endl;
+  *stream->GetStream () << dev->GetBytesInNetmapTxRing () << std::endl;
 }
 #endif
 

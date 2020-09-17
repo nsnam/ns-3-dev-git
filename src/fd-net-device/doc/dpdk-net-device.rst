@@ -1,5 +1,5 @@
 DPDK NetDevice
--------------------------
+--------------
 .. include:: replace.txt
 .. highlight:: cpp
 
@@ -101,12 +101,12 @@ To compile DPDK from source, you need to perform the following 4 steps:
 1. Download the source
 ######################
 
-Head over to `DPDK Downloads <https://core.dpdk.org/download/>`_ page to get the latest stable source. (This module has been tested with version 19.11 LTS and DpdkNetDevice will only be enabled if this version is available.)
+Visit the `DPDK Downloads <https://core.dpdk.org/download/>`_ page to download the latest stable source. (This module has been tested with version 19.11 LTS and DpdkNetDevice will only be enabled if this version is available.)
 
 2. Configure DPDK as a shared library
 #####################################
 
-Goto the DPDK directory, edit ``config/common_base`` file to change following line to compile DPDK as a shared library:
+In the DPDK directory, edit the ``config/common_base`` file to change the following line to compile DPDK as a shared library:
 
 .. sourcecode:: text
 
@@ -116,7 +116,7 @@ Goto the DPDK directory, edit ``config/common_base`` file to change following li
 3. Install the source
 #####################
 
-Refer `Installation <https://doc.dpdk.org/guides/linux_gsg/build_dpdk.html>`_ for detailed instructions.
+Refer to `Installation <https://doc.dpdk.org/guides/linux_gsg/build_dpdk.html>`_ for detailed instructions.
 
 For a 64 bit linux machine with gcc, run:
 
@@ -127,7 +127,7 @@ For a 64 bit linux machine with gcc, run:
 4. Export DPDK Environment variables
 ####################################
 
-Export following environment variables:
+Export the following environment variables:
 
 * RTE_SDK as the your DPDK source folder.
 * RTE_TARGET as the build target directory.
@@ -147,7 +147,7 @@ It is advisable that you export these variables in ``.bashrc`` or similar for re
 Load DPDK Drivers to kernel
 ===========================
 
-Execute following:
+Execute the following:
 
 .. sourcecode:: text
 
@@ -229,7 +229,7 @@ it is found, a user should see:
 
 ``DpdkNetDevice`` does not use a dedicated helper class, but reuses the 
 ``EmuFdNetDeviceHelper`` class provided in the ``fd-net-device/helper`` 
-directory. The ``EmuFdNetDeviceHelper`` will allows us to set ``dpdkMode``
+directory. The ``EmuFdNetDeviceHelper`` allows us to set ``dpdkMode``
 which will launch the ``DpdkNetDevice`` instead of the ``FdNetDevice``.
 
 .. sourcecode:: text
@@ -320,5 +320,5 @@ Examples
 
 The following examples are provided:
 
-* ``fd-emu-dpdk-ping.cc``: This example uses the EmuFdNetDeviceHelper in Dpdk mode to send ICMP traffic bypassing the kernel over a real channel.
-* ``fd-emu-dpdk-onoff.cc``: This example allows us to measure the throughput of the ``DpdkNetDevice`` by sending traffic from the simulated node to a real device using the ``ns3::OnOffApplication`` while leveraging DPDK’s fast packet processing abilities. This is achieved by saturating the channel with TCP/UDP traffic.
+* ``fd-emu-ping.cc``: This example can be configured to use the EmuFdNetDeviceHelper in DPDK mode to send ICMP traffic bypassing the kernel over a real channel.
+* ``fd-emu-onoff.cc``: This example can be configured to measure the throughput of the ``DpdkNetDevice`` by sending traffic from the simulated node to a real device using the ``ns3::OnOffApplication`` while leveraging DPDK’s fast packet processing abilities. This is achieved by saturating the channel with TCP/UDP traffic.

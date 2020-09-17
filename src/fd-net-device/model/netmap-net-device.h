@@ -99,7 +99,7 @@ private:
 
 /**
  * \ingroup fd-net-device
- * 
+ *
  * \brief This class performs the actual data reading from the netmap ring.
  */
 class NetmapNetDeviceFdReader : public FdReader
@@ -212,6 +212,7 @@ private:
   uint32_t m_totalQueuedBytes; //!< Total queued bytes
   Ptr<SystemThread> m_syncAndNotifyQueueThread; //!< Thread used to perform the flow control
   std::atomic<bool> m_syncAndNotifyQueueThreadRun; //!< Running flag of the flow control thread
+  uint8_t m_syncAndNotifyQueuePeriod; //!< The period of time in us after which the device syncs the netmap ring and notifies queue status
 };
 
 } // namespace ns3

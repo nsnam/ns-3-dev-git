@@ -52,23 +52,23 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId(void);
+  static TypeId GetTypeId (void);
 
   /**
    * Constructor for the DpdkNetDevice.
    */
-  DpdkNetDevice();
+  DpdkNetDevice ();
 
   /**
    * Destructor for the DpdkNetDevice.
    */
-  ~DpdkNetDevice();
+  ~DpdkNetDevice ();
 
   /**
    * Check the link status of all ports in up to 9s
    * and print them finally
    */
-  void CheckAllPortsLinkStatus(void);
+  void CheckAllPortsLinkStatus (void);
 
   /**
    * Initialize Dpdk.
@@ -77,42 +77,42 @@ public:
    * \param argc Dpdk EAL args count.
    * \param argv Dpdk EAL args list.
    */
-  void InitDpdk(int argc, char **argv);
+  void InitDpdk (int argc, char **argv);
 
   /**
    * Set device name.
    *
    * \param deviceName The device name.
    */
-  void SetDeviceName(std::string deviceName);
+  void SetDeviceName (std::string deviceName);
 
   /**
    * A signal handler for SIGINT and SIGTERM signals.
    *
    * \param signum The signal number.
    */
-  static void SignalHandler(int signum);
+  static void SignalHandler (int signum);
 
   /**
    * A function to handle rx & tx operations.
    */
-  static int LaunchCore(void *arg);
+  static int LaunchCore (void *arg);
 
   /**
    * Transmit packets in burst from the tx_buffer to the nic.
    */
-  void HandleTx();
+  void HandleTx ();
 
   /**
    * Receive packets in burst from the nic to the rx_buffer.
    */
-  void HandleRx();
+  void HandleRx ();
 
   /**
    * Check the status of the link.
    * \return Status of the link - up/down as true/false.
    */
-  bool IsLinkUp(void) const;
+  bool IsLinkUp (void) const;
 
   /**
    * Free the given packet buffer.
@@ -122,7 +122,7 @@ public:
   /**
    * Allocate packet buffer.
    */
-  virtual uint8_t* AllocateBuffer(size_t len);
+  virtual uint8_t* AllocateBuffer (size_t len);
 
 protected:
   /**
@@ -131,7 +131,7 @@ protected:
    * \param length The data length.
    * \return The size of data written.
    */
-  ssize_t Write(uint8_t *buffer, size_t length);
+  ssize_t Write (uint8_t *buffer, size_t length);
 
   /**
    * The port number of the device to be used.
@@ -144,6 +144,7 @@ protected:
   std::string m_deviceName;
 
 private:
+  void DoFinishStoppingDevice (void);
   /**
    * Condition variable for Dpdk to stop
    */

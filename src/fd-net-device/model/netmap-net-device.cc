@@ -20,6 +20,7 @@
 
 #include "netmap-net-device.h"
 #include "ns3/system-thread.h"
+#include "ns3/uinteger.h"
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -31,19 +32,17 @@ TypeId
 NetDeviceQueueLock::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetDeviceQueueLock")
-                          .SetParent<NetDeviceQueue> ()
-                          .SetGroupName ("Network")
-                          .AddConstructor<NetDeviceQueueLock> ();
+    .SetParent<NetDeviceQueue> ()
+    .SetGroupName ("Network")
+    .AddConstructor<NetDeviceQueueLock> ();
   return tid;
 }
 
 NetDeviceQueueLock::NetDeviceQueueLock ()
-{
-}
+{}
 
 NetDeviceQueueLock::~NetDeviceQueueLock ()
-{
-}
+{}
 
 bool
 NetDeviceQueueLock::IsStopped (void) const
@@ -95,10 +94,10 @@ NetDeviceQueueLock::NotifyTransmittedBytes (uint32_t bytes)
 }
 
 NetmapNetDeviceFdReader::NetmapNetDeviceFdReader ()
-    : m_bufferSize (65536), // Defaults to maximum TCP window size
-      m_nifp (nullptr)
-{
-}
+  : m_bufferSize (65536),
+    // Defaults to maximum TCP window size
+    m_nifp (nullptr)
+{}
 
 void
 NetmapNetDeviceFdReader::SetBufferSize (uint32_t bufferSize)
@@ -171,9 +170,14 @@ TypeId
 NetmapNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetmapNetDevice")
-                          .SetParent<FdNetDevice> ()
-                          .SetGroupName ("FdNetDevice")
-                          .AddConstructor<NetmapNetDevice> ();
+    .SetParent<FdNetDevice> ()
+    .SetGroupName ("FdNetDevice")
+    .AddConstructor<NetmapNetDevice> ()
+    .AddAttribute ("SyncAndNotifyQueuePeriod",
+                   "The period of time (in number of us) after which the device syncs the netmap ring and notifies queue status.",
+                   UintegerValue (50),
+                   MakeUintegerAccessor (&NetmapNetDevice::m_syncAndNotifyQueuePeriod),
+                   MakeUintegerChecker<uint8_t> ());
   return tid;
 }
 
@@ -337,9 +341,7 @@ NetmapNetDevice::SyncAndNotifyQueue ()
             }
         }
 
-      // we use a period to sync, check and notify of 200 us; it is a value close to the interrupt coalescence
-      // period of a real device
-      usleep (200);
+      usleep (m_syncAndNotifyQueuePeriod);
 
       NS_LOG_DEBUG ("Space in the netmap ring of " << nm_ring_space (txring) << " packets");
     }
