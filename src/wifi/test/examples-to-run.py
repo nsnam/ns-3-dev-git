@@ -468,10 +468,10 @@ cpp_examples = [
     ("wifi-test-interference-helper --enableCapture=0 --txPowerA=5 --txPowerB=15  --delay=20 --standard=WIFI_PHY_STANDARD_80211ac --preamble=WIFI_PREAMBLE_VHT_SU --txModeA=VhtMcs0 --txModeB=VhtMcs0 --checkResults=1 --expectRxASuccessfull=0 --expectRxBSuccessfull=0", "True", "True"),
     ("wifi-test-interference-helper --enableCapture=0 --txPowerA=5 --txPowerB=15  --delay=27 --standard=WIFI_PHY_STANDARD_80211ac --preamble=WIFI_PREAMBLE_VHT_SU --txModeA=VhtMcs0 --txModeB=VhtMcs0 --checkResults=1 --expectRxASuccessfull=0 --expectRxBSuccessfull=0", "True", "True"),
     ("wifi-test-interference-helper --enableCapture=1 --txPowerA=5 --txPowerB=15 --delay=10 --txModeA=OfdmRate6Mbps --txModeB=OfdmRate6Mbps --checkResults=1 --expectRxASuccessfull=0 --expectRxBSuccessfull=1", "True", "False"),
-    ("wifi-bianchi --validate --phyRate=54 --nMinStas=5 --nMaxStas=10 --duration=5", "False", "False"), # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
-    ("wifi-bianchi --validate --phyRate=6 --nMinStas=5 --nMaxStas=10 --duration=15", "True", "False"), # TODO: run from N=5 to N=50 for 400s (TAKES_FOREVER) when issue #170 is fixed
-    ("wifi-bianchi --validate --phyRate=54 --nMinStas=5 --nMaxStas=10 --duration=5 --infra", "False", "False"), # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
-    ("wifi-bianchi --validate --phyRate=6 --nMinStas=5 --nMaxStas=10 --duration=20 --infra", "False", "False"), # TODO: run from N=5 to N=50 for 600s (TAKES_FOREVER) when issue #170 is fixed
+    ("wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5", "False", "False"), # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
+    ("wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=15", "True", "False"), # TODO: run from N=5 to N=50 for 400s (TAKES_FOREVER) when issue #170 is fixed
+    ("wifi-bianchi --validate --phyMode=OfdmRate54Mbps --nMinStas=5 --nMaxStas=10 --duration=5 --infra", "False", "False"), # TODO: run from N=5 to N=50 for 100s (TAKES_FOREVER) when issue #170 is fixed
+    ("wifi-bianchi --validate --phyMode=OfdmRate6Mbps --nMinStas=5 --nMaxStas=10 --duration=20 --infra", "False", "False"), # TODO: run from N=5 to N=50 for 600s (TAKES_FOREVER) when issue #170 is fixed
 ]
 
 # A list of Python examples to run in order to ensure that they remain

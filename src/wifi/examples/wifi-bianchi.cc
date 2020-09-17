@@ -28,6 +28,7 @@
 #include "ns3/log.h"
 #include "ns3/config.h"
 #include "ns3/gnuplot.h"
+#include "ns3/boolean.h"
 #include "ns3/string.h"
 #include "ns3/double.h"
 #include "ns3/integer.h"
@@ -47,6 +48,8 @@
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/application-container.h"
+#include "ns3/ampdu-subframe-header.h"
+#include "ns3/wifi-mac.h"
 
 #define PI 3.1415926535
 
@@ -81,11 +84,12 @@ std::set<uint32_t> associated; ///< Contains the IDs of the STAs that successful
 
 bool tracing = false;    ///< Flag to enable/disable generation of tracing files
 uint32_t pktSize = 1500; ///< packet size used for the simulation (in bytes)
+uint8_t maxMpdus = 0;    ///< The maximum number of MPDUs in A-MPDUs (0 to disable MPDU aggregation)
 
-std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsEifs =
+std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsEifs =
 {
 /* 11b */
-    {1000000, {
+    {"DsssRate1Mbps", {
         {5, 0.8418},
         {10, 0.7831},
         {15, 0.7460},
@@ -97,7 +101,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 0.6386},
         {50, 0.6285},
     }},
-    {2000000, {
+    {"DsssRate2Mbps", {
         {5, 1.6170},
         {10, 1.5075},
         {15, 1.4371},
@@ -109,7 +113,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 1.2317},
         {50, 1.2124},
     }},
-    {5500000, {
+    {"DsssRate5_5Mbps", {
         {5, 3.8565},
         {10, 3.6170},
         {15, 3.4554},
@@ -121,7 +125,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 2.9725},
         {50, 2.9266},
     }},
-    {11000000, {
+    {"DsssRate11Mbps", {
         {5, 6.3821},
         {10, 6.0269},
         {15, 5.7718},
@@ -133,8 +137,8 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 4.9860},
         {50, 4.9103},
     }},
-/* 11a/g */
-    {6000000, {
+/* 11a */
+    {"OfdmRate6Mbps", {
         {5, 4.6899},
         {10, 4.3197},
         {15, 4.1107},
@@ -146,7 +150,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 3.5358},
         {50, 3.4711},
     }},
-    {9000000, {
+    {"OfdmRate9Mbps", {
         {5, 6.8188},
         {10, 6.2885},
         {15, 5.9874},
@@ -158,7 +162,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 5.1551},
         {50, 5.0612},
     }},
-    {12000000, {
+    {"OfdmRate12Mbps", {
         {5, 8.8972},
         {10, 8.2154},
         {15, 7.8259},
@@ -170,7 +174,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 6.7447},
         {50, 6.6225},
     }},
-    {18000000, {
+    {"OfdmRate18Mbps", {
         {5, 12.6719},
         {10, 11.7273},
         {15, 11.1814},
@@ -182,7 +186,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 9.6538},
         {50, 9.4804},
     }},
-    {24000000, {
+    {"OfdmRate24Mbps", {
         {5, 16.0836},
         {10, 14.9153},
         {15, 14.2327},
@@ -194,7 +198,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 12.3083},
         {50, 12.0889},
     }},
-    {36000000, {
+    {"OfdmRate36Mbps", {
         {5, 22.0092},
         {10, 20.4836},
         {15, 19.5743},
@@ -206,7 +210,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 16.9760},
         {50, 16.6777},
     }},
-    {48000000, {
+    {"OfdmRate48Mbps", {
         {5, 26.8382},
         {10, 25.0509},
         {15, 23.9672},
@@ -218,7 +222,104 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 20.8348},
         {50, 20.4729},
     }},
-    {54000000, {
+    {"OfdmRate54Mbps", {
+        {5, 29.2861},
+        {10, 27.3763},
+        {15, 26.2078},
+        {20, 25.3325},
+        {25, 24.6808},
+        {30, 24.0944},
+        {35, 23.5719},
+        {40, 23.1549},
+        {45, 22.8100},
+        {50, 22.4162},
+    }},
+/* 11g */
+    {"ErpOfdmRate6Mbps", {
+        {5, 4.6899},
+        {10, 4.3197},
+        {15, 4.1107},
+        {20, 3.9589},
+        {25, 3.8478},
+        {30, 3.7490},
+        {35, 3.6618},
+        {40, 3.5927},
+        {45, 3.5358},
+        {50, 3.4711},
+    }},
+    {"ErpOfdmRate9Mbps", {
+        {5, 6.8188},
+        {10, 6.2885},
+        {15, 5.9874},
+        {20, 5.7680},
+        {25, 5.6073},
+        {30, 5.4642},
+        {35, 5.3378},
+        {40, 5.2376},
+        {45, 5.1551},
+        {50, 5.0612},
+    }},
+    {"ErpOfdmRate12Mbps", {
+        {5, 8.8972},
+        {10, 8.2154},
+        {15, 7.8259},
+        {20, 7.5415},
+        {25, 7.3329},
+        {30, 7.1469},
+        {35, 6.9825},
+        {40, 6.8521},
+        {45, 6.7447},
+        {50, 6.6225},
+    }},
+    {"ErpOfdmRate18Mbps", {
+        {5, 12.6719},
+        {10, 11.7273},
+        {15, 11.1814},
+        {20, 10.7810},
+        {25, 10.4866},
+        {30, 10.2237},
+        {35, 9.9910},
+        {40, 9.8061},
+        {45, 9.6538},
+        {50, 9.4804},
+    }},
+    {"ErpOfdmRate24Mbps", {
+        {5, 16.0836},
+        {10, 14.9153},
+        {15, 14.2327},
+        {20, 13.7300},
+        {25, 13.3595},
+        {30, 13.0281},
+        {35, 12.7343},
+        {40, 12.5008},
+        {45, 12.3083},
+        {50, 12.0889},
+    }},
+    {"ErpOfdmRate36Mbps", {
+        {5, 22.0092},
+        {10, 20.4836},
+        {15, 19.5743},
+        {20, 18.8997},
+        {25, 18.4002},
+        {30, 17.9524},
+        {35, 17.5545},
+        {40, 17.2377},
+        {45, 16.9760},
+        {50, 16.6777},
+    }},
+    {"ErpOfdmRate48Mbps", {
+        {5, 26.8382},
+        {10, 25.0509},
+        {15, 23.9672},
+        {20, 23.1581},
+        {25, 22.5568},
+        {30, 22.0165},
+        {35, 21.5355},
+        {40, 21.1519},
+        {45, 20.8348},
+        {50, 20.4729},
+    }},
+    {"ErpOfdmRate54Mbps", {
         {5, 29.2861},
         {10, 27.3763},
         {15, 26.2078},
@@ -232,10 +333,10 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
     }},
 };
 
-std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsDifs =
+std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, double /* calculated throughput */> > bianchiResultsDifs =
 {
 /* 11b */
-    {1000000, {
+    {"DsssRate1Mbps", {
         {5, 0.8437},
         {10, 0.7861},
         {15, 0.7496},
@@ -247,7 +348,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 0.6435},
         {50, 0.6336},
     }},
-    {2000000, {
+    {"DsssRate2Mbps", {
         {5, 1.6228},
         {10, 1.5168},
         {15, 1.4482},
@@ -259,7 +360,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 1.2469},
         {50, 1.2279},
     }},
-    {5500000, {
+    {"DsssRate5_5Mbps", {
         {5, 3.8896},
         {10, 3.6707},
         {15, 3.5203},
@@ -271,7 +372,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 3.0625},
         {50, 3.0184},
     }},
-    {11000000, {
+    {"DsssRate11Mbps", {
         {5, 6.4734},
         {10, 6.1774},
         {15, 5.9553},
@@ -283,8 +384,8 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 5.2446},
         {50, 5.1745},
     }},
-/* 11a/g */
-    {6000000, {
+/* 11a */
+    {"OfdmRate6Mbps", {
         {5, 4.7087},
         {10, 4.3453},
         {15, 4.1397},
@@ -296,7 +397,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 3.5712},
         {50, 3.5071},
     }},
-    {9000000, {
+    {"OfdmRate9Mbps", {
         {5, 6.8586},
         {10, 6.3431},
         {15, 6.0489},
@@ -308,7 +409,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 5.2307},
         {50, 5.1380},
     }},
-    {12000000, {
+    {"OfdmRate12Mbps", {
         {5, 8.9515},
         {10, 8.2901},
         {15, 7.9102},
@@ -320,7 +421,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 6.8485},
         {50, 6.7278},
     }},
-    {18000000, {
+    {"OfdmRate18Mbps", {
         {5, 12.7822},
         {10, 11.8801},
         {15, 11.3543},
@@ -332,7 +433,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 9.8679},
         {50, 9.6978},
     }},
-    {24000000, {
+    {"OfdmRate24Mbps", {
         {5, 16.2470},
         {10, 15.1426},
         {15, 14.4904},
@@ -344,7 +445,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 12.6286},
         {50, 12.4144},
     }},
-    {36000000, {
+    {"OfdmRate36Mbps", {
         {5, 22.3164},
         {10, 20.9147},
         {15, 20.0649},
@@ -356,7 +457,7 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 17.5915},
         {50, 17.3036},
     }},
-    {48000000, {
+    {"OfdmRate48Mbps", {
         {5, 27.2963},
         {10, 25.6987},
         {15, 24.7069},
@@ -368,7 +469,104 @@ std::map<unsigned int /* rate (bit/s)*/, std::map<unsigned int /* number of node
         {45, 21.7696},
         {50, 21.4243},
     }},
-    {54000000, {
+    {"OfdmRate54Mbps", {
+        {5, 29.8324},
+        {10, 28.1519},
+        {15, 27.0948},
+        {20, 26.2925},
+        {25, 25.6896},
+        {30, 25.1434},
+        {35, 24.6539},
+        {40, 24.2613},
+        {45, 23.9353},
+        {50, 23.5618},
+    }},
+/* 11g */
+    {"ErpOfdmRate6Mbps", {
+        {5, 4.7087},
+        {10, 4.3453},
+        {15, 4.1397},
+        {20, 3.9899},
+        {25, 3.8802},
+        {30, 3.7824},
+        {35, 3.6961},
+        {40, 3.6276},
+        {45, 3.5712},
+        {50, 3.5071},
+    }},
+    {"ErpOfdmRate9Mbps", {
+        {5, 6.8586},
+        {10, 6.3431},
+        {15, 6.0489},
+        {20, 5.8340},
+        {25, 5.6762},
+        {30, 5.5355},
+        {35, 5.4110},
+        {40, 5.3122},
+        {45, 5.2307},
+        {50, 5.1380},
+    }},
+    {"ErpOfdmRate12Mbps", {
+        {5, 8.9515},
+        {10, 8.2901},
+        {15, 7.9102},
+        {20, 7.6319},
+        {25, 7.4274},
+        {30, 7.2447},
+        {35, 7.0829},
+        {40, 6.9544},
+        {45, 6.8485},
+        {50, 6.7278},
+    }},
+    {"ErpOfdmRate18Mbps", {
+        {5, 12.7822},
+        {10, 11.8801},
+        {15, 11.3543},
+        {20, 10.9668},
+        {25, 10.6809},
+        {30, 10.4249},
+        {35, 10.1978},
+        {40, 10.0171},
+        {45, 9.8679},
+        {50, 9.6978},
+    }},
+    {"ErpOfdmRate24Mbps", {
+        {5, 16.2470},
+        {10, 15.1426},
+        {15, 14.4904},
+        {20, 14.0072},
+        {25, 13.6496},
+        {30, 13.3288},
+        {35, 13.0436},
+        {40, 12.8164},
+        {45, 12.6286},
+        {50, 12.4144},
+    }},
+    {"ErpOfdmRate36Mbps", {
+        {5, 22.3164},
+        {10, 20.9147},
+        {15, 20.0649},
+        {20, 19.4289},
+        {25, 18.9552},
+        {30, 18.5284},
+        {35, 18.1476},
+        {40, 17.8434},
+        {45, 17.5915},
+        {50, 17.3036},
+    }},
+    {"ErpOfdmRate48Mbps", {
+        {5, 27.2963},
+        {10, 25.6987},
+        {15, 24.7069},
+        {20, 23.9578},
+        {25, 23.3965},
+        {30, 22.8891},
+        {35, 22.4350},
+        {40, 22.0713},
+        {45, 21.7696},
+        {50, 21.4243},
+    }},
+    {"ErpOfdmRate54Mbps", {
         {5, 29.8324},
         {10, 28.1519},
         {15, 27.0948},
@@ -428,8 +626,17 @@ IncrementCounter (std::map<Mac48Address, uint64_t> & counter, Mac48Address addr,
 }
 
 void
-TracePacketReception (std::string context, Ptr<const Packet> packet, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
+TracePacketReception (std::string context, Ptr<const Packet> p, uint16_t channelFreqMhz, WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
+  Ptr<Packet> packet = p->Copy ();
+  if (txVector.IsAggregation ())
+    {
+      AmpduSubframeHeader subHdr;
+      uint32_t extractedLength;
+      packet->RemoveHeader (subHdr);
+      extractedLength = subHdr.GetLength ();
+      packet = packet->CreateFragment (0, static_cast<uint32_t> (extractedLength));
+    }
   WifiMacHeader hdr;
   packet->PeekHeader (hdr);
   // hdr.GetAddr1() is the receiving MAC address
@@ -438,7 +645,7 @@ TracePacketReception (std::string context, Ptr<const Packet> packet, uint16_t ch
       return;
     }
   // hdr.GetAddr2() is the sending MAC address
-  if (packet->GetSize () == (pktSize + 36)) // ignore non-data frames
+  if (packet->GetSize () >= pktSize) // ignore non-data frames
     {
       IncrementCounter (packetsReceived, hdr.GetAddr2 ());
       IncrementCounter (bytesReceived, hdr.GetAddr2 (), pktSize);
@@ -506,7 +713,7 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
       break;
     case BUSY_DECODING_PREAMBLE:
     {
-      if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+      if (p->GetSize () >= pktSize) // ignore non-data frames
         {
           IncrementCounter (rxEventWhileDecodingPreamble, addr);
         }
@@ -514,7 +721,7 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
     }
     case RXING:
     {
-      if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+      if (p->GetSize () >= pktSize) // ignore non-data frames
         {
           IncrementCounter (rxEventWhileRxing, addr);
         }
@@ -522,7 +729,7 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
     }
     case TXING:
     {
-      if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+      if (p->GetSize () >= pktSize) // ignore non-data frames
         {
           IncrementCounter (rxEventWhileTxing, addr);
         }
@@ -536,7 +743,7 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
       break;
     case RECEPTION_ABORTED_BY_TX:
     {
-      if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+      if (p->GetSize () >= pktSize) // ignore non-data frames
         {
           IncrementCounter (rxEventAbortedByTx, addr);
         }
@@ -544,7 +751,7 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
     }
     case L_SIG_FAILURE:
     {
-      if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+      if (p->GetSize () >= pktSize) // ignore non-data frames
         {
           IncrementCounter (phyHeaderFailed, addr);
         }
@@ -579,8 +786,23 @@ PhyRxDoneTrace (std::string context, Ptr<const Packet> p)
 void
 PhyRxOkTrace (std::string context, Ptr<const Packet> p, double snr, WifiMode mode, WifiPreamble preamble)
 {
-  NS_LOG_INFO ("PHY-RX-OK time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " size=" << p->GetSize () << " snr=" << snr << " mode=" << mode << " preamble=" << preamble);
-  if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+  uint8_t nMpdus = (p->GetSize () / pktSize);
+  NS_LOG_INFO ("PHY-RX-OK time=" << Simulator::Now () << " node="
+                                 << ContextToNodeId (context) << " size="
+                                 << p->GetSize () << " nMPDUs="
+                                 << p->GetSize () / pktSize << " snr="
+                                 << snr << " mode="
+                                 << mode << " preamble="
+                                 << preamble);
+  if ((maxMpdus != 0) && (nMpdus != 0) && (nMpdus != maxMpdus))
+    {
+      if (nMpdus > maxMpdus)
+        {
+          NS_FATAL_ERROR ("A-MPDU settings not properly applied: maximum configured MPDUs is " << +maxMpdus << " but received an A-MPDU containing " << +nMpdus << " MPDUs");
+        }
+      NS_LOG_WARN ("Warning: less MPDUs aggregated in a received A-MPDU (" << +nMpdus << ") than configured (" << +maxMpdus << ")");
+    }
+  if (p->GetSize () >= pktSize) // ignore non-data frames
     {
       Mac48Address addr = ContextToMac (context);
       IncrementCounter (psduSucceeded, addr);
@@ -591,7 +813,7 @@ void
 PhyRxErrorTrace (std::string context, Ptr<const Packet> p, double snr)
 {
   NS_LOG_INFO ("PHY-RX-ERROR time=" << Simulator::Now () << " node=" << ContextToNodeId (context) << " size=" << p->GetSize () << " snr=" << snr);
-  if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+  if (p->GetSize () >= pktSize) // ignore non-data frames
     {
       Mac48Address addr = ContextToMac (context);
       IncrementCounter (psduFailed, addr);
@@ -606,7 +828,7 @@ PhyTxTrace (std::string context, Ptr<const Packet> p, double txPowerW)
     {
       phyTxTraceFile << Simulator::Now ().GetSeconds () << " " << ContextToNodeId (context) << " size=" << p->GetSize () << " " << txPowerW << std::endl;
     }
-  if (p->GetSize () == (pktSize + 36)) // ignore non-data frames
+  if (p->GetSize () >= pktSize) // ignore non-data frames
     {
       Mac48Address addr = ContextToMac (context);
       IncrementCounter (packetsTransmitted, addr);
@@ -707,7 +929,8 @@ public:
    * \return 0 if all went well
    */
   int Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel,
-           uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra);
+           uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra, uint16_t channelWidth, uint16_t guardIntervalNs,
+           double distance, double apTxPower, double staTxPower, uint16_t pktInterval);
 };
 
 Experiment::Experiment ()
@@ -716,7 +939,8 @@ Experiment::Experiment ()
 
 int
 Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel,
-                 uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra)
+                 uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra, uint16_t channelWidth, uint16_t guardIntervalNs,
+                 double distance, double apTxPower, double staTxPower, uint16_t pktInterval)
 {
   NodeContainer wifiNodes;
   if (infra)
@@ -744,11 +968,15 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
       mac.SetType ("ns3::ApWifiMac",
                    "BeaconInterval", TimeValue (MicroSeconds (beaconInterval)),
                    "Ssid", SsidValue (ssid));
+      phy.Set ("TxPowerStart", DoubleValue (apTxPower)); 
+      phy.Set ("TxPowerEnd", DoubleValue (apTxPower));
       devices = wifi.Install (phy, mac, wifiNodes.Get (0));
 
       mac.SetType ("ns3::StaWifiMac",
                    "MaxMissedBeacons", UintegerValue (std::numeric_limits<uint32_t>::max ()),
                    "Ssid", SsidValue (ssid));
+      phy.Set ("TxPowerStart", DoubleValue (staTxPower)); 
+      phy.Set ("TxPowerEnd", DoubleValue (staTxPower));
       for (uint32_t i = 1; i < nNodes; ++i)
         {
           devices.Add (wifi.Install (phy, mac, wifiNodes.Get (i)));
@@ -757,10 +985,27 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   else
     {
       mac.SetType ("ns3::AdhocWifiMac");
+      phy.Set ("TxPowerStart", DoubleValue (staTxPower));
+      phy.Set ("TxPowerEnd", DoubleValue (staTxPower));
       devices = wifi.Install (phy, mac, wifiNodes);
     }
 
   wifi.AssignStreams (devices, trialNumber);
+
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (guardIntervalNs == 400 ? true : false));
+  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (guardIntervalNs)));
+
+  // Configure aggregation
+  for (uint32_t i = 0; i < nNodes; ++i)
+    {
+      Ptr<NetDevice> dev = wifiNodes.Get (i)->GetDevice (0);
+      Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
+      wifi_dev->GetMac ()->SetAttribute ("BE_MaxAmpduSize", UintegerValue (maxMpdus * (pktSize + 50)));
+      wifi_dev->GetMac ()->SetAttribute ("BK_MaxAmpduSize", UintegerValue (maxMpdus * (pktSize + 50)));
+      wifi_dev->GetMac ()->SetAttribute ("VO_MaxAmpduSize", UintegerValue (maxMpdus * (pktSize + 50)));
+      wifi_dev->GetMac ()->SetAttribute ("VI_MaxAmpduSize", UintegerValue (maxMpdus * (pktSize + 50)));
+    }
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
@@ -772,7 +1017,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   double angle = (static_cast<double> (360) / (nNodes - 1));
   for (uint32_t i = 0; i < (nNodes - 1); ++i)
     {
-      positionAlloc->Add (Vector (1.0 + (0.001 * cos ((i * angle * PI) / 180)), 1.0 + (0.001 * sin ((i * angle * PI) / 180)), 0.0));
+      positionAlloc->Add (Vector (1.0 + (distance * cos ((i * angle * PI) / 180)), 1.0 + (distance * sin ((i * angle * PI) / 180)), 0.0));
     }
 
   mobility.SetPositionAllocator (positionAlloc);
@@ -800,7 +1045,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
       wifiNodes.Get (i)->AddApplication (client);
       client->SetAttribute ("PacketSize", UintegerValue (pktSize));
       client->SetAttribute ("MaxPackets", UintegerValue (0));
-      client->SetAttribute ("Interval", TimeValue (MilliSeconds (1))); //TODO: reduce it for lower rates, increase it for higher rates
+      client->SetAttribute ("Interval", TimeValue (MicroSeconds (pktInterval)));
       double start = startTime->GetValue ();
       NS_LOG_DEBUG ("Client " << i << " starting at " << start);
       client->SetStartTime (Seconds (start));
@@ -885,20 +1130,27 @@ GetCount (const std::map<Mac48Address, uint64_t> & counter, Mac48Address addr)
 
 int main (int argc, char *argv[])
 {
-  uint32_t nMinStas = 5;           ///< Minimum number of STAs to start with
-  uint32_t nMaxStas = 50;          ///< Maximum number of STAs to end with
-  uint32_t nStepSize = 5;          ///< Number of stations to add at each step
-  uint32_t verbose = 0;            ///< verbosity level that increases the number of debugging traces
-  double duration = 100;           ///< duration (in seconds) of each simulation run (i.e. per trial and per number of stations)
-  uint32_t trials = 1;             ///< Number of runs per point in the plot
-  bool pcap = false;               ///< Flag to enable/disable PCAP files generation
-  bool infra = false;              ///< Flag to enable infrastructure model, ring adhoc network if not set
-  std::string workDir = "./";      ///< the working directory to store generated files
-  double phyRate = 54;             ///< the constant PHY rate used to transmit Data frames (in Mbps)
-  std::string standard ("11a");    ///< the 802.11 standard
-  bool validate = false;           ///< Flag used for regression in order to verify ns-3 results are in the expected boundaries
-  uint32_t plotBianchiModel = 0x1; ///< First bit corresponds to the DIFS model, second bit to the EIFS model
-  double maxRelativeError = 0.015; ///< Maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)
+  uint32_t nMinStas = 5;                  ///< Minimum number of STAs to start with
+  uint32_t nMaxStas = 50;                 ///< Maximum number of STAs to end with
+  uint32_t nStepSize = 5;                 ///< Number of stations to add at each step
+  uint32_t verbose = 0;                   ///< verbosity level that increases the number of debugging traces
+  double duration = 100;                  ///< duration (in seconds) of each simulation run (i.e. per trial and per number of stations)
+  uint32_t trials = 1;                    ///< Number of runs per point in the plot
+  bool pcap = false;                      ///< Flag to enable/disable PCAP files generation
+  bool infra = false;                     ///< Flag to enable infrastructure model, ring adhoc network if not set
+  std::string workDir = "./";             ///< the working directory to store generated files
+  std::string phyMode = "OfdmRate54Mbps"; ///< the constant PHY mode used to transmit frames
+  std::string standard ("11a");           ///< the 802.11 standard
+  bool validate = false;                  ///< Flag used for regression in order to verify ns-3 results are in the expected boundaries
+  uint8_t plotBianchiModel = 0x01;        ///< First bit corresponds to the DIFS model, second bit to the EIFS model
+  double maxRelativeError = 0.015;        ///< Maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)
+  double frequency = 5;                   ///< The operating frequency band: 2.4, 5 or 6
+  uint16_t channelWidth = 20;             ///< The constant channel width in MHz (only for 11n/ac/ax)
+  uint16_t guardIntervalNs = 800;         ///< The guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or 3200 for 11 ax)
+  uint16_t pktInterval = 1000;            ///< The socket packet interval in microseconds (a higher value is needed to reach saturation conditions as the channel bandwidth or the MCS increases)
+  double distance = 0.001;                ///< The distance in meters between the AP and the STAs
+  double apTxPower = 16;                  ///< The transmit power of the AP in dBm (if infrastructure only)
+  double staTxPower = 16;                 ///< The transmit power of each STA in dBm (or all STAs if adhoc)
 
   // Disable fragmentation and RTS/CTS
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("22000"));
@@ -919,13 +1171,21 @@ int main (int argc, char *argv[])
   cmd.AddValue ("pcap", "Enable/disable PCAP tracing", pcap);
   cmd.AddValue ("infra", "True to use infrastructure mode, false to use ring adhoc mode", infra);
   cmd.AddValue ("workDir", "The working directory used to store generated files", workDir);
-  cmd.AddValue ("phyRate", "Set the constant PHY rate in Mbps used to transmit Data frames", phyRate);
+  cmd.AddValue ("phyMode", "Set the constant PHY mode string used to transmit frames", phyMode);
   cmd.AddValue ("standard", "Set the standard (11a, 11b, 11g, 11n, 11ac, 11ax)", standard);
   cmd.AddValue ("nMinStas", "Minimum number of stations to start with", nMinStas);
   cmd.AddValue ("nMaxStas", "Maximum number of stations to start with", nMaxStas);
   cmd.AddValue ("nStepSize", "Number of stations to add at each step", nStepSize);
   cmd.AddValue ("validate", "Enable/disable validation of the ns-3 simulations against the Bianchi model", validate);
   cmd.AddValue ("maxRelativeError", "The maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)", maxRelativeError);
+  cmd.AddValue ("frequency", "Set the operating frequency band: 2.4, 5 or 6", frequency);
+  cmd.AddValue ("channelWidth", "Set the constant channel width in MHz (only for 11n/ac/ax)", channelWidth);
+  cmd.AddValue ("guardIntervalNs", "Set the the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or 3200 for 11 ax)", guardIntervalNs);
+  cmd.AddValue ("maxMpdus", "Set the maximum number of MPDUs in A-MPDUs (0 to disable MPDU aggregation)", maxMpdus);
+  cmd.AddValue ("distance", "Set the distance in meters between the AP and the STAs", distance);
+  cmd.AddValue ("apTxPower", "Set the transmit power of the AP in dBm (if infrastructure only)", apTxPower);
+  cmd.AddValue ("staTxPower", "Set the transmit power of each STA in dBm (or all STAs if adhoc)", staTxPower);
+  cmd.AddValue ("pktInterval", "Set the socket packet interval in microseconds", pktInterval);
   cmd.Parse (argc, argv);
 
   if (tracing)
@@ -966,53 +1226,79 @@ int main (int argc, char *argv[])
     {
       LogComponentEnable ("WifiBianchi", LOG_LEVEL_ALL);
     }
+  else
+    {
+      LogComponentEnable ("WifiBianchi", LOG_LEVEL_WARN);
+    }
   if (verbose >= 2)
     {
       WifiHelper::EnableLogComponents ();
     }
 
   std::stringstream ss;
-  ss << "wifi-"<< standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-" << phyRate << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.plt";
+  ss << "wifi-"<< standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-" << phyMode << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.plt";
   std::ofstream throughputPlot (ss.str ().c_str ());
   ss.str ("");
-  ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") <<"-r-" << phyRate << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.eps";
+  ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") <<"-r-" << phyMode << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.eps";
   Gnuplot gnuplot = Gnuplot (ss.str ());
 
   WifiStandard wifiStandard;
-  std::stringstream phyRateStr;
   if (standard == "11a")
     {
       wifiStandard = WIFI_STANDARD_80211a;
-      if ((phyRate != 6) && (phyRate != 9) && (phyRate != 12) && (phyRate != 18) && (phyRate != 24) && (phyRate != 36) && (phyRate != 48) && (phyRate != 54))
-        {
-          NS_FATAL_ERROR ("Selected PHY rate " << phyRate << " is not defined in " << standard);
-        }
-      phyRateStr << "OfdmRate" << phyRate << "Mbps";
+      frequency = 5;
+      channelWidth = 20;
     }
   else if (standard == "11b")
     {
       wifiStandard = WIFI_STANDARD_80211b;
-      if ((phyRate != 1) && (phyRate != 2) && (phyRate != 5.5) && (phyRate != 11))
-        {
-          NS_FATAL_ERROR ("Selected PHY rate " << phyRate << " is not defined in " << standard);
-        }
-      if (phyRate == 5.5)
-        {
-          phyRateStr << "DsssRate5_5Mbps";
-        }
-      else
-        {
-          phyRateStr << "DsssRate" << phyRate << "Mbps";
-        }
+      frequency = 2.4;
+      channelWidth = 22;
     }
   else if (standard == "11g")
     {
       wifiStandard = WIFI_STANDARD_80211g;
-      if ((phyRate != 6) && (phyRate != 9) && (phyRate != 12) && (phyRate != 18) && (phyRate != 24) && (phyRate != 36) && (phyRate != 48) && (phyRate != 54))
+      frequency = 2.4;
+      channelWidth = 20;
+    }
+  else if (standard == "11n")
+    {
+      if (frequency == 2.4)
         {
-          NS_FATAL_ERROR ("Selected PHY rate " << phyRate << " is not defined in " << standard);
+          wifiStandard = WIFI_STANDARD_80211n_2_4GHZ;
         }
-      phyRateStr << "ErpOfdmRate" << phyRate << "Mbps";
+      else if (frequency == 5)
+        {
+          wifiStandard = WIFI_STANDARD_80211n_5GHZ;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " MHz for standard " << standard);
+        }
+    }
+  else if (standard == "11ac")
+    {
+      wifiStandard = WIFI_STANDARD_80211ac;
+      frequency = 5;
+    }
+  else if (standard == "11ax")
+    {
+      if (frequency == 2.4)
+        {
+          wifiStandard = WIFI_STANDARD_80211ax_2_4GHZ;
+        }
+      else if (frequency == 5)
+        {
+          wifiStandard = WIFI_STANDARD_80211ax_5GHZ;
+        }
+      else if (frequency == 6)
+        {
+          wifiStandard = WIFI_STANDARD_80211ax_6GHZ;
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " MHz for standard " << standard);
+        }
     }
   else
     {
@@ -1020,16 +1306,40 @@ int main (int argc, char *argv[])
     }
 
   YansWifiPhyHelper wifiPhy;
-  YansWifiChannelHelper wifiChannel;
-  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel");
   wifiPhy.DisablePreambleDetectionModel ();
 
-  WifiMacHelper wifiMac;
+  YansWifiChannelHelper wifiChannel;
+  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+  if (frequency == 6)
+    {
+      // Reference Loss for Friss at 1 m with 6.0 GHz
+      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
+                                      "Exponent", DoubleValue (2.0),
+                                      "ReferenceDistance", DoubleValue (1.0),
+                                      "ReferenceLoss", DoubleValue (49.013));
+    }
+  else if (frequency == 5)
+    {
+      // Reference Loss for Friss at 1 m with 5.15 GHz
+      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
+                                      "Exponent", DoubleValue (2.0),
+                                      "ReferenceDistance", DoubleValue (1.0),
+                                      "ReferenceLoss", DoubleValue (46.6777));
+    }
+  else
+    {
+      // Reference Loss for Friss at 1 m with 2.4 GHz
+      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel",
+                                      "Exponent", DoubleValue (2.0),
+                                      "ReferenceDistance", DoubleValue (1.0),
+                                      "ReferenceLoss", DoubleValue (40.046));
+    }
 
   WifiHelper wifi;
   wifi.SetStandard (wifiStandard);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue (phyRateStr.str()));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue (phyMode),
+                                "ControlMode", StringValue (phyMode));
 
   Gnuplot2dDataset dataset;
   Gnuplot2dDataset datasetBianchiEifs;
@@ -1040,6 +1350,7 @@ int main (int argc, char *argv[])
   datasetBianchiDifs.SetStyle (Gnuplot2dDataset::LINES_POINTS);
 
   Experiment experiment;
+  WifiMacHelper wifiMac;
   double averageThroughput, throughputArray[trials];
   for (uint32_t n = nMinStas; n <= nMaxStas; n += nStepSize)
     {
@@ -1061,17 +1372,17 @@ int main (int argc, char *argv[])
           rxEventAbortedByTx.clear ();
           associated.clear ();
           throughput = 0;
-          std::cout << "Trial " << runIndex + 1 << " of " << trials << "; "<< phyRate << " Mbps for " << n << " nodes " << std::endl;
+          std::cout << "Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode  << " (" << channelWidth << " MHz) for " << n << " nodes " << std::endl;
           if (tracing)
             {
-              cwTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyRate << " Mbps for " << n << " nodes" << std::endl;
-              backoffTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyRate << " Mbps for " << n << " nodes" << std::endl;
-              phyTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyRate << " Mbps for " << n << " nodes" << std::endl;
-              macTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyRate << " Mbps for " << n << " nodes" << std::endl;
-              macRxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyRate << " Mbps for " << n << " nodes" << std::endl;
-              socketSendTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyRate << " Mbps for " << n << " nodes" << std::endl;
+              cwTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode << " for " << n << " nodes" << std::endl;
+              backoffTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode << " for " << n << " nodes" << std::endl;
+              phyTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
+              macTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
+              macRxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
+              socketSendTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
             }
-          experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, runIndex, n, duration, pcap, infra);
+          experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, runIndex, n, duration, pcap, infra, channelWidth, guardIntervalNs, distance, apTxPower, staTxPower, pktInterval);
           uint32_t k = 0;
           if (bytesReceived.size () != n)
             {
@@ -1122,7 +1433,7 @@ int main (int argc, char *argv[])
       bool rateFound = false;
       double relativeErrorDifs = 0;
       double relativeErrorEifs = 0;
-      auto itDifs = bianchiResultsDifs.find (static_cast<unsigned int> (phyRate * 1000000));
+      auto itDifs = bianchiResultsDifs.find (phyMode);
       if (itDifs != bianchiResultsDifs.end ())
         {
           rateFound = true;
@@ -1137,7 +1448,7 @@ int main (int argc, char *argv[])
               NS_FATAL_ERROR ("No Bianchi results (DIFS) calculated for that number of stations!");
             }
         }
-      auto itEifs = bianchiResultsEifs.find (static_cast<unsigned int> (phyRate * 1000000));
+      auto itEifs = bianchiResultsEifs.find (phyMode);
       if (itEifs != bianchiResultsEifs.end ())
         {
           rateFound = true;
@@ -1172,7 +1483,7 @@ int main (int argc, char *argv[])
     }
   dataset.SetTitle ("ns-3");
 
-  auto itDifs = bianchiResultsDifs.find (static_cast<unsigned int> (phyRate * 1000000));
+  auto itDifs = bianchiResultsDifs.find (phyMode);
   if (itDifs != bianchiResultsDifs.end ())
     {
       for (uint32_t i = nMinStas; i <= nMaxStas; i += nStepSize)
@@ -1194,7 +1505,7 @@ int main (int argc, char *argv[])
         }
     }
 
-  auto itEifs = bianchiResultsEifs.find (static_cast<unsigned int> (phyRate * 1000000));
+  auto itEifs = bianchiResultsEifs.find (phyMode);
   if (itEifs != bianchiResultsEifs.end ())
     {
       for (uint32_t i = nMinStas; i <= nMaxStas; i += nStepSize)
