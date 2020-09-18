@@ -12,3 +12,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('packet-socket-apps', ['core', 'network'])
     obj.source = 'packet-socket-apps.cc'
+
+    obj = bld.create_ns3_program('lollipop-comparisions', ['core', 'network'])
+    obj.source = 'lollipop-comparisions.cc'

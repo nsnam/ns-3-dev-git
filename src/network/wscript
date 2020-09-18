@@ -84,6 +84,7 @@ def build(bld):
         'test/pcap-file-test-suite.cc',
         'test/sequence-number-test-suite.cc',
         'test/packet-socket-apps-test-suite.cc',
+        'test/lollipop-counter-test.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
@@ -159,6 +160,7 @@ def build(bld):
         'utils/packet-data-calculators.h',
         'utils/packet-probe.h',
         'utils/mac8-address.h',
+        'utils/lollipop-counter.h',
         'helper/application-container.h',
         'helper/net-device-container.h',
         'helper/node-container.h',
