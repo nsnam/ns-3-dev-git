@@ -496,11 +496,12 @@ for 802.11n/ac/ax, while ``ns3::YansErrorRateModel`` is the |ns3| default for 80
 Unlike analytical error models based on error bounds, ``ns3::TableBasedErrorRateModel`` contains
 end-to-end link simulation tables (PER vs SNR) for AWGN channels. Since it is infeasible to generate
 such look-up tables for all desired packet sizes and input SNRs, we adopt the recommendation of IEEE P802.11 TGax [porat2016]_ that proposed
-estimating PER for any desired packet length by extrapolating the results from two reference lengths:
+estimating PER for any desired packet length using BCC FEC encoding by extrapolating the results from two reference lengths:
 32 (all lengths less than 400) bytes and 1458 (all lengths greater or equal to 400) bytes respectively.
-Hence, we provide 2 tables that are generated using a reliable and publicly available commercial link
-simulator (MATLAB WLAN Toolbox) for each modulation and coding scheme. Note that tables are
-limited to MCS 9. For higher MCSs, the models fall back to the use of the YANS analytical model.
+In case of LDPC FEC encoding, IEEE P802.11 TGax recommends the use of a single reference length.
+Hence, we provide two tables for BCC and one table for LDPC that are generated using a reliable and publicly
+available commercial link simulator (MATLAB WLAN Toolbox) for each modulation and coding scheme.
+Note that BCC tables are limited to MCS 9. For higher MCSs, the models fall back to the use of the YANS analytical model.
 
 The validation scenario is set as follows:
 
