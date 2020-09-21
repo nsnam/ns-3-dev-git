@@ -1020,7 +1020,7 @@ TableBasedErrorRateTestCase::DoRun (void)
   for (double snr = -4.0; snr <= 30.0; snr += 0.5)
     {
       double expectedValue = 0;
-      if (m_mode.GetMcsValue () > ERROR_TABLE_MAX_NUM_MCS)
+      if (m_mode.GetMcsValue () > ERROR_TABLE_BCC_MAX_NUM_MCS)
         {
           Ptr<YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
           expectedValue = 1 - yans->GetChunkSuccessRate (m_mode, txVector, std::pow (10.0, snr / 10.0), m_size * 8);

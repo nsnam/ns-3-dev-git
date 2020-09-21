@@ -146,7 +146,8 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txV
   uint64_t size = std::max<uint64_t> (1, (nbits / 8));
   double roundedSnr = RoundSnr (RatioToDb (snr), SNR_PRECISION);
   uint8_t mcs = GetMcsForMode (mode);
-  NS_LOG_FUNCTION (this << +mcs << roundedSnr << size);
+  bool ldpc = txVector.IsLdpc ();
+  NS_LOG_FUNCTION (this << +mcs << roundedSnr << size << ldpc);
 
   // HT: for mcs greater than 7, use 0 - 7 curves for data rate
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
@@ -154,13 +155,13 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txV
       mcs = mcs % 8;
     }
 
-  if (mcs > ERROR_TABLE_MAX_NUM_MCS)
+  if (mcs > (ldpc ? ERROR_TABLE_LDPC_MAX_NUM_MCS : ERROR_TABLE_BCC_MAX_NUM_MCS))
     {
       NS_LOG_WARN ("Table missing for MCS: " << +mcs << " in TableBasedErrorRateModel: use fallback error rate model");
       return m_fallbackErrorModel->GetChunkSuccessRate (mode, txVector, snr, nbits);
     }
 
-  auto errorTable = size < m_threshold ? AwgnErrorTable32 : AwgnErrorTable1458;
+  auto errorTable = (ldpc ? AwgnErrorTableLdpc1458 : (size < m_threshold ? AwgnErrorTableBcc32 : AwgnErrorTableBcc1458));
   auto itVector = errorTable[mcs];
   auto itTable = std::find_if (itVector.begin(), itVector.end(),
       [&roundedSnr](const std::pair<double, double>& element) {
@@ -204,7 +205,7 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txV
       per = itTable->second;
     }
 
-  uint16_t tableSize = size < m_threshold ? ERROR_TABLE_SMALL_FRAME_SIZE : ERROR_TABLE_LARGE_FRAME_SIZE;
+  uint16_t tableSize = (ldpc ? ERROR_TABLE_LDPC_FRAME_SIZE : (size < m_threshold ? ERROR_TABLE_BCC_SMALL_FRAME_SIZE : ERROR_TABLE_BCC_LARGE_FRAME_SIZE));
   if (size != tableSize)
     {
       // From IEEE document 11-14/0803r1 (Packet Length for Box 0 Calibration)
