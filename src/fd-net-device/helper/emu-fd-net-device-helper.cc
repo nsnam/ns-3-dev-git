@@ -180,6 +180,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
 
   if (m_hostQdiscBypass)
     {
+#ifdef PACKET_QDISC_BYPASS
       static const int32_t sock_qdisc_bypass = 1;
       int32_t sock_qdisc_ret = setsockopt (fd, SOL_PACKET, PACKET_QDISC_BYPASS, &sock_qdisc_bypass,
                                            sizeof (sock_qdisc_bypass));
@@ -188,6 +189,10 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
         {
           NS_LOG_ERROR ("Cannot use the qdisc bypass option");
         }
+#else
+      // PACKET_QDISC_BYPASS is defined since Linux 3.14
+      NS_LOG_ERROR ("PACKET_QDISC_BYPASS undefined; cannot use the qdisc bypass option");
+#endif
     }
 
   //
