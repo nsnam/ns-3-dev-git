@@ -712,6 +712,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
     }
 
   YansWifiPhyHelper phy = wifiPhy;
+  phy.SetErrorRateModel ("ns3::NistErrorRateModel");
   phy.SetChannel (wifiChannel.Create ());
   phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
 
