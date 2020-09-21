@@ -247,6 +247,9 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, WifiPhyState::CCA_BUSY);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::CCA_BUSY);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (10), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, WifiPhyState::CCA_BUSY);
+  // PHYs of AP1 and STA1 should be idle after HE-SIG-A if they were reset by OBSS_PD SR, otherwise they should be CCA_busy until beginning of payload.
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (35), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
+  Simulator::Schedule (Seconds (2.0) + MicroSeconds (35), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::CCA_BUSY);
   // PHYs of AP1 and STA1 should be idle if they were reset by OBSS_PD SR, otherwise they should be receiving.
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (50), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::RX);
   Simulator::Schedule (Seconds (2.0) + MicroSeconds (50), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::IDLE : WifiPhyState::RX);
@@ -257,13 +260,13 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
 
   // AP2 sends another packet 0.1s later.
   Simulator::Schedule (Seconds (2.1), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
-  // STA1 sends a packet 90us later. Even though AP2 is still transmitting, STA1 can transmit simultaneously if it's PHY was reset by OBSS_PD SR.
-  Simulator::Schedule (Seconds (2.1) + MicroSeconds (90), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
+  // STA1 sends a packet 42us later (i.e. right after HE-SIG-A of AP2). Even though AP2 is still transmitting, STA1 can transmit simultaneously if it's PHY was reset by OBSS_PD SR.
+  Simulator::Schedule (Seconds (2.1) + MicroSeconds (42), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
   if (expectPhyReset)
     {
       // In this case, we check the TX power is restricted (and set the expected value slightly before transmission should occur)
       double expectedTxPower = std::min (m_txPowerDbm, 21 - (m_obssPdLevelDbm + 82));
-      Simulator::Schedule (Seconds (2.1) + MicroSeconds (89), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
+      Simulator::Schedule (Seconds (2.1) + MicroSeconds (41), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
     }
   // Check simultaneous transmissions
   Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device2, WifiPhyState::TX);
@@ -271,13 +274,31 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
   Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::RX);
   Simulator::Schedule (Seconds (2.1) + MicroSeconds (100), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::CCA_BUSY : WifiPhyState::RX);
 
+  // AP2 sends another packet 0.1s later, and STA1 wanting to send a packet during the payload of the former.
+  Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, m_txPowerDbm);
+  Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
+  // STA1 sends a packet 90us later (i.e. during payload of AP2). Even though AP2 is still transmitting, STA1 can transmit simultaneously if it's PHY was reset by OBSS_PD SR.
+  Simulator::Schedule (Seconds (2.2) + MicroSeconds (90), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
+  if (expectPhyReset)
+    {
+      // In this case, we check the TX power is restricted (and set the expected value slightly before transmission should occur)
+      double expectedTxPower = std::min (m_txPowerDbm, 21 - (m_obssPdLevelDbm + 82));
+      Simulator::Schedule (Seconds (2.2) + MicroSeconds (89), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
+    }
+  // Check simultaneous transmissions
+  Simulator::Schedule (Seconds (2.2) + MicroSeconds (105), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device2, WifiPhyState::TX);
+  Simulator::Schedule (Seconds (2.2) + MicroSeconds (105), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device1, expectPhyReset ? WifiPhyState::TX : WifiPhyState::RX);
+  Simulator::Schedule (Seconds (2.2) + MicroSeconds (105), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, sta_device2, WifiPhyState::RX);
+  Simulator::Schedule (Seconds (2.2) + MicroSeconds (105), &TestInterBssConstantObssPdAlgo::CheckPhyState, this, ap_device1, expectPhyReset ? WifiPhyState::CCA_BUSY : WifiPhyState::RX);
+
+
   // Verify transmit power restrictions are not applied if access to the channel is requested after ignored OBSS transmissions.
 
-  Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, m_txPowerDbm);
+  Simulator::Schedule (Seconds (2.3), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, m_txPowerDbm);
   // AP2 sends another packet 0.1s later. Power restriction should not be applied.
-  Simulator::Schedule (Seconds (2.2), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
+  Simulator::Schedule (Seconds (2.3), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2);
   // STA1 sends a packet 0.1s later. Power restriction should not be applied.
-  Simulator::Schedule (Seconds (2.3), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
+  Simulator::Schedule (Seconds (2.4), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device1, ap_device1, m_payloadSize1);
 
   // Verify a scenario that involves 3 networks in order to verify corner cases for transmit power restrictions.
   // First, there is a transmission on network 2 from STA to AP, followed by a response from AP to STA.
@@ -286,18 +307,18 @@ TestInterBssConstantObssPdAlgo::SetupSimulation ()
   // Before its backoff expires, a transmission on network 3 occurs, also eventually triggering another CCA reset (depending on the scenario that is being run).
   // This test checks whether this sequence preserves transmit power restrictions if CCA resets occurred, since STA 1 has been deferring during ignored OBSS transmissions.
 
-  Simulator::Schedule (Seconds (2.4), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device2, ap_device2, m_payloadSize2 / 10);
-  Simulator::Schedule (Seconds (2.4) + MicroSeconds (15), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2 / 10);
-  Simulator::Schedule (Seconds (2.4) + MicroSeconds (270), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device1, sta_device1, m_payloadSize1 / 10);
-  Simulator::Schedule (Seconds (2.4) + MicroSeconds (300), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device3, sta_device3, m_payloadSize3 / 10);
+  Simulator::Schedule (Seconds (2.5), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, sta_device2, ap_device2, m_payloadSize2 / 10);
+  Simulator::Schedule (Seconds (2.5) + MicroSeconds (15), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device2, sta_device2, m_payloadSize2 / 10);
+  Simulator::Schedule (Seconds (2.5) + MicroSeconds (270), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device1, sta_device1, m_payloadSize1 / 10);
+  Simulator::Schedule (Seconds (2.5) + MicroSeconds (300), &TestInterBssConstantObssPdAlgo::SendOnePacket, this, ap_device3, sta_device3, m_payloadSize3 / 10);
   if (expectPhyReset)
     {
       // In this case, we check the TX power is restricted (and set the expected value slightly before transmission should occur)
       double expectedTxPower = std::min (m_txPowerDbm, 21 - (m_obssPdLevelDbm + 82));
-      Simulator::Schedule (Seconds (2.4) + MicroSeconds (400), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
+      Simulator::Schedule (Seconds (2.5) + MicroSeconds (338), &TestInterBssConstantObssPdAlgo::SetExpectedTxPower, this, expectedTxPower);
     }
 
-  Simulator::Stop (Seconds (2.5));
+  Simulator::Stop (Seconds (2.6));
 }
 
 void
@@ -317,13 +338,13 @@ TestInterBssConstantObssPdAlgo::ResetResults ()
 void
 TestInterBssConstantObssPdAlgo::CheckResults ()
 {
-  NS_TEST_ASSERT_MSG_EQ (m_numSta1PacketsSent, 3, "The number of packets sent by STA1 is not correct!");
+  NS_TEST_ASSERT_MSG_EQ (m_numSta1PacketsSent, 4, "The number of packets sent by STA1 is not correct!");
   NS_TEST_ASSERT_MSG_EQ (m_numSta2PacketsSent, 2, "The number of packets sent by STA2 is not correct!");
   NS_TEST_ASSERT_MSG_EQ (m_numAp1PacketsSent, 2, "The number of packets sent by AP1 is not correct!");
-  NS_TEST_ASSERT_MSG_EQ (m_numAp2PacketsSent, 5, "The number of packets sent by AP2 is not correct!");
+  NS_TEST_ASSERT_MSG_EQ (m_numAp2PacketsSent, 6, "The number of packets sent by AP2 is not correct!");
   NS_TEST_ASSERT_MSG_EQ (m_numSta1PacketsReceived, 2, "The number of packets received by STA1 is not correct!");
-  NS_TEST_ASSERT_MSG_EQ (m_numSta2PacketsReceived, 5, "The number of packets received by STA2 is not correct!");
-  NS_TEST_ASSERT_MSG_EQ (m_numAp1PacketsReceived, 3, "The number of packets received by AP1 is not correct!");
+  NS_TEST_ASSERT_MSG_EQ (m_numSta2PacketsReceived, 6, "The number of packets received by STA2 is not correct!");
+  NS_TEST_ASSERT_MSG_EQ (m_numAp1PacketsReceived, 4, "The number of packets received by AP1 is not correct!");
   NS_TEST_ASSERT_MSG_EQ (m_numAp2PacketsReceived, 2, "The number of packets received by AP2 is not correct!");
 }
 

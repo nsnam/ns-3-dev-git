@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-struct HePreambleParameters;
+struct HeSigAParameters;
 
 class WifiNetDevice;
 
@@ -60,16 +60,16 @@ public:
 
   /**
    * Reset PHY to IDLE.
-   * \param params HePreambleParameters causing PHY reset
+   * \param params HeSigAParameters causing PHY reset
    */
-  void ResetPhy (HePreambleParameters params);
+  void ResetPhy (HeSigAParameters params);
 
   /**
-   * \param params the HE SIG parameters
+   * \param params the HE-SIG-A parameters
    *
-   * Evaluate the receipt of HE SIG.
+   * Evaluate the receipt of HE-SIG-A.
    */
-  virtual void ReceiveHeSig (HePreambleParameters params) = 0;
+  virtual void ReceiveHeSigA (HeSigAParameters params) = 0;
 
   /**
    * TracedCallback signature for OBSS_PD reset events.

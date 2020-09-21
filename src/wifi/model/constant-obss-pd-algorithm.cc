@@ -56,12 +56,12 @@ void
 ConstantObssPdAlgorithm::ConnectWifiNetDevice (const Ptr<WifiNetDevice> device)
 {
   Ptr<WifiPhy> phy = device->GetPhy ();
-  phy->TraceConnectWithoutContext ("EndOfHePreamble", MakeCallback (&ConstantObssPdAlgorithm::ReceiveHeSig, this));
+  phy->TraceConnectWithoutContext ("EndOfHeSigA", MakeCallback (&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
   ObssPdAlgorithm::ConnectWifiNetDevice (device);
 }
 
 void
-ConstantObssPdAlgorithm::ReceiveHeSig (HePreambleParameters params)
+ConstantObssPdAlgorithm::ReceiveHeSigA (HeSigAParameters params)
 {
   NS_LOG_FUNCTION (this << +params.bssColor << WToDbm (params.rssiW));
 

@@ -32,7 +32,7 @@ namespace ns3 {
  * This constant OBSS_PD algorithm is a simple OBSS_PD algorithm which evaluates if a receiving
  * signal should be accepted or rejected based on a constant threshold.
  *
- * Once a HE preamble and its header have been received by the PHY, the ReceiveHeSig method is
+ * Once a HE-SIG-A has been received by the PHY, the ReceiveHeSigA method is
  * triggered. The algorithm then checks whether this is an OBSS frame by comparing its own BSS
  * color with the BSS color of the received preamble. If this is an OBSS frame, it compares the
  * received RSSI with its configured OBSS_PD level value. The PHY then gets reset to IDLE state
@@ -58,11 +58,11 @@ public:
   void ConnectWifiNetDevice (const Ptr<WifiNetDevice> device);
 
   /**
-   * \param params the HE SIG parameters
+   * \param params the HE-SIG-A parameters
    *
-   * Evaluate the receipt of HE SIG.
+   * Evaluate the receipt of HE-SIG-A.
    */
-  void ReceiveHeSig (HePreambleParameters params);
+  void ReceiveHeSigA (HeSigAParameters params);
 };
 
 } //namespace ns3

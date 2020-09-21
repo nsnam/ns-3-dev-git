@@ -133,8 +133,8 @@ struct MpduInfo
   uint32_t mpduRefNumber; ///< MPDU ref number
 };
 
-/// Parameters for receive HE preamble
-struct HePreambleParameters
+/// Parameters for received HE-SIG-A for OBSS_PD based SR
+struct HeSigAParameters
 {
   double rssiW; ///< RSSI in W
   uint8_t bssColor; ///< BSS color
@@ -1507,19 +1507,19 @@ public:
   typedef void (* PsduTxBeginCallback)(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   /**
-   * Public method used to fire a EndOfHePreamble trace once both HE SIG fields have been received, as well as training fields.
+   * Public method used to fire a EndOfHeSigA trace once HE-SIG-A field has been received.
    *
-   * \param params the HE preamble parameters
+   * \param params the HE-SIG-A parameters
    */
-  void NotifyEndOfHePreamble (HePreambleParameters params);
+  void NotifyEndOfHeSigA (HeSigAParameters params);
 
   /**
    * TracedCallback signature for end of HE-SIG-A events.
    *
    *
-   * \param params the HE preamble parameters
+   * \param params the HE-SIG-A parameters
    */
-  typedef void (* EndOfHePreambleCallback)(HePreambleParameters params);
+  typedef void (* EndOfHeSigACallback)(HeSigAParameters params);
 
   /**
    * TracedCallback signature for start of PSDU reception events.
@@ -2207,11 +2207,11 @@ private:
   TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, uint16_t /* STA-ID*/> m_phyMonitorSniffTxTrace;
 
   /**
-   * A trace source that indicates the end of both HE SIG fields as well as training fields for received 802.11ax packets
+   * A trace source that indicates the end of HE SIG-A field for received 802.11ax PPDUs
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<HePreambleParameters> m_phyEndOfHePreambleTrace;
+  TracedCallback<HeSigAParameters> m_phyEndOfHeSigATrace;
 
   /**
    * This vector holds the set of transmission modes that this

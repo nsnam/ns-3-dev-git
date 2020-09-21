@@ -498,10 +498,10 @@ WifiPhy::GetTypeId (void)
                      "in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace),
                      "ns3::WifiPhy::MonitorSnifferTxTracedCallback")
-    .AddTraceSource ("EndOfHePreamble",
-                     "Trace source indicating the end of the 802.11ax preamble (after training fields)",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyEndOfHePreambleTrace),
-                     "ns3::WifiPhy::EndOfHePreambleTracedCallback")
+    .AddTraceSource ("EndOfHeSigA",
+                     "Trace source indicating the end of the HE-SIG-A field for HE PPDUs (or more recent)",
+                     MakeTraceSourceAccessor (&WifiPhy::m_phyEndOfHeSigATrace),
+                     "ns3::WifiPhy::EndOfHeSigATracedCallback")
   ;
   return tid;
 }
@@ -2872,9 +2872,9 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
 }
 
 void
-WifiPhy::NotifyEndOfHePreamble (HePreambleParameters params)
+WifiPhy::NotifyEndOfHeSigA (HeSigAParameters params)
 {
-  m_phyEndOfHePreambleTrace (params);
+  m_phyEndOfHeSigATrace (params);
 }
 
 void
@@ -3439,11 +3439,10 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
         }
       if (modulation == WIFI_MOD_CLASS_HE)
         {
-          HePreambleParameters params;
+          HeSigAParameters params;
           params.rssiW = event->GetRxPowerW (measurementBand);
           params.bssColor = event->GetTxVector ().GetBssColor ();
-          Simulator::Schedule (GetPhyTrainingSymbolDuration (txVector) + GetPhySigBDuration (txVector),
-                               &WifiPhy::NotifyEndOfHePreamble, this, params); //TODO change this to immediate call since HE-SIG-A has been decoded
+          Simulator::ScheduleNow (&WifiPhy::NotifyEndOfHeSigA, this, params);
         }
     }
   else //PHY reception failed

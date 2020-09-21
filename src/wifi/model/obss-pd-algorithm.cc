@@ -84,7 +84,7 @@ ObssPdAlgorithm::ConnectWifiNetDevice (const Ptr<WifiNetDevice> device)
 }
 
 void
-ObssPdAlgorithm::ResetPhy (HePreambleParameters params)
+ObssPdAlgorithm::ResetPhy (HeSigAParameters params)
 {
   double txPowerMaxSiso = 0;
   double txPowerMaxMimo = 0;
