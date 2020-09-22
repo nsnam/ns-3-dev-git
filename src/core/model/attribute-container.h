@@ -397,7 +397,7 @@ typename AttributeContainerValue<A, C>::result_type
 AttributeContainerValue<A, C>::Get (void) const
 {
   result_type c;
-  for (const value_type a: *this)
+  for (const value_type& a: *this)
     c.insert (c.end (), a->Get ());
   return c;
 }
