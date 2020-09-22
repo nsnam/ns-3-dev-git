@@ -446,6 +446,12 @@ WifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (0)),
                    MakeTimeAccessor (&WifiPhy::m_pifs),
                    MakeTimeChecker ())
+    .AddAttribute ("PowerDensityLimit",
+                   "The mean equivalent isotropically radiated power density"
+                   "limit (in dBm/MHz) set by regulators.",
+                   DoubleValue (100.0), //set to a high value so as to have no effect
+                   MakeDoubleAccessor (&WifiPhy::m_powerDensityLimit),
+                   MakeDoubleChecker<double> ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -3856,7 +3862,7 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
 }
 
 WifiSpectrumBand
-WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId)
+WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId) const
 {
   NS_ASSERT (txVector.IsMu ());
   WifiSpectrumBand band;
@@ -3870,7 +3876,7 @@ WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId)
 }
 
 WifiSpectrumBand
-WifiPhy::GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId)
+WifiPhy::GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId) const
 {
   NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
   uint16_t channelWidth = txVector.GetChannelWidth ();
@@ -5249,24 +5255,42 @@ WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMa
 }
 
 double
-WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector) const
+WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector, uint16_t staId /* = SU_STA_ID */, TxPsdFlag flag /* = PSD_NON_HE_TB */) const
 {
-  NS_LOG_FUNCTION (this << m_powerRestricted);
+  NS_LOG_FUNCTION (this << m_powerRestricted << txVector << staId << flag);
+  // Get transmit power before antenna gain
+  double txPowerDbm;
   if (!m_powerRestricted)
     {
-      return GetPowerDbm (txVector.GetTxPowerLevel ());
+      txPowerDbm = GetPowerDbm (txVector.GetTxPowerLevel ());
     }
   else
     {
       if (txVector.GetNssMax () > 1)
         {
-          return std::min (m_txPowerMaxMimo, GetPowerDbm (txVector.GetTxPowerLevel ()));
+          txPowerDbm = std::min (m_txPowerMaxMimo, GetPowerDbm (txVector.GetTxPowerLevel ()));
         }
       else
         {
-          return std::min (m_txPowerMaxSiso, GetPowerDbm (txVector.GetTxPowerLevel ()));
+          txPowerDbm = std::min (m_txPowerMaxSiso, GetPowerDbm (txVector.GetTxPowerLevel ()));
         }
     }
+
+  //Apply power density constraint on EIRP
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && staId != SU_STA_ID)
+    {
+      NS_ASSERT (flag > PSD_NON_HE_TB);
+      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+      channelWidth = (flag == PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
+      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << staId << " for " << flag);
+    }
+  double txPowerDbmPerMhz = (txPowerDbm + GetTxGain ()) - RatioToDb (channelWidth); //account for antenna gain since EIRP
+  NS_LOG_INFO ("txPowerDbm=" << txPowerDbm << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz << " over " << channelWidth << " MHz");
+  txPowerDbm = std::min (txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb (channelWidth);
+  txPowerDbm -= GetTxGain(); //remove antenna gain since will be added right afterwards
+  NS_LOG_INFO ("txPowerDbm=" << txPowerDbm << " after applying m_powerDensityLimit=" << m_powerDensityLimit);
+  return txPowerDbm;
 }
 
 void

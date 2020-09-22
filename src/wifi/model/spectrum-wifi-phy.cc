@@ -518,12 +518,12 @@ SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
   NS_LOG_FUNCTION (this << ppdu << +txPowerLevel);
   WifiTxVector txVector = ppdu->GetTxVector ();
   txVector.SetTxPowerLevel (txPowerLevel);
-  double txPowerDbm = GetTxPowerForTransmission (txVector) + GetTxGain ();
-  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << txPowerDbm << "dBm");
-  double txPowerWatts = DbmToW (txPowerDbm);
   NS_ASSERT_MSG (m_wifiSpectrumPhyInterface, "SpectrumPhy() is not set; maybe forgot to call CreateWifiSpectrumPhyInterface?");
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
     {
+      double txPowerWatts = DbmToW (GetTxPowerForTransmission (txVector, ppdu->GetStaId (), PSD_HE_TB_NON_OFDMA_PORTION) + GetTxGain ()); //enforce power density limit on non-OFDMA part
+      NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << WToDbm (txPowerWatts) << "dBm");
+
       //non-OFDMA part
       Time nonOfdmaDuration = CalculateNonOfdmaDurationForHeTb (txVector);
       Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu, PSD_HE_TB_NON_OFDMA_PORTION);
@@ -539,10 +539,13 @@ SpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
       Transmit (txParams);
 
       //OFDMA part
+      txPowerWatts = DbmToW (GetTxPowerForTransmission (txVector, ppdu->GetStaId (), PSD_HE_TB_OFDMA_PORTION) + GetTxGain ()); //enforce power density limit since transmission bandwidth of RU is potentially narrower than total PPDU bandwidth
       Simulator::Schedule (nonOfdmaDuration, &SpectrumWifiPhy::StartOfdmaTx, this, ppdu, txPowerWatts);
     }
   else
     {
+      double txPowerWatts = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
+      NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << WToDbm (txPowerWatts) << "dBm");
       Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu);
       Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
       txParams->duration = ppdu->GetTxDuration ();

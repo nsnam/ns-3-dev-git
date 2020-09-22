@@ -112,6 +112,18 @@ public:
    */
   Ptr<Event> GetCurrentEvent (void);
 
+  /**
+   * Wrapper to InterferenceHelper method.
+   *
+   * \param energyW the minimum energy (W) requested
+   * \param band identify the requested band
+   *
+   * \returns the expected amount of time the observed
+   *          energy on the medium for a given band will
+   *          be higher than the requested threshold.
+   */
+  Time GetEnergyDuration (double energyW, WifiSpectrumBand band);
+
 private:
   // Inherited
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
@@ -192,6 +204,12 @@ Ptr<Event>
 OfdmaSpectrumWifiPhy::GetCurrentEvent (void)
 {
   return m_currentEvent;
+}
+
+Time
+OfdmaSpectrumWifiPhy::GetEnergyDuration (double energyW, WifiSpectrumBand band)
+{
+  return m_interference.GetEnergyDuration (energyW, band);
 }
 
 /**
@@ -1532,6 +1550,13 @@ private:
   virtual void DoRun (void);
 
   /**
+   * Get TXVECTOR for HE TB PPDU.
+   * \param txStaId the ID of the TX STA
+   * \param index the RU index used for the transmission
+   * \param bssColor the BSS color of the TX STA
+   */
+  WifiTxVector GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_t index, uint8_t bssColor) const;
+  /**
    * Send HE TB PPDU function
    * \param txStaId the ID of the TX STA
    * \param index the RU index used for the transmission
@@ -1556,6 +1581,13 @@ private:
    * \param bssColor the BSS color
    */
   void SetBssColor (Ptr<WifiPhy> phy, uint8_t bssColor);
+
+  /**
+   * Set the PSD limit
+   * \param phy the PHY
+   * \param psdLimit the PSD limit in dBm/MHz
+   */
+  void SetPsdLimit (Ptr<WifiPhy> phy, double psdLimit);
 
   /**
    * Generate interference function
@@ -1588,6 +1620,21 @@ private:
    * \param expectedBytes the expected number of bytes
    */
   void CheckRxFromSta2 (uint32_t expectedSuccess, uint32_t expectedFailures, uint32_t expectedBytes);
+
+  /**
+   * Check the received power for the non-OFDMA of the HE TB PPDUs over the given band
+   * \param phy the PHY
+   * \param band the WifiSpectrumBand over which the power is measured
+   * \param expectedRxPower the expected received power in W
+   */
+  void CheckNonOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, WifiSpectrumBand band, double expectedRxPower);
+  /**
+   * Check the received power for the OFDMA part of the HE TB PPDUs over the given band
+   * \param phy the PHY
+   * \param band the WifiSpectrumBand over which the power is measured
+   * \param expectedRxPower the expected received power in W
+   */
+  void CheckOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, WifiSpectrumBand band, double expectedRxPower);
 
   /**
    * Verify all events are cleared at end of TX or RX
@@ -1643,6 +1690,17 @@ private:
                      uint32_t expectedSuccessFromSta2, uint32_t expectedFailuresFromSta2, uint32_t expectedBytesFromSta2,
                      bool scheduleTxSta1 = true, WifiPhyState expectedStateBeforeEnd = WifiPhyState::RX);
 
+  /**
+   * Schedule power measurement related checks.
+   *
+   * \param delay the reference delay used to schedule the events
+   * \param rxPowerNonOfdmaRu1 the received power (in watts) on the non-OFDMA part of RU1
+   * \param rxPowerNonOfdmaRu2 the received power (in watts) on the non-OFDMA part of RU2
+   * \param rxPowerOfdmaRu1 the received power (in watts) on RU1
+   * \param rxPowerOfdmaRu2 the received power (in watts) on RU2
+   */
+  void SchedulePowerMeasurementChecks (Time delay, double rxPowerNonOfdmaRu1, double rxPowerNonOfdmaRu2,
+                                       double rxPowerOfdmaRu1, double rxPowerOfdmaRu2);
   /**
    * Log scenario description
    *
@@ -1724,12 +1782,9 @@ TestUlOfdmaPhyTransmission::SendHeSuPpdu (uint16_t txStaId, std::size_t payloadS
   phy->Send (psdus, txVector);
 }
 
-void
-TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor)
+WifiTxVector
+TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_t index, uint8_t bssColor) const
 {
-  NS_LOG_FUNCTION (this << txStaId << index << payloadSize << uid << +bssColor);
-  WifiConstPsduMap psdus;
-
   WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, m_channelWidth, false, false, false, bssColor);
 
   HeRu::RuType ruType = HeRu::RU_106_TONE;
@@ -1768,7 +1823,16 @@ TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, s
   txVector.SetRu (ru, txStaId);
   txVector.SetMode (WifiPhy::GetHeMcs7 (), txStaId);
   txVector.SetNss (1, txStaId);
+  return txVector;
+}
 
+void
+TestUlOfdmaPhyTransmission::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std::size_t payloadSize, uint64_t uid, uint8_t bssColor)
+{
+  NS_LOG_FUNCTION (this << txStaId << index << payloadSize << uid << +bssColor);
+  WifiConstPsduMap psdus;
+
+  WifiTxVector txVector = GetTxVectorForHeTbPpdu (txStaId, index, bssColor);
   Ptr<Packet> pkt = Create<Packet> (payloadSize);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);
@@ -1874,6 +1938,41 @@ TestUlOfdmaPhyTransmission::CheckRxFromSta2 (uint32_t expectedSuccess, uint32_t 
 }
 
 void
+TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, WifiSpectrumBand band, double expectedRxPower)
+{
+  Ptr<Event> event = phy->GetCurrentEvent ();
+  NS_ASSERT (event);
+  double rxPower = event->GetRxPowerW (band);
+  NS_LOG_FUNCTION (this << band.first << band.second << expectedRxPower << rxPower);
+  //Since there is out of band emission due to spectrum mask, the tolerance cannot be very low
+  NS_TEST_ASSERT_MSG_EQ_TOL (rxPower, expectedRxPower, 5e-3, "RX power " << rxPower << " over (" << band.first << ", " << band.second << ") does not match expected power " << expectedRxPower << " at " << Simulator::Now ());
+}
+
+void
+TestUlOfdmaPhyTransmission::CheckOfdmaRxPower (Ptr<OfdmaSpectrumWifiPhy> phy, WifiSpectrumBand band, double expectedRxPower)
+{
+  /**
+   * The current event cannot be used since it points to the preamble part of the HE TB PPDU.
+   * We will have to check if the expected power is indeed the max power returning a positive
+   * duration when calling GetEnergyDuration.
+   */
+  NS_LOG_FUNCTION (this << band.first << band.second << expectedRxPower);
+  double step = 5e-3;
+  if (expectedRxPower > 0.0)
+    {
+      NS_TEST_ASSERT_MSG_EQ (phy->GetEnergyDuration (expectedRxPower - step, band).IsStrictlyPositive (), true,
+                             "At least " << expectedRxPower << " W expected for OFDMA part over (" << band.first << ", " << band.second << ") at " << Simulator::Now ());
+      NS_TEST_ASSERT_MSG_EQ (phy->GetEnergyDuration (expectedRxPower + step, band).IsStrictlyPositive (), false,
+                             "At most " << expectedRxPower << " W expected for OFDMA part over (" << band.first << ", " << band.second << ") at " << Simulator::Now ());
+    }
+  else
+    {
+      NS_TEST_ASSERT_MSG_EQ (phy->GetEnergyDuration (expectedRxPower + step, band).IsStrictlyPositive (), false,
+                             "At most " << expectedRxPower << " W expected for OFDMA part over (" << band.first << ", " << band.second << ") at " << Simulator::Now ());
+    }
+}
+
+void
 TestUlOfdmaPhyTransmission::VerifyEventsCleared (void)
 {
   NS_TEST_ASSERT_MSG_EQ (m_phyAp->GetCurrentEvent (), 0, "m_currentEvent for AP was not cleared");
@@ -1921,6 +2020,13 @@ TestUlOfdmaPhyTransmission::SetBssColor (Ptr<WifiPhy> phy, uint8_t bssColor)
   Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (phy->GetDevice ());
   Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
   heConfiguration->SetAttribute ("BssColor", UintegerValue (bssColor));
+}
+
+void
+TestUlOfdmaPhyTransmission::SetPsdLimit (Ptr<WifiPhy> phy, double psdLimit)
+{
+  NS_LOG_FUNCTION (this << phy << psdLimit);
+  phy->SetAttribute ("PowerDensityLimit", DoubleValue (psdLimit));
 }
 
 void
@@ -2012,6 +2118,17 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
   m_phyInterferer->SetChannel (spectrumChannel);
   m_phyInterferer->SetDutyCycle (1);
   interfererNode->AddDevice (interfererDev);
+
+  //Configure power attributes of all wifi devices
+  std::list<Ptr<WifiPhy>> phys {m_phyAp, m_phySta1, m_phySta2, m_phySta3};
+  for (auto & phy : phys)
+    {
+      phy->SetAttribute ("TxGain", DoubleValue (1.0));
+      phy->SetAttribute ("TxPowerStart", DoubleValue (16.0));
+      phy->SetAttribute ("TxPowerEnd", DoubleValue (16.0));
+      phy->SetAttribute ("PowerDensityLimit", DoubleValue (100.0)); //no impact by default
+      phy->SetAttribute ("RxGain", DoubleValue (2.0));
+    }
 }
 
 void
@@ -2052,6 +2169,87 @@ TestUlOfdmaPhyTransmission::ScheduleTest (Time delay, bool solicited, WifiPhySta
 
   delay += MilliSeconds (100);
   Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::Reset, this);
+}
+
+void
+TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks (Time delay, double rxPowerNonOfdmaRu1, double rxPowerNonOfdmaRu2,
+                                                            double rxPowerOfdmaRu1, double rxPowerOfdmaRu2)
+{
+  Time detectionDuration = WifiPhy::GetPreambleDetectionDuration ();
+  WifiTxVector txVectorSta1 = GetTxVectorForHeTbPpdu (1, 1, 0);
+  WifiTxVector txVectorSta2 = GetTxVectorForHeTbPpdu (2, 2, 0);
+  Time nonOfdmaDuration = m_phyAp->CalculateNonOfdmaDurationForHeTb (txVectorSta2);
+  NS_ASSERT (nonOfdmaDuration == m_phyAp->CalculateNonOfdmaDurationForHeTb (txVectorSta1));
+
+  std::vector<double> rxPowerNonOfdma { rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2 };
+  std::vector<WifiSpectrumBand> nonOfdmaBand { m_phyAp->GetNonOfdmaBand (txVectorSta1, 1), m_phyAp->GetNonOfdmaBand (txVectorSta2, 2) };
+  std::vector<double> rxPowerOfdma { rxPowerOfdmaRu1, rxPowerOfdmaRu2 };
+  std::vector<WifiSpectrumBand> ofdmaBand { m_phyAp->GetRuBand (txVectorSta1, 1), m_phyAp->GetRuBand (txVectorSta2, 2) };
+
+  for (uint8_t i = 0; i < 2; ++i)
+    {
+      /**
+       * Perform checks at AP
+       */
+      //Check received power on non-OFDMA portion
+      Simulator::Schedule (delay + detectionDuration + NanoSeconds (1), //just after beginning of portion (once event is stored)
+                           &TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower, this, m_phyAp,
+                           nonOfdmaBand[i], rxPowerNonOfdma[i]);
+      Simulator::Schedule (delay + nonOfdmaDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckNonOfdmaRxPower, this, m_phyAp,
+                           nonOfdmaBand[i], rxPowerNonOfdma[i]);
+      //Check received power on OFDMA portion
+      Simulator::Schedule (delay + nonOfdmaDuration + NanoSeconds (1), //just after beginning of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phyAp,
+                           ofdmaBand[i], rxPowerOfdma[i]);
+      Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phyAp,
+                           ofdmaBand[i], rxPowerOfdma[i]);
+
+      /**
+       * Perform checks for non-transmitting STA (STA 3).
+       * Cannot use CheckNonOfdmaRxPower method since current event may be reset if
+       * preamble not detected (e.g. not on primary).
+       */
+      //Check received power on non-OFDMA portion
+      Simulator::Schedule (delay + detectionDuration + NanoSeconds (1), //just after beginning of portion (once event is stored)
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta3,
+                           nonOfdmaBand[i], rxPowerNonOfdma[i]);
+      Simulator::Schedule (delay + nonOfdmaDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta3,
+                           nonOfdmaBand[i], rxPowerNonOfdma[i]);
+      //Check received power on OFDMA portion
+      Simulator::Schedule (delay + nonOfdmaDuration + NanoSeconds (1), //just after beginning of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta3,
+                           ofdmaBand[i], rxPowerOfdma[i]);
+      Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta3,
+                           ofdmaBand[i], rxPowerOfdma[i]);
+    }
+
+  if (rxPowerOfdmaRu1 != 0.0)
+    {
+      /**
+       * Perform checks for transmitting STA (STA 2) to ensure it has correctly logged
+       * power received from other transmitting STA (STA 1).
+       * Cannot use CheckNonOfdmaRxPower method since current event not set.
+       */
+      double rxPowerNonOfdmaSta1Only = (m_channelWidth >= 40) ? rxPowerNonOfdma[0] : rxPowerNonOfdma[0] / 2; //both STAs transmit over the same 20 MHz channel
+      //Check received power on non-OFDMA portion
+      Simulator::Schedule (delay + detectionDuration + NanoSeconds (1), //just after beginning of portion (once event is stored)
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta2,
+                           nonOfdmaBand[0], rxPowerNonOfdmaSta1Only);
+      Simulator::Schedule (delay + nonOfdmaDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta2,
+                           nonOfdmaBand[0], rxPowerNonOfdmaSta1Only);
+      //Check received power on OFDMA portion
+      Simulator::Schedule (delay + nonOfdmaDuration + NanoSeconds (1), //just after beginning of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta2,
+                           ofdmaBand[0], rxPowerOfdma[0]);
+      Simulator::Schedule (delay + m_expectedPpduDuration - NanoSeconds (1), //just before end of portion
+                           &TestUlOfdmaPhyTransmission::CheckOfdmaRxPower, this, m_phySta2,
+                           ofdmaBand[0], rxPowerOfdma[0]);
+    }
 }
 
 void
@@ -2365,6 +2563,65 @@ TestUlOfdmaPhyTransmission::RunOne (void)
                 0, 0, 0, //No transmission scheduled for STA 1
                 succ, fail, bytes,
                 false, state);
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Measure the power of a solicited HE TB PPDU from STA 2 on RU 2
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Measure power for reception of HE TB PPDU only on RU 2");
+  double rxPower = DbmToW (19); //16+1 dBm at STAs and +2 at AP (no loss since all devices are colocated)
+  SchedulePowerMeasurementChecks (delay,
+                                  (m_channelWidth >= 40) ? 0.0 : rxPower, rxPower, //power detected on RU1 only if same 20 MHz as RU 2
+                                  0.0, rxPower);
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,    //No transmission scheduled for STA 1
+                1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
+                false, WifiPhyState::RX); //Measurement channel is total channel width
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Measure the power of a solicited HE TB PPDU from STA 2 on RU 2 with power spectrum density limitation enforced
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Measure power for reception of HE TB PPDU only on RU 2 with PSD limitation");
+  //Configure PSD limitation at 3 dBm/MHz -> 3+13.0103=16.0103 dBm max for 20 MHz, 3+9.0309=12.0309 dBm max for 106-tone RU, no impact for 40 MHz and above
+  Simulator::Schedule (delay - NanoSeconds (1), //just before sending HE TB
+                       &TestUlOfdmaPhyTransmission::SetPsdLimit, this, m_phySta2, 3.0);
+
+  rxPower = (m_channelWidth > 40) ? DbmToW (19) : DbmToW (18.0103); //15.0103+1 dBm at STA 2 and +2 at AP for non-OFDMA transmitted only on one 20 MHz channel
+  double rxPowerOfdma = rxPower;
+  if (m_channelWidth <= 40)
+    {
+      rxPowerOfdma = (m_channelWidth == 20) ? DbmToW (14.0309) //11.0309+1 dBm at STA and +2 at AP if 106-tone RU
+                                            : DbmToW (18.0103); //15.0103+1 dBm at STA 2 and +2 at AP if 242-tone RU
+    }
+  SchedulePowerMeasurementChecks (delay,
+                                  (m_channelWidth >= 40) ? 0.0 : rxPower, rxPower, //power detected on RU1 only if same 20 MHz as RU 2
+                                  0.0, rxPowerOfdma);
+
+  //Reset PSD limitation once HE TB has been sent
+  Simulator::Schedule (delay + m_expectedPpduDuration,
+                       &TestUlOfdmaPhyTransmission::SetPsdLimit, this, m_phySta2, 100.0);
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                0, 0, 0,    //No transmission scheduled for STA 1
+                1, 0, 1001, //One PSDU of 1001 bytes should have been successfully received from STA 2
+                false, WifiPhyState::RX); //Measurement channel is total channel width
+  delay += Seconds (1.0);
+
+  //---------------------------------------------------------------------------
+  //Measure the power of 2 solicited HE TB PPDU from both STAs
+  Simulator::Schedule (delay, &TestUlOfdmaPhyTransmission::LogScenario, this,
+                       "Measure power for reception of HE TB PPDU on both RUs");
+  rxPower = DbmToW (19); //16+1 dBm at STAs and +2 at AP (no loss since all devices are colocated)
+  double rxPowerNonOfdma = (m_channelWidth >= 40) ? rxPower : rxPower * 2; //both STAs transmit over the same 20 MHz channel
+  SchedulePowerMeasurementChecks (delay,
+                                  rxPowerNonOfdma, rxPowerNonOfdma,
+                                  rxPower, rxPower);
+  ScheduleTest (delay, true,
+                WifiPhyState::IDLE,
+                1, 0, 1000,  //One PSDU of 1000 bytes should have been successfully received from STA 1
+                1, 0, 1001); //One PSDU of 1001 bytes should have been successfully received from STA 2
   delay += Seconds (1.0);
 
   //---------------------------------------------------------------------------
