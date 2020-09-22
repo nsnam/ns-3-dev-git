@@ -27,8 +27,6 @@
 #include <ns3/ptr.h>
 #include <ns3/object.h>
 #include <ns3/type-id.h>
-#include <ns3/address.h>
-#include <ns3/mac48-address.h>
 
 #include <algorithm>
 #include <iterator>
@@ -52,8 +50,8 @@ public:
   friend std::ostream &operator <<(std::ostream &os, const PairObject &obj);
 
 private:
-  std::pair <std::string, std::string> m_stringpair;
-  std::pair <Address, int> m_addresspair;
+  std::pair <std::string, std::string> m_stringPair;
+  std::pair <double, int> m_doubleIntPair;
 };
 
 PairObject::PairObject ()
@@ -75,13 +73,13 @@ PairObject::GetTypeId ()
     .AddConstructor<PairObject> ()
     .AddAttribute ("StringPair", "Pair: string, string",
                    PairValue <StringValue, StringValue> (),
-                   MakePairAccessor <StringValue, StringValue> (&PairObject::m_stringpair),
+                   MakePairAccessor <StringValue, StringValue> (&PairObject::m_stringPair),
                    MakePairChecker<StringValue, StringValue> (MakeStringChecker (), MakeStringChecker ()))
-    .AddAttribute ("AddressPair", "Pair: address int",
+    .AddAttribute ("DoubleIntPair", "Pair: double int",
                    // the container value container differs from the underlying object
-                   PairValue <AddressValue, IntegerValue> (),
-                   MakePairAccessor <AddressValue, IntegerValue> (&PairObject::m_addresspair),
-                   MakePairChecker<AddressValue, IntegerValue> (MakeAddressChecker (), MakeIntegerChecker<int> ()))
+                   PairValue <DoubleValue, IntegerValue> (),
+                   MakePairAccessor <DoubleValue, IntegerValue> (&PairObject::m_doubleIntPair),
+                   MakePairChecker<DoubleValue, IntegerValue> (MakeDoubleChecker<double> (), MakeIntegerChecker<int> ()))
     ;
   return tid;
 }
@@ -89,8 +87,8 @@ PairObject::GetTypeId ()
 std::ostream &
 operator << (std::ostream &os, const PairObject &obj)
 {
-  os << "StringPair = { " << obj.m_stringpair << " } ";
-  os << "AddressPair = { " << obj.m_addresspair << " }";
+  os << "StringPair = { " << obj.m_stringPair << " } ";
+  os << "DoubleIntPair = { " << obj.m_doubleIntPair << " }";
   return os;
 }
 
@@ -124,11 +122,11 @@ PairValueTestCase::DoRun ()
   }
 
   {
-    std::pair<const std::string, Mac48Address> ref = {"hello", Mac48Address::Allocate ()};
+    std::pair<const std::string, double> ref = {"hello", 3.14};
 
-    PairValue<StringValue, Mac48AddressValue> ac;
+    PairValue<StringValue, DoubleValue> ac;
     ac.Set (ref);
-    std::pair<const std::string, Mac48Address> rv = ac.Get ();
+    std::pair<const std::string, double> rv = ac.Get ();
     NS_TEST_ASSERT_MSG_EQ (rv, ref, "Attribute value does not equal original");
   }
 
@@ -149,17 +147,15 @@ PairValueSettingsTestCase::PairValueSettingsTestCase ()
 void
 PairValueSettingsTestCase::DoRun ()
 {
-  Address addr = Mac48Address::Allocate ();
-
   auto p = CreateObject <PairObject> ();
   p->SetAttribute ("StringPair", PairValue<StringValue, StringValue> (std::make_pair ("hello", "world")));
-  p->SetAttribute ("AddressPair", PairValue<AddressValue, IntegerValue> (std::make_pair (addr, 31)));
+  p->SetAttribute ("DoubleIntPair", PairValue<DoubleValue, IntegerValue> (std::make_pair (3.14, 31)));
 
   std::ostringstream oss;
   oss << *p;
   
   std::ostringstream ref;
-  ref << "StringPair = { (hello,world) } AddressPair = { (" << addr << ",31) }";
+  ref << "StringPair = { (hello,world) } DoubleIntPair = { (3.14,31) }";
 
   NS_TEST_ASSERT_MSG_EQ ((oss.str ()), (ref.str ()), "Pairs not correctly set");
 }
