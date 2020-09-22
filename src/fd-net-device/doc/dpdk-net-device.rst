@@ -89,7 +89,7 @@ To install DPDK on Ubuntu, run the following command:
 
 .. sourcecode:: text
 
- apt-get install dpdk dpdk-dev libdpdk-dev
+ apt-get install dpdk dpdk-dev libdpdk-dev dpdk-igb-uio-dkms
 
 Ubuntu 20.04 has packaged DPDK v19.11 LTS which is tested with this module and DpdkNetDevice will only be enabled if this version is available.
 
@@ -153,8 +153,11 @@ Execute the following:
 
  sudo modprobe uio_pci_generic
  sudo modprobe uio
- sudo insmod $RTE_SDK/$RTE_TARGET/kmod/igb_uio.ko
  sudo modprobe vfio-pci
+
+ sudo modprobe igb_uio # for ubuntu package
+ # OR
+ sudo insmod $RTE_SDK/$RTE_TARGET/kmod/igb_uio.ko # for dpdk source
 
 
 These should be done every time you reboot your system.
