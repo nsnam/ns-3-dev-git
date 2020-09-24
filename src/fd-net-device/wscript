@@ -209,9 +209,11 @@ def build(bld):
     if bld.env['ENABLE_DPDKNETDEV']:
         module.use.append('DPDK')
         module.source.extend([
+            'helper/dpdk-net-device-helper.cc',
             'model/dpdk-net-device.cc'
         ])
         headers.source.extend([
+            'helper/dpdk-net-device-helper.h',
             'model/dpdk-net-device.h'
         ])
         if 'src' in bld.env['DPDK_LIB_MODE']:

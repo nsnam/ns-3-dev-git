@@ -257,14 +257,16 @@ DpdkNetDevice::IsLinkUp (void) const
 }
 
 void
-DpdkNetDevice::InitDpdk (int argc, char** argv)
+DpdkNetDevice::InitDpdk (int argc, char** argv, std::string dpdkDriver)
 {
   NS_LOG_FUNCTION (this << argc << argv);
 
   NS_LOG_INFO ("Binding device to DPDK");
   std::string command;
   command.append ("dpdk-devbind.py --force ");
-  command.append ("--bind=uio_pci_generic ");
+  command.append ("--bind=");
+  command.append (dpdkDriver.c_str ());
+  command.append (" ");
   command.append (m_deviceName.c_str ());
   printf ("Executing: %s\n", command.c_str ());
   if (system (command.c_str ()))

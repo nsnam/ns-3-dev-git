@@ -48,7 +48,7 @@
 //  1) You need to decide on a physical device on your real system, and either
 //     overwrite the hard-configured device name below (eth0) or pass this
 //     device name in as a command-line argument
-//  1') If you run emulation in dpdk mode, use device address (eg. 0000:00.1f.6) 
+//  1') If you run emulation in dpdk mode, use device address (eg. 0000:00.1f.6)
 //      as device name. This address can be obtained by running `lspci`
 //  2) The host device must be set to promiscuous mode
 //     (e.g. "sudo ifconfig eth0 promisc")
@@ -74,7 +74,7 @@
 //
 //     $ sudo chown root.root build/src/fd-net-device/ns3-dev-raw-sock-creator
 //     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-raw-sock-creator
-// 
+//
 //     or (if you run emulation in netmap mode):
 //     $ sudo chown root.root build/src/fd-net-device/ns3-dev-netmap-device-creator
 //     $ sudo chmod 4755 build/src/fd-net-device/ns3-dev-netmap-device-creator
@@ -197,34 +197,14 @@ main (int argc, char *argv[])
 #ifdef HAVE_DPDK_USER_H
   if (emuMode == "dpdk")
     {
-      EmuFdNetDeviceHelper* dpdk = new EmuFdNetDeviceHelper;
-      // set the dpdk emulation mode
-      char **ealArgv = new char*[20];
-      // arg[0] is program name (optional)
-      ealArgv[0] = new char[20];
-      strcpy (ealArgv[0], "");
-      // logical core usage
-      ealArgv[1] = new char[20];
-      strcpy (ealArgv[1], "-l");
-      // Use core 0 and 1
-      ealArgv[2] = new char[20];
-      strcpy (ealArgv[2], "0,1");
-      // Load library
-      ealArgv[3] = new char[20];
-      strcpy (ealArgv[3], "-d");
+      DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
       // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
       // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
-      // based on your NIC. You just need to add it as a library using -d option as
-      // used below.
-      ealArgv[4] = new char[20];
-      strcpy (ealArgv[4], "librte_pmd_e1000.so");
-      // Load library
-      ealArgv[5] = new char[20];
-      strcpy (ealArgv[5], "-d");
-      // Use mempool ring library
-      ealArgv[6] = new char[50];
-      strcpy (ealArgv[6], "librte_mempool_ring.so");
-      dpdk->SetDpdkMode (7, ealArgv);
+      // based on your NIC. You just need to set pmd library as follows:
+      dpdk->SetPmdLibrary ("librte_pmd_e1000.so");
+      // Set dpdk driver to use for the NIC. `uio_pci_generic` supports most NICs.
+      dpdk->SetDpdkDriver ("uio_pci_generic");
+      // Set device name
       dpdk->SetDeviceName (deviceName);
       helper = dpdk;
     }

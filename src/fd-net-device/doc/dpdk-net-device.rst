@@ -30,7 +30,7 @@ Design
 Initialization
 ##############
 
-``EmuFdNetDeviceHelper`` model is responsible for the initialization of ``DpdkNetDevice``. It contains a boolean flag named ``isDpdkMode`` which upon setting, initializes the ``DpdkNetDevice``. After this, the EAL is initialized, a memory pool is allocated, access to the Ethernet port is obtained and it is initialized, reception (Rx) and transmission (Tx) queues are set up on the port, Rx and Tx buffers are set up and LaunchCore method is called which will launch the ``HandleRx`` method to handle reading of packets in burst.
+``DpdkNetDeviceHelper`` model is responsible for the initialization of ``DpdkNetDevice``. After this, the EAL is initialized, a memory pool is allocated, access to the Ethernet port is obtained and it is initialized, reception (Rx) and transmission (Tx) queues are set up on the port, Rx and Tx buffers are set up and LaunchCore method is called which will launch the ``HandleRx`` method to handle reading of packets in burst.
 
 Packet Transfer
 ###############
@@ -230,10 +230,7 @@ it is found, a user should see:
 
   DPDK NetDevice                : enabled
 
-``DpdkNetDevice`` does not use a dedicated helper class, but reuses the 
-``EmuFdNetDeviceHelper`` class provided in the ``fd-net-device/helper`` 
-directory. The ``EmuFdNetDeviceHelper`` allows us to set ``dpdkMode``
-which will launch the ``DpdkNetDevice`` instead of the ``FdNetDevice``.
+``DpdkNetDeviceHelper`` class supports the configuration of ``DpdkNetDevice``.
 
 .. sourcecode:: text
 
@@ -262,42 +259,19 @@ which will launch the ``DpdkNetDevice`` instead of the ``FdNetDevice``.
              +-------------- ( Internet ) ----
 
 
-Initialization of DPDK requires passing of EAL arguments. These are passed to ``EmuFdNetDevice::SetDpdkMode``, which initializes the ``DPDKNetDevice``. The ``deviceName`` variable is the PCI address of the ethernet controller (for eg. ``0000:00:1f.6``), which can be obtained by ``lspci``. The following code snippet shows the whole procedure:
+Initialization of DPDK driver requires initialization of EAL. EAL requires PMD (Poll Mode Driver) Library for using NIC. DPDK supports multiple Poll Mode Drivers and you can use one that works for your NIC. PMD Library can be set via ``DpdkNetDeviceHelper::SetPmdLibrary``, as follows:
 
 .. sourcecode:: text
 
- char **ealArgv = new char*[20];
- // arg[0] is program name (optional)
- ealArgv[0] = new char[20];
- strcpy (ealArgv[0], "");
- // logical core usage
- ealArgv[1] = new char[20];
- strcpy (ealArgv[1], "-l");
- // Use core 0 and 1
- ealArgv[2] = new char[20];
- strcpy (ealArgv[2], "0,1");
- // Load library
- ealArgv[3] = new char[20];
- strcpy (ealArgv[3], "-d");
- // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
- // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
- // based on your NIC. You just need to add it as a library using -d option as
- // used below.
- ealArgv[4] = new char[20];
- strcpy (ealArgv[4], "librte_pmd_e1000.so");
- // Load library
- ealArgv[5] = new char[20];
- strcpy (ealArgv[5], "-d");
- // Use mempool ring library
- ealArgv[6] = new char[50];
- strcpy (ealArgv[6], "librte_mempool_ring.so");
- EmuFdNetDeviceHelper emu;
- emu.SetDpdkMode(7, ealArgv);
- emu.SetDeviceName(deviceName);
- NetDeviceContainer devices = emu.Install(node);
- Ptr<NetDevice> device = devices.Get(0);
- device->SetAttribute("Address", Mac48AddressValue(Mac48Address::Allocate ()));
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ dpdk->SetPmdLibrary("librte_pmd_e1000.so");
 
+Also, NIC should be bound to DPDK Driver in order to be used with EAL. The default driver used is ``uio_pci_generic`` which supports most of the NICs. You can change it using ``DpdkNetDeviceHelper::SetDpdkDriver``, as follows:
+
+.. sourcecode:: text
+
+ DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
+ dpdk->SetDpdkDriver("igb_uio");
 
 Attributes
 ==========
@@ -323,5 +297,5 @@ Examples
 
 The following examples are provided:
 
-* ``fd-emu-ping.cc``: This example can be configured to use the EmuFdNetDeviceHelper in DPDK mode to send ICMP traffic bypassing the kernel over a real channel.
+* ``fd-emu-ping.cc``: This example can be configured to use the ``DpdkNetDevice`` to send ICMP traffic bypassing the kernel over a real channel.
 * ``fd-emu-onoff.cc``: This example can be configured to measure the throughput of the ``DpdkNetDevice`` by sending traffic from the simulated node to a real device using the ``ns3::OnOffApplication`` while leveraging DPDK’s fast packet processing abilities. This is achieved by saturating the channel with TCP/UDP traffic.

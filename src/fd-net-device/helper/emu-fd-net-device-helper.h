@@ -45,8 +45,7 @@ public:
    */
   EmuFdNetDeviceHelper ();
   virtual ~EmuFdNetDeviceHelper ()
-  {
-  }
+  {}
 
   /**
    * Get the device name of this device.
@@ -67,14 +66,6 @@ public:
    * \param hostQdiscBypass to enable host qdisc bypass
    */
   void HostQdiscBypass (bool hostQdiscBypass);
-
-  /**
-   * Set the device in DPDK mode.
-   *
-   * \param argc Dpdk EAL args count.
-   * \param argv Dpdk EAL args list.
-   */
-  void SetDpdkMode (int argc, char **argv);
 
 protected:
 
@@ -104,21 +95,6 @@ protected:
    */
   std::string m_deviceName;
   bool m_hostQdiscBypass;
-
-  /**
-   * The DPDK mode of the device.
-   */
-  bool m_dpdkMode;
-
-  /**
-   * DPDK EAL arguments count.
-   */
-  int m_ealArgc;
-
-  /**
-   * DPDK EAL arguments list.
-   */
-  char **m_ealArgv;
 };
 
 } // namespace ns3

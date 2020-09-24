@@ -76,8 +76,9 @@ public:
    *
    * \param argc Dpdk EAL args count.
    * \param argv Dpdk EAL args list.
+   * \param dpdkDriver Dpdk Driver to bind NIC to.
    */
-  void InitDpdk (int argc, char **argv);
+  void InitDpdk (int argc, char **argv, std::string dpdkDriver);
 
   /**
    * Set device name.

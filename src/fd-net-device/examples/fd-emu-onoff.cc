@@ -124,7 +124,7 @@ main (int argc, char *argv[])
 {
   uint16_t sinkPort = 8000;
   uint32_t packetSize = 1400; // bytes
-  std::string dataRate("1000Mb/s");
+  std::string dataRate ("1000Mb/s");
   bool serverMode = false;
 
   std::string deviceName ("eth0");
@@ -215,34 +215,14 @@ main (int argc, char *argv[])
 #ifdef HAVE_DPDK_USER_H
   if (emuMode == "dpdk")
     {
-      EmuFdNetDeviceHelper* dpdk = new EmuFdNetDeviceHelper;
-      // set the dpdk emulation mode
-      char **ealArgv = new char*[20];
-      // arg[0] is program name (optional)
-      ealArgv[0] = new char[20];
-      strcpy (ealArgv[0], "");
-      // logical core usage
-      ealArgv[1] = new char[20];
-      strcpy (ealArgv[1], "-l");
-      // Use core 0 and 1
-      ealArgv[2] = new char[20];
-      strcpy (ealArgv[2], "0,1");
-      // Load library
-      ealArgv[3] = new char[20];
-      strcpy (ealArgv[3], "-d");
+      DpdkNetDeviceHelper* dpdk = new DpdkNetDeviceHelper ();
       // Use e1000 driver library (this is for IGb PMD supproting Intel 1GbE NIC)
       // NOTE: DPDK supports multiple Poll Mode Drivers (PMDs) and you can use it
-      // based on your NIC. You just need to add it as a library using -d option as
-      // used below.
-      ealArgv[4] = new char[20];
-      strcpy (ealArgv[4], "librte_pmd_e1000.so");
-      // Load library
-      ealArgv[5] = new char[20];
-      strcpy (ealArgv[5], "-d");
-      // Use mempool ring library
-      ealArgv[6] = new char[50];
-      strcpy (ealArgv[6], "librte_mempool_ring.so");
-      dpdk->SetDpdkMode (7, ealArgv);
+      // based on your NIC. You just need to set pmd library as follows:
+      dpdk->SetPmdLibrary ("librte_pmd_e1000.so");
+      // Set dpdk driver to use for the NIC. `uio_pci_generic` supports most NICs.
+      dpdk->SetDpdkDriver ("uio_pci_generic");
+      // Set device name
       dpdk->SetDeviceName (deviceName);
       helper = dpdk;
     }

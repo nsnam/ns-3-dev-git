@@ -29,10 +29,6 @@
 #include "ns3/simulator.h"
 #include "ns3/trace-helper.h"
 
-#ifdef HAVE_DPDK_USER_H
-#include "ns3/dpdk-net-device.h"
-#endif
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <iostream>
@@ -67,7 +63,6 @@ EmuFdNetDeviceHelper::EmuFdNetDeviceHelper ()
 {
   m_deviceName = "undefined";
   m_hostQdiscBypass = false;
-  m_dpdkMode = false;
 }
 
 void
@@ -80,22 +75,6 @@ void
 EmuFdNetDeviceHelper::HostQdiscBypass (bool hostQdiscBypass)
 {
   m_hostQdiscBypass = hostQdiscBypass;
-}
-void
-EmuFdNetDeviceHelper::SetDpdkMode (int argc, char **argv)
-{
-  NS_LOG_FUNCTION (this);
-
-#ifdef HAVE_DPDK_USER_H
-  FdNetDeviceHelper::SetTypeId ("ns3::DpdkNetDevice");
-  m_dpdkMode = true;
-  m_ealArgc = argc;
-  m_ealArgv = argv;
-
-  NS_LOG_LOGIC ("Set DPDK Mode");
-#else
-  NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetDpdkMode (): Attempted to set DPDK Mode without DPDK support enabled");
-#endif
 }
 
 std::string
@@ -122,16 +101,6 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
     {
       NS_FATAL_ERROR ("EmuFdNetDeviceHelper::SetFileDescriptor (): m_deviceName is not set");
     }
-
-#ifdef HAVE_DPDK_USER_H
-  if (m_dpdkMode)
-    {
-      Ptr<DpdkNetDevice> dpdkDevice = StaticCast<DpdkNetDevice> (device);
-      dpdkDevice->SetDeviceName (m_deviceName);
-      dpdkDevice->InitDpdk (m_ealArgc, m_ealArgv);
-      return;
-    }
-#endif
 
   //
   // Call out to a separate process running as suid root in order to get a raw
