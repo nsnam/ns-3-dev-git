@@ -158,11 +158,13 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
+  void StartTransmission(void);
+
   /**
-   * The TransmitComplete method is used internally to finish the process
+   * The FinishTransmission method is used internally to finish the process
    * of sending a packet out on the channel.
    */
-  void TransmitComplete (void);
+  void FinishTransmission (Ptr<Packet> packet);
 
   bool m_linkUp; //!< Flag indicating whether or not the link is up
 
@@ -174,7 +176,7 @@ private:
 
   Ptr<Queue<Packet> > m_queue; //!< The Queue for outgoing packets.
   DataRate m_bps; //!< The device nominal Data rate. Zero means infinite
-  EventId TransmitCompleteEvent; //!< the Tx Complete event
+  EventId FinishTransmissionEvent; //!< the Tx Complete event
 
   /**
    * List of callbacks to fire if the link changes state (up or down).
