@@ -39,6 +39,7 @@
 #include "ns3/double.h"
 #include "ns3/string.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/queue.h"
 
 using namespace ns3;
 
@@ -54,6 +55,14 @@ static void SendPacket (int num, Ptr<NetDevice> device, Address& addr)
 // Two nodes, two devices, one channel
 static void BuildSimpleTopology (Ptr<Node> a, Ptr<Node> b, Ptr<SimpleNetDevice> input, Ptr<SimpleNetDevice> output, Ptr<SimpleChannel> channel)
 {
+  ObjectFactory queueFactory;
+  queueFactory.SetTypeId("ns3::DropTailQueue<Packet>");
+  queueFactory.Set("MaxSize", StringValue("100000p")); // Much larger than we need
+  Ptr<Queue<Packet> > queueA = queueFactory.Create<Queue<Packet> > ();
+  Ptr<Queue<Packet> > queueB = queueFactory.Create<Queue<Packet> > ();
+
+  input->SetQueue(queueA);
+  output->SetQueue(queueB);
   a->AddDevice (input);
   b->AddDevice (output);
   input->SetAddress (Mac48Address::Allocate ());
