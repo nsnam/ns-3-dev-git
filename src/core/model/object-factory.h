@@ -103,7 +103,8 @@ public:
    * Base case to stop the recursion performed by the templated version of this
    * method.
    */
-  void Set (void);
+  void Set (void)
+  { }
 
   /**
    * Get the TypeId which will be created by this ObjectFactory.

@@ -86,10 +86,6 @@ ObjectFactory::DoSet (const std::string &name, const AttributeValue &value)
     }
   m_parameters.Add (name, info.checker, value.Copy ());
 }
-void
-ObjectFactory::Set (void)
-{
-}
 
 TypeId
 ObjectFactory::GetTypeId (void) const
