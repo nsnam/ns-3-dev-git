@@ -239,13 +239,6 @@ FdNetDevice::StartDevice (void)
       NS_LOG_DEBUG ("FdNetDevice::Start(): Failure, invalid file descriptor.");
       return;
     }
-  //
-  // A similar story exists for the node ID.  We can't just naively do a
-  // GetNode ()->GetId () since GetNode is going to give us a Ptr<Node> which
-  // is reference counted.  We need to stash away the node ID for use in the
-  // read thread.
-  //
-  m_nodeId = GetNode ()->GetId ();
 
   m_fdReader = DoCreateFdReader ();
   m_fdReader->Start (m_fd, MakeCallback (&FdNetDevice::ReceiveCallback, this));
@@ -786,6 +779,11 @@ void
 FdNetDevice::SetNode (Ptr<Node> node)
 {
   m_node = node;
+
+  // Save the node ID for use in the read thread, to avoid having
+  // to make a call to GetNode ()->GetId () that increments
+  // Ptr<Node>'s reference count.
+  m_nodeId = node->GetId ();
 }
 
 bool
