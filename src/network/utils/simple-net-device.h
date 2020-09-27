@@ -158,11 +158,18 @@ private:
    */
   TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 
-  void StartTransmission(void);
+  /**
+   * The StartTransmission method is used internally to start the process
+   * of sending a packet out on the channel, by scheduling the
+   * FinishTransmission method at a time corresponding to the transmission
+   * delay of the packet.
+   */
+  void StartTransmission (void);
 
   /**
    * The FinishTransmission method is used internally to finish the process
    * of sending a packet out on the channel.
+   * \param packet The packet to send on the channel
    */
   void FinishTransmission (Ptr<Packet> packet);
 

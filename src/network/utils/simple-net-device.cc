@@ -432,7 +432,6 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
     {
       return false;
     }
-  Ptr<Packet> packet = p->Copy ();
 
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   Mac48Address from = Mac48Address::ConvertFrom (source);
@@ -448,11 +447,10 @@ SimpleNetDevice::SendFrom (Ptr<Packet> p, const Address& source, const Address& 
     {
       if (m_queue->GetNPackets () == 1 && !FinishTransmissionEvent.IsRunning ())
         {
-          StartTransmission();
+          StartTransmission ();
         }
       return true;
     }
-
 
   return false;
 }
@@ -471,11 +469,11 @@ SimpleNetDevice::StartTransmission ()
   /**
    * SimpleChannel will deliver the packet to the far end(s) of the link as soon as Send is called
    * (or after its fixed delay, if one is configured). So we have to handle the rate of the link here,
-   * which we do by scheudling FinishTransmission (packetSize / linkRate) time in the future. While
+   * which we do by scheduling FinishTransmission (packetSize / linkRate) time in the future. While
    * that event is running, the transmit path of this NetDevice is busy, so we can't send other packets. 
    * 
    * SimpleChannel doesn't have a locking mechanism, and doesn't check for collisions, so there's nothing
-   * we need to do with the channel until the transmisison has "completed" from the perspective of this
+   * we need to do with the channel until the transmission has "completed" from the perspective of this
    * NetDevice. 
    */
   Time txTime = Time (0);
@@ -500,7 +498,7 @@ SimpleNetDevice::FinishTransmission (Ptr<Packet> packet)
 
   m_channel->Send (packet, proto, dst, src, this);
 
-  StartTransmission();
+  StartTransmission ();
 
   return;
 }
