@@ -1282,3 +1282,24 @@ option which will print the full build version and exit.
 If the ``--enable-build-version`` option was not configured, ``--version``
 will print out a message similar to ``--check-version`` indicating that the build
 version option is not enabled.
+
+Source version
+++++++++++++++
+
+An alternative to storing build version information in the |ns3| libraries
+is to track the source code version used to build the code.  When using
+Git, the following recipe can be added to Bash shell scripts to
+create a ``version.txt`` file with Git revision information, appended
+with a patch of any changes to that revision if the repository is dirty.
+The resulting text file can then be saved with any corresponding
+|ns3| simulation results.
+
+.. sourcecode:: bash
+
+  echo `git describe` > version.txt
+  gitDiff=`git diff`
+  if [[ $gitDiff ]]
+  then
+      echo "$gitDiff" >> version.txt
+  fi
+
