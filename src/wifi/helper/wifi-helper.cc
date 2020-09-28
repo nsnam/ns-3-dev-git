@@ -749,6 +749,40 @@ WifiHelper::SetStandard (WifiStandard standard)
   m_standard = standard;
 }
 
+// NS_DEPRECATED_3_32
+void
+WifiHelper::SetStandard (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_80211a:
+      m_standard = WIFI_STANDARD_80211a;
+      return;
+    case WIFI_PHY_STANDARD_80211b:
+      m_standard = WIFI_STANDARD_80211b;
+      return;
+    case WIFI_PHY_STANDARD_80211g:
+      m_standard = WIFI_STANDARD_80211g;
+      return;
+    case WIFI_PHY_STANDARD_holland:
+      m_standard = WIFI_STANDARD_holland;
+      return;
+    // remove the next value from WifiPhyStandard when deprecation ends
+    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
+      m_standard = WIFI_STANDARD_80211n_2_4GHZ;
+      return;
+    // remove the next value from WifiPhyStandard when deprecation ends
+    case WIFI_PHY_STANDARD_80211n_5GHZ:
+      m_standard = WIFI_STANDARD_80211n_5GHZ;
+      return;
+    case WIFI_PHY_STANDARD_80211ac:
+      m_standard = WIFI_STANDARD_80211ac;
+      return;
+    default:
+      NS_FATAL_ERROR ("Unsupported value of WifiPhyStandard");
+    }
+}
+
 void
 WifiHelper::SetSelectQueueCallback (SelectQueueCallback f)
 {

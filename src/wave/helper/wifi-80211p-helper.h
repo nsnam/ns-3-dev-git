@@ -24,6 +24,7 @@
 #ifndef WIFI_802_11P_HELPER_H
 #define WIFI_802_11P_HELPER_H
 #include "ns3/wifi-helper.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -58,6 +59,16 @@ public:
    * The default 802.11p standard uses 10MHz.
    */
   virtual void SetStandard (enum WifiStandard standard);
+
+  /**
+   * \param standard the phy standard to configure during installation
+   *
+   * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
+   * The default 802.11p standard uses 10MHz.
+   * \deprecated This method will go away in a future release of ns-3.
+   */
+  NS_DEPRECATED_3_32
+  virtual void SetStandard (WifiPhyStandard standard);
 
   /**
    * \param phy the PHY helper to create PHY objects
