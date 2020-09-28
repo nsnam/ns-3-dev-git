@@ -172,9 +172,9 @@ private:
   EventId m_txEvent;
 
   /**
-   * Timeout for stale packet transmission
+   * The time to wait before transmitting burst from Tx buffer
    */
-  uint64_t m_txTimeout;
+  Time m_txTimeout;
 
   /**
    * Size of Rx burst

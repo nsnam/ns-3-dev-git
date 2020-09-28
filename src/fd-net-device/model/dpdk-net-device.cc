@@ -62,10 +62,10 @@ DpdkNetDevice::GetTypeId (void)
     .SetGroupName ("FdNetDevice")
     .AddConstructor<DpdkNetDevice> ()
     .AddAttribute ("TxTimeout",
-                   "The time to wait before transmitting burst from Tx Buffer (in us).",
-                   UintegerValue (2000),
-                   MakeUintegerAccessor (&DpdkNetDevice::m_txTimeout),
-                   MakeUintegerChecker<uint64_t> ())
+                   "The time to wait before transmitting burst from Tx buffer.",
+                   TimeValue (MicroSeconds (2000)),
+                   MakeTimeAccessor (&DpdkNetDevice::m_txTimeout),
+                   MakeTimeChecker ())
     .AddAttribute ("MaxRxBurst",
                    "Size of Rx Burst.",
                    UintegerValue (64),
@@ -467,9 +467,7 @@ DpdkNetDevice::Write (uint8_t *buffer, size_t length)
     {
       // If this is a first packet in buffer, schedule a tx.
       Simulator::Cancel (m_txEvent);
-      m_txEvent =
-        Simulator::Schedule ( Time ( MicroSeconds (m_txTimeout) ),
-                              &DpdkNetDevice::HandleTx, this);
+      m_txEvent = Simulator::Schedule (m_txTimeout, &DpdkNetDevice::HandleTx, this);
     }
 
   return length;
