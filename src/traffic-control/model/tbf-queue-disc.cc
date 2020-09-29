@@ -254,16 +254,38 @@ TbfQueueDisc::DoDequeue (void)
         }
 
       // the watchdog timer setup.
-      /* A packet gets blocked if the above if condition is not satisfied, i.e.
-      both the ptoks and btoks are less than zero. In that case we have to 
-      schedule the waking of queue when enough tokens are available. */
+      // A packet gets blocked if the above if() condition is not satisfied:
+      // either or both btoks and ptoks are negative.  In that case, we have
+      // to schedule the waking of queue when enough tokens are available.
       if (m_id.IsExpired () == true)
         {
-          Time requiredDelayTime = std::max (m_rate.CalculateBytesTxTime (-btoks),
-                                             m_peakRate.CalculateBytesTxTime (-ptoks));
+          NS_ASSERT_MSG (m_rate.GetBitRate () > 0, "Rate must be positive");
+          Time requiredDelayTime;
+          if (m_peakRate.GetBitRate () == 0)
+            {
+              NS_ASSERT_MSG (btoks < 0, "Logic error; btoks must be < 0 here");
+              requiredDelayTime = m_rate.CalculateBytesTxTime (-btoks);
+            }
+          else
+            {
+              if (btoks < 0 && ptoks >= 0)
+                {
+                  requiredDelayTime = m_rate.CalculateBytesTxTime (-btoks);
+                }
+              else if (btoks >= 0 && ptoks < 0)
+                {
+                  requiredDelayTime = m_peakRate.CalculateBytesTxTime (-ptoks);
+                }
+              else
+                {
+                  requiredDelayTime = std::max (m_rate.CalculateBytesTxTime (-btoks),
+                                                m_peakRate.CalculateBytesTxTime (-ptoks));
+                }
 
+            }
+          NS_ASSERT_MSG (requiredDelayTime.GetSeconds () >= 0, "Negative time");
           m_id = Simulator::Schedule (requiredDelayTime, &QueueDisc::Run, this);
-          NS_LOG_LOGIC("Waking Event Scheduled in " << requiredDelayTime);
+          NS_LOG_LOGIC("Waking Event Scheduled in " << requiredDelayTime.As (Time::S));
         }
     }
   return 0;
