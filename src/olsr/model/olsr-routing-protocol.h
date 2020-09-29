@@ -63,7 +63,7 @@ struct RoutingTableEntry
   uint32_t interface; //!< Interface index
   uint32_t distance; //!< Distance in hops to the destination.
 
-  RoutingTableEntry () : // default values
+  RoutingTableEntry (void) : // default values
     destAddr (), nextAddr (),
     interface (0), distance (0)
   {
@@ -85,14 +85,16 @@ public:
    */
   friend class ::OlsrMprTestCase;
 
+  static const uint16_t OLSR_PORT_NUMBER; //!< port number (698)
+
   /**
    * \brief Get the type ID.
    * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 
-  RoutingProtocol ();
-  virtual ~RoutingProtocol ();
+  RoutingProtocol (void);
+  virtual ~RoutingProtocol (void);
 
   /**
    * \brief Set the OLSR main address to the first address on the indicated interface.
@@ -109,10 +111,46 @@ public:
   void Dump (void);
 
   /**
-   * Get the touting table entries.
+   * Get the routing table entries.
    * \return the list of routing table entries discovered by OLSR
    */
-  std::vector<RoutingTableEntry> GetRoutingTableEntries () const;
+  std::vector<RoutingTableEntry> GetRoutingTableEntries (void) const;
+
+  /**
+   * Gets the MPR set.
+   * \return The MPR set.
+   */
+  MprSet GetMprSet (void) const;
+
+  /**
+   * Gets the MPR selectors.
+   * \returns The MPR selectors.
+   */
+  const MprSelectorSet & GetMprSelectors (void) const;
+
+  /**
+   * Get the one hop neighbors.
+   * \return the set of neighbors discovered by OLSR
+   */
+  const NeighborSet & GetNeighbors (void) const;
+
+  /**
+   * Get the two hop neighbors.
+   * \return the set of two hop neighbors discovered by OLSR
+   */
+  const TwoHopNeighborSet & GetTwoHopNeighbors (void) const;
+
+  /**
+   * Gets the topology set.
+   * \returns The topology set discovery by OLSR
+   */
+  const TopologySet & GetTopologySet (void) const;
+
+  /**
+   * Gets the underlying OLSR state object
+   * \returns The OLSR state object
+   */
+  const OlsrState & GetOlsrState (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -148,7 +186,7 @@ public:
    * Get the excluded interfaces.
    * \returns Container of excluded interfaces.
    */
-  std::set<uint32_t> GetInterfaceExclusions () const
+  std::set<uint32_t> GetInterfaceExclusions (void) const
   {
     return m_interfaceExclusions;
   }
@@ -195,10 +233,12 @@ public:
    * \brief Returns the internal HNA table
    * \returns the internal HNA table
    */
-  Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation () const;
+  Ptr<const Ipv4StaticRouting> GetRoutingTableAssociation (void) const;
 
 protected:
   virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_table; //!< Data structure for the routing table.
 
@@ -222,13 +262,13 @@ private:
   /**
    * \brief Clears the routing table and frees the memory assigned to each one of its entries.
    */
-  void Clear ();
+  void Clear (void);
 
   /**
    * Returns the routing table size.
    * \return The routing table size.
    */
-  uint32_t GetSize () const
+  uint32_t GetSize (void) const
   {
     return m_table.size ();
   }
@@ -297,6 +337,7 @@ private:
   bool FindSendEntry (const RoutingTableEntry &entry,
                       RoutingTableEntry &outEntry) const;
 
+public:
   // From Ipv4RoutingProtocol
   virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p,
                                       const Ipv4Header &header,
@@ -309,14 +350,16 @@ private:
                            MulticastForwardCallback mcb,
                            LocalDeliverCallback lcb,
                            ErrorCallback ecb);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual Ptr<Ipv4> GetIpv4 (void) const;
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
+
+
+private:
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
-  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
-  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
-
-  void DoDispose ();
 
   /**
    * Send an OLSR message.
@@ -329,13 +372,13 @@ private:
    * Increments packet sequence number and returns the new value.
    * \return The packet sequence number.
    */
-  inline uint16_t GetPacketSequenceNumber ();
+  inline uint16_t GetPacketSequenceNumber (void);
 
   /**
    * Increments message sequence number and returns the new value.
    * \return The message sequence number.
    */
-  inline uint16_t GetMessageSequenceNumber ();
+  inline uint16_t GetMessageSequenceNumber (void);
 
   /**
    * Receive an OLSR message.
@@ -346,13 +389,14 @@ private:
   /**
    * \brief Computates MPR set of a node following \RFC{3626} hints.
    */
-  void MprComputation ();
+  void MprComputation (void);
 
   /**
    * \brief Creates the routing table of the node following \RFC{3626} hints.
    */
-  void RoutingTableComputation ();
+  void RoutingTableComputation (void);
 
+public:
   /**
    * \brief Gets the main address associated with a given interface address.
    * \param iface_addr the interface address.
@@ -360,6 +404,7 @@ private:
    */
   Ipv4Address GetMainAddress (Ipv4Address iface_addr) const;
 
+private:
   /**
    *  \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
    *  \param route The route to be tested.
@@ -372,25 +417,25 @@ private:
   /**
    * \brief Sends a HELLO message and reschedules the HELLO timer.
    */
-  void HelloTimerExpire ();
+  void HelloTimerExpire (void);
 
   Timer m_tcTimer; //!< Timer for the TC message.
   /**
    * \brief Sends a TC message (if there exists any MPR selector) and reschedules the TC timer.
    */
-  void TcTimerExpire ();
+  void TcTimerExpire (void);
 
   Timer m_midTimer; //!< Timer for the MID message.
   /**
    * \brief \brief Sends a MID message (if the node has more than one interface) and resets the MID timer.
    */
-  void MidTimerExpire ();
+  void MidTimerExpire (void);
 
   Timer m_hnaTimer; //!< Timer for the HNA message.
   /**
    * \brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the HNA timer.
    */
-  void HnaTimerExpire ();
+  void HnaTimerExpire (void);
 
   /**
    * \brief Removes tuple if expired. Else timer is rescheduled to expire at tuple.expirationTime.
@@ -464,7 +509,7 @@ private:
   /**
    * Increments the ANSN counter.
    */
-  void IncrementAnsn ();
+  void IncrementAnsn (void);
 
   /// A list of pending messages which are buffered awaiting for being sent.
   olsr::MessageList m_queuedMessages;
@@ -503,27 +548,27 @@ private:
    * Maximum number of messages which can be contained in an %OLSR packet is
    * dictated by OLSR_MAX_MSGS constant.
    */
-  void SendQueuedMessages ();
+  void SendQueuedMessages (void);
 
   /**
    * \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
    */
-  void SendHello ();
+  void SendHello (void);
 
   /**
    * \brief Creates a new %OLSR TC message which is buffered for being sent later on.
    */
-  void SendTc ();
+  void SendTc (void);
 
   /**
    * \brief Creates a new %OLSR MID message which is buffered for being sent later on.
    */
-  void SendMid ();
+  void SendMid (void);
 
   /**
    * \brief Creates a new %OLSR HNA message which is buffered for being sent later on.
    */
-  void SendHna ();
+  void SendHna (void);
 
   /**
    * \brief Performs all actions needed when a neighbor loss occurs.
