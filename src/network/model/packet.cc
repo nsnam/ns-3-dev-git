@@ -603,9 +603,19 @@ uint32_t Packet::GetSerializedSize (void) const
       size += 4;
     }
 
-  //Tag size
-  /// \todo Serialze Tags size
-  //size += m_tags.GetSerializedSize ();
+  // increment total size by size of packet tag list
+  // ensuring 4-byte boundary
+  size += ((m_packetTagList.GetSerializedSize () + 3) & (~3));
+
+  // add 4-bytes for entry of total length of packet tag list
+  size += 4;
+
+  // increment total size by size of byte tag list
+  // ensuring 4-byte boundary
+  size += ((m_byteTagList.GetSerializedSize () + 3) & (~3));
+
+  // add 4-bytes for entry of total length of byte tag list
+  size += 4;
 
   // increment total size by size of meta-data 
   // ensuring 4-byte boundary
@@ -677,8 +687,61 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
         }
     }
 
-  // Serialize Tags
-  /// \todo Serialize Tags
+  // Serialize byte tag list
+  uint32_t byteTagSize = m_byteTagList.GetSerializedSize ();
+  if (size + byteTagSize <= maxSize)
+    {
+      // put the total length of byte tag list in the
+      // buffer. this includes 4-bytes for total
+      // length itself
+      *p++ = byteTagSize + 4;
+      size += byteTagSize;
+
+      // serialize the byte tag list
+      uint32_t serialized = m_byteTagList.Serialize (p, byteTagSize);
+      if (serialized)
+        {
+          // increment p by byteTagSize bytes
+          // ensuring 4-byte boundary
+          p += ((byteTagSize+3) & (~3)) / 4;
+        }
+      else
+        {
+          return 0;
+        }
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Serialize packet tag list
+  uint32_t packetTagSize = m_packetTagList.GetSerializedSize ();
+  if (size + packetTagSize <= maxSize)
+    {
+      // put the total length of packet tag list in the
+      // buffer. this includes 4-bytes for total
+      // length itself
+      *p++ = packetTagSize + 4;
+      size += packetTagSize;
+
+      // serialize the packet tag list
+      uint32_t serialized = m_packetTagList.Serialize (p, packetTagSize);
+      if (serialized)
+        {
+          // increment p by packetTagSize bytes
+          // ensuring 4-byte boundary
+          p += ((packetTagSize+3) & (~3)) / 4;
+        }
+      else
+        {
+          return 0;
+        }
+    }
+  else
+    {
+      return 0;
+    }
 
   // Serialize Metadata
   uint32_t metaSize = m_metadata.GetSerializedSize ();
@@ -713,7 +776,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
   if (size + bufSize <= maxSize)
     {
       // put the total length of the buffer in the
-      // buffer. this includes 4-bytes for total 
+      // buffer. this includes 4-bytes for total
       // length itself
       *p++ = bufSize + 4;
 
@@ -748,8 +811,6 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
   // will be overrun, assert
   NS_ASSERT (size >= nixSize);
 
-  size -= nixSize;
-
   if (nixSize > 4)
     {
       Ptr<NixVector> nix = Create<NixVector> ();
@@ -765,52 +826,84 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
       // 4-byte boundary
       p += ((((nixSize - 4) + 3) & (~3)) / 4);
     }
+  size -= nixSize;
 
-  // read tags
-  /// \todo Deserialize Tags
-  //uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
-  //buffer.RemoveAtStart (tagsDeserialized);
+  // read byte tags
+  uint32_t byteTagSize = *p++;
+
+  // if size less than byteTagSize, the buffer
+  // will be overrun, assert
+  NS_ASSERT (size >= byteTagSize);
+  
+  uint32_t byteTagDeserialized =
+    m_byteTagList.Deserialize (p, byteTagSize);
+  if (!byteTagDeserialized)
+    {
+      // byte tags not deserialized completely
+      return 0;
+    }
+  // increment p by byteTagSize ensuring
+  // 4-byte boundary
+  p += ((((byteTagSize - 4) + 3) & (~3)) / 4);
+  size -= byteTagSize;
+
+  // read packet tags
+  uint32_t packetTagSize = *p++;
+
+  // if size less than packetTagSize, the buffer
+  // will be overrun, assert
+  NS_ASSERT (size >= packetTagSize);
+
+  uint32_t packetTagDeserialized =
+    m_packetTagList.Deserialize (p, packetTagSize);
+  if (!packetTagDeserialized)
+    {
+      // packet tags not deserialized completely
+      return 0;
+    }
+  // increment p by packetTagSize ensuring
+  // 4-byte boundary
+  p += ((((packetTagSize - 4) + 3) & (~3)) / 4);
+  size -= packetTagSize;
 
   // read metadata
   uint32_t metaSize = *p++;
 
-  // if size less than metaSize, the buffer 
+  // if size less than metaSize, the buffer
   // will be overrun, assert
   NS_ASSERT (size >= metaSize);
 
-  size -= metaSize;
-
-  uint32_t metadataDeserialized = 
+  uint32_t metadataDeserialized =
     m_metadata.Deserialize (reinterpret_cast<const uint8_t *> (p), metaSize);
   if (!metadataDeserialized)
     {
-      // meta-data not deserialized 
+      // meta-data not deserialized
       // completely
       return 0;
     }
-  // increment p by metaSize ensuring 
+  // increment p by metaSize ensuring
   // 4-byte boundary
   p += ((((metaSize - 4) + 3) & (~3)) / 4);
+  size -= metaSize;
 
   // read buffer contents
   uint32_t bufSize = *p++;
 
-  // if size less than bufSize, the buffer 
+  // if size less than bufSize, the buffer
   // will be overrun, assert
   NS_ASSERT (size >= bufSize);
-
-  size -= bufSize;
 
   uint32_t bufferDeserialized =
     m_buffer.Deserialize (reinterpret_cast<const uint8_t *> (p), bufSize);
   if (!bufferDeserialized)
     {
-      // buffer not deserialized 
+      // buffer not deserialized
       // completely
       return 0;
     }
+  size -= bufSize;
 
-  // return zero if did not deserialize the 
+  // return zero if did not deserialize the
   // number of expected bytes
   return (size == 0);
 }

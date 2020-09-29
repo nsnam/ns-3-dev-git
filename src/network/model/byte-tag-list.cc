@@ -424,5 +424,179 @@ ByteTagList::Deallocate (struct ByteTagListData *data)
 
 #endif /* USE_FREE_LIST */
 
+uint32_t
+ByteTagList::GetSerializedSize (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  uint32_t size = 0;
+
+  // Number of tags in list
+  size += 4; // numberOfTags
+
+  ByteTagList::Iterator i = BeginAll ();
+  while (i.HasNext ())
+    {
+      ByteTagList::Iterator::Item item = i.Next ();
+
+      // TypeId hash; ensure size is multiple of 4 bytes
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      size += hashSize;
+
+      size += 3 * 4; // size, start, end
+
+      // tag data; ensure size is multiple of 4 bytes
+      uint32_t tagWordSize = (item.size+3) & (~3);
+      size += tagWordSize;
+    }
+
+  return size;
+}
+
+uint32_t
+ByteTagList::Serialize (uint32_t* buffer, uint32_t maxSize) const
+{
+  NS_LOG_FUNCTION (this << buffer << maxSize);
+
+  uint32_t* p = buffer;
+  uint32_t size = 0;
+
+  uint32_t* numberOfTags = 0;
+
+  if (size + 4 <= maxSize)
+    {
+      numberOfTags = p;
+      *p++ = 0;
+      size += 4;
+    }
+  else
+    {
+      return 0;
+    }
+
+  ByteTagList::Iterator i = BeginAll ();
+  while (i.HasNext ())
+    {
+      ByteTagList::Iterator::Item item = i.Next ();
+
+      NS_LOG_INFO ("Serializing " << item.tid);
+
+      // ensure size is multiple of 4 bytes for 4 byte boundaries
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      if (size + hashSize <= maxSize)
+        {
+          TypeId::hash_t tid = item.tid.GetHash ();
+          memcpy (p, &tid, sizeof (TypeId::hash_t));
+          p += hashSize / 4;
+          size += hashSize;
+        }
+      else
+        {
+          return 0;
+        }
+
+      if (size + 4 <= maxSize)
+        {
+          *p++ = item.size;
+          size += 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      if (size + 4 <= maxSize)
+        {
+          *p++ = item.start;
+          size += 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      if (size + 4 <= maxSize)
+        {
+          *p++ = item.end;
+          size += 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      // ensure size is multiple of 4 bytes for 4 byte boundaries
+      uint32_t tagWordSize = (item.size+3) & (~3);
+
+      if (size + tagWordSize <= maxSize)
+        {
+          item.buf.Read (reinterpret_cast<uint8_t *> (p), item.size);
+          size += tagWordSize;
+          p += tagWordSize / 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      (*numberOfTags)++;
+    }
+
+  // Serialized successfully
+  return 1;
+}
+
+uint32_t
+ByteTagList::Deserialize (const uint32_t* buffer, uint32_t size)
+{
+  NS_LOG_FUNCTION (this << buffer << size);
+  const uint32_t* p = buffer;
+  uint32_t sizeCheck = size - 4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t numberTagData = *p++;
+  sizeCheck -= 4;
+
+  NS_LOG_INFO ("Deserializing number of tags " << numberTagData);
+
+  for(uint32_t i = 0; i < numberTagData; ++i)
+    {
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      NS_ASSERT (sizeCheck >= hashSize);
+      TypeId::hash_t hash;
+      memcpy (&hash, p, sizeof (TypeId::hash_t));
+      p += hashSize / 4;
+      sizeCheck -= hashSize;
+
+      TypeId tid = TypeId::LookupByHash (hash);
+
+      NS_ASSERT (sizeCheck >= 4);
+      uint32_t bufferSize = *p++;
+      sizeCheck -= 4;
+
+      NS_ASSERT (sizeCheck >= 4);
+      uint32_t start = *p++;
+      sizeCheck -= 4;
+
+      NS_ASSERT (sizeCheck >= 4);
+      uint32_t end = *p++;
+      sizeCheck -= 4;
+
+      NS_ASSERT (sizeCheck >= bufferSize);
+      TagBuffer buf = Add (tid, bufferSize, start, end);
+      buf.Write ( reinterpret_cast<const uint8_t *> (p), bufferSize);
+
+      // ensure 4 byte boundary
+      uint32_t tagSizeBytes = (bufferSize+3) & (~3);
+      sizeCheck -= tagSizeBytes;
+      p += tagSizeBytes / 4;
+    }
+
+  NS_ASSERT (sizeCheck == 0);
+
+  // return zero if buffer did not
+  // contain a complete message
+  return (sizeCheck != 0) ? 0 : 1;
+}
 
 } // namespace ns3

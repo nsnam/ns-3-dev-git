@@ -256,12 +256,12 @@ PacketTagList::ReplaceWriter (Tag & tag, bool preMerge,
   return found;
 }
 
-void 
+void
 PacketTagList::Add (const Tag &tag) const
 {
   NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ());
   // ensure this id was not yet added
-  for (struct TagData *cur = m_next; cur != 0; cur = cur->next) 
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
     {
       NS_ASSERT_MSG (cur->tid != tag.GetInstanceTypeId (),
                      "Error: cannot add the same kind of tag twice.");
@@ -281,9 +281,9 @@ PacketTagList::Peek (Tag &tag) const
 {
   NS_LOG_FUNCTION (this << tag.GetInstanceTypeId ());
   TypeId tid = tag.GetInstanceTypeId ();
-  for (struct TagData *cur = m_next; cur != 0; cur = cur->next) 
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
     {
-      if (cur->tid == tid) 
+      if (cur->tid == tid)
         {
           /* found tag */
           tag.Deserialize (TagBuffer (cur->data, cur->data + cur->size));
@@ -299,6 +299,165 @@ PacketTagList::Head (void) const
 {
   return m_next;
 }
+
+uint32_t
+PacketTagList::GetSerializedSize (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  uint32_t size = 0;
+
+  size = 4; // numberOfTags
+
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
+    {
+      size += 4; // TagData -> size
+
+      // TypeId hash; ensure size is multiple of 4 bytes
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      size += hashSize;
+
+      // TagData -> data; ensure size is multiple of 4 bytes
+      uint32_t tagWordSize = (cur->size+3) & (~3);
+      size += tagWordSize;
+    }
+
+  return size;
+}
+
+uint32_t
+PacketTagList::Serialize (uint32_t* buffer, uint32_t maxSize) const
+{
+  NS_LOG_FUNCTION (this << buffer << maxSize);
+
+  uint32_t* p = buffer;
+  uint32_t size = 0;
+
+  uint32_t* numberOfTags = 0;
+
+  if (size + 4 <= maxSize)
+    {
+      numberOfTags = p;
+      *p++ = 0;
+      size += 4;
+    }
+  else
+    {
+      return 0;
+    }
+
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->next)
+    {
+      if (size + 4 <= maxSize)
+        {
+          *p++ = cur->size;
+          size += 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      NS_LOG_INFO("Serializing tag id " << cur->tid);
+
+      // ensure size is multiple of 4 bytes for 4 byte boundaries
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      if (size + hashSize <= maxSize)
+        {
+          TypeId::hash_t tid = cur->tid.GetHash ();
+          memcpy (p, &tid, sizeof (TypeId::hash_t));
+          p += hashSize / 4;
+          size += hashSize;
+        }
+      else
+        {
+          return 0;
+        }
+
+      // ensure size is multiple of 4 bytes for 4 byte boundaries
+      uint32_t tagWordSize = (cur->size+3) & (~3);
+      if (size + tagWordSize <= maxSize)
+        {
+          memcpy (p, cur->data, cur->size);
+          size += tagWordSize;
+          p += tagWordSize / 4;
+        }
+      else
+        {
+          return 0;
+        }
+
+      (*numberOfTags)++;
+    }
+
+  // Serialized successfully
+  return 1;
+}
+
+uint32_t
+PacketTagList::Deserialize (const uint32_t* buffer, uint32_t size)
+{
+  NS_LOG_FUNCTION (this << buffer << size);
+  const uint32_t* p = buffer;
+  uint32_t sizeCheck = size - 4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t numberOfTags = *p++;
+  sizeCheck -= 4;
+
+  NS_LOG_INFO("Deserializing number of tags " << numberOfTags);
+
+  struct TagData * prevTag = 0;
+  for (uint32_t i = 0; i < numberOfTags; ++i)
+    {
+      NS_ASSERT (sizeCheck >= 4);
+      uint32_t tagSize = *p++;
+      sizeCheck -= 4;
+
+      uint32_t hashSize = (sizeof (TypeId::hash_t)+3) & (~3);
+      NS_ASSERT (sizeCheck >= hashSize);
+      TypeId::hash_t hash;
+      memcpy (&hash, p, sizeof (TypeId::hash_t));
+      p += hashSize / 4;
+      sizeCheck -= hashSize;
+
+      TypeId tid = TypeId::LookupByHash(hash);
+
+      NS_LOG_INFO ("Deserializing tag of type " << tid);
+
+      struct TagData * newTag = CreateTagData (tagSize);
+      newTag->count = 1;
+      newTag->next = 0;
+      newTag->tid = tid;
+
+      NS_ASSERT (sizeCheck >= tagSize);
+      memcpy (newTag->data, p, tagSize);
+
+      // ensure 4 byte boundary
+      uint32_t tagWordSize = (tagSize+3) & (~3);
+      p += tagWordSize / 4;
+      sizeCheck -= tagWordSize;
+
+      // Set link list pointers.
+      if (i==0)
+        {
+          m_next = newTag;
+        }
+      else
+        {
+          prevTag->next = newTag;
+        }
+
+      prevTag = newTag;
+    }
+
+  NS_ASSERT (sizeCheck == 0);
+
+  // return zero if buffer did not
+  // contain a complete message
+  return (sizeCheck != 0) ? 0 : 1;
+}
+
 
 } /* namespace ns3 */
 

@@ -394,20 +394,39 @@ struct Expected
    * \param end_ End
    */
   Expected (uint32_t n_, uint32_t start_, uint32_t end_)
-    : n (n_), start (start_), end (end_) {}
+    : n (n_), start (start_), end (end_), data(0) {}
+
+    /**
+   * Constructor
+   * \param n_ Number of elements
+   * \param start_ Start
+   * \param end_ End
+   * \param data_ Data stored in tag
+   */
+  Expected (uint32_t n_, uint32_t start_, uint32_t end_, uint8_t data_)
+    : n (n_), start (start_), end (end_), data(data_) {}
 
   uint32_t n;     //!< Number of elements
   uint32_t start; //!< Start
   uint32_t end;   //!< End
+  uint8_t data;   //!< Optional data
 };
 
 }
 
 // tag name, start, end
-#define E(a,b,c) a,b,c
+#define E(name,start,end) name,start,end
 
+// tag name, start, end, data
+#define E_DATA(name,start,end,data) name,start,end,data
+
+// Check byte tags on a packet, checks name, start, end
 #define CHECK(p, n, ...)                                \
   DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__)
+
+// Check byte tags on a packet, checks name, start, end, data
+#define CHECK_DATA(p, n, ...)                           \
+  DoCheckData (p, __FILE__, __LINE__, n, __VA_ARGS__)
 
 /**
  * \ingroup network-test
@@ -430,6 +449,7 @@ private:
    * \param ... The variable arguments
    */
   void DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
+  void DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
 };
 
 
@@ -467,6 +487,45 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
       NS_TEST_EXPECT_MSG_NE (tag, 0, "trivial");
       item.GetTag (*tag);
       NS_TEST_EXPECT_MSG_EQ (tag->m_error, false, "trivial");
+      delete tag;
+      j++;
+    }
+  NS_TEST_EXPECT_MSG_EQ (i.HasNext (), false, "Nothing left");
+  NS_TEST_EXPECT_MSG_EQ (j, expected.size (), "Size match");
+}
+
+void
+PacketTest::DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...)
+{
+  std::vector<struct Expected> expected;
+  va_list ap;
+  va_start (ap, n);
+  for (uint32_t k = 0; k < n; ++k)
+    {
+      uint32_t N = va_arg (ap, uint32_t);
+      uint32_t start = va_arg (ap, uint32_t);
+      uint32_t end = va_arg (ap, uint32_t);
+      int data = va_arg (ap, int);
+      expected.push_back (Expected (N, start, end, data));
+    }
+  va_end (ap);
+
+  ByteTagIterator i = p->GetByteTagIterator ();
+  uint32_t j = 0;
+  while (i.HasNext () && j < expected.size ())
+    {
+      ByteTagIterator::Item item = i.Next ();
+      struct Expected e = expected[j];
+      std::ostringstream oss;
+      oss << "anon::ATestTag<" << e.n << ">";
+      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetTypeId ().GetName (), oss.str (), "trivial", file, line);
+      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetStart (), e.start, "trivial", file, line);
+      NS_TEST_EXPECT_MSG_EQ_INTERNAL (item.GetEnd (), e.end, "trivial", file, line);
+      ATestTagBase *tag = dynamic_cast<ATestTagBase *> (item.GetTypeId ().GetConstructor () ());
+      NS_TEST_EXPECT_MSG_NE (tag, 0, "trivial");
+      item.GetTag (*tag);
+      NS_TEST_EXPECT_MSG_EQ (tag->m_error, false, "trivial");
+      NS_TEST_EXPECT_MSG_EQ (tag->GetData (), e.data, "trivial");
       delete tag;
       j++;
     }
@@ -639,6 +698,58 @@ PacketTest::DoRun (void)
     NS_TEST_EXPECT_MSG_EQ (copy.PeekPacketTag (c), true, "trivial");
     p.RemoveAllPacketTags ();
     NS_TEST_EXPECT_MSG_EQ (p.PeekPacketTag (b), false, "trivial");
+  }
+
+  /* Test Serialization and Deserialization of Packet with PacketTag data */
+  {
+    Ptr<Packet> p1 = Create<Packet> (1000);;
+    ATestTag<10> a1(65);
+    ATestTag<11> b1(66);
+    ATestTag<12> c1(67);
+
+    p1->AddPacketTag (a1);
+    p1->AddPacketTag (b1);
+    p1->AddPacketTag (c1);
+
+    uint32_t serializedSize = p1->GetSerializedSize ();
+    uint8_t* buffer =  new uint8_t[serializedSize + 16];
+    p1->Serialize (buffer, serializedSize);
+
+    Ptr<Packet> p2 = Create<Packet> (buffer, serializedSize, true);
+
+    ATestTag<10> a2;
+    ATestTag<11> b2;
+    ATestTag<12> c2;
+
+    NS_TEST_EXPECT_MSG_EQ (p2 -> PeekPacketTag(a2), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (a2.GetData (), 65, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (p2 -> PeekPacketTag(b2), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (b2.GetData (), 66, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (p2 -> PeekPacketTag(c2), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (c2.GetData (), 67, "trivial");
+  }
+
+  /* Test Serialization and Deserialization of Packet with ByteTag data */
+  {
+    Ptr<Packet> p1 = Create<Packet> (1000);;
+
+    ATestTag<10> a1(65);
+    ATestTag<11> b1(66);
+    ATestTag<12> c1(67);
+
+    p1->AddByteTag (a1);
+    p1->AddByteTag (b1);
+    p1->AddByteTag (c1);
+
+    CHECK (p1, 3, E (10, 0, 1000), E (11, 0, 1000), E (12, 0, 1000));
+
+    uint32_t serializedSize = p1->GetSerializedSize ();
+    uint8_t* buffer =  new uint8_t[serializedSize];
+    p1->Serialize (buffer, serializedSize);
+
+    Ptr<Packet> p2 = Create<Packet> (buffer, serializedSize, true);
+
+    CHECK_DATA (p2, 3, E_DATA (10, 0, 1000, 65), E_DATA (11, 0, 1000, 66), E_DATA (12, 0, 1000, 67));
   }
 
   {
