@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: Harsh Patel <thadodaharsh10@gmail.com>
+ *          Hrishikesh Hiraskar <hrishihiraskar@gmail.com>
  */
 
 #include "dpdk-net-device-helper.h"
@@ -59,14 +62,14 @@ DpdkNetDeviceHelper::InstallPriv (Ptr<Node> node) const
   Ptr<DpdkNetDevice> dpdkDevice = DynamicCast<DpdkNetDevice> (device);
   dpdkDevice->SetDeviceName (m_deviceName);
 
-  // set eal args
+  // Set EAL arguments
   char **ealArgv = new char*[20];
 
   // arg[0] is program name (optional)
   ealArgv[0] = new char[20];
   strcpy (ealArgv[0], "");
 
-  // logical core usage
+  // Logical core usage
   ealArgv[1] = new char[20];
   strcpy (ealArgv[1], "-l");
   ealArgv[2] = new char[20];

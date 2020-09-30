@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: Harsh Patel <thadodaharsh10@gmail.com>
+ *          Hrishikesh Hiraskar <hrishihiraskar@gmail.com>
  */
 
 #ifndef DPDK_NET_DEVICE_HELPER_H
@@ -44,21 +47,21 @@ public:
   {}
 
   /**
-   * Sets list of logical cores to use
+   * \brief Sets list of logical cores to use
    *
-   * \param lCoreList Comma seperated logical core list. eg: "0,1"
+   * \param lCoreList Comma separated logical core list (e.g., "0,1")
    */
   void SetLCoreList (std::string lCoreList);
 
   /**
-   * Sets PMD Library to be used for the NIC
+   * \brief Sets PMD Library to be used for the NIC
    *
    * \param pmdLibrary The PMD Library
    */
   void SetPmdLibrary (std::string pmdLibrary);
 
   /**
-   * Sets DPDK Driver to bind NIC to
+   * \brief Sets DPDK Driver to bind NIC to
    *
    * \param dpdkDriver The DPDK Driver
    */
@@ -66,7 +69,7 @@ public:
 
 protected:
   /**
-   * This method creates an ns3::FdNetDevice attached to a physical network
+   * \brief This method creates an ns3::FdNetDevice attached to a physical network
    * interface
    *
    * \param node The node to install the device in
@@ -80,7 +83,7 @@ protected:
   std::string m_lCoreList;
 
   /**
-   * PMD Library to use for NIC
+   * PMD Library to be used for NIC
    */
   std::string m_pmdLibrary;
 

@@ -10,8 +10,16 @@ DPDK NetDevice
    ############# Paragraph (no number)
 
 
+Data Plane Development Kit (DPDK) is a library hosted by The Linux Foundation
+to accelerate packet processing workloads (https://www.dpdk.org/).
+
 The ``DpdkNetDevice`` class provides the implementation of a network device which uses DPDK’s fast packet processing abilities and bypasses the kernel. This class is included in the ``src/fd-net-device model``. The ``DpdkNetDevice`` class inherits the ``FdNetDevice`` class and overrides the functions which are required by |ns3| to interact with DPDK environment.
 
+The ``DpdkNetDevice`` for |ns3| [Patel2019]_ was developed by Harsh Patel,
+Hrishikesh Hiraskar and Mohit P. Tahiliani. They were supported by Intel
+Technology India Pvt. Ltd., Bangalore for this work.
+
+.. [Patel2019] Harsh Patel, Hrishikesh Hiraskar, Mohit P. Tahiliani, "Extending Network Emulation Support in ns-3 using DPDK", Proceedings of the 2019 Workshop on ns-3, ACM, Pages 17-24, (https://dl.acm.org/doi/abs/10.1145/3321349.3321358)
 
 Model Description
 *****************
