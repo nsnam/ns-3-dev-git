@@ -427,8 +427,31 @@ operator << (std::ostream & os, const TimeWithUnit & timeU)
       break;
     }
 
-  int64x64_t v = timeU.m_time.To (timeU.m_unit);
-  os << v << unit;
+  double v = timeU.m_time.ToDouble (timeU.m_unit);
+
+  // Note: we must copy the "original" format flags because we have to modify them.
+  // std::ios_base::showpos is to print the "+" in front of the number for positive,
+  // std::ios_base::right is to add (eventual) extra space in front of the number.
+  //   the eventual extra space might be due to a std::setw (_number_), and
+  //   normally it would be printed after the number and before the time unit.
+
+  std::ios_base::fmtflags ff = os.flags ();
+
+  os << std::showpos << std::right << v << unit;
+
+  // And here we have to restore what we changed.
+  if (!(ff & std::ios_base::showpos))
+    {
+      os << std::noshowpos;
+    }
+  if (ff & std::ios_base::left)
+    {
+      os << std::left;
+    }
+  else if (ff & std::ios_base::internal)
+    {
+      os << std::internal;
+    }
 
   return os;
 }
