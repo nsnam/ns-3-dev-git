@@ -24,7 +24,7 @@
 #include "ns3/log.h"
 
 namespace ns3 {
-  
+
 NS_LOG_COMPONENT_DEFINE ("DataRate");
 
 ATTRIBUTE_HELPER_CPP (DataRate);
@@ -229,15 +229,13 @@ bool DataRate::operator != (const DataRate& rhs) const
 Time DataRate::CalculateBytesTxTime (uint32_t bytes) const
 {
   NS_LOG_FUNCTION (this << bytes);
-  // \todo avoid to use double (if possible).
-  return Seconds (static_cast<double>(bytes)*8/m_bps);
+  return Seconds (bytes * 8) / m_bps;
 }
 
 Time DataRate::CalculateBitsTxTime (uint32_t bits) const
 {
   NS_LOG_FUNCTION (this << bits);
-  // \todo avoid to use double (if possible).
-  return Seconds (static_cast<double>(bits)/m_bps);
+  return Seconds (bits) / m_bps;
 }
 
 uint64_t DataRate::GetBitRate () const
