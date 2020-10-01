@@ -26,7 +26,6 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    buildings
    click
    csma
-   dpdk-net-device
    dsdv
    dsr
    emulation-overview
@@ -39,7 +38,6 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    mesh
    distributed
    mobility
-   netmap-net-device
    network
    nix-vector-routing
    olsr
@@ -48,7 +46,6 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    propagation
    spectrum
    sixlowpan
-   tap
    topology
    traffic-control
    uan
