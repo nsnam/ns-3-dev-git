@@ -85,6 +85,7 @@ def build(bld):
         'test/sequence-number-test-suite.cc',
         'test/packet-socket-apps-test-suite.cc',
         'test/lollipop-counter-test.cc',
+        'test/test-data-rate.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
@@ -92,7 +93,7 @@ def build(bld):
         network_test.source.extend([
         #   'test/network-examples-test-suite.cc',
             ])
-    
+
     headers = bld(features='ns3header')
     headers.module = 'network'
     headers.source = [
