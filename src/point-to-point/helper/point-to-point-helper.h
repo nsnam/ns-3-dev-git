@@ -184,9 +184,6 @@ private:
   ObjectFactory m_queueFactory;         //!< Queue Factory
   ObjectFactory m_channelFactory;       //!< Channel Factory
   ObjectFactory m_deviceFactory;        //!< Device Factory
-#ifdef NS3_MPI
-  ObjectFactory m_remoteChannelFactory; //!< Remote Channel Factory
-#endif
 };
 
 } // namespace ns3

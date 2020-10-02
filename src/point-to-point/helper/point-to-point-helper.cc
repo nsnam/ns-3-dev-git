@@ -47,9 +47,6 @@ PointToPointHelper::PointToPointHelper ()
   m_queueFactory.SetTypeId ("ns3::DropTailQueue<Packet>");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
-#ifdef NS3_MPI
-  m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
-#endif
 }
 
 void 
@@ -78,9 +75,6 @@ void
 PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
-#ifdef NS3_MPI
-  m_remoteChannelFactory.Set (n1, v1);
-#endif
 }
 
 void 
@@ -273,11 +267,13 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
     }
   if (useNormalChannel)
     {
+      m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
       channel = m_channelFactory.Create<PointToPointChannel> ();
     }
   else
     {
-      channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
+      m_channelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
+      channel = m_channelFactory.Create<PointToPointRemoteChannel> ();
       Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
       Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
       mpiRecA->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devA));
