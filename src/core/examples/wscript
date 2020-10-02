@@ -64,3 +64,5 @@ def build(bld):
         obj = bld.create_ns3_program('main-test-sync', ['network'])
         obj.source = 'main-test-sync.cc'
 
+    obj = bld.create_ns3_program('length-example', ['core'])
+    obj.source = 'length-example.cc'
