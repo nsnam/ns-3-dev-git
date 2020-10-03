@@ -315,9 +315,6 @@ tagged. However, if the next layer down inserts an IPv4 header, this ByteTag
 will not cover those bytes.  The converse is true for the PacketTag; it covers a
 packet despite the operations on it.
 
-PacketTags are limited in size to 20 bytes. This is a modifiable compile-time
-constant in ``src/network/model/packet-tag-list.h``. ByteTags have no such restriction.
-
 Each tag type must subclass ``ns3::Tag``, and only one instance of
 each Tag type may be in each tag list. Here are a few differences in the
 behavior of packet tags and byte tags.
