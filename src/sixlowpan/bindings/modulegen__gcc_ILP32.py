@@ -129,7 +129,7 @@ def register_types(module):
     ## log.h (module 'core'): ns3::ParameterLogger [class]
     module.add_class('ParameterLogger', import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::ObjectBase'], automatic_type_narrowing=True, template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::ObjectBase'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', import_from_module='ns.core', destructor_visibility='private')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
@@ -143,7 +143,7 @@ def register_types(module):
     ## sixlowpan-helper.h (module 'sixlowpan'): ns3::SixLowPanHelper [class]
     module.add_class('SixLowPanHelper')
     ## tag.h (module 'network'): ns3::Tag [class]
-    module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
+    module.add_class('Tag', parent=root_module['ns3::ObjectBase'], import_from_module='ns.network')
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
     ## nstime.h (module 'core'): ns3::Time [class]
@@ -175,35 +175,35 @@ def register_types(module):
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::impl_type [enumeration]
     module.add_enum('impl_type', ['int128_impl', 'cairo_impl', 'ld_impl'], outer_class=root_module['ns3::int64x64_t'], import_from_module='ns.core')
     ## chunk.h (module 'network'): ns3::Chunk [class]
-    module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
+    module.add_class('Chunk', parent=root_module['ns3::ObjectBase'], import_from_module='ns.network')
     ## header.h (module 'network'): ns3::Header [class]
-    module.add_class('Header', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    module.add_class('Header', parent=root_module['ns3::Chunk'], import_from_module='ns.network')
     ## object.h (module 'core'): ns3::Object [class]
-    module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
+    module.add_class('Object', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'], import_from_module='ns.core')
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
-    module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
+    module.add_class('RandomVariableStream', parent=root_module['ns3::Object'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
-    module.add_class('SequentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('SequentialRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
-    module.add_class('SimpleRefCount', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', parent=root_module['ns3::empty'], automatic_type_narrowing=True, template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
+    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanBc0 [class]
     module.add_class('SixLowPanBc0', parent=root_module['ns3::Header'])
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanFrag1 [class]
@@ -237,75 +237,75 @@ def register_types(module):
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanUdpNhcExtension::Ports_e [enumeration]
     module.add_enum('Ports_e', ['PORTS_INLINE', 'PORTS_ALL_SRC_LAST_DST', 'PORTS_LAST_SRC_ALL_DST', 'PORTS_LAST_SRC_LAST_DST'], outer_class=root_module['ns3::SixLowPanUdpNhcExtension'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
-    module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
+    module.add_class('TraceSourceAccessor', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'], import_from_module='ns.core')
     ## trailer.h (module 'network'): ns3::Trailer [class]
-    module.add_class('Trailer', import_from_module='ns.network', parent=root_module['ns3::Chunk'])
+    module.add_class('Trailer', parent=root_module['ns3::Chunk'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::TriangularRandomVariable [class]
-    module.add_class('TriangularRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('TriangularRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
-    module.add_class('UniformRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('UniformRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::WeibullRandomVariable [class]
-    module.add_class('WeibullRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('WeibullRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ZetaRandomVariable [class]
-    module.add_class('ZetaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ZetaRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ZipfRandomVariable [class]
-    module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ZipfRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
-    module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
+    module.add_class('AttributeAccessor', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], allow_subclassing=False, automatic_type_narrowing=True)
+    module.add_class('AttributeChecker', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], automatic_type_narrowing=True, import_from_module='ns.core', allow_subclassing=False)
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
-    module.add_class('AttributeValue', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], allow_subclassing=False, automatic_type_narrowing=True)
+    module.add_class('AttributeValue', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], automatic_type_narrowing=True, import_from_module='ns.core', allow_subclassing=False)
     ## callback.h (module 'core'): ns3::CallbackChecker [class]
-    module.add_class('CallbackChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('CallbackChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImplBase [class]
-    module.add_class('CallbackImplBase', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'])
+    module.add_class('CallbackImplBase', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> >'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackValue [class]
-    module.add_class('CallbackValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('CallbackValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
-    module.add_class('ConstantRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ConstantRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
-    module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('DeterministicRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
-    module.add_class('EmpiricalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('EmpiricalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeAccessor [class]
-    module.add_class('EmptyAttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::AttributeAccessor'])
+    module.add_class('EmptyAttributeAccessor', parent=root_module['ns3::AttributeAccessor'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeChecker [class]
-    module.add_class('EmptyAttributeChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('EmptyAttributeChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::EmptyAttributeValue [class]
-    module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('EmptyAttributeValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable [class]
-    module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ErlangRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
-    module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    module.add_class('EventImpl', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable [class]
-    module.add_class('ExponentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ExponentialRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## random-variable-stream.h (module 'core'): ns3::GammaRandomVariable [class]
-    module.add_class('GammaRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('GammaRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
-    module.add_class('Ipv4AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv4AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressValue [class]
-    module.add_class('Ipv4AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker [class]
-    module.add_class('Ipv4MaskChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv4MaskChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue [class]
-    module.add_class('Ipv4MaskValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv4MaskValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6AddressChecker [class]
-    module.add_class('Ipv6AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv6AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6AddressValue [class]
-    module.add_class('Ipv6AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv6AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixChecker [class]
-    module.add_class('Ipv6PrefixChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Ipv6PrefixChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6PrefixValue [class]
-    module.add_class('Ipv6PrefixValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Ipv6PrefixValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::LogNormalRandomVariable [class]
-    module.add_class('LogNormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('LogNormalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## mac48-address.h (module 'network'): ns3::Mac48AddressChecker [class]
-    module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('Mac48AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
-    module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('Mac48AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## net-device.h (module 'network'): ns3::NetDevice [class]
-    module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    module.add_class('NetDevice', parent=root_module['ns3::Object'], import_from_module='ns.network')
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) (  )', 'ns3::NetDevice::LinkChangeTracedCallback')
@@ -318,15 +318,15 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::NetDevice::PromiscReceiveCallback*')
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
-    module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
+    module.add_class('NixVector', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'], import_from_module='ns.network')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
-    module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('NormalRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
-    module.add_class('ObjectFactoryChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
-    module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('ObjectFactoryValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## packet.h (module 'network'): ns3::Packet [class]
-    module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'], import_from_module='ns.network')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )', 'ns3::Packet::TracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )*', 'ns3::Packet::TracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const > )&', 'ns3::Packet::TracedCallback&')
@@ -346,7 +346,7 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', 'ns3::Packet::SinrTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', 'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
-    module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    module.add_class('ParetoRandomVariable', parent=root_module['ns3::RandomVariableStream'], import_from_module='ns.core')
     ## sixlowpan-net-device.h (module 'sixlowpan'): ns3::SixLowPanNetDevice [class]
     module.add_class('SixLowPanNetDevice', parent=root_module['ns3::NetDevice'])
     ## sixlowpan-net-device.h (module 'sixlowpan'): ns3::SixLowPanNetDevice::DropReason [enumeration]
@@ -358,19 +358,19 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::SixLowPanNetDevice::DropReason, ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::SixLowPanNetDevice >, uint32_t )*', 'ns3::SixLowPanNetDevice::DropTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::SixLowPanNetDevice::DropReason, ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::SixLowPanNetDevice >, uint32_t )&', 'ns3::SixLowPanNetDevice::DropTracedCallback&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
-    module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
-    module.add_class('TypeIdChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('TypeIdChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## type-id.h (module 'core'): ns3::TypeIdValue [class]
-    module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
+    module.add_class('TypeIdValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## address.h (module 'network'): ns3::AddressChecker [class]
-    module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    module.add_class('AddressChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.network')
     ## address.h (module 'network'): ns3::AddressValue [class]
-    module.add_class('AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    module.add_class('AddressValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.network')
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::Ptr<ns3::SixLowPanNetDevice>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ptr<ns3::SixLowPanNetDevice>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ptr<ns3::SixLowPanNetDevice>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::SixLowPanNetDevice::DropReason, ns3::Ptr<const ns3::Packet>, ns3::Ptr<ns3::SixLowPanNetDevice>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], template_parameters=['void', 'ns3::SixLowPanNetDevice::DropReason', 'ns3::Ptr<const ns3::Packet>', 'ns3::Ptr<ns3::SixLowPanNetDevice>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
@@ -407,7 +407,7 @@ def register_types_ns3_Hash(module):
     root_module = module.get_root()
     
     ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
-    module.add_class('Implementation', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
+    module.add_class('Implementation', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'], import_from_module='ns.core')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )', 'ns3::Hash::Hash32Function_ptr')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )*', 'ns3::Hash::Hash32Function_ptr*')
     typehandlers.add_type_alias('uint32_t ( * ) ( char const *, std::size_t const )&', 'ns3::Hash::Hash32Function_ptr&')
@@ -425,13 +425,13 @@ def register_types_ns3_Hash_Function(module):
     root_module = module.get_root()
     
     ## hash-fnv.h (module 'core'): ns3::Hash::Function::Fnv1a [class]
-    module.add_class('Fnv1a', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Fnv1a', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32 [class]
-    module.add_class('Hash32', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Hash32', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64 [class]
-    module.add_class('Hash64', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Hash64', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
     ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3 [class]
-    module.add_class('Murmur3', import_from_module='ns.core', parent=root_module['ns3::Hash::Implementation'])
+    module.add_class('Murmur3', parent=root_module['ns3::Hash::Implementation'], import_from_module='ns.core')
 
 def register_types_ns3_TracedValueCallback(module):
     root_module = module.get_root()
@@ -994,10 +994,24 @@ def register_Ns3ByteTagList_methods(root_module, cls):
                    'ns3::ByteTagList::Iterator', 
                    [param('int32_t', 'offsetStart'), param('int32_t', 'offsetEnd')], 
                    is_const=True)
+    ## byte-tag-list.h (module 'network'): uint32_t ns3::ByteTagList::Deserialize(uint32_t const * buffer, uint32_t size) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
+    ## byte-tag-list.h (module 'network'): uint32_t ns3::ByteTagList::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::RemoveAll() [member function]
     cls.add_method('RemoveAll', 
                    'void', 
                    [])
+    ## byte-tag-list.h (module 'network'): uint32_t ns3::ByteTagList::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
+    cls.add_method('Serialize', 
+                   'uint32_t', 
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
+                   is_const=True)
     return
 
 def register_Ns3ByteTagListIterator_methods(root_module, cls):
@@ -2007,8 +2021,8 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_constructor([param('ns3::ObjectFactory const &', 'arg0')])
     ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory() [constructor]
     cls.add_constructor([])
-    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string typeId) [constructor]
-    cls.add_constructor([param('std::string', 'typeId')])
+    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string const & typeId) [constructor]
+    cls.add_constructor([param('std::string const &', 'typeId')])
     ## object-factory.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectFactory::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Object >', 
@@ -2024,10 +2038,10 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## object-factory.h (module 'core'): void ns3::ObjectFactory::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    ## object-factory.h (module 'core'): void ns3::ObjectFactory::Set() [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+                   [])
     ## object-factory.h (module 'core'): void ns3::ObjectFactory::SetTypeId(ns3::TypeId tid) [member function]
     cls.add_method('SetTypeId', 
                    'void', 
@@ -2196,6 +2210,15 @@ def register_Ns3PacketTagList_methods(root_module, cls):
                    'void', 
                    [param('ns3::Tag const &', 'tag')], 
                    is_const=True)
+    ## packet-tag-list.h (module 'network'): uint32_t ns3::PacketTagList::Deserialize(uint32_t const * buffer, uint32_t size) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
+    ## packet-tag-list.h (module 'network'): uint32_t ns3::PacketTagList::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## packet-tag-list.h (module 'network'): ns3::PacketTagList::TagData const * ns3::PacketTagList::Head() const [member function]
     cls.add_method('Head', 
                    'ns3::PacketTagList::TagData const *', 
@@ -2218,6 +2241,11 @@ def register_Ns3PacketTagList_methods(root_module, cls):
     cls.add_method('Replace', 
                    'bool', 
                    [param('ns3::Tag &', 'tag')])
+    ## packet-tag-list.h (module 'network'): uint32_t ns3::PacketTagList::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
+    cls.add_method('Serialize', 
+                   'uint32_t', 
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
+                   is_const=True)
     return
 
 def register_Ns3PacketTagListTagData_methods(root_module, cls):
@@ -5807,7 +5835,7 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ptr__lt__ns3SixLowPanNetDevice__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -5829,7 +5857,7 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ptr__lt_
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('ns3::Ptr< ns3::SixLowPanNetDevice >', 'arg1'), param('unsigned int', 'arg2')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Ns3SixLowPanNetDeviceDropReason_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Ptr__lt__ns3SixLowPanNetDevice__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -5851,7 +5879,7 @@ def register_Ns3CallbackImpl__Void_Ns3SixLowPanNetDeviceDropReason_Ns3Ptr__lt__c
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::SixLowPanNetDevice::DropReason', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1'), param('ns3::Ptr< ns3::SixLowPanNetDevice >', 'arg2'), param('unsigned int', 'arg3')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True, is_pure_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3HashImplementation_methods(root_module, cls):

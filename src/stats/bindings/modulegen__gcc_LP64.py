@@ -79,7 +79,7 @@ def register_types(module):
     ## log.h (module 'core'): ns3::ParameterLogger [class]
     module.add_class('ParameterLogger', import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::ObjectBase'], import_from_module='ns.core')
     ## simulator.h (module 'core'): ns3::Simulator [class]
     module.add_class('Simulator', destructor_visibility='private', import_from_module='ns.core')
     ## simulator.h (module 'core'): ns3::Simulator [enumeration]
@@ -141,29 +141,29 @@ def register_types(module):
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeAccessor>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeChecker', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeChecker>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Hash::Implementation', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Hash::Implementation>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SQLiteOutput, ns3::empty, ns3::DefaultDeleter<ns3::SQLiteOutput> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, template_parameters=['ns3::SQLiteOutput', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SQLiteOutput>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::SQLiteOutput', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SQLiteOutput>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
-    module.add_class('SimpleRefCount', parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'])
+    module.add_class('SimpleRefCount', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'), parent=root_module['ns3::empty'], import_from_module='ns.core')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'], import_from_module='ns.core')
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'], allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core')
+    module.add_class('AttributeChecker', automatic_type_narrowing=True, allow_subclassing=False, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     ## attribute.h (module 'core'): ns3::AttributeValue [class]
-    module.add_class('AttributeValue', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'], allow_subclassing=False, automatic_type_narrowing=True, import_from_module='ns.core')
+    module.add_class('AttributeValue', automatic_type_narrowing=True, allow_subclassing=False, import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
     ## boolean.h (module 'core'): ns3::BooleanChecker [class]
     module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## boolean.h (module 'core'): ns3::BooleanValue [class]
@@ -207,7 +207,7 @@ def register_types(module):
     ## integer.h (module 'core'): ns3::IntegerValue [class]
     module.add_class('IntegerValue', parent=root_module['ns3::AttributeValue'], import_from_module='ns.core')
     ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<double> [class]
-    module.add_class('MinMaxAvgTotalCalculator', parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']], template_parameters=['double'])
+    module.add_class('MinMaxAvgTotalCalculator', template_parameters=['double'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
     module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'], import_from_module='ns.core')
     ## object-factory.h (module 'core'): ns3::ObjectFactoryValue [class]
@@ -246,17 +246,17 @@ def register_types(module):
     ## boolean-probe.h (module 'stats'): ns3::BooleanProbe [class]
     module.add_class('BooleanProbe', parent=root_module['ns3::Probe'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'bool', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'bool', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, double, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'double', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned char, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'unsigned char', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned char', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'])
+    module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'], import_from_module='ns.core')
     ## double-probe.h (module 'stats'): ns3::DoubleProbe [class]
     module.add_class('DoubleProbe', parent=root_module['ns3::Probe'])
     module.add_container('std::map< std::string, ns3::LogComponent * >', ('std::string', 'ns3::LogComponent *'), container_type='map')
@@ -1135,8 +1135,8 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
     cls.add_constructor([param('ns3::ObjectFactory const &', 'arg0')])
     ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory() [constructor]
     cls.add_constructor([])
-    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string typeId) [constructor]
-    cls.add_constructor([param('std::string', 'typeId')])
+    ## object-factory.h (module 'core'): ns3::ObjectFactory::ObjectFactory(std::string const & typeId) [constructor]
+    cls.add_constructor([param('std::string const &', 'typeId')])
     ## object-factory.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectFactory::Create() const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Object >', 
@@ -1152,10 +1152,10 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## object-factory.h (module 'core'): void ns3::ObjectFactory::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    ## object-factory.h (module 'core'): void ns3::ObjectFactory::Set() [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+                   [])
     ## object-factory.h (module 'core'): void ns3::ObjectFactory::SetTypeId(ns3::TypeId tid) [member function]
     cls.add_method('SetTypeId', 
                    'void', 
@@ -2117,12 +2117,12 @@ def register_Ns3Object_methods(root_module, cls):
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [], 
-                   is_const=True, custom_template_method_name='GetObject', template_parameters=['ns3::Object'])
+                   template_parameters=['ns3::Object'], is_const=True, custom_template_method_name='GetObject')
     ## object.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
     cls.add_method('GetObject', 
                    'ns3::Ptr< ns3::Object >', 
                    [param('ns3::TypeId', 'tid')], 
-                   is_const=True, custom_template_method_name='GetObject', template_parameters=['ns3::Object'])
+                   template_parameters=['ns3::Object'], is_const=True, custom_template_method_name='GetObject')
     ## object.h (module 'core'): static ns3::TypeId ns3::Object::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2414,42 +2414,42 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('Demangle', 
                    'std::string', 
                    [param('std::string const &', 'mangled')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['ns3::ObjectBase*'], visibility='protected')
+                   template_parameters=['ns3::ObjectBase*'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['void'], visibility='protected')
+                   template_parameters=['void'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['bool'], visibility='protected')
+                   template_parameters=['bool'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['double'], visibility='protected')
+                   template_parameters=['double'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned short'], visibility='protected')
+                   template_parameters=['unsigned short'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned int'], visibility='protected')
+                   template_parameters=['unsigned int'], visibility='protected', is_static=True)
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, template_parameters=['unsigned char'], visibility='protected')
+                   template_parameters=['unsigned char'], visibility='protected', is_static=True)
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -2792,7 +2792,7 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::AttributeValue >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   is_const=True, is_virtual=True, visibility='private')
     ## attribute.h (module 'core'): bool ns3::EmptyAttributeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
@@ -2802,7 +2802,7 @@ def register_Ns3EmptyAttributeValue_methods(root_module, cls):
     cls.add_method('SerializeToString', 
                    'std::string', 
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   is_const=True, is_virtual=True, visibility='private')
     return
 
 def register_Ns3EnumChecker_methods(root_module, cls):
@@ -2914,7 +2914,7 @@ def register_Ns3EventImpl_methods(root_module, cls):
     cls.add_method('Notify', 
                    'void', 
                    [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+                   visibility='protected', is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3FileAggregator_methods(root_module, cls):
@@ -3352,27 +3352,27 @@ def register_Ns3SQLiteOutput_methods(root_module, cls):
     cls.add_method('CheckError', 
                    'bool', 
                    [param('sqlite3 *', 'db'), param('int', 'rc'), param('std::string const &', 'cmd'), param('sem_t *', 'sem'), param('bool', 'hardExit')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## sqlite-output.h (module 'stats'): static void ns3::SQLiteOutput::Error(sqlite3 * db, std::string const & cmd) [member function]
     cls.add_method('Error', 
                    'void', 
                    [param('sqlite3 *', 'db'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinExec(sqlite3 * db, std::string const & cmd) [member function]
     cls.add_method('SpinExec', 
                    'int', 
                    [param('sqlite3 *', 'db'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinExec(sqlite3 * db, sqlite3_stmt * stmt) [member function]
     cls.add_method('SpinExec', 
                    'int', 
                    [param('sqlite3 *', 'db'), param('sqlite3_stmt *', 'stmt')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## sqlite-output.h (module 'stats'): static int ns3::SQLiteOutput::SpinPrepare(sqlite3 * db, sqlite3_stmt * * stmt, std::string const & cmd) [member function]
     cls.add_method('SpinPrepare', 
                    'int', 
                    [param('sqlite3 *', 'db'), param('sqlite3_stmt * *', 'stmt'), param('std::string const &', 'cmd')], 
-                   is_static=True, visibility='protected')
+                   visibility='protected', is_static=True)
     ## sqlite-output.h (module 'stats'): int ns3::SQLiteOutput::WaitExec(sqlite3 * db, std::string const & cmd) const [member function]
     cls.add_method('WaitExec', 
                    'int', 
@@ -3770,7 +3770,7 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -3792,7 +3792,7 @@ def register_Ns3CallbackImpl__Void_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty
     cls.add_method('operator()', 
                    'void', 
                    [param('bool', 'arg0'), param('bool', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -3814,7 +3814,7 @@ def register_Ns3CallbackImpl__Void_Double_Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3E
     cls.add_method('operator()', 
                    'void', 
                    [param('double', 'arg0'), param('double', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_char_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -3836,7 +3836,7 @@ def register_Ns3CallbackImpl__Void_Unsigned_char_Unsigned_char_Ns3Empty_Ns3Empty
     cls.add_method('operator()', 
                    'void', 
                    [param('unsigned char', 'arg0'), param('unsigned char', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -3858,7 +3858,7 @@ def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_N
     cls.add_method('operator()', 
                    'void', 
                    [param('unsigned int', 'arg0'), param('unsigned int', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
@@ -3880,7 +3880,7 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3Empty_Ns3Emp
     cls.add_method('operator()', 
                    'void', 
                    [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1')], 
-                   custom_name='__call__', is_pure_virtual=True, is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True, custom_name='__call__')
     return
 
 def register_Ns3DoubleProbe_methods(root_module, cls):
