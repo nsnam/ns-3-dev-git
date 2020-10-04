@@ -59,6 +59,11 @@ us a note on ns-developers mailing list.</p>
 <li>Added <b>L4S Mode</b> to FqCoDel and CoDel queue discs</li>
 <li> A model for <b>dynamic pacing</b> has been added to TCP.</li>
 <li>Added <b>Active/Inactive feature</b> to PIE queue disc</li>
+<li>Added <b>netmap</b> and <b>DPDK</b> emulation device variants</li>
+<li>Added capability to configure <b>STL pair and containers as attributes</b></li>
+<li> Added <b>CartesianToGeographic</b> coordinate conversion capability
+<li> Added <b>LollipopCounter</b>, a sequence number counter type 
+<li> Added <b>6 GHz band</b> support for Wi-Fi 802.11ax
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -77,8 +82,8 @@ WifiStandard enum.  If before you specified a value such as WIFI_PHY_STANDARD_xx
 <ul>
 <li>Added "--enable-asserts" and "--enable-logs" to waf configure, to selectively enable asserts and/or logs in release and optimized builds.</li>
 <li>A build version reporting system has been added by extracting data from the 
-local git repository (or a standalone file if a git repository is not present).
-</li>
+local git repository (or a standalone file if a git repository is not present).  </li>
+<li>Added support for EditorConfig</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>

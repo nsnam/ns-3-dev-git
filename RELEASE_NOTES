@@ -9,28 +9,80 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.32
+============
+
+Availability
+------------
+This release is not yet published.
+
+Supported platforms
+-------------------
+This release is intended to work on systems with the following minimal
+requirements (Note:  not all ns-3 features available on all systems):
+- g++-4.9 or later
+- Xcode 10.1 or later
+- Python 3.5 or later
+
+Starting with ns-3.30, Python 3 has been the only supported Python version,
+and scripts default to Python 3 usage.
+
+This release has been tested on the following systems:
+- Fedora 32 with g++-10.2.1 and Python 3.8.5
+- Fedora 32 with clang-10.0.0 and Python 3.8.5
+- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.2
+- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
+- Ubuntu 16.04.6 with g++-5.4.0 and Python 3.5.2
+- macOS 10.15.7 (Catalina) with Xcode 12
+- macOS 10.13.6 (High Sierra) with Xcode 10.1
 
 New user-visible features
 -------------------------
 - (build system) Added "--enable-asserts" and "--enable-logs" to waf configure,
    to selectively enable asserts and/or logs in release and optimized builds.
-- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' congestion control).
+- (build system) The "--enable-build-version" option has been added to waf
+   configure, allowing users to embed version information in the libraries
+- (build system) Added support for EditorConfig
+- (config-store) Improved the RawTextConfig output (see !93)
+- (core) Added capability to configure STL pair and containers as attributes
+- (core) The default timestamp print format for logging statements has been 
+  changed to use the As() method that prepends +/- and appends the time unit
+- (fd-net-device) Added two enhanced emulation devices based on netmap and DPDK
+- (mobility) Add CartesianToGeographic coordinate conversion capability
+- (network) Packet tags are now serialized and deserialized for distributed 
+  simulations
+- (network) Added LollipopCounter, a sequence number counter type 
+- (olsr) Some internal OLSR API has been opened up to enable cross-layer access
+- (tcp) Support for dynamic pacing in TCP.
+- (tcp) Added TcpLinuxReno congestion control (aligns with Linux 'reno' 
+- (tests) test.py text output now distinguishes between TestSuites and TestCases
+  congestion control).
 - (traffic-control) Added, to PIE queue disc, queue delay calculation using
   timestamp feature (Linux default behavior), cap drop adjustment feature
   (Section 5.5 of RFC 8033), ECN (Section 5.1 of RFC 8033) and derandomization
   feature (Section 5.4 of RFC 8033).
 - (traffic-control) Add support for L4S mode to CoDel and FqCoDel queue discs
-- (tcp) Support for dynamic pacing in TCP.
-- (wifi) Support for 6 GHz channels when using 802.11ax
 - (traffic-control) Add Active/Inactive feature to PIE queue disc.
+- (traffic-control) Add ECN and L4S support for CoDel, FqCoDel, Cobalt queues
+- (wifi) Add 6 GHz band support for 802.11ax
+- (wifi) RIFS support has been removed from the model
 
 Bugs fixed
 ----------
-- (traffic-control) #225 - Do not mark packet twice within a CoDel queue
-- (mesh) - Enable possible use with SpectrumWifiPhy
+- (applications) Handle possible partial socket sends (during emulation)
+- (applications) Remove stray exit call from OnOffApplication
+- (internet-apps) Fixes DHCP behaviour when interface goes down and back up
 - (lte) #224 - The scheduled SendMeasurementReport() event doesn't cancel after link failure detection
+- (mesh) - Enable possible use with SpectrumWifiPhy
+- (network) #264 - Rounding is more accurate for DataRate transmission times 
+- (network) !424 - Fixed instantaneous send behavior in SimpleNetDevice when queue is empty
+- (tcp) !368 - Fix assert in tx-buffer when loss rate high and w/o SACK
+- (tcp) !367 - Stop to merge items whose m_lost values are different
+- (tcp) - Fix TcpRateOps to update m_ackElapsed like Linux
+- (traffic-control) #225 - Do not ECN mark packet twice within a CoDel queue
+- (wifi) - Fix radiotap header for received 802.11ax PPDUs
+- (wifi) - Do not send VHT capabilities when operating in 2.4 GHz band 
+- (wifi) #252 - Correctly handle multicast frames
 
 Release 3.31
 ============
