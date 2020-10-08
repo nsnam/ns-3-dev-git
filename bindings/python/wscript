@@ -206,7 +206,7 @@ def configure(conf):
             Logs.warn("pybindgen (found %r), (need %r)" %
                       (pybindgen_version, REQUIRED_PYBINDGEN_VERSION))
             conf.report_optional_feature("python", "Python Bindings", False,
-                                         "PyBindGen version not correct and newer version could not be retrieved")
+                                         "PyBindGen found but version %s is not the required version %s" % (pybindgen_version, REQUIRED_PYBINDGEN_VERSION))
             return
 
 
