@@ -21,7 +21,6 @@
 
 #include "ns3/log.h"
 #include "nist-error-rate-model.h"
-#include "dsss-error-rate-model.h"
 #include "wifi-phy.h"
 
 namespace ns3 {
@@ -274,7 +273,7 @@ NistErrorRateModel::GetFec1024QamBer (double snr, uint64_t nbits,
 }
 
 double
-NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const
+NistErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const
 {
   NS_LOG_FUNCTION (this << mode << txVector.GetMode () << snr << nbits);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
@@ -382,22 +381,6 @@ NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, d
                                        3    // b value
                                        );
             }
-        }
-    }
-  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS || mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
-    {
-      switch (mode.GetDataRate (20))
-        {
-        case 1000000:
-          return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr, nbits);
-        case 2000000:
-          return DsssErrorRateModel::GetDsssDqpskSuccessRate (snr, nbits);
-        case 5500000:
-          return DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (snr, nbits);
-        case 11000000:
-          return DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (snr, nbits);
-        default:
-          NS_ASSERT ("undefined DSSS/HR-DSSS datarate");
         }
     }
   return 0;

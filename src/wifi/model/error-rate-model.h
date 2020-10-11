@@ -51,7 +51,6 @@ public:
   double CalculateSnr (WifiTxVector txVector, double ber) const;
 
   /**
-   * A pure virtual method that must be implemented in the subclass.
    * This method returns the probability that the given 'chunk' of the
    * packet will be successfully received by the PHY.
    *
@@ -66,6 +65,9 @@ public:
    * to calculate the chunk error rate, and the txVector is used for
    * other information as needed.
    *
+   * This method handles 802.11b rates by using the DSSS error rate model.
+   * For all other rates, the method implemented by the subclass is called.
+   *
    * \param mode the Wi-Fi mode applicable to this chunk
    * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
@@ -73,7 +75,21 @@ public:
    *
    * \return probability of successfully receiving the chunk
    */
-  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const = 0;
+  double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
+
+
+private:
+  /**
+   * A pure virtual method that must be implemented in the subclass.
+   *
+   * \param mode the Wi-Fi mode applicable to this chunk
+   * \param txVector TXVECTOR of the overall transmission
+   * \param snr the SNR of the chunk
+   * \param nbits the number of bits in this chunk
+   *
+   * \return probability of successfully receiving the chunk
+   */
+  virtual double DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const = 0;
 };
 
 } //namespace ns3

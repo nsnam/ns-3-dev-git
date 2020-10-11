@@ -61,10 +61,10 @@ public:
 
   YansErrorRateModel ();
 
-  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
-
 
 private:
+  //Inherited from ErrorRateModel
+  double DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
   /**
    * Return BER of BPSK with the given parameters.
    *
