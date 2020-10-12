@@ -371,11 +371,20 @@ protected:
 
   /**
    * Push an item in the queue
-   * \param pos the position where the item is inserted
+   * \param pos the position before which the item will be inserted
    * \param item the item to enqueue
    * \return true if success, false if the packet has been dropped.
    */
   bool DoEnqueue (ConstIterator pos, Ptr<Item> item);
+
+  /**
+   * Push an item in the queue
+   * \param pos the position before which the item will be inserted
+   * \param item the item to enqueue
+   * \param[out] ret an iterator pointing to the inserted value
+   * \return true if success, false if the packet has been dropped.
+   */
+  bool DoEnqueue (ConstIterator pos, Ptr<Item> item, Iterator& ret);
 
   /**
    * Pull the item to dequeue from the queue
@@ -481,6 +490,14 @@ template <typename Item>
 bool
 Queue<Item>::DoEnqueue (ConstIterator pos, Ptr<Item> item)
 {
+  Iterator ret;
+  return DoEnqueue (pos, item, ret);
+}
+
+template <typename Item>
+bool
+Queue<Item>::DoEnqueue (ConstIterator pos, Ptr<Item> item, Iterator& ret)
+{
   NS_LOG_FUNCTION (this << item);
 
   if (GetCurrentSize () + item > GetMaxSize ())
@@ -490,7 +507,7 @@ Queue<Item>::DoEnqueue (ConstIterator pos, Ptr<Item> item)
       return false;
     }
 
-  m_packets.insert (pos, item);
+  ret = m_packets.insert (pos, item);
 
   uint32_t size = item->GetSize ();
   m_nBytes += size;
