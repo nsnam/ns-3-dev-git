@@ -2022,6 +2022,16 @@ private:
   WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId);
 
   /**
+   * Drop the PPDU and the corresponding preamble detection event, but keep CCA busy
+   * state after the completion of the currently processed event.
+   *
+   * \param ppdu the incoming PPDU
+   * \param reason the reason the PPDU is dropped
+   * \param endRx the end of the incoming PPDU's reception
+   */
+  void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx);
+
+  /**
    * The trace source fired when a packet begins the transmission process on
    * the medium.
    *
