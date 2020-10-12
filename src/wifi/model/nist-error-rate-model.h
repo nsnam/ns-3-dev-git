@@ -48,7 +48,7 @@ public:
 
 private:
   //Inherited from ErrorRateModel
-  double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
+  double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const;
   /**
    * Return the bValue such that coding rate = bValue / (bValue + 1).
    *

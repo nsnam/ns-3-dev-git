@@ -217,9 +217,9 @@ NistErrorRateModel::GetBValue (WifiCodeRate codeRate) const
 }
 
 double
-NistErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
+NistErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const
 {
-  NS_LOG_FUNCTION (this << mode << snr << nbits);
+  NS_LOG_FUNCTION (this << mode << snr << nbits << staId);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || mode.GetModulationClass () == WIFI_MOD_CLASS_HT

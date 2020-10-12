@@ -48,7 +48,7 @@ public:
   ~TableBasedErrorRateModel ();
 
   //Inherited from ErrorRateModel
-  double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
+  double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const;
 
   /**
    * \brief Utility function to convert WifiMode to an MCS value

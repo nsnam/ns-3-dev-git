@@ -140,9 +140,9 @@ TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
 }
 
 double
-TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
+TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const
 {
-  NS_LOG_FUNCTION (this << mode << txVector << snr << nbits);
+  NS_LOG_FUNCTION (this << mode << txVector << snr << nbits << staId);
   uint64_t size = std::max<uint64_t> (1, (nbits / 8));
   double roundedSnr = RoundSnr (RatioToDb (snr), SNR_PRECISION);
   uint8_t mcs = GetMcsForMode (mode);
@@ -158,7 +158,7 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
   if (mcs > (ldpc ? ERROR_TABLE_LDPC_MAX_NUM_MCS : ERROR_TABLE_BCC_MAX_NUM_MCS))
     {
       NS_LOG_WARN ("Table missing for MCS: " << +mcs << " in TableBasedErrorRateModel: use fallback error rate model");
-      return m_fallbackErrorModel->GetChunkSuccessRate (mode, txVector, snr, nbits);
+      return m_fallbackErrorModel->GetChunkSuccessRate (mode, txVector, snr, nbits, staId);
     }
 
   auto errorTable = (ldpc ? AwgnErrorTableLdpc1458 : (size < m_threshold ? AwgnErrorTableBcc32 : AwgnErrorTableBcc1458));

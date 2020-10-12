@@ -407,7 +407,7 @@ InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration
   uint64_t rate = mode.GetDataRate (txVector, staId);
   uint64_t nbits = static_cast<uint64_t> (rate * duration.GetSeconds ());
   nbits /= txVector.GetNss (staId); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
-  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, nbits);
+  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, nbits, staId);
   return csr;
 }
 

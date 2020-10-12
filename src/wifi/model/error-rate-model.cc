@@ -60,7 +60,7 @@ ErrorRateModel::CalculateSnr (const WifiTxVector& txVector, double ber) const
 }
 
 double
-ErrorRateModel::GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
+ErrorRateModel::GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS || mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
     {
@@ -80,7 +80,7 @@ ErrorRateModel::GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector
     }
   else
     {
-      return DoGetChunkSuccessRate (mode, txVector, snr, nbits);
+      return DoGetChunkSuccessRate (mode, txVector, snr, nbits, staId);
     }
   return 0;
 }

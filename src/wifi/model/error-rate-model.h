@@ -22,11 +22,9 @@
 #define ERROR_RATE_MODEL_H
 
 #include "ns3/object.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
-
-class WifiTxVector;
-class WifiMode;
 
 /**
  * \ingroup wifi
@@ -72,10 +70,11 @@ public:
    * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   * \param staId the station ID for MU
    *
    * \return probability of successfully receiving the chunk
    */
-  double GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
+  double GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId = SU_STA_ID) const;
 
 
 private:
@@ -86,10 +85,11 @@ private:
    * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   * \param staId the station ID for MU
    *
    * \return probability of successfully receiving the chunk
    */
-  virtual double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const = 0;
+  virtual double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const = 0;
 };
 
 } //namespace ns3
