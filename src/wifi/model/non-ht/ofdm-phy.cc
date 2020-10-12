@@ -486,6 +486,7 @@ OfdmPhy::CreateOfdmMode (std::string uniqueName, bool isMandatory)
                                           MakeBoundCallback (&GetCodeRate, uniqueName),
                                           MakeBoundCallback (&GetConstellationSize, uniqueName),
                                           MakeBoundCallback (&GetPhyRate, uniqueName),
+                                          MakeCallback (&GetPhyRateFromTxVector),
                                           MakeBoundCallback (&GetDataRate, uniqueName),
                                           MakeCallback (&GetDataRateFromTxVector),
                                           MakeCallback (&IsModeAllowed));
@@ -515,6 +516,15 @@ uint64_t
 OfdmPhy::CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate)
 {
   return (dataRate / GetCodeRatio (codeRate));
+}
+
+uint64_t
+OfdmPhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
+{
+  return GetPhyRate (txVector.GetMode ().GetUniqueName (),
+                     txVector.GetChannelWidth (),
+                     txVector.GetGuardInterval (),
+                     txVector.GetNss ());
 }
 
 double

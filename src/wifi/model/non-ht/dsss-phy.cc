@@ -287,8 +287,9 @@ DsssPhy::CreateDsssMode (std::string uniqueName,
                                           true,
                                           MakeBoundCallback (&GetCodeRate, uniqueName),
                                           MakeBoundCallback (&GetConstellationSize, uniqueName),
-                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass),
                                           MakeBoundCallback (&GetDataRate, uniqueName, modClass), //PhyRate is equivalent to DataRate
+                                          MakeCallback (&GetDataRateFromTxVector), //PhyRate is equivalent to DataRate
+                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass),
                                           MakeCallback (&GetDataRateFromTxVector),
                                           MakeCallback (&IsModeAllowed));
 }

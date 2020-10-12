@@ -552,6 +552,7 @@ HtPhy::CreateHtMcs (uint8_t index)
                                          MakeBoundCallback (&GetHtCodeRate, index),
                                          MakeBoundCallback (&GetHtConstellationSize, index),
                                          MakeBoundCallback (&GetPhyRate, index),
+                                         MakeCallback (&GetPhyRateFromTxVector),
                                          MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
@@ -626,6 +627,15 @@ uint64_t
 HtPhy::CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate)
 {
   return (dataRate / GetCodeRatio (codeRate));
+}
+
+uint64_t
+HtPhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
+{
+  return GetPhyRate (txVector.GetMode ().GetMcsValue (),
+                     txVector.GetChannelWidth (),
+                     txVector.GetGuardInterval (),
+                     txVector.GetNss ());
 }
 
 double

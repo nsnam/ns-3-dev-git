@@ -297,6 +297,15 @@ public:
    */
   static uint64_t GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
   /**
+   * Return the PHY rate corresponding to
+   * the supplied TXVECTOR for the STA-ID.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID for MU (unused if SU)
+   * \return the physical bit rate of this signal in bps.
+   */
+  static uint64_t GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t staId = SU_STA_ID);
+  /**
    * Return the data rate corresponding to
    * the supplied TXVECTOR for the STA-ID.
    *

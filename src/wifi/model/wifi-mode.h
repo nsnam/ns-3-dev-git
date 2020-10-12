@@ -89,13 +89,20 @@ public:
   uint64_t GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
    * \param txVector the const WifiTxVector& of the signal
+   * \param staId the station ID for MU (unused if SU)
    *
    * \returns the physical bit rate of this signal in bps.
    *
    * If a transmission mode uses 1/2 FEC, and if its
    * data rate is 3.25Mbps, the PHY rate is 6.5Mbps
    */
-  uint64_t GetPhyRate (const WifiTxVector& txVector) const;
+  uint64_t GetPhyRate (const WifiTxVector& txVector, uint16_t staId = SU_STA_ID) const;
+  /**
+   * \param channelWidth the considered channel width in MHz
+   *
+   * \returns the physical bit rate of this non-HT signal.
+  */
+  uint64_t GetPhyRate (uint16_t channelWidth) const;
   /**
    *
    * \param channelWidth the considered channel width in MHz
@@ -115,7 +122,7 @@ public:
   /**
    * \param channelWidth the considered channel width in MHz
    *
-   * \returns the data bit rate of this non-HT or non-VHT signal.
+   * \returns the data bit rate of this non-HT.
   */
   uint64_t GetDataRate (uint16_t channelWidth) const;
 
@@ -288,12 +295,22 @@ public:
    */
   typedef Callback<uint64_t, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */> PhyRateCallback;
   /**
+   * Typedef for callback used to calculate PHY rate of a WifiMode
+   * from a TXVECTOR. This is mostly useful in HE or later amendments.
+   * For the others it's a simple wrapper of \see PhyRateCallback.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID
+   * \return the physical bit rate of the signal in bps.
+   */
+  typedef Callback<uint64_t, const WifiTxVector& /* txVector */, uint16_t /* staId */> PhyRateFromTxVectorCallback;
+  /**
    * Typedef for callback used to calculate data rate of a WifiMode
    *
    * \param channelWidth the channel width in MHz
    * \param guardInterval the guard interval duration in nanoseconds
    * \param nss the number of streams
-   * \return the data rate  of the signal in bps.
+   * \return the data rate of the signal in bps.
    */
   typedef Callback<uint64_t, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */> DataRateCallback;
   /**
@@ -303,7 +320,7 @@ public:
    *
    * \param txVector the TXVECTOR used for the transmission
    * \param staId the station ID
-   * \return the data rate  of the signal in bps.
+   * \return the data rate of the signal in bps.
    */
   typedef Callback<uint64_t, const WifiTxVector& /* txVector */, uint16_t /* staId */> DataRateFromTxVectorCallback;
   /**
@@ -338,6 +355,8 @@ public:
    *        order of the constellation used.
    * \param phyRateCallback a callback function to calculate the PHY rate (in
    *        bps) of this WifiMode.
+   * \param phyRateFromTxVectorCallback a callback function to calculate the PHY rate
+   *        (in bps) of this WifiMode using a TXVECTOR as input.
    * \param dataRateCallback a callback function to calculate the data rate
    *        (in bps) of this WifiMode.
    * \param dataRateFromTxVectorCallback a callback function to calculate the data rate
@@ -356,6 +375,7 @@ public:
                                   CodeRateCallback codeRateCallback,
                                   ConstellationSizeCallback constellationSizeCallback,
                                   PhyRateCallback phyRateCallback,
+                                  PhyRateFromTxVectorCallback phyRateFromTxVectorCallback,
                                   DataRateCallback dataRateCallback,
                                   DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
                                   ModeAllowedCallback isModeAllowedCallback);
@@ -371,6 +391,8 @@ public:
    *        of modulation constellation of this WifiMode.
    * \param phyRateCallback a callback function to calculate the PHY rate (in
    *        bps) of this WifiMode.
+   * \param phyRateFromTxVectorCallback a callback function to calculate the PHY rate
+   *        (in bps) of this WifiMode using a TXVECTOR as input.
    * \param dataRateCallback a callback function to calculate the data rate (in
    *        bps) of this WifiMode.
    * \param dataRateFromTxVectorCallback a callback function to calculate the data rate
@@ -391,6 +413,7 @@ public:
                                  CodeRateCallback codeRateCallback,
                                  ConstellationSizeCallback constellationSizeCallback,
                                  PhyRateCallback phyRateCallback,
+                                 PhyRateFromTxVectorCallback phyRateFromTxVectorCallback,
                                  DataRateCallback dataRateCallback,
                                  DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
                                  NonHtReferenceRateCallback nonHtReferenceRateCallback,
@@ -424,6 +447,7 @@ private:
     CodeRateCallback GetCodeRateCallback;                         ///< Callback to retrieve code rate of this WifiModeItem
     ConstellationSizeCallback GetConstellationSizeCallback;       ///< Callback to retrieve constellation size of this WifiModeItem
     PhyRateCallback GetPhyRateCallback;                           ///< Callback to calculate PHY rate in bps of this WifiModeItem
+    PhyRateFromTxVectorCallback GetPhyRateFromTxVectorCallback;   ///< Callback to calculate PHY rate in bps of this WifiModeItem using a TXVECTOR as input
     DataRateCallback GetDataRateCallback;                         ///< Callback to calculate data rate in bps of this WifiModeItem
     DataRateFromTxVectorCallback GetDataRateFromTxVectorCallback; ///< Callback to calculate data rate in bps of this WifiModeItem using a TXVECTOR as input
     NonHtReferenceRateCallback GetNonHtReferenceRateCallback;     ///< Callback to calculate non-HT reference rate of this WifiModeItem

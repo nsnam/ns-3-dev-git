@@ -1003,6 +1003,7 @@ HePhy::CreateHeMcs (uint8_t index)
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
                                          MakeBoundCallback (&GetPhyRate, index),
+                                         MakeCallback (&GetPhyRateFromTxVector),
                                          MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
@@ -1042,6 +1043,20 @@ HePhy::GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterv
   WifiCodeRate codeRate = GetCodeRate (mcsValue);
   uint64_t dataRate = GetDataRate (mcsValue, channelWidth, guardInterval, nss);
   return HtPhy::CalculatePhyRate (codeRate, dataRate);
+}
+
+uint64_t
+HePhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t staId /* = SU_STA_ID */)
+{
+  uint16_t bw = txVector.GetChannelWidth ();
+  if (txVector.IsMu ())
+    {
+      bw = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+    }
+  return HePhy::GetPhyRate (txVector.GetMode (staId).GetMcsValue (),
+                            bw,
+                            txVector.GetGuardInterval (),
+                            txVector.GetNss (staId));
 }
 
 uint64_t
