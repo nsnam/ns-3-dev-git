@@ -83,6 +83,25 @@ public:
    * \param v the position to append at the end of the list of positions to return from GetNext.
    */
   void Add (Vector v);
+
+  /**
+   * \brief Add the positions listed in a file.
+   * The file should be a simple text file, with one position per line,
+   * either X and Y, or X, Y and Z, in meters.  The delimiter can
+   * be any character, such as ',' or '\t'; the default is a comma ','.
+   *
+   * The file is read using CsvReader, which explains how comments
+   * and whitespace are handled.
+   *
+   * \param [in] filePath The path to the input file.
+   * \param [in] defaultZ The default Z value to use when reading files
+   *             with only X and Y positions.
+   * \param [in] delimiter The delimiter character; see CsvReader.
+   */
+  void Add (const std::string filePath,
+            double defaultZ = 0,
+            char delimiter = ',');
+
   /**
    * Return the number of positions stored.  Note that this will not change
    * based on calling GetNext(), as the number of positions is not altered
@@ -93,6 +112,7 @@ public:
   uint32_t GetSize (void) const;
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
   std::vector<Vector> m_positions;  //!< vector of positions
   mutable std::vector<Vector>::const_iterator m_current; //!< vector iterator
@@ -114,7 +134,8 @@ public:
   /**
    * Determine whether positions are allocated row first or column first.
    */
-  enum LayoutType {
+  enum LayoutType
+  {
     /**
      * In row-first mode, positions are allocated on the first row until
      * N positions have been allocated. Then, the second row located a yMin + yDelta
@@ -140,7 +161,7 @@ public:
    */
   void SetMinY (double yMin);
   /**
-   * \param z   the Z coordinate of all the positions allocated 
+   * \param z   the Z coordinate of all the positions allocated
    */
   void SetZ (double z);
   /**
@@ -189,6 +210,7 @@ public:
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
   mutable uint32_t m_current; //!< currently position
   enum LayoutType m_layoutType;  //!< currently selected layout type
@@ -225,13 +247,14 @@ public:
    * \param y pointer to a RandomVariableStream object
    */
   void SetY (Ptr<RandomVariableStream> y);
-  /** 
-   * \param z   the Z coordinate of all the positions allocated 
+  /**
+   * \param z   the Z coordinate of all the positions allocated
    */
   void SetZ (double z);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
   Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
   Ptr<RandomVariableStream> m_y; //!< pointer to y's random variable stream
@@ -271,6 +294,7 @@ public:
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
   Ptr<RandomVariableStream> m_x; //!< pointer to x's random variable stream
   Ptr<RandomVariableStream> m_y; //!< pointer to y's random variable stream
@@ -280,7 +304,7 @@ private:
 /**
  * \ingroup mobility
  * \brief Allocate random positions within a disc according to
- * a given distribution for the polar coordinates of each node 
+ * a given distribution for the polar coordinates of each node
  * with respect to the provided center of the disc.
  *
  * \note With the default uniform distribution over \f$2 \pi\f$ in \c theta and a
@@ -311,21 +335,22 @@ public:
    * \param rho Random variable that represents the radius of a position, in meters, in a random disc.
    */
   void SetRho (Ptr<RandomVariableStream> rho);
-  /** 
+  /**
    * \param x  the X coordinate of the center of the disc
    */
   void SetX (double x);
-  /** 
-   * \param y   the Y coordinate of the center of the disc 
+  /**
+   * \param y   the Y coordinate of the center of the disc
    */
   void SetY (double y);
-  /** 
-   * \param z   the Z coordinate of all the positions allocated 
+  /**
+   * \param z   the Z coordinate of all the positions allocated
    */
   void SetZ (double z);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
   Ptr<RandomVariableStream> m_theta; //!< pointer to theta's random variable stream
   Ptr<RandomVariableStream> m_rho; //!< pointer to rho's random variable stream
@@ -345,7 +370,7 @@ private:
  * for any subset \f$ S \subset D \f$, the expected value of the
  * fraction of points which fall into \f$ S \subset D \f$ corresponds
  * to \f$ \frac{|S|}{|D|} \f$, i.e., to the ratio of the area of the
- * subset to the area of the whole disc. 
+ * subset to the area of the whole disc.
  *
  * \note using UniformDiscPositionAllocator is not equivalent to using
  * a RandomDiscPositionAllocator with a uniformly-distributed radius,
@@ -363,30 +388,31 @@ public:
   UniformDiscPositionAllocator ();
   virtual ~UniformDiscPositionAllocator ();
 
-  /** 
+  /**
    * \param rho the value of the radius of the disc
    */
   void SetRho (double rho);
 
-  /** 
+  /**
    * \param x  the X coordinate of the center of the disc
    */
   void SetX (double x);
 
-  /** 
-   * \param y   the Y coordinate of the center of the disc 
+  /**
+   * \param y   the Y coordinate of the center of the disc
    */
   void SetY (double y);
 
-  /** 
-   * \param z   the Z coordinate of all the positions allocated 
+  /**
+   * \param z   the Z coordinate of all the positions allocated
    */
   void SetZ (double z);
 
   virtual Vector GetNext (void) const;
   virtual int64_t AssignStreams (int64_t stream);
+
 private:
-  Ptr<UniformRandomVariable> m_rv;  //!< pointer to uniform random variable 
+  Ptr<UniformRandomVariable> m_rv;  //!< pointer to uniform random variable
   double m_rho; //!< value of the radius of the disc
   double m_x;  //!< x coordinate of center of disc
   double m_y;  //!< y coordinate of center of disc
