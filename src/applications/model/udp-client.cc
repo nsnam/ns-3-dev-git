@@ -77,6 +77,7 @@ UdpClient::UdpClient ()
 {
   NS_LOG_FUNCTION (this);
   m_sent = 0;
+  m_totalTx = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
 }
@@ -190,6 +191,7 @@ UdpClient::Send (void)
   if ((m_socket->Send (p)) >= 0)
     {
       ++m_sent;
+      m_totalTx += p->GetSize ();
       NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
                                     << peerAddressStringStream.str () << " Uid: "
                                     << p->GetUid () << " Time: "
@@ -207,5 +209,13 @@ UdpClient::Send (void)
       m_sendEvent = Simulator::Schedule (m_interval, &UdpClient::Send, this);
     }
 }
+
+
+uint64_t
+UdpClient::GetTotalTx () const
+{
+  return m_totalTx;
+}
+
 
 } // Namespace ns3
