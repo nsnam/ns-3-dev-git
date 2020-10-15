@@ -203,7 +203,7 @@ CoDelQueueDisc::OkToDrop (Ptr<QueueDiscItem> item, uint32_t now)
     }
 
   Time delta = Simulator::Now () - item->GetTimeStamp ();
-  NS_LOG_INFO ("Sojourn time " << delta.ToDouble (Time::MS) << "ms");
+  NS_LOG_INFO ("Sojourn time " << delta.As (Time::MS));
   uint32_t sojournTime = Time2CoDel (delta);
 
   if (CoDelTimeBefore (sojournTime, Time2CoDel (m_target))

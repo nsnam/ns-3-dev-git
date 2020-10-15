@@ -431,7 +431,7 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
 
   /* Simplified Codel implementation */
   Time delta = Simulator::Now () - item->GetTimeStamp ();
-  NS_LOG_INFO ("Sojourn time " << delta.GetSeconds ());
+  NS_LOG_INFO ("Sojourn time " << delta.As (Time::S));
   int64_t sojournTime = Time2CoDel (delta);
   int64_t schedule = now - m_dropNext;
   bool over_target = CoDelTimeAfter (sojournTime, Time2CoDel (m_target));
