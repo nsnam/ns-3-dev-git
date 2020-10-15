@@ -235,6 +235,7 @@ def build(bld):
         'model/time-printer.cc',
         'model/show-progress.cc',
         'model/system-wall-clock-timestamp.cc',
+        'helper/csv-reader.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -368,6 +369,7 @@ def build(bld):
         'model/node-printer.h',
         'model/time-printer.h',
         'model/show-progress.h',
+        'helper/csv-reader.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
