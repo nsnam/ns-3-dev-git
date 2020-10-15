@@ -224,26 +224,29 @@ public:
    * \param stream an output stream wrapper
    * \param nodeid the id of the node to generate ascii output for.
    *
-   * Enable ascii output on the mobility model associated to the
-   * specified nodeid and dump that to the specified stdc++ output 
-   * stream.
+   * Enable ascii output to record course changes from the mobility model
+   * associated with the specified nodeid and dump that to the specified output 
+   * stream.  If the Node does not have a MobilityModel aggregated,
+   * this method will not produce any output.
    */
   static void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid);
   /**
    * \param stream an output stream wrapper
    * \param n node container
    *
-   * Enable ascii output on the mobility model associated each of
-   * the nodes in the input container and dump that to the 
-   * specified stdc++ output stream.
+   * Enable ascii output to record course changes from the mobility models
+   * associated to the the nodes in the input container and dump that to the 
+   * specified output stream.  Nodes that do not have a MobilityModel
+   * aggregated will not result in any output.
    */
   static void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
   /**
    * \param stream an output stream wrapper
    *
-   * Enable ascii output on the mobility model associated
-   * every node in the system and dump that to the specified 
-   * stdc++ output stream.
+   * Enable ascii output to record course changes from the mobility models
+   * associated to every node in the system and dump that to the specified 
+   * output stream.  Nodes that do not have a MobilityModel aggregated
+   * will not result in any output.
    */
   static void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
   /**

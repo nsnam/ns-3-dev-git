@@ -236,8 +236,8 @@ MobilityHelper::EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid)
 {
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/$ns3::MobilityModel/CourseChange";
-  Config::ConnectWithoutContext (oss.str (), 
-                                 MakeBoundCallback (&MobilityHelper::CourseChanged, stream));
+  Config::ConnectWithoutContextFailSafe (oss.str (), 
+                                         MakeBoundCallback (&MobilityHelper::CourseChanged, stream));
 }
 void 
 MobilityHelper::EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n)
