@@ -48,9 +48,14 @@ namespace ns3 {
  *
  * Print a status message showing the simulator time and
  * execution speed, relative to wall clock time, as well as the number
- * of events executed each interval.
+ * of events executed each interval of wall clock time.
  *
- * The target update rate (and output stream) can be configured at construction.
+ * The output interval is based on wall clock time, rather than simulation
+ * time, to avoid too many events for fast simulations, and too long of
+ * a reporting interval for very slow simulations.
+ *
+ * The target update interval (and output stream) can be configured
+ * at construction.  The default output stream, if unspecified, is cout.
  *
  * Example usage:
  *
@@ -59,7 +64,7 @@ namespace ns3 {
  *     {
  *       // Create your model
  *
- *       ShowProgress (Seconds (1), std::cerr);
+ *       ShowProgress progress (Seconds (10), std::cerr);
  *       Simulator::Run ();
  *       Simulator::Destroy ();
  *     }
@@ -80,9 +85,12 @@ namespace ns3 {
  *     Elapsed wall clock: 16s
  * \endcode
  *
+ * A more extensive example of use is provided in sample-show-progress.cc.
+ *
  * Based on a python version by Gustavo Carneiro <gjcarneiro@gmail.com>,
  * as released here:
- * http://mailman.isi.edu/pipermail/ns-developers/2009-January/005201.html
+ * 
+ * https://mailman.isi.edu/pipermail/ns-developers/2009-January/005039.html
  */
 class ShowProgress
 {
