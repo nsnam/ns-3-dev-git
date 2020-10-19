@@ -249,7 +249,7 @@ HtPhy::GetTrainingDuration (WifiTxVector txVector,
   Time duration = MicroSeconds (4) * (nDataLtf + nExtensionLtf);
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF)
     {
-      return MicroSeconds (4) * (nDataLtf /* - 1 */ + nExtensionLtf); //FIXME: no HT-STF and first HT-LTF is already in preamble, see IEEE 802.11-2016, section 19.3.5.5 "HT-greenfield format LTF"
+      return MicroSeconds (4) * (nDataLtf - 1 + nExtensionLtf); //no HT-STF and first HT-LTF is already in preamble, see IEEE 802.11-2016, section 19.3.5.5 "HT-greenfield format LTF"
     }
   else //HT-MF
     {
