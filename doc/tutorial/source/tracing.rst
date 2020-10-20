@@ -2646,7 +2646,7 @@ provide additional user-level functionality.  What this means to the
 user is that all device helpers in the system will have all of the
 ASCII trace methods available; and these methods will all work in the
 same way across devices if the devices implement
-``EnablAsciiInternal`` correctly.
+``EnableAsciiInternal`` correctly.
 
 Methods
 #######
@@ -2806,7 +2806,7 @@ but to summarize ...
   convention.  Combining all of the traces into a single file is
   accomplished similarly to the examples above.
 
-* You can enable PCAP tracing on the basis of Node ID and device ID
+* You can enable ASCII tracing on the basis of Node ID and device ID
   as well as with explicit ``Ptr``.  Each Node in the system has an
   integer Node ID and each device connected to a Node has an integer
   device ID.
@@ -2818,7 +2818,7 @@ but to summarize ...
   Of course, the traces can be combined into a single file as shown
   above.
 
-* Finally, you can enable PCAP tracing for all devices in the
+* Finally, you can enable ASCII tracing for all devices in the
   system, with the same type as that managed by the device helper.
 
   ::
@@ -3088,7 +3088,7 @@ provide additional user-level functionality.  What this means to the
 user is that all device helpers in the system will have all of the
 ASCII trace methods available; and these methods will all work in the
 same way across protocols if the protocols implement
-``EnablAsciiIpv4Internal`` correctly.
+``EnableAsciiIpv4Internal`` correctly.
 
 Methods
 #######
@@ -3246,7 +3246,7 @@ but to summarize ...
   convention.  Combining all of the traces into a single file is
   accomplished similarly to the examples above.
 
-* You can enable PCAP tracing on the basis of Node ID and device ID as
+* You can enable ASCII tracing on the basis of Node ID and device ID as
   well.  In this case, the node-id is translated to a ``Ptr<Node>`` and
   the appropriate protocol is looked up in the node.  The resulting
   protocol and interface are used to specify the resulting trace source.
