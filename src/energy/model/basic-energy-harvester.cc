@@ -110,8 +110,8 @@ void
 BasicEnergyHarvester::UpdateHarvestedPower (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                << "s BasicEnergyHarvester(" << GetNode ()->GetId () << "): Updating harvesting power.");
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                << " BasicEnergyHarvester(" << GetNode ()->GetId () << "): Updating harvesting power.");
 
   Time duration = Simulator::Now () - m_lastHarvestingUpdateTime;
 
@@ -169,8 +169,8 @@ BasicEnergyHarvester::CalculateHarvestedPower (void)
 
   m_harvestedPower = m_harvestablePower->GetValue ();
 
-  NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
-                << "s BasicEnergyHarvester:Harvested energy = " << m_harvestedPower);
+  NS_LOG_DEBUG (Simulator::Now ().As (Time::S)
+                << " BasicEnergyHarvester:Harvested energy = " << m_harvestedPower);
 }
 
 double

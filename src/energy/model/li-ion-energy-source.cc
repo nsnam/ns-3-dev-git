@@ -277,7 +277,7 @@ LiIonEnergySource::CalculateRemainingEnergy (void)
   // energy = current * voltage * time
   double energyToDecreaseJ = totalCurrentA * m_supplyVoltageV * duration.GetSeconds ();
 
-  if (m_remainingEnergyJ < energyToDecreaseJ) 
+  if (m_remainingEnergyJ < energyToDecreaseJ)
     {
       m_remainingEnergyJ = 0; // energy never goes below 0
     } 
@@ -286,7 +286,7 @@ LiIonEnergySource::CalculateRemainingEnergy (void)
       m_remainingEnergyJ -= energyToDecreaseJ;
     }  
 
-  m_drainedCapacity += (totalCurrentA * duration.GetSeconds () / 3600);
+  m_drainedCapacity += (totalCurrentA * duration).GetHours ();
   // update the supply voltage
   m_supplyVoltageV = GetVoltage (totalCurrentA);
   NS_LOG_DEBUG ("LiIonEnergySource:Remaining energy = " << m_remainingEnergyJ);

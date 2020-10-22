@@ -47,7 +47,7 @@ using namespace ns3;
 static void
 PrintCellInfo (Ptr<LiIonEnergySource> es)
 {
-  std::cout << "At " << Simulator::Now ().GetSeconds () << " Cell voltage: " << es->GetSupplyVoltage () << " V Remaining Capacity: " <<
+  std::cout << "At " << Simulator::Now ().As (Time::S) << " Cell voltage: " << es->GetSupplyVoltage () << " V Remaining Capacity: " <<
   es->GetRemainingEnergy () / (3.6 * 3600) << " Ah" << std::endl;
 
   if (!Simulator::IsFinished ())

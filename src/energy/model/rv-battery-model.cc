@@ -163,7 +163,7 @@ RvBatteryModel::UpdateEnergySource (void)
   double calculatedAlpha = Discharge (currentLoad, Simulator::Now ());
 
   NS_LOG_DEBUG ("RvBatteryModel:Calculated alpha = " << calculatedAlpha <<
-                " time = " << Simulator::Now ().GetSeconds ());
+                " time = " << Simulator::Now ().As (Time::S));
 
   // calculate battery level
   m_batteryLevel = 1 - (calculatedAlpha / m_alpha);
@@ -369,9 +369,9 @@ RvBatteryModel::RvModelAFunction (Time t, Time sk, Time sk_1, double beta)
   NS_LOG_FUNCTION (this << t << sk << sk_1 << beta);
 
   // everything is in minutes
-  double firstDelta = (t.GetSeconds () - sk.GetSeconds ()) / 60;
-  double secondDelta = (t.GetSeconds () - sk_1.GetSeconds ()) / 60;
-  double delta = (sk.GetSeconds () - sk_1.GetSeconds ()) / 60;
+  double firstDelta = (t - sk).GetMinutes ();
+  double secondDelta = (t - sk_1).GetMinutes ();
+  double delta = (sk - sk_1).GetMinutes ();
 
   double sum = 0.0;
   for (int m = 1; m <= m_numOfTerms; m++)

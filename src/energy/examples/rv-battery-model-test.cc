@@ -780,8 +780,8 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
   actualLifetime = srcPtr->GetLifetime ();
 
-  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
-  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.As (Time::S));
+  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.As (Time::S));
 
   Simulator::Destroy ();
 
@@ -876,15 +876,14 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
   Ptr<RvBatteryModel> srcPtr = DynamicCast<RvBatteryModel> (sources.Get (0));
   actualLifetime = srcPtr->GetLifetime ();
 
-  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
-  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
-  NS_LOG_DEBUG ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
+  NS_LOG_DEBUG ("Expected lifetime = " << expLifetime.As (Time::S));
+  NS_LOG_DEBUG ("Actual lifetime = " << actualLifetime.As (Time::S));
+  NS_LOG_DEBUG ("Difference = " << (expLifetime - actualLifetime).As (Time::S));
 
   Simulator::Destroy ();
 
   // error tolerance = 120s
-  if ((actualLifetime.GetSeconds ()) > (expLifetime.GetSeconds ()) + (120) ||
-      (actualLifetime.GetSeconds ()) < (expLifetime.GetSeconds ()) - (120))
+  if (Abs (actualLifetime - expLifetime)  > Seconds (120))
     {
       std::cerr << "VariableLoadTest: Incorrect lifetime." << std::endl;
       return true;
