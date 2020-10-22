@@ -86,6 +86,13 @@ public:
    * \note Prop. delay is transmitted with 16 bits and ms accuracy
    */
   Time GetPropDelay (void) const;
+  /**
+   * Specialized Print with Time::Unit declared.
+   *
+   * \param os ostream.
+   * \param unit Time unit.
+   */
+  void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
   virtual uint32_t GetSerializedSize (void) const;
@@ -197,6 +204,13 @@ public:
    * \return The retry number.
    */
   uint8_t GetRetryNo (void) const;
+   /**
+   * Specialized Print with Time::Unit declared.
+   *
+   * \param os ostream.
+   * \param unit Time unit.
+   */
+  void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
   virtual uint32_t GetSerializedSize (void) const;
@@ -294,6 +308,13 @@ public:
    * \return The timestamp.
    */
   Time GetTxTimeStamp (void) const;
+  /**
+   * Specialized Print with Time::Unit declared.
+   *
+   * \param os ostream.
+   * \param unit Time unit.
+   */
+  void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
   virtual uint32_t GetSerializedSize (void) const;
@@ -405,6 +426,13 @@ public:
    * \return The destination address.
    */
   Mac8Address GetAddress (void) const;
+  /**
+   * Specialized Print with Time::Unit declared.
+   *
+   * \param os ostream.
+   * \param unit Time unit.
+   */
+  void Print (std::ostream &os, Time::Unit unit) const;
 
   // Inherrited methods
   virtual uint32_t GetSerializedSize (void) const;

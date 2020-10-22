@@ -170,8 +170,7 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
       // times, the offset in terms of the arriving symbol power is
       // 0.3 symbol+clearing times.
 
-      int32_t syms = (uint32_t)(tDelta / (ts + clearingTime)).GetHigh ();
-      tDelta = tDelta - syms * (ts + clearingTime);
+      tDelta = Rem (tDelta, ts + clearingTime);
 
       // Align to pktRx
       if (arrTime + maxTapDelay  > it->GetArrivalTime ())
