@@ -90,6 +90,27 @@ HePhy::BuildModeList (void)
 }
 
 WifiMode
+HePhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_TRAINING: //consider SIG-A (SIG-B) mode for training for the time being for SU/ER-SU/TB (MU) (useful for InterferenceHelper)
+        if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+          {
+            //Training comes after SIG-B
+            return GetSigBMode (txVector);
+          }
+        else
+          {
+            //Training comes after SIG-A
+            return GetSigAMode ();
+          }
+      default:
+        return VhtPhy::GetSigMode (field, txVector);
+    }
+}
+
+WifiMode
 HePhy::GetSigAMode (void) const
 {
   return GetVhtMcs0 (); //same number of data tones as VHT for 20 MHz (i.e. 52)

@@ -132,8 +132,10 @@ HtPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
 {
   switch (field)
     {
+      case WIFI_PPDU_FIELD_PREAMBLE: //consider non-HT header mode for preamble (useful for InterferenceHelper)
       case WIFI_PPDU_FIELD_NON_HT_HEADER:
         return GetLSigMode ();
+      case WIFI_PPDU_FIELD_TRAINING: //consider HT-SIG mode for training (useful for InterferenceHelper)
       case WIFI_PPDU_FIELD_HT_SIG:
         return GetHtSigMode ();
       default:

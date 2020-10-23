@@ -145,4 +145,23 @@ PhyEntity::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const
   return duration;
 }
 
+PhyEntity::PhyHeaderSections
+PhyEntity::GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const
+{
+  PhyHeaderSections map;
+  WifiPpduField field = WIFI_PPDU_FIELD_PREAMBLE; //preamble always present
+  Time start = ppduStart;
+
+  while (field != WIFI_PPDU_FIELD_DATA)
+    {
+      Time duration = GetDuration (field, txVector);
+      map[field] = std::make_pair (std::make_pair (start, start + duration),
+                                   GetSigMode (field, txVector));
+      //Move to next field
+      start += duration;
+      field = GetNextField (field, txVector.GetPreambleType ());
+    }
+  return map;
+}
+
 } //namespace ns3

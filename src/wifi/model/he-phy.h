@@ -62,6 +62,7 @@ public:
   virtual ~HePhy ();
 
   // Inherited
+  WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   WifiMode GetSigAMode (void) const override;
   WifiMode GetSigBMode (WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;

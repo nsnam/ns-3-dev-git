@@ -64,6 +64,7 @@ DsssPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
 {
   switch (field)
     {
+      case WIFI_PPDU_FIELD_PREAMBLE: //consider header mode for preamble (useful for InterferenceHelper)
       case WIFI_PPDU_FIELD_NON_HT_HEADER:
         return GetHeaderMode (txVector);
       default:

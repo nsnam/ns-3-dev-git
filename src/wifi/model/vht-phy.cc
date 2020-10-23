@@ -107,6 +107,7 @@ VhtPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
 {
   switch (field)
     {
+      case WIFI_PPDU_FIELD_TRAINING: //consider SIG-A mode for training (useful for InterferenceHelper)
       case WIFI_PPDU_FIELD_SIG_A:
         return GetSigAMode ();
       case WIFI_PPDU_FIELD_SIG_B:

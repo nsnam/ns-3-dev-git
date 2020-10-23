@@ -29,6 +29,7 @@
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
 #include <list>
+#include <map>
 
 /**
  * \file
@@ -166,6 +167,29 @@ public:
   virtual Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
                                    bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                                    uint16_t staId) const = 0;
+
+  /**
+   * A pair containing information on the PHY header chunk, namely
+   * the start and stop times of the chunk and the WifiMode used.
+   */
+  typedef std::pair<std::pair<Time /* start */, Time /* stop */>, WifiMode> PhyHeaderChunkInfo;
+  /**
+   * A map of PhyHeaderChunkInfo elements per PPDU field.
+   * \see PhyHeaderChunkInfo
+   */
+  typedef std::map<WifiPpduField, PhyHeaderChunkInfo> PhyHeaderSections;
+  /**
+   * Return a map of PHY header chunk information per PPDU field.
+   * This map will contain the PPDU fields that are actually present based
+   * on the \p txVector information.
+   *
+   * \param txVector the transmission parameters
+   * \param ppduStart the time at which the PPDU started
+   * \return the list of preamble sections
+   *
+   * \see PhyHeaderSections
+   */
+  PhyHeaderSections GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const;
 
 protected:
   /**

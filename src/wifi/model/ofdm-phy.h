@@ -24,7 +24,6 @@
 #define OFDM_PHY_H
 
 #include "phy-entity.h"
-#include <map>
 #include <vector>
 
 /**
