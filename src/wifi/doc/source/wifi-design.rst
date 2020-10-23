@@ -948,6 +948,7 @@ Algorithms in literature:
 * ``AarfcdWifiManager`` [maguolo2008aarfcd]_
 * ``ParfWifiManager`` [akella2007parf]_
 * ``AparfWifiManager`` [chevillat2005aparf]_
+* ``ThompsonSamplingWifiManager`` [krotov2020rate]_
 
 ConstantRateWifiManager
 #######################
@@ -1009,6 +1010,42 @@ selection of HE MCS-11 which resulted in high PER.
 With this new default value (i.e. 1e-6), a HE STA moving away from a HE AP has
 smooth throughput decrease (whereas with 1e-5, better performance was seen further
 away, which is not "ideal").
+
+ThompsonSamplingWifiManager
+###########################
+
+Thompson Sampling (TS) is a classical solution to the Multi-Armed
+Bandit problem.  `ThompsonSamplingWifiManager` implements a rate
+control algorithm based on TS with the goal of providing a simple
+statistics-based algorithm with a low number of parameters.
+
+The algorithm maintains the number of successful transmissions
+:math:`\alpha_i` and the number of unsuccessful transmissions
+:math:`\beta_i` for each MCS :math:`i`, both of which are initially
+set to zero.
+
+To select MCS for a data frame, the algorithm draws a sample frame
+success rate :math:`\p_i` from the beta distribution with shape
+parameters :math:`(1 + \alpha_i, 1 + \beta_i)` for each MCS and then
+selects MCS with the highest expected throughput calculated as the
+sample frame success rate multiplied by MCS rate.
+
+To account for changing channel conditions, exponential decay is
+applied to :math:`\alpha_i` and :math:`\beta_i`. The rate of
+exponential decay is controlled with the `Decay` attribute which is
+the inverse of the time constant. Default value of 1 Hz results in
+using exponential window with the time constant of 1 second.  Setting
+this value to zero effectively disables exponential decay and can be
+used in static scenarios.
+
+Control frames are always transmitted using the most robust MCS,
+except when the standard specifies otherwise, such as for ACK frames.
+
+As the main goal of this algorithm is to provide a stable baseline, it
+does not take into account backoff overhead, inter-frame spaces and
+aggregation for MCS rate calculation. For an example of a more complex
+statistics-based rate control algorithm used in real devices, consider
+Minstrel-HT described below.
 
 MinstrelWifiManager
 ###################

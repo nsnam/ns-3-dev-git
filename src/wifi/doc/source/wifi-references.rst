@@ -58,3 +58,5 @@ References
 .. [erceg2004] \ V. Erceg and L. Schumacher and P. Kyritsi, "Tgn channel models", IEEE 802.11-03/940r4, 2004.
 
 .. [porat2016] \ R. Porat et al., "11ax Evaluation Methodology", IEE P802.11 Wireless LANs, 11-14-0571r3, 2016. 
+
+.. [krotov2020rate] \ A. Krotov, A. Kiryanov, E. Khorov., `Rate Control With Spatial Reuse for Wi-Fi 6 Dense Deployments <https://doi.org/10.1109/ACCESS.2020.3023552>`__, IEEE Access, September 2020

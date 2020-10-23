@@ -23,6 +23,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/minstrel-ht-wifi-manager.h"
+#include "ns3/thompson-sampling-wifi-manager.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/ampdu-subframe-header.h"
 #include "ns3/mobility-model.h"
@@ -1032,6 +1033,12 @@ WifiHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
           if (minstrelHt)
             {
               currentStream += minstrelHt->AssignStreams (currentStream);
+            }
+
+          Ptr<ThompsonSamplingWifiManager> thompsonSampling = DynamicCast<ThompsonSamplingWifiManager> (manager);
+          if (thompsonSampling)
+            {
+              currentStream += thompsonSampling->AssignStreams (currentStream);
             }
 
           //Handle any random numbers in the MAC objects.
