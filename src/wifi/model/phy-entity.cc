@@ -124,4 +124,25 @@ PhyEntity::GetNextField (WifiPpduField currentField, WifiPreamble preamble) cons
     }
 }
 
+Time
+PhyEntity::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+{
+  if (field > WIFI_PPDU_FIELD_SIG_B)
+    {
+      NS_FATAL_ERROR ("Unsupported PPDU field");
+    }
+  return MicroSeconds (0); //should be overloaded
+}
+
+Time
+PhyEntity::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const
+{
+  Time duration = MicroSeconds (0);
+  for (uint8_t field = WIFI_PPDU_FIELD_PREAMBLE; field < WIFI_PPDU_FIELD_DATA; ++field)
+    {
+      duration += GetDuration (static_cast<WifiPpduField> (field), txVector);
+    }
+  return duration;
+}
+
 } //namespace ns3

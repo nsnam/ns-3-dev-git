@@ -23,6 +23,7 @@
 #define HE_PHY_H
 
 #include "vht-phy.h"
+#include "wifi-phy-band.h"
 
 /**
  * \file
@@ -64,6 +65,33 @@ public:
   WifiMode GetSigAMode (void) const override;
   WifiMode GetSigBMode (WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
+  Time GetLSigDuration (WifiPreamble preamble) const override;
+  virtual Time GetTrainingDuration (WifiTxVector txVector,
+                                    uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
+  Time GetSigADuration (WifiPreamble preamble) const override;
+  Time GetSigBDuration (WifiTxVector txVector) const override;
+
+  /**
+   * \param ppduDuration the duration of the HE TB PPDU
+   * \param band the frequency band being used
+   *
+   * \return the L-SIG length value corresponding to that HE TB PPDU duration.
+   */
+  uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band) const;
+  /**
+   * \param length the L-SIG length value
+   * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
+   * \param band the frequency band being used
+   *
+   * \return the duration of the HE TB PPDU corresponding to that L-SIG length value.
+   */
+  Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band) const;
+  /**
+   * \param txVector the transmission parameters used for the HE TB PPDU
+   *
+   * \return the duration of the non-OFDMA portion of the HE TB PPDU.
+   */
+  Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const;
 
   /**
    * Initialize all HE modes.

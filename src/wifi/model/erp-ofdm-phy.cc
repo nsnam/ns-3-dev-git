@@ -57,6 +57,18 @@ ErpOfdmPhy::GetHeaderMode (WifiTxVector txVector) const
   return GetErpOfdmRate6Mbps ();
 }
 
+Time
+ErpOfdmPhy::GetPreambleDuration (WifiTxVector /* txVector */) const
+{
+  return MicroSeconds (16); //L-STF + L-LTF
+}
+
+Time
+ErpOfdmPhy::GetHeaderDuration (WifiTxVector /* txVector */) const
+{
+  return MicroSeconds (4); //L-SIG
+}
+
 void
 ErpOfdmPhy::InitializeModes (void)
 {

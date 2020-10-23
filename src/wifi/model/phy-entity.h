@@ -126,6 +126,25 @@ public:
    */
   WifiPpduField GetNextField (WifiPpduField currentField, WifiPreamble preamble) const;
 
+  /**
+   * Get the duration of the PPDU field (or group of fields)
+   * used by this entity for the given transmission parameters.
+   *
+   * \param field the PPDU field (or group of fields)
+   * \param txVector the transmission parameters
+   *
+   * \return the duration of the PPDU field
+   *
+   * This method is overridden by child classes.
+   */
+  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const;
+  /**
+   * \param txVector the transmission parameters
+   *
+   * \return the total duration of the PHY preamble and PHY header.
+   */
+  Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const;
+
 protected:
   /**
    * A map of PPDU field elements per preamble type.

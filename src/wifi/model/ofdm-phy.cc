@@ -136,6 +136,64 @@ OfdmPhy::GetPpduFormats (void) const
   return m_ofdmPpduFormats;
 }
 
+Time
+OfdmPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_PREAMBLE:
+        return GetPreambleDuration (txVector); //L-STF + L-LTF
+      case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        return GetHeaderDuration (txVector); //L-SIG
+      default:
+        return PhyEntity::GetDuration (field, txVector);
+    }
+}
+
+Time
+OfdmPhy::GetPreambleDuration (WifiTxVector txVector) const
+{
+  switch (txVector.GetChannelWidth ())
+    {
+      case 20:
+      default:
+        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
+        return MicroSeconds (16);
+      case 10:
+        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
+        return MicroSeconds (32);
+      case 5:
+        //Section 17.3.3 "PHY preamble (SYNC)" Figure 17-4 "OFDM training structure"
+        //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016
+        return MicroSeconds (64);
+    }
+}
+
+Time
+OfdmPhy::GetHeaderDuration (WifiTxVector txVector) const
+{
+  switch (txVector.GetChannelWidth ())
+    {
+      case 20:
+      default:
+        //Section 17.3.3 "PHY preamble (SYNC)" and Figure 17-4 "OFDM training structure"; IEEE Std 802.11-2016
+        //also Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
+        //We return the duration of the SIGNAL field only, since the
+        //SERVICE field (which strictly speaking belongs to the PHY
+        //header, see Section 17.3.2 and Figure 17-1) is sent using the
+        //payload mode.
+        return MicroSeconds (4);
+      case 10:
+        //Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
+        return MicroSeconds (8);
+      case 5:
+        //Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
+        return MicroSeconds (16);
+    }
+}
+
 void
 OfdmPhy::InitializeModes (void)
 {

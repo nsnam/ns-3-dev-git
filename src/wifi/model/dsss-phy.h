@@ -57,6 +57,7 @@ public:
   // Inherited
   WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   const PpduFormats & GetPpduFormats (void) const override;
+  Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
 
   /**
    * Initialize all HR/DSSS modes.
@@ -109,6 +110,19 @@ private:
    * \return the WifiMode used for the PHY header field
    */
   WifiMode GetHeaderMode (WifiTxVector txVector) const;
+
+  /**
+   * \param txVector the transmission parameters
+   * \return the duration of the PHY preamble field
+   *
+   * \see WIFI_PPDU_FIELD_PREAMBLE
+   */
+  Time GetPreambleDuration (WifiTxVector txVector) const;
+  /**
+   * \param txVector the transmission parameters
+   * \return the duration of the PHY header field
+   */
+  Time GetHeaderDuration (WifiTxVector txVector) const;
 
   static const PpduFormats m_dsssPpduFormats; //!< DSSS and HR/DSSS PPDU formats
 }; //class DsssPhy

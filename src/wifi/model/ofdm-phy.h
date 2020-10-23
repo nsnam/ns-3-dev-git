@@ -83,6 +83,7 @@ public:
   // Inherited
   virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
+  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
 
   /**
    * Initialize all OFDM modes (for all variants).
@@ -258,6 +259,18 @@ protected:
    * \return the WifiMode used for the SIGNAL field
    */
   virtual WifiMode GetHeaderMode (WifiTxVector txVector) const;
+  /**
+   * \param txVector the transmission parameters
+   * \return the duration of the preamble field
+   *
+   * \see WIFI_PPDU_FIELD_PREAMBLE
+   */
+  virtual Time GetPreambleDuration (WifiTxVector txVector) const;
+  /**
+   * \param txVector the transmission parameters
+   * \return the duration of the SIGNAL field
+   */
+  virtual Time GetHeaderDuration (WifiTxVector txVector) const;
 
 private:
   static const PpduFormats m_ofdmPpduFormats; //!< OFDM PPDU formats

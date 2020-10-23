@@ -194,6 +194,75 @@ HtPhy::SetMaxSupportedNss (uint8_t maxNss)
     }
 }
 
+Time
+HtPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_PREAMBLE:
+        return MicroSeconds (16); //L-STF + L-LTF or HT-GF-STF + HT-LTF1
+      case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        return GetLSigDuration (txVector.GetPreambleType ());
+      case WIFI_PPDU_FIELD_TRAINING:
+        {
+          //We suppose here that STBC = 0.
+          //If STBC > 0, we need a different mapping between Nss and Nltf
+          // (see IEEE 802.11-2016 , section 19.3.9.4.6 "HT-LTF definition").
+          uint8_t nDataLtf = 8;
+          uint8_t nss = txVector.GetNssMax (); //so as to cover also HE MU case (see section 27.3.10.10 of IEEE P802.11ax/D4.0)
+          if (nss < 3)
+            {
+              nDataLtf = nss;
+            }
+          else if (nss < 5)
+            {
+              nDataLtf = 4;
+            }
+          else if (nss < 7)
+            {
+              nDataLtf = 6;
+            }
+
+          uint8_t nExtensionLtf = (txVector.GetNess () < 3) ? txVector.GetNess () : 4;
+
+          return GetTrainingDuration (txVector, nDataLtf, nExtensionLtf);
+        }
+      case WIFI_PPDU_FIELD_HT_SIG:
+        return GetHtSigDuration ();
+      default:
+        return PhyEntity::GetDuration (field, txVector);
+    }
+}
+
+Time
+HtPhy::GetLSigDuration (WifiPreamble preamble) const
+{
+  return (preamble == WIFI_PREAMBLE_HT_GF) ? MicroSeconds (0) : MicroSeconds (4); //no L-SIG for HT-GF
+}
+
+Time
+HtPhy::GetTrainingDuration (WifiTxVector txVector,
+                            uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
+{
+  NS_ABORT_MSG_IF (nDataLtf == 0 || nDataLtf > 4 || nExtensionLtf > 4 || (nDataLtf + nExtensionLtf) > 5,
+                   "Unsupported combination of data (" << +nDataLtf << ")  and extension (" << +nExtensionLtf << ")  LTFs numbers for HT"); //see IEEE 802.11-2016, section 19.3.9.4.6 "HT-LTF definition"
+  Time duration = MicroSeconds (4) * (nDataLtf + nExtensionLtf);
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF)
+    {
+      return MicroSeconds (4) * (nDataLtf /* - 1 */ + nExtensionLtf); //FIXME: no HT-STF and first HT-LTF is already in preamble, see IEEE 802.11-2016, section 19.3.5.5 "HT-greenfield format LTF"
+    }
+  else //HT-MF
+    {
+      return MicroSeconds (4) * (1 /* HT-STF */ + nDataLtf + nExtensionLtf);
+    }
+}
+
+Time
+HtPhy::GetHtSigDuration (void) const
+{
+  return MicroSeconds (8); //HT-SIG
+}
+
 void
 HtPhy::InitializeModes (void)
 {

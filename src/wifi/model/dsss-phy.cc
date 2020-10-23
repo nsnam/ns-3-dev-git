@@ -93,6 +93,55 @@ DsssPhy::GetPpduFormats (void) const
   return m_dsssPpduFormats;
 }
 
+Time
+DsssPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+{
+  if (field == WIFI_PPDU_FIELD_PREAMBLE)
+    {
+      return GetPreambleDuration (txVector); //SYNC + SFD or shortSYNC + shortSFD
+    }
+  else if (field == WIFI_PPDU_FIELD_NON_HT_HEADER)
+    {
+      return GetHeaderDuration (txVector); //PHY header or short PHY header
+    }
+  else
+    {
+      return PhyEntity::GetDuration (field, txVector);
+    }
+}
+
+Time
+DsssPhy::GetPreambleDuration (WifiTxVector txVector) const
+{
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_SHORT
+      && (txVector.GetMode ().GetDataRate (22) > 1000000))
+    {
+      //Section 16.2.2.3 "Short PPDU format" Figure 16-2 "Short PPDU format"; IEEE Std 802.11-2016
+      return MicroSeconds (72);
+    }
+  else
+    {
+      //Section 16.2.2.2 "Long PPDU format" Figure 16-1 "Long PPDU format"; IEEE Std 802.11-2016
+      return MicroSeconds (144);
+    }
+}
+
+Time
+DsssPhy::GetHeaderDuration (WifiTxVector txVector) const
+{
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_SHORT
+      && (txVector.GetMode ().GetDataRate (22) > 1000000))
+    {
+      //Section 16.2.2.3 "Short PPDU format" and Figure 16-2 "Short PPDU format"; IEEE Std 802.11-2016
+      return MicroSeconds (24);
+    }
+  else
+    {
+      //Section 16.2.2.2 "Long PPDU format" and Figure 16-1 "Short PPDU format"; IEEE Std 802.11-2016
+      return MicroSeconds (48);
+    }
+}
+
 void
 DsssPhy::InitializeModes (void)
 {

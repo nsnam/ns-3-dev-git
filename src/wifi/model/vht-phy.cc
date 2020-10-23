@@ -120,6 +120,53 @@ VhtPhy::GetSigBMode (WifiTxVector txVector) const
   return GetVhtMcs0 ();
 }
 
+Time
+VhtPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_SIG_A:
+        return GetSigADuration (txVector.GetPreambleType ());
+      case WIFI_PPDU_FIELD_SIG_B:
+        return GetSigBDuration (txVector);
+      default:
+        return HtPhy::GetDuration (field, txVector);
+    }
+}
+
+Time
+VhtPhy::GetLSigDuration (WifiPreamble /* preamble */) const
+{
+  return MicroSeconds (4); //L-SIG
+}
+
+Time
+VhtPhy::GetHtSigDuration (void) const
+{
+  return MicroSeconds (0); //no HT-SIG
+}
+
+Time
+VhtPhy::GetTrainingDuration (WifiTxVector txVector,
+                             uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
+{
+  NS_ABORT_MSG_IF (nDataLtf > 8, "Unsupported number of LTFs " << +nDataLtf << " for VHT");
+  NS_ABORT_MSG_IF (nExtensionLtf > 0, "No extension LTFs expected for VHT");
+  return MicroSeconds (4 + 4 * nDataLtf); //VHT-STF + VHT-LTFs
+}
+
+Time
+VhtPhy::GetSigADuration (WifiPreamble /* preamble */) const
+{
+  return MicroSeconds (8); //VHT-SIG-A (first and second symbol)
+}
+
+Time
+VhtPhy::GetSigBDuration (WifiTxVector txVector) const
+{
+  return (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU) ? MicroSeconds (4) : MicroSeconds (0); //HE-SIG-B only for MU
+}
+
 void
 VhtPhy::InitializeModes (void)
 {

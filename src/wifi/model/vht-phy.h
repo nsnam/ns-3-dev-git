@@ -63,6 +63,10 @@ public:
   // Inherited
   virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
+  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual Time GetLSigDuration (WifiPreamble preamble) const override;
+  virtual Time GetTrainingDuration (WifiTxVector txVector,
+                                    uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
 
   /**
    * \return the WifiMode used for the SIG-A field
@@ -73,6 +77,17 @@ public:
    * \return the WifiMode used for the SIG-B field
    */
   virtual WifiMode GetSigBMode (WifiTxVector txVector) const;
+
+  /**
+   * \param preamble the type of preamble
+   * \return the duration of the SIG-A field
+   */
+  virtual Time GetSigADuration (WifiPreamble preamble) const;
+  /**
+   * \param txVector the transmission parameters
+   * \return the duration of the SIG-B field
+   */
+  virtual Time GetSigBDuration (WifiTxVector txVector) const;
 
   /**
    * Initialize all VHT modes.
@@ -151,6 +166,7 @@ public:
 protected:
   // Inherited
   WifiMode GetHtSigMode (void) const override;
+  Time GetHtSigDuration (void) const override;
 
 private:
   // Inherited

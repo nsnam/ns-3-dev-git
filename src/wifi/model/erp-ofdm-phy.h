@@ -126,6 +126,8 @@ public:
 private:
   // Inherited
   WifiMode GetHeaderMode (WifiTxVector txVector) const override;
+  Time GetPreambleDuration (WifiTxVector txVector) const override;
+  Time GetHeaderDuration (WifiTxVector txVector) const override;
 }; //class ErpOfdmPhy
 
 } //namespace ns3

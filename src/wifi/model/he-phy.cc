@@ -134,6 +134,128 @@ HePhy::GetPpduFormats (void) const
   return m_hePpduFormats;
 }
 
+Time
+HePhy::GetLSigDuration (WifiPreamble /* preamble */) const
+{
+  return MicroSeconds (8); //L-SIG + RL-SIG
+}
+
+Time
+HePhy::GetTrainingDuration (WifiTxVector txVector,
+                            uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
+{
+  Time ltfDuration = MicroSeconds (8); //TODO extract from TxVector when available
+  Time stfDuration = (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB) ? MicroSeconds (8) : MicroSeconds (4);
+  NS_ABORT_MSG_IF (nDataLtf > 8, "Unsupported number of LTFs " << +nDataLtf << " for HE");
+  NS_ABORT_MSG_IF (nExtensionLtf > 0, "No extension LTFs expected for HE");
+  return stfDuration + ltfDuration * nDataLtf; //HE-STF + HE-LTFs
+}
+
+Time
+HePhy::GetSigADuration (WifiPreamble preamble) const
+{
+  return (preamble == WIFI_PREAMBLE_HE_ER_SU) ? MicroSeconds (16) : MicroSeconds (8); //HE-SIG-A (first and second symbol)
+}
+
+Time
+HePhy::GetSigBDuration (WifiTxVector txVector) const
+{
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
+    {
+      /*
+       * Compute the number of bits used by common field.
+       * Assume that compression bit in HE-SIG-A is not set (i.e. not
+       * full band MU-MIMO); the field is present.
+       */
+      uint16_t bw = txVector.GetChannelWidth ();
+      std::size_t commonFieldSize = 4 /* CRC */ + 6 /* tail */;
+      if (bw <= 40)
+        {
+          commonFieldSize += 8; //only one allocation subfield
+        }
+      else
+        {
+          commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
+        }
+
+      /*
+       * Compute the number of bits used by user-specific field.
+       * MU-MIMO is not supported; only one station per RU.
+       * The user-specific field is composed of N user block fields
+       * spread over each corresponding HE-SIG-B content channel.
+       * Each user block field contains either two or one users' data
+       * (the latter being for odd number of stations per content channel).
+       * Padding will be handled further down in the code.
+       */
+      std::pair<std::size_t, std::size_t> numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel ();
+      std::size_t maxNumStaPerContentChannel = std::max (numStaPerContentChannel.first, numStaPerContentChannel.second);
+      std::size_t maxNumUserBlockFields = maxNumStaPerContentChannel / 2; //handle last user block with single user, if any, further down
+      std::size_t userSpecificFieldSize = maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
+      if (maxNumStaPerContentChannel % 2 != 0)
+        {
+          userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
+        }
+
+      /*
+       * Compute duration of HE-SIG-B considering that padding
+       * is added up to the next OFDM symbol.
+       * Nss = 1 and GI = 800 ns for HE-SIG-B.
+       */
+      Time symbolDuration = MicroSeconds (4);
+      double numDataBitsPerSymbol = GetSigBMode (txVector).GetDataRate (20, 800, 1) * symbolDuration.GetNanoSeconds () / 1e9;
+      double numSymbols = ceil ((commonFieldSize + userSpecificFieldSize) / numDataBitsPerSymbol);
+
+      return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
+    }
+  else
+    {
+      // no SIG-B
+      return MicroSeconds (0);
+    }
+}
+
+uint16_t
+HePhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band) const
+{
+  uint8_t sigExtension = 0;
+  if (band == WIFI_PHY_BAND_2_4GHZ)
+    {
+      sigExtension = 6;
+    }
+  uint8_t m = 2; //HE TB PPDU so m is set to 2
+  uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
+  return length;
+}
+
+Time
+HePhy::ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band) const
+{
+  NS_ABORT_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_HE_TB);
+  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
+  Time preambleDuration = CalculatePhyPreambleAndHeaderDuration (txVector);
+  uint8_t sigExtension = 0;
+  if (band == WIFI_PHY_BAND_2_4GHZ)
+    {
+      sigExtension = 6;
+    }
+  uint8_t m = 2; //HE TB PPDU so m is set to 2
+  //Equation 27-11 of IEEE P802.11ax/D4.0
+  Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (length + 3 + m) / 3)) * 4) + 20 + sigExtension);
+  uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
+  Time ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
+  return ppduDuration;
+}
+
+Time
+HePhy::CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const
+{
+  NS_ABORT_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_HE_TB);
+  Time duration = GetDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector)
+    + GetDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector)
+    + GetDuration (WIFI_PPDU_FIELD_SIG_A, txVector);
+  return duration;
+}
+
 void
 HePhy::InitializeModes (void)
 {

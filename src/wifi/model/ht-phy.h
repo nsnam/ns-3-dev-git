@@ -69,6 +69,7 @@ public:
   bool HandlesMcsModes (void) const override;
   virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
+  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
 
   /**
    * \return the WifiMode used for the L-SIG (non-HT header) field
@@ -107,6 +108,28 @@ public:
    * \param maxNss the maximum number of spatial streams
    */
   void SetMaxSupportedNss (uint8_t maxNss);
+
+  /**
+   * \param preamble the type of preamble
+   * \return the duration of the L-SIG (non-HT header) field
+   *
+   * \see WIFI_PPDU_FIELD_NON_HT_HEADER
+   */
+  virtual Time GetLSigDuration (WifiPreamble preamble) const;
+  /**
+   * \param txVector the transmission parameters
+   * \param nDataLtf the number of data LTF fields (excluding those in preamble)
+   * \param nExtensionLtf the number of extension LTF fields
+   * \return the duration of the training field
+   *
+   * \see WIFI_PPDU_FIELD_TRAINING
+   */
+  virtual Time GetTrainingDuration (WifiTxVector txVector,
+                                    uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const;
+  /**
+   * \return the duration of the HT-SIG field
+   */
+  virtual Time GetHtSigDuration (void) const;
 
   /**
    * Initialize all HT modes.
