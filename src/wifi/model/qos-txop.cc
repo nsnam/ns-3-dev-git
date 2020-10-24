@@ -1150,8 +1150,8 @@ QosTxop::TerminateTxop (void)
   if (GetTxopLimit ().IsStrictlyPositive ())
     {
       NS_LOG_DEBUG ("Terminating TXOP. Duration = " << Simulator::Now () - m_startTxop);
-      m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
+  m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
   GenerateBackoff ();
   RestartAccessIfNeeded ();
 }
