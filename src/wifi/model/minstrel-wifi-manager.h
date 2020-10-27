@@ -188,7 +188,7 @@ public:
   void UpdateRate (MinstrelWifiRemoteStation *station);
 
   /**
-   * Update the Minstrel Table every 1/10 seconds.
+   * Update the Minstrel Table.
    *
    * \param station the station object
    */
@@ -350,7 +350,7 @@ private:
   typedef std::map<WifiMode, Time> TxTime;
 
   TxTime m_calcTxTime;      ///< to hold all the calculated TxTime for all modes
-  Time m_updateStats;       ///< how frequent do we calculate the stats (1/10 seconds)
+  Time m_updateStats;       ///< how frequent do we calculate the stats
   uint8_t m_lookAroundRate; ///< the % to try other rates than our current rate
   uint8_t m_ewmaLevel;      ///< exponential weighted moving average
   uint8_t m_sampleCol;      ///< number of sample columns

@@ -81,8 +81,13 @@ MinstrelHtWifiManager::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddAttribute ("UpdateStatistics",
                    "The interval between updating statistics table ",
-                   TimeValue (MilliSeconds (100)),
+                   TimeValue (MilliSeconds (50)),
                    MakeTimeAccessor (&MinstrelHtWifiManager::m_updateStats),
+                   MakeTimeChecker ())
+    .AddAttribute ("LegacyUpdateStatistics",
+                   "The interval between updating statistics table (for legacy Minstrel) ",
+                   TimeValue (MilliSeconds (100)),
+                   MakeTimeAccessor (&MinstrelHtWifiManager::m_legacyUpdateStats),
                    MakeTimeChecker ())
     .AddAttribute ("LookAroundRate",
                    "The percentage to try other rates (for legacy Minstrel)",
@@ -428,7 +433,7 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
           NS_LOG_INFO ("non-HT station " << station);
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
-          m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
+          m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_legacyUpdateStats));
           m_legacyManager->SetAttribute ("LookAroundRate", UintegerValue (m_lookAroundRate));
           m_legacyManager->SetAttribute ("EWMA", UintegerValue (m_ewmaLevel));
           m_legacyManager->SetAttribute ("SampleColumn", UintegerValue (m_nSampleCol));
