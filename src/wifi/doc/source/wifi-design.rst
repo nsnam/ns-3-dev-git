@@ -164,8 +164,7 @@ combines the effect of thermal noise and of interference from other Wi-Fi
 packets.  Moreover, interference from other technologies is not modeled.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ax MU-OFDMA is not supported
-* 802.11ax only supports SU PPDU format
+* 802.11ax OFDMA is not supported (but some code changes are progressively being added)
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
 * 802.11n RIFS is not supported
