@@ -58,7 +58,8 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li></li>
+<li>A new <b>TableBasedErrorRateModel</b> has been added for Wi-Fi, and the default values are aligned with link-simulation results from MATLAB WLAN Toolbox and IEEE 802.11 TGn.
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -66,7 +67,7 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
-<li></li>
+<li>The <b>default Wi-Fi ErrorRateModel</b> for the 802.11n/ac/ax standards has been changed from the NistErrorRateModel to a new TableBasedErrorRateModel.  Users may experience a shift in Wi-Fi link range due to the new default error model, as <b>the new model is more optimistic</b> (the PER for a given MCS will degrade at a lower SNR value). The Wi-Fi module documentation provides plots that compare the performance of the NIST and new table-based model.</li>
 </ul>
 
 <hr>

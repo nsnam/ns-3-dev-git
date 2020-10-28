@@ -14,6 +14,8 @@ Release 3-dev
 
 New user-visible features
 -------------------------
+- (wifi) A new table-based error model based on link simulations has been
+  added and made the default for 802.11n/ac/ax simulations.
 
 Bugs fixed
 ----------
