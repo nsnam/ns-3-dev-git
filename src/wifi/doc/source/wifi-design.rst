@@ -438,13 +438,94 @@ Having more TX antennas can be safely ignored for AWGN. The resulting gain is:
   4 x 4       4     0 dB
   ...
 
-ErrorModel
-##########
+ErrorRateModel
+##############
 
-The error models are described in more detail in outside references.  Please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the available BER/PER models.
+|ns3| makes a packet error or success decision based on the input received
+SNR of a frame and based on any possible interfering frames that may overlap
+in time; i.e. based on the signal-to-noise (plus interference) ratio, or
+SINR.  The relationship between packet error ratio (PER) and SINR in |ns3|
+is defined by the ``ns3::ErrorRateModel``, of which there are several.
+The PER is a function of the frame's modulation and coding (MCS), its SINR,
+and the specific ErrorRateModel configured for the MCS.
+
+|ns3| has updated its default ErrorRateModel over time.  The current
+(as of ns-3.33 release) model for recent OFDM-based standards (i.e.,
+802.11n/ac/ax), is the ``ns3::TableBasedErrorRateModel``.  The default
+for 802.11a/g is the ``ns3::YansErrorRateModel``, and the default for
+802.11b is the ``ns3::DsssErrorRateModel``.  The error rate model for
+recent standards was updated during the ns-3.33 release cycle (previously,
+it was the ``ns3::NistErrorRateModel``).
+
+The error models are described in more detail in outside references.  The
+current OFDM model is based on work published in [patidar2017]_, using
+link simulations results from the MATLAB WLAN Toolbox, and validated against
+IEEE TGn results [erceg2004]_.  For publications related to other error models,
+please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the legacy PER models.
 
 The current |ns3| error rate models are for additive white gaussian
-noise channels (AWGN) only; any potential fast fading effects are not modeled.
+noise channels (AWGN) only; any potential frequency-selective fading
+effects are not modeled.
+
+In summary, there are four error models:
+
+#. ``ns3::TableBasedErrorRateModel``: for OFDM modes and reuses
+   ``ns3::DsssErrorRateModel`` for 802.11b modes.
+   This is the default for 802.11n/ac/ax.
+#. ``ns3::YansErrorRateModel``: for OFDM modes and reuses
+   ``ns3::DsssErrorRateModel`` for 802.11b modes.
+   This is the default for 802.11a/g.
+#. ``ns3::DsssErrorRateModel``:  contains models for 802.11b modes.  The
+   802.11b 1 Mbps and 2 Mbps error models are based on classical modulation
+   analysis.  If GNU Scientific Library (GSL) is installed, the 5.5 Mbps
+   and 11 Mbps from [pursley2009]_ are used for CCK modulation;
+   otherwise, results from a backup MATLAB-based CCK model are used.
+#. ``ns3::NistErrorRateModel``: for OFDM modes and reuses
+   ``ns3::DsssErrorRateModel`` for 802.11b modes.
+
+Users may select either NIST, YANS or Table-based models for OFDM,
+and DSSS will be used in either case for 802.11b.  The NIST model was
+a long-standing default in ns-3 (through release 3.32).
+
+TableBasedErrorRateModel
+########################
+
+The ``ns3::TableBasedErrorRateModel`` has been recently added and is now the |ns3| default
+for 802.11n/ac/ax, while ``ns3::YansErrorRateModel`` is the |ns3| default for 802.11a/g.
+
+Unlike analytical error models based on error bounds, ``ns3::TableBasedErrorRateModel`` contains
+end-to-end link simulation tables (PER vs SNR) for AWGN channels. Since it is infeasible to generate
+such look-up tables for all desired packet sizes and input SNRs, we adopt the recommendation of IEEE P802.11 TGax [porat2016]_ that proposed
+estimating PER for any desired packet length by extrapolating the results from two reference lengths:
+32 (all lengths less than 400) bytes and 1458 (all lengths greater or equal to 400) bytes respectively.
+Hence, we provide 2 tables that are generated using a reliable and publicly available commercial link
+simulator (MATLAB WLAN Toolbox) for each modulation and coding scheme. Note that tables are
+limited to MCS 9. For higher MCSs, the models fall back to the use of the YANS analytical model.
+
+The validation scenario is set as follows:
+
+#. Ideal channel and perfect channel estimation.
+#. Perfect packet synchronization and detection.
+#. Phase tracking, phase correction, phase noise, carrier frequency offset, power amplifier non-linearities etc. are not considered.
+
+Several packets are simulated across the link to obtain PER, the number of packets needed to reliably
+estimate a PER value is computed using the consideration that ratio of the estimation error to the true
+value should be within 10 % with probability 0.95.
+For each SNR value (using 0.2 dB SNR resolution), simulations were run until either a minimum value
+of 400 unsuccessfully decoded packets were observed or a total of 40000 packets were simulated.
+
+The obtained results are very close to original TGn curves as shown in Figure
+:ref:`default-table-based-error-model-validation`
+
+.. _default-table-based-error-model-validation:
+
+.. figure:: figures/default-table-based-error-model-validation.*
+   :scale: 75%
+  
+   *Comparison of table-based OFDM Error Model with TGn results.*
+
+Legacy ErrorRateModels
+######################
 
 The original error rate model was called the ``ns3::YansErrorRateModel`` and
 was based on analytical results.  For 802.11b modulations, the 1 Mbps mode 
@@ -470,68 +551,17 @@ Furthermore, the 5.5 Mbps and 11 Mbps models for 802.11b rely on library
 methods implemented in the GNU Scientific Library (GSL).  The Waf build
 system tries to detect whether the host platform has GSL installed; if so,
 it compiles in the newer models from [pursley2009]_ for 5.5 Mbps and 11 Mbps;
-if not, it uses a backup model derived from Matlab simulations.
+if not, it uses a backup model derived from MATLAB simulations.
 
 The error curves for analytical models are shown to diverge from link simulation results for higher MCS in
-Figure :ref:`error-models-comparison`. This prompts to improve the physical layer with link simulation results.
+Figure :ref:`error-models-comparison`. This prompted the move to a new error
+model based on link simulations (the default TableBasedErrorRateModel).
 
 .. _error-models-comparison:
 
 .. figure:: figures/error-models-comparison.*
 
   *YANS and NIST error model comparison with TGn results*
-
-The ``ns3::TableBasedErrorRateModel`` has been recently added and is now the |ns3| default
-for 802.11n/ac/ax, whereas ``ns3::YansErrorRateModel`` is the |ns3| default for 802.11a/g.
-
-Unlike analytical error models based on error bounds, ``ns3::TableBasedErrorRateModel`` contains
-end-to-end link simulation tables (PER vs SNR) for AWGN channels. Since it is infeasible to generate
-such look-up tables for all desired packet sizes, we adopt the recommendation of TGax that proposed
-estimating PER for any desired packet length by interpolating the results from two reference lengths:
-32 (all lengths less than 400) bytes and 1458 (all lengths greater or equal to 400) bytes respectively.
-Hence, we provide 2 tables that are generated using a reliable and publicly available commercial link
-simulator (MATLAB WLAN System Toolbox) for each modulation and coding scheme. Note that tables are
-limited to MCS 9. For higher MCSs, the models fallback to the use of the Yans analytical model.
-
-The simulation scenario is set as follows:
-
-#. Ideal channel and perfect channel estimation.
-#. Perfect packet synchronization and detection.
-#. Phase tracking, phase correction, phase noise, carrier frequency offset, power amplifier non-linearities etc. are not considered.
-
-Several packets are simulated across the link to obtain PER, the number of packets needed to reliably
-estimate a PER value is computed using the consideration that ratio of the estimation error to the true
-value should be within 10 % with probability 0.95.
-For each SNR value (using 0.2 dB SNR resolution), simulations were run until either a minimum value
-of 400 unsuccessfully decoded packets were observed or a total of 40000 packets were simulated.
-
-The obtained results are very close to TGn curves as shown in  Figure
-:ref:`default-table-based-error-model-validation`
-
-.. _default-table-based-error-model-validation:
-
-.. figure:: figures/default-table-based-error-model-validation.*
-   :scale: 75%
-  
-   *Comparison of table-based OFDM Error Model with TGn results.*
-
-In summary, there are four error models:
-
-#. ``ns3::DsssErrorRateModel``:  contains models for 802.11b modes.  The
-   802.11b 1 Mbps and 2 Mbps error models are based on classical modulation
-   analysis.  If GSL is installed, the 5.5 Mbps and 11 Mbps from
-   [pursley2009]_ are used; otherwise, a backup Matlab model is used.
-#. ``ns3::NistErrorRateModel``: for OFDM modes and reuses
-   ``ns3::DsssErrorRateModel`` for 802.11b modes.
-#. ``ns3::YansErrorRateModel``: for OFDM modes and reuses
-   ``ns3::DsssErrorRateModel`` for 802.11b modes.
-   This is the default for 802.11a/g.
-#. ``ns3::TableBasedErrorRateModel``: for OFDM modes and reuses
-   ``ns3::DsssErrorRateModel`` for 802.11b modes.
-   This is the default for 802.11n/ac/ax.
-
-Users should select either Nist, Yans or Table-based models for OFDM,
-and Dsss will be used in either case for 802.11b.
 
 SpectrumWifiPhy
 ###############

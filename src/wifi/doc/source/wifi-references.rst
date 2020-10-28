@@ -52,3 +52,9 @@ References
 .. [bianchi2000] \ G. Bianchi, "Performance analysis of the IEEE 802.11 distributed coordination function", IEEE Communications Letters, 18(3):535–547, 2000.
 
 .. [bianchi2005] \ G. Bianchi and I. Tinnirello. "Remarks on IEEE 802.11 DCF performance analysis", IEEE Communications Letters, 9(8):765–767, 2005.
+
+.. [patidar2017] \ R. Patidar et al., "Link-to-System Mapping for ns-3 Wi-Fi OFDM Error Models", Proceedings of the Workshop on ns-3, June 2017. `<https://dl.acm.org/doi/10.1145/3067665.3067671>`__
+
+.. [erceg2004] \ V. Erceg and L. Schumacher and P. Kyritsi, "Tgn channel models", IEEE 802.11-03/940r4, 2004.
+
+.. [porat2016] \ R. Porat et al., "11ax Evaluation Methodology", IEE P802.11 Wireless LANs, 11-14-0571r3, 2016. 
