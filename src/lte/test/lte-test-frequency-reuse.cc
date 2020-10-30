@@ -185,12 +185,10 @@ LteFrTestCase::LteFrTestCase (std::string name,
     m_usedMutedDlRbg (false),
     m_availableUlRb (availableUlRb),
     m_usedMutedUlRbg (false)
-{
-}
+{}
 
 LteFrTestCase::~LteFrTestCase ()
-{
-}
+{}
 
 
 
@@ -235,9 +233,7 @@ LteFrTestCase::UlDataRxStart (Ptr<const SpectrumValue> spectrumValue)
 
 void
 LteFrTestCase::DoRun (void)
-{
-
-}
+{}
 
 
 LteHardFrTestCase::LteHardFrTestCase (std::string name, uint32_t userNum,
@@ -257,8 +253,7 @@ LteHardFrTestCase::LteHardFrTestCase (std::string name, uint32_t userNum,
 }
 
 LteHardFrTestCase::~LteHardFrTestCase ()
-{
-}
+{}
 
 void
 LteHardFrTestCase::DoRun (void)
@@ -374,8 +369,7 @@ LteStrictFrTestCase::LteStrictFrTestCase (std::string name, uint32_t userNum,
 }
 
 LteStrictFrTestCase::~LteStrictFrTestCase ()
-{
-}
+{}
 
 void
 LteStrictFrTestCase::DoRun (void)
@@ -496,8 +490,7 @@ LteFrAreaTestCase::LteFrAreaTestCase (std::string name, std::string schedulerTyp
   m_usedWrongUlRbg = false;
 }
 LteFrAreaTestCase::~LteFrAreaTestCase ()
-{
-}
+{}
 
 void
 LteFrAreaTestCase::DlDataRxStart (Ptr<const SpectrumValue> spectrumValue)
@@ -573,7 +566,7 @@ LteFrAreaTestCase::UlDataRxStart (Ptr<const SpectrumValue> spectrumValue)
       else if (m_expectedUlRb[i] == true && power > 0)
         {
           NS_TEST_ASSERT_MSG_EQ_TOL (power, m_expectedUlPower, 0.01,
-                                     "Wrong Data Channel UL Power level" << Simulator::Now ().GetSeconds ());
+                                     "Wrong Data Channel UL Power level" << Simulator::Now ().As (Time::S));
         }
       i++;
     }
@@ -632,8 +625,7 @@ LteFrAreaTestCase::SetUlExpectedValues (double expectedUlPower, std::vector<bool
 
 void
 LteFrAreaTestCase::DoRun (void)
-{
-}
+{}
 
 LteStrictFrAreaTestCase::LteStrictFrAreaTestCase (std::string name, std::string schedulerType)
   : LteFrAreaTestCase (name, schedulerType)
@@ -642,8 +634,7 @@ LteStrictFrAreaTestCase::LteStrictFrAreaTestCase (std::string name, std::string 
 }
 
 LteStrictFrAreaTestCase::~LteStrictFrAreaTestCase ()
-{
-}
+{}
 
 void
 LteStrictFrAreaTestCase::DoRun (void)
@@ -737,14 +728,14 @@ LteStrictFrAreaTestCase::DoRun (void)
   //Since this test includes the Token Bank Fair Queue Scheduler
   //(ns3::FdTbfqFfMacScheduler) we have to treat the default
   //bearer as the dedicated bearer with QoS.
-   GbrQosInformation qos;
-   qos.mbrUl = 1e6;
-   qos.mbrDl = 1e6;
-   qos.gbrUl = 1e4;
-   qos.gbrDl = 1e4;
+  GbrQosInformation qos;
+  qos.mbrUl = 1e6;
+  qos.mbrDl = 1e6;
+  qos.gbrUl = 1e4;
+  qos.gbrDl = 1e4;
 
-   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
-   EpsBearer bearer (q, qos);
+  enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
+  EpsBearer bearer (q, qos);
 
   lteHelper->ActivateDataRadioBearer (ueDevs1, bearer);
   lteHelper->ActivateDataRadioBearer (ueDevs2, bearer);
@@ -829,8 +820,7 @@ LteSoftFrAreaTestCase::LteSoftFrAreaTestCase (std::string name, std::string sche
 }
 
 LteSoftFrAreaTestCase::~LteSoftFrAreaTestCase ()
-{
-}
+{}
 
 void
 LteSoftFrAreaTestCase::DoRun (void)
@@ -1021,8 +1011,7 @@ LteSoftFfrAreaTestCase::LteSoftFfrAreaTestCase (std::string name, std::string sc
 }
 
 LteSoftFfrAreaTestCase::~LteSoftFfrAreaTestCase ()
-{
-}
+{}
 
 void
 LteSoftFfrAreaTestCase::DoRun (void)
@@ -1245,8 +1234,7 @@ LteEnhancedFfrAreaTestCase::LteEnhancedFfrAreaTestCase (std::string name, std::s
 }
 
 LteEnhancedFfrAreaTestCase::~LteEnhancedFfrAreaTestCase ()
-{
-}
+{}
 
 void
 LteEnhancedFfrAreaTestCase::DoRun (void)
@@ -1480,8 +1468,7 @@ LteDistributedFfrAreaTestCase::LteDistributedFfrAreaTestCase (std::string name, 
 }
 
 LteDistributedFfrAreaTestCase::~LteDistributedFfrAreaTestCase ()
-{
-}
+{}
 
 void
 LteDistributedFfrAreaTestCase::DoRun (void)

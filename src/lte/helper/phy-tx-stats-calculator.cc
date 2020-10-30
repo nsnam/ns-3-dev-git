@@ -49,7 +49,7 @@ PhyTxStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyTxStatsCalculator")
     .SetParent<LteStatsCalculator> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<PhyTxStatsCalculator> ()
     .AddAttribute ("DlTxOutputFilename",
                    "Name of the file where the downlink results will be saved.",
@@ -118,8 +118,7 @@ PhyTxStatsCalculator::DlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
     }
-
-//   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -163,8 +162,7 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
     }
-
-//   outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -181,7 +179,7 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
 
 void
 PhyTxStatsCalculator::DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
-                      std::string path, PhyTransmissionStatParameters params)
+                                                 std::string path, PhyTransmissionStatParameters params)
 {
   NS_LOG_FUNCTION (phyTxStats << path);
   uint64_t imsi = 0;
@@ -204,7 +202,7 @@ PhyTxStatsCalculator::DlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTx
 
 void
 PhyTxStatsCalculator::UlPhyTransmissionCallback (Ptr<PhyTxStatsCalculator> phyTxStats,
-                      std::string path, PhyTransmissionStatParameters params)
+                                                 std::string path, PhyTransmissionStatParameters params)
 {
   NS_LOG_FUNCTION (phyTxStats << path);
   uint64_t imsi = 0;

@@ -86,14 +86,14 @@ LteChunkProcessor::End ()
 }
 
 
-  
+
 void
 LteSpectrumValueCatcher::ReportValue (const SpectrumValue& value)
 {
   m_value = value.Copy ();
 }
 
-Ptr<SpectrumValue> 
+Ptr<SpectrumValue>
 LteSpectrumValueCatcher::GetValue ()
 {
   return m_value;

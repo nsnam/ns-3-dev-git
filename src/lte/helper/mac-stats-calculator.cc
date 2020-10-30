@@ -17,7 +17,7 @@
  *
  * Author: Jaume Nin <jnin@cttc.es>
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #include "mac-stats-calculator.h"
@@ -49,7 +49,7 @@ MacStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MacStatsCalculator")
     .SetParent<LteStatsCalculator> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<MacStatsCalculator> ()
     .AddAttribute ("DlOutputFilename",
                    "Name of the file where the downlink results will be saved.",
@@ -93,7 +93,7 @@ void
 MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, DlSchedulingCallbackInfo dlSchedulingCallbackInfo)
 {
   NS_LOG_FUNCTION (this << cellId << imsi << dlSchedulingCallbackInfo.frameNo << dlSchedulingCallbackInfo.subframeNo <<
-		  dlSchedulingCallbackInfo.rnti << (uint32_t) dlSchedulingCallbackInfo.mcsTb1 << dlSchedulingCallbackInfo.sizeTb1 << (uint32_t) dlSchedulingCallbackInfo.mcsTb2 << dlSchedulingCallbackInfo.sizeTb2);
+                   dlSchedulingCallbackInfo.rnti << (uint32_t) dlSchedulingCallbackInfo.mcsTb1 << dlSchedulingCallbackInfo.sizeTb1 << (uint32_t) dlSchedulingCallbackInfo.mcsTb2 << dlSchedulingCallbackInfo.sizeTb2);
   NS_LOG_INFO ("Write DL Mac Stats in " << GetDlOutputFilename ().c_str ());
 
   std::ofstream outFile;
@@ -119,7 +119,7 @@ MacStatsCalculator::DlScheduling (uint16_t cellId, uint64_t imsi, DlSchedulingCa
         }
     }
 
-  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << (uint32_t) cellId << "\t";
   outFile << imsi << "\t";
   outFile << dlSchedulingCallbackInfo.frameNo << "\t";
@@ -163,7 +163,7 @@ MacStatsCalculator::UlScheduling (uint16_t cellId, uint64_t imsi, uint32_t frame
         }
     }
 
-  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << (uint32_t) cellId << "\t";
   outFile << imsi << "\t";
   outFile << frameNo << "\t";
@@ -208,8 +208,8 @@ MacStatsCalculator::DlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std:
 
 void
 MacStatsCalculator::UlSchedulingCallback (Ptr<MacStatsCalculator> macStats, std::string path,
-                      uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
-                      uint8_t mcs, uint16_t size, uint8_t componentCarrierId)
+                                          uint32_t frameNo, uint32_t subframeNo, uint16_t rnti,
+                                          uint8_t mcs, uint16_t size, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (macStats << path);
 

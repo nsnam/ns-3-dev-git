@@ -297,7 +297,7 @@ LteRadioLinkFailureTestCase::DoRun ()
   double interPacketInterval = static_cast<double> (packetSize * 8) / bitRate;
   Time udpInterval = Seconds (interPacketInterval);
 
-  NS_LOG_DEBUG ("UDP will use application interval " << udpInterval.GetSeconds () << " sec");
+  NS_LOG_DEBUG ("UDP will use application interval " << udpInterval.As (Time::S));
 
   for (uint32_t u = 0; u < m_numUes; ++u)
     {
@@ -488,21 +488,21 @@ LteRadioLinkFailureTestCase::CheckIdle (Ptr<NetDevice> ueDevice, NetDeviceContai
 
   switch (numEnbDevices)
     {
-    // 1 eNB
-    case 1:
-      NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::IDLE_CELL_SEARCH, "Wrong LteUeRrc state!");
-      ueManagerFound = CheckUeExistAtEnb (rnti, enbDevices.Get (0));
-      NS_TEST_ASSERT_MSG_EQ (ueManagerFound, false, "Unexpected RNTI with value " << rnti << " found in eNB");
-      break;
-    // 2 eNBs
-    case 2:
-      NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
-      ueManagerFound = CheckUeExistAtEnb (rnti, enbDevices.Get (1));
-      NS_TEST_ASSERT_MSG_EQ (ueManagerFound, true, "RNTI " << rnti << " is not attached to the eNB");
-      break;
-    default:
-      NS_FATAL_ERROR ("The RRC state of the UE in more then 2 eNB scenario is not defined. Consider creating more cases");
-      break;
+      // 1 eNB
+      case 1:
+        NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::IDLE_CELL_SEARCH, "Wrong LteUeRrc state!");
+        ueManagerFound = CheckUeExistAtEnb (rnti, enbDevices.Get (0));
+        NS_TEST_ASSERT_MSG_EQ (ueManagerFound, false, "Unexpected RNTI with value " << rnti << " found in eNB");
+        break;
+      // 2 eNBs
+      case 2:
+        NS_TEST_ASSERT_MSG_EQ (ueRrc->GetState (), LteUeRrc::CONNECTED_NORMALLY, "Wrong LteUeRrc state!");
+        ueManagerFound = CheckUeExistAtEnb (rnti, enbDevices.Get (1));
+        NS_TEST_ASSERT_MSG_EQ (ueManagerFound, true, "RNTI " << rnti << " is not attached to the eNB");
+        break;
+      default:
+        NS_FATAL_ERROR ("The RRC state of the UE in more then 2 eNB scenario is not defined. Consider creating more cases");
+        break;
     }
 }
 

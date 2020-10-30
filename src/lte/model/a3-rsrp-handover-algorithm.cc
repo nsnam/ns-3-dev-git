@@ -51,7 +51,7 @@ A3RsrpHandoverAlgorithm::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::A3RsrpHandoverAlgorithm")
     .SetParent<LteHandoverAlgorithm> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<A3RsrpHandoverAlgorithm> ()
     .AddAttribute ("Hysteresis",
                    "Handover margin (hysteresis) in dB "
@@ -95,7 +95,7 @@ A3RsrpHandoverAlgorithm::DoInitialize ()
   uint8_t hysteresisIeValue = EutranMeasurementMapping::ActualHysteresis2IeValue (m_hysteresisDb);
   NS_LOG_LOGIC (this << " requesting Event A3 measurements"
                      << " (hysteresis=" << (uint16_t) hysteresisIeValue << ")"
-                     << " (ttt=" << m_timeToTrigger.GetMilliSeconds () << ")");
+                     << " (ttt=" << m_timeToTrigger.As (Time::MS) << ")");
 
   LteRrcSap::ReportConfigEutra reportConfig;
   reportConfig.eventId = LteRrcSap::ReportConfigEutra::EVENT_A3;

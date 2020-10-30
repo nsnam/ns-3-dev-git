@@ -71,7 +71,8 @@ NotifyConnectionEstablishedUe (std::string context,
                                uint16_t cellid,
                                uint16_t rnti)
 {
-  std::cout << Simulator::Now ().GetSeconds () << " " << context
+
+  std::cout << Simulator::Now ().As (Time::S) << " " << context
             << " UE IMSI " << imsi
             << ": connected to cell id " << cellid
             << " with RNTI " << rnti
@@ -84,7 +85,8 @@ NotifyConnectionEstablishedEnb (std::string context,
                                 uint16_t cellId,
                                 uint16_t rnti)
 {
-  std::cout << Simulator::Now ().GetSeconds () << " " << context
+
+  std::cout << Simulator::Now ().As (Time::S) << " " << context
             << " eNB cell id " << cellId
             << ": successful connection of UE with IMSI " << imsi
             << " RNTI " << rnti
@@ -132,15 +134,19 @@ static const std::string & ToString (LteUeRrc::State s)
 void
 UeStateTransition (uint64_t imsi, uint16_t cellId, uint16_t rnti, LteUeRrc::State oldState, LteUeRrc::State newState)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << " UE with IMSI " << imsi << " RNTI " << rnti << " connected to cell " << cellId <<
-  " transitions from " << ToString (oldState) << " to " << ToString (newState) << std::endl;
+
+  std::cout << Simulator::Now ().As (Time::S)
+            << " UE with IMSI " << imsi << " RNTI " << rnti
+            << " connected to cell " << cellId << " transitions from "
+            << ToString (oldState) << " to " << ToString (newState)
+            << std::endl;
 }
 
 void
 EnbRrcTimeout (uint64_t imsi, uint16_t rnti, uint16_t cellId, std::string cause)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+
+  std::cout << Simulator::Now ().As (Time::S)
             << " IMSI " << imsi << ", RNTI " << rnti << ", Cell id " << cellId
             << ", ENB RRC " << cause << std::endl;
 }
@@ -155,7 +161,8 @@ NotifyConnectionReleaseAtEnodeB (uint64_t imsi, uint16_t cellId, uint16_t rnti)
 
 void PhySyncDetection (uint16_t n310, uint64_t imsi, uint16_t rnti, uint16_t cellId, std::string type, uint8_t count)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+
+  std::cout << Simulator::Now ().As (Time::S)
             << " IMSI " << imsi << ", RNTI " << rnti
             << ", Cell id " << cellId << ", " << type << ", no of sync indications: " << +count
             << std::endl;
@@ -189,7 +196,7 @@ void RadioLinkFailure (Time t310, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 void
 NotifyRandomAccessErrorUe (uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+  std::cout << Simulator::Now ().As (Time::S)
             << " IMSI " << imsi << ", RNTI " << rnti << ", Cell id " << cellId
             << ", UE RRC Random access Failed" << std::endl;
 }
@@ -198,7 +205,7 @@ void
 NotifyConnectionTimeoutUe (uint64_t imsi, uint16_t cellId, uint16_t rnti,
                            uint8_t connEstFailCount)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+  std::cout << Simulator::Now ().As (Time::S)
             << " IMSI " << imsi << ", RNTI " << rnti
             << ", Cell id " << cellId
             << ", T300 expiration counter " << (uint16_t) connEstFailCount
@@ -210,7 +217,7 @@ NotifyRaResponseTimeoutUe (uint64_t imsi, bool contention,
                            uint8_t preambleTxCounter,
                            uint8_t maxPreambleTxLimit)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
+  std::cout << Simulator::Now ().As (Time::S)
             << " IMSI " << imsi << ", Contention flag " << contention
             << ", preamble Tx Counter " << (uint16_t) preambleTxCounter
             << ", Max Preamble Tx Limit " << (uint16_t) maxPreambleTxLimit
@@ -225,7 +232,7 @@ ReceivePacket (Ptr<const Packet> packet, const Address &)
 }
 
 void
-Throughput(bool firstWrite, Time binSize, std::string fileName)
+Throughput (bool firstWrite, Time binSize, std::string fileName)
 {
   std::ofstream output;
 
@@ -240,8 +247,9 @@ Throughput(bool firstWrite, Time binSize, std::string fileName)
     }
 
   //Instantaneous throughput every 200 ms
-  double  throughput = (ByteCounter - oldByteCounter)*8/binSize.GetSeconds ()/1024/1024;
-  output << Simulator::Now().GetSeconds() << " " << throughput << std::endl;
+
+  double  throughput = (ByteCounter - oldByteCounter) * 8 / binSize.GetSeconds () / 1024 / 1024;
+  output << Simulator::Now ().As (Time::S) << " " << throughput << std::endl;
   oldByteCounter = ByteCounter;
   Simulator::Schedule (binSize, &Throughput, firstWrite, binSize, fileName);
 }
@@ -441,7 +449,7 @@ main (int argc, char *argv[])
 
   Time udpInterval = Seconds (interPacketInterval);
 
-  NS_LOG_DEBUG ("UDP will use application interval " << udpInterval.GetSeconds () << " sec");
+  NS_LOG_DEBUG ("UDP will use application interval " << udpInterval.As (Time::S) << " sec");
 
 
   for (uint32_t u = 0; u < numberOfUes; ++u)
@@ -534,10 +542,10 @@ main (int argc, char *argv[])
   Config::ConnectWithoutContext (oss.str (), MakeCallback (&ReceivePacket));
 
   bool firstWrite = true;
-  std::string rrcType = useIdealRrc == 1 ? "ideal_rrc":"real_rrc";
+  std::string rrcType = useIdealRrc == 1 ? "ideal_rrc" : "real_rrc";
   std::string fileName = "rlf_dl_thrput_" + std::to_string (enbNodes.GetN ()) + "_eNB_" + rrcType;
   Time binSize = Seconds (0.2);
-  Simulator::Schedule (Seconds(0.47), &Throughput, firstWrite, binSize, fileName);
+  Simulator::Schedule (Seconds (0.47), &Throughput, firstWrite, binSize, fileName);
 
   NS_LOG_INFO ("Starting simulation...");
 

@@ -32,8 +32,8 @@ NS_OBJECT_ENSURE_REGISTERED (PhyStatsCalculator);
 
 PhyStatsCalculator::PhyStatsCalculator ()
   :  m_RsrpSinrFirstWrite (true),
-    m_UeSinrFirstWrite (true),
-    m_InterferenceFirstWrite (true)
+     m_UeSinrFirstWrite (true),
+     m_InterferenceFirstWrite (true)
 {
   NS_LOG_FUNCTION (this);
 
@@ -49,7 +49,7 @@ PhyStatsCalculator::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PhyStatsCalculator")
     .SetParent<LteStatsCalculator> ()
-    .SetGroupName("Lte")
+    .SetGroupName ("Lte")
     .AddConstructor<PhyStatsCalculator> ()
     .AddAttribute ("DlRsrpSinrFilename",
                    "Name of the file where the RSRP/SINR statistics will be saved.",
@@ -138,7 +138,7 @@ PhyStatsCalculator::ReportCurrentCellRsrpSinr (uint16_t cellId, uint64_t imsi, u
         }
     }
 
-  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << cellId << "\t";
   outFile << imsi << "\t";
   outFile << rnti << "\t";
@@ -177,7 +177,7 @@ PhyStatsCalculator::ReportUeSinr (uint16_t cellId, uint64_t imsi, uint16_t rnti,
         }
     }
 
-  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << cellId << "\t";
   outFile << imsi << "\t";
   outFile << rnti << "\t";
@@ -215,7 +215,7 @@ PhyStatsCalculator::ReportInterference (uint16_t cellId, Ptr<SpectrumValue> inte
         }
     }
 
-  outFile << Simulator::Now ().GetNanoSeconds () / (double) 1e9 << "\t";
+  outFile << Simulator::Now ().GetSeconds () << "\t";
   outFile << cellId << "\t";
   outFile << *interference;
   outFile.close ();
@@ -224,8 +224,8 @@ PhyStatsCalculator::ReportInterference (uint16_t cellId, Ptr<SpectrumValue> inte
 
 void
 PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback (Ptr<PhyStatsCalculator> phyStats,
-                      std::string path, uint16_t cellId, uint16_t rnti,
-                      double rsrp, double sinr, uint8_t componentCarrierId)
+                                                       std::string path, uint16_t cellId, uint16_t rnti,
+                                                       double rsrp, double sinr, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (phyStats << path);
   uint64_t imsi = 0;
@@ -269,7 +269,7 @@ PhyStatsCalculator::ReportUeSinr (Ptr<PhyStatsCalculator> phyStats, std::string 
 
 void
 PhyStatsCalculator::ReportInterference (Ptr<PhyStatsCalculator> phyStats, std::string path,
-                    uint16_t cellId, Ptr<SpectrumValue> interference)
+                                        uint16_t cellId, Ptr<SpectrumValue> interference)
 {
   NS_LOG_FUNCTION (phyStats << path);
   phyStats->ReportInterference (cellId, interference);

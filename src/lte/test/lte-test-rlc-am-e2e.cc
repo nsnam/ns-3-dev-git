@@ -52,31 +52,31 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
                      12221, 13332, 14443, 15554, 16665, 17776, 18887, 19998, 21109, 22220,
                      23331, 24442, 25553, 26664, 27775, 28886, 29997, 31108, 32219, 33330};
 
-  for ( uint32_t l = 0 ; l < (sizeof (losses) / sizeof (double)) ; l++ )
+  for ( uint32_t l = 0; l < (sizeof (losses) / sizeof (double)); l++ )
     {
-      for ( uint32_t s = 0 ; s < (sizeof (runs) / sizeof (uint32_t)) ; s++ )
+      for ( uint32_t s = 0; s < (sizeof (runs) / sizeof (uint32_t)); s++ )
         {
           for (uint32_t sduArrivalType = 0; sduArrivalType <= 1; ++sduArrivalType)
             {
               std::ostringstream name;
               name << " losses = " << losses[l] * 100 << "%; run = " << runs[s];
-              
+
               bool bulkSduArrival;
               switch (sduArrivalType)
                 {
-                case 0:
-                  bulkSduArrival = false;
-                  name << "; continuous SDU arrival";
-                  break;
-                case 1:
-                  bulkSduArrival = true;
-                  name << "; bulk SDU arrival";
-                  break;
-                default:
-                  NS_FATAL_ERROR ("unsupported option");
-                  break;
+                  case 0:
+                    bulkSduArrival = false;
+                    name << "; continuous SDU arrival";
+                    break;
+                  case 1:
+                    bulkSduArrival = true;
+                    name << "; bulk SDU arrival";
+                    break;
+                  default:
+                    NS_FATAL_ERROR ("unsupported option");
+                    break;
                 }
-              
+
               TestCase::TestDuration testDuration;
               if (l == 1 && s == 0)
                 {
@@ -88,7 +88,7 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
                 }
               else
                 {
-                  testDuration = TestCase::TAKES_FOREVER;              
+                  testDuration = TestCase::TAKES_FOREVER;
                 }
               AddTestCase (new LteRlcAmE2eTestCase (name.str (), runs[s], losses[l], bulkSduArrival), testDuration);
             }
@@ -99,19 +99,18 @@ LteRlcAmE2eTestSuite::LteRlcAmE2eTestSuite ()
 static LteRlcAmE2eTestSuite lteRlcAmE2eTestSuite;
 
 LteRlcAmE2eTestCase::LteRlcAmE2eTestCase (std::string name, uint32_t run, double losses, bool bulkSduArrival)
-   : TestCase (name),
-     m_run (run),
-     m_losses (losses),
-     m_bulkSduArrival (bulkSduArrival),
-     m_dlDrops (0),
-     m_ulDrops (0)
+  : TestCase (name),
+    m_run (run),
+    m_losses (losses),
+    m_bulkSduArrival (bulkSduArrival),
+    m_dlDrops (0),
+    m_ulDrops (0)
 {
   NS_LOG_INFO ("Creating LteRlcAmTestingTestCase: " + name);
 }
 
 LteRlcAmE2eTestCase::~LteRlcAmE2eTestCase ()
-{
-}
+{}
 
 
 void
@@ -217,8 +216,8 @@ LteRlcAmE2eTestCase::DoRun (void)
       sduStopTimeSeconds = sduStartTimeSeconds + 10;
     }
   sduArrivalTimeSeconds = (sduStopTimeSeconds - sduStartTimeSeconds) / numSdu;
-  
-  
+
+
 
   // Sending packets from RRC layer
   lteSimpleHelper->m_enbRrc->SetArrivalTime (Seconds (sduArrivalTimeSeconds));
@@ -238,13 +237,13 @@ LteRlcAmE2eTestCase::DoRun (void)
   Simulator::Schedule (Seconds (sduStartTimeSeconds), &LteTestRrc::Start, lteSimpleHelper->m_enbRrc);
   Simulator::Schedule (Seconds (sduStopTimeSeconds), &LteTestRrc::Stop, lteSimpleHelper->m_enbRrc);
 
-  
-  double maxDlThroughput = (dlTxOppSizeBytes/(dlTxOppSizeBytes+4.0))*(dlTxOppSizeBytes/dlTxOpprTimeSeconds) * (1.0-m_losses);
+
+  double maxDlThroughput = (dlTxOppSizeBytes / (dlTxOppSizeBytes + 4.0)) * (dlTxOppSizeBytes / dlTxOpprTimeSeconds) * (1.0 - m_losses);
   const double statusProhibitSeconds = 0.020;
-  double pollFrequency = (1.0/dlTxOpprTimeSeconds)*(1-m_losses);
-  double statusFrequency = std::min (pollFrequency, 1.0/statusProhibitSeconds);
-  const uint32_t numNackSnPerStatusPdu = (ulTxOppSizeBytes*8 - 14)/10;
-  double maxRetxThroughput = ((double)numNackSnPerStatusPdu*(double)dlTxOppSizeBytes)*statusFrequency;
+  double pollFrequency = (1.0 / dlTxOpprTimeSeconds) * (1 - m_losses);
+  double statusFrequency = std::min (pollFrequency, 1.0 / statusProhibitSeconds);
+  const uint32_t numNackSnPerStatusPdu = (ulTxOppSizeBytes * 8 - 14) / 10;
+  double maxRetxThroughput = ((double)numNackSnPerStatusPdu * (double)dlTxOppSizeBytes) * statusFrequency;
   double throughput = std::min (maxDlThroughput, maxRetxThroughput);
   double totBytes = ((sduSizeBytes) * (sduStopTimeSeconds - sduStartTimeSeconds) / sduArrivalTimeSeconds);
 
@@ -291,10 +290,10 @@ LteRlcAmE2eTestCase::DoRun (void)
     {
       margin = Seconds (30);
     }
-  Time stopTime = Seconds (std::max (sduStartTimeSeconds + totBytes/throughput, sduStopTimeSeconds)) + margin;
-  
-  NS_LOG_INFO ("statusFrequency=" << statusFrequency << ", maxDlThroughput=" << maxDlThroughput << ", maxRetxThroughput=" << maxRetxThroughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime.GetSeconds () << "s");
-  
+  Time stopTime = Seconds (std::max (sduStartTimeSeconds + totBytes / throughput, sduStopTimeSeconds)) + margin;
+
+  NS_LOG_INFO ("statusFrequency=" << statusFrequency << ", maxDlThroughput=" << maxDlThroughput << ", maxRetxThroughput=" << maxRetxThroughput << ", totBytes=" << totBytes << ", stopTime=" << stopTime.As (Time::S));
+
   Simulator::Stop (stopTime);
   Simulator::Run ();
 
@@ -307,14 +306,14 @@ LteRlcAmE2eTestCase::DoRun (void)
   NS_LOG_INFO ("Run = " << m_run);
   NS_LOG_INFO ("Loss rate (%) = " << uint32_t (m_losses * 100));
 
-  
-  NS_LOG_INFO ("RLC PDUs   TX: " << txEnbRlcPdus 
-               << "   RX: " << rxUeRlcPdus 
-               << "   LOST: " << m_dlDrops
-               << " (" << (100.0 * (double) m_dlDrops)/txEnbRlcPdus << "%)");
 
-  NS_TEST_ASSERT_MSG_EQ (txEnbRlcPdus,  rxUeRlcPdus + m_dlDrops, "lost RLC PDUs don't match TX + RX");  
-                          
+  NS_LOG_INFO ("RLC PDUs   TX: " << txEnbRlcPdus
+                                 << "   RX: " << rxUeRlcPdus
+                                 << "   LOST: " << m_dlDrops
+                                 << " (" << (100.0 * (double) m_dlDrops) / txEnbRlcPdus << "%)");
+
+  NS_TEST_ASSERT_MSG_EQ (txEnbRlcPdus,  rxUeRlcPdus + m_dlDrops, "lost RLC PDUs don't match TX + RX");
+
   NS_LOG_INFO ("eNB tx RRC count = " << txEnbRrcPdus);
   NS_LOG_INFO ("UE rx RRC count = " << rxUeRrcPdus);
 

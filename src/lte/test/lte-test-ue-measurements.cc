@@ -129,8 +129,7 @@ LteUeMeasurementsTestCase::LteUeMeasurementsTestCase (std::string name,
 }
 
 LteUeMeasurementsTestCase::~LteUeMeasurementsTestCase ()
-{
-}
+{}
 
 void
 LteUeMeasurementsTestCase::DoRun (void)
@@ -657,7 +656,7 @@ LteUeMeasurementsPiecewiseTestCase1::DoTeardown ()
   NS_LOG_FUNCTION (this);
   bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
   NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
-                         "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
+                         "Reporting should have occurred at " << m_itExpectedTime->As (Time::S));
   hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
   NS_ASSERT (hasEnded);
 }
@@ -687,7 +686,7 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
       bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
       NS_TEST_ASSERT_MSG_EQ (hasEnded, false,
                              "Reporting should not have occurred at "
-                             << Simulator::Now ().GetSeconds () << "s");
+                             << Simulator::Now ().As (Time::S));
       if (!hasEnded)
         {
           hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
@@ -1247,7 +1246,7 @@ LteUeMeasurementsPiecewiseTestCase2::DoTeardown ()
   NS_LOG_FUNCTION (this);
   bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
   NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
-                         "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
+                         "Reporting should have occurred at " << m_itExpectedTime->As (Time::S));
   hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
   NS_ASSERT (hasEnded);
 }
@@ -1302,7 +1301,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
       bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
       NS_TEST_ASSERT_MSG_EQ (hasEnded, false,
                              "Reporting should not have occurred at "
-                             << Simulator::Now ().GetSeconds () << "s");
+                             << Simulator::Now ().As (Time::S));
       if (!hasEnded)
         {
           hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
@@ -2074,7 +2073,7 @@ LteUeMeasurementsHandoverTestCase::DoTeardown ()
   NS_LOG_FUNCTION (this);
   bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
   NS_TEST_ASSERT_MSG_EQ (hasEnded, true,
-                         "Reporting should have occurred at " << m_itExpectedTime->GetSeconds () << "s");
+                         "Reporting should have occurred at " << m_itExpectedTime->As (Time::S));
   hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
   NS_ASSERT (hasEnded);
 }
@@ -2145,7 +2144,7 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
       bool hasEnded = m_itExpectedTime == m_expectedTime.end ();
       NS_TEST_ASSERT_MSG_EQ (hasEnded, false,
                              "Reporting should not have occurred at "
-                             << Simulator::Now ().GetSeconds () << "s");
+                             << Simulator::Now ().As (Time::S));
       if (!hasEnded)
         {
           hasEnded = m_itExpectedRsrp == m_expectedRsrp.end ();
