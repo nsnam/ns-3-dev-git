@@ -52,7 +52,7 @@ def main(argv):
 
     wifi = ns.wifi.WifiHelper()
     wifiMac = ns.wifi.WifiMacHelper()
-    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiPhy = ns.wifi.YansWifiPhyHelper()
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     ssid = ns.wifi.Ssid("wifi-default")

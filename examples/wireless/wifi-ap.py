@@ -113,7 +113,7 @@ def main(argv):
     packetSocket.Install(stas)
     packetSocket.Install(ap)
 
-    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiPhy = ns.wifi.YansWifiPhyHelper()
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
 
