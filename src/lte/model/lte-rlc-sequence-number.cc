@@ -18,7 +18,7 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/lte-rlc-sequence-number.h"
+#include "lte-rlc-sequence-number.h"
 
 namespace ns3 {
 
