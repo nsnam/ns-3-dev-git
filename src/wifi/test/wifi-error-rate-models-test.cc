@@ -32,7 +32,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiErrorRateModelsTest");
 
-double
+static double
 FromRss (double rssDbw)
 {
   // SINR is based on receiver noise figure of 7 dB and thermal noise

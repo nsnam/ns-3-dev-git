@@ -40,7 +40,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("InterBssTestSuite");
 
-uint32_t
+static uint32_t
 ConvertContextToNodeId (std::string context)
 {
   std::string sub = context.substr (10);
