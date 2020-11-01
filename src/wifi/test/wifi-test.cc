@@ -1256,8 +1256,6 @@ public:
 private:
   uint32_t m_countInternalCollisions; ///< count internal collisions
 
-  /// Populate ARP cache function
-  void PopulateArpCache ();
   /**
    * Transmit data failed function
    * \param context the context
