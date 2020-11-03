@@ -33,6 +33,7 @@
  * - ns3::WifiModulationClass
  * - ns3::WifiPpduField
  * - ns3::WifiPpduType
+ * - ns3::WifiPhyRxfailureReason
  */
 
 namespace ns3 {
@@ -232,6 +233,84 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPpduType &type)
       default:
         NS_FATAL_ERROR ("Unknown type");
         return (os << "unknown");
+    }
+}
+
+/**
+ * \ingroup wifi
+ * Enumeration of the possible reception failure reasons.
+ */
+enum WifiPhyRxfailureReason
+{
+  UNKNOWN = 0,
+  UNSUPPORTED_SETTINGS,
+  CHANNEL_SWITCHING,
+  RXING,
+  TXING,
+  SLEEPING,
+  BUSY_DECODING_PREAMBLE,
+  PREAMBLE_DETECT_FAILURE,
+  RECEPTION_ABORTED_BY_TX,
+  L_SIG_FAILURE,
+  HT_SIG_FAILURE,
+  SIG_A_FAILURE,
+  SIG_B_FAILURE,
+  PREAMBLE_DETECTION_PACKET_SWITCH,
+  FRAME_CAPTURE_PACKET_SWITCH,
+  OBSS_PD_CCA_RESET,
+  HE_TB_PPDU_TOO_LATE,
+  FILTERED
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param reason the failure reason
+ * \returns a reference to the stream
+ */
+inline std::ostream& operator<< (std::ostream &os, const WifiPhyRxfailureReason &reason)
+{
+  switch (reason)
+    {
+      case UNSUPPORTED_SETTINGS:
+        return (os << "UNSUPPORTED_SETTINGS");
+      case CHANNEL_SWITCHING:
+        return (os << "CHANNEL_SWITCHING");
+      case RXING:
+        return (os << "RXING");
+      case TXING:
+        return (os << "TXING");
+      case SLEEPING:
+        return (os << "SLEEPING");
+      case BUSY_DECODING_PREAMBLE:
+        return (os << "BUSY_DECODING_PREAMBLE");
+      case PREAMBLE_DETECT_FAILURE:
+        return (os << "PREAMBLE_DETECT_FAILURE");
+      case RECEPTION_ABORTED_BY_TX:
+        return (os << "RECEPTION_ABORTED_BY_TX");
+      case L_SIG_FAILURE:
+        return (os << "L_SIG_FAILURE");
+      case HT_SIG_FAILURE:
+        return (os << "HT_SIG_FAILURE");
+      case SIG_A_FAILURE:
+        return (os << "SIG_A_FAILURE");
+      case SIG_B_FAILURE:
+        return (os << "SIG_B_FAILURE");
+      case PREAMBLE_DETECTION_PACKET_SWITCH:
+        return (os << "PREAMBLE_DETECTION_PACKET_SWITCH");
+      case FRAME_CAPTURE_PACKET_SWITCH:
+        return (os << "FRAME_CAPTURE_PACKET_SWITCH");
+      case OBSS_PD_CCA_RESET:
+        return (os << "OBSS_PD_CCA_RESET");
+      case HE_TB_PPDU_TOO_LATE:
+        return (os << "HE_TB_PPDU_TOO_LATE");
+      case FILTERED:
+        return (os << "FILTERED");
+      case UNKNOWN:
+      default:
+        NS_FATAL_ERROR ("Unknown reason");
+        return (os << "UNKNOWN");
     }
 }
 

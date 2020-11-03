@@ -550,7 +550,9 @@ PhyRxDropTrace (std::string context, Ptr<const Packet> p, WifiPhyRxfailureReason
         }
       break;
     }
+    case HT_SIG_FAILURE:
     case SIG_A_FAILURE:
+    case SIG_B_FAILURE:
       NS_FATAL_ERROR ("Unexpected PHY header failure!");
     case PREAMBLE_DETECTION_PACKET_SWITCH:
       NS_FATAL_ERROR ("All devices should send with same power, so no packet switch during preamble detection should occur!");
