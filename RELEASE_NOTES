@@ -15,11 +15,12 @@ Release 3-dev
 New user-visible features
 -------------------------
 - (wifi) A new table-based error model based on link simulations has been
-  added and made the default for 802.11n/ac/ax simulations.
+  added (TableBasedErrorRateModel) and made the default for 802.11n/ac/ax simulations.
+- (wifi) It is now possible to select either BCC or LDPC FEC encoding.
 
 Bugs fixed
 ----------
-
+- (wifi) Fix Minstrel HT statistics update window duration
 
 Release 3.32
 ============
@@ -79,11 +80,6 @@ New user-visible features
 - (traffic-control) Add ECN and L4S support for CoDel, FqCoDel, Cobalt queues
 - (wifi) Add 6 GHz band support for 802.11ax
 - (wifi) RIFS support has been removed from the model
-
-- (wifi) A new OFDM error rate model has been added for WiFi (TableBasedErrorRateModel);
-  this model makes use of pre-generated tables using link simulators.
-  The default error rate model has been changed to this one for 802.11n and later standards.
-  YansErrorRateModel is now the default for non-HT.
 
 Bugs fixed
 ----------
