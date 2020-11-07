@@ -105,7 +105,6 @@ PhyTxStatsCalculator::DlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
       m_dlTxFirstWrite = false;
-      //outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi"; // txMode is not available at dl tx side
       outFile << "% time\tcellId\tIMSI\tRNTI\tlayer\tmcs\tsize\trv\tndi\tccId";
       outFile << std::endl;
     }
@@ -118,7 +117,7 @@ PhyTxStatsCalculator::DlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
     }
-  outFile << Simulator::Now ().GetSeconds () << "\t";
+
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -162,7 +161,7 @@ PhyTxStatsCalculator::UlPhyTransmission (PhyTransmissionStatParameters params)
           return;
         }
     }
-  outFile << Simulator::Now ().GetSeconds () << "\t";
+
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";

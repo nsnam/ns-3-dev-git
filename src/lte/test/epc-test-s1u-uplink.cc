@@ -139,12 +139,11 @@ EpsBearerTagUdpClient::GetTypeId (void)
                    "The time to wait between packets", TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&EpsBearerTagUdpClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute (
-    "RemoteAddress",
-    "The destination Ipv4Address of the outbound packets",
-    Ipv4AddressValue (),
-    MakeIpv4AddressAccessor (&EpsBearerTagUdpClient::m_peerAddress),
-    MakeIpv4AddressChecker ())
+    .AddAttribute ("RemoteAddress",
+                   "The destination Ipv4Address of the outbound packets",
+                   Ipv4AddressValue (),
+                   MakeIpv4AddressAccessor (&EpsBearerTagUdpClient::m_peerAddress),
+                   MakeIpv4AddressChecker ())
     .AddAttribute ("RemotePort", "The destination port of the outbound packets",
                    UintegerValue (100),
                    MakeUintegerAccessor (&EpsBearerTagUdpClient::m_peerPort),

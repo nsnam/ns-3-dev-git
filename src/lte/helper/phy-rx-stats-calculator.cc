@@ -117,7 +117,7 @@ PhyRxStatsCalculator::DlPhyReception (PhyReceptionStatParameters params)
           return;
         }
     }
-  outFile << Simulator::Now ().GetSeconds () << "\t";
+
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
@@ -161,7 +161,7 @@ PhyRxStatsCalculator::UlPhyReception (PhyReceptionStatParameters params)
           return;
         }
     }
-  outFile << Simulator::Now ().GetSeconds () << "\t";
+
   outFile << params.m_timestamp << "\t";
   outFile << (uint32_t) params.m_cellId << "\t";
   outFile << params.m_imsi << "\t";
