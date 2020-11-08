@@ -19,9 +19,11 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <cmath>
+#include <bitset>
 #include "ns3/log.h"
 #include "nist-error-rate-model.h"
-#include "wifi-phy.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 
@@ -65,50 +67,21 @@ NistErrorRateModel::GetQpskBer (double snr) const
 }
 
 double
-NistErrorRateModel::Get16QamBer (double snr) const
+NistErrorRateModel::GetQamBer (uint16_t constellationSize, double snr) const
 {
-  NS_LOG_FUNCTION (this << snr);
-  double z = std::sqrt (snr / (5.0 * 2.0));
-  double ber = 0.75 * 0.5 * erfc (z);
-  NS_LOG_INFO ("16-Qam" << " snr=" << snr << " ber=" << ber);
+  NS_LOG_FUNCTION (this << constellationSize << snr);
+  NS_ASSERT (std::bitset<16> (constellationSize).count () == 1); //constellationSize has to be a power of 2
+  double z = std::sqrt (snr / ((2 * (constellationSize - 1)) / 3));
+  uint8_t bitsPerSymbol = std::sqrt (constellationSize);
+  double ber = ((bitsPerSymbol - 1) / (bitsPerSymbol * std::log2 (bitsPerSymbol))) * erfc (z);
+  NS_LOG_INFO (constellationSize << "-QAM: snr=" << snr << " ber=" << ber);
   return ber;
 }
 
 double
-NistErrorRateModel::Get64QamBer (double snr) const
+NistErrorRateModel::GetFecBpskBer (double snr, uint64_t nbits, uint8_t bValue) const
 {
-  NS_LOG_FUNCTION (this << snr);
-  double z = std::sqrt (snr / (21.0 * 2.0));
-  double ber = 7.0 / 12.0 * 0.5 * erfc (z);
-  NS_LOG_INFO ("64-Qam" << " snr=" << snr << " ber=" << ber);
-  return ber;
-}
-
-double
-NistErrorRateModel::Get256QamBer (double snr) const
-{
-  NS_LOG_FUNCTION (this << snr);
-  double z = std::sqrt (snr / (85.0 * 2.0));
-  double ber = 15.0 / 32.0 * 0.5 * erfc (z);
-  NS_LOG_INFO ("256-Qam" << " snr=" << snr << " ber=" << ber);
-  return ber;
-}
-
-double
-NistErrorRateModel::Get1024QamBer (double snr) const
-{
-  NS_LOG_FUNCTION (this << snr);
-  double z = std::sqrt (snr / (341.0 * 2.0));
-  double ber = 31.0 / 80.0 * 0.5 * erfc (z);
-  NS_LOG_INFO ("1024-Qam" << " snr=" << snr << " ber=" << ber);
-  return ber;
-}
-
-double
-NistErrorRateModel::GetFecBpskBer (double snr, uint64_t nbits,
-                                   uint32_t bValue) const
-{
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
+  NS_LOG_FUNCTION (this << snr << nbits << +bValue);
   double ber = GetBpskBer (snr);
   if (ber == 0.0)
     {
@@ -121,10 +94,9 @@ NistErrorRateModel::GetFecBpskBer (double snr, uint64_t nbits,
 }
 
 double
-NistErrorRateModel::GetFecQpskBer (double snr, uint64_t nbits,
-                                   uint32_t bValue) const
+NistErrorRateModel::GetFecQpskBer (double snr, uint64_t nbits, uint8_t bValue) const
 {
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
+  NS_LOG_FUNCTION (this << snr << nbits << +bValue);
   double ber = GetQpskBer (snr);
   if (ber == 0.0)
     {
@@ -137,9 +109,9 @@ NistErrorRateModel::GetFecQpskBer (double snr, uint64_t nbits,
 }
 
 double
-NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
+NistErrorRateModel::CalculatePe (double p, uint8_t bValue) const
 {
-  NS_LOG_FUNCTION (this << p << bValue);
+  NS_LOG_FUNCTION (this << p << +bValue);
   double D = std::sqrt (4.0 * p * (1.0 - p));
   double pe = 1.0;
   if (bValue == 1)
@@ -209,11 +181,10 @@ NistErrorRateModel::CalculatePe (double p, uint32_t bValue) const
 }
 
 double
-NistErrorRateModel::GetFec16QamBer (double snr, uint64_t nbits,
-                                    uint32_t bValue) const
+NistErrorRateModel::GetFecQamBer (uint16_t constellationSize, double snr, uint64_t nbits, uint8_t bValue) const
 {
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
-  double ber = Get16QamBer (snr);
+  NS_LOG_FUNCTION (this << constellationSize << snr << nbits << +bValue);
+  double ber = GetQamBer (constellationSize, snr);
   if (ber == 0.0)
     {
       return 1.0;
@@ -224,52 +195,25 @@ NistErrorRateModel::GetFec16QamBer (double snr, uint64_t nbits,
   return pms;
 }
 
-double
-NistErrorRateModel::GetFec64QamBer (double snr, uint64_t nbits,
-                                    uint32_t bValue) const
+uint8_t
+NistErrorRateModel::GetBValue (WifiCodeRate codeRate) const
 {
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
-  double ber = Get64QamBer (snr);
-  if (ber == 0.0)
+  switch (codeRate)
     {
-      return 1.0;
+    case WIFI_CODE_RATE_3_4:
+      return 3;
+    case WIFI_CODE_RATE_2_3:
+      return 2;
+    case WIFI_CODE_RATE_1_2:
+      return 1;
+    case WIFI_CODE_RATE_5_6:
+      return 5;
+    case WIFI_CODE_RATE_UNDEFINED:
+    default:
+      NS_FATAL_ERROR ("Unknown code rate");
+      break;
     }
-  double pe = CalculatePe (ber, bValue);
-  pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
-  return pms;
-}
-
-double
-NistErrorRateModel::GetFec256QamBer (double snr, uint64_t nbits,
-                                     uint32_t bValue) const
-{
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
-  double ber = Get256QamBer (snr);
-  if (ber == 0.0)
-    {
-      return 1.0;
-    }
-  double pe = CalculatePe (ber, bValue);
-  pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
-  return pms;
-}
-
-double
-NistErrorRateModel::GetFec1024QamBer (double snr, uint64_t nbits,
-                                      uint32_t bValue) const
-{
-  NS_LOG_FUNCTION (this << snr << nbits << bValue);
-  double ber = Get1024QamBer (snr);
-  if (ber == 0.0)
-    {
-      return 1.0;
-    }
-  double pe = CalculatePe (ber, bValue);
-  pe = std::min (pe, 1.0);
-  double pms = std::pow (1 - pe, nbits);
-  return pms;
+  return 0;
 }
 
 double
@@ -284,103 +228,15 @@ NistErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector,
     {
       if (mode.GetConstellationSize () == 2)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
-            {
-              return GetFecBpskBer (snr,
-                                    nbits,
-                                    1); //b value
-            }
-          else
-            {
-              return GetFecBpskBer (snr,
-                                    nbits,
-                                    3); //b value
-            }
+          return GetFecBpskBer (snr, nbits, GetBValue (mode.GetCodeRate ()));
         }
       else if (mode.GetConstellationSize () == 4)
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
-            {
-              return GetFecQpskBer (snr,
-                                    nbits,
-                                    1); //b value
-            }
-          else
-            {
-              return GetFecQpskBer (snr,
-                                    nbits,
-                                    3); //b value
-            }
+          return GetFecQpskBer (snr, nbits, GetBValue (mode.GetCodeRate ()));
         }
-      else if (mode.GetConstellationSize () == 16)
+      else
         {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
-            {
-              return GetFec16QamBer (snr,
-                                     nbits,
-                                     1); //b value
-            }
-          else
-            {
-              return GetFec16QamBer (snr,
-                                     nbits,
-                                     3); //b value
-            }
-        }
-      else if (mode.GetConstellationSize () == 64)
-        {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_2_3)
-            {
-              return GetFec64QamBer (snr,
-                                     nbits,
-                                     2); //b value
-            }
-          else if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
-            {
-              return GetFec64QamBer (snr,
-                                     nbits,
-                                     5); //b value
-            }
-          else
-            {
-              return GetFec64QamBer (snr,
-                                     nbits,
-                                     3); //b value
-            }
-        }
-      else if (mode.GetConstellationSize () == 256)
-        {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
-            {
-              return GetFec256QamBer (snr,
-                                      nbits,
-                                      5     // b value
-                                      );
-            }
-          else
-            {
-              return GetFec256QamBer (snr,
-                                      nbits,
-                                      3     // b value
-                                      );
-            }
-        }
-      else if (mode.GetConstellationSize () == 1024)
-        {
-          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
-            {
-              return GetFec1024QamBer (snr,
-                                       nbits,
-                                       5    // b value
-                                       );
-            }
-          else
-            {
-              return GetFec1024QamBer (snr,
-                                       nbits,
-                                       3    // b value
-                                       );
-            }
+          return GetFecQamBer (mode.GetConstellationSize (), snr, nbits, GetBValue (mode.GetCodeRate ()));
         }
     }
   return 0;
