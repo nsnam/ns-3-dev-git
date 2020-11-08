@@ -99,7 +99,7 @@ NistErrorRateModel::Get1024QamBer (double snr) const
 {
   NS_LOG_FUNCTION (this << snr);
   double z = std::sqrt (snr / (341.0 * 2.0));
-  double ber = 31.0 / 160.0 * 0.5 * erfc (z);
+  double ber = 31.0 / 80.0 * 0.5 * erfc (z);
   NS_LOG_INFO ("1024-Qam" << " snr=" << snr << " ber=" << ber);
   return ber;
 }
