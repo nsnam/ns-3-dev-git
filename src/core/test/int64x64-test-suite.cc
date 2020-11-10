@@ -187,6 +187,68 @@ Int64x64HiLoTestCase::DoRun (void)
 }
 
 
+class Int64x64IntRoundTestCase : public TestCase
+{
+public:
+  Int64x64IntRoundTestCase (void);
+  virtual void DoRun (void);
+  void Check (const int64x64_t value,
+              const int64_t expectInt,
+              const int64_t expectRnd);
+};
+
+Int64x64IntRoundTestCase::Int64x64IntRoundTestCase (void)
+  : TestCase ("Check GetInt and Round")
+{}
+
+void
+Int64x64IntRoundTestCase::Check (const int64x64_t value,
+                                 const int64_t expectInt,
+                                 const int64_t expectRnd)
+{
+  int64_t vInt = value.GetInt ();
+  int64_t vRnd = value.Round ();
+
+  bool pass = (vInt == expectInt) && (vRnd == expectRnd);
+  std::cout << GetParent ()->GetName () << " Check: "
+            << (pass ? "pass " : "FAIL ")
+            << value
+            << " (int)-> " << std::setw (2) << vInt << " (expected: " << std::setw (2) << expectInt
+            << "), (rnd)-> " << std::setw (2) << vRnd << " (expected " << std::setw (2) << expectRnd
+            << ")"
+            << std::endl;
+
+  NS_TEST_EXPECT_MSG_EQ (vInt, expectInt,
+                         "Truncation to int failed");
+  NS_TEST_EXPECT_MSG_EQ (vRnd, expectRnd,
+                         "Rounding to int failed.");
+}
+
+void
+Int64x64IntRoundTestCase::DoRun (void)
+{
+  std::cout << std::endl;
+  std::cout << GetParent ()->GetName () << " Check: " << GetName ()
+            << std::endl;
+
+  // Trivial cases
+  Check ( 0,    0,  0);
+  Check ( 1,    1,  1);
+  Check (-1,   -1, -1);
+
+  // Both should move toward zero
+  Check ( 2.4,  2,  2);
+  Check (-2.4, -2, -2);
+
+  // GetInt should move toward zero; Round should move away
+  Check ( 3.6,  3,  4);
+  Check (-3.6, -3, -4);
+  // Boundary case
+  Check ( 4.5,  4,  5);
+  Check (-4.5, -4, -5);
+}
+
+
 class Int64x64InputTestCase : public TestCase
 {
 public:
@@ -1224,6 +1286,7 @@ public:
   {
     AddTestCase (new Int64x64ImplTestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64HiLoTestCase (), TestCase::QUICK);
+    AddTestCase (new Int64x64IntRoundTestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64ArithmeticTestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64CompareTestCase (), TestCase::QUICK);
     AddTestCase (new Int64x64InputTestCase (), TestCase::QUICK);

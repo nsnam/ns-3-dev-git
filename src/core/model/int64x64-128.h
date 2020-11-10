@@ -236,6 +236,37 @@ public:
   }
 
   /**
+   * Truncate to an integer.
+   * Truncation is always toward zero, 
+   * \return The value truncated toward zero.
+   */
+  int64_t GetInt (void) const
+  {
+    const bool negative = _v < 0;
+    const uint128_t value = negative ? -_v : _v;
+    int64_t retval = value >> 64;
+    retval = negative ? - retval : retval;
+    return retval;
+  }
+
+  /**
+   * Round to the nearest int.
+   * Similar to std::round this rounds halfway cases away from zero,
+   * regardless of the current (floating) rounding mode.
+   * \return The value rounded to the nearest int.
+   */
+  int64_t Round (void) const
+  {
+    const bool negative = _v < 0;
+    int64x64_t value = (negative ? -(*this) : *this);
+    const int64x64_t half (0, 1LL << 63);
+    value += half;
+    int64_t retval = value.GetHigh ();
+    retval = negative ? - retval : retval;
+    return retval;
+  }
+
+  /**
    * Multiply this value by a Q0.128 value, presumably representing an inverse,
    * completing a division operation.
    *

@@ -227,6 +227,37 @@ public:
   }
 
   /**
+   * Truncate to an integer.
+   * Truncation is always toward zero, 
+   * \return The value truncated toward zero.
+   */
+  int64_t GetInt (void) const
+  {
+    const bool negative = _cairo_int128_negative (_v);
+    const cairo_int128_t value = negative ? _cairo_int128_negate (_v) : _v;
+    int64_t retval = value.hi;
+    retval = negative ? - retval : retval;
+    return retval;
+  }
+
+  /**
+   * Round to the nearest int.
+   * Similar to std::round this rounds halfway cases away from zero,
+   * regardless of the current (floating) rounding mode.
+   * \return The value rounded to the nearest int.
+   */
+  int64_t Round (void) const
+  {
+    const bool negative = _cairo_int128_negative (_v);
+    cairo_uint128_t value = negative ? _cairo_int128_negate (_v) : _v;
+    cairo_uint128_t half {1ULL << 63, 0};  // lo, hi
+    value = _cairo_uint128_add (value, half);
+    int64_t retval = value.hi;
+    retval = negative ? - retval : retval;
+    return retval;
+  }
+
+  /**
    * Multiply this value by a Q0.128 value, presumably representing an inverse,
    * completing a division operation.
    *
