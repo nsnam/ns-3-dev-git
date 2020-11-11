@@ -88,8 +88,8 @@ def bianchi_ax(data_rate, ack_rate, k, difs):
     bianchi_result = S_bianchi
     return bianchi_result
 
-def str_result(bianchi_result, mcs):
-    str_bianchi = '    {' + '\"HeMcs{:d}\"'.format(mcs) + ', {\n'
+def str_result(bianchi_result, mcs, bw):
+    str_bianchi = '    {' + '\"HeMcs{:d}'.format(mcs) + '_{:d}MHz\"'.format(bw) + ', {\n'
     for  i in range (len(bianchi_result)):
         str_tmp = '        {' + '{:d}, {:.4f}'.format(5*(i+1), bianchi_result[i]) +'},\n'
         str_bianchi  = str_bianchi + str_tmp
@@ -99,17 +99,34 @@ def str_result(bianchi_result, mcs):
 
 # Settings for different MCS and mode
 data_rates_20MHz = [8.603e6, 17.206e6, 25.8e6, 34.4e6, 51.5e6, 68.8e6, 77.4e6, 86e6, 103.2e6, 114.7e6, 129e6, 143.4e6]
-ack_rates_20MHz = [6e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
+ack_rates_20MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
 data_rates_40MHz = [17.2e6, 34.4e6, 51.5e6, 68.8e6, 103.2e6, 137.6e6, 154.9e6, 172.1e6, 206.5e6, 229.4e6, 258.1e6, 286.8e6]
-ack_rates_40MHz = [12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
+ack_rates_40MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
+data_rates_80MHz = [36e6, 72.1e6, 108.1e6, 144.1e6, 216.2e6, 288.2e6, 324.3e6, 360.3e6, 432.4e6, 480.4e6, 540.4e6, 600.5e6]
+ack_rates_80MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
+data_rates_160MHz = [72.1e6, 144.1e6, 216.2e6, 288.2e6, 432.4e6, 576.5e6, 648.5e6, 720.6e6, 864.7e6, 960.8e6, 1080.9e6, 1201e6]
+ack_rates_160MHz = [6e6, 12e6, 12e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6, 24e6]
 
+# Generate results with frame aggregation disabled
 k = 1
 
 difs = 1
 fo = open("bianchi_11ax_difs.txt", "w")
 for i in range(len(data_rates_20MHz)):
     bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i)
+    str_s = str_result(bianchi_result, i, 20)
+    fo.write(str_s)
+for i in range(len(data_rates_40MHz)):
+    bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 40)
+    fo.write(str_s)
+for i in range(len(data_rates_80MHz)):
+    bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 80)
+    fo.write(str_s)
+for i in range(len(data_rates_160MHz)):
+    bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 160)
     fo.write(str_s)
 fo.close()
 
@@ -117,6 +134,18 @@ difs = 0
 fo = open("bianchi_11ax_eifs.txt", "w")
 for i in range(len(data_rates_20MHz)):
     bianchi_result = bianchi_ax(data_rates_20MHz[i], ack_rates_20MHz[i], k, difs)
-    str_s = str_result(bianchi_result, i)
+    str_s = str_result(bianchi_result, i, 20)
+    fo.write(str_s)
+for i in range(len(data_rates_40MHz)):
+    bianchi_result = bianchi_ax(data_rates_40MHz[i], ack_rates_40MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 40)
+    fo.write(str_s)
+for i in range(len(data_rates_80MHz)):
+    bianchi_result = bianchi_ax(data_rates_80MHz[i], ack_rates_80MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 80)
+    fo.write(str_s)
+for i in range(len(data_rates_160MHz)):
+    bianchi_result = bianchi_ax(data_rates_160MHz[i], ack_rates_160MHz[i], k, difs)
+    str_s = str_result(bianchi_result, i, 160)
     fo.write(str_s)
 fo.close()

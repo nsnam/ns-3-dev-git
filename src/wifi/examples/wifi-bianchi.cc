@@ -332,7 +332,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {50, 22.4162},
     }},
 /* 11ax, maxMpdus=1 */
-    {"HeMcs0", {
+    {"HeMcs0_20MHz", {
         {5, 6.3381},
         {10, 5.8172},
         {15, 5.5223},
@@ -344,7 +344,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 4.7134},
         {50, 4.6317},
     }},
-    {"HeMcs1", {
+    {"HeMcs1_20MHz", {
         {5, 11.6580},
         {10, 10.7369},
         {15, 10.2068},
@@ -356,7 +356,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 8.7355},
         {50, 8.5860},
     }},
-    {"HeMcs2", {
+    {"HeMcs2_20MHz", {
         {5, 15.9567},
         {10, 14.7372},
         {15, 14.0254},
@@ -368,7 +368,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 12.0305},
         {50, 11.8266},
     }},
-    {"HeMcs3", {
+    {"HeMcs3_20MHz", {
         {5, 19.7457},
         {10, 18.2820},
         {15, 17.4163},
@@ -380,7 +380,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 14.9687},
         {50, 14.7173},
     }},
-    {"HeMcs4", {
+    {"HeMcs4_20MHz", {
         {5, 25.8947},
         {10, 24.0721},
         {15, 22.9698},
@@ -392,7 +392,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 19.8059},
         {50, 19.4784},
     }},
-    {"HeMcs5", {
+    {"HeMcs5_20MHz", {
         {5, 30.0542},
         {10, 28.0155},
         {15, 26.7625},
@@ -404,7 +404,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 23.1277},
         {50, 22.7492},
     }},
-    {"HeMcs6", {
+    {"HeMcs6_20MHz", {
         {5, 32.6789},
         {10, 30.5150},
         {15, 29.1708},
@@ -416,7 +416,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 25.2446},
         {50, 24.8343},
     }},
-    {"HeMcs7", {
+    {"HeMcs7_20MHz", {
         {5, 34.1710},
         {10, 31.9398},
         {15, 30.5451},
@@ -428,7 +428,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 26.4554},
         {50, 26.0271},
     }},
-    {"HeMcs8", {
+    {"HeMcs8_20MHz", {
         {5, 37.6051},
         {10, 35.2296},
         {15, 33.7228},
@@ -440,7 +440,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 29.2623},
         {50, 28.7929},
     }},
-    {"HeMcs9", {
+    {"HeMcs9_20MHz", {
         {5, 39.5947},
         {10, 37.1424},
         {15, 35.5731},
@@ -452,7 +452,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 30.9016},
         {50, 30.4086},
     }},
-    {"HeMcs10", {
+    {"HeMcs10_20MHz", {
         {5, 39.5947},
         {10, 37.1424},
         {15, 35.5731},
@@ -464,7 +464,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 30.9016},
         {50, 30.4086},
     }},
-    {"HeMcs11", {
+    {"HeMcs11_20MHz", {
         {5, 41.8065},
         {10, 39.2749},
         {15, 37.6383},
@@ -724,7 +724,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {50, 23.5618},
     }},
 /* 11ax, maxMpdus=1 */
-    {"HeMcs0", {
+    {"HeMcs0_20MHz", {
         {5, 6.3746},
         {10, 5.8670},
         {15, 5.5782},
@@ -736,7 +736,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 4.7813},
         {50, 4.7004},
     }},
-    {"HeMcs1", {
+    {"HeMcs1_20MHz", {
         {5, 11.7574},
         {10, 10.8735},
         {15, 10.3606},
@@ -748,7 +748,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 8.9235},
         {50, 8.7763},
     }},
-    {"HeMcs2", {
+    {"HeMcs2_20MHz", {
         {5, 16.1281},
         {10, 14.9742},
         {15, 14.2930},
@@ -760,7 +760,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 12.3594},
         {50, 12.1598},
     }},
-    {"HeMcs3", {
+    {"HeMcs3_20MHz", {
         {5, 20.0089},
         {10, 18.6480},
         {15, 17.8309},
@@ -772,7 +772,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 15.4813},
         {50, 15.2369},
     }},
-    {"HeMcs4", {
+    {"HeMcs4_20MHz", {
         {5, 26.3492},
         {10, 24.7107},
         {15, 23.6964},
@@ -784,7 +784,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 20.7134},
         {50, 20.3991},
     }},
-    {"HeMcs5", {
+    {"HeMcs5_20MHz", {
         {5, 30.6683},
         {10, 28.8843},
         {15, 27.7540},
@@ -796,7 +796,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 24.3746},
         {50, 24.0151},
     }},
-    {"HeMcs6", {
+    {"HeMcs6_20MHz", {
         {5, 33.4062},
         {10, 31.5485},
         {15, 30.3527},
@@ -808,7 +808,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 26.7376},
         {50, 26.3507},
     }},
-    {"HeMcs7", {
+    {"HeMcs7_20MHz", {
         {5, 34.9671},
         {10, 33.0739},
         {15, 31.8436},
@@ -820,7 +820,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 28.0997},
         {50, 27.6975},
     }},
-    {"HeMcs8", {
+    {"HeMcs8_20MHz", {
         {5, 38.5714},
         {10, 36.6144},
         {15, 35.3124},
@@ -832,7 +832,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 31.2874},
         {50, 30.8512},
     }},
-    {"HeMcs9", {
+    {"HeMcs9_20MHz", {
         {5, 40.6674},
         {10, 38.6851},
         {15, 37.3466},
@@ -844,7 +844,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 33.1688},
         {50, 32.7137},
     }},
-    {"HeMcs10", {
+    {"HeMcs10_20MHz", {
         {5, 40.6674},
         {10, 38.6851},
         {15, 37.3466},
@@ -856,7 +856,7 @@ std::map<std::string /* mode */, std::map<unsigned int /* number of nodes */, do
         {45, 33.1688},
         {50, 32.7137},
     }},
-    {"HeMcs11", {
+    {"HeMcs11_20MHz", {
         {5, 43.0043},
         {10, 41.0039},
         {15, 39.6294},
@@ -1526,11 +1526,18 @@ int main (int argc, char *argv[])
       WifiHelper::EnableLogComponents ();
     }
 
+  std::stringstream phyModeStr;
+  phyModeStr << phyMode;
+  if (phyMode.find ("Mcs") != std::string::npos)
+    {
+      phyModeStr << "_" << channelWidth << "MHz";
+    }
+
   std::stringstream ss;
-  ss << "wifi-"<< standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-" << phyMode << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.plt";
+  ss << "wifi-"<< standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") << "-r-" << phyModeStr.str () << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.plt";
   std::ofstream throughputPlot (ss.str ().c_str ());
   ss.str ("");
-  ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") <<"-r-" << phyMode << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.eps";
+  ss << "wifi-" << standard << "-p-" << pktSize << (infra ? "-infrastructure" : "-adhoc") <<"-r-" << phyModeStr.str () << "-min-" << nMinStas << "-max-" << nMaxStas << "-step-" << nStepSize << "-throughput.eps";
   Gnuplot gnuplot = Gnuplot (ss.str ());
 
   WifiStandard wifiStandard;
@@ -1663,15 +1670,15 @@ int main (int argc, char *argv[])
           rxEventAbortedByTx.clear ();
           associated.clear ();
           throughput = 0;
-          std::cout << "Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode  << " (" << channelWidth << " MHz) for " << n << " nodes " << std::endl;
+          std::cout << "Trial " << runIndex + 1 << " of " << trials << "; "<< phyModeStr.str () << " for " << n << " nodes " << std::endl;
           if (tracing)
             {
-              cwTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode << " for " << n << " nodes" << std::endl;
-              backoffTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyMode << " for " << n << " nodes" << std::endl;
-              phyTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
-              macTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
-              macRxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
-              socketSendTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyMode << " for " << n << " nodes" << std::endl;
+              cwTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyModeStr.str () << " for " << n << " nodes" << std::endl;
+              backoffTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; "<< phyModeStr.str () << " for " << n << " nodes" << std::endl;
+              phyTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
+              macTxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
+              macRxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
+              socketSendTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
             }
           experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, runIndex, n, duration, pcap, infra, channelWidth, guardIntervalNs, distance, apTxPower, staTxPower, pktInterval);
           uint32_t k = 0;
@@ -1724,7 +1731,7 @@ int main (int argc, char *argv[])
       bool rateFound = false;
       double relativeErrorDifs = 0;
       double relativeErrorEifs = 0;
-      auto itDifs = bianchiResultsDifs.find (phyMode);
+      auto itDifs = bianchiResultsDifs.find (phyModeStr.str ());
       if (itDifs != bianchiResultsDifs.end ())
         {
           rateFound = true;
@@ -1739,7 +1746,7 @@ int main (int argc, char *argv[])
               NS_FATAL_ERROR ("No Bianchi results (DIFS) calculated for that number of stations!");
             }
         }
-      auto itEifs = bianchiResultsEifs.find (phyMode);
+      auto itEifs = bianchiResultsEifs.find (phyModeStr.str ());
       if (itEifs != bianchiResultsEifs.end ())
         {
           rateFound = true;
@@ -1774,7 +1781,7 @@ int main (int argc, char *argv[])
     }
   dataset.SetTitle ("ns-3");
 
-  auto itDifs = bianchiResultsDifs.find (phyMode);
+  auto itDifs = bianchiResultsDifs.find (phyModeStr.str ());
   if (itDifs != bianchiResultsDifs.end ())
     {
       for (uint32_t i = nMinStas; i <= nMaxStas; i += nStepSize)
@@ -1796,7 +1803,7 @@ int main (int argc, char *argv[])
         }
     }
 
-  auto itEifs = bianchiResultsEifs.find (phyMode);
+  auto itEifs = bianchiResultsEifs.find (phyModeStr.str ());
   if (itEifs != bianchiResultsEifs.end ())
     {
       for (uint32_t i = nMinStas; i <= nMaxStas; i += nStepSize)
