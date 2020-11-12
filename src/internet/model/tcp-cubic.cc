@@ -172,8 +172,16 @@ TcpCubic::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
           HystartReset (tcb);
         }
 
-      tcb->m_cWnd += tcb->m_segmentSize;
-      segmentsAcked -= 1;
+      // In Linux, the QUICKACK socket option enables the receiver to send
+      // immediate acks initially (during slow start) and then transition
+      // to delayed acks.  ns-3 does not implement QUICKACK, and if ack
+      // counting instead of byte counting is used during slow start window
+      // growth, when TcpSocket::DelAckCount==2, then the slow start will
+      // not reach as large of an initial window as in Linux.  Therefore,
+      // we can approximate the effect of QUICKACK by making this slow
+      // start phase perform Appropriate Byte Counting (RFC 3465)
+      tcb->m_cWnd += segmentsAcked * tcb->m_segmentSize;
+      segmentsAcked = 0;
 
       NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd <<
                    " ssthresh " << tcb->m_ssThresh);
