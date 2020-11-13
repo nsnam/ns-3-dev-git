@@ -62,8 +62,10 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>A new <b>LdpcSupported</b> attribute has been added for Wi-Fi in <b>HtConfiguration</b>, in order to select LDPC FEC encoding instead of the default BCC FEC encoding.
 </li>
-<li> The signature of <b>WifiPhy::PsduTxBeginCallback</b> and <b>WifiPhy::m_phyTxPsduBeginTrace</b> have been changed to take a map of PSDUs instead of a single PSDU
+<li> The signature of <b>WifiPhy::PsduTxBeginCallback</b> and <b>WifiPhy::PhyTxPsduBegin</b> have been changed to take a map of PSDUs instead of a single PSDU
 in order to support multi-users (MU) transmissions.
+</li>
+<li> The wifi trace <b>WifiPhy::PhyRxBegin</b> has been extended to report the received power for every band.
 </li>
 </ul>
 <h2>Changes to build system:</h2>
