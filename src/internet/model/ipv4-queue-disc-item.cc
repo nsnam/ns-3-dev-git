@@ -78,7 +78,7 @@ Ipv4QueueDiscItem::Print (std::ostream& os) const
   os << GetPacket () << " "
      << "Dst addr " << GetAddress () << " "
      << "proto " << (uint16_t) GetProtocol () << " "
-     << "txq " << (uint8_t) GetTxQueueIndex ()
+     << "txq " << (uint16_t) GetTxQueueIndex ()
   ;
 }
 
