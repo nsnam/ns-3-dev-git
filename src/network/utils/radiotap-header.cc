@@ -106,6 +106,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // Time Synchronization Function Timer (when the first bit of the MPDU
   // arrived at the MAC)
+  // Reference: https://www.radiotap.org/fields/TSFT.html
   //
   if (m_present & RADIOTAP_TSFT) // bit 0
     {
@@ -114,6 +115,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // Properties of transmitted and received frames.
+  // Reference: https://www.radiotap.org/fields/Flags.html
   //
   if (m_present & RADIOTAP_FLAGS) // bit 1
     {
@@ -122,6 +124,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // TX/RX data rate in units of 500 kbps
+  // Reference: https://www.radiotap.org/fields/Rate.html
   //
   if (m_present & RADIOTAP_RATE) // bit 2
     {
@@ -130,6 +133,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // Tx/Rx frequency in MHz, followed by flags.
+  // Reference: https://www.radiotap.org/fields/Channel.html
   //
   if (m_present & RADIOTAP_CHANNEL) // bit 3
     {
@@ -141,6 +145,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // The hop set and pattern for frequency-hopping radios.  We don't need it but
   // still need to account for it.
+  // Reference: https://www.radiotap.org/fields/FHSS.html
   //
   if (m_present & RADIOTAP_FHSS) // bit 4
     {
@@ -150,6 +155,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // RF signal power at the antenna, decibel difference from an arbitrary, fixed
   // reference.
+  // Reference: https://www.radiotap.org/fields/Antenna%20signal.html
   //
   if (m_present & RADIOTAP_DBM_ANTSIGNAL) // bit 5
     {
@@ -159,6 +165,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // RF noise power at the antenna, decibel difference from an arbitrary, fixed
   // reference.
+  // Reference: https://www.radiotap.org/fields/Antenna%20noise.html
   //
   if (m_present & RADIOTAP_DBM_ANTNOISE) // bit 6
     {
@@ -167,6 +174,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // Quality of Barker code lock.
+  // Reference: https://www.radiotap.org/fields/Lock%20quality.html
   //
   if (m_present & RADIOTAP_LOCK_QUALITY) // bit 7
     {
@@ -176,6 +184,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // Transmit power expressed as unitless distance from max power
   // set at factory calibration (0 is max power).
+  // Reference: https://www.radiotap.org/fields/TX%20attenuation.html
   //
   if (m_present & RADIOTAP_TX_ATTENUATION) // bit 8
     {
@@ -185,6 +194,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // Transmit power expressed as decibel distance from max power
   // set at factory calibration (0 is max power).
+  // Reference: https://www.radiotap.org/fields/dB%20TX%20attenuation.html
   //
   if (m_present & RADIOTAP_DB_TX_ATTENUATION) // bit 9
     {
@@ -194,6 +204,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // Transmit power expressed as dBm (decibels from a 1 milliwatt reference).
   // This is the absolute power level measured at the antenna port.
+  // Reference: https://www.radiotap.org/fields/dBm%20TX%20power.html
   //
   if (m_present & RADIOTAP_DBM_TX_POWER) // bit 10
     {
@@ -203,6 +214,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
   //
   // Unitless indication of the Rx/Tx antenna for this packet.
   // The first antenna is antenna 0.
+  // Reference: https://www.radiotap.org/fields/Antenna.html
   //
   if (m_present & RADIOTAP_ANTENNA) // bit 11
     {
@@ -211,6 +223,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // RF signal power at the antenna (decibel difference from an arbitrary fixed reference).
+  // Reference: https://www.radiotap.org/fields/dB%20antenna%20signal.html
   //
   if (m_present & RADIOTAP_DB_ANTSIGNAL) // bit 12
     {
@@ -219,6 +232,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // RF noise power at the antenna (decibel difference from an arbitrary fixed reference).
+  // Reference: https://www.radiotap.org/fields/dB%20antenna%20noise.html
   //
   if (m_present & RADIOTAP_DB_ANTNOISE) // bit 13
     {
@@ -227,6 +241,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // Properties of received frames.
+  // Reference: https://www.radiotap.org/fields/RX%20flags.html
   //
   if (m_present & RADIOTAP_RX_FLAGS) // bit 14
     {
@@ -235,6 +250,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // MCS field.
+  // Reference: https://www.radiotap.org/fields/MCS.html
   //
   if (m_present & RADIOTAP_MCS) // bit 19
     {
@@ -245,6 +261,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // A-MPDU Status, information about the received or transmitted A-MPDU.
+  // Reference: https://www.radiotap.org/fields/A-MPDU%20status.html
   //
   if (m_present & RADIOTAP_AMPDU_STATUS) // bit 20
     {
@@ -257,6 +274,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // Information about the received or transmitted VHT frame.
+  // Reference: https://www.radiotap.org/fields/VHT.html
   //
   if (m_present & RADIOTAP_VHT) // bit 21
     {
@@ -275,6 +293,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // HE field.
+  // Reference: https://www.radiotap.org/fields/HE.html
   //
   if (m_present & RADIOTAP_HE) // bit 23
     {
@@ -289,6 +308,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // HE MU field.
+  // Reference: https://www.radiotap.org/fields/HE-MU.html
   //
   if (m_present & RADIOTAP_HE_MU) // bit 24
     {
@@ -307,6 +327,7 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
 
   //
   // HE MU other user field.
+  // Reference: https://www.radiotap.org/fields/HE-MU-other-user.html
   //
   if (m_present & RADIOTAP_HE_MU_OTHER_USER) // bit 25
     {
@@ -334,6 +355,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Time Synchronization Function Timer (when the first bit of the MPDU arrived at the MAC)
+  // Reference: https://www.radiotap.org/fields/TSFT.html
   //
   if (m_present & RADIOTAP_TSFT) // bit 0
     {
@@ -343,6 +365,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Properties of transmitted and received frames.
+  // Reference: https://www.radiotap.org/fields/Flags.html
   //
   if (m_present & RADIOTAP_FLAGS) // bit 1
     {
@@ -352,6 +375,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // TX/RX data rate in units of 500 kbps
+  // Reference: https://www.radiotap.org/fields/Rate.html
   //
   if (m_present & RADIOTAP_RATE) // bit 2
     {
@@ -361,6 +385,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Tx/Rx frequency in MHz, followed by flags.
+  // Reference: https://www.radiotap.org/fields/Channel.html
   //
   if (m_present & RADIOTAP_CHANNEL) // bit 3
     {
@@ -374,6 +399,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // The hop set and pattern for frequency-hopping radios.  We don't need it but
   // still need to account for it.
+  // Reference: https://www.radiotap.org/fields/FHSS.html
   //
   if (m_present & RADIOTAP_FHSS) // bit 4
     {
@@ -385,6 +411,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // RF signal power at the antenna, decibel difference from an arbitrary, fixed
   // reference.
+  // Reference: https://www.radiotap.org/fields/Antenna%20signal.html
   //
   if (m_present & RADIOTAP_DBM_ANTSIGNAL) // bit 5
     {
@@ -395,6 +422,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // RF noise power at the antenna, decibel difference from an arbitrary, fixed
   // reference.
+  // Reference: https://www.radiotap.org/fields/Antenna%20noise.html
   //
   if (m_present & RADIOTAP_DBM_ANTNOISE) // bit 6
     {
@@ -404,6 +432,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Quality of Barker code lock.
+  // Reference: https://www.radiotap.org/fields/Lock%20quality.html
   //
   if (m_present & RADIOTAP_LOCK_QUALITY) // bit 7
     {
@@ -415,6 +444,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // Transmit power expressed as unitless distance from max power
   // set at factory calibration (0 is max power).
+  // Reference: https://www.radiotap.org/fields/TX%20attenuation.html
   //
   if (m_present & RADIOTAP_TX_ATTENUATION) // bit 8
     {
@@ -426,6 +456,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // Transmit power expressed as decibel distance from max power
   // set at factory calibration (0 is max power).
+  // Reference: https://www.radiotap.org/fields/dB%20TX%20attenuation.html
   //
   if (m_present & RADIOTAP_DB_TX_ATTENUATION) // bit 9
     {
@@ -437,6 +468,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // Transmit power expressed as dBm (decibels from a 1 milliwatt reference).
   // This is the absolute power level measured at the antenna port.
+  // Reference: https://www.radiotap.org/fields/dBm%20TX%20power.html
   //
   if (m_present & RADIOTAP_DBM_TX_POWER) // bit 10
     {
@@ -448,6 +480,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
   //
   // Unitless indication of the Rx/Tx antenna for this packet.
   // The first antenna is antenna 0.
+  // Reference: https://www.radiotap.org/fields/Antenna.html
   //
   if (m_present & RADIOTAP_ANTENNA) // bit 11
     {
@@ -458,6 +491,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // RF signal power at the antenna (decibel difference from an arbitrary fixed reference).
+  // Reference: https://www.radiotap.org/fields/dB%20antenna%20signal.html
   //
   if (m_present & RADIOTAP_DB_ANTSIGNAL) // bit 12
     {
@@ -468,6 +502,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // RF noise power at the antenna (decibel difference from an arbitrary fixed reference).
+  // Reference: https://www.radiotap.org/fields/dB%20antenna%20noise.html
   //
   if (m_present & RADIOTAP_DB_ANTNOISE) // bit 13
     {
@@ -478,6 +513,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Properties of received frames.
+  // Reference: https://www.radiotap.org/fields/RX%20flags.html
   //
   if (m_present & RADIOTAP_RX_FLAGS) // bit 14
     {
@@ -488,6 +524,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // MCS field.
+  // Reference: https://www.radiotap.org/fields/MCS.html
   //
   if (m_present & RADIOTAP_MCS) // bit 19
     {
@@ -499,6 +536,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // A-MPDU Status, information about the received or transmitted A-MPDU.
+  // Reference: https://www.radiotap.org/fields/A-MPDU%20status.html
   //
   if (m_present & RADIOTAP_AMPDU_STATUS) // bit 20
     {
@@ -513,6 +551,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // Information about the received or transmitted VHT frame.
+  // Reference: https://www.radiotap.org/fields/VHT.html
   //
   if (m_present & RADIOTAP_VHT) // bit 21
     {
@@ -533,6 +572,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // HE field.
+  // Reference: https://www.radiotap.org/fields/HE.html
   //
   if (m_present & RADIOTAP_HE) // bit 23
     {
@@ -549,6 +589,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // HE MU field.
+  // Reference: https://www.radiotap.org/fields/HE-MU.html
   //
   if (m_present & RADIOTAP_HE_MU) // bit 24
     {
@@ -568,6 +609,7 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
 
   //
   // HE MU other user field.
+  // Reference: https://www.radiotap.org/fields/HE-MU-other-user.html
   //
   if (m_present & RADIOTAP_HE_MU_OTHER_USER) // bit 25
     {
