@@ -21,6 +21,7 @@ New user-visible features
 Bugs fixed
 ----------
 - (wifi) Fix Minstrel HT statistics update window duration
+- (wifi) Fix wrong calculations for 1024-QAM when using NistErrorRateModel
 
 Release 3.32
 ============
