@@ -1189,7 +1189,7 @@ QosTxop::NeedFragmentation (void) const
       || (m_stationManager->GetHtSupported ()
           && m_currentHdr.IsQosData ()
           && GetBaAgreementEstablished (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr))
-          && GetLow ()->GetMpduAggregator () != 0
+          && GetLow ()->GetMpduAggregator () != 0 && m_stationManager->GetHtSupported (m_currentHdr.GetAddr1 ())
           && GetLow ()->GetMpduAggregator ()->GetMaxAmpduSize (m_currentHdr.GetAddr1 (), GetTid (m_currentPacket, m_currentHdr),
                                                                WIFI_MOD_CLASS_HT) >= m_currentPacket->GetSize ()))
     {
@@ -1534,7 +1534,7 @@ QosTxop::SetupBlockAckIfNeeded (void)
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
   uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
-      || (GetLow ()->GetMpduAggregator () != 0 && GetLow ()->GetMpduAggregator ()->GetMaxAmpduSize (recipient, tid, WIFI_MOD_CLASS_HT) > 0 && packets > 1)
+      || (GetLow ()->GetMpduAggregator () != 0 && m_stationManager->GetHtSupported (recipient) && GetLow ()->GetMpduAggregator ()->GetMaxAmpduSize (recipient, tid, WIFI_MOD_CLASS_HT) > 0 && packets > 1)
       || m_stationManager->GetVhtSupported ()
       || m_stationManager->GetHeSupported ())
     {

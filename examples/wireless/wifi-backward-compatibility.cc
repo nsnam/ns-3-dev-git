@@ -21,6 +21,7 @@
 #include "ns3/command-line.h"
 #include "ns3/config.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/log.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/ssid.h"
@@ -131,6 +132,7 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::" + staRaa + "WifiManager");
 
   mac.SetType ("ns3::StaWifiMac",
+               "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
   NetDeviceContainer staDevice;
@@ -140,6 +142,7 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::" + apRaa + "WifiManager");
 
   mac.SetType ("ns3::ApWifiMac",
+               "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevice;
