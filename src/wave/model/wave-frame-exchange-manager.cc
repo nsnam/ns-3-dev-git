@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2008 INRIA
- * Copyright (c) 2013 Dalian University of Technology
+ * Copyright (c) 2020 Universita' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,51 +15,54 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- *         Junling Bu <linlinjavaer@gmail.com>
+ * Author: Stefano Avallone <stavallo@unina.it>
  */
 
 #include "ns3/log.h"
-#include "ns3/event-id.h"
-#include "ns3/wifi-phy.h"
-#include "wave-mac-low.h"
+#include "ns3/abort.h"
+#include "ns3/wifi-protection.h"
+#include "ns3/wifi-acknowledgment.h"
+#include "wave-frame-exchange-manager.h"
 #include "higher-tx-tag.h"
+
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("WaveMacLow");
+NS_LOG_COMPONENT_DEFINE ("WaveFrameExchangeManager");
 
-NS_OBJECT_ENSURE_REGISTERED (WaveMacLow);
+NS_OBJECT_ENSURE_REGISTERED (WaveFrameExchangeManager);
 
 TypeId
-WaveMacLow::GetTypeId (void)
+WaveFrameExchangeManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::WaveMacLow")
-    .SetParent<MacLow> ()
+  static TypeId tid = TypeId ("ns3::WaveFrameExchangeManager")
+    .SetParent<QosFrameExchangeManager> ()
+    .AddConstructor<WaveFrameExchangeManager> ()
     .SetGroupName ("Wave")
-    .AddConstructor<WaveMacLow> ()
   ;
   return tid;
 }
-WaveMacLow::WaveMacLow ()
-{
-  NS_LOG_FUNCTION (this);
-}
-WaveMacLow::~WaveMacLow ()
+
+WaveFrameExchangeManager::WaveFrameExchangeManager ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-void
-WaveMacLow::SetWaveNetDevice (Ptr<WaveNetDevice> device)
+WaveFrameExchangeManager::~WaveFrameExchangeManager ()
 {
-  m_scheduler  =  device->GetChannelScheduler ();
-  m_coordinator =  device->GetChannelCoordinator ();
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
+void
+WaveFrameExchangeManager::SetWaveNetDevice (Ptr<WaveNetDevice> device)
+{
+  m_scheduler = device->GetChannelScheduler ();
+  m_coordinator = device->GetChannelCoordinator ();
   NS_ASSERT (m_scheduler != 0 && m_coordinator != 0);
 }
 
 WifiTxVector
-WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
+WaveFrameExchangeManager::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
 {
   NS_LOG_FUNCTION (this << *item);
   HigherLayerTxVectorTag datatag;
@@ -70,7 +72,7 @@ WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
   // will be determined by MAC layer itself.
   if (!found)
     {
-      return MacLow::GetDataTxVector (item);
+      return m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader ());
     }
 
   // if high layer has set the transmit parameters with non-adaption mode,
@@ -83,7 +85,7 @@ WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
   // if high layer has set the transmit parameters with non-adaption mode,
   // the real transmit parameters are determined by both high layer and MAC layer.
   WifiTxVector txHigher = datatag.GetTxVector ();
-  WifiTxVector txMac = MacLow::GetDataTxVector (item);
+  WifiTxVector txMac = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (item->GetHeader ());
   WifiTxVector txAdapter;
   txAdapter.SetChannelWidth (10);
   // the DataRate set by higher layer is the minimum data rate
@@ -105,36 +107,61 @@ WaveMacLow::GetDataTxVector (Ptr<const WifiMacQueueItem> item) const
   return txAdapter;
 }
 
-void
-WaveMacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
-                               MacLowTransmissionParameters params,
-                               Ptr<Txop> dca)
+bool
+WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
 {
-  NS_LOG_FUNCTION (this << *mpdu << params << dca);
-  Ptr<WifiPhy> phy = MacLow::GetPhy ();
-  uint32_t curChannel = phy->GetChannelNumber ();
-  // if current channel access is not AlternatingAccess, just do as MacLow.
-  if (!m_scheduler->IsAlternatingAccessAssigned (curChannel))
+  NS_LOG_FUNCTION (this << dcf);
+
+  uint32_t curChannel = m_phy->GetChannelNumber ();
+  // if current channel access is not AlternatingAccess, just do as FrameExchangeManager.
+  if (m_scheduler == 0 || !m_scheduler->IsAlternatingAccessAssigned (curChannel))
     {
-      MacLow::StartTransmission (mpdu, params, dca);
-      return;
+      return FrameExchangeManager::StartTransmission (dcf);
     }
 
-  Time transmissionTime = MacLow::CalculateTransmissionTime (mpdu->GetPacket (), &mpdu->GetHeader (), params);
+  m_txTimer.Cancel ();
+  m_dcf = dcf;
+
+  Ptr<WifiMacQueue> queue = dcf->GetWifiMacQueue ();
+
+  if (queue->IsEmpty ())
+    {
+      NS_LOG_DEBUG ("Queue empty");
+      m_dcf->NotifyChannelReleased ();
+      m_dcf = 0;
+      return false;
+    }
+
+  m_dcf->NotifyChannelAccessed ();
+  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPairs ().front ().it;
+  NS_ASSERT (mpdu != 0);
+
+  // assign a sequence number if this is not a fragment nor a retransmission
+  if (!mpdu->IsFragment () && !mpdu->GetHeader ().IsRetry ())
+    {
+      uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&mpdu->GetHeader ());
+      mpdu->GetHeader ().SetSequenceNumber (sequence);
+    }
+
+  WifiTxParameters txParams;
+  txParams.m_txVector = GetDataTxVector (mpdu);
   Time remainingTime = m_coordinator->NeedTimeToGuardInterval ();
 
-  if (transmissionTime > remainingTime)
+  if (!TryAddMpdu (mpdu, txParams, remainingTime))
     {
       // The attempt for this transmission will be canceled;
       // and this packet will be pending for next transmission by QosTxop class
-      NS_LOG_DEBUG ("Because the required transmission time = " << transmissionTime.As (Time::MS)
-                                                                << " exceeds the remainingTime = " << remainingTime.As (Time::MS)
-                                                                << ", currently this packet will not be transmitted.");
+      NS_LOG_DEBUG ("Because the required transmission time exceeds the remainingTime = "
+                    << remainingTime.As (Time::MS)
+                    << ", currently this packet will not be transmitted.");
     }
   else
     {
-      MacLow::StartTransmission (mpdu, params, dca);
+      SendMpduWithProtection (mpdu, txParams);
+      return true;
     }
+  return false;
 }
 
-} // namespace ns3
+
+} //namespace ns3

@@ -9,7 +9,7 @@
 def build(bld):
     module = bld.create_ns3_module('wave', ['core','wifi', 'propagation', 'internet'])
     module.source = [
-        'model/wave-mac-low.cc',
+        'model/wave-frame-exchange-manager.cc',
         'model/ocb-wifi-mac.cc',
         'model/vendor-specific-action.cc',
         'model/channel-coordinator.cc',
@@ -42,7 +42,7 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'wave'
     headers.source = [
-        'model/wave-mac-low.h',
+        'model/wave-frame-exchange-manager.h',
         'model/ocb-wifi-mac.h',
         'model/vendor-specific-action.h',
         'model/channel-coordinator.h',

@@ -422,37 +422,8 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
         {
           Ptr<WifiMac> wifiMac = macHelper.Create (device, WIFI_STANDARD_80211p);
           Ptr<OcbWifiMac> ocbMac = DynamicCast<OcbWifiMac> (wifiMac);
-          // we use WaveMacLow to replace original MacLow
-          ocbMac->EnableForWave (device);
           ocbMac->SetWifiRemoteStationManager (m_stationManager.Create<WifiRemoteStationManager> ());
-          // Install ack policy selector
-          BooleanValue qosSupported;
-          PointerValue ptr;
-          Ptr<WifiAckPolicySelector> ackSelector;
-
-          ocbMac->GetAttributeFailSafe ("QosSupported", qosSupported);
-          if (qosSupported.Get ())
-            {
-              ocbMac->GetAttributeFailSafe ("BE_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_BE].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-
-              ocbMac->GetAttributeFailSafe ("BK_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_BK].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-
-              ocbMac->GetAttributeFailSafe ("VI_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_VI].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-
-              ocbMac->GetAttributeFailSafe ("VO_Txop", ptr);
-              ackSelector = m_ackPolicySelector[AC_VO].Create<WifiAckPolicySelector> ();
-              ackSelector->SetQosTxop (ptr.Get<QosTxop> ());
-              ptr.Get<QosTxop> ()->SetAckPolicySelector (ackSelector);
-            }
+          ocbMac->EnableForWave (device);
           device->AddMac (*k, ocbMac);
         }
 

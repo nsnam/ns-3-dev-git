@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2008 INRIA
+ * Copyright (c) 2020 Universita' degli Studi di Napoli Federico II
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,23 +17,21 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *         Junling Bu <linlinjavaer@gmail.com>
+ *         Stefano Avallone <stavallo@unina.it>
  */
-#ifndef WAVE_MAC_LOW_H
-#define WAVE_MAC_LOW_H
 
-#include "ns3/mac-low.h"
-#include "ns3/msdu-aggregator.h"
-#include "ns3/mpdu-aggregator.h"
-#include "ns3/wifi-psdu.h"
+#ifndef WAVE_FRAME_EXCHANGE_MANAGER_H
+#define WAVE_FRAME_EXCHANGE_MANAGER_H
+
+#include "ns3/qos-frame-exchange-manager.h"
 #include "wave-net-device.h"
 
 namespace ns3 {
-class WaveNetDevice;
-class WifiMacQueueItem;
 
 /**
  * \ingroup wave
- * This class is the subclass of MacLow to provide support for MAC extension
+ *
+ * This class is the subclass of QosFrameExchangeManager to provide support for MAC extension
  * (1) allows higher layer control data rate and tx power level.
  *     If higher layer does not set, they will be determined by WifiRemoteStationManager
  *          of MAC layer;
@@ -46,7 +44,7 @@ class WifiMacQueueItem;
  *      However, the feature is extended further here that the required transmit time is determined
  *      by MAC layer itself rather than PHY layer, which contains RTS/CTS, DATA and ACK time.
  */
-class WaveMacLow : public MacLow
+class WaveFrameExchangeManager : public QosFrameExchangeManager
 {
 public:
   /**
@@ -54,25 +52,17 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  WaveMacLow ();
-  virtual ~WaveMacLow ();
+  WaveFrameExchangeManager ();
+  virtual ~WaveFrameExchangeManager ();
+
+  // Overridden from FrameExchangeManager
+  virtual bool StartTransmission (Ptr<Txop> dcf);
 
   /**
-   * \param device WaveNetDevice associated with WaveMacLow
+   * \param device WaveNetDevice associated with WaveFrameExchangeManager
    */
   void SetWaveNetDevice (Ptr<WaveNetDevice> device);
 
-  /**
-   * \param mpdu packet to send
-   * \param parameters the transmission parameters to use for this packet.
-   * \param txop pointer to the calling Txop.
-   *
-   * Start the transmission of the input packet and notify the listener
-   * of transmission events.
-   */
-  virtual void StartTransmission (Ptr<WifiMacQueueItem> mpdu,
-                                  MacLowTransmissionParameters parameters,
-                                  Ptr<Txop> txop);
 private:
   /**
    * Return a TXVECTOR for the DATA frame given the destination.
@@ -84,10 +74,10 @@ private:
    */
   virtual WifiTxVector GetDataTxVector (Ptr<const WifiMacQueueItem> item) const;
 
-  Ptr<ChannelScheduler> m_scheduler; ///< the channel scheduler
+  Ptr<ChannelScheduler> m_scheduler;     ///< the channel scheduler
   Ptr<ChannelCoordinator> m_coordinator; ///< the channel coordinator
 };
 
-} // namespace ns3
+} //namespace ns3
 
-#endif /* WAVE_MAC_LOW_H*/
+#endif /* VHT_FRAME_EXCHANGE_MANAGER_H */
