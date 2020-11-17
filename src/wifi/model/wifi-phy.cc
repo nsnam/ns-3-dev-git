@@ -3292,7 +3292,7 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
   WifiMode mode = event->GetTxVector ().GetMode (staId);
   NS_LOG_DEBUG ("mode=" << (mode.GetDataRate (event->GetTxVector (), staId)) <<
                 ", snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per << ", size=" << psdu->GetSize () <<
-                ", relativeStart = " << relativeMpduStart.GetNanoSeconds () << "ns, duration = " << mpduDuration.GetNanoSeconds () << "ns");
+                ", relativeStart = " << relativeMpduStart.As (Time::NS) << ", duration = " << mpduDuration.As (Time::NS));
 
   // There are two error checks: PER and receive error model check.
   // PER check models is typical for Wi-Fi and is based on signal modulation;

@@ -205,7 +205,7 @@ WifiMacQueueItem::Print (std::ostream& os) const
   os << "size=" << m_packet->GetSize ()
      << ", to=" << m_header.GetAddr1 ()
      << ", seqN=" << m_header.GetSequenceNumber ()
-     << ", lifetime=" << (Simulator::Now () - m_tstamp).GetMicroSeconds () << "us";
+     << ", lifetime=" << (Simulator::Now () - m_tstamp).As (Time::US);
   if (m_header.IsQosData ())
     {
       os << ", tid=" << +m_header.GetQosTid ();
