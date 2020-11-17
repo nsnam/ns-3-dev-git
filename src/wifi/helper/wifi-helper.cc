@@ -1026,7 +1026,10 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
   LogComponentEnable ("Txop", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiAckPolicySelector", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiDefaultAckManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiDefaultProtectionManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueue", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueueItem", LOG_LEVEL_ALL);
@@ -1034,12 +1037,14 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPpdu", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiProtectionManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPsdu", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiRadioEnergyModel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiRemoteStationManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiSpectrumPhyInterface", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiSpectrumSignalParameters", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiTxCurrentModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiTxParameters", LOG_LEVEL_ALL);
   LogComponentEnable ("YansErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
