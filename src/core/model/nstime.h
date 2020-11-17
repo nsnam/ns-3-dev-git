@@ -547,6 +547,16 @@ public:
   /**@}*/  // Get Times as Numbers in Specified Units
 
   /**
+   * Round a Time to a specific unit.
+   * Rounding is to nearest integer.
+   * \return The Time rounded to the specific unit.
+   */
+  Time RoundTo (enum Unit unit) const
+  {
+    return From (this->To (unit).Round (), unit);
+  }
+
+  /**
    * Attach a unit to a Time, to facilitate output in a specific unit.
    *
    * For example,
