@@ -138,6 +138,13 @@ public:
   void SetMode (WifiMode mode, uint16_t staId);
 
   /**
+   * Get the modulation class specified by this TXVECTOR.
+   *
+   * \return the Modulation Class specified by this TXVECTOR
+   */
+  WifiModulationClass GetModulationClass (void) const;
+
+  /**
    * \returns the transmission power level
    */
   uint8_t GetTxPowerLevel (void) const;
