@@ -27,19 +27,51 @@
 #include "wifi-tx-vector.h"
 #include "wifi-phy-band.h"
 #include "wifi-ppdu.h"
+#include "wifi-spectrum-signal-parameters.h"
+#include "wifi-mpdu-type.h"
 #include "ns3/event-id.h"
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
+#include "ns3/wifi-spectrum-value-helper.h"
 #include <list>
 #include <map>
 
 /**
  * \file
  * \ingroup wifi
- * Declaration of ns3::PhyEntity class.
+ * Declaration of:
+ * - ns3::PhyEntity class
+ * - ns3::SignalNoiseDbm, ns3::MpduInfo, and ns3::RxSignalInfo structs
+ * - ns3::RxPowerWattPerChannelBand typedef
  */
 
 namespace ns3 {
+
+/// SignalNoiseDbm structure
+struct SignalNoiseDbm
+{
+  double signal; ///< signal strength in dBm
+  double noise;  ///< noise power in dBm
+};
+
+/// MpduInfo structure
+struct MpduInfo
+{
+  MpduType type;          ///< type of MPDU
+  uint32_t mpduRefNumber; ///< MPDU ref number
+};
+
+/// RxSignalInfo structure containing info on the received signal
+struct RxSignalInfo
+{
+  double snr;  ///< SNR in linear scale
+  double rssi; ///< RSSI in dBm
+};
+
+/**
+ * A map of the received power (Watts) for each band
+ */
+typedef std::map <WifiSpectrumBand, double> RxPowerWattPerChannelBand;
 
 class WifiPsdu;
 class WifiPhy;

@@ -21,7 +21,6 @@
 #ifndef INTERFERENCE_HELPER_H
 #define INTERFERENCE_HELPER_H
 
-#include "ns3/wifi-spectrum-value-helper.h"
 #include "phy-entity.h"
 
 namespace ns3 {
@@ -29,11 +28,6 @@ namespace ns3 {
 class WifiPpdu;
 class WifiPsdu;
 class ErrorRateModel;
-
-/**
- * A map of the received power (Watts) for each band
- */
-typedef std::map <WifiSpectrumBand, double> RxPowerWattPerChannelBand;
 
 /**
  * \ingroup wifi

@@ -27,7 +27,6 @@
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 #include "wifi-ppdu.h"
-#include "wifi-spectrum-signal-parameters.h"
 #include "phy-entity.h"
 
 namespace ns3 {
@@ -41,33 +40,11 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 
-
-/// SignalNoiseDbm structure
-struct SignalNoiseDbm
-{
-  double signal; ///< in dBm
-  double noise; ///< in dBm
-};
-
-/// MpduInfo structure
-struct MpduInfo
-{
-  MpduType type; ///< type
-  uint32_t mpduRefNumber; ///< MPDU ref number
-};
-
 /// Parameters for received HE-SIG-A for OBSS_PD based SR
 struct HeSigAParameters
 {
   double rssiW; ///< RSSI in W
   uint8_t bssColor; ///< BSS color
-};
-
-/// RxSignalInfo structure containing info on the received signal
-struct RxSignalInfo
-{
-  double snr;  ///< SNR in linear scale
-  double rssi; ///< RSSI in dBm
 };
 
 /**
