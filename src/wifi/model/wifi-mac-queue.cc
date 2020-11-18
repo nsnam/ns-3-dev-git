@@ -567,4 +567,45 @@ WifiMacQueue::GetNBytes (void)
   return QueueBase::GetNBytes ();
 }
 
+bool
+WifiMacQueue::DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item)
+{
+  Iterator ret;
+  if (Queue<WifiMacQueueItem>::DoEnqueue (pos, item, ret))
+    {
+      // set item's information about its position in the queue
+      item->m_queueIts = {{this, ret}};
+      return true;
+    }
+  return false;
+}
+
+Ptr<WifiMacQueueItem>
+WifiMacQueue::DoDequeue (ConstIterator pos)
+{
+  Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoDequeue (pos);
+
+  if (item != 0)
+    {
+      NS_ASSERT (item->m_queueIts.size () == 1);
+      item->m_queueIts.clear ();
+    }
+
+  return item;
+}
+
+Ptr<WifiMacQueueItem>
+WifiMacQueue::DoRemove (ConstIterator pos)
+{
+  Ptr<WifiMacQueueItem> item = Queue<WifiMacQueueItem>::DoRemove (pos);
+
+  if (item != 0)
+    {
+      NS_ASSERT (item->m_queueIts.size () == 1);
+      item->m_queueIts.clear ();
+    }
+
+  return item;
+}
+
 } //namespace ns3

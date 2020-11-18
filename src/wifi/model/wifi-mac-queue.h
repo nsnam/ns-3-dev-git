@@ -312,6 +312,31 @@ private:
    * \return true if the item is removed, false otherwise
    */
   bool TtlExceeded (ConstIterator &it);
+  /**
+   * Wrapper for the DoEnqueue method provided by the base class that additionally
+   * sets the iterator field of the item, if insertion succeeded.
+   *
+   * \param pos the position before where the item will be inserted
+   * \param item the item to enqueue
+   * \return true if success, false if the packet has been dropped.
+   */
+  bool DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item);
+  /**
+   * Wrapper for the DoDequeue method provided by the base class that additionally
+   * resets the iterator field of the item, if an item was dequeued.
+   *
+   * \param pos the position of the item to dequeue
+   * \return the item.
+   */
+  Ptr<WifiMacQueueItem> DoDequeue (ConstIterator pos);
+  /**
+   * Wrapper for the DoRemove method provided by the base class that additionally
+   * resets the iterator field of the item, if an item was dropped.
+   *
+   * \param pos the position of the item to drop
+   * \return the item.
+   */
+  Ptr<WifiMacQueueItem> DoRemove (ConstIterator pos);
 
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue

@@ -27,6 +27,7 @@
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-utils.h"
+#include "msdu-aggregator.h"
 
 namespace ns3 {
 
@@ -83,9 +84,21 @@ WifiMacQueueItem::GetTimeStamp (void) const
 }
 
 uint32_t
+WifiMacQueueItem::GetPacketSize (void) const
+{
+  return m_packet->GetSize ();
+}
+
+uint32_t
 WifiMacQueueItem::GetSize (void) const
 {
-  return m_packet->GetSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
+  return GetPacketSize () + m_header.GetSerializedSize () + WIFI_MAC_FCS_LENGTH;
+}
+
+bool
+WifiMacQueueItem::IsFragment (void) const
+{
+  return m_header.IsMoreFragments () || m_header.GetFragmentNumber () > 0;
 }
 
 Ptr<Packet>
@@ -110,6 +123,7 @@ WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
       // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
       Ptr<const WifiMacQueueItem> firstMsdu = Create<const WifiMacQueueItem> (*this);
       m_packet = Create<Packet> ();
+      m_queueIts.clear ();
       DoAggregate (firstMsdu);
 
       m_header.SetQosAmsdu ();
@@ -156,6 +170,7 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
   hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
 
   m_msduList.push_back ({msdu->GetPacket (), hdr});
+  m_queueIts.insert (m_queueIts.end (), msdu->m_queueIts.begin (), msdu->m_queueIts.end ());
 
   // build the A-MSDU
   NS_ASSERT (m_packet);
@@ -186,14 +201,25 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
   m_tstamp = Max (m_tstamp, msdu->GetTimeStamp ());
 }
 
+bool
+WifiMacQueueItem::IsQueued (void) const
+{
+  return !m_queueIts.empty ();
+}
 
-MsduAggregator::DeaggregatedMsdusCI
+const std::list<WifiMacQueueItem::QueueIteratorPair>&
+WifiMacQueueItem::GetQueueIteratorPairs (void) const
+{
+  return m_queueIts;
+}
+
+WifiMacQueueItem::DeaggregatedMsdusCI
 WifiMacQueueItem::begin (void)
 {
   return m_msduList.begin ();
 }
 
-MsduAggregator::DeaggregatedMsdusCI
+WifiMacQueueItem::DeaggregatedMsdusCI
 WifiMacQueueItem::end (void)
 {
   return m_msduList.end ();
@@ -202,9 +228,11 @@ WifiMacQueueItem::end (void)
 void
 WifiMacQueueItem::Print (std::ostream& os) const
 {
-  os << "size=" << m_packet->GetSize ()
+  os << m_header.GetTypeString ()
+     << ", payloadSize=" << GetPacketSize ()
      << ", to=" << m_header.GetAddr1 ()
      << ", seqN=" << m_header.GetSequenceNumber ()
+     << ", duration/ID=" << m_header.GetDuration ()
      << ", lifetime=" << (Simulator::Now () - m_tstamp).As (Time::US);
   if (m_header.IsQosData ())
     {
@@ -222,6 +250,7 @@ WifiMacQueueItem::Print (std::ostream& os) const
           os << ", ack=BlockAck";
         }
     }
+  os << ", packet=" << m_packet;
 }
 
 std::ostream & operator << (std::ostream &os, const WifiMacQueueItem &item)

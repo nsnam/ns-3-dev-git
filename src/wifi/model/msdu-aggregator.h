@@ -25,14 +25,13 @@
 #include "ns3/nstime.h"
 #include "wifi-mode.h"
 #include "qos-utils.h"
+#include "wifi-mac-queue-item.h"
 #include <map>
 
 namespace ns3 {
 
-class AmsduSubframeHeader;
 class Packet;
 class QosTxop;
-class WifiMacQueueItem;
 class WifiTxVector;
 
 /**
@@ -42,10 +41,6 @@ class WifiTxVector;
 class MsduAggregator : public Object
 {
 public:
-  /// DeaggregatedMsdus typedef
-  typedef std::list<std::pair<Ptr<const Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
-  /// DeaggregatedMsdusCI typedef
-  typedef std::list<std::pair<Ptr<const Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
   /// EDCA queues typedef
   typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
 
@@ -119,7 +114,7 @@ public:
    * \param aggregatedPacket the aggregated packet.
    * \returns DeaggregatedMsdus.
    */
-  static DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
+  static WifiMacQueueItem::DeaggregatedMsdus Deaggregate (Ptr<Packet> aggregatedPacket);
 
   /**
    * Set the map of EDCA queues.

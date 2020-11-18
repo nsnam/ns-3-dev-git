@@ -28,6 +28,7 @@
 #include "originator-block-ack-agreement.h"
 #include "block-ack-type.h"
 #include "wifi-mac-queue-item.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 

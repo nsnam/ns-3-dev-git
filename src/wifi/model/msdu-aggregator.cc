@@ -22,7 +22,6 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "msdu-aggregator.h"
-#include "amsdu-subframe-header.h"
 #include "qos-txop.h"
 #include "mpdu-aggregator.h"
 #include "wifi-remote-station-manager.h"
@@ -271,11 +270,11 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   return maxAmsduSize;
 }
 
-MsduAggregator::DeaggregatedMsdus
+WifiMacQueueItem::DeaggregatedMsdus
 MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  DeaggregatedMsdus set;
+  WifiMacQueueItem::DeaggregatedMsdus set;
 
   AmsduSubframeHeader hdr;
   Ptr<Packet> extractedMsdu = Create<Packet> ();
