@@ -669,6 +669,15 @@ public:
    */
   WifiTxVector GetRtsTxVector (Mac48Address address);
   /**
+   * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
+   * used by the sender.
+   *
+   * \param to the MAC address of the CTS receiver
+   * \param rtsTxMode the mode of the RTS used by the sender
+   * \return TXVECTOR for the CTS
+   */
+  WifiTxVector GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const;
+  /**
    * Since CTS-to-self parameters are not dependent on the station,
    * it is implemented in wifi remote station manager
    *
@@ -676,6 +685,31 @@ public:
    *         transmission of the data packet itself.
    */
   WifiTxVector GetCtsToSelfTxVector (void);
+  /**
+   * Return a TXVECTOR for the Ack frame given the destination and the mode of the Data
+   * used by the sender.
+   *
+   * \param to the MAC address of the Ack receiver
+   * \param dataTxMode the mode of the Data used by the sender
+   * \return TXVECTOR for the Ack
+   */
+  WifiTxVector GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
+  /**
+   * Return a TXVECTOR for the BlockAck frame given the destination and the mode of the Data
+   * used by the sender.
+   *
+   * \param to the MAC address of the BlockAck receiver
+   * \param dataTxMode the mode of the Data used by the sender
+   * \return TXVECTOR for the BlockAck
+   */
+  WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
+  /**
+   * Get control answer mode function.
+   *
+   * \param reqMode request mode
+   * \return control answer mode
+   */
+  WifiMode GetControlAnswerMode (WifiMode reqMode) const;
 
   /**
    * Should be invoked whenever the RtsTimeout associated to a transmission

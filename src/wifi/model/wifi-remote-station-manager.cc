@@ -608,6 +608,196 @@ WifiRemoteStationManager::GetRtsTxVector (Mac48Address address)
   return DoGetRtsTxVector (Lookup (address));
 }
 
+WifiTxVector
+WifiRemoteStationManager::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const
+{
+  NS_ASSERT (!to.IsGroup ());
+  WifiMode ctsMode = GetControlAnswerMode (rtsTxMode);
+  WifiTxVector v;
+  v.SetMode (ctsMode);
+  v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
+  v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, m_wifiPhy->GetChannelWidth ()));
+  uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  v.SetGuardInterval (ctsTxGuardInterval);
+  v.SetNss (1);
+  return v;
+}
+
+WifiTxVector
+WifiRemoteStationManager::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const
+{
+  NS_ASSERT (!to.IsGroup ());
+  WifiMode ackMode = GetControlAnswerMode (dataTxMode);
+  WifiTxVector v;
+  v.SetMode (ackMode);
+  v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
+  v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, m_wifiPhy->GetChannelWidth ()));
+  uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  v.SetGuardInterval (ackTxGuardInterval);
+  v.SetNss (1);
+  return v;
+}
+
+WifiTxVector
+WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const
+{
+  NS_ASSERT (!to.IsGroup ());
+  WifiMode blockAckMode = GetControlAnswerMode (dataTxMode);
+  WifiTxVector v;
+  v.SetMode (blockAckMode);
+  v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
+  v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, m_wifiPhy->GetChannelWidth ()));
+  uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
+  v.SetGuardInterval (blockAckTxGuardInterval);
+  v.SetNss (1);
+  return v;
+}
+
+WifiMode
+WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode) const
+{
+  /**
+   * The standard has relatively unambiguous rules for selecting a
+   * control response rate (the below is quoted from IEEE 802.11-2012,
+   * Section 9.7):
+   *
+   * To allow the transmitting STA to calculate the contents of the
+   * Duration/ID field, a STA responding to a received frame shall
+   * transmit its Control Response frame (either CTS or Ack), other
+   * than the BlockAck control frame, at the highest rate in the
+   * BSSBasicRateSet parameter that is less than or equal to the
+   * rate of the immediately previous frame in the frame exchange
+   * sequence (as defined in Annex G) and that is of the same
+   * modulation class (see Section 9.7.8) as the received frame...
+   */
+  NS_LOG_FUNCTION (this << reqMode);
+  WifiMode mode = GetDefaultMode ();
+  bool found = false;
+  //First, search the BSS Basic Rate set
+  for (uint8_t i = 0; i < GetNBasicModes (); i++)
+    {
+      WifiMode testMode = GetBasicMode (i);
+      if ((!found || testMode.IsHigherDataRate (mode))
+          && (!testMode.IsHigherDataRate (reqMode))
+          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), testMode.GetModulationClass ())))
+        {
+          mode = testMode;
+          //We've found a potentially-suitable transmit rate, but we
+          //need to continue and consider all the basic rates before
+          //we can be sure we've got the right one.
+          found = true;
+        }
+    }
+  if (GetHtSupported ())
+    {
+      if (!found)
+        {
+          mode = GetDefaultMcs ();
+          for (uint8_t i = 0; i != GetNBasicMcs (); i++)
+            {
+              WifiMode testMode = GetBasicMcs (i);
+              if ((!found || testMode.IsHigherDataRate (mode))
+                  && (!testMode.IsHigherDataRate (reqMode))
+                  && (testMode.GetModulationClass () == reqMode.GetModulationClass ()))
+                {
+                  mode = testMode;
+                  //We've found a potentially-suitable transmit rate, but we
+                  //need to continue and consider all the basic rates before
+                  //we can be sure we've got the right one.
+                  found = true;
+                }
+            }
+        }
+    }
+  //If we found a suitable rate in the BSSBasicRateSet, then we are
+  //done and can return that mode.
+  if (found)
+    {
+      NS_LOG_DEBUG ("WifiRemoteStationManager::GetControlAnswerMode returning " << mode);
+      return mode;
+    }
+
+  /**
+   * If no suitable basic rate was found, we search the mandatory
+   * rates. The standard (IEEE 802.11-2007, Section 9.6) says:
+   *
+   *   ...If no rate contained in the BSSBasicRateSet parameter meets
+   *   these conditions, then the control frame sent in response to a
+   *   received frame shall be transmitted at the highest mandatory
+   *   rate of the PHY that is less than or equal to the rate of the
+   *   received frame, and that is of the same modulation class as the
+   *   received frame. In addition, the Control Response frame shall
+   *   be sent using the same PHY options as the received frame,
+   *   unless they conflict with the requirement to use the
+   *   BSSBasicRateSet parameter.
+   *
+   * \todo Note that we're ignoring the last sentence for now, because
+   * there is not yet any manipulation here of PHY options.
+   */
+  for (uint8_t idx = 0; idx < m_wifiPhy->GetNModes (); idx++)
+    {
+      WifiMode thismode = m_wifiPhy->GetMode (idx);
+      /* If the rate:
+       *
+       *  - is a mandatory rate for the PHY, and
+       *  - is equal to or faster than our current best choice, and
+       *  - is less than or equal to the rate of the received frame, and
+       *  - is of the same modulation class as the received frame
+       *
+       * ...then it's our best choice so far.
+       */
+      if (thismode.IsMandatory ()
+          && (!found || thismode.IsHigherDataRate (mode))
+          && (!thismode.IsHigherDataRate (reqMode))
+          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), thismode.GetModulationClass ())))
+        {
+          mode = thismode;
+          //As above; we've found a potentially-suitable transmit
+          //rate, but we need to continue and consider all the
+          //mandatory rates before we can be sure we've got the right one.
+          found = true;
+        }
+    }
+  if (GetHtSupported () )
+    {
+      for (uint8_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
+        {
+          WifiMode thismode = m_wifiPhy->GetMcs (idx);
+          if (thismode.IsMandatory ()
+              && (!found || thismode.IsHigherDataRate (mode))
+              && (!thismode.IsHigherCodeRate (reqMode))
+              && (thismode.GetModulationClass () == reqMode.GetModulationClass ()))
+            {
+              mode = thismode;
+              //As above; we've found a potentially-suitable transmit
+              //rate, but we need to continue and consider all the
+              //mandatory rates before we can be sure we've got the right one.
+              found = true;
+            }
+        }
+    }
+
+  /**
+   * If we still haven't found a suitable rate for the response then
+   * someone has messed up the simulation configuration. This probably means
+   * that the WifiPhyStandard is not set correctly, or that a rate that
+   * is not supported by the PHY has been explicitly requested.
+   *
+   * Either way, it is serious - we can either disobey the standard or
+   * fail, and I have chosen to do the latter...
+   */
+  if (!found)
+    {
+      NS_FATAL_ERROR ("Can't find response rate for " << reqMode);
+    }
+
+  NS_LOG_DEBUG ("WifiRemoteStationManager::GetControlAnswerMode returning " << mode);
+  return mode;
+}
+
 void
 WifiRemoteStationManager::ReportRtsFailed (Mac48Address address, const WifiMacHeader *header)
 {

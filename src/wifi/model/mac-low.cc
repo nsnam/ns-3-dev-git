@@ -1218,219 +1218,29 @@ MacLow::GetResponseDuration (const MacLowTransmissionParameters& params, WifiTxV
   else if (params.MustWaitBlockAck ())
     {
       duration += GetSifs ();
-      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
+      WifiTxVector blockAckReqTxVector = m_stationManager->GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
       duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckType ());
     }
   else if (params.MustSendBlockAckRequest ())
     {
       duration += 2 * GetSifs ();
-      WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
+      WifiTxVector blockAckReqTxVector = m_stationManager->GetBlockAckTxVector (m_self, dataTxVector.GetMode ());
       duration += GetBlockAckRequestDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
       duration += GetBlockAckDuration (blockAckReqTxVector, params.GetBlockAckRequestType ());
     }
   return duration;
 }
 
-WifiMode
-MacLow::GetControlAnswerMode (WifiMode reqMode) const
-{
-  /**
-   * The standard has relatively unambiguous rules for selecting a
-   * control response rate (the below is quoted from IEEE 802.11-2012,
-   * Section 9.7):
-   *
-   * To allow the transmitting STA to calculate the contents of the
-   * Duration/ID field, a STA responding to a received frame shall
-   * transmit its Control Response frame (either CTS or Ack), other
-   * than the BlockAck control frame, at the highest rate in the
-   * BSSBasicRateSet parameter that is less than or equal to the
-   * rate of the immediately previous frame in the frame exchange
-   * sequence (as defined in Annex G) and that is of the same
-   * modulation class (see Section 9.7.8) as the received frame...
-   */
-  NS_LOG_FUNCTION (this << reqMode);
-  WifiMode mode = m_stationManager->GetDefaultMode ();
-  bool found = false;
-  //First, search the BSS Basic Rate set
-  for (uint8_t i = 0; i < m_stationManager->GetNBasicModes (); i++)
-    {
-      WifiMode testMode = m_stationManager->GetBasicMode (i);
-      if ((!found || testMode.IsHigherDataRate (mode))
-          && (!testMode.IsHigherDataRate (reqMode))
-          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), testMode.GetModulationClass ())))
-        {
-          mode = testMode;
-          //We've found a potentially-suitable transmit rate, but we
-          //need to continue and consider all the basic rates before
-          //we can be sure we've got the right one.
-          found = true;
-        }
-    }
-  if (m_stationManager->GetHtSupported ())
-    {
-      if (!found)
-        {
-          mode = m_stationManager->GetDefaultMcs ();
-          for (uint8_t i = 0; i != m_stationManager->GetNBasicMcs (); i++)
-            {
-              WifiMode testMode = m_stationManager->GetBasicMcs (i);
-              if ((!found || testMode.IsHigherDataRate (mode))
-                  && (!testMode.IsHigherDataRate (reqMode))
-                  && (testMode.GetModulationClass () == reqMode.GetModulationClass ()))
-                {
-                  mode = testMode;
-                  //We've found a potentially-suitable transmit rate, but we
-                  //need to continue and consider all the basic rates before
-                  //we can be sure we've got the right one.
-                  found = true;
-                }
-            }
-        }
-    }
-  //If we found a suitable rate in the BSSBasicRateSet, then we are
-  //done and can return that mode.
-  if (found)
-    {
-      NS_LOG_DEBUG ("MacLow::GetControlAnswerMode returning " << mode);
-      return mode;
-    }
-
-  /**
-   * If no suitable basic rate was found, we search the mandatory
-   * rates. The standard (IEEE 802.11-2007, Section 9.6) says:
-   *
-   *   ...If no rate contained in the BSSBasicRateSet parameter meets
-   *   these conditions, then the control frame sent in response to a
-   *   received frame shall be transmitted at the highest mandatory
-   *   rate of the PHY that is less than or equal to the rate of the
-   *   received frame, and that is of the same modulation class as the
-   *   received frame. In addition, the Control Response frame shall
-   *   be sent using the same PHY options as the received frame,
-   *   unless they conflict with the requirement to use the
-   *   BSSBasicRateSet parameter.
-   *
-   * \todo Note that we're ignoring the last sentence for now, because
-   * there is not yet any manipulation here of PHY options.
-   */
-  for (uint8_t idx = 0; idx < m_phy->GetNModes (); idx++)
-    {
-      WifiMode thismode = m_phy->GetMode (idx);
-      /* If the rate:
-       *
-       *  - is a mandatory rate for the PHY, and
-       *  - is equal to or faster than our current best choice, and
-       *  - is less than or equal to the rate of the received frame, and
-       *  - is of the same modulation class as the received frame
-       *
-       * ...then it's our best choice so far.
-       */
-      if (thismode.IsMandatory ()
-          && (!found || thismode.IsHigherDataRate (mode))
-          && (!thismode.IsHigherDataRate (reqMode))
-          && (IsAllowedControlAnswerModulationClass (reqMode.GetModulationClass (), thismode.GetModulationClass ())))
-        {
-          mode = thismode;
-          //As above; we've found a potentially-suitable transmit
-          //rate, but we need to continue and consider all the
-          //mandatory rates before we can be sure we've got the right one.
-          found = true;
-        }
-    }
-  if (m_stationManager->GetHtSupported () )
-    {
-      for (uint8_t idx = 0; idx < m_phy->GetNMcs (); idx++)
-        {
-          WifiMode thismode = m_phy->GetMcs (idx);
-          if (thismode.IsMandatory ()
-              && (!found || thismode.IsHigherDataRate (mode))
-              && (!thismode.IsHigherCodeRate (reqMode))
-              && (thismode.GetModulationClass () == reqMode.GetModulationClass ()))
-            {
-              mode = thismode;
-              //As above; we've found a potentially-suitable transmit
-              //rate, but we need to continue and consider all the
-              //mandatory rates before we can be sure we've got the right one.
-              found = true;
-            }
-        }
-    }
-
-  /**
-   * If we still haven't found a suitable rate for the response then
-   * someone has messed up the simulation configuration. This probably means
-   * that the WifiPhyStandard is not set correctly, or that a rate that
-   * is not supported by the PHY has been explicitly requested.
-   *
-   * Either way, it is serious - we can either disobey the standard or
-   * fail, and I have chosen to do the latter...
-   */
-  if (!found)
-    {
-      NS_FATAL_ERROR ("Can't find response rate for " << reqMode);
-    }
-
-  NS_LOG_DEBUG ("MacLow::GetControlAnswerMode returning " << mode);
-  return mode;
-}
-
-WifiTxVector
-MacLow::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const
-{
-  NS_ASSERT (!to.IsGroup ());
-  WifiMode ctsMode = GetControlAnswerMode (rtsTxMode);
-  WifiTxVector v;
-  v.SetMode (ctsMode);
-  v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
-  v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
-  v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, m_phy->GetChannelWidth ()));
-   uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
-  v.SetGuardInterval (ctsTxGuardInterval);
-  v.SetNss (1);
-  return v;
-}
-
-WifiTxVector
-MacLow::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const
-{
-  NS_ASSERT (!to.IsGroup ());
-  WifiMode ackMode = GetControlAnswerMode (dataTxMode);
-  WifiTxVector v;
-  v.SetMode (ackMode);
-  v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
-  v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
-  v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, m_phy->GetChannelWidth ()));
-   uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
-  v.SetGuardInterval (ackTxGuardInterval);
-  v.SetNss (1);
-  return v;
-}
-
-WifiTxVector
-MacLow::GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const
-{
-  NS_ASSERT (!to.IsGroup ());
-  WifiMode blockAckMode = GetControlAnswerMode (dataTxMode);
-  WifiTxVector v;
-  v.SetMode (blockAckMode);
-  v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), m_stationManager->GetShortPreambleEnabled (), m_stationManager->UseGreenfieldForDestination (to)));
-  v.SetTxPowerLevel (m_stationManager->GetDefaultTxPowerLevel ());
-  v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, m_phy->GetChannelWidth ()));
-uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, DynamicCast<WifiNetDevice> (m_phy->GetDevice ()));
-  v.SetGuardInterval (blockAckTxGuardInterval);
-  v.SetNss (1);
-  return v;
-}
-
 WifiTxVector
 MacLow::GetCtsTxVectorForRts (Mac48Address to, WifiMode rtsTxMode) const
 {
-  return GetCtsTxVector (to, rtsTxMode);
+  return m_stationManager->GetCtsTxVector (to, rtsTxMode);
 }
 
 WifiTxVector
 MacLow::GetAckTxVectorForData (Mac48Address to, WifiMode dataTxMode) const
 {
-  return GetAckTxVector (to, dataTxMode);
+  return m_stationManager->GetAckTxVector (to, dataTxMode);
 }
 
 Time
@@ -1779,7 +1589,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
       // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
       // at the PHY-TXEND.confirm primitive" (section 10.3.2.9 or 10.22.2.2 of 802.11-2016).
       // aRxPHYStartDelay equals the time to transmit the PHY header.
-      WifiTxVector ackTxVector = GetAckTxVector (m_currentPacket->GetAddr1 (),
+      WifiTxVector ackTxVector = m_stationManager->GetAckTxVector (m_currentPacket->GetAddr1 (),
                                                  dataTxVector.GetMode ());
       Time timerDelay = txDuration + GetSifs () + GetSlotTime ()
                         + m_phy->CalculatePhyPreambleAndHeaderDuration (ackTxVector);
@@ -1792,7 +1602,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
       // the timeout duration is "aSIFSTime + aSlotTime + aRxPHYStartDelay, starting
       // at the PHY-TXEND.confirm primitive" (section 10.3.2.9 or 10.22.2.2 of 802.11-2016).
       // aRxPHYStartDelay equals the time to transmit the PHY header.
-      WifiTxVector blockAckTxVector = GetBlockAckTxVector (m_currentPacket->GetAddr1 (),
+      WifiTxVector blockAckTxVector = m_stationManager->GetBlockAckTxVector (m_currentPacket->GetAddr1 (),
                                                            dataTxVector.GetMode ());
       Time timerDelay = txDuration + GetSifs () + GetSlotTime ()
                         + m_phy->CalculatePhyPreambleAndHeaderDuration (blockAckTxVector);
@@ -1954,7 +1764,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxV
   /* send a CTS when you receive a RTS
    * right after SIFS.
    */
-  WifiTxVector ctsTxVector = GetCtsTxVector (source, rtsTxVector.GetMode ());
+  WifiTxVector ctsTxVector = m_stationManager->GetCtsTxVector (source, rtsTxVector.GetMode ());
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
   cts.SetDsNotFrom ();
@@ -2050,7 +1860,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 {
   NS_LOG_FUNCTION (this);
   // send an Ack, after SIFS, when you receive a packet
-  WifiTxVector ackTxVector = GetAckTxVector (source, dataTxMode);
+  WifiTxVector ackTxVector = m_stationManager->GetAckTxVector (source, dataTxMode);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
@@ -2311,7 +2121,7 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
   hdr.SetNoRetry ();
   hdr.SetNoMoreFragments ();
 
-  WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (originator, blockAckReqTxMode);
+  WifiTxVector blockAckReqTxVector = m_stationManager->GetBlockAckTxVector (originator, blockAckReqTxMode);
 
   if (immediate)
     {
@@ -2371,7 +2181,7 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
       NS_LOG_DEBUG ("Got Implicit block Ack Req with seq " << seqNumber);
       (*i).second.FillBlockAckBitmap (&blockAck);
 
-      WifiTxVector blockAckTxVector = GetBlockAckTxVector (originator, blockAckReqTxVector.GetMode ());
+      WifiTxVector blockAckTxVector = m_stationManager->GetBlockAckTxVector (originator, blockAckReqTxVector.GetMode ());
 
       SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckTxVector.GetMode (), rxSnr);
     }

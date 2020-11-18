@@ -482,39 +482,6 @@ private:
    * \param rtsTxMode the mode of the RTS used by the sender
    * \return TXVECTOR for the CTS
    */
-  WifiTxVector GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) const;
-  /**
-   * Return a TXVECTOR for the Ack frame given the destination and the mode of the Data
-   * used by the sender.
-   * The function consults WifiRemoteStationManager, which controls the rate
-   * to different destinations.
-   *
-   * \param to the MAC address of the Ack receiver
-   * \param dataTxMode the mode of the Data used by the sender
-   * \return TXVECTOR for the Ack
-   */
-  WifiTxVector GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
-  /**
-   * Return a TXVECTOR for the BlockAck frame given the destination and the mode of the Data
-   * used by the sender.
-   * The function consults WifiRemoteStationManager, which controls the rate
-   * to different destinations.
-   *
-   * \param to the MAC address of the BlockAck receiver
-   * \param dataTxMode the mode of the Data used by the sender
-   * \return TXVECTOR for the BlockAck
-   */
-  WifiTxVector GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const;
-  /**
-   * Return a TXVECTOR for the CTS frame given the destination and the mode of the RTS
-   * used by the sender.
-   * The function consults WifiRemoteStationManager, which controls the rate
-   * to different destinations.
-   *
-   * \param to the MAC address of the CTS receiver
-   * \param rtsTxMode the mode of the RTS used by the sender
-   * \return TXVECTOR for the CTS
-   */
   WifiTxVector GetCtsTxVectorForRts (Mac48Address to, WifiMode rtsTxMode) const;
   /**
    * Return a TXVECTOR for the BlockAck frame given the destination and the mode of the Data
@@ -527,14 +494,6 @@ private:
    * \return TXVECTOR for the BlockAck
    */
   WifiTxVector GetAckTxVectorForData (Mac48Address to, WifiMode dataTxMode) const;
-  /**
-   * Get control answer mode function.
-   *
-   * \param reqMode request mode
-   *
-   * \return control answer mode
-   */
-  WifiMode GetControlAnswerMode (WifiMode reqMode) const;
   /**
    * Return the time required to transmit the CTS (including preamble and FCS).
    *
