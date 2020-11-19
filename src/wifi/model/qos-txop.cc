@@ -502,8 +502,10 @@ void
 QosTxop::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_accessRequested);
-  m_accessRequested = false;
+  // TODO FEM may have changed m_access to GRANTED, so the assert below holds not
+  // always true. Anyway, this function will soon be removed altogether.
+  // NS_ASSERT (m_access == REQUESTED);
+  m_access = NOT_REQUESTED;
   m_isAccessRequestedForRts = false;
   m_startTxop = Simulator::Now ();
   // discard the current packet if it is a QoS Data frame with expired lifetime
@@ -994,7 +996,7 @@ QosTxop::RestartAccessIfNeeded (void)
   bool queueIsNotEmpty = !m_queue->IsEmpty ();
 
   if ((m_currentPacket != 0 || baManagerHasPackets || queueIsNotEmpty)
-      && !IsAccessRequested ())
+      && m_access == NOT_REQUESTED)
     {
       Ptr<const WifiMacQueueItem> item;
       if (m_currentPacket != 0)
@@ -1031,7 +1033,7 @@ QosTxop::StartAccessIfNeeded (void)
 
   if (m_currentPacket == 0
       && (baManagerHasPackets || queueIsNotEmpty)
-      && !IsAccessRequested ())
+      && m_access == NOT_REQUESTED)
     {
       Ptr<const WifiMacQueueItem> item = PeekNextFrame ();
       if (item != 0)

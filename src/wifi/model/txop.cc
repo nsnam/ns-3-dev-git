@@ -89,7 +89,7 @@ Txop::Txop ()
     m_cwMax (0),
     m_cw (0),
     m_backoff (0),
-    m_accessRequested (false),
+    m_access (NOT_REQUESTED),
     m_backoffSlots (0),
     m_backoffStart (Seconds (0.0)),
     m_currentPacket (0)
@@ -342,7 +342,7 @@ Txop::RestartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
        || !m_queue->IsEmpty ())
-      && !IsAccessRequested ()
+      && m_access == NOT_REQUESTED
       && !m_low->IsCfPeriod ())
     {
       m_channelAccessManager->RequestAccess (this);
@@ -355,7 +355,7 @@ Txop::StartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
       && !m_queue->IsEmpty ()
-      && !IsAccessRequested ()
+      && m_access == NOT_REQUESTED
       && !m_low->IsCfPeriod ())
     {
       m_channelAccessManager->RequestAccess (this);
@@ -457,25 +457,53 @@ Txop::GetFragmentPacket (WifiMacHeader *hdr)
   return fragment;
 }
 
-bool
-Txop::IsAccessRequested (void) const
+Txop::ChannelAccessStatus
+Txop::GetAccessStatus (void) const
 {
-  return m_accessRequested;
+  return m_access;
 }
 
 void
 Txop::NotifyAccessRequested (void)
 {
   NS_LOG_FUNCTION (this);
-  m_accessRequested = true;
+  m_access = REQUESTED;
+}
+
+void
+Txop::NotifyChannelAccessed (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_access = GRANTED;
+}
+
+void
+Txop::NotifyChannelReleased (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_access = NOT_REQUESTED;
+  GenerateBackoff ();
+  if (HasFramesToTransmit ())
+    {
+      Simulator::ScheduleNow (&Txop::RequestAccess, this);
+    }
+}
+
+void
+Txop::RequestAccess (void)
+{
+  if (m_access == NOT_REQUESTED)
+    {
+      m_channelAccessManager->RequestAccess (this);
+    }
 }
 
 void
 Txop::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_accessRequested);
-  m_accessRequested = false;
+//   NS_ASSERT (m_access == REQUESTED); FEM may have changed m_access to GRANTED
+  m_access = NOT_REQUESTED;
   if (m_currentPacket == 0)
     {
       if (m_queue->IsEmpty ())
