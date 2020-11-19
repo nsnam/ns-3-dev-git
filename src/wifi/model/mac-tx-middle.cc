@@ -124,4 +124,24 @@ MacTxMiddle::GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) co
   return seq;
 }
 
+void
+MacTxMiddle::SetSequenceNumberFor (const WifiMacHeader *hdr)
+{
+  NS_LOG_FUNCTION (this << *hdr);
+
+  if (hdr->IsQosData ()
+      && !hdr->GetAddr1 ().IsGroup ())
+    {
+      uint8_t tid = hdr->GetQosTid ();
+      NS_ASSERT (tid < 16);
+      auto it = m_qosSequences.find (hdr->GetAddr1 ());
+      NS_ASSERT (it != m_qosSequences.end ());
+      it->second[tid] = hdr->GetSequenceNumber ();
+    }
+  else
+    {
+      m_sequence = hdr->GetSequenceNumber ();
+    }
+}
+
 } //namespace ns3
