@@ -258,12 +258,6 @@ public:
    */
   static Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector);
   /**
-   * \param txVector the transmission parameters used for the HE TB PPDU
-   *
-   * \return the duration of the non-OFDMA portion of the HE TB PPDU.
-   */
-  static Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector);
-  /**
    * Get the duration of the PPDU field (or group of fields)
    * for the given transmission parameters.
    *
@@ -472,21 +466,6 @@ public:
    *         modulation class
    */
   WifiMode GetMcs (WifiModulationClass modulation, uint8_t mcs) const;
-
-  /**
-   * \param txVector the transmission parameters
-   *
-   * \return the WifiMode used for the transmission of the non-HT PHY header
-   */
-  static WifiMode GetNonHtHeaderMode (WifiTxVector txVector);
-  /**
-   * \param txVector the transmission parameters
-   *
-   * \return the WifiMode used for the transmission of the SIG field
-   *
-   * This only applies to HT and following standards.
-   */
-  static WifiMode GetSigMode (WifiTxVector txVector);
 
   /**
    * \brief Set channel number.
@@ -1087,15 +1066,6 @@ protected:
    * \param channelWidth the channel width in MHz used for RSSI measurement
    */
   void SwitchMaybeToCcaBusy (uint16_t channelWidth);
-
-  /**
-   * Return the STA ID that has been assigned to the station this PHY belongs to.
-   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
-   *
-   * \param ppdu the PPDU for which the STA ID is requested
-   * \return the STA ID
-   */
-  virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
 
   /**
    * Return the channel width used to measure the RSSI.

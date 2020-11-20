@@ -1869,29 +1869,6 @@ WifiPhy::GetPpduFieldDuration (WifiPpduField field, WifiTxVector txVector)
   return GetStaticPhyEntity (txVector.GetModulationClass ())->GetDuration (field, txVector);
 }
 
-WifiMode
-WifiPhy::GetNonHtHeaderMode (WifiTxVector txVector)
-{
-  //Wrapper for InterferenceHelper. TODO: cleanup once amendment-specific logic has been moved out of the latter
-  return GetStaticPhyEntity (txVector.GetModulationClass ())->GetSigMode (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector);
-}
-
-WifiMode
-WifiPhy::GetSigMode (WifiTxVector txVector)
-{
-  //Wrapper for InterferenceHelper. TODO: cleanup once amendment-specific logic has been moved out of the latter
-  WifiPpduField field = (txVector.GetModulationClass () == WIFI_MOD_CLASS_HT) ? WIFI_PPDU_FIELD_HT_SIG : WIFI_PPDU_FIELD_SIG_A;
-  return GetStaticPhyEntity (txVector.GetModulationClass ())->GetSigMode (field, txVector);
-}
-
-Time
-WifiPhy::CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector)
-{
-  NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
-  auto hePhy = DynamicCast<const HePhy> (GetStaticPhyEntity (txVector.GetModulationClass ()));
-  return (hePhy ? hePhy->CalculateNonOfdmaDurationForHeTb (txVector) : NanoSeconds (0));
-}
-
 Time
 WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, uint16_t staId)
 {
@@ -2556,13 +2533,6 @@ WifiPhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
 {
   //TODO: wrapper. See if still needed
   return GetPhyEntity (ppdu->GetModulation ())->GetAddressedPsduInPpdu (ppdu);
-}
-
-uint16_t
-WifiPhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
-{
-  //TODO: wrapper. See if still needed
-  return GetPhyEntity (ppdu->GetModulation ())->GetStaId (ppdu);
 }
 
 uint16_t
