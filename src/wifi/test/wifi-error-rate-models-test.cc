@@ -1048,7 +1048,7 @@ TableBasedErrorRateTestCase::DoRun (void)
         }
       double per = 1 - table->GetChunkSuccessRate (m_mode, txVector, std::pow (10.0, snr / 10.0), m_size * 8);
       NS_LOG_INFO (m_testName << ": snr=" << snr << "dB per=" << per << " expectedPER=" << expectedValue);
-      NS_TEST_ASSERT_MSG_EQ_TOL (per, expectedValue, 1e-6, "Not equal within tolerance");
+      NS_TEST_ASSERT_MSG_EQ_TOL (per, expectedValue, 1e-5, "Not equal within tolerance");
     }
 }
 

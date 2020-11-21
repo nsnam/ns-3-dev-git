@@ -31,9 +31,10 @@
 #include "ns3/dsss-error-rate-model.h"
 #include "yans-error-rate-model.h"
 
-static const double SNR_PRECISION = 2;
-
 namespace ns3 {
+
+static const double SNR_PRECISION = 2;
+static const double TABLED_BASED_ERROR_MODEL_PRECISION = 1e-5;
 
 NS_OBJECT_ENSURE_REGISTERED (TableBasedErrorRateModel);
 
@@ -210,6 +211,11 @@ TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVect
     {
       // From IEEE document 11-14/0803r1 (Packet Length for Box 0 Calibration)
       per = (1.0 - std::pow ((1 - per), (static_cast<double> (size) / tableSize)));
+    }
+
+  if (per < TABLED_BASED_ERROR_MODEL_PRECISION)
+    {
+      per = 0.0;
     }
 
   return 1.0 - per;
