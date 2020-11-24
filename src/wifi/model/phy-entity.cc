@@ -21,6 +21,7 @@
  */
 
 #include "phy-entity.h"
+#include "wifi-psdu.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include <algorithm>
@@ -162,6 +163,14 @@ PhyEntity::GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const
       field = GetNextField (field, txVector.GetPreambleType ());
     }
   return map;
+}
+
+Ptr<WifiPpdu>
+PhyEntity::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                      Time /* ppduDuration */, WifiPhyBand /* band */, uint64_t /* uid */) const
+{
+  NS_FATAL_ERROR ("This method is unsupported for the base PhyEntity class. Use the overloaded version in the amendment-specific subclasses instead!");
+  return Create<WifiPpdu> (psdus.begin ()->second, txVector); //should be overloaded
 }
 
 } //namespace ns3

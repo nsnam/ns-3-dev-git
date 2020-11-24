@@ -21,6 +21,8 @@
 #ifndef WIFI_PHY_BAND_H
 #define WIFI_PHY_BAND_H
 
+#include <iostream>
+
 namespace ns3 {
 
 /**

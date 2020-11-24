@@ -20,6 +20,8 @@
  */
 
 #include "vht-phy.h"
+#include "vht-ppdu.h"
+#include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -209,6 +211,13 @@ VhtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
       nes = iter->second;
     }
   return nes;
+}
+
+Ptr<WifiPpdu>
+VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const
+{
+  return Create<VhtPpdu> (psdus.begin ()->second, txVector, ppduDuration, band, uid);
 }
 
 void

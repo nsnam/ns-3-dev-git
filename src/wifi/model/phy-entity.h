@@ -24,11 +24,10 @@
 #define PHY_ENTITY_H
 
 #include "wifi-mpdu-type.h"
-#include "wifi-tx-vector.h"
 #include "wifi-phy-band.h"
+#include "wifi-ppdu.h"
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
-#include <list>
 #include <map>
 
 /**
@@ -38,6 +37,8 @@
  */
 
 namespace ns3 {
+
+class WifiPsdu;
 
 /**
  * \brief Abstract class for PHY entities
@@ -190,6 +191,23 @@ public:
    * \see PhyHeaderSections
    */
   PhyHeaderSections GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const;
+
+  /**
+   * Build amendment-specific PPDU.
+   *
+   * \param psdus the PHY payloads (PSDUs)
+   * \param txVector the TXVECTOR that was used for the PPDU
+   * \param ppduDuration the transmission duration of the PPDU
+   * \param band the WifiPhyBand used for the transmission of the PPDU
+   * \param uid the unique ID of this PPDU
+   *
+   * \return the amendment-specific WifiPpdu
+   *
+   * This method is overridden by child classes to create their
+   * corresponding PPDU, e.g., HtPhy creates HtPpdu.
+   */
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const;
 
 protected:
   /**

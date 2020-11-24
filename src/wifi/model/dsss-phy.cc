@@ -21,6 +21,8 @@
  */
 
 #include "dsss-phy.h"
+#include "dsss-ppdu.h"
+#include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 
@@ -149,6 +151,13 @@ DsssPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand /
                              uint16_t /* staId */) const
 {
   return MicroSeconds (lrint (ceil ((size * 8.0) / (txVector.GetMode ().GetDataRate (22) / 1.0e6))));
+}
+
+Ptr<WifiPpdu>
+DsssPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                    Time ppduDuration, WifiPhyBand /* band */, uint64_t uid) const
+{
+  return Create<DsssPpdu> (psdus.begin ()->second, txVector, ppduDuration, uid);
 }
 
 void

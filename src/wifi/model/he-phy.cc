@@ -20,6 +20,8 @@
  */
 
 #include "he-phy.h"
+#include "he-ppdu.h"
+#include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -289,6 +291,13 @@ HePhy::GetSymbolDuration (WifiTxVector txVector) const
   uint16_t gi = txVector.GetGuardInterval ();
   NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
   return NanoSeconds (12800 + gi);
+}
+
+Ptr<WifiPpdu>
+HePhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                  Time ppduDuration, WifiPhyBand band, uint64_t uid) const
+{
+  return Create<HePpdu> (psdus, txVector, ppduDuration, band, uid);
 }
 
 void

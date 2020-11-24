@@ -68,6 +68,8 @@ public:
   virtual Time GetLSigDuration (WifiPreamble preamble) const override;
   virtual Time GetTrainingDuration (WifiTxVector txVector,
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
 
   /**
    * \return the WifiMode used for the SIG-A field

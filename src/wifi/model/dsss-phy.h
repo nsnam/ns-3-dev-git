@@ -61,6 +61,8 @@ public:
   Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                           Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
 
   /**
    * Initialize all HR/DSSS modes.

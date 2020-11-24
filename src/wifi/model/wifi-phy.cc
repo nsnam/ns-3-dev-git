@@ -39,10 +39,6 @@
 #include "he-configuration.h"
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
-#include "dsss-ppdu.h"
-#include "erp-ofdm-ppdu.h"
-#include "ht-ppdu.h"
-#include "vht-ppdu.h"
 #include "he-ppdu.h"
 #include "ap-wifi-mac.h"
 #include "dsss-phy.h"
@@ -2233,32 +2229,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
   m_previouslyRxPpduUid = UINT64_MAX; //reset to use it only once
   m_previouslyTxPpduUid = uid; //to be able to identify solicited HE TB PPDUs
 
-  Ptr<WifiPpdu> ppdu;
-  switch (txVector.GetModulationClass ())
-    {
-      case WIFI_MOD_CLASS_DSSS:
-      case WIFI_MOD_CLASS_HR_DSSS:
-       ppdu = Create<DsssPpdu> (psdus.begin ()->second, txVector, txDuration, uid);
-        break;
-      case WIFI_MOD_CLASS_OFDM:
-        ppdu = Create<OfdmPpdu> (psdus.begin ()->second, txVector, GetPhyBand (), uid);
-        break;
-      case WIFI_MOD_CLASS_ERP_OFDM:
-        ppdu = Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, GetPhyBand (), uid);
-        break;
-      case WIFI_MOD_CLASS_HT:
-        ppdu = Create<HtPpdu> (psdus.begin ()->second, txVector, txDuration, GetPhyBand (), uid);
-        break;
-     case WIFI_MOD_CLASS_VHT:
-        ppdu = Create<VhtPpdu> (psdus.begin ()->second, txVector, txDuration, GetPhyBand (), uid);
-        break;
-      case WIFI_MOD_CLASS_HE:
-        ppdu = Create<HePpdu> (psdus, txVector, txDuration, GetPhyBand (), uid);
-        break;
-      default:
-        NS_FATAL_ERROR ("unsupported modulation class");
-        break;
-    }
+  Ptr<WifiPpdu> ppdu = GetPhyEntity (txVector.GetModulationClass ())->BuildPpdu (psdus, txVector, txDuration, GetPhyBand (), uid);
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {

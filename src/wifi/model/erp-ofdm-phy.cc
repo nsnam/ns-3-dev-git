@@ -21,6 +21,8 @@
  */
 
 #include "erp-ofdm-phy.h"
+#include "erp-ofdm-ppdu.h"
+#include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -67,6 +69,13 @@ Time
 ErpOfdmPhy::GetHeaderDuration (WifiTxVector /* txVector */) const
 {
   return MicroSeconds (4); //L-SIG
+}
+
+Ptr<WifiPpdu>
+ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                       Time /* ppduDuration */, WifiPhyBand /* band */, uint64_t uid) const
+{
+  return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, WIFI_PHY_BAND_2_4GHZ, uid);
 }
 
 void

@@ -71,6 +71,8 @@ public:
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
   Time GetSigADuration (WifiPreamble preamble) const override;
   Time GetSigBDuration (WifiTxVector txVector) const override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
 
   /**
    * \param ppduDuration the duration of the HE TB PPDU

@@ -21,6 +21,8 @@
  */
 
 #include "ofdm-phy.h"
+#include "ofdm-ppdu.h"
+#include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -225,6 +227,13 @@ Time
 OfdmPhy::GetSignalExtension (WifiPhyBand band) const
 {
   return (band == WIFI_PHY_BAND_2_4GHZ) ? MicroSeconds (6) : MicroSeconds (0);
+}
+
+Ptr<WifiPpdu>
+OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
+                    Time /* ppduDuration */, WifiPhyBand band, uint64_t uid) const
+{
+  return Create<OfdmPpdu> (psdus.begin ()->second, txVector, band, uid);
 }
 
 void
