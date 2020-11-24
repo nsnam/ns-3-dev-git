@@ -132,18 +132,19 @@ WifiPpdu::GetTxDuration (void) const
 void
 WifiPpdu::Print (std::ostream& os) const
 {
-  os << "preamble=" << m_preamble
+  os << "[ preamble=" << m_preamble
      << ", modulation=" << m_modulation
      << ", truncatedTx=" << (m_truncatedTx ? "Y" : "N")
-     << ", uid=" << m_uid
-     << "," << PrintPayload ();
+     << ", UID=" << m_uid
+     << ", " << PrintPayload ()
+     << "]";
 }
 
 std::string
 WifiPpdu::PrintPayload (void) const
 {
   std::ostringstream ss;
-  ss << "PSDU=" << GetPsdu ();
+  ss << "PSDU=" << GetPsdu () << " ";
   return ss.str ();
 }
 
@@ -154,9 +155,15 @@ WifiPpdu::Copy (void) const
   return Create<WifiPpdu> (GetPsdu (), GetTxVector ());
 }
 
-std::ostream & operator << (std::ostream &os, const WifiPpdu &ppdu)
+std::ostream & operator << (std::ostream &os, const Ptr<const WifiPpdu> &ppdu)
 {
-  ppdu.Print (os);
+  ppdu->Print (os);
+  return os;
+}
+
+std::ostream & operator << (std::ostream &os, const Ptr<WifiPpdu> &ppdu)
+{
+  ppdu->Print (os);
   return os;
 }
 

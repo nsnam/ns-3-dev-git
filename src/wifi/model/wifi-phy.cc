@@ -2419,7 +2419,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxP
     [] (const std::pair<WifiSpectrumBand, double>& p1, const std::pair<WifiSpectrumBand, double>& p2) {
       return p1.second < p2.second;
     });
-  NS_LOG_FUNCTION (this << *ppdu << it->second);
+  NS_LOG_FUNCTION (this << ppdu << it->second);
   WifiTxVector txVector = ppdu->GetTxVector ();
   Time rxDuration = ppdu->GetTxDuration ();
 
@@ -2577,7 +2577,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxP
 void
 WifiPhy::DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth)
 {
-  NS_LOG_FUNCTION (this << *ppdu << reason << endRx << measurementChannelWidth);
+  NS_LOG_FUNCTION (this << ppdu << reason << endRx << measurementChannelWidth);
   NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), reason);
   auto it = m_currentPreambleEvents.find (std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ()));
   if (it != m_currentPreambleEvents.end ())
@@ -2615,7 +2615,7 @@ WifiPhy::StartReceiveOfdmaPayload (Ptr<Event> event)
     [] (const std::pair<WifiSpectrumBand, double>& p1, const std::pair<WifiSpectrumBand, double>& p2) {
       return p1.second < p2.second;
     });
-  NS_LOG_FUNCTION (this << event << *ppdu << it->second);
+  NS_LOG_FUNCTION (this << event << ppdu << it->second);
   NS_ASSERT (m_currentEvent != 0);
   auto itEvent = m_beginOfdmaPayloadRxEvents.find (GetStaId (ppdu));
   /**

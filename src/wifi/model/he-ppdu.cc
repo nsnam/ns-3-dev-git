@@ -224,7 +224,7 @@ HePpdu::PrintPayload (void) const
     }
   else
     {
-      ss << "PSDU=" << m_psdus.at (SU_STA_ID);
+      ss << "PSDU=" << m_psdus.at (SU_STA_ID) << " ";
     }
   return ss.str ();
 }
