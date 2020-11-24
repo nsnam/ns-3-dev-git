@@ -28,6 +28,9 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/wifi-helper.h"
 #include "ns3/wifi-ack-policy-selector.h"
+#include "ns3/frame-exchange-manager.h"
+#include "ns3/wifi-default-protection-manager.h"
+#include "ns3/wifi-default-ack-manager.h"
 
 namespace ns3
 {
@@ -219,6 +222,18 @@ MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uin
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
   mac->SetAddress (Mac48Address::Allocate ());
   mac->ConfigureStandard (m_standard);
+  Ptr<RegularWifiMac> wifiMac = DynamicCast<RegularWifiMac> (mac);
+  Ptr<FrameExchangeManager> fem;
+  if (wifiMac != 0 && (fem = wifiMac->GetFrameExchangeManager ()) != 0)
+    {
+      Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+      protectionManager->SetWifiMac (wifiMac);
+      fem->SetProtectionManager (protectionManager);
+
+      Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+      ackManager->SetWifiMac (wifiMac);
+      fem->SetAckManager (ackManager);
+    }
   phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
   device->SetMac (mac);
   device->SetPhy (phy);

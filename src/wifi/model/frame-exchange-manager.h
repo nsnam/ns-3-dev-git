@@ -111,6 +111,18 @@ public:
    */
   virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
+   * Set the Protection Manager to use
+   *
+   * \param protectionManager the Protection Manager to use
+   */
+  virtual void SetProtectionManager (Ptr<WifiProtectionManager> protectionManager);
+  /**
+   * Set the Acknowledgment Manager to use
+   *
+   * \param ackManager the Acknowledgment Manager to use
+   */
+  virtual void SetAckManager (Ptr<WifiAckManager> ackManager);
+  /**
    * Set the MAC address.
    *
    * \param address the MAC address
@@ -450,20 +462,6 @@ protected:
   virtual void CtsTimeout (void);
 
 private:
-  /**
-   * Create a Protection Manager of the given TypeId
-   *
-   * \param protectionManagerTypeId the TypeId of the Protection Manager to create
-   */
-  void CreateProtectionManager (TypeId protectionManagerTypeId);
-
-  /**
-   * Create an Acknowledgment Manager of the given TypeId
-   *
-   * \param acknowledgmentManagerTypeId the TypeId of the Acknowledgment Manager to create
-   */
-  void CreateAcknowledgmentManager (TypeId acknowledgmentManagerTypeId);
-
   /**
    * \param txVector the TXVECTOR decoded from PHY header.
    * \param psduDuration the duration of the PSDU that is about to be received.

@@ -876,10 +876,8 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           device->SetHeConfiguration (heConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = macHelper.Create (device);
+      Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-      mac->SetAddress (Mac48Address::Allocate ());
-      mac->ConfigureStandard (m_standard);
       phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
       device->SetMac (mac);
       device->SetPhy (phy);

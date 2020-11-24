@@ -50,18 +50,6 @@ FrameExchangeManager::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<FrameExchangeManager> ()
     .SetGroupName ("Wifi")
-    .AddAttribute ("ProtectionManagerTypeId",
-                   "TypeId of the ProtectionManager object.",
-                   TypeId::ATTR_CONSTRUCT,
-                   TypeIdValue (WifiDefaultProtectionManager::GetTypeId ()),
-                   MakeTypeIdAccessor (&FrameExchangeManager::CreateProtectionManager),
-                   MakeTypeIdChecker ())
-    .AddAttribute ("AcknowledgmentManagerTypeId",
-                   "TypeId of the AcknowledgmentManager object.",
-                   TypeId::ATTR_CONSTRUCT,
-                   TypeIdValue (WifiDefaultAckManager::GetTypeId ()),
-                   MakeTypeIdAccessor (&FrameExchangeManager::CreateAcknowledgmentManager),
-                   MakeTypeIdChecker ())
   ;
   return tid;
 }
@@ -115,13 +103,10 @@ FrameExchangeManager::DoDispose (void)
 }
 
 void
-FrameExchangeManager::CreateProtectionManager (TypeId protectionManagerTypeId)
+FrameExchangeManager::SetProtectionManager (Ptr<WifiProtectionManager> protectionManager)
 {
-  NS_LOG_FUNCTION (this << protectionManagerTypeId);
-
-  ObjectFactory protectionManagerFactory;
-  protectionManagerFactory.SetTypeId (protectionManagerTypeId);
-  m_protectionManager = protectionManagerFactory.Create<WifiProtectionManager> ();
+  NS_LOG_FUNCTION (this << protectionManager);
+  m_protectionManager = protectionManager;
 }
 
 Ptr<WifiProtectionManager>
@@ -131,13 +116,10 @@ FrameExchangeManager::GetProtectionManager (void) const
 }
 
 void
-FrameExchangeManager::CreateAcknowledgmentManager (TypeId acknowledgmentManagerTypeId)
+FrameExchangeManager::SetAckManager (Ptr<WifiAckManager> ackManager)
 {
-  NS_LOG_FUNCTION (this << acknowledgmentManagerTypeId);
-
-  ObjectFactory acknowledgmentManagerFactory;
-  acknowledgmentManagerFactory.SetTypeId (acknowledgmentManagerTypeId);
-  m_ackManager = acknowledgmentManagerFactory.Create<WifiAckManager> ();
+  NS_LOG_FUNCTION (this << ackManager);
+  m_ackManager = ackManager;
 }
 
 Ptr<WifiAckManager>
@@ -151,8 +133,6 @@ FrameExchangeManager::SetWifiMac (Ptr<RegularWifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
-  m_protectionManager->SetWifiMac (mac);
-  m_ackManager->SetWifiMac (mac);
 }
 
 void
@@ -281,6 +261,8 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
   // check if the MSDU needs to be fragmented
   mpdu = GetFirstFragmentIfNeeded (mpdu);
 
+  NS_ASSERT (m_protectionManager != 0);
+  NS_ASSERT (m_ackManager != 0);
   WifiTxParameters txParams;
   txParams.m_txVector = m_mac->GetWifiRemoteStationManager ()->GetDataTxVector (mpdu->GetHeader ());
   txParams.m_protection = m_protectionManager->TryAddMpdu (mpdu, txParams);

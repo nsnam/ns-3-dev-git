@@ -22,6 +22,7 @@
 #define WIFI_MAC_HELPER_H
 
 #include "ns3/object-factory.h"
+#include "ns3/wifi-standards.h"
 
 namespace ns3 {
 
@@ -57,60 +58,84 @@ public:
   virtual ~WifiMacHelper ();
 
   /**
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
    * \param type the type of ns3::WifiMac to create.
-   * Valid values of the type field must be a type subclassed from WifiMac.
-   *
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   * \param n4 the name of the attribute to set
-   * \param v4 the value of the attribute to set
-   * \param n5 the name of the attribute to set
-   * \param v5 the value of the attribute to set
-   * \param n6 the name of the attribute to set
-   * \param v6 the value of the attribute to set
-   * \param n7 the name of the attribute to set
-   * \param v7 the value of the attribute to set
-   * \param n8 the name of the attribute to set
-   * \param v8 the value of the attribute to set
-   * \param n9 the name of the attribute to set
-   * \param v9 the value of the attribute to set
-   * \param n10 the name of the attribute to set
-   * \param v10 the value of the attribute to set
+   * \param args A sequence of name-value pairs of the attributes to set.
    *
    * All the attributes specified in this method should exist
    * in the requested MAC.
    */
-  virtual void SetType (std::string type,
-                        std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-                        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-                        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-                        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-                        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue (),
-                        std::string n8 = "", const AttributeValue &v8 = EmptyAttributeValue (),
-                        std::string n9 = "", const AttributeValue &v9 = EmptyAttributeValue (),
-                        std::string n10 = "", const AttributeValue &v10 = EmptyAttributeValue ());
+  template <typename... Args>
+  void SetType (std::string type, Args&&... args);
+
+  /**
+   * Helper function used to set the Protection Manager.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of Protection Manager
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void SetProtectionManager (std::string type, Args&&... args);
+
+  /**
+   * Helper function used to set the Acknowledgment Manager.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of Acknowledgment Manager
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void SetAckManager (std::string type, Args&&... args);
 
   /**
    * \param device the device within which the MAC object will reside
+   * \param standard the standard to configure during installation
    * \returns a new MAC object.
    *
    * This allows the ns3::WifiHelper class to create MAC objects from ns3::WifiHelper::Install.
    */
-  virtual Ptr<WifiMac> Create (Ptr<NetDevice> device) const;
+  virtual Ptr<WifiMac> Create (Ptr<NetDevice> device, WifiStandard standard) const;
 
 
 protected:
-  ObjectFactory m_mac; ///< MAC object factory
+  ObjectFactory m_mac;                ///< MAC object factory
+  ObjectFactory m_protectionManager;  ///< Factory to create a protection manager
+  ObjectFactory m_ackManager;         ///< Factory to create an acknowledgment manager
 };
+
+} // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
+
+template <typename... Args>
+void
+WifiMacHelper::SetType (std::string type, Args&&... args)
+{
+  m_mac.SetTypeId (type);
+  m_mac.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetProtectionManager (std::string type, Args&&... args)
+{
+  m_protectionManager.SetTypeId (type);
+  m_protectionManager.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetAckManager (std::string type, Args&&... args)
+{
+  m_ackManager.SetTypeId (type);
+  m_ackManager.Set (args...);
+}
 
 } // namespace ns3
 

@@ -26,6 +26,9 @@
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
+#include "ns3/frame-exchange-manager.h"
+#include "ns3/wifi-default-protection-manager.h"
+#include "ns3/wifi-default-ack-manager.h"
 
 using namespace ns3;
 
@@ -77,6 +80,15 @@ PowerRateAdaptationTest::ConfigureNode ()
   Ptr<AdhocWifiMac> mac = CreateObject<AdhocWifiMac> ();
   mac->SetDevice (dev);
   mac->ConfigureStandard (WIFI_STANDARD_80211a);
+  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
+
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (mac);
+  fem->SetProtectionManager (protectionManager);
+
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (mac);
+  fem->SetAckManager (ackManager);
 
   /*
    * Create mobility model. Is needed by the phy layer for transmission.
