@@ -112,12 +112,19 @@ TcpDctcp::Init (Ptr<TcpSocketState> tcb)
   tcb->m_ectCodePoint = m_useEct0 ? TcpSocketState::Ect0 : TcpSocketState::Ect1;
 }
 
+// Step 9, Section 3.3 of RFC 8257.  GetSsThresh() is called upon
+// entering the CWR state, and then later, when CWR is exited,
+// cwnd is set to ssthresh (this value).  bytesInFlight is ignored.
+uint32_t
+TcpDctcp::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
+{
+  NS_LOG_FUNCTION (this << tcb << bytesInFlight);
+  return static_cast<uint32_t> ((1 - m_alpha / 2.0) * tcb->m_cWnd);
+}
+
 void
 TcpDctcp::ReduceCwnd (Ptr<TcpSocketState> tcb)
 {
-  NS_LOG_FUNCTION (this << tcb);
-  uint32_t val = static_cast<uint32_t> ((1 - m_alpha / 2.0) * tcb->m_cWnd);
-  tcb->m_cWnd = std::max (val, 2 * tcb->m_segmentSize);
 }
 
 void

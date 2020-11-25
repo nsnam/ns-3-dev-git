@@ -72,6 +72,8 @@ public:
   virtual void Init (Ptr<TcpSocketState> tcb);
 
   // Documented in base class
+  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
+                                uint32_t bytesInFlight);
   virtual Ptr<TcpCongestionOps> Fork ();
   virtual void ReduceCwnd (Ptr<TcpSocketState> tcb);
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
