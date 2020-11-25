@@ -83,6 +83,11 @@ ApWifiMac::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::m_enableNonErpProtection),
                    MakeBooleanChecker ())
+    .AddAttribute ("BsrLifetime",
+                   "Lifetime of Buffer Status Reports received from stations.",
+                   TimeValue (MilliSeconds (20)),
+                   MakeTimeAccessor (&ApWifiMac::m_bsrLifetime),
+                   MakeTimeChecker ())
   ;
   return tid;
 }
@@ -1612,6 +1617,55 @@ ApWifiMac::IncrementPollingListIterator (void)
     {
       m_itCfPollingList = m_cfPollingList.begin ();
     }
+}
+
+uint8_t
+ApWifiMac::GetBufferStatus (uint8_t tid, Mac48Address address) const
+{
+  auto it = m_bufferStatus.find (WifiAddressTidPair (address, tid));
+  if (it == m_bufferStatus.end ()
+      || it->second.timestamp + m_bsrLifetime < Simulator::Now ())
+    {
+      return 255;
+    }
+  return it->second.value;
+}
+
+void
+ApWifiMac::SetBufferStatus (uint8_t tid, Mac48Address address, uint8_t size)
+{
+  if (size == 255)
+    {
+      // no point in storing an unspecified size
+      m_bufferStatus.erase (WifiAddressTidPair (address, tid));
+    }
+  else
+    {
+      m_bufferStatus[WifiAddressTidPair (address, tid)] = {size, Simulator::Now ()};
+    }
+}
+
+uint8_t
+ApWifiMac::GetMaxBufferStatus (Mac48Address address) const
+{
+  uint8_t maxSize = 0;
+  bool found = false;
+
+  for (uint8_t tid = 0; tid < 8; tid++)
+    {
+      uint8_t size = GetBufferStatus (tid, address);
+      if (size != 255)
+        {
+          maxSize = std::max (maxSize, size);
+          found = true;
+        }
+    }
+
+  if (found)
+    {
+      return maxSize;
+    }
+  return 255;
 }
 
 } //namespace ns3

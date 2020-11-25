@@ -28,6 +28,25 @@ namespace ns3 {
 class Packet;
 class WifiMacHeader;
 class QueueItem;
+class Mac48Address;
+
+typedef std::pair<Mac48Address, uint8_t> WifiAddressTidPair;  //!< (MAC address, TID) pair
+
+/**
+ * Function object to compute the hash of a (MAC address, TID) pair
+ */
+struct WifiAddressTidHash
+{
+  std::size_t operator() (const WifiAddressTidPair& addressTidPair) const;
+};
+
+/**
+ * Function object to compute the hash of a MAC address
+ */
+struct WifiAddressHash
+{
+  std::size_t operator() (const Mac48Address& address) const;
+};
 
 /**
  * \ingroup wifi

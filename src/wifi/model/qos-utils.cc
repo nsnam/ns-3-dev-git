@@ -28,6 +28,27 @@
 
 namespace ns3 {
 
+std::size_t
+WifiAddressTidHash::operator()(const WifiAddressTidPair& addressTidPair) const
+{
+  uint8_t buffer[7];
+  addressTidPair.first.CopyTo (buffer);
+  buffer[6] = addressTidPair.second;
+
+  std::string s (buffer, buffer + 7);
+  return std::hash<std::string>{} (s);
+}
+
+std::size_t
+WifiAddressHash::operator()(const Mac48Address& address) const
+{
+  uint8_t buffer[6];
+  address.CopyTo (buffer);
+
+  std::string s (buffer, buffer + 6);
+  return std::hash<std::string>{} (s);
+}
+
 AcIndex
 QosUtilsMapTidToAc (uint8_t tid)
 {
