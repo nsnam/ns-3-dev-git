@@ -250,6 +250,12 @@ public:
    */
   void SetQosTxopLimit (uint8_t txop);
   /**
+   * Set the Queue Size subfield in the QoS control field.
+   *
+   * \param size the value for the Queue Size subfield
+   */
+  void SetQosQueueSize (uint8_t size);
+  /**
    * Set the Mesh Control Present flag for the QoS header.
    */
   void SetQosMeshControlPresent ();
@@ -544,6 +550,12 @@ public:
    * \return the QoS Ack policy in the QoS control field
    */
   QosAckPolicy GetQosAckPolicy (void) const;
+  /**
+   * Get the Queue Size subfield in the QoS control field.
+   *
+   * \return the value of the Queue Size subfield
+   */
+  uint8_t GetQosQueueSize (void) const;
   /**
    * Return the size of the WifiMacHeader in octets.
    * GetSerializedSize calls this function.
