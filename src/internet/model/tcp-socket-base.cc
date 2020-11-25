@@ -1578,11 +1578,17 @@ TcpSocketBase::EnterCwr (uint32_t currentDelivered)
   NS_ASSERT (m_tcb->m_congState != TcpSocketState::CA_CWR);
   NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_CWR");
   m_tcb->m_congState = TcpSocketState::CA_CWR;
+  // CWR state will be exited when the ack exceeds the m_recover variable.
+  // Do not set m_recoverActive (which applies to a loss-based recovery)
+  // m_recover corresponds to Linux tp->high_seq
+  m_recover = m_tcb->m_highTxMark;
   if (!m_congestionControl->HasCongControl ())
     {
+      // If there is a recovery algorithm, invoke it.
       m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount, UnAckDataCount (), currentDelivered);
-      NS_LOG_INFO ("Enter CWR recovery mode; reset cwnd to " << m_tcb->m_cWnd
-                    << ", ssthresh to " << m_tcb->m_ssThresh);
+      NS_LOG_INFO ("Enter CWR recovery mode; set cwnd to " << m_tcb->m_cWnd
+                    << ", ssthresh to " << m_tcb->m_ssThresh
+                    << ", recover to " << m_recover);
     }
 }
 
@@ -1801,6 +1807,20 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
 
   uint32_t currentDelivered = static_cast<uint32_t> (m_rateOps->GetConnectionRate ().m_delivered - previousDelivered);
 
+  if (m_tcb->m_congState == TcpSocketState::CA_CWR && (ackNumber > m_recover))
+    {
+      // Recovery is over after the window exceeds m_recover
+      // (although it may be re-entered below if ECE is still set)
+      NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_OPEN");
+      m_tcb->m_congState = TcpSocketState::CA_OPEN;
+      if (!m_congestionControl->HasCongControl ())
+        {
+           m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
+           m_recoveryOps->ExitRecovery (m_tcb);
+           m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
+        }
+    }
+
   if (ackNumber > oldHeadSequence && (m_tcb->m_ecnState != TcpSocketState::ECN_DISABLED) && (tcpHeader.GetFlags () & TcpHeader::ECE))
     {
       if (m_ecnEchoSeq < ackNumber)
@@ -1817,14 +1837,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
     }
   else if (m_tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD && !(tcpHeader.GetFlags () & TcpHeader::ECE))
     {
-      // When the receiver stops sending ECE, the recovery is over
       m_tcb->m_ecnState = TcpSocketState::ECN_IDLE;
-      NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_CWR);
-      NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_OPEN");
-      m_tcb->m_congState = TcpSocketState::CA_OPEN;
-      m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
-      m_recoveryOps->ExitRecovery (m_tcb);
-      m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
     }
 
   // Update bytes in flight before processing the ACK for proper calculation of congestion window
@@ -2038,6 +2051,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
         }
       else if (m_tcb->m_congState == TcpSocketState::CA_CWR)
         {
+          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
           // TODO: need to check behavior if marking is compounded by loss
           // and/or packet reordering
           if (!m_congestionControl->HasCongControl () && segsAcked >= 1)
