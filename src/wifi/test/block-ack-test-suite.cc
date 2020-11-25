@@ -814,7 +814,7 @@ BlockAckAggregationDisabledTest::DoRun (void)
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_STANDARD_80211a);
+  wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
   wifi.SetAckPolicySelectorForAc (AC_BE, "ns3::ConstantWifiAckPolicySelector",
                                   "BaThreshold", DoubleValue (0.125));
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
@@ -822,7 +822,8 @@ BlockAckAggregationDisabledTest::DoRun (void)
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::StaWifiMac",
-               "QosSupported", BooleanValue (true),
+               "BE_MaxAmsduSize", UintegerValue (0),
+               "BE_MaxAmpduSize", UintegerValue (0),
                "Ssid", SsidValue (ssid),
                /* setting blockack threshold for sta's BE queue */
                "BE_BlockAckThreshold", UintegerValue (2),
@@ -832,7 +833,8 @@ BlockAckAggregationDisabledTest::DoRun (void)
   staDevices = wifi.Install (phy, mac, wifiStaNode);
 
   mac.SetType ("ns3::ApWifiMac",
-               "QosSupported", BooleanValue (true),
+               "BE_MaxAmsduSize", UintegerValue (0),
+               "BE_MaxAmpduSize", UintegerValue (0),
                "Ssid", SsidValue (ssid),
                "BeaconGeneration", BooleanValue (true));
 
