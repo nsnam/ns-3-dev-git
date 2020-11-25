@@ -40,6 +40,8 @@
 #include "wifi-phy.h"
 #include "wifi-ack-policy-selector.h"
 #include "wifi-psdu.h"
+#include "qos-frame-exchange-manager.h"
+#include "wifi-tx-parameters.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -122,7 +124,15 @@ QosTxop::DoDispose (void)
   m_ackPolicySelector = 0;
   m_baManager = 0;
   m_qosBlockedDestinations = 0;
+  m_qosFem = 0;
   Txop::DoDispose ();
+}
+
+void
+QosTxop::SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem)
+{
+  NS_LOG_FUNCTION (this << qosFem);
+  m_qosFem = qosFem;
 }
 
 bool
@@ -496,6 +506,87 @@ QosTxop::PeekNextMpdu (WifiMacQueueItem::QueueIteratorPair queueIt, uint8_t tid,
     }
 
   return 0;
+}
+
+Ptr<WifiMacQueueItem>
+QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+                      Time availableTime, bool initialFrame, WifiMacQueueItem::QueueIteratorPair& queueIt)
+{
+  NS_ASSERT (peekedItem != 0);
+  NS_ASSERT (m_qosFem != 0);
+  NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime << initialFrame);
+
+  Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
+
+  // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
+  // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
+  // consisting of more than one MPDU (Sec. 10.22.2.8 of 802.11-2016)
+  Time actualAvailableTime = (initialFrame && txParams.GetSize (recipient) == 0
+                              ? Time::Min () : availableTime);
+
+  if (!m_qosFem->TryAddMpdu (peekedItem, txParams, actualAvailableTime))
+    {
+      return nullptr;
+    }
+
+  NS_ASSERT (peekedItem->IsQueued ());
+  NS_ASSERT_MSG (peekedItem->GetQueueIteratorPairs ().size () == 1,
+                 "An item in the MAC queue cannot contain an A-MSDU");
+  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
+  NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
+
+  if (peekedIt.queue == PeekPointer (m_baManager->GetRetransmitQueue ()))
+    {
+      // the packet can only have been peeked from the block ack manager retransmit
+      // queue if:
+      // - the peeked packet is a QoS Data frame AND
+      // - the peeked packet is not a broadcast frame AND
+      // - an agreement has been established
+      NS_ASSERT (peekedItem->GetHeader ().IsQosData () && !recipient.IsBroadcast ());
+      uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+      NS_ASSERT (GetBaAgreementEstablished (recipient, tid));
+      // we should not be asked to dequeue an old packet
+      NS_ASSERT (!QosUtilsIsOldPacket (GetBaStartingSequence (recipient, tid),
+                                       peekedItem->GetHeader ().GetSequenceNumber ()));
+      // we should not be asked to dequeue an MPDU that is beyond the transmit window
+      NS_ASSERT (IsInWindow (peekedItem->GetHeader ().GetSequenceNumber (),
+                             GetBaStartingSequence (recipient, tid),
+                             GetBaBufferSize (recipient, tid)));
+      // A-MSDU aggregation cannot be done on a retransmitted MPDU, hence return
+      // the peeked MPDU
+      NS_LOG_DEBUG ("Got MPDU from BA manager queue: " << *peekedItem);
+
+      queueIt = peekedIt;
+      queueIt.it++;
+
+      return *peekedIt.it;
+    }
+
+  // The MPDU has been peeked from the EDCA queue.
+  NS_ASSERT (peekedIt.queue == PeekPointer (m_queue));
+  Ptr<WifiMacQueueItem> mpdu;
+
+  mpdu = *peekedIt.it;
+  peekedIt.it++;
+
+  // Assign a sequence number if this is not a fragment nor a retransmission
+  AssignSequenceNumber (mpdu);
+  NS_LOG_DEBUG ("Got MPDU from EDCA queue: " << *mpdu);
+  queueIt = peekedIt;
+
+  return mpdu;
+}
+
+void
+QosTxop::AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const
+{
+  NS_LOG_FUNCTION (this << *mpdu);
+
+  if (!mpdu->IsFragment () && !mpdu->GetHeader ().IsRetry ())
+    {
+      uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&mpdu->GetHeader ());
+      mpdu->GetHeader ().SetSequenceNumber (sequence);
+    }
 }
 
 MacLowTransmissionParameters

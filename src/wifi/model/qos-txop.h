@@ -40,6 +40,8 @@ class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
 class WifiTxVector;
 class WifiAckPolicySelector;
+class QosFrameExchangeManager;
+class WifiTxParameters;
 
 /**
  * Enumeration for type of station
@@ -155,6 +157,13 @@ public:
    * \return type of station.
    */
   TypeOfStation GetTypeOfStation (void) const;
+
+  /**
+   * Set the Frame Exchange Manager associated with this QoS STA.
+   *
+   * \param qosFem the associated QoS Frame Exchange Manager.
+   */
+  void SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem);
 
   /**
    * \param address recipient address of the peer station
@@ -419,6 +428,39 @@ public:
                                             uint8_t tid = 8,
                                             Mac48Address recipient = Mac48Address::GetBroadcast ());
   /**
+   * Prepare the frame to transmit starting from the MPDU that has been previously
+   * peeked by calling PeekNextMpdu. A frame is only returned if it meets the
+   * constraint on the maximum A-MPDU size (by assuming that the frame has to be
+   * aggregated to an existing A-MPDU as specified by the TX parameters) and its
+   * transmission time does not exceed the given PPDU duration limit (if distinct from
+   *  Time::Min ()). If the peeked MPDU is a unicast QoS Data frame stored in the EDCA queue,
+   * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
+   * above) and assign a sequence number to the dequeued frame.
+   *
+   * \param peekedItem the peeked frame.
+   * \param txParams the TX parameters for the frame
+   * \param availableTime the time available for the transmission of the frame
+                          (including protection and acknowledgment); a value of
+   *                      Time::Min() indicates no time constraint
+   * \param initialFrame true if the frame is the initial PPDU of a TXOP
+   * \param[out] queueIt a QueueIteratorPair pointing to the queue item following the
+   *                     last item used to prepare the returned MPDU, if any; if no MPDU
+   *                     is returned, its value is unchanged
+   * \return the frame to transmit or a null pointer if no frame meets the time constraints
+   */
+  Ptr<WifiMacQueueItem> GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+                                     Time availableTime, bool initialFrame,
+                                     WifiMacQueueItem::QueueIteratorPair& queueIt);
+
+  /**
+   * Assign a sequence number to the given MPDU, if it is not a fragment
+   * and it is not a retransmitted frame.
+   *
+   * \param mpdu the MPDU
+   */
+  void AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
+
+  /**
    * Compute the MacLow transmission parameters for the given frame. Allowed frames
    * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA
    * Request/Response, DELBA Request).
@@ -580,6 +622,7 @@ private:
 
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station
+  Ptr<QosFrameExchangeManager> m_qosFem;                //!< the QoS Frame Exchange Manager
   Ptr<WifiAckPolicySelector> m_ackPolicySelector;       //!< the ack policy selector
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the block ack manager
