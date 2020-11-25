@@ -341,9 +341,11 @@ public:
 
   /**
    * Called by the FrameExchangeManager to notify that channel access has
-   * been granted.
+   * been granted for the given amount of time.
+   *
+   * \param txopDuration the duration of the TXOP gained (zero for DCF)
    */
-  virtual void NotifyChannelAccessed (void);
+  virtual void NotifyChannelAccessed (Time txopDuration = Seconds (0));
   /**
    * Called by the FrameExchangeManager to notify the completion of the transmissions.
    * This method generates a new backoff and restarts access if needed.

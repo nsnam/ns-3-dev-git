@@ -125,6 +125,8 @@ public:
   void EndTxNoAck (void);
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);
+  virtual void NotifyChannelAccessed (Time txopDuration);
+  void NotifyChannelReleased (void);
   Time GetTxopRemaining (void) const;
   bool NeedFragmentation (void) const;
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
@@ -384,6 +386,39 @@ public:
                                             bool aggregate = true, uint32_t ampduSize = 0,
                                             Time ppduDurationLimit = Time::Min ());
   /**
+   * Peek the next frame to transmit to the given receiver and of the given
+   * TID from the block ack manager retransmit queue first and, if not found, from
+   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
+   * is the broadcast address, the first available frame is returned.
+   * Note that A-MSDU aggregation is never attempted (this is relevant if the
+   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
+   * queue, it is assigned a sequence number peeked from MacTxMiddle.
+   *
+   * \param tid traffic ID.
+   * \param recipient the receiver station address.
+   * \returns the peeked frame.
+   */
+  Ptr<const WifiMacQueueItem> PeekNextMpdu (uint8_t tid = 8,
+                                            Mac48Address recipient = Mac48Address::GetBroadcast ());
+  /**
+   * Peek the next frame to transmit to the given receiver and of the given
+   * TID from the block ack manager retransmit queue first and, if not found, from
+   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
+   * is the broadcast address, the first available frame is returned.
+   * Note that A-MSDU aggregation is never attempted (this is relevant if the
+   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
+   * queue, it is assigned a sequence number peeked from MacTxMiddle.
+   *
+   * \param queueIt the QueueIteratorPair pointing to the queue item from which the
+   *                search for an MPDU starts, if the QueueIteratorPair is valid
+   * \param tid traffic ID.
+   * \param recipient the receiver station address.
+   * \returns the peeked frame.
+   */
+  Ptr<const WifiMacQueueItem> PeekNextMpdu (WifiMacQueueItem::QueueIteratorPair queueIt,
+                                            uint8_t tid = 8,
+                                            Mac48Address recipient = Mac48Address::GetBroadcast ());
+  /**
    * Compute the MacLow transmission parameters for the given frame. Allowed frames
    * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA
    * Request/Response, DELBA Request).
@@ -436,6 +471,19 @@ public:
    * \return Mac48Address
    */
   Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
+
+  /**
+   * Return true if a TXOP has started.
+   *
+   * \return true if a TXOP has started, false otherwise.
+   */
+  virtual bool IsTxopStarted (void) const;
+  /**
+   * Return the remaining duration in the current TXOP.
+   *
+   * \return the remaining duration in the current TXOP.
+   */
+  virtual Time GetRemainingTxop (void) const;
 
 protected:
   // Overridden from Txop
@@ -542,6 +590,7 @@ private:
   Time m_currentPacketTimestamp;                        //!< the current packet timestamp
   uint16_t m_blockAckInactivityTimeout;                 //!< the BlockAck inactivity timeout value (in TUs, i.e. blocks of 1024 microseconds)
   Time m_startTxop;                                     //!< the start TXOP time
+  Time m_txopDuration;                                  //!< the duration of a TXOP
   bool m_isAccessRequestedForRts;                       //!< flag whether access is requested to transmit a RTS frame
   bool m_currentIsFragmented;                           //!< flag whether current packet is fragmented
   Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response

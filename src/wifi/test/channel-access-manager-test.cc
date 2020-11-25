@@ -61,7 +61,7 @@ private:
 
   /// Inherited
   void DoDispose (void);
-  void NotifyChannelAccessed (void);
+  void NotifyChannelAccessed (Time txopDuration = Seconds (0));
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
@@ -431,7 +431,7 @@ TxopTest<TxopType>::DoDispose (void)
 
 template <typename TxopType>
 void
-TxopTest<TxopType>::NotifyChannelAccessed (void)
+TxopTest<TxopType>::NotifyChannelAccessed (Time txopDuration)
 {
   Txop::m_access = Txop::NOT_REQUESTED;
   m_test->NotifyAccessGranted (m_i);

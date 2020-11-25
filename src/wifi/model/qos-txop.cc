@@ -95,6 +95,7 @@ QosTxop::QosTxop ()
   : m_typeOfStation (STA),
     m_blockAckType (COMPRESSED_BLOCK_ACK),
     m_startTxop (Seconds (0)),
+    m_txopDuration (Seconds (0)),
     m_isAccessRequestedForRts (false),
     m_currentIsFragmented (false)
 {
@@ -413,6 +414,88 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
   NS_LOG_DEBUG ("dequeued from EDCA queue: " << *item);
 
   return item;
+}
+
+Ptr<const WifiMacQueueItem>
+QosTxop::PeekNextMpdu (uint8_t tid, Mac48Address recipient)
+{
+  return PeekNextMpdu ({nullptr, WifiMacQueue::EMPTY}, tid, recipient);
+}
+
+Ptr<const WifiMacQueueItem>
+QosTxop::PeekNextMpdu (WifiMacQueueItem::QueueIteratorPair queueIt, uint8_t tid, Mac48Address recipient)
+{
+  NS_LOG_FUNCTION (this << +tid << recipient);
+
+  // lambda to peek the next frame
+  auto peek = [this, &tid, &recipient, &queueIt] () -> WifiMacQueue::ConstIterator
+    {
+      if (tid == 8 && recipient.IsBroadcast ())  // undefined TID and recipient
+        {
+          return queueIt.queue->PeekFirstAvailable (m_qosBlockedDestinations, queueIt.it);
+        }
+      if (m_qosBlockedDestinations->IsBlocked (recipient, tid))
+        {
+          return queueIt.queue->end ();
+        }
+      return queueIt.queue->PeekByTidAndAddress (tid, recipient, queueIt.it);
+    };
+
+  if (queueIt.queue == nullptr && queueIt.it == WifiMacQueue::EMPTY)
+    {
+      // check if there is a packet in the BlockAckManager retransmit queue
+      queueIt.queue = PeekPointer (m_baManager->GetRetransmitQueue ());
+    }
+
+  if (queueIt.queue == PeekPointer (m_baManager->GetRetransmitQueue ()))
+    {
+      queueIt.it = peek ();
+      // remove old packets
+      while (queueIt.it != m_baManager->GetRetransmitQueue ()->end () && IsQosOldPacket (*queueIt.it))
+        {
+          NS_LOG_DEBUG ("Removing an old packet from BlockAckManager retransmit queue: " << **queueIt.it);
+          queueIt.it = m_baManager->GetRetransmitQueue ()->Remove (queueIt.it);
+          queueIt.it = peek ();
+        }
+      if (queueIt.it != m_baManager->GetRetransmitQueue ()->end ())
+        {
+          NS_LOG_DEBUG ("Packet peeked from BlockAckManager retransmit queue: " << **queueIt.it);
+          return *queueIt.it;
+        }
+      // otherwise, check if there is a packet in the EDCA queue
+      queueIt = {PeekPointer (m_queue), WifiMacQueue::EMPTY};
+    }
+
+  queueIt.it = peek ();
+  if (queueIt.it != m_queue->end ())
+    {
+      // peek the next sequence number and check if it is within the transmit window
+      // in case of QoS data frame
+      uint16_t sequence = m_txMiddle->PeekNextSequenceNumberFor (&(*queueIt.it)->GetHeader ());
+      if ((*queueIt.it)->GetHeader ().IsQosData ())
+        {
+          Mac48Address recipient = (*queueIt.it)->GetHeader ().GetAddr1 ();
+          uint8_t tid = (*queueIt.it)->GetHeader ().GetQosTid ();
+
+          if (GetBaAgreementEstablished (recipient, tid)
+              && !IsInWindow (sequence, GetBaStartingSequence (recipient, tid), GetBaBufferSize (recipient, tid)))
+            {
+              NS_LOG_DEBUG ("Packet beyond the end of the current transmit window");
+              return 0;
+            }
+        }
+
+      WifiMacHeader& hdr = (*queueIt.it)->GetHeader ();
+      // Assign a sequence number if this is not a fragment nor a retransmission
+      if (!(*queueIt.it)->IsFragment () && !hdr.IsRetry ())
+        {
+          hdr.SetSequenceNumber (sequence);
+        }
+      NS_LOG_DEBUG ("Packet peeked from EDCA queue: " << **queueIt.it);
+      return *queueIt.it;
+    }
+
+  return 0;
 }
 
 MacLowTransmissionParameters
@@ -1154,6 +1237,52 @@ QosTxop::TerminateTxop (void)
   m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
   GenerateBackoff ();
   RestartAccessIfNeeded ();
+}
+
+void
+QosTxop::NotifyChannelAccessed (Time txopDuration)
+{
+  NS_LOG_FUNCTION (this << txopDuration);
+
+  NS_ASSERT (txopDuration != Time::Min ());
+  m_startTxop = Simulator::Now ();
+  m_txopDuration = txopDuration;
+  Txop::NotifyChannelAccessed ();
+}
+
+bool
+QosTxop::IsTxopStarted (void) const
+{
+  NS_LOG_FUNCTION (this << !m_startTxop.IsZero ());
+  return (!m_startTxop.IsZero ());
+}
+
+void
+QosTxop::NotifyChannelReleased (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_startTxop.IsStrictlyPositive ())
+    {
+      NS_LOG_DEBUG ("Terminating TXOP. Duration = " << Simulator::Now () - m_startTxop);
+      m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
+    }
+  m_startTxop = Seconds (0);
+  Txop::NotifyChannelReleased ();
+}
+
+Time
+QosTxop::GetRemainingTxop (void) const
+{
+  NS_ASSERT (m_startTxop.IsStrictlyPositive ());
+  Time remainingTxop = m_txopDuration;
+  remainingTxop -= (Simulator::Now () - m_startTxop);
+  if (remainingTxop.IsStrictlyNegative ())
+    {
+      remainingTxop = Seconds (0);
+    }
+  NS_LOG_FUNCTION (this << remainingTxop);
+  return remainingTxop;
 }
 
 Time

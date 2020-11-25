@@ -471,9 +471,9 @@ Txop::NotifyAccessRequested (void)
 }
 
 void
-Txop::NotifyChannelAccessed (void)
+Txop::NotifyChannelAccessed (Time txopDuration)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << txopDuration);
   m_access = GRANTED;
 }
 
