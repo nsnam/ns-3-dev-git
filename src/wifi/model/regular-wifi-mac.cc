@@ -36,7 +36,7 @@
 #include "he-configuration.h"
 #include <algorithm>
 #include <cmath>
-#include "frame-exchange-manager.h"
+#include "qos-frame-exchange-manager.h"
 
 namespace ns3 {
 
@@ -149,7 +149,7 @@ RegularWifiMac::SetupFrameExchangeManager (void)
     }
   else if (GetQosSupported ())
     {
-      // TODO create a QoS Frame Exchange Manager
+      m_feManager = CreateObject<QosFrameExchangeManager> ();
     }
   else
     {
@@ -164,6 +164,13 @@ RegularWifiMac::SetupFrameExchangeManager (void)
       m_feManager->SetAddress (GetAddress ());
       m_feManager->SetBssid (GetBssid ());
       m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+      if (GetQosSupported ())
+        {
+          for (const auto& pair : m_edca)
+            {
+              pair.second->SetQosFrameExchangeManager (DynamicCast<QosFrameExchangeManager> (m_feManager));
+            }
+        }
     }
 }
 

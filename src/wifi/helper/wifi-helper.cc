@@ -973,6 +973,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ConstantWifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssErrorRateModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("FrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HeConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("HtConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
@@ -990,6 +991,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("OnoeWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("OriginatorBlockAckAgreement", LOG_LEVEL_ALL);
   LogComponentEnable ("ParfWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("QosFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
   LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
