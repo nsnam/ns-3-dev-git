@@ -113,6 +113,16 @@ public:
   void RequestAccess (Ptr<Txop> txop, bool isCfPeriod = false);
 
   /**
+   * Access will never be granted to the medium _before_
+   * the time returned by this method.
+   *
+   * \param ignoreNav flag whether NAV should be ignored
+   *
+   * \returns the absolute time at which access could start to be granted
+   */
+  Time GetAccessGrantStart (bool ignoreNav = false) const;
+
+  /**
    * \param duration expected duration of reception
    *
    * Notify the Txop that a packet reception started
@@ -228,15 +238,6 @@ private:
    * \return the most recent time
    */
   Time MostRecent (std::initializer_list<Time> list) const;
-  /**
-   * Access will never be granted to the medium _before_
-   * the time returned by this method.
-   *
-   * \param ignoreNav flag whether NAV should be ignored
-   *
-   * \returns the absolute time at which access could start to be granted
-   */
-  Time GetAccessGrantStart (bool ignoreNav = false) const;
   /**
    * Return the time when the backoff procedure
    * started for the given Txop.
