@@ -307,7 +307,7 @@ WifiPhy::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
                                          &WifiPhy::GetChannelNumber),
-                   MakeUintegerChecker<uint8_t> (0, 196))
+                   MakeUintegerChecker<uint8_t> (0, 233))
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal.",
