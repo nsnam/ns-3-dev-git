@@ -1822,6 +1822,7 @@ TcpSocketBase::ReceivedAck (Ptr<Packet> packet, const TcpHeader& tcpHeader)
       NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_CWR);
       NS_LOG_DEBUG (TcpSocketState::TcpCongStateName[m_tcb->m_congState] << " -> CA_OPEN");
       m_tcb->m_congState = TcpSocketState::CA_OPEN;
+      m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
       m_recoveryOps->ExitRecovery (m_tcb);
       m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
     }
@@ -2129,6 +2130,7 @@ TcpSocketBase::ProcessAck(const SequenceNumber32 &ackNumber, bool scoreboardUpda
           if (exitedFastRecovery)
             {
               NewAck (ackNumber, true);
+              m_tcb->m_cWnd = m_tcb->m_ssThresh.Get ();
               m_recoveryOps->ExitRecovery (m_tcb);
               NS_LOG_DEBUG ("Leaving Fast Recovery; BytesInFlight() = " <<
                             BytesInFlight () << "; cWnd = " << m_tcb->m_cWnd);

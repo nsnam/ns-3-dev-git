@@ -124,7 +124,6 @@ void
 TcpPrrRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  tcb->m_cWnd = tcb->m_ssThresh.Get ();
   tcb->m_cWndInfl = tcb->m_cWnd;
 }
 
