@@ -28,8 +28,6 @@
 
 namespace ns3 {
 
-class LteEnbNetDevice;
-
 /**
  * This class implements the Access Stratum (AS) Service Access Point
  * (SAP), i.e., the interface between the EpcUeNas and the LteUeRrc.
