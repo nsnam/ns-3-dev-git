@@ -234,7 +234,7 @@ public:
       }
   }
   explicit inline Time (const int64x64_t & v)
-    : m_data (v.GetHigh ())
+    : m_data (v.Round ())
   {
     if (g_markingTimes)
       {
