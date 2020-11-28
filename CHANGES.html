@@ -54,7 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.32 to ns-3.33</h1>
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li><b>Time::RoundTo (unit)</b> allows time to be rounded to the nearest integer multiple of unit</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -78,6 +78,7 @@ in order to support multi-users (MU) transmissions.
 <ul>
 <li>The <b>default Wi-Fi ErrorRateModel</b> for the 802.11n/ac/ax standards has been changed from the NistErrorRateModel to a new TableBasedErrorRateModel.  Users may experience a shift in Wi-Fi link range due to the new default error model, as <b>the new model is more optimistic</b> (the PER for a given MCS will degrade at a lower SNR value). The Wi-Fi module documentation provides plots that compare the performance of the NIST and new table-based model.</li>
 <li>The default value of the <b>BerThreshold</b> attribute in <b>IdealWifiManager</b> was changed from 1e-5 to 1e-6, so as to the correct high order MCS.</li>
+<li> Time values that are created from an int64x64_t value are now rounded to the nearest integer multiple of the unit, rather than truncated.  Issue #265 in the GitLab.com tracker describes the behavior that was fixed.  Some Time values that rely on this conversion may have changed due to this fix.</li>
 </ul>
 
 <hr>
