@@ -20,13 +20,13 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 |ns3| provides models for these aspects of 802.11:
 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
-* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** (both 2.4 and 5 GHz bands) physical layers
+* **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** (2.4, 5 and 6 GHz bands) physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
 * various rate control algorithms including **Aarf, Arf, Cara, Onoe, Rraa,
-  ConstantRate, and Minstrel**
+  ConstantRate, Minstrel and Minstrel-HT**
 * 802.11s (mesh), described in another chapter
 * 802.11p and WAVE (vehicular), described in another chapter
 
@@ -135,11 +135,11 @@ are typically three main components to packet reception:
 
 |ns3| offers users a choice between two physical layer models, with a
 base interface defined in the ``ns3::WifiPhy`` class.  The YansWifiPhy
-class has been the only physical layer model until recently; the model
-implemented there is described in a paper entitled
+class implements a simple physical layer model, which is described
+in a paper entitled
 `Yet Another Network Simulator <https://dl.acm.org/doi/pdf/10.1145/1190455.1190467?download=true>`_
 The acronym *Yans* derives from this paper title.  The SpectrumWifiPhy
-class is an alternative implementation based on the Spectrum framework
+class is a more advanced implementation based on the Spectrum framework
 used for other |ns3| wireless models.  Spectrum allows a fine-grained
 frequency decomposition of the signal, and permits scenarios to
 include multiple technologies coexisting on the same channel.
@@ -154,14 +154,15 @@ attempts to summarize compliance with the standard and with behavior
 found in practice.
 
 The physical layer and channel models operate on a per-packet basis, with
-no frequency-selective propagation or interference effects when using
+no frequency-selective propagation nor interference effects when using
 the default YansWifiPhy model.  Directional antennas are also not
 supported at this time.  For additive white Gaussian noise (AWGN)
 scenarios, or wideband interference scenarios, performance is governed
 by the application of analytical models (based on modulation and factors
 such as channel width) to the received signal-to-noise ratio, where noise
 combines the effect of thermal noise and of interference from other Wi-Fi
-packets.  Moreover, interference from other technologies is not modeled.
+packets.  Interference from other wireless technologies is only modeled
+when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
 * 802.11ax OFDMA is not supported (but some code changes are progressively being added)
@@ -173,6 +174,8 @@ The following details pertain to the physical layer and channel models:
 * Authentication and encryption are missing
 * Processing delays are not modeled
 * The current implementation assumes that secondary channels are always higher than primary channels
+* Channel bonding implementation only supports the use of the configured channel width
+and does not perform CCA on secondary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
 * Energy consumption model does not consider MIMO
 
@@ -191,7 +194,7 @@ Design Details
 
 The remainder of this section is devoted to more in-depth design descriptions
 of some of the Wi-Fi models.  Users interested in skipping to the section
-on usage of the wifi module (User Documentation) may do so at this point.
+on usage of the wifi module (:ref:`sec-wifi-user-doc`) may do so at this point.
 We organize these more detailed sections from the bottom-up, in terms of
 layering, by describing the channel and PHY models first, followed by
 the MAC models.
@@ -206,9 +209,8 @@ mixed technologies on the same channel, or frequency dependent effects,
 the SpectrumWifiPhy is more appropriate.  The two frameworks are very
 similarly configured.
 
-The SpectrumWifiPhy framework uses the ``Spectrum`` channel
-framework, which is not documented herein but in the Spectrum module
-documentation.
+The SpectrumWifiPhy framework uses the :ref:`sec-spectrum-module` channel
+framework.
 
 The YansWifiChannel is the only concrete channel model class in 
 the |ns3| wifi module.  The 
@@ -226,7 +228,7 @@ delay between the positions of the devices).
 
 Only objects of ``ns3::YansWifiPhy`` may be attached to a 
 ``ns3::YansWifiChannel``; therefore, objects modeling other 
-(interfering) technologies such as LTE are not allowed.    Furthermore,
+(interfering) technologies such as LTE are not allowed. Furthermore,
 packets from different channels do not interact; if a channel is logically
 configured for e.g. channels 5 and 6, the packets do not cause 
 adjacent channel interference (even if their channel numbers overlap).
@@ -236,12 +238,12 @@ WifiPhy and related models
 
 The ``ns3::WifiPhy`` is an abstract base class representing the 802.11
 physical layer functions.  Packets passed to this object (via a
-``SendPacket()`` method) are sent over a channel object, and
+``Send()`` method) are sent over a channel object, and
 upon reception, the receiving PHY object decides (based on signal power
 and interference) whether the packet was successful or not.  This class
 also provides a number of callbacks for notifications of physical layer
 events, exposes a notion of a state machine that can be monitored for
-MAC-level processes such as carrier sense, and handles sleep/wake models
+MAC-level processes such as carrier sense, and handles sleep/wake/off models
 and energy consumption.  The ``ns3::WifiPhy`` hooks to the ``ns3::MacLow``
 object in the WifiNetDevice.
 
@@ -272,16 +274,17 @@ layer, and allows other objects to hook as *listeners* to monitor PHY
 state.  The main use of listeners is for the MAC layer to know when
 the PHY is busy or not (for transmission and collision avoidance).
 
-The PHY layer can be in one of six states:
+The PHY layer can be in one of seven states:
 
 #. TX: the PHY is currently transmitting a signal on behalf of its associated
    MAC
 #. RX: the PHY is synchronized on a signal and is waiting until it has received
    its last bit to forward it to the MAC.
-#. IDLE: the PHY is not in the TX, RX, or CCA BUSY states.
-#. CCA Busy: the PHY is not in TX or RX state but the measured energy is higher than the energy detection threshold.
+#. IDLE: the PHY is not in the TX, RX, or CCA_BUSY states.
+#. CCA_BUSY: the PHY is not in TX or RX state but the measured energy is higher than the energy detection threshold.
 #. SWITCHING: the PHY is switching channels.
 #. SLEEP: the PHY is in a power save mode and cannot send nor receive frames.
+#. OFF: the PHY is powered off and cannot send nor receive frames.
 
 Packet reception works as follows.  For ``YansWifiPhy``, most of the logic
 is implemented in the ``WifiPhy`` base class.  The ``YansWifiChannel`` calls
@@ -316,8 +319,8 @@ detection event.
 
 The ``StartReceiveHeader ()`` method will check, with a preamble detection
 model, whether the signal is strong enough to be received, and if so,
-an event ``WifiPhy::EndReceive ()`` is scheduled for the end of reception,
-and the PHY is put into the RX state.  Currently, there is only a 
+an event ``WifiPhy::ContinueReceiveHeader ()`` is scheduled for the end of the
+non-HT header and the PHY is put into the CCA_BUSY state. Currently, there is only a
 simple threshold-based preamble detection model in ns-3,
 called ``ThresholdPreambleDetectionModel``.  If there is no preamble detection
 model, the preamble is assumed to have been detected.  
@@ -330,34 +333,25 @@ compared with that of previous releases, so some packet receptions that were
 previously successful will now fail on this check.  More details on the
 modeling behind this change are provided in [lanante2019]_.
 
-In a real system, the ``EndReceive ()`` time would
-not be determined until later when the PHY headers are successfully decoded,
-but this ns-3 model has the available information at the start of the 
-packet to schedule this.  The second event to schedule is 
-``StartReceivePayload ()`` for the time at which the PHY headers
-have been received and the payload is about to start.
+The next event to schedule is ``StartReceivePayload ()`` for the time at which
+the remaining PHY header fields have been received and the payload is about to start.
+This event is scheduled only if the non-HT PHY headers have been successfully received,
+otherwise the reception is aborted and PHY is put either in IDLE state or in CCA_BUSY state,
+depending on whether the measured energy is higher than the energy detection threshold.
 
 The next event at ``StartReceivePayload ()`` checks, using the interference
 helper and error model, whether the header was successfully decoded, and if so,
 a ``PhyRxPayloadBegin`` callback (equivalent to the PHY-RXSTART primitive)
-is triggered.
-The PHY header is often transmitted
-at a lower modulation rate than is the payload.  The portion of the packet
+is triggered. The PHY header is often transmitted
+at a lower modulation rate than is the payload. The portion of the packet
 corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
 for "probability of error (PER)" for this header based on the SNR that has
 been tracked by the InterferenceHelper.  The ``YansWifiPhy`` then draws
 a random number from a uniform distribution and compares it against the 
 PER and decides success or failure.  The process is again repeated after 
-the payload has been received (possibly with a different error model 
-applied for the different modulation).  If both the header and payload 
-are successfully received, the packet is passed up to the ``MacLow`` object.  
-
-If the header is determined to have errors, then a "PlcpSuccess" flag is
-set for future reference, but the ``EndReceive ()`` is not cancelled and
-the PHY stays in RX state; upon the ``EndReceive ()`` event, the packet
-will be considered errored in this case regardless of the payload reception,
-based on the PlcpSuccess flag.
+the payload has been received.  If both the header and payload
+are successfully received, the packet is passed up to the ``MacLow`` object.
 
 Even if packet objects received by the PHY are not part of the reception
 process, they are tracked by the InterferenceHelper object for purposes
@@ -380,10 +374,11 @@ the possibility to raise the CCA_BUSY while the overall energy exceeds
 this threshold.
 
 The above describes the case in which the packet is a single MPDU.  For
-more recent Wi-Fi standards using MPDU aggregation, each individual MPDU
-in the aggregate is sent as a single ``ns3::Packet``, and the logic in
-the ``WifiPhy`` is a bit different than the above for handling such 
-MPDUs (MPDUs after the first arrive without a preamble and header).
+more recent Wi-Fi standards using MPDU aggregation, ``StartReceivePayload``
+schedules an event for reception of each individual MPDU (``ScheduleEndOfMpdus``),
+which then forwards each MPDU as they arrive up to MacLow, if the reception
+of the MPDU has been successful. Once the A-MPDU reception is finished,
+MacLow is also notified about the amount of successfully received MPDUs.
 
 InterferenceHelper
 ##################
@@ -401,7 +396,7 @@ model, and the InterferenceHelper breaks the packet into one or more
 of error for a given number of bits from the error model in use.  The
 InterferenceHelper builds an aggregate "probability of error" value
 based on these chunks and their duration, and returns this back to
-the ``YansWifiPhy`` for a reception decision.
+the ``WifiPhy`` for a reception decision.
 
 .. _snir:
 
@@ -595,7 +590,7 @@ add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
 late from a hidden node) are added to the noise.
 
-Unlike YansWifiPhy, where there are no foreign signals, CCA BUSY state
+Unlike YansWifiPhy, where there are no foreign signals, CCA_BUSY state
 will be raised for foreign signals that are higher than CcaEdThreshold
 (see section 16.4.8.5 in the 802.11-2012 standard for definition of
 CCA Mode 1).  The attribute ``WifiPhy::CcaEdThreshold`` therefore
@@ -774,6 +769,7 @@ Algorithms found in real devices:
 * ``OnoeWifiManager``
 * ``ConstantRateWifiManager``
 * ``MinstrelWifiManager``
+* ``MinstrelHtWifiManager``
 
 Algorithms in literature:
 
@@ -851,7 +847,7 @@ MinstrelWifiManager
 ###################
 
 The minstrel rate control algorithm is a rate control algorithm originated from
-madwifi project.  It is currently the default rate control algorithm of the Linux kernel.
+madwifi project. It is currently the default rate control algorithm of the Linux kernel.
 
 Minstrel keeps track of the probability of successfully sending a frame of each available rate.
 Minstrel then calculates the expected throughput by multiplying the probability with the rate.
@@ -862,6 +858,11 @@ In minstrel, roughly 10 percent of transmissions are sent at the so-called looka
 The goal of the lookaround rate is to force minstrel to try higher rate than the currently used rate.
 
 For a more detailed information about minstrel, see [linuxminstrel]_.
+
+MinstrelHtWifiManager
+#####################
+
+This is the extension of minstrel for 802.11n/ac/ax.
 
 Ack policy selection
 ####################
@@ -953,4 +954,3 @@ Depending on your goal, the common tasks are (in no particular order):
   ``Txop`` or ``QosTxop`` while RTS/CTS transaction is handled by ``MacLow``.
 * Modifying or creating new rate control algorithms can be done by creating a new child class of Wi-Fi remote
   station manager or modifying the existing ones.
-
