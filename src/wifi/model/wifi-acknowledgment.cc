@@ -106,6 +106,58 @@ WifiNormalAck::Print (std::ostream &os) const
   os << "NORMAL_ACK";
 }
 
+/*
+ * WifiBlockAck
+ */
+
+WifiBlockAck::WifiBlockAck ()
+  : WifiAcknowledgment (BLOCK_ACK)
+{
+}
+
+bool
+WifiBlockAck::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  if (ackPolicy == WifiMacHeader::NORMAL_ACK)
+    {
+      return true;
+    }
+  return false;
+}
+
+void
+WifiBlockAck::Print (std::ostream &os) const
+{
+  os << "BLOCK_ACK";
+}
+
+
+/*
+ * WifiBarBlockAck
+ */
+
+WifiBarBlockAck::WifiBarBlockAck ()
+  : WifiAcknowledgment (BAR_BLOCK_ACK)
+{
+}
+
+bool
+WifiBarBlockAck::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  if (ackPolicy == WifiMacHeader::BLOCK_ACK)
+    {
+      return true;
+    }
+  return false;
+}
+
+void
+WifiBarBlockAck::Print (std::ostream &os) const
+{
+  os << "BAR_BLOCK_ACK";
+}
+
+
 std::ostream & operator << (std::ostream &os, const WifiAcknowledgment* acknowledgment)
 {
   acknowledgment->Print (os);

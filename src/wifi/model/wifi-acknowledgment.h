@@ -23,6 +23,7 @@
 
 #include "ns3/nstime.h"
 #include "wifi-tx-vector.h"
+#include "block-ack-type.h"
 #include "wifi-mac-header.h"
 #include "ctrl-headers.h"
 #include <map>
@@ -48,7 +49,9 @@ struct WifiAcknowledgment
   enum Method
     {
       NONE = 0,
-      NORMAL_ACK
+      NORMAL_ACK,
+      BLOCK_ACK,
+      BAR_BLOCK_ACK
     };
 
   /**
@@ -135,6 +138,44 @@ struct WifiNormalAck : public WifiAcknowledgment
   void Print (std::ostream &os) const override;
 
   WifiTxVector ackTxVector;       //!< Ack TXVECTOR
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiBlockAck specifies that acknowledgment via Block Ack is required.
+ */
+struct WifiBlockAck : public WifiAcknowledgment
+{
+  WifiBlockAck ();
+
+  // Overridden from WifiAcknowledgment
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
+  void Print (std::ostream &os) const;
+
+  WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
+  BlockAckType baType;                 //!< BlockAck type
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiBarBlockAck specifies that a BlockAckReq is sent to solicit a Block Ack response.
+ */
+struct WifiBarBlockAck : public WifiAcknowledgment
+{
+  WifiBarBlockAck ();
+
+  // Overridden from WifiAcknowledgment
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
+  void Print (std::ostream &os) const;
+
+  WifiTxVector blockAckReqTxVector;    //!< BlockAckReq TXVECTOR
+  WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
+  BlockAckReqType barType;             //!< BlockAckReq type
+  BlockAckType baType;                 //!< BlockAck type
 };
 
 

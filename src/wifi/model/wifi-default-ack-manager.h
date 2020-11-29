@@ -51,6 +51,38 @@ public:
                                                           const WifiTxParameters& txParams);
   virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
                                                                 const WifiTxParameters& txParams);
+
+  /**
+   * Get the maximum distance between the starting sequence number of the Block
+   * Ack agreement which the given MPDU belongs to and each of the sequence numbers
+   * of the given MPDU and of all the QoS data frames included in the given TX
+   * parameters.
+   *
+   * \param mpdu the given MPDU
+   * \param txParams the given TX parameters
+   * \return the maximum distance between the starting sequence number of the Block
+   *         Ack agreement which the given MPDU belongs to and each of the sequence
+   *         numbers of the given MPDU and of all the QoS data frames included in
+   *         the given TX parameters
+   */
+  uint16_t GetMaxDistFromStartingSeq (Ptr<const WifiMacQueueItem> mpdu,
+                                      const WifiTxParameters& txParams) const;
+
+protected:
+  /**
+   * Determine whether the (A-)MPDU containing the given MPDU and the MPDUs (if any)
+   * included in the given TX parameters requires an immediate response (Normal Ack,
+   * Block Ack or Block Ack Request followed by Block Ack).
+   *
+   * \param mpdu the given MPDU.
+   * \param txParams the given TX parameters.
+   * \return true if the given PSDU requires an immediate response
+   */
+  bool IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
+                         const WifiTxParameters& txParams) const;
+private:
+  bool m_useExplicitBar;                    //!< true for sending BARs, false for using Implicit BAR policy
+  double m_baThreshold;                     //!< Threshold to determine when a BlockAck must be requested
 };
 
 
