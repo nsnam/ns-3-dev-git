@@ -35,7 +35,6 @@ class BlockAckAgreement
   /// Provide access to MacLow class
   friend class MacLow;
 
-
 public:
   /**
    * Constructor for BlockAckAgreement with given peer and TID.
@@ -164,6 +163,15 @@ public:
    * \return the type of the Block Ack Requests sent by the originator of this agreement
    */
   BlockAckReqType GetBlockAckReqType (void) const;
+  /**
+   * Get the distance between the given starting sequence number and the
+   * given sequence number.
+   *
+   * \param seqNumber the given sequence number
+   * \param startingSeqNumber the given starting sequence number
+   * \return the distance of the given sequence number from the given starting sequence number
+   */
+  static std::size_t GetDistance (uint16_t seqNumber, uint16_t startingSeqNumber);
 
 
 protected:

@@ -88,8 +88,7 @@ OriginatorBlockAckAgreement::GetStartingSequence (void) const
 std::size_t
 OriginatorBlockAckAgreement::GetDistance (uint16_t seqNumber) const
 {
-  NS_ASSERT (seqNumber < SEQNO_SPACE_SIZE);
-  return (seqNumber - GetStartingSequence () + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
+  return BlockAckAgreement::GetDistance (seqNumber, m_txWindow.GetWinStart ());
 }
 
 void

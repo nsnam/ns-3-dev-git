@@ -964,6 +964,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("AparfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ArfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckAgreement", LOG_LEVEL_ALL);
+  LogComponentEnable ("RecipientBlockAckAgreement", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckCache", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("CaraWifiManager", LOG_LEVEL_ALL);

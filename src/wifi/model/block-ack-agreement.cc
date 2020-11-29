@@ -191,4 +191,11 @@ BlockAckAgreement::GetBlockAckReqType (void) const
   return BlockAckReqType::COMPRESSED;
 }
 
+std::size_t
+BlockAckAgreement::GetDistance (uint16_t seqNumber, uint16_t startingSeqNumber)
+{
+  NS_ASSERT (seqNumber < SEQNO_SPACE_SIZE && startingSeqNumber < SEQNO_SPACE_SIZE);
+  return (seqNumber - startingSeqNumber + SEQNO_SPACE_SIZE) % SEQNO_SPACE_SIZE;
+}
+
 } //namespace ns3

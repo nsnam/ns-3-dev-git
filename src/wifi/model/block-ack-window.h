@@ -103,6 +103,16 @@ public:
    */
   std::vector<bool>::reference At (std::size_t distance);
   /**
+   * Get a const reference to the element in the window having the given distance from
+   * the current winStart. Note that the given distance must be less than the
+   * window size.
+   *
+   * \param distance the given distance
+   * \return a const reference to the element in the window having the given distance
+   *         from the current winStart
+   */
+  std::vector<bool>::const_reference At (std::size_t distance) const;
+  /**
    * Advance the current winStart by the given number of positions.
    *
    * \param count the number of positions the current winStart must be advanced by

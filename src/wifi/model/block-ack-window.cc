@@ -73,6 +73,14 @@ BlockAckWindow::At (std::size_t distance)
   return m_window.at ((m_head + distance) % m_window.size ());
 }
 
+std::vector<bool>::const_reference
+BlockAckWindow::At (std::size_t distance) const
+{
+  NS_ASSERT (distance < m_window.size ());
+
+  return m_window.at ((m_head + distance) % m_window.size ());
+}
+
 void
 BlockAckWindow::Advance (std::size_t count)
 {
