@@ -166,6 +166,19 @@ public:
   void SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem);
 
   /**
+   * Return true if an explicit BlockAckRequest is sent after a missed BlockAck
+   *
+   * \return true if an explicit BlockAckRequest is sent after a missed BlockAck
+   */
+  bool UseExplicitBarAfterMissedBlockAck (void) const;
+
+  /**
+   * Get the Block Ack Manager associated with this QosTxop.
+   *
+   * \returns the Block Ack Manager
+   */
+  Ptr<BlockAckManager> GetBaManager (void);
+  /**
    * \param address recipient address of the peer station
    * \param tid traffic ID.
    *
@@ -255,6 +268,20 @@ public:
    * \param recipient address of the recipient.
    */
   void GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient);
+  /**
+   * Callback when ADDBA response is not received after timeout.
+   *
+   * \param recipient MAC address of recipient
+   * \param tid traffic ID
+   */
+  void AddBaResponseTimeout (Mac48Address recipient, uint8_t tid);
+  /**
+   * Reset BA agreement after BA negotiation failed.
+   *
+   * \param recipient MAC address of recipient
+   * \param tid traffic ID
+   */
+  void ResetBa (Mac48Address recipient, uint8_t tid);
 
   /**
    * Check if BlockAckRequest should be re-transmitted.
@@ -305,6 +332,12 @@ public:
    * \param timeout the BlockAck inactivity timeout.
    */
   void SetBlockAckInactivityTimeout (uint16_t timeout);
+  /**
+   * Get the BlockAck inactivity timeout.
+   *
+   * \return the BlockAck inactivity timeout.
+   */
+  uint16_t GetBlockAckInactivityTimeout (void) const;
   /**
    * Sends DELBA frame to cancel a block ack agreement with STA
    * addressed by <i>addr</i> for TID <i>tid</i>.
@@ -533,6 +566,13 @@ public:
   Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
 
   /**
+   * Set the Queue Size subfield of the QoS Control field of the given QoS data frame.
+   *
+   * \param mpdu the given QoS data frame
+   */
+  void SetQosQueueSize (Ptr<WifiMacQueueItem> mpdu);
+
+  /**
    * Return true if a TXOP has started.
    *
    * \return true if a TXOP has started, false otherwise.
@@ -623,20 +663,6 @@ private:
    * \returns the TXOP fragment offset in bytes
    */
   uint32_t GetTxopFragmentOffset (uint32_t fragmentNumber) const;
-  /**
-   * Callback when ADDBA response is not received after timeout.
-   *
-   * \param recipient MAC address of recipient
-   * \param tid traffic ID
-   */
-  void AddBaResponseTimeout (Mac48Address recipient, uint8_t tid);
-  /**
-   * Reset BA agreement after BA negotiation failed.
-   *
-   * \param recipient MAC address of recipient
-   * \param tid traffic ID
-   */
-  void ResetBa (Mac48Address recipient, uint8_t tid);
 
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station

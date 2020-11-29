@@ -128,10 +128,32 @@ QosTxop::DoDispose (void)
 }
 
 void
+QosTxop::SetQosQueueSize (Ptr<WifiMacQueueItem> mpdu)
+{
+  NS_LOG_FUNCTION (this << *mpdu);
+
+  WifiMacHeader& hdr = mpdu->GetHeader ();
+  NS_ASSERT (hdr.IsQosData ());
+
+  uint32_t bufferSize = m_queue->GetNBytes (hdr.GetQosTid (), hdr.GetAddr1 ())
+                        + m_baManager->GetRetransmitQueue ()->GetNBytes (hdr.GetQosTid (), hdr.GetAddr1 ());
+  // A queue size value of 254 is used for all sizes greater than 64 768 octets.
+  uint8_t queueSize = static_cast<uint8_t> (std::ceil (std::min (bufferSize, 64769u) / 256.0));
+  NS_LOG_DEBUG ("Buffer size=" << bufferSize << " Queue Size=" << +queueSize);
+  hdr.SetQosQueueSize (queueSize);
+}
+
+void
 QosTxop::SetQosFrameExchangeManager (const Ptr<QosFrameExchangeManager> qosFem)
 {
   NS_LOG_FUNCTION (this << qosFem);
   m_qosFem = qosFem;
+}
+
+Ptr<BlockAckManager>
+QosTxop::GetBaManager (void)
+{
+  return m_baManager;
 }
 
 bool
@@ -211,6 +233,12 @@ TypeOfStation
 QosTxop::GetTypeOfStation (void) const
 {
   return m_typeOfStation;
+}
+
+bool
+QosTxop::UseExplicitBarAfterMissedBlockAck (void) const
+{
+  return m_useExplicitBarAfterMissedBlockAck;
 }
 
 bool
@@ -1783,6 +1811,12 @@ QosTxop::GetBlockAckThreshold (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_blockAckThreshold;
+}
+
+uint16_t
+QosTxop::GetBlockAckInactivityTimeout (void) const
+{
+  return m_blockAckInactivityTimeout;
 }
 
 void
