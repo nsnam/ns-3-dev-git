@@ -2872,7 +2872,7 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
   InterferenceHelper::SnrPer snrPer = m_interference.CalculateNonHtPhyHeaderSnrPer (event, GetBand (channelWidth));
 
   NS_LOG_DEBUG ("snr(dB)=" << RatioToDb (snrPer.snr) << ", per=" << snrPer.per);
-  if (m_random->GetValue () > snrPer.per) //legacy PHY header reception succeeded
+  if (m_random->GetValue () > snrPer.per) //non-HT PHY header reception succeeded
     {
       NS_LOG_DEBUG ("Received non-HT PHY header");
       WifiTxVector txVector = event->GetTxVector ();
