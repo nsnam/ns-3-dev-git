@@ -1006,6 +1006,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
   LogComponentEnable ("Txop", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
+  LogComponentEnable ("VhtFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiDefaultAckManager", LOG_LEVEL_ALL);
