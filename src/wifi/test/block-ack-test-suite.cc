@@ -1007,7 +1007,7 @@ BlockAckAggregationDisabledTest::Transmit (std::string context, Ptr<const Packet
   WifiMacHeader hdr;
   p->PeekHeader (hdr);
 
-  if (m_txSinceBar == 9 || m_txTotal == 14)
+  if (m_nBar < 2 && (m_txSinceBar == 9 || m_txTotal == 14))
     {
       NS_TEST_ASSERT_MSG_EQ (hdr.IsBlockAckReq (), true, "Didn't get a BlockAckReq when expected");
     }
@@ -1067,8 +1067,7 @@ BlockAckAggregationDisabledTest::DoRun (void)
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_STANDARD_80211n_5GHZ);
-  wifi.SetAckPolicySelectorForAc (AC_BE, "ns3::ConstantWifiAckPolicySelector",
-                                  "BaThreshold", DoubleValue (0.125));
+  Config::SetDefault ("ns3::WifiDefaultAckManager::BaThreshold", DoubleValue (0.125));
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
 
   WifiMacHelper mac;

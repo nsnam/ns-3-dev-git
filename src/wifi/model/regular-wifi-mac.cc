@@ -36,7 +36,7 @@
 #include "he-configuration.h"
 #include <algorithm>
 #include <cmath>
-#include "qos-frame-exchange-manager.h"
+#include "he-frame-exchange-manager.h"
 
 namespace ns3 {
 
@@ -137,15 +137,15 @@ RegularWifiMac::SetupFrameExchangeManager (void)
 
   if (GetHeSupported ())
     {
-      // TODO create an HE Frame Exchange Manager
+      m_feManager = CreateObject<HeFrameExchangeManager> ();
     }
   else if (GetVhtSupported ())
     {
-      // TODO create a VHT Frame Exchange Manager
+      m_feManager = CreateObject<VhtFrameExchangeManager> ();
     }
   else if (GetHtSupported ())
     {
-      // TODO create an HT Frame Exchange Manager
+      m_feManager = CreateObject<HtFrameExchangeManager> ();
     }
   else if (GetQosSupported ())
     {
@@ -156,20 +156,17 @@ RegularWifiMac::SetupFrameExchangeManager (void)
       m_feManager = CreateObject<FrameExchangeManager> ();
     }
 
-  if (m_feManager != 0)
+  m_feManager->SetWifiMac (this);
+  m_feManager->SetMacTxMiddle (m_txMiddle);
+  m_feManager->SetMacRxMiddle (m_rxMiddle);
+  m_feManager->SetAddress (GetAddress ());
+  m_feManager->SetBssid (GetBssid ());
+  m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+  if (GetQosSupported ())
     {
-      m_feManager->SetWifiMac (this);
-      m_feManager->SetMacTxMiddle (m_txMiddle);
-      m_feManager->SetMacRxMiddle (m_rxMiddle);
-      m_feManager->SetAddress (GetAddress ());
-      m_feManager->SetBssid (GetBssid ());
-      m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
-      if (GetQosSupported ())
+      for (const auto& pair : m_edca)
         {
-          for (const auto& pair : m_edca)
-            {
-              pair.second->SetQosFrameExchangeManager (DynamicCast<QosFrameExchangeManager> (m_feManager));
-            }
+          pair.second->SetQosFrameExchangeManager (DynamicCast<QosFrameExchangeManager> (m_feManager));
         }
     }
 }
@@ -555,14 +552,8 @@ RegularWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
   m_phy = phy;
   m_channelAccessManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
-  if (m_feManager != 0)
-    {
-      m_feManager->SetWifiPhy (phy);
-    }
-  else
-    {
-      m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::DeaggregateAmpduAndReceive, m_low));
-    }
+  NS_ASSERT (m_feManager != 0);
+  m_feManager->SetWifiPhy (phy);
 }
 
 Ptr<WifiPhy>
@@ -930,10 +921,11 @@ RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
   packet->AddHeader (respHdr);
   packet->AddHeader (actionHdr);
 
-  //We need to notify our MacLow object as it will have to buffer all
+  //We need to notify our FrameExchangeManager object as it will have to buffer all
   //correctly received packets for this Block Ack session
-  m_low->CreateBlockAckAgreement (&respHdr, originator,
-                                  reqHdr->GetStartingSequence ());
+  NS_ASSERT (m_feManager != 0);
+  Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_feManager);
+  htFem->CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
 
   //It is unclear which queue this frame should go into. For now we
   //bung it into the queue corresponding to the TID for which we are

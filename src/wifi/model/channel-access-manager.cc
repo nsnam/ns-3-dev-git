@@ -389,16 +389,9 @@ ChannelAccessManager::DoGrantDcfAccess (void)
            * could change the global state of the manager, and, thus, could change
            * the result of the calculations.
            */
-          bool transmitted = true;
-          if (m_feManager != 0)
-            {          
-              transmitted = m_feManager->StartTransmission (txop);
-            }
-          else
-            {
-              txop->NotifyAccessGranted ();
-            }
-          if (transmitted)
+          NS_ASSERT (m_feManager != 0);
+
+          if (m_feManager->StartTransmission (txop))
             {
               for (auto& collidingTxop : internalCollisionTxops)
                 {

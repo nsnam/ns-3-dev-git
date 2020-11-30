@@ -412,7 +412,7 @@ int main (int argc, char *argv[])
   throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Aggregation disabled: " << '\n'
             << "  Throughput = " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 39 || throughput > 40))
+  if (verifyResults && (throughput < 38 || throughput > 39))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);
@@ -431,7 +431,7 @@ int main (int argc, char *argv[])
   throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "A-MPDU disabled and A-MSDU enabled (8kB): " << '\n'
             << "  Throughput = " << throughput << " Mbit/s" << '\n';
-  if (verifyResults && (throughput < 53 || throughput > 54))
+  if (verifyResults && (throughput < 52 || throughput > 53))
     {
       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
       exit (1);

@@ -1684,20 +1684,34 @@ Bug2831TestCase::DoRun (void)
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
   mac.Set ("EnableBeaconJitter", BooleanValue (false));
-  Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> apMac = mac.Create<RegularWifiMac> ();
   apMac->SetDevice (apDev);
   apMac->SetAddress (Mac48Address::Allocate ());
   apMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
+  Ptr<FrameExchangeManager> fem = apMac->GetFrameExchangeManager ();
+  Ptr<WifiProtectionManager> protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (apMac);
+  fem->SetProtectionManager (protectionManager);
+  Ptr<WifiAckManager> ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (apMac);
+  fem->SetAckManager (ackManager);
 
   Ptr<Node> staNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
   Ptr<HtConfiguration> staHtConfiguration = CreateObject<HtConfiguration> ();
   staDev->SetHtConfiguration (staHtConfiguration);
   mac.SetTypeId ("ns3::StaWifiMac");
-  Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
+  Ptr<RegularWifiMac> staMac = mac.Create<RegularWifiMac> ();
   staMac->SetDevice (staDev);
   staMac->SetAddress (Mac48Address::Allocate ());
   staMac->ConfigureStandard (WIFI_STANDARD_80211ax_5GHZ);
+  fem = staMac->GetFrameExchangeManager ();
+  protectionManager = CreateObject<WifiDefaultProtectionManager> ();
+  protectionManager->SetWifiMac (staMac);
+  fem->SetProtectionManager (protectionManager);
+  ackManager = CreateObject<WifiDefaultAckManager> ();
+  ackManager->SetWifiMac (staMac);
+  fem->SetAckManager (ackManager);
 
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
   apMobility->SetPosition (Vector (0.0, 0.0, 0.0));
@@ -2210,7 +2224,7 @@ Bug2470TestCase::DoRun (void)
   // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
-  blackList.push_back (6);
+  blackList.push_back (10);
   apPem->SetList (blackList);
 
   {

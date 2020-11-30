@@ -138,10 +138,12 @@ public:
   /**
    * \param respHdr Relative Add block ack response (action frame).
    * \param recipient Address of peer station involved in block ack mechanism.
+   * \param startingSeq the updated starting sequence number
    *
    * Invoked upon receipt of a ADDBA response frame from <i>recipient</i>.
    */
-  void UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
+  void UpdateAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient,
+                        uint16_t startingSeq);
   /**
    * \param mpdu MPDU to store.
    *
