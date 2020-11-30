@@ -977,6 +977,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("FrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HeConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("HtConfiguration", LOG_LEVEL_ALL);
+  LogComponentEnable ("HtFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("InfrastructureWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
