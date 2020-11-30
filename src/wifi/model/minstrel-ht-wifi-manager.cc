@@ -514,7 +514,7 @@ MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
     {
       m_legacyManager->UpdateRate (station);
     }
-  else
+  else if (station->m_longRetry < CountRetries (station))
     {
       uint8_t rateId = GetRateId (station->m_txrate);
       uint8_t groupId = GetGroupId (station->m_txrate);
