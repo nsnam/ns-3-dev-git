@@ -23,15 +23,14 @@
 #include "ns3/packet.h"
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
-#include "mpdu-aggregator.h"
 #include "wifi-remote-station-manager.h"
 #include "mac-low.h"
-#include "wifi-phy.h"
-#include "wifi-net-device.h"
 #include "ht-capabilities.h"
 #include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
+#include "ht-frame-exchange-manager.h"
+#include "wifi-tx-parameters.h"
 #include <algorithm>
 
 namespace ns3 {
@@ -63,6 +62,7 @@ void
 MsduAggregator::DoDispose ()
 {
   m_mac = 0;
+  m_htFem = 0;
   Object::DoDispose ();
 }
 
@@ -71,6 +71,7 @@ MsduAggregator::SetWifiMac (const Ptr<RegularWifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_mac = mac;
+  m_htFem = DynamicCast<HtFrameExchangeManager> (m_mac->GetFrameExchangeManager ());
 }
 
 uint16_t
@@ -180,6 +181,69 @@ MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
 
   // Aggregation succeeded, we have to remove the first MSDU
   queue->Remove (first);
+
+  return amsdu;
+}
+
+Ptr<WifiMacQueueItem>
+MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& txParams,
+                              Time availableTime, WifiMacQueueItem::QueueIteratorPair& queueIt) const
+{
+  NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
+
+  NS_ASSERT (peekedItem->IsQueued ());
+  NS_ASSERT (peekedItem->GetQueueIteratorPairs ().size () == 1);
+  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
+  NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
+
+  uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+  Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
+
+  /* "The Address 1 field of an MPDU carrying an A-MSDU shall be set to an
+   * individual address or to the GCR concealment address" (Section 10.12
+   * of 802.11-2016)
+   */
+  NS_ABORT_MSG_IF (recipient.IsBroadcast (), "Recipient address is broadcast");
+
+  /* "A STA shall not transmit an A-MSDU within a QoS Data frame under a block
+   * ack agreement unless the recipient indicates support for A-MSDU by setting
+   * the A-MSDU Supported field to 1 in its BlockAck Parameter Set field of the
+   * ADDBA Response frame" (Section 10.12 of 802.11-2016)
+   */
+  // No check required for now, as we always set the A-MSDU Supported field to 1
+
+  // TODO Add support for the Max Number Of MSDUs In A-MSDU field in the Extended
+  // Capabilities element sent by the recipient
+
+  NS_ASSERT (m_htFem != 0);
+
+  if (GetMaxAmsduSize (recipient, tid, txParams.m_txVector.GetModulationClass ()) == 0)
+    {
+      NS_LOG_DEBUG ("A-MSDU aggregation disabled");
+      return nullptr;
+    }
+
+  Ptr<WifiMacQueueItem> amsdu = Copy (peekedItem);
+  uint8_t nMsdu = 1;
+
+  peekedIt.it++;
+
+  while ((peekedIt.it = peekedIt.queue->PeekByTidAndAddress (tid, recipient, peekedIt.it)) != peekedIt.queue->end ()
+         && m_htFem->TryAggregateMsdu (*peekedIt.it, txParams, availableTime))
+    {
+      amsdu->Aggregate (*peekedIt.it);
+      peekedIt.it++;
+      nMsdu++;
+    }
+
+  if (nMsdu == 1)
+    {
+      NS_LOG_DEBUG ("Aggregation failed (could not aggregate at least two MSDUs)");
+      return nullptr;
+    }
+
+  // Aggregation succeeded
+  queueIt = peekedIt;
 
   return amsdu;
 }

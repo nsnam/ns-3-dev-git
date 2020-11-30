@@ -40,7 +40,7 @@
 #include "wifi-phy.h"
 #include "wifi-ack-policy-selector.h"
 #include "wifi-psdu.h"
-#include "qos-frame-exchange-manager.h"
+#include "ht-frame-exchange-manager.h"
 #include "wifi-tx-parameters.h"
 
 #undef NS_LOG_APPEND_CONTEXT
@@ -593,8 +593,40 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
   NS_ASSERT (peekedIt.queue == PeekPointer (m_queue));
   Ptr<WifiMacQueueItem> mpdu;
 
-  mpdu = *peekedIt.it;
-  peekedIt.it++;
+  // If it is a non-broadcast QoS Data frame and it is not a retransmission nor a fragment,
+  // attempt A-MSDU aggregation
+  if (peekedItem->GetHeader ().IsQosData ())
+    {
+      uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
+
+      // we should not be asked to dequeue an MPDU that is beyond the transmit window.
+      // Note that PeekNextMpdu() temporarily assigns the next available sequence number
+      // to the peeked frame
+      NS_ASSERT (!GetBaAgreementEstablished (recipient, tid)
+                 || IsInWindow (peekedItem->GetHeader ().GetSequenceNumber (),
+                                GetBaStartingSequence (recipient, tid),
+                                GetBaBufferSize (recipient, tid)));
+
+      // try A-MSDU aggregation
+      if (m_stationManager->GetHtSupported () && !recipient.IsBroadcast ()
+          && !peekedItem->GetHeader ().IsRetry () && !peekedItem->IsFragment ())
+        {
+          Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_qosFem);
+          mpdu = htFem->GetMsduAggregator ()->GetNextAmsdu (peekedItem, txParams, availableTime, peekedIt);
+        }
+
+      if (mpdu != 0)
+        {
+          NS_LOG_DEBUG ("Prepared an MPDU containing an A-MSDU");
+        }
+      // else aggregation was not attempted or failed
+    }
+
+  if (mpdu == 0)
+    {
+      mpdu = *peekedIt.it;
+      peekedIt.it++;
+    }
 
   // Assign a sequence number if this is not a fragment nor a retransmission
   AssignSequenceNumber (mpdu);
