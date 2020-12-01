@@ -715,46 +715,6 @@ Txop::MissedAck (void)
 }
 
 void
-Txop::GotCfEnd (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (m_currentPacket != 0)
-    {
-      RestartAccessIfNeeded ();
-    }
-  else
-    {
-      StartAccessIfNeeded ();
-    }
-}
-
-void
-Txop::MissedCfPollResponse (bool expectedCfAck)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("missed response to CF-POLL");
-  if (expectedCfAck)
-    {
-      if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
-        {
-          NS_LOG_DEBUG ("Ack Fail");
-          m_stationManager->ReportFinalDataFailed (Create<const WifiMacQueueItem> (m_currentPacket,
-                                                   m_currentHdr));
-          m_currentPacket = 0;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Retransmit");
-          m_currentHdr.SetRetry ();
-        }
-    }
-  if (!m_txFailedCallback.IsNull ())
-    {
-      m_txFailedCallback (m_currentHdr);
-    }
-}
-
-void
 Txop::StartNextFragment (void)
 {
   NS_LOG_FUNCTION (this);
@@ -796,84 +756,6 @@ Txop::EndTxNoAck (void)
       m_txOkCallback (m_currentHdr);
     }
   StartAccessIfNeeded ();
-}
-
-void
-Txop::SendCfFrame (WifiMacType frameType, Mac48Address addr)
-{
-  NS_LOG_FUNCTION (this << frameType << addr);
-  NS_ASSERT (m_low->IsCfPeriod ());
-  if (m_currentPacket != 0 && frameType != WIFI_MAC_CTL_END)
-    {
-      if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
-        {
-          m_stationManager->ReportFinalDataFailed (Create<const WifiMacQueueItem> (m_currentPacket,
-                                                   m_currentHdr));
-          m_currentPacket = 0;
-        }
-      else
-        {
-          m_currentHdr.SetRetry ();
-        }
-    }
-  else if ((m_queue->GetNPacketsByAddress (addr) > 0) && (frameType != WIFI_MAC_CTL_END)) //if no packet for that dest, send to another dest?
-    {
-      Ptr<WifiMacQueueItem> item = m_queue->DequeueByAddress (addr);
-      NS_ASSERT (item != 0);
-      m_currentPacket = item->GetPacket ();
-      m_currentHdr = item->GetHeader ();
-      uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
-      m_currentHdr.SetSequenceNumber (sequence);
-      m_currentHdr.SetFragmentNumber (0);
-      m_currentHdr.SetNoMoreFragments ();
-      m_currentHdr.SetNoRetry ();
-    }
-  else
-    {
-      m_currentPacket = Create<Packet> ();
-      m_currentHdr.SetNoRetry ();
-    }
-
-  if (m_currentPacket->GetSize () > 0)
-    {
-      switch (frameType)
-        {
-        case WIFI_MAC_DATA_NULL_CFPOLL:
-          m_currentHdr.SetType (WIFI_MAC_DATA_CFPOLL);
-          break;
-        case WIFI_MAC_DATA_NULL:
-          m_currentHdr.SetType (WIFI_MAC_DATA);
-          break;
-        default:
-          NS_ASSERT (false);
-          break;
-        }
-    }
-  else
-    {
-      m_currentHdr.SetType (frameType);
-    }
-  m_currentHdr.SetAddr1 (addr);
-  m_currentHdr.SetAddr2 (m_low->GetAddress ());
-  if (frameType == WIFI_MAC_DATA_NULL)
-    {
-      m_currentHdr.SetAddr3 (m_low->GetBssid ());
-      m_currentHdr.SetDsTo ();
-      m_currentHdr.SetDsNotFrom ();
-    }
-  else
-    {
-      m_currentHdr.SetAddr3 (m_low->GetAddress ());
-      m_currentHdr.SetDsNotTo ();
-      m_currentHdr.SetDsFrom ();
-    }
-  m_channelAccessManager->RequestAccess (this, true);
-}
-
-bool
-Txop::CanStartNextPolling () const
-{
-  return (!m_channelAccessManager->IsBusy () && GetLow ()->CanTransmitNextCfFrame ());
 }
 
 bool

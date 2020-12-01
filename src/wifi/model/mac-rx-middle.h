@@ -57,13 +57,6 @@ public:
   void SetForwardCallback (ForwardUpCallback callback);
 
   /**
-   * Set a callback to trigger the next PCF frame.
-   *
-   * \param callback the callback to set
-   */
-  void SetPcfCallback (Callback<void> callback);
-
-  /**
    * Receive a packet.
    *
    * \param mpdu the MPDU
@@ -133,8 +126,6 @@ private:
   Originators m_originatorStatus; ///< originator status
   QosOriginators m_qosOriginatorStatus; ///< QOS originator status
   ForwardUpCallback m_callback; ///< forward up callback
-
-  Callback<void> m_pcfCallback; //!< PCF callback
 };
 
 } //namespace ns3

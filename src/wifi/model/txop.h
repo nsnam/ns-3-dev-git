@@ -261,14 +261,6 @@ public:
    */
   virtual void Queue (Ptr<Packet> packet, const WifiMacHeader &hdr);
 
-  /**
-   * Sends CF frame to STA with address <i>addr</i>.
-   *
-   * \param frameType the type of frame to be transmitted.
-   * \param addr address of the recipient.
-   */
-  void SendCfFrame (WifiMacType frameType, Mac48Address addr);
-
   /* Event handlers */
   /**
    * Event handler when a CTS timeout has occurred.
@@ -282,16 +274,6 @@ public:
    * Event handler when an Ack is missed.
    */
   virtual void MissedAck (void);
-  /**
-   * Event handler when a CF-END frame is received.
-   */
-  void GotCfEnd (void);
-  /**
-   * Event handler when a response to a CF-POLL frame is missed.
-   *
-   * \param expectedCfAck flag to indicate whether a CF-Ack was expected in the response.
-   */
-  void MissedCfPollResponse (bool expectedCfAck);
   /**
    * Event handler when a BlockAck is received.
    *
@@ -351,15 +333,6 @@ public:
    * This method generates a new backoff and restarts access if needed.
    */
   virtual void NotifyChannelReleased (void);
-
-  /**
-   * Check if the next PCF transmission can fit in the remaining CFP duration.
-   *
-   * \return true if the next PCF transmission can fit in the remaining CFP duration,
-   *         false otherwise
-   */
-  bool CanStartNextPolling (void) const;
-
 
   /**
    * Assign a fixed random variable stream number to the random variables

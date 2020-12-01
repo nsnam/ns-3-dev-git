@@ -264,14 +264,6 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
 }
 
 void
-StaWifiMac::SendCfPollResponse (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_ASSERT (GetPcfSupported ());
-  m_txop->SendCfFrame (WIFI_MAC_DATA_NULL, GetBssid ());
-}
-
-void
 StaWifiMac::TryToEnsureAssociated (void)
 {
   NS_LOG_FUNCTION (this);
@@ -520,10 +512,6 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
       NotifyRxDrop (packet);
       return;
     }
-  else if ((hdr->GetAddr1 () == GetAddress ()) && (hdr->GetAddr2 () == GetBssid ()) && hdr->IsCfPoll ())
-    {
-      SendCfPollResponse ();
-    }
   if (hdr->IsData ())
     {
       if (!IsAssociated ())
@@ -585,19 +573,6 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
         {
           NS_LOG_LOGIC ("Beacon is for our SSID");
           goodBeacon = true;
-        }
-      CfParameterSet cfParameterSet = beacon.GetCfParameterSet ();
-      if (cfParameterSet.GetCFPCount () == 0)
-        {
-          //see section 9.3.2.2 802.11-1999
-          if (GetPcfSupported ())
-            {
-              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPMaxDurationUs ()));
-            }
-          else
-            {
-              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPDurRemainingUs ()));
-            }
         }
       SupportedRates rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;

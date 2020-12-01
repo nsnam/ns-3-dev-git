@@ -298,7 +298,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
 }
 
 void
-ChannelAccessManager::RequestAccess (Ptr<Txop> txop, bool isCfPeriod)
+ChannelAccessManager::RequestAccess (Ptr<Txop> txop)
 {
   NS_LOG_FUNCTION (this << txop);
   if (m_phy)
@@ -308,13 +308,6 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop, bool isCfPeriod)
   //Deny access if in sleep mode or off
   if (m_sleeping || m_off)
     {
-      return;
-    }
-  if (isCfPeriod)
-    {
-      txop->NotifyAccessRequested ();
-      Time delay = (MostRecent ({GetAccessGrantStart (true), Simulator::Now ()}) - Simulator::Now ());
-      m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::DoGrantPcfAccess, this, txop);
       return;
     }
   /*
@@ -337,12 +330,6 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> txop, bool isCfPeriod)
   txop->NotifyAccessRequested ();
   DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
-}
-
-void
-ChannelAccessManager::DoGrantPcfAccess (Ptr<Txop> txop)
-{
-  txop->NotifyAccessGranted ();
 }
 
 void

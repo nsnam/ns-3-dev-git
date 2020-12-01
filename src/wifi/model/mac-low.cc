@@ -698,7 +698,6 @@ MacLow::ReceiveError (Ptr<WifiPsdu> psdu)
   if (IsCfPeriod () && m_currentPacket->GetHeader (0).IsCfPoll ())
     {
       NS_ASSERT (m_currentTxop != 0);
-      m_currentTxop->MissedCfPollResponse (m_cfAckInfo.expectCfAck);
     }
   else if (m_cfAckInfo.expectCfAck)
     {
@@ -955,10 +954,6 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
                 {
                   m_currentTxop->MissedAck ();
                 }
-            }
-          if (m_currentTxop != 0)
-            {
-              m_currentTxop->GotCfEnd ();
             }
           m_cfAckInfo.expectCfAck = false;
         }
@@ -1486,7 +1481,6 @@ MacLow::CfPollTimeout (void)
   if (!busy)
     {
       NS_ASSERT (m_currentTxop != 0);
-      m_currentTxop->MissedCfPollResponse (m_cfAckInfo.expectCfAck);
       m_cfAckInfo.expectCfAck = false;
     }
 }

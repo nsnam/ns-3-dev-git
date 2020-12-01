@@ -74,14 +74,6 @@ public:
    */
   Time GetBeaconInterval (void) const;
   /**
-   * \param duration the maximum duration for the CF period.
-   */
-  void SetCfpMaxDuration (Time duration);
-  /**
-   * \return the maximum duration for the CF period.
-   */
-  Time GetCfpMaxDuration (void) const;
-  /**
    * Determine whether short slot time should be enabled or not in the BSS.
    * Typically, true is returned only when there is no non-ERP stations associated
    * to the AP, and that short slot time is supported by the AP and by all other
@@ -228,18 +220,6 @@ private:
    * Forward a beacon packet to the beacon special DCF.
    */
   void SendOneBeacon (void);
-  /**
-   * Determine what is the next PCF frame and trigger its transmission.
-   */
-  void SendNextCfFrame (void);
-  /**
-   * Send a CF-Poll packet to the next polling STA.
-   */
-  void SendCfPoll (void);
-  /**
-   * Send a CF-End packet.
-   */
-  void SendCfEnd (void);
 
   /**
    * Return the Capability information of the current AP.
@@ -259,12 +239,6 @@ private:
    * \return the EDCA Parameter Set that we support
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
-  /**
-   * Return the CF parameter set of the current AP.
-   *
-   * \return the CF parameter set that we support
-   */
-  CfParameterSet GetCfParameterSet (void) const;
   /**
    * Return the HT operation of the current AP.
    *
@@ -309,11 +283,6 @@ private:
    *         false otherwise
    */
   bool GetUseNonErpProtection (void) const;
-  /**
-   * Increment the PCF polling list iterator to indicate
-   * that the next polling station can be polled.
-   */
-  void IncrementPollingListIterator (void);
 
   void DoDispose (void);
   void DoInitialize (void);

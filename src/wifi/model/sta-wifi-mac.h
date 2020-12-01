@@ -238,10 +238,6 @@ private:
    */
   void SendAssociationRequest (bool isReassoc);
   /**
-   * Forward a CF-Poll response packet to the CFP queue.
-   */
-  void SendCfPollResponse (void);
-  /**
    * Try to ensure that we are associated with an AP by taking an appropriate action
    * depending on the current association status.
    */

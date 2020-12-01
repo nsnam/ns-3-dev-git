@@ -301,10 +301,7 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
   NS_LOG_FUNCTION (*mpdu);
   const WifiMacHeader* hdr = &mpdu->GetHeader ();
   NS_ASSERT (hdr->IsData () || hdr->IsMgt ());
-  if (!m_pcfCallback.IsNull ())
-    {
-      m_pcfCallback ();
-    }
+
   OriginatorRxStatus *originator = Lookup (hdr);
   /**
    * The check below is really unneeded because it can fail in a lot of
@@ -352,12 +349,6 @@ MacRxMiddle::Receive (Ptr<WifiMacQueueItem> mpdu)
       // transmitted packets (i.e., with the same UID) to the receiver.
       m_callback (Create<WifiMacQueueItem> (aggregate, *hdr));
     }
-}
-
-void
-MacRxMiddle::SetPcfCallback (Callback<void> callback)
-{
-  m_pcfCallback = callback;
 }
 
 } //namespace ns3
