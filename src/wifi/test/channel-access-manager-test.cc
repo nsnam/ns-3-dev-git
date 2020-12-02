@@ -23,7 +23,6 @@
 #include "ns3/channel-access-manager.h"
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/qos-txop.h"
-#include "ns3/mac-low.h"
 
 using namespace ns3;
 
@@ -106,30 +105,6 @@ private:
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
   uint32_t m_i; //!< the index of the Txop
-};
-
-/**
- * \ingroup wifi-test
- * \ingroup tests
- *
- * \brief Mac Low Stub
- */
-class MacLowStub : public MacLow
-{
-public:
-  MacLowStub ()
-  {
-  }
-  /**
-   * This function indicates whether Simulator::Now is in the CF period.
-   *
-   * \return true if Simulator::Now is in CF period,
-   *         false otherwise
-   */
-  bool IsCfPeriod (void) const
-  {
-    return false;
-  }
 };
 
 /**
@@ -400,7 +375,6 @@ private:
 
   typedef std::vector<Ptr<TxopTest<TxopType>>> TxopTests; //!< the TXOP tests typedef
 
-  Ptr<MacLowStub> m_low; //!< the MAC low stubbed
   Ptr<FrameExchangeManagerStub> m_feManager; //!< the Frame Exchange Manager stubbed
   Ptr<ChannelAccessManagerStub> m_ChannelAccessManager; //!< the channel access manager
   TxopTests m_txop; //!< the vector of Txop test instances
@@ -594,8 +568,6 @@ void
 ChannelAccessManagerTest<TxopType>::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs, uint32_t ackTimeoutValue)
 {
   m_ChannelAccessManager = CreateObject<ChannelAccessManagerStub> ();
-  m_low = CreateObject<MacLowStub> ();
-  m_ChannelAccessManager->SetupLow (m_low);
   m_feManager = CreateObject<FrameExchangeManagerStub> ();
   m_ChannelAccessManager->SetupFrameExchangeManager (m_feManager);
   m_ChannelAccessManager->SetSlot (MicroSeconds (slotTime));
@@ -612,7 +584,6 @@ ChannelAccessManagerTest<TxopType>::AddTxop (uint32_t aifsn)
   txop->SetAifsn (aifsn);
   m_txop.push_back (txop);
   txop->SetChannelAccessManager (m_ChannelAccessManager);
-  txop->SetMacLow (m_low);
 }
 
 template <typename TxopType>
@@ -634,7 +605,6 @@ ChannelAccessManagerTest<TxopType>::EndTest (void)
 
   m_ChannelAccessManager->Dispose ();
   m_ChannelAccessManager = 0;
-  m_low = 0;
   m_feManager = 0;
   Simulator::Destroy ();
 }

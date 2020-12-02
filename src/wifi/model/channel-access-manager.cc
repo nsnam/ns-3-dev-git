@@ -275,7 +275,7 @@ ChannelAccessManager::NeedBackoffUponAccess (Ptr<Txop> txop)
    *    associated with that AC are empty; the medium is busy on the primary channel
    */
   if (!txop->HasFramesToTransmit () && txop->GetAccessStatus () != Txop::GRANTED
-      && !txop->GetLow ()->IsCfPeriod () && txop->GetBackoffSlots () == 0)
+      && txop->GetBackoffSlots () == 0)
     {
       if (!IsBusy ())
         {
