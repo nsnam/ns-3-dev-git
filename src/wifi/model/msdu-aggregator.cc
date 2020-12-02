@@ -24,7 +24,6 @@
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
 #include "wifi-remote-station-manager.h"
-#include "mac-low.h"
 #include "ht-capabilities.h"
 #include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
@@ -81,108 +80,6 @@ MsduAggregator::GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize)
 
   // the size of the A-MSDU subframe header is 14 bytes: DA (6), SA (6) and Length (2)
   return amsduSize + CalculatePadding (amsduSize) + 14 + msduSize;
-}
-
-Ptr<WifiMacQueueItem>
-MsduAggregator::GetNextAmsdu (Mac48Address recipient, uint8_t tid,
-                              WifiTxVector txVector, uint32_t ampduSize,
-                              Time ppduDurationLimit) const
-{
-  NS_LOG_FUNCTION (recipient << +tid << txVector << ampduSize << ppduDurationLimit);
-
-  /* "The Address 1 field of an MPDU carrying an A-MSDU shall be set to an
-   * individual address or to the GCR concealment address" (Section 10.12
-   * of 802.11-2016)
-   */
-  NS_ABORT_MSG_IF (recipient.IsGroup (), "Recipient address is group addressed");
-
-  Ptr<QosTxop> qosTxop = m_mac->GetQosTxop (tid);
-  Ptr<WifiMacQueue> queue = qosTxop->GetWifiMacQueue ();
-  WifiMacQueue::ConstIterator peekedIt = queue->PeekByTidAndAddress (tid, recipient);
-
-  if (peekedIt == queue->end ())
-    {
-      NS_LOG_DEBUG ("No packet with the given TID and address in the queue");
-      return 0;
-    }
-
-  /* "A STA shall not transmit an A-MSDU within a QoS Data frame under a block
-   * ack agreement unless the recipient indicates support for A-MSDU by setting
-   * the A-MSDU Supported field to 1 in its BlockAck Parameter Set field of the
-   * ADDBA Response frame" (Section 10.12 of 802.11-2016)
-   */
-  // No check required for now, as we always set the A-MSDU Supported field to 1
-
-  WifiModulationClass modulation = txVector.GetModulationClass ();
-
-  // Get the maximum size of the A-MSDU we can send to the recipient
-  uint16_t maxAmsduSize = GetMaxAmsduSize (recipient, tid, modulation);
-
-  if (maxAmsduSize == 0)
-    {
-      return 0;
-    }
-
-  Ptr<WifiMacQueueItem> amsdu = Create<WifiMacQueueItem> (Create<const Packet> (), (*peekedIt)->GetHeader ());
-  uint8_t nMsdu = 0;
-  // We need to keep track of the first MSDU. When it is processed, it is not known
-  // if aggregation will succeed or not.
-  WifiMacQueue::ConstIterator first = peekedIt;
-
-  // TODO Add support for the Max Number Of MSDUs In A-MSDU field in the Extended
-  // Capabilities element sent by the recipient
-
-  while (peekedIt != queue->end ())
-    {
-      // check if aggregating the peeked MSDU violates the A-MSDU size limit
-      uint16_t newAmsduSize = GetSizeIfAggregated ((*peekedIt)->GetPacket ()->GetSize (),
-                                                   amsdu->GetPacket ()->GetSize ());
-
-      if (newAmsduSize > maxAmsduSize)
-        {
-          NS_LOG_DEBUG ("No other MSDU can be aggregated: maximum A-MSDU size reached");
-          break;
-        }
-
-      // check if the A-MSDU obtained by aggregating the peeked MSDU violates
-      // the A-MPDU size limit or the PPDU duration limit
-      if (!qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (amsdu->GetHeader ().GetSize () + newAmsduSize
-                                                          + WIFI_MAC_FCS_LENGTH,
-                                                          recipient, tid, txVector, ampduSize, ppduDurationLimit))
-        {
-          NS_LOG_DEBUG ("No other MSDU can be aggregated");
-          break;
-        }
-
-      // The MSDU can be aggregated to the A-MSDU.
-      // If it is the first MSDU, move to the next one
-      if (nMsdu == 0)
-        {
-          amsdu = Copy (*peekedIt);
-          peekedIt++;
-        }
-      // otherwise, remove it from the queue
-      else
-        {
-          amsdu->Aggregate (*peekedIt);
-          peekedIt = queue->Remove (peekedIt);
-        }
-
-      nMsdu++;
-
-      peekedIt = queue->PeekByTidAndAddress (tid, recipient, peekedIt);
-    }
-
-  if (nMsdu < 2)
-    {
-      NS_LOG_DEBUG ("Aggregation failed (could not aggregate at least two MSDUs)");
-      return 0;
-    }
-
-  // Aggregation succeeded, we have to remove the first MSDU
-  queue->Remove (first);
-
-  return amsdu;
 }
 
 Ptr<WifiMacQueueItem>

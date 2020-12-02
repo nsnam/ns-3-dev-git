@@ -417,12 +417,6 @@ QosTxop::DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVecto
           return 0;
         }
 
-      // try A-MSDU aggregation
-      if (m_low->GetMsduAggregator () != 0 && !recipient.IsGroup () && aggregate)
-        {
-          item = m_low->GetMsduAggregator ()->GetNextAmsdu (recipient, tid, txVector, ampduSize, ppduDurationLimit);
-        }
-
       if (item != 0)
         {
           NS_LOG_DEBUG ("tx unicast A-MSDU");

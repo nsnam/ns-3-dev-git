@@ -519,10 +519,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
 
       //Perform MPDU aggregation if possible
       std::vector<Ptr<WifiMacQueueItem>> mpduList;
-      if (m_mpduAggregator != 0)
-        {
-          mpduList = m_mpduAggregator->GetNextAmpdu (newMpdu, m_currentTxVector, txopLimit);
-        }
 
       if (mpduList.size () > 1)
         {

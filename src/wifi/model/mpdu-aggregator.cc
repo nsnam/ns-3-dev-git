@@ -26,7 +26,6 @@
 #include "wifi-phy.h"
 #include "wifi-tx-vector.h"
 #include "wifi-remote-station-manager.h"
-#include "mac-low.h"
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-queue.h"
 #include "msdu-aggregator.h"
@@ -210,97 +209,6 @@ MpduAggregator::GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle)
       hdr.SetEof (1);
     }
   return hdr;
-}
-
-std::vector<Ptr<WifiMacQueueItem>>
-MpduAggregator::GetNextAmpdu (Ptr<const WifiMacQueueItem> mpdu, WifiTxVector txVector,
-                              Time ppduDurationLimit) const
-{
-  NS_LOG_FUNCTION (this << *mpdu << ppduDurationLimit);
-  std::vector<Ptr<WifiMacQueueItem>> mpduList;
-  Mac48Address recipient = mpdu->GetHeader ().GetAddr1 ();
-
-  NS_ASSERT (mpdu->GetHeader ().IsQosData () && !recipient.IsGroup ());
-
-  uint8_t tid = GetTid (mpdu->GetPacket (), mpdu->GetHeader ());
-  Ptr<QosTxop> qosTxop = m_mac->GetQosTxop (tid);
-  NS_ASSERT (qosTxop != 0);
-
-  WifiModulationClass modulation = txVector.GetModulationClass ();
-  uint32_t maxAmpduSize = GetMaxAmpduSize (recipient, tid, modulation);
-
-  if (maxAmpduSize == 0)
-    {
-      NS_LOG_DEBUG ("A-MPDU aggregation disabled");
-      return mpduList;
-    }
-
-  //Have to make sure that the block ack agreement is established before sending an A-MPDU
-  if (qosTxop->GetBaAgreementEstablished (recipient, tid))
-    {
-      /* here is performed MPDU aggregation */
-      uint16_t startingSequenceNumber = qosTxop->GetBaStartingSequence (recipient, tid);
-      Ptr<WifiMacQueueItem> nextMpdu;
-      uint16_t maxMpdus = qosTxop->GetBaBufferSize (recipient, tid);
-      uint32_t currentAmpduSize = 0;
-
-      // check if the received MPDU meets the size and duration constraints
-      if (qosTxop->GetLow ()->IsWithinSizeAndTimeLimits (mpdu, txVector, 0, ppduDurationLimit))
-        {
-          // MPDU can be aggregated
-          nextMpdu = Copy (mpdu);
-        }
-
-      while (nextMpdu != 0)
-        {
-          /* if we are here, nextMpdu can be aggregated to the A-MPDU.
-           * nextMpdu may be any of the following:
-           * (a) an A-MSDU (with all the constituent MSDUs dequeued from
-           *     the EDCA queue)
-           * (b) an MSDU dequeued from the EDCA queue
-           * (c) a retransmitted MSDU or A-MSDU dequeued from the BA Manager queue
-           * (d) an MPDU that was aggregated in an A-MPDU which was not
-           *     transmitted (e.g., because the RTS/CTS exchange failed)
-           */
-
-          currentAmpduSize = GetSizeIfAggregated (nextMpdu->GetSize (), currentAmpduSize);
-
-          NS_LOG_DEBUG ("Adding packet with sequence number " << nextMpdu->GetHeader ().GetSequenceNumber ()
-                        << " to A-MPDU, packet size = " << nextMpdu->GetSize ()
-                        << ", A-MPDU size = " << currentAmpduSize);
-
-          // Always use the Normal Ack policy (Implicit Block Ack), for now
-          nextMpdu->GetHeader ().SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
-
-          mpduList.push_back (nextMpdu);
-
-          // If allowed by the BA agreement, get the next MPDU
-          nextMpdu = 0;
-
-          Ptr<const WifiMacQueueItem> peekedMpdu;
-          peekedMpdu = qosTxop->PeekNextFrame (tid, recipient);
-          if (peekedMpdu != 0)
-            {
-              uint16_t currentSequenceNumber = peekedMpdu->GetHeader ().GetSequenceNumber ();
-
-              if (IsInWindow (currentSequenceNumber, startingSequenceNumber, maxMpdus))
-                {
-                  // dequeue the frame if constraints on size and duration limit are met.
-                  // Note that the dequeued MPDU differs from the peeked MPDU if A-MSDU
-                  // aggregation is performed during the dequeue
-                  NS_LOG_DEBUG ("Trying to aggregate another MPDU");
-                  nextMpdu = qosTxop->DequeuePeekedFrame (peekedMpdu, txVector, true,
-                                                                 currentAmpduSize, ppduDurationLimit);
-                }
-            }
-        }
-      if (mpduList.size () == 1)
-        {
-          // return an empty vector if it was not possible to aggregate at least two MPDUs
-          mpduList.clear ();
-        }
-    }
-  return mpduList;
 }
 
 std::vector<Ptr<WifiMacQueueItem>>

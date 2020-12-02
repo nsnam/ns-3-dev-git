@@ -69,38 +69,6 @@ public:
   static uint16_t GetSizeIfAggregated (uint16_t msduSize, uint16_t amsduSize);
 
   /**
-   * Dequeue MSDUs to be transmitted to a given station and belonging to a
-   * given TID from the corresponding EDCA queue and aggregate them to form
-   * an A-MSDU that meets the following constraints:
-   *
-   * - the A-MSDU size does not exceed the maximum A-MSDU size as determined for
-   * the modulation class indicated by the given TxVector
-   *
-   * - the size of the A-MPDU resulting from the aggregation of the MPDU in which
-   * the A-MSDU will be embedded and an existing A-MPDU of the given size
-   * (possibly null) does not exceed the maximum A-MPDU size as determined for
-   * the modulation class indicated by the given TxVector
-   *
-   * - the time to transmit the resulting PPDU, according to the given TxVector,
-   * does not exceed both the maximum PPDU duration allowed by the corresponding
-   * modulation class (if any) and the given PPDU duration limit (if distinct from
-   * Time::Min ())
-   *
-   * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
-   * from the EDCA queue and a null pointer is returned.
-   *
-   * \param recipient the receiver station address.
-   * \param tid the TID.
-   * \param txVector the TxVector used to transmit the frame
-   * \param ampduSize the size of the existing A-MPDU in bytes
-   * \param ppduDurationLimit the limit on the PPDU duration
-   * \return the resulting A-MSDU, if aggregation is possible, 0 otherwise.
-   */
-  Ptr<WifiMacQueueItem> GetNextAmsdu (Mac48Address recipient, uint8_t tid,
-                                      WifiTxVector txVector, uint32_t ampduSize = 0,
-                                      Time ppduDurationLimit = Time::Min ()) const;
-
-  /**
    * Attempt to aggregate other MSDUs to the given A-MSDU while meeting the
    * following constraints:
    *
