@@ -896,6 +896,19 @@ public:
    */
   typedef void (*RateChangeTracedCallback)(DataRate oldRate, DataRate newRate, Mac48Address remoteAddress);
 
+  /**
+   * Return the WifiPhy.
+   *
+   * \return a pointer to the WifiPhy
+   */
+  Ptr<WifiPhy> GetPhy (void) const;
+  /**
+   * Return the WifiMac.
+   *
+   * \return a pointer to the WifiMac
+   */
+  Ptr<WifiMac> GetMac (void) const;
+
 
 protected:
   virtual void DoDispose (void);
@@ -1055,19 +1068,6 @@ protected:
    * \return the number of Ness the station has
    */
   uint8_t GetNess (const WifiRemoteStation *station) const;
-
-  /**
-   * Return the WifiPhy.
-   *
-   * \return a pointer to the WifiPhy
-   */
-  Ptr<WifiPhy> GetPhy (void) const;
-  /**
-   * Return the WifiMac.
-   *
-   * \return a pointer to the WifiMac
-   */
-  Ptr<WifiMac> GetMac (void) const;
 
 
 private:

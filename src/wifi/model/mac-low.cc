@@ -485,14 +485,13 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         }
 
       // QosTxop may send us a peeked frame
-      Ptr<const WifiMacQueueItem> tmp = qosTxop->PeekNextFrame ();
+      Ptr<const WifiMacQueueItem> tmp;
       bool isPeeked = (tmp != 0 && tmp->GetPacket () == mpdu->GetPacket ());
 
       Ptr<WifiMacQueueItem> newMpdu;
       // If the frame has been peeked, dequeue it if it meets the size and duration constraints
       if (isPeeked)
         {
-          newMpdu = qosTxop->DequeuePeekedFrame (mpdu, m_currentTxVector, true, 0, txopLimit);
         }
       else if (IsWithinSizeAndTimeLimits (mpdu, m_currentTxVector, 0, txopLimit))
         {
@@ -1009,8 +1008,6 @@ MacLow::ReceiveOk (Ptr<WifiMacQueueItem> mpdu, double rxSnr, WifiTxVector txVect
              data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
              them and shall send a DELBA frame using the normal access
              mechanisms. */
-          AcIndex ac = QosUtilsMapTidToAc (hdr.GetQosTid ());
-          m_edca[ac]->SendDelbaFrame (hdr.GetAddr2 (), hdr.GetQosTid (), false);
           return;
         }
       else if (hdr.IsQosData () && hdr.IsQosNoAck ())
@@ -1968,14 +1965,6 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
 
   if (respHdr->GetTimeout () != 0)
     {
-      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, respHdr->GetTid ()));
-      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
-
-      AcIndex ac = QosUtilsMapTidToAc (agreement.GetTid ());
-
-      it->second.first.m_inactivityEvent = Simulator::Schedule (timeout,
-                                                                &QosTxop::SendDelbaFrame,
-                                                                m_edca[ac], originator, tid, false);
     }
 }
 
@@ -2230,12 +2219,6 @@ MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
     {
       NS_ASSERT (agreement.m_inactivityEvent.IsRunning ());
       agreement.m_inactivityEvent.Cancel ();
-      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
-      AcIndex ac = QosUtilsMapTidToAc (agreement.GetTid ());
-      agreement.m_inactivityEvent = Simulator::Schedule (timeout,
-                                                         &QosTxop::SendDelbaFrame,
-                                                         m_edca[ac], agreement.GetPeer (),
-                                                         agreement.GetTid (), false);
     }
 }
 

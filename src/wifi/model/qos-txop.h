@@ -115,14 +115,12 @@ public:
   bool IsQosTxop (void) const;
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   virtual bool HasFramesToTransmit (void);
-  void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void GotAck (void);
   void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
                     double rxSnr, double dataSnr, WifiTxVector dataTxVector);
   void MissedBlockAck (uint8_t nMpdus);
   void MissedAck (void);
-  void StartNextPacket (void);
   void EndTxNoAck (void);
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);
@@ -326,15 +324,6 @@ public:
    */
   uint16_t GetBlockAckInactivityTimeout (void) const;
   /**
-   * Sends DELBA frame to cancel a block ack agreement with STA
-   * addressed by <i>addr</i> for TID <i>tid</i>.
-   *
-   * \param addr address of the recipient.
-   * \param tid traffic ID.
-   * \param byOriginator flag to indicate whether this is set by the originator.
-   */
-  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
-  /**
    * Stores an MPDU (part of an A-MPDU) in block ack agreement (i.e. the sender is waiting
    * for a BlockAck containing the sequence number of this MPDU).
    *
@@ -397,41 +386,6 @@ public:
    * \return the next sequence number.
    */
   uint16_t PeekNextSequenceNumberFor (const WifiMacHeader *hdr);
-  /**
-   * Peek the next frame to transmit to the given receiver and of the given
-   * TID from the block ack manager retransmit queue first and, if not found, from
-   * the EDCA queue. If <i>tid</i> is equal to 8 (invalid value) and <i>recipient</i>
-   * is the broadcast address, the first available frame is returned.
-   * Note that A-MSDU aggregation is never attempted (this is relevant if the
-   * frame is peeked from the EDCA queue). If the frame is peeked from the EDCA
-   * queue, it is assigned a sequence number peeked from MacTxMiddle.
-   *
-   * \param tid traffic ID.
-   * \param recipient the receiver station address.
-   * \returns the peeked frame.
-   */
-  Ptr<const WifiMacQueueItem> PeekNextFrame (uint8_t tid = 8, Mac48Address recipient = Mac48Address::GetBroadcast ());
-  /**
-   * Dequeue the frame that has been previously peeked by calling PeekNextFrame.
-   * If the peeked frame is a QoS Data frame, it is actually dequeued if it meets
-   * the constraint on the maximum A-MPDU size (by assuming that the frame has to
-   * be aggregated to an existing A-MPDU of the given size) and its transmission
-   * time does not exceed the given PPDU duration limit (if distinct from Time::Min ()).
-   * If the peeked frame is a unicast QoS Data frame stored in the EDCA queue,
-   * attempt to perform A-MSDU aggregation (while meeting the constraints mentioned
-   * above) if <i>aggregate</i> is true and assign a sequence number to the
-   * dequeued frame.
-   *
-   * \param peekedItem the peeked frame.
-   * \param txVector the TX vector used to transmit the peeked frame
-   * \param aggregate whether to attempt A-MSDU aggregation
-   * \param ampduSize the size of the existing A-MPDU in bytes, if any
-   * \param ppduDurationLimit the limit on the PPDU duration
-   * \returns the dequeued frame.
-   */
-  Ptr<WifiMacQueueItem> DequeuePeekedFrame (Ptr<const WifiMacQueueItem> peekedItem, WifiTxVector txVector,
-                                            bool aggregate = true, uint32_t ampduSize = 0,
-                                            Time ppduDurationLimit = Time::Min ());
   /**
    * Peek the next frame to transmit to the given receiver and of the given
    * TID from the block ack manager retransmit queue first and, if not found, from
@@ -595,18 +549,6 @@ private:
    * \return true if we tried to set up block ack, false otherwise.
    */
   bool SetupBlockAckIfNeeded (void);
-  /**
-   * Sends an ADDBA Request to establish a block ack agreement with STA
-   * addressed by <i>recipient</i> for TID <i>tid</i>.
-   *
-   * \param recipient address of the recipient.
-   * \param tid traffic ID.
-   * \param startSeq starting sequence.
-   * \param timeout timeout value.
-   * \param immediateBAck flag to indicate whether immediate BlockAck is used.
-   */
-  void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startSeq,
-                         uint16_t timeout, bool immediateBAck);
   /**
    * Check if the given MPDU is to be considered old according to the current
    * starting sequence number of the transmit window, provided that a block ack
