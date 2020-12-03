@@ -42,7 +42,6 @@
 #include "wifi-net-device.h"
 #include "wifi-mac.h"
 #include <algorithm>
-#include "wifi-ack-policy-selector.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -540,11 +539,6 @@ MacLow::StartTransmission (Ptr<WifiMacQueueItem> mpdu,
         {
           m_currentPacket = Create<WifiPsdu> (newMpdu, false);
         }
-
-      // A QoS Txop must have an installed ack policy selector
-      NS_ASSERT (qosTxop->GetAckPolicySelector () != 0);
-      qosTxop->GetAckPolicySelector ()->UpdateTxParams (m_currentPacket, m_txParams);
-      qosTxop->GetAckPolicySelector ()->SetAckPolicy (m_currentPacket, m_txParams);
     }
 
   NS_LOG_DEBUG ("startTx size=" << m_currentPacket->GetSize () <<

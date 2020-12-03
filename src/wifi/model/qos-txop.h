@@ -39,7 +39,6 @@ class MgtAddBaResponseHeader;
 class MgtDelBaHeader;
 class AggregationCapableTransmissionListener;
 class WifiTxVector;
-class WifiAckPolicySelector;
 class QosFrameExchangeManager;
 class WifiTxParameters;
 
@@ -133,18 +132,6 @@ public:
   bool NeedFragmentation (void) const;
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
 
-  /**
-   * Set the ack policy selector.
-   *
-   * \param ackSelector the ack policy selector.
-   */
-  void SetAckPolicySelector (Ptr<WifiAckPolicySelector> ackSelector);
-  /**
-   * Return the ack policy selector.
-   *
-   * \return the ack policy selector.
-   */
-  Ptr<WifiAckPolicySelector> GetAckPolicySelector (void) const;
   /**
    * Set type of station with the given type.
    *
@@ -667,7 +654,6 @@ private:
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosFrameExchangeManager> m_qosFem;                //!< the QoS Frame Exchange Manager
-  Ptr<WifiAckPolicySelector> m_ackPolicySelector;       //!< the ack policy selector
   Ptr<QosBlockedDestinations> m_qosBlockedDestinations; //!< the QoS blocked destinations
   Ptr<BlockAckManager> m_baManager;                     //!< the block ack manager
   uint8_t m_blockAckThreshold;                          /**< the block ack threshold (use BA mechanism if number of packets in queue reaches

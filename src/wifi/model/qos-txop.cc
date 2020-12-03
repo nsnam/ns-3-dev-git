@@ -38,7 +38,6 @@
 #include "mpdu-aggregator.h"
 #include "ctrl-headers.h"
 #include "wifi-phy.h"
-#include "wifi-ack-policy-selector.h"
 #include "wifi-psdu.h"
 #include "ht-frame-exchange-manager.h"
 #include "wifi-tx-parameters.h"
@@ -120,7 +119,6 @@ void
 QosTxop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_ackPolicySelector = 0;
   m_baManager = 0;
   m_qosBlockedDestinations = 0;
   m_qosFem = 0;
@@ -207,19 +205,6 @@ QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remote
   Txop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
   m_baManager->SetWifiRemoteStationManager (m_stationManager);
-}
-
-void
-QosTxop::SetAckPolicySelector (Ptr<WifiAckPolicySelector> ackSelector)
-{
-  NS_LOG_FUNCTION (this << ackSelector);
-  m_ackPolicySelector = ackSelector;
-}
-
-Ptr<WifiAckPolicySelector>
-QosTxop::GetAckPolicySelector (void) const
-{
-  return m_ackPolicySelector;
 }
 
 void

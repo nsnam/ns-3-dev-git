@@ -38,7 +38,6 @@
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
 #include "ns3/obss-pd-algorithm.h"
-#include "ns3/wifi-ack-policy-selector.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -722,10 +721,6 @@ WifiHelper::WifiHelper ()
     m_selectQueueCallback (&SelectQueueByDSField)
 {
   SetRemoteStationManager ("ns3::ArfWifiManager");
-  SetAckPolicySelectorForAc (AC_BE, "ns3::ConstantWifiAckPolicySelector");
-  SetAckPolicySelectorForAc (AC_BK, "ns3::ConstantWifiAckPolicySelector");
-  SetAckPolicySelectorForAc (AC_VI, "ns3::ConstantWifiAckPolicySelector");
-  SetAckPolicySelectorForAc (AC_VO, "ns3::ConstantWifiAckPolicySelector");
 }
 
 void
@@ -772,29 +767,6 @@ WifiHelper::SetObssPdAlgorithm (std::string type,
   m_obssPdAlgorithm.Set (n5, v5);
   m_obssPdAlgorithm.Set (n6, v6);
   m_obssPdAlgorithm.Set (n7, v7);
-}
-
-void
-WifiHelper::SetAckPolicySelectorForAc (AcIndex ac, std::string type,
-                                       std::string n0, const AttributeValue &v0,
-                                       std::string n1, const AttributeValue &v1,
-                                       std::string n2, const AttributeValue &v2,
-                                       std::string n3, const AttributeValue &v3,
-                                       std::string n4, const AttributeValue &v4,
-                                       std::string n5, const AttributeValue &v5,
-                                       std::string n6, const AttributeValue &v6,
-                                       std::string n7, const AttributeValue &v7)
-{
-  m_ackPolicySelector[ac] = ObjectFactory ();
-  m_ackPolicySelector[ac].SetTypeId (type);
-  m_ackPolicySelector[ac].Set (n0, v0);
-  m_ackPolicySelector[ac].Set (n1, v1);
-  m_ackPolicySelector[ac].Set (n2, v2);
-  m_ackPolicySelector[ac].Set (n3, v3);
-  m_ackPolicySelector[ac].Set (n4, v4);
-  m_ackPolicySelector[ac].Set (n5, v5);
-  m_ackPolicySelector[ac].Set (n6, v6);
-  m_ackPolicySelector[ac].Set (n7, v7);
 }
 
 void
@@ -907,9 +879,6 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
               for (auto& ac : {AC_BE, AC_BK, AC_VI, AC_VO})
                 {
                   Ptr<QosTxop> qosTxop = rmac->GetQosTxop (ac);
-                  auto ackSelector = m_ackPolicySelector[ac].Create<WifiAckPolicySelector> ();
-                  ackSelector->SetQosTxop (qosTxop);
-                  qosTxop->SetAckPolicySelector (ackSelector);
                   wmq = qosTxop->GetWifiMacQueue ();
                   ndqi->GetTxQueue (static_cast<std::size_t> (ac))->ConnectQueueTraces (wmq);
                 }
