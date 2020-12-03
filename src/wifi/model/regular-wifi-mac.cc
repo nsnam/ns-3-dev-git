@@ -60,7 +60,6 @@ RegularWifiMac::RegularWifiMac ()
   m_low->SetMac (this);
 
   m_channelAccessManager = CreateObject<ChannelAccessManager> ();
-  m_channelAccessManager->SetupLow (m_low);
 
   m_txop = CreateObject<Txop> ();
   m_txop->SetMacLow (m_low);

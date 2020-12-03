@@ -24,7 +24,6 @@
 #include "txop.h"
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
-#include "mac-low.h"
 #include "frame-exchange-manager.h"
 
 namespace ns3 {
@@ -161,13 +160,6 @@ ChannelAccessManager::RemovePhyListener (Ptr<WifiPhy> phy)
       m_phyListener = 0;
       m_phy = 0;
     }
-}
-
-void
-ChannelAccessManager::SetupLow (Ptr<MacLow> low)
-{
-  NS_LOG_FUNCTION (this << low);
-  low->RegisterChannelAccessManager (this);
 }
 
 void

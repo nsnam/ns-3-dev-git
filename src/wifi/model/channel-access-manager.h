@@ -31,7 +31,6 @@ namespace ns3 {
 class WifiPhy;
 class PhyListener;
 class Txop;
-class MacLow;
 class FrameExchangeManager;
 
 /**
@@ -67,12 +66,6 @@ public:
    * \param phy the WifiPhy to listen to
    */
   void RemovePhyListener (Ptr<WifiPhy> phy);
-  /**
-   * Set up listener for MacLow events.
-   *
-   * \param low the MacLow to listen to
-   */
-  void SetupLow (Ptr<MacLow> low);
   /**
    * Set up the Frame Exchange Manager.
    *
