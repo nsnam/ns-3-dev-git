@@ -2224,7 +2224,7 @@ Bug2470TestCase::DoRun (void)
   // Block ADDBA request 3 times (== maximum number of MAC frame transmissions in the ADDBA response timeout interval)
   blackList.push_back (4);
   blackList.push_back (5);
-  blackList.push_back (10);
+  blackList.push_back (6);
   apPem->SetList (blackList);
 
   {

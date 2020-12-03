@@ -165,7 +165,7 @@ AmpduAggregationTest::DoRun (void)
   reqHdr.SetBufferSize (64);
   reqHdr.SetTimeout (0);
   reqHdr.SetStartingSequence (0);
-  m_mac->GetBEQueue ()->m_baManager->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
+  m_mac->GetBEQueue ()->GetBaManager ()->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
 
   MgtAddBaResponseHeader respHdr;
   StatusCode code;
@@ -176,7 +176,7 @@ AmpduAggregationTest::DoRun (void)
   respHdr.SetTid (reqHdr.GetTid ());
   respHdr.SetBufferSize (63);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
-  m_mac->GetBEQueue ()->m_baManager->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
+  m_mac->GetBEQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
   //-----------------------------------------------------------------------------------------------------
 
@@ -469,7 +469,7 @@ TwoLevelAggregationTest::DoRun (void)
   reqHdr.SetBufferSize (64);
   reqHdr.SetTimeout (0);
   reqHdr.SetStartingSequence (0);
-  m_mac->GetVIQueue ()->m_baManager->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
+  m_mac->GetVIQueue ()->GetBaManager ()->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
 
   MgtAddBaResponseHeader respHdr;
   StatusCode code;
@@ -480,7 +480,7 @@ TwoLevelAggregationTest::DoRun (void)
   respHdr.SetTid (reqHdr.GetTid ());
   respHdr.SetBufferSize (63);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
-  m_mac->GetVIQueue ()->m_baManager->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
+  m_mac->GetVIQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
   m_mac->SetAttribute ("VI_MaxAmsduSize", UintegerValue (3050));  // max 2 MSDUs per A-MSDU
   m_mac->SetAttribute ("VI_MaxAmpduSize", UintegerValue (65535));
@@ -648,7 +648,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   reqHdr.SetBufferSize (bufferSize);
   reqHdr.SetTimeout (0);
   reqHdr.SetStartingSequence (0);
-  m_mac->GetBEQueue ()->m_baManager->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
+  m_mac->GetBEQueue ()->GetBaManager ()->CreateAgreement (&reqHdr, hdr.GetAddr1 ());
 
   MgtAddBaResponseHeader respHdr;
   StatusCode code;
@@ -659,7 +659,7 @@ HeAggregationTest::DoRunSubTest (uint16_t bufferSize)
   respHdr.SetTid (reqHdr.GetTid ());
   respHdr.SetBufferSize (bufferSize - 1);
   respHdr.SetTimeout (reqHdr.GetTimeout ());
-  m_mac->GetBEQueue ()->m_baManager->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
+  m_mac->GetBEQueue ()->GetBaManager ()->UpdateAgreement (&respHdr, hdr.GetAddr1 (), 0);
 
   /*
    * Test behavior when 300 packets are ready for transmission but negociated buffer size is 64

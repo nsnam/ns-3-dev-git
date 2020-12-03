@@ -30,7 +30,6 @@
 #include "mac-tx-middle.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-mac-trailer.h"
-#include "wifi-tx-vector.h"   // to be removed
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_stationManager != 0 && m_stationManager->GetMac () != 0) { std::clog << "[mac=" << m_stationManager->GetMac ()->GetAddress () << "] "; }
@@ -92,8 +91,7 @@ Txop::Txop ()
     m_backoff (0),
     m_access (NOT_REQUESTED),
     m_backoffSlots (0),
-    m_backoffStart (Seconds (0.0)),
-    m_currentPacket (0)
+    m_backoffStart (Seconds (0.0))
 {
   NS_LOG_FUNCTION (this);
   m_queue = CreateObject<WifiMacQueue> ();
@@ -301,7 +299,7 @@ Txop::GetTxopLimit (void) const
 bool
 Txop::HasFramesToTransmit (void)
 {
-  bool ret = (m_currentPacket != 0 || !m_queue->IsEmpty ());
+  bool ret = (!m_queue->IsEmpty ());
   NS_LOG_FUNCTION (this << ret);
   return ret;
 }
@@ -330,24 +328,10 @@ Txop::AssignStreams (int64_t stream)
 }
 
 void
-Txop::RestartAccessIfNeeded (void)
-{
-  NS_LOG_FUNCTION (this);
-  if ((m_currentPacket != 0
-       || !m_queue->IsEmpty ())
-      && m_access == NOT_REQUESTED)
-    {
-      m_channelAccessManager->RequestAccess (this);
-    }
-}
-
-void
 Txop::StartAccessIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_currentPacket == 0
-      && !m_queue->IsEmpty ()
-      && m_access == NOT_REQUESTED)
+  if (HasFramesToTransmit () && m_access == NOT_REQUESTED)
     {
       m_channelAccessManager->RequestAccess (this);
     }
@@ -359,87 +343,6 @@ Txop::DoInitialize ()
   NS_LOG_FUNCTION (this);
   ResetCw ();
   GenerateBackoff ();
-}
-
-bool
-Txop::NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRetransmission (Create<const WifiMacQueueItem> (packet, hdr));
-}
-
-bool
-Txop::NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRetransmission (Create<const WifiMacQueueItem> (packet, hdr));
-}
-
-bool
-Txop::NeedFragmentation (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedFragmentation (Create<const WifiMacQueueItem> (m_currentPacket, m_currentHdr));
-}
-
-void
-Txop::NextFragment (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_fragmentNumber++;
-}
-
-uint32_t
-Txop::GetFragmentSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentSize (Create<const WifiMacQueueItem> (m_currentPacket,
-                                            m_currentHdr), m_fragmentNumber);
-}
-
-bool
-Txop::IsLastFragment (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->IsLastFragment (Create<const WifiMacQueueItem> (m_currentPacket,
-                                           m_currentHdr), m_fragmentNumber);
-}
-
-uint32_t
-Txop::GetNextFragmentSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentSize (Create<const WifiMacQueueItem> (m_currentPacket,
-                                            m_currentHdr), m_fragmentNumber + 1);
-}
-
-uint32_t
-Txop::GetFragmentOffset (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_stationManager->GetFragmentOffset (Create<const WifiMacQueueItem> (m_currentPacket,
-                                              m_currentHdr), m_fragmentNumber);
-}
-
-Ptr<Packet>
-Txop::GetFragmentPacket (WifiMacHeader *hdr)
-{
-  NS_LOG_FUNCTION (this << hdr);
-  *hdr = m_currentHdr;
-  hdr->SetFragmentNumber (m_fragmentNumber);
-  uint32_t startOffset = GetFragmentOffset ();
-  Ptr<Packet> fragment;
-  if (IsLastFragment ())
-    {
-      hdr->SetNoMoreFragments ();
-    }
-  else
-    {
-      hdr->SetMoreFragments ();
-    }
-  fragment = m_currentPacket->CreateFragment (startOffset,
-                                              GetFragmentSize ());
-  return fragment;
 }
 
 Txop::ChannelAccessStatus
@@ -497,7 +400,7 @@ Txop::NotifyInternalCollision (void)
 {
   NS_LOG_FUNCTION (this);
   GenerateBackoff ();
-  RestartAccessIfNeeded ();
+  StartAccessIfNeeded ();
 }
 
 void
@@ -505,18 +408,12 @@ Txop::NotifyChannelSwitching (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();
-  m_currentPacket = 0;
 }
 
 void
 Txop::NotifySleep (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_currentPacket != 0)
-    {
-      m_queue->PushFront (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr));
-      m_currentPacket = 0;
-    }
 }
 
 void
@@ -524,14 +421,13 @@ Txop::NotifyOff (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();
-  m_currentPacket = 0;
 }
 
 void
 Txop::NotifyWakeUp (void)
 {
   NS_LOG_FUNCTION (this);
-  RestartAccessIfNeeded ();
+  StartAccessIfNeeded ();
 }
 
 void
@@ -541,166 +437,10 @@ Txop::NotifyOn (void)
   StartAccessIfNeeded ();
 }
 
-void
-Txop::MissedCts (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("missed cts");
-  if (!NeedRtsRetransmission (m_currentPacket, m_currentHdr))
-    {
-      NS_LOG_DEBUG ("Cts Fail");
-      m_stationManager->ReportFinalRtsFailed (m_currentHdr);
-      if (!m_txFailedCallback.IsNull ())
-        {
-          m_txFailedCallback (m_currentHdr);
-        }
-      //to reset the Txop.
-      m_currentPacket = 0;
-      ResetCw ();
-    }
-  else
-    {
-      UpdateFailedCw ();
-    }
-  GenerateBackoff ();
-  RestartAccessIfNeeded ();
-}
-
-void
-Txop::GotAck (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (!NeedFragmentation ()
-      || IsLastFragment ())
-    {
-      NS_LOG_DEBUG ("got ack. tx done.");
-      if (!m_txOkCallback.IsNull ())
-        {
-          m_txOkCallback (m_currentHdr);
-        }
-
-      /* we are not fragmenting or we are done fragmenting
-       * so we can get rid of that packet now.
-       */
-      m_currentPacket = 0;
-      ResetCw ();
-      GenerateBackoff ();
-      RestartAccessIfNeeded ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("got ack. tx not done, size=" << m_currentPacket->GetSize ());
-    }
-}
-
-void
-Txop::MissedAck (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("missed ack");
-  if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
-    {
-      NS_LOG_DEBUG ("Ack Fail");
-      m_stationManager->ReportFinalDataFailed (Create<const WifiMacQueueItem> (m_currentPacket,
-                                               m_currentHdr));
-      if (!m_txFailedCallback.IsNull ())
-        {
-          m_txFailedCallback (m_currentHdr);
-        }
-      //to reset the Txop.
-      m_currentPacket = 0;
-      ResetCw ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Retransmit");
-      m_stationManager->ReportDataFailed (Create<const WifiMacQueueItem> (m_currentPacket,
-                                          m_currentHdr));
-      m_currentHdr.SetRetry ();
-      UpdateFailedCw ();
-    }
-  GenerateBackoff ();
-  RestartAccessIfNeeded ();
-}
-
-void
-Txop::StartNextFragment (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("start next packet fragment");
-  /* this callback is used only for fragments. */
-  NextFragment ();
-  WifiMacHeader hdr;
-  Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-  m_currentParams.EnableAck ();
-  m_currentParams.DisableRts ();
-  if (IsLastFragment ())
-    {
-      m_currentParams.DisableNextData ();
-    }
-  else
-    {
-      m_currentParams.EnableNextData (GetNextFragmentSize ());
-    }
-}
-
-void
-Txop::Cancel (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("transmission cancelled");
-}
-
-void
-Txop::EndTxNoAck (void)
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
-  m_currentPacket = 0;
-  ResetCw ();
-  GenerateBackoff ();
-  if (!m_txOkCallback.IsNull ())
-    {
-      m_txOkCallback (m_currentHdr);
-    }
-  StartAccessIfNeeded ();
-}
-
 bool
 Txop::IsQosTxop () const
 {
   return false;
-}
-
-void
-Txop::StartNextPacket (void)
-{
-  NS_LOG_WARN ("StartNext should not be called for non QoS!");
-}
-
-void
-Txop::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, double dataSnr, WifiTxVector dataTxVector)
-{
-  NS_LOG_WARN ("GotBlockAck should not be called for non QoS!");
-}
-
-void
-Txop::MissedBlockAck (uint8_t nMpdus)
-{
-  NS_LOG_WARN ("MissedBlockAck should not be called for non QoS!");
-}
-
-Time
-Txop::GetTxopRemaining (void) const
-{
-  NS_LOG_WARN ("GetTxopRemaining should not be called for non QoS!");
-  return Seconds (0);
-}
-
-void
-Txop::TerminateTxop (void)
-{
-  NS_LOG_WARN ("TerminateTxop should not be called for non QoS!");
 }
 
 } //namespace ns3

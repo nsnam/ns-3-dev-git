@@ -22,7 +22,6 @@
 #define TXOP_H
 
 #include "ns3/traced-value.h"
-#include "mac-low-transmission-parameters.h"
 #include "wifi-mac-header.h"
 
 namespace ns3 {
@@ -36,7 +35,6 @@ class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 class WifiRemoteStationManager;
-class WifiTxVector;
 
 /**
  * \brief Handle packet fragmentation and retransmissions
@@ -247,66 +245,6 @@ public:
    */
   virtual void Queue (Ptr<Packet> packet, const WifiMacHeader &hdr);
 
-  /* Event handlers */
-  /**
-   * Event handler when a CTS timeout has occurred.
-   */
-  virtual void MissedCts (void);
-  /**
-   * Event handler when an Ack is received.
-   */
-  virtual void GotAck (void);
-  /**
-   * Event handler when an Ack is missed.
-   */
-  virtual void MissedAck (void);
-  /**
-   * Event handler when a BlockAck is received.
-   *
-   * \param blockAck BlockAck header.
-   * \param recipient address of the recipient.
-   * \param rxSnr SNR of the BlockAck itself in linear scale.
-   * \param dataSnr reported data SNR from the peer in linear scale.
-   * \param dataTxVector TXVECTOR used to send the Data.
-   */
-  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                            double rxSnr, double dataSnr, WifiTxVector dataTxVector);
-  /**
-   * Event handler when a BlockAck timeout has occurred.
-   * \param nMpdus the number of MPDUs sent in the A-MPDU transmission that results in a BlockAck timeout.
-   */
-  virtual void MissedBlockAck (uint8_t nMpdus);
-
-  /**
-   * Start transmission for the next fragment.
-   * This is called for fragment only.
-   */
-  virtual void StartNextFragment (void);
-  /**
-   * Cancel the transmission.
-   */
-  virtual void Cancel (void);
-  /**
-   * Start transmission for the next packet if allowed by the TxopLimit.
-   */
-  virtual void StartNextPacket (void);
-  /**
-   * Event handler when a transmission that
-   * does not require an Ack has completed.
-   */
-  virtual void EndTxNoAck (void);
-
-  /**
-   * Return the remaining duration in the current TXOP.
-   *
-   * \return the remaining duration in the current TXOP.
-   */
-  virtual Time GetTxopRemaining (void) const;
-  /**
-   * Update backoff and restart access if needed.
-   */
-  virtual void TerminateTxop (void);
-
   /**
    * Called by the FrameExchangeManager to notify that channel access has
    * been granted for the given amount of time.
@@ -371,10 +309,6 @@ protected:
    */
   virtual void GenerateBackoff (void);
   /**
-   * Restart access request if needed.
-   */
-  virtual void RestartAccessIfNeeded (void);
-  /**
    * Request access from Txop if needed.
    */
   virtual void StartAccessIfNeeded (void);
@@ -409,72 +343,6 @@ protected:
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
   /**
-   * Check if RTS should be re-transmitted if CTS was missed.
-   *
-   * \param packet current packet being transmitted.
-   * \param hdr current header being transmitted.
-   * \return true if RTS should be re-transmitted,
-   *         false otherwise.
-   */
-  bool NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
-  /**
-   * Check if Data should be re-transmitted if Ack was missed.
-   *
-   * \param packet current packet being transmitted.
-   * \param hdr current header being transmitted.
-   * \return true if Data should be re-transmitted,
-   *         false otherwise.
-   */
-  bool NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr);
-  /**
-   * Check if the current packet should be fragmented.
-   *
-   * \return true if the current packet should be fragmented,
-   *         false otherwise
-   */
-  virtual bool NeedFragmentation (void) const;
-
-  /**
-   * Continue to the next fragment. This method simply
-   * increments the internal variable that keep track
-   * of the current fragment number.
-   */
-  void NextFragment (void);
-  /**
-   * Get the next fragment from the packet with
-   * appropriate Wifi header for the fragment.
-   *
-   * \param hdr Wi-Fi header.
-   *
-   * \return the fragment with the current fragment number.
-   */
-  virtual Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
-  /**
-   * Calculate the size of the next fragment.
-   *
-   * \return the size of the next fragment in bytes.
-   */
-  virtual uint32_t GetNextFragmentSize (void) const;
-  /**
-   * Calculate the size of the current fragment.
-   *
-   * \return the size of the current fragment in bytes.
-   */
-  virtual uint32_t GetFragmentSize (void) const;
-  /**
-   * Calculate the offset for the current fragment.
-   *
-   * \return the offset for the current fragment in bytes.
-   */
-  virtual uint32_t GetFragmentOffset (void) const;
-  /**
-   * Check if the current fragment is the last fragment.
-   *
-   * \return true if the current fragment is the last fragment,
-   *         false otherwise.
-   */
-  virtual bool IsLastFragment (void) const;
-  /**
    *
    * Pass the packet included in the wifi MAC queue item to the
    * packet dropped callback.
@@ -508,10 +376,6 @@ protected:
   uint8_t m_aifsn;        //!< the AIFSN
   Time m_txopLimit;       //!< the TXOP limit time
 
-  Ptr<const Packet> m_currentPacket;            //!< the current packet
-  WifiMacHeader m_currentHdr;                   //!< the current header
-  MacLowTransmissionParameters m_currentParams; //!< current transmission parameters
-  uint8_t m_fragmentNumber;                     //!< the fragment number
   TracedCallback<uint32_t> m_backoffTrace;      //!< backoff trace value
   TracedValue<uint32_t> m_cwTrace;              //!< CW trace value
 };

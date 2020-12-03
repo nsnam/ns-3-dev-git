@@ -26,6 +26,10 @@
 #include "msdu-aggregator.h"
 #include "wifi-psdu.h"
 
+class AmpduAggregationTest;
+class TwoLevelAggregationTest;
+class HeAggregationTest;
+
 namespace ns3 {
 
 class MgtAddBaResponseHeader;

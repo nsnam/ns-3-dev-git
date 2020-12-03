@@ -28,10 +28,6 @@
 #include "txop.h"
 #include "qos-utils.h"
 
-class AmpduAggregationTest;
-class TwoLevelAggregationTest;
-class HeAggregationTest;
-
 namespace ns3 {
 
 class QosBlockedDestinations;
@@ -93,15 +89,6 @@ enum TypeOfStation
 class QosTxop : public Txop
 {
 public:
-  /// allow AmpduAggregationTest class access
-  friend class ::AmpduAggregationTest;
-  /// allow TwoLevelAggregationTest class access
-  friend class ::TwoLevelAggregationTest;
-  /// allow HeAggregationTest class access
-  friend class ::HeAggregationTest;
-
-  std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
-
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -116,19 +103,8 @@ public:
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   virtual bool HasFramesToTransmit (void);
   void NotifyInternalCollision (void);
-  void GotAck (void);
-  void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                    double rxSnr, double dataSnr, WifiTxVector dataTxVector);
-  void MissedBlockAck (uint8_t nMpdus);
-  void MissedAck (void);
-  void EndTxNoAck (void);
-  void RestartAccessIfNeeded (void);
-  void StartAccessIfNeeded (void);
   virtual void NotifyChannelAccessed (Time txopDuration);
   void NotifyChannelReleased (void);
-  Time GetTxopRemaining (void) const;
-  bool NeedFragmentation (void) const;
-  Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
 
   /**
    * Set type of station with the given type.
@@ -233,13 +209,6 @@ public:
 
   /* Event handlers */
   /**
-   * Event handler when a CTS timeout has occurred.
-   *
-   * \param mpduList the list of MPDUs that were not transmitted
-   */
-  void NotifyMissedCts (std::list<Ptr<WifiMacQueueItem>> mpduList);
-
-  /**
    * Event handler when an ADDBA response is received.
    *
    * \param respHdr ADDBA response header.
@@ -267,14 +236,6 @@ public:
    * \param tid traffic ID
    */
   void ResetBa (Mac48Address recipient, uint8_t tid);
-
-  /**
-   * Check if BlockAckRequest should be re-transmitted.
-   *
-   * \return true if BAR should be re-transmitted,
-   *         false otherwise.
-   */
-  bool NeedBarRetransmission (void);
 
   /**
    * Set the access category of this EDCAF.
@@ -330,20 +291,6 @@ public:
    * \param mpdu received MPDU.
    */
   void CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu);
-  /**
-   * Return whether A-MPDU is used to transmit data to a peer station.
-   *
-   * \param dest address of peer station
-   * \returns true if A-MPDU is used by the peer station
-   */
-  bool GetAmpduExist (Mac48Address dest) const;
-  /**
-   * Set indication whether A-MPDU is used to transmit data to a peer station.
-   *
-   * \param dest address of peer station.
-   * \param enableAmpdu flag whether A-MPDU is used or not.
-   */
-  void SetAmpduExist (Mac48Address dest, bool enableAmpdu);
   /**
    * Set the timeout to wait for ADDBA response.
    *
@@ -453,24 +400,6 @@ public:
   void AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Compute the MacLow transmission parameters for the given frame. Allowed frames
-   * are those handled by a QosTxop (QoS data frames, BlockAckReq frames, ADDBA
-   * Request/Response, DELBA Request).
-   *
-   * \param frame the given frame
-   * \return the MacLow transmission parameters.
-   */
-  MacLowTransmissionParameters GetTransmissionParameters (Ptr<const WifiMacQueueItem> frame) const;
-
-  /**
-   * Update the current packet this QosTxop is trying to transmit. This method
-   * is typically called by MacLow when it changes (i.e., by performing A-MSDU
-   * aggregation) the packet received from this QosTxop.
-   *
-   * \param mpdu the MPDU that MacLow is forwarding down to the PHY.
-   */
-  void UpdateCurrentPacket (Ptr<WifiMacQueueItem> mpdu);
-  /**
    * The packet we sent was successfully received by the receiver.
    *
    * \param hdr the header of the packet that we successfully sent.
@@ -482,29 +411,6 @@ public:
    * \param hdr the header of the packet that we failed to sent.
    */
   void BaTxFailed (const WifiMacHeader &hdr);
-
-  /**
-   * This functions are used only to correctly set source address in A-MSDU subframes.
-   * If aggregating STA is a non-AP STA (in an infrastructure network):
-   *   SA = Address2
-   * If aggregating STA is an AP
-   *   SA = Address3
-   *
-   * \param hdr Wi-Fi header
-   * \return Mac48Address
-   */
-  Mac48Address MapSrcAddressForAggregation (const WifiMacHeader &hdr);
-  /**
-   * This functions are used only to correctly set destination address in A-MSDU subframes.
-   * If aggregating STA is a non-AP STA (in an infrastructure network):
-   *   DA = Address3
-   * If aggregating STA is an AP
-   *   DA = Address1
-   *
-   * \param hdr Wi-Fi header
-   * \return Mac48Address
-   */
-  Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
 
   /**
    * Set the Queue Size subfield of the QoS Control field of the given QoS data frame.
@@ -536,19 +442,7 @@ private:
 
   // Overridden from Txop
   void DoInitialize (void);
-  void TerminateTxop (void);
-  uint32_t GetNextFragmentSize (void) const;
-  uint32_t GetFragmentSize (void) const;
-  uint32_t GetFragmentOffset (void) const;
-  bool IsLastFragment (void) const;
 
-  /**
-   * If number of packets in the queue reaches m_blockAckThreshold value, an ADDBA Request frame
-   * is sent to destination in order to setup a block ack.
-   *
-   * \return true if we tried to set up block ack, false otherwise.
-   */
-  bool SetupBlockAckIfNeeded (void);
   /**
    * Check if the given MPDU is to be considered old according to the current
    * starting sequence number of the transmit window, provided that a block ack
@@ -559,40 +453,6 @@ private:
    */
   bool IsQosOldPacket (Ptr<const WifiMacQueueItem> mpdu);
 
-  /**
-   * Check if the current packet is fragmented because of an exceeded TXOP duration.
-   *
-   * \return true if the current packet is fragmented because of an exceeded TXOP duration,
-   *         false otherwise
-   */
-  bool IsTxopFragmentation (void) const;
-  /**
-   * Calculate the size of the current TXOP fragment.
-   *
-   * \return the size of the current TXOP fragment in bytes
-   */
-  uint32_t GetTxopFragmentSize (void) const;
-  /**
-   * Calculate the number of TXOP fragments needed for the transmission of the current packet.
-   *
-   * \return the number of TXOP fragments needed for the transmission of the current packet
-   */
-  uint32_t GetNTxopFragment (void) const;
-  /**
-   * Calculate the size of the next TXOP fragment.
-   *
-   * \param fragmentNumber number of the next fragment
-   * \returns the next TXOP fragment size in bytes
-   */
-  uint32_t GetNextTxopFragmentSize (uint32_t fragmentNumber) const;
-  /**
-   * Calculate the offset for the fragment.
-   *
-   * \param fragmentNumber number of the fragment
-   * \returns the TXOP fragment offset in bytes
-   */
-  uint32_t GetTxopFragmentOffset (uint32_t fragmentNumber) const;
-
   AcIndex m_ac;                                         //!< the access category
   TypeOfStation m_typeOfStation;                        //!< the type of station
   Ptr<QosFrameExchangeManager> m_qosFem;                //!< the QoS Frame Exchange Manager
@@ -601,13 +461,10 @@ private:
   uint8_t m_blockAckThreshold;                          /**< the block ack threshold (use BA mechanism if number of packets in queue reaches
                                                              this value. If this value is 0, block ack is never used. When A-MPDU is enabled,
                                                              block ack mechanism is used regardless of this value) */
-  BlockAckType m_blockAckType;                          //!< the BlockAck type
   Time m_currentPacketTimestamp;                        //!< the current packet timestamp
   uint16_t m_blockAckInactivityTimeout;                 //!< the BlockAck inactivity timeout value (in TUs, i.e. blocks of 1024 microseconds)
   Time m_startTxop;                                     //!< the start TXOP time
   Time m_txopDuration;                                  //!< the duration of a TXOP
-  bool m_isAccessRequestedForRts;                       //!< flag whether access is requested to transmit a RTS frame
-  bool m_currentIsFragmented;                           //!< flag whether current packet is fragmented
   Time m_addBaResponseTimeout;                          //!< timeout for ADDBA response
   Time m_failedAddBaTimeout;                            //!< timeout after failed BA agreement
   bool m_useExplicitBarAfterMissedBlockAck;             //!< flag whether explicit BlockAckRequest should be sent upon missed BlockAck Response
