@@ -934,13 +934,11 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ArfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckAgreement", LOG_LEVEL_ALL);
   LogComponentEnable ("RecipientBlockAckAgreement", LOG_LEVEL_ALL);
-  LogComponentEnable ("BlockAckCache", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("CaraWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ConstantObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("ConstantRateWifiManager", LOG_LEVEL_ALL);
-  LogComponentEnable ("ConstantWifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("FrameExchangeManager", LOG_LEVEL_ALL);
@@ -951,7 +949,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("InfrastructureWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("MacLow", LOG_LEVEL_ALL);
   LogComponentEnable ("MacRxMiddle", LOG_LEVEL_ALL);
   LogComponentEnable ("MacTxMiddle", LOG_LEVEL_ALL);
   LogComponentEnable ("MinstrelHtWifiManager", LOG_LEVEL_ALL);
@@ -978,7 +975,6 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiAckManager", LOG_LEVEL_ALL);
-  LogComponentEnable ("WifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiDefaultAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiDefaultProtectionManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
