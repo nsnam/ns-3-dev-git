@@ -17,6 +17,10 @@ New user-visible features
 - (wifi) A new table-based error model based on link simulations has been
   added (TableBasedErrorRateModel) and made the default for 802.11n/ac/ax simulations.
 - (wifi) It is now possible to select either BCC or LDPC FEC encoding.
+- (mpi) A new Enable call was added that takes a user supplied MPI_Communicator, which enables (optional) partitioning of the MPI processes.  See !389.
+- (core) A new Length class has been added to represent lengths with an explicit unit, rather than the use of raw numbers (ints, doubles) with implicit length.
+- (core) A flexible CsvReader class has been introduced to allow users to read in csv- or tab-delimited data.
+- (mobility) The ListPositionAllocator can now input positions from a csv file.
 
 Bugs fixed
 ----------

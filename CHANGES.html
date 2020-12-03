@@ -58,6 +58,11 @@ us a note on ns-developers mailing list.</p>
 <b>Time::RoundTo (unit)</b> allows time to be rounded to the nearest integer multiple of unit</li>
 <li><b>Time::RoundTo (unit)</b> allows time to be rounded to the nearest integer multiple of unit</li>
 <li><b>UdpClient now can report both transmitted and received bytes.</li>
+<li>A new <b>MPI Enable()</b> variant was introduced that takes a user-supplied MPI_Communicator, allowing for partitioning of the MPI processes.</li>
+<li>A <b>Length</b> class has been introduced to allow users to replace the use of raw numbers (ints, doubles) that have implicit lengths with a class that represents lengths with an explicit unit.</li>
+<li>A flexible <b>CsvReader</b> class has been introduced to allow users to read in csv- or tab-delimited data.</li>
+<li>The <li>ListPositionAllocator</li> can now input positions from a csv file.
+k
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
