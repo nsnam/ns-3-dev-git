@@ -35,6 +35,20 @@ NS_LOG_COMPONENT_DEFINE ("ErpOfdmPhy");
  *       ERP-OFDM PHY (IEEE 802.11-2016, clause 18)
  *******************************************************/
 
+/* *NS_CHECK_STYLE_OFF* */
+const PhyEntity::ModulationLookupTable ErpOfdmPhy::m_erpOfdmModulationLookupTable {
+  // Unique name           Code rate           Constellation size
+  { "ErpOfdmRate6Mbps",  { WIFI_CODE_RATE_1_2, 2 } },
+  { "ErpOfdmRate9Mbps",  { WIFI_CODE_RATE_3_4, 2 } },
+  { "ErpOfdmRate12Mbps", { WIFI_CODE_RATE_1_2, 4 } },
+  { "ErpOfdmRate18Mbps", { WIFI_CODE_RATE_3_4, 4 } },
+  { "ErpOfdmRate24Mbps", { WIFI_CODE_RATE_1_2, 16 } },
+  { "ErpOfdmRate36Mbps", { WIFI_CODE_RATE_3_4, 16 } },
+  { "ErpOfdmRate48Mbps", { WIFI_CODE_RATE_2_3, 64 } },
+  { "ErpOfdmRate54Mbps", { WIFI_CODE_RATE_3_4, 64 } }
+};
+/* *NS_CHECK_STYLE_ON* */
+
 ErpOfdmPhy::ErpOfdmPhy ()
   : OfdmPhy (OFDM_PHY_DEFAULT, false) //don't add OFDM modes to list
 {

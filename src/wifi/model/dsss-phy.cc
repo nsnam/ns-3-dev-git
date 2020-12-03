@@ -45,6 +45,14 @@ const PhyEntity::PpduFormats DsssPhy::m_dsssPpduFormats {
                            WIFI_PPDU_FIELD_NON_HT_HEADER, //Short PHY header
                            WIFI_PPDU_FIELD_DATA } }
 };
+
+const PhyEntity::ModulationLookupTable DsssPhy::m_dsssModulationLookupTable {
+  // Unique name         Code rate                 Constellation size
+  { "DsssRate1Mbps",   { WIFI_CODE_RATE_UNDEFINED, 2 } },
+  { "DsssRate2Mbps",   { WIFI_CODE_RATE_UNDEFINED, 4 } },
+  { "DsssRate5_5Mbps", { WIFI_CODE_RATE_UNDEFINED, 16 } },
+  { "DsssRate11Mbps",  { WIFI_CODE_RATE_UNDEFINED, 256 } }
+};
 /* *NS_CHECK_STYLE_ON* */
 
 DsssPhy::DsssPhy ()

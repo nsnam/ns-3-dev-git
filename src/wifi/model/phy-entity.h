@@ -469,6 +469,16 @@ protected:
   typedef std::map<WifiPreamble, std::vector<WifiPpduField> > PpduFormats;
 
   /**
+   * A pair to hold modulation information: code rate and constellation size.
+   */
+  typedef std::pair<WifiCodeRate, uint16_t> CodeRateConstellationSizePair;
+
+  /**
+   * A modulation lookup table using unique name of modulation as key.
+   */
+  typedef std::map<std::string, CodeRateConstellationSizePair> ModulationLookupTable;
+
+  /**
    * Return the PPDU formats of the PHY.
    *
    * This method should be implemented (overridden) by each child

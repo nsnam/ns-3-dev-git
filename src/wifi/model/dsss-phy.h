@@ -142,6 +142,8 @@ private:
   PhyFieldRxStatus EndReceiveHeader (Ptr<Event> event);
 
   static const PpduFormats m_dsssPpduFormats; //!< DSSS and HR/DSSS PPDU formats
+
+  static const ModulationLookupTable m_dsssModulationLookupTable; //!< lookup table to retrieve code rate and constellation size corresponding to a unique name of modulation
 }; //class DsssPhy
 
 } //namespace ns3

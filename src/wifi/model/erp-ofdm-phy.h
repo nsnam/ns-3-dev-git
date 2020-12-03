@@ -131,6 +131,8 @@ private:
   WifiMode GetHeaderMode (WifiTxVector txVector) const override;
   Time GetPreambleDuration (WifiTxVector txVector) const override;
   Time GetHeaderDuration (WifiTxVector txVector) const override;
+
+  static const ModulationLookupTable m_erpOfdmModulationLookupTable; //!< lookup table to retrieve code rate and constellation size corresponding to a unique name of modulation
 }; //class ErpOfdmPhy
 
 } //namespace ns3
