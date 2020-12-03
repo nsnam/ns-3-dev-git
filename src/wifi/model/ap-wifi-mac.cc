@@ -27,7 +27,7 @@
 #include "ns3/string.h"
 #include "ns3/random-variable-stream.h"
 #include "ap-wifi-mac.h"
-#include "mac-low.h"
+#include "channel-access-manager.h"
 #include "mac-tx-middle.h"
 #include "mac-rx-middle.h"
 #include "mgt-headers.h"
@@ -155,7 +155,7 @@ Time
 ApWifiMac::GetBeaconInterval (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_low->GetBeaconInterval ();
+  return m_beaconInterval;
 }
 
 void
@@ -191,7 +191,7 @@ ApWifiMac::SetBeaconInterval (Time interval)
     {
       NS_FATAL_ERROR ("beacon interval should be smaller then or equal to 65535 * 1024us (802.11 time unit)");
     }
-  m_low->SetBeaconInterval (interval);
+  m_beaconInterval = interval;
 }
 
 int64_t
@@ -370,7 +370,7 @@ ApWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
   //We're sending this packet with a from address that is our own. We
   //get that address from the lower MAC and make use of the
   //from-spoofing Enqueue() method to avoid duplicated code.
-  Enqueue (packet, to, m_low->GetAddress ());
+  Enqueue (packet, to, GetAddress ());
 }
 
 bool

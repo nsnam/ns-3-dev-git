@@ -294,6 +294,7 @@ private:
 
   Ptr<Txop> m_beaconTxop;                    //!< Dedicated Txop for beacons
   bool m_enableBeaconGeneration;             //!< Flag whether beacons are being generated
+  Time m_beaconInterval;                     //!< Beacon interval
   EventId m_beaconEvent;                     //!< Event to generate one beacon
   EventId m_cfpEvent;                        //!< Event to generate one PCF frame
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon

@@ -25,7 +25,6 @@
 #include "ns3/simulator.h"
 #include "sta-wifi-mac.h"
 #include "wifi-phy.h"
-#include "mac-low.h"
 #include "mgt-headers.h"
 #include "snr-tag.h"
 #include "wifi-net-device.h"
@@ -476,7 +475,7 @@ StaWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
     }
 
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();

@@ -27,7 +27,6 @@
 
 namespace ns3 {
 
-class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;
 class ChannelAccessManager;
@@ -179,7 +178,6 @@ protected:
 
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
-  Ptr<MacLow> m_low;                                //!< MacLow (RTS, CTS, Data, Ack etc.)
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< channel access manager
   Ptr<WifiPhy> m_phy;                               //!< Wifi PHY
   Ptr<FrameExchangeManager> m_feManager;            //!< Frame Exchange Manager
@@ -450,10 +448,8 @@ private:
    */
   bool m_dsssSupported;
 
-  /// Enable aggregation function
-  void EnableAggregation (void);
-  /// Disable aggregation function
-  void DisableAggregation (void);
+  Mac48Address m_address;   ///< MAC address of this station
+  Mac48Address m_bssid;     ///< the BSSID
 
   uint16_t m_voMaxAmsduSize; ///< maximum A-MSDU size for AC_VO (in bytes)
   uint16_t m_viMaxAmsduSize; ///< maximum A-MSDU size for AC_VI (in bytes)
@@ -469,6 +465,7 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
+  bool m_ctsToSelfSupported;     ///< flag indicating whether CTS-To-Self is supported
 };
 
 } //namespace ns3

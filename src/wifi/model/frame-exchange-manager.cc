@@ -56,6 +56,7 @@ FrameExchangeManager::GetTypeId (void)
 
 FrameExchangeManager::FrameExchangeManager ()
   : m_navEnd (Seconds (0)),
+    m_promisc (false),
     m_moreFragments (false)
 {
   NS_LOG_FUNCTION (this);
@@ -167,6 +168,15 @@ FrameExchangeManager::SetWifiPhy (Ptr<WifiPhy> phy)
 }
 
 void
+FrameExchangeManager::ResetPhy (void)
+{
+  m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
+                                        MakeCallback (&FrameExchangeManager::RxStartIndication, this));
+  m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, double, WifiTxVector, std::vector<bool>> ());
+  m_phy = 0;
+}
+
+void
 FrameExchangeManager::SetAddress (Mac48Address address)
 {
   NS_LOG_FUNCTION (this << address);
@@ -178,6 +188,18 @@ FrameExchangeManager::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
   m_bssid = bssid;
+}
+
+void
+FrameExchangeManager::SetPromisc (void)
+{
+  m_promisc = true;
+}
+
+bool
+FrameExchangeManager::IsPromisc (void) const
+{
+  return m_promisc;
 }
 
 void
@@ -841,6 +863,10 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, double rxSnr,
   Mac48Address addr1 = psdu->GetAddr1 ();
   if (!addr1.IsGroup () && addr1 != m_self)
     {
+      if (m_promisc && psdu->GetNMpdus () == 1 && psdu->GetHeader (0).IsData ())
+        {
+          m_rxMiddle->Receive (*psdu->begin ());
+        }
       return;
     }
 

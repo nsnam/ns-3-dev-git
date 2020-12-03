@@ -111,6 +111,10 @@ public:
    */
   virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
+   * Remove WifiPhy associated with this MacLow.
+   */
+  virtual void ResetPhy (void);
+  /**
    * Set the Protection Manager to use
    *
    * \param protectionManager the Protection Manager to use
@@ -134,6 +138,17 @@ public:
    * \param bssid the BSSID
    */
   virtual void SetBssid (Mac48Address bssid);
+  /**
+   * Enable promiscuous mode.
+   */
+  void SetPromisc (void);
+  /**
+   * Check if the device is operating in promiscuous mode.
+   *
+   * \return true if the device is operating in promiscuous mode,
+   *         false otherwise
+   */
+  bool IsPromisc (void) const;
 
   /**
    * Get the Protection Manager used by this node.
@@ -334,6 +349,7 @@ protected:
   Mac48Address m_self;                              //!< the MAC address of this device
   Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
   Time m_navEnd;                                    //!< NAV expiration time
+  bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
 
   /**
    * Forward an MPDU down to the PHY layer.

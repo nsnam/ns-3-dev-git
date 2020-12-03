@@ -23,7 +23,6 @@
 #include "ns3/mesh-wifi-beacon.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
-#include "ns3/mac-low.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/simulator.h"
 #include "ns3/yans-wifi-phy.h"
@@ -33,6 +32,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/socket.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/channel-access-manager.h"
 
 namespace ns3 {
 
@@ -98,7 +98,7 @@ void
 MeshWifiInterfaceMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  ForwardDown (packet, m_low->GetAddress (), to);
+  ForwardDown (packet, GetAddress (), to);
 }
 bool
 MeshWifiInterfaceMac::SupportsSendFrom () const
