@@ -95,7 +95,6 @@ ApWifiMac::ApWifiMac ()
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
   m_beaconTxop->SetMaxCw (0);
-  m_beaconTxop->SetMacLow (m_low);
   m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
   m_beaconTxop->SetTxOkCallback (MakeCallback (&ApWifiMac::TxOk, this));

@@ -62,7 +62,6 @@ RegularWifiMac::RegularWifiMac ()
   m_channelAccessManager = CreateObject<ChannelAccessManager> ();
 
   m_txop = CreateObject<Txop> ();
-  m_txop->SetMacLow (m_low);
   m_txop->SetChannelAccessManager (m_channelAccessManager);
   m_txop->SetTxMiddle (m_txMiddle);
   m_txop->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
@@ -480,7 +479,6 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
   Ptr<QosTxop> edca = CreateObject<QosTxop> ();
-  edca->SetMacLow (m_low);
   edca->SetChannelAccessManager (m_channelAccessManager);
   edca->SetTxMiddle (m_txMiddle);
   edca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));

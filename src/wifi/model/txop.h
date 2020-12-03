@@ -30,7 +30,6 @@ namespace ns3 {
 class Packet;
 class ChannelAccessManager;
 class MacTxMiddle;
-class MacLow;
 class WifiMode;
 class WifiMacQueue;
 class WifiMacQueueItem;
@@ -112,12 +111,6 @@ public:
   virtual bool IsQosTxop () const;
 
   /**
-   * Set MacLow associated with this Txop.
-   *
-   * \param low MacLow to associate.
-   */
-  void SetMacLow (const Ptr<MacLow> low);
-  /**
    * Set ChannelAccessManager this Txop is associated to.
    *
    * \param manager ChannelAccessManager to associate.
@@ -151,13 +144,6 @@ public:
    *        packet is dropped.
    */
   void SetTxDroppedCallback (TxDropped callback);
-
-  /**
-   * Return the MacLow associated with this Txop.
-   *
-   * \return the associated MacLow
-   */
-  Ptr<MacLow> GetLow (void) const;
 
   /**
    * Return the packet queue associated with this Txop.
@@ -371,10 +357,6 @@ protected:
    */
   virtual void NotifyAccessRequested (void);
   /**
-   * Notify the Txop that access has been granted.
-   */
-  virtual void NotifyAccessGranted (void);
-  /**
    * Notify the Txop that internal collision has occurred.
    */
   virtual void NotifyInternalCollision (void);
@@ -507,7 +489,6 @@ protected:
   TxDropped m_txDroppedCallback;                    //!< the packet dropped callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle
-  Ptr <MacLow> m_low;                               //!< the MacLow
   Ptr<WifiRemoteStationManager> m_stationManager;   //!< the wifi remote station manager
   Ptr<UniformRandomVariable> m_rng;                 //!< the random stream
 

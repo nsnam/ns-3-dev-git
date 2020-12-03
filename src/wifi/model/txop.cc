@@ -25,14 +25,15 @@
 #include "ns3/socket.h"
 #include "txop.h"
 #include "channel-access-manager.h"
+#include "wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "mac-low.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-mac-trailer.h"
+#include "wifi-tx-vector.h"   // to be removed
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
+#define NS_LOG_APPEND_CONTEXT if (m_stationManager != 0 && m_stationManager->GetMac () != 0) { std::clog << "[mac=" << m_stationManager->GetMac ()->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -109,7 +110,6 @@ Txop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue = 0;
-  m_low = 0;
   m_stationManager = 0;
   m_rng = 0;
   m_txMiddle = 0;
@@ -128,13 +128,6 @@ void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 {
   NS_LOG_FUNCTION (this);
   m_txMiddle = txMiddle;
-}
-
-void
-Txop::SetMacLow (const Ptr<MacLow> low)
-{
-  NS_LOG_FUNCTION (this << low);
-  m_low = low;
 }
 
 void
@@ -342,8 +335,7 @@ Txop::RestartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
        || !m_queue->IsEmpty ())
-      && m_access == NOT_REQUESTED
-      && !m_low->IsCfPeriod ())
+      && m_access == NOT_REQUESTED)
     {
       m_channelAccessManager->RequestAccess (this);
     }
@@ -355,17 +347,10 @@ Txop::StartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
       && !m_queue->IsEmpty ()
-      && m_access == NOT_REQUESTED
-      && !m_low->IsCfPeriod ())
+      && m_access == NOT_REQUESTED)
     {
       m_channelAccessManager->RequestAccess (this);
     }
-}
-
-Ptr<MacLow>
-Txop::GetLow (void) const
-{
-  return m_low;
 }
 
 void
@@ -495,82 +480,6 @@ Txop::RequestAccess (void)
   if (m_access == NOT_REQUESTED)
     {
       m_channelAccessManager->RequestAccess (this);
-    }
-}
-
-void
-Txop::NotifyAccessGranted (void)
-{
-  NS_LOG_FUNCTION (this);
-//   NS_ASSERT (m_access == REQUESTED); FEM may have changed m_access to GRANTED
-  m_access = NOT_REQUESTED;
-  if (m_currentPacket == 0)
-    {
-      if (m_queue->IsEmpty ())
-        {
-          NS_LOG_DEBUG ("queue empty");
-          return;
-        }
-      Ptr<WifiMacQueueItem> item = m_queue->Dequeue ();
-      NS_ASSERT (item != 0);
-      m_currentPacket = item->GetPacket ();
-      m_currentHdr = item->GetHeader ();
-      NS_ASSERT (m_currentPacket != 0);
-      uint16_t sequence = m_txMiddle->GetNextSequenceNumberFor (&m_currentHdr);
-      m_currentHdr.SetSequenceNumber (sequence);
-      m_currentHdr.SetFragmentNumber (0);
-      m_currentHdr.SetNoMoreFragments ();
-      m_currentHdr.SetNoRetry ();
-      m_fragmentNumber = 0;
-      NS_LOG_DEBUG ("dequeued size=" << m_currentPacket->GetSize () <<
-                    ", to=" << m_currentHdr.GetAddr1 () <<
-                    ", seq=" << m_currentHdr.GetSequenceControl ());
-    }
-  if (m_currentHdr.GetAddr1 ().IsGroup ())
-    {
-      m_currentParams.DisableRts ();
-      m_currentParams.DisableAck ();
-      m_currentParams.DisableNextData ();
-      NS_LOG_DEBUG ("tx broadcast");
-      GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
-                                    m_currentParams, this);
-    }
-  else
-    {
-      m_currentParams.EnableAck ();
-      if (NeedFragmentation ())
-        {
-          m_currentParams.DisableRts ();
-          WifiMacHeader hdr;
-          Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-          if (IsLastFragment ())
-            {
-              NS_LOG_DEBUG ("fragmenting last fragment size=" << fragment->GetSize ());
-              m_currentParams.DisableNextData ();
-            }
-          else
-            {
-              NS_LOG_DEBUG ("fragmenting size=" << fragment->GetSize ());
-              m_currentParams.EnableNextData (GetNextFragmentSize ());
-            }
-          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr),
-                                        m_currentParams, this);
-        }
-      else
-        {
-          uint32_t size = m_currentHdr.GetSize () + m_currentPacket->GetSize () + WIFI_MAC_FCS_LENGTH;
-          if (m_stationManager->NeedRts (m_currentHdr, size) && !m_low->IsCfPeriod ())
-            {
-              m_currentParams.EnableRts ();
-            }
-          else
-            {
-              m_currentParams.DisableRts ();
-            }
-          m_currentParams.DisableNextData ();
-          GetLow ()->StartTransmission (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr),
-                                        m_currentParams, this);
-        }
     }
 }
 
@@ -733,7 +642,6 @@ Txop::StartNextFragment (void)
     {
       m_currentParams.EnableNextData (GetNextFragmentSize ());
     }
-  GetLow ()->StartTransmission (Create<WifiMacQueueItem> (fragment, hdr), m_currentParams, this);
 }
 
 void
