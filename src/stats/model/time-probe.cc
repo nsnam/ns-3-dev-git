@@ -70,14 +70,14 @@ TimeProbe::GetValue (void) const
 void
 TimeProbe::SetValue (Time newVal)
 {
-  NS_LOG_FUNCTION (this << newVal.GetSeconds ());
+  NS_LOG_FUNCTION (this << newVal.As (Time::S));
   m_output = newVal.GetSeconds ();
 }
 
 void
 TimeProbe::SetValueByPath (std::string path, Time newVal)
 {
-  NS_LOG_FUNCTION (path << newVal.GetSeconds ());
+  NS_LOG_FUNCTION (path << newVal.As (Time::S));
   Ptr<TimeProbe> probe = Names::Find<TimeProbe> (path);
   NS_ASSERT_MSG (probe, "Error:  Can't find probe for path " << path);
   probe->SetValue (newVal);
@@ -103,7 +103,7 @@ TimeProbe::ConnectByPath (std::string path)
 void
 TimeProbe::TraceSink (Time oldData, Time newData)
 {
-  NS_LOG_FUNCTION (this << oldData.GetSeconds () << newData.GetSeconds ());
+  NS_LOG_FUNCTION (this << oldData.As (Time::S) << newData.As (Time::S));
   if (IsEnabled ())
     {
       m_output = newData.GetSeconds ();

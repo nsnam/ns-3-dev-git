@@ -90,7 +90,7 @@ void
 Emitter::Emit (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("Emitting at " << Simulator::Now ().GetSeconds ());
+  NS_LOG_DEBUG ("Emitting at " << Simulator::Now ().As (Time::S));
   Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Emit, this);
 }
 
@@ -98,7 +98,7 @@ void
 Emitter::Count (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("Counting at " << Simulator::Now ().GetSeconds ());
+  NS_LOG_DEBUG ("Counting at " << Simulator::Now ().As (Time::S));
   m_counter += 1.0;
   DoubleProbe::SetValueByPath ("/Names/StaticallyAccessedProbe", m_counter);
   Simulator::Schedule (Seconds (m_var->GetValue ()), &Emitter::Count, this);
