@@ -262,24 +262,14 @@ DsssPhy::GetDsssRatesBpsList (void)
 WifiMode
 DsssPhy::GetDsssRate1Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("DsssRate1Mbps",
-                                     WIFI_MOD_CLASS_DSSS,
-                                     true,
-                                     WIFI_CODE_RATE_UNDEFINED,
-                                     2);
+  static WifiMode mode = CreateDsssMode ("DsssRate1Mbps", WIFI_MOD_CLASS_DSSS);
   return mode;
 }
 
 WifiMode
 DsssPhy::GetDsssRate2Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("DsssRate2Mbps",
-                                     WIFI_MOD_CLASS_DSSS,
-                                     true,
-                                     WIFI_CODE_RATE_UNDEFINED,
-                                     4);
+  static WifiMode mode = CreateDsssMode ("DsssRate2Mbps", WIFI_MOD_CLASS_DSSS);
   return mode;
 }
 
@@ -289,25 +279,31 @@ DsssPhy::GetDsssRate2Mbps (void)
 WifiMode
 DsssPhy::GetDsssRate5_5Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("DsssRate5_5Mbps",
-                                     WIFI_MOD_CLASS_HR_DSSS,
-                                     true,
-                                     WIFI_CODE_RATE_UNDEFINED,
-                                     16);
+  static WifiMode mode = CreateDsssMode ("DsssRate5_5Mbps", WIFI_MOD_CLASS_HR_DSSS);
   return mode;
 }
 
 WifiMode
 DsssPhy::GetDsssRate11Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("DsssRate11Mbps",
-                                     WIFI_MOD_CLASS_HR_DSSS,
-                                     true,
-                                     WIFI_CODE_RATE_UNDEFINED,
-                                     256);
+  static WifiMode mode = CreateDsssMode ("DsssRate11Mbps", WIFI_MOD_CLASS_HR_DSSS);
   return mode;
+}
+
+WifiMode
+DsssPhy::CreateDsssMode (std::string uniqueName,
+                         WifiModulationClass modClass)
+{
+  // Check whether uniqueName is in lookup table
+  const auto it = m_dsssModulationLookupTable.find (uniqueName);
+  NS_ASSERT_MSG (it != m_dsssModulationLookupTable.end (), "DSSS or HR/DSSS mode cannot be created because it is not in the lookup table!");
+  NS_ASSERT_MSG (modClass == WIFI_MOD_CLASS_DSSS || modClass == WIFI_MOD_CLASS_HR_DSSS, "DSSS or HR/DSSS mode must be either WIFI_MOD_CLASS_DSSS or WIFI_MOD_CLASS_HR_DSSS!");
+
+  return WifiModeFactory::CreateWifiMode (uniqueName,
+                                          modClass,
+                                          true,
+                                          GetCodeRate (uniqueName),
+                                          GetConstellationSize (uniqueName));
 }
 
 WifiCodeRate

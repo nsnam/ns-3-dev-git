@@ -95,7 +95,7 @@ VhtPhy::BuildModeList (void)
   for (uint8_t index = 0; index <= m_maxSupportedMcsIndexPerSs; ++index)
     {
       NS_LOG_LOGIC ("Add VhtMcs" << +index << " to list");
-      m_modeList.emplace_back (GetVhtMcs (index));
+      m_modeList.emplace_back (CreateVhtMcs (index));
     }
 }
 
@@ -355,84 +355,33 @@ VhtPhy::GetVhtMcs (uint8_t index)
     }
 }
 
-WifiMode
-VhtPhy::GetVhtMcs0 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs0", 0, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
+#define GET_VHT_MCS(x) \
+WifiMode \
+VhtPhy::GetVhtMcs ## x (void) \
+{ \
+  static WifiMode mcs = CreateVhtMcs (x); \
+  return mcs; \
+} \
+
+GET_VHT_MCS (0);
+GET_VHT_MCS (1);
+GET_VHT_MCS (2);
+GET_VHT_MCS (3);
+GET_VHT_MCS (4);
+GET_VHT_MCS (5);
+GET_VHT_MCS (6);
+GET_VHT_MCS (7);
+GET_VHT_MCS (8);
+GET_VHT_MCS (9);
+#undef GET_VHT_MCS
 
 WifiMode
-VhtPhy::GetVhtMcs1 (void)
+VhtPhy::CreateVhtMcs (uint8_t index)
 {
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs1", 1, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs2 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs2", 2, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs3 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs3", 3, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs4 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs4", 4, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs5 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs5", 5, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs6 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs6", 6, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs7 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs7", 7, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs8 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs8", 8, WIFI_MOD_CLASS_VHT);
-  return mcs;
-}
-
-WifiMode
-VhtPhy::GetVhtMcs9 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("VhtMcs9", 9, WIFI_MOD_CLASS_VHT);
-  return mcs;
+  NS_ASSERT_MSG (index <= 9, "VhtMcs index must be <= 9!");
+  return WifiModeFactory::CreateWifiMcs ("VhtMcs" + std::to_string (index),
+                                         index,
+                                         WIFI_MOD_CLASS_VHT);
 }
 
 WifiCodeRate

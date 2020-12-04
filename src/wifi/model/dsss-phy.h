@@ -195,6 +195,17 @@ private:
    */
   PhyFieldRxStatus EndReceiveHeader (Ptr<Event> event);
 
+  /**
+   * Create a DSSS or HR/DSSS mode from a unique name, the unique name
+   * must already be contained inside ModulationLookupTable.
+   * This method binds all the callbacks used by WifiMode.
+   *
+   * \param uniqueName the unique name of the WifiMode
+   * \param modClass the modulation class of the WifiMode, must be either WIFI_MOD_CLASS_DSSS or WIFI_MOD_CLASS_HR_DSSS
+   * \return the DSSS or HR/DSSS WifiMode
+   */
+  static WifiMode CreateDsssMode (std::string uniqueName, WifiModulationClass modClass);
+
   static const PpduFormats m_dsssPpduFormats; //!< DSSS and HR/DSSS PPDU formats
 
   static const ModulationLookupTable m_dsssModulationLookupTable; //!< lookup table to retrieve code rate and constellation size corresponding to a unique name of modulation

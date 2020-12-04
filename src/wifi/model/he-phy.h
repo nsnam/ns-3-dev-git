@@ -386,12 +386,21 @@ protected:
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 
   EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
-
 private:
   // Inherited
   virtual void BuildModeList (void) override;
   uint8_t GetNumberBccEncoders (WifiTxVector txVector) const override;
   virtual Time GetSymbolDuration (WifiTxVector txVector) const override;
+
+  /**
+   * Create and return the HE MCS corresponding to
+   * the provided index.
+   * This method binds all the callbacks used by WifiMode.
+   *
+   * \param index the index of the MCS
+   * \return an HE MCS
+   */
+  static WifiMode CreateHeMcs (uint8_t index);
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 }; //class HePhy

@@ -138,97 +138,71 @@ ErpOfdmPhy::GetErpOfdmRatesBpsList (void)
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate6Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate6Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     2);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate6Mbps", true);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate9Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate9Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     2);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate9Mbps", false);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate12Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate12Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     4);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate12Mbps", true);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate18Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate18Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     4);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate18Mbps", false);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate24Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate24Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     16);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate24Mbps", true);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate36Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate36Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     16);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate36Mbps", false);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate48Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate48Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_2_3,
-                                     64);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate48Mbps", false);
   return mode;
 }
 
 WifiMode
 ErpOfdmPhy::GetErpOfdmRate54Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("ErpOfdmRate54Mbps",
-                                     WIFI_MOD_CLASS_ERP_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     64);
+  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate54Mbps", false);
   return mode;
+}
+
+WifiMode
+ErpOfdmPhy::CreateErpOfdmMode (std::string uniqueName, bool isMandatory)
+{
+  // Check whether uniqueName is in lookup table
+  const auto it = m_erpOfdmModulationLookupTable.find (uniqueName);
+  NS_ASSERT_MSG (it != m_erpOfdmModulationLookupTable.end (), "ERP-OFDM mode cannot be created because it is not in the lookup table!");
+
+  return WifiModeFactory::CreateWifiMode (uniqueName,
+                                          WIFI_MOD_CLASS_ERP_OFDM,
+                                          isMandatory,
+                                          GetCodeRate (uniqueName),
+                                          GetConstellationSize (uniqueName));
 }
 
 WifiCodeRate

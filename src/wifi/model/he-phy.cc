@@ -97,7 +97,7 @@ HePhy::BuildModeList (void)
   for (uint8_t index = 0; index <= m_maxSupportedMcsIndexPerSs; ++index)
     {
       NS_LOG_LOGIC ("Add HeMcs" << +index << " to list");
-      m_modeList.emplace_back (GetHeMcs (index));
+      m_modeList.emplace_back (CreateHeMcs (index));
     }
 }
 
@@ -978,100 +978,35 @@ HePhy::GetHeMcs (uint8_t index)
     }
 }
 
-WifiMode
-HePhy::GetHeMcs0 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs0", 0, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
+#define GET_HE_MCS(x) \
+WifiMode \
+HePhy::GetHeMcs ## x (void) \
+{ \
+  static WifiMode mcs = CreateHeMcs (x); \
+  return mcs; \
+} \
+
+GET_HE_MCS (0);
+GET_HE_MCS (1);
+GET_HE_MCS (2);
+GET_HE_MCS (3);
+GET_HE_MCS (4);
+GET_HE_MCS (5);
+GET_HE_MCS (6);
+GET_HE_MCS (7);
+GET_HE_MCS (8);
+GET_HE_MCS (9);
+GET_HE_MCS (10);
+GET_HE_MCS (11);
+#undef GET_HE_MCS
 
 WifiMode
-HePhy::GetHeMcs1 (void)
+HePhy::CreateHeMcs (uint8_t index)
 {
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs1", 1, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs2 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs2", 2, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs3 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs3", 3, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs4 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs4", 4, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs5 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs5", 5, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs6 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs6", 6, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs7 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs7", 7, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs8 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs8", 8, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs9 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs9", 9, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs10 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs10", 10, WIFI_MOD_CLASS_HE);
-  return mcs;
-}
-
-WifiMode
-HePhy::GetHeMcs11 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HeMcs11", 11, WIFI_MOD_CLASS_HE);
-  return mcs;
+  NS_ASSERT_MSG (index <= 11, "HeMcs index must be <= 11!");
+  return WifiModeFactory::CreateWifiMcs ("HeMcs" + std::to_string (index),
+                                         index,
+                                         WIFI_MOD_CLASS_HE);
 }
 
 WifiCodeRate

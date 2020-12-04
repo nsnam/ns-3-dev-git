@@ -198,6 +198,17 @@ private:
   Time GetPreambleDuration (WifiTxVector txVector) const override;
   Time GetHeaderDuration (WifiTxVector txVector) const override;
 
+  /**
+   * Create an ERP-OFDM mode from a unique name, the unique name
+   * must already be contained inside ModulationLookupTable.
+   * This method binds all the callbacks used by WifiMode.
+   *
+   * \param uniqueName the unique name of the WifiMode
+   * \param isMandatory whether the WifiMode is mandatory
+   * \return the ERP-OFDM WifiMode
+   */
+  static WifiMode CreateErpOfdmMode (std::string uniqueName, bool isMandatory);
+
   static const ModulationLookupTable m_erpOfdmModulationLookupTable; //!< lookup table to retrieve code rate and constellation size corresponding to a unique name of modulation
 }; //class ErpOfdmPhy
 

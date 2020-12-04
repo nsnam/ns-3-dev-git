@@ -82,7 +82,7 @@ HtPhy::BuildModeList (void)
       for (uint8_t i = 0; i <= m_maxSupportedMcsIndexPerSs; ++i)
         {
           NS_LOG_LOGIC ("Add HtMcs" << +index << " to list");
-          m_modeList.emplace_back (GetHtMcs (index));
+          m_modeList.emplace_back (CreateHtMcs (index));
           ++index;
         }
       index = 8 * nss;
@@ -539,260 +539,55 @@ HtPhy::GetHtMcs (uint8_t index)
     }
 }
 
-WifiMode
-HtPhy::GetHtMcs0 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs0", 0, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
+#define GET_HT_MCS(x) \
+WifiMode \
+HtPhy::GetHtMcs ## x (void) \
+{ \
+  static WifiMode mcs = CreateHtMcs (x); \
+  return mcs; \
+} \
+
+GET_HT_MCS (0);
+GET_HT_MCS (1);
+GET_HT_MCS (2);
+GET_HT_MCS (3);
+GET_HT_MCS (4);
+GET_HT_MCS (5);
+GET_HT_MCS (6);
+GET_HT_MCS (7);
+GET_HT_MCS (8);
+GET_HT_MCS (9);
+GET_HT_MCS (10);
+GET_HT_MCS (11);
+GET_HT_MCS (12);
+GET_HT_MCS (13);
+GET_HT_MCS (14);
+GET_HT_MCS (15);
+GET_HT_MCS (16);
+GET_HT_MCS (17);
+GET_HT_MCS (18);
+GET_HT_MCS (19);
+GET_HT_MCS (20);
+GET_HT_MCS (21);
+GET_HT_MCS (22);
+GET_HT_MCS (23);
+GET_HT_MCS (24);
+GET_HT_MCS (25);
+GET_HT_MCS (26);
+GET_HT_MCS (27);
+GET_HT_MCS (28);
+GET_HT_MCS (29);
+GET_HT_MCS (30);
+GET_HT_MCS (31);
+#undef GET_HT_MCS
 
 WifiMode
-HtPhy::GetHtMcs1 (void)
+HtPhy::CreateHtMcs (uint8_t index)
 {
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs1", 1, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs2 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs2", 2, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs3 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs3", 3, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs4 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs4", 4, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs5 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs5", 5, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs6 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs6", 6, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs7 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs7", 7, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs8 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs8", 8, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs9 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs9", 9, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs10 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs10", 10, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs11 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs11", 11, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs12 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs12", 12, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs13 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs13", 13, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs14 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs14", 14, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs15 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs15", 15, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs16 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs16", 16, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs17 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs17", 17, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs18 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs18", 18, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs19 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs19", 19, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs20 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs20", 20, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs21 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs21", 21, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs22 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs22", 22, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs23 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs23", 23, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs24 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs24", 24, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs25 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs25", 25, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs26 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs26", 26, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs27 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs27", 27, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs28 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs28", 28, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs29 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs29", 29, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs30 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs30", 30, WIFI_MOD_CLASS_HT);
-  return mcs;
-}
-
-WifiMode
-HtPhy::GetHtMcs31 (void)
-{
-  static WifiMode mcs =
-    WifiModeFactory::CreateWifiMcs ("HtMcs31", 31, WIFI_MOD_CLASS_HT);
-  return mcs;
+  NS_ASSERT_MSG (index <= 31, "HtMcs index must be <= 31!");
+  return WifiModeFactory::CreateWifiMcs ("HtMcs" + std::to_string (index),
+                                         index,
+                                         WIFI_MOD_CLASS_HT);
 }
 
 WifiCodeRate

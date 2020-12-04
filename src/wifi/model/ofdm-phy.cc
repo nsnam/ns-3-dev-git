@@ -455,96 +455,56 @@ OfdmPhy::GetOfdmRatesBpsList (void)
 WifiMode
 OfdmPhy::GetOfdmRate6Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate6Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate6Mbps", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate9Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate9Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate9Mbps", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate12Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate12Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate12Mbps", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate18Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate18Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate18Mbps", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate24Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate24Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate24Mbps", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate36Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate36Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate36Mbps", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate48Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate48Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_2_3,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate48Mbps", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate54Mbps (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate54Mbps",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate54Mbps", false);
   return mode;
 }
 
@@ -554,96 +514,56 @@ OfdmPhy::GetOfdmRate54Mbps (void)
 WifiMode
 OfdmPhy::GetOfdmRate3MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate3MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate3MbpsBW10MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate4_5MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate4_5MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate4_5MbpsBW10MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate6MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate6MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate6MbpsBW10MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate9MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate9MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate9MbpsBW10MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate12MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate12MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate12MbpsBW10MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate18MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate18MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate18MbpsBW10MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate24MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate24MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_2_3,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate24MbpsBW10MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate27MbpsBW10MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate27MbpsBW10MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate27MbpsBW10MHz", false);
   return mode;
 }
 
@@ -653,97 +573,71 @@ OfdmPhy::GetOfdmRate27MbpsBW10MHz (void)
 WifiMode
 OfdmPhy::GetOfdmRate1_5MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate1_5MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate1_5MbpsBW5MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate2_25MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate2_25MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     2);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate2_25MbpsBW5MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate3MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate3MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate3MbpsBW5MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate4_5MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate4_5MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     4);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate4_5MbpsBW5MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate6MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate6MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     true,
-                                     WIFI_CODE_RATE_1_2,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate6MbpsBW5MHz", true);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate9MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate9MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     16);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate9MbpsBW5MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate12MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate12MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_2_3,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate12MbpsBW5MHz", false);
   return mode;
 }
 
 WifiMode
 OfdmPhy::GetOfdmRate13_5MbpsBW5MHz (void)
 {
-  static WifiMode mode =
-    WifiModeFactory::CreateWifiMode ("OfdmRate13_5MbpsBW5MHz",
-                                     WIFI_MOD_CLASS_OFDM,
-                                     false,
-                                     WIFI_CODE_RATE_3_4,
-                                     64);
+  static WifiMode mode = CreateOfdmMode ("OfdmRate13_5MbpsBW5MHz", false);
   return mode;
+}
+
+WifiMode
+OfdmPhy::CreateOfdmMode (std::string uniqueName, bool isMandatory)
+{
+  // Check whether uniqueName is in lookup table
+  const auto it = m_ofdmModulationLookupTable.find (uniqueName);
+  NS_ASSERT_MSG (it != m_ofdmModulationLookupTable.end (), "OFDM mode cannot be created because it is not in the lookup table!");
+
+  return WifiModeFactory::CreateWifiMode (uniqueName,
+                                          WIFI_MOD_CLASS_OFDM,
+                                          isMandatory,
+                                          GetCodeRate (uniqueName),
+                                          GetConstellationSize (uniqueName));
 }
 
 WifiCodeRate

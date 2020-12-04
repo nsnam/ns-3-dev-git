@@ -528,6 +528,16 @@ private:
    */
   PhyFieldRxStatus EndReceiveHtSig (Ptr<Event> event);
 
+  /**
+   * Return the HT MCS corresponding to
+   * the provided index.
+   * This method binds all the callbacks used by WifiMode.
+   *
+   * \param index the index of the MCS
+   * \return an HT MCS
+   */
+  static WifiMode CreateHtMcs (uint8_t index);
+
   uint8_t m_maxSupportedNss; //!< Maximum supported number of spatial streams (used to build HT MCS indices)
 
   static const PpduFormats m_htPpduFormats; //!< HT PPDU formats

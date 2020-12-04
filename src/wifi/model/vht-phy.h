@@ -317,6 +317,16 @@ private:
   virtual void BuildModeList (void) override;
 
   /**
+   * Return the VHT MCS corresponding to
+   * the provided index.
+   * This method binds all the callbacks used by WifiMode.
+   *
+   * \param index the index of the MCS
+   * \return a VHT MCS
+   */
+  static WifiMode CreateVhtMcs (uint8_t index);
+
+  /**
    * Typedef for storing exceptions in the number of BCC encoders for VHT MCSs
    */
   typedef std::map< std::tuple<uint16_t /* channelWidth in MHz */,
