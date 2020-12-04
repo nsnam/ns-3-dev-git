@@ -161,78 +161,47 @@ WifiMode::GetNonHtReferenceRate (void) const
 bool
 WifiMode::IsHigherCodeRate (WifiMode mode) const
 {
-  WifiCodeRate codeRate = mode.GetCodeRate ();
-  switch (GetCodeRate ())
-    {
-    case WIFI_CODE_RATE_1_2:
-      return false; //This is the smallest code rate.
-    case WIFI_CODE_RATE_2_3:
-      return (codeRate == WIFI_CODE_RATE_1_2);
-    case WIFI_CODE_RATE_3_4:
-      return (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3);
-    case WIFI_CODE_RATE_5_6:
-      return (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3 || codeRate == WIFI_CODE_RATE_3_4);
-    default:
-      NS_FATAL_ERROR ("Wifi Code Rate not defined");
-      return false;
-    }
+  NS_ASSERT_MSG (GetCodeRate () != WIFI_CODE_RATE_UNDEFINED, "Wifi Code Rate not defined");
+  return (GetCodeRate () > mode.GetCodeRate ());
 }
 
 bool
 WifiMode::IsHigherDataRate (WifiMode mode) const
 {
-  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  switch (item->modClass)
+  // If current modulation class is DSSS and other is not, the other is always higher
+  if (GetModulationClass () == WIFI_MOD_CLASS_DSSS
+      && mode.GetModulationClass () != WIFI_MOD_CLASS_DSSS)
     {
-    case WIFI_MOD_CLASS_DSSS:
-      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
-        {
-          return (GetConstellationSize () > mode.GetConstellationSize ());
-        }
-      else
-        {
-          return false;
-        }
-    case WIFI_MOD_CLASS_HR_DSSS:
-      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
-        {
-          return true;
-        }
-      else
-        {
-          return (GetConstellationSize () > mode.GetConstellationSize ());
-        }
-    case WIFI_MOD_CLASS_ERP_OFDM:
-    case WIFI_MOD_CLASS_OFDM:
-    case WIFI_MOD_CLASS_HT:
-    case WIFI_MOD_CLASS_VHT:
-    case WIFI_MOD_CLASS_HE:
-      if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
-        {
-          return true;
-        }
-      else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
-        {
-          return (mode.GetConstellationSize () > GetConstellationSize ());
-        }
-      else
-        {
-          if (GetConstellationSize () > mode.GetConstellationSize ())
-            {
-              return true;
-            }
-          else if (GetConstellationSize () == mode.GetConstellationSize ())
-            {
-              return IsHigherCodeRate (mode);
-            }
-          else
-            {
-              return false;
-            }
-        }
-    default:
-      NS_FATAL_ERROR ("Modulation class not defined");
       return false;
+    }
+  // If other modulation class is DSSS and current is not, the current is always higher
+  else if (GetModulationClass () != WIFI_MOD_CLASS_DSSS
+           && mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
+    {
+      return true;
+    }
+  // If current is not HR/DSSS while other is not, check constellation size of other against current
+  else if (GetModulationClass () != WIFI_MOD_CLASS_HR_DSSS
+           && mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
+    {
+      return (mode.GetConstellationSize () > GetConstellationSize ());
+    }
+  // This block is for current and other mode > HR/DSSS, if constellation size
+  // is the same, check the code rate (DSSS and HR/DSSS does not define code rate)
+  else if (GetConstellationSize () == mode.GetConstellationSize ()
+           && GetCodeRate () != WIFI_CODE_RATE_UNDEFINED
+           && mode.GetCodeRate () != WIFI_CODE_RATE_UNDEFINED)
+    {
+      return IsHigherCodeRate (mode);
+    }
+  // Otherwise, check constellation size of current against other,
+  // the code go here if:
+  //   - both current and other mode is DSSS
+  //   - current mode is HR/DSSS and other mode is not HR/DSSS
+  //   - current and other mode > HR/DSSS and both constellation size is not equal
+  else
+    {
+      return (GetConstellationSize () > mode.GetConstellationSize ());
     }
 }
 
