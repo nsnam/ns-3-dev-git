@@ -254,7 +254,7 @@ void PyViz::DoPause (std::string const &message)
 {
   m_pauseMessages.push_back (message);
   m_stop = true;
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": Have "
+  NS_LOG_LOGIC (Simulator::Now ().As (Time::S) << ": Have "
                                                 << g_visualizer->m_pauseMessages.size () << " pause messages");
 }
 
@@ -267,7 +267,7 @@ void PyViz::Pause (std::string const &message)
 std::vector<std::string>
 PyViz::GetPauseMessages () const
 {
-  NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << ": GetPauseMessages: have "
+  NS_LOG_LOGIC (Simulator::Now ().As (Time::S) << ": GetPauseMessages: have "
                                                 << g_visualizer->m_pauseMessages.size () << " pause messages");
   return m_pauseMessages;
 }
