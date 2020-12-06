@@ -24,6 +24,7 @@
 
 #include "ns3/tcp-congestion-ops.h"
 #include "ns3/tcp-linux-reno.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -72,6 +73,15 @@ public:
    */
   virtual void Init (Ptr<TcpSocketState> tcb);
 
+  /**
+   * TracedCallback signature for DCTCP update of congestion state
+   *
+   * \param [in] bytesAcked Bytes acked in this observation window
+   * \param [in] bytesMarked Bytes marked in this observation window
+   * \param [in] alpha New alpha (congestion estimate) value
+   */
+  typedef void (* CongestionEstimateTracedCallback)(uint32_t bytesAcked, uint32_t bytesMarked, double alpha);
+
   // Documented in base class
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
                                 uint32_t bytesInFlight);
@@ -113,11 +123,11 @@ private:
   void Reset (Ptr<TcpSocketState> tcb);
 
   /**
-   * \brief Sets the value of m_alpha
+   * \brief Initialize the value of m_alpha
    *
    * \param alpha DCTCP alpha parameter
    */
-  void SetDctcpAlpha (double alpha);
+  void InitializeDctcpAlpha (double alpha);
 
   uint32_t m_ackedBytesEcn;             //!< Number of acked bytes which are marked
   uint32_t m_ackedBytesTotal;           //!< Total number of acked bytes
@@ -130,6 +140,11 @@ private:
   bool m_delayedAckReserved;            //!< Delayed Ack state
   double m_g;                           //!< Estimation gain
   bool m_useEct0;                       //!< Use ECT(0) for ECN codepoint
+  bool m_initialized;                   //!< Whether DCTCP has been initialized
+  /**
+   * \brief Callback pointer for congestion state update
+   */
+  TracedCallback<uint32_t, uint32_t, double> m_traceCongestionEstimate;
 };
 
 } // namespace ns3
