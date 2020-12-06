@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (TcpDctcp);
 TypeId TcpDctcp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::TcpDctcp")
-    .SetParent<TcpNewReno> ()
+    .SetParent<TcpLinuxReno> ()
     .AddConstructor<TcpDctcp> ()
     .SetGroupName ("Internet")
     .AddAttribute ("DctcpShiftG",
@@ -61,7 +61,7 @@ std::string TcpDctcp::GetName () const
 }
 
 TcpDctcp::TcpDctcp ()
-  : TcpNewReno ()
+  : TcpLinuxReno ()
 {
   NS_LOG_FUNCTION (this);
   m_ackedBytesEcn = 0;
@@ -75,7 +75,7 @@ TcpDctcp::TcpDctcp ()
 }
 
 TcpDctcp::TcpDctcp (const TcpDctcp& sock)
-  : TcpNewReno (sock),
+  : TcpLinuxReno (sock),
     m_ackedBytesEcn (sock.m_ackedBytesEcn),
     m_ackedBytesTotal (sock.m_ackedBytesTotal),
     m_priorRcvNxt (sock.m_priorRcvNxt),

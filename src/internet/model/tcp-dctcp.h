@@ -23,6 +23,7 @@
 #define TCP_DCTCP_H
 
 #include "ns3/tcp-congestion-ops.h"
+#include "ns3/tcp-linux-reno.h"
 
 namespace ns3 {
 
@@ -33,7 +34,7 @@ namespace ns3 {
  * endpoint capabilities mentioned in the DCTCP SIGCOMM paper.
  */
 
-class TcpDctcp : public TcpNewReno
+class TcpDctcp : public TcpLinuxReno
 {
 public:
   /**
