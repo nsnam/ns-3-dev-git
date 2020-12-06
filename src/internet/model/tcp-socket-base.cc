@@ -133,6 +133,11 @@ TcpSocketBase::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&TcpSocketBase::GetRxBuffer),
                    MakePointerChecker<TcpRxBuffer> ())
+    .AddAttribute ("CongestionOps",
+                   "Pointer to TcpCongestionOps object",
+                   PointerValue (),
+                   MakePointerAccessor (&TcpSocketBase::m_congestionControl),
+                   MakePointerChecker<TcpCongestionOps> ())
     .AddAttribute ("ReTxThreshold", "Threshold for fast retransmit",
                    UintegerValue (3),
                    MakeUintegerAccessor (&TcpSocketBase::SetRetxThresh,
