@@ -242,10 +242,10 @@ public:
    * Units of length in various measurement systems that are supported by the
    * Length class
    */
-  enum class Unit : uint16_t
+  enum Unit : uint16_t
   {
     //Metric Units
-    Nanometer,      //!< 1e<sup>-9</sup> meters
+    Nanometer = 1,  //!< 1e<sup>-9</sup> meters
     Micrometer,     //!< 1e<sup>-6</sup> meters
     Millimeter,     //!< 1e<sup>-3</sup> meters
     Centimeter,     //!< 1e<sup>-2</sup> meters
