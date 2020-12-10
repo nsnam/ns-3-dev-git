@@ -95,6 +95,9 @@ public:
    */
   static SubcarrierGroup GetSubcarrierGroup (uint8_t bw, RuType ruType, std::size_t index);
 
+#ifdef NOTYET
+// Currently unused methods planned for ns-3.34; causing
+// problems with API scanning (see issue #308) 
   /**
    * Check whether the given RU overlaps with the given set of RUs.
    * Note that for channel width of 160 MHz the returned range is relative to
@@ -118,6 +121,7 @@ public:
    * \return true if the given RU overlaps with the given set of tone ranges.
    */
   static bool DoesOverlap (uint8_t bw, RuSpec ru, const SubcarrierGroup &toneRanges);
+#endif
 
   /**
    * Get the approximate bandwidth occupied by a RU.
