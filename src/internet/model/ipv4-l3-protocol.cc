@@ -877,7 +877,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   Ptr<Ipv4Route> newRoute;
   if (m_routingProtocol != 0)
     {
-      newRoute = m_routingProtocol->RouteOutput (packet, ipHeader, oif, errno_);
+      newRoute = m_routingProtocol->RouteOutput (pktCopyWithTags, ipHeader, oif, errno_);
     }
   else
     {
