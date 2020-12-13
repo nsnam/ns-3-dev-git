@@ -114,13 +114,39 @@ attribute.
 Scope and Limitations
 =====================
 
+Contex-based compression
+########################
+
+The present implementation does not support context-based (stateful) compression.
+This limitation will be removed in the future.
+
+6LoWPAM-ND
+##########
+
 Future versions of this module will support :rfc:`6775`, however no timeframe is guaranteed.
+
+Mesh-under routing
+##################
 
 It would be a good idea to improve the mesh-under flooding by providing the following:
 
 * Adaptive hop-limit calculation,
 * Adaptive forwarding jitter,
 * Use of direct (non mesh) transmission for packets directed to 1-hop neighbors.
+
+Mixing compression types in a PAN
+#################################
+
+The IPv6/MAC addressing scheme defined in :rfc:`6282` and :rfc:`4944` is different.
+One adds the PanId in the pseudo-MAC address (4944) and the other doesn't (6282).
+
+The expected use cases (confirmed by the RFC editor) is to *never* have a mixed environment
+where part of the nodes are using HC1 and part IPHC because this would lead to confusion on
+what the IPv6 address of a node is. 
+
+Due to this, the nodes configured to use IPHC will drop the packets compressed with HC1
+and viceversa. The drop is logged in the drop trace as ``DROP_DISALLOWED_COMPRESSION``.
+
 
 Using 6LoWPAN with IPv4 (or other L3 protocols)
 ###############################################
