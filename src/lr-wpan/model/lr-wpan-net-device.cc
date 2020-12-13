@@ -65,6 +65,11 @@ LrWpanNetDevice::GetTypeId (void)
                    BooleanValue (true),
                    MakeBooleanAccessor (&LrWpanNetDevice::m_useAcks),
                    MakeBooleanChecker ())
+    .AddAttribute ("PseudoMacAddressMode", "Build the pseudo-MAC Address according to RFC 4944 or RFC 6282 (default: RFC 6282).",
+                   EnumValue (LrWpanNetDevice::RFC6282),
+                   MakeEnumAccessor (&LrWpanNetDevice::m_pseudoMacMode),
+                   MakeEnumChecker (LrWpanNetDevice::RFC6282, "RFC 6282 (don't use PanId)",
+                                    LrWpanNetDevice::RFC4944, "RFC 4944 (use PanId)"))
   ;
   return tid;
 }
@@ -474,7 +479,15 @@ LrWpanNetDevice::McpsDataIndication (McpsDataIndicationParams params, Ptr<Packet
 {
   NS_LOG_FUNCTION (this);
   // TODO: Use the PromiscReceiveCallback if the MAC is in promiscuous mode.
-    m_receiveCallback (this, pkt, 0, BuildPseudoMacAddress (params.m_srcPanId, params.m_srcAddr));
+
+  if (params.m_dstAddrMode == SHORT_ADDR)
+    {
+      m_receiveCallback (this, pkt, 0, BuildPseudoMacAddress (params.m_srcPanId, params.m_srcAddr));
+    }
+  else
+    {
+      m_receiveCallback (this, pkt, 0, params.m_srcExtAddr);
+    }
 }
 
 bool
@@ -491,10 +504,19 @@ LrWpanNetDevice::BuildPseudoMacAddress (uint16_t panId, Mac16Address shortAddr) 
 
   uint8_t buf[6];
 
-  buf[0] = panId >> 8;
-  // Make sure the U/L bit is set
-  buf[0] |= 0x02;
-  buf[1] = panId & 0xff;
+  if (m_pseudoMacMode == RFC4944)
+    {
+      buf[0] = panId >> 8;
+      // Make sure the U/L bit is set
+      buf[0] |= 0x02;
+      buf[1] = panId & 0xff;
+    }
+  else
+    {
+      // Make sure the U/L bit is set
+      buf[0] = 0x02;
+      buf[1] = 0x00;
+    }
   buf[2] = 0;
   buf[3] = 0;
   shortAddr.CopyTo (buf+4);

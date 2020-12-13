@@ -146,6 +146,62 @@ Although it is expected that other technology profiles (such as
 LrWpanNetDevice is provided, which encapsulates the common operations
 of creating a generic LrWpan device and hooking things together.
 
+MAC addresses
++++++++++++++
+
+Contrary to other technologies, a IEEE 802.15.4 has 2 different kind of addresses:
+
+* Long addresses (64 bits)
+* Short addresses (16 bits)
+
+The 64-bit addresses are unique worldwide, and set by the device vendor (in a real device).
+The 16-bit addresses are not guaranteed to be unique, and they are typically either assigned 
+during the devices deployment, or assigned dynamically during the device bootstrap.
+
+In |ns-3| the device bootstrap is not (yet) present. Hence, both addresses are set when the
+device is created.
+
+The other relavant "address" to consider is the PanId (16 bits), which represents the PAN
+the device is attached to.
+
+Due to the limited number of available bytes in a packet, IEEE 802.15.4 tries to use short 
+addresses instead of long addresses, even though the two might be used at the same time.
+
+For the sake of communicating with the upper layers, and in particular to generate auto-configured
+IPv6 addresses, each NetDevice must identify itself with a MAC address. The MAC addresses are
+also used during packet reception, so it is important to use them consistently.
+
+Focusing on IPv6 Stateless address autoconfiguration (SLAAC), there are two relevant RFCs to
+consider: RFC 4944 and RFC 6282, and the two differ on how to build the IPv6 address given
+the NetDevice address.
+
+RFC 4944 mandates that the IID part of the IPv6 address is calculated as ``YYYY:00ff:fe00:XXXX``,
+while RFC 6282 mandates that the IID part of the IPv6 address is calculated as ``0000:00ff:fe00:XXXX``
+where ``XXXX`` is the device short address, and ``YYYY`` is the PanId.
+In both cases the U/L bit must be set to local, so in the RFC 4944 the PanId might have one bit flipped.
+
+In order to facilitate interoperability, and to avoid unwanted module dependencies, the |ns-3| 
+implementation moves the IID calculation in the ``LrWpanNetDevice::GetAddress ()``, which will
+return an ``Address`` formatted properly, i.e.:
+
+* The Long address (a ``Mac64Address``) if the Short address has not been set, or
+* A properly formatted 48-bit pseudo-address (a ``Mac48Address``) if the short address has been set.
+
+The 48-bit pseudo-address is generated according to either RFC 4944 or RFC 6282 depending on the
+configuration of an Attribute (``PseudoMacAddressMode``).
+
+The default is to use RFC 6282 style addresses.
+
+Note that, on reception, a packet might contain either a short or a long address. This is reflected
+in the upper-layer notification callback, which can contain either the pseudo-address (48 bits) or 
+the long address (64 bit) of the sender.
+
+Note also that RFC 4944 or RFC 6282 are the RFCs defining the IPv6 address compression formats
+(HC1 and IPHC respectively). It is defintely not a good idea to either mix devices using different
+pseudo-address format or compression types in the same network. This point is further discussed
+in the ``sixlowpan`` module documentation.
+
+
 Scope and Limitations
 =====================
 
