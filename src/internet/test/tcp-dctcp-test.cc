@@ -273,7 +273,6 @@ TcpDctcpCongestedRouter::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize,
   if (m_tcb->m_ecnState == TcpSocketState::ECN_ECE_RCVD && m_ecnEchoSeq.Get () > m_ecnCWRSeq.Get () && !isRetransmission && m_testCase != 3)
     {
       NS_LOG_INFO ("Backoff mechanism by reducing CWND  by half because we've received ECN Echo");
-      m_congestionControl->ReduceCwnd (m_tcb);
       m_tcb->m_ssThresh = m_tcb->m_cWnd;
       flags |= TcpHeader::CWR;
       m_ecnCWRSeq = seq;
@@ -665,13 +664,11 @@ TcpDctcpDecrementTest::ExecuteTest (void)
   Ptr<TcpDctcp> cong = CreateObject <TcpDctcp> ();
   m_state->m_ecnState = TcpSocketState::ECN_IDLE;
   cong->PktsAcked (m_state, m_segmentsAcked, m_rtt);
-  cong->ReduceCwnd (m_state);
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd.Get (), m_cWnd,
                          "cWnd has updated correctly");
 
   m_state->m_ecnState = TcpSocketState::ECN_ECE_RCVD;
   cong->PktsAcked (m_state, m_segmentsAcked, m_rtt);
-  cong->ReduceCwnd (m_state);
 
   uint32_t val = (uint32_t)(m_cWnd * (1 - 0.0625 / 2.0));
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd.Get (), val,

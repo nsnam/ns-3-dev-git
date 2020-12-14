@@ -130,11 +130,6 @@ TcpDctcp::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
 }
 
 void
-TcpDctcp::ReduceCwnd (Ptr<TcpSocketState> tcb)
-{
-}
-
-void
 TcpDctcp::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time &rtt)
 {
   NS_LOG_FUNCTION (this << tcb << segmentsAcked << rtt);

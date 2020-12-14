@@ -273,14 +273,6 @@ TcpBic::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
   return ssThresh;
 }
 
-void
-TcpBic::ReduceCwnd (Ptr<TcpSocketState> tcb)
-{
-  NS_LOG_FUNCTION (this << tcb);
-
-  tcb->m_cWnd = std::max (tcb->m_cWnd.Get () / 2, tcb->m_segmentSize);
-}
-
 Ptr<TcpCongestionOps>
 TcpBic::Fork (void)
 {

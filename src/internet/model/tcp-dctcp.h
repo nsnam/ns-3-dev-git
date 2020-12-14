@@ -86,7 +86,6 @@ public:
   virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
                                 uint32_t bytesInFlight);
   virtual Ptr<TcpCongestionOps> Fork ();
-  virtual void ReduceCwnd (Ptr<TcpSocketState> tcb);
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
                           const Time &rtt);
   virtual void CwndEvent (Ptr<TcpSocketState> tcb,
