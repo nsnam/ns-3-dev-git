@@ -129,7 +129,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream);
+  static void PrintNeighborCacheAllAt (Time printTime, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
   /**
    * \brief prints the neighbor cache of all nodes at regular intervals specified by user.
@@ -144,7 +144,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream);
+  static void PrintNeighborCacheAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
   /**
    * \brief prints the neighbor cache of a node at a particular time.
@@ -160,7 +160,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
+  static void PrintNeighborCacheAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
   /**
    * \brief prints the neighbor cache of a node at regular intervals specified by user.
@@ -176,7 +176,7 @@ public:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNeighborCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
+  static void PrintNeighborCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
   /**
    * \brief Request a specified routing protocol &lt;T&gt; from Ipv6RoutingProtocol protocol
@@ -229,7 +229,7 @@ private:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
+  static void PrintNdiscCache (Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 
   /**
    * \brief prints the neighbor cache of a node at regular intervals specified by user.
@@ -245,7 +245,7 @@ private:
      \endverbatim
    * Note that the MAC address is printed as "type"-"size"-"actual address"
    */
-  static void PrintNdiscCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream);
+  static void PrintNdiscCacheEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S);
 };
 
 /**

@@ -37,8 +37,9 @@ public:
   /**
    * \brief Print the time
    * \param os ostream
+   * \param unit Time::Unit
    */
-  void Print (std::ostream &os) const;
+  void Print (std::ostream &os, Time::Unit unit = Time::S) const;
 
   /**
    * \brief Get the size in the sequence number space

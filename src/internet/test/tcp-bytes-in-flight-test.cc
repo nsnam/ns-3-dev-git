@@ -260,7 +260,7 @@ TcpBytesInFlightTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketW
           // count retransmission only one time
           m_guessedBytesInFlight += p->GetSize ();
         }
-       retr = h.GetSequenceNumber ();
+      retr = h.GetSequenceNumber ();
 
       NS_LOG_DEBUG ("TX size=" << p->GetSize () << " seq=" << h.GetSequenceNumber () <<
                     " m_guessedBytesInFlight=" << m_guessedBytesInFlight);
