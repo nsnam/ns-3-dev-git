@@ -79,9 +79,9 @@ public:
     CA_DISORDER,  /**< In all the respects it is "Open",
                     *  but requires a bit more attention. It is entered when
                     *  we see some SACKs or dupacks. It is split of "Open" */
-    CA_CWR,       /**< cWnd was reduced due to some Congestion Notification event.
-                    *  It can be ECN, ICMP source quench, local device congestion.
-                    *  Not used in NS-3 right now. */
+    CA_CWR,       /**< cWnd was reduced due to some congestion notification
+                    *  event, such as ECN, ICMP source quench, local device
+                    *  congestion. */
     CA_RECOVERY,  /**< CWND was reduced, we are fast-retransmitting. */
     CA_LOSS,      /**< CWND was reduced due to RTO timeout or SACK reneging. */
     CA_LAST_STATE /**< Used only in debug messages */

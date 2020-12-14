@@ -111,9 +111,9 @@ public:
  * - CA_DISORDER
  * - CA_RECOVERY
  * - CA_LOSS
+ * - CA_CWR
  *
- * Another one (CA_CWR) is present but not used. For more information, see
- * the TcpCongState_t documentation.
+ * For more information, see the TcpCongState_t documentation.
  *
  * Congestion control interface
  * ---------------------------
@@ -1043,6 +1043,13 @@ protected:
    * \param currentDelivered Current (S)ACKed bytes
    */
   void DupAck (uint32_t currentDelivered);
+
+  /**
+   * \brief Enter CA_CWR state upon receipt of an ECN Echo
+   *
+   * \param currentDelivered Currently (S)ACKed bytes
+   */
+  void EnterCwr (uint32_t currentDelivered);
 
   /**
    * \brief Enter the CA_RECOVERY, and retransmit the head
