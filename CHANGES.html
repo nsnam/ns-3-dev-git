@@ -61,7 +61,8 @@ us a note on ns-developers mailing list.</p>
 <li>A new <b>MPI Enable()</b> variant was introduced that takes a user-supplied MPI_Communicator, allowing for partitioning of the MPI processes.</li>
 <li>A <b>Length</b> class has been introduced to allow users to replace the use of raw numbers (ints, doubles) that have implicit lengths with a class that represents lengths with an explicit unit.</li>
 <li>A flexible <b>CsvReader</b> class has been introduced to allow users to read in csv- or tab-delimited data.</li>
-<li>The <li>ListPositionAllocator</li> can now input positions from a csv file.
+<li>The <b>ListPositionAllocator</b> can now input positions from a csv file.</li>
+<li>A new trace source for DCTCP alpha value has been added to <b>TcpDctcp</b>.</li>
 k
 </ul>
 <h2>Changes to existing API:</h2>
@@ -87,6 +88,8 @@ in order to support multi-users (MU) transmissions.
 <li>The <b>default Wi-Fi ErrorRateModel</b> for the 802.11n/ac/ax standards has been changed from the NistErrorRateModel to a new TableBasedErrorRateModel.  Users may experience a shift in Wi-Fi link range due to the new default error model, as <b>the new model is more optimistic</b> (the PER for a given MCS will degrade at a lower SNR value). The Wi-Fi module documentation provides plots that compare the performance of the NIST and new table-based model.</li>
 <li>The default value of the <b>BerThreshold</b> attribute in <b>IdealWifiManager</b> was changed from 1e-5 to 1e-6, so as to the correct high order MCS.</li>
 <li> Time values that are created from an int64x64_t value are now rounded to the nearest integer multiple of the unit, rather than truncated.  Issue #265 in the GitLab.com tracker describes the behavior that was fixed.  Some Time values that rely on this conversion may have changed due to this fix.</li>
+<li> TCP now implements the Linux-like <b>congestion window reduced (CWR)</b> state when explicit congestion notification (ECN) is enabled.</li>
+<li> <b>TcpDctcp</b> now inherits from <b>TcpLinuxReno</b>, making its congestion avoidance track more closely to that of Linux.</li>
 </ul>
 
 <hr>
