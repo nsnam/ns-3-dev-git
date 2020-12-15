@@ -419,10 +419,17 @@ private:
    */ 
   virtual void DoRun (void);
   /**
-   * \brief Check test case.
+   * \brief Check roundtrip from/to string.
    * \param str Time input check.
    */
   void Check (const std::string & str);
+
+  /**
+   * \brief Check autoscaling output using Time::As()
+   * \param t Time instance.
+   * \param expect Expected string output with Time::As() autoscaling.
+   */
+  void CheckAs (const Time t, const std::string expect);
 };
 
 TimeInputOutputTestCase::TimeInputOutputTestCase ()
@@ -438,7 +445,7 @@ TimeInputOutputTestCase::Check (const std::string & str)
   ss << time;
   bool pass = (str == ss.str ());
 
-  std::cout << GetParent ()->GetName () << " InputOutput: "
+  std::cout << GetParent ()->GetName () << " InputOutput:    "
             << (pass ? "pass " : "FAIL ")
             << "\"" << str << "\"";
   if (!pass)
@@ -446,6 +453,28 @@ TimeInputOutputTestCase::Check (const std::string & str)
       std::cout << ", got " << ss.str ();
     }
   std::cout << std::endl;
+  NS_TEST_EXPECT_MSG_EQ (ss.str (), str, "round trip conversion from/to string");
+}
+
+void
+TimeInputOutputTestCase::CheckAs (const Time t, const std::string expect)
+{
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision (6) << t.As ();
+  std::string str;
+  ss >> str;
+  bool pass = (str == expect);
+
+  std::cout << GetParent ()->GetName () << " InputOutput:As: "
+            << (pass ? "pass " : "FAIL ")
+            << "\"" << expect << "\"";
+  if (!pass)
+    {
+      std::cout << ", got " << str;
+    }
+  std::cout << std::endl;
+  NS_TEST_EXPECT_MSG_EQ (str, expect, "Time::As() autoscaling");
+
 }
 
 void
@@ -484,7 +513,26 @@ TimeInputOutputTestCase::DoRun (void)
             << "example: Get ns: " << t.GetNanoSeconds ()
             << std::endl;
 
-  std::cout << std::endl;
+  std::cout << GetParent ()->GetName () << " InputOutput: "
+            << "example: auto scale: \n";
+  CheckAs (t * 1e-9, "+3.000000ns");
+  CheckAs (t * 1e-8, "+31.000000ns");
+  CheckAs (t * 1e-7, "+314.000000ns");
+  CheckAs (t * 1e-6, "+3.142000us");
+  CheckAs (t * 1e-5, "+31.416000us");
+  CheckAs (t * 1e-4, "+314.159000us");
+  CheckAs (t * 1e-3, "+3.141593ms");
+  CheckAs (t * 1e-2, "+31.415927ms");
+  CheckAs (t * 1e-1, "+314.159265ms");
+  CheckAs (t * 1e-0, "+3.141593s");
+  CheckAs (t * 1e+1, "+31.415927s");
+  CheckAs (t * 1e+2, "+5.235988min");
+  CheckAs (t * 1e+3, "+52.359878min");
+  CheckAs (t * 1e+4, "+8.726646h");
+  CheckAs (t * 1e+5, "+3.636103d");
+  CheckAs (t * 1e+6, "+36.361026d");
+  CheckAs (t * 1e+7, "+363.610261d");
+  CheckAs (t * 1e+8, "+9.961925y");
 }
 
 /**

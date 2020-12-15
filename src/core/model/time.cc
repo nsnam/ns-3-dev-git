@@ -23,7 +23,7 @@
 #include "abort.h"
 #include "system-mutex.h"
 #include "log.h"
-#include <cmath>
+#include <cmath>    // pow
 #include <iomanip>  // showpos
 #include <sstream>
 
@@ -37,6 +37,40 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE_MASK ("Time", ns3::LOG_PREFIX_TIME);
+
+/** Unnamed namespace */
+namespace {
+
+  /** Scaling coefficients, exponents, and look up table for unit. */
+  /** @{ */
+  //                                      Y,   D,  H, MIN,  S, MS, US, NS, PS, FS
+  const int8_t  UNIT_POWER[Time::LAST] = {     17,  17, 17,  16, 15, 12,  9,  6,  3,  0 };
+  const int32_t UNIT_COEFF[Time::LAST] = { 315360, 864, 36,   6,  1,  1,  1,  1,  1,  1 };
+
+
+  long double
+  Scale (Time::Unit u)
+  {
+    return UNIT_COEFF[u] * std::pow (10L, UNIT_POWER[u]); 
+  }
+
+  long double *
+  InitUnitValue (void)
+  {
+    static long double values[Time::LAST];
+    for (auto u = static_cast<int> (Time::Y); u != static_cast<int> (Time::LAST); ++u)
+      {
+        values [u] = Scale (static_cast<Time::Unit> (u));
+      }
+    return values;
+  }
+
+  const long double * UNIT_VALUE = InitUnitValue ();
+
+  /** @} */
+
+}  // unnamed namespace
+
 
 // The set of marked times
 // static
@@ -197,29 +231,26 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution,
       ConvertTimes (unit);
     }
 
-  // Y, D, H, MIN, S, MS, US, NS, PS, FS
-  const int8_t power[LAST] = { 17, 17, 17, 16, 15, 12, 9, 6, 3, 0 };
-  const int32_t coefficient[LAST] = { 315360, 864, 36, 6, 1, 1, 1, 1, 1, 1 };
   for (int i = 0; i < Time::LAST; i++)
     {
-      int shift = power[i] - power[(int)unit];
+      int shift = UNIT_POWER[i] - UNIT_POWER[(int)unit];
       int quotient = 1;
-      if (coefficient[i] > coefficient[(int) unit])
+      if (UNIT_COEFF[i] > UNIT_COEFF[(int) unit])
         {
-          quotient = coefficient[i] / coefficient[(int) unit];
-          NS_ASSERT (quotient * coefficient[(int) unit] == coefficient[i]);
+          quotient = UNIT_COEFF[i] / UNIT_COEFF[(int) unit];
+          NS_ASSERT (quotient * UNIT_COEFF[(int) unit] == UNIT_COEFF[i]);
         }
-      else if (coefficient[i] < coefficient[(int) unit])
+      else if (UNIT_COEFF[i] < UNIT_COEFF[(int) unit])
         {
-          quotient = coefficient[(int) unit] / coefficient[i];
-          NS_ASSERT (quotient * coefficient[i] == coefficient[(int) unit]);
+          quotient = UNIT_COEFF[(int) unit] / UNIT_COEFF[i];
+          NS_ASSERT (quotient * UNIT_COEFF[i] == UNIT_COEFF[(int) unit]);
         }
       NS_LOG_DEBUG ("SetResolution for unit " << (int) unit <<
                     " loop iteration " << i <<
                     " has shift " << shift << " has quotient " << quotient);
       int64_t factor = static_cast<int64_t> (std::pow (10, std::fabs (shift)) * quotient);
       double realFactor = std::pow (10, (double) shift)
-        * static_cast<double> (coefficient[i]) / coefficient[(int) unit];
+        * static_cast<double> (UNIT_COEFF[i]) / UNIT_COEFF[(int) unit];
       NS_LOG_DEBUG ("SetResolution factor " << factor << " real factor " << realFactor);
       struct Information *info = &resolution->info[i];
       info->factor = factor;
@@ -386,7 +417,7 @@ Time::GetResolution (void)
 
 
 TimeWithUnit
-Time::As (const enum Unit unit) const
+Time::As (const enum Unit unit /* = Time::AUTO */) const
 {
   return TimeWithUnit (*this, unit);
 }
@@ -403,41 +434,62 @@ operator << (std::ostream & os, const Time & time)
 std::ostream &
 operator << (std::ostream & os, const TimeWithUnit & timeU)
 {
-  std::string unit;
 
-  switch (timeU.m_unit)
+  std::string label;
+  Time::Unit unit = timeU.m_unit;
+
+  if (unit == Time::AUTO)
+    {
+      long double value = static_cast<long double> (timeU.m_time.GetTimeStep ());
+      // convert to finest scale (fs)
+      value *= Scale (Time::GetResolution ());
+      // find the best unit
+      int u = Time::Y;
+      while (u != Time::LAST && UNIT_VALUE[u] > value)
+        {
+          ++u;
+        }
+      if (u == Time::LAST)
+        {
+          --u;
+        }
+      unit = static_cast<Time::Unit> (u);
+    }
+
+  switch (unit)
     {
       // *NS_CHECK_STYLE_OFF*
-    case Time::Y:    unit = "y";    break;
-    case Time::D:    unit = "d";    break;
-    case Time::H:    unit = "h";    break;
-    case Time::MIN:  unit = "min";  break;
-    case Time::S:    unit = "s";    break;
-    case Time::MS:   unit = "ms";   break;
-    case Time::US:   unit = "us";   break;
-    case Time::NS:   unit = "ns";   break;
-    case Time::PS:   unit = "ps";   break;
-    case Time::FS:   unit = "fs";   break;
+    case Time::Y:    label = "y";    break;
+    case Time::D:    label = "d";    break;
+    case Time::H:    label = "h";    break;
+    case Time::MIN:  label = "min";  break;
+    case Time::S:    label = "s";    break;
+    case Time::MS:   label = "ms";   break;
+    case Time::US:   label = "us";   break;
+    case Time::NS:   label = "ns";   break;
+    case Time::PS:   label = "ps";   break;
+    case Time::FS:   label = "fs";   break;
       // *NS_CHECK_STYLE_ON*
 
     case Time::LAST:
+    case Time::AUTO:
     default:
       NS_ABORT_MSG ("can't be reached");
-      unit = "unreachable";
+      label = "unreachable";
       break;
     }
 
-  double v = timeU.m_time.ToDouble (timeU.m_unit);
+  double v = timeU.m_time.ToDouble (unit);
 
   // Note: we must copy the "original" format flags because we have to modify them.
   // std::ios_base::showpos is to print the "+" in front of the number for positive,
   // std::ios_base::right is to add (eventual) extra space in front of the number.
   //   the eventual extra space might be due to a std::setw (_number_), and
-  //   normally it would be printed after the number and before the time unit.
+  //   normally it would be printed after the number and before the time unit label.
 
   std::ios_base::fmtflags ff = os.flags ();
 
-  os << std::showpos << std::right << v << unit;
+  os << std::showpos << std::right << v << label;
 
   // And here we have to restore what we changed.
   if (!(ff & std::ios_base::showpos))

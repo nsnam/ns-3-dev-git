@@ -118,7 +118,8 @@ public:
     NS  = 7,   //!< nanosecond
     PS  = 8,   //!< picosecond
     FS  = 9,   //!< femtosecond
-    LAST = 10
+    LAST = 10, //!< marker for last normal value
+    AUTO = 11  //!< auto-scale output when using Time::As()
   };
 
   /**
@@ -569,7 +570,7 @@ public:
    * \param [in] unit The unit to use.
    * \return The Time with embedded unit.
    */
-  TimeWithUnit As (const enum Unit unit) const;
+  TimeWithUnit As (const enum Unit unit = Time::AUTO) const;
 
   /**
    * TracedCallback signature for Time

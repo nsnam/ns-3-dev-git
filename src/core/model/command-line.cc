@@ -784,12 +784,6 @@ CommandLine::Item::HasDefault () const
   return false;
 }
 
-std::string
-CommandLine::Item::GetDefault () const
-{
-  return "";
-}
-
 bool
 CommandLine::StringItem::Parse (const std::string value)
 {
@@ -847,6 +841,15 @@ CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
       iss >> val;
       return !iss.bad () && !iss.fail ();
     }
+}
+
+template <>
+std::string
+CommandLineHelper::GetDefault<Time> (const Time & val)
+{
+  std::ostringstream oss;
+  oss << val.As ();
+  return oss.str ();
 }
 
 template <>

@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "callback.h"
+#include "nstime.h"
 
 /**
  * \file
@@ -440,7 +441,7 @@ private:
     /**
      * \return The default value
      */
-    virtual std::string GetDefault () const;
+    virtual std::string GetDefault () const = 0;
   };  // class Item
 
   /**
@@ -629,7 +630,8 @@ bool UserItemParse<uint8_t> (const std::string value, uint8_t & val);
 
 /**
  * \ingroup commandlinehelper
- * \brief Helper to specialize CommandLine::UserItem::GetDefault() on bool
+ * \brief Helper to specialize CommandLine::UserItem::GetDefault() on special
+ * types.
  *
  * \param [in] val The argument value
  * \return The string representation of value
@@ -639,6 +641,9 @@ template <typename T>
 std::string GetDefault (const T & val);
 template <>
 std::string GetDefault<bool> (const bool & val);
+template <>
+std::string
+GetDefault<Time> (const Time & val);
 /**@}*/
 
 }  // namespace CommandLineHelper
@@ -712,7 +717,6 @@ CommandLineHelper::GetDefault (const T & val)
   oss << val;
   return oss.str ();
 }
-
 
 template <typename T>
 bool
