@@ -43,17 +43,25 @@ namespace {
 
   /** Scaling coefficients, exponents, and look up table for unit. */
   /** @{ */
+  /** Scaling exponent, relative to smallest unit. */
   //                                      Y,   D,  H, MIN,  S, MS, US, NS, PS, FS
   const int8_t  UNIT_POWER[Time::LAST] = {     17,  17, 17,  16, 15, 12,  9,  6,  3,  0 };
+  /** Scaling coefficient, relative to smallest unit. */
   const int32_t UNIT_COEFF[Time::LAST] = { 315360, 864, 36,   6,  1,  1,  1,  1,  1,  1 };
 
 
+  /**
+   * Scale a unit to the smallest unit.
+   * \param u The unit to scale
+   * \returns The value of \pname{u} in terms of the smallest defined unit.
+   */
   long double
   Scale (Time::Unit u)
   {
     return UNIT_COEFF[u] * std::pow (10L, UNIT_POWER[u]); 
   }
 
+  /** Initializer for \c UNIT_VALUE */
   long double *
   InitUnitValue (void)
   {
@@ -65,6 +73,7 @@ namespace {
     return values;
   }
 
+  /** Value of each unit, in terms of the smallest defined unit. */
   const long double * UNIT_VALUE = InitUnitValue ();
 
   /** @} */
