@@ -32,6 +32,7 @@
 #include <ratio>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -694,24 +695,86 @@ operator<< (std::ostream& stream, Length::Unit unit)
   return stream;
 }
 
+/**
+ * This function provides a string parsing method that does not rely
+ * on istream, which has been found to have different behaviors in different
+ * implementations.
+ *
+ * The input string can either contain a double (for example, "5.5") or
+ * a double and a string with no space between them (for example, "5.5m")
+ *
+ * \param input The input string
+ * \return A three element tuple containing the result of parsing the string.
+ * The first tuple element is a boolean indicating whether the parsing succeeded
+ * or failed.  The second element contains the value of the double that was
+ * extracted from the string.  The third element was the unit symbol that was
+ * extracted from the string.  If the input string did not have a unit symbol,
+ * the third element will contain an empty string.
+ */
+std::tuple<bool, double, std::string>
+ParseLengthString (const std::string& input)
+{
+    NS_LOG_FUNCTION (input);
+
+    double value = 0;
+    std::size_t pos = 0;
+    std::string symbol;
+
+    try
+    {
+        value = std::stod(input, &pos);
+    }
+    catch (const std::exception& e)
+    {
+        NS_LOG_ERROR ("Caught exception while parsing double: " << e.what());
+
+        return std::make_tuple(false, 0, "");
+    }
+
+    //skip any whitespace between value and symbol
+    while (pos < input.size () && std::isspace(input[pos]))
+        ++pos;
+
+    if (pos < input.size ())
+    {
+        NS_LOG_LOGIC ("String has value and symbol, extracting symbol");
+
+        //input has a double followed by a string
+        symbol = input.substr(pos);
+    }
+
+    return std::make_tuple(true, value, symbol);
+}
+
 std::istream&
 operator>> (std::istream& stream, Length& l)
 {
-  double value;
+  bool success = false;
+  double value = 0;
   std::string symbol;
+  std::string temp;
 
   //configure stream to skip whitespace in case it was disabled
   auto origFlags = stream.flags ();
   std::skipws (stream);
 
-  //split input stream into value and symbol parts.
-  //this correctly handles both 1m and 1 m
-  stream >> value >> symbol;
+  //Read the contents into a temporary string and parse it manually
+  stream >> temp;
+
+  std::tie(success, value, symbol) = ParseLengthString (temp);
+
+  if (success && symbol.empty ())
+  {
+      NS_LOG_LOGIC ("Temp string only contained value, extracting unit symbol from stream");
+
+      //temp only contained the double
+      //still need to read the symbol from the stream
+      stream >> symbol;
+  }
 
   //special handling for nautical mile which is two words
   if (symbol == "nautical")
     {
-      std::string temp;
       stream >> temp;
 
       if (!temp.empty ())
