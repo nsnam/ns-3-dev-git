@@ -76,7 +76,7 @@ private:
   /**
    * Struct containing the parameters for each test
    */
-  typedef struct
+  struct TestVector
   {
     Vector m_positionA; //!< the position of the first node
     Vector m_positionB; //!< the position of the second node
@@ -84,7 +84,7 @@ private:
     double m_pNlosv {0.0};  //!< NLOSv probability
     std::string m_density;  //!< the vehicles density
     TypeId m_typeId; //!< the type ID of the channel condition model to be used
-  } TestVector;
+  };
 
   TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
   Ptr<ProbabilisticV2vUrbanChannelConditionModel> m_condModel; //!< the channel condition model
@@ -266,7 +266,7 @@ private:
   /**
    * Struct containing the parameters for each test
    */
-  typedef struct
+  struct TestVector
   {
     Vector m_positionA; //!< the position of the first node
     Vector m_positionB; //!< the position of the second node
@@ -274,7 +274,7 @@ private:
     double m_pNlos {0.0};  //!< NLOS probability
     std::string m_density;  //!< the vehicles density
     TypeId m_typeId; //!< the type ID of the channel condition model to be used
-  } TestVector;
+  };
 
   TestVectors<TestVector> m_testVectors; //!< array containing all the test vectors
   Ptr<ProbabilisticV2vHighwayChannelConditionModel> m_condModel; //!< the channel condition model
