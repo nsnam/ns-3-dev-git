@@ -171,7 +171,9 @@ def post_register_types(root_module):
             root_module.classes.remove(root_module['ns3::%s' % clsname])
         root_module.enums.remove(root_module['ns3::RealtimeSimulatorImpl::SynchronizationMode'])
 
-    root_module.after_init.write_code("PyEval_InitThreads();")
+    # Issue 318: PyEval_InitThreads deprecated after Python 3.6
+    if sys.hexversion < 0x03070000:
+        root_module.after_init.write_code("PyEval_InitThreads();")
 
 # these are already in the main script, so commented out here
 # Object_customizations(root_module)
