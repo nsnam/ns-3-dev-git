@@ -365,7 +365,9 @@ def register_types(module):
     ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition [class]
     module.add_class('ChannelCondition', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::LosConditionValue [enumeration]
-    module.add_enum('LosConditionValue', ['LOS', 'NLOS'], outer_class=root_module['ns3::ChannelCondition'], import_from_module='ns.propagation')
+    module.add_enum('LosConditionValue', ['LOS', 'NLOS', 'NLOSv', 'LC_ND'], outer_class=root_module['ns3::ChannelCondition'], import_from_module='ns.propagation')
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::O2iConditionValue [enumeration]
+    module.add_enum('O2iConditionValue', ['O2O', 'O2I', 'I2I', 'O2I_ND'], outer_class=root_module['ns3::ChannelCondition'], import_from_module='ns.propagation')
     ## channel-condition-model.h (module 'propagation'): ns3::ChannelConditionModel [class]
     module.add_class('ChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
@@ -491,6 +493,8 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::NetDevice::PromiscReceiveCallback&')
     ## channel-condition-model.h (module 'propagation'): ns3::NeverLosChannelConditionModel [class]
     module.add_class('NeverLosChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
+    ## channel-condition-model.h (module 'propagation'): ns3::NeverLosVehicleChannelConditionModel [class]
+    module.add_class('NeverLosVehicleChannelConditionModel', import_from_module='ns.propagation', parent=root_module['ns3::ChannelConditionModel'])
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
@@ -1029,6 +1033,7 @@ def register_methods(root_module):
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NeverLosChannelConditionModel_methods(root_module, root_module['ns3::NeverLosChannelConditionModel'])
+    register_Ns3NeverLosVehicleChannelConditionModel_methods(root_module, root_module['ns3::NeverLosVehicleChannelConditionModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
     register_Ns3NonCommunicatingNetDevice_methods(root_module, root_module['ns3::NonCommunicatingNetDevice'])
@@ -3609,6 +3614,11 @@ def register_Ns3Time_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
+    ## nstime.h (module 'core'): ns3::Time ns3::Time::RoundTo(ns3::Time::Unit unit) const [member function]
+    cls.add_method('RoundTo', 
+                   'ns3::Time', 
+                   [param('ns3::Time::Unit', 'unit')], 
+                   is_const=True)
     ## nstime.h (module 'core'): static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
     cls.add_method('SetResolution', 
                    'void', 
@@ -4192,6 +4202,11 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
                    'int64_t', 
                    [], 
                    is_const=True)
+    ## int64x64-128.h (module 'core'): int64_t ns3::int64x64_t::GetInt() const [member function]
+    cls.add_method('GetInt', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
     ## int64x64-128.h (module 'core'): uint64_t ns3::int64x64_t::GetLow() const [member function]
     cls.add_method('GetLow', 
                    'uint64_t', 
@@ -4206,6 +4221,11 @@ def register_Ns3Int64x64_t_methods(root_module, cls):
     cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::int64x64_t const &', 'o')])
+    ## int64x64-128.h (module 'core'): int64_t ns3::int64x64_t::Round() const [member function]
+    cls.add_method('Round', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
     ## int64x64-128.h (module 'core'): ns3::int64x64_t::implementation [variable]
     cls.add_static_attribute('implementation', 'ns3::int64x64_t::impl_type const', is_const=True)
     return
@@ -6047,9 +6067,16 @@ def register_Ns3ChannelCondition_methods(root_module, cls):
     cls.add_constructor([param('ns3::ChannelCondition const &', 'arg0')])
     ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::ChannelCondition() [constructor]
     cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::ChannelCondition(ns3::ChannelCondition::LosConditionValue losCondition, ns3::ChannelCondition::O2iConditionValue o2iCondition=::ns3::ChannelCondition::O2iConditionValue::O2O) [constructor]
+    cls.add_constructor([param('ns3::ChannelCondition::LosConditionValue', 'losCondition'), param('ns3::ChannelCondition::O2iConditionValue', 'o2iCondition', default_value='::ns3::ChannelCondition::O2iConditionValue::O2O')])
     ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::LosConditionValue ns3::ChannelCondition::GetLosCondition() const [member function]
     cls.add_method('GetLosCondition', 
                    'ns3::ChannelCondition::LosConditionValue', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::ChannelCondition::O2iConditionValue ns3::ChannelCondition::GetO2iCondition() const [member function]
+    cls.add_method('GetO2iCondition', 
+                   'ns3::ChannelCondition::O2iConditionValue', 
                    [], 
                    is_const=True)
     ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::ChannelCondition::GetTypeId() [member function]
@@ -6057,10 +6084,49 @@ def register_Ns3ChannelCondition_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsEqual(ns3::Ptr<const ns3::ChannelCondition> otherCondition) const [member function]
+    cls.add_method('IsEqual', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::ChannelCondition const >', 'otherCondition')], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsI2i() const [member function]
+    cls.add_method('IsI2i', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsLos() const [member function]
+    cls.add_method('IsLos', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsNlos() const [member function]
+    cls.add_method('IsNlos', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsNlosv() const [member function]
+    cls.add_method('IsNlosv', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsO2i() const [member function]
+    cls.add_method('IsO2i', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-condition-model.h (module 'propagation'): bool ns3::ChannelCondition::IsO2o() const [member function]
+    cls.add_method('IsO2o', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## channel-condition-model.h (module 'propagation'): void ns3::ChannelCondition::SetLosCondition(ns3::ChannelCondition::LosConditionValue losCondition) [member function]
     cls.add_method('SetLosCondition', 
                    'void', 
                    [param('ns3::ChannelCondition::LosConditionValue', 'losCondition')])
+    ## channel-condition-model.h (module 'propagation'): void ns3::ChannelCondition::SetO2iCondition(ns3::ChannelCondition::O2iConditionValue o2iCondition) [member function]
+    cls.add_method('SetO2iCondition', 
+                   'void', 
+                   [param('ns3::ChannelCondition::O2iConditionValue', 'o2iCondition')])
     return
 
 def register_Ns3ChannelConditionModel_methods(root_module, cls):
@@ -7514,6 +7580,26 @@ def register_Ns3NeverLosChannelConditionModel_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3NeverLosVehicleChannelConditionModel_methods(root_module, cls):
+    ## channel-condition-model.h (module 'propagation'): static ns3::TypeId ns3::NeverLosVehicleChannelConditionModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## channel-condition-model.h (module 'propagation'): ns3::NeverLosVehicleChannelConditionModel::NeverLosVehicleChannelConditionModel() [constructor]
+    cls.add_constructor([])
+    ## channel-condition-model.h (module 'propagation'): ns3::Ptr<ns3::ChannelCondition> ns3::NeverLosVehicleChannelConditionModel::GetChannelCondition(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetChannelCondition', 
+                   'ns3::Ptr< ns3::ChannelCondition >', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True)
+    ## channel-condition-model.h (module 'propagation'): int64_t ns3::NeverLosVehicleChannelConditionModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3NixVector_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## nix-vector.h (module 'network'): ns3::NixVector::NixVector() [constructor]
@@ -8551,6 +8637,11 @@ def register_Ns3ThreeGppChannelConditionModel_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_const=True, is_pure_virtual=True, is_virtual=True, visibility='private')
+    ## channel-condition-model.h (module 'propagation'): double ns3::ThreeGppChannelConditionModel::ComputePnlos(ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    cls.add_method('ComputePnlos', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   is_const=True, is_virtual=True, visibility='private')
     return
 
 def register_Ns3ThreeGppChannelModel_methods(root_module, cls):
@@ -8604,6 +8695,11 @@ def register_Ns3ThreeGppChannelModel_methods(root_module, cls):
     cls.add_method('SetScenario', 
                    'void', 
                    [param('std::string const &', 'scenario')])
+    ## three-gpp-channel-model.h (module 'spectrum'): ns3::Ptr<const ns3::ThreeGppChannelModel::ParamsTable> ns3::ThreeGppChannelModel::GetThreeGppTable(ns3::Ptr<const ns3::ChannelCondition> channelCondition, double hBS, double hUT, double distance2D) const [member function]
+    cls.add_method('GetThreeGppTable', 
+                   'ns3::Ptr< ns3::ThreeGppChannelModel::ParamsTable const >', 
+                   [param('ns3::Ptr< ns3::ChannelCondition const >', 'channelCondition'), param('double', 'hBS'), param('double', 'hUT'), param('double', 'distance2D')], 
+                   is_const=True, is_virtual=True, visibility='private')
     return
 
 def register_Ns3ThreeGppIndoorMixedOfficeChannelConditionModel_methods(root_module, cls):
