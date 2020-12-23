@@ -13,7 +13,7 @@ Overview of support for TCP
 inherit from a few common header classes in the ``src/network`` directory, so that
 user code can swap out implementations with minimal changes to the scripts.
 
-There are two important abstract base classes:
+There are three important abstract base classes:
 
 * class :cpp:class:`TcpSocket`: This is defined in
   ``src/internet/model/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
@@ -22,6 +22,8 @@ There are two important abstract base classes:
   that derive from class :cpp:class:`TcpSocket`.
 * class :cpp:class:`TcpSocketFactory`: This is used by the layer-4 protocol
   instance to create TCP sockets of the right type.
+* class :cpp:class:`TcpCongestionOps`: This supports different variants of 
+  congestion control-- a key topic of simulation-based TCP research.
 
 There are presently two active and one legacy implementations of TCP available for |ns3|.
 
@@ -32,6 +34,11 @@ There are presently two active and one legacy implementations of TCP available f
 NSC is no longer actively supported; it requires use of gcc-5 or gcc-4.9, and
 only covers up to Linux kernel version 2.6.29.
 
+Direct Code Execution is also limited in its support for newer kernels; at
+present, only Linux kernel 4.4 is supported.  However, the TCP implementations
+in kernel 4.4 can still be used for ns-3 validation or for specialized
+simulation use cases.
+
 It should also be mentioned that various ways of combining virtual machines
 with |ns3| makes available also some additional TCP implementations, but
 those are out of scope for this chapter.
@@ -41,7 +48,7 @@ ns-3 TCP
 
 In brief, the native |ns3| TCP model supports a full bidirectional TCP with
 connection setup and close logic. Several congestion control algorithms
-are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
+are supported, with NewReno the default, and CUBIC, Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
 (LEDBAT), TCP Low Priority (TCP-LP) and and Data Center TCP (DCTCP) also supported. The model also supports
@@ -64,13 +71,12 @@ Before the ns-3.25 release, a congestion control was considered as a stand-alone
 through an inheritance relation: each congestion control (e.g. TcpNewReno) was
 a subclass of TcpSocketBase, reimplementing some inherited methods. The
 architecture was redone to avoid this inheritance,
-the fundamental principle of the GSoC proposal was avoiding this inheritance,
-by making each congestion control a separate class, and making an interface
+by making each congestion control a separate class, and defining an interface
 to exchange important data between TcpSocketBase and the congestion modules.
-For instance, similar modularity is used in Linux.
+The Linux ``tcp_congestion_ops`` interface was used as the design reference.
 
 Along with congestion control, Fast Retransmit and Fast Recovery algorithms
-have been modified; in previous releases, these algorithms were demanded to
+have been modified; in previous releases, these algorithms were delegated to
 TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
 TcpSocketBase. In future releases, they can be extracted as separate modules,
 following the congestion control design.
@@ -78,6 +84,10 @@ following the congestion control design.
 As of the ns-3.31 release, the default initial window was set to 10 segments
 (in previous releases, it was set to 1 segment).  This aligns with current
 Linux default, and is discussed further in :rfc:`6928`.
+
+In the ns-3.32 release, the default recovery algorithm was set to
+Proportional Rate Reduction (PRR) from the classic ack-clocked Fast
+Recovery algorithm.
 
 Acknowledgments
 +++++++++++++++
@@ -368,11 +378,11 @@ callback as well.
 Congestion Control Algorithms
 +++++++++++++++++++++++++++++
 Here follows a list of supported TCP congestion control algorithms. For an
-academic peer-reviewed paper on these congestion control algorithms, see
+academic paper on many of these congestion control algorithms, see
 http://dl.acm.org/citation.cfm?id=2756518 .
 
 NewReno
-^^^^^^^^
+^^^^^^^
 NewReno algorithm introduces partial ACKs inside the well-established Reno
 algorithm. This and other modifications are described in RFC 6582. We have two
 possible congestion window increment strategy: slow start and congestion
@@ -395,11 +405,30 @@ During congestion avoidance, cwnd is incremented by roughly 1 full-sized
 segment per round-trip time (RTT), and for each congestion event, the slow
 start threshold is halved.
 
+CUBIC
+^^^^^
+CUBIC (class :cpp:class:`TcpCubic`) is the default TCP congestion control
+in Linux, macOS (since 2014), and Microsoft Windows (since 2017).
+CUBIC has two main differences with respect to
+a more classic TCP congestion control such as NewReno.  First, during the
+congestion avoidance phase, the window size grows according to a cubic
+function (concave, then convex) with the latter convex portion designed
+to allow for bandwidth probing.  Second, a hybrid slow start (HyStart)
+algorithm uses observations of delay increases in the slow start
+phase of window growth to try to exit slow start before window growth
+causes queue overflow.
+
+CUBIC is documented in :rfc:`8312`, and the |ns3| implementation is based
+on the RFC more so than the Linux implementation, although the Linux 4.4
+kernel implementation (through the Direct Code Execution environment) has
+been used to validate the behavior and is fairly well aligned (see below
+section on validation).
+
 Linux Reno
 ^^^^^^^^^^
 TCP Linux Reno (class :cpp:class:`TcpLinuxReno`) is designed to provide a
 Linux-like implementation of
-TCP NewReno. The implementation of class :cpp:class:`TcpNewReno1 in ns-3
+TCP NewReno. The implementation of class :cpp:class:`TcpNewReno` in ns-3
 follows RFC standards, and increases cwnd more conservatively than does Linux Reno.
 Linux Reno modifies slow start and congestion avoidance algorithms to 
 increase cwnd based on the number of bytes being acknowledged by each 
@@ -621,7 +650,7 @@ More information at: http://dx.doi.org/10.1109/JSAC.2002.807336
 
 BIC
 ^^^
-
+BIC (class :cpp:class:`TcpBic`) is a predecessor of TCP CUBIC.
 In TCP BIC the congestion control problem is viewed as a search
 problem. Taking as a starting point the current window value
 and as a target point the last maximum window value
@@ -1047,6 +1076,7 @@ The following enum represents the mode of ECN:
 The following are some important ECN parameters:
 
 ::
+
   // ECN parameters
   EcnMode_t              m_ecnMode {ClassicEcn}; //!< ECN mode
   UseEcn_t               m_useEcn {Off};         //!< Socket ECN capability
@@ -1313,10 +1343,12 @@ implementation of Linux kernel 4.4.0 using ns-3 Direct Code Execution (DCE).
 DCE is a framework which allows the users to run kernel space protocol inside
 ns-3 without changing the source code.
 
-In this validation, cwnd traces of DCE Linux Reno was compared to ns-3 Linux Reno
-and NewReno for delayed acknowledgement of 1 segment. And it was observed that
-cwnd traces for ns-3 Linux Reno was closely overlapping with DCE Linux Reno whereas
-for ns-3 NewReno there was deviation in congestion avoidance phase.
+In this validation, cwnd traces of DCE Linux ``reno`` were compared to those of
+ns-3 Linux Reno and NewReno for a delayed acknowledgement configuration of 1
+segment (in the ns-3 implementation; Linux does not allow direct configuration
+of this setting). It can be observed that cwnd traces for ns-3 Linux Reno are
+closely overlapping with DCE ``reno``, while
+for ns-3 NewReno there was deviation in the congestion avoidance phase.
 
 .. _fig-dce-Linux-reno-vs-ns3-linux-reno:
 
@@ -1335,7 +1367,7 @@ for ns-3 NewReno there was deviation in congestion avoidance phase.
    DCE Linux Reno vs. ns-3 Linux Reno
 
 The difference in the cwnd in the early stage of this flow is because of the
-way cwnd are plotted.  As ns-3 provides a trace source for cwnd, an ns-3 Linux
+way cwnd is plotted.  As ns-3 provides a trace source for cwnd, an ns-3 Linux
 Reno cwnd simple is obtained every time the cwnd value changes, whereas for
 DCE Linux Reno, the kernel does not have a corresponding trace source. 
 Instead, we use the "ss" command of the Linux kernel to obtain
@@ -1379,6 +1411,38 @@ sensitivity to RTT (and can be reproduced using the Linux implementation).
    :align: center
 
    DCTCP throughput for 80ms/50Mbps bottleneck, 1ms CE threshold
+
+Similar to DCTCP, TCP CUBIC has been tested against the Linux kernel version
+4.4 implementation.  Figure :ref:`fig-cubic-50ms-50mbps-tcp-cwnd-no-ecn` 
+compares the congestion window evolution between ns-3 and Linux for a single
+flow operating over a 50 Mbps link with 50 ms base RTT and the CoDel AQM.
+Some differences can be observed between the peak of slow start window
+growth (ns-3 exits slow start earlier due to its HyStart implementation),
+and the window growth is a bit out-of-sync (likely due to different
+implementations of the algorithm), but the cubic concave/convex window
+pattern, and the signs of TCP CUBIC fast convergence algorithm
+(alternating patterns of cubic and concave window growth) can be observed.
+The |ns3| congestion window is maintained in bytes (unlike Linux which uses
+segments) but has been normalized to segments for these plots.
+Figure :ref:`fig-cubic-50ms-50mbps-tcp-cwnd-ecn` displays the outcome of
+a similar scenario but with ECN enabled throughout.
+
+.. _fig-cubic-50ms-50mbps-tcp-cwnd-no-ecn:
+
+.. figure:: figures/cubic-50ms-50mbps-tcp-cwnd-no-ecn.*
+   :scale: 80 %
+   :align: center
+
+   CUBIC cwnd evolution for 50ms/50Mbps bottleneck, no ECN
+
+.. _fig-cubic-50ms-50mbps-tcp-cwnd-ecn:
+
+.. figure:: figures/cubic-50ms-50mbps-tcp-cwnd-ecn.*
+   :scale: 80 %
+   :align: center
+
+   CUBIC cwnd evolution for 50ms/50Mbps bottleneck, with ECN
+
 
 Writing a new congestion control algorithm
 ++++++++++++++++++++++++++++++++++++++++++
