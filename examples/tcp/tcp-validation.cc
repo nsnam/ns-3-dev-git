@@ -41,11 +41,11 @@
 // ---> downstream (primary data transfer from servers to clients)
 // <--- upstream (return acks and ICMP echo response)
 //
-//              ----   bottleneck link    ---- 
+//              ----   bottleneck link    ----
 //  servers ---| WR |--------------------| LR |--- clients
 //              ----                      ----
 //  ns-3 node IDs:
-//  nodes 0-2    3                         4        5-7 
+//  nodes 0-2    3                         4        5-7
 //
 // - The box WR is notionally a WAN router, aggregating all server links
 // - The box LR is notionally a LAN router, aggregating all client links
@@ -99,8 +99,8 @@
 //
 // Program Options:
 // ---------------
-//    --firstTcpType:   first TCP type (dctcp or reno) [reno]
-//    --secondTcpType:  second TCP type (dctcp or reno) []
+//    --firstTcpType:   first TCP type (cubic, dctcp, or reno) [cubic]
+//    --secondTcpType:  second TCP type (cubic, dctcp, or reno) []
 //    --queueType:      bottleneck queue type (fq, codel, pie, or red) [codel]
 //    --baseRtt:        base RTT [+80ms]
 //    --ceThreshold:    CoDel CE threshold (for DCTCP) [+1ms]
@@ -118,15 +118,29 @@
 //    - Throughput between 48 Mbps and 49 Mbps for time greater than 5.6s
 //    - DCTCP alpha below 0.1 for time greater than 5.4s
 //    - DCTCP alpha between 0.06 and 0.085 for time greater than 7s
-// 
+//
 // Case 'dctcp-80ms': DCTCP single flow, 80ms base RTT, 50 Mbps link, ECN enabled, CoDel:
 //     ./waf --run 'tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms'
-//    - Throughput less than 20 Mbps for time less than 14s 
-//    - Throughput less than 48 Mbps for time less than 30s 
-//    - Throughput between 47.5 Mbps and 48.5 for time greater than 32s 
+//    - Throughput less than 20 Mbps for time less than 14s
+//    - Throughput less than 48 Mbps for time less than 30s
+//    - Throughput between 47.5 Mbps and 48.5 for time greater than 32s
 //    - DCTCP alpha above 0.1 for time less than 7.5
 //    - DCTCP alpha below 0.01 for time greater than 11 and less than 30
 //    - DCTCP alpha between 0.015 and 0.025 for time greater than 34
+//
+// Case 'cubic-50ms-no-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN disabled, CoDel:
+//     ./waf --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//    - Maximum value of cwnd is 511 segments at 5.4593 seconds
+//    - cwnd decreases to 173 segments at 5.80304 seconds
+//    - cwnd reaches another local maxima around 14.2815 seconds of 236 segments
+//    - cwnd reaches a second maximum around 18.048 seconds of 234 segments
+//
+// Case 'cubic-50ms-ecn': CUBIC single flow, 50ms base RTT, 50 Mbps link, ECN enabled, CoDel:
+//     ./waf --run 'tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn'
+//    - Maximum value of cwnd is 511 segments at 5.4593 seconds
+//    - cwnd decreases to 173 segments at 5.7939 seconds
+//    - cwnd reaches another local maxima around 14.3477 seconds of 236 segments
+//    - cwnd reaches a second maximum around 18.064 seconds of 234 segments
 
 #include <iostream>
 #include <fstream>
@@ -159,6 +173,28 @@ TraceFirstCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
   // TCP segment size is configured below to be 1448 bytes
   // so that we can report cwnd in units of segments
   *ofStream << Simulator::Now ().GetSeconds () << " " << static_cast<double> (newCwnd) / 1448 << std::endl;
+  // Validation checks; both the ECN enabled and disabled cases are similar
+  if (g_validate && (g_validation == "cubic-50ms-no-ecn" || g_validation == "cubic-50ms-ecn"))
+    {
+      double now = Simulator::Now ().GetSeconds ();
+      double cwnd = static_cast<double> (newCwnd) / 1448;
+      if ((now > 5.43) && (now < 5.465) && (cwnd < 500))
+        {
+          g_validationFailed = true;
+        }
+      else if ((now > 5.795) && (now < 6) && (cwnd > 190))
+        {
+          g_validationFailed = true;
+        }
+      else if ((now > 14) && (now < 14.328) && (cwnd < 225))
+        {
+          g_validationFailed = true;
+        }
+      else if ((now > 17) && (now < 18.2) && (cwnd < 225))
+        {
+          g_validationFailed = true;
+        }
+    }
 }
 
 void
@@ -169,15 +205,30 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
   if (g_validate && g_validation == "dctcp-80ms")
     {
       double now = Simulator::Now ().GetSeconds ();
-      if ((now < 7.5) && (alpha < 0.1)) g_validationFailed = true;
-      else if ((now > 11) && (now < 30) && (alpha > 0.01)) g_validationFailed = true;
-      else if ((now > 34) && (alpha < 0.015) && (alpha > 0.025)) g_validationFailed = true;
+      if ((now < 7.5) && (alpha < 0.1))
+        {
+          g_validationFailed = true;
+        }
+      else if ((now > 11) && (now < 30) && (alpha > 0.01))
+        {
+          g_validationFailed = true;
+        }
+      else if ((now > 34) && (alpha < 0.015) && (alpha > 0.025))
+        {
+          g_validationFailed = true;
+        }
     }
   else if (g_validate && g_validation == "dctcp-10ms")
     {
       double now = Simulator::Now ().GetSeconds ();
-      if ((now > 5.6) && (alpha > 0.1)) g_validationFailed = true;
-      if ((now > 7) && ((alpha > 0.09) || (alpha < 0.055))) g_validationFailed = true;
+      if ((now > 5.6) && (alpha > 0.1))
+        {
+          g_validationFailed = true;
+        }
+      if ((now > 7) && ((alpha > 0.09) || (alpha < 0.055)))
+        {
+          g_validationFailed = true;
+        }
     }
 }
 
@@ -258,14 +309,26 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
   if (g_validate && g_validation == "dctcp-80ms")
     {
       double now = Simulator::Now ().GetSeconds ();
-      if ((now < 14) && (throughput > 20)) g_validationFailed = true;
-      if ((now < 30) && (throughput > 48)) g_validationFailed = true;
-      if ((now > 32) && ((throughput < 47.5) || (throughput > 48.5))) g_validationFailed = true;
+      if ((now < 14) && (throughput > 20))
+        {
+          g_validationFailed = true;
+        }
+      if ((now < 30) && (throughput > 48))
+        {
+          g_validationFailed = true;
+        }
+      if ((now > 32) && ((throughput < 47.5) || (throughput > 48.5)))
+        {
+          g_validationFailed = true;
+        }
     }
   else if (g_validate && g_validation == "dctcp-10ms")
     {
       double now = Simulator::Now ().GetSeconds ();
-      if ((now > 5.6) && ((throughput < 48) || (throughput > 49))) g_validationFailed = true;
+      if ((now > 5.6) && ((throughput < 48) || (throughput > 49)))
+        {
+          g_validationFailed = true;
+        }
     }
 }
 
@@ -347,7 +410,7 @@ main (int argc, char *argv[])
   ////////////////////////////////////////////////////////////
   // variables configured at command line                   //
   ////////////////////////////////////////////////////////////
-  std::string firstTcpType = "reno";
+  std::string firstTcpType = "cubic";
   std::string secondTcpType = "";
   std::string queueType = "codel";
   Time stopTime = Seconds (70);
@@ -373,8 +436,8 @@ main (int argc, char *argv[])
   // command-line argument parsing                          //
   ////////////////////////////////////////////////////////////
   CommandLine cmd;
-  cmd.AddValue ("firstTcpType", "first TCP type (dctcp or reno)", firstTcpType);
-  cmd.AddValue ("secondTcpType", "second TCP type (dctcp or reno)", secondTcpType);
+  cmd.AddValue ("firstTcpType", "first TCP type (cubic, dctcp, or reno)", firstTcpType);
+  cmd.AddValue ("secondTcpType", "second TCP type (cubic, dctcp, or reno)", secondTcpType);
   cmd.AddValue ("queueType", "bottleneck queue type (fq, codel, pie, or red)", queueType);
   cmd.AddValue ("baseRtt", "base RTT", baseRtt);
   cmd.AddValue ("ceThreshold", "CoDel CE threshold (for DCTCP)", ceThreshold);
@@ -390,24 +453,41 @@ main (int argc, char *argv[])
   if (g_validate)
     {
       NS_ABORT_MSG_IF (g_validation == "", "No specified validation test");
-      NS_ABORT_MSG_UNLESS (g_validation == "dctcp-10ms" || g_validation == "dctcp-80ms", "Unknown test");
-      if (g_validation == "dctcp-10ms")
+      NS_ABORT_MSG_UNLESS (g_validation == "dctcp-10ms"
+                           || g_validation == "dctcp-80ms"
+                           || g_validation == "cubic-50ms-no-ecn"
+                           || g_validation == "cubic-50ms-ecn", "Unknown test");
+      if (g_validation == "dctcp-10ms" || g_validation == "dctcp-80ms")
         {
           NS_ABORT_MSG_UNLESS (firstTcpType == "dctcp", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (secondTcpType == "", "Incorrect TCP");
-          NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (10), "Incorrect RTT");
           NS_ABORT_MSG_UNLESS (linkRate == DataRate ("50Mbps"), "Incorrect data rate");
           NS_ABORT_MSG_UNLESS (queueUseEcn == true, "Incorrect ECN configuration");
           NS_ABORT_MSG_UNLESS (stopTime >= Seconds (15), "Incorrect stopTime");
+          if (g_validation == "dctcp-10ms")
+            {
+              NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (10), "Incorrect RTT");
+            }
+          else if (g_validation == "dctcp-80ms")
+            {
+              NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (80), "Incorrect RTT");
+            }
         }
-      else if (g_validation == "dctcp-80ms")
+      else if (g_validation == "cubic-50ms-no-ecn" || g_validation == "cubic-50ms-ecn")
         {
-          NS_ABORT_MSG_UNLESS (firstTcpType == "dctcp", "Incorrect TCP");
+          NS_ABORT_MSG_UNLESS (firstTcpType == "cubic", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (secondTcpType == "", "Incorrect TCP");
-          NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (80), "Incorrect RTT");
+          NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (50), "Incorrect RTT");
           NS_ABORT_MSG_UNLESS (linkRate == DataRate ("50Mbps"), "Incorrect data rate");
-          NS_ABORT_MSG_UNLESS (queueUseEcn == true, "Incorrect ECN configuration");
-          NS_ABORT_MSG_UNLESS (stopTime >= Seconds (40), "Incorrect stopTime");
+          NS_ABORT_MSG_UNLESS (stopTime >= Seconds (20), "Incorrect stopTime");
+          if (g_validation == "cubic-50ms-no-ecn")
+            {
+              NS_ABORT_MSG_UNLESS (queueUseEcn == false, "Incorrect ECN configuration");
+            }
+          else if (g_validation == "cubic-50ms-ecn")
+            {
+              NS_ABORT_MSG_UNLESS (queueUseEcn == true, "Incorrect ECN configuration");
+            }
         }
     }
 
@@ -417,12 +497,16 @@ main (int argc, char *argv[])
       LogComponentEnable ("TcpDctcp", (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_NODE | LOG_PREFIX_TIME | LOG_LEVEL_ALL));
     }
 
-  Time oneWayDelay = baseRtt/2;
+  Time oneWayDelay = baseRtt / 2;
 
   TypeId firstTcpTypeId;
   if (firstTcpType == "reno")
     {
       firstTcpTypeId = TcpLinuxReno::GetTypeId ();
+    }
+  else if (firstTcpType == "cubic")
+    {
+      firstTcpTypeId = TcpCubic::GetTypeId ();
     }
   else if (firstTcpType == "dctcp")
     {
@@ -443,6 +527,11 @@ main (int argc, char *argv[])
     {
       enableSecondTcp = true;
       secondTcpTypeId = TcpLinuxReno::GetTypeId ();
+    }
+  else if (secondTcpType == "cubic")
+    {
+      enableSecondTcp = true;
+      secondTcpTypeId = TcpCubic::GetTypeId ();
     }
   else if (secondTcpType == "dctcp")
     {
