@@ -469,9 +469,10 @@ TCP NewReno with delayed acknowledgement of 2 segments:
 .. _fig-ns3-new-reno-vs-ns3-linux-reno:
 
 .. figure:: figures/ns3-new-reno-vs-ns3-linux-reno.*
+   :scale: 70%
    :align: center
 
-   ns-3 TCP NewReno v/s ns-3 TCP Linux Reno
+   ns-3 TCP NewReno vs. ns-3 TCP Linux Reno
 
 HighSpeed
 ^^^^^^^^^
@@ -882,28 +883,45 @@ More information (paper): http://cs.northwestern.edu/~akuzma/rice/doc/TCP-LP.pdf
 Data Center TCP (DCTCP)
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-DCTCP is an enhancement to the TCP congestion control algorithm for data center
-networks and leverages Explicit Congestion Notification (ECN) to provide more fine-grained congestion
-feedback to the end hosts. DCTCP extends the Explicit Congestion Notification
+DCTCP, specified in RFC 8257 and implemented in Linux, is a TCP congestion
+control algorithm for data center networks.  It leverages Explicit Congestion
+Notification (ECN) to provide more fine-grained congestion
+feedback to the end hosts, and is intended to work with routers that
+implement a shallow congestion marking threshold (on the order of a
+few milliseconds) to achieve high throughput and low latency in the
+datacenter.  However, because DCTCP does not react in the same way to
+notification of congestion experienced, there are coexistence (fairness) 
+issues between it and legacy TCP congestion controllers, which is why it
+is recommended to only be used in controlled networking environments such
+as within data centers.  
+
+DCTCP extends the Explicit Congestion Notification signal
 to estimate the fraction of bytes that encounter congestion, rather than simply
 detecting that the congestion has occurred. DCTCP then scales the congestion
 window based on this estimate. This approach achieves high burst tolerance, low
 latency, and high throughput with shallow-buffered switches.
 
-* Receiver functionality: If CE is set in IP header of incoming packet, send congestion notification to the sender by setting ECE in TCP header. This processing is different from standard ECN processing which sets ECE bit for every ACK until it observes CWR
+* *Receiver functionality:* If CE is observed in the IP header of an incoming
+  packet at the TCP receiver, the receiver sends congestion notification to
+  the sender by setting ECE in TCP header. This processing is different
+  from standard receiver ECN processing which sets and holds the ECE bit
+  for every ACK until it observes a CWR signal from the TCP sender.
 
-* Sender functionality: The sender makes use of the modified receiver ECE semantics to maintain an average of fraction of packets marked (:math:`\alpha`) by using the exponential weighted moving average as shown below:
+* *Sender functionality:* The sender makes use of the modified receiver
+  ECE semantics to maintain an estimate of the fraction of packets marked 
+  (:math:`\alpha`) by using the exponential weighted moving average (EWMA) as
+  shown below:
 
 .. math::
 
-               \alpha = (1 - g) x \alpha + g x F
+               \alpha = (1 - g) * \alpha + g * F
 
-where
+In the above EWMA:
 
-* g is the estimation gain (between 0 and 1)
-* F is the fraction of packets marked in current RTT.
+* *g* is the estimation gain (between 0 and 1)
+* *F* is the fraction of packets marked in current RTT.
 
-For windows in which at least one ACK was received with ECE set,
+For send windows in which at least one ACK was received with ECE set,
 the sender should respond by reducing the congestion
 window as follows, once for every window of data:
 
@@ -920,25 +938,21 @@ Following the recommendation of RFC 8257, the default values of the parameters a
   initial alpha (\alpha) = 1
 
 
-
 To enable DCTCP on all TCP sockets, the following configuration can be used:
 
 ::
 
   Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
 
-To enable DCTCP on a chosen TCP socket, the following configuration can be used:
+To enable DCTCP on a selected node, one can set the "SocketType" attribute
+on the TcpL4Protocol object of that node to the TcpDctcp TypeId.
 
-::
-
-  Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpDctcp::GetTypeId ()));
-
-This will take effect only if socket has already instantiated.
-
-The ECN is enabled automatically when DCTCP is used, even if the user has not explicitly enabled it.
+The ECN is enabled automatically when DCTCP is used, even if the user
+has not explicitly enabled it.
 
 DCTCP depends on a simple queue management algorithm in routers / switches to
-mark packets. The current implementation of DCTCP in ns-3 uses RED with a simple
+mark packets. The current implementation of DCTCP in ns-3 can use RED with
+a simple
 configuration to achieve the behavior of desired queue management algorithm.
 
 To configure RED router for DCTCP:
@@ -950,14 +964,27 @@ To configure RED router for DCTCP:
   Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (16));
   Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (16));
 
+There is also the option, when running CoDel or FqCoDel, to enable ECN
+on the queue and to set the "CeThreshold" value to a low value such as 1ms.
+The following example uses CoDel:
+
+::
+
+  Config::SetDefault ("ns3::CoDelQueueDisc::UseEcn", BooleanValue (true));
+  Config::SetDefault ("ns3::CoDelQueueDisc::CeThreshold", TimeValue (MilliSeconds (1)));
 
 The following unit tests have been written to validate the implementation of DCTCP:
 
 * ECT flags should be set for SYN, SYN+ACK, ACK and data packets for DCTCP traffic
 * ECT flags should not be set for SYN, SYN+ACK and pure ACK packets, but should be set on data packets for ECN enabled traditional TCP flows
 * ECE should be set only when CE flags are received at receiver and even if sender doesn’t send CWR, receiver should not send ECE if it doesn’t receive packets with CE flags
-* DCTCP follows NewReno behavior for slow start
-* Test to validate cwnd decrement in DCTCP
+
+An example program, ``examples/tcp/tcp-validation.cc``, can be used to
+experiment with DCTCP for long-running flows with different bottleneck
+link bandwidth, base RTTs, and queuing disciplines.  A variant of this
+program has also been run using the |ns3| Direct Code Execution
+environment using DCTCP from Linux kernel 4.4, and the results were
+compared against |ns3| results.  
 
 An example program based on an experimental topology found in the original
 DCTCP SIGCOMM paper is provided in ``examples/tcp/dctcp-example.cc``.
@@ -970,19 +997,13 @@ the Linux kernel version 4.4 using the ns-3 direct code execution (DCE)
 environment. Some differences were noted:
 
 * Linux maintains its congestion window in segments and not bytes, and
-  the arithmetic is not floating point, so some differences in the
+  the arithmetic is not floating point, so small differences in the
   evolution of congestion window have been observed.
 * Linux uses pacing, where packets to be sent are paced out at regular
   intervals. However, if at any instant the number of segments that can 
   be sent are less than two, Linux does not pace them and instead sends 
   them back-to-back. Currently, ns-3 paces out all packets eligible to 
   be sent in the same manner.
-* Linux implements a state called 'Congestion Window Reduced' (CWR) 
-  immediately following a cwnd reduction, and performs proportional rate
-  reduction similar to how a fast retransmit event is handled.  During
-  CWR, no cwnd additive increases are performed.  This implementation does
-  not implement CWR and performs additive increase during the round trip
-  time that immediately follows a cwnd reduction.
 
 More information about DCTCP is available in the RFC 8257:
 https://tools.ietf.org/html/rfc8257
@@ -1300,26 +1321,64 @@ for ns-3 NewReno there was deviation in congestion avoidance phase.
 .. _fig-dce-Linux-reno-vs-ns3-linux-reno:
 
 .. figure:: figures/dce-linux-reno-vs-ns3-linux-reno.*
+   :scale: 70%
    :align: center
 
-   DCE Linux Reno v/s ns-3 Linux Reno
+   DCE Linux Reno vs. ns-3 Linux Reno
 
 .. _fig-dce-Linux-reno-vs-ns3-new-reno:
 
 .. figure:: figures/dce-linux-reno-vs-ns3-new-reno.*
+   :scale: 70%
    :align: center
 
-   DCE Linux Reno v/s ns-3 Linux Reno
+   DCE Linux Reno vs. ns-3 Linux Reno
 
-The difference in the cwnd at very early stage of this flow is because of the
-way cwnd are plotted. As n-3 provides a trace source for cwnd, for ns-3 Linux
-Reno cwnd is obtained everytime cwnd value changes whereas for DCE Linux Reno
-we donot have trace source. So we use "ss" command of Linux kernel to obtain
-cwnd values. The "ss" runs at a interval of 0.5 seconds, so cwnd is obtained after
-every 0.5 seconds.
+The difference in the cwnd in the early stage of this flow is because of the
+way cwnd are plotted.  As ns-3 provides a trace source for cwnd, an ns-3 Linux
+Reno cwnd simple is obtained every time the cwnd value changes, whereas for
+DCE Linux Reno, the kernel does not have a corresponding trace source. 
+Instead, we use the "ss" command of the Linux kernel to obtain
+cwnd values. The "ss" samples cwnd at an interval of 0.5 seconds.
 
 TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
 module documentation.
+
+.. _fig-dce-Linux-reno-vs-ns3-linux-reno:
+
+.. figure:: figures/dce-linux-reno-vs-ns3-linux-reno.*
+   :scale: 70 %
+   :align: center
+
+   DCE Linux Reno vs. ns-3 Linux Reno
+
+Figure :ref:`fig-dctcp-10ms-50mbps-tcp-throughput` shows a long-running
+file transfer using DCTCP over a 50 Mbps bottleneck (running CoDel queue
+disc with a 1ms CE threshold setting) with a 10 ms base RTT.  The figure
+shows that DCTCP reaches link capacity very quickly and stays there for
+the duration with minimal change in throughput.  In contrast, Figure
+:ref:`fig-dctcp-80ms-50mbps-tcp-throughput` plots the throughput for
+the same configuration except with an 80 ms base RTT.  In this case,
+the DCTCP exits slow start early and takes a long time to build the
+flow throughput to the bottleneck link capacity.  DCTCP is not intended
+to be used at such a large base RTT, but this figure highlights the
+sensitivity to RTT (and can be reproduced using the Linux implementation).
+
+.. _fig-dctcp-10ms-50mbps-tcp-throughput:
+
+.. figure:: figures/dctcp-10ms-50mbps-tcp-throughput.*
+   :scale: 80 %
+   :align: center
+
+   DCTCP throughput for 10ms/50Mbps bottleneck, 1ms CE threshold
+
+.. _fig-dctcp-80ms-50mbps-tcp-throughput:
+
+.. figure:: figures/dctcp-80ms-50mbps-tcp-throughput.*
+   :scale: 80 %
+   :align: center
+
+   DCTCP throughput for 80ms/50Mbps bottleneck, 1ms CE threshold
 
 Writing a new congestion control algorithm
 ++++++++++++++++++++++++++++++++++++++++++
