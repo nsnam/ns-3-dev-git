@@ -55,10 +55,10 @@ GtkConfigStore::ConfigureDefaults (void)
   scroll = gtk_scrolled_window_new (0, 0);
   gtk_container_add (GTK_CONTAINER (scroll), view);
 
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
   gtk_box_pack_start (GTK_BOX (vbox), scroll, TRUE, TRUE, 0);
-  gtk_box_pack_end (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, FALSE, 0);
-  GtkWidget *hbox = gtk_hbox_new (FALSE, 5);
+  gtk_box_pack_end (GTK_BOX (vbox), gtk_separator_new (GTK_ORIENTATION_HORIZONTAL), FALSE, FALSE, 0);
+  GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_box_pack_end (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   GtkWidget *save = gtk_button_new_with_label ("Save");
   g_signal_connect (save, "clicked",  (GCallback) save_clicked_default, window);
@@ -107,10 +107,10 @@ GtkConfigStore::ConfigureAttributes (void)
   scroll = gtk_scrolled_window_new (0, 0);
   gtk_container_add (GTK_CONTAINER (scroll), view);
 
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
   gtk_box_pack_start (GTK_BOX (vbox), scroll, TRUE, TRUE, 0);
-  gtk_box_pack_end (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, FALSE, 0);
-  GtkWidget *hbox = gtk_hbox_new (FALSE, 5);
+  gtk_box_pack_end (GTK_BOX (vbox), gtk_separator_new (GTK_ORIENTATION_HORIZONTAL), FALSE, FALSE, 0);
+  GtkWidget *hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_box_pack_end (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   GtkWidget *save = gtk_button_new_with_label ("Save");
   g_signal_connect (save, "clicked",  (GCallback) save_clicked, window);

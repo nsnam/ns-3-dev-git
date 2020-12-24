@@ -228,7 +228,7 @@ create_view (GtkTreeStore *model)
   g_signal_connect (view, "query-tooltip", (GCallback) cell_tooltip_callback, 0);
 
   gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
-  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
+  // gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
 
   col = gtk_tree_view_column_new ();
   gtk_tree_view_column_set_title (col, "Object Attributes");
@@ -267,7 +267,7 @@ save_clicked (GtkButton *button, gpointer user_data)
   GtkWidget *dialog;
 
   dialog = gtk_file_chooser_dialog_new ("Save File", GTK_WINDOW (parent_window), GTK_FILE_CHOOSER_ACTION_SAVE,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE,
+                                        "_Cancel", GTK_RESPONSE_CANCEL, "_Save",
                                         GTK_RESPONSE_ACCEPT, (char *) 0);
   gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog),
                                                   TRUE);
@@ -298,7 +298,7 @@ load_clicked (GtkButton *button, gpointer user_data)
   GtkWidget *dialog;
 
   dialog = gtk_file_chooser_dialog_new ("Open File", GTK_WINDOW (parent_window), GTK_FILE_CHOOSER_ACTION_OPEN,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                        "_Cancel", GTK_RESPONSE_CANCEL, "_Open",
                                         GTK_RESPONSE_ACCEPT, (char *) 0);
 
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
@@ -501,7 +501,7 @@ save_clicked_default (GtkButton *button, gpointer user_data)
   GtkWidget *dialog;
 
   dialog = gtk_file_chooser_dialog_new ("Save File", GTK_WINDOW (parent_window), GTK_FILE_CHOOSER_ACTION_SAVE,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE,
+                                        "_Cancel", GTK_RESPONSE_CANCEL, "_Save",
                                         GTK_RESPONSE_ACCEPT, (char *) 0);
   gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog),
                                                   TRUE);
@@ -535,7 +535,7 @@ load_clicked_default (GtkButton *button, gpointer user_data)
   GtkWidget *dialog;
 
   dialog = gtk_file_chooser_dialog_new ("Open File", GTK_WINDOW (parent_window), GTK_FILE_CHOOSER_ACTION_OPEN,
-                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+                                        "_Cancel", GTK_RESPONSE_CANCEL, "_Open",
                                         GTK_RESPONSE_ACCEPT, (char *) 0);
 
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
@@ -567,7 +567,7 @@ create_view_config_default (GtkTreeStore *model)
   g_signal_connect (view, "query-tooltip", (GCallback) cell_tooltip_callback_config_default, 0);
 
   gtk_tree_view_set_grid_lines (GTK_TREE_VIEW (view), GTK_TREE_VIEW_GRID_LINES_BOTH);
-  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
+  // gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
 
   col = gtk_tree_view_column_new ();
   gtk_tree_view_column_set_title (col, "Object Attributes");
