@@ -2403,6 +2403,38 @@ EmpiricalAntitheticTestCase::DoRun (void)
 }
 
 /**
+ * Test case for caching of Normal RV parameters (see issue #302)
+ */
+class NormalCachingTestCase : public TestCaseBase
+{
+public:
+  // Constructor
+  NormalCachingTestCase ();
+
+private:
+  // Inherited
+  virtual void DoRun (void);
+};
+
+NormalCachingTestCase::NormalCachingTestCase ()
+  : TestCaseBase ("NormalRandomVariable caching of parameters")
+{}
+
+void
+NormalCachingTestCase::DoRun (void)
+{
+  NS_LOG_FUNCTION (this);
+  SetTestSuiteSeed ();
+
+  Ptr<NormalRandomVariable> n = CreateObject<NormalRandomVariable> ();
+  double v1 = n->GetValue (-10, 1, 10);  // Mean -10, variance 1, bounded to [-20,0]
+  double v2 = n->GetValue (10, 1, 10);   // Mean 10, variance 1, bounded to [0,20]
+
+  NS_TEST_ASSERT_MSG_LT (v1, 0, "Incorrect value returned, expected < 0");
+  NS_TEST_ASSERT_MSG_GT (v2, 0, "Incorrect value returned, expected > 0");
+}
+
+/**
  * RandomVariableStream test suite, covering all random number variable
  * stream generator types.
  */ 
@@ -2451,6 +2483,8 @@ RandomVariableSuite::RandomVariableSuite ()
   AddTestCase (new DeterministicTestCase);
   AddTestCase (new EmpiricalTestCase);
   AddTestCase (new EmpiricalAntitheticTestCase);
+  /// Issue #302:  NormalRandomVariable produces stale values
+  AddTestCase (new NormalCachingTestCase);
 }
 
 static RandomVariableSuite randomVariableSuite;

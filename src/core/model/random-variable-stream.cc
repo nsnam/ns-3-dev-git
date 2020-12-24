@@ -705,7 +705,11 @@ NormalRandomVariable::GetValue (double mean, double variance, double bound)
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
-      return m_next;
+      double x2 = mean + m_v2 * m_y * std::sqrt (variance);
+      if (std::fabs (x2 - mean) <= bound)
+        {
+          return x2;
+        }
     }
   while (1)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
@@ -724,20 +728,21 @@ NormalRandomVariable::GetValue (double mean, double variance, double bound)
       if (w <= 1.0)
         { // Got good pair
           double y = std::sqrt ((-2 * std::log (w)) / w);
-          m_next = mean + v2 * y * std::sqrt (variance);
-          // if next is in bounds, it is valid
-          m_nextValid = std::fabs (m_next - mean) <= bound;
           double x1 = mean + v1 * y * std::sqrt (variance);
-          // if x1 is in bounds, return it
+          // if x1 is in bounds, return it, cache v2 and y
           if (std::fabs (x1 - mean) <= bound)
             {
+              m_nextValid = true;
+              m_y = y;
+              m_v2 = v2;
               return x1;
             }
-          // otherwise try and return m_next if it is valid
-          else if (m_nextValid)
+          // otherwise try and return the other if it is valid
+          double x2 = mean + v2 * y * std::sqrt (variance);
+          if (std::fabs (x2 - mean) <= bound)
             {
               m_nextValid = false;
-              return m_next;
+              return x2;
             }
           // otherwise, just run this loop again
         }
@@ -1021,7 +1026,11 @@ GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
-      return m_next;
+      double x2 = mean + m_v2 * m_y * std::sqrt (variance);
+      if (std::fabs (x2 - mean) <= bound)
+        {
+          return x2;
+        }
     }
   while (1)
     { // See Simulation Modeling and Analysis p. 466 (Averill Law)
@@ -1040,20 +1049,21 @@ GammaRandomVariable::GetNormalValue (double mean, double variance, double bound)
       if (w <= 1.0)
         { // Got good pair
           double y = std::sqrt ((-2 * std::log (w)) / w);
-          m_next = mean + v2 * y * std::sqrt (variance);
-          // if next is in bounds, it is valid
-          m_nextValid = std::fabs (m_next - mean) <= bound;
           double x1 = mean + v1 * y * std::sqrt (variance);
-          // if x1 is in bounds, return it
+          // if x1 is in bounds, return it, cache v2 an y
           if (std::fabs (x1 - mean) <= bound)
             {
+              m_nextValid = true;
+              m_y = y;
+              m_v2 = v2;
               return x1;
             }
-          // otherwise try and return m_next if it is valid
-          else if (m_nextValid)
+          // otherwise try and return the other if it is valid
+          double x2 = mean + v2 * y * std::sqrt (variance);
+          if (std::fabs (x2 - mean) <= bound)
             {
               m_nextValid = false;
-              return m_next;
+              return x2;
             }
           // otherwise, just run this loop again
         }
