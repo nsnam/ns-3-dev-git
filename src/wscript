@@ -7,7 +7,7 @@ import shutil
 import types
 import warnings
 
-from waflib import TaskGen, Task, Options, Build, Utils
+from waflib import TaskGen, Task, Options, Build, Utils, Context
 from waflib.Errors import WafError
 import wutils
 
@@ -125,8 +125,9 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.is_ns3_module = True
     module.ns3_dir_location = bld.path.path_from(bld.srcnode)
 
-    module.env.append_value("INCLUDES", '#')
-
+    builddirname = Context.top_dir + '/build'
+    module.env.append_value("INCLUDES", builddirname)
+    
     module.pcfilegen = bld(features='ns3pcfile')
     module.pcfilegen.module = module.name
     
@@ -287,7 +288,9 @@ def ns3_python_bindings(bld):
         except ValueError:
             pass
     pymod.env['DEFINES'] = defines
-    pymod.includes = '# bindings'
+    # The following string should lead to includes of 
+    # '-I.', '-Isrc/core/bindings' when compiling module_helpers.cc
+    pymod.includes = Context.top_dir + '/build' + ' ' + Context.top_dir + '/build/src/core/bindings'
     pymod.install_path = '${PYTHONARCHDIR}/ns'
 
     # Workaround to a WAF bug, remove this when ns-3 upgrades to WAF > 1.6.10
