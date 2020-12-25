@@ -64,17 +64,6 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
 GtkWidget *
 create_view (GtkTreeStore *model);
 /**
- * This is the action done when the user presses on the save button.
- * It will save the config to a file.
- */
-void
-save_clicked (GtkButton *button, gpointer user_data);
-/**
- * If the user presses the button load, it will load the config file into memory.
- */
-void
-load_clicked (GtkButton *button, gpointer user_data);
-/**
  * Exit the window when exit button is pressed
  */
 void
@@ -106,16 +95,27 @@ void
 cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, 
                                          GtkTreeIter *iter, gpointer user_data);
 /**
- * This is the action done when the user presses on the save button.
+ * This is the action done when the user presses on the save button for the Default attributes.
  * It will save the config to a file.
  */
 void
 save_clicked_default (GtkButton *button, gpointer user_data);
 /**
- * If the user presses the button load, it will load the config file into memory.
+ * If the user presses the button load, it will load the config file into memory for the Default attributes.
  */
 void
 load_clicked_default (GtkButton *button, gpointer user_data);
+/**
+ * This is the action done when the user presses on the save button for the Attributes.
+ * It will save the config to a file.
+ */
+void
+save_clicked_attribute (GtkButton *button, gpointer user_data);
+/**
+ * If the user presses the button load, it will load the config file into memory for the Attributes.
+ */
+void
+load_clicked_attribute (GtkButton *button, gpointer user_data);
 /**
  *  This functions is called whenever there is a change in the value of an attribute
  *  If the input value is ok, it will be updated in the default value and in the
