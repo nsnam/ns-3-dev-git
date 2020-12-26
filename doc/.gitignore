@@ -10,8 +10,5 @@ doxygen.docset.conf
 doxygen.log
 doxygen.warnings.log
 */build/
-*/figures/*.eps
-*/figures/*.pdf
-*/figures/*.png
 */source-temp/
 ns3_html_theme/static/ns3_version.js
