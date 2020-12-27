@@ -21,14 +21,15 @@ def configure(conf):
                                      conf.env['ENABLE_GTK'],
                                      "--disable-gtk option given")
     else:
-        have_gtk = conf.check_cfg(package='gtk+-3.0', atleast_version='3.0',
+        have_gtk = conf.check_cfg(package='gtk+-3.0', atleast_version='3.2',
                                   args=['--cflags', '--libs'], uselib_store='GTK',
+                                  msg="Checking for gtk+-3 > 3.2",
                                   mandatory=False)
 
         conf.env['ENABLE_GTK'] = have_gtk
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
                                      conf.env['ENABLE_GTK'],
-                                     "library 'gtk+-3.0 >= 3.0' not found")
+                                     "library 'gtk+-3 >= 3.2' not found")
 
         # Bug 2936 -Wparentheses issue for gcc >= 8
         if conf.env['ENABLE_GTK']: 
