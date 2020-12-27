@@ -8600,11 +8600,6 @@ def register_Ns3Ipv4PacketInfoTag_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ipv4-packet-info-tag.h (module 'internet'): ns3::Ipv4Address ns3::Ipv4PacketInfoTag::GetLocalAddress() const [member function]
-    cls.add_method('GetLocalAddress', 
-                   'ns3::Ipv4Address', 
-                   [], 
-                   is_const=True)
     ## ipv4-packet-info-tag.h (module 'internet'): uint32_t ns3::Ipv4PacketInfoTag::GetRecvIf() const [member function]
     cls.add_method('GetRecvIf', 
                    'uint32_t', 
@@ -8637,10 +8632,6 @@ def register_Ns3Ipv4PacketInfoTag_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## ipv4-packet-info-tag.h (module 'internet'): void ns3::Ipv4PacketInfoTag::SetAddress(ns3::Ipv4Address addr) [member function]
     cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'addr')])
-    ## ipv4-packet-info-tag.h (module 'internet'): void ns3::Ipv4PacketInfoTag::SetLocalAddress(ns3::Ipv4Address addr) [member function]
-    cls.add_method('SetLocalAddress', 
                    'void', 
                    [param('ns3::Ipv4Address', 'addr')])
     ## ipv4-packet-info-tag.h (module 'internet'): void ns3::Ipv4PacketInfoTag::SetRecvIf(uint32_t ifindex) [member function]
