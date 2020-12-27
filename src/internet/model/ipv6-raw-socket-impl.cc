@@ -437,6 +437,9 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         {
           Ipv6PacketInfoTag tag;
           copy->RemovePacketTag (tag);
+          tag.SetAddress (hdr.GetDestinationAddress ());
+          tag.SetHoplimit (hdr.GetHopLimit ());
+          tag.SetTrafficClass (hdr.GetTrafficClass ());
           tag.SetRecvIf (device->GetIfIndex ());
           copy->AddPacketTag (tag);
         }

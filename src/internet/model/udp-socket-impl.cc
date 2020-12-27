@@ -1011,6 +1011,8 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
     {
       Ipv4PacketInfoTag tag;
       packet->RemovePacketTag (tag);
+      tag.SetAddress (header.GetDestination ());
+      tag.SetTtl (header.GetTtl ());
       tag.SetRecvIf (incomingInterface->GetDevice ()->GetIfIndex ());
       packet->AddPacketTag (tag);
     }
@@ -1068,6 +1070,9 @@ UdpSocketImpl::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
     {
       Ipv6PacketInfoTag tag;
       packet->RemovePacketTag (tag);
+      tag.SetAddress (header.GetDestinationAddress ());
+      tag.SetHoplimit (header.GetHopLimit ());
+      tag.SetTrafficClass (header.GetTrafficClass ());
       tag.SetRecvIf (incomingInterface->GetDevice ()->GetIfIndex ());
       packet->AddPacketTag (tag);
     }

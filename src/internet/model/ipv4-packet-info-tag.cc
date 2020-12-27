@@ -30,7 +30,6 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4PacketInfoTag");
 
 Ipv4PacketInfoTag::Ipv4PacketInfoTag ()
   : m_addr (Ipv4Address ()),
-    m_spec_dst (Ipv4Address ()),
     m_ifindex (0),
     m_ttl (0)
 {
@@ -49,20 +48,6 @@ Ipv4PacketInfoTag::GetAddress (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_addr;
-}
-
-void 
-Ipv4PacketInfoTag::SetLocalAddress (Ipv4Address addr)
-{
-  NS_LOG_FUNCTION (this << addr);
-  m_spec_dst = addr;
-}
-
-Ipv4Address
-Ipv4PacketInfoTag::GetLocalAddress (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_spec_dst;
 }
 
 void 
@@ -116,9 +101,7 @@ uint32_t
 Ipv4PacketInfoTag::GetSerializedSize (void) const
 { 
   NS_LOG_FUNCTION (this);
-  return 4 + 4 
-         + sizeof (uint32_t)
-         + sizeof (uint8_t);
+  return 4 + sizeof (uint32_t) + sizeof (uint8_t);
 }
 void 
 Ipv4PacketInfoTag::Serialize (TagBuffer i) const
@@ -126,8 +109,6 @@ Ipv4PacketInfoTag::Serialize (TagBuffer i) const
   NS_LOG_FUNCTION (this << &i);
   uint8_t buf[4];
   m_addr.Serialize (buf);
-  i.Write (buf, 4);
-  m_spec_dst.Serialize (buf);
   i.Write (buf, 4);
   i.WriteU32 (m_ifindex);
   i.WriteU8 (m_ttl);
@@ -139,8 +120,6 @@ Ipv4PacketInfoTag::Deserialize (TagBuffer i)
   uint8_t buf[4];
   i.Read (buf, 4);
   m_addr = Ipv4Address::Deserialize (buf);
-  i.Read (buf, 4);
-  m_spec_dst = Ipv4Address::Deserialize (buf);
   m_ifindex = i.ReadU32 ();
   m_ttl = i.ReadU8 ();
 }
@@ -149,7 +128,6 @@ Ipv4PacketInfoTag::Print (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << "Ipv4 PKTINFO [DestAddr: " << m_addr;
-  os << ", Local Address:" << m_spec_dst;
   os << ", RecvIf:" << (uint32_t) m_ifindex;
   os << ", TTL:" << (uint32_t) m_ttl;
   os << "] ";
