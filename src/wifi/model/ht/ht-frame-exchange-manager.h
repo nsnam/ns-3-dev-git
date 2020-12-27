@@ -195,7 +195,7 @@ protected:
   virtual void RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const override;
   virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const override;
   virtual void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
-  virtual void CtsTimeout (void) override;
+  virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
   virtual void TransmissionSucceeded (void) override;
   virtual void DequeueMpdu (Ptr<WifiMacQueueItem> mpdu) override;
 

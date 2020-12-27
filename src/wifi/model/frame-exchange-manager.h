@@ -469,13 +469,17 @@ protected:
    * Called when the Ack timeout expires.
    *
    * \param mpdu the MPDU that solicited a Normal Ack response
+   * \param txVector the TXVECTOR used to transmit the frame soliciting the Normal Ack
    */
-  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu);
+  void NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
 
   /**
    * Called when the CTS timeout expires.
+   *
+   * \param rts the RTS that solicited a CTS response
+   * \param txVector the TXVECTOR used to transmit the RTS frame
    */
-  virtual void CtsTimeout (void);
+  virtual void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector);
 
 private:
   /**

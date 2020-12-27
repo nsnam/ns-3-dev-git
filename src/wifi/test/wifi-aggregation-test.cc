@@ -297,7 +297,7 @@ AmpduAggregationTest::DoRun (void)
   m_manager->SetMaxSsrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
   m_mac->TraceConnectWithoutContext ("MacTxDrop", MakeCallback (&AmpduAggregationTest::PacketDiscarded, this));
   htFem->m_dcf = m_mac->GetBEQueue ();
-  htFem->NormalAckTimeout (item);
+  htFem->NormalAckTimeout (item, txParams.m_txVector);
 
   NS_TEST_EXPECT_MSG_EQ (m_discarded, true, "packet should be discarded");
   m_mac->GetBEQueue ()->GetWifiMacQueue ()->Flush ();

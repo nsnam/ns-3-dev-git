@@ -396,7 +396,7 @@ FrameExchangeManager::SendMpdu (void)
                     + m_phy->CalculatePhyPreambleAndHeaderDuration (normalAcknowledgment->ackTxVector);
       NS_ASSERT (!m_txTimer.IsRunning ());
       m_txTimer.Set (WifiTxTimer::WAIT_NORMAL_ACK, timeout, &FrameExchangeManager::NormalAckTimeout,
-                     this, m_mpdu);
+                     this, m_mpdu, m_txParams.m_txVector);
       m_channelAccessManager->NotifyAckTimeoutStartNow (timeout);
     }
   else
@@ -575,7 +575,8 @@ FrameExchangeManager::SendRts (const WifiTxParameters& txParams)
                  + m_phy->GetSlot ()
                  + m_phy->CalculatePhyPreambleAndHeaderDuration (rtsCtsProtection->ctsTxVector);
   NS_ASSERT (!m_txTimer.IsRunning ());
-  m_txTimer.Set (WifiTxTimer::WAIT_CTS, timeout, &FrameExchangeManager::CtsTimeout, this);
+  m_txTimer.Set (WifiTxTimer::WAIT_CTS, timeout, &FrameExchangeManager::CtsTimeout, this,
+                 mpdu, rtsCtsProtection->rtsTxVector);
   m_channelAccessManager->NotifyCtsTimeoutStartNow (timeout);
 
   ForwardMpduDown (mpdu, rtsCtsProtection->rtsTxVector);
@@ -748,9 +749,9 @@ FrameExchangeManager::TransmissionFailed (void)
 }
 
 void
-FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu)
+FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this << *mpdu);
+  NS_LOG_FUNCTION (this << *mpdu << txVector);
 
   m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
 
@@ -784,9 +785,9 @@ FrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) 
 }
 
 void
-FrameExchangeManager::CtsTimeout (void)
+FrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << *rts << txVector);
 
   m_mac->GetWifiRemoteStationManager ()->ReportRtsFailed (m_mpdu->GetHeader ());
 

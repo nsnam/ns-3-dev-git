@@ -688,15 +688,15 @@ HtFrameExchangeManager::SendPsduWithProtection (Ptr<WifiPsdu> psdu, WifiTxParame
 }
 
 void
-HtFrameExchangeManager::CtsTimeout (void)
+HtFrameExchangeManager::CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << *rts << txVector);
 
   if (m_psdu == 0)
     {
       // A CTS Timeout occurred when protecting a single MPDU is handled by the
       // parent classes
-      QosFrameExchangeManager::CtsTimeout ();
+      QosFrameExchangeManager::CtsTimeout (rts, txVector);
       return;
     }
 
