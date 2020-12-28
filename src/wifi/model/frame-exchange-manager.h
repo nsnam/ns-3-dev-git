@@ -151,6 +151,13 @@ public:
   bool IsPromisc (void) const;
 
   /**
+   * Get a const reference to the WifiTxTimer object.
+   *
+   * \return a const reference to the WifiTxTimer object
+   */
+  const WifiTxTimer& GetWifiTxTimer (void) const;
+
+  /**
    * Get the Protection Manager used by this node.
    *
    * \return the Protection Manager used by this node

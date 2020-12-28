@@ -202,6 +202,12 @@ FrameExchangeManager::IsPromisc (void) const
   return m_promisc;
 }
 
+const WifiTxTimer&
+FrameExchangeManager::GetWifiTxTimer (void) const
+{
+  return m_txTimer;
+}
+
 void
 FrameExchangeManager::NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu)
 {

@@ -20,6 +20,9 @@
 
 #include "ns3/log.h"
 #include "wifi-tx-timer.h"
+#include "wifi-mac-queue-item.h"
+#include "wifi-tx-vector.h"
+#include "wifi-psdu.h"
 
 
 namespace ns3 {
@@ -100,6 +103,40 @@ Time
 WifiTxTimer::GetDelayLeft (void) const
 {
   return Simulator::GetDelayLeft (m_timeoutEvent);
+}
+
+void
+WifiTxTimer::SetMpduResponseTimeoutCallback (MpduResponseTimeout callback) const
+{
+  m_mpduResponseTimeoutCallback = callback;
+}
+
+template<>
+void
+WifiTxTimer::FeedTraceSource<Ptr<WifiMacQueueItem>, WifiTxVector> (Ptr<WifiMacQueueItem> item,
+                                                                   WifiTxVector txVector)
+{
+  if (!m_mpduResponseTimeoutCallback.IsNull ())
+    {
+      m_mpduResponseTimeoutCallback (m_reason, item, txVector);
+    }
+}
+
+void
+WifiTxTimer::SetPsduResponseTimeoutCallback (PsduResponseTimeout callback) const
+{
+  m_psduResponseTimeoutCallback = callback;
+}
+
+template<>
+void
+WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
+                                                           WifiTxVector txVector)
+{
+  if (!m_psduResponseTimeoutCallback.IsNull ())
+    {
+      m_psduResponseTimeoutCallback (m_reason, psdu, txVector);
+    }
 }
 
 } //namespace ns3

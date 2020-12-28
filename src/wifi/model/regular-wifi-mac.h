@@ -32,6 +32,8 @@ class MacTxMiddle;
 class ChannelAccessManager;
 class ExtendedCapabilities;
 class FrameExchangeManager;
+class WifiPsdu;
+enum WifiTxTimerReason : uint8_t;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -463,6 +465,44 @@ private:
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback; ///< transmit OK callback
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
+
+  /**
+   * TracedCallback signature for MPDU response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param mpdu the MPDU whose response was not received before the timeout
+   * \param txVector the TXVECTOR used to transmit the MPDU
+   */
+  typedef void (* MpduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiMacQueueItem> mpdu,
+                                               const WifiTxVector& txVector);
+
+  /// TracedCallback for MPDU response timeout events typedef
+  typedef TracedCallback<uint8_t, Ptr<const WifiMacQueueItem>, const WifiTxVector&> MpduResponseTimeoutTracedCallback;
+
+  /**
+   * MPDU response timeout traced callback.
+   * This trace source is fed by a WifiTxTimer object.
+   */
+  MpduResponseTimeoutTracedCallback m_mpduResponseTimeoutCallback;
+
+  /**
+   * TracedCallback signature for PSDU response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param psdu the PSDU whose response was not received before the timeout
+   * \param txVector the TXVECTOR used to transmit the PSDU
+   */
+  typedef void (* PsduResponseTimeoutCallback)(uint8_t reason, Ptr<const WifiPsdu> psdu,
+                                               const WifiTxVector& txVector);
+
+  /// TracedCallback for PSDU response timeout events typedef
+  typedef TracedCallback<uint8_t, Ptr<const WifiPsdu>, const WifiTxVector&> PsduResponseTimeoutTracedCallback;
+
+  /**
+   * PSDU response timeout traced callback.
+   * This trace source is fed by a WifiTxTimer object.
+   */
+  PsduResponseTimeoutTracedCallback m_psduResponseTimeoutCallback;
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_ctsToSelfSupported;     ///< flag indicating whether CTS-To-Self is supported

@@ -152,6 +152,10 @@ RegularWifiMac::SetupFrameExchangeManager (void)
   m_feManager->SetMacRxMiddle (m_rxMiddle);
   m_feManager->SetAddress (GetAddress ());
   m_feManager->SetBssid (GetBssid ());
+  m_feManager->GetWifiTxTimer ().SetMpduResponseTimeoutCallback (MakeCallback (&MpduResponseTimeoutTracedCallback::operator(),
+                                                                               &m_mpduResponseTimeoutCallback));
+  m_feManager->GetWifiTxTimer ().SetPsduResponseTimeoutCallback (MakeCallback (&PsduResponseTimeoutTracedCallback::operator(),
+                                                                               &m_psduResponseTimeoutCallback));
   m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
   if (GetQosSupported ())
     {
@@ -1085,6 +1089,20 @@ RegularWifiMac::GetTypeId (void)
                      "The header of unsuccessfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
+    .AddTraceSource ("MpduResponseTimeout",
+                     "An MPDU whose response was not received before the timeout, along with "
+                     "an identifier of the type of timeout (see WifiTxTimer::Reason) and the "
+                     "TXVECTOR used to transmit the MPDU. This trace source is fired when a "
+                     "CTS is missing after an RTS or a Normal Ack is missing after an MPDU.",
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_mpduResponseTimeoutCallback),
+                     "ns3::RegularWifiMac::MpduResponseTimeoutCallback")
+    .AddTraceSource ("PsduResponseTimeout",
+                     "A PSDU whose response was not received before the timeout, along with "
+                     "an identifier of the type of timeout (see WifiTxTimer::Reason) and the "
+                     "TXVECTOR used to transmit the PSDU. This trace source is fired when a "
+                     "BlockAck is missing after an A-MPDU or a BlockAckReq.",
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_psduResponseTimeoutCallback),
+                     "ns3::RegularWifiMac::PsduResponseTimeoutCallback")
   ;
   return tid;
 }

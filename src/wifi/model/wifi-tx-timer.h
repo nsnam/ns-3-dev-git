@@ -24,8 +24,14 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
+#include "ns3/traced-callback.h"
+#include <functional>
 
 namespace ns3 {
+
+class WifiMacQueueItem;
+class WifiPsdu;
+class WifiTxVector;
 
 /**
  * \ingroup wifi
@@ -41,7 +47,7 @@ public:
    * \enum Reason
    * \brief The reason why the timer was started
    */
-  enum Reason
+  enum Reason : uint8_t
     {
       NOT_RUNNING = 0,
       WAIT_CTS,
@@ -116,6 +122,32 @@ public:
    */
   Time GetDelayLeft (void) const;
 
+  /**
+   * MPDU response timeout callback typedef
+   */
+  typedef Callback<void, uint8_t, Ptr<const WifiMacQueueItem>, const WifiTxVector&> MpduResponseTimeout;
+
+  /**
+   * PSDU response timeout callback typedef
+   */
+  typedef Callback<void, uint8_t, Ptr<const WifiPsdu>, const WifiTxVector&> PsduResponseTimeout;
+
+  /**
+   * Set the callback to invoke when the TX timer following the transmission of an MPDU expires.
+   *
+   * \param callback the callback to invoke when the TX timer following the transmission
+   *                 of an MPDU expires
+   */
+  void SetMpduResponseTimeoutCallback (MpduResponseTimeout callback) const;
+
+  /**
+   * Set the callback to invoke when the TX timer following the transmission of a PSDU expires.
+   *
+   * \param callback the callback to invoke when the TX timer following the transmission
+   *                 of a PSDU expires
+   */
+  void SetPsduResponseTimeoutCallback (PsduResponseTimeout callback) const;
+
 private:
   /**
    * This method is called when the timer expires. It invokes the callbacks
@@ -131,12 +163,67 @@ private:
   template<typename MEM, typename OBJ, typename... Args>
   void Timeout (MEM mem_ptr, OBJ obj, Args... args);
 
+  /**
+   * This method is called when the timer expires to feed the trace sources
+   * reporting timeout events. This method does nothing, while its specializations
+   * actually do the job of feeding the trace sources.
+   *
+   * \tparam Args \deduced Type template parameter pack
+   * \param args The arguments to pass to the trace sources
+   */
+  template<typename... Args>
+  void FeedTraceSource (Args... args);
+
   EventId m_timeoutEvent;         //!< the timeout event after a missing response
   Reason m_reason;                //!< the reason why the timer was started
   Ptr<EventImpl> m_endRxEvent;       //!< event to schedule upon RXSTART.indication
   bool m_rescheduled;             //!< whether the timer has been already rescheduled
+
+  //!< the MPDU response timeout callback
+  mutable MpduResponseTimeout m_mpduResponseTimeoutCallback;
+  //!< the PSDU response timeout callback
+  mutable PsduResponseTimeout m_psduResponseTimeoutCallback;
 };
 
+} // namespace ns3
+
+
+/***************************************************************
+ *  Declaration of member function template specialization.
+ ***************************************************************/
+
+namespace ns3 {
+
+/**
+ * Explicit specialization of the FeedTraceSource member function template
+ * that feeds the MPDU response timeout callback.
+ *
+ * \param item the MPDU followed by no response
+ * \param txVector the TXVECTOR used to transmit the MPDU
+ */
+template<>
+void WifiTxTimer::FeedTraceSource<Ptr<WifiMacQueueItem>, WifiTxVector> (Ptr<WifiMacQueueItem> item,
+                                                                        WifiTxVector txVector);
+
+/**
+ * Explicit specialization of the FeedTraceSource member function template
+ * that feeds the PSDU response timeout callback.
+ *
+ * \param psdu the PSDU followed by no response
+ * \param txVector the TXVECTOR used to transmit the PSDU
+ */
+template<>
+void WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
+                                                                WifiTxVector txVector);
+
+} // namespace ns3
+
+
+/***************************************************************
+ *  Implementation of the templates declared above.
+ ***************************************************************/
+
+namespace ns3 {
 
 template<typename MEM, typename OBJ, typename... Args>
 void
@@ -157,8 +244,16 @@ template<typename MEM, typename OBJ, typename... Args>
 void
 WifiTxTimer::Timeout (MEM mem_ptr, OBJ obj, Args... args)
 {
+  FeedTraceSource (std::forward<Args> (args)...);
+
   // Invoke the method set by the user
-  ((*obj).*mem_ptr)(args...);
+  ((*obj).*mem_ptr)(std::forward<Args> (args)...);
+}
+
+template<typename... Args>
+void
+WifiTxTimer::FeedTraceSource (Args... args)
+{
 }
 
 } //namespace ns3
