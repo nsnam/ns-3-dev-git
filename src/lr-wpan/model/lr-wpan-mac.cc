@@ -386,8 +386,24 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
   if (b0 == TX_OPTION_ACK)
     {
       // Set AckReq bit only if the destination is not the broadcast address.
-      if (!(macHdr.GetDstAddrMode () == SHORT_ADDR && macHdr.GetShortDstAddr () == "ff:ff"))
+      if (macHdr.GetDstAddrMode () == SHORT_ADDR)
         {
+          // short address and ACK requested.
+          Mac16Address shortAddr = macHdr.GetShortDstAddr ();
+          if (shortAddr.IsBroadcast() || shortAddr.IsMulticast())
+            {
+              NS_LOG_LOGIC ("LrWpanMac::McpsDataRequest: requested an ACK on broadcast or multicast destination (" << shortAddr << ") - forcefully removing it.");
+              macHdr.SetNoAckReq ();
+              params.m_txOptions &= ~uint8_t (TX_OPTION_ACK);
+            }
+          else
+            {
+              macHdr.SetAckReq ();
+            }
+        }
+      else
+        {
+          // other address (not short) and ACK requested
           macHdr.SetAckReq ();
         }
     }
@@ -1113,26 +1129,22 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                   // unicast, for me
                   acceptFrame = true;
                 }
-              else if (receivedMacHdr.GetShortDstAddr () == Mac16Address ("ff:ff"))
+              else if (receivedMacHdr.GetShortDstAddr ().IsBroadcast () || receivedMacHdr.GetShortDstAddr ().IsMulticast ())
                 {
-                  // broadcast
-                  acceptFrame = true;
-                }
-              else
-                {
-                  // multicast
-                  // See RFC 4944, Section 12
-                  // Multicast address 16 bits: 100X XXXX XXXX XXXX
-                  uint8_t buf[2];
-                  receivedMacHdr.GetShortDstAddr ().CopyTo (buf);
-                  if (buf[0] & 0x80)
+                  // broadcast or multicast
+                  if (receivedMacHdr.IsAckReq ())
                     {
-                      acceptFrame = true;
+                      // discard broadcast/multicast with the ACK bit set
+                      acceptFrame = false;
                     }
                   else
                     {
-                      acceptFrame = false;
+                      acceptFrame = true;
                     }
+                }
+              else
+                {
+                  acceptFrame = false;
                 }
             }
 
@@ -1173,9 +1185,9 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
               // If the received frame is a frame with the ACK request bit set, we immediately send back an ACK.
               // If we are currently waiting for a pending ACK, we assume the ACK was lost and trigger a retransmission after sending the ACK.
               if ((receivedMacHdr.IsData () || receivedMacHdr.IsCommand ()) && receivedMacHdr.IsAckReq ()
-                  && !(receivedMacHdr.GetDstAddrMode () == SHORT_ADDR && receivedMacHdr.GetShortDstAddr () == "ff:ff"))
+                  && !(receivedMacHdr.GetDstAddrMode () == SHORT_ADDR && (receivedMacHdr.GetShortDstAddr ().IsBroadcast () || receivedMacHdr.GetShortDstAddr ().IsMulticast ())))
                 {
-                  // If this is a data or mac command frame, which is not a broadcast,
+                  // If this is a data or mac command frame, which is not a broadcast or multicast,
                   // with ack req set, generate and send an ack frame.
                   // If there is a CSMA medium access in progress we cancel the medium access
                   // for sending the ACK frame. A new transmission attempt will be started
@@ -1421,7 +1433,7 @@ LrWpanMac::RemoveFirstTxQElement ()
   Ptr<Packet> pkt = p->Copy ();
   LrWpanMacHeader hdr;
   pkt->RemoveHeader (hdr);
-  if (hdr.GetShortDstAddr () != Mac16Address ("ff:ff"))
+  if (!hdr.GetShortDstAddr ().IsBroadcast () && !hdr.GetShortDstAddr ().IsMulticast())
     {
       m_sentPktTrace (p, m_retransmission + 1, m_numCsmacaRetry);
     }
