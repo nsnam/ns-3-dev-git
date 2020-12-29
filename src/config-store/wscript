@@ -21,9 +21,8 @@ def configure(conf):
                                      conf.env['ENABLE_GTK'],
                                      "--disable-gtk option given")
     else:
-        have_gtk = conf.check_cfg(package='gtk+-3.0', atleast_version='3.2',
+        have_gtk = conf.check_cfg(package='gtk+-3.0 >= 3.20',
                                   args=['--cflags', '--libs'], uselib_store='GTK',
-                                  msg="Checking for gtk+-3 > 3.2",
                                   mandatory=False)
 
         conf.env['ENABLE_GTK'] = have_gtk
@@ -40,7 +39,7 @@ def configure(conf):
             if conf.env['CXX_NAME'] in ['clang', 'gcc']:
                     conf.env.append_value ('CXXFLAGS', '-Wno-error=deprecated-declarations')
 
-    have_libxml2 = conf.check_cfg(package='libxml-2.0', atleast_version='2.7',
+    have_libxml2 = conf.check_cfg(package='libxml-2.0 >= 2.7',
                                   args=['--cflags', '--libs'], uselib_store='LIBXML2',
                                   mandatory=False)
 
