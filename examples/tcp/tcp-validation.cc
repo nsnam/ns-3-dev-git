@@ -163,18 +163,20 @@ uint32_t g_firstBytesReceived = 0;
 uint32_t g_secondBytesReceived = 0;
 uint32_t g_marksObserved = 0;
 uint32_t g_dropsObserved = 0;
-bool g_validate = false;
+std::string g_validate = "";  // Empty string disables this mode
 bool g_validationFailed = false;
-std::string g_validation = "";
 
 void
 TraceFirstCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
 {
   // TCP segment size is configured below to be 1448 bytes
   // so that we can report cwnd in units of segments
-  *ofStream << Simulator::Now ().GetSeconds () << " " << static_cast<double> (newCwnd) / 1448 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << static_cast<double> (newCwnd) / 1448 << std::endl;
+    }
   // Validation checks; both the ECN enabled and disabled cases are similar
-  if (g_validate && (g_validation == "cubic-50ms-no-ecn" || g_validation == "cubic-50ms-ecn"))
+  if (g_validate == "cubic-50ms-no-ecn" || g_validate == "cubic-50ms-ecn")
     {
       double now = Simulator::Now ().GetSeconds ();
       double cwnd = static_cast<double> (newCwnd) / 1448;
@@ -200,9 +202,12 @@ TraceFirstCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
 void
 TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAcked, double alpha)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << alpha << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << alpha << std::endl;
+    }
   // Validation checks
-  if (g_validate && g_validation == "dctcp-80ms")
+  if (g_validate == "dctcp-80ms")
     {
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 7.5) && (alpha < 0.1))
@@ -218,7 +223,7 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
           g_validationFailed = true;
         }
     }
-  else if (g_validate && g_validation == "dctcp-10ms")
+  else if (g_validate == "dctcp-10ms")
     {
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && (alpha > 0.1))
@@ -235,7 +240,10 @@ TraceFirstDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAc
 void
 TraceFirstRtt (std::ofstream* ofStream, Time oldRtt, Time newRtt)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << newRtt.GetSeconds () * 1000 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << newRtt.GetSeconds () * 1000 << std::endl;
+    }
 }
 
 void
@@ -243,19 +251,37 @@ TraceSecondCwnd (std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
 {
   // TCP segment size is configured below to be 1448 bytes
   // so that we can report cwnd in units of segments
-  *ofStream << Simulator::Now ().GetSeconds () << " " << static_cast<double> (newCwnd) / 1448 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << static_cast<double> (newCwnd) / 1448 << std::endl;
+    }
 }
 
 void
 TraceSecondRtt (std::ofstream* ofStream, Time oldRtt, Time newRtt)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << newRtt.GetSeconds () * 1000 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << newRtt.GetSeconds () * 1000 << std::endl;
+    }
+}
+
+void
+TraceSecondDctcp (std::ofstream* ofStream, uint32_t bytesMarked, uint32_t bytesAcked, double alpha)
+{
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << alpha << std::endl;
+    }
 }
 
 void
 TracePingRtt (std::ofstream* ofStream, Time rtt)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << rtt.GetSeconds () * 1000 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << rtt.GetSeconds () * 1000 << std::endl;
+    }
 }
 
 void
@@ -273,14 +299,20 @@ TraceSecondRx (Ptr<const Packet> packet, const Address &address)
 void
 TraceQueueDrop (std::ofstream* ofStream, Ptr<const QueueDiscItem> item)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << std::hex << item->Hash () << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << std::hex << item->Hash () << std::endl;
+    }
   g_dropsObserved++;
 }
 
 void
 TraceQueueMark (std::ofstream* ofStream, Ptr<const QueueDiscItem> item, const char* reason)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << std::hex << item->Hash () << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << std::hex << item->Hash () << std::endl;
+    }
   g_marksObserved++;
 }
 
@@ -288,13 +320,19 @@ void
 TraceQueueLength (std::ofstream* ofStream, DataRate queueLinkRate, uint32_t oldVal, uint32_t newVal)
 {
   // output in units of ms
-  *ofStream << Simulator::Now ().GetSeconds () << " " << std::fixed << static_cast<double> (newVal * 8) / (queueLinkRate.GetBitRate () / 1000) << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << std::fixed << static_cast<double> (newVal * 8) / (queueLinkRate.GetBitRate () / 1000) << std::endl;
+    }
 }
 
 void
 TraceMarksFrequency (std::ofstream* ofStream, Time marksSamplingInterval)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << g_marksObserved << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << g_marksObserved << std::endl;
+    }
   g_marksObserved = 0;
   Simulator::Schedule (marksSamplingInterval, &TraceMarksFrequency, ofStream, marksSamplingInterval);
 }
@@ -303,10 +341,13 @@ void
 TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
 {
   double throughput = g_firstBytesReceived * 8 / throughputInterval.GetSeconds () / 1e6;
-  *ofStream << Simulator::Now ().GetSeconds () << " " << throughput << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << throughput << std::endl;
+    }
   g_firstBytesReceived = 0;
   Simulator::Schedule (throughputInterval, &TraceFirstThroughput, ofStream, throughputInterval);
-  if (g_validate && g_validation == "dctcp-80ms")
+  if (g_validate == "dctcp-80ms")
     {
       double now = Simulator::Now ().GetSeconds ();
       if ((now < 14) && (throughput > 20))
@@ -322,7 +363,7 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
           g_validationFailed = true;
         }
     }
-  else if (g_validate && g_validation == "dctcp-10ms")
+  else if (g_validate == "dctcp-10ms")
     {
       double now = Simulator::Now ().GetSeconds ();
       if ((now > 5.6) && ((throughput < 48) || (throughput > 49)))
@@ -335,7 +376,10 @@ TraceFirstThroughput (std::ofstream* ofStream, Time throughputInterval)
 void
 TraceSecondThroughput (std::ofstream* ofStream, Time throughputInterval)
 {
-  *ofStream << Simulator::Now ().GetSeconds () << " " << g_secondBytesReceived * 8 / throughputInterval.GetSeconds () / 1e6 << std::endl;
+  if (g_validate == "")
+    {
+      *ofStream << Simulator::Now ().GetSeconds () << " " << g_secondBytesReceived * 8 / throughputInterval.GetSeconds () / 1e6 << std::endl;
+    }
   g_secondBytesReceived = 0;
   Simulator::Schedule (throughputInterval, &TraceSecondThroughput, ofStream, throughputInterval);
 }
@@ -356,6 +400,12 @@ void
 ScheduleFirstDctcpTraceConnection (std::ofstream* ofStream)
 {
   Config::ConnectWithoutContextFailSafe ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionOps/$ns3::TcpDctcp/CongestionEstimate", MakeBoundCallback (&TraceFirstDctcp, ofStream));
+}
+
+void
+ScheduleSecondDctcpTraceConnection (std::ofstream* ofStream)
+{
+  Config::ConnectWithoutContextFailSafe ("/NodeList/2/$ns3::TcpL4Protocol/SocketList/0/CongestionOps/$ns3::TcpDctcp/CongestionEstimate", MakeBoundCallback (&TraceSecondDctcp, ofStream));
 }
 
 void
@@ -397,11 +447,12 @@ main (int argc, char *argv[])
   std::string pingTraceFile = "tcp-validation-ping.dat";
   std::string firstTcpRttTraceFile = "tcp-validation-first-tcp-rtt.dat";
   std::string firstTcpCwndTraceFile = "tcp-validation-first-tcp-cwnd.dat";
-  std::string firstDctcpTraceFile = "tcp-validation-dctcp-alpha.dat";
+  std::string firstDctcpTraceFile = "tcp-validation-first-dctcp-alpha.dat";
   std::string firstTcpThroughputTraceFile = "tcp-validation-first-tcp-throughput.dat";
   std::string secondTcpRttTraceFile = "tcp-validation-second-tcp-rtt.dat";
   std::string secondTcpCwndTraceFile = "tcp-validation-second-tcp-cwnd.dat";
   std::string secondTcpThroughputTraceFile = "tcp-validation-second-tcp-throughput.dat";
+  std::string secondDctcpTraceFile = "tcp-validation-second-dctcp-alpha.dat";
   std::string queueMarkTraceFile = "tcp-validation-queue-mark.dat";
   std::string queueDropTraceFile = "tcp-validation-queue-drop.dat";
   std::string queueMarksFrequencyTraceFile = "tcp-validation-queue-marks-frequency.dat";
@@ -445,46 +496,44 @@ main (int argc, char *argv[])
   cmd.AddValue ("stopTime", "simulation stop time", stopTime);
   cmd.AddValue ("queueUseEcn", "use ECN on queue", queueUseEcn);
   cmd.AddValue ("enablePcap", "enable Pcap", enablePcap);
-  cmd.AddValue ("validate", "whether to validate output", g_validate);
-  cmd.AddValue ("validation", "validation case to run", g_validation);
+  cmd.AddValue ("validate", "validation case to run", g_validate);
   cmd.Parse (argc, argv);
 
   // If validation is selected, perform some configuration checks
-  if (g_validate)
+  if (g_validate != "")
     {
-      NS_ABORT_MSG_IF (g_validation == "", "No specified validation test");
-      NS_ABORT_MSG_UNLESS (g_validation == "dctcp-10ms"
-                           || g_validation == "dctcp-80ms"
-                           || g_validation == "cubic-50ms-no-ecn"
-                           || g_validation == "cubic-50ms-ecn", "Unknown test");
-      if (g_validation == "dctcp-10ms" || g_validation == "dctcp-80ms")
+      NS_ABORT_MSG_UNLESS (g_validate == "dctcp-10ms"
+                           || g_validate == "dctcp-80ms"
+                           || g_validate == "cubic-50ms-no-ecn"
+                           || g_validate == "cubic-50ms-ecn", "Unknown test");
+      if (g_validate == "dctcp-10ms" || g_validate == "dctcp-80ms")
         {
           NS_ABORT_MSG_UNLESS (firstTcpType == "dctcp", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (secondTcpType == "", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (linkRate == DataRate ("50Mbps"), "Incorrect data rate");
           NS_ABORT_MSG_UNLESS (queueUseEcn == true, "Incorrect ECN configuration");
           NS_ABORT_MSG_UNLESS (stopTime >= Seconds (15), "Incorrect stopTime");
-          if (g_validation == "dctcp-10ms")
+          if (g_validate == "dctcp-10ms")
             {
               NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (10), "Incorrect RTT");
             }
-          else if (g_validation == "dctcp-80ms")
+          else if (g_validate == "dctcp-80ms")
             {
               NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (80), "Incorrect RTT");
             }
         }
-      else if (g_validation == "cubic-50ms-no-ecn" || g_validation == "cubic-50ms-ecn")
+      else if (g_validate == "cubic-50ms-no-ecn" || g_validate == "cubic-50ms-ecn")
         {
           NS_ABORT_MSG_UNLESS (firstTcpType == "cubic", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (secondTcpType == "", "Incorrect TCP");
           NS_ABORT_MSG_UNLESS (baseRtt == MilliSeconds (50), "Incorrect RTT");
           NS_ABORT_MSG_UNLESS (linkRate == DataRate ("50Mbps"), "Incorrect data rate");
           NS_ABORT_MSG_UNLESS (stopTime >= Seconds (20), "Incorrect stopTime");
-          if (g_validation == "cubic-50ms-no-ecn")
+          if (g_validate == "cubic-50ms-no-ecn")
             {
               NS_ABORT_MSG_UNLESS (queueUseEcn == false, "Incorrect ECN configuration");
             }
-          else if (g_validation == "cubic-50ms-ecn")
+          else if (g_validate == "cubic-50ms-ecn")
             {
               NS_ABORT_MSG_UNLESS (queueUseEcn == true, "Incorrect ECN configuration");
             }
@@ -582,36 +631,45 @@ main (int argc, char *argv[])
   // Report on configuration
   NS_LOG_DEBUG ("first TCP: " << firstTcpTypeId.GetName () << "; second TCP: " << secondTcpTypeId.GetName () << "; queue: " << queueTypeId.GetName () << "; ceThreshold: " << ceThreshold.GetSeconds () * 1000 << "ms");
 
+  // Write traces only if we are not in validation mode (g_validate == "")
   std::ofstream pingOfStream;
-  pingOfStream.open (pingTraceFile.c_str (), std::ofstream::out);
   std::ofstream firstTcpRttOfStream;
-  firstTcpRttOfStream.open (firstTcpRttTraceFile.c_str (), std::ofstream::out);
   std::ofstream firstTcpCwndOfStream;
-  firstTcpCwndOfStream.open (firstTcpCwndTraceFile.c_str (), std::ofstream::out);
   std::ofstream firstTcpThroughputOfStream;
-  firstTcpThroughputOfStream.open (firstTcpThroughputTraceFile.c_str (), std::ofstream::out);
   std::ofstream firstTcpDctcpOfStream;
-  if (firstTcpType == "dctcp")
-    {
-      firstTcpDctcpOfStream.open (firstDctcpTraceFile.c_str (), std::ofstream::out);
-    }
   std::ofstream secondTcpRttOfStream;
   std::ofstream secondTcpCwndOfStream;
   std::ofstream secondTcpThroughputOfStream;
-  if (enableSecondTcp)
-    {
-      secondTcpRttOfStream.open (secondTcpRttTraceFile.c_str (), std::ofstream::out);
-      secondTcpCwndOfStream.open (secondTcpCwndTraceFile.c_str (), std::ofstream::out);
-      secondTcpThroughputOfStream.open (secondTcpThroughputTraceFile.c_str (), std::ofstream::out);
-    }
+  std::ofstream secondTcpDctcpOfStream;
   std::ofstream queueDropOfStream;
-  queueDropOfStream.open (queueDropTraceFile.c_str (), std::ofstream::out);
   std::ofstream queueMarkOfStream;
-  queueMarkOfStream.open (queueMarkTraceFile.c_str (), std::ofstream::out);
   std::ofstream queueMarksFrequencyOfStream;
-  queueMarksFrequencyOfStream.open (queueMarksFrequencyTraceFile.c_str (), std::ofstream::out);
   std::ofstream queueLengthOfStream;
-  queueLengthOfStream.open (queueLengthTraceFile.c_str (), std::ofstream::out);
+  if (g_validate == "")
+    {
+      pingOfStream.open (pingTraceFile.c_str (), std::ofstream::out);
+      firstTcpRttOfStream.open (firstTcpRttTraceFile.c_str (), std::ofstream::out);
+      firstTcpCwndOfStream.open (firstTcpCwndTraceFile.c_str (), std::ofstream::out);
+      firstTcpThroughputOfStream.open (firstTcpThroughputTraceFile.c_str (), std::ofstream::out);
+      if (firstTcpType == "dctcp")
+        {
+          firstTcpDctcpOfStream.open (firstDctcpTraceFile.c_str (), std::ofstream::out);
+        }
+      if (enableSecondTcp)
+        {
+          secondTcpRttOfStream.open (secondTcpRttTraceFile.c_str (), std::ofstream::out);
+          secondTcpCwndOfStream.open (secondTcpCwndTraceFile.c_str (), std::ofstream::out);
+          secondTcpThroughputOfStream.open (secondTcpThroughputTraceFile.c_str (), std::ofstream::out);
+          if (secondTcpType == "dctcp")
+            {
+              secondTcpDctcpOfStream.open (secondDctcpTraceFile.c_str (), std::ofstream::out);
+            }
+        }
+      queueDropOfStream.open (queueDropTraceFile.c_str (), std::ofstream::out);
+      queueMarkOfStream.open (queueMarkTraceFile.c_str (), std::ofstream::out);
+      queueMarksFrequencyOfStream.open (queueMarksFrequencyTraceFile.c_str (), std::ofstream::out);
+      queueLengthOfStream.open (queueLengthTraceFile.c_str (), std::ofstream::out);
+    }
 
   ////////////////////////////////////////////////////////////
   // scenario setup                                         //
@@ -795,6 +853,10 @@ main (int argc, char *argv[])
       Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleSecondTcpCwndTraceConnection, &secondTcpCwndOfStream);
       Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleSecondPacketSinkConnection);
       Simulator::Schedule (throughputSamplingInterval, &TraceSecondThroughput, &secondTcpThroughputOfStream, throughputSamplingInterval);
+      if (secondTcpType == "dctcp")
+        {
+          Simulator::Schedule (Seconds (15) + MilliSeconds (100), &ScheduleSecondDctcpTraceConnection, &secondTcpDctcpOfStream);
+        }
     }
   Simulator::Schedule (marksSamplingInterval, &TraceMarksFrequency, &queueMarksFrequencyOfStream, marksSamplingInterval);
 
@@ -806,26 +868,33 @@ main (int argc, char *argv[])
   Simulator::Stop (stopTime);
   Simulator::Run ();
 
-  pingOfStream.close ();
-  firstTcpCwndOfStream.close ();
-  firstTcpRttOfStream.close ();
-  if (firstTcpType == "dctcp")
+  if (g_validate == "")
     {
-      firstTcpDctcpOfStream.close ();
+      pingOfStream.close ();
+      firstTcpCwndOfStream.close ();
+      firstTcpRttOfStream.close ();
+      if (firstTcpType == "dctcp")
+        {
+          firstTcpDctcpOfStream.close ();
+        }
+      firstTcpThroughputOfStream.close ();
+      if (enableSecondTcp)
+        {
+          secondTcpCwndOfStream.close ();
+          secondTcpRttOfStream.close ();
+          secondTcpThroughputOfStream.close ();
+          if (secondTcpType == "dctcp")
+            {
+              secondTcpDctcpOfStream.close ();
+            }
+        }
+      queueDropOfStream.close ();
+      queueMarkOfStream.close ();
+      queueMarksFrequencyOfStream.close ();
+      queueLengthOfStream.close ();
     }
-  firstTcpThroughputOfStream.close ();
-  if (enableSecondTcp)
-    {
-      secondTcpCwndOfStream.close ();
-      secondTcpRttOfStream.close ();
-      secondTcpThroughputOfStream.close ();
-    }
-  queueDropOfStream.close ();
-  queueMarkOfStream.close ();
-  queueMarksFrequencyOfStream.close ();
-  queueLengthOfStream.close ();
 
-  if (g_validate && g_validationFailed)
+  if (g_validationFailed)
     {
       NS_FATAL_ERROR ("Validation failed");
     }

@@ -14,10 +14,10 @@ cpp_examples = [
     ("tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
     ("tcp-star-server", "True", "True"),
     ("tcp-variants-comparison", "True", "True"),
-    ("tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=1 --validation=dctcp-10ms", "True", "True"),
-    ("tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=1 --validation=dctcp-80ms", "True", "True"),
-    ("tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=1 --validation=cubic-50ms-no-ecn", "True", "True"),
-    ("tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=1 --stopTime=20s --validate=1 --validation=cubic-50ms-ecn", "True", "True"),
+    ("tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=10ms --queueUseEcn=1 --stopTime=15s --validate=dctcp-10ms", "True", "True"),
+    ("tcp-validation --firstTcpType=dctcp --linkRate=50Mbps --baseRtt=80ms --queueUseEcn=1 --stopTime=40s --validate=dctcp-80ms", "True", "True"),
+    ("tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=0 --stopTime=20s --validate=cubic-50ms-no-ecn", "True", "True"),
+    ("tcp-validation --firstTcpType=cubic --linkRate=50Mbps --baseRtt=50ms --queueUseEcn=1 --stopTime=20s --validate=cubic-50ms-ecn", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
