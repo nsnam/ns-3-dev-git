@@ -20,25 +20,6 @@
   variables:
     COMPILER: g++
 
-# GCC 4.9 : it could be unsupported ?
-weekly-build-gcc-4.9-debug:
-  extends: .weekly-build-gcc
-  image: gcc:4.9
-  variables:
-    MODE: debug
-
-weekly-build-gcc-4.9-release:
-  extends: .weekly-build-gcc
-  image: gcc:4.9
-  variables:
-    MODE: release
-
-weekly-build-gcc-4.9-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:4.9
-  variables:
-    MODE: optimized
-
 # GCC 5
 weekly-build-gcc-5-debug:
   extends: .weekly-build-gcc
@@ -133,3 +114,23 @@ weekly-build-gcc-9-optimized:
   image: gcc:9
   variables:
     MODE: optimized
+
+# GCC 10
+weekly-build-gcc-10-debug:
+  extends: .weekly-build-gcc
+  image: gcc:10
+  variables:
+    MODE: debug
+
+weekly-build-gcc-10-release:
+  extends: .weekly-build-gcc
+  image: gcc:10
+  variables:
+    MODE: release
+
+weekly-build-gcc-10-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:10
+  variables:
+    MODE: optimized
+    

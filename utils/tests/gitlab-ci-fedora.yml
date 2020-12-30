@@ -18,82 +18,6 @@
   variables:
     COMPILER: g++
 
-# Fedora 27
-weekly-build-fedora-27-debug:
-  extends: .weekly-build-fedora
-  image: fedora:27
-  variables:
-    MODE: debug
-
-weekly-build-fedora-27-release:
-  extends: .weekly-build-fedora
-  image: fedora:27
-  variables:
-    MODE: release
-
-weekly-build-fedora-27-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:27
-  variables:
-    MODE: optimized
-
-# Fedora 28
-weekly-build-fedora-28-debug:
-  extends: .weekly-build-fedora
-  image: fedora:28
-  variables:
-    MODE: debug
-
-weekly-build-fedora-28-release:
-  extends: .weekly-build-fedora
-  image: fedora:28
-  variables:
-    MODE: release
-
-weekly-build-fedora-28-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:28
-  variables:
-    MODE: optimized
-
-# Fedora 29
-weekly-build-fedora-29-debug:
-  extends: .weekly-build-fedora
-  image: fedora:29
-  variables:
-    MODE: debug
-
-weekly-build-fedora-29-release:
-  extends: .weekly-build-fedora
-  image: fedora:29
-  variables:
-    MODE: release
-
-weekly-build-fedora-29-optimized:
-  extends: .weekly-build-fedora
-  image: fedora:29
-  variables:
-    MODE: optimized
-
-# Fedora 30 -- DISABLED BECAUSE OF MISSING iphyton
-#weekly-build-fedora-30-debug:
-#  extends: .weekly-build-fedora
-#  image: fedora:30
-#  variables:
-#    MODE: debug
-
-#weekly-build-fedora-30-release:
-#  extends: .weekly-build-fedora
-#  image: fedora:30
-#  variables:
-#    MODE: release
-
-#weekly-build-fedora-30-optimized:
-#  extends: .weekly-build-fedora
-#  image: fedora:30
-#  variables:
-#    MODE: optimized
-
 # Fedora 31
 weekly-build-fedora-31-debug:
   extends: .weekly-build-fedora
@@ -110,5 +34,43 @@ weekly-build-fedora-31-release:
 weekly-build-fedora-31-optimized:
   extends: .weekly-build-fedora
   image: fedora:31
+  variables:
+    MODE: optimized
+
+# Fedora 32
+weekly-build-fedora-32-debug:
+  extends: .weekly-build-fedora
+  image: fedora:32
+  variables:
+    MODE: debug
+
+weekly-build-fedora-32-release:
+  extends: .weekly-build-fedora
+  image: fedora:32
+  variables:
+    MODE: release
+
+weekly-build-fedora-32-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:32
+  variables:
+    MODE: optimized
+
+# Fedora 33
+weekly-build-fedora-33-debug:
+  extends: .weekly-build-fedora
+  image: fedora:33
+  variables:
+    MODE: debug
+
+weekly-build-fedora-33-release:
+  extends: .weekly-build-fedora
+  image: fedora:33
+  variables:
+    MODE: release
+
+weekly-build-fedora-33-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:33
   variables:
     MODE: optimized
