@@ -25,6 +25,8 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
+* packet error models and frame detection models that have been validated
+  against link simulations and other references
 * various rate control algorithms including **Aarf, Arf, Cara, Onoe, Rraa,
   ConstantRate, Minstrel and Minstrel-HT**
 * 802.11s (mesh), described in another chapter
@@ -175,7 +177,7 @@ The following details pertain to the physical layer and channel models:
 * Processing delays are not modeled
 * The current implementation assumes that secondary channels are always higher than primary channels
 * Channel bonding implementation only supports the use of the configured channel width
-and does not perform CCA on secondary channels
+  and does not perform CCA on secondary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
 * Energy consumption model does not consider MIMO
 
@@ -194,7 +196,7 @@ Design Details
 
 The remainder of this section is devoted to more in-depth design descriptions
 of some of the Wi-Fi models.  Users interested in skipping to the section
-on usage of the wifi module (:ref:`sec-wifi-user-doc`) may do so at this point.
+on usage of the wifi module (:ref:`User Documentation<sec-wifi-user-doc>`) may do so at this point.
 We organize these more detailed sections from the bottom-up, in terms of
 layering, by describing the channel and PHY models first, followed by
 the MAC models.
@@ -551,7 +553,8 @@ if not, it uses a backup model derived from MATLAB simulations.
 
 The error curves for analytical models are shown to diverge from link simulation results for higher MCS in
 Figure :ref:`error-models-comparison`. This prompted the move to a new error
-model based on link simulations (the default TableBasedErrorRateModel).
+model based on link simulations (the default TableBasedErrorRateModel, which
+provides curves close to those depicted by the TGn dashed line).
 
 .. _error-models-comparison:
 

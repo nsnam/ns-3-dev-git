@@ -1,7 +1,7 @@
-.. _sec-wifi-user-doc:
-
 .. include:: replace.txt
 .. highlight:: cpp
+
+.. _sec-wifi-user-doc:
 
 ++++++++++++++++++
 User Documentation
@@ -50,8 +50,9 @@ To create a WifiNetDevice, users need to follow these steps:
   HT (802.11n) and/or VHT (802.11ac) and/or HE (802.11ax) features are supported or not.
 * Create WifiDevice: at this step, users configure the desired wifi standard
   (e.g. **802.11b**, **802.11g**, **802.11a**, **802.11n**, **802.11ac** or **802.11ax**) and rate control algorithm.
-* Configure mobility: finally, mobility model is (usually) required before WifiNetDevice
-  can be used.
+* Configure mobility: finally, a mobility model is (usually) required before WifiNetDevice
+  can be used; even if the devices are stationary, their relative positions
+  are needed for propagation loss calculations.
 
 The following sample code illustrates a typical configuration using mostly
 default values in the simulator, and infrastructure mode::
@@ -119,9 +120,8 @@ a discussion of the |ns3| object model, if you are not familiar with it.
 
 The following two methods are useful when configuring YansWifiChannelHelper:
 
-* ``YansWifiChannelHelper::AddPropagationLoss`` adds a PropagationLossModel
-  to a chain of PropagationLossModel
-* ``YansWifiChannelHelper::SetPropagationDelay`` sets a PropagationDelayModel
+* ``YansWifiChannelHelper::AddPropagationLoss`` adds a PropagationLossModel; if one or more PropagationLossModels already exist, the new model is chained to the end
+* ``YansWifiChannelHelper::SetPropagationDelay`` sets a PropagationDelayModel (not chainable)
 
 YansWifiPhyHelper
 =================
@@ -341,6 +341,9 @@ The following channel numbers are well-defined for 2.4 GHz standards:
 
 The following channel numbers are well-defined for 5 GHz standards:
 
+.. table:: 5 GHz channel numbers
+    :width: 30 70
+.. tabularcolumns:: |p{3cm}|p{10cm}|
 +------------------+-------------------------------------------+
 | ``ChannelWidth`` | ``ChannelNumber``                         |
 +------------------+-------------------------------------------+
@@ -363,6 +366,9 @@ The following channel numbers are well-defined for 5 GHz standards:
 
 The following channel numbers are well-defined for 6 GHz standards (802.11ax only):
 
+.. table:: 6 GHz channel numbers
+    :width: 30 70
+.. tabularcolumns:: |p{3cm}|p{10cm}|
 +------------------+-------------------------------------------+
 | ``ChannelWidth`` | ``ChannelNumber``                         |
 +------------------+-------------------------------------------+
