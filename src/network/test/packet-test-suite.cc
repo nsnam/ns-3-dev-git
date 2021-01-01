@@ -716,6 +716,8 @@ PacketTest::DoRun (void)
     p1->Serialize (buffer, serializedSize);
 
     Ptr<Packet> p2 = Create<Packet> (buffer, serializedSize, true);
+    
+    delete [] buffer;
 
     ATestTag<10> a2;
     ATestTag<11> b2;
