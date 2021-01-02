@@ -20,6 +20,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/he-ru.h"
@@ -566,6 +567,8 @@ TxDurationTest::DoRun (void)
                           40, 800, NanoSeconds (1489600));
 
   NS_TEST_EXPECT_MSG_EQ (retval, true, "an 802.11ax MU duration failed");
+
+  Simulator::Destroy ();
 }
 
 /**
