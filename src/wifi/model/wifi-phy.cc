@@ -511,6 +511,7 @@ WifiPhy::WifiPhy ()
     m_endRxEvent (),
     m_endPhyRxEvent (),
     m_endTxEvent (),
+    m_previouslyRxPpduUid (UINT64_MAX),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
     m_isConstructed (false),
@@ -531,8 +532,7 @@ WifiPhy::WifiPhy ()
     m_initialChannelNumber (0),
     m_currentEvent (0),
     m_wifiRadioEnergyModel (0),
-    m_timeLastPreambleDetected (Seconds (0)),
-    m_previouslyRxPpduUid (UINT64_MAX)
+    m_timeLastPreambleDetected (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();

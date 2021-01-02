@@ -34,6 +34,8 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-ppdu.h"
+#include "ns3/ap-wifi-mac.h"
+#include "ns3/threshold-preamble-detection-model.h"
 #include "ns3/waveform-generator.h"
 #include "ns3/non-communicating-net-device.h"
 
@@ -41,8 +43,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhyOfdmaTest");
 
+static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
 static const uint16_t DEFAULT_CHANNEL_WIDTH = 20; // MHz
+static const uint16_t DEFAULT_GUARD_WIDTH = DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 {
@@ -60,6 +64,8 @@ public:
   OfdmaSpectrumWifiPhy (uint16_t staId);
   virtual ~OfdmaSpectrumWifiPhy ();
 
+  using WifiPhy::Reset;
+
   /**
    * TracedCallback signature for UID of transmitted PPDU.
    *
@@ -73,9 +79,17 @@ public:
   void StartTx (Ptr<WifiPpdu> ppdu) override;
 
   /**
-   * Reset the global PPDU UID counter.
+   * Set the global PPDU UID counter.
+   *
+   * \param uid the value to which the global PPDU UID counter should be set
    */
-  void ResetPpduUid (void);
+  void SetPpduUid (uint64_t uid);
+
+  /**
+   * \return the current preamble events map
+   */
+  std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents (void);
+
 
 private:
   // Inherited
@@ -120,9 +134,10 @@ OfdmaSpectrumWifiPhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
 }
 
 void
-OfdmaSpectrumWifiPhy::ResetPpduUid (void)
+OfdmaSpectrumWifiPhy::SetPpduUid (uint64_t uid)
 {
-  m_globalPpduUid = 0;
+  m_globalPpduUid = uid;
+  m_previouslyRxPpduUid = uid;
 }
 
 void
@@ -132,6 +147,11 @@ OfdmaSpectrumWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
   SpectrumWifiPhy::StartTx (ppdu);
 }
 
+std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
+OfdmaSpectrumWifiPhy::GetCurrentPreambleEvents (void)
+{
+  return m_currentPreambleEvents;
+}
 
 /**
  * \ingroup wifi-test
@@ -967,7 +987,7 @@ void
 TestUlOfdmaPpduUid::ResetPpduUid (void)
 {
   NS_LOG_FUNCTION (this);
-  m_phyAp->ResetPpduUid (); //one is enough since it's a global attribute
+  m_phyAp->SetPpduUid (0); //one is enough since it's a global attribute
   return;
 }
 
@@ -1144,6 +1164,264 @@ TestUlOfdmaPpduUid::DoRun (void)
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief UL-OFDMA multiple RX events test
+ */
+class TestMultipleHeTbPreambles : public TestCase
+{
+public:
+  TestMultipleHeTbPreambles ();
+  virtual ~TestMultipleHeTbPreambles ();
+
+private:
+  virtual void DoSetup (void);
+  virtual void DoRun (void);
+
+  /**
+   * Receive HE TB PPDU function.
+   *
+   * \param uid the UID used to identify a set of HE TB PPDUs belonging to the same UL-MU transmission
+   * \param staId the STA ID
+   * \param txPowerWatts the TX power in watts
+   * \param payloadSize the size of the payload in bytes
+   */
+  void RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPowerWatts, size_t payloadSize);
+
+  /**
+   * RX dropped function
+   * \param p the packet
+   * \param reason the reason
+   */
+  void RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason);
+
+  /**
+   * Reset function
+   */
+  void Reset (void);
+
+  /**
+   * Check the received HE TB preambles
+   * \param nEvents the number of events created by the PHY
+   * \param uids the vector of expected UIDs
+   */
+  void CheckHeTbPreambles (size_t nEvents, std::vector <uint64_t> uids);
+
+  /**
+   * Check the number of bytes dropped
+   * \param expectedBytesDropped the expected number of bytes dropped
+   */
+  void CheckBytesDropped (size_t expectedBytesDropped);
+
+  Ptr<OfdmaSpectrumWifiPhy> m_phy; ///< Phy
+
+  uint64_t m_totalBytesDropped; ///< total number of dropped bytes
+};
+
+TestMultipleHeTbPreambles::TestMultipleHeTbPreambles ()
+  : TestCase ("UL-OFDMA multiple RX events test"),
+    m_totalBytesDropped (0)
+{
+}
+
+TestMultipleHeTbPreambles::~TestMultipleHeTbPreambles ()
+{
+  m_phy = 0;
+}
+
+void
+TestMultipleHeTbPreambles::Reset (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_totalBytesDropped = 0;
+  //We have to reset PHY here since we do not trigger OFDMA payload RX event in this test
+  m_phy->Reset ();
+}
+
+void
+TestMultipleHeTbPreambles::RxDropped (Ptr<const Packet> p, WifiPhyRxfailureReason reason)
+{
+  NS_LOG_FUNCTION (this << p << reason);
+  m_totalBytesDropped += (p->GetSize () - 30);
+}
+
+void
+TestMultipleHeTbPreambles::CheckHeTbPreambles (size_t nEvents, std::vector <uint64_t> uids)
+{
+  auto events = m_phy->GetCurrentPreambleEvents ();
+  NS_TEST_ASSERT_MSG_EQ (events.size (), nEvents, "The number of UL MU events is not correct!");
+  for (auto const& uid : uids)
+    {
+      auto pair = std::make_pair (uid, WIFI_PREAMBLE_HE_TB);
+      auto it = events.find (pair);
+      bool found = (it != events.end ());
+      NS_TEST_ASSERT_MSG_EQ (found, true, "HE TB PPDU with UID " << uid << " has not been received!");
+    }
+}
+
+void
+TestMultipleHeTbPreambles::CheckBytesDropped (size_t expectedBytesDropped)
+{
+  NS_TEST_ASSERT_MSG_EQ (m_totalBytesDropped, expectedBytesDropped, "The number of dropped bytes is not correct!");
+}
+
+void
+TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPowerWatts, size_t payloadSize)
+{
+  WifiConstPsduMap psdus;
+  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
+
+  HeRu::RuSpec ru;
+  ru.primary80MHz = false;
+  ru.ruType = HeRu::RU_106_TONE;
+  ru.index = staId;
+  txVector.SetRu (ru, staId);
+  txVector.SetMode (WifiPhy::GetHeMcs7 (), staId);
+  txVector.SetNss (1, staId);
+
+  Ptr<Packet> pkt = Create<Packet> (payloadSize);
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_QOSDATA);
+  hdr.SetQosTid (0);
+  hdr.SetAddr1 (Mac48Address ("00:00:00:00:00:00"));
+  hdr.SetSequenceNumber (1);
+  Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
+  psdus.insert (std::make_pair (staId, psdu));
+
+  Time ppduDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand (), staId);
+  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, ppduDuration, WIFI_PHY_BAND_5GHZ, uid);
+
+  Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH);
+  Ptr<WifiSpectrumSignalParameters> rxParams = Create<WifiSpectrumSignalParameters> ();
+  rxParams->psd = rxPsd;
+  rxParams->txPhy = 0;
+  rxParams->duration = ppduDuration;
+  rxParams->ppdu = ppdu;
+
+  m_phy->StartRx (rxParams);
+}
+
+void
+TestMultipleHeTbPreambles::DoSetup (void)
+{
+  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
+  m_phy = CreateObject<OfdmaSpectrumWifiPhy> (0);
+  m_phy->ConfigureStandardAndBand (WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  Ptr<ErrorRateModel> error = CreateObject<NistErrorRateModel> ();
+  Ptr<ApWifiMac> mac = CreateObject<ApWifiMac> ();
+  mac->SetAttribute ("BeaconGeneration", BooleanValue (false));
+  dev->SetMac (mac);
+  m_phy->SetErrorRateModel (error);
+  m_phy->SetChannelNumber (DEFAULT_CHANNEL_NUMBER);
+  m_phy->SetFrequency (DEFAULT_FREQUENCY);
+  m_phy->SetChannelWidth (DEFAULT_CHANNEL_WIDTH);
+  m_phy->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&TestMultipleHeTbPreambles::RxDropped, this));
+  m_phy->SetDevice (dev);
+  Ptr<ThresholdPreambleDetectionModel> preambleDetectionModel = CreateObject<ThresholdPreambleDetectionModel> ();
+  preambleDetectionModel->SetAttribute ("Threshold", DoubleValue (4));
+  preambleDetectionModel->SetAttribute ("MinimumRssi", DoubleValue (-82));
+  m_phy->SetPreambleDetectionModel (preambleDetectionModel);
+}
+
+void
+TestMultipleHeTbPreambles::DoRun (void)
+{
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (1);
+  int64_t streamNumber = 0;
+  m_phy->AssignStreams (streamNumber);
+
+  double txPowerWatts = 0.01;
+
+  {
+    //Verify a single UL MU transmission with two stations belonging to the same BSS
+    std::vector<uint64_t> uids {0};
+    Simulator::Schedule (Seconds (1), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
+    Simulator::Schedule (Seconds (1) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
+    //Check that we received a single UL MU transmission with the corresponding UID
+    Simulator::Schedule (Seconds (1.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, uids);
+    Simulator::Schedule (Seconds (1.5), &TestMultipleHeTbPreambles::Reset, this);
+  }
+
+  {
+    //Verify the correct reception of 2 UL MU transmissions with two stations per BSS, where the second transmission
+    //arrives during the preamble detection window and with half the power of the first transmission.
+    std::vector<uint64_t> uids {1, 2};
+    Simulator::Schedule (Seconds (2), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
+    Simulator::Schedule (Seconds (2) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
+    Simulator::Schedule (Seconds (2) + NanoSeconds (200), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 1, txPowerWatts / 2, 1003);
+    Simulator::Schedule (Seconds (2) + NanoSeconds (300), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 2, txPowerWatts / 2, 1004);
+    //Check that we received the correct reception of 2 UL MU transmissions with the corresponding UIDs
+    Simulator::Schedule (Seconds (2.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 2, uids);
+    Simulator::Schedule (Seconds (2.5), &TestMultipleHeTbPreambles::Reset, this);
+    //TODO: verify PPDUs from second UL MU transmission are dropped
+  }
+
+  {
+    //Verify the correct reception of 2 UL MU transmissions with two stations per BSS, where the second transmission
+    //arrives during the preamble detection window and with twice the power of the first transmission.
+    std::vector<uint64_t> uids {3, 4};
+    Simulator::Schedule (Seconds (3), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts / 2, 1001);
+    Simulator::Schedule (Seconds (3) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts / 2, 1002);
+    Simulator::Schedule (Seconds (3) + NanoSeconds (200), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 1, txPowerWatts, 1003);
+    Simulator::Schedule (Seconds (3) + NanoSeconds (300), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 2, txPowerWatts, 1004);
+    //Check that we received the correct reception of 2 UL MU transmissions with the corresponding UIDs
+    Simulator::Schedule (Seconds (3.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 2, uids);
+    Simulator::Schedule (Seconds (3.5), &TestMultipleHeTbPreambles::Reset, this);
+    //TODO: verify PPDUs from first UL MU transmission are dropped
+  }
+
+  {
+    //Verify the correct reception of 2 UL MU transmissions with two stations per BSS, where the second transmission
+    //arrives during PHY header reception and with the same power as the first transmission.
+    std::vector<uint64_t> uids {5, 6};
+    Simulator::Schedule (Seconds (4), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
+    Simulator::Schedule (Seconds (4) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
+    Simulator::Schedule (Seconds (4) + MicroSeconds (5), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 1, txPowerWatts, 1003);
+    Simulator::Schedule (Seconds (4) + MicroSeconds (5) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 2, txPowerWatts, 1004);
+    //Check that we received the correct reception of the first UL MU transmission with the corresponding UID (second one dropped)
+    Simulator::Schedule (Seconds (4.0) + MicroSeconds (10), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, std::vector<uint64_t> {uids[0]});
+    //The packets of the second UL MU transmission should have been dropped
+    Simulator::Schedule (Seconds (4.0) + MicroSeconds (10), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 1003 + 1004);
+    Simulator::Schedule (Seconds (4.5), &TestMultipleHeTbPreambles::Reset, this);
+  }
+
+  {
+    //Verify the correct reception of one UL MU transmission out of 2 with two stations per BSS, where the second transmission
+    //arrives during payload reception and with the same power as the first transmission.
+    std::vector<uint64_t> uids {7, 8};
+    Simulator::Schedule (Seconds (5), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
+    Simulator::Schedule (Seconds (5) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
+    Simulator::Schedule (Seconds (5) + MicroSeconds (50), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 1, txPowerWatts, 1003);
+    Simulator::Schedule (Seconds (5) + MicroSeconds (50) + NanoSeconds (100), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[1], 2, txPowerWatts, 1004);
+    //Check that we received the correct reception of the first UL MU transmission with the corresponding UID (second one dropped)
+    Simulator::Schedule (Seconds (5.0) + MicroSeconds (100), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, std::vector<uint64_t> {uids[0]});
+    //The packets of the second UL MU transmission should have been dropped
+    Simulator::Schedule (Seconds (5.0) + MicroSeconds (100), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 1003 + 1004);
+    Simulator::Schedule (Seconds (5.5), &TestMultipleHeTbPreambles::Reset, this);
+  }
+
+  {
+    //Verify the correct reception of a single UL MU transmission with two stations belonging to the same BSS,
+    //and the second PPDU arrives 500ns after the first PPDU, i.e. it exceeds the delay spread of 400ns
+    std::vector<uint64_t> uids {9};
+    Simulator::Schedule (Seconds (6), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 1, txPowerWatts, 1001);
+    Simulator::Schedule (Seconds (6) + NanoSeconds (500), &TestMultipleHeTbPreambles::RxHeTbPpdu, this, uids[0], 2, txPowerWatts, 1002);
+    //Check that we received a single UL MU transmission with the corresponding UID
+    Simulator::Schedule (Seconds (6.0) + MicroSeconds (1), &TestMultipleHeTbPreambles::CheckHeTbPreambles, this, 1, uids);
+    //The first packet of 1001 bytes should be dropped because preamble is not detected after 4us (because the PPDU that arrived at 500ns is interfering):
+    //the second HE TB PPDU is acting as interference since it arrived after the maximum allowed 400ns.
+    //Obviously, that second packet of 1002 bytes is dropped as well.
+    Simulator::Schedule (Seconds (6.0) + MicroSeconds (5), &TestMultipleHeTbPreambles::CheckBytesDropped, this, 1001 + 1002);
+    Simulator::Schedule (Seconds (6.5), &TestMultipleHeTbPreambles::Reset, this);
+  }
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
 
 /**
  * \ingroup wifi-test
@@ -1162,6 +1440,7 @@ WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite ()
 {
   AddTestCase (new TestDlOfdmaPhyTransmission, TestCase::QUICK);
   AddTestCase (new TestUlOfdmaPpduUid, TestCase::QUICK);
+  AddTestCase (new TestMultipleHeTbPreambles, TestCase::QUICK);
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite

@@ -1852,6 +1852,8 @@ protected:
   std::vector <EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
   std::map <std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event> > m_currentPreambleEvents; //!< store event associated to a PPDU (that has a unique ID and preamble combination) whose preamble is being received
 
+  uint64_t m_previouslyRxPpduUid;      //!< UID of the previously received PPDU (reused by HE TB PPDUs), reset to UINT64_MAX upon transmission
+
   static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
 
 
@@ -2234,8 +2236,6 @@ private:
   SignalNoiseDbm m_signalNoise;      //!< latest signal power and noise power in dBm (noise power includes the noise figure)
 
   Callback<void> m_capabilitiesChangedCallback;         //!< Callback when PHY capabilities changed
-
-  uint64_t m_previouslyRxPpduUid;                       //!< UID of the previously received PPDU (reused by HE TB PPDUs), reset to UINT64_MAX upon transmission
 };
 
 } //namespace ns3
