@@ -110,8 +110,8 @@ private:
    * \return a packet if the packet is successfully reassembled (or not a fragment),
    *         0 if we failed to reassemble the packet (e.g. missing fragments/out-of-order).
    */
-  Ptr<Packet> HandleFragments (Ptr<Packet> packet, const WifiMacHeader* hdr,
-                               OriginatorRxStatus *originator);
+  Ptr<const Packet> HandleFragments (Ptr<const Packet> packet, const WifiMacHeader* hdr,
+                                     OriginatorRxStatus *originator);
 
   /**
    * typedef for a map between address and OriginatorRxStatus
