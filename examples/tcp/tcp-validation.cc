@@ -108,8 +108,7 @@
 //    --stopTime:       simulation stop time [+1.16667min]
 //    --queueUseEcn:    use ECN on queue [false]
 //    --enablePcap:     enable Pcap [false]
-//    --validate:       whether to validate output [false]
-//    --validation:     validation case to run []
+//    --validate:       validation case to run []
 //
 // validation cases (and syntax of how to run):
 // ------------
@@ -867,6 +866,7 @@ main (int argc, char *argv[])
 
   Simulator::Stop (stopTime);
   Simulator::Run ();
+  Simulator::Destroy ();
 
   if (g_validate == "")
     {
