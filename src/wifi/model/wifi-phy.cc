@@ -3189,7 +3189,7 @@ WifiPhy::ScheduleEndOfMpdus (Ptr<Event> event)
         }
 
       endOfMpduDuration += mpduDuration;
-      m_endOfMpduEvents.push_back (Simulator::Schedule (endOfMpduDuration, &WifiPhy::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration));
+      Simulator::Schedule (endOfMpduDuration, &WifiPhy::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration);
 
       //Prepare next iteration
       ++i;

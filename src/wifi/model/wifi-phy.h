@@ -2177,8 +2177,6 @@ private:
   Ptr<ErrorModel> m_postReceptionErrorModel;            //!< Error model for receive packet events
   Time m_timeLastPreambleDetected;                      //!< Record the time the last preamble was detected
 
-  std::vector <EventId> m_endOfMpduEvents; //!< the end of MPDU events (only used for A-MPDUs)
-
   std::vector<bool> m_statusPerMpdu; //!<  current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
   SignalNoiseDbm m_signalNoise;      //!< latest signal power and noise power in dBm (noise power includes the noise figure)
 
