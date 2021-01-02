@@ -87,25 +87,25 @@ private:
   int32_t Posdiff (int32_t a, int32_t b);
 
   // Fields accessed in enqueue path
-  uint32_t m_numQueued;                 //!< Total ever queued
-  uint32_t m_adjLimit;                  //!< limit + num_completed
-  uint32_t m_lastObjCnt;                //!< Count at last queuing
+  uint32_t m_numQueued {0};                 //!< Total ever queued
+  uint32_t m_adjLimit {0};                  //!< limit + num_completed
+  uint32_t m_lastObjCnt {0};                //!< Count at last queuing
 
   // Fields accessed only by completion path
-  TracedValue<uint32_t> m_limit;        //!< Current limit
-  uint32_t m_numCompleted;              //!< Total ever completed
+  TracedValue<uint32_t> m_limit;            //!< Current limit
+  uint32_t m_numCompleted {0};              //!< Total ever completed
 
-  uint32_t m_prevOvlimit;               //!< Previous over limit
-  uint32_t m_prevNumQueued;             //!< Previous queue total
-  uint32_t m_prevLastObjCnt;            //!< Previous queuing cnt
+  uint32_t m_prevOvlimit {0};               //!< Previous over limit
+  uint32_t m_prevNumQueued {0};             //!< Previous queue total
+  uint32_t m_prevLastObjCnt {0};            //!< Previous queuing cnt
 
-  uint32_t m_lowestSlack;               //!< Lowest slack found
-  Time m_slackStartTime;                //!< Time slacks seen
+  uint32_t m_lowestSlack {std::numeric_limits<uint32_t>::max ()};  //!< Lowest slack found
+  Time m_slackStartTime {Seconds (0)};      //!< Time slacks seen
 
   // Configuration
-  uint32_t m_maxLimit;                  //!< Max limit
-  uint32_t m_minLimit;                  //!< Minimum limit
-  Time m_slackHoldTime;                 //!< Time to measure slack
+  uint32_t m_maxLimit;                      //!< Max limit
+  uint32_t m_minLimit;                      //!< Minimum limit
+  Time m_slackHoldTime;                     //!< Time to measure slack
 };
 
 } // namespace ns3
