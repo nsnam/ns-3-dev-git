@@ -3715,6 +3715,25 @@ WifiPhy::GetRuBand (WifiTxVector txVector, uint16_t staId)
 }
 
 WifiSpectrumBand
+WifiPhy::GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId)
+{
+  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  NS_ASSERT (channelWidth <= GetChannelWidth ());
+
+  HeRu::RuSpec ru = txVector.GetRu (staId);
+  uint16_t ruWidth = HeRu::GetBandwidth (ru.ruType);
+  uint16_t nonOfdmaWidth = ruWidth < 20 ? 20 : ruWidth;
+
+  // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
+  HeRu::RuSpec nonOfdmaRu = HeRu::FindOverlappingRu (channelWidth, ru, HeRu::GetRuType (nonOfdmaWidth));
+
+  HeRu::SubcarrierGroup groupPreamble = HeRu::GetSubcarrierGroup (channelWidth, nonOfdmaRu.ruType, nonOfdmaRu.index);
+  HeRu::SubcarrierRange range = std::make_pair (groupPreamble.front ().first, groupPreamble.back ().second);
+  return ConvertHeRuSubcarriers (channelWidth, range);
+}
+
+WifiSpectrumBand
 WifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const
 {
   NS_ASSERT_MSG (false, "802.11ax can only be used with SpectrumWifiPhy");

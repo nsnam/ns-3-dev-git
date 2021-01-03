@@ -1857,6 +1857,16 @@ protected:
    */
   WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId);
 
+  /**
+   * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the station taking part of the UL MU
+   *
+   * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
+   */
+  WifiSpectrumBand GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId);
+
   InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper

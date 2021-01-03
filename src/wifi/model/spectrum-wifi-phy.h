@@ -176,18 +176,29 @@ protected:
    */
   WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
+  /**
+   * Get the center frequency of the non-OFDMA part of the current TxVector for the
+   * given STA-ID.
+   * Note this method is only to be used for UL MU.
+   *
+   * \param txVector the TXVECTOR that has the RU allocation
+   * \param staId the STA-ID of the station taking part of the UL MU
+   * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
+   */
+  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
+
 
 private:
   /**
    * \param txPowerW power in W to spread across the bands
    * \param ppdu the PPDU that will be transmitted
-   * \param isOfdma flag whether the constructed Tx PSD is for the OFDMA part of an HE TB PPDU
+   * \param flag flag indicating the type of Tx PSD to build
    * \return Pointer to SpectrumValue
    *
    * This is a helper function to create the right TX PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu, bool isOfdma = false);
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu, TxPsdFlag flag = PSD_NON_HE_TB);
 
   /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
