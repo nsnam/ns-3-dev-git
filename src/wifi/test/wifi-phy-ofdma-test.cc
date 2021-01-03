@@ -46,7 +46,6 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyOfdmaTest");
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
 static const uint16_t DEFAULT_CHANNEL_WIDTH = 20; // MHz
-static const uint16_t DEFAULT_GUARD_WIDTH = DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 class OfdmaSpectrumWifiPhy : public SpectrumWifiPhy
 {
@@ -77,6 +76,11 @@ public:
    * \param ppdu the PPDU to send
    */
   void StartTx (Ptr<WifiPpdu> ppdu) override;
+  /**
+   * \param currentChannelWidth channel width of the current transmission (MHz)
+   * \return the width of the guard band (MHz) set to 2
+   */
+  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
 
   /**
    * Set the global PPDU UID counter.
@@ -151,6 +155,14 @@ std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
 OfdmaSpectrumWifiPhy::GetCurrentPreambleEvents (void)
 {
   return m_currentPreambleEvents;
+}
+
+uint16_t
+OfdmaSpectrumWifiPhy::GetGuardBandwidth (uint16_t currentChannelWidth) const
+{
+  // return a small enough value to avoid having too much out of band transmission
+  // knowing that slopes are not configurable yet.
+  return 1;
 }
 
 /**
@@ -1293,7 +1305,10 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   Time ppduDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand (), staId);
   Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, ppduDuration, WIFI_PHY_BAND_5GHZ, uid);
 
-  Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH);
+  uint32_t centerFrequency = m_phy->GetCenterFrequencyForNonOfdmaPart (txVector, staId);
+  uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+  uint16_t channelWidth = ruWidth < 20 ? 20 : ruWidth;
+  Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerWatts, m_phy->GetGuardBandwidth (channelWidth));
   Ptr<WifiSpectrumSignalParameters> rxParams = Create<WifiSpectrumSignalParameters> ();
   rxParams->psd = rxPsd;
   rxParams->txPhy = 0;

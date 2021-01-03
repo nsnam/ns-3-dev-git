@@ -344,14 +344,14 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
-      SwitchMaybeToCcaBusy ();
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
   if (wifiRxParams && m_disableWifiReception)
     {
       NS_LOG_INFO ("Received Wi-Fi signal but blocked from syncing");
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
-      SwitchMaybeToCcaBusy ();
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
     }
 
@@ -383,7 +383,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
           if (rxDuration > m_state->GetDelayUntilIdle ())
             {
               //that packet will be noise _after_ the completion of the OFDMA part of the HE TB PPDUs
-              SwitchMaybeToCcaBusy ();
+              SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
             }
         }
     }

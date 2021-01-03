@@ -256,21 +256,23 @@ public:
    * all SNIR changes in the SNIR vector.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
+   * \param channelWidth the channel width (in MHz) for header measurement
    * \param band identify the band used by the PSDU
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectrumBand band) const;
+  struct InterferenceHelper::SnrPer CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band) const;
   /**
    * Calculate the SNIR at the start of the HT PHY header and accumulate
    * all SNIR changes in the SNIR vector.
    *
    * \param event the event corresponding to the first time the corresponding PPDU arrives
+   * \param channelWidth the channel width (in MHz) for header measurement
    * \param band identify the band used by the PSDU
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculateHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectrumBand band) const;
+  struct InterferenceHelper::SnrPer CalculateHtPhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band) const;
 
   /**
    * Notify that RX has started.
@@ -423,22 +425,26 @@ private:
    *
    * \param event the event
    * \param nis the NiChanges
+   * \param channelWidth the channel width (in MHz) for header measurement
    * \param band the band
    *
    * \return the error rate of the non-HT PHY header
    */
-  double CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis, WifiSpectrumBand band) const;
+  double CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis,
+                                     uint16_t channelWidth, WifiSpectrumBand band) const;
   /**
    * Calculate the error rate of the HT PHY header. TheHT PHY header
    * can be divided into multiple chunks (e.g. due to interference from other transmissions).
    *
    * \param event the event
    * \param nis the NiChanges
+   * \param channelWidth the channel width (in MHz) for header measurement
    * \param band the band
    *
    * \return the error rate of the HT PHY header
    */
-  double CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis, WifiSpectrumBand band) const;
+  double CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis,
+                                  uint16_t channelWidth, WifiSpectrumBand band) const;
 
   double m_noiseFigure;                                    //!< noise figure (linear)
   Ptr<ErrorRateModel> m_errorRateModel;                    //!< error rate model

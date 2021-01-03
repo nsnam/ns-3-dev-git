@@ -461,11 +461,11 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
 }
 
 double
-InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis, WifiSpectrumBand band) const
+InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis,
+                                                uint16_t channelWidth, WifiSpectrumBand band) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second);
   const WifiTxVector txVector = event->GetTxVector ();
-  uint16_t channelWidth = txVector.GetChannelWidth () >= 40 ? 20 : txVector.GetChannelWidth (); //calculate PER on the 20 MHz primary channel for L-SIG
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
@@ -576,11 +576,11 @@ InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChange
 }
 
 double
-InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis, WifiSpectrumBand band) const
+InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPerBand *nis,
+                                             uint16_t channelWidth, WifiSpectrumBand band) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second);
   const WifiTxVector txVector = event->GetTxVector ();
-  uint16_t channelWidth = txVector.GetChannelWidth () >= 40 ? 20 : txVector.GetChannelWidth (); //calculate PER on the 20 MHz primary channel for PHY headers
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
@@ -879,19 +879,10 @@ InterferenceHelper::CalculateSnr (Ptr<Event> event, uint16_t channelWidth, uint8
 }
 
 struct InterferenceHelper::SnrPer
-InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectrumBand band) const
+InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band) const
 {
-  NS_LOG_FUNCTION (this << band.first << band.second);
+  NS_LOG_FUNCTION (this << channelWidth << band.first << band.second);
   NiChangesPerBand ni;
-  uint16_t channelWidth;
-  if (event->GetTxVector ().GetChannelWidth () >= 40)
-    {
-      channelWidth = 20; //calculate PER on the 20 MHz primary channel for L-SIG
-    }
-  else
-    {
-      channelWidth = event->GetTxVector ().GetChannelWidth ();
-    }
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni, band);
   double snr = CalculateSnr (event->GetRxPowerW (band),
                              noiseInterferenceW,
@@ -901,7 +892,7 @@ InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectru
   /* calculate the SNIR at the start of the PHY header and accumulate
    * all SNIR changes in the SNIR vector.
    */
-  double per = CalculateNonHtPhyHeaderPer (event, &ni, band);
+  double per = CalculateNonHtPhyHeaderPer (event, &ni, channelWidth, band);
 
   struct SnrPer snrPer;
   snrPer.snr = snr;
@@ -910,19 +901,10 @@ InterferenceHelper::CalculateNonHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectru
 }
 
 struct InterferenceHelper::SnrPer
-InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectrumBand band) const
+InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second);
   NiChangesPerBand ni;
-  uint16_t channelWidth;
-  if (event->GetTxVector ().GetChannelWidth () >= 40)
-    {
-      channelWidth = 20; //calculate PER on the 20 MHz primary channel for PHY headers
-    }
-  else
-    {
-      channelWidth = event->GetTxVector ().GetChannelWidth ();
-    }
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni, band);
   double snr = CalculateSnr (event->GetRxPowerW (band),
                              noiseInterferenceW,
@@ -932,7 +914,7 @@ InterferenceHelper::CalculateHtPhyHeaderSnrPer (Ptr<Event> event, WifiSpectrumBa
   /* calculate the SNIR at the start of the PHY header and accumulate
    * all SNIR changes in the SNIR vector.
    */
-  double per = CalculateHtPhyHeaderPer (event, &ni, band);
+  double per = CalculateHtPhyHeaderPer (event, &ni, channelWidth, band);
   
   struct SnrPer snrPer;
   snrPer.snr = snr;

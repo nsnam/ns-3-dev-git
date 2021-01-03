@@ -140,7 +140,18 @@ public:
    * to the current channel bandwidth (which can be different from devices max
    * channel width).
    */
-  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const;
+  virtual uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const;
+
+  /**
+   * Get the center frequency of the non-OFDMA part of the current TxVector for the
+   * given STA-ID.
+   * Note this method is only to be used for UL MU.
+   *
+   * \param txVector the TXVECTOR that has the RU allocation
+   * \param staId the STA-ID of the station taking part of the UL MU
+   * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
+   */
+  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
 
   /**
    * Callback invoked when the PHY model starts to process a signal
@@ -175,17 +186,6 @@ protected:
    * \return a pair of start and stop indexes that defines the band
    */
   WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
-
-  /**
-   * Get the center frequency of the non-OFDMA part of the current TxVector for the
-   * given STA-ID.
-   * Note this method is only to be used for UL MU.
-   *
-   * \param txVector the TXVECTOR that has the RU allocation
-   * \param staId the STA-ID of the station taking part of the UL MU
-   * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
-   */
-  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
 
 
 private:
