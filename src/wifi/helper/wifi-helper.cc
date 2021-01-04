@@ -991,12 +991,14 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("BlockAckCache", LOG_LEVEL_ALL);
   LogComponentEnable ("BlockAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("CaraWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ConstantObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("ConstantRateWifiManager", LOG_LEVEL_ALL);
-  LogComponentEnable ("Txop", LOG_LEVEL_ALL);
+  LogComponentEnable ("ConstantWifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssErrorRateModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
+  LogComponentEnable ("HeConfiguration", LOG_LEVEL_ALL);
+  LogComponentEnable ("HtConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("InfrastructureWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
@@ -1010,7 +1012,9 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("NistErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("OnoeWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("OriginatorBlockAckAgreement", LOG_LEVEL_ALL);
   LogComponentEnable ("ParfWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("QosTxop", LOG_LEVEL_ALL);
   LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("RrpaaWifiManager", LOG_LEVEL_ALL);
@@ -1020,7 +1024,11 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
   LogComponentEnable ("TableBasedErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("Txop", LOG_LEVEL_ALL);
+  LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiAckPolicySelector", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiMacQueue", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiMacQueueItem", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);
