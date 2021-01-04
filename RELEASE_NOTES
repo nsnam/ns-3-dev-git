@@ -9,25 +9,70 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.33
+============
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+This release is intended to work on systems with the following minimal
+requirements (Note: not all ns-3 features are available on all systems):
+- g++-5.4 or later, or clang++-8 or later
+- Python 3.5 or later
+- (macOS only) Xcode 10.1 or later
+
+This release has been tested on the following systems:
+- Arch Linux with g++-10.2.0 and clang++ versions 8-11, Python 3.9.1
+- Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.1
+- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
+- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
+- Ubuntu 16.04.6 with g++-5.4.0 and Python 3.5.2
+- Linux Mint 20 Ulyana with g++-9.3.0 and Python 3.8.5
+- macOS 11.1 (Big Sur) with Xcode 12.3 (Apple clang-1200.0.32.28), Python 3.8.2 (system) and Python 3.9.1 (Homebrew)
+- macOS 10.15.7 (Catalina) with Xcode 12 (Apple clang-1200.0.31.1, Python 3.9.1)
+- macOS 10.13.6 (High Sierra) with Xcode 10.1 (Apple clang-1000.11.45.5, Python 3.7.1)
 
 New user-visible features
 -------------------------
-- (wifi) A new table-based error model based on link simulations has been
-  added (TableBasedErrorRateModel) and made the default for 802.11n/ac/ax simulations.
-- (wifi) It is now possible to select either BCC or LDPC FEC encoding.
-- (mpi) A new Enable call was added that takes a user supplied MPI_Communicator, which enables (optional) partitioning of the MPI processes.  See !389.
 - (core) A new Length class has been added to represent lengths with an explicit unit, rather than the use of raw numbers (ints, doubles) with implicit length.
 - (core) A flexible CsvReader class has been introduced to allow users to read in csv- or tab-delimited data.
+- (lr-wpan) Added support for handling differences between RFC4944- and RFC6282-style IPv6 address expansion
 - (mobility) The ListPositionAllocator can now input positions from a csv file.
-- (tcp) A model for TCP CUBIC has been added.
+- (mpi) A new Enable call was added that takes a user supplied MPI_Communicator, which enables (optional) partitioning of the MPI processes.  See !389.
+- (propagation) A channel condition model for vehicular scenarios was added.  See !435
+- (tcp) A model for TCP CUBIC congestion control has been added.
+- (tcp) TCP handling of ECN has been improved with the addition of a Congestion Window Reduced state
+- (tcp) TCP DCTCP includes a trace source for tracing the alpha value
+- (wifi) A new table-based error model based on link simulations has been
+  added (TableBasedErrorRateModel) and made the default for 802.11n/ac/ax simulations.
+- (wifi) Add error table support for LDPC FEC encoding (BCC or LDPC may now be selected)
+- (wifi) Add PHY layer support for High Efficiency Multi Users [HE-MU] access, including High Efficiency Resource Units (HE RU) and PCAP support
+- (wifi) Add option to configure the OFDM transmit spectrum mask
 
 Bugs fixed
 ----------
-- (wifi) Fix Minstrel HT statistics update window duration
-- (wifi) Fix wrong calculations for 1024-QAM when using NistErrorRateModel
+- (applications) #444 - Report Tx bytes from UdpClient
 - (core) #265 - Time is not rounded when created from an int64x64_t
+- (core) #277 - Make Time::As() print with autoscaled unit
+- (core) #302 - Time is not rounded when created from an int64x64_t
+- (internet) #272 - Add missing data to Ipv[4,6]PacketInfoTag
+- (internet) !440 - Loopback IPv4 address should have HOST scope
+- (lte) #273 - When removing LC, remove also its BSR
+- (lr-wpan) #314 - Multicast/broadcast must not generate ACKs
+- (mobility) #276 - Make EnableAsciiAll connect in a failsafe way
+- (tcp) TcpCongestionOps objects can now be accessed by config paths
+- (tcp) #783 - Update previousLost and priorInFlight on reception of ACK
+- (wifi) #284 - Fix memory consumption issue for saturated devices
+- (wifi) Fix Minstrel HT statistics update window duration
+- (wifi) Fix incorrect calculations for 1024-QAM when using NistErrorRateModel
+- (wifi) Fix maximum channel number that can be selected for the PHY
+- (wifi) Set BER threshold for Ideal rate manager to 1e-6 to avoid high PER for high MCS values
+- (wifi) Reduce precision to fix infinite loop when Ideal rate manager as used with Yans error rate model
+- (wifi) Report reception of BAR to WifiRemoteStationManager
+- (wifi) TXOP durations were not always being traced
 
 Release 3.32
 ============

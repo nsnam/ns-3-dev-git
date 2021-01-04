@@ -54,25 +54,26 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.32 to ns-3.33</h1>
 <h2>New API:</h2>
 <ul>
-<li>A model for TCP CUBIC has been added.</li>
+<li>A model for <b>TCP CUBIC</b> (RFC 8312) has been added.</li>
 <li>New <b>channel models based on 3GPP TR 37.885</b> have been added to support vehicular simulations.</li>
-<b>Time::RoundTo (unit)</b> allows time to be rounded to the nearest integer multiple of unit</li>
 <li><b>Time::RoundTo (unit)</b> allows time to be rounded to the nearest integer multiple of unit</li>
-<li><b>UdpClient now can report both transmitted and received bytes.</li>
+<li><b>UdpClient</b> now can report both transmitted and received bytes.</li>
 <li>A new <b>MPI Enable()</b> variant was introduced that takes a user-supplied MPI_Communicator, allowing for partitioning of the MPI processes.</li>
 <li>A <b>Length</b> class has been introduced to allow users to replace the use of raw numbers (ints, doubles) that have implicit lengths with a class that represents lengths with an explicit unit.</li>
 <li>A flexible <b>CsvReader</b> class has been introduced to allow users to read in csv- or tab-delimited data.</li>
 <li>The <b>ListPositionAllocator</b> can now input positions from a csv file.</li>
 <li>A new trace source for DCTCP alpha value has been added to <b>TcpDctcp</b>.</li>
-</ul>
-<h2>Changes to existing API:</h2>
-<ul>
 <li>A new <b>TableBasedErrorRateModel</b> has been added for Wi-Fi, and the default values are aligned with link-simulation results from MATLAB WLAN Toolbox and IEEE 802.11 TGn.
 </li>
 <li>A new <b>LdpcSupported</b> attribute has been added for Wi-Fi in <b>HtConfiguration</b>, in order to select LDPC FEC encoding instead of the default BCC FEC encoding.
 </li>
+</ul>
+<h2>Changes to existing API:</h2>
+<ul>
 <li> The signature of <b>WifiPhy::PsduTxBeginCallback</b> and <b>WifiPhy::PhyTxPsduBegin</b> have been changed to take a map of PSDUs instead of a single PSDU
 in order to support multi-users (MU) transmissions.
+</li>
+<li> The wifi trace <b>WifiPhy::PhyRxBegin</b> has been extended to report the received power for every band.
 </li>
 <li> The wifi trace <b>WifiPhy::PhyRxBegin</b> has been extended to report the received power for every band.
 </li>
@@ -81,13 +82,13 @@ in order to support multi-users (MU) transmissions.
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
-<li></li>
+<li>Waf has been upgraded to git development version waf-2.0.21-6-g60e3f5f4</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
 <li>The <b>default Wi-Fi ErrorRateModel</b> for the 802.11n/ac/ax standards has been changed from the NistErrorRateModel to a new TableBasedErrorRateModel.  Users may experience a shift in Wi-Fi link range due to the new default error model, as <b>the new model is more optimistic</b> (the PER for a given MCS will degrade at a lower SNR value). The Wi-Fi module documentation provides plots that compare the performance of the NIST and new table-based model.</li>
-<li>The default value of the <b>BerThreshold</b> attribute in <b>IdealWifiManager</b> was changed from 1e-5 to 1e-6, so as to the correct high order MCS.</li>
-<li> Time values that are created from an int64x64_t value are now rounded to the nearest integer multiple of the unit, rather than truncated.  Issue #265 in the GitLab.com tracker describes the behavior that was fixed.  Some Time values that rely on this conversion may have changed due to this fix.</li>
+<li>The default value of the <b>BerThreshold</b> attribute in <b>IdealWifiManager</b> was changed from 1e-5 to 1e-6, so as to correct behavior with high order MCS.</li>
+<li> <b>Time values that are created from an int64x64_t value</b> are now rounded to the nearest integer multiple of the unit, rather than truncated.  Issue #265 in the GitLab.com tracker describes the behavior that was fixed.  Some Time values that rely on this conversion may have changed due to this fix.</li>
 <li> TCP now implements the Linux-like <b>congestion window reduced (CWR)</b> state when explicit congestion notification (ECN) is enabled.</li>
 <li> <b>TcpDctcp</b> now inherits from <b>TcpLinuxReno</b>, making its congestion avoidance track more closely to that of Linux.</li>
 </ul>
@@ -118,6 +119,7 @@ by including flow-monitor.h you will need to change that to stats-module.h.
 longer takes a WifiPhyStandard enum, but instead takes a similarly named 
 WifiStandard enum.  If before you specified a value such as WIFI_PHY_STANDARD_xxx, now you must specify WIFI_STANDARD_xxx.
 </li>
+<li> The <b>YansWifiPhyHelper::Default</b> and <b>SpectrumWifiPhyHelper::Default</b> methods have been removed; the default constructors may instead by used.</li>
 <li> <b>PIE</b> queue disc now uses <b>Timestamp</b> for queue delay calculation as default instead of <b>Dequeue Rate Estimator</b></li>
 </ul>
 <h2>Changes to build system:</h2>
