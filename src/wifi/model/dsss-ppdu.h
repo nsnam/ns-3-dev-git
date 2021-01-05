@@ -17,13 +17,14 @@
  *
  * Author: Rediet <getachew.redieteab@orange.com>
  *         Muhammad Iqbal Rochman <muhiqbalcr@uchicago.edu>
+ *         Sébastien Deronne <sebastien.deronne@gmail.com> (DsssSigHeader)
  */
 
 #ifndef DSSS_PPDU_H
 #define DSSS_PPDU_H
 
-#include "wifi-phy-header.h"
 #include "wifi-ppdu.h"
+#include "ns3/header.h"
 
 /**
  * \file
@@ -44,6 +45,60 @@ class WifiPsdu;
 class DsssPpdu : public WifiPpdu
 {
 public:
+
+  /**
+   * DSSS SIG PHY header.
+   * See section 16.2.2 in IEEE 802.11-2016.
+   */
+  class DsssSigHeader : public Header
+  {
+  public:
+    DsssSigHeader ();
+    virtual ~DsssSigHeader ();
+
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId (void);
+
+    // Inherited
+    TypeId GetInstanceTypeId (void) const;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start);
+
+    /**
+     * Fill the RATE field of L-SIG (in bit/s).
+     *
+     * \param rate the RATE field of L-SIG expressed in bit/s
+     */
+    void SetRate (uint64_t rate);
+    /**
+     * Return the RATE field of L-SIG (in bit/s).
+     *
+     * \return the RATE field of L-SIG expressed in bit/s
+     */
+    uint64_t GetRate (void) const;
+    /**
+     * Fill the LENGTH field of L-SIG (in bytes).
+     *
+     * \param length the LENGTH field of L-SIG expressed in bytes
+     */
+    void SetLength (uint16_t length);
+    /**
+     * Return the LENGTH field of L-SIG (in bytes).
+     *
+     * \return the LENGTH field of L-SIG expressed in bytes
+     */
+    uint16_t GetLength (void) const;
+
+  private:
+    uint8_t m_rate;    ///< RATE field
+    uint16_t m_length; ///< LENGTH field
+  }; //class DsssSigHeader
+
   /**
    * Create a DSSS (HR/DSSS) PPDU.
    *

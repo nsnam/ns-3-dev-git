@@ -17,6 +17,7 @@
  *
  * Author: Rediet <getachew.redieteab@orange.com>
  *         Muhammad Iqbal Rochman <muhiqbalcr@uchicago.edu>
+ *         Sébastien Deronne <sebastien.deronne@gmail.com> (HeSigHeader)
  */
 
 #include "wifi-phy.h"
@@ -226,6 +227,250 @@ HePpdu::PrintPayload (void) const
       ss << "PSDU=" << m_psdus.at (SU_STA_ID);
     }
   return ss.str ();
+}
+
+HePpdu::HeSigHeader::HeSigHeader ()
+  : m_format (1),
+    m_bssColor (0),
+    m_ul_dl (0),
+    m_mcs (0),
+    m_spatialReuse (0),
+    m_bandwidth (0),
+    m_gi_ltf_size (0),
+    m_nsts (0),
+    m_mu (false)
+{
+}
+
+HePpdu::HeSigHeader::~HeSigHeader ()
+{
+}
+
+TypeId
+HePpdu::HeSigHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::HeSigHeader")
+    .SetParent<Header> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<HeSigHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+HePpdu::HeSigHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void
+HePpdu::HeSigHeader::Print (std::ostream &os) const
+{
+  os << "MCS=" << +m_mcs
+     << " CHANNEL_WIDTH=" << GetChannelWidth ()
+     << " GI=" << GetGuardInterval ()
+     << " NSTS=" << +m_nsts
+     << " BSSColor=" << +m_bssColor
+     << " MU=" << +m_mu;
+}
+
+uint32_t
+HePpdu::HeSigHeader::GetSerializedSize (void) const
+{
+  uint32_t size = 0;
+  size += 4; //HE-SIG-A1
+  size += 4; //HE-SIG-A2
+  if (m_mu)
+    {
+      size += 1; //HE-SIG-B
+    }
+  return size;
+}
+
+void
+HePpdu::HeSigHeader::SetMuFlag (bool mu)
+{
+  m_mu = mu;
+}
+
+void
+HePpdu::HeSigHeader::SetMcs (uint8_t mcs)
+{
+  NS_ASSERT (mcs <= 11);
+  m_mcs = mcs;
+}
+
+uint8_t
+HePpdu::HeSigHeader::GetMcs (void) const
+{
+  return m_mcs;
+}
+
+void
+HePpdu::HeSigHeader::SetBssColor (uint8_t bssColor)
+{
+  NS_ASSERT (bssColor < 64);
+  m_bssColor = bssColor;
+}
+
+uint8_t
+HePpdu::HeSigHeader::GetBssColor (void) const
+{
+  return m_bssColor;
+}
+
+void
+HePpdu::HeSigHeader::SetChannelWidth (uint16_t channelWidth)
+{
+  if (channelWidth == 160)
+    {
+      m_bandwidth = 3;
+    }
+  else if (channelWidth == 80)
+    {
+      m_bandwidth = 2;
+    }
+  else if (channelWidth == 40)
+    {
+      m_bandwidth = 1;
+    }
+  else
+    {
+      m_bandwidth = 0;
+    }
+}
+
+uint16_t
+HePpdu::HeSigHeader::GetChannelWidth (void) const
+{
+  if (m_bandwidth == 3)
+    {
+      return 160;
+    }
+  else if (m_bandwidth == 2)
+    {
+      return 80;
+    }
+  else if (m_bandwidth == 1)
+    {
+      return 40;
+    }
+  else
+    {
+      return 20;
+    }
+}
+
+void
+HePpdu::HeSigHeader::SetGuardIntervalAndLtfSize (uint16_t gi, uint8_t ltf)
+{
+  if (gi == 800 && ltf == 1)
+    {
+      m_gi_ltf_size = 0;
+    }
+  else if (gi == 800 && ltf == 2)
+    {
+      m_gi_ltf_size = 1;
+    }
+  else if (gi == 1600 && ltf == 2)
+    {
+      m_gi_ltf_size = 2;
+    }
+  else
+    {
+      m_gi_ltf_size = 3;
+    }
+}
+
+uint16_t
+HePpdu::HeSigHeader::GetGuardInterval (void) const
+{
+  if (m_gi_ltf_size == 3)
+    {
+      //we currently do not consider DCM nor STBC fields
+      return 3200;
+    }
+  else if (m_gi_ltf_size == 2)
+    {
+      return 1600;
+    }
+  else
+    {
+      return 800;
+    }
+}
+
+void
+HePpdu::HeSigHeader::SetNStreams (uint8_t nStreams)
+{
+  NS_ASSERT (nStreams <= 8);
+  m_nsts = (nStreams - 1);
+}
+
+uint8_t
+HePpdu::HeSigHeader::GetNStreams (void) const
+{
+  return (m_nsts + 1);
+}
+
+void
+HePpdu::HeSigHeader::Serialize (Buffer::Iterator start) const
+{
+  //HE-SIG-A1
+  uint8_t byte = m_format & 0x01;
+  byte |= ((m_ul_dl & 0x01) << 2);
+  byte |= ((m_mcs & 0x0f) << 3);
+  start.WriteU8 (byte);
+  uint16_t bytes = (m_bssColor & 0x3f);
+  bytes |= (0x01 << 6); //Reserved set to 1
+  bytes |= ((m_spatialReuse & 0x0f) << 7);
+  bytes |= ((m_bandwidth & 0x03) << 11);
+  bytes |= ((m_gi_ltf_size & 0x03) << 13);
+  bytes |= ((m_nsts & 0x01) << 15);
+  start.WriteU16 (bytes);
+  start.WriteU8 ((m_nsts >> 1) & 0x03);
+
+  //HE-SIG-A2
+  uint32_t sigA2 = 0;
+  sigA2 |= (0x01 << 14); //Set Reserved bit #14 to 1
+  start.WriteU32 (sigA2);
+
+  if (m_mu)
+    {
+      //HE-SIG-B
+      start.WriteU8 (0);
+    }
+}
+
+uint32_t
+HePpdu::HeSigHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  //HE-SIG-A1
+  uint8_t byte = i.ReadU8 ();
+  m_format = (byte & 0x01);
+  m_ul_dl = ((byte >> 2) & 0x01);
+  m_mcs = ((byte >> 3) & 0x0f);
+  uint16_t bytes = i.ReadU16 ();
+  m_bssColor = (bytes & 0x3f);
+  m_spatialReuse = ((bytes >> 7) & 0x0f);
+  m_bandwidth = ((bytes >> 11) & 0x03);
+  m_gi_ltf_size = ((bytes >> 13) & 0x03);
+  m_nsts = ((bytes >> 15) & 0x01);
+  byte = i.ReadU8 ();
+  m_nsts |= (byte & 0x03) << 1;
+
+  //HE-SIG-A2
+  i.ReadU32 ();
+
+  if (m_mu)
+    {
+      //HE-SIG-B
+      i.ReadU8 ();
+    }
+
+  return i.GetDistanceFrom (start);
 }
 
 } //namespace ns3

@@ -17,14 +17,15 @@
  *
  * Author: Rediet <getachew.redieteab@orange.com>
  *         Muhammad Iqbal Rochman <muhiqbalcr@uchicago.edu>
+ *         Sébastien Deronne <sebastien.deronne@gmail.com> (LSigHeader)
  */
 
 #ifndef OFDM_PPDU_H
 #define OFDM_PPDU_H
 
-#include "wifi-phy-header.h"
 #include "wifi-phy-band.h"
 #include "wifi-ppdu.h"
+#include "ns3/header.h"
 
 /**
  * \file
@@ -46,6 +47,62 @@ class WifiPsdu;
 class OfdmPpdu : public WifiPpdu
 {
 public:
+
+  /**
+   * OFDM and ERP OFDM L-SIG PHY header.
+   * See section 17.3.4 in IEEE 802.11-2016.
+   */
+  class LSigHeader : public Header
+  {
+  public:
+    LSigHeader ();
+    virtual ~LSigHeader ();
+
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId (void);
+
+    // Inherited
+    TypeId GetInstanceTypeId (void) const;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start);
+
+    /**
+     * Fill the RATE field of L-SIG (in bit/s).
+     *
+     * \param rate the RATE field of L-SIG expressed in bit/s
+     * \param channelWidth the channel width (in MHz)
+     */
+    void SetRate (uint64_t rate, uint16_t channelWidth = 20);
+    /**
+     * Return the RATE field of L-SIG (in bit/s).
+     *
+     * \param channelWidth the channel width (in MHz)
+     * \return the RATE field of L-SIG expressed in bit/s
+     */
+    uint64_t GetRate (uint16_t channelWidth = 20) const;
+    /**
+     * Fill the LENGTH field of L-SIG (in bytes).
+     *
+     * \param length the LENGTH field of L-SIG expressed in bytes
+     */
+    void SetLength (uint16_t length);
+    /**
+     * Return the LENGTH field of L-SIG (in bytes).
+     *
+     * \return the LENGTH field of L-SIG expressed in bytes
+     */
+    uint16_t GetLength (void) const;
+
+  private:
+    uint8_t m_rate;    ///< RATE field
+    uint16_t m_length; ///< LENGTH field
+  }; //class LSigHeader
+
   /**
    * Create an OFDM PPDU.
    *

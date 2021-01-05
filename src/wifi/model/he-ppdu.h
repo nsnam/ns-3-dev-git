@@ -17,6 +17,7 @@
  *
  * Author: Rediet <getachew.redieteab@orange.com>
  *         Muhammad Iqbal Rochman <muhiqbalcr@uchicago.edu>
+ *         Sébastien Deronne <sebastien.deronne@gmail.com> (HeSigHeader)
  */
 
 #ifndef HE_PPDU_H
@@ -43,6 +44,113 @@ class WifiPsdu;
 class HePpdu : public OfdmPpdu
 {
 public:
+
+  /**
+   * HE-SIG PHY header (HE-SIG-A1/A2/B)
+   */
+  class HeSigHeader : public Header
+  {
+  public:
+    HeSigHeader ();
+    virtual ~HeSigHeader ();
+
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId (void);
+
+    // Inherited
+    TypeId GetInstanceTypeId (void) const;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start);
+
+    /**
+     * Set the Multi-User (MU) flag.
+     *
+     * \param mu the MU flag
+     */
+    void SetMuFlag (bool mu);
+
+    /**
+     * Fill the MCS field of HE-SIG-A1.
+     *
+     * \param mcs the MCS field of HE-SIG-A1
+     */
+    void SetMcs (uint8_t mcs);
+    /**
+     * Return the MCS field of HE-SIG-A1.
+     *
+     * \return the MCS field of HE-SIG-A1
+     */
+    uint8_t GetMcs (void) const;
+    /**
+     * Fill the BSS Color field of HE-SIG-A1.
+     *
+     * \param bssColor the BSS Color value
+     */
+    void SetBssColor (uint8_t bssColor);
+    /**
+     * Return the BSS Color field in the HE-SIG-A1.
+     *
+     * \return the BSS Color field in the HE-SIG-A1
+     */
+    uint8_t GetBssColor (void) const;
+    /**
+     * Fill the channel width field of HE-SIG-A1 (in MHz).
+     *
+     * \param channelWidth the channel width (in MHz)
+     */
+    void SetChannelWidth (uint16_t channelWidth);
+    /**
+     * Return the channel width (in MHz).
+     *
+     * \return the channel width (in MHz)
+     */
+    uint16_t GetChannelWidth (void) const;
+    /**
+     * Fill the GI + LTF size field of HE-SIG-A1.
+     *
+     * \param gi the guard interval (in nanoseconds)
+     * \param ltf the sequence of HE-LTF
+     */
+    void SetGuardIntervalAndLtfSize (uint16_t gi, uint8_t ltf);
+    /**
+     * Return the guard interval (in nanoseconds).
+     *
+     * \return the guard interval (in nanoseconds)
+     */
+    uint16_t GetGuardInterval (void) const;
+    /**
+     * Fill the number of streams field of HE-SIG-A1.
+     *
+     * \param nStreams the number of streams
+     */
+    void SetNStreams (uint8_t nStreams);
+    /**
+     * Return the number of streams.
+     *
+     * \return the number of streams
+     */
+    uint8_t GetNStreams (void) const;
+
+  private:
+    //HE-SIG-A1 fields
+    uint8_t m_format;       ///< Format bit
+    uint8_t m_bssColor;     ///< BSS color field
+    uint8_t m_ul_dl;        ///< UL/DL bit
+    uint8_t m_mcs;          ///< MCS field
+    uint8_t m_spatialReuse; ///< Spatial Reuse field
+    uint8_t m_bandwidth;    ///< Bandwidth field
+    uint8_t m_gi_ltf_size;  ///< GI+LTF Size field
+    uint8_t m_nsts;         ///< NSTS
+
+    /// This is used to decide whether MU SIG-B should be added or not
+    bool m_mu;
+  }; //class HeSigHeader
+
   /**
    * Create an SU HE PPDU, storing a PSDU.
    *

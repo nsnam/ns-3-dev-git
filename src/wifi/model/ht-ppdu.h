@@ -17,6 +17,7 @@
  *
  * Author: Rediet <getachew.redieteab@orange.com>
  *         Muhammad Iqbal Rochman <muhiqbalcr@uchicago.edu>
+ *         Sébastien Deronne <sebastien.deronne@gmail.com> (HtSigHeader)
  */
 
 #ifndef HT_PPDU_H
@@ -43,6 +44,99 @@ class WifiPsdu;
 class HtPpdu : public OfdmPpdu
 {
 public:
+
+  /**
+   * HT PHY header (HT-SIG1/2).
+   * See section 19.3.9 in IEEE 802.11-2016.
+   */
+  class HtSigHeader : public Header
+  {
+  public:
+    HtSigHeader ();
+    virtual ~HtSigHeader ();
+
+    /**
+     * \brief Get the type ID.
+     * \return the object TypeId
+     */
+    static TypeId GetTypeId (void);
+
+    // Inherited
+    TypeId GetInstanceTypeId (void) const;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start);
+
+    /**
+     * Fill the MCS field of HT-SIG.
+     *
+     * \param mcs the MCS field of HT-SIG
+     */
+    void SetMcs (uint8_t mcs);
+    /**
+     * Return the MCS field of HT-SIG.
+     *
+     * \return the MCS field of HT-SIG
+     */
+    uint8_t GetMcs (void) const;
+    /**
+     * Fill the channel width field of HT-SIG (in MHz).
+     *
+     * \param channelWidth the channel width (in MHz)
+     */
+    void SetChannelWidth (uint16_t channelWidth);
+    /**
+     * Return the channel width (in MHz).
+     *
+     * \return the channel width (in MHz)
+     */
+    uint16_t GetChannelWidth (void) const;
+    /**
+     * Fill the aggregation field of HT-SIG.
+     *
+     * \param aggregation whether the PSDU contains A-MPDU or not
+     */
+    void SetAggregation (bool aggregation);
+    /**
+     * Return the aggregation field of HT-SIG.
+     *
+     * \return the aggregation field of HT-SIG
+     */
+    bool GetAggregation (void) const;
+    /**
+     * Fill the short guard interval field of HT-SIG.
+     *
+     * \param sgi whether short guard interval is used or not
+     */
+    void SetShortGuardInterval (bool sgi);
+    /**
+     * Return the short guard interval field of HT-SIG.
+     *
+     * \return the short guard interval field of HT-SIG
+     */
+    bool GetShortGuardInterval (void) const;
+    /**
+     * Fill the HT length field of HT-SIG (in bytes).
+     *
+     * \param length the HT length field of HT-SIG (in bytes)
+     */
+    void SetHtLength (uint16_t length);
+    /**
+     * Return the HT length field of HT-SIG (in bytes).
+     *
+     * \return the HT length field of HT-SIG (in bytes)
+     */
+    uint16_t GetHtLength (void) const;
+
+  private:
+    uint8_t m_mcs;         ///< Modulation and Coding Scheme index
+    uint8_t m_cbw20_40;    ///< CBW 20/40
+    uint16_t m_htLength;   ///< HT length
+    uint8_t m_aggregation; ///< Aggregation
+    uint8_t m_sgi;         ///< Short Guard Interval
+  }; //HtSigHeader
+
   /**
    * Create an HT PPDU.
    *
