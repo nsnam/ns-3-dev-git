@@ -140,8 +140,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
     module.is_ns3_module = True
     module.ns3_dir_location = bld.path.path_from(bld.srcnode)
 
-    builddirname = Context.top_dir + '/build'
-    module.env.append_value("INCLUDES", builddirname)
+    module.env.append_value("INCLUDES", Context.out_dir)
 
     module.pcfilegen = bld(features='ns3pcfile')
     module.pcfilegen.module = module.name
@@ -291,7 +290,7 @@ def ns3_python_bindings(bld):
     pymod.env['DEFINES'] = defines
     # The following string should lead to includes of 
     # '-I.', '-Isrc/core/bindings' when compiling module_helpers.cc
-    pymod.includes = Context.top_dir + '/build' + ' ' + Context.top_dir + '/build/src/core/bindings'
+    pymod.includes = Context.out_dir + ' ' + Context.out_dir + '/src/core/bindings'
     pymod.install_path = '${PYTHONARCHDIR}/ns'
 
     # Workaround to a WAF bug, remove this when ns-3 upgrades to WAF > 1.6.10
