@@ -467,6 +467,22 @@ private:
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
 
   /**
+   * TracedCallback signature for MPDU drop events.
+   *
+   * \param reason the reason why the MPDU was dropped (\see WifiMacDropReason)
+   * \param mpdu the dropped MPDU
+   */
+  typedef void (* DroppedMpduCallback)(WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
+
+  /// TracedCallback for MPDU drop events typedef
+  typedef TracedCallback<WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpduTracedCallback;
+
+  /**
+   * This trace indicates that an MPDU was dropped for the given reason.
+   */
+  DroppedMpduTracedCallback m_droppedMpduCallback;
+
+  /**
    * TracedCallback signature for MPDU response timeout events.
    *
    * \param reason the reason why the timer was started

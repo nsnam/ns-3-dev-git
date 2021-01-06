@@ -35,6 +35,18 @@ class VhtConfiguration;
 class HeConfiguration;
 
 /**
+ * \ingroup wifi
+  * \enum WifiMacDropReason
+  * \brief The reason why an MPDU was dropped
+  */
+enum WifiMacDropReason : uint8_t
+{
+  WIFI_MAC_DROP_FAILED_ENQUEUE = 0,
+  WIFI_MAC_DROP_EXPIRED_LIFETIME,
+  WIFI_MAC_DROP_REACHED_RETRY_LIMIT
+};
+
+/**
  * \brief base class for all MAC-level wifi objects.
  * \ingroup wifi
  *
@@ -186,9 +198,9 @@ public:
   /**
    * \param packet the packet being dropped
    *
-   * Public method used to fire a MacTxDrop trace. Implemented for encapsulation purposes.
-   * This trace indicates that the packet was dropped before it was transmitted
-   * (e.g. when a STA is not associated with an AP).
+   * Public method used to fire a MacTxDrop trace.
+   * This trace indicates that the packet was dropped before it was queued for
+   * transmission (e.g. when a STA is not associated with an AP).
    */
   void NotifyTxDrop (Ptr<const Packet> packet);
   /**
@@ -258,7 +270,7 @@ private:
   TracedCallback<Ptr<const Packet> > m_macTxTrace;
   /**
    * The trace source fired when packets coming into the "top" of the device
-   * are dropped at the MAC layer during transmission.
+   * are dropped at the MAC layer before being queued for transmission.
    *
    * \see class CallBackTraceSource
    */

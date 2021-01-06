@@ -191,6 +191,13 @@ FrameExchangeManager::SetBssid (Mac48Address bssid)
 }
 
 void
+FrameExchangeManager::SetDroppedMpduCallback (DroppedMpdu callback)
+{
+  NS_LOG_FUNCTION (this << &callback);
+  m_droppedMpduCallback = callback;
+}
+
+void
 FrameExchangeManager::SetPromisc (void)
 {
   m_promisc = true;
@@ -211,7 +218,10 @@ FrameExchangeManager::GetWifiTxTimer (void) const
 void
 FrameExchangeManager::NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu)
 {
-  m_mac->NotifyTxDrop (mpdu->GetPacket ());
+  if (!m_droppedMpduCallback.IsNull ())
+    {
+      m_droppedMpduCallback (WIFI_MAC_DROP_REACHED_RETRY_LIMIT, mpdu);
+    }
 }
 
 void

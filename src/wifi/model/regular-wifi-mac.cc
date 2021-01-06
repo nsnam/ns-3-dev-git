@@ -62,7 +62,8 @@ RegularWifiMac::RegularWifiMac ()
   m_txop->SetTxMiddle (m_txMiddle);
   m_txop->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   m_txop->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
-  m_txop->SetTxDroppedCallback (MakeCallback (&RegularWifiMac::NotifyTxDrop, this));
+  m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
+                                                &m_droppedMpduCallback));
 
   //Construct the EDCAFs. The ordering is important - highest
   //priority (Table 9-1 UP-to-AC mapping; IEEE 802.11-2012) must be created
@@ -156,6 +157,8 @@ RegularWifiMac::SetupFrameExchangeManager (void)
                                                                                &m_mpduResponseTimeoutCallback));
   m_feManager->GetWifiTxTimer ().SetPsduResponseTimeoutCallback (MakeCallback (&PsduResponseTimeoutTracedCallback::operator(),
                                                                                &m_psduResponseTimeoutCallback));
+  m_feManager->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
+                                                     &m_droppedMpduCallback));
   m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
   if (GetQosSupported ())
     {
@@ -467,7 +470,8 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   edca->SetTxMiddle (m_txMiddle);
   edca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   edca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
-  edca->SetTxDroppedCallback (MakeCallback (&RegularWifiMac::NotifyTxDrop, this));
+  edca->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
+                                              &m_droppedMpduCallback));
   edca->SetAccessCategory (ac);
   edca->CompleteConfig ();
 
@@ -1089,6 +1093,10 @@ RegularWifiMac::GetTypeId (void)
                      "The header of unsuccessfully transmitted packet.",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback),
                      "ns3::WifiMacHeader::TracedCallback")
+    .AddTraceSource ("DroppedMpdu",
+                     "An MPDU that was dropped for the given reason (see WifiMacDropReason).",
+                     MakeTraceSourceAccessor (&RegularWifiMac::m_droppedMpduCallback),
+                     "ns3::RegularWifiMac::DroppedMpduCallback")
     .AddTraceSource ("MpduResponseTimeout",
                      "An MPDU whose response was not received before the timeout, along with "
                      "an identifier of the type of timeout (see WifiTxTimer::Reason) and the "

@@ -150,20 +150,14 @@ Txop::SetTxFailedCallback (TxFailed callback)
 }
 
 void
-Txop::SetTxDroppedCallback (TxDropped callback)
+Txop::SetDroppedMpduCallback (DroppedMpdu callback)
 {
   NS_LOG_FUNCTION (this << &callback);
-  m_txDroppedCallback = callback;
-  m_queue->TraceConnectWithoutContext ("Drop", MakeCallback (&Txop::TxDroppedPacket, this));
-}
-
-void
-Txop::TxDroppedPacket (Ptr<const WifiMacQueueItem> item)
-{
-  if (!m_txDroppedCallback.IsNull ())
-    {
-      m_txDroppedCallback (item->GetPacket ());
-    }
+  m_droppedMpduCallback = callback;
+  m_queue->TraceConnectWithoutContext ("DropBeforeEnqueue",
+                                       m_droppedMpduCallback.Bind (WIFI_MAC_DROP_FAILED_ENQUEUE));
+  m_queue->TraceConnectWithoutContext ("Expired",
+                                       m_droppedMpduCallback.Bind (WIFI_MAC_DROP_EXPIRED_LIFETIME));
 }
 
 Ptr<WifiMacQueue >

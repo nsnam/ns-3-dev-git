@@ -59,12 +59,13 @@ public:
   AmpduAggregationTest ();
 
 private:
-  /*
-   * Fired when the MAC discards a packet.
+  /**
+   * Fired when the MAC discards an MPDU.
    *
-   * \param packet the discarded packet
+   * \param reason the reason why the MPDU was discarded
+   * \param mpdu the discarded MPDU
    */
-  void PacketDiscarded (Ptr<const Packet> packet);
+  void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
 
   virtual void DoRun (void);
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
@@ -82,7 +83,7 @@ AmpduAggregationTest::AmpduAggregationTest ()
 }
 
 void
-AmpduAggregationTest::PacketDiscarded (Ptr<const Packet> packet)
+AmpduAggregationTest::MpduDiscarded (WifiMacDropReason, Ptr<const WifiMacQueueItem>)
 {
   m_discarded = true;
 }
@@ -295,7 +296,7 @@ AmpduAggregationTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (mpduList.empty (), true, "no MPDU aggregation should be performed if there is no agreement");
 
   m_manager->SetMaxSsrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
-  m_mac->TraceConnectWithoutContext ("MacTxDrop", MakeCallback (&AmpduAggregationTest::PacketDiscarded, this));
+  m_mac->TraceConnectWithoutContext ("DroppedMpdu", MakeCallback (&AmpduAggregationTest::MpduDiscarded, this));
   htFem->m_dcf = m_mac->GetBEQueue ();
   htFem->NormalAckTimeout (item, txParams.m_txVector);
 

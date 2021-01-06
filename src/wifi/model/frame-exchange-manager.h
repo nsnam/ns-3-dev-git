@@ -58,6 +58,11 @@ public:
   virtual ~FrameExchangeManager ();
 
   /**
+   * typedef for a callback to invoke when an MPDU is dropped.
+   */
+  typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpdu;
+
+  /**
    * Request the FrameExchangeManager to start a frame exchange sequence.
    *
    * \param dcf the channel access function that gained channel access. It is
@@ -138,6 +143,12 @@ public:
    * \param bssid the BSSID
    */
   virtual void SetBssid (Mac48Address bssid);
+  /**
+   * Set the callback to invoke when an MPDU is dropped.
+   *
+   * \param callback the callback to invoke when an MPDU is dropped
+   */
+  virtual void SetDroppedMpduCallback (DroppedMpdu callback);
   /**
    * Enable promiscuous mode.
    */
@@ -306,8 +317,8 @@ protected:
   virtual void RetransmitMpduAfterMissedCts (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Pass the packet included in the given MPDU to the
-   * packet dropped callback.
+   * Pass the given MPDU, discarded because of the max retry limit was reached,
+   * to the MPDU dropped callback.
    *
    * \param mpdu the discarded MPDU
    */
@@ -357,6 +368,7 @@ protected:
   Mac48Address m_bssid;                             //!< BSSID address (Mac48Address)
   Time m_navEnd;                                    //!< NAV expiration time
   bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
+  DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
 
   /**
    * Forward an MPDU down to the PHY layer.

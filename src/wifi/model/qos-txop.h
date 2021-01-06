@@ -105,6 +105,7 @@ public:
   void NotifyInternalCollision (void);
   virtual void NotifyChannelAccessed (Time txopDuration);
   void NotifyChannelReleased (void);
+  void SetDroppedMpduCallback (DroppedMpdu callback);
 
   /**
    * Set type of station with the given type.
