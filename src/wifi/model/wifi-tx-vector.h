@@ -305,6 +305,18 @@ public:
    * \return true if this TX vector is used for a multi-user transmission
    */
   bool IsMu (void) const;
+   /**
+   * Return true if this TX vector is used for a downlink multi-user transmission.
+   *
+   * \return true if this TX vector is used for a downlink multi-user transmission
+   */
+  bool IsDlMu (void) const;
+   /**
+   * Return true if this TX vector is used for an uplink multi-user transmission.
+   *
+   * \return true if this TX vector is used for an uplink multi-user transmission
+   */
+  bool IsUlMu (void) const;
   /**
     * Get the RU specification for the STA-ID.
     * This is applicable only for HE MU.

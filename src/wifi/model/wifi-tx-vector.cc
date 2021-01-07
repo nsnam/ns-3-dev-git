@@ -371,6 +371,18 @@ WifiTxVector::IsMu (void) const
   return (m_preamble == WIFI_PREAMBLE_HE_MU || m_preamble == WIFI_PREAMBLE_HE_TB);
 }
 
+bool
+WifiTxVector::IsDlMu (void) const
+{
+  return ((m_preamble == WIFI_PREAMBLE_VHT_MU) || (m_preamble == WIFI_PREAMBLE_HE_MU));
+}
+
+bool
+WifiTxVector::IsUlMu (void) const
+{
+  return (m_preamble == WIFI_PREAMBLE_HE_TB);
+}
+
 HeRu::RuSpec
 WifiTxVector::GetRu (uint16_t staId) const
 {
