@@ -90,21 +90,6 @@ public:
   virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
 
   /**
-   * The packet we sent was successfully received by the receiver
-   * (i.e. we received an Ack from the receiver).
-   *
-   * \param hdr the header of the packet that we successfully sent
-   */
-  virtual void TxOk (const WifiMacHeader &hdr);
-  /**
-   * The packet we sent was successfully received by the receiver
-   * (i.e. we did not receive an Ack from the receiver).
-   *
-   * \param hdr the header of the packet that we failed to sent
-   */
-  virtual void TxFailed (const WifiMacHeader &hdr);
-
-  /**
    * Get the Frame Exchange Manager
    *
    * \return the Frame Exchange Manager
@@ -465,6 +450,12 @@ private:
 
   TracedCallback<const WifiMacHeader &> m_txOkCallback; ///< transmit OK callback
   TracedCallback<const WifiMacHeader &> m_txErrCallback; ///< transmit error callback
+
+  /// TracedCallback for acked/nacked MPDUs typedef
+  typedef TracedCallback<Ptr<const WifiMacQueueItem>> MpduTracedCallback;
+
+  MpduTracedCallback m_ackedMpduCallback;  ///< ack'ed MPDU callback
+  MpduTracedCallback m_nackedMpduCallback; ///< nack'ed MPDU callback
 
   /**
    * TracedCallback signature for MPDU drop events.

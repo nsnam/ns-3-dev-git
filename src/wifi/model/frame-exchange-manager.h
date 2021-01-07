@@ -61,6 +61,10 @@ public:
    * typedef for a callback to invoke when an MPDU is dropped.
    */
   typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem>> DroppedMpdu;
+  /**
+   * typedef for a callback to invoke when an MPDU is successfully acknowledged.
+   */
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> AckedMpdu;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.
@@ -149,6 +153,12 @@ public:
    * \param callback the callback to invoke when an MPDU is dropped
    */
   virtual void SetDroppedMpduCallback (DroppedMpdu callback);
+  /**
+   * Set the callback to invoke when an MPDU is successfully acked.
+   *
+   * \param callback the callback to invoke when an MPDU is successfully acked
+   */
+  void SetAckedMpduCallback (AckedMpdu callback);
   /**
    * Enable promiscuous mode.
    */
@@ -369,6 +379,7 @@ protected:
   Time m_navEnd;                                    //!< NAV expiration time
   bool m_promisc;                                   //!< Flag if the device is operating in promiscuous mode
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
+  AckedMpdu m_ackedMpduCallback;                    //!< the acknowledged MPDU callback
 
   /**
    * Forward an MPDU down to the PHY layer.

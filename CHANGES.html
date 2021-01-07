@@ -71,6 +71,7 @@ us a note on ns-developers mailing list.</p>
 <li>The default <b>TCP congestion control</b> has been changed from NewReno to CUBIC.</li>
 <li>The PHY layer of the wifi module has been refactored: the amendment-specific logic has been ported to <b>PhyEntity</b> classes and <b>WifiPpdu</b> classes.</li>
 <li>The MAC layer of the wifi module has been refactored. The MacLow class has been replaced by a hierarchy of FrameExchangeManager classes, each adding support for the frame exchange sequences introduced by a given amendment.</li>
+<li>The TxOkHeader and TxErrHeader trace sources of RegularWifiMac have been obsoleted and replaced by trace sources that better capture the result of a transmission: AckedMpdu (fired when an MPDU is successfully acknowledged, via either a Normal Ack or a Block Ack), NAckedMpdu (fired when an MPDU is negatively acknowledged via a Block Ack), DroppedMpdu (fired when an MPDU is dropped), MpduResponseTimeout (fired when a CTS is missing after an RTS or a Normal Ack is missing after an MPDU) and PsduResponseTimeout (fired when a BlockAck is missing after an A-MPDU or a BlockAckReq).</li>
 <li>The 802.11a-like PHY configuration known as <b>Holland</b> has been removed from the wifi module. It was added in the 2005 timeframe for Wi-Fi rate control research but hasn't been used for quite some time.</li>
 <li>Support for <b>Greenfield mode</b> (aka <b>HT_GF</b>) has been dropped from wifi.</li>
 <li>Some wifi/src/model files were moved to <b>non-ht</b>, <b>ht</b>, <b>vht</b>, <b>he</b>, and <b>rate-control</b> subfolders.</li>

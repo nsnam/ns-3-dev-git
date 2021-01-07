@@ -102,8 +102,6 @@ QosTxop::QosTxop ()
   m_baManager->SetQueue (m_queue);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
   m_baManager->SetUnblockDestinationCallback (MakeCallback (&QosBlockedDestinations::Unblock, m_qosBlockedDestinations));
-  m_baManager->SetTxOkCallback (MakeCallback (&QosTxop::BaTxOk, this));
-  m_baManager->SetTxFailedCallback (MakeCallback (&QosTxop::BaTxFailed, this));
 }
 
 QosTxop::~QosTxop ()
@@ -738,26 +736,6 @@ QosTxop::DoInitialize (void)
   NS_LOG_FUNCTION (this);
   ResetCw ();
   GenerateBackoff ();
-}
-
-void
-QosTxop::BaTxOk (const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this << hdr);
-  if (!m_txOkCallback.IsNull ())
-    {
-      m_txOkCallback (hdr);
-    }
-}
-
-void
-QosTxop::BaTxFailed (const WifiMacHeader &hdr)
-{
-  NS_LOG_FUNCTION (this << hdr);
-  if (!m_txFailedCallback.IsNull ())
-    {
-      m_txFailedCallback (hdr);
-    }
 }
 
 void

@@ -136,20 +136,6 @@ Txop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteMan
 }
 
 void
-Txop::SetTxOkCallback (TxOk callback)
-{
-  NS_LOG_FUNCTION (this << &callback);
-  m_txOkCallback = callback;
-}
-
-void
-Txop::SetTxFailedCallback (TxFailed callback)
-{
-  NS_LOG_FUNCTION (this << &callback);
-  m_txFailedCallback = callback;
-}
-
-void
 Txop::SetDroppedMpduCallback (DroppedMpdu callback)
 {
   NS_LOG_FUNCTION (this << &callback);

@@ -198,6 +198,13 @@ FrameExchangeManager::SetDroppedMpduCallback (DroppedMpdu callback)
 }
 
 void
+FrameExchangeManager::SetAckedMpduCallback (AckedMpdu callback)
+{
+  NS_LOG_FUNCTION (this << &callback);
+  m_ackedMpduCallback = callback;
+}
+
+void
 FrameExchangeManager::SetPromisc (void)
 {
   m_promisc = true;
@@ -776,7 +783,6 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTx
       NS_LOG_DEBUG ("Missed Ack, discard MPDU");
       NotifyPacketDiscarded (mpdu);
       m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
-      m_mac->TxFailed (mpdu->GetHeader ());
       m_dcf->ResetCw ();
     }
   else
@@ -1117,7 +1123,10 @@ FrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu)
   NS_LOG_FUNCTION (this << *mpdu);
 
   // inform the MAC that the transmission was successful
-  m_mac->TxOk (mpdu->GetHeader ());
+  if (!m_ackedMpduCallback.IsNull ())
+    {
+      m_ackedMpduCallback (mpdu);
+    }
 }
 
 void

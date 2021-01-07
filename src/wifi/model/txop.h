@@ -77,16 +77,6 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * typedef for a callback to invoke when a
-   * packet transmission was completed successfully.
-   */
-  typedef Callback <void, const WifiMacHeader&> TxOk;
-  /**
-   * typedef for a callback to invoke when a
-   * packet transmission was failed.
-   */
-  typedef Callback <void, const WifiMacHeader&> TxFailed;
-  /**
    * typedef for a callback to invoke when an MPDU is dropped.
    */
   typedef Callback <void, WifiMacDropReason, Ptr<const WifiMacQueueItem> > DroppedMpdu;
@@ -127,16 +117,6 @@ public:
    */
   void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
-  /**
-   * \param callback the callback to invoke when a
-   * packet transmission was completed successfully.
-   */
-  void SetTxOkCallback (TxOk callback);
-  /**
-   * \param callback the callback to invoke when a
-   *        packet transmission was completed unsuccessfully.
-   */
-  void SetTxFailedCallback (TxFailed callback);
   /**
    * \param callback the callback to invoke when an MPDU is dropped
    */
@@ -342,8 +322,6 @@ protected:
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
   Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
-  TxOk m_txOkCallback;                              //!< the transmit OK callback
-  TxFailed m_txFailedCallback;                      //!< the transmit failed callback
   DroppedMpdu m_droppedMpduCallback;                //!< the dropped MPDU callback
   Ptr<WifiMacQueue> m_queue;                        //!< the wifi MAC queue
   Ptr<MacTxMiddle> m_txMiddle;                      //!< the MacTxMiddle

@@ -49,18 +49,18 @@ void
 PeerManagementProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)
 {
   m_parent = parent;
-  m_parent->TraceConnectWithoutContext ("TxErrHeader", MakeCallback (&PeerManagementProtocolMac::TxError, this));
-  m_parent->TraceConnectWithoutContext ("TxOkHeader",  MakeCallback (&PeerManagementProtocolMac::TxOk,    this));
+  m_parent->TraceConnectWithoutContext ("DroppedMpdu", MakeCallback (&PeerManagementProtocolMac::TxError, this));
+  m_parent->TraceConnectWithoutContext ("AckedMpdu",   MakeCallback (&PeerManagementProtocolMac::TxOk,    this));
 }
 void
-PeerManagementProtocolMac::TxError (WifiMacHeader const &hdr)
+PeerManagementProtocolMac::TxError (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu)
 {
-  m_protocol->TransmissionFailure (m_ifIndex, hdr.GetAddr1 ());
+  m_protocol->TransmissionFailure (m_ifIndex, mpdu->GetHeader ().GetAddr1 ());
 }
 void
-PeerManagementProtocolMac::TxOk (WifiMacHeader const &hdr)
+PeerManagementProtocolMac::TxOk (Ptr <const WifiMacQueueItem> mpdu)
 {
-  m_protocol->TransmissionSuccess (m_ifIndex, hdr.GetAddr1 ());
+  m_protocol->TransmissionSuccess (m_ifIndex, mpdu->GetHeader ().GetAddr1 ());
 }
 bool
 PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeader & header)

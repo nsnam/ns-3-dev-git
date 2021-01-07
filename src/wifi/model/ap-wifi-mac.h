@@ -167,18 +167,20 @@ private:
    * was an association response to the receiver, we record that
    * the receiver is now associated with us.
    *
-   * \param hdr the header of the packet that we successfully sent
+   * \param mpdu the MPDU that we successfully sent
    */
-  void TxOk (const WifiMacHeader &hdr);
+  void TxOk (Ptr<const WifiMacQueueItem> mpdu);
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we did not receive an Ack from the receiver).  If the packet
    * was an association response to the receiver, we record that
    * the receiver is not associated with us yet.
    *
-   * \param hdr the header of the packet that we failed to sent
+   * \param timeoutReason the reason why the TX timer was started (\see WifiTxTimer::Reason)
+   * \param mpdu the MPDU that we failed to sent
+   * \param txVector the TX vector used to send the MPDU
    */
-  void TxFailed (const WifiMacHeader &hdr);
+  void TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
 
   /**
    * This method is called to de-aggregate an A-MSDU and forward the

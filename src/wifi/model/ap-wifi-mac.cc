@@ -97,7 +97,6 @@ ApWifiMac::ApWifiMac ()
   m_beaconTxop->SetMaxCw (0);
   m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
   m_beaconTxop->SetTxMiddle (m_txMiddle);
-  m_beaconTxop->SetTxOkCallback (MakeCallback (&ApWifiMac::TxOk, this));
 
   //Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
@@ -863,10 +862,10 @@ ApWifiMac::SendOneBeacon (void)
 }
 
 void
-ApWifiMac::TxOk (const WifiMacHeader &hdr)
+ApWifiMac::TxOk (Ptr<const WifiMacQueueItem> mpdu)
 {
-  NS_LOG_FUNCTION (this);
-  RegularWifiMac::TxOk (hdr);
+  NS_LOG_FUNCTION (this << *mpdu);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
       && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
     {
@@ -876,10 +875,10 @@ ApWifiMac::TxOk (const WifiMacHeader &hdr)
 }
 
 void
-ApWifiMac::TxFailed (const WifiMacHeader &hdr)
+ApWifiMac::TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
 {
-  NS_LOG_FUNCTION (this);
-  RegularWifiMac::TxFailed (hdr);
+  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu << txVector);
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
       && m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ()))
@@ -1433,6 +1432,8 @@ ApWifiMac::DoInitialize (void)
           m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
         }
     }
+  NS_ABORT_IF (!TraceConnectWithoutContext ("AckedMpdu", MakeCallback (&ApWifiMac::TxOk, this)));
+  NS_ABORT_IF (!TraceConnectWithoutContext ("MpduResponseTimeout", MakeCallback (&ApWifiMac::TxFailed, this)));
   RegularWifiMac::DoInitialize ();
 }
 

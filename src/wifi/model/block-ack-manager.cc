@@ -517,7 +517,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                       nSuccessfulMpdus++;
                       if (!m_txOkCallback.IsNull ())
                         {
-                          m_txOkCallback ((*queueIt)->GetHeader ());
+                          m_txOkCallback (*queueIt);
                         }
                     }
                   else if (!QosUtilsIsOldPacket (currentStartingSeq, currentSeq))
@@ -525,7 +525,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
                       nFailedMpdus++;
                       if (!m_txFailedCallback.IsNull ())
                         {
-                          m_txFailedCallback ((*queueIt)->GetHeader ());
+                          m_txFailedCallback (*queueIt);
                         }
                       InsertInRetryQueue (*queueIt);
                     }

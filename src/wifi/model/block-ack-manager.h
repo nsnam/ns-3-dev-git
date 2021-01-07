@@ -364,15 +364,13 @@ public:
   uint16_t GetOriginatorStartingSequence (Mac48Address recipient, uint8_t tid) const;
 
   /**
-   * typedef for a callback to invoke when a
-   * packet transmission was completed successfully.
+   * typedef for a callback to invoke when an MPDU is successfully ack'ed.
    */
-  typedef Callback <void, const WifiMacHeader&> TxOk;
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> TxOk;
   /**
-   * typedef for a callback to invoke when a
-   * packet transmission was failed.
+   * typedef for a callback to invoke when an MPDU is negatively ack'ed.
    */
-  typedef Callback <void, const WifiMacHeader&> TxFailed;
+  typedef Callback <void, Ptr<const WifiMacQueueItem>> TxFailed;
   /**
    * \param callback the callback to invoke when a
    * packet transmission was completed successfully.
