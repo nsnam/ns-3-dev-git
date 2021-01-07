@@ -274,7 +274,7 @@ BlockAckManager::StorePacket (Ptr<WifiMacQueueItem> mpdu)
 }
 
 Ptr<const WifiMacQueueItem>
-BlockAckManager::GetBar (bool remove)
+BlockAckManager::GetBar (bool remove, uint8_t tid, Mac48Address address)
 {
   Ptr<const WifiMacQueueItem> bar;
   // remove all expired MPDUs in the retransmission queue, so that Block Ack Requests
@@ -285,9 +285,18 @@ BlockAckManager::GetBar (bool remove)
 
   while (nextBar != m_bars.end ())
     {
+      Mac48Address recipient = nextBar->bar->GetHeader ().GetAddr1 ();
+
+      if (address != Mac48Address::GetBroadcast () && tid != 8
+            && (!nextBar->bar->GetHeader ().IsBlockAckReq ()
+                  || address != recipient || tid != nextBar->tid))
+        {
+          // we can only return a BAR addressed to the given station and for the given TID
+          nextBar++;
+          continue;
+        }
       if (nextBar->bar->GetHeader ().IsBlockAckReq ())
         {
-          Mac48Address recipient = nextBar->bar->GetHeader ().GetAddr1 ();
           AgreementsI it = m_agreements.find (std::make_pair (recipient, nextBar->tid));
           if (it == m_agreements.end ())
             {
@@ -653,21 +662,38 @@ void
 BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
 {
   NS_LOG_FUNCTION (this << *bar);
-  NS_ASSERT (bar->GetHeader ().IsBlockAckReq ());
+  NS_ASSERT (bar->GetHeader ().IsBlockAckReq () || bar->GetHeader ().IsTrigger ());
 
-  CtrlBAckRequestHeader reqHdr;
-  bar->GetPacket ()->PeekHeader (reqHdr);
-  uint8_t tid = reqHdr.GetTidInfo ();
+  uint8_t tid = 0;
+  if (bar->GetHeader ().IsBlockAckReq ())
+    {
+      CtrlBAckRequestHeader reqHdr;
+      bar->GetPacket ()->PeekHeader (reqHdr);
+      tid = reqHdr.GetTidInfo ();
+    }
+#ifdef NS3_BUILD_PROFILE_DEBUG
+  else
+    {
+      CtrlTriggerHeader triggerHdr;
+      bar->GetPacket ()->PeekHeader (triggerHdr);
+      NS_ASSERT (triggerHdr.IsMuBar ());
+    }
+#endif
   Bar request (bar, tid, skipIfNoDataQueued);
 
   // if a BAR for the given agreement is present, replace it with the new one
-  for (std::list<Bar>::const_iterator i = m_bars.begin (); i != m_bars.end (); i++)
+  std::list<Bar>::const_iterator i = m_bars.end ();
+
+  if (bar->GetHeader ().IsBlockAckReq ())
     {
-      if (i->bar->GetHeader ().GetAddr1 () == bar->GetHeader ().GetAddr1 () && i->tid == tid)
+      for (i = m_bars.begin (); i != m_bars.end (); i++)
         {
-          i = m_bars.erase (i);
-          m_bars.insert (i, request);
-          return;
+          if (i->bar->GetHeader ().IsBlockAckReq ()
+              && i->bar->GetHeader ().GetAddr1 () == bar->GetHeader ().GetAddr1 () && i->tid == tid)
+            {
+              i = m_bars.erase (i);
+              break;
+            }
         }
     }
 
@@ -677,7 +703,7 @@ BlockAckManager::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoData
     }
   else
     {
-      m_bars.push_back (request);
+      m_bars.insert (i, request);
     }
 }
 
