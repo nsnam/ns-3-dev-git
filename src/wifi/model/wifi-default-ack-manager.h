@@ -81,8 +81,57 @@ protected:
   bool IsResponseNeeded (Ptr<const WifiMacQueueItem> mpdu,
                          const WifiTxParameters& txParams) const;
 private:
+  /**
+   * Compute the information about the acknowledgment of the current multi-user frame
+   * (as described by the given TX parameters) if the given MPDU is added. If the
+   * computed information is the same as the current one, a null pointer is returned.
+   * Otherwise, the computed information is returned.
+   * This method can only be called if the selected acknowledgment method for DL
+   * multi-user frames consists of a sequence of BlockAckReq and BlockAck frames.
+   *
+   * \param mpdu the given MPDU
+   * \param txParams the TX parameters describing the current multi-user frame
+   * \return the new acknowledgment method or a null pointer if the acknowledgment method
+   *         is unchanged
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfBarBaSequence (Ptr<const WifiMacQueueItem> mpdu,
+                                                                         const WifiTxParameters& txParams);
+  /**
+   * Compute the information about the acknowledgment of the current multi-user frame
+   * (as described by the given TX parameters) if the given MPDU is added. If the
+   * computed information is the same as the current one, a null pointer is returned.
+   * Otherwise, the computed information is returned.
+   * This method can only be called if the selected acknowledgment method for DL
+   * multi-user frames consists of a MU-BAR Trigger Frame sent as single-user frame.
+   *
+   * \param mpdu the given MPDU
+   * \param txParams the TX parameters describing the current multi-user frame
+   * \return the new acknowledgment method or a null pointer if the acknowledgment method
+   *         is unchanged
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfTfMuBar (Ptr<const WifiMacQueueItem> mpdu,
+                                                                   const WifiTxParameters& txParams);
+  /**
+   * Compute the information about the acknowledgment of the current multi-user frame
+   * (as described by the given TX parameters) if the given MPDU is added. If the
+   * computed information is the same as the current one, a null pointer is returned.
+   * Otherwise, the computed information is returned.
+   * This method can only be called if the selected acknowledgment method for DL
+   * multi-user frames consists of MU-BAR Trigger Frames aggregated to the PSDUs of
+   * the MU PPDU.
+   *
+   * \param mpdu the given MPDU
+   * \param txParams the TX parameters describing the current multi-user frame
+   * \return the new acknowledgment method or a null pointer if the acknowledgment method
+   *         is unchanged
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> mpdu,
+                                                                           const WifiTxParameters& txParams);
+
   bool m_useExplicitBar;                    //!< true for sending BARs, false for using Implicit BAR policy
   double m_baThreshold;                     //!< Threshold to determine when a BlockAck must be requested
+  WifiAcknowledgment::Method m_dlMuAckType; //!< Type of the ack sequence for DL MU PPDUs
+  uint8_t m_maxMcsForBlockAckInTbPpdu;      //!< Max MCS used to send a BlockAck in a TB PPDU
 };
 
 
