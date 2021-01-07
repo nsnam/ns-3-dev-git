@@ -51,7 +51,10 @@ struct WifiAcknowledgment
       NONE = 0,
       NORMAL_ACK,
       BLOCK_ACK,
-      BAR_BLOCK_ACK
+      BAR_BLOCK_ACK,
+      DL_MU_BAR_BA_SEQUENCE,
+      DL_MU_TF_MU_BAR,
+      DL_MU_AGGREGATE_TF
     };
 
   /**
@@ -176,6 +179,111 @@ struct WifiBarBlockAck : public WifiAcknowledgment
   WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
   BlockAckReqType barType;             //!< BlockAckReq type
   BlockAckType baType;                 //!< BlockAck type
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiDlMuBarBaSequence specifies that a DL MU PPDU is acknowledged through a
+ * sequence of BlockAckReq and BlockAck frames. Only one station may be allowed
+ * to reply a SIFS after the DL MU PPDU by sending either a Normal Ack or a BlockAck.
+ */
+struct WifiDlMuBarBaSequence : public WifiAcknowledgment
+{
+  WifiDlMuBarBaSequence ();
+
+  // Overridden from WifiAcknowledgment
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
+
+  /// information related to an Ack frame sent by a station
+  struct AckInfo
+  {
+    WifiTxVector ackTxVector;          //!< TXVECTOR for the Ack frame
+  };
+  /// information related to a BlockAck frame sent by a station
+  struct BlockAckInfo
+  {
+    WifiTxVector blockAckTxVector;     //!< TXVECTOR for the BlockAck frame
+    BlockAckType baType;               //!< BlockAck type
+  };
+  /// information related to a BlockAckReq frame sent to a station
+  struct BlockAckReqInfo
+  {
+    WifiTxVector blockAckReqTxVector;  //!< TXVECTOR for the BlockAckReq frame
+    BlockAckReqType barType;           //!< BlockAckReq type
+    WifiTxVector blockAckTxVector;     //!< TXVECTOR for the BlockAck frame
+    BlockAckType baType;               //!< BlockAck type
+  };
+
+  ///< Set of stations replying with an Ack frame (no more than one)
+  std::map<Mac48Address, AckInfo> stationsReplyingWithNormalAck;
+  ///< Set of stations replying with a BlockAck frame (no more than one)
+  std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
+  ///< Set of stations receiving a BlockAckReq frame and replying with a BlockAck frame
+  std::map<Mac48Address, BlockAckReqInfo> stationsSendBlockAckReqTo;
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiDlMuTfMuBar specifies that a DL MU PPDU is followed after a SIFS duration
+ * by a MU-BAR Trigger Frame (sent as single user frame) soliciting BlockAck
+ * frames sent as HE TB PPDUs.
+ */
+struct WifiDlMuTfMuBar : public WifiAcknowledgment
+{
+  WifiDlMuTfMuBar ();
+
+  // Overridden from WifiAcknowledgment
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
+
+  /// information related to a BlockAck frame sent by a station
+  struct BlockAckInfo
+  {
+    CtrlBAckRequestHeader barHeader;   //!< BlockAckReq header
+    WifiTxVector blockAckTxVector;     //!< TXVECTOR for the BlockAck frame
+    BlockAckType baType;               //!< BlockAck type
+  };
+
+  ///< Set of stations replying with a BlockAck frame
+  std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
+  std::list<BlockAckReqType> barTypes; //!< BAR types
+  uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frame
+  WifiTxVector muBarTxVector;          //!< TXVECTOR used to transmit the MU-BAR Trigger Frame
+};
+
+
+/**
+ * \ingroup wifi
+ *
+ * WifiDlMuAggregateTf specifies that a DL MU PPDU made of PSDUs including each
+ * a MU-BAR Trigger Frame is acknowledged through BlockAck frames sent as
+ * HE TB PPDUs.
+ */
+struct WifiDlMuAggregateTf : public WifiAcknowledgment
+{
+  WifiDlMuAggregateTf ();
+
+  // Overridden from WifiAcknowledgment
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
+
+  /// information related to a BlockAck frame sent by a station
+  struct BlockAckInfo
+  {
+    uint32_t muBarSize;                //!< size in bytes of a MU-BAR Trigger Frame
+    CtrlBAckRequestHeader barHeader;   //!< BlockAckReq header
+    WifiTxVector blockAckTxVector;     //!< TXVECTOR for the BlockAck frame
+    BlockAckType baType;               //!< BlockAck type
+  };
+
+  ///< Set of stations replying with a BlockAck frame
+  std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
+  uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frames
 };
 
 

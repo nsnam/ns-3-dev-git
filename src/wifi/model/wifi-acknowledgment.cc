@@ -158,6 +158,135 @@ WifiBarBlockAck::Print (std::ostream &os) const
 }
 
 
+/*
+ * WifiDlMuBarBaSequence
+ */
+
+WifiDlMuBarBaSequence::WifiDlMuBarBaSequence ()
+  : WifiAcknowledgment (DL_MU_BAR_BA_SEQUENCE)
+{
+}
+
+bool
+WifiDlMuBarBaSequence::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
+                                          WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  if (ackPolicy == WifiMacHeader::NORMAL_ACK)
+    {
+      // The given receiver must be the only one to send an immediate reply
+      if (stationsReplyingWithNormalAck.size () == 1
+          && stationsReplyingWithNormalAck.begin ()->first == receiver)
+        {
+          return true;
+        }
+
+      if (stationsReplyingWithBlockAck.size () == 1
+          && stationsReplyingWithBlockAck.begin ()->first == receiver)
+        {
+          return true;
+        }
+
+      return false;
+    }
+
+  if (ackPolicy == WifiMacHeader::BLOCK_ACK)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+void
+WifiDlMuBarBaSequence::Print (std::ostream &os) const
+{
+  os << "DL_MU_BAR_BA_SEQUENCE [";
+  for (const auto& sta : stationsReplyingWithNormalAck)
+    {
+      os << " (ACK) " << sta.first;
+    }
+  for (const auto& sta : stationsReplyingWithBlockAck)
+    {
+      os << " (BA) " << sta.first;
+    }
+  for (const auto& sta : stationsSendBlockAckReqTo)
+    {
+      os << " (BAR+BA) " << sta.first;
+    }
+  os << "]";
+}
+
+
+/*
+ * WifiDlMuTfMuBar
+ */
+
+WifiDlMuTfMuBar::WifiDlMuTfMuBar ()
+  : WifiAcknowledgment (DL_MU_TF_MU_BAR),
+    ulLength (0)
+{
+}
+
+bool
+WifiDlMuTfMuBar::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
+                                    WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  // the only admitted ack policy is Block Ack because stations need to wait for a MU-BAR
+  if (ackPolicy == WifiMacHeader::BLOCK_ACK)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+void
+WifiDlMuTfMuBar::Print (std::ostream &os) const
+{
+  os << "DL_MU_TF_MU_BAR [";
+  for (const auto& sta : stationsReplyingWithBlockAck)
+    {
+      os << " (BA) " << sta.first;
+    }
+  os << "]";
+}
+
+
+/*
+ * WifiDlMuAggregateTf
+ */
+
+WifiDlMuAggregateTf::WifiDlMuAggregateTf ()
+  : WifiAcknowledgment (DL_MU_AGGREGATE_TF),
+    ulLength (0)
+{
+}
+
+bool
+WifiDlMuAggregateTf::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
+                                        WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  // the only admitted ack policy is No explicit acknowledgment or TB PPDU Ack policy
+  if (ackPolicy == WifiMacHeader::NO_EXPLICIT_ACK)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+void
+WifiDlMuAggregateTf::Print (std::ostream &os) const
+{
+  os << "DL_MU_AGGREGATE_TF [";
+  for (const auto& sta : stationsReplyingWithBlockAck)
+    {
+      os << " (BA) " << sta.first;
+    }
+  os << "]";
+}
+
+
 std::ostream & operator << (std::ostream &os, const WifiAcknowledgment* acknowledgment)
 {
   acknowledgment->Print (os);
