@@ -189,6 +189,23 @@ GetBlockAckRequestSize (BlockAckReqType type)
 }
 
 uint32_t
+GetMuBarSize (std::list<BlockAckReqType> types)
+{
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_TRIGGER);
+  CtrlTriggerHeader trigger;
+  trigger.SetType (MU_BAR_TRIGGER);
+  for (auto& t : types)
+    {
+      auto userInfo = trigger.AddUserInfoField ();
+      CtrlBAckRequestHeader bar;
+      bar.SetType (t);
+      userInfo.SetMuBarTriggerDepUserInfo (bar);
+    }
+  return hdr.GetSize () + trigger.GetSerializedSize () + 4;
+}
+
+uint32_t
 GetRtsSize (void)
 {
   WifiMacHeader rts;

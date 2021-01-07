@@ -24,6 +24,7 @@
 #include "block-ack-type.h"
 #include "wifi-phy-common.h"
 #include "wifi-mode.h"
+#include <list>
 
 namespace ns3 {
 
@@ -134,6 +135,13 @@ uint32_t GetBlockAckSize (BlockAckType type);
  * \return the total BlockAckRequest size in bytes
  */
 uint32_t GetBlockAckRequestSize (BlockAckReqType type);
+/**
+ * Return the total MU-BAR size (including FCS trailer).
+ *
+ * \param types the list of Block Ack Request types of the individual BARs
+ * \return the total MU-BAR size in bytes
+ */
+uint32_t GetMuBarSize (std::list<BlockAckReqType> types);
 /**
  * Return the total RTS size (including FCS trailer).
  *
