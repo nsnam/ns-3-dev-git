@@ -953,6 +953,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("MinstrelWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("MpduAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("MsduAggregator", LOG_LEVEL_ALL);
+  LogComponentEnable ("MultiUserScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("NistErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("ObssPdAlgorithm", LOG_LEVEL_ALL);
   LogComponentEnable ("OfdmPhy", LOG_LEVEL_ALL);
