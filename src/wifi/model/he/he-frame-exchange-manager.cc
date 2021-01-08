@@ -515,6 +515,7 @@ HeFrameExchangeManager::PrepareMuBar (const WifiTxVector& responseTxVector,
   NS_ASSERT (!recipients.empty ());
 
   CtrlTriggerHeader muBar (TriggerFrameType::MU_BAR_TRIGGER, responseTxVector);
+  SetTargetRssi (muBar);
   Mac48Address rxAddress;
 
   // Add the Trigger Dependent User Info subfield to every User Info field
@@ -783,6 +784,84 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
   m_psduMap.clear ();
 }
 
+WifiTxVector
+HeFrameExchangeManager::GetHeTbTxVector (CtrlTriggerHeader trigger, Mac48Address triggerSender) const
+{
+  NS_ASSERT (triggerSender != m_self); //TxPower information is used only by STAs, it is useless for the sending AP (which can directly use CtrlTriggerHeader::GetHeTbTxVector)
+  NS_ASSERT (m_staMac != nullptr);
+  uint16_t staId = m_staMac->GetAssociationId ();
+  auto userInfoIt = trigger.FindUserInfoWithAid (staId);
+  NS_ASSERT (userInfoIt != trigger.end ());
+
+  WifiTxVector v = trigger.GetHeTbTxVector (staId);
+
+  Ptr<HeConfiguration> heConfiguration = m_mac->GetHeConfiguration ();
+  NS_ASSERT_MSG (heConfiguration != 0, "This STA has to be an HE station to send an HE TB PPDU");
+  v.SetBssColor (heConfiguration->GetBssColor ());
+
+  uint8_t powerLevel = m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ();
+  /**
+   * Get the transmit power to use for an HE TB PPDU
+   * considering:
+   * - the transmit power used by the AP to send the Trigger Frame (TF),
+   *   obtained from the AP TX Power subfield of the Common Info field
+   *   of the TF.
+   * - the target uplink RSSI expected by the AP for the triggered HE TB PPDU,
+   *   obtained from the UL Target RSSI subfield of the User Info field
+   *   of the TF.
+   * - the RSSI of the PPDU containing the TF, typically logged by the
+   *   WifiRemoteStationManager upon reception of the TF from the AP.
+   *
+   * It is assumed that path loss is symmetric (i.e. uplink path loss is
+   * equivalent to the measured downlink path loss);
+   *
+   * Refer to section 27.3.14.2 (Power pre-correction) of 802.11ax Draft 4.0 for more details.
+   */
+  int8_t pathLossDb = trigger.GetApTxPower () - static_cast<int8_t> (m_mac->GetWifiRemoteStationManager ()->GetMostRecentRssi (triggerSender)); //cast RSSI to be on equal footing with AP Tx power information
+  double reqTxPowerDbm = static_cast<double> (userInfoIt->GetUlTargetRssi () + pathLossDb);
+
+  //Convert the transmit power to a power level
+  uint8_t numPowerLevels = m_phy->GetNTxPower ();
+  if (numPowerLevels > 1)
+    {
+      double stepDbm = (m_phy->GetTxPowerEnd () - m_phy->GetTxPowerStart ()) / (numPowerLevels - 1);
+      powerLevel = static_cast<uint8_t> (ceil ((reqTxPowerDbm - m_phy->GetTxPowerStart ()) / stepDbm)); //better be slightly above so as to satisfy target UL RSSI
+      if (powerLevel > numPowerLevels)
+        {
+          powerLevel = numPowerLevels; //capping will trigger warning below
+        }
+    }
+  if (reqTxPowerDbm > m_phy->GetPowerDbm (powerLevel))
+    {
+      NS_LOG_WARN ("The requested power level (" << reqTxPowerDbm << "dBm) cannot be satisfied (max: " << m_phy->GetTxPowerEnd () << "dBm)");
+    }
+  v.SetTxPowerLevel (powerLevel);
+  NS_LOG_LOGIC ("UL power control: "
+                << "input {pathLoss=" << pathLossDb << "dB, reqTxPower=" << reqTxPowerDbm << "dBm}"
+                << " output {powerLevel=" << +powerLevel << " -> " << m_phy->GetPowerDbm (powerLevel) << "dBm}"
+                << " PHY power capa {min=" << m_phy->GetTxPowerStart () << "dBm, max=" << m_phy->GetTxPowerEnd () << "dBm, levels:" << +numPowerLevels << "}");
+
+  return v;
+}
+
+void
+HeFrameExchangeManager::SetTargetRssi (CtrlTriggerHeader& trigger) const
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_apMac != 0);
+
+  trigger.SetApTxPower (static_cast<int8_t> (m_phy->GetPowerDbm (m_mac->GetWifiRemoteStationManager ()->GetDefaultTxPowerLevel ())));
+  for (auto& userInfo : trigger)
+    {
+      const auto staList = m_apMac->GetStaList ();
+      auto itAidAddr = staList.find (userInfo.GetAid12 ());
+      NS_ASSERT (itAidAddr != staList.end ());
+      int8_t rssi = static_cast<int8_t> (m_mac->GetWifiRemoteStationManager ()->GetMostRecentRssi (itAidAddr->second));
+      rssi = (rssi >= -20) ? -20 : ((rssi <= -110) ? -110 : rssi); //cap so as to keep within [-110; -20] dBm
+      userInfo.SetUlTargetRssi (rssi);
+    }
+}
+
 void
 HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector, bool inAmpdu)
@@ -903,7 +982,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
               NS_LOG_DEBUG ("Schedule Block Ack in TB PPDU");
               Simulator::Schedule (m_phy->GetSifs (), &HeFrameExchangeManager::SendBlockAck, this,
                                   agreementIt->second, hdr.GetDuration (),
-                                  trigger.GetHeTbTxVector (staId), rxSignalInfo.snr);
+                                  GetHeTbTxVector (trigger, hdr.GetAddr2 ()), rxSignalInfo.snr);
             }
         }
       else
