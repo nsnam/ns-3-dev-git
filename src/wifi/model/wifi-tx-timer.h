@@ -26,12 +26,16 @@
 #include "ns3/simulator.h"
 #include "ns3/traced-callback.h"
 #include <functional>
+#include <unordered_map>
 
 namespace ns3 {
 
 class WifiMacQueueItem;
 class WifiPsdu;
 class WifiTxVector;
+class Mac48Address;
+
+typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
  * \ingroup wifi
@@ -135,6 +139,11 @@ public:
   typedef Callback<void, uint8_t, Ptr<const WifiPsdu>, const WifiTxVector&> PsduResponseTimeout;
 
   /**
+   * PSDU map response timeout callback typedef
+   */
+  typedef Callback<void, uint8_t, WifiPsduMap*, const std::set<Mac48Address>*, std::size_t> PsduMapResponseTimeout;
+
+  /**
    * Set the callback to invoke when the TX timer following the transmission of an MPDU expires.
    *
    * \param callback the callback to invoke when the TX timer following the transmission
@@ -149,6 +158,14 @@ public:
    *                 of a PSDU expires
    */
   void SetPsduResponseTimeoutCallback (PsduResponseTimeout callback) const;
+
+  /**
+   * Set the callback to invoke when the TX timer following the transmission of a PSDU map expires.
+   *
+   * \param callback the callback to invoke when the TX timer following the transmission
+   *                 of a PSDU map expires
+   */
+  void SetPsduMapResponseTimeoutCallback (PsduMapResponseTimeout callback) const;
 
 private:
   /**
@@ -185,6 +202,8 @@ private:
   mutable MpduResponseTimeout m_mpduResponseTimeoutCallback;
   //!< the PSDU response timeout callback
   mutable PsduResponseTimeout m_psduResponseTimeoutCallback;
+  //!< the PSDU map response timeout callback
+  mutable PsduMapResponseTimeout m_psduMapResponseTimeoutCallback;
 };
 
 } // namespace ns3
@@ -217,6 +236,19 @@ void WifiTxTimer::FeedTraceSource<Ptr<WifiMacQueueItem>, WifiTxVector> (Ptr<Wifi
 template<>
 void WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
                                                                 WifiTxVector txVector);
+
+/**
+ * Explicit specialization of the FeedTraceSource member function template
+ * that feeds the PSDU map response timeout callback.
+ *
+ * \param psduMap the PSDU map for which not all responses were received
+ * \param missingStations the set of stations that did not respond
+ * \param nTotalStations the total number of expected responses
+ */
+template<>
+void WifiTxTimer::FeedTraceSource<WifiPsduMap*, std::set<Mac48Address>*, std::size_t> (WifiPsduMap* psduMap,
+                                                                                       std::set<Mac48Address>* missingStations,
+                                                                                       std::size_t nTotalStations);
 
 } // namespace ns3
 

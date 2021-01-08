@@ -24,6 +24,8 @@
 #include "wifi-mac.h"
 #include "qos-txop.h"
 #include "ssid.h"
+#include <set>
+#include <unordered_map>
 
 namespace ns3 {
 
@@ -34,6 +36,8 @@ class ExtendedCapabilities;
 class FrameExchangeManager;
 class WifiPsdu;
 enum WifiTxTimerReason : uint8_t;
+
+typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -494,6 +498,27 @@ private:
    * This trace source is fed by a WifiTxTimer object.
    */
   PsduResponseTimeoutTracedCallback m_psduResponseTimeoutCallback;
+
+  /**
+   * TracedCallback signature for PSDU map response timeout events.
+   *
+   * \param reason the reason why the timer was started
+   * \param psduMap the PSDU map for which not all responses were received before the timeout
+   * \param missingStations the MAC addresses of the stations that did not respond
+   * \param nTotalStations the total number of stations that had to respond
+   */
+  typedef void (* PsduMapResponseTimeoutCallback)(uint8_t reason, WifiPsduMap* psduMap,
+                                                  const std::set<Mac48Address>* missingStations,
+                                                  std::size_t nTotalStations);
+
+  /// TracedCallback for PSDU map response timeout events typedef
+  typedef TracedCallback<uint8_t, WifiPsduMap*, const std::set<Mac48Address>*, std::size_t> PsduMapResponseTimeoutTracedCallback;
+
+  /**
+   * PSDU map response timeout traced callback.
+   * This trace source is fed by a WifiTxTimer object.
+   */
+  PsduMapResponseTimeoutTracedCallback m_psduMapResponseTimeoutCallback;
 
   bool m_shortSlotTimeSupported; ///< flag whether short slot time is supported
   bool m_ctsToSelfSupported;     ///< flag indicating whether CTS-To-Self is supported

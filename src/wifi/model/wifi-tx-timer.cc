@@ -139,4 +139,22 @@ WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
     }
 }
 
+void
+WifiTxTimer::SetPsduMapResponseTimeoutCallback (PsduMapResponseTimeout callback) const
+{
+  m_psduMapResponseTimeoutCallback = callback;
+}
+
+template<>
+void
+WifiTxTimer::FeedTraceSource<WifiPsduMap*, std::set<Mac48Address>*, std::size_t> (WifiPsduMap* psduMap,
+                                                                                  std::set<Mac48Address>* missingStations,
+                                                                                  std::size_t nTotalStations)
+{
+  if (!m_psduMapResponseTimeoutCallback.IsNull ())
+    {
+      m_psduMapResponseTimeoutCallback (m_reason, psduMap, missingStations, nTotalStations);
+    }
+}
+
 } //namespace ns3
