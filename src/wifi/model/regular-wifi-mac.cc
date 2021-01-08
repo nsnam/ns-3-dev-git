@@ -484,10 +484,13 @@ void
 RegularWifiMac::SetTypeOfStation (TypeOfStation type)
 {
   NS_LOG_FUNCTION (this << type);
-  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-    {
-      i->second->SetTypeOfStation (type);
-    }
+  m_typeOfStation = type;
+}
+
+TypeOfStation
+RegularWifiMac::GetTypeOfStation (void) const
+{
+  return m_typeOfStation;
 }
 
 Ptr<Txop>

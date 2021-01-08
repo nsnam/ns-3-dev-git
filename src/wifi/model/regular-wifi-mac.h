@@ -71,6 +71,7 @@ public:
   void ResetWifiPhy (void);
   virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
   void ConfigureStandard (WifiStandard standard);
+  TypeOfStation GetTypeOfStation (void) const;
 
   /**
    * This type defines the callback of a higher layer that a
@@ -162,6 +163,7 @@ public:
 protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
+  void SetTypeOfStation (TypeOfStation type);
 
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
@@ -222,16 +224,6 @@ protected:
    * contention window size.
    */
   void ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax);
-
-  /**
-   * This method is invoked by a subclass to specify what type of
-   * station it is implementing. This is something that the channel
-   * access functions (instantiated within this class as QosTxop's)
-   * need to know.
-   *
-   * \param type the type of station.
-   */
-  void SetTypeOfStation (TypeOfStation type);
 
   /**
    * This method acts as the MacRxMiddle receive callback and is
@@ -409,6 +401,8 @@ private:
    * \param timeout the BK block ack inactivity timeout.
    */
   void SetBkBlockAckInactivityTimeout (uint16_t timeout);
+
+  TypeOfStation m_typeOfStation;                        //!< the type of station
 
   /**
    * This Boolean is set \c true iff this WifiMac is to model

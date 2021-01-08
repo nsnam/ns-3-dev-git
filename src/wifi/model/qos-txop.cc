@@ -92,8 +92,7 @@ QosTxop::GetTypeId (void)
 }
 
 QosTxop::QosTxop ()
-  : m_typeOfStation (STA),
-    m_startTxop (Seconds (0)),
+  : m_startTxop (Seconds (0)),
     m_txopDuration (Seconds (0))
 {
   NS_LOG_FUNCTION (this);
@@ -210,19 +209,6 @@ QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remote
   Txop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
   m_baManager->SetWifiRemoteStationManager (m_stationManager);
-}
-
-void
-QosTxop::SetTypeOfStation (TypeOfStation type)
-{
-  NS_LOG_FUNCTION (this << +type);
-  m_typeOfStation = type;
-}
-
-TypeOfStation
-QosTxop::GetTypeOfStation (void) const
-{
-  return m_typeOfStation;
 }
 
 bool

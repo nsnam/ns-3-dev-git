@@ -35,6 +35,18 @@ class VhtConfiguration;
 class HeConfiguration;
 
 /**
+ * Enumeration for type of station
+ */
+enum TypeOfStation
+{
+  STA,
+  AP,
+  ADHOC_STA,
+  MESH,
+  OCB
+};
+
+/**
  * \ingroup wifi
   * \enum WifiMacDropReason
   * \brief The reason why an MPDU was dropped
@@ -79,7 +91,22 @@ public:
    */
   Ptr<NetDevice> GetDevice (void) const;
 
+   /**
+   * This method is invoked by a subclass to specify what type of
+   * station it is implementing. This is something that the channel
+   * access functions need to know.
+   *
+   * \param type the type of station.
+   */
+  virtual void SetTypeOfStation (TypeOfStation type) = 0;
   /**
+   * Return the type of station.
+   *
+   * \return the type of station.
+   */
+  virtual TypeOfStation GetTypeOfStation (void) const = 0;
+
+ /**
    * \param ssid the current SSID of this MAC layer.
    */
   virtual void SetSsid (Ssid ssid) = 0;

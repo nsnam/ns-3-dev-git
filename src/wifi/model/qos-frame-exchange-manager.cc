@@ -600,7 +600,7 @@ QosFrameExchangeManager::PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTx
   SetTxopHolder (psdu, txVector);
 
   // APs store buffer size report of associated stations
-  if (m_mac->GetQosTxop (AC_BE)->GetTypeOfStation () == AP && psdu->GetAddr1 () == m_self)
+  if (m_mac->GetTypeOfStation () == AP && psdu->GetAddr1 () == m_self)
     {
       for (const auto& mpdu : *PeekPointer (psdu))
         {
