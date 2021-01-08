@@ -53,6 +53,8 @@ public:
       WAIT_CTS,
       WAIT_NORMAL_ACK,
       WAIT_BLOCK_ACK,
+      WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU,
+      WAIT_BLOCK_ACKS_IN_TB_PPDU,
     };
 
   /** Default constructor */
