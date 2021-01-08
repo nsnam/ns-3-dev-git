@@ -276,6 +276,17 @@ public:
                                    uint16_t staId) const = 0;
 
   /**
+   * Get a WifiConstPsduMap from a PSDU and the TXVECTOR to use to send the PSDU.
+   * The STA-ID value is properly determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the given PSDU
+   * \param txVector the TXVECTOR to use to send the PSDU
+   * \return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
+   */
+  virtual WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const;
+
+  /**
    * Get the maximum PSDU size in bytes.
    *
    * \return the maximum PSDU size in bytes

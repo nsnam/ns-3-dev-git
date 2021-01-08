@@ -121,7 +121,23 @@ public:
   void EndReceiveInterBss (void);
 
   /**
-   * \param psdu the PSDU to send
+   * Get a WifiConstPsduMap from a PSDU and the TXVECTOR to use to send the PSDU.
+   * The STA-ID value is properly determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the given PSDU
+   * \param txVector the TXVECTOR to use to send the PSDU
+   * \return a WifiConstPsduMap built from the given PSDU and the given TXVECTOR
+   */
+  static WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
+
+  /**
+   * This function is a wrapper for the Send variant that accepts a WifiConstPsduMap
+   * as first argument. This function inserts the given PSDU in a WifiConstPsduMap
+   * along with a STA-ID value that is determined based on whether the given PSDU has
+   * to be transmitted as a DL or UL frame.
+   *
+   * \param psdu the PSDU to send (in a SU PPDU)
    * \param txVector the TXVECTOR that has TX parameters such as mode, the transmission mode to use to send
    *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
@@ -217,6 +233,21 @@ public:
    */
   static Time CalculateTxDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band,
                                    uint16_t staId = SU_STA_ID);
+  /**
+   * This function is a wrapper for the CalculateTxDuration variant that accepts a
+   * WifiConstPsduMap as first argument. This function inserts the given PSDU in a
+   * WifiConstPsduMap along with a STA-ID value that is determined based on whether
+   * the given PSDU has to be transmitted as a DL or UL frame, thus allowing to
+   * properly calculate the TX duration in case the PSDU has to be transmitted as
+   * an UL frame.
+   *
+   * \param psdu the PSDU to transmit
+   * \param txVector the TXVECTOR used for the transmission of the PSDU
+   * \param band the frequency band
+   *
+   * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
+   */
+  static Time CalculateTxDuration (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, WifiPhyBand band);
   /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID
    * \param txVector the TXVECTOR used for the transmission of the PPDU

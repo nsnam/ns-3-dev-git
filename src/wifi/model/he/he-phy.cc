@@ -1180,6 +1180,20 @@ HePhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
   return true;
 }
 
+WifiConstPsduMap
+HePhy::GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const
+{
+  uint16_t staId = SU_STA_ID;
+
+  if (txVector.IsUlMu ())
+    {
+      NS_ASSERT (txVector.GetHeMuUserInfoMap ().size () == 1);
+      staId = txVector.GetHeMuUserInfoMap ().begin ()->first;
+    }
+
+  return WifiConstPsduMap ({std::make_pair (staId, psdu)});
+}
+
 uint32_t
 HePhy::GetMaxPsduSize (void) const
 {

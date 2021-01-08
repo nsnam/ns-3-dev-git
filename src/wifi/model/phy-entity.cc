@@ -193,6 +193,12 @@ PhyEntity::CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector) 
   return duration;
 }
 
+WifiConstPsduMap
+PhyEntity::GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const
+{
+  return WifiConstPsduMap ({std::make_pair (SU_STA_ID, psdu)});
+}
+
 Ptr<const WifiPsdu>
 PhyEntity::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
 {

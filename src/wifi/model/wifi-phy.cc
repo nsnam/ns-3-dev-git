@@ -1620,6 +1620,12 @@ WifiPhy::CalculateTxDuration (uint32_t size, const WifiTxVector& txVector, WifiP
 }
 
 Time
+WifiPhy::CalculateTxDuration (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, WifiPhyBand band)
+{
+  return CalculateTxDuration (GetWifiConstPsduMap (psdu, txVector), txVector, band);
+}
+
+Time
 WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band)
 {
   return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculateTxDuration (psduMap, txVector, band);
@@ -1756,13 +1762,17 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
     }
 }
 
+WifiConstPsduMap
+WifiPhy::GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+  return GetStaticPhyEntity (txVector.GetModulationClass ())->GetWifiConstPsduMap (psdu, txVector);
+}
+
 void
 WifiPhy::Send (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
-  WifiConstPsduMap psdus;
-  psdus.insert (std::make_pair (SU_STA_ID, psdu));
-  Send (psdus, txVector);
+  Send (GetWifiConstPsduMap (psdu, txVector), txVector);
 }
 
 void
