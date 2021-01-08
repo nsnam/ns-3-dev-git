@@ -185,8 +185,7 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
     {
       NS_LOG_DEBUG ("Non-QoS data frame or Block Ack agreement not established, request Normal Ack");
       WifiNormalAck* acknowledgment = new WifiNormalAck;
-      WifiMode mode = txParams.m_txVector.GetMode ();
-      acknowledgment->ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (receiver, mode);
+      acknowledgment->ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (receiver, txParams.m_txVector);
       if (hdr.IsQosData ())
         {
           acknowledgment->SetQosAckPolicy (receiver, hdr.GetQosTid (), WifiMacHeader::NORMAL_ACK);
@@ -224,8 +223,7 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
     {
       NS_LOG_DEBUG ("Sending a single MPDU, no previous frame to ack: request Normal Ack");
       WifiNormalAck* acknowledgment = new WifiNormalAck;
-      WifiMode mode = txParams.m_txVector.GetMode ();
-      acknowledgment->ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (receiver, mode);
+      acknowledgment->ackTxVector = m_mac->GetWifiRemoteStationManager ()->GetAckTxVector (receiver, txParams.m_txVector);
       acknowledgment->SetQosAckPolicy (receiver, tid, WifiMacHeader::NORMAL_ACK);
       return std::unique_ptr<WifiAcknowledgment> (acknowledgment);
     }
@@ -240,8 +238,7 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
       NS_LOG_DEBUG ("Request to schedule a Block Ack Request");
 
       WifiBarBlockAck* acknowledgment = new WifiBarBlockAck;
-      WifiMode mode = txParams.m_txVector.GetMode ();
-      acknowledgment->blockAckReqTxVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (receiver, mode);
+      acknowledgment->blockAckReqTxVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (receiver, txParams.m_txVector);
       acknowledgment->blockAckTxVector = acknowledgment->blockAckReqTxVector;
       acknowledgment->barType = m_mac->GetQosTxop (tid)->GetBlockAckReqType (receiver, tid);
       acknowledgment->baType = m_mac->GetQosTxop (tid)->GetBlockAckType (receiver, tid);
@@ -251,8 +248,7 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
 
   NS_LOG_DEBUG ("A-MPDU using Implicit Block Ack Request policy or BlockAckReq, request Block Ack");
   WifiBlockAck* acknowledgment = new WifiBlockAck;
-  WifiMode mode = txParams.m_txVector.GetMode ();
-  acknowledgment->blockAckTxVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (receiver, mode);
+  acknowledgment->blockAckTxVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (receiver, txParams.m_txVector);
   acknowledgment->baType = m_mac->GetQosTxop (tid)->GetBlockAckType (receiver, tid);
   acknowledgment->SetQosAckPolicy (receiver, tid, WifiMacHeader::NORMAL_ACK);
   return std::unique_ptr<WifiAcknowledgment> (acknowledgment);

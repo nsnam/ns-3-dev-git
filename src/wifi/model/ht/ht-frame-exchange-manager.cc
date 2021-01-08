@@ -1260,7 +1260,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
 
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector.GetMode ());
+          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector);
           m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_psdu->GetHeader (0),
                                                               rxSnr, txVector.GetMode (), tag.Get ());
 
@@ -1321,7 +1321,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           NS_LOG_DEBUG ("Schedule Block Ack");
           Simulator::Schedule (m_phy->GetSifs (), &HtFrameExchangeManager::SendBlockAck, this,
                                agreementIt->second, hdr.GetDuration (),
-                               m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (sender, txVector.GetMode ()),
+                               m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (sender, txVector),
                                rxSnr);
         }
       else
@@ -1382,7 +1382,7 @@ HtFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSigna
 
           Simulator::Schedule (m_phy->GetSifs (), &HtFrameExchangeManager::SendBlockAck, this,
                                agreementIt->second, psdu->GetDuration (),
-                               m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (psdu->GetAddr2 (), txVector.GetMode ()),
+                               m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (psdu->GetAddr2 (), txVector),
                                rxSignalInfo.snr);
         }
     }

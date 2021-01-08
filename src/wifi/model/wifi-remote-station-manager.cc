@@ -25,7 +25,8 @@
 #include "ns3/simulator.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-phy.h"
-#include "wifi-mac.h"
+#include "ap-wifi-mac.h"
+#include "sta-wifi-mac.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
@@ -472,6 +473,33 @@ WifiRemoteStationManager::RecordDisassociated (Mac48Address address)
   LookupState (address)->m_state = WifiRemoteStationState::DISASSOC;
 }
 
+uint16_t
+WifiRemoteStationManager::GetStaId (Mac48Address address, const WifiTxVector& txVector) const
+{
+  NS_LOG_FUNCTION (this << address << txVector);
+
+  uint16_t staId = SU_STA_ID;
+
+  if (txVector.IsMu ())
+    {
+      if (m_wifiMac->GetTypeOfStation () == AP)
+        {
+          staId = StaticCast<ApWifiMac> (m_wifiMac)->GetAssociationId (address);
+        }
+      else if (m_wifiMac->GetTypeOfStation () == STA)
+        {
+          Ptr<StaWifiMac> staMac = StaticCast<StaWifiMac> (m_wifiMac);
+          if (staMac->IsAssociated ())
+            {
+              staId = staMac->GetAssociationId ();
+            }
+        }
+    }
+
+  NS_LOG_DEBUG ("Returning STAID = " << staId);
+  return staId;
+}
+
 WifiTxVector
 WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
 {
@@ -597,10 +625,10 @@ WifiRemoteStationManager::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) c
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) const
+WifiRemoteStationManager::GetAckTxVector (Mac48Address to, const WifiTxVector& dataTxVector) const
 {
   NS_ASSERT (!to.IsGroup ());
-  WifiMode ackMode = GetControlAnswerMode (dataTxMode);
+  WifiMode ackMode = GetControlAnswerMode (dataTxVector.GetMode (GetStaId (to, dataTxVector)));
   WifiTxVector v;
   v.SetMode (ackMode);
   v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled ()));
@@ -613,10 +641,10 @@ WifiRemoteStationManager::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) 
 }
 
 WifiTxVector
-WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address to, WifiMode dataTxMode) const
+WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address to, const WifiTxVector& dataTxVector) const
 {
   NS_ASSERT (!to.IsGroup ());
-  WifiMode blockAckMode = GetControlAnswerMode (dataTxMode);
+  WifiMode blockAckMode = GetControlAnswerMode (dataTxVector.GetMode (GetStaId (to, dataTxVector)));
   WifiTxVector v;
   v.SetMode (blockAckMode);
   v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled ()));
@@ -831,7 +859,8 @@ WifiRemoteStationManager::ReportDataOk (Ptr<const WifiMacQueueItem> mpdu, double
       station->m_state->m_info.NotifyTxSuccess (m_ssrc[ac]);
       m_ssrc[ac] = 0;
     }
-  DoReportDataOk (station, ackSnr, ackMode, dataSnr, dataTxVector.GetChannelWidth (), dataTxVector.GetNss ());
+  DoReportDataOk (station, ackSnr, ackMode, dataSnr, dataTxVector.GetChannelWidth (),
+                  dataTxVector.GetNss (GetStaId (hdr.GetAddr1 (), dataTxVector)));
 }
 
 void
@@ -869,15 +898,15 @@ WifiRemoteStationManager::ReportFinalDataFailed (Ptr<const WifiMacQueueItem> mpd
 }
 
 void
-WifiRemoteStationManager::ReportRxOk (Mac48Address address, RxSignalInfo rxSignalInfo, WifiMode txMode)
+WifiRemoteStationManager::ReportRxOk (Mac48Address address, RxSignalInfo rxSignalInfo, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION (this << address << rxSignalInfo << txMode);
+  NS_LOG_FUNCTION (this << address << rxSignalInfo << txVector);
   if (address.IsGroup ())
     {
       return;
     }
   WifiRemoteStation *station = Lookup (address);
-  DoReportRxOk (station, rxSignalInfo.snr, txMode);
+  DoReportRxOk (station, rxSignalInfo.snr, txVector.GetMode (GetStaId (address, txVector)));
   station->m_rssiAndUpdateTimePair = std::make_pair (rxSignalInfo.rssi, Simulator::Now ());
 }
 
@@ -892,7 +921,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address,
     {
       m_macTxDataFailed (address);
     }
-  DoReportAmpduTxStatus (Lookup (address), nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataTxVector.GetChannelWidth (), dataTxVector.GetNss ());
+  DoReportAmpduTxStatus (Lookup (address), nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataTxVector.GetChannelWidth (), dataTxVector.GetNss (GetStaId (address, dataTxVector)));
 }
 
 bool
