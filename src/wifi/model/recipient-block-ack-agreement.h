@@ -80,10 +80,13 @@ public:
   /**
    * Set the Starting Sequence Number subfield of the Block Ack Starting Sequence
    * Control subfield of the Block Ack frame and fill the block ack bitmap.
+   * For Multi-STA Block Acks, <i>index</i> identifies the Per AID TID Info
+   * subfield whose bitmap has to be filled.
    *
    * \param blockAckHeader the block ack header
+   * \param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
    */
-  void FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader) const;
+  void FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader, std::size_t index = 0) const;
   /**
    * This is called when a Block Ack agreement is destroyed to flush the
    * received packets.

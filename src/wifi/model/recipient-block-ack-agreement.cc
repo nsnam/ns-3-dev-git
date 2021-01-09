@@ -221,9 +221,9 @@ RecipientBlockAckAgreement::NotifyReceivedBar (uint16_t startingSequenceNumber)
 }
 
 void
-RecipientBlockAckAgreement::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader) const
+RecipientBlockAckAgreement::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAckHeader, std::size_t index) const
 {
-  NS_LOG_FUNCTION (this << blockAckHeader);
+  NS_LOG_FUNCTION (this << blockAckHeader << index);
   if (blockAckHeader->IsBasic ())
     {
       NS_FATAL_ERROR ("Basic block ack is not supported.");
@@ -232,7 +232,8 @@ RecipientBlockAckAgreement::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAck
     {
       NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
     }
-  else if (blockAckHeader->IsCompressed () || blockAckHeader->IsExtendedCompressed ())
+  else if (blockAckHeader->IsCompressed () || blockAckHeader->IsExtendedCompressed ()
+           || blockAckHeader->IsMultiSta ())
     {
       // The Starting Sequence Number subfield of the Block Ack Starting Sequence
       // Control subfield of the BlockAck frame shall be set to any value in the
@@ -240,14 +241,14 @@ RecipientBlockAckAgreement::FillBlockAckBitmap (CtrlBAckResponseHeader *blockAck
       // We set it to WinStartR
       uint16_t ssn = m_scoreboard.GetWinStart ();
       NS_LOG_DEBUG ("SSN=" << ssn);
-      blockAckHeader->SetStartingSequence (ssn);
-      blockAckHeader->ResetBitmap ();
+      blockAckHeader->SetStartingSequence (ssn, index);
+      blockAckHeader->ResetBitmap (index);
 
       for (std::size_t i = 0; i < m_scoreboard.GetWinSize (); i++)
         {
           if (m_scoreboard.At (i))
             {
-              blockAckHeader->SetReceivedPacket ((ssn + i) % SEQNO_SPACE_SIZE);
+              blockAckHeader->SetReceivedPacket ((ssn + i) % SEQNO_SPACE_SIZE, index);
             }
         }
     }

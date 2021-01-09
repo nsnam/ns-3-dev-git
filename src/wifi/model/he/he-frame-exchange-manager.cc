@@ -905,7 +905,7 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           CtrlBAckResponseHeader blockAck;
           mpdu->GetPacket ()->PeekHeader (blockAck);
           uint8_t tid = blockAck.GetTidInfo ();
-          GetBaManager (tid)->NotifyGotBlockAck (&blockAck, hdr.GetAddr2 (), rxSignalInfo.snr,
+          GetBaManager (tid)->NotifyGotBlockAck (&blockAck, hdr.GetAddr2 (), {tid}, rxSignalInfo.snr,
                                                  tag.Get (), m_txParams.m_txVector);
 
           // remove the sender from the set of stations that are expected to send a BlockAck

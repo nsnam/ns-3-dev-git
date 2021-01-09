@@ -194,17 +194,23 @@ public:
   /**
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
+   * \param tids the set of TIDs the acknowledged MPDUs belong to
    * \param rxSnr received SNR of the BlockAck frame itself
    * \param dataSnr data SNR reported by remote station
    * \param dataTxVector the TXVECTOR used to send the Data
+   * \param index the index of the Per AID TID Info subfield, in case of Multi-STA
+   *              Block Ack, or 0, otherwise
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
    * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
    * with Ack Policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
+   * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
+   * using All-ack context.
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
-                          double rxSnr, double dataSnr, WifiTxVector dataTxVector);
+                          const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
+                          const WifiTxVector& dataTxVector, size_t index = 0);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.
