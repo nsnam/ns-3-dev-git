@@ -93,6 +93,7 @@ HeFrameExchangeManager::DoDispose (void)
   m_psduMap.clear ();
   m_txParams.Clear ();
   m_muScheduler = 0;
+  m_multiStaBaEvent.Cancel ();
   VhtFrameExchangeManager::DoDispose ();
 }
 
@@ -268,6 +269,9 @@ HeFrameExchangeManager::SendPsduMap (void)
   WifiTxVector* responseTxVector = nullptr;
   Ptr<WifiMacQueueItem> mpdu = nullptr;
   Ptr<WifiPsdu> psdu = nullptr;
+  WifiTxVector txVector;
+
+  // Compute the type of TX timer to set depending on the acknowledgment method
 
   /*
    * Acknowledgment via a sequence of BlockAckReq and BlockAck frames
@@ -409,6 +413,95 @@ HeFrameExchangeManager::SendPsduMap (void)
       timerType = WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU;
       responseTxVector = &acknowledgment->stationsReplyingWithBlockAck.begin ()->second.blockAckTxVector;
     }
+  /*
+   * Basic Trigger Frame starting an UL MU transmission
+   */
+  else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA)
+    {
+      // the PSDU map being sent must contain a (Basic) Trigger Frame
+      NS_ASSERT (m_psduMap.size () == 1 && m_psduMap.begin ()->first == SU_STA_ID
+                 && (mpdu = *m_psduMap.begin ()->second->begin ())->GetHeader ().IsTrigger ());
+
+      WifiUlMuMultiStaBa* acknowledgment = static_cast<WifiUlMuMultiStaBa*> (m_txParams.m_acknowledgment.get ());
+
+      // record the set of stations solicited by this Trigger Frame
+      m_staExpectTbPpduFrom.clear ();
+
+      for (const auto& station : acknowledgment->stationsReceivingMultiStaBa)
+        {
+          m_staExpectTbPpduFrom.insert (station.first.first);
+        }
+
+      // Reset stationsReceivingMultiStaBa, which will be filled as soon as
+      // TB PPDUs are received
+      acknowledgment->stationsReceivingMultiStaBa.clear ();
+      acknowledgment->baType.m_bitmapLen.clear ();
+
+      // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
+      // Trigger Frame, so that its Duration/ID is correctly computed
+      NS_ASSERT (m_muScheduler != 0);
+      acknowledgment->acknowledgmentTime += m_mac->GetWifiPhy ()->GetSifs ()
+                                            + m_muScheduler->GetUlMuInfo ().tbPpduDuration;
+
+      timerType = WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF;
+      responseTxVector = &acknowledgment->tbPpduTxVector;
+    }
+  /*
+   * BSRP Trigger Frame
+   */
+  else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE
+           && !m_txParams.m_txVector.IsUlMu ()
+           && m_psduMap.size () == 1 && m_psduMap.begin ()->first == SU_STA_ID
+           && (mpdu = *m_psduMap.begin ()->second->begin ())->GetHeader ().IsTrigger ())
+    {
+      CtrlTriggerHeader trigger;
+      mpdu->GetPacket ()->PeekHeader (trigger);
+      NS_ASSERT (trigger.IsBsrp ());
+      NS_ASSERT (m_apMac != 0);
+
+      // record the set of stations solicited by this Trigger Frame
+      m_staExpectTbPpduFrom.clear ();
+
+      for (const auto& userInfo : trigger)
+        {
+          auto staIt = m_apMac->GetStaList ().find (userInfo.GetAid12 ());
+          NS_ASSERT (staIt != m_apMac->GetStaList ().end ());
+          m_staExpectTbPpduFrom.insert (staIt->second);
+        }
+
+      // Add a SIFS and the TB PPDU duration to the acknowledgment time of the
+      // Trigger Frame, so that its Duration/ID is correctly computed
+      WifiNoAck* acknowledgment = static_cast<WifiNoAck*> (m_txParams.m_acknowledgment.get ());
+      txVector = trigger.GetHeTbTxVector (trigger.begin ()->GetAid12 ());
+      acknowledgment->acknowledgmentTime += m_mac->GetWifiPhy ()->GetSifs ()
+                                            + HePhy::ConvertLSigLengthToHeTbPpduDuration (trigger.GetUlLength (),
+                                                                                          txVector,
+                                                                                          m_phy->GetPhyBand ());
+
+      timerType = WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF;
+      responseTxVector = &txVector;
+    }
+  /*
+   * TB PPDU solicited by a Basic Trigger Frame
+   */
+  else if (m_txParams.m_txVector.IsUlMu ()
+           && m_txParams.m_acknowledgment->method == WifiAcknowledgment::ACK_AFTER_TB_PPDU)
+    {
+      NS_ASSERT (m_psduMap.size () == 1);
+      timerType = WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU;
+      NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+      txVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (m_psduMap.begin ()->second->GetAddr1 (),
+                                                                             m_txParams.m_txVector);
+      responseTxVector = &txVector;
+    }
+  /*
+   * QoS Null frames solicited by a BSRP Trigger Frame
+   */
+  else if (m_txParams.m_txVector.IsUlMu ()
+           && m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
+    {
+      // No response is expected, so do nothing.
+    }
   else
     {
       NS_ABORT_MSG ("Unable to handle the selected acknowledgment method ("
@@ -470,6 +563,15 @@ HeFrameExchangeManager::SendPsduMap (void)
           case WifiTxTimer::WAIT_BLOCK_ACKS_IN_TB_PPDU:
             m_txTimer.Set (timerType, timeout, &HeFrameExchangeManager::BlockAcksInTbPpduTimeout, this,
                           &m_psduMap, &m_staExpectTbPpduFrom, m_staExpectTbPpduFrom.size ());
+            break;
+          case WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF:
+          case WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF:
+            m_txTimer.Set (timerType, timeout, &HeFrameExchangeManager::TbPpduTimeout, this,
+                          &m_psduMap, &m_staExpectTbPpduFrom, m_staExpectTbPpduFrom.size ());
+            break;
+          case WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU:
+            m_txTimer.Set (timerType, timeout, &HeFrameExchangeManager::BlockAckAfterTbPpduTimeout,
+                          this, m_psduMap.begin ()->second, m_txParams.m_txVector);
             break;
           default:
             NS_ABORT_MSG ("Unknown timer type: " << timerType);
@@ -678,6 +780,28 @@ HeFrameExchangeManager::CalculateAcknowledgmentTime (WifiAcknowledgment* acknowl
 
       dlMuAggrTfAcknowledgment->acknowledgmentTime = m_phy->GetSifs () + duration;
     }
+  /*
+   * Basic Trigger Frame starting an UL MU transmission
+   */
+  else if (acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA)
+    {
+      WifiUlMuMultiStaBa* ulMuMultiStaBa = static_cast<WifiUlMuMultiStaBa*> (acknowledgment);
+
+      Time duration = m_phy->CalculateTxDuration (GetBlockAckSize (ulMuMultiStaBa->baType),
+                                                  ulMuMultiStaBa->multiStaBaTxVector,
+                                                  m_phy->GetPhyBand ());
+      ulMuMultiStaBa->acknowledgmentTime = m_phy->GetSifs () + duration;
+    }
+  /*
+   * TB PPDU solicired by a Basic or BSRP Trigger Frame
+   */
+  else if (acknowledgment->method == WifiAcknowledgment::ACK_AFTER_TB_PPDU)
+    {
+      // The station solicited by the Trigger Frame does not have to account
+      // for the actual acknowledgment time since it is given the PPDU duration
+      // through the Trigger Frame
+      acknowledgment->acknowledgmentTime = Seconds (0);
+    }
   else
     {
       VhtFrameExchangeManager::CalculateAcknowledgmentTime (acknowledgment);
@@ -714,6 +838,37 @@ HeFrameExchangeManager::GetTxDuration (uint32_t ppduPayloadSize, Mac48Address re
                                                   m_phy->GetPhyBand (), staId);
 
   return std::max (psduDuration, txParams.m_txDuration);
+}
+
+void
+HeFrameExchangeManager::TbPpduTimeout (WifiPsduMap* psduMap,
+                                       const std::set<Mac48Address>* staMissedTbPpduFrom,
+                                       std::size_t nSolicitedStations)
+{
+  NS_LOG_FUNCTION (this << psduMap << staMissedTbPpduFrom->size () << nSolicitedStations);
+
+  NS_ASSERT (psduMap != nullptr);
+  NS_ASSERT (psduMap->size () == 1 && psduMap->begin ()->first == SU_STA_ID
+              && psduMap->begin ()->second->GetHeader (0).IsTrigger ());
+
+  // This method is called if some station(s) did not send a TB PPDU
+  NS_ASSERT (!staMissedTbPpduFrom->empty ());
+  NS_ASSERT (m_edca != 0);
+
+  if (staMissedTbPpduFrom->size () == nSolicitedStations)
+    {
+      // no station replied, the transmission failed
+      m_edca->UpdateFailedCw ();
+
+      TransmissionFailed ();
+    }
+  else if (!m_multiStaBaEvent.IsRunning ())
+    {
+      m_edca->ResetCw ();
+      TransmissionSucceeded ();
+    }
+
+  m_psduMap.clear ();
 }
 
 void
@@ -781,6 +936,26 @@ HeFrameExchangeManager::BlockAcksInTbPpduTimeout (WifiPsduMap* psduMap,
     {
       TransmissionSucceeded ();
     }
+  m_psduMap.clear ();
+}
+
+void
+HeFrameExchangeManager::BlockAckAfterTbPpduTimeout (Ptr<WifiPsdu> psdu, const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << *psdu << txVector);
+
+  bool resetCw;
+
+  // call ReportDataFailed to increase SRC/LRC
+  m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (*psdu->begin ());
+
+  MissedBlockAck (psdu, m_txParams.m_txVector, resetCw);
+
+  // This is a PSDU sent in a TB PPDU. An HE STA resumes the EDCA backoff procedure
+  // without modifying CW or the backoff counter for the associated EDCAF, after
+  // transmission of an MPDU in a TB PPDU regardless of whether the STA has received
+  // the corresponding acknowledgment frame in response to the MPDU sent in the TB PPDU
+  // (Sec. 10.22.2.2 of 11ax Draft 3.0)
   m_psduMap.clear ();
 }
 
@@ -863,6 +1038,267 @@ HeFrameExchangeManager::SetTargetRssi (CtrlTriggerHeader& trigger) const
 }
 
 void
+HeFrameExchangeManager::SendMultiStaBlockAck (const WifiTxParameters& txParams)
+{
+  NS_LOG_FUNCTION (this << &txParams);
+
+  NS_ASSERT (m_apMac != 0);
+  NS_ASSERT (txParams.m_acknowledgment
+             && txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
+  WifiUlMuMultiStaBa* acknowledgment = static_cast<WifiUlMuMultiStaBa*> (txParams.m_acknowledgment.get ());
+
+  NS_ASSERT (!acknowledgment->stationsReceivingMultiStaBa.empty ());
+
+  CtrlBAckResponseHeader blockAck;
+  blockAck.SetType (acknowledgment->baType);
+
+  Mac48Address receiver;
+
+  for (const auto& staInfo : acknowledgment->stationsReceivingMultiStaBa)
+    {
+      receiver = staInfo.first.first;
+      uint8_t tid = staInfo.first.second;
+      std::size_t index = staInfo.second;
+
+      blockAck.SetAid11 (m_apMac->GetAssociationId (receiver), index);
+      blockAck.SetTidInfo (tid, index);
+
+      if (tid == 14)
+        {
+          // All-ack context
+          NS_LOG_DEBUG ("Multi-STA Block Ack: Sending All-ack to=" << receiver);
+          blockAck.SetAckType (true, index);
+          continue;
+        }
+
+      if (acknowledgment->baType.m_bitmapLen.at (index) == 0)
+        {
+          // Acknowledgment context
+          NS_LOG_DEBUG ("Multi-STA Block Ack: Sending Ack to=" << receiver);
+          blockAck.SetAckType (true, index);
+        }
+      else
+        {
+          // Block acknowledgment context
+          blockAck.SetAckType (false, index);
+
+          auto addressTidPair = staInfo.first;
+          auto agreementIt = m_agreements.find (addressTidPair);
+          NS_ASSERT (agreementIt != m_agreements.end ());
+          agreementIt->second.FillBlockAckBitmap (&blockAck, index);
+          NS_LOG_DEBUG ("Multi-STA Block Ack: Sending Block Ack with seq=" << blockAck.GetStartingSequence (index)
+                        << " to=" << receiver << " tid=" << +tid);
+        }
+    }
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
+  hdr.SetAddr1 (acknowledgment->stationsReceivingMultiStaBa.size () == 1 ? receiver : Mac48Address::GetBroadcast ());
+  hdr.SetAddr2 (m_self);
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (blockAck);
+  Ptr<WifiPsdu> psdu = GetWifiPsdu (Create<WifiMacQueueItem> (packet, hdr),
+                                    acknowledgment->multiStaBaTxVector);
+
+  // The Duration/ID field in a BlockAck frame transmitted in response to a frame
+  // carried in HE TB PPDU is set according to the multiple protection settings
+  // (Sec. 9.2.5.7 of 802.11ax D3.0)
+  Time txDuration = m_phy->CalculateTxDuration (GetBlockAckSize (acknowledgment->baType),
+                                                acknowledgment->multiStaBaTxVector,
+                                                m_phy->GetPhyBand ());
+  WifiTxParameters params;
+  // if the TXOP limit is null, GetPsduDurationId returns the acknowledgment time,
+  // hence we set an method with acknowledgment time equal to zero.
+  params.m_acknowledgment = std::unique_ptr<WifiAcknowledgment> (new WifiNoAck);
+  psdu->SetDuration (GetPsduDurationId (txDuration, params));
+
+  psdu->GetPayload (0)->AddPacketTag (m_muSnrTag);
+
+  ForwardPsduDown (psdu, acknowledgment->multiStaBaTxVector);
+
+  // continue with the TXOP if time remains
+  m_psduMap.clear ();
+  m_edca->ResetCw ();
+  m_muSnrTag.Reset ();
+  Simulator::Schedule (txDuration, &HeFrameExchangeManager::TransmissionSucceeded, this);
+}
+
+void
+HeFrameExchangeManager::ReceiveBasicTrigger (const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr)
+{
+  NS_LOG_FUNCTION (this << trigger << hdr);
+  NS_ASSERT (trigger.IsBasic ());
+  NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+
+  NS_LOG_DEBUG ("Received a Trigger Frame (basic variant) soliciting a transmission");
+
+  if (trigger.GetCsRequired () && hdr.GetAddr2 () != m_txopHolder && m_navEnd > Simulator::Now ())
+    {
+      NS_LOG_DEBUG ("Carrier Sensing required and channel busy, do nothing");
+      return;
+    }
+
+  // Starting from the Preferred AC indicated in the Trigger Frame, check if there
+  // is either a pending BlockAckReq frame or a data frame that can be transmitted
+  // in the allocated time and is addressed to a station with which a Block Ack
+  // agreement has been established.
+
+  // create the sequence of TIDs to check
+  std::vector<uint8_t> tids;
+  uint16_t staId = m_staMac->GetAssociationId ();
+  AcIndex preferredAc = trigger.FindUserInfoWithAid (staId)->GetPreferredAc ();
+  auto acIt = wifiAcList.find (preferredAc);
+  for (uint8_t i = 0; i < 4; i++)
+    {
+      NS_ASSERT (acIt != wifiAcList.end ());
+      tids.push_back (acIt->second.GetHighTid ());
+      tids.push_back (acIt->second.GetLowTid ());
+
+      acIt++;
+      if (acIt == wifiAcList.end ())
+        {
+          acIt = wifiAcList.begin ();
+        }
+    }
+
+  Ptr<const WifiMacQueueItem> mpdu;
+  Ptr<WifiPsdu> psdu;
+  WifiTxParameters txParams;
+  WifiTxVector tbTxVector = GetHeTbTxVector (trigger, hdr.GetAddr2 ());
+  Time ppduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration (trigger.GetUlLength (),
+                                                                  tbTxVector,
+                                                                  m_phy->GetPhyBand ());
+
+  for (const auto& tid : tids)
+    {
+      Ptr<QosTxop> edca = m_mac->GetQosTxop (tid);
+
+      if (!edca->GetBaAgreementEstablished (hdr.GetAddr2 (), tid))
+        {
+          // no Block Ack agreement established for this TID
+          continue;
+        }
+
+      txParams.Clear ();
+      txParams.m_txVector = tbTxVector;
+
+      // first, check if there is a pending BlockAckReq frame
+      if ((mpdu = edca->GetBaManager ()->GetBar (false, tid, hdr.GetAddr2 ())) != 0
+          && TryAddMpdu (mpdu, txParams, ppduDuration))
+        {
+          NS_LOG_DEBUG ("Sending a BAR within a TB PPDU");
+          psdu = Create<WifiPsdu> (edca->GetBaManager ()->GetBar (true, tid, hdr.GetAddr2 ()), true);
+          break;
+        }
+
+      // otherwise, check if a suitable data frame is available
+      if ((mpdu = edca->PeekNextMpdu (tid, hdr.GetAddr2 ())) != 0)
+        {
+          WifiMacQueueItem::QueueIteratorPair queueIt;
+          Ptr<WifiMacQueueItem> item = edca->GetNextMpdu (mpdu, txParams, ppduDuration, false, queueIt);
+
+          if (item != 0)
+            {
+              // try A-MPDU aggregation
+              std::vector<Ptr<WifiMacQueueItem>> mpduList = m_mpduAggregator->GetNextAmpdu (item, txParams,
+                                                                                            ppduDuration,
+                                                                                            queueIt);
+              psdu = (mpduList.size () > 1 ? Create<WifiPsdu> (std::move (mpduList))
+                                           : Create<WifiPsdu> (item, true));
+              break;
+            }
+        }
+    }
+
+  if (psdu != 0)
+    {
+      psdu->SetDuration (hdr.GetDuration () - m_phy->GetSifs () - ppduDuration);
+      SendPsduMapWithProtection (WifiPsduMap {{staId, psdu}}, txParams);
+    }
+  else
+    {
+      // send QoS Null frames
+      SendQosNullFramesInTbPpdu (trigger, hdr);
+    }
+}
+
+void
+HeFrameExchangeManager::SendQosNullFramesInTbPpdu (const CtrlTriggerHeader& trigger, const WifiMacHeader& hdr)
+{
+  NS_LOG_FUNCTION (this << trigger << hdr);
+  NS_ASSERT (trigger.IsBasic () || trigger.IsBsrp ());
+  NS_ASSERT (m_staMac != 0 && m_staMac->IsAssociated ());
+
+  NS_LOG_DEBUG ("Requested to send QoS Null frames");
+
+  if (trigger.GetCsRequired () && hdr.GetAddr2 () != m_txopHolder && m_navEnd > Simulator::Now ())
+    {
+      NS_LOG_DEBUG ("Carrier Sensing required and channel busy, do nothing");
+      return;
+    }
+
+  WifiMacHeader header;
+  header.SetType (WIFI_MAC_QOSDATA_NULL);
+  header.SetAddr1 (hdr.GetAddr2 ());
+  header.SetAddr2 (m_self);
+  header.SetAddr3 (hdr.GetAddr2 ());
+  header.SetDsTo ();
+  header.SetDsNotFrom ();
+  // TR3: Sequence numbers for transmitted QoS (+)Null frames may be set
+  // to any value. (Table 10-3 of 802.11-2016)
+  header.SetSequenceNumber (0);
+  // Set the EOSP bit so that NotifyTxToEdca will add the Queue Size
+  header.SetQosEosp ();
+
+  WifiTxParameters txParams;
+  txParams.m_txVector = GetHeTbTxVector (trigger, hdr.GetAddr2 ());
+  txParams.m_protection = std::unique_ptr<WifiProtection> (new WifiNoProtection);
+  txParams.m_acknowledgment = std::unique_ptr<WifiAcknowledgment> (new WifiNoAck);
+
+  Time ppduDuration = HePhy::ConvertLSigLengthToHeTbPpduDuration (trigger.GetUlLength (),
+                                                                  txParams.m_txVector,
+                                                                  m_phy->GetPhyBand ());
+  header.SetDuration (hdr.GetDuration () - m_phy->GetSifs () - ppduDuration);
+
+  Ptr<WifiMacQueueItem> mpdu;
+  std::vector<Ptr<WifiMacQueueItem>> mpduList;
+  uint8_t tid = 0;
+  header.SetQosTid (tid);
+
+  while (tid < 8
+         && IsWithinSizeAndTimeLimits (txParams.GetSizeIfAddMpdu (mpdu = Create<WifiMacQueueItem> (Create<Packet> (),
+                                                                                                   header)),
+                                       hdr.GetAddr2 (), txParams, ppduDuration))
+    {
+      NS_LOG_DEBUG ("Aggregating a QoS Null frame with tid=" << +tid);
+      // We could call TryAddMpdu instead of IsWithinSizeAndTimeLimits above in order to
+      // get the TX parameters updated automatically. However, aggregating the QoS Null
+      // frames might fail because MPDU aggregation is disabled by default for VO
+      // and BK. Therefore, we skip the check on max A-MPDU size and only update the
+      // TX parameters below.
+      txParams.m_acknowledgment = GetAckManager ()->TryAddMpdu (mpdu, txParams);
+      txParams.AddMpdu (mpdu);
+      UpdateTxDuration (mpdu->GetHeader ().GetAddr1 (), txParams);
+      mpduList.push_back (mpdu);
+      header.SetQosTid (++tid);
+    }
+
+  if (mpduList.empty ())
+    {
+      NS_LOG_DEBUG ("Not enough time to send a QoS Null frame");
+      return;
+    }
+
+  Ptr<WifiPsdu> psdu = (mpduList.size () > 1 ? Create<WifiPsdu> (std::move (mpduList))
+                                             : Create<WifiPsdu> (mpduList.front (), true));
+  uint16_t staId = m_staMac->GetAssociationId ();
+  SendPsduMapWithProtection (WifiPsduMap {{staId, psdu}}, txParams);
+}
+
+void
 HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector, bool inAmpdu)
 {
@@ -871,6 +1307,96 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
   const WifiMacHeader& hdr = mpdu->GetHeader ();
+
+  if (txVector.IsUlMu () && m_txTimer.IsRunning ()
+      && m_txTimer.GetReason () == WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF)
+    {
+      Mac48Address sender = hdr.GetAddr2 ();
+      NS_ASSERT (m_txParams.m_acknowledgment
+                  && m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
+      WifiUlMuMultiStaBa* acknowledgment = static_cast<WifiUlMuMultiStaBa*> (m_txParams.m_acknowledgment.get ());
+      std::size_t index = acknowledgment->baType.m_bitmapLen.size ();
+
+      if (m_staExpectTbPpduFrom.find (sender) == m_staExpectTbPpduFrom.end ())
+        {
+          NS_LOG_WARN ("Received a TB PPDU from an unexpected station: " << sender);
+          return;
+        }
+
+      if (hdr.IsBlockAckReq ())
+        {
+          NS_LOG_DEBUG ("Received a BlockAckReq in a TB PPDU from " << sender);
+
+          CtrlBAckRequestHeader blockAckReq;
+          mpdu->GetPacket ()->PeekHeader (blockAckReq);
+          NS_ABORT_MSG_IF (blockAckReq.IsMultiTid (), "Multi-TID BlockAckReq not supported");
+          uint8_t tid = blockAckReq.GetTidInfo ();
+          auto agreementIt = m_agreements.find ({sender, tid});
+          NS_ASSERT (agreementIt != m_agreements.end ());
+          agreementIt->second.NotifyReceivedBar (blockAckReq.GetStartingSequence ());
+
+          // Block Acknowledgment context
+          acknowledgment->stationsReceivingMultiStaBa.emplace (std::make_pair (sender, tid), index);
+          acknowledgment->baType.m_bitmapLen.push_back (GetBlockAckType (sender, tid).m_bitmapLen.at (0));
+          uint16_t staId = txVector.GetHeMuUserInfoMap ().begin ()->first;
+          m_muSnrTag.Set (staId, rxSignalInfo.snr);
+        }
+      else if (hdr.IsQosData () && !inAmpdu && hdr.GetQosAckPolicy () == WifiMacHeader::NORMAL_ACK)
+        {
+          NS_LOG_DEBUG ("Received an S-MPDU in a TB PPDU from " << sender << " (" << *mpdu << ")");
+
+          uint8_t tid = hdr.GetQosTid ();
+          auto agreementIt = m_agreements.find ({sender, tid});
+          NS_ASSERT (agreementIt != m_agreements.end ());
+          agreementIt->second.NotifyReceivedMpdu (mpdu);
+
+          // Acknowledgment context of Multi-STA Block Acks
+          acknowledgment->stationsReceivingMultiStaBa.emplace (std::make_pair (sender, tid), index);
+          acknowledgment->baType.m_bitmapLen.push_back (0);
+          uint16_t staId = txVector.GetHeMuUserInfoMap ().begin ()->first;
+          m_muSnrTag.Set (staId, rxSignalInfo.snr);
+        }
+      else if (!(hdr.IsQosData () && !hdr.HasData () && !inAmpdu))
+        {
+          // The other case handled by this function is when we receive a QoS Null frame
+          // that is not in an A-MPDU. For all other cases, the reception is handled by
+          // parent classes. In particular, in case of a QoS data frame in A-MPDU, we
+          // have to wait until the A-MPDU reception is completed, but we let the
+          // parent classes notify the Block Ack agreement of the reception of this MPDU
+          VhtFrameExchangeManager::ReceiveMpdu (mpdu, rxSignalInfo, txVector, inAmpdu);
+          return;
+        }
+
+      // Schedule the transmission of a Multi-STA BlockAck frame if needed
+      if (!acknowledgment->stationsReceivingMultiStaBa.empty () && !m_multiStaBaEvent.IsRunning ())
+        {
+          m_multiStaBaEvent = Simulator::Schedule (m_phy->GetSifs (),
+                                                   &HeFrameExchangeManager::SendMultiStaBlockAck,
+                                                   this, std::cref (m_txParams));
+        }
+
+      // remove the sender from the set of stations that are expected to send a TB PPDU
+      m_staExpectTbPpduFrom.erase (sender);
+
+      if (m_staExpectTbPpduFrom.empty ())
+        {
+          // we do not expect any other BlockAck frame
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyAckTimeoutResetNow ();
+
+          if (!m_multiStaBaEvent.IsRunning ())
+            {
+              // all of the stations that replied with a TB PPDU sent QoS Null frames.
+              NS_LOG_DEBUG ("Continue the TXOP");
+              m_psduMap.clear ();
+              m_edca->ResetCw ();
+              TransmissionSucceeded ();
+            }
+        }
+
+      // the received TB PPDU has been processed
+      return;
+    }
 
   if (hdr.IsCtl ())
     {
@@ -926,6 +1452,64 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
               m_psduMap.clear ();
               TransmissionSucceeded ();
             }
+        }
+      else if (hdr.IsBlockAck () && m_txTimer.IsRunning ()
+               && m_txTimer.GetReason () == WifiTxTimer::WAIT_BLOCK_ACK_AFTER_TB_PPDU)
+        {
+          CtrlBAckResponseHeader blockAck;
+          mpdu->GetPacket ()->PeekHeader (blockAck);
+
+          NS_ABORT_MSG_IF (!blockAck.IsMultiSta (),
+                           "A Multi-STA BlockAck is expected after a TB PPDU");
+          NS_LOG_DEBUG ("Received a Multi-STA BlockAck from=" << hdr.GetAddr2 ());
+
+          NS_ASSERT (m_staMac != nullptr && m_staMac->IsAssociated ());
+          uint16_t staId = m_staMac->GetAssociationId ();
+          std::vector<uint32_t> indices = blockAck.FindPerAidTidInfoWithAid (staId);
+
+          if (indices.empty ())
+            {
+              NS_LOG_DEBUG ("No Per AID TID Info subfield intended for me");
+              return;
+            }
+
+          MuSnrTag tag;
+          mpdu->GetPacket ()->PeekPacketTag (tag);
+
+          // notify the Block Ack Manager
+          for (const auto& index : indices)
+            {
+              uint8_t tid = blockAck.GetTidInfo (index);
+
+              if (blockAck.GetAckType (index) && tid < 8)
+                {
+                  // Acknowledgment context
+                  NS_ABORT_IF (m_psduMap.empty () || m_psduMap.begin ()->first != staId);
+                  GetBaManager (tid)->NotifyGotAck (*m_psduMap.at (staId)->begin ());
+                }
+              else
+                {
+                  // Block Acknowledgment or All-ack context
+                  if (blockAck.GetAckType (index) && tid == 14)
+                    {
+                      // All-ack context, we need to determine the actual TID(s) of the PSDU
+                      NS_ASSERT (indices.size () == 1);
+                      NS_ABORT_IF (m_psduMap.empty () || m_psduMap.begin ()->first != staId);
+                      std::set<uint8_t> tids = m_psduMap.at (staId)->GetTids ();
+                      NS_ABORT_MSG_IF (tids.size () > 1, "Multi-TID A-MPDUs not supported yet");
+                      tid = *tids.begin ();
+                    }
+
+                  GetBaManager (tid)->NotifyGotBlockAck (&blockAck, hdr.GetAddr2 (), {tid},
+                                                         rxSignalInfo.snr, tag.Get (staId),
+                                                         m_txParams.m_txVector, index);
+                }
+            }
+
+          // cancel the timer
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyAckTimeoutResetNow ();
+          m_psduMap.clear ();
         }
       else if (hdr.IsTrigger ())
         {
@@ -984,6 +1568,16 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                                   agreementIt->second, hdr.GetDuration (),
                                   GetHeTbTxVector (trigger, hdr.GetAddr2 ()), rxSignalInfo.snr);
             }
+          else if (trigger.IsBasic ())
+            {
+              Simulator::Schedule (m_phy->GetSifs (), &HeFrameExchangeManager::ReceiveBasicTrigger,
+                                   this, trigger, hdr);
+            }
+          else if (trigger.IsBsrp ())
+            {
+              Simulator::Schedule (m_phy->GetSifs (), &HeFrameExchangeManager::SendQosNullFramesInTbPpdu,
+                                   this, trigger, hdr);
+            }
         }
       else
         {
@@ -1004,6 +1598,118 @@ HeFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSigna
                                          const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus)
 {
   std::set<uint8_t> tids = psdu->GetTids ();
+
+  if (txVector.IsUlMu () && m_txTimer.IsRunning ()
+      && m_txTimer.GetReason () == WifiTxTimer::WAIT_TB_PPDU_AFTER_BASIC_TF)
+    {
+      Mac48Address sender = psdu->GetAddr2 ();
+      NS_ASSERT (m_txParams.m_acknowledgment
+                  && m_txParams.m_acknowledgment->method == WifiAcknowledgment::UL_MU_MULTI_STA_BA);
+      WifiUlMuMultiStaBa* acknowledgment = static_cast<WifiUlMuMultiStaBa*> (m_txParams.m_acknowledgment.get ());
+      std::size_t index = acknowledgment->baType.m_bitmapLen.size ();
+
+      if (m_staExpectTbPpduFrom.find (sender) == m_staExpectTbPpduFrom.end ())
+        {
+          NS_LOG_WARN ("Received a TB PPDU from an unexpected station: " << sender);
+          return;
+        }
+
+      NS_LOG_DEBUG ("Received an A-MPDU in a TB PPDU from " << sender << " (" << *psdu << ")");
+
+      if (std::any_of (tids.begin (), tids.end (),
+                       [&psdu](uint8_t tid)
+                         { return psdu->GetAckPolicyForTid (tid) == WifiMacHeader::NORMAL_ACK; }))
+        {
+          if (std::all_of (perMpduStatus.cbegin (), perMpduStatus.cend (), [](bool v) { return v; }))
+            {
+              // All-ack context
+              acknowledgment->stationsReceivingMultiStaBa.emplace (std::make_pair (sender, 14), index);
+              acknowledgment->baType.m_bitmapLen.push_back (0);
+            }
+          else
+            {
+              // Block Acknowledgment context
+              std::size_t i = 0;
+              for (const auto& tid : tids)
+                {
+                  acknowledgment->stationsReceivingMultiStaBa.emplace (std::make_pair (sender, tid), index + i++);
+                  acknowledgment->baType.m_bitmapLen.push_back (GetBlockAckType (sender, tid).m_bitmapLen.at (0));
+                }
+            }
+          uint16_t staId = txVector.GetHeMuUserInfoMap ().begin ()->first;
+          m_muSnrTag.Set (staId, rxSignalInfo.snr);
+        }
+
+      // Schedule the transmission of a Multi-STA BlockAck frame if needed
+      if (!acknowledgment->stationsReceivingMultiStaBa.empty () && !m_multiStaBaEvent.IsRunning ())
+        {
+          m_multiStaBaEvent = Simulator::Schedule (m_phy->GetSifs (),
+                                                   &HeFrameExchangeManager::SendMultiStaBlockAck,
+                                                   this, std::cref (m_txParams));
+        }
+
+      // remove the sender from the set of stations that are expected to send a TB PPDU
+      m_staExpectTbPpduFrom.erase (sender);
+
+      if (m_staExpectTbPpduFrom.empty ())
+        {
+          // we do not expect any other BlockAck frame
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyAckTimeoutResetNow ();
+
+          if (!m_multiStaBaEvent.IsRunning ())
+            {
+              // all of the stations that replied with a TB PPDU sent QoS Null frames.
+              NS_LOG_DEBUG ("Continue the TXOP");
+              m_psduMap.clear ();
+              m_edca->ResetCw ();
+              TransmissionSucceeded ();
+            }
+        }
+
+      // the received TB PPDU has been processed
+      return;
+    }
+
+  if (txVector.IsUlMu () && m_txTimer.IsRunning ()
+      && m_txTimer.GetReason () == WifiTxTimer::WAIT_QOS_NULL_AFTER_BSRP_TF)
+    {
+      Mac48Address sender = psdu->GetAddr2 ();
+
+      if (m_staExpectTbPpduFrom.find (sender) == m_staExpectTbPpduFrom.end ())
+        {
+          NS_LOG_WARN ("Received a TB PPDU from an unexpected station: " << sender);
+          return;
+        }
+      if (std::none_of (psdu->begin (), psdu->end (), [](Ptr<WifiMacQueueItem> mpdu)
+                                                      { return mpdu->GetHeader ().IsQosData ()
+                                                               && !mpdu->GetHeader ().HasData ();
+                                                      }))
+        {
+          NS_LOG_WARN ("No QoS Null frame in the received PSDU");
+          return;
+        }
+
+      NS_LOG_DEBUG ("Received QoS Null frames in a TB PPDU from " << sender);
+
+      // remove the sender from the set of stations that are expected to send a TB PPDU
+      m_staExpectTbPpduFrom.erase (sender);
+
+      if (m_staExpectTbPpduFrom.empty ())
+        {
+          // we do not expect any other response
+          m_txTimer.Cancel ();
+          m_channelAccessManager->NotifyAckTimeoutResetNow ();
+
+          NS_ASSERT (m_edca != 0);
+          m_psduMap.clear ();
+          m_edca->ResetCw ();
+          TransmissionSucceeded ();
+        }
+
+      // the received TB PPDU has been processed
+      return;
+    }
 
   if (m_triggerFrameInAmpdu)
     {

@@ -1263,7 +1263,7 @@ HtFrameExchangeManager::SendBlockAck (const RecipientBlockAckAgreement& agreemen
   // time, in microseconds between the end of the PPDU carrying the frame that
   // elicited the response and the end of the PPDU carrying the BlockAck frame.
   Time baDurationId = durationId - m_phy->GetSifs ()
-                      - m_phy->CalculateTxDuration (psdu->GetSize (), blockAckTxVector, m_phy->GetPhyBand ());
+                      - m_phy->CalculateTxDuration (psdu, blockAckTxVector, m_phy->GetPhyBand ());
   // The TXOP holder may exceed the TXOP limit in some situations (Sec. 10.22.2.8 of 802.11-2016)
   if (baDurationId.IsStrictlyNegative ())
     {

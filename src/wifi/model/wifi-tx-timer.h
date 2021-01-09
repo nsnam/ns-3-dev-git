@@ -59,6 +59,9 @@ public:
       WAIT_BLOCK_ACK,
       WAIT_NORMAL_ACK_AFTER_DL_MU_PPDU,
       WAIT_BLOCK_ACKS_IN_TB_PPDU,
+      WAIT_TB_PPDU_AFTER_BASIC_TF,
+      WAIT_QOS_NULL_AFTER_BSRP_TF,
+      WAIT_BLOCK_ACK_AFTER_TB_PPDU,
     };
 
   /** Default constructor */
