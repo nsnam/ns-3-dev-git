@@ -41,7 +41,8 @@ struct BlockAckType
     BASIC,
     COMPRESSED,
     EXTENDED_COMPRESSED,
-    MULTI_TID
+    MULTI_TID,
+    MULTI_STA
   };
   enum Variant m_variant;           //!< Block Ack variant
   std::vector<uint8_t> m_bitmapLen; //!< Length (bytes) of included bitmaps

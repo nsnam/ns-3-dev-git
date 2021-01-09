@@ -36,6 +36,7 @@ BlockAckType::BlockAckType (Variant v)
       m_bitmapLen.push_back (8);
       break;
     case MULTI_TID:
+    case MULTI_STA:
       // m_bitmapLen is left empty.
       break;
     default:
@@ -98,6 +99,9 @@ std::ostream &operator << (std::ostream &os, const BlockAckType &type)
       break;
     case BlockAckType::MULTI_TID:
       os << "multi-tid-block-ack[" << type.m_bitmapLen.size () << "]";
+      break;
+    case BlockAckType::MULTI_STA:
+      os << "multi-sta-block-ack[" << type.m_bitmapLen.size () << "]";
       break;
     default:
       NS_FATAL_ERROR ("Unknown block ack type");
