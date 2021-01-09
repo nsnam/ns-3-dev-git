@@ -28,6 +28,7 @@
 #include "ap-wifi-mac.h"
 #include "ctrl-headers.h"
 #include "ns3/he-phy.h"
+#include "ns3/he-frame-exchange-manager.h"
 
 
 namespace ns3 {
@@ -187,6 +188,48 @@ WifiDefaultAckManager::TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
 
   const WifiMacHeader& hdr = mpdu->GetHeader ();
   Mac48Address receiver = hdr.GetAddr1 ();
+
+  // Acknowledgment for TB PPDUs
+  if (txParams.m_txVector.IsUlMu ())
+    {
+      if (hdr.IsQosData () && !hdr.HasData ())
+        {
+          // QoS Null frame
+          WifiNoAck* acknowledgment = nullptr;
+
+          if (txParams.m_acknowledgment)
+            {
+              NS_ASSERT (txParams.m_acknowledgment->method == WifiAcknowledgment::NONE);
+              acknowledgment = static_cast<WifiNoAck*> (txParams.m_acknowledgment.get ());
+              acknowledgment = new WifiNoAck (*acknowledgment);
+            }
+          else
+            {
+              acknowledgment = new WifiNoAck;
+            }
+          acknowledgment->SetQosAckPolicy (receiver, hdr.GetQosTid (), WifiMacHeader::NO_ACK);
+          return std::unique_ptr<WifiAcknowledgment> (acknowledgment);
+        }
+
+      if (txParams.m_acknowledgment)
+        {
+          NS_ASSERT (txParams.m_acknowledgment->method == WifiAcknowledgment::ACK_AFTER_TB_PPDU);
+          return nullptr;
+        }
+
+      WifiAckAfterTbPpdu* acknowledgment = new WifiAckAfterTbPpdu;
+      if (hdr.IsQosData ())
+        {
+          acknowledgment->SetQosAckPolicy (receiver, hdr.GetQosTid (), WifiMacHeader::NORMAL_ACK);
+        }
+      return std::unique_ptr<WifiAcknowledgment> (acknowledgment);
+    }
+
+  // if this is a Trigger Frame, call a separate method
+  if (hdr.IsTrigger ())
+    {
+      return TryUlMuTransmission (mpdu, txParams);
+    }
 
   // if the current protection method (if any) is already BLOCK_ACK or BAR_BLOCK_ACK,
   // it will not change by adding an MPDU
@@ -588,6 +631,72 @@ WifiDefaultAckManager::GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> 
                    "QoS data and MU-BAR Trigger frames only can be aggregated when transmitting a DL MU PPDU");
 
   // no change is needed
+  return nullptr;
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiDefaultAckManager::TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
+                                            const WifiTxParameters& txParams)
+{
+  NS_LOG_FUNCTION (this << *mpdu << &txParams);
+  NS_ASSERT (mpdu->GetHeader ().IsTrigger ());
+
+  Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (m_mac);
+  NS_ABORT_MSG_IF (apMac == nullptr, "HE APs only can send Trigger Frames");
+
+  Ptr<HeFrameExchangeManager> heFem = DynamicCast<HeFrameExchangeManager> (m_mac->GetFrameExchangeManager ());
+  NS_ABORT_MSG_IF (heFem == nullptr, "HE APs only can send Trigger Frames");
+
+  CtrlTriggerHeader trigger;
+  mpdu->GetPacket ()->PeekHeader (trigger);
+
+  if (trigger.IsBasic ())
+    {
+      // the only supported ack method for now is through a multi-STA BlockAck frame
+      WifiUlMuMultiStaBa* acknowledgment = new WifiUlMuMultiStaBa;
+      acknowledgment->baType.m_variant = BlockAckType::MULTI_STA;
+
+      for (const auto& userInfo : trigger)
+        {
+          uint16_t aid12 = userInfo.GetAid12 ();
+
+          if (aid12 == 2046)
+            {
+              NS_LOG_INFO ("Unallocated RU");
+              continue;
+            }
+          NS_ABORT_MSG_IF (aid12 == 0 || aid12 > 2007, "Allocation of RA-RUs is not supported");
+
+          NS_ASSERT (apMac->GetStaList ().find (aid12) != apMac->GetStaList ().end ());
+          Mac48Address staAddress = apMac->GetStaList ().find (aid12)->second;
+
+          // find a TID for which a BA agreement exists with the given originator
+          uint8_t tid = 0;
+          while (tid < 8 && !heFem->GetBaAgreementEstablished (staAddress, tid))
+            {
+              tid++;
+            }
+          NS_ASSERT_MSG (tid < 8, "No Block Ack agreement established with originator " << staAddress);
+
+          std::size_t index = acknowledgment->baType.m_bitmapLen.size ();
+          acknowledgment->stationsReceivingMultiStaBa.emplace (std::make_pair (staAddress, tid), index);
+
+          // we assume the Block Acknowledgment context is used for the multi-STA BlockAck frame
+          // (since it requires the longest TX time due to the presence of a bitmap)
+          acknowledgment->baType.m_bitmapLen.push_back (heFem->GetBlockAckType (staAddress, tid).m_bitmapLen.at (0));
+        }
+
+      uint16_t staId = trigger.begin ()->GetAid12 ();
+      acknowledgment->tbPpduTxVector = trigger.GetHeTbTxVector (staId);
+      acknowledgment->multiStaBaTxVector = m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (apMac->GetStaList ().find (staId)->second,
+                                                                                                       acknowledgment->tbPpduTxVector);
+      return std::unique_ptr<WifiUlMuMultiStaBa> (acknowledgment);
+    }
+  else if (trigger.IsBsrp ())
+    {
+      return std::unique_ptr<WifiAcknowledgment> (new WifiNoAck);
+    }
+
   return nullptr;
 }
 

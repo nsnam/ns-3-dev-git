@@ -128,6 +128,17 @@ private:
   virtual std::unique_ptr<WifiAcknowledgment> GetAckInfoIfAggregatedMuBar (Ptr<const WifiMacQueueItem> mpdu,
                                                                            const WifiTxParameters& txParams);
 
+  /**
+   * Calculate the acknowledgment method for the TB PPDUs solicited by the given
+   * Trigger Frame.
+   *
+   * \param mpdu the given Trigger Frame
+   * \param txParams the current TX parameters (just the TXVECTOR needs to be set)
+   * \return the acknowledgment method for the TB PPDUs solicited by the given Trigger Frame
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> TryUlMuTransmission (Ptr<const WifiMacQueueItem> mpdu,
+                                                                   const WifiTxParameters& txParams);
+
   bool m_useExplicitBar;                    //!< true for sending BARs, false for using Implicit BAR policy
   double m_baThreshold;                     //!< Threshold to determine when a BlockAck must be requested
   WifiAcknowledgment::Method m_dlMuAckType; //!< Type of the ack sequence for DL MU PPDUs

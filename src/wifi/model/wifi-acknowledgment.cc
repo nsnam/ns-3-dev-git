@@ -329,6 +329,75 @@ WifiDlMuAggregateTf::Print (std::ostream &os) const
 }
 
 
+/*
+ * WifiUlMuMultiStaBa
+ */
+
+WifiUlMuMultiStaBa::WifiUlMuMultiStaBa ()
+  : WifiAcknowledgment (UL_MU_MULTI_STA_BA)
+{
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiUlMuMultiStaBa::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiUlMuMultiStaBa (*this));
+}
+
+bool
+WifiUlMuMultiStaBa::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
+                                       WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  // a Basic Trigger Frame has no QoS ack policy
+  return true;
+}
+
+void
+WifiUlMuMultiStaBa::Print (std::ostream &os) const
+{
+  os << "UL_MU_MULTI_STA_BA [";
+  for (const auto& sta : stationsReceivingMultiStaBa)
+    {
+      os << "(" << sta.first.first << "," << +sta.first.second << ") ";
+    }
+  os << "]";
+}
+
+
+/*
+ * WifiAckAfterTbPpdu
+ */
+
+WifiAckAfterTbPpdu::WifiAckAfterTbPpdu ()
+  : WifiAcknowledgment (ACK_AFTER_TB_PPDU)
+{
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiAckAfterTbPpdu::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiAckAfterTbPpdu (*this));
+}
+
+bool
+WifiAckAfterTbPpdu::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
+                                        WifiMacHeader::QosAckPolicy ackPolicy) const
+{
+  if (ackPolicy == WifiMacHeader::NORMAL_ACK)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+void
+WifiAckAfterTbPpdu::Print (std::ostream &os) const
+{
+  os << "ACK_AFTER_TB_PPDU";
+}
+
+
 std::ostream & operator << (std::ostream &os, const WifiAcknowledgment* acknowledgment)
 {
   acknowledgment->Print (os);
