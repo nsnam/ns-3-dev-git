@@ -23,6 +23,7 @@
 #include "ns3/frame-exchange-manager.h"
 #include "ns3/wifi-protection-manager.h"
 #include "ns3/wifi-ack-manager.h"
+#include "ns3/multi-user-scheduler.h"
 #include "ns3/boolean.h"
 
 namespace ns3 {
@@ -44,6 +45,9 @@ WifiMacHelper::~WifiMacHelper ()
 Ptr<WifiMac>
 WifiMacHelper::Create (Ptr<NetDevice> device, WifiStandard standard) const
 {
+  auto standardIt = wifiStandards.find (standard);
+  NS_ABORT_MSG_IF (standardIt == wifiStandards.end (), "Selected standard is not defined!");
+
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   mac->SetDevice (device);
   mac->SetAddress (Mac48Address::Allocate ());
@@ -61,6 +65,15 @@ WifiMacHelper::Create (Ptr<NetDevice> device, WifiStandard standard) const
       Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager> ();
       ackManager->SetWifiMac (wifiMac);
       fem->SetAckManager (ackManager);
+
+      // create and install the Multi User Scheduler if this is an HE AP
+      Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (mac);
+      if (apMac != nullptr && standardIt->second.macStandard >= WIFI_MAC_STANDARD_80211ax
+          && m_muScheduler.IsTypeIdSet ())
+        {
+          Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();
+          apMac->AggregateObject (muScheduler);
+        }
     }
   return mac;
 }

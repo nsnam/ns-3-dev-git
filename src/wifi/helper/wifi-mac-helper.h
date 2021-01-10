@@ -89,6 +89,17 @@ public:
   void SetAckManager (std::string type, Args&&... args);
 
   /**
+   * Helper function used to set the Multi User Scheduler that can be aggregated
+   * to an HE AP's MAC.
+   *
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param type the type of Multi User Scheduler
+   * \param args A sequence of name-value pairs of the attributes to set.
+   */
+  template <typename... Args>
+  void SetMultiUserScheduler (std::string type, Args&&... args);
+
+  /**
    * \param device the device within which the MAC object will reside
    * \param standard the standard to configure during installation
    * \returns a new MAC object.
@@ -102,6 +113,7 @@ protected:
   ObjectFactory m_mac;                ///< MAC object factory
   ObjectFactory m_protectionManager;  ///< Factory to create a protection manager
   ObjectFactory m_ackManager;         ///< Factory to create an acknowledgment manager
+  ObjectFactory m_muScheduler;        ///< Multi-user Scheduler object factory
 };
 
 } // namespace ns3
@@ -135,6 +147,14 @@ WifiMacHelper::SetAckManager (std::string type, Args&&... args)
 {
   m_ackManager.SetTypeId (type);
   m_ackManager.Set (args...);
+}
+
+template <typename... Args>
+void
+WifiMacHelper::SetMultiUserScheduler (std::string type, Args&&... args)
+{
+  m_muScheduler.SetTypeId (type);
+  m_muScheduler.Set (args...);
 }
 
 } // namespace ns3
