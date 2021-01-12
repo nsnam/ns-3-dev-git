@@ -20,6 +20,7 @@
 
 #include "he-ru.h"
 #include "ns3/abort.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -166,6 +167,80 @@ HeRu::GetNRus (uint16_t bw, RuType ruType)
     }
 
   return (bw == 160 ? 2 : 1) * it->second.size ();
+}
+
+std::vector<HeRu::RuSpec>
+HeRu::GetRusOfType (uint16_t bw, HeRu::RuType ruType)
+{
+  if (ruType == HeRu::RU_2x996_TONE)
+    {
+      NS_ASSERT (bw >= 160);
+      return {{true, ruType, 1}};
+    }
+
+  std::vector<HeRu::RuSpec> ret;
+  std::vector<bool> primary80MHzSet {true};
+
+  if (bw == 160)
+    {
+      primary80MHzSet.push_back (false);
+      bw = 80;
+    }
+
+  for (auto primary80MHz : primary80MHzSet)
+    {
+      for (std::size_t ruIndex = 1; ruIndex <= HeRu::m_heRuSubcarrierGroups.at ({bw, ruType}).size (); ruIndex++)
+        {
+          ret.push_back ({primary80MHz, ruType, ruIndex});
+        }
+    }
+  return ret;
+}
+
+std::vector<HeRu::RuSpec>
+HeRu::GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType)
+{
+  std::vector<std::size_t> indices;
+
+  if (ruType == HeRu::RU_52_TONE || ruType == HeRu::RU_106_TONE)
+    {
+      if (bw == 20)
+        {
+          indices.push_back (5);
+        }
+      else if (bw == 40)
+        {
+          indices.insert (indices.end (), {5, 14});
+        }
+      else if (bw >= 80)
+        {
+          indices.insert (indices.end (), {5, 14, 19, 24, 33});
+        }
+    }
+  else if (ruType == HeRu::RU_242_TONE || ruType == HeRu::RU_484_TONE)
+    {
+      if (bw >= 80)
+        {
+          indices.push_back (19);
+        }
+    }
+
+  std::vector<HeRu::RuSpec> ret;
+  std::vector<bool> primary80MHzSet {true};
+
+  if (bw == 160)
+    {
+      primary80MHzSet.push_back (false);
+    }
+
+  for (auto primary80MHz : primary80MHzSet)
+    {
+      for (const auto& index : indices)
+        {
+          ret.push_back ({primary80MHz, HeRu::RU_26_TONE, index});
+        }
+    }
+  return ret;
 }
 
 HeRu::SubcarrierGroup
@@ -378,5 +453,71 @@ HeRu::GetRuType (uint16_t bandwidth)
         return RU_242_TONE;
     }
 }
+
+HeRu::RuType
+HeRu::GetEqualSizedRusForStations (uint16_t bandwidth, std::size_t& nStations,
+                                   std::size_t& nCentral26TonesRus)
+{
+  RuType ruType;
+  uint8_t nRusAssigned = 0;
+
+  // iterate over all the available RU types
+  for (auto& ru : m_heRuSubcarrierGroups)
+    {
+      if (ru.first.first == bandwidth && ru.second.size () <= nStations)
+        {
+          ruType = ru.first.second;
+          nRusAssigned = ru.second.size ();
+          break;
+        }
+      else if (bandwidth == 160 && ru.first.first == 80 && (2 * ru.second.size () <= nStations))
+        {
+          ruType = ru.first.second;
+          nRusAssigned = 2 * ru.second.size ();
+          break;
+        }
+    }
+  if (nRusAssigned == 0)
+    {
+      NS_ABORT_IF (bandwidth != 160 || nStations != 1);
+      nRusAssigned = 1;
+      ruType = RU_2x996_TONE;
+    }
+
+  nStations = nRusAssigned;
+
+  switch (ruType)
+    {
+      case RU_52_TONE:
+      case RU_106_TONE:
+        if (bandwidth == 20)
+          {
+            nCentral26TonesRus = 1;
+          }
+        else if (bandwidth == 40)
+          {
+            nCentral26TonesRus = 2;
+          }
+        else
+          {
+            nCentral26TonesRus = 5;
+          }
+        break;
+      case RU_242_TONE:
+      case RU_484_TONE:
+        nCentral26TonesRus = (bandwidth >= 80 ? 1 : 0);
+        break;
+      default:
+        nCentral26TonesRus = 0;
+    }
+
+  if (bandwidth == 160)
+    {
+      nCentral26TonesRus *= 2;
+    }
+
+  return ruType;
+}
+
 
 } //namespace ns3

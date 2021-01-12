@@ -80,6 +80,26 @@ public:
   static std::size_t GetNRus (uint16_t bw, RuType ruType);
 
   /**
+   * Get the set of distinct RUs of the given type (number of tones)
+   * available in a HE PPDU of the given bandwidth.
+   *
+   * \param bw the bandwidth (MHz) of the HE PPDU (20, 40, 80, 160)
+   * \param ruType the RU type (number of tones)
+   * \return the set of distinct RUs available
+   */
+  static std::vector<HeRu::RuSpec> GetRusOfType (uint16_t bw, HeRu::RuType ruType);
+
+  /**
+   * Get the set of 26-tone RUs that can be additionally allocated if the given
+   * bandwidth is split in RUs of the given type.
+   *
+   * \param bw the bandwidth (MHz) of the HE PPDU (20, 40, 80, 160)
+   * \param ruType the RU type (number of tones)
+   * \return the set of 26-tone RUs that can be additionally allocated
+   */
+  static std::vector<HeRu::RuSpec> GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType);
+
+  /**
    * Get the subcarrier group of the RU having the given index among all the
    * RUs of the given type (number of tones) available in a HE PPDU of the
    * given bandwidth. A subcarrier group is defined as one or more pairs
@@ -146,6 +166,22 @@ public:
    * \return the RU type
    */
   static RuType GetRuType (uint16_t bandwidth);
+
+  /**
+   * Given the channel bandwidth and the number of stations candidate for being
+   * assigned an RU, maximize the number of candidate stations that can be assigned
+   * an RU subject to the constraint that all the stations must be assigned an RU
+   * of the same size (in terms of number of tones).
+   *
+   * \param bandwidth the channel bandwidth in MHz
+   * \param nStations the number of candidate stations. On return, it is set to
+   *                  the number of stations that are assigned an RU
+   * \param[out] nCentral26TonesRus the number of additional 26-tone RUs that can be
+   *                                allocated if the returned RU size is greater than 26 tones
+   * \return the RU type
+   */
+  static RuType GetEqualSizedRusForStations (uint16_t bandwidth, std::size_t& nStations,
+                                             std::size_t& nCentral26TonesRus);
 
   /// (bandwidth, number of tones) pair
   typedef std::pair<uint8_t, RuType> BwTonesPair;
