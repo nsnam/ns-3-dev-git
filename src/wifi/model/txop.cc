@@ -423,4 +423,10 @@ Txop::IsQosTxop () const
   return false;
 }
 
+AcIndex
+Txop::GetAccessCategory (void) const
+{
+  return AC_BE_NQOS;
+}
+
 } //namespace ns3

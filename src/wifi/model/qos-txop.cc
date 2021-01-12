@@ -788,4 +788,10 @@ QosTxop::IsQosTxop (void) const
   return true;
 }
 
+AcIndex
+QosTxop::GetAccessCategory (void) const
+{
+  return m_ac;
+}
+
 } //namespace ns3

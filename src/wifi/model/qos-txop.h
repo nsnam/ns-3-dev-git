@@ -84,6 +84,7 @@ public:
   virtual ~QosTxop ();
 
   bool IsQosTxop (void) const override;
+  AcIndex GetAccessCategory (void) const override;
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager) override;
   bool HasFramesToTransmit (void) override;
   void NotifyInternalCollision (void) override;
