@@ -71,7 +71,7 @@ namespace ns3 {
  *   while (csv.FetchNextRow ())
  *     {
  *       // Ignore blank lines
- *       if (csv.IsBlankLine ())
+ *       if (csv.IsBlankRow ())
  *         {
  *           continue;
  *         }
@@ -129,7 +129,7 @@ namespace ns3 {
  *     # This row treated as a single empty column, returning an empty string.
  *     "" # So is this
  *
- * IsBlankLine() will return \c true in either of these cases.
+ * IsBlankRow() will return \c true in either of these cases.
  *
  * Quoted Columns
  * --------------
