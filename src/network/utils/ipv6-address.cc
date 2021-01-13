@@ -375,19 +375,19 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Address addr, Ipv6Address pr
 
   if (Mac64Address::IsMatchingType (addr))
     {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), Ipv6Address (prefix) );
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac64Address::ConvertFrom (addr), prefix);
     }
   else if (Mac48Address::IsMatchingType (addr))
     {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), Ipv6Address (prefix));
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), prefix);
     }
   else if (Mac16Address::IsMatchingType (addr))
     {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), Ipv6Address (prefix) );
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac16Address::ConvertFrom (addr), prefix);
     }
   else if (Mac8Address::IsMatchingType (addr))
     {
-      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), Ipv6Address (prefix) );
+      ipv6Addr = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), prefix);
     }
 
   if (ipv6Addr.IsAny ())
@@ -395,6 +395,12 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Address addr, Ipv6Address pr
       NS_ABORT_MSG ("Unknown address type");
     }
   return ipv6Addr;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Address addr, Ipv6Prefix prefix)
+{
+  Ipv6Address ipv6PrefixAddr = Ipv6Address::GetOnes ().CombinePrefix(prefix);
+  return MakeAutoconfiguredAddress (addr, ipv6PrefixAddr);
 }
 
 Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac16Address addr, Ipv6Address prefix)

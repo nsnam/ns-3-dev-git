@@ -155,6 +155,18 @@ public:
   static Ipv6Address MakeAutoconfiguredAddress (Address addr, Ipv6Address prefix);
 
   /**
+   * \brief Make the autoconfigured IPv6 address from a Mac address.
+   *
+   * Actually the MAC supported are: Mac8, Mac16, Mac48, and Mac64.
+   *
+   * \param addr the MAC address.
+   * \param prefix the IPv6 prefix
+   * \return autoconfigured IPv6 address
+   */
+
+  static Ipv6Address MakeAutoconfiguredAddress (Address addr, Ipv6Prefix prefix);
+
+  /**
    * \brief Make the autoconfigured IPv6 address with Mac16Address.
    *
    * The EUI-64 scheme used is based on the \RFC{4944}.
