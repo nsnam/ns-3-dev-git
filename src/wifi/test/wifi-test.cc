@@ -1463,7 +1463,7 @@ Bug2843TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
   // Get channel bandwidth and modulation class
   Ptr<const WifiSpectrumSignalParameters> wifiTxParams = DynamicCast<WifiSpectrumSignalParameters> (txParams);
 
-  Ptr<WifiPpdu> ppdu = Copy (wifiTxParams->ppdu);
+  Ptr<WifiPpdu> ppdu = wifiTxParams->ppdu->Copy ();
   WifiTxVector txVector = ppdu->GetTxVector ();
   m_channelWidth = txVector.GetChannelWidth ();
   WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();

@@ -36,7 +36,7 @@
 #include "ns3/wifi-mac-queue-item.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/wifi-ppdu.h"
+#include "ns3/he-ppdu.h"
 #include "ns3/he-phy.h"
 
 using namespace ns3;
@@ -130,7 +130,7 @@ TestThresholdPreambleDetectionWithoutFrameCapture::SendPacket (double rxPowerDbm
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -487,7 +487,7 @@ TestThresholdPreambleDetectionWithFrameCapture::SendPacket (double rxPowerDbm)
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -997,7 +997,7 @@ TestSimpleFrameCaptureModel::SendPacket (double rxPowerDbm, uint32_t packetSize)
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -1205,7 +1205,7 @@ TestPhyHeadersReception::SendPacket (double rxPowerDbm)
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 
@@ -1720,7 +1720,7 @@ TestAmpduReception::SendAmpduWithThreeMpdus (double rxPowerDbm, uint32_t referen
   
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, m_uid++);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, DbmToW (rxPowerDbm), GUARD_WIDTH);
 

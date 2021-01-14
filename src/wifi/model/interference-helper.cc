@@ -28,7 +28,7 @@
 #include "wifi-phy.h"
 #include "error-rate-model.h"
 #include "wifi-utils.h"
-#include "wifi-ppdu.h"
+#include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 #include "wifi-psdu.h"
 
 namespace ns3 {
@@ -204,7 +204,7 @@ InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand r
   hdr.SetType (WIFI_MAC_QOSDATA);
   hdr.SetQosTid (0);
   Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0), hdr),
-                                             WifiTxVector (), duration, WIFI_PHY_BAND_UNSPECIFIED, UINT64_MAX);
+                                             WifiTxVector ());
   Add (fakePpdu, WifiTxVector (), duration, rxPowerW);
 }
 
@@ -425,7 +425,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
   Time previous = j->first;
   WifiMode payloadMode = txVector.GetMode (staId);
   Time phyPayloadStart = j->first;
-  if (!event->GetPpdu ()->IsUlMu ()) //j->first corresponds to the start of the UL-OFDMA payload
+  if (event->GetPpdu ()->GetType () != WIFI_PPDU_TYPE_UL_MU) //j->first corresponds to the start of the UL-OFDMA payload
     {
       phyPayloadStart = j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
     }

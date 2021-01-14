@@ -942,14 +942,18 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ChannelAccessManager", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("DsssPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("ErpOfdmPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("ErpOfdmPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("FrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HeConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("HeFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HePhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("HePpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("HtConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("HtFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HtPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("HtPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("InfrastructureWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
@@ -964,6 +968,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("OfdmPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("OnoeWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("OriginatorBlockAckAgreement", LOG_LEVEL_ALL);
+  LogComponentEnable ("OfdmPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("ParfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyEntity", LOG_LEVEL_ALL);
   LogComponentEnable ("QosFrameExchangeManager", LOG_LEVEL_ALL);
@@ -981,6 +986,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("VhtPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiDefaultAckManager", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiDefaultProtectionManager", LOG_LEVEL_ALL);

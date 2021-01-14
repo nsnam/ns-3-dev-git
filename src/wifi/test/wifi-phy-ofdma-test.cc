@@ -34,7 +34,7 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/wifi-ppdu.h"
+#include "ns3/he-ppdu.h"
 #include "ns3/wifi-utils.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
@@ -160,7 +160,7 @@ OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
 uint16_t
 OfdmaSpectrumWifiPhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
 {
-  if (ppdu->IsDlMu ())
+  if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU)
     {
       return m_staId;
     }
@@ -1372,7 +1372,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   psdus.insert (std::make_pair (staId, psdu));
 
   Time ppduDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand (), staId);
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdus, txVector, ppduDuration, WIFI_PHY_BAND_5GHZ, uid);
+  Ptr<WifiPpdu> ppdu = Create<HePpdu> (psdus, txVector, ppduDuration, WIFI_PHY_BAND_5GHZ, uid);
 
   //Send non-OFDMA part
   Time nonOfdmaDuration = WifiPhy::CalculateNonOfdmaDurationForHeTb (txVector);

@@ -32,7 +32,7 @@
 #include "spectrum-wifi-phy.h"
 #include "wifi-spectrum-phy-interface.h"
 #include "wifi-utils.h"
-#include "wifi-ppdu.h"
+#include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 #include "wifi-psdu.h"
 
 namespace ns3 {
@@ -358,7 +358,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
     }
 
   NS_LOG_INFO ("Received Wi-Fi signal");
-  Ptr<WifiPpdu> ppdu = Copy (wifiRxParams->ppdu);
+  Ptr<WifiPpdu> ppdu = wifiRxParams->ppdu->Copy ();
   WifiTxVector txVector = ppdu->GetTxVector ();
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
       && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION)
@@ -565,7 +565,8 @@ void
 SpectrumWifiPhy::StartOfdmaTx (Ptr<WifiPpdu> ppdu, double txPowerWatts)
 {
   NS_LOG_FUNCTION (this << ppdu << txPowerWatts);
-  NS_ASSERT (ppdu->IsUlMu ());
+  //TODO: Move this to HePhy
+  NS_ASSERT (DynamicCast<HePpdu> (ppdu)->GetType () == WIFI_PPDU_TYPE_UL_MU);
   Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu, PSD_HE_TB_OFDMA_PORTION);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   WifiTxVector txVector = ppdu->GetTxVector ();

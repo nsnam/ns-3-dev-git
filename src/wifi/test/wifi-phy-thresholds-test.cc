@@ -28,7 +28,7 @@
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-utils.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/wifi-ppdu.h"
+#include "ns3/ofdm-ppdu.h"
 #include "ns3/ofdm-phy.h"
 
 using namespace ns3;
@@ -149,7 +149,7 @@ WifiPhyThresholdsTest::MakeWifiSignal (double txPowerWatts)
   Ptr<WifiPsdu> psdu = Create<WifiPsdu> (pkt, hdr);
   Time txDuration = m_phy->CalculateTxDuration (psdu->GetSize (), txVector, m_phy->GetPhyBand ());
 
-  Ptr<WifiPpdu> ppdu = Create<WifiPpdu> (psdu, txVector, txDuration, WIFI_PHY_BAND_5GHZ, 0);
+  Ptr<WifiPpdu> ppdu = Create<OfdmPpdu> (psdu, txVector, WIFI_PHY_BAND_5GHZ, 0);
 
   Ptr<SpectrumValue> txPowerSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (FREQUENCY, CHANNEL_WIDTH, txPowerWatts, CHANNEL_WIDTH);
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();

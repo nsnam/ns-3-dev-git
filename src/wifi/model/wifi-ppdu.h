@@ -21,69 +21,73 @@
 #ifndef WIFI_PPDU_H
 #define WIFI_PPDU_H
 
+#include "wifi-tx-vector.h"
+#include "ns3/nstime.h"
 #include <list>
 #include <unordered_map>
-#include "ns3/nstime.h"
-#include "wifi-tx-vector.h"
-#include "wifi-phy-header.h"
-#include "wifi-phy-band.h"
+
+/**
+ * \file
+ * \ingroup wifi
+ * Declaration of ns3::WifiPpdu class
+ * and ns3::WifiConstPsduMap.
+ */
 
 namespace ns3 {
 
 class WifiPsdu;
 
-typedef std::unordered_map <uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
+/**
+ * Map of const PSDUs indexed by STA-ID
+ */
+typedef std::unordered_map <uint16_t /* STA-ID */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
 
 /**
  * \ingroup wifi
  *
  * WifiPpdu stores a preamble, a modulation class, PHY headers and a PSDU.
- * This class should be extended later on to handle MU PPDUs.
+ * This class should be subclassed for each amendment.
  */
 class WifiPpdu : public SimpleRefCount<WifiPpdu>
 {
 public:
   /**
-   * Create a SU PPDU storing a PSDU.
+   * Create a PPDU storing a PSDU.
    *
    * \param psdu the PHY payload (PSDU)
    * \param txVector the TXVECTOR that was used for this PPDU
-   * \param ppduDuration the transmission duration of this PPDU
-   * \param band the WifiPhyBand used for the transmission of this PPDU
-   * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
+   * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid);
-
+  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, uint64_t uid = UINT64_MAX);
   /**
-   * Create a MU PPDU storing a vector of PSDUs.
+   * Create a PPDU storing a map of PSDUs.
    *
    * \param psdus the PHY payloads (PSDUs)
    * \param txVector the TXVECTOR that was used for this PPDU
-   * \param ppduDuration the transmission duration of this PPDU
-   * \param band the WifiPhyBand used for the transmission of this PPDU
-   * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
+   * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration, WifiPhyBand band, uint64_t uid = 0);
-
+  WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, uint64_t uid);
+  /**
+   * Destructor for WifiPpdu.
+   */
   virtual ~WifiPpdu ();
 
   /**
    * Get the TXVECTOR used to send the PPDU.
+   *
    * \return the TXVECTOR of the PPDU.
    */
   WifiTxVector GetTxVector (void) const;
 
   /**
    * Get the payload of the PPDU.
-   * \param bssColor the BSS color of the PHY calling this function.
-   * \param staId the staId of the PHY calling this function.
+   *
    * \return the PSDU
    */
-  Ptr<const WifiPsdu> GetPsdu (uint8_t bssColor = 0, uint16_t staId = SU_STA_ID) const;
+  Ptr<const WifiPsdu> GetPsdu (void) const;
 
   /**
-   * Return true if the PPDU's transmission was aborted due to transmitter switch off
-   * \return true if the PPDU's transmission was aborted due to transmitter switch off
+   * \return c\ true if the PPDU's transmission was aborted due to transmitter switch off
    */
   bool IsTruncatedTx (void) const;
 
@@ -94,37 +98,18 @@ public:
 
   /**
    * Get the total transmission duration of the PPDU.
+   *
+   * This method is overridden by child classes.
+   *
    * \return the transmission duration of the PPDU
    */
-  Time GetTxDuration () const;
-
-  /**
-   * Return true if the PPDU is a MU PPDU
-   * \return true if the PPDU is a MU PPDU
-   */
-  bool IsMu (void) const;
-  /**
-   * Return true if the PPDU is a DL MU PPDU
-   * \return true if the PPDU is a DL MU PPDU
-   */
-  bool IsDlMu (void) const;
-  /**
-   * Return true if the PPDU is an UL MU PPDU
-   * \return true if the PPDU is an UL MU PPDU
-   */
-  bool IsUlMu (void) const;
+  virtual Time GetTxDuration (void) const;
 
   /**
    * Get the modulation used for the PPDU.
    * \return the modulation used for the PPDU
    */
   WifiModulationClass GetModulation (void) const;
-
-  /**
-   * Get the ID of the STA that transmitted the PPDU (for HE TB PPDU).
-   * \return the ID of the STA that transmitted the PPDU
-   */
-  uint16_t GetStaId (void) const;
 
   /**
    * Get the UID of the PPDU.
@@ -143,33 +128,50 @@ public:
    * \param os output stream in which the data should be printed.
    */
   void Print (std::ostream &os) const;
+  /**
+   * \brief Copy this instance.
+   * \return a Ptr to a copy of this instance.
+   */
+  virtual Ptr<WifiPpdu> Copy (void) const;
 
+  /**
+   * Return the PPDU type (\see WifiPpduType)
+   * \return the PPDU type
+   */
+  virtual WifiPpduType GetType (void) const;
+
+  /**
+   * Get the ID of the STA that transmitted the PPDU for UL MU,
+   * SU_STA_ID otherwise.
+   * \return the ID of the STA that transmitted the PPDU for UL MU, SU_STA_ID otherwise
+   */
+  virtual uint16_t GetStaId (void) const;
+
+protected:
+  /**
+   * \brief Print the payload of the PPDU.
+   * \return information on the payload part of the PPDU
+   */
+  virtual std::string PrintPayload (void) const;
+
+  WifiPreamble m_preamble;          //!< the PHY preamble
+  WifiModulationClass m_modulation; //!< the modulation used for the transmission of this PPDU
+  WifiConstPsduMap m_psdus;         //!< the PSDUs contained in this PPDU
+  uint64_t m_uid;                   //!< the unique ID of this PPDU
 
 private:
   /**
-   * Fill in the PHY headers.
+   * Get the TXVECTOR used to send the PPDU.
    *
-   * \param txVector the TXVECTOR that was used for this PPDU
-   * \param ppduDuration the transmission duration of this PPDU
-   * \param band the WifiPhyBand used for the transmission of this PPDU
+   * This method should be overridden by child classes.
+   *
+   * \return the TXVECTOR of the PPDU.
    */
-  void SetPhyHeaders (WifiTxVector txVector, Time ppduDuration, WifiPhyBand band);
+  virtual WifiTxVector DoGetTxVector (void) const;
 
-  DsssSigHeader m_dsssSig;                     //!< the DSSS SIG PHY header
-  LSigHeader m_lSig;                           //!< the L-SIG PHY header
-  HtSigHeader m_htSig;                         //!< the HT-SIG PHY header
-  VhtSigHeader m_vhtSig;                       //!< the VHT-SIG PHY header
-  HeSigHeader m_heSig;                         //!< the HE-SIG PHY header
-  WifiPreamble m_preamble;                     //!< the PHY preamble
-  WifiModulationClass m_modulation;            //!< the modulation used for the transmission of this PPDU
-  WifiConstPsduMap m_psdus;                    //!< the PSDUs contained in this PPDU
-  bool m_truncatedTx;                          //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
-  WifiPhyBand m_band;                          //!< the WifiPhyBand used to transmit that PPDU
-  uint16_t m_channelWidth;                     //!< the channel width used to transmit that PPDU in MHz
-  uint8_t m_txPowerLevel;                      //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
-  WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
-  uint64_t m_uid;                              //!< the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
-};
+  bool m_truncatedTx;     //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
+  uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
+}; //class WifiPpdu
 
 /**
  * \brief Stream insertion operator.
