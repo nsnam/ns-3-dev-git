@@ -376,7 +376,14 @@ VhtPhy::CreateVhtMcs (uint8_t index)
   NS_ASSERT_MSG (index <= 9, "VhtMcs index must be <= 9!");
   return WifiModeFactory::CreateWifiMcs ("VhtMcs" + std::to_string (index),
                                          index,
-                                         WIFI_MOD_CLASS_VHT);
+                                         WIFI_MOD_CLASS_VHT,
+                                         MakeBoundCallback (&GetCodeRate, index),
+                                         MakeBoundCallback (&GetConstellationSize, index),
+                                         MakeBoundCallback (&GetPhyRate, index),
+                                         MakeBoundCallback (&GetDataRate, index),
+                                         MakeCallback (&GetDataRateFromTxVector),
+                                         MakeBoundCallback (&GetNonHtReferenceRate, index),
+                                         MakeBoundCallback (&IsModeAllowed, index));
 }
 
 WifiCodeRate

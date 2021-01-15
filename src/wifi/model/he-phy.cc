@@ -999,7 +999,14 @@ HePhy::CreateHeMcs (uint8_t index)
   NS_ASSERT_MSG (index <= 11, "HeMcs index must be <= 11!");
   return WifiModeFactory::CreateWifiMcs ("HeMcs" + std::to_string (index),
                                          index,
-                                         WIFI_MOD_CLASS_HE);
+                                         WIFI_MOD_CLASS_HE,
+                                         MakeBoundCallback (&GetCodeRate, index),
+                                         MakeBoundCallback (&GetConstellationSize, index),
+                                         MakeBoundCallback (&GetPhyRate, index),
+                                         MakeBoundCallback (&GetDataRate, index),
+                                         MakeCallback (&GetDataRateFromTxVector),
+                                         MakeBoundCallback (&GetNonHtReferenceRate, index),
+                                         MakeCallback (&IsModeAllowed));
 }
 
 WifiCodeRate

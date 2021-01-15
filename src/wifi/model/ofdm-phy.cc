@@ -496,8 +496,12 @@ OfdmPhy::CreateOfdmMode (std::string uniqueName, bool isMandatory)
   return WifiModeFactory::CreateWifiMode (uniqueName,
                                           WIFI_MOD_CLASS_OFDM,
                                           isMandatory,
-                                          GetCodeRate (uniqueName),
-                                          GetConstellationSize (uniqueName));
+                                          MakeBoundCallback (&GetCodeRate, uniqueName),
+                                          MakeBoundCallback (&GetConstellationSize, uniqueName),
+                                          MakeBoundCallback (&GetPhyRate, uniqueName),
+                                          MakeBoundCallback (&GetDataRate, uniqueName),
+                                          MakeCallback (&GetDataRateFromTxVector),
+                                          MakeCallback (&IsModeAllowed));
 }
 
 WifiCodeRate

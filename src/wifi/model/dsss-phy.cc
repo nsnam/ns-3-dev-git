@@ -285,8 +285,12 @@ DsssPhy::CreateDsssMode (std::string uniqueName,
   return WifiModeFactory::CreateWifiMode (uniqueName,
                                           modClass,
                                           true,
-                                          GetCodeRate (uniqueName),
-                                          GetConstellationSize (uniqueName));
+                                          MakeBoundCallback (&GetCodeRate, uniqueName),
+                                          MakeBoundCallback (&GetConstellationSize, uniqueName),
+                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass),
+                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass), //PhyRate is equivalent to DataRate
+                                          MakeCallback (&GetDataRateFromTxVector),
+                                          MakeCallback (&IsModeAllowed));
 }
 
 WifiCodeRate

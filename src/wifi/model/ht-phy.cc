@@ -560,7 +560,14 @@ HtPhy::CreateHtMcs (uint8_t index)
   NS_ASSERT_MSG (index <= 31, "HtMcs index must be <= 31!");
   return WifiModeFactory::CreateWifiMcs ("HtMcs" + std::to_string (index),
                                          index,
-                                         WIFI_MOD_CLASS_HT);
+                                         WIFI_MOD_CLASS_HT,
+                                         MakeBoundCallback (&GetHtCodeRate, index),
+                                         MakeBoundCallback (&GetHtConstellationSize, index),
+                                         MakeBoundCallback (&GetPhyRate, index),
+                                         MakeBoundCallback (&GetDataRate, index),
+                                         MakeCallback (&GetDataRateFromTxVector),
+                                         MakeBoundCallback (&GetNonHtReferenceRate, index),
+                                         MakeCallback (&IsModeAllowed));
 }
 
 WifiCodeRate

@@ -24,6 +24,7 @@
 
 #include "wifi-phy-common.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/callback.h"
 #include <vector>
 
 namespace ns3 {
@@ -266,17 +267,84 @@ typedef WifiModeList::const_iterator WifiModeListIterator;
 class WifiModeFactory
 {
 public:
+  // Typedefs for callbacks used by WifiModeItem
+  /**
+   * Typedef for callback used to retrieve code rate of a WifiMode
+   * \return the code rate of the WifiMode.
+   */
+  typedef Callback<WifiCodeRate> CodeRateCallback;
+  /**
+   * Typedef for callback used to retrieve constellation size of a WifiMode
+   * \return the size of modulation constellation of the WifiMode.
+   */
+  typedef Callback<uint16_t> ConstellationSizeCallback;
+  /**
+   * Typedef for callback used to calculate PHY rate of a WifiMode
+   *
+   * \param channelWidth the channel width in MHz
+   * \param guardInterval the guard interval duration in nanoseconds
+   * \param nss the number of streams
+   * \return the physical bit rate of the signal in bps.
+   */
+  typedef Callback<uint64_t, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */> PhyRateCallback;
+  /**
+   * Typedef for callback used to calculate data rate of a WifiMode
+   *
+   * \param channelWidth the channel width in MHz
+   * \param guardInterval the guard interval duration in nanoseconds
+   * \param nss the number of streams
+   * \return the data rate  of the signal in bps.
+   */
+  typedef Callback<uint64_t, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */> DataRateCallback;
+  /**
+   * Typedef for callback used to calculate data rate of a WifiMode
+   * from a TXVECTOR. This is mostly useful in HE or later amendments.
+   * For the others it's a simple wrapper of \see DataRateCallback.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID
+   * \return the data rate  of the signal in bps.
+   */
+  typedef Callback<uint64_t, WifiTxVector /* txVector */, uint16_t /* staId */> DataRateFromTxVectorCallback;
+  /**
+   * Typedef for callback used to calculate Non-HT Reference Rate of
+   * an MCS defined in HT or later amendment. For Non-HT modes (DSSS, OFDM,
+   * etc) this should be defined as null.
+   *
+   * \return the rate (in bps) of the non-HT Reference Rate.
+   */
+  typedef Callback<uint64_t> NonHtReferenceRateCallback;
+  /**
+   * Typedef for callback used to check whether the combination of <current
+   * WifiMode, channel width (in MHz), number of stream> is allowed
+   *
+   * \param channelWidth the channel width in MHz
+   * \param nss the number of streams
+   * \return true if combination of current WifiMode and supplied parameters is allowed.
+   */
+  typedef Callback<bool, uint16_t /* channelWidth */, uint8_t /* nss */> ModeAllowedCallback;
+
   /**
    * \param uniqueName the name of the associated WifiMode. This name
    *        must be unique across _all_ instances.
    * \param modClass the class of modulation
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
-   * \param codingRate if convolutional coding is used for this rate
-   *        then this parameter specifies the convolutional coding rate
-   *        used. If there is no explicit convolutional coding step (e.g.,
-   *        for DSSS rates) then the caller should set this parameter to
-   *        WIFI_CODE_RATE_UNCODED.
-   * \param constellationSize the order of the constellation used.
+   * \param codeRateCallback a callback function to retrieve coding rate of
+   *        this WifiMode. If convolutional coding is used for this rate
+   *        then the callback returns the convolutional coding rate used. If
+   *        there is no explicit convolutional coding step (e.g., for DSSS
+   *        rates) then the callback should returns WIFI_CODE_RATE_UNDEFINED.
+   * \param constellationSizeCallback a callback function that returns the
+   *        order of the constellation used.
+   * \param phyRateCallback a callback function to calculate the PHY rate (in
+   *        bps) of this WifiMode.
+   * \param dataRateCallback a callback function to calculate the data rate
+   *        (in bps) of this WifiMode.
+   * \param dataRateFromTxVectorCallback a callback function to calculate the data rate
+   *        (in bps) of this WifiMode using a TXVECTOR as input.
+   * \param isModeAllowedCallback a callback function to check whether a
+   *        specific combination of this WifiMode, channel width (MHz), and
+   *        NSS are allowed.
    *
    * \return WifiMode
    *
@@ -285,22 +353,48 @@ public:
   static WifiMode CreateWifiMode (std::string uniqueName,
                                   WifiModulationClass modClass,
                                   bool isMandatory,
-                                  WifiCodeRate codingRate,
-                                  uint16_t constellationSize);
+                                  CodeRateCallback codeRateCallback,
+                                  ConstellationSizeCallback constellationSizeCallback,
+                                  PhyRateCallback phyRateCallback,
+                                  DataRateCallback dataRateCallback,
+                                  DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
+                                  ModeAllowedCallback isModeAllowedCallback);
 
   /**
    * \param uniqueName the name of the associated WifiMode. This name
    *        must be unique across _all_ instances.
    * \param mcsValue the MCS value
    * \param modClass the class of modulation
+   * \param codeRateCallback a callback function that returns the coding rate
+   *        of this WifiMode.
+   * \param constellationSizeCallback a callback function that returns the size
+   *        of modulation constellation of this WifiMode.
+   * \param phyRateCallback a callback function to calculate the PHY rate (in
+   *        bps) of this WifiMode.
+   * \param dataRateCallback a callback function to calculate the data rate (in
+   *        bps) of this WifiMode.
+   * \param dataRateFromTxVectorCallback a callback function to calculate the data rate
+   *        (in bps) of this WifiMode using a TXVECTOR as input.
+   * \param nonHtReferenceRateCallback a callback function to calculate the rate
+   *        (in bps) of the non-HT Reference Rate of this WifiMode.
+   * \param isModeAllowedCallback a callback function to calculate whether a
+   *        combination of <MCS index, channel width (MHz), number of spatial
+   *        stream> is allowed for this WifiMode.
    *
    * \return WifiMode
    *
-   * Create a HT WifiMode.
+   * Create a HT or later WifiMode.
    */
   static WifiMode CreateWifiMcs (std::string uniqueName,
                                  uint8_t mcsValue,
-                                 WifiModulationClass modClass);
+                                 WifiModulationClass modClass,
+                                 CodeRateCallback codeRateCallback,
+                                 ConstellationSizeCallback constellationSizeCallback,
+                                 PhyRateCallback phyRateCallback,
+                                 DataRateCallback dataRateCallback,
+                                 DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
+                                 NonHtReferenceRateCallback nonHtReferenceRateCallback,
+                                 ModeAllowedCallback isModeAllowedCallback);
 
 
 private:
@@ -323,12 +417,17 @@ private:
    */
   struct WifiModeItem
   {
-    std::string uniqueUid; ///< unique UID
+    std::string uniqueUid;        ///< unique UID
     WifiModulationClass modClass; ///< modulation class
-    uint16_t constellationSize; ///< constellation size
-    WifiCodeRate codingRate; ///< coding rate
-    bool isMandatory; ///< flag to indicate whether this mode is mandatory
-    uint8_t mcsValue; ///< MCS value
+    bool isMandatory;             ///< flag to indicate whether this mode is mandatory
+    uint8_t mcsValue;             ///< MCS value
+    CodeRateCallback GetCodeRateCallback;                         ///< Callback to retrieve code rate of this WifiModeItem
+    ConstellationSizeCallback GetConstellationSizeCallback;       ///< Callback to retrieve constellation size of this WifiModeItem
+    PhyRateCallback GetPhyRateCallback;                           ///< Callback to calculate PHY rate in bps of this WifiModeItem
+    DataRateCallback GetDataRateCallback;                         ///< Callback to calculate data rate in bps of this WifiModeItem
+    DataRateFromTxVectorCallback GetDataRateFromTxVectorCallback; ///< Callback to calculate data rate in bps of this WifiModeItem using a TXVECTOR as input
+    NonHtReferenceRateCallback GetNonHtReferenceRateCallback;     ///< Callback to calculate non-HT reference rate of this WifiModeItem
+    ModeAllowedCallback IsModeAllowedCallback;                    ///< Callback to check whether the combination of <MCS, channel width (MHz), NSS> is allowed
   };
 
   /**
