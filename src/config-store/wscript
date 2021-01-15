@@ -21,23 +21,14 @@ def configure(conf):
                                      conf.env['ENABLE_GTK'],
                                      "--disable-gtk option given")
     else:
-        have_gtk = conf.check_cfg(package='gtk+-3.0 >= 3.20',
+        have_gtk = conf.check_cfg(package='gtk+-3.0 >= 3.22',
                                   args=['--cflags', '--libs'], uselib_store='GTK',
                                   mandatory=False)
 
         conf.env['ENABLE_GTK'] = have_gtk
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
                                      conf.env['ENABLE_GTK'],
-                                     "library 'gtk+-3 >= 3.2' not found")
-
-        # Bug 2936 -Wparentheses issue for gcc >= 8
-        if conf.env['ENABLE_GTK']: 
-            if conf.env['CXX_NAME'] in ['gcc']:
-                if tuple(map(int, conf.env['CC_VERSION'])) >= gcc_version_gtkplus_warning_issue:
-                    conf.env.append_value('CXXFLAGS', '-Wno-parentheses')
-            # Bug 2978 gcc and clang warnings about deprecated declarations
-            if conf.env['CXX_NAME'] in ['clang', 'gcc']:
-                    conf.env.append_value ('CXXFLAGS', '-Wno-error=deprecated-declarations')
+                                     "library 'gtk+-3 >= 3.22' not found")
 
     have_libxml2 = conf.check_cfg(package='libxml-2.0 >= 2.7',
                                   args=['--cflags', '--libs'], uselib_store='LIBXML2',
