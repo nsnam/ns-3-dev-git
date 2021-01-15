@@ -135,61 +135,23 @@ ErpOfdmPhy::GetErpOfdmRatesBpsList (void)
   return OfdmPhy::GetOfdmRatesBpsList ().at (20);
 }
 
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate6Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate6Mbps", true);
-  return mode;
-}
+#define GET_ERP_OFDM_MODE(x, f) \
+WifiMode \
+ErpOfdmPhy::Get ## x (void) \
+{ \
+  static WifiMode mode = CreateErpOfdmMode (#x, f); \
+  return mode; \
+} \
 
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate9Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate9Mbps", false);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate12Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate12Mbps", true);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate18Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate18Mbps", false);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate24Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate24Mbps", true);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate36Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate36Mbps", false);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate48Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate48Mbps", false);
-  return mode;
-}
-
-WifiMode
-ErpOfdmPhy::GetErpOfdmRate54Mbps (void)
-{
-  static WifiMode mode = CreateErpOfdmMode ("ErpOfdmRate54Mbps", false);
-  return mode;
-}
+GET_ERP_OFDM_MODE (ErpOfdmRate6Mbps,  true );
+GET_ERP_OFDM_MODE (ErpOfdmRate9Mbps,  false);
+GET_ERP_OFDM_MODE (ErpOfdmRate12Mbps, true );
+GET_ERP_OFDM_MODE (ErpOfdmRate18Mbps, false);
+GET_ERP_OFDM_MODE (ErpOfdmRate24Mbps, true );
+GET_ERP_OFDM_MODE (ErpOfdmRate36Mbps, false);
+GET_ERP_OFDM_MODE (ErpOfdmRate48Mbps, false);
+GET_ERP_OFDM_MODE (ErpOfdmRate54Mbps, false);
+#undef GET_ERP_OFDM_MODE
 
 WifiMode
 ErpOfdmPhy::CreateErpOfdmMode (std::string uniqueName, bool isMandatory)

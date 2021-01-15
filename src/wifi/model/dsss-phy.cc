@@ -257,38 +257,21 @@ DsssPhy::GetDsssRatesBpsList (void)
   /* *NS_CHECK_STYLE_ON* */
 }
 
+#define GET_DSSS_MODE(x, m) \
+WifiMode \
+DsssPhy::Get ## x (void) \
+{ \
+  static WifiMode mode = CreateDsssMode (#x, WIFI_MOD_CLASS_ ## m); \
+  return mode; \
+} \
+
 // Clause 15 rates (DSSS)
-
-WifiMode
-DsssPhy::GetDsssRate1Mbps (void)
-{
-  static WifiMode mode = CreateDsssMode ("DsssRate1Mbps", WIFI_MOD_CLASS_DSSS);
-  return mode;
-}
-
-WifiMode
-DsssPhy::GetDsssRate2Mbps (void)
-{
-  static WifiMode mode = CreateDsssMode ("DsssRate2Mbps", WIFI_MOD_CLASS_DSSS);
-  return mode;
-}
-
-
+GET_DSSS_MODE (DsssRate1Mbps,   DSSS);
+GET_DSSS_MODE (DsssRate2Mbps,   DSSS);
 // Clause 16 rates (HR/DSSS)
-
-WifiMode
-DsssPhy::GetDsssRate5_5Mbps (void)
-{
-  static WifiMode mode = CreateDsssMode ("DsssRate5_5Mbps", WIFI_MOD_CLASS_HR_DSSS);
-  return mode;
-}
-
-WifiMode
-DsssPhy::GetDsssRate11Mbps (void)
-{
-  static WifiMode mode = CreateDsssMode ("DsssRate11Mbps", WIFI_MOD_CLASS_HR_DSSS);
-  return mode;
-}
+GET_DSSS_MODE (DsssRate5_5Mbps, HR_DSSS);
+GET_DSSS_MODE (DsssRate11Mbps,  HR_DSSS);
+#undef GET_DSSS_MODE
 
 WifiMode
 DsssPhy::CreateDsssMode (std::string uniqueName,

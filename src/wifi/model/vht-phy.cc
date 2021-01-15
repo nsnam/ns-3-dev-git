@@ -327,32 +327,27 @@ VhtPhy::InitializeModes (void)
 WifiMode
 VhtPhy::GetVhtMcs (uint8_t index)
 {
+#define CASE(x) \
+case x: \
+  return GetVhtMcs ## x (); \
+
   switch (index)
     {
-      case 0:
-        return GetVhtMcs0 ();
-      case 1:
-        return GetVhtMcs1 ();
-      case 2:
-        return GetVhtMcs2 ();
-      case 3:
-        return GetVhtMcs3 ();
-      case 4:
-        return GetVhtMcs4 ();
-      case 5:
-        return GetVhtMcs5 ();
-      case 6:
-        return GetVhtMcs6 ();
-      case 7:
-        return GetVhtMcs7 ();
-      case 8:
-        return GetVhtMcs8 ();
-      case 9:
-        return GetVhtMcs9 ();
+      CASE ( 0)
+      CASE ( 1)
+      CASE ( 2)
+      CASE ( 3)
+      CASE ( 4)
+      CASE ( 5)
+      CASE ( 6)
+      CASE ( 7)
+      CASE ( 8)
+      CASE ( 9)
       default:
         NS_ABORT_MSG ("Inexistent index (" << +index << ") requested for VHT");
         return WifiMode ();
     }
+#undef CASE
 }
 
 #define GET_VHT_MCS(x) \

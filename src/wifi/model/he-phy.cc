@@ -946,36 +946,29 @@ HePhy::InitializeModes (void)
 WifiMode
 HePhy::GetHeMcs (uint8_t index)
 {
+#define CASE(x) \
+case x: \
+  return GetHeMcs ## x (); \
+
   switch (index)
     {
-      case 0:
-        return GetHeMcs0 ();
-      case 1:
-        return GetHeMcs1 ();
-      case 2:
-        return GetHeMcs2 ();
-      case 3:
-        return GetHeMcs3 ();
-      case 4:
-        return GetHeMcs4 ();
-      case 5:
-        return GetHeMcs5 ();
-      case 6:
-        return GetHeMcs6 ();
-      case 7:
-        return GetHeMcs7 ();
-      case 8:
-        return GetHeMcs8 ();
-      case 9:
-        return GetHeMcs9 ();
-      case 10:
-        return GetHeMcs10 ();
-      case 11:
-        return GetHeMcs11 ();
+      CASE ( 0)
+      CASE ( 1)
+      CASE ( 2)
+      CASE ( 3)
+      CASE ( 4)
+      CASE ( 5)
+      CASE ( 6)
+      CASE ( 7)
+      CASE ( 8)
+      CASE ( 9)
+      CASE (10)
+      CASE (11)
       default:
         NS_ABORT_MSG ("Inexistent index (" << +index << ") requested for HE");
         return WifiMode ();
     }
+#undef CASE
 }
 
 #define GET_HE_MCS(x) \

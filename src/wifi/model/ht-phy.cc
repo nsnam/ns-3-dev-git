@@ -467,76 +467,49 @@ HtPhy::InitializeModes (void)
 WifiMode
 HtPhy::GetHtMcs (uint8_t index)
 {
+#define CASE(x) \
+case x: \
+  return GetHtMcs ## x (); \
+
   switch (index)
     {
-      case 0:
-        return GetHtMcs0 ();
-      case 1:
-        return GetHtMcs1 ();
-      case 2:
-        return GetHtMcs2 ();
-      case 3:
-        return GetHtMcs3 ();
-      case 4:
-        return GetHtMcs4 ();
-      case 5:
-        return GetHtMcs5 ();
-      case 6:
-        return GetHtMcs6 ();
-      case 7:
-        return GetHtMcs7 ();
-      case 8:
-        return GetHtMcs8 ();
-      case 9:
-        return GetHtMcs9 ();
-      case 10:
-        return GetHtMcs10 ();
-      case 11:
-        return GetHtMcs11 ();
-      case 12:
-        return GetHtMcs12 ();
-      case 13:
-        return GetHtMcs13 ();
-      case 14:
-        return GetHtMcs14 ();
-      case 15:
-        return GetHtMcs15 ();
-      case 16:
-        return GetHtMcs16 ();
-      case 17:
-        return GetHtMcs17 ();
-      case 18:
-        return GetHtMcs18 ();
-      case 19:
-        return GetHtMcs19 ();
-      case 20:
-        return GetHtMcs20 ();
-      case 21:
-        return GetHtMcs21 ();
-      case 22:
-        return GetHtMcs22 ();
-      case 23:
-        return GetHtMcs23 ();
-      case 24:
-        return GetHtMcs24 ();
-      case 25:
-        return GetHtMcs25 ();
-      case 26:
-        return GetHtMcs26 ();
-      case 27:
-        return GetHtMcs27 ();
-      case 28:
-        return GetHtMcs28 ();
-      case 29:
-        return GetHtMcs29 ();
-      case 30:
-        return GetHtMcs30 ();
-      case 31:
-        return GetHtMcs31 ();
+      CASE ( 0)
+      CASE ( 1)
+      CASE ( 2)
+      CASE ( 3)
+      CASE ( 4)
+      CASE ( 5)
+      CASE ( 6)
+      CASE ( 7)
+      CASE ( 8)
+      CASE ( 9)
+      CASE (10)
+      CASE (11)
+      CASE (12)
+      CASE (13)
+      CASE (14)
+      CASE (15)
+      CASE (16)
+      CASE (17)
+      CASE (18)
+      CASE (19)
+      CASE (20)
+      CASE (21)
+      CASE (22)
+      CASE (23)
+      CASE (24)
+      CASE (25)
+      CASE (26)
+      CASE (27)
+      CASE (28)
+      CASE (29)
+      CASE (30)
+      CASE (31)
       default:
         NS_ABORT_MSG ("Inexistent (or not supported) index (" << +index << ") requested for HT");
         return WifiMode ();
     }
+#undef CASE
 }
 
 #define GET_HT_MCS(x) \
