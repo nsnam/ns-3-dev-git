@@ -256,6 +256,72 @@ public:
    */
   static WifiMode GetOfdmRate13_5MbpsBW5MHz (void);
 
+  /**
+   * Return the WifiCodeRate from the OFDM mode's unique name using
+   * ModulationLookupTable. This is mainly used as a callback for
+   * WifiMode operation.
+   *
+   * \param name the unique name of the OFDM mode
+   * \return WifiCodeRate corresponding to the unique name
+   */
+  static WifiCodeRate GetCodeRate (const std::string& name);
+  /**
+   * Return the constellation size from the OFDM mode's unique name using
+   * ModulationLookupTable. This is mainly used as a callback for
+   * WifiMode operation.
+   *
+   * \param name the unique name of the OFDM mode
+   * \return constellation size corresponding to the unique name
+   */
+  static uint16_t GetConstellationSize (const std::string& name);
+  /**
+   * Return the PHY rate from the OFDM mode's unique name and
+   * the supplied parameters. This function calls CalculatePhyRate
+   * and is mainly used as a callback for WifiMode operation.
+   *
+   * \param name the unique name of the OFDM mode
+   * \param channelWidth the considered channel width in MHz
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param nss the considered number of streams
+   *
+   * \return the physical bit rate of this signal in bps.
+   */
+  static uint64_t GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Return the data rate corresponding to
+   * the supplied TXVECTOR.
+   * This function is mainly used as a callback
+   * for WifiMode operation.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID (only here to have a common signature for all callbacks)
+   * \return the data bit rate in bps.
+   */
+  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  /**
+   * Return the data rate from the OFDM mode's unique name and
+   * the supplied parameters. This function calls CalculateDataRate and
+   * is mainly used as a callback for WifiMode operation.
+   *
+   * \param name the unique name of the OFDM mode
+   * \param channelWidth the considered channel width in MHz
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param nss the considered number of streams
+   *
+   * \return the data bit rate of this signal in bps.
+   */
+  static uint64_t GetDataRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Check whether the combination of <WifiMode, channel width, NSS> is allowed.
+   * This function is used as a callback for WifiMode operation, and always
+   * returns true since there is no limitation for any mode in OfdmPhy.
+   *
+   * \param channelWidth the considered channel width in MHz
+   * \param nss the considered number of streams
+   * \returns true.
+   */
+  static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
+
 protected:
   // Inherited
   virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
@@ -315,6 +381,49 @@ protected:
    * \return \c true if supported, \c false otherwise
    */
   virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const;
+
+  /**
+   * Calculate the PHY rate in bps from code rate and data rate.
+   *
+   * \param codeRate the WifiCodeRate
+   * \param dataRate the data rate in bps
+   * \return the physical rate in bps from WifiCodeRate and data rate.
+   */
+  static uint64_t CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate);
+  /**
+   * Convert WifiCodeRate to a ratio, e.g., code ratio of WIFI_CODE_RATE_1_2 is 0.5.
+   *
+   * \param codeRate the WifiCodeRate
+   * \return the ratio form of WifiCodeRate.
+   */
+  static double GetCodeRatio (WifiCodeRate codeRate);
+  /**
+   * Calculates data rate from the supplied parameters.
+   *
+   * \param codeRate the code rate of the mode
+   * \param constellationSize the size of modulation constellation
+   * \param channelWidth the considered channel width in MHz
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param nss the considered number of streams
+   *
+   * \return the data bit rate of this signal in bps.
+   */
+  static uint64_t CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth,
+                                     uint16_t guardInterval, uint8_t nss);
+  /**
+   * Calculates data rate from the supplied parameters.
+   *
+   * \param symbolDuration the symbol duration (in us) excluding guard interval
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param usableSubarriers the number of usable subcarriers for data
+   * \param numberOfBitsPerSubcarrier the number of data bits per subcarrier
+   * \param codingRate the coding rate
+   *
+   * \return the data bit rate of this signal in bps.
+   */
+  static uint64_t CalculateDataRate (double symbolDuration, uint16_t guardInterval,
+                                     uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+                                     double codingRate);
 
 private:
   static const PpduFormats m_ofdmPpduFormats; //!< OFDM PPDU formats

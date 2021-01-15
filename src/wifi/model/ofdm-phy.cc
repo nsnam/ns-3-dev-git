@@ -746,6 +746,102 @@ OfdmPhy::GetOfdmRate13_5MbpsBW5MHz (void)
   return mode;
 }
 
+WifiCodeRate
+OfdmPhy::GetCodeRate (const std::string& name)
+{
+  return m_ofdmModulationLookupTable.at (name).first;
+}
+
+uint16_t
+OfdmPhy::GetConstellationSize (const std::string& name)
+{
+  return m_ofdmModulationLookupTable.at (name).second;
+}
+
+uint64_t
+OfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetCodeRate (name);
+  uint64_t dataRate = GetDataRate (name, channelWidth, guardInterval, nss);
+  return CalculatePhyRate (codeRate, dataRate);
+}
+
+uint64_t
+OfdmPhy::CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate)
+{
+  return (dataRate / GetCodeRatio (codeRate));
+}
+
+double
+OfdmPhy::GetCodeRatio (WifiCodeRate codeRate)
+{
+  switch (codeRate)
+    {
+      case WIFI_CODE_RATE_3_4:
+        return (3.0 / 4.0);
+      case WIFI_CODE_RATE_2_3:
+        return (2.0 / 3.0);
+      case WIFI_CODE_RATE_1_2:
+        return (1.0 / 2.0);
+      case WIFI_CODE_RATE_UNDEFINED:
+      default:
+        NS_FATAL_ERROR ("trying to get code ratio for undefined coding rate");
+        return 0;
+    }
+}
+
+uint64_t
+OfdmPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+{
+  return GetDataRate (txVector.GetMode ().GetUniqueName (),
+                      txVector.GetChannelWidth (),
+                      txVector.GetGuardInterval (),
+                      txVector.GetNss ());
+}
+
+uint64_t
+OfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetCodeRate (name);
+  uint16_t constellationSize = GetConstellationSize (name);
+  return CalculateDataRate (codeRate, constellationSize, channelWidth, guardInterval, nss);
+}
+
+uint64_t
+OfdmPhy::CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth, uint16_t /* guardInterval */, uint8_t /* nss */)
+{
+  double symbolDuration = 3.2; //in us
+  uint16_t guardInterval = 800; //in ns
+  if (channelWidth == 10)
+    {
+      symbolDuration = 6.4;
+      guardInterval = 1600;
+    }
+  else if (channelWidth == 5)
+    {
+      symbolDuration = 12.8;
+      guardInterval = 3200;
+    }
+  return CalculateDataRate (symbolDuration, guardInterval,
+                            48, static_cast<uint16_t> (log2 (constellationSize)),
+                            GetCodeRatio (codeRate));
+}
+
+uint64_t
+OfdmPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
+                            uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+                            double codingRate)
+{
+  double symbolRate = (1 / (symbolDuration + (static_cast<double> (guardInterval) / 1000))) * 1e6;
+  return lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
+}
+
+bool
+OfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+{
+  return true;
+}
+
 } //namespace ns3
 
 namespace {

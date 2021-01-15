@@ -310,6 +310,55 @@ DsssPhy::GetDsssRate11Mbps (void)
   return mode;
 }
 
+WifiCodeRate
+DsssPhy::GetCodeRate (const std::string& name)
+{
+  return m_dsssModulationLookupTable.at (name).first;
+}
+
+uint16_t
+DsssPhy::GetConstellationSize (const std::string& name)
+{
+  return m_dsssModulationLookupTable.at (name).second;
+}
+
+uint64_t
+DsssPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+{
+  WifiMode mode = txVector.GetMode ();
+  return DsssPhy::GetDataRate (mode.GetUniqueName (),
+                               mode.GetModulationClass (),
+                               22, 0, 1); //dummy values since unused
+}
+
+uint64_t
+DsssPhy::GetDataRate (const std::string& name, WifiModulationClass modClass, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */)
+{
+  uint16_t constellationSize = GetConstellationSize (name);
+  uint16_t divisor = 0;
+  if (modClass == WIFI_MOD_CLASS_DSSS)
+    {
+      divisor = 11;
+    }
+  else if (modClass == WIFI_MOD_CLASS_HR_DSSS)
+    {
+      divisor = 8;
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Incorrect modulation class, must specify either WIFI_MOD_CLASS_DSSS or WIFI_MOD_CLASS_HR_DSSS!");
+    }
+  uint16_t numberOfBitsPerSubcarrier = static_cast<uint16_t> (log2 (constellationSize));
+  uint64_t dataRate = ((11000000 / divisor) * numberOfBitsPerSubcarrier);
+  return dataRate;
+}
+
+bool
+DsssPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+{
+  return true;
+}
+
 } //namespace ns3
 
 namespace {

@@ -231,6 +231,50 @@ ErpOfdmPhy::GetErpOfdmRate54Mbps (void)
   return mode;
 }
 
+WifiCodeRate
+ErpOfdmPhy::GetCodeRate (const std::string& name)
+{
+  return m_erpOfdmModulationLookupTable.at (name).first;
+}
+
+uint16_t
+ErpOfdmPhy::GetConstellationSize (const std::string& name)
+{
+  return m_erpOfdmModulationLookupTable.at (name).second;
+}
+
+uint64_t
+ErpOfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetCodeRate (name);
+  uint16_t constellationSize = GetConstellationSize (name);
+  uint64_t dataRate = OfdmPhy::CalculateDataRate (codeRate, constellationSize, channelWidth, guardInterval, nss);
+  return OfdmPhy::CalculatePhyRate (codeRate, dataRate);
+}
+
+uint64_t
+ErpOfdmPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+{
+  return GetDataRate (txVector.GetMode ().GetUniqueName (),
+                      txVector.GetChannelWidth (),
+                      txVector.GetGuardInterval (),
+                      txVector.GetNss ());
+}
+
+uint64_t
+ErpOfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetCodeRate (name);
+  uint16_t constellationSize = GetConstellationSize (name);
+  return OfdmPhy::CalculateDataRate (codeRate, constellationSize, channelWidth, guardInterval, nss);
+}
+
+bool
+ErpOfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+{
+  return true;
+}
+
 } //namespace ns3
 
 namespace {

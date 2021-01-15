@@ -264,6 +264,80 @@ public:
    */
   static WifiMode GetHeMcs11 (void);
 
+  /**
+   * Return the coding rate corresponding to
+   * the supplied HE MCS index. This function is used
+   * as a callback for WifiMode operation.
+   *
+   * \param mcsValue the MCS index
+   * \return the coding rate.
+   */
+  static WifiCodeRate GetCodeRate (uint8_t mcsValue);
+  /**
+   * Return the constellation size corresponding
+   * to the supplied HE MCS index. This function is used
+   * as a callback for WifiMode operation.
+   *
+   * \param mcsValue the MCS index
+   * \return the size of modulation constellation.
+   */
+  static uint16_t GetConstellationSize (uint8_t mcsValue);
+  /**
+   * Return the PHY rate corresponding to the supplied HE MCS
+   * index, channel width, guard interval, and number of
+   * spatial stream. This function calls HtPhy::CalculatePhyRate
+   * and is mainly used as a callback for WifiMode operation.
+   *
+   * \param mcsValue the HE MCS index
+   * \param channelWidth the considered channel width in MHz
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param nss the considered number of stream
+   *
+   * \return the physical bit rate of this signal in bps.
+   */
+  static uint64_t GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Return the data rate corresponding to
+   * the supplied TXVECTOR for the STA-ID.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID for MU (unused if SU)
+   * \return the data bit rate in bps.
+   */
+  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId = SU_STA_ID);
+  /**
+   * Return the data rate corresponding to
+   * the supplied HE MCS index, channel width,
+   * guard interval, and number of spatial
+   * streams.
+   *
+   * \param mcsValue the MCS index
+   * \param channelWidth the channel width in MHz
+   * \param guardInterval the guard interval duration in nanoseconds
+   * \param nss the number of spatial streams
+   * \return the data bit rate in bps.
+   */
+  static uint64_t GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Calculate the rate in bps of the non-HT Reference Rate corresponding
+   * to the supplied HE MCS index. This function calls CalculateNonHtReferenceRate
+   * and is used as a callback for WifiMode operation.
+   *
+   * \param mcsValue the HE MCS index
+   * \return the rate in bps of the non-HT Reference Rate.
+   */
+  static uint64_t GetNonHtReferenceRate (uint8_t mcsValue);
+  /**
+   * Check whether the combination of <MCS, channel width, NSS> is allowed.
+   * This function is used as a callback for WifiMode operation, and always
+   * returns true since there is no limitation for any MCS in HePhy.
+   *
+   * \param channelWidth the considered channel width in MHz
+   * \param nss the considered number of streams
+   * \returns true.
+   */
+  static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
+
 protected:
   // Inherited
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
@@ -285,6 +359,26 @@ protected:
    * \param event the event holding incoming OFDMA part of the PPDU's information
    */
   void StartReceiveOfdmaPayload (Ptr<Event> event);
+
+  /**
+   * Return the rate (in bps) of the non-HT Reference Rate
+   * which corresponds to the supplied code rate and
+   * constellation size.
+   *
+   * \param codeRate the convolutional coding rate
+   * \param constellationSize the size of modulation constellation
+   * \returns the rate in bps.
+   *
+   * To convert an HE MCS to its corresponding non-HT Reference Rate
+   * use the modulation and coding rate of the HT MCS
+   * and lookup in Table 10-10 of IEEE P802.11ax/D6.0.
+   */
+  static uint64_t CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellationSize);
+  /**
+   * \param channelWidth the channel width in MHz
+   * \return he number of usable subcarriers for data
+   */
+  static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received

@@ -795,6 +795,206 @@ HtPhy::GetHtMcs31 (void)
   return mcs;
 }
 
+WifiCodeRate
+HtPhy::GetHtCodeRate (uint8_t mcsValue)
+{
+  return GetCodeRate (mcsValue % 8);
+}
+
+WifiCodeRate
+HtPhy::GetCodeRate (uint8_t mcsValue)
+{
+  switch (mcsValue)
+    {
+      case 0:
+      case 1:
+      case 3:
+        return WIFI_CODE_RATE_1_2;
+      case 2:
+      case 4:
+      case 6:
+        return WIFI_CODE_RATE_3_4;
+      case 5:
+        return WIFI_CODE_RATE_2_3;
+      case 7:
+        return WIFI_CODE_RATE_5_6;
+      default:
+        return WIFI_CODE_RATE_UNDEFINED;
+    }
+}
+
+uint16_t
+HtPhy::GetHtConstellationSize (uint8_t mcsValue)
+{
+  return GetConstellationSize (mcsValue % 8);
+}
+
+uint16_t
+HtPhy::GetConstellationSize (uint8_t mcsValue)
+{
+  switch (mcsValue)
+    {
+      case 0:
+        return 2;
+      case 1:
+      case 2:
+        return 4;
+      case 3:
+      case 4:
+        return 16;
+      case 5:
+      case 6:
+      case 7:
+        return 64;
+      default:
+        return 0;
+    }
+}
+
+uint64_t
+HtPhy::GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetHtCodeRate (mcsValue);
+  uint64_t dataRate = GetDataRate (mcsValue, channelWidth, guardInterval, nss);
+  return CalculatePhyRate (codeRate, dataRate);
+}
+
+uint64_t
+HtPhy::CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate)
+{
+  return (dataRate / GetCodeRatio (codeRate));
+}
+
+double
+HtPhy::GetCodeRatio (WifiCodeRate codeRate)
+{
+  switch (codeRate)
+    {
+      case WIFI_CODE_RATE_5_6:
+        return (5.0 / 6.0);
+      default:
+        return OfdmPhy::GetCodeRatio (codeRate);
+    }
+}
+
+uint64_t
+HtPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+{
+  return GetDataRate (txVector.GetMode ().GetMcsValue (),
+                      txVector.GetChannelWidth (),
+                      txVector.GetGuardInterval (),
+                      txVector.GetNss ());
+}
+
+uint64_t
+HtPhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  NS_ASSERT (guardInterval == 800 || guardInterval == 400);
+  NS_ASSERT (nss <= 4);
+  return CalculateDataRate (3.2, guardInterval,
+                            GetUsableSubcarriers (channelWidth),
+                            static_cast<uint16_t> (log2 (GetHtConstellationSize (mcsValue))),
+                            GetCodeRatio (GetHtCodeRate (mcsValue)), nss);
+}
+
+uint64_t
+HtPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
+                          uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+                          double codingRate, uint8_t nss)
+{
+  return nss * OfdmPhy::CalculateDataRate (symbolDuration, guardInterval,
+                                           usableSubCarriers, numberOfBitsPerSubcarrier,
+                                           codingRate);
+}
+
+uint16_t
+HtPhy::GetUsableSubcarriers (uint16_t channelWidth)
+{
+  return (channelWidth == 40) ? 108 : 52;
+}
+
+uint64_t
+HtPhy::GetNonHtReferenceRate (uint8_t mcsValue)
+{
+  WifiCodeRate codeRate = GetHtCodeRate (mcsValue);
+  uint16_t constellationSize = GetHtConstellationSize (mcsValue);
+  return CalculateNonHtReferenceRate (codeRate, constellationSize);
+}
+
+uint64_t
+HtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellationSize)
+{
+  uint64_t dataRate;
+  switch (constellationSize)
+    {
+      case 2:
+        if (codeRate == WIFI_CODE_RATE_1_2)
+          {
+            dataRate = 6000000;
+          }
+        else if (codeRate == WIFI_CODE_RATE_3_4)
+          {
+            dataRate = 9000000;
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
+          }
+        break;
+      case 4:
+        if (codeRate == WIFI_CODE_RATE_1_2)
+          {
+            dataRate = 12000000;
+          }
+        else if (codeRate == WIFI_CODE_RATE_3_4)
+          {
+            dataRate = 18000000;
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
+          }
+        break;
+      case 16:
+        if (codeRate == WIFI_CODE_RATE_1_2)
+          {
+            dataRate = 24000000;
+          }
+        else if (codeRate == WIFI_CODE_RATE_3_4)
+          {
+            dataRate = 36000000;
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
+          }
+        break;
+      case 64:
+        if (codeRate == WIFI_CODE_RATE_1_2 || codeRate == WIFI_CODE_RATE_2_3)
+          {
+            dataRate = 48000000;
+          }
+        else if (codeRate == WIFI_CODE_RATE_3_4 || codeRate == WIFI_CODE_RATE_5_6)
+          {
+            dataRate = 54000000;
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
+          }
+        break;
+      default:
+        NS_FATAL_ERROR ("Wrong constellation size");
+    }
+  return dataRate;
+}
+
+bool
+HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+{
+  return true;
+}
+
 } //namespace ns3
 
 namespace {

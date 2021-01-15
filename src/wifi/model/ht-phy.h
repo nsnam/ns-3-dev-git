@@ -341,6 +341,102 @@ public:
    */
   static WifiMode GetHtMcs31 (void);
 
+  /**
+   * Return the coding rate corresponding to
+   * the supplied HT MCS index. This function calls
+   * GetCodeRate and is used as a callback for
+   * WifiMode operation.
+   *
+   * \param mcsValue the MCS index
+   * \return the coding rate.
+   */
+  static WifiCodeRate GetHtCodeRate (uint8_t mcsValue);
+  /**
+   * Return the coding rate corresponding to
+   * the supplied HT MCS index between 0 and 7,
+   * since HT MCS index > 8 is used for higher NSS.
+   * This function is reused by child classes.
+   *
+   * \param mcsValue the MCS index
+   * \return the coding rate.
+   */
+  static WifiCodeRate GetCodeRate (uint8_t mcsValue);
+  /**
+   * Return the constellation size corresponding
+   * to the supplied HT MCS index.
+   *
+   * \param mcsValue the MCS index
+   * \return the size of modulation constellation.
+   */
+  static uint16_t GetHtConstellationSize (uint8_t mcsValue);
+  /**
+   * Return the constellation size corresponding
+   * to the supplied HT MCS index between 0 and 7,
+   * since HT MCS index > 8 is used for higher NSS.
+   * This function is reused by child classes.
+   *
+   * \param mcsValue the MCS index
+   * \return the size of modulation constellation.
+   */
+  static uint16_t GetConstellationSize (uint8_t mcsValue);
+  /**
+   * Return the PHY rate corresponding to the supplied HT MCS
+   * index, channel width, guard interval, and number of
+   * spatial stream. This function calls CalculatePhyRate
+   * and is mainly used as a callback for WifiMode operation.
+   *
+   * \param mcsValue the HT MCS index
+   * \param channelWidth the considered channel width in MHz
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param nss the considered number of stream
+   *
+   * \return the physical bit rate of this signal in bps.
+   */
+  static uint64_t GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Return the data rate corresponding to
+   * the supplied TXVECTOR.
+   * This function is mainly used as a callback
+   * for WifiMode operation.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the station ID (only here to have a common signature for all callbacks)
+   * \return the data bit rate in bps.
+   */
+  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  /**
+   * Return the data rate corresponding to the supplied HT
+   * MCS index, channel width, guard interval, and number
+   * of spatial streams. This function is mainly used as a
+   * callback for WifiMode operation.
+   *
+   * \param mcsValue the HT MCS index
+   * \param channelWidth the channel width in MHz
+   * \param guardInterval the guard interval duration in nanoseconds
+   * \param nss the number of spatial streams
+   * \return the data bit rate in bps.
+   */
+  static uint64_t GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  /**
+   * Calculate the rate in bps of the non-HT Reference Rate corresponding
+   * to the supplied HT MCS index. This function calls CalculateNonHtReferenceRate
+   * and is used as a callback for WifiMode operation.
+   *
+   * \param mcsValue the HT MCS index
+   * \return the rate in bps of the non-HT Reference Rate.
+   */
+  static uint64_t GetNonHtReferenceRate (uint8_t mcsValue);
+  /**
+   * Check whether the combination of <MCS, channel width, NSS> is allowed.
+   * This function is used as a callback for WifiMode operation, and always
+   * returns true since there is no limitation for any MCS in HtPhy.
+   *
+   * \param channelWidth the considered channel width in MHz
+   * \param nss the considered number of streams
+   * \returns true.
+   */
+  static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
+
 protected:
   // Inherited
   virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
@@ -366,6 +462,57 @@ protected:
    * \return the symbol duration (including GI)
    */
   virtual Time GetSymbolDuration (WifiTxVector txVector) const;
+
+  /**
+   * Return the PHY rate corresponding to
+   * the supplied code rate and data rate.
+   *
+   * \param codeRate the code rate
+   * \param dataRate the data rate in bps
+   * \return the data bit rate in bps.
+   */
+  static uint64_t CalculatePhyRate (WifiCodeRate codeRate, uint64_t dataRate);
+  /**
+   * Return the rate (in bps) of the non-HT Reference Rate
+   * which corresponds to the supplied code rate and
+   * constellation size.
+   *
+   * \param codeRate the convolutional coding rate
+   * \param constellationSize the size of modulation constellation
+   * \returns the rate in bps.
+   *
+   * To convert an HT MCS to its corresponding non-HT Reference Rate
+   * use the modulation and coding rate of the HT MCS
+   * and lookup in Table 10-7 of IEEE 802.11-2016s.
+   */
+  static uint64_t CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellationSize);
+  /**
+   * Convert WifiCodeRate to a ratio, e.g., code ratio of WIFI_CODE_RATE_1_2 is 0.5.
+   *
+   * \param codeRate the code rate
+   * \return the code rate in ratio.
+   */
+  static double GetCodeRatio (WifiCodeRate codeRate);
+  /**
+   * Calculates data rate from the supplied parameters.
+   *
+   * \param symbolDuration the symbol duration (in us) excluding guard interval
+   * \param guardInterval the considered guard interval duration in nanoseconds
+   * \param usableSubarriers the number of usable subcarriers for data
+   * \param numberOfBitsPerSubcarrier the number of data bits per subcarrier
+   * \param codingRate the coding rate
+   * \param nss the considered number of streams
+   *
+   * \return the data bit rate of this signal in bps.
+   */
+  static uint64_t CalculateDataRate (double symbolDuration, uint16_t guardInterval,
+                                     uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
+                                     double codingRate, uint8_t nss);
+  /**
+   * \param channelWidth the channel width in MHz
+   * \return he number of usable subcarriers for data
+   */
+  static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
   uint8_t m_maxMcsIndexPerSs;          //!< the maximum MCS index per spatial stream as defined by the standard
   uint8_t m_maxSupportedMcsIndexPerSs; //!< the maximum supported MCS index per spatial stream
