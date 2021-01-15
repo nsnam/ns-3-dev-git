@@ -44,6 +44,7 @@
 #include "dsss-phy.h"
 #include "erp-ofdm-phy.h"
 #include "he-phy.h" //includes OFDM, HT, and VHT
+#include <tuple>
 
 namespace ns3 {
 
@@ -1921,130 +1922,77 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand b
                              uint16_t staId)
 {
   WifiMode payloadMode = txVector.GetMode (staId);
+  WifiModulationClass modulationClass = payloadMode.GetModulationClass ();
   NS_LOG_FUNCTION (size << payloadMode);
 
   double stbc = 1;
   if (txVector.IsStbc ()
-      && (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
-          || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT))
+      && (modulationClass == WIFI_MOD_CLASS_HT
+          || modulationClass == WIFI_MOD_CLASS_VHT))
     {
       stbc = 2;
     }
 
   double Nes = 1;
-  //todo: improve logic to reduce the number of if cases
-  //todo: extend to NSS > 4 for VHT rates
-  if (payloadMode == HtPhy::GetHtMcs21 ()
-      || payloadMode == HtPhy::GetHtMcs22 ()
-      || payloadMode == HtPhy::GetHtMcs23 ()
-      || payloadMode == HtPhy::GetHtMcs28 ()
-      || payloadMode == HtPhy::GetHtMcs29 ()
-      || payloadMode == HtPhy::GetHtMcs30 ()
-      || payloadMode == HtPhy::GetHtMcs31 ())
+  if (modulationClass == WIFI_MOD_CLASS_HT
+      || modulationClass == WIFI_MOD_CLASS_VHT)
     {
-      Nes = 2;
-    }
-  if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-    {
-      if (txVector.GetChannelWidth () == 40
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () >= 8)
+      // General rule: each maxRatePerCoder frontier adds a coder
+      double maxRatePerCoder = 0;
+      uint16_t gi = txVector.GetGuardInterval ();
+      if (modulationClass == WIFI_MOD_CLASS_HT)
         {
-          Nes = 2;
+          /**
+           * The value of 320 Mbps and 350 Mbps for normal GI and short GI (resp.)
+           * were obtained by observing the rates for which Nes was incremented in tables
+           * 19-27 to 19-41 of IEEE 802.11-2016.
+           */
+          maxRatePerCoder = (gi == 800) ? 320e6 : 350e6;
         }
-      if (txVector.GetChannelWidth () == 80
-          && txVector.GetNss (staId) == 2
-          && payloadMode.GetMcsValue () >= 7)
+      else
         {
-          Nes = 2;
+          /**
+           * The value of 540 Mbps and 600 Mbps for normal GI and short GI (resp.)
+           * were obtained by observing the rates for which Nes was incremented in tables
+           * 21-30 to 21-61 of IEEE 802.11-2016.
+           * These values are the last values before changing encoders.
+           */
+          maxRatePerCoder = (gi == 800) ? 540e6 : 600e6;
         }
-      if (txVector.GetChannelWidth () == 80
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () >= 7)
+      Nes = ceil (payloadMode.GetDataRate (txVector) / maxRatePerCoder);
+
+      //Exceptions for some VHT cases
+      if (modulationClass == WIFI_MOD_CLASS_VHT)
         {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 80
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () == 9)
-        {
-          Nes = 3;
-        }
-      if (txVector.GetChannelWidth () == 80
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 4)
-        {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 80
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 7)
-        {
-          Nes = 3;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && payloadMode.GetMcsValue () >= 7)
-        {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 2
-          && payloadMode.GetMcsValue () >= 4)
-        {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 2
-          && payloadMode.GetMcsValue () >= 7)
-        {
-          Nes = 3;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () >= 3)
-        {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () >= 5)
-        {
-          Nes = 3;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 3
-          && payloadMode.GetMcsValue () >= 7)
-        {
-          Nes = 4;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 2)
-        {
-          Nes = 2;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 4)
-        {
-          Nes = 3;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 5)
-        {
-          Nes = 4;
-        }
-      if (txVector.GetChannelWidth () == 160
-          && txVector.GetNss (staId) == 4
-          && payloadMode.GetMcsValue () >= 7)
-        {
-          Nes = 6;
+          std::map< std::tuple<uint16_t /* channelWidth */,
+                              uint8_t /* Nss */,
+                              uint8_t /* MCS index */>, uint8_t /* Nes */ > exceptionsMap {
+            { std::make_tuple ( 80, 7, 2),  3 },   //instead of 2
+            { std::make_tuple ( 80, 7, 7),  6 },   //instead of 4
+            { std::make_tuple ( 80, 7, 8),  6 },   //instead of 5
+            { std::make_tuple ( 80, 8, 7),  6 },   //instead of 5
+            { std::make_tuple (160, 4, 7),  6 },   //instead of 5
+            { std::make_tuple (160, 5, 8),  8 },   //instead of 7
+            { std::make_tuple (160, 6, 7),  8 },   //instead of 7
+            { std::make_tuple (160, 7, 3),  4 },   //instead of 3
+            { std::make_tuple (160, 7, 4),  6 },   //instead of 5
+            { std::make_tuple (160, 7, 5),  7 },   //instead of 6
+            { std::make_tuple (160, 7, 7),  9 },   //instead of 8
+            { std::make_tuple (160, 7, 8), 12 },   //instead of 9
+            { std::make_tuple (160, 7, 9), 12 } }; //instead of 10
+
+          auto iter = exceptionsMap.find (std::make_tuple (txVector.GetChannelWidth (),
+                                                           txVector.GetNss (staId),
+                                                           payloadMode.GetMcsValue ()));
+          if (iter != exceptionsMap.end ())
+            {
+              Nes = iter->second;
+            }
         }
     }
 
   Time symbolDuration = Seconds (0);
-  switch (payloadMode.GetModulationClass ())
+  switch (modulationClass)
     {
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_ERP_OFDM:
@@ -2137,13 +2085,13 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand b
       NS_FATAL_ERROR ("Unknown MPDU type");
     }
 
-  switch (payloadMode.GetModulationClass ())
+  switch (modulationClass)
     {
     case WIFI_MOD_CLASS_OFDM:
     case WIFI_MOD_CLASS_ERP_OFDM:
       {
         //Add signal extension for ERP PHY
-        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+        if (modulationClass == WIFI_MOD_CLASS_ERP_OFDM)
           {
             return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ())) + MicroSeconds (6);
           }

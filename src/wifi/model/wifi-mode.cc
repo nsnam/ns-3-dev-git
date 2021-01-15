@@ -72,8 +72,6 @@ WifiMode::IsAllowed (uint16_t channelWidth, uint8_t nss) const
 uint64_t
 WifiMode::GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
-  //TODO: nss > 4 not supported yet
-  NS_ASSERT (nss <= 4);
   uint64_t dataRate, phyRate;
   dataRate = GetDataRate (channelWidth, guardInterval, nss);
   switch (GetCodeRate ())
@@ -125,8 +123,7 @@ WifiMode::GetDataRate (WifiTxVector txVector, uint16_t staId) const
 uint64_t
 WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
-  //TODO: nss > 4 not supported yet
-  NS_ASSERT (nss <= 4);
+  NS_ASSERT (nss <= 8);
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   uint64_t dataRate = 0;
   uint16_t usableSubCarriers = 0;
@@ -182,6 +179,10 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
       if (item->modClass == WIFI_MOD_CLASS_VHT)
         {
           NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS " << +item->mcsValue << " forbidden at " << channelWidth << " MHz when NSS is " << +nss);
+        }
+      else
+        {
+          NS_ASSERT (nss <= 4);
         }
 
       NS_ASSERT (guardInterval == 800 || guardInterval == 400);
