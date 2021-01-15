@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Rediet <getachew.redieteab@orange.com>
- *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy)
+ *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy and spectrum-wifi-phy)
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr> (for logic ported from wifi-phy)
  */
 
@@ -423,6 +423,26 @@ public:
    */
   virtual uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
 
+  /**
+   * This function is called by SpectrumWifiPhy to send
+   * the PPDU while performing amendment-specific actions.
+   * \see SpectrumWifiPhy::StartTx
+   *
+   * \param ppdu the PPDU to send
+   */
+  virtual void StartTx (Ptr<WifiPpdu> ppdu);
+
+  /**
+   * This function prepares most of the WifiSpectrumSignalParameters
+   * parameters and invokes SpectrumWifiPhy's Transmit method.
+   * \see SpectrumWifiPhy::Transmit
+   *
+   * \param txDuration the duration of the transmission
+   * \param ppdu the PPDU to send
+   * \param type the type of transmission (for logging)
+   */
+  void Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type);
+
 protected:
   /**
    * A map of PPDU field elements per preamble type.
@@ -688,6 +708,26 @@ protected:
    * \return the UID to use for the PPDU to transmit
    */
   virtual uint64_t ObtainNextUid (const WifiTxVector& txVector);
+
+  /**
+   * \param txPowerW power in W to spread across the bands
+   * \param ppdu the PPDU that will be transmitted
+   * \return Pointer to SpectrumValue
+   *
+   * This is a helper function to create the right TX PSD corresponding
+   * to the amendment of this PHY.
+   */
+  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const = 0;
+
+  /**
+   * Get the center frequency of the channel corresponding the current TxVector rather than
+   * that of the supported channel width.
+   * Consider that this "primary channel" is on the lower part for the time being.
+   *
+   * \param txVector the TXVECTOR that has the channel width that is to be used
+   * \return the center frequency in MHz corresponding to the channel width to be used
+   */
+  uint16_t GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const;
 
   /**
    * \param currentChannelWidth channel width of the current transmission (MHz)

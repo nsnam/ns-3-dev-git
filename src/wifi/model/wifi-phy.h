@@ -154,13 +154,8 @@ public:
 
   /**
    * \param ppdu the PPDU to send
-   * \param txPowerLevel the power level to use
-   *
-   * Note that now that the content of the TXVECTOR is stored in the WifiPpdu through PHY headers,
-   * the calling method has to specify the TX power level to use upon transmission.
-   * Indeed the TXVECTOR obtained from WifiPpdu does not have this information set.
    */
-  virtual void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel) = 0;
+  virtual void StartTx (Ptr<WifiPpdu> ppdu) = 0;
 
   /**
    * Put in sleep mode.

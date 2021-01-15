@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Rediet <getachew.redieteab@orange.com>
- *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy)
+ *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy and spectrum-wifi-phy)
  */
 
 #ifndef HE_PHY_H
@@ -78,6 +78,7 @@ public:
   void CancelAllEvents (void) override;
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
+  void StartTx (Ptr<WifiPpdu> ppdu) override;
 
   /**
    * \return the BSS color of this PHY.
@@ -129,6 +130,17 @@ public:
    * \return the UID of the HE TB PPDU being received
    */
   uint64_t GetCurrentHeTbPpduUid (void) const;
+
+  /**
+   * Get the center frequency of the non-OFDMA part of the current TxVector for the
+   * given STA-ID.
+   * Note this method is only to be used for UL MU.
+   *
+   * \param txVector the TXVECTOR that has the RU allocation
+   * \param staId the STA-ID of the station taking part of the UL MU
+   * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
+   */
+  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
 
   /**
    * Initialize all HE modes.
@@ -228,6 +240,7 @@ protected:
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
   uint64_t ObtainNextUid (const WifiTxVector& txVector) override;
+  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
 
   /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.

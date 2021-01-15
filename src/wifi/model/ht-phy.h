@@ -346,6 +346,7 @@ protected:
   virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
   virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
 
   /**
    * Build mode list.

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Rediet <getachew.redieteab@orange.com>
- *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy)
+ *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy and spectrum-wifi-phy)
  */
 
 #include "he-phy.h"
@@ -791,6 +791,84 @@ HePhy::ObtainNextUid (const WifiTxVector& txVector)
     }
   m_previouslyTxPpduUid = uid; //to be able to identify solicited HE TB PPDUs
   return uid;
+}
+
+Ptr<SpectrumValue>
+HePhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
+  auto hePpdu = DynamicCast<const HePpdu> (ppdu);
+  NS_ASSERT (hePpdu);
+  HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
+  Ptr<SpectrumValue> v;
+  if (flag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
+    {
+      WifiSpectrumBand band = GetRuBand (txVector, GetStaId (hePpdu));
+      v = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth), band);
+    }
+  else
+    {
+      if (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION)
+        {
+          //non-OFDMA portion is sent only on the 20 MHz channels covering the RU
+          uint16_t staId = GetStaId (hePpdu);
+          centerFrequency = GetCenterFrequencyForNonOfdmaPart (txVector, staId);
+          uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+          channelWidth = ruWidth < 20 ? 20 : ruWidth;
+        }
+      const auto & txMaskRejectionParams = GetTxMaskRejectionParams ();
+      v = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
+                                                                       std::get<0> (txMaskRejectionParams), std::get<1> (txMaskRejectionParams), std::get<2> (txMaskRejectionParams));
+    }
+  return v;
+}
+
+uint16_t
+HePhy::GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const
+{
+  NS_LOG_FUNCTION (this << txVector << staId);
+  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
+  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
+  uint16_t currentWidth = txVector.GetChannelWidth ();
+
+  HeRu::RuSpec ru = txVector.GetRu (staId);
+  uint16_t ruWidth = HeRu::GetBandwidth (ru.ruType);
+  uint16_t nonOfdmaWidth = ruWidth < 20 ? 20 : ruWidth;
+  if (nonOfdmaWidth != currentWidth)
+    {
+      //Obtain the index of the non-OFDMA portion
+      HeRu::RuSpec nonOfdmaRu = HeRu::FindOverlappingRu (currentWidth, ru, HeRu::GetRuType (nonOfdmaWidth));
+
+      uint16_t startingFrequency = centerFrequency - (currentWidth / 2);
+      centerFrequency = startingFrequency + nonOfdmaWidth * (nonOfdmaRu.index - 1) + nonOfdmaWidth / 2;
+    }
+  return centerFrequency;
+}
+
+void
+HePhy::StartTx (Ptr<WifiPpdu> ppdu)
+{
+  NS_LOG_FUNCTION (this << ppdu);
+  if (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU)
+    {
+      //non-OFDMA part
+      Time nonOfdmaDuration = CalculateNonOfdmaDurationForHeTb (ppdu->GetTxVector ());
+      Transmit (nonOfdmaDuration, ppdu, "non-OFDMA transmission");
+
+      //OFDMA part
+      auto hePpdu = DynamicCast<HePpdu> (ppdu->Copy ()); //since flag will be modified
+      NS_ASSERT (hePpdu);
+      hePpdu->SetTxPsdFlag (HePpdu::PSD_HE_TB_OFDMA_PORTION);
+      Time ofdmaDuration = ppdu->GetTxDuration () - nonOfdmaDuration;
+      Simulator::Schedule (nonOfdmaDuration, &PhyEntity::Transmit, this, ofdmaDuration, hePpdu, "OFDMA transmission");
+    }
+  else
+    {
+      PhyEntity::StartTx (ppdu);
+    }
 }
 
 void

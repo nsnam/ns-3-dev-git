@@ -295,6 +295,19 @@ OfdmPhy::IsAllConfigSupported (WifiPpduField /* field */, Ptr<const WifiPpdu> pp
   return IsConfigSupported (ppdu);
 }
 
+Ptr<SpectrumValue>
+OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
+  const auto & txMaskRejectionParams = GetTxMaskRejectionParams ();
+  Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth),
+                                                                                    std::get<0> (txMaskRejectionParams), std::get<1> (txMaskRejectionParams), std::get<2> (txMaskRejectionParams));
+  return v;
+}
+
 void
 OfdmPhy::InitializeModes (void)
 {

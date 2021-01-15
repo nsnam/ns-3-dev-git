@@ -23,7 +23,6 @@
 #include "ns3/log.h"
 #include "yans-wifi-phy.h"
 #include "yans-wifi-channel.h"
-#include "wifi-ppdu.h"
 
 namespace ns3 {
 
@@ -80,12 +79,10 @@ YansWifiPhy::SetChannel (const Ptr<YansWifiChannel> channel)
 }
 
 void
-YansWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
+YansWifiPhy::StartTx (Ptr<WifiPpdu> ppdu)
 {
   NS_LOG_FUNCTION (this << ppdu);
-  WifiTxVector txVector = ppdu->GetTxVector ();
-  txVector.SetTxPowerLevel (txPowerLevel);
-  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
+  NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (ppdu->GetTxVector ().GetTxPowerLevel ()) << "dBm");
   m_channel->Send (this, ppdu, GetTxPowerForTransmission (ppdu) + GetTxGain ());
 }
 

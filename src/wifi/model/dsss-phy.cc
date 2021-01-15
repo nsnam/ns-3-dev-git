@@ -198,6 +198,18 @@ DsssPhy::EndReceiveHeader (Ptr<Event> event)
   return status;
 }
 
+Ptr<SpectrumValue>
+DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
+  uint16_t channelWidth = txVector.GetChannelWidth ();
+  NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
+  NS_ABORT_MSG_IF (channelWidth != 22, "Invalid channel width for DSSS");
+  Ptr<SpectrumValue> v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW, GetGuardBandwidth (channelWidth));
+  return v;
+}
+
 void
 DsssPhy::InitializeModes (void)
 {

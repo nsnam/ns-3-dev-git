@@ -16,16 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Authors: Rediet <getachew.redieteab@orange.com>
- *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy)
+ *          Sébastien Deronne <sebastien.deronne@gmail.com> (for logic ported from wifi-phy and spectrum-wifi-phy)
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr> (for logic ported from wifi-phy)
  */
 
 #include "phy-entity.h"
-#include "wifi-phy.h"
+#include "spectrum-wifi-phy.h"
 #include "wifi-psdu.h"
 #include "preamble-detection-model.h"
 #include "frame-capture-model.h"
 #include "wifi-utils.h"
+#include "wifi-spectrum-signal-parameters.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
@@ -1010,6 +1011,46 @@ PhyEntity::ObtainNextUid (const WifiTxVector& /* txVector */)
 {
   NS_LOG_FUNCTION (this);
   return m_globalPpduUid++;
+}
+
+uint16_t
+PhyEntity::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
+{
+  NS_LOG_FUNCTION (this << txVector);
+  uint16_t centerFrequencyForSupportedWidth = m_wifiPhy->GetFrequency ();
+  uint16_t supportedWidth = m_wifiPhy->GetChannelWidth ();
+  uint16_t currentWidth = txVector.GetChannelWidth ();
+  if (currentWidth != supportedWidth)
+    {
+      uint16_t startingFrequency = centerFrequencyForSupportedWidth - (supportedWidth / 2);
+      return startingFrequency + (currentWidth / 2); // primary channel is in the lower part (for the time being)
+    }
+  return centerFrequencyForSupportedWidth;
+}
+
+void
+PhyEntity::StartTx (Ptr<WifiPpdu> ppdu)
+{
+  NS_LOG_FUNCTION (this << ppdu);
+  Transmit (ppdu->GetTxDuration (), ppdu, "transmission");
+}
+
+void
+PhyEntity::Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type)
+{
+  NS_LOG_FUNCTION (this << txDuration << ppdu << type);
+  double txPowerWatts = DbmToW (m_wifiPhy->GetTxPowerForTransmission (ppdu) + m_wifiPhy->GetTxGain ());
+  NS_LOG_DEBUG ("Start " << type << ": signal power before antenna gain=" << WToDbm (txPowerWatts) << "dBm");
+  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (txPowerWatts, ppdu);
+  Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
+  txParams->duration = txDuration;
+  txParams->psd = txPowerSpectrum;
+  txParams->ppdu = ppdu;
+  NS_LOG_DEBUG ("Starting " << type << " with power " << WToDbm (txPowerWatts) << " dBm on channel " << +m_wifiPhy->GetChannelNumber () << " for " << txParams->duration.As (Time::MS));
+  NS_LOG_DEBUG ("Starting " << type << " with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
+  auto spectrumWifiPhy = DynamicCast<SpectrumWifiPhy> (m_wifiPhy);
+  NS_ASSERT (spectrumWifiPhy);
+  spectrumWifiPhy->Transmit (txParams);
 }
 
 uint16_t

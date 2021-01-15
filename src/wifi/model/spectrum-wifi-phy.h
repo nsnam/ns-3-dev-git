@@ -29,14 +29,12 @@
 #include "ns3/antenna-model.h"
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-model.h"
-#include "ns3/wifi-spectrum-value-helper.h"
 #include "wifi-phy.h"
 
 namespace ns3 {
 
 class WifiSpectrumPhyInterface;
 struct WifiSpectrumSignalParameters;
-class HePpdu; //TODO revert to WifiPpdu once Tx refactoring is finished
 
 /**
  * \brief 802.11 PHY layer model
@@ -63,7 +61,7 @@ public:
   virtual ~SpectrumWifiPhy ();
 
   // Implementation of pure virtual method.
-  void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel) override;
+  void StartTx (Ptr<WifiPpdu> ppdu) override;
   Ptr<Channel> GetChannel (void) const override;
   virtual uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
@@ -82,16 +80,6 @@ public:
    * \param rxParams Input signal parameters
    */
   void StartRx (Ptr<SpectrumSignalParameters> rxParams);
-
-  /**
-   * Get the center frequency of the channel corresponding the current TxVector rather than
-   * that of the supported channel width.
-   * Consider that this "primary channel" is on the lower part for the time being.
-   *
-   * \param txVector the TXVECTOR that has the channel width that is to be used
-   * \return the center frequency in MHz corresponding to the channel width to be used
-   */
-  uint16_t GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const;
 
   /**
    * Method to encapsulate the creation of the WifiSpectrumPhyInterface
@@ -132,17 +120,6 @@ public:
   uint32_t GetBandBandwidth (void) const;
 
   /**
-   * Get the center frequency of the non-OFDMA part of the current TxVector for the
-   * given STA-ID.
-   * Note this method is only to be used for UL MU.
-   *
-   * \param txVector the TXVECTOR that has the RU allocation
-   * \param staId the STA-ID of the station taking part of the UL MU
-   * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
-   */
-  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
-
-  /**
    * Callback invoked when the PHY model starts to process a signal
    *
    * \param signalType Whether signal is WiFi (true) or foreign (false)
@@ -158,6 +135,14 @@ public:
   virtual void SetFrequency (uint16_t freq) override;
   virtual void SetChannelWidth (uint16_t channelwidth) override;
   virtual void ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band) override;
+
+  /**
+   * This function is sending the signal to the Spectrum channel
+   * after finishing the configuration of the transmit parameters.
+   *
+   * \param txParams the parameters to be provided to the Spectrum channel
+   */
+  void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
 protected:
   // Inherited
@@ -177,16 +162,6 @@ protected:
 
 private:
   /**
-   * \param txPowerW power in W to spread across the bands
-   * \param ppdu the PPDU that will be transmitted
-   * \return Pointer to SpectrumValue
-   *
-   * This is a helper function to create the right TX PSD corresponding
-   * to the standard in use.
-   */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu);
-
-  /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
    * \param range the subcarrier range of the HE RU
    * \return the converted subcarriers
@@ -194,20 +169,6 @@ private:
    * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
    */
   WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const override;
-
-  /**
-   * This function is called to send the OFDMA part of a PPDU.
-   *
-   * \param ppdu the HE PPDU to send
-   */
-  void StartOfdmaTx (Ptr<HePpdu> ppdu);
-
-  /**
-   * This function is sending the signal to the Spectrum channel
-   *
-   * \param txParams the parameters to be provided to the Spectrum channel
-   */
-  void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
   /**
    * Perform run-time spectrum model change
