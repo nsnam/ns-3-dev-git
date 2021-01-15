@@ -29,7 +29,7 @@ HtOperation::HtOperation ()
     m_rifsMode (0),
     m_reservedInformationSubset1 (0),
     m_htProtection (0),
-    m_nonGfHtStasPresent (0),
+    m_nonGfHtStasPresent (1),
     m_reservedInformationSubset2_1 (0),
     m_obssNonHtStasPresent (0),
     m_reservedInformationSubset2_2 (0),

@@ -60,20 +60,6 @@ public:
    */
   bool GetShortGuardIntervalSupported (void) const;
   /**
-   * Enable or disable Greenfield support.
-   *
-   * \param enable true if Greenfield is to be supported,
-   *               false otherwise
-   */
-  void SetGreenfieldSupported (bool enable);
-  /**
-   * \return whether the device supports Greenfield.
-   *
-   * \return true if Greenfield is supported,
-   *         false otherwise.
-   */
-  bool GetGreenfieldSupported (void) const;
-  /**
    * Enable or disable LDPC support.
    *
    * \param enable true if LDPC is to be supported,
@@ -91,7 +77,6 @@ public:
 
 private:
   bool m_sgiSupported;        ///< flag whether short guard interval is supported
-  bool m_greenfieldSupported; ///< flag whether Greenfield is supported
   bool m_ldpcSupported;       ///< flag whether LDPC coding is supported
 };
 

@@ -42,8 +42,8 @@ namespace ns3 {
  * \ingroup wifi
  *
  * HT PHY is based on OFDM PHY.
- * HT-Mixed and HT-Greenfield PPDU formats are
- * supported. Only HT MCSs up to 31 are supported.
+ * Only HT-Mixed is supported (support for HT-Greenfield has been removed).
+ * Only HT MCSs up to 31 are supported.
  *
  * Refer to IEEE 802.11-2016, clause 19.
  */

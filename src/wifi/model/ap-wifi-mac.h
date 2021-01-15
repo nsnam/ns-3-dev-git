@@ -91,12 +91,6 @@ public:
    */
   bool GetShortPreambleEnabled (void) const;
   /**
-   * Determine whether non-Greenfield HT stations are present or not.
-   *
-   * \returns whether non-Greenfield HT stations are present or not.
-   */
-  bool IsNonGfHtStasPresent (void) const;
-  /**
    * Determine the VHT operational channel width (in MHz).
    *
    * \returns the VHT operational channel width (in MHz).

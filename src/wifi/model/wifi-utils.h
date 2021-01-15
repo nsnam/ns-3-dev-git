@@ -89,11 +89,10 @@ uint16_t ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInte
  *
  * \param modulation the modulation selected for the transmission
  * \param useShortPreamble whether short preamble should be used
- * \param useGreenfield whether HT Greenfield should be used
  *
  * \return the preamble to be used for the transmission
  */
-WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble, bool useGreenfield);
+WifiPreamble GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble);
 /**
  * Return the channel width that corresponds to the selected mode (instead of
  * letting the PHY's default channel width). This is especially useful when using

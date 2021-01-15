@@ -240,22 +240,6 @@ ApWifiMac::GetShortPreambleEnabled (void) const
   return false;
 }
 
-bool
-ApWifiMac::IsNonGfHtStasPresent (void) const
-{
-  bool isNonGfHtStasPresent = false;
-  for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
-    {
-      if (!m_stationManager->GetGreenfieldSupported (i->second))
-        {
-          isNonGfHtStasPresent = true;
-          break;
-        }
-    }
-  m_stationManager->SetUseGreenfieldProtection (isNonGfHtStasPresent);
-  return isNonGfHtStasPresent;
-}
-
 uint16_t
 ApWifiMac::GetVhtOperationalChannelWidth (void) const
 {
@@ -531,7 +515,7 @@ ApWifiMac::GetHtOperation (void) const
       operation.SetHtSupported (1);
       operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (false);
-      operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+      operation.SetNonGfHtStasPresent (true);
       if (m_phy->GetChannelWidth () > 20)
         {
           operation.SetSecondaryChannelOffset (1);

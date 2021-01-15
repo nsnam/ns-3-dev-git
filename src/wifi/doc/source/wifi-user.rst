@@ -789,10 +789,6 @@ The following line of code enables the support of a short guard interval for all
 
  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
 
-Furthermore, 802.11n provides an optional mode (Greenfield mode) to reduce preamble durations and which is only compatible with 802.11n devices. This mode is enabled as follows::
-
- htConfiguration->SetGreenfieldSupported (true);
-
 VHT configuration
 =================
 

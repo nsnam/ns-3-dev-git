@@ -386,10 +386,6 @@ WifiPhyHelper::GetRadiotapHeader (
         }
 
       mcsKnown |= RadiotapHeader::MCS_KNOWN_HT_FORMAT;
-      if (preamble == WIFI_PREAMBLE_HT_GF)
-        {
-          mcsFlags |= RadiotapHeader::MCS_FLAGS_HT_GREENFIELD;
-        }
 
       mcsKnown |= RadiotapHeader::MCS_KNOWN_NESS;
       if (txVector.GetNess () & 0x01) //bit 1

@@ -412,7 +412,7 @@ RrpaaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       m_powerChange (prevPower, power, station->m_state->m_address);
       station->m_prevPowerLevel = station->m_powerLevel;
     }
-  return WifiTxVector (mode, station->m_powerLevel, GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+  return WifiTxVector (mode, station->m_powerLevel, GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
 }
 WifiTxVector
 RrpaaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
@@ -434,7 +434,7 @@ RrpaaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     {
       mode = GetNonErpSupported (station, 0);
     }
-  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
   return rtsTxVector;
 }
 

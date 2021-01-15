@@ -113,7 +113,7 @@ GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth
 }
 
 WifiPreamble
-GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble, bool useGreenfield)
+GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble)
 {
   if (modulation == WIFI_MOD_CLASS_HE)
     {
@@ -123,14 +123,9 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     {
       return WIFI_PREAMBLE_VHT_SU;
     }
-  else if (modulation == WIFI_MOD_CLASS_HT && useGreenfield)
-    {
-      //If protection for Greenfield is used we go for HT_MF preamble which is the default protection for GF format defined in the standard.
-      return WIFI_PREAMBLE_HT_GF;
-    }
   else if (modulation == WIFI_MOD_CLASS_HT)
     {
-      return WIFI_PREAMBLE_HT_MF;
+      return WIFI_PREAMBLE_HT_MF; // HT_GF has been removed
     }
   else if (modulation == WIFI_MOD_CLASS_HR_DSSS && useShortPreamble) //ERP_DSSS is modeled through HR_DSSS (since same preamble and modulation)
     {
@@ -245,21 +240,18 @@ GetPpduMaxTime (WifiPreamble preamble)
 
   switch (preamble)
     {
-    case WIFI_PREAMBLE_HT_GF:
-      duration = MicroSeconds (10000);
-      break;
-    case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_HE_ER_SU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      duration = MicroSeconds (5484);
-      break;
-    default:
-      duration = MicroSeconds (0);
-      break;
+      case WIFI_PREAMBLE_HT_MF:
+      case WIFI_PREAMBLE_VHT_SU:
+      case WIFI_PREAMBLE_VHT_MU:
+      case WIFI_PREAMBLE_HE_SU:
+      case WIFI_PREAMBLE_HE_ER_SU:
+      case WIFI_PREAMBLE_HE_MU:
+      case WIFI_PREAMBLE_HE_TB:
+        duration = MicroSeconds (5484);
+        break;
+      default:
+        duration = MicroSeconds (0);
+        break;
     }
   return duration;
 }
@@ -267,7 +259,7 @@ GetPpduMaxTime (WifiPreamble preamble)
 bool
 IsHt (WifiPreamble preamble)
 {
-   return (preamble == WIFI_PREAMBLE_HT_MF || preamble == WIFI_PREAMBLE_HT_GF);
+   return (preamble == WIFI_PREAMBLE_HT_MF);
 }
 
 bool

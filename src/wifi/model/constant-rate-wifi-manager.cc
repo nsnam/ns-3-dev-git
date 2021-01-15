@@ -123,14 +123,14 @@ ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       nss = 1 + (m_dataMode.GetMcsValue () / 8);
     }
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (st))), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st));
+  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), nss, 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st));
 }
 
 WifiTxVector
 ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_ctlMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (st))), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetChannelWidth (st)), GetAggregation (st));
+  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_ctlMode.GetModulationClass (), GetShortPreambleEnabled ()), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardIntervalSupported (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetChannelWidth (st)), GetAggregation (st));
 }
 
 } //namespace ns3

@@ -117,12 +117,6 @@ HtCapabilities::SetSupportedChannelWidth (uint8_t supportedChannelWidth)
 }
 
 void
-HtCapabilities::SetGreenfield (uint8_t greenfield)
-{
-  m_greenField = greenfield;
-}
-
-void
 HtCapabilities::SetShortGuardInterval20 (uint8_t shortGuardInterval)
 {
   m_shortGuardInterval20 = shortGuardInterval;
@@ -208,12 +202,6 @@ uint8_t
 HtCapabilities::GetSupportedChannelWidth (void) const
 {
   return m_supportedChannelWidth;
-}
-
-uint8_t
-HtCapabilities::GetGreenfield (void) const
-{
-  return m_greenField;
 }
 
 uint8_t
@@ -554,7 +542,6 @@ operator << (std::ostream &os, const HtCapabilities &htcapabilities)
 {
   os << bool (htcapabilities.GetLdpc ())
      << "|" << bool (htcapabilities.GetSupportedChannelWidth ())
-     << "|" << bool (htcapabilities.GetGreenfield ())
      << "|" << bool (htcapabilities.GetShortGuardInterval20 ()) << "|";
   for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
     {

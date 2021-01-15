@@ -114,12 +114,6 @@ public:
    */
   void SetSupportedChannelWidth (uint8_t supportedChannelWidth);
   /**
-   * Set the Greenfield field.
-   *
-   * \param greenfield the Greenfield field
-   */
-  void SetGreenfield (uint8_t greenfield);
-  /**
    * Set the short guard interval 20 field.
    *
    * \param shortGuardInterval the short guard interval
@@ -243,12 +237,6 @@ public:
    * \return the supported channel width
    */
   uint8_t GetSupportedChannelWidth (void) const;
-  /**
-   * Return the Greenfield field.
-   *
-   * \return the Greenfield field
-   */
-  uint8_t GetGreenfield (void) const;
   /**
    * Return the short guard interval 20 value.
    *

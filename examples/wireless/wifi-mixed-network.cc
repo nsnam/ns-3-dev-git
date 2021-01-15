@@ -45,9 +45,7 @@
 // - whether short PPDU format is supported by the 802.11b station;
 // - whether short slot time is supported by both the 802.11g station and the AP.
 //
-// The example then compares HT only and mixed HT/non-HT cases with various configurations depending on the following parameters:
-// - whether HT GF is supported by the AP;
-// - whether HT GF is supported by all HT stations;
+// The example then compares HT only and mixed HT/non-HT cases.
 //
 // The output results show that the presence of an 802.11b station strongly affects 802.11g performance.
 // Protection mechanisms ensure that the NAV value of 802.11b stations is set correctly in case of 802.11g transmissions.
@@ -55,8 +53,6 @@
 // less overhead than Rts-Cts, but is not heard by hidden stations (and is thus generally only recommended as a protection
 // mechanism for access points). Since short slot time is disabled once an 802.11b station enters the network, benefits from
 // short slot time are only observed in a g only configuration.
-//
-// HT and mixed-HT results show that HT GF permits to slightly increase performance when all HT stations support GF mode
 //
 // The user can also select the payload size and can choose either an UDP or a TCP connection.
 // Example: ./waf --run "wifi-mixed-network --isUdp=1"
@@ -73,15 +69,12 @@ struct Parameters
   bool enableShortSlotTime;
   bool enableShortPhyPreamble;
   WifiStandard apType;
-  bool apSupportsGreenfield;
   uint32_t nWifiB;
   bool bHasTraffic;
   uint32_t nWifiG;
   bool gHasTraffic;
-  uint32_t nWifiNNonGreenfield;
-  bool nNonGreenfieldHasTraffic;
-  uint32_t nWifiNGreenfield;
-  bool nGreenfieldHasTraffic;
+  uint32_t nWifiN;
+  bool nHasTraffic;
   bool isUdp;
   uint32_t payloadSize;
   double simulationTime;
@@ -117,15 +110,12 @@ Experiment::Run (Parameters params)
             << "\n\t enableShortSlotTime=" << params.enableShortSlotTime
             << "\n\t enableShortPhyPreamble=" << params.enableShortPhyPreamble
             << "\n\t apType=" << apTypeString
-            << "\n\t apSupportsGreenfield=" << params.apSupportsGreenfield
             << "\n\t nWifiB=" << params.nWifiB
             << "\n\t bHasTraffic=" << params.bHasTraffic
             << "\n\t nWifiG=" << params.nWifiG
             << "\n\t gHasTraffic=" << params.gHasTraffic
-            << "\n\t nWifiNNonGreenfield=" << params.nWifiNNonGreenfield
-            << "\n\t nNonGreenfieldHasTraffic=" << params.nNonGreenfieldHasTraffic
-            << "\n\t nWifiNGreenfield=" << params.nWifiNGreenfield
-            << "\n\t nGreenfieldHasTraffic=" << params.nGreenfieldHasTraffic
+            << "\n\t nWifiN=" << params.nWifiN
+            << "\n\t nHasTraffic=" << params.nHasTraffic
             << std::endl;
 
   Config::SetDefault ("ns3::WifiRemoteStationManager::ErpProtectionMode", StringValue (params.erpProtectionMode));
@@ -133,8 +123,7 @@ Experiment::Run (Parameters params)
   double throughput = 0;
   uint32_t nWifiB = params.nWifiB;
   uint32_t nWifiG = params.nWifiG;
-  uint32_t nWifiNNGF = params.nWifiNNonGreenfield;
-  uint32_t nWifiNGF = params.nWifiNGreenfield;
+  uint32_t nWifiN = params.nWifiN;
   double simulationTime = params.simulationTime;
   uint32_t payloadSize = params.payloadSize;
 
@@ -142,10 +131,8 @@ Experiment::Run (Parameters params)
   wifiBStaNodes.Create (nWifiB);
   NodeContainer wifiGStaNodes;
   wifiGStaNodes.Create (nWifiG);
-  NodeContainer wifiNNGFStaNodes;
-  wifiNNGFStaNodes.Create (nWifiNNGF);
-  NodeContainer wifiNGFStaNodes;
-  wifiNGFStaNodes.Create (nWifiNGF);
+  NodeContainer wifiNStaNodes;
+  wifiNStaNodes.Create (nWifiN);
   NodeContainer wifiApNode;
   wifiApNode.Create (1);
 
@@ -182,13 +169,12 @@ Experiment::Run (Parameters params)
 
   // 802.11b/g/n STA
   wifi.SetStandard (WIFI_STANDARD_80211n_2_4GHZ);
-  NetDeviceContainer nNGFStaDevice, nGFStaDevice;
+  NetDeviceContainer nStaDevice;
   mac.SetType ("ns3::StaWifiMac",
                "Ssid", SsidValue (ssid),
                "BE_BlockAckThreshold", UintegerValue (2),
                "ShortSlotTimeSupported", BooleanValue (params.enableShortSlotTime));
-  nNGFStaDevice = wifi.Install (phy, mac, wifiNNGFStaNodes);
-  nGFStaDevice = wifi.Install (phy, mac, wifiNGFStaNodes);
+  nStaDevice = wifi.Install (phy, mac, wifiNStaNodes);
 
   // AP
   NetDeviceContainer apDevice;
@@ -206,31 +192,16 @@ Experiment::Run (Parameters params)
     {
       Ptr<NetDevice> dev = wifiApNode.Get (0)->GetDevice (0);
       Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
-      Ptr<HtConfiguration> htConfiguration = wifi_dev->GetHtConfiguration ();
-      htConfiguration->SetGreenfieldSupported (params.apSupportsGreenfield);
       Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
       PointerValue ptr;
       wifi_mac->GetAttribute ("BE_Txop", ptr);
       Ptr<QosTxop> edca = ptr.Get<QosTxop> ();
       edca->SetTxopLimit (MicroSeconds (3008));
     }
-  if (nWifiNNGF > 0)
+  if (nWifiN > 0)
     {
-      Ptr<NetDevice> dev = wifiNNGFStaNodes.Get (0)->GetDevice (0);
+      Ptr<NetDevice> dev = wifiNStaNodes.Get (0)->GetDevice (0);
       Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
-      Ptr<HtConfiguration> htConfiguration = wifi_dev->GetHtConfiguration ();
-      Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
-      PointerValue ptr;
-      wifi_mac->GetAttribute ("BE_Txop", ptr);
-      Ptr<QosTxop> edca = ptr.Get<QosTxop> ();
-      edca->SetTxopLimit (MicroSeconds (3008));
-    }
-  if (nWifiNGF > 0)
-    {
-      Ptr<NetDevice> dev = wifiNGFStaNodes.Get (0)->GetDevice (0);
-      Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
-      Ptr<HtConfiguration> htConfiguration = wifi_dev->GetHtConfiguration ();
-      htConfiguration->SetGreenfieldSupported (true);
       Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
       PointerValue ptr;
       wifi_mac->GetAttribute ("BE_Txop", ptr);
@@ -253,11 +224,7 @@ Experiment::Run (Parameters params)
     {
       positionAlloc->Add (Vector (0.0, 5.0, 0.0));
     }
-  for (uint32_t i = 0; i < nWifiNNGF; i++)
-    {
-      positionAlloc->Add (Vector (0.0, 0.0, 5.0));
-    }
-  for (uint32_t i = 0; i < nWifiNGF; i++)
+  for (uint32_t i = 0; i < nWifiN; i++)
     {
       positionAlloc->Add (Vector (0.0, 0.0, 5.0));
     }
@@ -267,16 +234,14 @@ Experiment::Run (Parameters params)
   mobility.Install (wifiApNode);
   mobility.Install (wifiBStaNodes);
   mobility.Install (wifiGStaNodes);
-  mobility.Install (wifiNNGFStaNodes);
-  mobility.Install (wifiNGFStaNodes);
+  mobility.Install (wifiNStaNodes);
 
   // Internet stack
   InternetStackHelper stack;
   stack.Install (wifiApNode);
   stack.Install (wifiBStaNodes);
   stack.Install (wifiGStaNodes);
-  stack.Install (wifiNNGFStaNodes);
-  stack.Install (wifiNGFStaNodes);
+  stack.Install (wifiNStaNodes);
 
   Ipv4AddressHelper address;
   address.SetBase ("192.168.1.0", "255.255.255.0");
@@ -284,10 +249,8 @@ Experiment::Run (Parameters params)
   bStaInterface = address.Assign (bStaDevice);
   Ipv4InterfaceContainer gStaInterface;
   gStaInterface = address.Assign (gStaDevice);
-  Ipv4InterfaceContainer nNGFStaInterface;
-  nNGFStaInterface = address.Assign (nNGFStaDevice);
-  Ipv4InterfaceContainer nGFStaInterface;
-  nGFStaInterface = address.Assign (nGFStaDevice);
+  Ipv4InterfaceContainer nStaInterface;
+  nStaInterface = address.Assign (nStaDevice);
   Ipv4InterfaceContainer ApInterface;
   ApInterface = address.Assign (apDevice);
 
@@ -314,13 +277,9 @@ Experiment::Run (Parameters params)
         {
           clientApps.Add (client.Install (wifiGStaNodes));
         }
-      if (params.nNonGreenfieldHasTraffic)
+      if (params.nHasTraffic)
         {
-          clientApps.Add (client.Install (wifiNNGFStaNodes));
-        }
-      if (params.nGreenfieldHasTraffic)
-        {
-          clientApps.Add (client.Install (wifiNGFStaNodes));
+          clientApps.Add (client.Install (wifiNStaNodes));
         }
       clientApps.Start (Seconds (1.0));
       clientApps.Stop (Seconds (simulationTime + 1));
@@ -359,13 +318,9 @@ Experiment::Run (Parameters params)
         {
           clientApps.Add (onoff.Install (wifiGStaNodes));
         }
-      if (params.nNonGreenfieldHasTraffic)
+      if (params.nHasTraffic)
         {
-          clientApps.Add (onoff.Install (wifiNNGFStaNodes));
-        }
-      if (params.nGreenfieldHasTraffic)
-        {
-          clientApps.Add (onoff.Install (wifiNGFStaNodes));
+          clientApps.Add (onoff.Install (wifiNStaNodes));
         }
       clientApps.Start (Seconds (1.0));
       clientApps.Stop (Seconds (simulationTime + 1));
@@ -389,15 +344,12 @@ int main (int argc, char *argv[])
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
   params.apType = WIFI_STANDARD_80211g;
-  params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
   params.nWifiG = 1;
   params.gHasTraffic = true;
-  params.nWifiNNonGreenfield = 0;
-  params.nNonGreenfieldHasTraffic = false;
-  params.nWifiNGreenfield = 0;
-  params.nGreenfieldHasTraffic = false;
+  params.nWifiN = 0;
+  params.nHasTraffic = false;
   params.isUdp = true;
   params.payloadSize = 1472; //bytes
   params.simulationTime = 10; //seconds
@@ -516,130 +468,17 @@ int main (int argc, char *argv[])
     }
   std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
 
-  params.testName = "HT GF not supported";
-  params.enableErpProtection = false;
-  params.enableShortSlotTime = false;
-  params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = false;
-  params.nWifiB = 0;
-  params.bHasTraffic = false;
-  params.nWifiG = 0;
-  params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 1;
-  params.nNonGreenfieldHasTraffic = true;
-  params.nWifiNGreenfield = 0;
-  params.nGreenfieldHasTraffic = false;
-  throughput = experiment.Run (params);
-  if (verifyResults && (throughput < 43 || throughput > 44))
-    {
-      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
-      exit (1);
-    }
-  std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-
-  params.testName = "HT only with GF used";
-  params.enableErpProtection = false;
-  params.enableShortSlotTime = false;
-  params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = true;
-  params.nWifiB = 0;
-  params.bHasTraffic = false;
-  params.nWifiG = 0;
-  params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 0;
-  params.nNonGreenfieldHasTraffic = false;
-  params.nWifiNGreenfield = 1;
-  params.nGreenfieldHasTraffic = true;
-  throughput = experiment.Run (params);
-  if (verifyResults && (throughput < 44 || throughput > 45))
-    {
-      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
-      exit (1);
-    }
-  std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-
-  params.testName = "HT only with GF allowed but disabled by protection";
-  params.enableErpProtection = false;
-  params.enableShortSlotTime = false;
-  params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = true;
-  params.nWifiB = 0;
-  params.bHasTraffic = false;
-  params.nWifiG = 0;
-  params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 1;
-  params.nNonGreenfieldHasTraffic = false;
-  params.nWifiNGreenfield = 1;
-  params.nGreenfieldHasTraffic = true;
-  throughput = experiment.Run (params);
-  if (verifyResults && (throughput < 43 || throughput > 44))
-    {
-      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
-      exit (1);
-    }
-  std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-
-  params.testName = "HT only with GF not supported by the receiver";
-  params.enableErpProtection = false;
-  params.enableShortSlotTime = false;
-  params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = false;
-  params.nWifiB = 0;
-  params.bHasTraffic = false;
-  params.nWifiG = 0;
-  params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 0;
-  params.nNonGreenfieldHasTraffic = false;
-  params.nWifiNGreenfield = 1;
-  params.nGreenfieldHasTraffic = true;
-  throughput = experiment.Run (params);
-  if (verifyResults && (throughput < 43 || throughput > 44))
-    {
-      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
-      exit (1);
-    }
-  std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-
-  params.testName = "Mixed HT/non-HT with GF enabled";
-  params.enableErpProtection = false;
-  params.enableShortSlotTime = false;
-  params.enableShortPhyPreamble = false;
-  params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = true;
-  params.nWifiB = 0;
-  params.bHasTraffic = false;
-  params.nWifiG = 1;
-  params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 0;
-  params.nNonGreenfieldHasTraffic = false;
-  params.nWifiNGreenfield = 1;
-  params.nGreenfieldHasTraffic = true;
-  throughput = experiment.Run (params);
-  if (verifyResults && (throughput < 44 || throughput > 45))
-    {
-      NS_LOG_ERROR ("Obtained throughput " << throughput << " is not in the expected boundaries!");
-      exit (1);
-    }
-  std::cout << "Throughput: " << throughput << " Mbit/s \n" << std::endl;
-
   params.testName = "HT only";
   params.enableErpProtection = false;
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
   params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
   params.nWifiG = 0;
   params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 1;
-  params.nNonGreenfieldHasTraffic = true;
-  params.nWifiNGreenfield = 0;
-  params.nGreenfieldHasTraffic = false;
+  params.nWifiN = 1;
+  params.nHasTraffic = true;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 44 || throughput > 45))
     {
@@ -653,15 +492,12 @@ int main (int argc, char *argv[])
   params.enableShortSlotTime = false;
   params.enableShortPhyPreamble = false;
   params.apType = WIFI_STANDARD_80211n_2_4GHZ;
-  params.apSupportsGreenfield = false;
   params.nWifiB = 0;
   params.bHasTraffic = false;
   params.nWifiG = 1;
   params.gHasTraffic = false;
-  params.nWifiNNonGreenfield = 1;
-  params.nNonGreenfieldHasTraffic = true;
-  params.nWifiNGreenfield = 0;
-  params.nGreenfieldHasTraffic = false;
+  params.nWifiN = 1;
+  params.nHasTraffic = true;
   throughput = experiment.Run (params);
   if (verifyResults && (throughput < 44 || throughput > 45))
     {

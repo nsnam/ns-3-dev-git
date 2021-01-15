@@ -41,10 +41,6 @@ const PhyEntity::PpduFormats HtPhy::m_htPpduFormats {
                            WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG
                            WIFI_PPDU_FIELD_HT_SIG,        //HT-SIG
                            WIFI_PPDU_FIELD_TRAINING,      //HT-STF + HT-LTFs
-                           WIFI_PPDU_FIELD_DATA } },
-  { WIFI_PREAMBLE_HT_GF, { WIFI_PPDU_FIELD_PREAMBLE, //HT-GF-STF + HT-LTF1
-                           WIFI_PPDU_FIELD_HT_SIG,   //HT-SIG
-                           WIFI_PPDU_FIELD_TRAINING, //Additional HT-LTFs
                            WIFI_PPDU_FIELD_DATA } }
 };
 /* *NS_CHECK_STYLE_ON* */
@@ -242,7 +238,7 @@ HtPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
 Time
 HtPhy::GetLSigDuration (WifiPreamble preamble) const
 {
-  return (preamble == WIFI_PREAMBLE_HT_GF) ? MicroSeconds (0) : MicroSeconds (4); //no L-SIG for HT-GF
+  return MicroSeconds (4);
 }
 
 Time
@@ -252,14 +248,7 @@ HtPhy::GetTrainingDuration (WifiTxVector txVector,
   NS_ABORT_MSG_IF (nDataLtf == 0 || nDataLtf > 4 || nExtensionLtf > 4 || (nDataLtf + nExtensionLtf) > 5,
                    "Unsupported combination of data (" << +nDataLtf << ")  and extension (" << +nExtensionLtf << ")  LTFs numbers for HT"); //see IEEE 802.11-2016, section 19.3.9.4.6 "HT-LTF definition"
   Time duration = MicroSeconds (4) * (nDataLtf + nExtensionLtf);
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF)
-    {
-      return MicroSeconds (4) * (nDataLtf - 1 + nExtensionLtf); //no HT-STF and first HT-LTF is already in preamble, see IEEE 802.11-2016, section 19.3.5.5 "HT-greenfield format LTF"
-    }
-  else //HT-MF
-    {
-      return MicroSeconds (4) * (1 /* HT-STF */ + nDataLtf + nExtensionLtf);
-    }
+  return MicroSeconds (4) * (1 /* HT-STF */ + nDataLtf + nExtensionLtf);
 }
 
 Time
@@ -383,7 +372,6 @@ HtPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
       case WIFI_PPDU_FIELD_TRAINING:
         return PhyFieldRxStatus (true); //always consider that training has been correctly received
       case WIFI_PPDU_FIELD_NON_HT_HEADER:
-        NS_ASSERT (event->GetTxVector ().GetPreambleType () != WIFI_PREAMBLE_HT_GF);
       //no break so as to go to OfdmPhy for processing
       default:
         return OfdmPhy::DoEndReceiveField (field, event);

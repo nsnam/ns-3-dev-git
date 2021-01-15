@@ -120,7 +120,6 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
   : m_pcfSupported (false),
     m_useNonErpProtection (false),
     m_useNonHtProtection (false),
-    m_useGreenfieldProtection (false),
     m_shortPreambleEnabled (false),
     m_shortSlotTimeEnabled (false)
 {
@@ -268,22 +267,6 @@ bool
 WifiRemoteStationManager::GetPcfSupported (void) const
 {
   return m_pcfSupported;
-}
-
-bool
-WifiRemoteStationManager::GetGreenfieldSupported (void) const
-{
-  if (GetHtSupported ())
-    {
-      Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
-      Ptr<HtConfiguration> htConfiguration = device->GetHtConfiguration ();
-      NS_ASSERT (htConfiguration); //If HT is supported, we should have a HT configuration attached
-      if (htConfiguration->GetGreenfieldSupported ())
-        {
-          return true;
-        }
-    }
-  return false;
 }
 
 bool
@@ -512,7 +495,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
       WifiMode mode = GetNonUnicastMode ();
       WifiTxVector v;
       v.SetMode (mode);
-      v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+      v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()));
       v.SetTxPowerLevel (m_defaultTxPowerLevel);
       v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
       v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
@@ -535,7 +518,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
           mgtMode = GetDefaultMode ();
         }
       txVector.SetMode (mgtMode);
-      txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+      txVector.SetPreambleType (GetPreambleForTransmission (mgtMode.GetModulationClass (), GetShortPreambleEnabled ()));
       txVector.SetTxPowerLevel (m_defaultTxPowerLevel);
       txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
       txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
@@ -598,7 +581,7 @@ WifiRemoteStationManager::GetRtsTxVector (Mac48Address address)
         WifiMode mode = GetNonUnicastMode ();
         WifiTxVector v;
         v.SetMode (mode);
-        v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (address)));
+        v.SetPreambleType (GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()));
         v.SetTxPowerLevel (m_defaultTxPowerLevel);
         v.SetChannelWidth (GetChannelWidthForTransmission (mode, m_wifiPhy->GetChannelWidth ()));
         v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())));
@@ -617,7 +600,7 @@ WifiRemoteStationManager::GetCtsTxVector (Mac48Address to, WifiMode rtsTxMode) c
   WifiMode ctsMode = GetControlAnswerMode (rtsTxMode);
   WifiTxVector v;
   v.SetMode (ctsMode);
-  v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetPreambleType (GetPreambleForTransmission (ctsMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ctsMode, m_wifiPhy->GetChannelWidth ()));
   uint16_t ctsTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ctsMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
@@ -633,7 +616,7 @@ WifiRemoteStationManager::GetAckTxVector (Mac48Address to, WifiMode dataTxMode) 
   WifiMode ackMode = GetControlAnswerMode (dataTxMode);
   WifiTxVector v;
   v.SetMode (ackMode);
-  v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetPreambleType (GetPreambleForTransmission (ackMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (ackMode, m_wifiPhy->GetChannelWidth ()));
   uint16_t ackTxGuardInterval = ConvertGuardIntervalToNanoSeconds (ackMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
@@ -649,7 +632,7 @@ WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address to, WifiMode dataTxM
   WifiMode blockAckMode = GetControlAnswerMode (dataTxMode);
   WifiTxVector v;
   v.SetMode (blockAckMode);
-  v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (to)));
+  v.SetPreambleType (GetPreambleForTransmission (blockAckMode.GetModulationClass (), GetShortPreambleEnabled ()));
   v.SetTxPowerLevel (GetDefaultTxPowerLevel ());
   v.SetChannelWidth (GetChannelWidthForTransmission (blockAckMode, m_wifiPhy->GetChannelWidth ()));
   uint16_t blockAckTxGuardInterval = ConvertGuardIntervalToNanoSeconds (blockAckMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ()));
@@ -1038,19 +1021,6 @@ WifiRemoteStationManager::GetUseNonHtProtection (void) const
   return m_useNonHtProtection;
 }
 
-void
-WifiRemoteStationManager::SetUseGreenfieldProtection (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  m_useGreenfieldProtection = enable;
-}
-
-bool
-WifiRemoteStationManager::GetUseGreenfieldProtection (void) const
-{
-  return m_useGreenfieldProtection;
-}
-
 bool
 WifiRemoteStationManager::NeedRetransmission (Ptr<const WifiMacQueueItem> mpdu)
 {
@@ -1415,18 +1385,6 @@ WifiRemoteStationManager::GetStationHeCapabilities (Mac48Address from)
 }
 
 bool
-WifiRemoteStationManager::GetGreenfieldSupported (Mac48Address address) const
-{
-  Ptr<const HtCapabilities> htCapabilities = LookupState (address)->m_htCapabilities;
-
-  if (!htCapabilities)
-    {
-      return false;
-    }
-  return htCapabilities->GetGreenfield ();
-}
-
-bool
 WifiRemoteStationManager::GetLdpcSupported (Mac48Address address) const
 {
   Ptr<const HtCapabilities> htCapabilities = LookupState (address)->m_htCapabilities;
@@ -1698,18 +1656,6 @@ WifiRemoteStationManager::GetGuardInterval (const WifiRemoteStation *station) co
 }
 
 bool
-WifiRemoteStationManager::GetGreenfield (const WifiRemoteStation *station) const
-{
-  Ptr<const HtCapabilities> htCapabilities = station->m_state->m_htCapabilities;
-
-  if (!htCapabilities)
-    {
-      return false;
-    }
-  return htCapabilities->GetGreenfield ();
-}
-
-bool
 WifiRemoteStationManager::GetAggregation (const WifiRemoteStation *station) const
 {
   return station->m_state->m_aggregation;
@@ -1866,12 +1812,6 @@ uint8_t
 WifiRemoteStationManager::GetMaxNumberOfTransmitStreams (void) const
 {
   return m_wifiPhy->GetMaxSupportedTxSpatialStreams ();
-}
-
-bool
-WifiRemoteStationManager::UseGreenfieldForDestination (Mac48Address dest) const
-{
-  return (GetGreenfieldSupported () && GetGreenfieldSupported (dest) && !GetUseGreenfieldProtection ());
 }
 
 bool

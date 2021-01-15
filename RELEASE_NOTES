@@ -28,6 +28,7 @@ New user-visible features
 -------------------------
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
 - (wifi) Holland PHY configuration has been removed from the model
+- (wifi) HT Greenfield (HT_GF) preamble support has been removed from the model
 
 Bugs fixed
 ----------

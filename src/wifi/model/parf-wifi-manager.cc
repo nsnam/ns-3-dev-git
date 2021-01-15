@@ -333,7 +333,7 @@ ParfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       m_rateChange (prevRate, rate, station->m_state->m_address);
       station->m_prevRateIndex = station->m_rateIndex;
     }
-  return WifiTxVector (mode, station->m_powerLevel, GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+  return WifiTxVector (mode, station->m_powerLevel, GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
 }
 
 WifiTxVector
@@ -358,7 +358,7 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     {
       mode = GetNonErpSupported (station, 0);
     }
-  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled (), UseGreenfieldForDestination (GetAddress (station))), 800, 1, 1, 0, channelWidth, GetAggregation (station));
+  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
   return rtsTxVector;
 }
 

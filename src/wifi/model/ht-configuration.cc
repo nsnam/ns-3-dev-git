@@ -52,12 +52,6 @@ HtConfiguration::GetTypeId (void)
                    MakeBooleanAccessor (&HtConfiguration::GetShortGuardIntervalSupported,
                                         &HtConfiguration::SetShortGuardIntervalSupported),
                    MakeBooleanChecker ())
-    .AddAttribute ("GreenfieldSupported",
-                   "Whether or not Greenfield is supported.",
-                   BooleanValue (false),
-                   MakeBooleanAccessor (&HtConfiguration::GetGreenfieldSupported,
-                                        &HtConfiguration::SetGreenfieldSupported),
-                   MakeBooleanChecker ())
     .AddAttribute ("LdpcSupported",
                    "Whether or not LDPC coding is supported.",
                    BooleanValue (false),
@@ -79,19 +73,6 @@ bool
 HtConfiguration::GetShortGuardIntervalSupported (void) const
 {
   return m_sgiSupported;
-}
-
-void
-HtConfiguration::SetGreenfieldSupported (bool enable)
-{
-  NS_LOG_FUNCTION (this << enable);
-  m_greenfieldSupported = enable;
-}
-
-bool
-HtConfiguration::GetGreenfieldSupported (void) const
-{
-  return m_greenfieldSupported;
 }
 
 void
