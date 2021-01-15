@@ -889,12 +889,6 @@ WifiPhy::ConfigureDefaultsForStandard (void)
       // Channel number should be aligned by SetFrequency () to either 172 or 171
       NS_ASSERT ((GetChannelWidth () == 10 && GetChannelNumber () == 172) || (GetChannelWidth () == 5 && GetChannelNumber () == 171)) ;
       break;
-    case WIFI_PHY_STANDARD_holland:
-      SetChannelWidth (20);
-      SetFrequency (5180);
-      // Channel number should be aligned by SetFrequency () to 36
-      NS_ASSERT (GetChannelNumber () == 36);
-      break;
     case WIFI_PHY_STANDARD_80211n:
       SetChannelWidth (20);
       if (m_band == WIFI_PHY_BAND_2_4GHZ)
@@ -1112,17 +1106,6 @@ WifiPhy::Configure80211p (void)
 }
 
 void
-WifiPhy::ConfigureHolland (void)
-{
-  NS_LOG_FUNCTION (this);
-  AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> (OFDM_PHY_HOLLAND));
-
-  SetSifs (MicroSeconds (16));
-  SetSlot (MicroSeconds (9));
-  SetPifs (GetSifs () + GetSlot ());
-}
-
-void
 WifiPhy::Configure80211n (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1292,9 +1275,6 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
       break;
     case WIFI_PHY_STANDARD_80211p:
       Configure80211p ();
-      break;
-    case WIFI_PHY_STANDARD_holland:
-      ConfigureHolland ();
       break;
     case WIFI_PHY_STANDARD_80211n:
       Configure80211n ();

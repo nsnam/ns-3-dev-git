@@ -1116,7 +1116,6 @@ RegularWifiMac::ConfigureStandard (WifiStandard standard)
       }
     case WIFI_STANDARD_80211g:
       SetErpSupported (true);
-    case WIFI_STANDARD_holland:
     case WIFI_STANDARD_80211a:
     case WIFI_STANDARD_80211p:
       cwmin = 15;

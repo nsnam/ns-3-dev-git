@@ -30,7 +30,7 @@
 // By default, the 802.11a standard using IdealWifiManager is plotted. Several command line
 // arguments can change the following options:
 // --wifiManager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, MinstrelHt, Onoe, Rraa)
-// --standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11p-10MHz, 802.11p-5MHz)
+// --standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11p-10MHz, 802.11p-5MHz)
 // --serverShortGuardInterval and --clientShortGuardInterval (for 802.11n/ac)
 // --serverNss and --clientNss (for 802.11n/ac)
 // --serverChannelWidth and --clientChannelWidth (for 802.11n/ac)
@@ -186,7 +186,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("clientNss", "Set nss of the client (valid only for 802.11n or ac)", clientNss);
   cmd.AddValue ("serverShortGuardInterval", "Set short guard interval of the server (802.11n/ac/ax) in nanoseconds", serverShortGuardInterval);
   cmd.AddValue ("clientShortGuardInterval", "Set short guard interval of the client (802.11n/ac/ax) in nanoseconds", clientShortGuardInterval);
-  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11-holland, 802.11p-10MHz, 802.11p-5MHz, 802.11ax-5GHz, 802.11ax-2.4GHz)", standard);
+  cmd.AddValue ("standard", "Set standard (802.11a, 802.11b, 802.11g, 802.11n-5GHz, 802.11n-2.4GHz, 802.11ac, 802.11p-10MHz, 802.11p-5MHz, 802.11ax-5GHz, 802.11ax-2.4GHz)", standard);
   cmd.AddValue ("wifiManager", "Set wifi rate manager (Aarf, Aarfcd, Amrr, Arf, Cara, Ideal, Minstrel, MinstrelHt, Onoe, Rraa)", wifiManager);
   cmd.AddValue ("infrastructure", "Use infrastructure instead of adhoc", infrastructure);
   cmd.Parse (argc,argv);
@@ -252,7 +252,6 @@ int main (int argc, char *argv[])
   serverStandards.push_back (StandardInfo ("802.11n-5GHz", WIFI_STANDARD_80211n_5GHZ, serverChannelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
   serverStandards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_STANDARD_80211n_2_4GHZ, serverChannelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
   serverStandards.push_back (StandardInfo ("802.11ac", WIFI_STANDARD_80211ac, serverChannelWidth, 5, 50, 0, 55, 120 * channelRateFactor));
-  serverStandards.push_back (StandardInfo ("802.11-holland", WIFI_STANDARD_holland, 20, 3, 27, 0, 30, 60));
   serverStandards.push_back (StandardInfo ("802.11p-10MHz", WIFI_STANDARD_80211p, 10, 3, 27, 0, 30, 60));
   serverStandards.push_back (StandardInfo ("802.11p-5MHz", WIFI_STANDARD_80211p, 5, 3, 27, 0, 30, 60));
   serverStandards.push_back (StandardInfo ("802.11ax-5GHz", WIFI_STANDARD_80211ax_5GHZ, serverChannelWidth, 5, 55, 0, 60, 120 * channelRateFactor));
@@ -264,7 +263,6 @@ int main (int argc, char *argv[])
   clientStandards.push_back (StandardInfo ("802.11n-5GHz", WIFI_STANDARD_80211n_5GHZ, clientChannelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
   clientStandards.push_back (StandardInfo ("802.11n-2.4GHz", WIFI_STANDARD_80211n_2_4GHZ, clientChannelWidth, 3, 30, 0, 35, 80 * channelRateFactor));
   clientStandards.push_back (StandardInfo ("802.11ac", WIFI_STANDARD_80211ac, clientChannelWidth, 5, 50, 0, 55, 120 * channelRateFactor));
-  clientStandards.push_back (StandardInfo ("802.11-holland", WIFI_STANDARD_holland, 20, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11p-10MHz", WIFI_STANDARD_80211p, 10, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11p-5MHz", WIFI_STANDARD_80211p, 5, 3, 27, 0, 30, 60));
   clientStandards.push_back (StandardInfo ("802.11ax-5GHz", WIFI_STANDARD_80211ax_5GHZ, clientChannelWidth, 5, 55, 0, 60, 160 * channelRateFactor));

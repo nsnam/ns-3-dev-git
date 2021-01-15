@@ -46,12 +46,6 @@ enum WifiPhyStandard
   WIFI_PHY_STANDARD_80211_5MHZ,
   /** OFDM PHY (Clause 17 - amendment for 10 MHz and 5 MHz channels) */
   WIFI_PHY_STANDARD_80211p,
-  /** This is intended to be the configuration used in this paper:
-   *  Gavin Holland, Nitin Vaidya and Paramvir Bahl, "A Rate-Adaptive
-   *  MAC Protocol for Multi-Hop Wireless Networks", in Proc. of
-   *  ACM MOBICOM, 2001.
-   */
-  WIFI_PHY_STANDARD_holland,
   /** HT PHY for the 2.4 GHz band (clause 20) */
   /** this value is NS_DEPRECATED_3_32 */
   WIFI_PHY_STANDARD_80211n_2_4GHZ,
@@ -87,8 +81,6 @@ inline std::ostream& operator<< (std::ostream& os, WifiPhyStandard standard)
       return (os << "802.11g");
     case WIFI_PHY_STANDARD_80211p:
       return (os << "802.11p");
-    case WIFI_PHY_STANDARD_holland:
-      return (os << "802.11a-holland");
     case WIFI_PHY_STANDARD_80211n:
       return (os << "802.11n");
     case WIFI_PHY_STANDARD_80211ac:
@@ -147,7 +139,6 @@ enum WifiStandard
   WIFI_STANDARD_80211b,
   WIFI_STANDARD_80211g,
   WIFI_STANDARD_80211p,
-  WIFI_STANDARD_holland,
   WIFI_STANDARD_80211n_2_4GHZ,
   WIFI_STANDARD_80211n_5GHZ,
   WIFI_STANDARD_80211ac,
@@ -175,8 +166,6 @@ inline std::ostream& operator<< (std::ostream& os, WifiStandard standard)
       return (os << "802.11g");
     case WIFI_STANDARD_80211p:
       return (os << "802.11p");
-    case WIFI_STANDARD_holland:
-      return (os << "802.11a-holland");
     case WIFI_STANDARD_80211n_2_4GHZ:
       return (os << "802.11n-2.4GHz");
     case WIFI_STANDARD_80211n_5GHZ:
@@ -211,7 +200,6 @@ const std::map<WifiStandard, WifiStandardInfo> wifiStandards =
   { WIFI_STANDARD_80211b, { WIFI_PHY_STANDARD_80211b, WIFI_PHY_BAND_2_4GHZ, WIFI_MAC_STANDARD_80211 } },
   { WIFI_STANDARD_80211g, { WIFI_PHY_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ, WIFI_MAC_STANDARD_80211 } },
   { WIFI_STANDARD_80211p, { WIFI_PHY_STANDARD_80211p, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211 } },
-  { WIFI_STANDARD_holland, { WIFI_PHY_STANDARD_holland, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211 } },
   { WIFI_STANDARD_80211n_2_4GHZ, { WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_2_4GHZ, WIFI_MAC_STANDARD_80211n } },
   { WIFI_STANDARD_80211n_5GHZ, { WIFI_PHY_STANDARD_80211n, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211n } },
   { WIFI_STANDARD_80211ac, { WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ, WIFI_MAC_STANDARD_80211ac } },

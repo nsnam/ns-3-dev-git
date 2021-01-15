@@ -90,19 +90,6 @@ OfdmPhy::OfdmPhy (OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildMod
                 m_modeList.emplace_back (mode);
               }
             break;
-          case OFDM_PHY_HOLLAND:
-            NS_LOG_LOGIC ("Use Holland configuration");
-            NS_LOG_LOGIC ("Add OfdmRate6Mbps to list");
-            m_modeList.emplace_back (GetOfdmRate6Mbps ());
-            NS_LOG_LOGIC ("Add OfdmRate12Mbps to list");
-            m_modeList.emplace_back (GetOfdmRate12Mbps ());
-            NS_LOG_LOGIC ("Add OfdmRate18Mbps to list");
-            m_modeList.emplace_back (GetOfdmRate18Mbps ());
-            NS_LOG_LOGIC ("Add OfdmRate36Mbps to list");
-            m_modeList.emplace_back (GetOfdmRate36Mbps ());
-            NS_LOG_LOGIC ("Add OfdmRate54Mbps to list");
-            m_modeList.emplace_back (GetOfdmRate54Mbps ());
-            break;
           case OFDM_PHY_10_MHZ:
             for (const auto & rate : bwRatesMap.at (10))
               {

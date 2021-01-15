@@ -1164,11 +1164,6 @@ private:
   void Configure80211p (void);
   /**
    * Configure WifiPhy with appropriate channel frequency and
-   * supported rates for Holland.
-   */
-  void ConfigureHolland (void);
-  /**
-   * Configure WifiPhy with appropriate channel frequency and
    * supported rates for 802.11n standard.
    */
   void Configure80211n (void);

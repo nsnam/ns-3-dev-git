@@ -794,10 +794,9 @@ PhyHeaderSectionsTest::DoRun (void)
   // 11a (OFDM)
   txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
 
-  // -> one iteration per variant: default, Holland, 10 MHz, and 5 MHz
+  // -> one iteration per variant: default, 10 MHz, and 5 MHz
   std::map<OfdmPhyVariant, std::size_t> variants { //number to use to deduce rate and BW info for each variant
     { OFDM_PHY_DEFAULT, 1},
-    { OFDM_PHY_HOLLAND, 1},
     { OFDM_PHY_10_MHZ,  2},
     { OFDM_PHY_5_MHZ,   4}
   };

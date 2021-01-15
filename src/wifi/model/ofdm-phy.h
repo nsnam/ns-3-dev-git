@@ -44,7 +44,6 @@ namespace ns3 {
 enum OfdmPhyVariant
 {
   OFDM_PHY_DEFAULT,
-  OFDM_PHY_HOLLAND,
   OFDM_PHY_10_MHZ,
   OFDM_PHY_5_MHZ
 };
@@ -56,10 +55,6 @@ enum OfdmPhyVariant
  * This class is also used for the 10 MHz and 5 MHz bandwidth
  * variants addressing vehicular communications (default is 20 MHz
  * bandwidth).
- * It is also used for the Holland configuration detailed in this paper:
- * Gavin Holland, Nitin Vaidya and Paramvir Bahl, "A Rate-Adaptive
- * MAC Protocol for Multi-Hop Wireless Networks", in Proc. of
- * ACM MOBICOM, 2001.
  *
  * Refer to IEEE 802.11-2016, clause 17.
  */

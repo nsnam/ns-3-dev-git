@@ -67,10 +67,6 @@ WifiStandard ConvertStringToStandard (std::string version)
     {
       standard = WIFI_STANDARD_80211p;
     }
-  else if (version == "holland")
-    {
-      standard = WIFI_STANDARD_holland;
-    }
   else if (version == "80211n_2_4GHZ")
     {
       standard = WIFI_STANDARD_80211n_2_4GHZ;
@@ -107,8 +103,8 @@ int main (int argc, char *argv[])
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
-  cmd.AddValue ("apVersion", "The standard version used by the AP: 80211a, 80211b, 80211g, 80211p, holland, 80211n_2_4GHZ, 80211n_5GHZ, 80211ac, 80211ax_2_4GHZ or 80211ax_5GHZ", apVersion);
-  cmd.AddValue ("staVersion", "The standard version used by the station: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, holland, 80211n_2_4GHZ, 80211n_5GHZ, 80211ac, 80211ax_2_4GHZ or 80211ax_5GHZ", staVersion);
+  cmd.AddValue ("apVersion", "The standard version used by the AP: 80211a, 80211b, 80211g, 80211p, 80211n_2_4GHZ, 80211n_5GHZ, 80211ac, 80211ax_2_4GHZ or 80211ax_5GHZ", apVersion);
+  cmd.AddValue ("staVersion", "The standard version used by the station: 80211a, 80211b, 80211g, 80211_10MHZ, 80211_5MHZ, 80211n_2_4GHZ, 80211n_5GHZ, 80211ac, 80211ax_2_4GHZ or 80211ax_5GHZ", staVersion);
   cmd.AddValue ("apRaa", "Rate adaptation algorithm used by the AP", apRaa);
   cmd.AddValue ("staRaa", "Rate adaptation algorithm used by the station", staRaa);
   cmd.AddValue ("apHasTraffic", "Enable/disable traffic on the AP", apHasTraffic);

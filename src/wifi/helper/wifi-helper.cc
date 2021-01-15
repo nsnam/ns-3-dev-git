@@ -790,9 +790,6 @@ WifiHelper::SetStandard (WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211g:
       m_standard = WIFI_STANDARD_80211g;
       return;
-    case WIFI_PHY_STANDARD_holland:
-      m_standard = WIFI_STANDARD_holland;
-      return;
     // remove the next value from WifiPhyStandard when deprecation ends
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       m_standard = WIFI_STANDARD_80211n_2_4GHZ;

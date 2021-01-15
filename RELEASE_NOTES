@@ -27,6 +27,7 @@ requirements (Note: not all ns-3 features are available on all systems):
 New user-visible features
 -------------------------
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
+- (wifi) Holland PHY configuration has been removed from the model
 
 Bugs fixed
 ----------

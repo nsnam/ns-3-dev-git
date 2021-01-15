@@ -412,7 +412,6 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
     {
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_holland:
     case WIFI_PHY_STANDARD_80211b:
     case WIFI_PHY_STANDARD_80211n:
     case WIFI_PHY_STANDARD_80211ac:

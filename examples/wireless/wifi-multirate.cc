@@ -601,7 +601,7 @@ int main (int argc, char *argv[])
 
   wifiMac.SetType ("ns3::AdhocWifiMac",
                    "Ssid", StringValue ("Testbed"));
-  wifi.SetStandard (WIFI_STANDARD_holland);
+  wifi.SetStandard (WIFI_STANDARD_80211a);
   wifi.SetRemoteStationManager (experiment.GetRateManager ());
 
   NS_LOG_INFO ("Scenario: " << experiment.GetScenario ());
