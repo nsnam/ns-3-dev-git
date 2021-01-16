@@ -734,8 +734,8 @@ bool Ipv6Address::IsLinkLocalMulticast () const
 bool Ipv6Address::IsIpv4MappedAddress () const
 {
   NS_LOG_FUNCTION (this);
-  uint8_t v4MappedPrefix[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                 0x00, 0x00, 0xff, 0xff };
+  static uint8_t v4MappedPrefix[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                        0x00, 0x00, 0xff, 0xff };
   if (memcmp(m_address, v4MappedPrefix, sizeof(v4MappedPrefix)) == 0)
     {
       return (true);
@@ -766,14 +766,9 @@ Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix) const
 bool Ipv6Address::IsSolicitedMulticast () const
 {
   NS_LOG_FUNCTION (this);
-  uint8_t buf[16];
 
-  Serialize (buf);
-
-  if (buf[0] == 0xff && 
-      buf[1] == 0x02 &&
-      buf[11] == 0x01 &&
-      buf[12] == 0xff)
+  static Ipv6Address documentation ("ff02::1:ff00:0");
+  if (CombinePrefix (Ipv6Prefix (104)) == documentation)
     {
       return true;
     }
@@ -810,8 +805,8 @@ bool Ipv6Address::IsAny () const
 bool Ipv6Address::IsDocumentation () const
 {
   NS_LOG_FUNCTION (this);
-  Ipv6Address documentation ("2001:db8::0");
-  if (((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (32)) == documentation)
+  static Ipv6Address documentation ("2001:db8::0");
+  if (CombinePrefix (Ipv6Prefix (32)) == documentation)
     {
       return true;
     }
@@ -922,8 +917,8 @@ void Ipv6Address::GetBytes (uint8_t buf[16]) const
 bool Ipv6Address::IsLinkLocal () const
 {
   NS_LOG_FUNCTION (this);
-  Ipv6Address linkLocal ("fe80::0");
-  if (!IsMulticast () && ((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (64)) == linkLocal)
+  static Ipv6Address linkLocal ("fe80::0");
+  if (CombinePrefix (Ipv6Prefix (64)) == linkLocal)
     {
       return true;
     }
