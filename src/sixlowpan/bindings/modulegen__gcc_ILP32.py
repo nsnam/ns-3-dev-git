@@ -350,7 +350,7 @@ def register_types(module):
     ## sixlowpan-net-device.h (module 'sixlowpan'): ns3::SixLowPanNetDevice [class]
     module.add_class('SixLowPanNetDevice', parent=root_module['ns3::NetDevice'])
     ## sixlowpan-net-device.h (module 'sixlowpan'): ns3::SixLowPanNetDevice::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_FRAGMENT_TIMEOUT', 'DROP_FRAGMENT_BUFFER_FULL', 'DROP_UNKNOWN_EXTENSION', 'DROP_DISALLOWED_COMPRESSION'], outer_class=root_module['ns3::SixLowPanNetDevice'])
+    module.add_enum('DropReason', ['DROP_FRAGMENT_TIMEOUT', 'DROP_FRAGMENT_BUFFER_FULL', 'DROP_UNKNOWN_EXTENSION', 'DROP_DISALLOWED_COMPRESSION', 'DROP_SATETFUL_DECOMPRESSION_PROBLEM'], outer_class=root_module['ns3::SixLowPanNetDevice'])
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::SixLowPanNetDevice >, uint32_t )', 'ns3::SixLowPanNetDevice::RxTxTracedCallback')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::SixLowPanNetDevice >, uint32_t )*', 'ns3::SixLowPanNetDevice::RxTxTracedCallback*')
     typehandlers.add_type_alias('void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::SixLowPanNetDevice >, uint32_t )&', 'ns3::SixLowPanNetDevice::RxTxTracedCallback&')
@@ -1588,6 +1588,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Prefix prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Prefix', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -2386,6 +2391,10 @@ def register_Ns3SixLowPanHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::SixLowPanHelper const &', 'arg0')])
     ## sixlowpan-helper.h (module 'sixlowpan'): ns3::SixLowPanHelper::SixLowPanHelper() [constructor]
     cls.add_constructor([])
+    ## sixlowpan-helper.h (module 'sixlowpan'): void ns3::SixLowPanHelper::AddContext(ns3::NetDeviceContainer c, uint8_t contextId, ns3::Ipv6Prefix context, ns3::Time validity) [member function]
+    cls.add_method('AddContext', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('uint8_t', 'contextId'), param('ns3::Ipv6Prefix', 'context'), param('ns3::Time', 'validity')])
     ## sixlowpan-helper.h (module 'sixlowpan'): int64_t ns3::SixLowPanHelper::AssignStreams(ns3::NetDeviceContainer c, int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
@@ -2394,6 +2403,18 @@ def register_Ns3SixLowPanHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NetDeviceContainer', 'c')])
+    ## sixlowpan-helper.h (module 'sixlowpan'): void ns3::SixLowPanHelper::InvalidateContext(ns3::NetDeviceContainer c, uint8_t contextId) [member function]
+    cls.add_method('InvalidateContext', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('uint8_t', 'contextId')])
+    ## sixlowpan-helper.h (module 'sixlowpan'): void ns3::SixLowPanHelper::RemoveContext(ns3::NetDeviceContainer c, uint8_t contextId) [member function]
+    cls.add_method('RemoveContext', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('uint8_t', 'contextId')])
+    ## sixlowpan-helper.h (module 'sixlowpan'): void ns3::SixLowPanHelper::RenewContext(ns3::NetDeviceContainer c, uint8_t contextId, ns3::Time validity) [member function]
+    cls.add_method('RenewContext', 
+                   'void', 
+                   [param('ns3::NetDeviceContainer', 'c'), param('uint8_t', 'contextId'), param('ns3::Time', 'validity')])
     ## sixlowpan-helper.h (module 'sixlowpan'): void ns3::SixLowPanHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
     cls.add_method('SetDeviceAttribute', 
                    'void', 
@@ -3638,14 +3659,14 @@ def register_Ns3SixLowPanIphc_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## sixlowpan-header.h (module 'sixlowpan'): ns3::Ipv6Address ns3::SixLowPanIphc::GetDstAddress() const [member function]
-    cls.add_method('GetDstAddress', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_const=True)
     ## sixlowpan-header.h (module 'sixlowpan'): uint8_t ns3::SixLowPanIphc::GetDstContextId() const [member function]
     cls.add_method('GetDstContextId', 
                    'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): uint8_t const * ns3::SixLowPanIphc::GetDstInlinePart() const [member function]
+    cls.add_method('GetDstInlinePart', 
+                   'uint8_t const *', 
                    [], 
                    is_const=True)
     ## sixlowpan-header.h (module 'sixlowpan'): uint8_t ns3::SixLowPanIphc::GetEcn() const [member function]
@@ -3703,14 +3724,14 @@ def register_Ns3SixLowPanIphc_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## sixlowpan-header.h (module 'sixlowpan'): ns3::Ipv6Address ns3::SixLowPanIphc::GetSrcAddress() const [member function]
-    cls.add_method('GetSrcAddress', 
-                   'ns3::Ipv6Address', 
-                   [], 
-                   is_const=True)
     ## sixlowpan-header.h (module 'sixlowpan'): uint8_t ns3::SixLowPanIphc::GetSrcContextId() const [member function]
     cls.add_method('GetSrcContextId', 
                    'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## sixlowpan-header.h (module 'sixlowpan'): uint8_t const * ns3::SixLowPanIphc::GetSrcInlinePart() const [member function]
+    cls.add_method('GetSrcInlinePart', 
+                   'uint8_t const *', 
                    [], 
                    is_const=True)
     ## sixlowpan-header.h (module 'sixlowpan'): ns3::SixLowPanIphc::TrafficClassFlowLabel_e ns3::SixLowPanIphc::GetTf() const [member function]
@@ -3749,14 +3770,14 @@ def register_Ns3SixLowPanIphc_methods(root_module, cls):
     cls.add_method('SetDscp', 
                    'void', 
                    [param('uint8_t', 'dscp')])
-    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetDstAddress(ns3::Ipv6Address dstAddress) [member function]
-    cls.add_method('SetDstAddress', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'dstAddress')])
     ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetDstContextId(uint8_t dstContextId) [member function]
     cls.add_method('SetDstContextId', 
                    'void', 
                    [param('uint8_t', 'dstContextId')])
+    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetDstInlinePart(uint8_t * dstInlinePart, uint8_t size) [member function]
+    cls.add_method('SetDstInlinePart', 
+                   'void', 
+                   [param('uint8_t *', 'dstInlinePart'), param('uint8_t', 'size')])
     ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetEcn(uint8_t ecn) [member function]
     cls.add_method('SetEcn', 
                    'void', 
@@ -3793,14 +3814,14 @@ def register_Ns3SixLowPanIphc_methods(root_module, cls):
     cls.add_method('SetSam', 
                    'void', 
                    [param('ns3::SixLowPanIphc::HeaderCompression_e', 'samField')])
-    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetSrcAddress(ns3::Ipv6Address srcAddress) [member function]
-    cls.add_method('SetSrcAddress', 
-                   'void', 
-                   [param('ns3::Ipv6Address', 'srcAddress')])
     ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetSrcContextId(uint8_t srcContextId) [member function]
     cls.add_method('SetSrcContextId', 
                    'void', 
                    [param('uint8_t', 'srcContextId')])
+    ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetSrcInlinePart(uint8_t * srcInlinePart, uint8_t size) [member function]
+    cls.add_method('SetSrcInlinePart', 
+                   'void', 
+                   [param('uint8_t *', 'srcInlinePart'), param('uint8_t', 'size')])
     ## sixlowpan-header.h (module 'sixlowpan'): void ns3::SixLowPanIphc::SetTf(ns3::SixLowPanIphc::TrafficClassFlowLabel_e tfField) [member function]
     cls.add_method('SetTf', 
                    'void', 
@@ -5573,6 +5594,10 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
 def register_Ns3SixLowPanNetDevice_methods(root_module, cls):
     ## sixlowpan-net-device.h (module 'sixlowpan'): ns3::SixLowPanNetDevice::SixLowPanNetDevice() [constructor]
     cls.add_constructor([])
+    ## sixlowpan-net-device.h (module 'sixlowpan'): void ns3::SixLowPanNetDevice::AddContext(uint8_t contextId, ns3::Ipv6Prefix contextPrefix, bool compressionAllowed, ns3::Time validLifetime) [member function]
+    cls.add_method('AddContext', 
+                   'void', 
+                   [param('uint8_t', 'contextId'), param('ns3::Ipv6Prefix', 'contextPrefix'), param('bool', 'compressionAllowed'), param('ns3::Time', 'validLifetime')])
     ## sixlowpan-net-device.h (module 'sixlowpan'): void ns3::SixLowPanNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('AddLinkChangeCallback', 
                    'void', 
@@ -5597,6 +5622,10 @@ def register_Ns3SixLowPanNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## sixlowpan-net-device.h (module 'sixlowpan'): bool ns3::SixLowPanNetDevice::GetContext(uint8_t contextId, ns3::Ipv6Prefix & contextPrefix, bool & compressionAllowed, ns3::Time & validLifetime) [member function]
+    cls.add_method('GetContext', 
+                   'bool', 
+                   [param('uint8_t', 'contextId'), param('ns3::Ipv6Prefix &', 'contextPrefix'), param('bool &', 'compressionAllowed'), param('ns3::Time &', 'validLifetime')])
     ## sixlowpan-net-device.h (module 'sixlowpan'): uint32_t ns3::SixLowPanNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
                    'uint32_t', 
@@ -5632,6 +5661,10 @@ def register_Ns3SixLowPanNetDevice_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## sixlowpan-net-device.h (module 'sixlowpan'): void ns3::SixLowPanNetDevice::InvalidateContext(uint8_t contextId) [member function]
+    cls.add_method('InvalidateContext', 
+                   'void', 
+                   [param('uint8_t', 'contextId')])
     ## sixlowpan-net-device.h (module 'sixlowpan'): bool ns3::SixLowPanNetDevice::IsBridge() const [member function]
     cls.add_method('IsBridge', 
                    'bool', 
@@ -5662,6 +5695,14 @@ def register_Ns3SixLowPanNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## sixlowpan-net-device.h (module 'sixlowpan'): void ns3::SixLowPanNetDevice::RemoveContext(uint8_t contextId) [member function]
+    cls.add_method('RemoveContext', 
+                   'void', 
+                   [param('uint8_t', 'contextId')])
+    ## sixlowpan-net-device.h (module 'sixlowpan'): void ns3::SixLowPanNetDevice::RenewContext(uint8_t contextId, ns3::Time validLifetime) [member function]
+    cls.add_method('RenewContext', 
+                   'void', 
+                   [param('uint8_t', 'contextId'), param('ns3::Time', 'validLifetime')])
     ## sixlowpan-net-device.h (module 'sixlowpan'): bool ns3::SixLowPanNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
