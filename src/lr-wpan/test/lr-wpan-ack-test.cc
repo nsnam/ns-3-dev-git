@@ -187,6 +187,8 @@ LrWpanAckTestCase::DoRun (void)
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (6);
 
+  Packet::EnablePrinting ();
+
   // Helper - used to create traces
   LrWpanHelper helper;
   std::string asciiPrefix;
