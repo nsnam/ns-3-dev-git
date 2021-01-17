@@ -769,6 +769,19 @@ public:
   HeaderCompression_e GetSam (void) const;
 
   /**
+   * brief Set the source address inline part
+   * \param srcInlinePart The inline portion of the compressed source address (16 bytes)
+   * \param size The number of inline bytes
+   */
+  void SetSrcInlinePart (uint8_t srcInlinePart[16], uint8_t size);
+
+  /**
+   * brief Get the source address inline part
+   * \return The inline portion of the compressed source address (16 bytes)
+   */
+  const uint8_t* GetSrcInlinePart (void) const;
+
+  /**
    * \brief Set the M (Multicast) compression.
    * \param [in] mField True if destination is multicast.
    */
@@ -805,6 +818,19 @@ public:
   HeaderCompression_e GetDam (void) const;
 
   /**
+   * brief Set the destination address inline part
+   * \param dstInlinePart The inline portion of the compressed destination address (16 bytes)
+   * \param size The number of inline bytes
+   */
+  void SetDstInlinePart (uint8_t dstInlinePart[16], uint8_t size);
+
+  /**
+   * brief Get the destination address inline part
+   * \return The inline portion of the compressed destination address (16 bytes)
+   */
+  const uint8_t* GetDstInlinePart (void) const;
+
+   /**
    * \brief Set the SrcContextId.
    * \param [in] srcContextId Valid values are [0:15].
    */
@@ -888,51 +914,16 @@ public:
    */
   uint8_t GetHopLimit (void) const;
 
-  /**
-   * \brief Set the Source Address.
-   * \param [in] srcAddress The Source Address.
-   */
-  void SetSrcAddress (Ipv6Address srcAddress);
-
-  /**
-   * \brief Get the Source Address.
-   * \return The Source Address.
-   */
-  Ipv6Address GetSrcAddress () const;
-
-  /**
-   * \brief Set the Destination Address.
-   * \param [in] dstAddress The Destination Address.
-   */
-  void SetDstAddress (Ipv6Address dstAddress);
-
-  /**
-   * \brief Get the Destination Address.
-   * \return The Destination Address.
-   */
-  Ipv6Address GetDstAddress () const;
-
 private:
-  uint16_t m_baseFormat;      //!< Dispatch + encoding fields.
-  uint8_t m_srcdstContextId;  //!< Src and Dst Context ID.
-  uint8_t m_ecn : 2;          //!< ECN bits.
-  uint8_t m_dscp : 6;         //!< DSCP bits.
-  uint32_t m_flowLabel : 20;  //!< Flow Label bits.
-  uint8_t m_nextHeader;       //!< Next header.
-  uint8_t m_hopLimit;         //!< Hop Limit.
-  Ipv6Address m_srcAddress;   //!< Src address.
-  Ipv6Address m_dstAddress;   //!< Dst address.
-
-  /**
-   * \brief Post-process the Source address stateful compression
-   * \note Currently unsupported.
-   */
-  void PostProcessSac ();
-  /**
-   * \brief Post-process the Destination address stateful compression.
-   * \note Currently unsupported.
-   */
-  void PostProcessDac ();
+  uint16_t m_baseFormat;       //!< Dispatch + encoding fields.
+  uint8_t m_srcdstContextId;   //!< Src and Dst Context ID.
+  uint8_t m_ecn : 2;           //!< ECN bits.
+  uint8_t m_dscp : 6;          //!< DSCP bits.
+  uint32_t m_flowLabel : 20;   //!< Flow Label bits.
+  uint8_t m_nextHeader;        //!< Next header.
+  uint8_t m_hopLimit;          //!< Hop Limit.
+  uint8_t m_srcInlinePart[16]; //!< source address inline part.
+  uint8_t m_dstInlinePart[16]; //!< destination address inline part.
 
 };
 

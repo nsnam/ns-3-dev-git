@@ -66,6 +66,66 @@ NetDeviceContainer SixLowPanHelper::Install (const NetDeviceContainer c)
   return devs;
 }
 
+void SixLowPanHelper::AddContext (NetDeviceContainer c, uint8_t contextId, Ipv6Prefix context, Time validity)
+{
+  NS_LOG_FUNCTION (this << +contextId << context << validity);
+
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      Ptr<NetDevice> device = c.Get (i);
+      Ptr<SixLowPanNetDevice> sixDevice = DynamicCast<SixLowPanNetDevice> (device);
+      if (sixDevice)
+        {
+          sixDevice->AddContext (contextId, context, true, validity);
+        }
+    }
+}
+
+void SixLowPanHelper::RenewContext (NetDeviceContainer c, uint8_t contextId, Time validity)
+{
+  NS_LOG_FUNCTION (this << +contextId << validity);
+
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      Ptr<NetDevice> device = c.Get (i);
+      Ptr<SixLowPanNetDevice> sixDevice = DynamicCast<SixLowPanNetDevice> (device);
+      if (sixDevice)
+        {
+          sixDevice->RenewContext (contextId, validity);
+        }
+    }
+}
+
+void SixLowPanHelper::InvalidateContext (NetDeviceContainer c, uint8_t contextId)
+{
+  NS_LOG_FUNCTION (this << +contextId);
+
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      Ptr<NetDevice> device = c.Get (i);
+      Ptr<SixLowPanNetDevice> sixDevice = DynamicCast<SixLowPanNetDevice> (device);
+      if (sixDevice)
+        {
+          sixDevice->InvalidateContext (contextId);
+        }
+    }
+}
+
+void SixLowPanHelper::RemoveContext (NetDeviceContainer c, uint8_t contextId)
+{
+  NS_LOG_FUNCTION (this << +contextId);
+
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      Ptr<NetDevice> device = c.Get (i);
+      Ptr<SixLowPanNetDevice> sixDevice = DynamicCast<SixLowPanNetDevice> (device);
+      if (sixDevice)
+        {
+          sixDevice->RemoveContext (contextId);
+        }
+    }
+}
+
 int64_t SixLowPanHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 {
   int64_t currentStream = stream;

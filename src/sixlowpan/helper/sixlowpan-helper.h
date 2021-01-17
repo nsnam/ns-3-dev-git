@@ -80,16 +80,64 @@ public:
   NetDeviceContainer Install (NetDeviceContainer c);
 
   /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model. Return the number of streams (possibly zero) that
-  * have been assigned. The Install() method should have previously been
-  * called by the user.
-  *
-  * \param [in] c NetDeviceContainer of the set of net devices for which the
-  *          SixLowPanNetDevice should be modified to use a fixed stream.
-  * \param [in] stream First stream index to use.
-  * \return The number of stream indices assigned by this helper.
-  */
+   * \brief Adds a compression Context to a set of NetDevices.
+   *
+   * This function installs one Compression Context on a set of NetDevices.
+   * The context is used only in IPHC compression and decompression.
+   *
+   * \param [in] c The NetDevice container.
+   * \param [in] id The context id (must be less than 16).
+   * \param [in] prefix The context prefix.
+   * \param [in] validity the context validity time (relative to the actual time).
+   */
+  void AddContext (NetDeviceContainer c, uint8_t contextId, Ipv6Prefix context, Time validity);
+
+  /**
+   * \brief Renew a compression Context in a set of NetDevices.
+   *
+   * The context will have its lifetime extended and its validity for compression re-enabled.
+   *
+   * \param [in] c The NetDevice container.
+   * \param [in] id The context id (must be less than 16).
+   * \param [in] validity the context validity time (relative to the actual time).
+   */
+  void RenewContext (NetDeviceContainer c, uint8_t contextId, Time validity);
+
+  /**
+   * \brief Invalidates a compression Context in a set of NetDevices.
+   *
+   * An invalid context is used only in IPHC decompression and not
+   * in IPHC compression.
+   *
+   * This is necessary to avoid that a context reaching its validity lifetime
+   * can not be used for decompression whie packets are traveling the network.
+   *
+   * \param [in] c The NetDevice container.
+   * \param [in] id The context id (must be less than 16).
+   */
+  void InvalidateContext (NetDeviceContainer c, uint8_t contextId);
+
+  /**
+   * \brief Remove a compression Context in a set of NetDevices.
+   *
+   * The context is removed immediately from the contexts in the devices.
+   *
+   * \param [in] c The NetDevice container.
+   * \param [in] id The context id (must be less than 16).
+   */
+  void RemoveContext (NetDeviceContainer c, uint8_t contextId);
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned. The Install() method should have previously been
+   * called by the user.
+   *
+   * \param [in] c NetDeviceContainer of the set of net devices for which the
+   *          SixLowPanNetDevice should be modified to use a fixed stream.
+   * \param [in] stream First stream index to use.
+   * \return The number of stream indices assigned by this helper.
+   */
   int64_t AssignStreams (NetDeviceContainer c, int64_t stream);
 
 private:

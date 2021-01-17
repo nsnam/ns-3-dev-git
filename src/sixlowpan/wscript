@@ -11,8 +11,10 @@ def build(bld):
 
     module_test = bld.create_ns3_module_test_library('sixlowpan')
     module_test.source = [
+        'test/mock-net-device.cc',
         'test/sixlowpan-hc1-test.cc',
         'test/sixlowpan-iphc-test.cc',
+        'test/sixlowpan-iphc-stateful-test.cc',
         'test/sixlowpan-fragmentation-test.cc',
         ]
 
