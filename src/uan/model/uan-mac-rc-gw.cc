@@ -358,7 +358,7 @@ UanMacRcGw::StartCycle (void)
     {
       winSize = Seconds ((optA * std::exp (1.0) + 0.5) * 2.0 * 8.0 * m_rtsSize / (thAlpha * m_totalRate)) + (2 * m_maxDelta); 
     }
-  Time effWinSize = winSize - Seconds (m_rtsSize * 8 / ctlRate)  - (2 * m_maxDelta);
+  Time effWinSize = winSize - Seconds (m_rtsSize * 8.0 / ctlRate)  - (2 * m_maxDelta);
 
   // Before fast CTS/ACK(below)
   Time ctsTxTimeG = Seconds (m_ctsSizeG * 8.0 / dataRate);
