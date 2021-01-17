@@ -29,6 +29,7 @@ namespace ns3 {
 
 class Node;
 class AttributeValue;
+class Time;
 
 /**
  * \ingroup sixlowpan
