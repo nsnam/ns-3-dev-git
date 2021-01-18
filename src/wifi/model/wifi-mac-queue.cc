@@ -154,7 +154,16 @@ WifiMacQueue::Insert (ConstIterator pos, Ptr<WifiMacQueueItem> item)
   if (m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
-      DoRemove (begin ());
+      if (pos == begin ())
+        {
+          // Avoid invalidating pos
+          DoRemove (begin ());
+          pos = begin ();
+        }
+      else
+        {
+          DoRemove (begin ());
+        }
     }
 
   return DoEnqueue (pos, item);
