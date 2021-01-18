@@ -1,8 +1,8 @@
 // nsnam.org links, independent of version
-var ns3_site = "http://www.nsnam.org/";
+var ns3_site = "https://www.nsnam.org/";
 var ns3_home = ns3_site + "";
 var ns3_wiki = ns3_site + "wiki";
-var ns3_bugs = ns3_site + "bugzilla";
+var ns3_bugs = "https://gitlab.com/nsnam/ns-3-dev/-/issues";
 
 // Links that depend on version:
 // Defined in ns3_version.js:
