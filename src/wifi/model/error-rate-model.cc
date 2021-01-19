@@ -19,7 +19,7 @@
  */
 
 #include "error-rate-model.h"
-#include "dsss-error-rate-model.h"
+#include "non-ht/dsss-error-rate-model.h"
 #include "wifi-tx-vector.h"
 
 namespace ns3 {

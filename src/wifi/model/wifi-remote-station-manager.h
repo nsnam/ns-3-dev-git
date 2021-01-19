@@ -30,9 +30,9 @@
 #include "wifi-utils.h"
 #include "qos-utils.h"
 #include "wifi-remote-station-info.h"
-#include "ht-capabilities.h"
-#include "vht-capabilities.h"
-#include "he-capabilities.h"
+#include "ns3/ht-capabilities.h"
+#include "ns3/vht-capabilities.h"
+#include "ns3/he-capabilities.h"
 
 namespace ns3 {
 

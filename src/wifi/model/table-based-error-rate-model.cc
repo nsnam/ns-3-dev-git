@@ -28,7 +28,7 @@
 #include "table-based-error-rate-model.h"
 #include "wifi-utils.h"
 #include "wifi-tx-vector.h"
-#include "dsss-error-rate-model.h"
+#include "ns3/dsss-error-rate-model.h"
 #include "yans-error-rate-model.h"
 
 static const double SNR_PRECISION = 2;

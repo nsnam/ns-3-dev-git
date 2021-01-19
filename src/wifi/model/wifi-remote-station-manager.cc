@@ -29,10 +29,10 @@
 #include "wifi-mac-header.h"
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
-#include "ht-configuration.h"
-#include "ht-phy.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/ht-phy.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 #include "wifi-net-device.h"
 
 namespace ns3 {

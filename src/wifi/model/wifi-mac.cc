@@ -24,9 +24,9 @@
 #include "txop.h"
 #include "ssid.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 
 namespace ns3 {
 

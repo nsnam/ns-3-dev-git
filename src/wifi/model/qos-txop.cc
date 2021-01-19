@@ -38,7 +38,7 @@
 #include "ctrl-headers.h"
 #include "wifi-phy.h"
 #include "wifi-psdu.h"
-#include "ht-frame-exchange-manager.h"
+#include "ns3/ht-frame-exchange-manager.h"
 #include "wifi-tx-parameters.h"
 
 #undef NS_LOG_APPEND_CONTEXT

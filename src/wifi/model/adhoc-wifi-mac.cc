@@ -23,9 +23,9 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "adhoc-wifi-mac.h"
-#include "ht-capabilities.h"
-#include "vht-capabilities.h"
-#include "he-capabilities.h"
+#include "ns3/ht-capabilities.h"
+#include "ns3/vht-capabilities.h"
+#include "ns3/he-capabilities.h"
 
 namespace ns3 {
 

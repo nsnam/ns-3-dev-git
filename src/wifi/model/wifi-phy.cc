@@ -35,15 +35,15 @@
 #include "wifi-radio-energy-model.h"
 #include "error-rate-model.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/he-configuration.h"
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
 #include "wifi-ppdu.h"
 #include "ap-wifi-mac.h"
-#include "dsss-phy.h"
-#include "erp-ofdm-phy.h"
-#include "he-phy.h" //includes OFDM, HT, and VHT
+#include "ns3/dsss-phy.h"
+#include "ns3/erp-ofdm-phy.h"
+#include "ns3/he-phy.h" //includes OFDM, HT, and VHT
 
 namespace ns3 {
 

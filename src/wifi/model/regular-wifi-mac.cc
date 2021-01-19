@@ -30,12 +30,12 @@
 #include "mgt-headers.h"
 #include "amsdu-subframe-header.h"
 #include "wifi-net-device.h"
-#include "ht-configuration.h"
-#include "vht-configuration.h"
-#include "he-configuration.h"
+#include "ns3/ht-configuration.h"
+#include "ns3/vht-configuration.h"
+#include "ns3/he-configuration.h"
 #include <algorithm>
 #include <cmath>
-#include "he-frame-exchange-manager.h"
+#include "ns3/he-frame-exchange-manager.h"
 #include "channel-access-manager.h"
 
 namespace ns3 {

@@ -23,7 +23,7 @@
 #include "ns3/log.h"
 #include "wifi-mode.h"
 #include "wifi-tx-vector.h"
-#include "he-ru.h"
+#include "ns3/he-ru.h"
 
 namespace ns3 {
 

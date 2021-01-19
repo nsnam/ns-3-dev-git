@@ -24,11 +24,11 @@
 #include "msdu-aggregator.h"
 #include "qos-txop.h"
 #include "wifi-remote-station-manager.h"
-#include "ht-capabilities.h"
+#include "ns3/ht-capabilities.h"
 #include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "wifi-mac-trailer.h"
-#include "ht-frame-exchange-manager.h"
+#include "ns3/ht-frame-exchange-manager.h"
 #include "wifi-tx-parameters.h"
 #include <algorithm>
 
