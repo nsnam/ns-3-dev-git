@@ -32,6 +32,7 @@
  * - ns3::WifiPreamble
  * - ns3::WifiModulationClass
  * - ns3::WifiPpduField
+ * - ns3::WifiPpduType
  */
 
 namespace ns3 {
@@ -196,6 +197,40 @@ inline std::ostream& operator<< (std::ostream &os, const WifiPpduField &field)
         return (os << "data");
       default:
         NS_FATAL_ERROR ("Unknown field");
+        return (os << "unknown");
+    }
+}
+
+/**
+ * \ingroup wifi
+ * The type of PPDU (SU, DL MU, or UL MU)
+ */
+enum WifiPpduType
+{
+  WIFI_PPDU_TYPE_SU = 0,
+  WIFI_PPDU_TYPE_DL_MU,
+  WIFI_PPDU_TYPE_UL_MU
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param type the PPDU type
+ * \returns a reference to the stream
+ */
+inline std::ostream& operator<< (std::ostream &os, const WifiPpduType &type)
+{
+  switch (type)
+    {
+      case WIFI_PPDU_TYPE_SU:
+        return (os << "SU");
+      case WIFI_PPDU_TYPE_DL_MU:
+        return (os << "DL MU");
+      case WIFI_PPDU_TYPE_UL_MU:
+        return (os << "UL MU");
+      default:
+        NS_FATAL_ERROR ("Unknown type");
         return (os << "unknown");
     }
 }
