@@ -34,6 +34,7 @@
 #include "wifi-utils.h"
 #include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 #include "wifi-psdu.h"
+#include "he-phy.h"
 
 namespace ns3 {
 
@@ -363,7 +364,8 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
       && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION)
     {
-      if (m_currentHeTbPpduUid == ppdu->GetUid () && m_currentEvent != 0)
+      if (DynamicCast<const HePhy> (GetPhyEntity (WIFI_MOD_CLASS_HE))->GetCurrentHeTbPpduUid () == ppdu->GetUid ()
+          && m_currentEvent != 0)
         {
           //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayloadStart)
           bool ofdmaStarted = !m_beginOfdmaPayloadRxEvents.empty ();

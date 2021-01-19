@@ -148,38 +148,6 @@ public:
   void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW);
 
   /**
-   * Start receiving the PHY header of a PPDU (i.e. after the end of receiving the preamble).
-   *
-   * \param event the event holding incoming PPDU's information
-   */
-  void StartReceiveHeader (Ptr<Event> event);
-
-  /**
-   * Continue receiving the PHY header of a PPDU (i.e. after the end of receiving the non-HT header part).
-   *
-   * \param event the event holding incoming PPDU's information
-   */
-  void ContinueReceiveHeader (Ptr<Event> event);
-
-  /**
-   * The last common PHY header of the current PPDU has been received.
-   *
-   * The last common PHY header is:
-   *  - the non-HT header if the PPDU is non-HT
-   *  - the HT or SIG-A header otherwise
-   *
-   * \param event the event holding incoming PPDU's information
-   */
-  void EndReceiveCommonHeader (Ptr<Event> event);
-
-  /**
-   * The SIG-B of the current MU PPDU has been received.
-   *
-   * \param event the event holding incoming PPDU's information
-   */
-  void EndReceiveSigB (Ptr<Event> event);
-
-  /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived).
    *
    * \param event the event holding incoming PPDU's information
@@ -1249,7 +1217,7 @@ protected:
    */
   Ptr<PhyEntity> GetPhyEntity (WifiModulationClass modulation);
 
-  InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
+  InterferenceHelper m_interference;   //!< the class handling interference computations
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
 
@@ -1269,8 +1237,6 @@ protected:
 
   uint64_t m_previouslyRxPpduUid;      //!< UID of the previously received PPDU (reused by HE TB PPDUs), reset to UINT64_MAX upon transmission
   uint64_t m_previouslyTxPpduUid;      //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
-
-  uint64_t m_currentHeTbPpduUid;       //!< UID of the HE TB PPDU being received
 
   static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
 
@@ -1461,17 +1427,6 @@ private:
    * \param measurementChannelWidth the measurement width (in MHz) to consider for the PPDU
    */
   void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth);
-
-  /**
-   * Schedule StartReceivePayload if the mode in the SIG and the number of
-   * spatial streams are supported.
-   *
-   * \param event the event holding the incoming PPDU's information
-   * \param timeToPayloadStart the time left till payload start
-   * \return \c true if the reception of the payload has been scheduled,
-   *         \c false otherwise
-   */
-  bool ScheduleStartReceivePayload (Ptr<Event> event, Time timeToPayloadStart);
 
   /**
    * The trace source fired when a packet begins the transmission process on
