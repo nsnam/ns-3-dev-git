@@ -22,47 +22,15 @@
 #ifndef WIFI_MODE_H
 #define WIFI_MODE_H
 
-#include <vector>
+#include "wifi-phy-common.h"
 #include "ns3/attribute-helper.h"
+#include <vector>
 
 namespace ns3 {
 
 #define SU_STA_ID 65535
 
 class WifiTxVector;
-
-/**
- * This enumeration defines the modulation classes per
- * (Table 9-4 "Modulation classes"; IEEE 802.11-2012).
- */
-enum WifiModulationClass
-{
-  /** Modulation class unknown or unspecified. A WifiMode with this
-  WifiModulationClass has not been properly initialised. */
-  WIFI_MOD_CLASS_UNKNOWN = 0,
-  /** Infrared (IR) (Clause 16) */
-  WIFI_MOD_CLASS_IR,
-  /** Frequency-hopping spread spectrum (FHSS) PHY (Clause 14) */
-  WIFI_MOD_CLASS_FHSS,
-  /** DSSS PHY (Clause 15) */
-  WIFI_MOD_CLASS_DSSS,
-  /** HR/DSSS PHY (Clause 18) */
-  WIFI_MOD_CLASS_HR_DSSS,
-  /** ERP-PBCC PHY (19.6) */
-  WIFI_MOD_CLASS_ERP_PBCC,
-  /** DSSS-OFDM PHY (19.7) */
-  WIFI_MOD_CLASS_DSSS_OFDM,
-  /** ERP-OFDM PHY (19.5) */
-  WIFI_MOD_CLASS_ERP_OFDM,
-  /** OFDM PHY (Clause 17) */
-  WIFI_MOD_CLASS_OFDM,
-  /** HT PHY (Clause 20) */
-  WIFI_MOD_CLASS_HT,
-  /** VHT PHY (Clause 22) */
-  WIFI_MOD_CLASS_VHT,
-  /** HE PHY (Clause 26) */
-  WIFI_MOD_CLASS_HE
-};
 
 /**
  * This enumeration defines the various convolutional coding rates

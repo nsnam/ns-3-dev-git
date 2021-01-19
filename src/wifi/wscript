@@ -154,7 +154,7 @@ def build(bld):
         'model/wifi-net-device.h',
         'model/wifi-mode.h',
         'model/ssid.h',
-        'model/wifi-preamble.h',
+        'model/wifi-phy-common.h',
         'model/wifi-phy-band.h',
         'model/wifi-standards.h',
         'model/yans-wifi-phy.h',

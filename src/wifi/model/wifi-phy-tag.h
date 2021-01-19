@@ -22,7 +22,7 @@
 #define WIFI_PHY_TAG_H
 
 #include "ns3/tag.h"
-#include "wifi-preamble.h"
+#include "wifi-phy-common.h"
 #include "wifi-mode.h"
 
 namespace ns3 {

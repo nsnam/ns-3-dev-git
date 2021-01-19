@@ -24,7 +24,7 @@
 
 #include <list>
 #include "wifi-mode.h"
-#include "wifi-preamble.h"
+#include "wifi-phy-common.h"
 #include "he-ru.h"
 
 namespace ns3 {

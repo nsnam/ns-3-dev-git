@@ -21,7 +21,7 @@
 #include <vector>
 #include "ns3/object.h"
 #include "ns3/wifi-mode.h"
-#include "ns3/wifi-preamble.h"
+#include "ns3/wifi-phy-common.h"
 
 namespace ns3 {
 

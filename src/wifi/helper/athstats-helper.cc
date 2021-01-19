@@ -22,7 +22,7 @@
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/wifi-mode.h"
-#include "ns3/wifi-preamble.h"
+#include "ns3/wifi-phy-common.h"
 #include "ns3/wifi-phy-state.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"

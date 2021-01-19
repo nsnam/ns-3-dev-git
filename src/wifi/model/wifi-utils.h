@@ -22,7 +22,7 @@
 #define WIFI_UTILS_H
 
 #include "block-ack-type.h"
-#include "wifi-preamble.h"
+#include "wifi-phy-common.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
