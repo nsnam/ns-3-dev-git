@@ -513,6 +513,8 @@ def register_types(module):
     module.add_class('TriangularRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## txop.h (module 'wifi'): ns3::Txop [class]
     module.add_class('Txop', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
+    ## txop.h (module 'wifi'): ns3::Txop::ChannelAccessStatus [enumeration]
+    module.add_enum('ChannelAccessStatus', ['NOT_REQUESTED', 'REQUESTED', 'GRANTED'], outer_class=root_module['ns3::Txop'], import_from_module='ns.wifi')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'ns3::Txop::TxOk')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', 'ns3::Txop::TxOk*')
     typehandlers.add_type_alias('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', 'ns3::Txop::TxOk&')
@@ -551,6 +553,17 @@ def register_types(module):
     typehandlers.add_type_alias('void ( * ) ( ns3::WifiMacHeader const & )&', 'ns3::WifiMacHeader::TracedCallback&')
     ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem [class]
     module.add_class('WifiMacQueueItem', import_from_module='ns.wifi', parent=root_module['ns3::SimpleRefCount< ns3::WifiMacQueueItem, ns3::empty, ns3::DefaultDeleter<ns3::WifiMacQueueItem> >'])
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::QueueIteratorPair [struct]
+    module.add_class('QueueIteratorPair', import_from_module='ns.wifi', outer_class=root_module['ns3::WifiMacQueueItem'])
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'ns3::WifiMacQueueItem::DeaggregatedMsdus')
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >*', 'ns3::WifiMacQueueItem::DeaggregatedMsdus*')
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >&', 'ns3::WifiMacQueueItem::DeaggregatedMsdus&')
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator', 'ns3::WifiMacQueueItem::DeaggregatedMsdusCI')
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator*', 'ns3::WifiMacQueueItem::DeaggregatedMsdusCI*')
+    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator&', 'ns3::WifiMacQueueItem::DeaggregatedMsdusCI&')
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::WifiMacQueueItem > > const_iterator', 'ns3::WifiMacQueueItem::ConstIterator')
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::WifiMacQueueItem > > const_iterator*', 'ns3::WifiMacQueueItem::ConstIterator*')
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::WifiMacQueueItem > > const_iterator&', 'ns3::WifiMacQueueItem::ConstIterator&')
     ## wifi-phy.h (module 'wifi'): ns3::WifiPhy [class]
     module.add_class('WifiPhy', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     typehandlers.add_type_alias('std::pair< unsigned char, ns3::WifiPhyBand >', 'ns3::WifiPhy::ChannelNumberBandPair')
@@ -805,12 +818,6 @@ def register_types(module):
     typehandlers.add_type_alias('std::map< ns3::AcIndex, ns3::Ptr< ns3::QosTxop > >&', 'ns3::MpduAggregator::EdcaQueues&')
     ## msdu-aggregator.h (module 'wifi'): ns3::MsduAggregator [class]
     module.add_class('MsduAggregator', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'ns3::MsduAggregator::DeaggregatedMsdus')
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >*', 'ns3::MsduAggregator::DeaggregatedMsdus*')
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >&', 'ns3::MsduAggregator::DeaggregatedMsdus&')
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator', 'ns3::MsduAggregator::DeaggregatedMsdusCI')
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator*', 'ns3::MsduAggregator::DeaggregatedMsdusCI*')
-    typehandlers.add_type_alias('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > > const_iterator&', 'ns3::MsduAggregator::DeaggregatedMsdusCI&')
     typehandlers.add_type_alias('std::map< ns3::AcIndex, ns3::Ptr< ns3::QosTxop > >', 'ns3::MsduAggregator::EdcaQueues')
     typehandlers.add_type_alias('std::map< ns3::AcIndex, ns3::Ptr< ns3::QosTxop > >*', 'ns3::MsduAggregator::EdcaQueues*')
     typehandlers.add_type_alias('std::map< ns3::AcIndex, ns3::Ptr< ns3::QosTxop > >&', 'ns3::MsduAggregator::EdcaQueues&')
@@ -1069,6 +1076,8 @@ def register_types(module):
     module.add_container('std::map< unsigned short, ns3::HeMuUserInfo >', ('short unsigned int', 'ns3::HeMuUserInfo'), container_type='map')
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type='vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type='vector')
+    module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
+    module.add_container('std::list< ns3::WifiMacQueueItem::QueueIteratorPair >', 'ns3::WifiMacQueueItem::QueueIteratorPair', container_type='list')
     module.add_container('ns3::WifiConstPsduMap', ('short unsigned int', 'ns3::Ptr< ns3::WifiPsdu const >'), container_type='map')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('std::vector< unsigned short >', 'short unsigned int', container_type='vector')
@@ -1081,8 +1090,7 @@ def register_types(module):
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
     module.add_container('std::map< ns3::AcIndex, ns3::Ptr< ns3::QosTxop > >', ('ns3::AcIndex', 'ns3::Ptr< ns3::QosTxop >'), container_type='map')
     module.add_container('ns3::MpduAggregator::EdcaQueues', ('ns3::AcIndex', 'ns3::Ptr< ns3::QosTxop >'), container_type='map')
-    module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
-    module.add_container('ns3::MsduAggregator::DeaggregatedMsdus', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
+    module.add_container('ns3::WifiMacQueueItem::DeaggregatedMsdus', 'std::pair< ns3::Ptr< ns3::Packet const >, ns3::AmsduSubframeHeader >', container_type='list')
     module.add_container('ns3::MsduAggregator::EdcaQueues', ('ns3::AcIndex', 'ns3::Ptr< ns3::QosTxop >'), container_type='map')
     module.add_container('std::map< ns3::Mac48Address, bool >', ('ns3::Mac48Address', 'bool'), container_type='map')
     module.add_container('std::list< ns3::Ptr< ns3::WifiMacQueueItem > >', 'ns3::Ptr< ns3::WifiMacQueueItem >', container_type='list')
@@ -1438,6 +1446,7 @@ def register_methods(root_module):
     register_Ns3WifiMac_methods(root_module, root_module['ns3::WifiMac'])
     register_Ns3WifiMacHeader_methods(root_module, root_module['ns3::WifiMacHeader'])
     register_Ns3WifiMacQueueItem_methods(root_module, root_module['ns3::WifiMacQueueItem'])
+    register_Ns3WifiMacQueueItemQueueIteratorPair_methods(root_module, root_module['ns3::WifiMacQueueItem::QueueIteratorPair'])
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
     register_Ns3WifiPhyStateHelper_methods(root_module, root_module['ns3::WifiPhyStateHelper'])
     register_Ns3WifiPpdu_methods(root_module, root_module['ns3::WifiPpdu'])
@@ -3623,6 +3632,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Prefix prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Prefix', 'prefix')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
@@ -5944,16 +5958,11 @@ def register_Ns3WifiMacHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiMacHelper const &', 'arg0')])
     ## wifi-mac-helper.h (module 'wifi'): ns3::WifiMacHelper::WifiMacHelper() [constructor]
     cls.add_constructor([])
-    ## wifi-mac-helper.h (module 'wifi'): ns3::Ptr<ns3::WifiMac> ns3::WifiMacHelper::Create(ns3::Ptr<ns3::NetDevice> device) const [member function]
+    ## wifi-mac-helper.h (module 'wifi'): ns3::Ptr<ns3::WifiMac> ns3::WifiMacHelper::Create(ns3::Ptr<ns3::NetDevice> device, ns3::WifiStandard standard) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::WifiMac >', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::WifiStandard', 'standard')], 
                    is_const=True, is_virtual=True)
-    ## wifi-mac-helper.h (module 'wifi'): void ns3::WifiMacHelper::SetType(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue(), std::string n10="", ns3::AttributeValue const & v10=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetType', 
-                   'void', 
-                   [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n10', default_value='""'), param('ns3::AttributeValue const &', 'v10', default_value='ns3::EmptyAttributeValue()')], 
-                   is_virtual=True)
     return
 
 def register_Ns3WifiMode_methods(root_module, cls):
@@ -6326,6 +6335,11 @@ def register_Ns3WifiTxVector_methods(root_module, cls):
     ## wifi-tx-vector.h (module 'wifi'): bool ns3::WifiTxVector::GetModeInitialized() const [member function]
     cls.add_method('GetModeInitialized', 
                    'bool', 
+                   [], 
+                   is_const=True)
+    ## wifi-tx-vector.h (module 'wifi'): ns3::WifiModulationClass ns3::WifiTxVector::GetModulationClass() const [member function]
+    cls.add_method('GetModulationClass', 
+                   'ns3::WifiModulationClass', 
                    [], 
                    is_const=True)
     ## wifi-tx-vector.h (module 'wifi'): uint8_t ns3::WifiTxVector::GetNTx() const [member function]
@@ -8691,6 +8705,14 @@ def register_Ns3Txop_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## txop.h (module 'wifi'): void ns3::Txop::ResetCw() [member function]
+    cls.add_method('ResetCw', 
+                   'void', 
+                   [])
+    ## txop.h (module 'wifi'): void ns3::Txop::UpdateFailedCw() [member function]
+    cls.add_method('UpdateFailedCw', 
+                   'void', 
+                   [])
     ## txop.h (module 'wifi'): void ns3::Txop::NotifyChannelSwitching() [member function]
     cls.add_method('NotifyChannelSwitching', 
                    'void', 
@@ -8788,6 +8810,16 @@ def register_Ns3Txop_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## txop.h (module 'wifi'): void ns3::Txop::NotifyChannelAccessed() [member function]
+    cls.add_method('NotifyChannelAccessed', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## txop.h (module 'wifi'): void ns3::Txop::NotifyChannelReleased() [member function]
+    cls.add_method('NotifyChannelReleased', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## txop.h (module 'wifi'): bool ns3::Txop::CanStartNextPolling() const [member function]
     cls.add_method('CanStartNextPolling', 
                    'bool', 
@@ -8797,9 +8829,9 @@ def register_Ns3Txop_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')])
-    ## txop.h (module 'wifi'): bool ns3::Txop::IsAccessRequested() const [member function]
-    cls.add_method('IsAccessRequested', 
-                   'bool', 
+    ## txop.h (module 'wifi'): ns3::Txop::ChannelAccessStatus ns3::Txop::GetAccessStatus() const [member function]
+    cls.add_method('GetAccessStatus', 
+                   'ns3::Txop::ChannelAccessStatus', 
                    [], 
                    is_const=True, is_virtual=True)
     ## txop.h (module 'wifi'): void ns3::Txop::StartBackoffNow(uint32_t nSlots) [member function]
@@ -8853,21 +8885,16 @@ def register_Ns3Txop_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
+    ## txop.h (module 'wifi'): void ns3::Txop::RequestAccess() [member function]
+    cls.add_method('RequestAccess', 
+                   'void', 
+                   [], 
+                   visibility='protected')
     ## txop.h (module 'wifi'): uint32_t ns3::Txop::GetCw() const [member function]
     cls.add_method('GetCw', 
                    'uint32_t', 
                    [], 
                    is_const=True, visibility='protected')
-    ## txop.h (module 'wifi'): void ns3::Txop::ResetCw() [member function]
-    cls.add_method('ResetCw', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## txop.h (module 'wifi'): void ns3::Txop::UpdateFailedCw() [member function]
-    cls.add_method('UpdateFailedCw', 
-                   'void', 
-                   [], 
-                   visibility='protected')
     ## txop.h (module 'wifi'): uint32_t ns3::Txop::GetBackoffSlots() const [member function]
     cls.add_method('GetBackoffSlots', 
                    'uint32_t', 
@@ -9974,9 +10001,19 @@ def register_Ns3WifiMacQueueItem_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
                    is_const=True)
+    ## wifi-mac-queue-item.h (module 'wifi'): uint32_t ns3::WifiMacQueueItem::GetPacketSize() const [member function]
+    cls.add_method('GetPacketSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## wifi-mac-queue-item.h (module 'wifi'): ns3::Ptr<ns3::Packet> ns3::WifiMacQueueItem::GetProtocolDataUnit() const [member function]
     cls.add_method('GetProtocolDataUnit', 
                    'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   is_const=True)
+    ## wifi-mac-queue-item.h (module 'wifi'): std::list<ns3::WifiMacQueueItem::QueueIteratorPair, std::allocator<ns3::WifiMacQueueItem::QueueIteratorPair> > const & ns3::WifiMacQueueItem::GetQueueIteratorPairs() const [member function]
+    cls.add_method('GetQueueIteratorPairs', 
+                   'std::list< ns3::WifiMacQueueItem::QueueIteratorPair > const &', 
                    [], 
                    is_const=True)
     ## wifi-mac-queue-item.h (module 'wifi'): uint32_t ns3::WifiMacQueueItem::GetSize() const [member function]
@@ -9989,19 +10026,40 @@ def register_Ns3WifiMacQueueItem_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## wifi-mac-queue-item.h (module 'wifi'): bool ns3::WifiMacQueueItem::IsFragment() const [member function]
+    cls.add_method('IsFragment', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## wifi-mac-queue-item.h (module 'wifi'): bool ns3::WifiMacQueueItem::IsQueued() const [member function]
+    cls.add_method('IsQueued', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## wifi-mac-queue-item.h (module 'wifi'): void ns3::WifiMacQueueItem::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## wifi-mac-queue-item.h (module 'wifi'): ns3::MsduAggregator::DeaggregatedMsdusCI ns3::WifiMacQueueItem::begin() [member function]
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::DeaggregatedMsdusCI ns3::WifiMacQueueItem::begin() [member function]
     cls.add_method('begin', 
-                   'ns3::MsduAggregator::DeaggregatedMsdusCI', 
+                   'ns3::WifiMacQueueItem::DeaggregatedMsdusCI', 
                    [])
-    ## wifi-mac-queue-item.h (module 'wifi'): ns3::MsduAggregator::DeaggregatedMsdusCI ns3::WifiMacQueueItem::end() [member function]
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::DeaggregatedMsdusCI ns3::WifiMacQueueItem::end() [member function]
     cls.add_method('end', 
-                   'ns3::MsduAggregator::DeaggregatedMsdusCI', 
+                   'ns3::WifiMacQueueItem::DeaggregatedMsdusCI', 
                    [])
+    return
+
+def register_Ns3WifiMacQueueItemQueueIteratorPair_methods(root_module, cls):
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::QueueIteratorPair::QueueIteratorPair() [constructor]
+    cls.add_constructor([])
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::QueueIteratorPair::QueueIteratorPair(ns3::WifiMacQueueItem::QueueIteratorPair const & arg0) [constructor]
+    cls.add_constructor([param('ns3::WifiMacQueueItem::QueueIteratorPair const &', 'arg0')])
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::QueueIteratorPair::it [variable]
+    cls.add_instance_attribute('it', 'ns3::WifiMacQueueItem::ConstIterator', is_const=False)
+    ## wifi-mac-queue-item.h (module 'wifi'): ns3::WifiMacQueueItem::QueueIteratorPair::queue [variable]
+    cls.add_instance_attribute('queue', 'ns3::WifiMacQueue *', is_const=False)
     return
 
 def register_Ns3WifiPhy_methods(root_module, cls):
@@ -11460,6 +11518,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('AddSupportedPhyPreamble', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('bool', 'isShortPreambleSupported')])
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetAckTxVector(ns3::Mac48Address to, ns3::WifiMode dataTxMode) const [member function]
+    cls.add_method('GetAckTxVector', 
+                   'ns3::WifiTxVector', 
+                   [param('ns3::Mac48Address', 'to'), param('ns3::WifiMode', 'dataTxMode')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetBasicMcs(uint8_t i) const [member function]
     cls.add_method('GetBasicMcs', 
                    'ns3::WifiMode', 
@@ -11470,15 +11533,30 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('uint8_t', 'i')], 
                    is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetBlockAckTxVector(ns3::Mac48Address to, ns3::WifiMode dataTxMode) const [member function]
+    cls.add_method('GetBlockAckTxVector', 
+                   'ns3::WifiTxVector', 
+                   [param('ns3::Mac48Address', 'to'), param('ns3::WifiMode', 'dataTxMode')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint16_t ns3::WifiRemoteStationManager::GetChannelWidthSupported(ns3::Mac48Address address) const [member function]
     cls.add_method('GetChannelWidthSupported', 
                    'uint16_t', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetControlAnswerMode(ns3::WifiMode reqMode) const [member function]
+    cls.add_method('GetControlAnswerMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiMode', 'reqMode')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetCtsToSelfTxVector() [member function]
     cls.add_method('GetCtsToSelfTxVector', 
                    'ns3::WifiTxVector', 
                    [])
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetCtsTxVector(ns3::Mac48Address to, ns3::WifiMode rtsTxMode) const [member function]
+    cls.add_method('GetCtsTxVector', 
+                   'ns3::WifiTxVector', 
+                   [param('ns3::Mac48Address', 'to'), param('ns3::WifiMode', 'rtsTxMode')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetDataTxVector(ns3::WifiMacHeader const & header) [member function]
     cls.add_method('GetDataTxVector', 
                    'ns3::WifiTxVector', 
@@ -11498,14 +11576,14 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentOffset(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentOffset(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, uint32_t fragmentNumber) [member function]
     cls.add_method('GetFragmentOffset', 
                    'uint32_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentSize(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('uint32_t', 'fragmentNumber')])
+    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentSize(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, uint32_t fragmentNumber) [member function]
     cls.add_method('GetFragmentSize', 
                    'uint32_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('uint32_t', 'fragmentNumber')])
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentationThreshold() const [member function]
     cls.add_method('GetFragmentationThreshold', 
                    'uint32_t', 
@@ -11701,10 +11779,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::IsLastFragment(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::IsLastFragment(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, uint32_t fragmentNumber) [member function]
     cls.add_method('IsLastFragment', 
                    'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('uint32_t', 'fragmentNumber')])
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::IsWaitAssocTxOk(ns3::Mac48Address address) const [member function]
     cls.add_method('IsWaitAssocTxOk', 
                    'bool', 
@@ -11714,14 +11792,14 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('NeedCtsToSelf', 
                    'bool', 
                    [param('ns3::WifiTxVector', 'txVector')])
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedFragmentation(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedFragmentation(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('NeedFragmentation', 
                    'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRetransmission(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('NeedRetransmission', 
                    'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::NeedRts(ns3::WifiMacHeader const & header, uint32_t size) [member function]
     cls.add_method('NeedRts', 
                    'bool', 
@@ -11750,30 +11828,30 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('ReportAmpduTxStatus', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('uint8_t', 'nSuccessfulMpdus'), param('uint8_t', 'nFailedMpdus'), param('double', 'rxSnr'), param('double', 'dataSnr'), param('ns3::WifiTxVector', 'dataTxVector')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header, uint32_t packetSize) [member function]
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('ReportDataFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('uint32_t', 'packetSize')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ackSnr, ns3::WifiMode ackMode, double dataSnr, ns3::WifiTxVector dataTxVector, uint32_t packetSize) [member function]
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportDataOk(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu, double ackSnr, ns3::WifiMode ackMode, double dataSnr, ns3::WifiTxVector dataTxVector) [member function]
     cls.add_method('ReportDataOk', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr'), param('ns3::WifiTxVector', 'dataTxVector'), param('uint32_t', 'packetSize')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header, uint32_t packetSize) [member function]
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr'), param('ns3::WifiTxVector', 'dataTxVector')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalDataFailed(ns3::Ptr<const ns3::WifiMacQueueItem> mpdu) [member function]
     cls.add_method('ReportFinalDataFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('uint32_t', 'packetSize')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalRtsFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportFinalRtsFailed(ns3::WifiMacHeader const & header) [member function]
     cls.add_method('ReportFinalRtsFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRtsFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+                   [param('ns3::WifiMacHeader const &', 'header')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRtsFailed(ns3::WifiMacHeader const & header) [member function]
     cls.add_method('ReportRtsFailed', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRtsOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+                   [param('ns3::WifiMacHeader const &', 'header')])
+    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRtsOk(ns3::WifiMacHeader const & header, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
     cls.add_method('ReportRtsOk', 
                    'void', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')])
+                   [param('ns3::WifiMacHeader const &', 'header'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::ReportRxOk(ns3::Mac48Address address, double rxSnr, ns3::WifiMode txMode) [member function]
     cls.add_method('ReportRxOk', 
                    'void', 
@@ -12856,43 +12934,76 @@ def register_Ns3Channel_methods(root_module, cls):
     return
 
 def register_Ns3ChannelAccessManager_methods(root_module, cls):
-    ## channel-access-manager.h (module 'wifi'): ns3::ChannelAccessManager::ChannelAccessManager(ns3::ChannelAccessManager const & arg0) [constructor]
-    cls.add_constructor([param('ns3::ChannelAccessManager const &', 'arg0')])
     ## channel-access-manager.h (module 'wifi'): ns3::ChannelAccessManager::ChannelAccessManager() [constructor]
     cls.add_constructor([])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::SetupPhyListener(ns3::Ptr<ns3::WifiPhy> phy) [member function]
+    cls.add_method('SetupPhyListener', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::RemovePhyListener(ns3::Ptr<ns3::WifiPhy> phy) [member function]
+    cls.add_method('RemovePhyListener', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::SetupLow(ns3::Ptr<ns3::MacLow> low) [member function]
+    cls.add_method('SetupLow', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MacLow >', 'low')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::SetupFrameExchangeManager(ns3::Ptr<ns3::FrameExchangeManager> feManager) [member function]
+    cls.add_method('SetupFrameExchangeManager', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::FrameExchangeManager >', 'feManager')])
     ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::Add(ns3::Ptr<ns3::Txop> txop) [member function]
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::Txop >', 'txop')])
-    ## channel-access-manager.h (module 'wifi'): bool ns3::ChannelAccessManager::IsBusy() const [member function]
-    cls.add_method('IsBusy', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     ## channel-access-manager.h (module 'wifi'): bool ns3::ChannelAccessManager::NeedBackoffUponAccess(ns3::Ptr<ns3::Txop> txop) [member function]
     cls.add_method('NeedBackoffUponAccess', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Txop >', 'txop')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyAckTimeoutResetNow() [member function]
-    cls.add_method('NotifyAckTimeoutResetNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::RequestAccess(ns3::Ptr<ns3::Txop> txop, bool isCfPeriod=false) [member function]
+    cls.add_method('RequestAccess', 
                    'void', 
-                   [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyAckTimeoutStartNow(ns3::Time duration) [member function]
-    cls.add_method('NotifyAckTimeoutStartNow', 
+                   [param('ns3::Ptr< ns3::Txop >', 'txop'), param('bool', 'isCfPeriod', default_value='false')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifyRxStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyCtsTimeoutResetNow() [member function]
-    cls.add_method('NotifyCtsTimeoutResetNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxEndOkNow() [member function]
+    cls.add_method('NotifyRxEndOkNow', 
                    'void', 
                    [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyCtsTimeoutStartNow(ns3::Time duration) [member function]
-    cls.add_method('NotifyCtsTimeoutStartNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxEndErrorNow() [member function]
+    cls.add_method('NotifyRxEndErrorNow', 
+                   'void', 
+                   [])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyTxStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifyTxStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
     ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyMaybeCcaBusyStartNow(ns3::Time duration) [member function]
     cls.add_method('NotifyMaybeCcaBusyStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifySwitchingStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStartNow', 
+                   'void', 
+                   [param('ns3::Time', 'duration')])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifySleepNow() [member function]
+    cls.add_method('NotifySleepNow', 
+                   'void', 
+                   [])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyOffNow() [member function]
+    cls.add_method('NotifyOffNow', 
+                   'void', 
+                   [])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyWakeupNow() [member function]
+    cls.add_method('NotifyWakeupNow', 
+                   'void', 
+                   [])
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyOnNow() [member function]
+    cls.add_method('NotifyOnNow', 
+                   'void', 
+                   [])
     ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyNavResetNow(ns3::Time duration) [member function]
     cls.add_method('NotifyNavResetNow', 
                    'void', 
@@ -12901,68 +13012,34 @@ def register_Ns3ChannelAccessManager_methods(root_module, cls):
     cls.add_method('NotifyNavStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyOffNow() [member function]
-    cls.add_method('NotifyOffNow', 
-                   'void', 
-                   [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyOnNow() [member function]
-    cls.add_method('NotifyOnNow', 
-                   'void', 
-                   [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxEndErrorNow() [member function]
-    cls.add_method('NotifyRxEndErrorNow', 
-                   'void', 
-                   [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxEndOkNow() [member function]
-    cls.add_method('NotifyRxEndOkNow', 
-                   'void', 
-                   [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyRxStartNow(ns3::Time duration) [member function]
-    cls.add_method('NotifyRxStartNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyAckTimeoutStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifyAckTimeoutStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifySleepNow() [member function]
-    cls.add_method('NotifySleepNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyAckTimeoutResetNow() [member function]
+    cls.add_method('NotifyAckTimeoutResetNow', 
                    'void', 
                    [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifySwitchingStartNow(ns3::Time duration) [member function]
-    cls.add_method('NotifySwitchingStartNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyCtsTimeoutStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifyCtsTimeoutStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyTxStartNow(ns3::Time duration) [member function]
-    cls.add_method('NotifyTxStartNow', 
-                   'void', 
-                   [param('ns3::Time', 'duration')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyWakeupNow() [member function]
-    cls.add_method('NotifyWakeupNow', 
+    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::NotifyCtsTimeoutResetNow() [member function]
+    cls.add_method('NotifyCtsTimeoutResetNow', 
                    'void', 
                    [])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::RemovePhyListener(ns3::Ptr<ns3::WifiPhy> phy) [member function]
-    cls.add_method('RemovePhyListener', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::RequestAccess(ns3::Ptr<ns3::Txop> txop, bool isCfPeriod=false) [member function]
-    cls.add_method('RequestAccess', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Txop >', 'txop'), param('bool', 'isCfPeriod', default_value='false')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::SetupLow(ns3::Ptr<ns3::MacLow> low) [member function]
-    cls.add_method('SetupLow', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MacLow >', 'low')])
-    ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::SetupPhyListener(ns3::Ptr<ns3::WifiPhy> phy) [member function]
-    cls.add_method('SetupPhyListener', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')])
+    ## channel-access-manager.h (module 'wifi'): bool ns3::ChannelAccessManager::IsBusy() const [member function]
+    cls.add_method('IsBusy', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## channel-access-manager.h (module 'wifi'): ns3::ChannelAccessManager::ChannelAccessManager(ns3::ChannelAccessManager const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ChannelAccessManager const &', 'arg0')])
     ## channel-access-manager.h (module 'wifi'): void ns3::ChannelAccessManager::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
-    ## channel-access-manager.h (module 'wifi'): ns3::Time ns3::ChannelAccessManager::GetEifsNoDifs() const [member function]
-    cls.add_method('GetEifsNoDifs', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True, visibility='private')
     ## channel-access-manager.h (module 'wifi'): ns3::Time ns3::ChannelAccessManager::GetSifs() const [member function]
     cls.add_method('GetSifs', 
                    'ns3::Time', 
@@ -12970,6 +13047,11 @@ def register_Ns3ChannelAccessManager_methods(root_module, cls):
                    is_const=True, is_virtual=True, visibility='private')
     ## channel-access-manager.h (module 'wifi'): ns3::Time ns3::ChannelAccessManager::GetSlot() const [member function]
     cls.add_method('GetSlot', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True, visibility='private')
+    ## channel-access-manager.h (module 'wifi'): ns3::Time ns3::ChannelAccessManager::GetEifsNoDifs() const [member function]
+    cls.add_method('GetEifsNoDifs', 
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True, visibility='private')
@@ -16167,9 +16249,9 @@ def register_Ns3MsduAggregator_methods(root_module, cls):
                    'uint8_t', 
                    [param('uint16_t', 'amsduSize')], 
                    is_static=True)
-    ## msdu-aggregator.h (module 'wifi'): static ns3::MsduAggregator::DeaggregatedMsdus ns3::MsduAggregator::Deaggregate(ns3::Ptr<ns3::Packet> aggregatedPacket) [member function]
+    ## msdu-aggregator.h (module 'wifi'): static ns3::WifiMacQueueItem::DeaggregatedMsdus ns3::MsduAggregator::Deaggregate(ns3::Ptr<ns3::Packet> aggregatedPacket) [member function]
     cls.add_method('Deaggregate', 
-                   'ns3::MsduAggregator::DeaggregatedMsdus', 
+                   'ns3::WifiMacQueueItem::DeaggregatedMsdus', 
                    [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket')], 
                    is_static=True)
     ## msdu-aggregator.h (module 'wifi'): uint16_t ns3::MsduAggregator::GetMaxAmsduSize(ns3::Mac48Address recipient, uint8_t tid, ns3::WifiModulationClass modulation) const [member function]
@@ -17234,6 +17316,11 @@ def register_Ns3Queue__Ns3Packet_methods(root_module, cls):
                    'bool', 
                    [param('std::list< ns3::Ptr< ns3::Packet > > const_iterator', 'pos'), param('ns3::Ptr< ns3::Packet >', 'item')], 
                    visibility='protected')
+    ## queue.h (module 'network'): bool ns3::Queue<ns3::Packet>::DoEnqueue(ns3::Queue<ns3::Packet>::ConstIterator pos, ns3::Ptr<ns3::Packet> item, ns3::Queue<ns3::Packet>::Iterator & ret) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('std::list< ns3::Ptr< ns3::Packet > > const_iterator', 'pos'), param('ns3::Ptr< ns3::Packet >', 'item'), param('ns3::Queue< ns3::Packet > Iterator &', 'ret')], 
+                   visibility='protected')
     ## queue.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Queue<ns3::Packet>::DoDequeue(ns3::Queue<ns3::Packet>::ConstIterator pos) [member function]
     cls.add_method('DoDequeue', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -17320,6 +17407,11 @@ def register_Ns3Queue__Ns3QueueDiscItem_methods(root_module, cls):
                    'bool', 
                    [param('std::list< ns3::Ptr< ns3::QueueDiscItem > > const_iterator', 'pos'), param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
                    visibility='protected')
+    ## queue.h (module 'network'): bool ns3::Queue<ns3::QueueDiscItem>::DoEnqueue(ns3::Queue<ns3::QueueDiscItem>::ConstIterator pos, ns3::Ptr<ns3::QueueDiscItem> item, ns3::Queue<ns3::QueueDiscItem>::Iterator & ret) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('std::list< ns3::Ptr< ns3::QueueDiscItem > > const_iterator', 'pos'), param('ns3::Ptr< ns3::QueueDiscItem >', 'item'), param('ns3::Queue< ns3::QueueDiscItem > Iterator &', 'ret')], 
+                   visibility='protected')
     ## queue.h (module 'network'): ns3::Ptr<ns3::QueueDiscItem> ns3::Queue<ns3::QueueDiscItem>::DoDequeue(ns3::Queue<ns3::QueueDiscItem>::ConstIterator pos) [member function]
     cls.add_method('DoDequeue', 
                    'ns3::Ptr< ns3::QueueDiscItem >', 
@@ -17405,6 +17497,11 @@ def register_Ns3Queue__Ns3WifiMacQueueItem_methods(root_module, cls):
     cls.add_method('DoEnqueue', 
                    'bool', 
                    [param('std::list< ns3::Ptr< ns3::WifiMacQueueItem > > const_iterator', 'pos'), param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item')], 
+                   visibility='protected')
+    ## queue.h (module 'network'): bool ns3::Queue<ns3::WifiMacQueueItem>::DoEnqueue(ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator pos, ns3::Ptr<ns3::WifiMacQueueItem> item, ns3::Queue<ns3::WifiMacQueueItem>::Iterator & ret) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('std::list< ns3::Ptr< ns3::WifiMacQueueItem > > const_iterator', 'pos'), param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item'), param('ns3::Queue< ns3::WifiMacQueueItem > Iterator &', 'ret')], 
                    visibility='protected')
     ## queue.h (module 'network'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::Queue<ns3::WifiMacQueueItem>::DoDequeue(ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator pos) [member function]
     cls.add_method('DoDequeue', 
@@ -17696,6 +17793,21 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Mac48Address', 'to')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxOk', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxFailed', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::FrameExchangeManager> ns3::RegularWifiMac::GetFrameExchangeManager() const [member function]
+    cls.add_method('GetFrameExchangeManager', 
+                   'ns3::Ptr< ns3::FrameExchangeManager >', 
+                   [], 
+                   is_const=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCtsToSelfSupported(bool enable) [member function]
     cls.add_method('SetCtsToSelfSupported', 
                    'void', 
@@ -17709,6 +17821,21 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiRemoteStationManager >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::Txop> ns3::RegularWifiMac::GetTxop() const [member function]
+    cls.add_method('GetTxop', 
+                   'ns3::Ptr< ns3::Txop >', 
+                   [], 
+                   is_const=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::QosTxop> ns3::RegularWifiMac::GetQosTxop(ns3::AcIndex ac) const [member function]
+    cls.add_method('GetQosTxop', 
+                   'ns3::Ptr< ns3::QosTxop >', 
+                   [param('ns3::AcIndex', 'ac')], 
+                   is_const=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::QosTxop> ns3::RegularWifiMac::GetQosTxop(uint8_t tid) const [member function]
+    cls.add_method('GetQosTxop', 
+                   'ns3::Ptr< ns3::QosTxop >', 
+                   [param('uint8_t', 'tid')], 
+                   is_const=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::ExtendedCapabilities ns3::RegularWifiMac::GetExtendedCapabilities() const [member function]
     cls.add_method('GetExtendedCapabilities', 
                    'ns3::ExtendedCapabilities', 
@@ -17739,11 +17866,6 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True, visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::Txop> ns3::RegularWifiMac::GetTxop() const [member function]
-    cls.add_method('GetTxop', 
-                   'ns3::Ptr< ns3::Txop >', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::QosTxop> ns3::RegularWifiMac::GetVOQueue() const [member function]
     cls.add_method('GetVOQueue', 
                    'ns3::Ptr< ns3::QosTxop >', 
@@ -17779,16 +17901,6 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'mpdu')], 
                    is_virtual=True, visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxOk', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
-                   is_virtual=True, visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxFailed', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
-                   is_virtual=True, visibility='protected')
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::ForwardUp(ns3::Ptr<const ns3::Packet> packet, ns3::Mac48Address from, ns3::Mac48Address to) [member function]
     cls.add_method('ForwardUp', 
                    'void', 
@@ -17814,6 +17926,11 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, visibility='protected')
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetupFrameExchangeManager() [member function]
+    cls.add_method('SetupFrameExchangeManager', 
+                   'void', 
+                   [], 
+                   visibility='protected')
     ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetHtSupported() const [member function]
     cls.add_method('GetHtSupported', 
                    'bool', 
