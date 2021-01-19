@@ -2385,7 +2385,8 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
   NS_ASSERT (m_endPhyRxEvent.IsExpired ());
 
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (event->GetPpdu ());
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculateNonHtPhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth));
+  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
+                                                                               WIFI_PPDU_FIELD_NON_HT_HEADER);
 
   NS_LOG_DEBUG ("L-SIG/RL-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
   if (m_random->GetValue () > snrPer.per) //non-HT PHY header reception succeeded
@@ -2645,8 +2646,10 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
   bool commonHeaderReceived = true; //If we are here, this means non-HT PHY header was already successfully received
   if (modulation >= WIFI_MOD_CLASS_HT)
     {
-      InterferenceHelper::SnrPer snrPer = m_interference.CalculateHtPhyHeaderSnrPer (event, measurementChannelWidth, measurementBand);
-      NS_LOG_DEBUG ("SIG-A/HT-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+      WifiPpduField header = (modulation == WIFI_MOD_CLASS_HT) ? WIFI_PPDU_FIELD_HT_SIG : WIFI_PPDU_FIELD_SIG_A;
+      InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, measurementBand,
+                                                                                   header);
+      NS_LOG_DEBUG (header << ": SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
       commonHeaderReceived = (m_random->GetValue () > snrPer.per);
     }
   WifiTxVector txVector = event->GetTxVector ();
@@ -2740,7 +2743,8 @@ WifiPhy::EndReceiveSigB (Ptr<Event> event)
 
   //calculate PER of SIG-B on measurement channel
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (ppdu);
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculateHtPhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth));
+  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
+                                                                               WIFI_PPDU_FIELD_SIG_B);
   NS_LOG_DEBUG ("SIG-B: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
 
   bool success = false;
