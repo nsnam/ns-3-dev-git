@@ -24,6 +24,9 @@
 #include "wifi-psdu.h"
 #include "wifi-phy.h"
 #include "wifi-utils.h"
+#include "dsss-phy.h"
+#include "erp-ofdm-phy.h"
+#include "he-phy.h" //includes OFDM, HT, and VHT
 
 namespace ns3 {
 
@@ -180,159 +183,28 @@ WifiPpdu::GetTxVector (void) const
       case WIFI_MOD_CLASS_DSSS:
       case WIFI_MOD_CLASS_HR_DSSS:
         {
-          WifiMode mode;
-          switch (m_dsssSig.GetRate ())
-            {
-              case 1000000:
-                mode = WifiPhy::GetDsssRate1Mbps ();
-                break;
-              case 2000000:
-                mode = WifiPhy::GetDsssRate2Mbps ();
-                break;
-              case 5500000:
-                mode = WifiPhy::GetDsssRate5_5Mbps ();
-                break;
-              case 11000000:
-                mode = WifiPhy::GetDsssRate11Mbps ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid rate encoded in DSSS SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          txVector.SetMode (DsssPhy::GetDsssRate (m_dsssSig.GetRate ()));
           txVector.SetChannelWidth (22);
           break;
         }
       case WIFI_MOD_CLASS_OFDM:
         {
-          WifiMode mode;
-          switch (m_lSig.GetRate (m_channelWidth))
-            {
-              case 1500000:
-                mode = WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
-                break;
-              case 2250000:
-                mode = WifiPhy::GetOfdmRate2_25MbpsBW5MHz ();
-                break;
-              case 3000000:
-                mode = (m_channelWidth == 5) ? WifiPhy::GetOfdmRate3MbpsBW5MHz () : WifiPhy::GetOfdmRate3MbpsBW10MHz ();
-                break;
-              case 4500000:
-                mode = (m_channelWidth == 5) ? WifiPhy::GetOfdmRate4_5MbpsBW5MHz () : WifiPhy::GetOfdmRate4_5MbpsBW10MHz ();
-                break;
-              case 6000000:
-                if (m_channelWidth == 5)
-                  {
-                    mode = WifiPhy::GetOfdmRate6MbpsBW5MHz ();
-                  }
-                else if (m_channelWidth == 10)
-                  {
-                    mode = WifiPhy::GetOfdmRate6MbpsBW10MHz ();
-                  }
-                else
-                  {
-                    mode = WifiPhy::GetOfdmRate6Mbps ();
-                  }
-                break;
-              case 9000000:
-                if (m_channelWidth == 5)
-                  {
-                    mode = WifiPhy::GetOfdmRate9MbpsBW5MHz ();
-                  }
-                else if (m_channelWidth == 10)
-                  {
-                    mode = WifiPhy::GetOfdmRate9MbpsBW10MHz ();
-                  }
-                else
-                  {
-                    mode = WifiPhy::GetOfdmRate9Mbps ();
-                  }
-                break;
-              case 12000000:
-                if (m_channelWidth == 5)
-                  {
-                    mode = WifiPhy::GetOfdmRate12MbpsBW5MHz ();
-                  }
-                else if (m_channelWidth == 10)
-                  {
-                    mode = WifiPhy::GetOfdmRate12MbpsBW10MHz ();
-                  }
-                else
-                  {
-                    mode = WifiPhy::GetOfdmRate12Mbps ();
-                  }
-                break;
-              case 13500000:
-                mode = WifiPhy::GetOfdmRate13_5MbpsBW5MHz ();
-                break;
-              case 18000000:
-                mode = (m_channelWidth == 10) ? WifiPhy::GetOfdmRate18MbpsBW10MHz () : WifiPhy::GetOfdmRate18Mbps ();
-                break;
-              case 24000000:
-                mode = (m_channelWidth == 10) ? WifiPhy::GetOfdmRate24MbpsBW10MHz () : WifiPhy::GetOfdmRate24Mbps ();
-                break;
-              case 27000000:
-                mode = WifiPhy::GetOfdmRate27MbpsBW10MHz ();
-                break;
-              case 36000000:
-                mode = WifiPhy::GetOfdmRate36Mbps ();
-                break;
-              case 48000000:
-                mode = WifiPhy::GetOfdmRate48Mbps ();
-                break;
-              case 54000000:
-                mode = WifiPhy::GetOfdmRate54Mbps ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid rate encoded in L-SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          uint16_t channelWidth = m_channelWidth < 20 ? m_channelWidth : 20;
+          txVector.SetMode (OfdmPhy::GetOfdmRate (m_lSig.GetRate (m_channelWidth), channelWidth));
           //OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
-          txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
+          txVector.SetChannelWidth (channelWidth);
           break;
         }
       case WIFI_MOD_CLASS_ERP_OFDM:
         {
-          WifiMode mode;
-          switch (m_lSig.GetRate ())
-            {
-              case 6000000:
-                mode = WifiPhy::GetErpOfdmRate6Mbps ();
-                break;
-              case 9000000:
-                mode = WifiPhy::GetErpOfdmRate9Mbps ();
-                break;
-              case 12000000:
-                mode = WifiPhy::GetErpOfdmRate12Mbps ();
-                break;
-              case 18000000:
-                mode = WifiPhy::GetErpOfdmRate18Mbps ();
-                break;
-              case 24000000:
-                mode = WifiPhy::GetErpOfdmRate24Mbps ();
-                break;
-              case 36000000:
-                mode = WifiPhy::GetErpOfdmRate36Mbps ();
-                break;
-              case 48000000:
-                mode = WifiPhy::GetErpOfdmRate48Mbps ();
-                break;
-              case 54000000:
-                mode = WifiPhy::GetErpOfdmRate54Mbps ();
-                break;
-              default:
-                NS_ASSERT_MSG (false, "Invalid rate encoded in L-SIG header");
-                break;
-            }
-          txVector.SetMode (mode);
+          txVector.SetMode (ErpOfdmPhy::GetErpOfdmRate (m_lSig.GetRate ()));
           //ERP-OFDM uses 20 MHz, unless PHY channel width is 5 MHz or 10 MHz
           txVector.SetChannelWidth (m_channelWidth < 20 ? m_channelWidth : 20);
           break;
         }
       case WIFI_MOD_CLASS_HT:
         {
-          txVector.SetMode (WifiPhy::GetHtMcs (m_htSig.GetMcs ()));
+          txVector.SetMode (HtPhy::GetHtMcs (m_htSig.GetMcs ()));
           txVector.SetChannelWidth (m_htSig.GetChannelWidth ());
           txVector.SetNss (1 + (m_htSig.GetMcs () / 8));
           txVector.SetGuardInterval(m_htSig.GetShortGuardInterval () ? 400 : 800);
@@ -341,7 +213,7 @@ WifiPpdu::GetTxVector (void) const
         }
       case WIFI_MOD_CLASS_VHT:
         {
-          txVector.SetMode (WifiPhy::GetVhtMcs (m_vhtSig.GetSuMcs ()));
+          txVector.SetMode (VhtPhy::GetVhtMcs (m_vhtSig.GetSuMcs ()));
           txVector.SetChannelWidth (m_vhtSig.GetChannelWidth ());
           txVector.SetNss (m_vhtSig.GetNStreams ());
           txVector.SetGuardInterval (m_vhtSig.GetShortGuardInterval () ? 400 : 800);
@@ -350,7 +222,7 @@ WifiPpdu::GetTxVector (void) const
         }
       case WIFI_MOD_CLASS_HE:
         {
-          txVector.SetMode (WifiPhy::GetHeMcs (m_heSig.GetMcs ()));
+          txVector.SetMode (HePhy::GetHeMcs (m_heSig.GetMcs ()));
           txVector.SetChannelWidth (m_heSig.GetChannelWidth ());
           txVector.SetNss (m_heSig.GetNStreams ());
           txVector.SetGuardInterval (m_heSig.GetGuardInterval ());

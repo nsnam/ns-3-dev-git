@@ -140,7 +140,7 @@ NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
   Ptr<WifiPhy> phy = wifiDevice->GetPhy ();
   myPhy = phy;
   SetupPhy (phy);
-  DataRate dataRate = DataRate (phy->GetMode (0).GetDataRate (phy->GetChannelWidth ()));
+  DataRate dataRate = DataRate (phy->GetDefaultMode ().GetDataRate (phy->GetChannelWidth ()));
   double power = phy->GetTxPowerEnd ();
   for (uint32_t j = 0; j < stas.GetN (); j++)
     {
@@ -172,17 +172,15 @@ NodeStatistics::NodeStatistics (NetDeviceContainer aps, NetDeviceContainer stas)
 void
 NodeStatistics::SetupPhy (Ptr<WifiPhy> phy)
 {
-  uint32_t nModes = phy->GetNModes ();
-  for (uint32_t i = 0; i < nModes; i++)
+  for (const auto & mode : phy->GetModeList ())
     {
-      WifiMode mode = phy->GetMode (i);
       WifiTxVector txVector;
       txVector.SetMode (mode);
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);
       txVector.SetChannelWidth (phy->GetChannelWidth ());
       DataRate dataRate = DataRate (mode.GetDataRate (phy->GetChannelWidth ()));
       Time time = phy->CalculateTxDuration (packetSize, txVector, phy->GetPhyBand ());
-      NS_LOG_DEBUG (i << " " << time.GetSeconds () << " " << dataRate);
+      NS_LOG_DEBUG (mode.GetUniqueName () << " " << time.GetSeconds () << " " << dataRate);
       timeTable.push_back (std::make_pair (time, dataRate));
     }
 }

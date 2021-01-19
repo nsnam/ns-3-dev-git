@@ -439,32 +439,6 @@ public:
    */
   static Time GetPhyTrainingSymbolDuration (WifiTxVector txVector);
   /**
-   * \return the WifiMode used for the transmission of the HT-SIG and the HT training fields
-   *         in Mixed Format and Greenfield format PHY header
-   */
-  static WifiMode GetHtPhyHeaderMode ();
-  /**
-   * \return the WifiMode used for the transmission of the VHT-STF, VHT-LTF and VHT-SIG-B fields
-   */
-  static WifiMode GetVhtPhyHeaderMode ();
-  /**
-   * \return the WifiMode used for the transmission of the HE-STF, HE-LTF and HE-SIG-B fields
-   */
-  static WifiMode GetHePhyHeaderMode ();
-  /**
-   * Get the mode used for HE-SIG-B transmission.
-   * This is applicable only for HE MU.
-   * Get smallest HE MCS index among station's allocations and use the
-   * VHT version of the index. This enables to have 800 ns GI, 52 data
-   * tones, and 312.5 kHz spacing while ensuring that MCS will be decoded
-   * by all stations.
-   *
-   * \param txVector the transmission parameters used for the HE MU PPDU
-   *
-   * \return the transmission mode used for HE-SIG-B
-   */
-  static WifiMode GetHeSigBMode (WifiTxVector txVector);
-  /**
    * \param preamble the type of preamble
    *
    * \return the duration of the HT-SIG in Mixed Format and Greenfield format PHY header
@@ -488,12 +462,6 @@ public:
    * \return the duration of the SIG-B in PHY header
    */
   static Time GetPhySigBDuration (WifiTxVector txVector);
-  /**
-   * \param txVector the transmission parameters used for this packet
-   *
-   * \return the WifiMode used for the transmission of the PHY header
-   */
-  static WifiMode GetPhyHeaderMode (WifiTxVector txVector);
   /**
    * \param txVector the transmission parameters used for this packet
    *
@@ -544,43 +512,30 @@ public:
   static Time GetStartOfPacketDuration (WifiTxVector txVector);
 
   /**
-   * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
+   * The WifiPhy::GetModeList() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception modes that this WifiPhy(-derived class)
-   * can support - a set of WifiMode objects which we call the
-   * DeviceRateSet, and which is stored as WifiPhy::m_deviceRateSet.
+   * transmission/reception (non-MCS) modes that this WifiPhy(-derived class)
+   * can support - a set of modes which is stored by each non-HT PHY.
    *
-   * It is important to note that the DeviceRateSet is a superset (not
+   * It is important to note that this list is a superset (not
    * necessarily proper) of the OperationalRateSet (which is
    * logically, if not actually, a property of the associated
    * WifiRemoteStationManager), which itself is a superset (again, not
    * necessarily proper) of the BSSBasicRateSet.
    *
-   * \return the number of transmission modes supported by this PHY.
-   *
-   * \sa WifiPhy::GetMode()
+   * \return the list of supported (non-MCS) modes.
    */
-  uint8_t GetNModes (void) const;
+  std::list<WifiMode> GetModeList (void) const;
   /**
-   * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
-   * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception modes that this WifiPhy(-derived class)
-   * can support - a set of WifiMode objects which we call the
-   * DeviceRateSet, and which is stored as WifiPhy::m_deviceRateSet.
+   * Get the list of supported (non-MCS) modes for the given modulation class (i.e.
+   * corresponding to a given PHY entity).
    *
-   * It is important to note that the DeviceRateSet is a superset (not
-   * necessarily proper) of the OperationalRateSet (which is
-   * logically, if not actually, a property of the associated
-   * WifiRemoteStationManager), which itself is a superset (again, not
-   * necessarily proper) of the BSSBasicRateSet.
+   * \param modulation the modulation class
+   * \return the list of supported (non-MCS) modes for the given modulation class.
    *
-   * \param mode index in array of supported modes
-   *
-   * \return the mode whose index is specified.
-   *
-   * \sa WifiPhy::GetNModes()
+   * \see GetModeList (void)
    */
-  WifiMode GetMode (uint8_t mode) const;
+  std::list<WifiMode> GetModeList (WifiModulationClass modulation) const;
   /**
    * Check if the given WifiMode is supported by the PHY.
    *
@@ -591,24 +546,23 @@ public:
    */
   bool IsModeSupported (WifiMode mode) const;
   /**
-   * Check if the given WifiMode is supported by the PHY.
+   * Get the default WifiMode supported by the PHY.
+   * This is the first mode to be added (i.e. the lowest one
+   * over all supported PHY entities).
    *
-   * \param mcs the wifi mode to check
-   *
-   * \return true if the given mode is supported,
-   *         false otherwise
+   * \return the default WifiMode
    */
-  bool IsMcsSupported (WifiMode mcs) const;
+  WifiMode GetDefaultMode (void) const;
   /**
    * Check if the given MCS of the given modulation class is supported by the PHY.
    *
-   * \param mc the modulation class
+   * \param modulation the modulation class
    * \param mcs the MCS value
    *
    * \return true if the given mode is supported,
    *         false otherwise
    */
-  bool IsMcsSupported (WifiModulationClass mc, uint8_t mcs) const;
+  bool IsMcsSupported (WifiModulationClass modulation, uint8_t mcs) const;
 
   /**
    * \param txVector the transmission vector
@@ -669,49 +623,41 @@ public:
   Time GetBlockAckTxTime (void) const;
 
   /**
-  * The WifiPhy::NBssMembershipSelectors() method is used
-  * (e.g., by a WifiRemoteStationManager) to determine the set of
-  * transmission/reception modes that this WifiPhy(-derived class)
-  * can support - a set of WifiMode objects which we call the
-  * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
-  *
-  * \return the membership selector whose index is specified.
-  */
-  uint8_t GetNBssMembershipSelectors (void) const;
-  /**
   * The WifiPhy::BssMembershipSelector() method is used
   * (e.g., by a WifiRemoteStationManager) to determine the set of
   * transmission/reception modes that this WifiPhy(-derived class)
   * can support - a set of WifiMode objects which we call the
-  * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
+  * BssMembershipSelectorSet, and which is stored inside HT PHY (and above)
+  * instances.
   *
-  * \param selector index in array of supported memberships
-  *
-  * \return the membership selector whose index is specified.
+  * \return the list of BSS membership selectors.
   */
-  uint8_t GetBssMembershipSelector (uint8_t selector) const;
+  std::list<uint8_t> GetBssMembershipSelectorList (void) const;
   /**
-   * The WifiPhy::GetNMcs() method is used
-   * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception MCS indexes that this WifiPhy(-derived class)
-   * can support - a set of MCS indexes which we call the
-   * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
+   * \return the number of supported MCSs.
    *
-   * \return the MCS index whose index is specified.
+   * \see GetMcsList (void)
    */
-  uint8_t GetNMcs (void) const;
+  uint16_t GetNMcs (void) const;
   /**
-   * The WifiPhy::GetMcs() method is used
+   * The WifiPhy::GetMcsList() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception MCS indexes that this WifiPhy(-derived class)
-   * can support - a set of MCS indexes which we call the
-   * DeviceMcsSet, and which is stored as WifiPhy::m_deviceMcsSet.
+   * transmission/reception MCS indices that this WifiPhy(-derived class)
+   * can support - a set of MCS indices which is stored by each HT PHY (and above).
    *
-   * \param mcs index in array of supported MCS
-   *
-   * \return the MCS index whose index is specified.
+   * \return the list of supported MCSs.
    */
-  WifiMode GetMcs (uint8_t mcs) const;
+  std::list<WifiMode> GetMcsList (void) const;
+  /**
+   * Get the list of supported MCSs for the given modulation class (i.e.
+   * corresponding to a given PHY entity).
+   *
+   * \param modulation the modulation class
+   * \return the list of supported MCSs for the given modulation class.
+   *
+   * \see GetMcsList (void)
+   */
+  std::list<WifiMode> GetMcsList (WifiModulationClass modulation) const;
   /**
    * Get the WifiMode object corresponding to the given MCS of the given
    * modulation class.
@@ -753,6 +699,21 @@ public:
    *         HE modulation class
    */
   static WifiMode GetHeMcs (uint8_t mcs);
+
+  /**
+   * \param txVector the transmission parameters
+   *
+   * \return the WifiMode used for the transmission of the non-HT PHY header
+   */
+  static WifiMode GetNonHtHeaderMode (WifiTxVector txVector);
+  /**
+   * \param txVector the transmission parameters
+   *
+   * \return the WifiMode used for the transmission of the SIG field
+   *
+   * This only applies to HT and following standards.
+   */
+  static WifiMode GetSigMode (WifiTxVector txVector);
 
   /**
    * \brief Set channel number.
@@ -1998,6 +1959,17 @@ protected:
    *
    * The set of parameters (e.g. mode) that this WifiPhy(-derived class) can
    * support can be obtained through it.
+   *
+   * When it comes to modes, in conversation we call this set
+   * the DeviceRateSet (not a term you'll find in the standard), and
+   * it is a superset of standard-defined parameters such as the
+   * OperationalRateSet, and the BSSBasicRateSet (which, themselves,
+   * have a superset/subset relationship).
+   *
+   * Mandatory rates relevant to this WifiPhy can be found by
+   * iterating over the elements of this map, for each modulation class,
+   * looking for WifiMode objects for which
+   * WifiMode::IsMandatory() is true.
    */
   std::map<WifiModulationClass, Ptr<PhyEntity> > m_phyEntities;
 
@@ -2293,48 +2265,6 @@ private:
    * \see m_phyEntities.
    */
   static std::map<WifiModulationClass, Ptr<PhyEntity> > m_staticPhyEntities;
-  /**
-   * This vector holds the set of transmission modes that this
-   * WifiPhy(-derived class) can support. In conversation we call this
-   * the DeviceRateSet (not a term you'll find in the standard), and
-   * it is a superset of standard-defined parameters such as the
-   * OperationalRateSet, and the BSSBasicRateSet (which, themselves,
-   * have a superset/subset relationship).
-   *
-   * Mandatory rates relevant to this WifiPhy can be found by
-   * iterating over this vector looking for WifiMode objects for which
-   * WifiMode::IsMandatory() is true.
-   *
-   * A quick note is appropriate here (well, here is as good a place
-   * as any I can find)...
-   *
-   * In the standard there is no text that explicitly precludes
-   * production of a device that does not support some rates that are
-   * mandatory (according to the standard) for PHYs that the device
-   * happens to fully or partially support.
-   *
-   * This approach is taken by some devices which choose to only support,
-   * for example, 6 and 9 Mbps ERP-OFDM rates for cost and power
-   * consumption reasons (i.e., these devices don't need to be designed
-   * for and waste current on the increased linearity requirement of
-   * higher-order constellations when 6 and 9 Mbps more than meet their
-   * data requirements). The wording of the standard allows such devices
-   * to have an OperationalRateSet which includes 6 and 9 Mbps ERP-OFDM
-   * rates, despite 12 and 24 Mbps being "mandatory" rates for the
-   * ERP-OFDM PHY.
-   *
-   * Now this doesn't actually have any impact on code, yet. It is,
-   * however, something that we need to keep in mind for the
-   * future. Basically, the key point is that we can't be making
-   * assumptions like "the Operational Rate Set will contain all the
-   * mandatory rates".
-   */
-  WifiModeList m_deviceRateSet;
-  WifiModeList m_deviceMcsSet; //!< the device MCS set
-  /// Maps MCS values to indices in m_deviceMcsSet, for HT, VHT and HE modulation classes
-  std::map<WifiModulationClass, std::map<uint8_t /* MCS value */, uint8_t /* index */>> m_mcsIndexMap;
-
-  std::vector<uint8_t> m_bssMembershipSelectorSet; //!< the BSS membership selector set
 
   WifiPhyStandard m_standard;               //!< WifiPhyStandard
   WifiPhyBand m_band;                       //!< WifiPhyBand

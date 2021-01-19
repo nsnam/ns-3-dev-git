@@ -118,10 +118,8 @@ IdealWifiManager::BuildSnrThresholds (void)
   WifiMode mode;
   WifiTxVector txVector;
   uint8_t nss = 1;
-  uint8_t nModes = GetPhy ()->GetNModes ();
-  for (uint8_t i = 0; i < nModes; i++)
+  for (const auto & mode : GetPhy ()->GetModeList ())
     {
-      mode = GetPhy ()->GetMode (i);
       txVector.SetChannelWidth (GetChannelWidthForNonHtMode (mode));
       txVector.SetNss (nss);
       txVector.SetMode (mode);
@@ -131,13 +129,11 @@ IdealWifiManager::BuildSnrThresholds (void)
   // Add all MCSes
   if (GetHtSupported ())
     {
-      nModes = GetPhy ()->GetNMcs ();
-      for (uint8_t i = 0; i < nModes; i++)
+      for (const auto & mode : GetPhy ()->GetMcsList ())
         {
           for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
             {
               txVector.SetChannelWidth (j);
-              mode = GetPhy ()->GetMcs (i);
               if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
                 {
                   uint16_t guardInterval = GetShortGuardIntervalSupported () ? 400 : 800;

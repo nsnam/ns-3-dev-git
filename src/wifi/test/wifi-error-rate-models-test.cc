@@ -27,6 +27,7 @@
 #include "ns3/wifi-phy.h"
 #include "ns3/wifi-utils.h"
 #include "ns3/table-based-error-rate-model.h"
+#include "ns3/he-phy.h" //includes HT and VHT
 
 using namespace ns3;
 
@@ -333,7 +334,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
 {
   TestInterferenceHelper interference;
   interference.SetNoiseFigure (0);
-  WifiMode mode = WifiPhy::GetHtMcs0 ();
+  WifiMode mode = HtPhy::GetHtMcs0 ();
   WifiTxVector txVector;
 
   txVector.SetMode (mode);
@@ -1069,19 +1070,19 @@ WifiErrorRateModelsTestSuite::WifiErrorRateModelsTestSuite ()
   AddTestCase (new WifiErrorRateModelsTestCaseDsss, TestCase::QUICK);
   AddTestCase (new WifiErrorRateModelsTestCaseNist, TestCase::QUICK);
   AddTestCase (new WifiErrorRateModelsTestCaseMimo, TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1458bytes", WifiPhy::GetHtMcs0 (), 1458), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-32bytes", WifiPhy::GetHtMcs0 (), 32), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1000bytes", WifiPhy::GetHtMcs0 (), 1000), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1byte", WifiPhy::GetHtMcs0 (), 1), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-2000bytes", WifiPhy::GetHtMcs0 (), 2000), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs7-1500bytes", WifiPhy::GetHtMcs7 (), 1500), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1458bytes", WifiPhy::GetVhtMcs0 (), 1458), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-32bytes", WifiPhy::GetVhtMcs0 (), 32), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1000bytes", WifiPhy::GetVhtMcs0 (), 1000), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1byte", WifiPhy::GetVhtMcs0 (), 1), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-2000bytes", WifiPhy::GetVhtMcs0 (), 2000), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs8-1500bytes", WifiPhy::GetVhtMcs8 (), 1500), TestCase::QUICK);
-  AddTestCase (new TableBasedErrorRateTestCase ("FallbackTableBasedHeMcs11-1458bytes", WifiPhy::GetHeMcs11 (), 1458), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1458bytes", HtPhy::GetHtMcs0 (), 1458), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-32bytes", HtPhy::GetHtMcs0 (), 32), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1000bytes", HtPhy::GetHtMcs0 (), 1000), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-1byte", HtPhy::GetHtMcs0 (), 1), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs0-2000bytes", HtPhy::GetHtMcs0 (), 2000), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedHtMcs7-1500bytes", HtPhy::GetHtMcs7 (), 1500), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1458bytes", VhtPhy::GetVhtMcs0 (), 1458), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-32bytes", VhtPhy::GetVhtMcs0 (), 32), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1000bytes", VhtPhy::GetVhtMcs0 (), 1000), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-1byte", VhtPhy::GetVhtMcs0 (), 1), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs0-2000bytes", VhtPhy::GetVhtMcs0 (), 2000), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("DefaultTableBasedVhtMcs8-1500bytes", VhtPhy::GetVhtMcs8 (), 1500), TestCase::QUICK);
+  AddTestCase (new TableBasedErrorRateTestCase ("FallbackTableBasedHeMcs11-1458bytes", HePhy::GetHeMcs11 (), 1458), TestCase::QUICK);
 }
 
 static WifiErrorRateModelsTestSuite wifiErrorRateModelsTestSuite; ///< the test suite

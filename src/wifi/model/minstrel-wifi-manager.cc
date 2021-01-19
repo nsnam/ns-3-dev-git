@@ -113,10 +113,8 @@ void
 MinstrelWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  uint8_t nModes = phy->GetNModes ();
-  for (uint8_t i = 0; i < nModes; i++)
+  for (const auto & mode : phy->GetModeList ())
     {
-      WifiMode mode = phy->GetMode (i);
       WifiTxVector txVector;
       txVector.SetMode (mode);
       txVector.SetPreambleType (WIFI_PREAMBLE_LONG);

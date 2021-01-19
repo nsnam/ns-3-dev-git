@@ -233,13 +233,8 @@ RegularWifiMac::GetHtCapabilities (void) const
 
       capabilities.SetLSigProtectionSupport (!greenfieldSupported);
       uint64_t maxSupportedRate = 0; //in bit/s
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
-            {
-              continue;
-            }
           capabilities.SetRxMcsBitmask (mcs.GetMcsValue ());
           uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
           NS_ASSERT (nss > 0 && nss < 5);
@@ -305,11 +300,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
       capabilities.SetShortGuardIntervalFor80Mhz ((m_phy->GetChannelWidth () == 80) && sgiSupported);
       capabilities.SetShortGuardIntervalFor160Mhz ((m_phy->GetChannelWidth () == 160) && sgiSupported);
       uint8_t maxMcs = 0;
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-              && (mcs.GetMcsValue () > maxMcs))
+          if (mcs.GetMcsValue () > maxMcs)
             {
               maxMcs = mcs.GetMcsValue ();
             }
@@ -324,10 +317,9 @@ RegularWifiMac::GetVhtCapabilities (void) const
           capabilities.SetTxMcsMap (maxMcs, nss);
         }
       uint64_t maxSupportedRateLGI = 0; //in bit/s
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_VHT || !mcs.IsAllowed (m_phy->GetChannelWidth (), 1))
+          if (!mcs.IsAllowed (m_phy->GetChannelWidth (), 1))
             {
               continue;
             }
@@ -390,11 +382,9 @@ RegularWifiMac::GetHeCapabilities (void) const
       capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
 
       uint8_t maxMcs = 0;
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if ((mcs.GetModulationClass () == WIFI_MOD_CLASS_HE)
-              && (mcs.GetMcsValue () > maxMcs))
+          if (mcs.GetMcsValue () > maxMcs)
             {
               maxMcs = mcs.GetMcsValue ();
             }

@@ -31,6 +31,7 @@
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-ppdu.h"
 #include "ns3/wifi-utils.h"
+#include "ns3/he-phy.h" //includes OFDM PHY
 
 using namespace ns3;
 
@@ -119,7 +120,7 @@ SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest (std::string name)
 Ptr<SpectrumSignalParameters>
 SpectrumWifiPhyBasicTest::MakeSignal (double txPowerWatts)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetOfdmRate6Mbps (), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
+  WifiTxVector txVector = WifiTxVector (OfdmPhy::GetOfdmRate6Mbps (), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
@@ -390,7 +391,7 @@ SpectrumWifiPhyFilterTest::SpectrumWifiPhyFilterTest (std::string name)
 void
 SpectrumWifiPhyFilterTest::SendPpdu (void)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, m_txChannelWidth, false, false);
+  WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs0 (), 0, WIFI_PREAMBLE_HE_SU, 800, 1, 1, 0, m_txChannelWidth, false, false);
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);

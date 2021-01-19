@@ -575,16 +575,16 @@ StaWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
         }
       SupportedRates rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+      auto selectorList = m_phy->GetBssMembershipSelectorList ();
+      for (const auto & selector : selectorList)
         {
-          uint8_t selector = m_phy->GetBssMembershipSelector (i);
           if (rates.IsBssMembershipSelectorRate (selector))
             {
               NS_LOG_LOGIC ("Beacon is matched to our BSS membership selector");
               bssMembershipSelectorMatch = true;
             }
         }
-      if (m_phy->GetNBssMembershipSelectors () > 0 && bssMembershipSelectorMatch == false)
+      if (selectorList.size () > 0 && bssMembershipSelectorMatch == false)
         {
           NS_LOG_LOGIC ("No match for BSS membership selector");
           goodBeacon = false;
@@ -726,9 +726,8 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
   SetBssid (bssid);
   CapabilityInformation capabilities = beacon.GetCapabilities ();
   SupportedRates rates = beacon.GetSupportedRates ();
-  for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+  for (const auto & mode : m_phy->GetModeList ())
     {
-      WifiMode mode = m_phy->GetMode (i);
       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
         {
           m_stationManager->AddSupportedMode (apAddr, mode);
@@ -802,10 +801,9 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
         {
           m_stationManager->AddStationVhtCapabilities (apAddr, vhtCapabilities);
           VhtOperation vhtOperation = beacon.GetVhtOperation ();
-          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
             {
-              WifiMode mcs = m_phy->GetMcs (i);
-              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+              if (vhtCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
                 {
                   m_stationManager->AddSupportedMcs (apAddr, mcs);
                 }
@@ -824,10 +822,9 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
         {
           m_stationManager->AddStationHeCapabilities (apAddr, heCapabilities);
           HeOperation heOperation = beacon.GetHeOperation ();
-          for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+          for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
             {
-              WifiMode mcs = m_phy->GetMcs (i);
-              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+              if (heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
                 {
                   m_stationManager->AddSupportedMcs (apAddr, mcs);
                 }
@@ -844,18 +841,16 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
   NS_LOG_FUNCTION (this << probeResp << apAddr << bssid);
   CapabilityInformation capabilities = probeResp.GetCapabilities ();
   SupportedRates rates = probeResp.GetSupportedRates ();
-  for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+  for (const auto & selector : m_phy->GetBssMembershipSelectorList ())
     {
-      uint8_t selector = m_phy->GetBssMembershipSelector (i);
       if (!rates.IsBssMembershipSelectorRate (selector))
         {
           NS_LOG_DEBUG ("Supported rates do not fit with the BSS membership selector");
           return;
         }
     }
-  for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+  for (const auto & mode : m_phy->GetModeList ())
     {
-      WifiMode mode = m_phy->GetMode (i);
       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
         {
           m_stationManager->AddSupportedMode (apAddr, mode);
@@ -870,10 +865,9 @@ StaWifiMac::UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Ad
   if (GetErpSupported ())
     {
       bool isErpAllowed = false;
-      for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+      for (const auto & mode : m_phy->GetModeList (WIFI_MOD_CLASS_ERP_OFDM))
         {
-          WifiMode mode = m_phy->GetMode (i);
-          if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
+          if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
             {
               isErpAllowed = true;
               break;
@@ -917,10 +911,9 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetErpSupported ())
     {
       bool isErpAllowed = false;
-      for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+      for (const auto & mode : m_phy->GetModeList (WIFI_MOD_CLASS_ERP_OFDM))
         {
-          WifiMode mode = m_phy->GetMode (i);
-          if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM && rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
+          if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
             {
               isErpAllowed = true;
               break;
@@ -1007,9 +1000,8 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
         }
     }
-  for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+  for (const auto & mode : m_phy->GetModeList ())
     {
-      WifiMode mode = m_phy->GetMode (i);
       if (rates.IsSupportedRate (mode.GetDataRate (m_phy->GetChannelWidth ())))
         {
           m_stationManager->AddSupportedMode (apAddr, mode);
@@ -1022,10 +1014,9 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetHtSupported ())
     {
       HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+          if (htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
             {
               m_stationManager->AddSupportedMcs (apAddr, mcs);
               //here should add a control to add basic MCS when it is implemented
@@ -1035,10 +1026,9 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetVhtSupported ())
     {
       VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtcapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+          if (vhtcapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
             {
               m_stationManager->AddSupportedMcs (apAddr, mcs);
               //here should add a control to add basic MCS when it is implemented
@@ -1053,10 +1043,9 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
   if (GetHeSupported ())
     {
       HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
-      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
         {
-          WifiMode mcs = m_phy->GetMcs (i);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
+          if (heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
             {
               m_stationManager->AddSupportedMcs (apAddr, mcs);
               //here should add a control to add basic MCS when it is implemented
@@ -1069,18 +1058,17 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
-  for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
+  for (const auto & mode : m_phy->GetModeList ())
     {
-      WifiMode mode = m_phy->GetMode (i);
       uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
     }
   if (GetHtSupported ())
     {
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+      for (const auto & selector : m_phy->GetBssMembershipSelectorList ())
         {
-          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
+          rates.AddBssMembershipSelectorRate (selector);
         }
     }
   return rates;

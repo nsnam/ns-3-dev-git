@@ -29,6 +29,7 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/wifi-psdu.h"
 #include "ns3/wifi-ppdu.h"
+#include "ns3/ofdm-phy.h"
 
 using namespace ns3;
 
@@ -137,7 +138,7 @@ WifiPhyThresholdsTest::~WifiPhyThresholdsTest ()
 Ptr<SpectrumSignalParameters>
 WifiPhyThresholdsTest::MakeWifiSignal (double txPowerWatts)
 {
-  WifiTxVector txVector = WifiTxVector (WifiPhy::GetOfdmRate6Mbps (), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
+  WifiTxVector txVector = WifiTxVector (OfdmPhy::GetOfdmRate6Mbps (), 0, WIFI_PREAMBLE_LONG, 800, 1, 1, 0, 20, false);
 
   Ptr<Packet> pkt = Create<Packet> (1000);
   WifiMacHeader hdr;

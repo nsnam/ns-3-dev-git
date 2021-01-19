@@ -30,6 +30,7 @@
 #include "wifi-mac-queue-item.h"
 #include "wifi-mac-trailer.h"
 #include "ht-configuration.h"
+#include "ht-phy.h"
 #include "vht-configuration.h"
 #include "he-configuration.h"
 #include "wifi-net-device.h"
@@ -148,11 +149,11 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
   //transmit rate for automatic control responses like
   //acknowledgments.
   m_wifiPhy = phy;
-  m_defaultTxMode = phy->GetMode (0);
+  m_defaultTxMode = phy->GetDefaultMode ();
   NS_ASSERT (m_defaultTxMode.IsMandatory ());
   if (GetHtSupported ())
     {
-      m_defaultTxMcs = phy->GetMcs (0);
+      m_defaultTxMcs = HtPhy::GetHtMcs (0);
     }
   Reset ();
 }
@@ -376,12 +377,12 @@ WifiRemoteStationManager::AddAllSupportedModes (Mac48Address address)
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStationState *state = LookupState (address);
   state->m_operationalRateSet.clear ();
-  for (uint8_t i = 0; i < m_wifiPhy->GetNModes (); i++)
+  for (const auto & mode : m_wifiPhy->GetModeList ())
     {
-      state->m_operationalRateSet.push_back (m_wifiPhy->GetMode (i));
-      if (m_wifiPhy->GetMode (i).IsMandatory ())
+      state->m_operationalRateSet.push_back (mode);
+      if (mode.IsMandatory ())
         {
-          AddBasicMode (m_wifiPhy->GetMode (i));
+          AddBasicMode (mode);
         }
     }
 }
@@ -393,9 +394,9 @@ WifiRemoteStationManager::AddAllSupportedMcs (Mac48Address address)
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStationState *state = LookupState (address);
   state->m_operationalMcsSet.clear ();
-  for (uint8_t i = 0; i < m_wifiPhy->GetNMcs (); i++)
+  for (const auto & mcs : m_wifiPhy->GetMcsList ())
     {
-      state->m_operationalMcsSet.push_back (m_wifiPhy->GetMcs (i));
+      state->m_operationalMcsSet.push_back (mcs);
     }
 }
 
@@ -738,9 +739,8 @@ WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode) const
    * \todo Note that we're ignoring the last sentence for now, because
    * there is not yet any manipulation here of PHY options.
    */
-  for (uint8_t idx = 0; idx < m_wifiPhy->GetNModes (); idx++)
+  for (const auto & thismode : m_wifiPhy->GetModeList ())
     {
-      WifiMode thismode = m_wifiPhy->GetMode (idx);
       /* If the rate:
        *
        *  - is a mandatory rate for the PHY, and
@@ -764,9 +764,8 @@ WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode) const
     }
   if (GetHtSupported () )
     {
-      for (uint8_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
+      for (const auto & thismode : m_wifiPhy->GetMcsList ())
         {
-          WifiMode thismode = m_wifiPhy->GetMcs (idx);
           if (thismode.IsMandatory ()
               && (!found || thismode.IsHigherDataRate (mode))
               && (!thismode.IsHigherCodeRate (reqMode))
@@ -1296,10 +1295,9 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
       state->m_channelWidth = 20;
     }
   SetQosSupport (from, true);
-  for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+  for (const auto & mcs : m_wifiPhy->GetMcsList (WIFI_MOD_CLASS_HT))
     {
-      WifiMode mcs = m_wifiPhy->GetMcs (j);
-      if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+      if (htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
         {
           AddSupportedMcs (from, mcs);
         }
@@ -1330,10 +1328,9 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
     }
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
     {
-      for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+      for (const auto & mcs : m_wifiPhy->GetMcsList (WIFI_MOD_CLASS_VHT))
         {
-          WifiMode mcs = m_wifiPhy->GetMcs (j);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedMcs (mcs.GetMcsValue (), i))
+          if (vhtCapabilities.IsSupportedMcs (mcs.GetMcsValue (), i))
             {
               AddSupportedMcs (from, mcs);
             }
@@ -1386,12 +1383,10 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
     }
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
     {
-      for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+      for (const auto & mcs : m_wifiPhy->GetMcsList (WIFI_MOD_CLASS_HE))
         {
-          WifiMode mcs = m_wifiPhy->GetMcs (j);
-          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE
-              && heCapabilities.GetHighestNssSupported () >= i
-              && heCapabilities.GetHighestMcsSupported () >= j)
+          if (heCapabilities.GetHighestNssSupported () >= i
+              && heCapabilities.GetHighestMcsSupported () >= mcs.GetMcsValue ())
             {
               AddSupportedMcs (from, mcs);
             }

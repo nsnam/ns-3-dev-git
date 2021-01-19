@@ -189,6 +189,8 @@ Some implementation choices that are not imposed by the standard are listed belo
 
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
 * BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
+* OperationalRateSet is assumed to contain all mandatory rates (see
+  `issue 183 <https://gitlab.com/nsnam/ns-3-dev/-/issues/183>`_)
 * The wifi manager always selects the lowest basic rate for management frames.
 
 Design Details

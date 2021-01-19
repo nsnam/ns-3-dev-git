@@ -483,7 +483,7 @@ InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChange
   auto j = ni_it.begin ();
   Time previous = j->first;
   WifiPreamble preamble = txVector.GetPreambleType ();
-  WifiMode headerMode = WifiPhy::GetPhyHeaderMode (txVector);
+  WifiMode headerMode = WifiPhy::GetNonHtHeaderMode (txVector);
   Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
   Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
   Time phyTrainingSymbolsStart = phyLSigHeaderEnd + WifiPhy::GetPhyHtSigHeaderDuration (preamble) + WifiPhy::GetPhySigA1Duration (preamble) + WifiPhy::GetPhySigA2Duration (preamble); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
@@ -598,23 +598,8 @@ InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPe
   auto j = ni_it.begin ();
   Time previous = j->first;
   WifiPreamble preamble = txVector.GetPreambleType ();
-  WifiMode mcsHeaderMode;
-  if (IsHt (preamble))
-    {
-      //mode for PHY header fields sent with HT modulation
-      mcsHeaderMode = WifiPhy::GetHtPhyHeaderMode ();
-    }
-  else if (IsVht (preamble))
-    {
-      //mode for PHY header fields sent with VHT modulation
-      mcsHeaderMode = WifiPhy::GetVhtPhyHeaderMode ();
-    }
-  else if (IsHe (preamble))
-    {
-      //mode for PHY header fields sent with HE modulation
-      mcsHeaderMode = WifiPhy::GetHePhyHeaderMode ();
-    }
-  WifiMode headerMode = WifiPhy::GetPhyHeaderMode (txVector);
+  WifiMode mcsHeaderMode = WifiPhy::GetSigMode (txVector);
+  WifiMode headerMode = WifiPhy::GetNonHtHeaderMode (txVector);
   Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
   Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
   Time phyTrainingSymbolsStart = phyLSigHeaderEnd + WifiPhy::GetPhyHtSigHeaderDuration (preamble) + WifiPhy::GetPhySigA1Duration (preamble) + WifiPhy::GetPhySigA2Duration (preamble); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A

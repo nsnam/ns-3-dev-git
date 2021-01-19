@@ -926,13 +926,12 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       if (!rateFound)
         {
           Ptr<WifiPhy> phy = GetPhy ();
-          uint8_t nSupportRates = phy->GetNModes ();
-          for (uint8_t i = 0; i < nSupportRates; i++)
+          for (const auto & mode : phy->GetModeList ())
             {
-              uint64_t rate = phy->GetMode (i).GetDataRate (20);
+              uint64_t rate = mode.GetDataRate (20);
               if (rate <= lastDataRate)
                 {
-                  rtsRate = phy->GetMode (i);
+                  rtsRate = mode;
                   rateFound = true;
                 }
             }
@@ -1793,14 +1792,9 @@ WifiModeList
 MinstrelHtWifiManager::GetVhtDeviceMcsList (void) const
 {
   WifiModeList vhtMcsList;
-  Ptr<WifiPhy> phy = GetPhy ();
-  for (uint8_t i = 0; i < phy->GetNMcs (); i++)
+  for (const auto & mode : GetPhy ()->GetMcsList (WIFI_MOD_CLASS_VHT))
     {
-      WifiMode mode = phy->GetMcs (i);
-      if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
-        {
-          vhtMcsList.push_back (mode);
-        }
+      vhtMcsList.push_back (mode);
     }
   return vhtMcsList;
 }
@@ -1809,14 +1803,9 @@ WifiModeList
 MinstrelHtWifiManager::GetHtDeviceMcsList (void) const
 {
   WifiModeList htMcsList;
-  Ptr<WifiPhy> phy = GetPhy ();
-  for (uint8_t i = 0; i < phy->GetNMcs (); i++)
+  for (const auto & mode : GetPhy ()->GetMcsList (WIFI_MOD_CLASS_HT))
     {
-      WifiMode mode = phy->GetMcs (i);
-      if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
-        {
-          htMcsList.push_back (mode);
-        }
+      htMcsList.push_back (mode);
     }
   return htMcsList;
 }
