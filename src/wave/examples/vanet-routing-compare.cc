@@ -770,9 +770,10 @@ public:
    * \brief Callback signiture for Phy/RxDrop
    * \param context this object
    * \param packet the rx packet being dropped
+   * \param reason the reason for the drop
    * \return none
    */
-  void PhyRxDrop (std::string context, Ptr<const Packet> packet);
+  void PhyRxDrop (std::string context, Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
 
 private:
   uint32_t m_phyTxPkts; ///< phy transmit packets
@@ -818,7 +819,7 @@ WifiPhyStats::PhyTxDrop (std::string context, Ptr<const Packet> packet)
 }
 
 void
-WifiPhyStats::PhyRxDrop (std::string context, Ptr<const Packet> packet)
+WifiPhyStats::PhyRxDrop (std::string context, Ptr<const Packet> packet, WifiPhyRxfailureReason reason)
 {
   NS_LOG_UNCOND ("PHY Rx Drop");
 }
@@ -1451,9 +1452,9 @@ static ns3::GlobalValue g_pcap ("VRCpcap",
                                 ns3::UintegerValue (0),
                                 ns3::MakeUintegerChecker<uint32_t> ());
 static ns3::GlobalValue g_cumulativeBsmCaptureStart ("VRCcumulativeBsmCaptureStart",
-                                                     "Simulation starte time for capturing cumulative BSM",
-                                                     ns3::UintegerValue (0),
-                                                     ns3::MakeUintegerChecker<uint32_t> ());
+                                                     "Simulation start time for capturing cumulative BSM",
+                                                     ns3::TimeValue (Seconds (0)),
+                                                     ns3::MakeTimeChecker ());
 
 static ns3::GlobalValue g_txSafetyRange1 ("VRCtxSafetyRange1",
                                           "BSM range for PDR inclusion",
@@ -1605,15 +1606,24 @@ VanetRoutingExperiment::ConfigureDevices ()
   // devices are set up in SetupAdhocDevices(),
   // called by ConfigureChannels()
 
-  // every device will have PHY callback for tracing
-  // which is used to determine the total amount of
+  // use a PHY callback for tracing
+  // to determine the total amount of
   // data transmitted, and then used to calculate
   // the MAC/PHY overhead beyond the app-data
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&WifiPhyStats::PhyTxTrace, m_wifiPhyStats));
-  // TxDrop, RxDrop not working yet.  Not sure what I'm doing wrong.
-  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyTxDrop", MakeCallback (&WifiPhyStats::PhyTxDrop, m_wifiPhyStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyRxDrop", MakeCallback (&WifiPhyStats::PhyRxDrop, m_wifiPhyStats));
+  if (m_80211mode == 3)
+    {
+      // WAVE
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/State/Tx", MakeCallback (&WifiPhyStats::PhyTxTrace, m_wifiPhyStats));
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/PhyTxDrop", MakeCallback (&WifiPhyStats::PhyTxDrop, m_wifiPhyStats));
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WaveNetDevice/PhyEntities/*/PhyRxDrop", MakeCallback (&WifiPhyStats::PhyRxDrop, m_wifiPhyStats)); 
+    }
+  else
+    {
+      Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&WifiPhyStats::PhyTxTrace, m_wifiPhyStats));
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxDrop", MakeCallback (&WifiPhyStats::PhyTxDrop, m_wifiPhyStats));
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop", MakeCallback (&WifiPhyStats::PhyRxDrop, m_wifiPhyStats)); 
 }
+    }
 
 void
 VanetRoutingExperiment::ConfigureMobility ()
