@@ -368,11 +368,11 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
           //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayloadStart)
           bool ofdmaStarted = !m_beginOfdmaPayloadRxEvents.empty ();
           NS_LOG_INFO ("Switch to OFDMA part (already started? " << (ofdmaStarted ? "Y" : "N") << ") "
-                       << "and schedule OFDMA payload reception in " << GetPhyTrainingSymbolDuration (txVector).As (Time::NS));
+                       << "and schedule OFDMA payload reception in " << GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector).As (Time::NS));
           Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW, !ofdmaStarted);
           uint16_t staId = GetStaId (ppdu);
           NS_ASSERT (m_beginOfdmaPayloadRxEvents.find (staId) == m_beginOfdmaPayloadRxEvents.end ());
-          m_beginOfdmaPayloadRxEvents[staId] = Simulator::Schedule (GetPhyTrainingSymbolDuration (txVector),
+          m_beginOfdmaPayloadRxEvents[staId] = Simulator::Schedule (GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector),
                                                                     &WifiPhy::StartReceiveOfdmaPayload, this, event);
         }
       else

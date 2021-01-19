@@ -132,7 +132,7 @@ GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreambl
     {
       return WIFI_PREAMBLE_HT_MF;
     }
-  else if (useShortPreamble)
+  else if (modulation == WIFI_MOD_CLASS_HR_DSSS && useShortPreamble) //ERP_DSSS is modeled through HR_DSSS (since same preamble and modulation)
     {
       return WIFI_PREAMBLE_SHORT;
     }

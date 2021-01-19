@@ -1902,315 +1902,9 @@ WifiPhy::GetPreambleDetectionDuration (void)
 }
 
 Time
-WifiPhy::GetPhyTrainingSymbolDuration (WifiTxVector txVector)
-{
-  uint8_t Ndltf, Neltf;
-  //We suppose here that STBC = 0.
-  //If STBC > 0, we need a different mapping between Nss and Nltf (IEEE 802.11n-2012 standard, page 1682).
-  uint8_t nss = txVector.GetNssMax (); //so as to cover also HE MU case (see section 27.3.10.10 of IEEE P802.11ax/D4.0)
-  if (nss < 3)
-    {
-      Ndltf = nss;
-    }
-  else if (nss < 5)
-    {
-      Ndltf = 4;
-    }
-  else if (nss < 7)
-    {
-      Ndltf = 6;
-    }
-  else
-    {
-      Ndltf = 8;
-    }
-
-  if (txVector.GetNess () < 3)
-    {
-      Neltf = txVector.GetNess ();
-    }
-  else
-    {
-      Neltf = 4;
-    }
-
-  switch (txVector.GetPreambleType ())
-    {
-    case WIFI_PREAMBLE_HT_MF:
-      return MicroSeconds (4 + (4 * Ndltf) + (4 * Neltf));
-    case WIFI_PREAMBLE_HT_GF:
-      return MicroSeconds ((4 * Ndltf) + (4 * Neltf));
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-      return MicroSeconds (4 + (4 * Ndltf));
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_HE_MU:
-      return MicroSeconds (4 + (8 * Ndltf));
-    case WIFI_PREAMBLE_HE_TB:
-      return MicroSeconds (8 + (8 * Ndltf));
-    default:
-      return MicroSeconds (0);
-    }
-}
-
-Time
-WifiPhy::GetPhyHtSigHeaderDuration (WifiPreamble preamble)
-{
-  switch (preamble)
-    {
-    case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_HT_GF:
-      //HT-SIG
-      return MicroSeconds (8);
-    default:
-      //no HT-SIG for non HT
-      return MicroSeconds (0);
-    }
-}
-
-Time
-WifiPhy::GetPhySigA1Duration (WifiPreamble preamble)
-{
-  switch (preamble)
-    {
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      //VHT-SIG-A1 and HE-SIG-A1
-      return MicroSeconds (4);
-    default:
-      // no SIG-A1
-      return MicroSeconds (0);
-    }
-}
-
-Time
-WifiPhy::GetPhySigA2Duration (WifiPreamble preamble)
-{
-  switch (preamble)
-    {
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      //VHT-SIG-A2 and HE-SIG-A2
-      return MicroSeconds (4);
-    default:
-      // no SIG-A2
-      return MicroSeconds (0);
-    }
-}
-
-Time
-WifiPhy::GetPhySigBDuration (WifiTxVector txVector)
-{
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU) //See section 27.3.10.8 of IEEE 802.11ax draft 4.0.
-    {
-      /*
-       * Compute the number of bits used by common field.
-       * Assume that compression bit in HE-SIG-A is not set (i.e. not
-       * full band MU-MIMO); the field is present.
-       */
-      uint16_t bw = txVector.GetChannelWidth ();
-      std::size_t commonFieldSize = 4 /* CRC */ + 6 /* tail */;
-      if (bw <= 40)
-        {
-          commonFieldSize += 8; //only one allocation subfield
-        }
-      else
-        {
-          commonFieldSize += 8 * (bw / 40) /* one allocation field per 40 MHz */ + 1 /* center RU */;
-        }
-
-      /*
-       * Compute the number of bits used by user-specific field.
-       * MU-MIMO is not supported; only one station per RU.
-       * The user-specific field is composed of N user block fields
-       * spread over each corresponding HE-SIG-B content channel.
-       * Each user block field contains either two or one users' data
-       * (the latter being for odd number of stations per content channel).
-       * Padding will be handled further down in the code.
-       */
-      std::pair<std::size_t, std::size_t> numStaPerContentChannel = txVector.GetNumRusPerHeSigBContentChannel ();
-      std::size_t maxNumStaPerContentChannel = std::max (numStaPerContentChannel.first, numStaPerContentChannel.second);
-      std::size_t maxNumUserBlockFields = maxNumStaPerContentChannel / 2; //handle last user block with single user, if any, further down
-      std::size_t userSpecificFieldSize = maxNumUserBlockFields * (2 * 21 /* user fields (2 users) */ + 4 /* tail */ + 6 /* CRC */);
-      if (maxNumStaPerContentChannel % 2 != 0)
-        {
-          userSpecificFieldSize += 21 /* last user field */ + 4 /* CRC */ + 6 /* tail */;
-        }
-
-      /*
-       * Compute duration of HE-SIG-B considering that padding
-       * is added up to the next OFDM symbol.
-       * Nss = 1 and GI = 800 ns for HE-SIG-B.
-       */
-      Time symbolDuration = MicroSeconds (4);
-      WifiMode heSigBMode = m_staticPhyEntities[WIFI_MOD_CLASS_HE]->GetSigMode(WIFI_PPDU_FIELD_SIG_B, txVector);
-      double numDataBitsPerSymbol = heSigBMode.GetDataRate (20, 800, 1) * symbolDuration.GetNanoSeconds () / 1e9;
-      double numSymbols = ceil ((commonFieldSize + userSpecificFieldSize) / numDataBitsPerSymbol);
-
-      return FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
-    }
-  else if (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU)
-    {
-      return MicroSeconds (4);
-    }
-  else
-    {
-      // no SIG-B
-      return MicroSeconds (0);
-    }
-}
-
-Time
-WifiPhy::GetPhyHeaderDuration (WifiTxVector txVector)
-{
-  WifiPreamble preamble = txVector.GetPreambleType ();
-  switch (txVector.GetPreambleType ())
-    {
-    case WIFI_PREAMBLE_LONG:
-    case WIFI_PREAMBLE_SHORT:
-      {
-        switch (txVector.GetMode ().GetModulationClass ())
-          {
-          case WIFI_MOD_CLASS_OFDM:
-            {
-              switch (txVector.GetChannelWidth ())
-                {
-                case 20:
-                default:
-                  //(Section 17.3.3 "PHY preamble (SYNC))" and Figure 17-4 "OFDM training structure"; IEEE Std 802.11-2016)
-                  //also (Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016)
-                  //We return the duration of the SIGNAL field only, since the
-                  //SERVICE field (which strictly speaking belongs to the PHY
-                  //header, see Section 17.3.2 and Figure 17-1) is sent using the
-                  //payload mode.
-                  return MicroSeconds (4);
-                case 10:
-                  //(Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016)
-                  return MicroSeconds (8);
-                case 5:
-                  //(Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016)
-                  return MicroSeconds (16);
-                }
-            }
-          case WIFI_MOD_CLASS_ERP_OFDM:
-            return MicroSeconds (4);
-          case WIFI_MOD_CLASS_DSSS:
-          case WIFI_MOD_CLASS_HR_DSSS:
-            {
-              if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
-                {
-                  //(Section 16.2.2.3 "Short PPDU format" and Figure 16-2 "Short PPDU format"; IEEE Std 802.11-2016)
-                  return MicroSeconds (24);
-                }
-              else
-                {
-                  //(Section 16.2.2.2 "Long PPDU format" and Figure 16-1 "Short PPDU format"; IEEE Std 802.11-2016)
-                  return MicroSeconds (48);
-                }
-            }
-          default:
-            NS_FATAL_ERROR ("modulation class is not matching the preamble type");
-            return MicroSeconds (0);
-          }
-      }
-    case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-      //L-SIG
-      return MicroSeconds (4);
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_HE_ER_SU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      //LSIG + R-LSIG
-      return MicroSeconds (8);
-    case WIFI_PREAMBLE_HT_GF:
-      return MicroSeconds (0);
-    default:
-      NS_FATAL_ERROR ("unsupported preamble type");
-      return MicroSeconds (0);
-    }
-}
-
-Time
 WifiPhy::GetStartOfPacketDuration (WifiTxVector txVector)
 {
   return MicroSeconds (4);
-}
-
-Time
-WifiPhy::GetPhyPreambleDuration (WifiTxVector txVector)
-{
-  WifiPreamble preamble = txVector.GetPreambleType ();
-  switch (txVector.GetPreambleType ())
-    {
-    case WIFI_PREAMBLE_LONG:
-    case WIFI_PREAMBLE_SHORT:
-      {
-        switch (txVector.GetMode ().GetModulationClass ())
-          {
-            case WIFI_MOD_CLASS_OFDM:
-              {
-                switch (txVector.GetChannelWidth ())
-                  {
-                    case 20:
-                    default:
-                      //(Section 17.3.3 "PHY preamble (SYNC))" Figure 17-4 "OFDM training structure"
-                      //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016)
-                      return MicroSeconds (16);
-                    case 10:
-                      //(Section 17.3.3 "PHY preamble (SYNC))" Figure 17-4 "OFDM training structure"
-                      //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016)
-                      return MicroSeconds (32);
-                    case 5:
-                      //(Section 17.3.3 "PHY preamble (SYNC))" Figure 17-4 "OFDM training structure"
-                      //also Section 17.3.2.3 "Modulation-dependent parameters" Table 17-4 "Modulation-dependent parameters"; IEEE Std 802.11-2016)
-                      return MicroSeconds (64);
-                  }
-              }
-            case WIFI_MOD_CLASS_ERP_OFDM:
-              return MicroSeconds (16);
-            case WIFI_MOD_CLASS_DSSS:
-            case WIFI_MOD_CLASS_HR_DSSS:
-              {
-                if ((preamble == WIFI_PREAMBLE_SHORT) && (txVector.GetMode ().GetDataRate (22) > 1000000))
-                  {
-                    //(Section 17.2.2.3 "Short PPDU format)" Figure 17-2 "Short PPDU format"; IEEE Std 802.11-2012)
-                    return MicroSeconds (72);
-                  }
-                else
-                  {
-                    //(Section 17.2.2.2 "Long PPDU format)" Figure 17-1 "Long PPDU format"; IEEE Std 802.11-2012)
-                    return MicroSeconds (144);
-                  }
-              }
-            default:
-              NS_FATAL_ERROR ("modulation class is not matching the preamble type");
-              return MicroSeconds (0);
-          }
-      }
-    case WIFI_PREAMBLE_HT_MF:
-    case WIFI_PREAMBLE_VHT_SU:
-    case WIFI_PREAMBLE_VHT_MU:
-    case WIFI_PREAMBLE_HE_SU:
-    case WIFI_PREAMBLE_HE_ER_SU:
-    case WIFI_PREAMBLE_HE_MU:
-    case WIFI_PREAMBLE_HE_TB:
-      //L-STF + L-LTF
-      return MicroSeconds (16);
-    case WIFI_PREAMBLE_HT_GF:
-      //HT-GF-STF + HT-LTF1
-      return MicroSeconds (16);
-    default:
-      NS_FATAL_ERROR ("unsupported preamble type");
-      return MicroSeconds (0);
-    }
 }
 
 Time
@@ -2495,15 +2189,13 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand b
 Time
 WifiPhy::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector)
 {
-  WifiPreamble preamble = txVector.GetPreambleType ();
-  Time duration = GetPhyPreambleDuration (txVector)
-    + GetPhyHeaderDuration (txVector)
-    + GetPhyHtSigHeaderDuration (preamble)
-    + GetPhySigA1Duration (preamble)
-    + GetPhySigA2Duration (preamble)
-    + GetPhyTrainingSymbolDuration (txVector)
-    + GetPhySigBDuration (txVector);
-  return duration;
+  return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculatePhyPreambleAndHeaderDuration (txVector);
+}
+
+Time
+WifiPhy::GetPpduFieldDuration (WifiPpduField field, WifiTxVector txVector)
+{
+  return GetStaticPhyEntity (txVector.GetModulationClass ())->GetDuration (field, txVector);
 }
 
 WifiMode
@@ -2524,12 +2216,9 @@ WifiPhy::GetSigMode (WifiTxVector txVector)
 Time
 WifiPhy::CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector)
 {
-  NS_ASSERT (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB);
-  Time duration = GetPhyPreambleDuration (txVector)
-                  + GetPhyHeaderDuration (txVector)
-                  + GetPhySigA1Duration (WIFI_PREAMBLE_HE_TB)
-                  + GetPhySigA2Duration (WIFI_PREAMBLE_HE_TB);
-  return duration;
+  NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+  auto hePhy = DynamicCast<const HePhy> (GetStaticPhyEntity (txVector.GetModulationClass ()));
+  return (hePhy ? hePhy->CalculateNonOfdmaDurationForHeTb (txVector) : NanoSeconds (0));
 }
 
 Time
@@ -2544,6 +2233,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
 Time
 WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band)
 {
+  //TODO: Move this logic to HePhy
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
     {
       return ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, band);
@@ -2918,14 +2608,18 @@ WifiPhy::StartReceiveHeader (Ptr<Event> event)
       if (txVector.GetPreambleType () == WIFI_PREAMBLE_HT_GF)
         {
           //No non-HT PHY header for HT GF, in addition, remaining HT-LTFs follow after HT-SIG
-          Time remainingPreambleHeaderDuration = GetPhyPreambleDuration (txVector) + GetPhyHtSigHeaderDuration (WIFI_PREAMBLE_HT_GF) - (Simulator::Now () - m_currentEvent->GetStartTime ());
+          Time remainingPreambleHeaderDuration = GetPpduFieldDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector)
+                                                 + GetPpduFieldDuration (WIFI_PPDU_FIELD_HT_SIG, txVector)
+                                                 - (Simulator::Now () - m_currentEvent->GetStartTime ());
           m_state->SwitchMaybeToCcaBusy (remainingPreambleHeaderDuration);
           m_endPhyRxEvent = Simulator::Schedule (remainingPreambleHeaderDuration, &WifiPhy::EndReceiveCommonHeader, this, m_currentEvent);
         }
       else
         {
           //Schedule end of non-HT PHY header
-          Time remainingPreambleAndNonHtHeaderDuration = GetPhyPreambleDuration (txVector) + GetPhyHeaderDuration (txVector) - (Simulator::Now () - m_currentEvent->GetStartTime ());
+          Time remainingPreambleAndNonHtHeaderDuration = GetPpduFieldDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector)
+                                                         + GetPpduFieldDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector)
+                                                         - (Simulator::Now () - m_currentEvent->GetStartTime ());
           m_state->SwitchMaybeToCcaBusy (remainingPreambleAndNonHtHeaderDuration);
           m_endPhyRxEvent = Simulator::Schedule (remainingPreambleAndNonHtHeaderDuration, &WifiPhy::ContinueReceiveHeader, this, m_currentEvent);
         }
@@ -2961,8 +2655,8 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
       WifiTxVector txVector = event->GetTxVector ();
       Time remainingRxDuration = event->GetEndTime () - Simulator::Now ();
       m_state->SwitchMaybeToCcaBusy (remainingRxDuration);
-      WifiPreamble preamble = txVector.GetPreambleType ();
-      Time headerDuration = GetPhyHtSigHeaderDuration (preamble) + GetPhySigA1Duration (preamble) + GetPhySigA2Duration (preamble);
+      Time headerDuration = GetPpduFieldDuration (WIFI_PPDU_FIELD_HT_SIG, txVector)
+                            + GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_A, txVector);
       m_endPhyRxEvent = Simulator::Schedule (headerDuration, &WifiPhy::EndReceiveCommonHeader, this, event);
     }
   else //non-HT PHY header reception failed
@@ -3234,9 +2928,9 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
             {
               NS_LOG_INFO ("The BSS color of this DL MU PPDU matches device's. Schedule SIG-B reception.");
               Time timeBetweenSigAAndSigB = (ppdu->GetModulation () == WIFI_MOD_CLASS_VHT) ? //SIG-B just before payload for VHT whereas before training for HE
-                                            GetPhyTrainingSymbolDuration (txVector) :
+                                            GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector) :
                                             NanoSeconds (0);
-              m_endPhyRxEvent = Simulator::Schedule (timeBetweenSigAAndSigB + GetPhySigBDuration (txVector),
+              m_endPhyRxEvent = Simulator::Schedule (timeBetweenSigAAndSigB + GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_B, txVector),
                                                      &WifiPhy::EndReceiveSigB, this, event);
               success = true;
             }
@@ -3249,7 +2943,7 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
         }
       else if (psdu)
         {
-          success = ScheduleStartReceivePayload (event, GetPhyTrainingSymbolDuration (txVector));
+          success = ScheduleStartReceivePayload (event, GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector));
         }
       else
         {
@@ -3284,7 +2978,8 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
       else
         {
           Time remainingDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector)
-                                   + GetPhyTrainingSymbolDuration (txVector) + GetPhySigBDuration (txVector);
+                                   + GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector)
+                                   + GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_B, txVector);
           m_endRxEvents.push_back (Simulator::Schedule (remainingDuration,
                                                         &WifiPhy::ResetReceive, this, event));
         }
@@ -3302,7 +2997,7 @@ WifiPhy::EndReceiveSigB (Ptr<Event> event)
 
   Time timeBetweenSigBAndPayload = (ppdu->GetModulation () == WIFI_MOD_CLASS_VHT) ? //SIG-B just before payload for VHT whereas before training for HE
                                    NanoSeconds (0) :
-                                   GetPhyTrainingSymbolDuration (txVector);
+                                   GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector);
 
   //calculate PER of SIG-B on measurement channel
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (ppdu);
@@ -4186,32 +3881,15 @@ WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
 uint16_t
 WifiPhy::ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band)
 {
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
-  uint8_t m = 2; //HE TB PPDU so m is set to 2
-  uint16_t length = ((ceil ((static_cast<double> (ppduDuration.GetNanoSeconds () - (20 * 1000) - (sigExtension * 1000)) / 1000) / 4.0) * 3) - 3 - m);
-  return length;
+  return DynamicCast<const HePhy> (GetStaticPhyEntity (WIFI_MOD_CLASS_HE))->ConvertHeTbPpduDurationToLSigLength (ppduDuration, band);
 }
 
 Time
 WifiPhy::ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band)
 {
-  Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
-  Time preambleDuration = CalculatePhyPreambleAndHeaderDuration (txVector);
-  uint8_t sigExtension = 0;
-  if (band == WIFI_PHY_BAND_2_4GHZ)
-    {
-      sigExtension = 6;
-    }
-  uint8_t m = 2; //HE TB PPDU so m is set to 2
-  //Equation 27-11 of IEEE P802.11ax/D4.0
-  Time calculatedDuration = MicroSeconds (((ceil (static_cast<double> (length + 3 + m) / 3)) * 4) + 20 + sigExtension);
-  uint32_t nSymbols = floor (static_cast<double> ((calculatedDuration - preambleDuration).GetNanoSeconds () - (sigExtension * 1000)) / tSymbol.GetNanoSeconds ());
-  Time ppduDuration = preambleDuration + (nSymbols * tSymbol) + MicroSeconds (sigExtension);
-  return ppduDuration;
+  NS_ASSERT (txVector.GetModulationClass () == WIFI_MOD_CLASS_HE);
+  auto hePhy = DynamicCast<const HePhy> (GetStaticPhyEntity (txVector.GetModulationClass ()));
+  return (hePhy ? hePhy->ConvertLSigLengthToHeTbPpduDuration (length, txVector, band) : NanoSeconds (0));
 }
 
 int64_t

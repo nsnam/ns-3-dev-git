@@ -424,14 +424,17 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
   auto j = ni_it.begin ();
   Time previous = j->first;
   WifiMode payloadMode = txVector.GetMode (staId);
-  WifiPreamble preamble = txVector.GetPreambleType ();
   Time phyPayloadStart;
   if (!event->GetPpdu ()->IsUlMu ())
     {
-      Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
-      Time phyHtSigHeaderStart = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
-      Time phyTrainingSymbolsStart = phyHtSigHeaderStart + WifiPhy::GetPhyHtSigHeaderDuration (preamble) + WifiPhy::GetPhySigA1Duration (preamble) + WifiPhy::GetPhySigA2Duration (preamble); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
-      phyPayloadStart = phyTrainingSymbolsStart + WifiPhy::GetPhyTrainingSymbolDuration (txVector) + WifiPhy::GetPhySigBDuration (txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
+      Time phyHeaderStart = j->first + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector); //PPDU start time + preamble
+      Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector); //PPDU start time + preamble + L-SIG
+      Time phyTrainingSymbolsStart = phyLSigHeaderEnd
+                                     + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_HT_SIG, txVector)
+                                     + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_A, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
+      phyPayloadStart = phyTrainingSymbolsStart
+                        + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector)
+                        + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_B, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
     }
   else
     {
@@ -484,10 +487,14 @@ InterferenceHelper::CalculateNonHtPhyHeaderPer (Ptr<const Event> event, NiChange
   Time previous = j->first;
   WifiPreamble preamble = txVector.GetPreambleType ();
   WifiMode headerMode = WifiPhy::GetNonHtHeaderMode (txVector);
-  Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
-  Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
-  Time phyTrainingSymbolsStart = phyLSigHeaderEnd + WifiPhy::GetPhyHtSigHeaderDuration (preamble) + WifiPhy::GetPhySigA1Duration (preamble) + WifiPhy::GetPhySigA2Duration (preamble); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
-  Time phyPayloadStart = phyTrainingSymbolsStart + WifiPhy::GetPhyTrainingSymbolDuration (txVector) + WifiPhy::GetPhySigBDuration (txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
+  Time phyHeaderStart = j->first + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector); //PPDU start time + preamble
+  Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector); //PPDU start time + preamble + L-SIG
+  Time phyTrainingSymbolsStart = phyLSigHeaderEnd
+                                 + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_HT_SIG, txVector)
+                                 + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_A, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
+  Time phyPayloadStart = phyTrainingSymbolsStart
+                         + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector)
+                         + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_B, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
   double noiseInterferenceW = m_firstPowerPerBand.find (band)->second;
   double powerW = event->GetRxPowerW (band);
   while (++j != ni_it.end ())
@@ -600,10 +607,14 @@ InterferenceHelper::CalculateHtPhyHeaderPer (Ptr<const Event> event, NiChangesPe
   WifiPreamble preamble = txVector.GetPreambleType ();
   WifiMode mcsHeaderMode = WifiPhy::GetSigMode (txVector);
   WifiMode headerMode = WifiPhy::GetNonHtHeaderMode (txVector);
-  Time phyHeaderStart = j->first + WifiPhy::GetPhyPreambleDuration (txVector); //PPDU start time + preamble
-  Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPhyHeaderDuration (txVector); //PPDU start time + preamble + L-SIG
-  Time phyTrainingSymbolsStart = phyLSigHeaderEnd + WifiPhy::GetPhyHtSigHeaderDuration (preamble) + WifiPhy::GetPhySigA1Duration (preamble) + WifiPhy::GetPhySigA2Duration (preamble); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
-  Time phyPayloadStart = phyTrainingSymbolsStart + WifiPhy::GetPhyTrainingSymbolDuration (txVector) + WifiPhy::GetPhySigBDuration (txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
+  Time phyHeaderStart = j->first + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_PREAMBLE, txVector); //PPDU start time + preamble
+  Time phyLSigHeaderEnd = phyHeaderStart + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_NON_HT_HEADER, txVector); //PPDU start time + preamble + L-SIG
+  Time phyTrainingSymbolsStart = phyLSigHeaderEnd
+                                 + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_HT_SIG, txVector)
+                                 + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_A, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A
+  Time phyPayloadStart = phyTrainingSymbolsStart
+                         + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector)
+                         + WifiPhy::GetPpduFieldDuration (WIFI_PPDU_FIELD_SIG_B, txVector); //PPDU start time + preamble + L-SIG + HT-SIG or SIG-A + Training + SIG-B
   double noiseInterferenceW = m_firstPowerPerBand.find (band)->second;
   double powerW = event->GetRxPowerW (band);
   while (++j != ni_it.end ())

@@ -30,6 +30,7 @@
 #include "wifi-phy-state-helper.h"
 #include "wifi-ppdu.h"
 #include "wifi-spectrum-signal-parameters.h"
+#include "phy-entity.h"
 
 namespace ns3 {
 
@@ -41,7 +42,6 @@ class FrameCaptureModel;
 class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
-class PhyEntity;
 
 /**
  * Enumeration of the possible reception failure reasons.
@@ -428,52 +428,19 @@ public:
    */
   static Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector);
   /**
+   * Get the duration of the PPDU field (or group of fields)
+   * for the given transmission parameters.
    *
+   * \param field the PPDU field (or group of fields)
+   * \param txVector the transmission parameters
+   *
+   * \return the duration of the PPDU field
+   */
+  static Time GetPpduFieldDuration (WifiPpduField field, WifiTxVector txVector);
+  /**
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
    */
   static Time GetPreambleDetectionDuration (void);
-  /**
-   * \param txVector the transmission parameters used for this packet
-   *
-   * \return the training symbol duration
-   */
-  static Time GetPhyTrainingSymbolDuration (WifiTxVector txVector);
-  /**
-   * \param preamble the type of preamble
-   *
-   * \return the duration of the HT-SIG in Mixed Format and Greenfield format PHY header
-   */
-  static Time GetPhyHtSigHeaderDuration (WifiPreamble preamble);
-  /**
-   * \param preamble the type of preamble
-   *
-   * \return the duration of the SIG-A1 in PHY header
-   */
-  static Time GetPhySigA1Duration (WifiPreamble preamble);
-  /**
-   * \param preamble the type of preamble
-   *
-   * \return the duration of the SIG-A2 in PHY header
-   */
-  static Time GetPhySigA2Duration (WifiPreamble preamble);
-  /**
-   * \param txVector the transmission parameters used for this packet
-   *
-   * \return the duration of the SIG-B in PHY header
-   */
-  static Time GetPhySigBDuration (WifiTxVector txVector);
-  /**
-   * \param txVector the transmission parameters used for this packet
-   *
-   * \return the duration of the PHY header
-   */
-  static Time GetPhyHeaderDuration (WifiTxVector txVector);
-  /**
-   * \param txVector the transmission parameters used for this packet
-   *
-   * \return the duration of the PHY preamble
-   */
-  static Time GetPhyPreambleDuration (WifiTxVector txVector);
   /**
    * \param size the number of bytes in the packet to send
    * \param txVector the TXVECTOR used for the transmission of this packet

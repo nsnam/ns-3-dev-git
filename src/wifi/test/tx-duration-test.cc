@@ -641,7 +641,7 @@ HeSigBDurationTest::DoRun (void)
   std::pair<std::size_t, std::size_t> numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Both users should be on HE-SIG-B content channel 1");
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.second, 0, "Both users should be on HE-SIG-B content channel 2");
-  NS_TEST_EXPECT_MSG_EQ (WifiPhy::GetPhySigBDuration (txVector), MicroSeconds (4), "HE-SIG-B should only last one OFDM symbol");
+  NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (4), "HE-SIG-B should only last one OFDM symbol");
 
   //40 MHz band, even number of users per HE-SIG-B content channel
   userInfos.push_back ({{true, HeRu::RU_52_TONE, 5}, HePhy::GetHeMcs4 (), 1});
@@ -653,7 +653,7 @@ HeSigBDurationTest::DoRun (void)
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Two users should be on HE-SIG-B content channel 1");
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.second, 4, "Four users should be on HE-SIG-B content channel 2");
-  NS_TEST_EXPECT_MSG_EQ (WifiPhy::GetPhySigBDuration (txVector), MicroSeconds (4), "HE-SIG-B should only last one OFDM symbol");
+  NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (4), "HE-SIG-B should only last one OFDM symbol");
 
   //40 MHz band, odd number of users per HE-SIG-B content channel
   userInfos.push_back ({{true, HeRu::RU_26_TONE, 13}, HePhy::GetHeMcs3 (), 1});
@@ -662,7 +662,7 @@ HeSigBDurationTest::DoRun (void)
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 2, "Two users should be on HE-SIG-B content channel 1");
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.second, 5, "Five users should be on HE-SIG-B content channel 2");
-  NS_TEST_EXPECT_MSG_EQ (WifiPhy::GetPhySigBDuration (txVector), MicroSeconds (8), "HE-SIG-B should last two OFDM symbols");
+  NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (8), "HE-SIG-B should last two OFDM symbols");
 
   //80 MHz band
   userInfos.push_back ({{true, HeRu::RU_242_TONE, 3}, HePhy::GetHeMcs1 (), 1});
@@ -672,7 +672,7 @@ HeSigBDurationTest::DoRun (void)
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 3, "Three users should be on HE-SIG-B content channel 1");
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.second, 6, "Six users should be on HE-SIG-B content channel 2");
-  NS_TEST_EXPECT_MSG_EQ (WifiPhy::GetPhySigBDuration (txVector), MicroSeconds (16), "HE-SIG-B should last four OFDM symbols");
+  NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (16), "HE-SIG-B should last four OFDM symbols");
 
   //160 MHz band
   userInfos.push_back ({{false, HeRu::RU_996_TONE, 1}, HePhy::GetHeMcs1 (), 1});
@@ -681,7 +681,7 @@ HeSigBDurationTest::DoRun (void)
   numUsersPerCc = txVector.GetNumRusPerHeSigBContentChannel ();
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.first, 4, "Four users should be on HE-SIG-B content channel 1");
   NS_TEST_EXPECT_MSG_EQ (numUsersPerCc.second, 7, "Seven users should be on HE-SIG-B content channel 2");
-  NS_TEST_EXPECT_MSG_EQ (WifiPhy::GetPhySigBDuration (txVector), MicroSeconds (20), "HE-SIG-B should last five OFDM symbols");
+  NS_TEST_EXPECT_MSG_EQ (hePhy->GetDuration (WIFI_PPDU_FIELD_SIG_B, txVector), MicroSeconds (20), "HE-SIG-B should last five OFDM symbols");
 }
 
 /**
