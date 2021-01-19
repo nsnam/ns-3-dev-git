@@ -20,6 +20,7 @@
  */
 
 #include "he-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -286,6 +287,7 @@ public:
   ConstructorHe ()
   {
     ns3::HePhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_HE, ns3::Create<ns3::HePhy> ());
   }
 } g_constructor_he; ///< the constructor for HE modes
 

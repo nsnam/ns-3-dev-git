@@ -21,6 +21,7 @@
  */
 
 #include "dsss-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -197,6 +198,9 @@ public:
   ConstructorDsss ()
   {
     ns3::DsssPhy::InitializeModes ();
+    ns3::Ptr<ns3::DsssPhy> phyEntity = ns3::Create<ns3::DsssPhy> ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_HR_DSSS, phyEntity);
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_DSSS, phyEntity); //use same entity when plain DSSS modes are used
   }
 } g_constructor_dsss; ///< the constructor for DSSS modes
 

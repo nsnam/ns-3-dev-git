@@ -41,7 +41,7 @@ class FrameCaptureModel;
 class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
-class WifiPsdu;
+class PhyEntity;
 
 /**
  * Enumeration of the possible reception failure reasons.
@@ -1835,6 +1835,36 @@ public:
    */
   WifiSpectrumBand GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId) const;
 
+  /**
+   * Add the PHY entity to the map of __implemented__ PHY entities for the
+   * given modulation class.
+   * Through this method, child classes can add their own PHY entities in
+   * a static manner.
+   *
+   * \param modulation the modulation class
+   * \param phyEntity the PHY entity
+   */
+  static void AddStaticPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
+
+  /**
+   * Get the __implemented__ PHY entity corresponding to the modulation class.
+   * This is used to compute the different amendment-specific parameters within
+   * calling static methods.
+   *
+   * \param modulation the modulation class
+   * \return the pointer to the static implemented PHY entity
+   */
+  static const Ptr<const PhyEntity> GetStaticPhyEntity (WifiModulationClass modulation);
+
+  /**
+   * Get the supported PHY entity corresponding to the modulation class, for
+   * the WifiPhy instance.
+   *
+   * \param modulation the modulation class
+   * \return the const pointer to the supported PHY entity
+   */
+  const Ptr<const PhyEntity> GetPhyEntity (WifiModulationClass modulation) const;
+
 
 protected:
   // Inherited
@@ -1915,6 +1945,29 @@ protected:
    */
   virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
 
+  /**
+   * Add the PHY entity to the map of supported PHY entities for the
+   * given modulation class for the WifiPhy instance.
+   * This is a wrapper method used to check that the PHY entity is
+   * in the static map of implemented PHY entities (\see m_staticPhyEntities).
+   * In addition, child classes can add their own PHY entities.
+   *
+   * \param modulation the modulation class
+   * \param phyEntity the PHY entity
+   */
+  void AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
+  /**
+   * Get the supported PHY entity corresponding to the modulation class, for
+   * the WifiPhy instance.
+   *
+   * This method enables child classes to retrieve the non-const pointer to
+   * the supported PHY entity.
+   *
+   * \param modulation the modulation class
+   * \return the non-const pointer to the supported PHY entity
+   */
+  Ptr<PhyEntity> GetPhyEntity (WifiModulationClass modulation);
+
   InterferenceHelper m_interference;   //!< Pointer to InterferenceHelper
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
   Ptr<WifiPhyStateHelper> m_state;     //!< Pointer to WifiPhyStateHelper
@@ -1939,6 +1992,14 @@ protected:
   uint64_t m_currentHeTbPpduUid;       //!< UID of the HE TB PPDU being received
 
   static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
+
+  /**
+   * This map holds the supported PHY entities.
+   *
+   * The set of parameters (e.g. mode) that this WifiPhy(-derived class) can
+   * support can be obtained through it.
+   */
+  std::map<WifiModulationClass, Ptr<PhyEntity> > m_phyEntities;
 
 
 private:
@@ -2225,6 +2286,13 @@ private:
    */
   TracedCallback<HeSigAParameters> m_phyEndOfHeSigATrace;
 
+  /**
+   * Map of __implemented__ PHY entities. This is used to compute the different
+   * amendment-specific parameters in a static manner.
+   * For PHY entities supported by a given WifiPhy instance,
+   * \see m_phyEntities.
+   */
+  static std::map<WifiModulationClass, Ptr<PhyEntity> > m_staticPhyEntities;
   /**
    * This vector holds the set of transmission modes that this
    * WifiPhy(-derived class) can support. In conversation we call this

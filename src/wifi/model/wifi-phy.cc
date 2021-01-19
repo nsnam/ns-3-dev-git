@@ -40,6 +40,8 @@
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
 #include "ap-wifi-mac.h"
+#include "dsss-phy.h"
+#include "erp-ofdm-phy.h"
 #include "he-phy.h" //includes OFDM, HT, and VHT
 
 namespace ns3 {
@@ -287,6 +289,8 @@ WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
   { { {175, WIFI_PHY_BAND_6GHZ}, WIFI_PHY_STANDARD_80211ax}, {6815, 160} },
   { { {207, WIFI_PHY_BAND_6GHZ}, WIFI_PHY_STANDARD_80211ax}, {6975, 160} }
 };
+
+std::map<WifiModulationClass, Ptr<PhyEntity> > WifiPhy::m_staticPhyEntities; //will be filled by g_constructor_XXX
 
 TypeId
 WifiPhy::GetTypeId (void)
@@ -583,6 +587,12 @@ WifiPhy::DoDispose (void)
   m_deviceMcsSet.clear ();
   m_mcsIndexMap.clear ();
   m_currentPreambleEvents.clear ();
+
+  for (auto & phyEntity : m_phyEntities)
+    {
+      phyEntity.second = 0;
+    }
+  m_phyEntities.clear ();
 }
 
 void
@@ -965,6 +975,48 @@ WifiPhy::ConfigureDefaultsForStandard (void)
     }
 }
 
+const Ptr<const PhyEntity>
+WifiPhy::GetStaticPhyEntity (WifiModulationClass modulation)
+{
+  const auto it = m_staticPhyEntities.find (modulation);
+  NS_ABORT_MSG_IF (it == m_staticPhyEntities.end (), "Unimplemented Wi-Fi modulation class");
+  return it->second;
+}
+
+const Ptr<const PhyEntity>
+WifiPhy::GetPhyEntity (WifiModulationClass modulation) const
+{
+  const auto it = m_phyEntities.find (modulation);
+  NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class");
+  return it->second;
+}
+
+Ptr<PhyEntity>
+WifiPhy::GetPhyEntity (WifiModulationClass modulation)
+{
+  //This method returns a non-const pointer to be used by child classes
+  const auto it = m_phyEntities.find (modulation);
+  NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class");
+  return it->second;
+}
+
+void
+WifiPhy::AddStaticPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
+{
+  NS_LOG_FUNCTION (modulation);
+  NS_ASSERT_MSG (m_staticPhyEntities.find (modulation) == m_staticPhyEntities.end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
+  m_staticPhyEntities[modulation] = phyEntity;
+}
+
+void
+WifiPhy::AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
+{
+  NS_LOG_FUNCTION (this << modulation);
+  NS_ABORT_MSG_IF (m_staticPhyEntities.find (modulation) == m_staticPhyEntities.end (), "Cannot add an unimplemented PHY to supported list. Update the former first.");
+  NS_ASSERT_MSG (m_phyEntities.find (modulation) == m_phyEntities.end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
+  m_phyEntities[modulation] = phyEntity;
+}
+
 void
 WifiPhy::SetSifs (Time sifs)
 {
@@ -1017,6 +1069,7 @@ void
 WifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
+  AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> ());
 
   // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (16));
@@ -1040,6 +1093,9 @@ void
 WifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
+  Ptr<DsssPhy> phyEntity = Create<DsssPhy> ();
+  AddPhyEntity (WIFI_MOD_CLASS_HR_DSSS, phyEntity);
+  AddPhyEntity (WIFI_MOD_CLASS_DSSS, phyEntity); //when plain DSSS modes are used
 
   // See Table 16-4 "HR/DSSS PHY characteristics" of 802.11-2016
   SetSifs (MicroSeconds (10));
@@ -1065,6 +1121,7 @@ WifiPhy::Configure80211g (void)
   // if the user sets the ShortSlotTimeSupported flag to true and when the BSS
   // consists of only ERP STAs capable of supporting this option.
   Configure80211b ();
+  AddPhyEntity (WIFI_MOD_CLASS_ERP_OFDM, Create<ErpOfdmPhy> ());
 
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
@@ -1082,6 +1139,8 @@ WifiPhy::Configure80211p (void)
   NS_LOG_FUNCTION (this);
   if (GetChannelWidth () == 10)
     {
+      AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> (OFDM_PHY_10_MHZ));
+
       // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
       SetSifs (MicroSeconds (32));
       SetSlot (MicroSeconds (13));
@@ -1099,6 +1158,8 @@ WifiPhy::Configure80211p (void)
     }
   else if (GetChannelWidth () == 5)
     {
+      AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> (OFDM_PHY_5_MHZ));
+
       // See Table 17-21 "OFDM PHY characteristics" of 802.11-2016
       SetSifs (MicroSeconds (64));
       SetSlot (MicroSeconds (21));
@@ -1124,6 +1185,7 @@ void
 WifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
+  AddPhyEntity (WIFI_MOD_CLASS_OFDM, Create<OfdmPhy> (OFDM_PHY_HOLLAND));
 
   SetSifs (MicroSeconds (16));
   SetSlot (MicroSeconds (9));
@@ -1243,6 +1305,8 @@ WifiPhy::Configure80211n (void)
     {
       Configure80211a ();
     }
+  AddPhyEntity (WIFI_MOD_CLASS_HT, Create<HtPhy> (m_txSpatialStreams));
+
   // See Table 10-5 "Determination of the EstimatedAckTxTime based on properties
   // of the PPDU causing the EIFS" of 802.11-2016
   m_blockAckTxTime = MicroSeconds (68);
@@ -1255,6 +1319,7 @@ WifiPhy::Configure80211ac (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211n ();
+  AddPhyEntity (WIFI_MOD_CLASS_VHT, Create<VhtPhy> ());
 
   PushMcs (WifiPhy::GetVhtMcs0 ());
   PushMcs (WifiPhy::GetVhtMcs1 ());
@@ -1282,6 +1347,7 @@ WifiPhy::Configure80211ax (void)
     {
       Configure80211ac ();
     }
+  AddPhyEntity (WIFI_MOD_CLASS_HE, Create<HePhy> ());
 
   PushMcs (WifiPhy::GetHeMcs0 ());
   PushMcs (WifiPhy::GetHeMcs1 ());
@@ -1442,7 +1508,7 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
       break;
     case WIFI_PHY_STANDARD_UNSPECIFIED:
     default:
-      NS_ASSERT (false);
+      NS_ASSERT_MSG (false, "Unsupported standard");
       break;
     }
 }
@@ -1564,9 +1630,22 @@ WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
   bool changed = (m_txSpatialStreams != streams);
   m_txSpatialStreams = streams;
   ConfigureHtDeviceMcsSet ();
-  if (changed && !m_capabilitiesChangedCallback.IsNull ())
+  if (changed)
     {
-      m_capabilitiesChangedCallback ();
+      auto phyEntity = m_phyEntities.find (WIFI_MOD_CLASS_HT);
+      if (phyEntity != m_phyEntities.end ())
+        {
+          Ptr<HtPhy> htPhy = DynamicCast<HtPhy> (phyEntity->second);
+          if (htPhy)
+            {
+              htPhy->SetMaxSupportedNss (m_txSpatialStreams); //this is essential to have the right MCSs configured
+            }
+
+          if (!m_capabilitiesChangedCallback.IsNull ())
+            {
+              m_capabilitiesChangedCallback ();
+            }
+        }
     }
 }
 

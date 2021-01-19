@@ -20,6 +20,7 @@
  */
 
 #include "vht-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -252,6 +253,7 @@ public:
   ConstructorVht ()
   {
     ns3::VhtPhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_VHT, ns3::Create<ns3::VhtPhy> ());
   }
 } g_constructor_vht; ///< the constructor for VHT modes
 

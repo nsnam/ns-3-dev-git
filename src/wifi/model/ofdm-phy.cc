@@ -21,6 +21,7 @@
  */
 
 #include "ofdm-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -558,6 +559,7 @@ public:
   ConstructorOfdm ()
   {
     ns3::OfdmPhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_OFDM, ns3::Create<ns3::OfdmPhy> ()); //default variant will do
   }
 } g_constructor_ofdm; ///< the constructor for OFDM modes
 

@@ -20,6 +20,7 @@
  */
 
 #include "ht-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -546,6 +547,7 @@ public:
   ConstructorHt ()
   {
     ns3::HtPhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_HT, ns3::Create<ns3::HtPhy> ()); //dummy Nss
   }
 } g_constructor_ht; ///< the constructor for HT modes
 

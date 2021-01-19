@@ -128,10 +128,7 @@ WifiTxVector::GetModulationClass (void) const
 {
   NS_ABORT_MSG_IF (!m_modeInitialized, "WifiTxVector mode must be set before using");
 
-  // TODO Replace the following with IsMu when available
-  if (m_preamble == WIFI_PREAMBLE_VHT_MU
-      || m_preamble == WIFI_PREAMBLE_HE_MU
-      || m_preamble == WIFI_PREAMBLE_HE_TB)
+  if (IsMu ())
     {
       NS_ASSERT (!m_muUserInfos.empty ());
       // all the modes belong to the same modulation class

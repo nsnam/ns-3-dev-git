@@ -21,6 +21,7 @@
  */
 
 #include "erp-ofdm-phy.h"
+#include "wifi-phy.h" //only used for static mode constructor
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -207,6 +208,7 @@ public:
   ConstructorErpOfdm ()
   {
     ns3::ErpOfdmPhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_ERP_OFDM, ns3::Create<ns3::ErpOfdmPhy> ());
   }
 } g_constructor_erp_ofdm; ///< the constructor for ERP-OFDM modes
 
