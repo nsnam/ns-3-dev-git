@@ -1065,4 +1065,18 @@ PhyEntity::GetTxMaskRejectionParams (void) const
   return m_wifiPhy->GetTxMaskRejectionParams ();
 }
 
+uint16_t
+PhyEntity::GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const
+{
+  return ppdu->GetTxVector ().GetChannelWidth ();
+}
+
+Time
+PhyEntity::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const
+{
+  NS_ASSERT (psduMap.size () == 1);
+  const auto & it = psduMap.begin ();
+  return WifiPhy::CalculateTxDuration (it->second->GetSize (), txVector, band, it->first);
+}
+
 } //namespace ns3

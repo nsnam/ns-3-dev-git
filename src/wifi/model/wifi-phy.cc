@@ -44,7 +44,6 @@
 #include "dsss-phy.h"
 #include "erp-ofdm-phy.h"
 #include "he-phy.h" //includes OFDM, HT, and VHT
-#include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 
 namespace ns3 {
 
@@ -1879,28 +1878,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
 Time
 WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band)
 {
-  //TODO: Move this logic to HePhy
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
-    {
-      return HePhy::ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, band);
-    }
-
-  Time maxDuration = Seconds (0);
-  for (auto & staIdPsdu : psduMap)
-    {
-      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
-        {
-          WifiTxVector::HeMuUserInfoMap userInfoMap = txVector.GetHeMuUserInfoMap ();
-          NS_ABORT_MSG_IF (userInfoMap.find (staIdPsdu.first) == userInfoMap.end (), "STA-ID in psduMap (" << staIdPsdu.first << ") should be referenced in txVector");
-        }
-      Time current = CalculateTxDuration (staIdPsdu.second->GetSize (), txVector, band, staIdPsdu.first);
-      if (current > maxDuration)
-        {
-          maxDuration = current;
-        }
-    }
-  NS_ASSERT (maxDuration.IsStrictlyPositive ());
-  return maxDuration;
+  return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculateTxDuration (psduMap, txVector, band);
 }
 
 void
@@ -2503,18 +2481,7 @@ WifiPhy::GetTxPowerForTransmission (Ptr<const WifiPpdu> ppdu) const
     }
 
   //Apply power density constraint on EIRP
-  uint16_t channelWidth = txVector.GetChannelWidth ();
-  //TODO: Move to HePhy
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && ppdu->GetStaId () != SU_STA_ID)
-    {
-      auto hePpdu = DynamicCast<const HePpdu> (ppdu);
-      NS_ASSERT (hePpdu);
-      HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
-      NS_ASSERT (flag > HePpdu::PSD_NON_HE_TB);
-      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (ppdu->GetStaId ()).ruType);
-      channelWidth = (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
-      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << ppdu->GetStaId () << " for " << flag);
-    }
+  uint16_t channelWidth = GetPhyEntity (txVector.GetModulationClass ())->GetTransmissionChannelWidth (ppdu);
   double txPowerDbmPerMhz = (txPowerDbm + GetTxGain ()) - RatioToDb (channelWidth); //account for antenna gain since EIRP
   NS_LOG_INFO ("txPowerDbm=" << txPowerDbm << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz << " over " << channelWidth << " MHz");
   txPowerDbm = std::min (txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb (channelWidth);

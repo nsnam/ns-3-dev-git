@@ -79,6 +79,8 @@ public:
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<WifiPpdu> ppdu) override;
+  uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const override;
+  Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const override;
 
   /**
    * \return the BSS color of this PHY.

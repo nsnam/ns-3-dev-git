@@ -28,7 +28,6 @@
 #include "wifi-phy.h"
 #include "error-rate-model.h"
 #include "wifi-utils.h"
-#include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 #include "wifi-psdu.h"
 
 namespace ns3 {

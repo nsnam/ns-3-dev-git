@@ -871,6 +871,54 @@ HePhy::StartTx (Ptr<WifiPpdu> ppdu)
     }
 }
 
+uint16_t
+HePhy::GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && ppdu->GetStaId () != SU_STA_ID)
+    {
+      auto hePpdu = DynamicCast<const HePpdu> (ppdu);
+      NS_ASSERT (hePpdu);
+      HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
+      NS_ASSERT (flag > HePpdu::PSD_NON_HE_TB);
+      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (ppdu->GetStaId ()).ruType);
+      uint16_t channelWidth = (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
+      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << ppdu->GetStaId () << " for " << flag);
+      return channelWidth;
+    }
+  else
+    {
+      return PhyEntity::GetTransmissionChannelWidth (ppdu);
+    }
+}
+
+Time
+HePhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const
+{
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      return ConvertLSigLengthToHeTbPpduDuration (txVector.GetLength (), txVector, band);
+    }
+
+  Time maxDuration = Seconds (0);
+  for (auto & staIdPsdu : psduMap)
+    {
+      if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+        {
+          WifiTxVector::HeMuUserInfoMap userInfoMap = txVector.GetHeMuUserInfoMap ();
+          NS_ABORT_MSG_IF (userInfoMap.find (staIdPsdu.first) == userInfoMap.end (), "STA-ID in psduMap (" << staIdPsdu.first << ") should be referenced in txVector");
+        }
+      Time current = WifiPhy::CalculateTxDuration (staIdPsdu.second->GetSize (), txVector, band,
+                                                   staIdPsdu.first);
+      if (current > maxDuration)
+        {
+          maxDuration = current;
+        }
+    }
+  NS_ASSERT (maxDuration.IsStrictlyPositive ());
+  return maxDuration;
+}
+
 void
 HePhy::InitializeModes (void)
 {
