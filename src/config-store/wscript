@@ -30,6 +30,13 @@ def configure(conf):
                                      conf.env['ENABLE_GTK'],
                                      "library 'gtk+-3 >= 3.22' not found")
 
+        # Bug 2936 and #340 -Wparentheses issue for gcc >= 8
+        # This have to be kept until we can bump the minimum GTK version to 3.24
+        if conf.env['ENABLE_GTK']:
+            if conf.env['CXX_NAME'] in ['gcc']:
+                if tuple(map(int, conf.env['CC_VERSION'])) >= gcc_version_gtkplus_warning_issue:
+                    conf.env.append_value('CXXFLAGS', '-Wno-parentheses')
+
     have_libxml2 = conf.check_cfg(package='libxml-2.0 >= 2.7',
                                   args=['--cflags', '--libs'], uselib_store='LIBXML2',
                                   mandatory=False)
