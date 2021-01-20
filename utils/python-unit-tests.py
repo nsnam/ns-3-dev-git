@@ -1,3 +1,21 @@
+# Copyright (C) 2008-2011 INESC Porto
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Author: Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
+
 import unittest
 from ns.core import Simulator, Seconds, Config, int64x64_t
 import ns.core
@@ -111,11 +129,11 @@ class TestSimulator(unittest.TestCase):
         @param self this object
         @return none
         """
-        self.assert_(Seconds(123) == Seconds(123))
-        self.assert_(Seconds(123) >= Seconds(123))
-        self.assert_(Seconds(123) <= Seconds(123))
-        self.assert_(Seconds(124) > Seconds(123))
-        self.assert_(Seconds(123) < Seconds(124))
+        self.assertTrue(Seconds(123) == Seconds(123))
+        self.assertTrue(Seconds(123) >= Seconds(123))
+        self.assertTrue(Seconds(123) <= Seconds(123))
+        self.assertTrue(Seconds(124) > Seconds(123))
+        self.assertTrue(Seconds(123) < Seconds(124))
 
     def testTimeNumericOperations(self):
         """! Test numeric operations
@@ -162,7 +180,7 @@ class TestSimulator(unittest.TestCase):
         source.SendTo(ns.network.Packet(19), 0, ns.network.InetSocketAddress(ns.network.Ipv4Address("127.0.0.1"), 80))
 
         Simulator.Run()
-        self.assert_(self._received_packet is not None)
+        self.assertTrue(self._received_packet is not None)
         self.assertEqual(self._received_packet.GetSize(), 19)
 
 
@@ -171,17 +189,14 @@ class TestSimulator(unittest.TestCase):
         @param self this object
         @return none
         """
-        ##
-        ## Yes, I know, the GetAttribute interface for Python is
-        ## horrible, we should fix this soon, I hope.
-        ##
-        queue = ns.network.DropTailQueue()
+        # Templated class DropTailQueue<Packet> in C++
+        queue = ns.network.DropTailQueue__Ns3Packet()
+        queueSizeValue = ns.network.QueueSizeValue (ns.network.QueueSize ("500p"))
+        queue.SetAttribute("MaxSize", queueSizeValue)
 
-        queue.SetAttribute("MaxPackets", ns.core.UintegerValue(123456))
-
-        limit = ns.core.UintegerValue()
-        queue.GetAttribute("MaxPackets", limit)
-        self.assertEqual(limit.Get(), 123456)
+        limit = ns.network.QueueSizeValue()
+        queue.GetAttribute("MaxSize", limit)
+        self.assertEqual(limit.Get(), ns.network.QueueSize ("500p"))
 
         ## -- object pointer values
         mobility = ns.mobility.RandomWaypointMobilityModel()
@@ -194,7 +209,7 @@ class TestSimulator(unittest.TestCase):
 
         ptr = ns.core.PointerValue()
         mobility.GetAttribute("PositionAllocator", ptr)
-        self.assert_(ptr.GetObject() is not None)
+        self.assertTrue(ptr.GetObject() is not None)
 
     def testIdentity(self):
         """! Test identify
@@ -208,7 +223,7 @@ class TestSimulator(unittest.TestCase):
         c1 = csma.GetChannel()
         c2 = csma.GetChannel()
 
-        self.assert_(c1 is c2)
+        self.assertTrue(c1 is c2)
 
     def testTypeId(self):
         """! Test type ID
