@@ -44,6 +44,12 @@ QosFrameExchangeManager::GetTypeId (void)
     .SetParent<FrameExchangeManager> ()
     .AddConstructor<QosFrameExchangeManager> ()
     .SetGroupName ("Wifi")
+    .AddAttribute ("PifsRecovery",
+                   "Perform a PIFS recovery as a response to transmission failure "
+                   "within a TXOP",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&QosFrameExchangeManager::m_pifsRecovery),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -65,6 +71,7 @@ QosFrameExchangeManager::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_edca = 0;
   m_edcaBackingOff = 0;
+  m_pifsRecoveryEvent.Cancel ();
   FrameExchangeManager::DoDispose ();
 }
 
@@ -104,10 +111,50 @@ QosFrameExchangeManager::SendCfEndIfNeeded (void)
   return false;
 }
 
+void
+QosFrameExchangeManager::PifsRecovery (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_edca != 0);
+  NS_ASSERT (m_edca->IsTxopStarted ());
+
+  // Release the channel if it has not been idle for the last PIFS interval
+  if (m_channelAccessManager->GetAccessGrantStart () - m_phy->GetSifs ()
+      > Simulator::Now () - m_phy->GetPifs ())
+    {
+      m_edca->NotifyChannelReleased ();
+      m_edca = 0;
+    }
+  else
+    {
+      // the txopDuration parameter is unused because we are not starting a new TXOP
+      StartTransmission (m_edca, Seconds (0));
+    }
+}
+
+void
+QosFrameExchangeManager::CancelPifsRecovery (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_pifsRecoveryEvent.IsRunning ());
+  NS_ASSERT (m_edca != 0);
+
+  NS_LOG_DEBUG ("Cancel PIFS recovery being attempted by EDCAF " << m_edca);
+  m_pifsRecoveryEvent.Cancel ();
+  m_edca->NotifyChannelReleased ();
+}
+
 bool
 QosFrameExchangeManager::StartTransmission (Ptr<Txop> edca)
 {
   NS_LOG_FUNCTION (this << edca);
+
+  if (m_pifsRecoveryEvent.IsRunning ())
+    {
+      // Another AC (having AIFS=1 or lower, if the user changed the default settings)
+      // gained channel access while performing PIFS recovery. Abort PIFS recovery
+      CancelPifsRecovery ();
+    }
 
   // TODO This will become an assert once no Txop is installed on a QoS station
   if (!edca->IsQosTxop ())
@@ -125,6 +172,13 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
 {
   NS_LOG_FUNCTION (this << edca << txopDuration);
 
+  if (m_pifsRecoveryEvent.IsRunning ())
+    {
+      // Another AC (having AIFS=1 or lower, if the user changed the default settings)
+      // gained channel access while performing PIFS recovery. Abort PIFS recovery
+      CancelPifsRecovery ();
+    }
+
   if (m_txTimer.IsRunning ())
     {
       m_txTimer.Cancel ();
@@ -140,6 +194,7 @@ QosFrameExchangeManager::StartTransmission (Ptr<QosTxop> edca, Time txopDuration
     {
       NS_ASSERT (m_edca->GetTxopLimit ().IsStrictlyPositive ());
       NS_ASSERT (m_edca->IsTxopStarted ());
+      NS_ASSERT (!m_pifsRecovery);
       NS_ASSERT (!m_initialFrame);
 
       // clear the member variable
@@ -504,13 +559,27 @@ QosFrameExchangeManager::TransmissionFailed (void)
       NS_ASSERT_MSG (m_edca->GetTxopLimit ().IsStrictlyPositive (),
                      "Cannot transmit more than one frame if TXOP Limit is zero");
 
-      // In order not to terminate (yet) the TXOP, we call the NotifyChannelReleased
-      // method of the Txop class, which only generates a new backoff value and
-      // requests channel access if needed,
-      NS_LOG_DEBUG ("TX of a non-initial frame of a TXOP failed: invoke backoff");
-      m_edca->Txop::NotifyChannelReleased ();
-      m_edcaBackingOff = m_edca;
-      m_edca = 0;
+      // A STA can perform a PIFS recovery or perform a backoff as a response to
+      // transmission failure within a TXOP. How it chooses between these two is
+      // implementation dependent. (Sec. 10.22.2.2 of 802.11-2016)
+      if (m_pifsRecovery)
+        {
+          // we can continue the TXOP if the carrier sense mechanism indicates that
+          // the medium is idle in a PIFS
+          NS_LOG_DEBUG ("TX of a non-initial frame of a TXOP failed: perform PIFS recovery");
+          NS_ASSERT (!m_pifsRecoveryEvent.IsRunning ());
+          m_pifsRecoveryEvent = Simulator::Schedule (m_phy->GetPifs (), &QosFrameExchangeManager::PifsRecovery, this);
+        }
+      else
+        {
+          // In order not to terminate (yet) the TXOP, we call the NotifyChannelReleased
+          // method of the Txop class, which only generates a new backoff value and
+          // requests channel access if needed,
+          NS_LOG_DEBUG ("TX of a non-initial frame of a TXOP failed: invoke backoff");
+          m_edca->Txop::NotifyChannelReleased ();
+          m_edcaBackingOff = m_edca;
+          m_edca = 0;
+        }
     }
   m_initialFrame = false;
 }

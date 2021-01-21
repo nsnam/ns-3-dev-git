@@ -134,6 +134,13 @@ protected:
   virtual bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame);
 
   /**
+   * Perform a PIFS recovery as a response to transmission failure within a TXOP.
+   * If the carrier sense indicates that the medium is idle, continue the TXOP.
+   * Otherwise, release the channel.
+   */
+  void PifsRecovery (void);
+
+  /**
    * Send a CF-End frame to indicate the completion of the TXOP, provided that
    * the remaining duration is long enough to transmit this frame.
    *
@@ -153,7 +160,16 @@ protected:
   Mac48Address m_txopHolder;                 //!< MAC address of the TXOP holder
 
 private:
+
+  /**
+   * Cancel the PIFS recovery event and have the EDCAF attempting PIFS recovery
+   * release the channel.
+   */
+  void CancelPifsRecovery (void);
+
   bool m_initialFrame;                       //!< true if transmitting the initial frame of a TXOP
+  bool m_pifsRecovery;                       //!< true if performing a PIFS recovery after failure
+  EventId m_pifsRecoveryEvent;               //!< event associated with an attempt of PIFS recovery
   Ptr<Txop> m_edcaBackingOff;                //!< channel access function that invoked backoff during TXOP
 };
 
