@@ -20,6 +20,7 @@
 
 #include "ns3/test.h"
 #include "ns3/wifi-mac-queue.h"
+#include "ns3/simulator.h"
 
 using namespace ns3;
 
@@ -61,6 +62,7 @@ WifiMacQueueDropOldestTest::DoRun ()
   for (uint32_t i = 0; i < 5; i++)
     {
       WifiMacHeader header;
+      header.SetType (WIFI_MAC_QOSDATA);
       auto packet = Create<Packet> ();
       auto item = Create<WifiMacQueueItem> (packet, header);
       wifiMacQueue->PushFront (item);
@@ -81,6 +83,7 @@ WifiMacQueueDropOldestTest::DoRun ()
 
   // Push another element in front of the queue.
   WifiMacHeader header;
+  header.SetType (WIFI_MAC_QOSDATA);
   auto packet = Create<Packet> ();
   auto item = Create<WifiMacQueueItem> (packet, header);
   wifiMacQueue->PushFront (item);
@@ -98,6 +101,8 @@ WifiMacQueueDropOldestTest::DoRun ()
                              "Stored packet is not the expected one");
       it++;
     }
+
+  Simulator::Destroy ();
 }
 
 /**
