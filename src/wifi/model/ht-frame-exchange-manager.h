@@ -186,7 +186,7 @@ protected:
   virtual void DoDispose () override;
 
   // Overridden from QosFrameExchangeManager
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu) override;
   virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
                                 const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;

@@ -94,7 +94,7 @@ protected:
   virtual void DoDispose () override;
 
   // Overridden from FrameExchangeManager
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu) override;
   virtual void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
   virtual Time GetFrameDurationId (const WifiMacHeader& header, uint32_t size,

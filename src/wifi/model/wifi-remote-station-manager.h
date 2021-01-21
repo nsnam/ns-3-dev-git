@@ -44,6 +44,7 @@ class WifiMacQueueItem;
 class WifiTxVector;
 
 struct WifiRemoteStationState;
+struct RxSignalInfo;
 
 /**
  * \brief hold per-remote-station state.
@@ -59,7 +60,8 @@ struct WifiRemoteStationState;
 struct WifiRemoteStation
 {
   virtual ~WifiRemoteStation () {};
-  WifiRemoteStationState *m_state;  //!< Remote station state
+  WifiRemoteStationState *m_state;                 //!< Remote station state
+  std::pair<double, Time> m_rssiAndUpdateTimePair; //!< RSSI (in dBm) of the most recent packet received from the remote station along with update time
 };
 
 /**
@@ -776,12 +778,12 @@ public:
 
   /**
    * \param address remote address
-   * \param rxSnr the SNR of the packet received
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txMode the transmission mode used for the packet received
    *
    * Should be invoked whenever a packet is successfully received.
    */
-  void ReportRxOk (Mac48Address address, double rxSnr, WifiMode txMode);
+  void ReportRxOk (Mac48Address address, RxSignalInfo rxSignalInfo, WifiMode txMode);
 
   /**
    * \param header MAC header
@@ -847,6 +849,16 @@ public:
    * \return information regarding the remote station associated with the given address
    */
   WifiRemoteStationInfo GetInfo (Mac48Address address);
+  /**
+   * \param address of the remote station
+   *
+   * \return the RSSI (in dBm) of the most recent packet received from the remote station (irrespective of TID)
+   *
+   * This method is typically used when the device needs
+   * to estimate the target UL RSSI info to put in the
+   * Trigger frame to send to the remote station.
+   */
+  double GetMostRecentRssi (Mac48Address address) const;
   /**
    * Set the default transmission power level
    *

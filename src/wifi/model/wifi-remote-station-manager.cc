@@ -900,14 +900,16 @@ WifiRemoteStationManager::ReportFinalDataFailed (Ptr<const WifiMacQueueItem> mpd
 }
 
 void
-WifiRemoteStationManager::ReportRxOk (Mac48Address address, double rxSnr, WifiMode txMode)
+WifiRemoteStationManager::ReportRxOk (Mac48Address address, RxSignalInfo rxSignalInfo, WifiMode txMode)
 {
-  NS_LOG_FUNCTION (this << address << rxSnr << txMode);
+  NS_LOG_FUNCTION (this << address << rxSignalInfo << txMode);
   if (address.IsGroup ())
     {
       return;
     }
-  DoReportRxOk (Lookup (address), rxSnr, txMode);
+  WifiRemoteStation *station = Lookup (address);
+  DoReportRxOk (station, rxSignalInfo.snr, txMode);
+  station->m_rssiAndUpdateTimePair = std::make_pair (rxSignalInfo.rssi, Simulator::Now ());
 }
 
 void
@@ -1199,6 +1201,26 @@ WifiRemoteStationManager::GetInfo (Mac48Address address)
   return state->m_info;
 }
 
+double
+WifiRemoteStationManager::GetMostRecentRssi (Mac48Address address) const
+{
+  double rssi = 0.0;
+  Time mostRecentUpdateTime = NanoSeconds (0);
+  for (const auto & station : m_stations)
+    {
+      if (station->m_state->m_address == address) //get most recent RSSI irrespective of TID
+        {
+          if (station->m_rssiAndUpdateTimePair.second >= mostRecentUpdateTime)
+            {
+              rssi = station->m_rssiAndUpdateTimePair.first;
+              mostRecentUpdateTime = station->m_rssiAndUpdateTimePair.second;
+            }
+        }
+    }
+  NS_ASSERT (mostRecentUpdateTime.IsStrictlyPositive ());
+  return rssi;
+}
+
 WifiRemoteStationState *
 WifiRemoteStationManager::LookupState (Mac48Address address) const
 {
@@ -1244,6 +1266,7 @@ WifiRemoteStationManager::Lookup (Mac48Address address) const
 
   WifiRemoteStation *station = DoCreateStation ();
   station->m_state = state;
+  station->m_rssiAndUpdateTimePair = std::make_pair (0, Seconds (0));
   const_cast<WifiRemoteStationManager *> (this)->m_stations.push_back (station);
   return station;
 }

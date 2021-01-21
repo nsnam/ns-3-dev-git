@@ -246,11 +246,11 @@ protected:
    * This method handles the reception of an MPDU (possibly included in an A-MPDU)
    *
    * \param mpdu the received MPDU
-   * \param rxSnr snr of MPDU received in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TxVector of the received PSDU
    * \param inAmpdu true if the MPDU is part of an A-MPDU
    */
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu);
 
   /**
@@ -271,11 +271,11 @@ protected:
    * \param mpdu the MPDU that was acknowledged
    * \param txVector the TXVECTOR used to transmit the MPDU that was acknowledged
    * \param ackTxVector the TXVECTOR used to transmit the Normal Ack frame
-   * \param rxSnr snr of MPDU received in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param snr the SNR at the receiver for the MPDU that was acknowledged
    */
   virtual void ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
-                                  const WifiTxVector& ackTxVector, double rxSnr, double snr);
+                                  const WifiTxVector& ackTxVector, RxSignalInfo rxSignalInfo, double snr);
 
   /**
    * Notify other components that an MPDU was acknowledged.

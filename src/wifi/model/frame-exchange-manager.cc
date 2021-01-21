@@ -870,7 +870,6 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
       return;
     }
 
-  double rxSnr = rxSignalInfo.snr;
   if (psdu->GetNMpdus () == 1)
     {
       // if perMpduStatus is not empty (i.e., this MPDU is not included in an A-MPDU)
@@ -881,13 +880,13 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
       if (!psdu->GetHeader (0).IsAck () && !psdu->GetHeader (0).IsCts ())
         {
           m_mac->GetWifiRemoteStationManager ()->ReportRxOk (psdu->GetHeader (0).GetAddr2 (),
-                                                             rxSnr, txVector.GetMode ());
+                                                             rxSignalInfo, txVector.GetMode ());
         }
-      ReceiveMpdu (*(psdu->begin ()), rxSnr, txVector, perMpduStatus.empty ());
+      ReceiveMpdu (*(psdu->begin ()), rxSignalInfo, txVector, perMpduStatus.empty ());
     }
   else
     {
-      EndReceiveAmpdu (psdu, rxSnr, txVector, perMpduStatus);
+      EndReceiveAmpdu (psdu, rxSignalInfo.snr, txVector, perMpduStatus);
     }
 }
 
@@ -963,15 +962,16 @@ FrameExchangeManager::NavResetTimeout (void)
 }
 
 void
-FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                                    const WifiTxVector& txVector, bool inAmpdu)
 {
-  NS_LOG_FUNCTION (this << *mpdu << rxSnr << txVector << inAmpdu);
+  NS_LOG_FUNCTION (this << *mpdu << rxSignalInfo << txVector << inAmpdu);
   // The received MPDU is either broadcast or addressed to this station
   NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsGroup ()
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
   const WifiMacHeader& hdr = mpdu->GetHeader ();
+  double rxSnr = rxSignalInfo.snr;
 
   if (hdr.IsCtl ())
     {
@@ -1005,7 +1005,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
 
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSnr, txVector.GetMode ());
+          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector.GetMode ());
           m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_mpdu->GetHeader (),
                                                               rxSnr, txVector.GetMode (), tag.Get ());
 
@@ -1019,7 +1019,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
           NS_ASSERT (hdr.GetAddr1 () == m_self);
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          ReceivedNormalAck (m_mpdu, m_txParams.m_txVector, txVector, rxSnr, tag.Get ());
+          ReceivedNormalAck (m_mpdu, m_txParams.m_txVector, txVector, rxSignalInfo, tag.Get ());
           m_mpdu = 0;
         }
     }
@@ -1061,7 +1061,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
 
 void
 FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
-                                         const WifiTxVector& ackTxVector, double rxSnr,
+                                         const WifiTxVector& ackTxVector, RxSignalInfo rxSignalInfo,
                                          double snr)
 {
   Mac48Address sender = mpdu->GetHeader ().GetAddr1 ();
@@ -1072,9 +1072,8 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
   // When fragmentation is used, only update manager when the last fragment is acknowledged
   if (!mpdu->GetHeader ().IsMoreFragments ())
     {
-      m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSnr, ackTxVector.GetMode ());
-      m_mac->GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxSnr, ackTxVector.GetMode (),
-                                                           snr, txVector);
+      m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, ackTxVector.GetMode ());
+      m_mac->GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxSignalInfo.snr, ackTxVector.GetMode (), snr, txVector);
     }
   // cancel the timer
   m_txTimer.Cancel ();

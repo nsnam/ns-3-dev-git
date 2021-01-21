@@ -628,7 +628,7 @@ QosFrameExchangeManager::SetTxopHolder (Ptr<const WifiPsdu> psdu, const WifiTxVe
 }
 
 void
-QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                                       const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station
@@ -644,6 +644,7 @@ QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
       return;
     }
 
+  double rxSnr = rxSignalInfo.snr;
   if (hdr.IsRts ())
     {
       NS_ABORT_MSG_IF (inAmpdu, "Received RTS as part of an A-MPDU");
@@ -685,7 +686,7 @@ QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
       return;
     }
 
-  return FrameExchangeManager::ReceiveMpdu (mpdu, rxSnr, txVector, inAmpdu);
+  return FrameExchangeManager::ReceiveMpdu (mpdu, rxSignalInfo, txVector, inAmpdu);
 }
 
 } //namespace ns3

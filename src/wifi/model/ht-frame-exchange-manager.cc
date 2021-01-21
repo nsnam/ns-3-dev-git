@@ -1237,7 +1237,7 @@ HtFrameExchangeManager::GetBlockAckType (Mac48Address originator, uint8_t tid) c
 }
 
 void
-HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
+HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                                      const WifiTxVector& txVector, bool inAmpdu)
 {
   // The received MPDU is either broadcast or addressed to this station
@@ -1245,6 +1245,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
   const WifiMacHeader& hdr = mpdu->GetHeader ();
+  double rxSnr = rxSignalInfo.snr;
 
   if (hdr.IsCtl ())
     {
@@ -1259,7 +1260,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
 
           SnrTag tag;
           mpdu->GetPacket ()->PeekPacketTag (tag);
-          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSnr, txVector.GetMode ());
+          m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, txVector.GetMode ());
           m_mac->GetWifiRemoteStationManager ()->ReportRtsOk (m_psdu->GetHeader (0),
                                                               rxSnr, txVector.GetMode (), tag.Get ());
 
@@ -1326,7 +1327,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
       else
         {
           // the received control frame cannot be handled here
-          QosFrameExchangeManager::ReceiveMpdu (mpdu, rxSnr, txVector, inAmpdu);
+          QosFrameExchangeManager::ReceiveMpdu (mpdu, rxSignalInfo, txVector, inAmpdu);
         }
       return;
     }
@@ -1356,7 +1357,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, double rxSnr,
       // to a Block Ack agreement
     }
 
-  QosFrameExchangeManager::ReceiveMpdu (mpdu, rxSnr, txVector, inAmpdu);
+  QosFrameExchangeManager::ReceiveMpdu (mpdu, rxSignalInfo, txVector, inAmpdu);
 }
 
 void
