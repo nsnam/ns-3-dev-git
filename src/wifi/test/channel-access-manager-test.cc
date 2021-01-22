@@ -426,7 +426,7 @@ void
 TxopTest<TxopType>::DoDispose (void)
 {
   m_test = 0;
-  Txop::DoDispose ();
+  TxopType::DoDispose ();
 }
 
 template <typename TxopType>
@@ -620,7 +620,6 @@ void
 ChannelAccessManagerTest<TxopType>::EndTest (void)
 {
   Simulator::Run ();
-  Simulator::Destroy ();
 
   for (typename TxopTests::const_iterator i = m_txop.begin (); i != m_txop.end (); i++)
     {
@@ -633,9 +632,11 @@ ChannelAccessManagerTest<TxopType>::EndTest (void)
     }
   m_txop.clear ();
 
+  m_ChannelAccessManager->Dispose ();
   m_ChannelAccessManager = 0;
   m_low = 0;
   m_feManager = 0;
+  Simulator::Destroy ();
 }
 
 template <typename TxopType>

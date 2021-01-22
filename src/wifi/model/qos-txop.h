@@ -437,13 +437,15 @@ public:
    */
   Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
 
+protected:
+  // Overridden from Txop
+  void DoDispose (void);
 
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
   // Overridden from Txop
-  void DoDispose (void);
   void DoInitialize (void);
   void TerminateTxop (void);
   uint32_t GetNextFragmentSize (void) const;
