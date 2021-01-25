@@ -163,5 +163,13 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
   return false;
 }
 
+void
+WaveFrameExchangeManager::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_scheduler = 0;
+  m_coordinator = 0;
+  FrameExchangeManager::DoDispose ();
+}
 
 } //namespace ns3

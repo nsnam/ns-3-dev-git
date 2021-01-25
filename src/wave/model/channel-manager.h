@@ -132,6 +132,9 @@ public:
    */
   uint32_t GetManagementPowerLevel (uint32_t channelNumber);
 
+protected:
+  virtual void DoDispose (void);
+
 private:
   /// 1609.4-2010 Annex H
   static const uint32_t  DEFAULT_OPERATING_CLASS = 17;

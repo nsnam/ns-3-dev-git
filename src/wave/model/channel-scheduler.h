@@ -195,6 +195,7 @@ public:
 
 protected:
   virtual void DoInitialize (void);
+  virtual void DoDispose (void);
 
   /**
      * \param channelNumber the specific channel

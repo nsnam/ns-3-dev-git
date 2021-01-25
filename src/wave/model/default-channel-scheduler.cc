@@ -111,6 +111,7 @@ DefaultChannelScheduler::DoDispose (void)
     {
       m_waitEvent.Cancel ();
     }
+  m_phy = 0;
   ChannelScheduler::DoDispose ();
 }
 

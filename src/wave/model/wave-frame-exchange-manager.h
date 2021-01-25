@@ -63,6 +63,10 @@ public:
    */
   void SetWaveNetDevice (Ptr<WaveNetDevice> device);
 
+protected:
+  // Overridden from FrameExchangeManager
+  virtual void DoDispose (void);
+
 private:
   /**
    * Return a TXVECTOR for the DATA frame given the destination.

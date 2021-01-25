@@ -459,4 +459,11 @@ OcbWifiMac::EnableForWave (Ptr<WaveNetDevice> device)
   StaticCast<WaveFrameExchangeManager> (m_feManager)->SetWaveNetDevice (device);
 }
 
+void
+OcbWifiMac::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  RegularWifiMac::DoDispose ();
+}
+
 } // namespace ns3

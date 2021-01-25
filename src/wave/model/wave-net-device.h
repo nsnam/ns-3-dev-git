@@ -343,8 +343,6 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsPointToPoint (void) const;
   virtual bool IsBridge (void) const;
-  virtual Ptr<Node> GetNode (void) const;
-  virtual void SetNode (Ptr<Node> node);
   virtual bool NeedsArp (void) const;
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   virtual Address GetMulticast (Ipv6Address addr) const;
@@ -401,7 +399,6 @@ private:
   TracedCallback<Address, Address> m_addressChange;
 
   // copy from WifiNetDevice
-  Ptr<Node> m_node; ///< the node
   NetDevice::ReceiveCallback m_forwardUp; ///< forward up receive callback
   NetDevice::PromiscReceiveCallback m_promiscRx; ///< promiscious receive callback
   uint32_t m_ifIndex; ///< IF index

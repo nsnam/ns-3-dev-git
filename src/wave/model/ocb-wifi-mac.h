@@ -175,6 +175,8 @@ public:
 
   // Inherited from base class
   virtual void ConfigureStandard (enum WifiStandard standard);
+protected:
+  virtual void DoDispose (void);
 private:
   virtual void Receive (Ptr<WifiMacQueueItem> mpdu);
 
