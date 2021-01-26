@@ -39,13 +39,6 @@ class PreambleDetectionModel;
 class WifiRadioEnergyModel;
 class UniformRandomVariable;
 
-/// Parameters for received HE-SIG-A for OBSS_PD based SR
-struct HeSigAParameters
-{
-  double rssiW; ///< RSSI in W
-  uint8_t bssColor; ///< BSS color
-};
-
 /**
  * \brief 802.11 PHY layer model
  * \ingroup wifi
@@ -677,21 +670,6 @@ public:
   typedef void (* PsduTxBeginCallback)(WifiConstPsduMap psduMap, WifiTxVector txVector, double txPowerW);
 
   /**
-   * Public method used to fire a EndOfHeSigA trace once HE-SIG-A field has been received.
-   *
-   * \param params the HE-SIG-A parameters
-   */
-  void NotifyEndOfHeSigA (HeSigAParameters params);
-
-  /**
-   * TracedCallback signature for end of HE-SIG-A events.
-   *
-   *
-   * \param params the HE-SIG-A parameters
-   */
-  typedef void (* EndOfHeSigACallback)(HeSigAParameters params);
-
-  /**
    * TracedCallback signature for start of PSDU reception events.
    *
    * \param txVector the TXVECTOR decoded from the PHY header
@@ -1011,9 +989,9 @@ public:
    * the WifiPhy instance.
    *
    * \param modulation the modulation class
-   * \return the const pointer to the supported PHY entity
+   * \return the pointer to the supported PHY entity
    */
-  const Ptr<const PhyEntity> GetPhyEntity (WifiModulationClass modulation) const;
+  Ptr<PhyEntity> GetPhyEntity (WifiModulationClass modulation) const;
 
   /**
    * \return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)
@@ -1116,17 +1094,6 @@ protected:
    * \param phyEntity the PHY entity
    */
   void AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity);
-  /**
-   * Get the supported PHY entity corresponding to the modulation class, for
-   * the WifiPhy instance.
-   *
-   * This method enables child classes to retrieve the non-const pointer to
-   * the supported PHY entity.
-   *
-   * \param modulation the modulation class
-   * \return the non-const pointer to the supported PHY entity
-   */
-  Ptr<PhyEntity> GetPhyEntity (WifiModulationClass modulation);
 
   InterferenceHelper m_interference;   //!< the class handling interference computations
   Ptr<UniformRandomVariable> m_random; //!< Provides uniform random variables.
@@ -1378,13 +1345,6 @@ private:
    * of its size.
    */
   TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, uint16_t /* STA-ID*/> m_phyMonitorSniffTxTrace;
-
-  /**
-   * A trace source that indicates the end of HE SIG-A field for received 802.11ax PPDUs
-   *
-   * \see class CallBackTraceSource
-   */
-  TracedCallback<HeSigAParameters> m_phyEndOfHeSigATrace;
 
   /**
    * Map of __implemented__ PHY entities. This is used to compute the different

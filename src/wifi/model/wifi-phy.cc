@@ -508,10 +508,6 @@ WifiPhy::GetTypeId (void)
                      "in monitor mode to sniff all frames being transmitted",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyMonitorSniffTxTrace),
                      "ns3::WifiPhy::MonitorSnifferTxTracedCallback")
-    .AddTraceSource ("EndOfHeSigA",
-                     "Trace source indicating the end of the HE-SIG-A field for HE PPDUs (or more recent)",
-                     MakeTraceSourceAccessor (&WifiPhy::m_phyEndOfHeSigATrace),
-                     "ns3::WifiPhy::EndOfHeSigATracedCallback")
   ;
   return tid;
 }
@@ -966,18 +962,9 @@ WifiPhy::GetStaticPhyEntity (WifiModulationClass modulation)
   return it->second;
 }
 
-const Ptr<const PhyEntity>
+Ptr<PhyEntity>
 WifiPhy::GetPhyEntity (WifiModulationClass modulation) const
 {
-  const auto it = m_phyEntities.find (modulation);
-  NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class");
-  return it->second;
-}
-
-Ptr<PhyEntity>
-WifiPhy::GetPhyEntity (WifiModulationClass modulation)
-{
-  //This method returns a non-const pointer to be used by child classes
   const auto it = m_phyEntities.find (modulation);
   NS_ABORT_MSG_IF (it == m_phyEntities.end (), "Unsupported Wi-Fi modulation class");
   return it->second;
@@ -2004,12 +1991,6 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
       aMpdu.type = NORMAL_MPDU;
       m_phyMonitorSniffTxTrace (psdu->GetPacket (), channelFreqMhz, txVector, aMpdu, staId);
     }
-}
-
-void
-WifiPhy::NotifyEndOfHeSigA (HeSigAParameters params)
-{
-  m_phyEndOfHeSigATrace (params); //TODO to move to HePhy
 }
 
 void

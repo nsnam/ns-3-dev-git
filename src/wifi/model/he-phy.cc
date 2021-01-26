@@ -515,7 +515,7 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
   HeSigAParameters params;
   params.rssiW = GetRxPowerWForPpdu (event);
   params.bssColor = event->GetTxVector ().GetBssColor ();
-  Simulator::ScheduleNow (&WifiPhy::NotifyEndOfHeSigA, GetPointer (m_wifiPhy), params);
+  Simulator::ScheduleNow (&HePhy::NotifyEndOfHeSigA, this, params); //finish field processing first
 
   if (status.isSuccess)
     {
@@ -547,6 +547,21 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
         }
     }
   return status;
+}
+
+void
+HePhy::SetEndOfHeSigACallback (EndOfHeSigACallback callback)
+{
+  m_endOfHeSigACallback = callback;
+}
+
+void
+HePhy::NotifyEndOfHeSigA (HeSigAParameters params)
+{
+  if (!m_endOfHeSigACallback.IsNull ())
+    {
+      m_endOfHeSigACallback (params);
+    }
 }
 
 PhyEntity::PhyFieldRxStatus

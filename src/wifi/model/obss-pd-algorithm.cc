@@ -24,6 +24,7 @@
 #include "obss-pd-algorithm.h"
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
+#include "he-phy.h"
 #include "wifi-utils.h"
 
 namespace ns3 {

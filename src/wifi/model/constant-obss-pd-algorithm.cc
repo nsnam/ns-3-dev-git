@@ -27,6 +27,7 @@
 #include "sta-wifi-mac.h"
 #include "wifi-utils.h"
 #include "wifi-phy.h"
+#include "he-phy.h"
 #include "wifi-net-device.h"
 #include "he-configuration.h"
 
@@ -56,7 +57,9 @@ void
 ConstantObssPdAlgorithm::ConnectWifiNetDevice (const Ptr<WifiNetDevice> device)
 {
   Ptr<WifiPhy> phy = device->GetPhy ();
-  phy->TraceConnectWithoutContext ("EndOfHeSigA", MakeCallback (&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
+  auto hePhy = DynamicCast<HePhy> (phy->GetPhyEntity (WIFI_MOD_CLASS_HE));
+  NS_ASSERT (hePhy);
+  hePhy->SetEndOfHeSigACallback (MakeCallback (&ConstantObssPdAlgorithm::ReceiveHeSigA, this));
   ObssPdAlgorithm::ConnectWifiNetDevice (device);
 }
 

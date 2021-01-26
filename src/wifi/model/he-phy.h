@@ -24,11 +24,13 @@
 
 #include "vht-phy.h"
 #include "wifi-phy-band.h"
+#include "ns3/callback.h"
 
 /**
  * \file
  * \ingroup wifi
- * Declaration of ns3::HePhy class.
+ * Declaration of ns3::HePhy class
+ * and ns3::HeSigAParameters struct.
  */
 
 namespace ns3 {
@@ -37,6 +39,15 @@ namespace ns3 {
  * This defines the BSS membership value for HE PHY.
  */
 #define HE_PHY 125
+
+/**
+ * Parameters for received HE-SIG-A for OBSS_PD based SR
+ */
+struct HeSigAParameters
+{
+  double rssiW;     ///< RSSI in W
+  uint8_t bssColor; ///< BSS color
+};
 
 /**
  * \brief PHY entity for HE (11ax)
@@ -49,6 +60,13 @@ namespace ns3 {
 class HePhy : public VhtPhy
 {
 public:
+  /**
+   * Callback upon end of HE-SIG-A
+   *
+   * arg1: Parameters of HE-SIG-A
+   */
+  typedef Callback<void, HeSigAParameters> EndOfHeSigACallback;
+
   /**
    * Constructor for HE PHY
    *
@@ -143,6 +161,22 @@ public:
    * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
    */
   uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
+
+  /**
+   * Set a callback for a end of HE-SIG-A.
+   *
+   * \param callback the EndOfHeSigACallback to set
+   */
+  void SetEndOfHeSigACallback (EndOfHeSigACallback callback);
+
+  /**
+   * Fire a EndOfHeSigA callback (if connected) once HE-SIG-A field has been received.
+   * This method is scheduled immediatly after end of HE-SIG-A, once
+   * field processing is finished.
+   *
+   * \param params the HE-SIG-A parameters
+   */
+  void NotifyEndOfHeSigA (HeSigAParameters params);
 
   /**
    * Initialize all HE modes.
@@ -256,6 +290,8 @@ protected:
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
 
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
+
+  EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
 
 private:
   // Inherited
