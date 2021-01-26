@@ -42,6 +42,7 @@
 #include "tcp-socket-factory-impl.h"
 #include "tcp-socket-base.h"
 #include "tcp-congestion-ops.h"
+#include "tcp-cubic.h"
 #include "tcp-recovery-ops.h"
 #include "tcp-prr-recovery.h"
 #include "rtt-estimator.h"
@@ -79,7 +80,7 @@ TcpL4Protocol::GetTypeId (void)
                    MakeTypeIdChecker ())
     .AddAttribute ("SocketType",
                    "Socket type of TCP objects.",
-                   TypeIdValue (TcpNewReno::GetTypeId ()),
+                   TypeIdValue (TcpCubic::GetTypeId ()),
                    MakeTypeIdAccessor (&TcpL4Protocol::m_congestionTypeId),
                    MakeTypeIdChecker ())
     .AddAttribute ("RecoveryType",

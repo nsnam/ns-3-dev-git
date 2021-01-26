@@ -148,7 +148,7 @@ main (int argc, char *argv[])
   bool tracing = false;
 
   uint32_t maxBytes = 0; // value of zero corresponds to unlimited send
-  std::string transportProtocol = "ns3::TcpNewReno";
+  std::string transportProtocol = "ns3::TcpCubic";
 
   Time simulationEndTime = Seconds (5);
   DataRate bottleneckBandwidth ("10Mbps");  // value of x as shown in the above network topology

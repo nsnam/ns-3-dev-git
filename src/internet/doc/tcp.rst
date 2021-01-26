@@ -48,7 +48,7 @@ ns-3 TCP
 
 In brief, the native |ns3| TCP model supports a full bidirectional TCP with
 connection setup and close logic. Several congestion control algorithms
-are supported, with NewReno the default, and CUBIC, Westwood, Hybla, HighSpeed,
+are supported, with CUBIC the default, and NewReno, Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
 (LEDBAT), TCP Low Priority (TCP-LP) and and Data Center TCP (DCTCP) also supported. The model also supports
@@ -88,6 +88,9 @@ Linux default, and is discussed further in :rfc:`6928`.
 In the ns-3.32 release, the default recovery algorithm was set to
 Proportional Rate Reduction (PRR) from the classic ack-clocked Fast
 Recovery algorithm.
+
+In the ns-3.34 release, the default congestion control algorithm was set
+to CUBIC from NewReno.
 
 Acknowledgments
 +++++++++++++++
