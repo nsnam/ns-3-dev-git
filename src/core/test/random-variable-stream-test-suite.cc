@@ -280,30 +280,32 @@ public:
   /**
    * Set the seed used for this test suite.
    *
-   * Over time, this test suite is designed to be run with varying seed
-   * values so that the distributions can be evaluated with chi-squared
-   * tests.  To enable this, normal invocation of this test suite will
-   * result in a seed value corresponding to the seconds since epoch
+   * This test suite is designed to be run with both deterministic and
+   * random seed and run number values.  Deterministic values can be used
+   * for basic regression testing; random values can be used to more
+   * exhaustively test the generated streams, with the side effect of
+   * occasional test failures.
+   * 
+   * By default, this test suite will use the default values of RngSeed = 1
+   * and RngRun = 1.  Users can configure any other seed and run number
+   * in the usual way, but the special value of RngRun = 0 results in
+   * selecting a RngSeed value that corresponds to the seconds since epoch
    * (\c time (0) from \c ctime).  Note: this is not a recommended practice for
    * seeding normal simulations, as described in the ns-3 manual, but
-   * suits our purposes here.
+   * allows the test to be exposed to a wider range of seeds.
    *
-   * However, we also want to provide the ability to run this test suite 
-   * with a repeatable value, such as when the seed or run number is configured
-   * to a specific value.  Therefore, we adopt the following policy.  When
-   * the test program is being run with the default global values for seed
-   * and run number, this function will instead pick a random, time-based
-   * seed for use within this test suite.  If the global values for seed or
-   * run number have been configured differently from the default values,
-   * the global seed value will be used instead of the time-based one.
+   * In either case, the values produced will be checked with a chi-squared
+   * test.
    *
    * For example, this command will cause this test suite to use the
-   * deterministic value of seed=3 every time:
+   * deterministic value of seed=3 and default run number=1 every time:
    *   NS_GLOBAL_VALUE="RngSeed=3" ./test.py -s random-variable-stream-generators
    * or equivalently (to see log output):
    *   NS_LOG="RandomVariableStreamGenerators" NS_GLOBAL_VALUE="RngSeed=3" ./waf --run "test-runner --suite=random-variable-stream-generators"
-   *  Similarly, if the value of RngRun is not set to 1, the globals will be
-   *  used.
+   *
+   * Conversely, this command will cause this test suite to use a seed
+   * based on time-of-day, and run number=0: 
+   *   NS_GLOBAL_VALUE="RngRun=0" ./test.py -s random-variable-stream-generators
    */
   void
   SetTestSuiteSeed (void)
@@ -311,18 +313,18 @@ public:
     if (m_seedSet == false)
       {
         uint32_t seed;
-        if (RngSeedManager::GetSeed () == 1 && RngSeedManager::GetRun () == 1)
+        if (RngSeedManager::GetRun () == 0)
           {
             seed = static_cast<uint32_t> (time (0));
             m_seedSet = true;
-            NS_LOG_DEBUG ("Global seed and run number are default; seeding with time of day: " << seed);
+            NS_LOG_DEBUG ("Special run number value of zero; seeding with time of day: " << seed);
 
           }
         else
           {
             seed = RngSeedManager::GetSeed ();
             m_seedSet = true;
-            NS_LOG_DEBUG ("Global seed and run number are not default; using the non-default values seed: " <<
+            NS_LOG_DEBUG ("Using the values seed: " <<
                           seed << " and run: " << RngSeedManager::GetRun ());
           }
         SeedManager::SetSeed (seed);
