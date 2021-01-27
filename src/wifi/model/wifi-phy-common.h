@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006,2007 INRIA
+ * Copyright (c) 2020 Orange Labs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,7 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Rediet <getachew.redieteab@orange.com>
  */
 
 #ifndef WIFI_PHY_COMMON_H
@@ -29,6 +31,7 @@
  * Declaration of the following enums:
  * - ns3::WifiPreamble
  * - ns3::WifiModulationClass
+ * - ns3::WifiPpduField
  */
 
 namespace ns3 {
@@ -135,6 +138,64 @@ inline std::ostream& operator<< (std::ostream &os, const WifiModulationClass &mo
         return (os << "HE");
       default:
         NS_FATAL_ERROR ("Unknown modulation");
+        return (os << "unknown");
+    }
+}
+
+/**
+ * \ingroup wifi
+ * The type of PPDU field (grouped for convenience)
+ */
+enum WifiPpduField
+{
+  /**
+   * SYNC + SFD fields for DSSS or ERP,
+   * shortSYNC + shortSFD fields for HR/DSSS or ERP,
+   * HT-GF-STF + HT-GF-LTF1 fields for HT-GF,
+   * L-STF + L-LTF fields otherwise.
+   */
+  WIFI_PPDU_FIELD_PREAMBLE = 0,
+  /**
+   * PHY header field for DSSS or ERP,
+   * short PHY header field for HR/DSSS or ERP,
+   * field not present for HT-GF,
+   * L-SIG field or L-SIG + RL-SIG fields otherwise.
+   */
+  WIFI_PPDU_FIELD_NON_HT_HEADER,
+  WIFI_PPDU_FIELD_HT_SIG,   //!< HT-SIG field
+  WIFI_PPDU_FIELD_TRAINING, //!< STF + LTF fields (excluding those in preamble for HT-GF)
+  WIFI_PPDU_FIELD_SIG_A,    //!< SIG-A field
+  WIFI_PPDU_FIELD_SIG_B,    //!< SIG-B field
+  WIFI_PPDU_FIELD_DATA      //!< data field
+};
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param field the PPDU field
+ * \returns a reference to the stream
+ */
+inline std::ostream& operator<< (std::ostream &os, const WifiPpduField &field)
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_PREAMBLE:
+        return (os << "preamble");
+      case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        return (os << "non-HT header");
+      case WIFI_PPDU_FIELD_HT_SIG:
+        return (os << "HT-SIG");
+      case WIFI_PPDU_FIELD_TRAINING:
+        return (os << "training");
+      case WIFI_PPDU_FIELD_SIG_A:
+        return (os << "SIG-A");
+      case WIFI_PPDU_FIELD_SIG_B:
+        return (os << "SIG-B");
+      case WIFI_PPDU_FIELD_DATA:
+        return (os << "data");
+      default:
+        NS_FATAL_ERROR ("Unknown field");
         return (os << "unknown");
     }
 }

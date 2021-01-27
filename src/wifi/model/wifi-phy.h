@@ -33,10 +33,6 @@
 
 namespace ns3 {
 
-#define HE_PHY 125
-#define VHT_PHY 126
-#define HT_PHY 127
-
 class Channel;
 class NetDevice;
 class MobilityModel;

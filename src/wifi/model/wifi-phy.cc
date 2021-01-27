@@ -40,6 +40,7 @@
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
 #include "ap-wifi-mac.h"
+#include "he-phy.h" //includes OFDM, HT, and VHT
 
 namespace ns3 {
 
