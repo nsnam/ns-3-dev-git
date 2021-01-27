@@ -62,6 +62,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -205,6 +206,13 @@ TestThresholdPreambleDetectionWithoutFrameCapture::DoSetup (void)
   preambleDetectionModel->SetAttribute ("Threshold", DoubleValue (4));
   preambleDetectionModel->SetAttribute ("MinimumRssi", DoubleValue (-82));
   m_phy->SetPreambleDetectionModel (preambleDetectionModel);
+}
+
+void
+TestThresholdPreambleDetectionWithoutFrameCapture::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 void
@@ -419,6 +427,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -567,6 +576,13 @@ TestThresholdPreambleDetectionWithFrameCapture::DoSetup (void)
   frameCaptureModel->SetAttribute ("Margin", DoubleValue (5));
   frameCaptureModel->SetAttribute ("CaptureWindow", TimeValue (MicroSeconds (16)));
   m_phy->SetFrameCaptureModel (frameCaptureModel);
+}
+
+void
+TestThresholdPreambleDetectionWithFrameCapture::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 void
@@ -916,6 +932,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
 
 private:
   virtual void DoRun (void);
@@ -1101,6 +1118,13 @@ TestSimpleFrameCaptureModel::DoSetup (void)
 }
 
 void
+TestSimpleFrameCaptureModel::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
+}
+
+void
 TestSimpleFrameCaptureModel::DoRun (void)
 {
   RngSeedManager::SetSeed (1);
@@ -1161,6 +1185,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -1252,6 +1277,13 @@ TestPhyHeadersReception::DoSetup (void)
   m_phy->SetErrorRateModel (error);
   m_phy->SetChannelNumber (CHANNEL_NUMBER);
   m_phy->SetFrequency (FREQUENCY);
+}
+
+void
+TestPhyHeadersReception::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 void
@@ -1405,6 +1437,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
 
 private:
   virtual void DoRun (void);
@@ -1755,6 +1788,13 @@ TestAmpduReception::DoSetup (void)
   frameCaptureModel->SetAttribute ("Margin", DoubleValue (5));
   frameCaptureModel->SetAttribute ("CaptureWindow", TimeValue (MicroSeconds (16)));
   m_phy->SetFrameCaptureModel (frameCaptureModel);
+}
+
+void
+TestAmpduReception::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 void

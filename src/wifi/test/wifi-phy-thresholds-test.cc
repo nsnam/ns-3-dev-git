@@ -117,6 +117,7 @@ protected:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
 };
 
 WifiPhyThresholdsTest::WifiPhyThresholdsTest (std::string test_name)
@@ -238,6 +239,13 @@ WifiPhyThresholdsTest::DoSetup (void)
   m_phy->SetReceiveErrorCallback (MakeCallback (&WifiPhyThresholdsTest::RxFailure, this));
   m_phy->TraceConnectWithoutContext ("PhyRxDrop", MakeCallback (&WifiPhyThresholdsTest::RxDropped, this));
   m_phy->GetState ()->TraceConnectWithoutContext ("State", MakeCallback (&WifiPhyThresholdsTest::PhyStateChanged, this));
+}
+
+void
+WifiPhyThresholdsTest::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 /**

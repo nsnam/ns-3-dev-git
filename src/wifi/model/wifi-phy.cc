@@ -562,9 +562,18 @@ WifiPhy::DoDispose (void)
     }
   m_device = 0;
   m_mobility = 0;
-  m_state = 0;
+  m_frameCaptureModel = 0;
+  m_preambleDetectionModel = 0;
   m_wifiRadioEnergyModel = 0;
   m_postReceptionErrorModel = 0;
+  m_supportedChannelWidthSet.clear ();
+  m_random = 0;
+  m_state = 0;
+  m_currentEvent = 0;
+  for (auto & preambleEvent : m_currentPreambleEvents)
+    {
+      preambleEvent.second = 0;
+    }
   m_currentPreambleEvents.clear ();
 
   for (auto & phyEntity : m_phyEntities)

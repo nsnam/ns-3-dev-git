@@ -138,6 +138,7 @@ public:
 
   // Inherited
   virtual void DoInitialize (void) override;
+  virtual void DoDispose (void) override;
 
   using WifiPhy::Reset;
 
@@ -224,7 +225,6 @@ OfdmaSpectrumWifiPhy::OfdmaSpectrumWifiPhy (uint16_t staId)
 
 OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
 {
-  m_ofdmTestHePhy = 0;
 }
 
 void
@@ -233,6 +233,13 @@ OfdmaSpectrumWifiPhy::DoInitialize (void)
   //Replace HE PHY instance with test instance
   m_phyEntities[WIFI_MOD_CLASS_HE] = m_ofdmTestHePhy;
   SpectrumWifiPhy::DoInitialize ();
+}
+
+void
+OfdmaSpectrumWifiPhy::DoDispose (void)
+{
+  m_ofdmTestHePhy = 0;
+  SpectrumWifiPhy::DoDispose ();
 }
 
 void
@@ -301,6 +308,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -544,11 +552,6 @@ TestDlOfdmaPhyTransmission::StopInterference (void)
 
 TestDlOfdmaPhyTransmission::~TestDlOfdmaPhyTransmission ()
 {
-  m_phyAp = 0;
-  m_phySta1 = 0;
-  m_phySta2 = 0;
-  m_phySta3 = 0;
-  m_phyInterferer = 0;
 }
 
 void
@@ -722,6 +725,21 @@ TestDlOfdmaPhyTransmission::DoSetup (void)
   m_phyInterferer->SetChannel (spectrumChannel);
   m_phyInterferer->SetDutyCycle (1);
   interfererNode->AddDevice (interfererDev);
+}
+
+void
+TestDlOfdmaPhyTransmission::DoTeardown (void)
+{
+  m_phyAp->Dispose ();
+  m_phyAp = 0;
+  m_phySta1->Dispose ();
+  m_phySta1 = 0;
+  m_phySta2->Dispose ();
+  m_phySta2 = 0;
+  m_phySta3->Dispose ();
+  m_phySta3 = 0;
+  m_phyInterferer->Dispose ();
+  m_phyInterferer = 0;
 }
 
 void
@@ -947,6 +965,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -1009,9 +1028,6 @@ TestUlOfdmaPpduUid::TestUlOfdmaPpduUid ()
 
 TestUlOfdmaPpduUid::~TestUlOfdmaPpduUid ()
 {
-  m_phyAp = 0;
-  m_phySta1 = 0;
-  m_phySta2 = 0;
 }
 
 void
@@ -1075,6 +1091,17 @@ TestUlOfdmaPpduUid::DoSetup (void)
   sta2Dev->SetPhy (m_phySta2);
   sta2Node->AggregateObject (sta2Mobility);
   sta2Node->AddDevice (sta2Dev);
+}
+
+void
+TestUlOfdmaPpduUid::DoTeardown (void)
+{
+  m_phyAp->Dispose ();
+  m_phyAp = 0;
+  m_phySta1->Dispose ();
+  m_phySta1 = 0;
+  m_phySta2->Dispose ();
+  m_phySta2 = 0;
 }
 
 void
@@ -1318,6 +1345,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -1383,7 +1411,6 @@ TestMultipleHeTbPreambles::TestMultipleHeTbPreambles ()
 
 TestMultipleHeTbPreambles::~TestMultipleHeTbPreambles ()
 {
-  m_phy = 0;
 }
 
 void
@@ -1513,6 +1540,13 @@ TestMultipleHeTbPreambles::DoSetup (void)
 }
 
 void
+TestMultipleHeTbPreambles::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
+}
+
+void
 TestMultipleHeTbPreambles::DoRun (void)
 {
   RngSeedManager::SetSeed (1);
@@ -1623,6 +1657,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -1960,11 +1995,6 @@ TestUlOfdmaPhyTransmission::StopInterference (void)
 
 TestUlOfdmaPhyTransmission::~TestUlOfdmaPhyTransmission ()
 {
-  m_phyAp = 0;
-  m_phySta1 = 0;
-  m_phySta2 = 0;
-  m_phySta3 = 0;
-  m_phyInterferer = 0;
 }
 
 void
@@ -2205,6 +2235,21 @@ TestUlOfdmaPhyTransmission::DoSetup (void)
       phy->SetAttribute ("PowerDensityLimit", DoubleValue (100.0)); //no impact by default
       phy->SetAttribute ("RxGain", DoubleValue (2.0));
     }
+}
+
+void
+TestUlOfdmaPhyTransmission::DoTeardown (void)
+{
+  m_phyAp->Dispose ();
+  m_phyAp = 0;
+  m_phySta1->Dispose ();
+  m_phySta1 = 0;
+  m_phySta2->Dispose ();
+  m_phySta2 = 0;
+  m_phySta3->Dispose ();
+  m_phySta3 = 0;
+  m_phyInterferer->Dispose ();
+  m_phyInterferer = 0;
 }
 
 void
@@ -2762,6 +2807,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -2923,10 +2969,6 @@ TestPhyPaddingExclusion::StopInterference (void)
 
 TestPhyPaddingExclusion::~TestPhyPaddingExclusion ()
 {
-  m_phyAp = 0;
-  m_phySta1 = 0;
-  m_phySta2 = 0;
-  m_phyInterferer = 0;
 }
 
 void
@@ -3095,6 +3137,19 @@ TestPhyPaddingExclusion::DoSetup (void)
 }
 
 void
+TestPhyPaddingExclusion::DoTeardown (void)
+{
+  m_phyAp->Dispose ();
+  m_phyAp = 0;
+  m_phySta1->Dispose ();
+  m_phySta1 = 0;
+  m_phySta2->Dispose ();
+  m_phySta2 = 0;
+  m_phyInterferer->Dispose ();
+  m_phyInterferer = 0;
+}
+
+void
 TestPhyPaddingExclusion::DoRun (void)
 {
   Time expectedPpduDuration = NanoSeconds (279200);
@@ -3171,6 +3226,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -3453,6 +3509,19 @@ TestUlOfdmaPowerControl::DoSetup (void)
   lossModel->SetDefaultLoss (50.0);
   lossModel->SetLoss (apNode->GetObject<MobilityModel> (), staNodes.Get (1)->GetObject<MobilityModel> (),
                       56.0, true); //+6 dB between AP <-> STA 2 compared to AP <-> STA 1
+}
+
+void
+TestUlOfdmaPowerControl::DoTeardown (void)
+{
+  m_phyAp->Dispose ();
+  m_phyAp = 0;
+  m_apDev->Dispose ();
+  m_apDev = 0;
+  m_sta1Dev->Dispose ();
+  m_sta1Dev = 0;
+  m_sta2Dev->Dispose ();
+  m_sta2Dev = 0;
 }
 
 void

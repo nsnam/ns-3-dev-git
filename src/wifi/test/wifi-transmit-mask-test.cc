@@ -703,4 +703,7 @@ WifiTransmitMaskTestSuite::WifiTransmitMaskTestSuite ()
   AddTestCase (new WifiOfdmMaskSlopesTestCase ("11ax_5GHz 160MHz", WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ,
                                                160, maskSlopesLeft, maskSlopesRight, tol),
                TestCase::QUICK);
+
+  maskSlopesLeft.clear ();
+  maskSlopesRight.clear ();
 }
