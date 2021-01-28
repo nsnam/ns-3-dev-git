@@ -63,6 +63,7 @@ WifiMacQueueDropOldestTest::DoRun ()
     {
       WifiMacHeader header;
       header.SetType (WIFI_MAC_QOSDATA);
+      header.SetQosTid (0);
       auto packet = Create<Packet> ();
       auto item = Create<WifiMacQueueItem> (packet, header);
       wifiMacQueue->PushFront (item);
@@ -84,6 +85,7 @@ WifiMacQueueDropOldestTest::DoRun ()
   // Push another element in front of the queue.
   WifiMacHeader header;
   header.SetType (WIFI_MAC_QOSDATA);
+  header.SetQosTid (0);
   auto packet = Create<Packet> ();
   auto item = Create<WifiMacQueueItem> (packet, header);
   wifiMacQueue->PushFront (item);
