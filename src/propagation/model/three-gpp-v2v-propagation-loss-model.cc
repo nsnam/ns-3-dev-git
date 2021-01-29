@@ -99,7 +99,7 @@ ThreeGppV2vUrbanPropagationLossModel::GetAdditionalNlosvLoss (double distance3D,
   double blockerHeight = 0;
   double mu_a = 0;
   double sigma_a = 0;
-  double randomValue = m_uniformVar->GetValue () * 3.0;
+  double randomValue = m_uniformVar->GetValue ();
   if (randomValue < m_percType3Vehicles)
     {
       // vehicles of type 3 have height 3 meters
@@ -122,8 +122,8 @@ ThreeGppV2vUrbanPropagationLossModel::GetAdditionalNlosvLoss (double distance3D,
       // Case 2: Maximum antenna height value of TX and RX < Blocker height
       mu_a = 9.0 + std::max (0.0, 15 * log10 (distance3D) - 41.0);
       sigma_a = 4.5;
-      m_logNorVar->SetAttribute ("Mu", DoubleValue (log10 (pow (mu_a, 2) / sqrt (pow (sigma_a, 2) + pow (mu_a, 2)))));
-      m_logNorVar->SetAttribute ("Sigma", DoubleValue (sqrt (log10 (pow (sigma_a, 2) / pow (mu_a, 2) + 1))));
+      m_logNorVar->SetAttribute ("Mu", DoubleValue (log (pow (mu_a, 2) / sqrt (pow (sigma_a, 2) + pow (mu_a, 2)))));
+      m_logNorVar->SetAttribute ("Sigma", DoubleValue (sqrt (log (pow (sigma_a, 2) / pow (mu_a, 2) + 1))));
       additionalLoss = std::max (0.0, m_logNorVar->GetValue ());
     }
   else
@@ -132,8 +132,8 @@ ThreeGppV2vUrbanPropagationLossModel::GetAdditionalNlosvLoss (double distance3D,
       mu_a = 5.0 + std::max (0.0, 15 * log10 (distance3D) - 41.0);
       sigma_a = 4.0;
 
-      m_logNorVar->SetAttribute ("Mu", DoubleValue (log10 (pow (mu_a,2) / sqrt (pow (sigma_a, 2) + pow (mu_a, 2)))));
-      m_logNorVar->SetAttribute ("Sigma", DoubleValue (sqrt (log10 (pow (sigma_a,2) / pow (mu_a, 2) + 1))));
+      m_logNorVar->SetAttribute ("Mu", DoubleValue (log (pow (mu_a,2) / sqrt (pow (sigma_a, 2) + pow (mu_a, 2)))));
+      m_logNorVar->SetAttribute ("Sigma", DoubleValue (sqrt (log (pow (sigma_a,2) / pow (mu_a, 2) + 1))));
       additionalLoss = std::max (0.0, m_logNorVar->GetValue ());
     }
 
