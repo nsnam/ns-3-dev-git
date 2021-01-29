@@ -99,7 +99,7 @@ ThreeGppV2vUrbanPropagationLossModel::GetAdditionalNlosvLoss (double distance3D,
   double blockerHeight = 0;
   double mu_a = 0;
   double sigma_a = 0;
-  double randomValue = m_uniformVar->GetValue ();
+  double randomValue = m_uniformVar->GetValue () * 100.0;
   if (randomValue < m_percType3Vehicles)
     {
       // vehicles of type 3 have height 3 meters
