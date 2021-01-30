@@ -216,7 +216,7 @@ Ipv6ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit 
 
   *stream->GetStream () << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
                         << ", Time: " << Now().As (unit)
-                        << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
+                        << ", Local time: " << m_ipv6->GetObject<Node> ()->GetLocalTime ().As (unit)
                         << ", Ipv6ListRouting table" << std::endl;
   for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
