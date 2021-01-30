@@ -476,7 +476,7 @@ void RipNg::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit)
 
   *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
+      << ", Local time: " << m_ipv6->GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", IPv6 RIPng table" << std::endl;
 
   if (!m_routes.empty ())

@@ -496,7 +496,7 @@ void Rip::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) c
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
-      << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
+      << ", Local time: " << m_ipv4->GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", IPv4 RIP table" << std::endl;
 
   if (!m_routes.empty ())
