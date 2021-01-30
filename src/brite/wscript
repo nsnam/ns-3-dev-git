@@ -59,7 +59,7 @@ int main()
 }
 '''
 
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
+    conf.env['HAVE_DL'] = conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
 
     conf.env['LIBPATH_BRITE'] = [os.path.abspath(os.path.join(conf.env['WITH_BRITE'], '.'))]
 
@@ -98,7 +98,7 @@ def build(bld):
         #   'test/brite-examples-test-suite.cc',
             ])
     
-    if bld.env['BRITE'] and bld.env['DL']:
+    if bld.env['BRITE'] and bld.env['HAVE_DL']:
         module.use.extend(['BRITE', 'DL'])
         module_test.use.extend(['BRITE', 'DL'])
 

@@ -76,7 +76,7 @@ int main()
   return 0;
 }
 '''
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
+    conf.env['HAVE_DL'] = conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
 
     for tmp in ['lib', 'ns']:
         libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
@@ -119,7 +119,7 @@ def build(bld):
         #   'test/click-examples-test-suite.cc',
             ])
     
-    if bld.env['NSCLICK'] and bld.env['DL']:
+    if bld.env['NSCLICK'] and bld.env['HAVE_DL']:
         module.use.extend(['NSCLICK', 'DL'])
         module_test.use.extend(['NSCLICK', 'DL'])
 
