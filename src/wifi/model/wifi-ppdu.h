@@ -171,6 +171,7 @@ private:
 
   bool m_truncatedTx;     //!< flag indicating whether the frame's transmission was aborted due to transmitter switch off
   uint8_t m_txPowerLevel; //!< the transmission power level (used only for TX and initializing the returned WifiTxVector)
+  uint8_t m_txAntennas;   //!< the number of antennas used to transmit this PPDU
 }; //class WifiPpdu
 
 /**
