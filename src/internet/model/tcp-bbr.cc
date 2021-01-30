@@ -722,8 +722,8 @@ TcpBbr::CongestionStateSet (Ptr<TcpSocketState> tcb,
       
       InitRoundCounting ();
       InitFullPipe ();
-      InitPacingRate (tcb);
       EnterStartup ();      
+      InitPacingRate (tcb);
       m_ackEpochTime = Simulator::Now();
       m_extraAckedWinRtt = 0;
       m_extraAckedIdx = 0;
