@@ -9,39 +9,7 @@ def options(opt):
                    help=('Path to OFSID source for NS-3 OpenFlow Integration support'),
                    default='', dest='with_openflow')
 
-REQUIRED_BOOST_LIBS = ['system', 'signals', 'filesystem']
-
-def required_boost_libs(conf):
-    conf.env['REQUIRED_BOOST_LIBS'] += REQUIRED_BOOST_LIBS
-
 def configure(conf):
-    if not conf.env['LIB_BOOST']:
-        conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
-                                     "Required boost libraries not found")
-
-        # Add this module to the list of modules that won't be built
-        # if they are enabled.
-        conf.env['MODULES_NOT_BUILT'].append('openflow')
-        return 
-
-    present_boost_libs = []
-    for boost_lib_name in conf.env['LIB_BOOST']:
-        if boost_lib_name.startswith("boost_"):
-            boost_lib_name = boost_lib_name[6:]
-        if boost_lib_name.endswith("-mt"):
-            boost_lib_name = boost_lib_name[:-3]
-        present_boost_libs.append(boost_lib_name)
-
-    missing_boost_libs = [lib for lib in REQUIRED_BOOST_LIBS if lib not in present_boost_libs]
-    if missing_boost_libs != []:
-        conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
-                                     "Required boost libraries not found, missing: %s" % ', '.join(missing_boost_libs))
-
-        # Add this module to the list of modules that won't be built
-        # if they are enabled.
-        conf.env['MODULES_NOT_BUILT'].append('openflow')
-        return 
-
     if Options.options.with_openflow:
         if os.path.isdir(Options.options.with_openflow):
             conf.msg("Checking for OpenFlow location", ("%s (given)" % Options.options.with_openflow))
@@ -116,24 +84,22 @@ int main()
   return 0;
 }
 '''
+    conf.env['HAVE_DL'] = conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib_store='DL')
 
-    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib_store='DL')
-    conf.env['XML2'] = conf.check(mandatory=True, lib='xml2', define_name='XML2', uselib_store='XML2')
-    
-    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')))
+    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build')))
     conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib')))
     
     conf.env['INCLUDES_OPENFLOW'] = [
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include'))]
     conf.env['LIBPATH_OPENFLOW'] = [
-        os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')),
+        os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build')),
         os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib'))]
     
     conf.env['DEFINES_OPENFLOW'] = ['NS3_OPENFLOW']
 
     conf.env['OPENFLOW'] = conf.check_nonfatal(fragment=test_code, lib='openflow', 
                                                libpath=conf.env['LIBPATH_OPENFLOW'],
-                                               use='OPENFLOW DL XML2')
+                                               use='OPENFLOW DL')
     conf.env.append_value('LIB_OPENFLOW', 'dl')
     conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration",
                                  conf.env['OPENFLOW'], "openflow library not found")
@@ -166,9 +132,9 @@ def build(bld):
         #   'test/openflow-examples-test-suite.cc',
             ])
     
-    if bld.env['OPENFLOW'] and bld.env['DL'] and bld.env['XML2']:
-        obj.use.extend('OPENFLOW DL XML2'.split())
-        obj_test.use.extend('OPENFLOW DL XML2'.split())
+    if bld.env['OPENFLOW'] and bld.env['HAVE_DL']:
+        obj.use.extend('OPENFLOW DL'.split())
+        obj_test.use.extend('OPENFLOW DL'.split())
 
     headers = bld(features='ns3header')
     headers.module = 'openflow'
