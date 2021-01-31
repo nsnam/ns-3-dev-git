@@ -74,7 +74,16 @@ main (int argc, char *argv[])
 
   fd.EnablePcapAll ("dummy-network", true);
 
-  Simulator::Stop (Seconds (5.));
+  // The next three lines will stop the simulator at time 5 seconds.  Usually,
+  // it is sufficient to just call Simulator::Stop (Seconds (5)).
+  // However, in order to produce a clean valgrind output
+  // when running this example in our test suite (see issue #343), we
+  // first stop each device explicitly at time 5, and then wait one
+  // simulator timestep later (1 nanosecond by default) to call
+  // Simulator::Stop ().
+  device1->Stop (Seconds (5));
+  device2->Stop (Seconds (5));
+  Simulator::Stop (Seconds (5) + TimeStep (1));
   Simulator::Run ();
   Simulator::Destroy ();
 }
