@@ -2044,6 +2044,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Prefix prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Prefix', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -3751,6 +3756,11 @@ def register_Ns3UanPhyListener_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyTxEnd() [member function]
+    cls.add_method('NotifyTxEnd', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h (module 'uan'): void ns3::UanPhyListener::NotifyTxStart(ns3::Time duration) [member function]
     cls.add_method('NotifyTxStart', 
                    'void', 
@@ -5015,6 +5025,11 @@ def register_Ns3UanMacCw_methods(root_module, cls):
                    is_virtual=True)
     ## uan-mac-cw.h (module 'uan'): void ns3::UanMacCw::NotifyRxStart() [member function]
     cls.add_method('NotifyRxStart', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-mac-cw.h (module 'uan'): void ns3::UanMacCw::NotifyTxEnd() [member function]
+    cls.add_method('NotifyTxEnd', 
                    'void', 
                    [], 
                    is_virtual=True)
