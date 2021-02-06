@@ -259,6 +259,7 @@ def build(bld):
         'model/system-wall-clock-timestamp.cc',
         'helper/csv-reader.cc',
         'model/length.cc',
+        'model/trickle-timer.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -291,6 +292,7 @@ def build(bld):
         'test/hash-test-suite.cc',
         'test/type-id-test-suite.cc',
         'test/length-test-suite.cc',
+        'test/trickle-timer-test-suite.cc',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -394,7 +396,8 @@ def build(bld):
         'model/time-printer.h',
         'model/show-progress.h',
         'helper/csv-reader.h',
-        'model/length.h'
+        'model/length.h',
+        'model/trickle-timer.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
