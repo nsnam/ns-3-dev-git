@@ -49,7 +49,8 @@ HeConfiguration::GetTypeId (void)
     .AddAttribute ("BssColor",
                    "The BSS color",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&HeConfiguration::m_bssColor),
+                   MakeUintegerAccessor (&HeConfiguration::GetBssColor,
+                                         &HeConfiguration::SetBssColor),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("MpduBufferSize",
                    "The MPDU buffer size for receiving A-MPDUs",
@@ -73,6 +74,19 @@ Time
 HeConfiguration::GetGuardInterval (void) const
 {
   return m_guardInterval;
+}
+
+void
+HeConfiguration::SetBssColor (uint8_t bssColor)
+{
+  NS_LOG_FUNCTION (this << +bssColor);
+  m_bssColor = bssColor;
+}
+
+uint8_t
+HeConfiguration::GetBssColor (void) const
+{
+  return m_bssColor;
 }
 
 void

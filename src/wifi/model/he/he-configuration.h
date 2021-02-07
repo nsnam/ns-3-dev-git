@@ -53,6 +53,14 @@ public:
    */
   Time GetGuardInterval (void) const;
   /**
+   * \param bssColor the BSS color
+   */
+  void SetBssColor (uint8_t bssColor);
+  /**
+   * \return the BSS color
+   */
+  uint8_t GetBssColor (void) const;
+  /**
    * \param size the MPDU buffer size to receive A-MPDUs
    */
   void SetMpduBufferSize (uint16_t size);
