@@ -117,7 +117,10 @@ TrickleTimerTestCase::TestSteadyState (Time unit)
   TrickleTimer trickle (unit, 4, 1);
   trickle.SetFunction (&TrickleTimerTestCase::ExpireTimer, this);
   trickle.Enable ();
+  // We reset the timer to force the interval to the minimum
   trickle.Reset ();
+
+  NS_TEST_EXPECT_MSG_EQ (trickle.GetDoublings (), 4, "The doublings re-compute mechanism is not working.");
 
   // The transient is over at (exp2(doublings +1) -1) * MinInterval (worst case).
   Simulator::Schedule (unit*31, &TrickleTimerTestCase::TransientOver, this);
@@ -149,7 +152,10 @@ TrickleTimerTestCase::TestRedundancy (Time unit)
   TrickleTimer trickle (unit, 4, 1);
   trickle.SetFunction (&TrickleTimerTestCase::ExpireTimer, this);
   trickle.Enable ();
+  // We reset the timer to force the interval to the minimum
   trickle.Reset ();
+
+  NS_TEST_EXPECT_MSG_EQ (trickle.GetDoublings (), 4, "The doublings re-compute mechanism is not working.");
 
   // The transient is over at (exp2(doublings +1) -1) * MinInterval (worst case).
   Simulator::Schedule (unit*31, &TrickleTimerTestCase::TransientOver, this);

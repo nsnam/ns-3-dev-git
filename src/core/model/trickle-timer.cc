@@ -52,10 +52,11 @@ TrickleTimer::TrickleTimer (Time minInterval, uint8_t doublings, uint16_t redund
     m_uniRand (CreateObject<UniformRandomVariable> ())
 {
   NS_LOG_FUNCTION (this << minInterval << doublings << redundancy);
-  NS_ASSERT_MSG (std::exp2 (doublings) < std::numeric_limits<uint64_t>::max(), "Doublings value too large " << std::exp2 (doublings) << " > " << std::numeric_limits<uint64_t>::max());
+  NS_ASSERT_MSG (doublings < std::numeric_limits<decltype(m_ticks)>::digits, "Doublings value is too large");
 
   m_minInterval = minInterval;
-  m_ticks = std::exp2 (doublings);
+  m_ticks = 1;
+  m_ticks <<= doublings;
   m_maxInterval = m_ticks * minInterval;
   m_redundancy = redundancy;
 }
@@ -79,10 +80,11 @@ void
 TrickleTimer::SetParameters (Time minInterval, uint8_t doublings, uint16_t redundancy)
 {
   NS_LOG_FUNCTION (this << minInterval << doublings << redundancy);
-  NS_ASSERT_MSG (std::exp2 (doublings) < std::numeric_limits<uint64_t>::max(), "Doublings value too large " << std::exp2 (doublings) << " > " << std::numeric_limits<uint64_t>::max());
+  NS_ASSERT_MSG (doublings < std::numeric_limits<decltype(m_ticks)>::digits, "Doublings value is too large");
 
   m_minInterval = minInterval;
-  m_ticks = std::exp2 (doublings);
+  m_ticks = 1;
+  m_ticks <<= doublings;
   m_maxInterval = m_ticks * minInterval;
   m_redundancy = redundancy;
 }
@@ -105,7 +107,26 @@ uint8_t
 TrickleTimer::GetDoublings (void) const
 {
   NS_LOG_FUNCTION (this);
-  return std::log2 (m_ticks);
+
+  if (m_ticks == 0)
+    {
+      return 0;
+    }
+
+  // Here we assume that m_ticks is a power of 2.
+  // This could have been way more elegant by using
+  // std::countl_zero() defined in the <bit> header
+  // which is c++20 - so not yet widely available.
+
+  uint64_t ticks = m_ticks;
+  uint8_t doublings = 0;
+  while (ticks != 1)
+    {
+      ticks >>= 1;
+      doublings ++;
+    }
+
+  return doublings;
 }
 
 uint16_t
