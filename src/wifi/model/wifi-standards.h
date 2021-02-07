@@ -208,6 +208,17 @@ const std::map<WifiStandard, WifiStandardInfo> wifiStandards =
   { WIFI_STANDARD_80211ax_6GHZ, { WIFI_PHY_STANDARD_80211ax, WIFI_PHY_BAND_6GHZ, WIFI_MAC_STANDARD_80211ax } }
 };
 
+/**
+ * \ingroup wifi
+ * \brief Enumeration of frequency channel types
+ */
+enum FrequencyChannelType : uint8_t
+{
+  WIFI_PHY_DSSS_CHANNEL = 0,
+  WIFI_PHY_OFDM_CHANNEL,
+  WIFI_PHY_80211p_CHANNEL
+};
+
 } //namespace ns3
 
 #endif /* WIFI_STANDARD_H */
