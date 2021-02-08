@@ -360,49 +360,7 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
 
   NS_LOG_INFO ("Received Wi-Fi signal");
   Ptr<WifiPpdu> ppdu = wifiRxParams->ppdu->Copy ();
-  WifiTxVector txVector = ppdu->GetTxVector ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
-      && wifiRxParams->txPsdFlag == PSD_HE_TB_OFDMA_PORTION)
-    {
-      if (DynamicCast<const HePhy> (GetPhyEntity (WIFI_MOD_CLASS_HE))->GetCurrentHeTbPpduUid () == ppdu->GetUid ()
-          && m_currentEvent != 0)
-        {
-          //AP or STA has already received non-OFDMA part, switch to OFDMA part, and schedule reception of payload (will be canceled for STAs by StartPayloadStart)
-          bool ofdmaStarted = !m_beginOfdmaPayloadRxEvents.empty ();
-          NS_LOG_INFO ("Switch to OFDMA part (already started? " << (ofdmaStarted ? "Y" : "N") << ") "
-                       << "and schedule OFDMA payload reception in " << GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector).As (Time::NS));
-          Ptr<Event> event = m_interference.Add (ppdu, txVector, rxDuration, rxPowerW, !ofdmaStarted);
-          uint16_t staId = GetStaId (ppdu);
-          NS_ASSERT (m_beginOfdmaPayloadRxEvents.find (staId) == m_beginOfdmaPayloadRxEvents.end ());
-          m_beginOfdmaPayloadRxEvents[staId] = Simulator::Schedule (GetPpduFieldDuration (WIFI_PPDU_FIELD_TRAINING, txVector),
-                                                                    &WifiPhy::StartReceiveOfdmaPayload, this, event);
-        }
-      else
-        {
-          //PHY receives the OFDMA payload while having dropped the preamble
-          NS_LOG_INFO ("Consider OFDMA part of the HE TB PPDU as interference since device dropped the preamble");
-          m_interference.Add (ppdu, txVector, rxDuration, rxPowerW);
-          auto it = m_currentPreambleEvents.find (std::make_pair(ppdu->GetUid (), ppdu->GetPreamble ()));
-          if (it != m_currentPreambleEvents.end ())
-            {
-              m_currentPreambleEvents.erase (it);
-            }
-          if (m_currentPreambleEvents.empty ())
-            {
-              Reset ();
-            }
-
-          if (rxDuration > m_state->GetDelayUntilIdle ())
-            {
-              //that packet will be noise _after_ the completion of the OFDMA part of the HE TB PPDUs
-              SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
-            }
-        }
-    }
-  else
-    {
-      StartReceivePreamble (ppdu, rxPowerW);
-    }
+  StartReceivePreamble (ppdu, rxPowerW, rxDuration, wifiRxParams->txPsdFlag);
 }
 
 Ptr<AntennaModel>
@@ -455,7 +413,9 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu,
     case WIFI_MOD_CLASS_HE:
       if (flag == PSD_HE_TB_OFDMA_PORTION)
         {
-          WifiSpectrumBand band = GetRuBand (txVector, GetStaId (ppdu));
+          //TODO Move this to HePhy
+          const auto hePhy = DynamicCast<HePhy> (GetPhyEntity (WIFI_MOD_CLASS_HE));
+          WifiSpectrumBand band = hePhy->GetRuBand (txVector, GetStaId (ppdu));
           v = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerW, GetGuardBandwidth (channelWidth), band);
         }
       else
