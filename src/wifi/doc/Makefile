@@ -10,13 +10,17 @@ FIGURES = $(SOURCE)/figures
 
 IMAGES_DIA = \
 	$(FIGURES)/snir.dia \
-	$(FIGURES)/WifiArchitecture.dia
+	$(FIGURES)/WifiArchitecture.dia \
+	$(FIGURES)/PhyEntityHierarchy.dia \
+	$(FIGURES)/WifiPpduHierarchy.dia
 
 # specify eps figures from which .png and .pdf figures need to be built
 
 IMAGES_EPS = \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WifiArchitecture.eps \
+	$(FIGURES)/PhyEntityHierarchy.eps \
+	$(FIGURES)/WifiPpduHierarchy.eps \
         $(FIGURES)/clear-channel.eps \
         $(FIGURES)/nist-frame-success-rate.eps \
         $(FIGURES)/nist-frame-success-rate-n.eps \

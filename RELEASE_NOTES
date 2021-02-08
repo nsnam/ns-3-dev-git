@@ -27,8 +27,10 @@ requirements (Note: not all ns-3 features are available on all systems):
 New user-visible features
 -------------------------
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
+- (wifi) The PHY layer has been refactored: the amendment-specific logic has been ported to PhyEntity classes and WifiPpdu classes
 - (wifi) Holland PHY configuration has been removed from the model
 - (wifi) HT Greenfield (HT_GF) preamble support has been removed from the model
+- (wifi) Some wifi/src/model files were moved to the relevant subfolders (non-ht, ht, vht, he, and rate-control)
 
 Bugs fixed
 ----------

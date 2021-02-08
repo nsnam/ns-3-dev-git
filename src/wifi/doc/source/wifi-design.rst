@@ -48,7 +48,8 @@ The source code for the WifiNetDevice and its models lives in the directory
 
 The implementation is modular and provides roughly three sublayers of models:
 
-* the **PHY layer models**
+* the **PHY layer models**: they model amendment-specific and common
+  PHY layer operations and functions.
 * the so-called **MAC low models**: they model functions such as medium
   access (DCF and EDCA), RTS/CTS and ACK.  In |ns3|, the lower-level MAC
   is further subdivided into a **MAC low** and **MAC middle** sublayering,
@@ -66,7 +67,7 @@ Figure :ref:`wifi-architecture`.
 
 .. figure:: figures/WifiArchitecture.*
    
-   WifiNetDevice architecture.
+   *WifiNetDevice architecture*
 
 MAC high models
 ===============
@@ -253,11 +254,98 @@ object in the WifiNetDevice.
 
 There are currently two implementations of the ``WifiPhy``: the
 ``ns3::YansWifiPhy`` and the ``ns3::SpectrumWifiPhy``.  They each work in 
-conjunction with three other objects:
+conjunction with five other objects:
 
+* **PhyEntity**: Contains the amendment-specific part of the PHY processing
+* **WifiPpdu**: Models the amendment-specific PHY protocol data unit (PPDU)
 * **WifiPhyStateHelper**:  Maintains the PHY state machine
 * **InterferenceHelper**:  Tracks all packets observed on the channel
 * **ErrorModel**:  Computes a probability of error for a given SNR
+
+PhyEntity
+##################################
+
+A bit of background
+-------------------
+
+Some restructuring of ``ns3::WifiPhy`` and ``ns3::WifiMode`` (among others) was necessary
+considering the size and complexity of the corresponding files.
+In addition, adding and maintaining new PHY amendments had become a complex
+task (especially those implemented inside other modules, e.g. DMG).
+The adopted solution was to have ``PhyEntity`` classes that contain the "clause"
+specific (i.e. HT/VHT/HE etc) parts of the PHY process.
+
+The notion of "PHY entity" is in the standard at the beginning of each PHY
+layer description clause, e.g. section 21.1.1 of IEEE 802.11-2016:
+
+::
+Clause 21 specifies the **PHY entity** for a very high throughput (VHT) orthogonal
+frequency division multiplexing (OFDM) system.
+
+*Note that there is already such a name inside the wave module
+(e.g. ``WaveNetDevice::AddPhy``) to designate the WifiPhys on each 11p channel,
+but the wording is only used within the classes and there is no file using
+that name, so no ambiguity in using the name for 802.11 amendments.*
+
+Architecture
+-------------------
+
+The abstract base class ``ns3::PhyEntity`` enables to have a unique set of APIs
+to be used by each PHY entity, corresponding to the different amendments of
+the IEEE 802.11 standard. The currently implemented PHY entities are:
+
+* ``ns3::DsssPhy``: PHY entity for DSSS and HR/DSSS (11b)
+* ``ns3::OfdmPhy``: PHY entity for OFDM (11a and 11p)
+* ``ns3::ErpOfdmPhy``: PHY entity for ERP-OFDM (11g)
+* ``ns3::HtPhy``: PHY entity for HT (11n)
+* ``ns3::VhtPhy``: PHY entity for VHT (11ac)
+* ``ns3::HePhy``: PHY entity for HE (11ax)
+
+Their inheritance diagram is given in Figure :ref:`phyentity-hierarchy` and
+closely follows the standard's logic, e.g. section 21.1.1 of IEEE 802.11-2016:
+
+::
+The VHT PHY is **based** on the HT PHY defined in Clause 19, which **in turn**
+is **based** on the OFDM PHY defined in Clause 17.
+
+.. _phyentity-hierarchy:
+
+.. figure:: figures/PhyEntityHierarchy.*
+
+   *PhyEntity hierarchy*
+
+Such an architecture enables to handle the following operations in an amendment-
+specific manner:
+
+* ``WifiMode`` handling and data/PHY rate computation,
+* PPDU field size and duration computation, and
+* Transmit and receive paths.
+
+WifiPpdu
+##################################
+
+In the same vein as ``PhyEntity``, the ``ns3::WifiPpdu`` base class has been
+specialized into the following amendment-specific PPDUs:
+
+* ``ns3::DsssPpdu``: PPDU for DSSS and HR/DSSS (11b)
+* ``ns3::OfdmPpdu``: PPDU for OFDM (11a and 11p)
+* ``ns3::ErpOfdmPpdu``: PPDU for ERP-OFDM (11g)
+* ``ns3::HtPpdu``: PPDU for HT (11n)
+* ``ns3::VhtPpdu``: PPDU for VHT (11ac)
+* ``ns3::HePpdu``: PPDU for HE (11ax)
+
+Their inheritance diagram is given in Figure :ref:`wifippdu-hierarchy` and
+closely follows the standard's logic, e.g. section 21.3.8.1 of IEEE 802.11-2016:
+
+::
+To maintain compatibility with non-VHT STAs, specific non-VHT fields are defined
+that can be received by non-VHT STAs compliant with **Clause 17** [OFDM] or **Clause 19** [HT].
+
+.. _wifippdu-hierarchy:
+
+.. figure:: figures/WifiPpduHierarchy.*
+
+   *WifiPpdu hierarchy*
 
 YansWifiPhy and WifiPhyStateHelper
 ##################################
@@ -292,7 +380,9 @@ The PHY layer can be in one of seven states:
 
 Packet reception works as follows.  For ``YansWifiPhy``, most of the logic
 is implemented in the ``WifiPhy`` base class.  The ``YansWifiChannel`` calls
-``WifiPhy::StartReceivePreamble ()`` to start packet reception, but first
+``WifiPhy::StartReceivePreamble ()``. The latter calls
+``PhyEntity::StartReceivePreamble ()`` of the appropriate PHY entity
+to start packet reception, but first
 there is a check of the packet's notional signal power level against a
 threshold value stored in the attribute ``WifiPhy::RxSensitivity``.  Any
 packet with a power lower than RxSensitivity will be dropped with no
@@ -312,19 +402,19 @@ tracking, and then further reception steps are decided upon the state of
 the PHY.  In the case that the PHY is transmitting, for instance, the
 packet will be dropped.  If the PHY is IDLE, or if the PHY is receiving and
 an optional FrameCaptureModel is being used (and the packet is within
-the capture window), then ``WifiPhy::StartRx ()`` is called next.
+the capture window), then ``PhyEntity::StartPreambleDetectionPeriod ()`` is called next.
 
-The ``WifiPhy::StartRx ()`` will typically schedule an event,
-``WifiPhy::StartReceiveHeader ()``, to occur at
+The ``PhyEntity::StartPreambleDetectionPeriod ()`` will typically schedule an event,
+``PhyEntity::EndPreambleDetectionPeriod ()``, to occur at
 the notional end of the first OFDM symbol, to check whether the preamble
 has been detected.  As of revisions to the model in ns-3.30, any state
 machine transitions from IDLE state are suppressed until after the preamble
 detection event.
 
-The ``StartReceiveHeader ()`` method will check, with a preamble detection
+The ``PhyEntity::EndPreambleDetectionPeriod ()`` method will check, with a preamble detection
 model, whether the signal is strong enough to be received, and if so,
-an event ``WifiPhy::ContinueReceiveHeader ()`` is scheduled for the end of the
-non-HT header and the PHY is put into the CCA_BUSY state. Currently, there is only a
+an event ``PhyEntity::EndReceiveField ()`` is scheduled for the end of the
+preamble and the PHY is put into the CCA_BUSY state. Currently, there is only a
 simple threshold-based preamble detection model in ns-3,
 called ``ThresholdPreambleDetectionModel``.  If there is no preamble detection
 model, the preamble is assumed to have been detected.  
@@ -337,13 +427,13 @@ compared with that of previous releases, so some packet receptions that were
 previously successful will now fail on this check.  More details on the
 modeling behind this change are provided in [lanante2019]_.
 
-The next event to schedule is ``StartReceivePayload ()`` for the time at which
-the remaining PHY header fields have been received and the payload is about to start.
-This event is scheduled only if the non-HT PHY headers have been successfully received,
+The ``PhyEntity::EndReceiveField ()`` method will check the correct reception
+of the current preamble and header field and, if so, calls ``PhyEntity::StartReceiveField ()``
+for the next field,
 otherwise the reception is aborted and PHY is put either in IDLE state or in CCA_BUSY state,
 depending on whether the measured energy is higher than the energy detection threshold.
 
-The next event at ``StartReceivePayload ()`` checks, using the interference
+The next event at ``PhyEntity::StartReceiveField ()`` checks, using the interference
 helper and error model, whether the header was successfully decoded, and if so,
 a ``PhyRxPayloadBegin`` callback (equivalent to the PHY-RXSTART primitive)
 is triggered. The PHY header is often transmitted
@@ -351,11 +441,12 @@ at a lower modulation rate than is the payload. The portion of the packet
 corresponding to the PHY header is evaluated for probability of error
 based on the observed SNR.  The InterferenceHelper object returns a value
 for "probability of error (PER)" for this header based on the SNR that has
-been tracked by the InterferenceHelper.  The ``YansWifiPhy`` then draws
+been tracked by the InterferenceHelper.  The ``PhyEntity`` then draws
 a random number from a uniform distribution and compares it against the 
-PER and decides success or failure.  The process is again repeated after 
-the payload has been received.  If both the header and payload
-are successfully received, the packet is passed up to the ``MacLow`` object.
+PER and decides success or failure.
+
+This is iteratively performed up to the beginning of the data field
+upon which ``PhyEntity::StartReceivePayload ()`` is called.
 
 Even if packet objects received by the PHY are not part of the reception
 process, they are tracked by the InterferenceHelper object for purposes
@@ -406,7 +497,7 @@ the ``WifiPhy`` for a reception decision.
 
 .. figure:: figures/snir.*
    
-   *SNIR function over time.*
+   *SNIR function over time*
 
 From the SNIR function we can derive the Bit Error Rate (BER) and Packet 
 Error Rate (PER) for
@@ -582,7 +673,7 @@ and classes found in the spectrum module:
 
 The current ``SpectrumWifiPhy`` class 
 reuses the existing interference manager and error rate models originally
-built for YansWifiPhy, but allows, as a first step, foreign (non Wi-Fi)
+built for ``YansWifiPhy``, but allows, as a first step, foreign (non Wi-Fi)
 signals to be treated as additive noise.
 
 Two main changes were needed to adapt the Spectrum framework to Wi-Fi.
@@ -595,7 +686,7 @@ add their received power to the noise, in the same way that
 unintended Wi-Fi signals (perhaps from a different SSID or arriving
 late from a hidden node) are added to the noise.
 
-Unlike YansWifiPhy, where there are no foreign signals, CCA_BUSY state
+Unlike ``YansWifiPhy``, where there are no foreign signals, CCA_BUSY state
 will be raised for foreign signals that are higher than CcaEdThreshold
 (see section 16.4.8.5 in the 802.11-2012 standard for definition of
 CCA Mode 1).  The attribute ``WifiPhy::CcaEdThreshold`` therefore

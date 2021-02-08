@@ -135,6 +135,8 @@ SOURCEFIGS = \
 	$(SRC)/internet/doc/figures/dce-linux-reno-vs-ns3-new-reno.png \
 	$(SRC)/internet/doc/figures/ns3-new-reno-vs-ns3-linux-reno.png \
 	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
+	$(SRC)/wifi/doc/source/figures/PhyEntityHierarchy.dia \
+	$(SRC)/wifi/doc/source/figures/WifiPpduHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate.eps \
@@ -352,6 +354,8 @@ IMAGES_EPS = \
 	$(FIGURES)/routing.eps \
 	$(FIGURES)/routing-specialization.eps \
 	$(FIGURES)/WifiArchitecture.eps \
+	$(FIGURES)/PhyEntityHierarchy.eps \
+	$(FIGURES)/WifiPpduHierarchy.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
