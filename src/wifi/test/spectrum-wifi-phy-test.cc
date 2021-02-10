@@ -68,6 +68,7 @@ public:
 
 protected:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Make signal function
@@ -103,8 +104,7 @@ private:
 };
 
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest ()
-  : TestCase ("SpectrumWifiPhy test case receives one packet"),
-    m_count (0)
+  : SpectrumWifiPhyBasicTest ("SpectrumWifiPhy test case receives one packet")
 {
 }
 
@@ -181,6 +181,13 @@ SpectrumWifiPhyBasicTest::DoSetup (void)
   m_phy->SetFrequency (FREQUENCY);
   m_phy->SetReceiveOkCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure, this));
+}
+
+void
+SpectrumWifiPhyBasicTest::DoTeardown (void)
+{
+  m_phy->Dispose ();
+  m_phy = 0;
 }
 
 // Test that the expected number of packet receptions occur.
@@ -340,6 +347,7 @@ public:
 
 private:
   virtual void DoSetup (void);
+  virtual void DoTeardown (void);
   virtual void DoRun (void);
 
   /**
@@ -512,6 +520,15 @@ SpectrumWifiPhyFilterTest::DoSetup (void)
   rxNode->AggregateObject (sta1Mobility);
   rxNode->AddDevice (rxDev);
   m_rxPhy->TraceConnectWithoutContext ("PhyRxBegin", MakeCallback (&SpectrumWifiPhyFilterTest::RxCallback, this));
+}
+
+void
+SpectrumWifiPhyFilterTest::DoTeardown (void)
+{
+  m_txPhy->Dispose ();
+  m_txPhy = 0;
+  m_rxPhy->Dispose ();
+  m_rxPhy = 0;
 }
 
 void

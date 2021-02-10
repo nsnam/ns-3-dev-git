@@ -92,6 +92,8 @@ SpectrumWifiPhy::DoDispose (void)
   NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_wifiSpectrumPhyInterface = 0;
+  m_antenna = 0;
+  m_rxSpectrumModel = 0;
   WifiPhy::DoDispose ();
 }
 

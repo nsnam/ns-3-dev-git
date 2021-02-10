@@ -338,6 +338,7 @@ public:
      * \param event causes this NI change
      */
     NiChange (double power, Ptr<Event> event);
+    ~NiChange ();
     /**
      * Return the power
      *

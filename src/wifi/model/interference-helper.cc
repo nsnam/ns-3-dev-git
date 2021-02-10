@@ -50,6 +50,8 @@ Event::Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, Rx
 
 Event::~Event ()
 {
+  m_ppdu = 0;
+  m_rxPowerW.clear ();
 }
 
 Ptr<const WifiPpdu>
@@ -144,6 +146,11 @@ InterferenceHelper::NiChange::NiChange (double power, Ptr<Event> event)
 {
 }
 
+InterferenceHelper::NiChange::~NiChange ()
+{
+  m_event = 0;
+}
+
 double
 InterferenceHelper::NiChange::GetPower (void) const
 {
@@ -176,7 +183,7 @@ InterferenceHelper::InterferenceHelper ()
 
 InterferenceHelper::~InterferenceHelper ()
 {
-  EraseEvents ();
+  RemoveBands ();
   m_errorRateModel = 0;
 }
 
@@ -195,6 +202,7 @@ InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand r
   // of signal, so we provide dummy versions
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_QOSDATA);
+  hdr.SetQosTid (0);
   Ptr<WifiPpdu> fakePpdu = Create<WifiPpdu> (Create<WifiPsdu> (Create<Packet> (0), hdr),
                                              WifiTxVector (), duration, WIFI_PHY_BAND_UNSPECIFIED, UINT64_MAX);
   Add (fakePpdu, WifiTxVector (), duration, rxPowerW);
@@ -204,6 +212,10 @@ void
 InterferenceHelper::RemoveBands(void)
 {
   NS_LOG_FUNCTION (this);
+  for (auto it : m_niChangesPerBand)
+    {
+      it.second.clear ();
+    }
   m_niChangesPerBand.clear();
   m_firstPowerPerBand.clear();
 }
