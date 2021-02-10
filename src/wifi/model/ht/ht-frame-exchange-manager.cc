@@ -1244,8 +1244,8 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
   NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsGroup ()
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
-  const WifiMacHeader& hdr = mpdu->GetHeader ();
   double rxSnr = rxSignalInfo.snr;
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if (hdr.IsCtl ())
     {
@@ -1361,7 +1361,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
 }
 
 void
-HtFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+HtFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                          const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus)
 {
   std::set<uint8_t> tids = psdu->GetTids ();
@@ -1383,7 +1383,7 @@ HtFrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
           Simulator::Schedule (m_phy->GetSifs (), &HtFrameExchangeManager::SendBlockAck, this,
                                agreementIt->second, psdu->GetDuration (),
                                m_mac->GetWifiRemoteStationManager ()->GetBlockAckTxVector (psdu->GetAddr2 (), txVector.GetMode ()),
-                               rxSnr);
+                               rxSignalInfo.snr);
         }
     }
 }

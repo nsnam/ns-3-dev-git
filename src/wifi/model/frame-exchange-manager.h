@@ -35,6 +35,7 @@
 namespace ns3 {
 
 class ChannelAccessManager;
+struct RxSignalInfo;
 class WifiProtectionManager;
 struct WifiProtection;
 class WifiAckManager;
@@ -286,11 +287,11 @@ protected:
    * MPDUs is completed.
    *
    * \param psdu the received PSDU
-   * \param rxSnr snr of MPDU received in linear scale
+   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
    * \param txVector TxVector of the received PSDU
    * \param perMpduStatus per MPDU reception status
    */
-  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                 const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus);
 
   /**
@@ -299,11 +300,11 @@ protected:
    * \param mpdu the MPDU that was acknowledged
    * \param txVector the TXVECTOR used to transmit the MPDU that was acknowledged
    * \param ackTxVector the TXVECTOR used to transmit the Normal Ack frame
-   * \param rxSignalInfo the info on the received signal (\see RxSignalInfo)
+   * \param rxInfo the info on the received signal (\see RxSignalInfo)
    * \param snr the SNR at the receiver for the MPDU that was acknowledged
    */
   virtual void ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
-                                  const WifiTxVector& ackTxVector, RxSignalInfo rxSignalInfo, double snr);
+                                  const WifiTxVector& ackTxVector, const RxSignalInfo& rxInfo, double snr);
 
   /**
    * Notify other components that an MPDU was acknowledged.

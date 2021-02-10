@@ -643,6 +643,7 @@ QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo r
   NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsGroup ()
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
+  double rxSnr = rxSignalInfo.snr;
   const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if (hdr.IsCfEnd ())
@@ -652,7 +653,6 @@ QosFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo r
       return;
     }
 
-  double rxSnr = rxSignalInfo.snr;
   if (hdr.IsRts ())
     {
       NS_ABORT_MSG_IF (inAmpdu, "Received RTS as part of an A-MPDU");

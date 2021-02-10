@@ -909,7 +909,7 @@ FrameExchangeManager::Receive (Ptr<WifiPsdu> psdu, RxSignalInfo rxSignalInfo,
     }
   else
     {
-      EndReceiveAmpdu (psdu, rxSignalInfo.snr, txVector, perMpduStatus);
+      EndReceiveAmpdu (psdu, rxSignalInfo, txVector, perMpduStatus);
     }
 }
 
@@ -993,8 +993,8 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
   NS_ASSERT (mpdu->GetHeader ().GetAddr1 ().IsGroup ()
              || mpdu->GetHeader ().GetAddr1 () == m_self);
 
-  const WifiMacHeader& hdr = mpdu->GetHeader ();
   double rxSnr = rxSignalInfo.snr;
+  const WifiMacHeader& hdr = mpdu->GetHeader ();
 
   if (hdr.IsCtl ())
     {
@@ -1084,7 +1084,7 @@ FrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSi
 
 void
 FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector,
-                                         const WifiTxVector& ackTxVector, RxSignalInfo rxSignalInfo,
+                                         const WifiTxVector& ackTxVector, const RxSignalInfo& rxInfo,
                                          double snr)
 {
   Mac48Address sender = mpdu->GetHeader ().GetAddr1 ();
@@ -1095,8 +1095,9 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
   // When fragmentation is used, only update manager when the last fragment is acknowledged
   if (!mpdu->GetHeader ().IsMoreFragments ())
     {
-      m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxSignalInfo, ackTxVector.GetMode ());
-      m_mac->GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxSignalInfo.snr, ackTxVector.GetMode (), snr, txVector);
+      m_mac->GetWifiRemoteStationManager ()->ReportRxOk (sender, rxInfo, ackTxVector.GetMode ());
+      m_mac->GetWifiRemoteStationManager ()->ReportDataOk (mpdu, rxInfo.snr, ackTxVector.GetMode (),
+                                                           snr, txVector);
     }
   // cancel the timer
   m_txTimer.Cancel ();
@@ -1130,7 +1131,7 @@ FrameExchangeManager::NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-FrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+FrameExchangeManager::EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                        const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus)
 {
   NS_ASSERT_MSG (false, "A non-QoS station should not receive an A-MPDU");

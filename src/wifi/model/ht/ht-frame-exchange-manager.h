@@ -188,7 +188,7 @@ protected:
   // Overridden from QosFrameExchangeManager
   virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                             const WifiTxVector& txVector, bool inAmpdu) override;
-  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, double rxSnr,
+  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
                                 const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
   virtual void NotifyReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu) override;
   virtual void NotifyPacketDiscarded (Ptr<const WifiMacQueueItem> mpdu) override;
