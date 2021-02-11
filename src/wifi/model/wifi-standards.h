@@ -23,6 +23,7 @@
 
 #include <map>
 #include "wifi-phy-band.h"
+#include "ns3/abort.h"
 
 namespace ns3 {
 
@@ -218,6 +219,53 @@ enum FrequencyChannelType : uint8_t
   WIFI_PHY_OFDM_CHANNEL,
   WIFI_PHY_80211p_CHANNEL
 };
+
+/**
+ * Get the type of the frequency channel for the given PHY standard
+ *
+ * \param standard the PHY standard
+ * \return the type of the frequency channel for the given PHY standard
+ */
+inline FrequencyChannelType GetFrequencyChannelType (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+      case WIFI_PHY_STANDARD_80211b:
+        return WIFI_PHY_DSSS_CHANNEL;
+      case WIFI_PHY_STANDARD_80211p:
+        return WIFI_PHY_80211p_CHANNEL;
+      default:
+        return WIFI_PHY_OFDM_CHANNEL;
+    }
+}
+
+/**
+ * Get the maximum channel width in MHz allowed for the given PHY standard.
+ *
+ * \param standard the PHY standard
+ * \return the maximum channel width in MHz allowed for the given PHY standard
+ */
+inline uint16_t GetMaximumChannelWidth (WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+      case WIFI_PHY_STANDARD_80211b:
+        return 22;
+      case WIFI_PHY_STANDARD_80211p:
+        return 10;
+      case WIFI_PHY_STANDARD_80211a:
+      case WIFI_PHY_STANDARD_80211g:
+        return 20;
+      case WIFI_PHY_STANDARD_80211n:
+        return 40;
+      case WIFI_PHY_STANDARD_80211ac:
+      case WIFI_PHY_STANDARD_80211ax:
+        return 160;
+      default:
+        NS_ABORT_MSG ("Unknown standard: " << standard);
+        return 0;
+    }
+}
 
 } //namespace ns3
 

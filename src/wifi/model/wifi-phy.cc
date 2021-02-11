@@ -289,7 +289,7 @@ WifiPhy::ChannelToFrequencyWidthMap WifiPhy::m_channelToFrequencyWidth =
   { { {207, WIFI_PHY_BAND_6GHZ}, WIFI_PHY_STANDARD_80211ax}, {6975, 160} }
 };
 
-const std::set<WifiPhy::FrequencyChannelInfo> WifiPhy::m_frequencyChannels =
+const std::set<FrequencyChannelInfo> WifiPhy::m_frequencyChannels =
 {
   //2.4 GHz channels
   // 802.11b uses width of 22, while OFDM modes use width of 20

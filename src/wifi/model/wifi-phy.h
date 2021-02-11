@@ -27,8 +27,7 @@
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
 #include "phy-entity.h"
-#include <tuple>
-#include <set>
+#include "wifi-phy-operating-channel.h"
 
 namespace ns3 {
 
@@ -71,10 +70,6 @@ public:
    * A pair of a center frequency (MHz) and a channel width (MHz)
    */
   typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
-  /**
-   * A tuple (number, frequency, width, type, band) identifying a frequency channel
-   */
-  typedef std::tuple<uint8_t, uint16_t, uint16_t, FrequencyChannelType, WifiPhyBand> FrequencyChannelInfo;
 
   static const std::set<FrequencyChannelInfo> m_frequencyChannels;  //!< Available frequency channels
 
