@@ -131,6 +131,13 @@ int main (int argc, char *argv[])
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
+  //Workaround needed as long as we do not fully support channel bonding
+  if (staVersion == "80211ac")
+    {
+      phy.Set ("ChannelWidth", UintegerValue (20));
+      phy.Set ("Frequency", UintegerValue (5180));
+    }
+
   NetDeviceContainer staDevice;
   staDevice = wifi.Install (phy, mac, wifiStaNode);
 
@@ -141,20 +148,15 @@ int main (int argc, char *argv[])
                "QosSupported", BooleanValue (true),
                "Ssid", SsidValue (ssid));
 
-  NetDeviceContainer apDevice;
-  apDevice = wifi.Install (phy, mac, wifiApNode);
-
   //Workaround needed as long as we do not fully support channel bonding
-  if (staVersion == "80211ac")
-    {
-      Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
-      Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/Frequency", UintegerValue (5180));
-    }
   if (apVersion == "80211ac")
     {
-      Config::Set ("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
-      Config::Set ("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Phy/Frequency", UintegerValue (5180));
+      phy.Set ("ChannelWidth", UintegerValue (20));
+      phy.Set ("Frequency", UintegerValue (5180));
     }
+
+  NetDeviceContainer apDevice;
+  apDevice = wifi.Install (phy, mac, wifiApNode);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();

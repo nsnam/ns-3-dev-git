@@ -141,6 +141,7 @@ int main (int argc, char *argv[])
 
               mac.SetType ("ns3::StaWifiMac",
                            "Ssid", SsidValue (ssid));
+              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
               NetDeviceContainer staDevice;
               staDevice = wifi.Install (phy, mac, wifiStaNode);
@@ -148,12 +149,10 @@ int main (int argc, char *argv[])
               mac.SetType ("ns3::ApWifiMac",
                            "EnableBeaconJitter", BooleanValue (false),
                            "Ssid", SsidValue (ssid));
+              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);
-
-              // Set channel width
-              Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
 
               // Set guard interval
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (sgi));

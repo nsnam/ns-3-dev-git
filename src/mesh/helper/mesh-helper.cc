@@ -99,11 +99,11 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
           uint32_t channel = 0;
           if (m_spreadChannelPolicy == ZERO_CHANNEL)
             {
-              channel = 0;
+              channel = 100;
             }
           if (m_spreadChannelPolicy == SPREAD_CHANNELS)
             {
-              channel = i * 5;
+              channel = 100 + i * 5;
             }
           Ptr<WifiNetDevice> iface = CreateInterface (phyHelper, node, channel);
           mp->AddInterface (iface);

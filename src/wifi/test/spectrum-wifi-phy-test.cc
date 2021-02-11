@@ -535,7 +535,6 @@ SpectrumWifiPhyFilterTest::DoTeardown (void)
 void
 SpectrumWifiPhyFilterTest::RunOne (void)
 {
-  m_txPhy->SetChannelWidth (m_txChannelWidth);
   uint16_t txFrequency;
   switch (m_txChannelWidth)
     {
@@ -555,7 +554,6 @@ SpectrumWifiPhyFilterTest::RunOne (void)
     }
   m_txPhy->SetFrequency (txFrequency);
 
-  m_rxPhy->SetChannelWidth (m_rxChannelWidth);
   uint16_t rxFrequency;
   switch (m_rxChannelWidth)
     {

@@ -180,7 +180,6 @@ int main (int argc, char *argv[])
           phy.SetChannel (channel.Create ());
           phy.Set ("TxPowerStart", DoubleValue (1)); // dBm (1.26 mW)
           phy.Set ("TxPowerEnd", DoubleValue (1));
-          phy.Set ("Frequency", UintegerValue (5180));
         }
       else if (wifiType == "ns3::SpectrumWifiPhy")
         {
@@ -197,7 +196,6 @@ int main (int argc, char *argv[])
 
           spectrumPhy.SetChannel (spectrumChannel);
           spectrumPhy.SetErrorRateModel (errorModelType);
-          spectrumPhy.Set ("Frequency", UintegerValue (5180));
           spectrumPhy.Set ("TxPowerStart", DoubleValue (1)); // dBm  (1.26 mW)
           spectrumPhy.Set ("TxPowerEnd", DoubleValue (1));
         }
@@ -386,9 +384,11 @@ int main (int argc, char *argv[])
         {
           mac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid));
+          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           staDevice = wifi.Install (phy, mac, wifiStaNode);
           mac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid));
+          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           apDevice = wifi.Install (phy, mac, wifiApNode);
 
         }
@@ -396,30 +396,28 @@ int main (int argc, char *argv[])
         {
           mac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid));
+          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           staDevice = wifi.Install (spectrumPhy, mac, wifiStaNode);
           mac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid));
+          phy.Set ("ChannelWidth", UintegerValue (i <= 15 ? 20 : 40));
           apDevice = wifi.Install (spectrumPhy, mac, wifiApNode);
         }
 
       if (i <= 7)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
         }
       else if (i > 7 && i <= 15)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
         }
       else if (i > 15 && i <= 23)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
         }
       else
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
         }
 

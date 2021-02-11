@@ -118,7 +118,7 @@ void MonitorSniffRx (Ptr<const Packet> packet,
 
 NS_LOG_COMPONENT_DEFINE ("WifiSpectrumPerInterference");
 
-Ptr<SpectrumModel> SpectrumModelWifi5180MHz;
+Ptr<SpectrumModel> SpectrumModelWifi5180MHz, SpectrumModelWifi5190MHz;
 
 class static_SpectrumModelWifi5180MHz_initializer
 {
@@ -137,6 +137,24 @@ public:
   }
 
 } static_SpectrumModelWifi5180MHz_initializer_instance;
+
+class static_SpectrumModelWifi5190MHz_initializer
+{
+public:
+  static_SpectrumModelWifi5190MHz_initializer ()
+  {
+    BandInfo bandInfo;
+    bandInfo.fc = 5190e6;
+    bandInfo.fl = 5190e6 - 10e6;
+    bandInfo.fh = 5190e6 + 10e6;
+
+    Bands bands;
+    bands.push_back (bandInfo);
+
+    SpectrumModelWifi5190MHz = Create<SpectrumModel> (bands);
+  }
+
+} static_SpectrumModelWifi5190MHz_initializer_instance;
 
 int main (int argc, char *argv[])
 {
@@ -202,14 +220,15 @@ int main (int argc, char *argv[])
       YansWifiPhyHelper phy;
       SpectrumWifiPhyHelper spectrumPhy;
       Ptr<MultiModelSpectrumChannel> spectrumChannel;
+      uint16_t frequency = (i <= 15 ? 5180 : 5190);
       if (wifiType == "ns3::YansWifiPhy")
         {
           YansWifiChannelHelper channel;
           channel.AddPropagationLoss ("ns3::FriisPropagationLossModel",
-                                      "Frequency", DoubleValue (5.180e9));
+                                      "Frequency", DoubleValue (frequency * 1e6));
           channel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           phy.SetChannel (channel.Create ());
-          phy.Set ("Frequency", UintegerValue (5180));
+          phy.Set ("Frequency", UintegerValue (frequency));
         }
       else if (wifiType == "ns3::SpectrumWifiPhy")
         {
@@ -217,7 +236,7 @@ int main (int argc, char *argv[])
             = CreateObject<MultiModelSpectrumChannel> ();
           Ptr<FriisPropagationLossModel> lossModel
             = CreateObject<FriisPropagationLossModel> ();
-          lossModel->SetFrequency (5.180e9);
+          lossModel->SetFrequency (frequency * 1e6);
           spectrumChannel->AddPropagationLossModel (lossModel);
 
           Ptr<ConstantSpeedPropagationDelayModel> delayModel
@@ -226,7 +245,7 @@ int main (int argc, char *argv[])
 
           spectrumPhy.SetChannel (spectrumChannel);
           spectrumPhy.SetErrorRateModel (errorModelType);
-          spectrumPhy.Set ("Frequency", UintegerValue (5180)); // channel 36 at 20 MHz
+          spectrumPhy.Set ("Frequency", UintegerValue (frequency)); // channel 36 at 20 MHz, 38 at 40 MHz
         }
       else
         {
@@ -430,22 +449,18 @@ int main (int argc, char *argv[])
 
       if (i <= 7)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
         }
       else if (i > 7 && i <= 15)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (20));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
         }
       else if (i > 15 && i <= 23)
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (false));
         }
       else
         {
-          Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (40));
           Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (true));
         }
 
@@ -519,7 +534,8 @@ int main (int argc, char *argv[])
         }
 
       // Configure waveform generator
-      Ptr<SpectrumValue> wgPsd = Create<SpectrumValue> (SpectrumModelWifi5180MHz);
+      Ptr<SpectrumValue> wgPsd = Create<SpectrumValue> (i <= 15 ? SpectrumModelWifi5180MHz
+                                                                : SpectrumModelWifi5190MHz);
       *wgPsd = waveformPower / 20e6;  // PSD spread across 20 MHz
       NS_LOG_INFO ("wgPsd : " << *wgPsd << " integrated power: " << Integral (*(GetPointer (wgPsd))));
 
@@ -552,12 +568,20 @@ int main (int argc, char *argv[])
       // Make sure we are tuned to 5180 MHz; if not, the example will
       // not work properly
       Ptr<NetDevice> staDevicePtr = staDevice.Get (0);
-      Ptr<WifiNetDevice> wifiStaDevicePtr = staDevicePtr->GetObject <WifiNetDevice> ();
-      UintegerValue val;
-      wifiStaDevicePtr->GetPhy ()->GetAttribute ("Frequency", val);
-      if (val.Get () != 5180)
+      Ptr<WifiPhy> wifiPhyPtr = staDevicePtr->GetObject <WifiNetDevice> ()->GetPhy ();
+      if (i <= 15)
         {
-          NS_FATAL_ERROR ("Error:  Wi-Fi nodes must be tuned to 5180 MHz to match the waveform generator");
+          NS_ABORT_MSG_IF (wifiPhyPtr->GetChannelWidth () != 20,
+                           "Error: Channel width must be 20 MHz if MCS index <= 15");
+          NS_ABORT_MSG_IF (wifiPhyPtr->GetFrequency () != 5180,
+                           "Error:  Wi-Fi nodes must be tuned to 5180 MHz to match the waveform generator");
+        }
+      else
+        {
+          NS_ABORT_MSG_IF (wifiPhyPtr->GetChannelWidth () != 40,
+                           "Error: Channel width must be 40 MHz if MCS index > 15");
+          NS_ABORT_MSG_IF (wifiPhyPtr->GetFrequency () != 5190,
+                           "Error:  Wi-Fi nodes must be tuned to 5190 MHz to match the waveform generator");
         }
 
       Simulator::Stop (Seconds (simulationTime + 1));

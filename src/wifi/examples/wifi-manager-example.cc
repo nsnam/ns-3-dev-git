@@ -162,8 +162,8 @@ int main (int argc, char *argv[])
   uint16_t clientNss = 1;
   uint16_t serverShortGuardInterval = 800;
   uint16_t clientShortGuardInterval = 800;
-  uint16_t serverChannelWidth = 20;
-  uint16_t clientChannelWidth = 20;
+  uint16_t serverChannelWidth = 0;  // use default for standard and band
+  uint16_t clientChannelWidth = 0;  // use default for standard and band
   std::string wifiManager ("Ideal");
   std::string standard ("802.11a");
   StandardInfo serverSelectedStandard;
@@ -205,36 +205,78 @@ int main (int argc, char *argv[])
 
   if (standard == "802.11b")
     {
+      if (serverChannelWidth == 0)
+        {
+          serverChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211b, WIFI_PHY_BAND_2_4GHZ);
+        }
       NS_ABORT_MSG_IF (serverChannelWidth != 22 && serverChannelWidth != 22, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (serverNss != 1, "Invalid nss for standard " << standard);
+      if (clientChannelWidth == 0)
+        {
+          clientChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211b, WIFI_PHY_BAND_2_4GHZ);
+        }
       NS_ABORT_MSG_IF (clientChannelWidth != 22 && clientChannelWidth != 22, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss != 1, "Invalid nss for standard " << standard);
     }
   else if (standard == "802.11a" || standard == "802.11g")
     {
+      if (serverChannelWidth == 0)
+        {
+          serverChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ);
+        }
       NS_ABORT_MSG_IF (serverChannelWidth != 20, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (serverNss != 1, "Invalid nss for standard " << standard);
+      if (clientChannelWidth == 0)
+        {
+          clientChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211g, WIFI_PHY_BAND_2_4GHZ);
+        }
       NS_ABORT_MSG_IF (clientChannelWidth != 20, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss != 1, "Invalid nss for standard " << standard);
     }
   else if (standard == "802.11n-5GHz" || standard == "802.11n-2.4GHz")
     {
+      WifiPhyBand band = (standard == "802.11n-2.4GHz" ? WIFI_PHY_BAND_2_4GHZ : WIFI_PHY_BAND_5GHZ);
+      if (serverChannelWidth == 0)
+        {
+          serverChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211n, band);
+        }
       NS_ABORT_MSG_IF (serverChannelWidth != 20 && serverChannelWidth != 40, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (serverNss == 0 || serverNss > 4, "Invalid nss " << serverNss << " for standard " << standard);
+      if (clientChannelWidth == 0)
+        {
+          clientChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211n, band);
+        }
       NS_ABORT_MSG_IF (clientChannelWidth != 20 && clientChannelWidth != 40, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss == 0 || clientNss > 4, "Invalid nss " << clientNss << " for standard " << standard);
     }
   else if (standard == "802.11ac")
     {
+      if (serverChannelWidth == 0)
+        {
+          serverChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ);
+        }
       NS_ABORT_MSG_IF (serverChannelWidth != 20 && serverChannelWidth != 40 && serverChannelWidth != 80 && serverChannelWidth != 160, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (serverNss == 0 || serverNss > 4, "Invalid nss " << serverNss << " for standard " << standard);
+      if (clientChannelWidth == 0)
+        {
+          clientChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211ac, WIFI_PHY_BAND_5GHZ);
+        }
       NS_ABORT_MSG_IF (clientChannelWidth != 20 && clientChannelWidth != 40 && clientChannelWidth != 80 && clientChannelWidth != 160, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss == 0 || clientNss > 4, "Invalid nss " << clientNss << " for standard " << standard);
     }
   else if (standard == "802.11ax-5GHz" || standard == "802.11ax-2.4GHz")
     {
+      WifiPhyBand band = (standard == "802.11ax-2.4GHz" ? WIFI_PHY_BAND_2_4GHZ : WIFI_PHY_BAND_5GHZ);
+      if (serverChannelWidth == 0)
+        {
+          serverChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211ax, band);
+        }
       NS_ABORT_MSG_IF (serverChannelWidth != 20 && serverChannelWidth != 40 && serverChannelWidth != 80 && serverChannelWidth != 160, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (serverNss == 0 || serverNss > 4, "Invalid nss " << serverNss << " for standard " << standard);
+      if (clientChannelWidth == 0)
+        {
+          clientChannelWidth = GetDefaultChannelWidth (WIFI_PHY_STANDARD_80211ax, band);
+        }
       NS_ABORT_MSG_IF (clientChannelWidth != 20 && clientChannelWidth != 40 && clientChannelWidth != 80 && clientChannelWidth != 160, "Invalid channel width for standard " << standard);
       NS_ABORT_MSG_IF (clientNss == 0 || clientNss > 4, "Invalid nss " << clientNss << " for standard " << standard);
     }
@@ -352,15 +394,19 @@ int main (int argc, char *argv[])
       Ssid ssid = Ssid ("ns-3-ssid");
       wifiMac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid));
+      wifiPhy.Set ("ChannelWidth", UintegerValue (serverSelectedStandard.m_width));
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
       wifiMac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid));
+      wifiPhy.Set ("ChannelWidth", UintegerValue (clientSelectedStandard.m_width));
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
   else
     {
       wifiMac.SetType ("ns3::AdhocWifiMac");
+      wifiPhy.Set ("ChannelWidth", UintegerValue (serverSelectedStandard.m_width));
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
+      wifiPhy.Set ("ChannelWidth", UintegerValue (clientSelectedStandard.m_width));
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
 
@@ -409,13 +455,11 @@ int main (int argc, char *argv[])
   wifiPhyPtrServer->SetNumberOfAntennas (t_serverNss);
   wifiPhyPtrServer->SetMaxSupportedTxSpatialStreams (t_serverNss);
   wifiPhyPtrServer->SetMaxSupportedRxSpatialStreams (t_serverNss);
-  // Only set the channel width and guard interval for HT and VHT modes
+  // Only set the guard interval for HT and VHT modes
   if (serverSelectedStandard.m_name == "802.11n-5GHz"
       || serverSelectedStandard.m_name == "802.11n-2.4GHz"
       || serverSelectedStandard.m_name == "802.11ac")
     {
-      wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
-      wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
       Ptr<HtConfiguration> clientHtConfiguration = wndClient->GetHtConfiguration ();
       clientHtConfiguration->SetShortGuardIntervalSupported (clientShortGuardInterval == 400);
       Ptr<HtConfiguration> serverHtConfiguration = wndServer->GetHtConfiguration ();
@@ -424,8 +468,6 @@ int main (int argc, char *argv[])
   else if (serverSelectedStandard.m_name == "802.11ax-5GHz"
            || serverSelectedStandard.m_name == "802.11ax-2.4GHz")
     {
-      wifiPhyPtrServer->SetChannelWidth (serverSelectedStandard.m_width);
-      wifiPhyPtrClient->SetChannelWidth (clientSelectedStandard.m_width);
       wndServer->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
       wndClient->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
     }

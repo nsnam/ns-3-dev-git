@@ -534,23 +534,56 @@ WifiPhy::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddAttribute ("Frequency",
-                   "The operating center frequency (MHz)",
+                   "The center frequency (MHz) of the operating channel. "
+                   "If the operating channel for this object has not been set yet, the "
+                   "value of this attribute is saved and will be used, along with the channel "
+                   "number and width configured via other attributes, to set the operating "
+                   "channel when the standard and band are configured. The default value of "
+                   "this attribute is 0, which means unspecified center frequency. Note that "
+                   "if center frequency and channel number are both 0 when the standard and "
+                   "band are configured, a default channel (of the configured width, if any, "
+                   "or the default width for the current standard and band, otherwise) is set. "
+                   "If the operating channel for this object has been already set, the "
+                   "specified center frequency must uniquely identify a channel in the "
+                   "band being used.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::GetFrequency,
                                          &WifiPhy::SetFrequency),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("ChannelWidth",
-                   "Whether 5MHz, 10MHz, 20MHz, 22MHz, 40MHz, 80 MHz or 160 MHz.",
-                   UintegerValue (20),
-                   MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
-                                         &WifiPhy::SetChannelWidth),
-                   MakeUintegerChecker<uint16_t> (5, 160))
     .AddAttribute ("ChannelNumber",
-                   "If set to non-zero defined value, will control Frequency and ChannelWidth assignment",
+                   "The channel number of the operating channel. "
+                   "If the operating channel for this object has not been set yet, the "
+                   "value of this attribute is saved and will be used, along with the center "
+                   "frequency and width configured via other attributes, to set the operating "
+                   "channel when the standard and band are configured. The default value of "
+                   "this attribute is 0, which means unspecified channel number. Note that "
+                   "if center frequency and channel number are both 0 when the standard and "
+                   "band are configured, a default channel (of the configured width, if any, "
+                   "or the default width for the current standard and band, otherwise) is set. "
+                   "If the operating channel for this object has been already set, the "
+                   "specified channel number must uniquely identify a channel in the "
+                   "band being used.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&WifiPhy::SetChannelNumber,
                                          &WifiPhy::GetChannelNumber),
                    MakeUintegerChecker<uint8_t> (0, 233))
+    .AddAttribute ("ChannelWidth",
+                   "The width in MHz of the operating channel (5, 10, 20, 22, 40, 80 or 160). "
+                   "If the operating channel for this object has not been set yet, the "
+                   "value of this attribute is saved and will be used, along with the center "
+                   "frequency and channel number configured via other attributes, to set the "
+                   "operating channel when the standard and band are configured. The default value "
+                   "of this attribute is 0, which means unspecified channel width. Note that "
+                   "if center frequency and channel number are both 0 when the standard and "
+                   "band are configured, a default channel (of the configured width, if any, "
+                   "or the default width for the current standard and band, otherwise) is set. "
+                   "Do not set this attribute when the standard and band of this object have "
+                   "been already configured, because it cannot uniquely identify a channel in "
+                   "the band being used.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
+                                         &WifiPhy::SetChannelWidth),
+                   MakeUintegerChecker<uint16_t> (5, 160))
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal.",
@@ -761,7 +794,10 @@ WifiPhy::WifiPhy ()
     m_channelCenterFrequency (0),
     m_initialFrequency (0),
     m_frequencyChannelNumberInitialized (false),
+    m_channelNumber (0),
+    m_initialChannelNumber (0),
     m_channelWidth (0),
+    m_initialChannelWidth (0),
     m_sifs (Seconds (0)),
     m_slot (Seconds (0)),
     m_pifs (Seconds (0)),
@@ -771,8 +807,6 @@ WifiPhy::WifiPhy ()
     m_channelAccessRequested (false),
     m_txSpatialStreams (0),
     m_rxSpatialStreams (0),
-    m_channelNumber (0),
-    m_initialChannelNumber (0),
     m_wifiRadioEnergyModel (0),
     m_timeLastPreambleDetected (Seconds (0))
 {
@@ -1493,20 +1527,24 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
   NS_LOG_FUNCTION (this << standard << band);
   m_standard = standard;
   m_band = band;
-  m_isConstructed = true;
-  if (m_frequencyChannelNumberInitialized == false)
+
+  if (m_initialFrequency == 0 && m_initialChannelNumber == 0)
     {
-      InitializeFrequencyChannelNumber ();
-    }
-  if (GetFrequency () == 0 && GetChannelNumber () == 0)
-    {
-      ConfigureDefaultsForStandard ();
+      // set a default channel if the user did not specify anything
+      if (m_initialChannelWidth == 0)
+        {
+          // set a default channel width
+          m_initialChannelWidth = GetDefaultChannelWidth (m_standard, m_band);
+        }
+
+      m_operatingChannel.SetDefault (m_initialChannelWidth, m_standard, m_band);
     }
   else
     {
-      // The user has configured either (or both) Frequency or ChannelNumber
-      ConfigureChannelForStandard ();
+      m_operatingChannel.Set (m_initialChannelNumber, m_initialFrequency, m_initialChannelWidth,
+                              m_standard, m_band);
     }
+
   switch (standard)
     {
     case WIFI_PHY_STANDARD_80211a:
@@ -1550,87 +1588,214 @@ WifiPhy::GetPhyStandard (void) const
   return m_standard;
 }
 
+const WifiPhyOperatingChannel&
+WifiPhy::GetOperatingChannel (void) const
+{
+  return m_operatingChannel;
+}
+
 void
 WifiPhy::SetFrequency (uint16_t frequency)
 {
   NS_LOG_FUNCTION (this << frequency);
-  if (m_isConstructed == false)
+
+  if (!m_operatingChannel.IsSet ())
     {
+      // ConfigureStandardAndBand has not been called yet, so store the frequency
+      // into m_initialFrequency
       NS_LOG_DEBUG ("Saving frequency configuration for initialization");
       m_initialFrequency = frequency;
       return;
     }
+
   if (GetFrequency () == frequency)
     {
       NS_LOG_DEBUG ("No frequency change requested");
       return;
     }
-  if (frequency == 0)
-    {
-      DoFrequencySwitch (0);
-      NS_LOG_DEBUG ("Setting frequency and channel number to zero");
-      m_channelCenterFrequency = 0;
-      m_channelNumber = 0;
-      return;
-    }
-  // If the user has configured both Frequency and ChannelNumber, Frequency
-  // takes precedence.  Lookup the channel number corresponding to the
-  // requested frequency.
-  uint8_t nch = FindChannelNumberForFrequencyWidth (frequency, GetChannelWidth ());
-  if (nch != 0)
-    {
-      NS_LOG_DEBUG ("Setting frequency " << frequency << " corresponds to channel " << +nch);
-      if (DoFrequencySwitch (frequency))
-        {
-          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << +nch);
-          m_channelCenterFrequency = frequency;
-          m_channelNumber = nch;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Suppressing reassignment of frequency");
-        }
-    }
-  else
-    {
-      NS_LOG_DEBUG ("Channel number is unknown for frequency " << frequency);
-      if (DoFrequencySwitch (frequency))
-        {
-          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << 0);
-          m_channelCenterFrequency = frequency;
-          m_channelNumber = 0;
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Suppressing reassignment of frequency");
-        }
-    }
+
+  // if the frequency does not uniquely identify an operating channel,
+  // the simulation aborts
+  SetOperatingChannel (0, frequency, 0);
 }
 
 uint16_t
 WifiPhy::GetFrequency (void) const
 {
-  return m_channelCenterFrequency;
+  return m_operatingChannel.GetFrequency ();
+}
+
+void
+WifiPhy::SetChannelNumber (uint8_t nch)
+{
+  NS_LOG_FUNCTION (this << +nch);
+
+  if (!m_operatingChannel.IsSet ())
+    {
+      // ConfigureStandardAndBand has not been called yet, so store the channel
+      // into m_initialChannelNumber
+      NS_LOG_DEBUG ("Saving channel number configuration for initialization");
+      m_initialChannelNumber = nch;
+      return;
+    }
+
+  if (GetChannelNumber () == nch)
+    {
+      NS_LOG_DEBUG ("No channel change requested");
+      return;
+    }
+
+  // if the channel number does not uniquely identify an operating channel,
+  // the simulation aborts
+  SetOperatingChannel (nch, 0, 0);
+}
+
+uint8_t
+WifiPhy::GetChannelNumber (void) const
+{
+  return m_operatingChannel.GetNumber ();
 }
 
 void
 WifiPhy::SetChannelWidth (uint16_t channelWidth)
 {
   NS_LOG_FUNCTION (this << channelWidth);
-  NS_ASSERT_MSG (channelWidth == 5 || channelWidth == 10 || channelWidth == 20 || channelWidth == 22 || channelWidth == 40 || channelWidth == 80 || channelWidth == 160, "wrong channel width value");
-  bool changed = (m_channelWidth != channelWidth);
-  m_channelWidth = channelWidth;
-  AddSupportedChannelWidth (channelWidth);
-  if (changed && !m_capabilitiesChangedCallback.IsNull ())
+
+  if (channelWidth != 0)
     {
-      m_capabilitiesChangedCallback ();
+      AddSupportedChannelWidth (channelWidth);
     }
+
+  if (!m_operatingChannel.IsSet ())
+    {
+      // ConfigureStandardAndBand has not been called yet, so store the channel width
+      // into m_initialChannelWidth
+      NS_LOG_DEBUG ("Saving channel width configuration for initialization");
+      m_initialChannelWidth = channelWidth;
+      return;
+    }
+
+  if (GetChannelWidth () == channelWidth)
+    {
+      NS_LOG_DEBUG ("No channel width change requested");
+      return;
+    }
+
+  NS_ABORT_MSG ("The channel width does not uniquely identify an operating channel.");
 }
 
 uint16_t
 WifiPhy::GetChannelWidth (void) const
 {
-  return m_channelWidth;
+  return m_operatingChannel.GetWidth ();
+}
+
+void
+WifiPhy::SetOperatingChannel (uint8_t number, uint16_t frequency, uint16_t width)
+{
+  Time delay = Seconds (0);
+
+  if (IsInitialized ())
+    {
+      delay = DoChannelSwitch ();
+    }
+
+  if (delay.IsStrictlyNegative ())
+    {
+      // switching channel is not possible now
+      return;
+    }
+  if (delay.IsStrictlyPositive ())
+    {
+      // switching channel has been postponed
+      Simulator::Schedule (delay, &WifiPhy::SetOperatingChannel, this, number, frequency, width);
+      return;
+    }
+
+  // channel can be switched now.
+  uint16_t prevChannelWidth = 0;
+  if (m_operatingChannel.IsSet ())
+    {
+      prevChannelWidth = GetChannelWidth ();
+    }
+
+  m_operatingChannel.Set (number, frequency, width, m_standard, m_band);
+
+  if (GetChannelWidth () != prevChannelWidth)
+    {
+      AddSupportedChannelWidth (GetChannelWidth ());
+
+      // If channel width changed after initialization, invoke the capabilities changed callback
+      if (IsInitialized () && !m_capabilitiesChangedCallback.IsNull ())
+        {
+          m_capabilitiesChangedCallback ();
+        }
+    }
+}
+
+Time
+WifiPhy::DoChannelSwitch (void)
+{
+  m_powerRestricted = false;
+  m_channelAccessRequested = false;
+  m_currentEvent = 0;
+  m_currentPreambleEvents.clear ();
+  if (!IsInitialized ())
+    {
+      //this is not channel switch, this is initialization
+      NS_LOG_DEBUG ("Before initialization, nothing to do");
+      return Seconds (0);
+    }
+
+  Time delay = Seconds (0);
+
+  NS_ASSERT (!IsStateSwitching ());
+  switch (m_state->GetState ())
+    {
+    case WifiPhyState::RX:
+      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+      m_endPhyRxEvent.Cancel ();
+      for (auto & phyEntity : m_phyEntities)
+        {
+          phyEntity.second->CancelAllEvents ();
+        }
+      break;
+    case WifiPhyState::TX:
+      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
+      delay = GetDelayUntilIdle ();
+      break;
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
+      for (auto & phyEntity : m_phyEntities)
+        {
+          phyEntity.second->CancelAllEvents ();
+        }
+      break;
+    case WifiPhyState::SLEEP:
+      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
+      delay = Seconds (-1);  // negative value to indicate switching not possible
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+
+  if (delay.IsZero ())
+    {
+      // channel switch can be done now
+      NS_LOG_DEBUG ("switching channel");
+      m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
+      m_interference.EraseEvents ();
+      /*
+      * Needed here to be able to correctly sensed the medium for the first
+      * time after the switching. The actual switching is not performed until
+      * after m_channelSwitchDelay. Packets received during the switching
+      * state are added to the event list and are employed later to figure
+      * out the state of the medium after the switching.
+      */
+    }
+
+  return delay;
 }
 
 void
@@ -1738,128 +1903,6 @@ WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiP
   ChannelNumberStandardPair p = std::make_pair (std::make_pair (channelNumber, band), standard);
   FrequencyWidthPair f = m_channelToFrequencyWidth[p];
   return f;
-}
-
-void
-WifiPhy::SetChannelNumber (uint8_t nch)
-{
-  NS_LOG_FUNCTION (this << +nch);
-  if (m_isConstructed == false)
-    {
-      NS_LOG_DEBUG ("Saving channel number configuration for initialization");
-      m_initialChannelNumber = nch;
-      return;
-    }
-  if (GetChannelNumber () == nch)
-    {
-      NS_LOG_DEBUG ("No channel change requested");
-      return;
-    }
-  if (nch == 0)
-    {
-      // This case corresponds to when there is not a known channel
-      // number for the requested frequency.  There is no need to call
-      // DoChannelSwitch () because DoFrequencySwitch () should have been
-      // called by the client
-      NS_LOG_DEBUG ("Setting channel number to zero");
-      m_channelNumber = 0;
-      return;
-    }
-
-  // First make sure that the channel number is defined for the standard in use
-  FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyBand (), GetPhyStandard ());
-  if (f.first == 0)
-    {
-      f = GetFrequencyWidthForChannelNumberStandard (nch, GetPhyBand (), WIFI_PHY_STANDARD_UNSPECIFIED);
-    }
-  if (f.first != 0)
-    {
-      if (DoChannelSwitch (nch))
-        {
-          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << +f.second);
-          m_channelCenterFrequency = f.first;
-          SetChannelWidth (f.second);
-          m_channelNumber = nch;
-        }
-      else
-        {
-          // Subclass may have suppressed (e.g. waiting for state change)
-          NS_LOG_DEBUG ("Channel switch suppressed");
-        }
-    }
-  else
-    {
-      NS_FATAL_ERROR ("Frequency not found for channel number " << +nch);
-    }
-}
-
-uint8_t
-WifiPhy::GetChannelNumber (void) const
-{
-  return m_channelNumber;
-}
-
-bool
-WifiPhy::DoChannelSwitch (uint8_t nch)
-{
-  m_powerRestricted = false;
-  m_channelAccessRequested = false;
-  m_currentEvent = 0;
-  m_currentPreambleEvents.clear ();
-  if (!IsInitialized ())
-    {
-      //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("initialize to channel " << +nch);
-      return true;
-    }
-
-  NS_ASSERT (!IsStateSwitching ());
-  switch (m_state->GetState ())
-    {
-    case WifiPhyState::RX:
-      NS_LOG_DEBUG ("drop packet because of channel switching while reception");
-      m_endPhyRxEvent.Cancel ();
-      for (auto & phyEntity : m_phyEntities)
-        {
-          phyEntity.second->CancelAllEvents ();
-        }
-      goto switchChannel;
-      break;
-    case WifiPhyState::TX:
-      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
-      Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
-      break;
-    case WifiPhyState::CCA_BUSY:
-    case WifiPhyState::IDLE:
-      for (auto & phyEntity : m_phyEntities)
-        {
-          phyEntity.second->CancelAllEvents ();
-        }
-      goto switchChannel;
-      break;
-    case WifiPhyState::SLEEP:
-      NS_LOG_DEBUG ("channel switching ignored in sleep mode");
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-
-  return false;
-
-switchChannel:
-
-  NS_LOG_DEBUG ("switching channel " << +GetChannelNumber () << " -> " << +nch);
-  m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
-  m_interference.EraseEvents ();
-  /*
-   * Needed here to be able to correctly sensed the medium for the first
-   * time after the switching. The actual switching is not performed until
-   * after m_channelSwitchDelay. Packets received during the switching
-   * state are added to the event list and are employed later to figure
-   * out the state of the medium after the switching.
-   */
-  return true;
 }
 
 bool
