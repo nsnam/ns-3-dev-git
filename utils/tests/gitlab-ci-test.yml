@@ -33,6 +33,9 @@ daily-test-debug:
   only:
     variables:
       - $RELEASE == "daily"
+  tags:
+    - nsnam
+    - linux
   before_script:
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost valgrind --noconfirm
