@@ -256,6 +256,20 @@ HePhy::CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const
   return duration;
 }
 
+uint8_t
+HePhy::GetNumberBccEncoders (WifiTxVector /* txVector */) const
+{
+  return 1; //only 1 BCC encoder for HE since higher rates are obtained using LDPC
+}
+
+Time
+HePhy::GetSymbolDuration (WifiTxVector txVector) const
+{
+  uint16_t gi = txVector.GetGuardInterval ();
+  NS_ASSERT (gi == 800 || gi == 1600 || gi == 3200);
+  return NanoSeconds (12800 + gi);
+}
+
 void
 HePhy::InitializeModes (void)
 {

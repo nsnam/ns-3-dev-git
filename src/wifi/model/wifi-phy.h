@@ -24,7 +24,6 @@
 
 #include "ns3/event-id.h"
 #include "ns3/error-model.h"
-#include "wifi-mpdu-type.h"
 #include "wifi-standards.h"
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"

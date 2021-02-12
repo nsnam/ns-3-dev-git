@@ -263,6 +263,102 @@ HtPhy::GetHtSigDuration (void) const
   return MicroSeconds (8); //HT-SIG
 }
 
+Time
+HtPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                           bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                           uint16_t staId) const
+{
+  WifiMode payloadMode = txVector.GetMode (staId);
+  uint8_t stbc = txVector.IsStbc () ? 2 : 1; //corresponding to m_STBC in Nsym computation (see IEEE 802.11-2016, equations (19-32) and (21-62))
+  uint8_t nes = GetNumberBccEncoders (txVector);
+  //TODO: Update station managers to consider GI capabilities
+  Time symbolDuration = GetSymbolDuration (txVector);
+
+  double numDataBitsPerSymbol = payloadMode.GetDataRate (txVector, staId) * symbolDuration.GetNanoSeconds () / 1e9;
+  uint8_t service = GetNumberServiceBits ();
+
+  double numSymbols = 0;
+  switch (mpdutype)
+    {
+      case FIRST_MPDU_IN_AGGREGATE:
+        {
+          //First packet in an A-MPDU
+          numSymbols = (stbc * (service + size * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol));
+          if (incFlag == 1)
+            {
+              totalAmpduSize += size;
+              totalAmpduNumSymbols += numSymbols;
+            }
+          break;
+        }
+      case MIDDLE_MPDU_IN_AGGREGATE:
+        {
+          //consecutive packets in an A-MPDU
+          numSymbols = (stbc * size * 8.0) / (stbc * numDataBitsPerSymbol);
+          if (incFlag == 1)
+            {
+              totalAmpduSize += size;
+              totalAmpduNumSymbols += numSymbols;
+            }
+          break;
+        }
+      case LAST_MPDU_IN_AGGREGATE:
+        {
+          //last packet in an A-MPDU
+          uint32_t totalSize = totalAmpduSize + size;
+          numSymbols = lrint (stbc * ceil ((service + totalSize * 8.0 + 6 * nes) / (stbc * numDataBitsPerSymbol)));
+          NS_ASSERT (totalAmpduNumSymbols <= numSymbols);
+          numSymbols -= totalAmpduNumSymbols;
+          if (incFlag == 1)
+            {
+              totalAmpduSize = 0;
+              totalAmpduNumSymbols = 0;
+            }
+          break;
+        }
+      case NORMAL_MPDU:
+      case SINGLE_MPDU:
+        {
+          //Not an A-MPDU or single MPDU (i.e. the current payload contains both service and padding)
+          //The number of OFDM symbols in the data field when BCC encoding
+          //is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
+          numSymbols = lrint (stbc * ceil ((service + size * 8.0 + 6.0 * nes) / (stbc * numDataBitsPerSymbol)));
+          break;
+        }
+      default:
+        NS_FATAL_ERROR ("Unknown MPDU type");
+    }
+
+  Time payloadDuration = FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
+  if (mpdutype == NORMAL_MPDU || mpdutype == SINGLE_MPDU || mpdutype == LAST_MPDU_IN_AGGREGATE)
+    {
+      payloadDuration += GetSignalExtension (band);
+    }
+  return payloadDuration;
+}
+
+uint8_t
+HtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
+{
+  /**
+   * Add an encoder when crossing maxRatePerCoder frontier.
+   *
+   * The value of 320 Mbps and 350 Mbps for normal GI and short GI (resp.)
+   * were obtained by observing the rates for which Nes was incremented in tables
+   * 19-27 to 19-41 of IEEE 802.11-2016.
+   */
+  double maxRatePerCoder = (txVector.GetGuardInterval () == 800) ? 320e6 : 350e6;
+  return ceil (txVector.GetMode ().GetDataRate (txVector) / maxRatePerCoder);
+}
+
+Time
+HtPhy::GetSymbolDuration (WifiTxVector txVector) const
+{
+  uint16_t gi = txVector.GetGuardInterval ();
+  NS_ASSERT (gi == 400 || gi == 800);
+  return NanoSeconds (3200 + gi);
+}
+
 void
 HtPhy::InitializeModes (void)
 {

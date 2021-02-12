@@ -84,6 +84,9 @@ public:
   virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
   virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                                   bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                                   uint16_t staId) const override;
 
   /**
    * Initialize all OFDM modes (for all variants).
@@ -271,6 +274,16 @@ protected:
    * \return the duration of the SIGNAL field
    */
   virtual Time GetHeaderDuration (WifiTxVector txVector) const;
+
+  /**
+   * \return the number of service bits
+   */
+  uint8_t GetNumberServiceBits (void) const;
+  /**
+   * \param band the frequency band being used
+   * \return the signal extension duration
+   */
+  Time GetSignalExtension (WifiPhyBand band) const;
 
 private:
   static const PpduFormats m_ofdmPpduFormats; //!< OFDM PPDU formats

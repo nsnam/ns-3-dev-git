@@ -142,6 +142,14 @@ DsssPhy::GetHeaderDuration (WifiTxVector txVector) const
     }
 }
 
+Time
+DsssPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand /* band */, MpduType /* mpdutype */,
+                             bool /* incFlag */, uint32_t & /* totalAmpduSize */, double & /* totalAmpduNumSymbols */,
+                             uint16_t /* staId */) const
+{
+  return MicroSeconds (lrint (ceil ((size * 8.0) / (txVector.GetMode ().GetDataRate (22) / 1.0e6))));
+}
+
 void
 DsssPhy::InitializeModes (void)
 {

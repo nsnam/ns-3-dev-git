@@ -194,6 +194,38 @@ OfdmPhy::GetHeaderDuration (WifiTxVector txVector) const
     }
 }
 
+Time
+OfdmPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType /* mpdutype */,
+                             bool /* incFlag */, uint32_t & /* totalAmpduSize */, double & /* totalAmpduNumSymbols */,
+                             uint16_t /* staId */) const
+{
+  //(Section 17.3.2.4 "Timing related parameters" Table 17-5 "Timing-related parameters"; IEEE Std 802.11-2016
+  //corresponds to T_{SYM} in the table)
+  Time symbolDuration = MicroSeconds (4);
+
+  double numDataBitsPerSymbol = txVector.GetMode ().GetDataRate (txVector) * symbolDuration.GetNanoSeconds () / 1e9;
+
+  //The number of OFDM symbols in the data field when BCC encoding
+  //is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
+  double numSymbols = lrint (ceil ((GetNumberServiceBits () + size * 8.0 + 6.0) / (numDataBitsPerSymbol)));
+
+  Time payloadDuration = FemtoSeconds (static_cast<uint64_t> (numSymbols * symbolDuration.GetFemtoSeconds ()));
+  payloadDuration += GetSignalExtension (band);
+  return payloadDuration;
+}
+
+uint8_t
+OfdmPhy::GetNumberServiceBits (void) const
+{
+  return 16;
+}
+
+Time
+OfdmPhy::GetSignalExtension (WifiPhyBand band) const
+{
+  return (band == WIFI_PHY_BAND_2_4GHZ) ? MicroSeconds (6) : MicroSeconds (0);
+}
+
 void
 OfdmPhy::InitializeModes (void)
 {

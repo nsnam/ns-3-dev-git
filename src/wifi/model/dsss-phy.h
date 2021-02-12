@@ -58,6 +58,9 @@ public:
   WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   const PpduFormats & GetPpduFormats (void) const override;
   Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                           bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                           uint16_t staId) const override;
 
   /**
    * Initialize all HR/DSSS modes.

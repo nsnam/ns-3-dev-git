@@ -46,6 +46,23 @@ const PhyEntity::PpduFormats VhtPhy::m_vhtPpduFormats {
                             WIFI_PPDU_FIELD_SIG_B,         //VHT-SIG-B
                             WIFI_PPDU_FIELD_DATA } }
 };
+
+const VhtPhy::NesExceptionMap VhtPhy::m_exceptionsMap {
+                 /* {BW,Nss,MCS} Nes */
+  { std::make_tuple ( 80, 7, 2),  3 },   //instead of 2
+  { std::make_tuple ( 80, 7, 7),  6 },   //instead of 4
+  { std::make_tuple ( 80, 7, 8),  6 },   //instead of 5
+  { std::make_tuple ( 80, 8, 7),  6 },   //instead of 5
+  { std::make_tuple (160, 4, 7),  6 },   //instead of 5
+  { std::make_tuple (160, 5, 8),  8 },   //instead of 7
+  { std::make_tuple (160, 6, 7),  8 },   //instead of 7
+  { std::make_tuple (160, 7, 3),  4 },   //instead of 3
+  { std::make_tuple (160, 7, 4),  6 },   //instead of 5
+  { std::make_tuple (160, 7, 5),  7 },   //instead of 6
+  { std::make_tuple (160, 7, 7),  9 },   //instead of 8
+  { std::make_tuple (160, 7, 8), 12 },   //instead of 9
+  { std::make_tuple (160, 7, 9), 12 }    //instead of 10
+};
 /* *NS_CHECK_STYLE_ON* */
 
 VhtPhy::VhtPhy (bool buildModeList /* = true */)
@@ -165,6 +182,32 @@ Time
 VhtPhy::GetSigBDuration (WifiTxVector txVector) const
 {
   return (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU) ? MicroSeconds (4) : MicroSeconds (0); //HE-SIG-B only for MU
+}
+
+uint8_t
+VhtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
+{
+  WifiMode payloadMode = txVector.GetMode ();
+  /**
+   * General rule: add an encoder when crossing maxRatePerCoder frontier
+   *
+   * The value of 540 Mbps and 600 Mbps for normal GI and short GI (resp.)
+   * were obtained by observing the rates for which Nes was incremented in tables
+   * 21-30 to 21-61 of IEEE 802.11-2016.
+   * These values are the last values before changing encoders.
+   */
+  double maxRatePerCoder = (txVector.GetGuardInterval () == 800) ? 540e6 : 600e6;
+  uint8_t nes = ceil (payloadMode.GetDataRate (txVector) / maxRatePerCoder);
+
+  //Handle exceptions to the rule
+  auto iter = m_exceptionsMap.find (std::make_tuple (txVector.GetChannelWidth (),
+                                                     txVector.GetNss (),
+                                                     payloadMode.GetMcsValue ()));
+  if (iter != m_exceptionsMap.end ())
+    {
+      nes = iter->second;
+    }
+  return nes;
 }
 
 void

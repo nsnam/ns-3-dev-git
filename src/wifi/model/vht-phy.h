@@ -23,6 +23,7 @@
 #define VHT_PHY_H
 
 #include "ht-phy.h"
+#include <tuple>
 
 /**
  * \file
@@ -167,12 +168,20 @@ protected:
   // Inherited
   WifiMode GetHtSigMode (void) const override;
   Time GetHtSigDuration (void) const override;
+  virtual uint8_t GetNumberBccEncoders (WifiTxVector txVector) const override;
 
 private:
   // Inherited
   virtual void BuildModeList (void) override;
 
-  static const PpduFormats m_vhtPpduFormats; //!< VHT PPDU formats
+  /**
+   * Typedef for storing exceptions in the number of BCC encoders for VHT MCSs
+   */
+  typedef std::map< std::tuple<uint16_t /* channelWidth in MHz */,
+                               uint8_t /* Nss */,
+                               uint8_t /* MCS index */>, uint8_t /* Nes */ > NesExceptionMap;
+  static const NesExceptionMap m_exceptionsMap; //!< exception map for number of BCC encoders (extracted from VHT-MCS tables)
+  static const PpduFormats m_vhtPpduFormats;    //!< VHT PPDU formats
 }; //class VhtPhy
 
 } //namespace ns3

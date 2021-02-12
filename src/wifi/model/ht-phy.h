@@ -70,6 +70,9 @@ public:
   virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
   virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
+  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                           bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                           uint16_t staId) const override;
 
   /**
    * \return the WifiMode used for the L-SIG (non-HT header) field
@@ -345,6 +348,17 @@ protected:
    * (e.g. number of spatial streams for HT), changes.
    */
   virtual void BuildModeList (void);
+
+  /**
+   * \param txVector the transmission parameters
+   * \return the number of BCC encoders used for data encoding
+   */
+  virtual uint8_t GetNumberBccEncoders (WifiTxVector txVector) const;
+  /**
+   * \param txVector the transmission parameters
+   * \return the symbol duration (including GI)
+   */
+  virtual Time GetSymbolDuration (WifiTxVector txVector) const;
 
   uint8_t m_maxMcsIndexPerSs;          //!< the maximum MCS index per spatial stream as defined by the standard
   uint8_t m_maxSupportedMcsIndexPerSs; //!< the maximum supported MCS index per spatial stream

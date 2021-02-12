@@ -182,6 +182,8 @@ public:
 private:
   // Inherited
   virtual void BuildModeList (void) override;
+  uint8_t GetNumberBccEncoders (WifiTxVector txVector) const override;
+  virtual Time GetSymbolDuration (WifiTxVector txVector) const override;
 
   static const PpduFormats m_hePpduFormats; //!< HE PPDU formats
 }; //class HePhy

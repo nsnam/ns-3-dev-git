@@ -23,7 +23,9 @@
 #ifndef PHY_ENTITY_H
 #define PHY_ENTITY_H
 
+#include "wifi-mpdu-type.h"
 #include "wifi-tx-vector.h"
+#include "wifi-phy-band.h"
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
 #include <list>
@@ -144,6 +146,26 @@ public:
    * \return the total duration of the PHY preamble and PHY header.
    */
   Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const;
+
+  /**
+   * \param size the number of bytes in the packet to send
+   * \param txVector the TXVECTOR used for the transmission of this packet
+   * \param band the frequency band
+   * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
+   * \param incFlag this flag is used to indicate that the variables need to be update or not
+   * This function is called a couple of times for the same packet so variables should not be increased each time.
+   * \param totalAmpduSize the total size of the previously transmitted MPDUs for the concerned A-MPDU.
+   * If incFlag is set, this parameter will be updated.
+   * \param totalAmpduNumSymbols the number of symbols previously transmitted for the MPDUs in the concerned A-MPDU,
+   * used for the computation of the number of symbols needed for the last MPDU.
+   * If incFlag is set, this parameter will be updated.
+   * \param staId the STA-ID of the PSDU (only used for MU PPDUs)
+   *
+   * \return the duration of the PSDU
+   */
+  virtual Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+                                   bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
+                                   uint16_t staId) const = 0;
 
 protected:
   /**
