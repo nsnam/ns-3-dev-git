@@ -350,6 +350,14 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerAccessor (&WifiPhy::GetChannelWidth,
                                          &WifiPhy::SetChannelWidth),
                    MakeUintegerChecker<uint16_t> (5, 160))
+    .AddAttribute ("Primary20MHzIndex",
+                   "The index of the primary 20 MHz channel within the operating channel "
+                   "(0 indicates the 20 MHz subchannel with the lowest center frequency). "
+                   "This attribute is only valid if the width of the operating channel is "
+                   "a multiple of 20 MHz.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&WifiPhy::SetPrimary20Index),
+                   MakeUintegerChecker<uint8_t> (0, 7))
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
                    "this threshold (dBm) for the PHY to detect the signal.",
@@ -559,6 +567,7 @@ WifiPhy::WifiPhy ()
     m_initialFrequency (0),
     m_initialChannelNumber (0),
     m_initialChannelWidth (0),
+    m_initialPrimary20Index (0),
     m_sifs (Seconds (0)),
     m_slot (Seconds (0)),
     m_pifs (Seconds (0)),
@@ -1077,6 +1086,7 @@ WifiPhy::ConfigureStandardAndBand (WifiPhyStandard standard, WifiPhyBand band)
       m_operatingChannel.Set (m_initialChannelNumber, m_initialFrequency, m_initialChannelWidth,
                               m_standard, m_band);
     }
+  m_operatingChannel.SetPrimary20Index (m_initialPrimary20Index);
 
   switch (standard)
     {
@@ -1221,6 +1231,23 @@ uint16_t
 WifiPhy::GetChannelWidth (void) const
 {
   return m_operatingChannel.GetWidth ();
+}
+
+void
+WifiPhy::SetPrimary20Index (uint8_t index)
+{
+  NS_LOG_FUNCTION (this << +index);
+
+  if (!m_operatingChannel.IsSet ())
+    {
+      // ConfigureStandardAndBand has not been called yet, so store the primary20
+      // index into m_initialPrimary20Index
+      NS_LOG_DEBUG ("Saving primary20 index configuration for initialization");
+      m_initialPrimary20Index = index;
+      return;
+    }
+
+  m_operatingChannel.SetPrimary20Index (index);
 }
 
 void

@@ -60,6 +60,8 @@ public:
    * Set the channel according to the specified parameters if a unique
    * frequency channel matches the specified criteria, or abort the
    * simulation otherwise.
+   * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel
+   * is set to the 20 MHz subchannel with the lowest center frequency.
    *
    * \param number the channel number (use 0 to leave it unspecified)
    * \param frequency the channel center frequency in MHz (use 0 to leave it unspecified)
@@ -71,6 +73,8 @@ public:
             WifiPhyStandard standard, WifiPhyBand band);
   /**
    * Set the default channel of the given width and for the given PHY standard and band.
+   * If the channel width is a multiple of 20 MHz, the primary 20 MHz channel
+   * is set to the 20 MHz subchannel with the lowest center frequency.
    *
    * \param width the channel width in MHz
    * \param standard the PHY standard
@@ -97,6 +101,30 @@ public:
    */
   uint16_t GetWidth (void) const;
 
+  /**
+   * If the operating channel width is a multiple of 20 MHz, return the index of the
+   * primary channel of the given width within the operating channel (0 indicates
+   * the 20 MHz subchannel with the lowest center frequency). Otherwise, return 0.
+   *
+   * \param primaryChannelWidth the width of the primary channel in MHz
+   * \return the index of the requested primary channel within the operating channel
+   */
+  uint8_t GetPrimaryChannelIndex (uint16_t primaryChannelWidth) const;
+  /**
+   * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
+   * with the lowest center frequency).
+   *
+   * \param index the index of the primary 20 MHz channel
+   */
+  void SetPrimary20Index (uint8_t index);
+  /**
+   * Get the center frequency of the primary channel of the given width.
+   *
+   * \param primaryChannelWidth the width of the primary channel in MHz
+   * \return the center frequency of the primary channel of the given width
+   */
+  uint16_t GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const;
+
 private:
   /// Typedef for a const iterator pointing to a channel in the set of available channels
   typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
@@ -118,6 +146,8 @@ private:
                            ConstIterator start) const;
 
   ConstIterator m_channelIt;   //!< const iterator pointing to the configured frequency channel
+  uint8_t m_primary20Index;    /**< index of the primary20 channel (0 indicates the 20 MHz
+                                    subchannel with the lowest center frequency) */
 };
 
 } //namespace ns3

@@ -28,7 +28,8 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("WifiPhyOperatingChannel");
 
 WifiPhyOperatingChannel::WifiPhyOperatingChannel ()
-  : m_channelIt (WifiPhy::m_frequencyChannels.end ())
+  : m_channelIt (WifiPhy::m_frequencyChannels.end ()),
+    m_primary20Index (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -58,6 +59,7 @@ WifiPhyOperatingChannel::Set (uint8_t number, uint16_t frequency, uint16_t width
     {
       // a unique channel matches the specified criteria
       m_channelIt = channelIt;
+      m_primary20Index = 0;
       return;
     }
 
@@ -76,6 +78,7 @@ WifiPhyOperatingChannel::SetDefault (uint16_t width, WifiPhyStandard standard, W
     {
       // a channel matches the specified criteria
       m_channelIt = channelIt;
+      m_primary20Index = 0;
       return;
     }
 
@@ -142,6 +145,52 @@ WifiPhyOperatingChannel::GetWidth (void) const
 {
   NS_ASSERT (IsSet ());
   return std::get<2> (*m_channelIt);
+}
+
+uint8_t
+WifiPhyOperatingChannel::GetPrimaryChannelIndex (uint16_t primaryChannelWidth) const
+{
+  NS_LOG_FUNCTION (this << primaryChannelWidth);
+
+  NS_ASSERT (primaryChannelWidth <= GetWidth ());
+
+  if (primaryChannelWidth % 20 != 0)
+    {
+      NS_LOG_DEBUG ("The operating channel width is not a multiple of 20 MHz; return 0");
+      return 0;
+    }
+
+  // the index of primary40 is half the index of primary20; the index of
+  // primary80 is half the index of primary40, ...
+  uint16_t width = 20;
+  uint8_t index = m_primary20Index;
+
+  while (width < primaryChannelWidth)
+    {
+      index /= 2;
+      width *= 2;
+    }
+  NS_LOG_LOGIC ("Return " << +index);
+  return index;
+}
+
+void
+WifiPhyOperatingChannel::SetPrimary20Index (uint8_t index)
+{
+  NS_LOG_FUNCTION (this << +index);
+
+  NS_ABORT_MSG_IF (index > 0 && index >= GetWidth () / 20, "Primary20 index out of range");
+  m_primary20Index = index;
+}
+
+uint16_t
+WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const
+{
+  uint16_t freq = GetFrequency () - GetWidth () / 2
+                  + (GetPrimaryChannelIndex (primaryChannelWidth) + 0.5) * primaryChannelWidth;
+
+  NS_LOG_FUNCTION (this << primaryChannelWidth << freq);
+  return freq;
 }
 
 } //namespace ns3

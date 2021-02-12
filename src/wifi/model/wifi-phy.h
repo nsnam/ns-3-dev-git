@@ -847,6 +847,13 @@ public:
    */
   uint16_t GetFrequency (void) const;
   /**
+   * Set the index of the primary 20 MHz channel (0 indicates the 20 MHz subchannel
+   * with the lowest center frequency).
+   *
+   * \param index the index of the primary 20 MHz channel
+   */
+  void SetPrimary20Index (uint8_t index);
+  /**
    * \param antennas the number of antennas on this node.
    */
   void SetNumberOfAntennas (uint8_t antennas);
@@ -1334,6 +1341,7 @@ private:
   uint16_t m_initialFrequency;              //!< Store frequency until initialization (MHz)
   uint8_t m_initialChannelNumber;           //!< Store channel number until initialization
   uint16_t m_initialChannelWidth;           //!< Store channel width (MHz) until initialization
+  uint8_t m_initialPrimary20Index;          //!< Store the index of primary20 until initialization
 
   WifiPhyOperatingChannel m_operatingChannel;       //!< Operating channel
   std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width set (MHz)
