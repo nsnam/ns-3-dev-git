@@ -30,6 +30,9 @@
 #include "ns3/spectrum-channel.h"
 #include "ns3/spectrum-model.h"
 #include "wifi-phy.h"
+#include <map>
+
+class SpectrumWifiPhyFilterTest;
 
 namespace ns3 {
 
@@ -51,6 +54,9 @@ struct WifiSpectrumSignalParameters;
 class SpectrumWifiPhy : public WifiPhy
 {
 public:
+  /// allow SpectrumWifiPhyFilterTest class access
+  friend class ::SpectrumWifiPhyFilterTest;
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -159,16 +165,19 @@ protected:
    */
   WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0) override;
 
-
 private:
   /**
-   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
+   * \param bandWidth the width (MHz) of the band used for the OFDMA transmission. Must be
+   *                  a multiple of 20 MHz
+   * \param guardBandwidth width of the guard band (MHz)
    * \param range the subcarrier range of the HE RU
+   * \param bandIndex the index (starting at 0) of the band within the operating channel
    * \return the converted subcarriers
    *
    * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
    */
-  WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const override;
+  WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandwidth,
+                                           HeRu::SubcarrierRange range, uint8_t bandIndex = 0) const override;
 
   /**
    * Perform run-time spectrum model change
@@ -184,6 +193,12 @@ private:
   Ptr<WifiSpectrumPhyInterface> m_wifiSpectrumPhyInterface; //!< Spectrum PHY interface
   Ptr<AntennaModel> m_antenna;                              //!< antenna model
   mutable Ptr<const SpectrumModel> m_rxSpectrumModel;       //!< receive spectrum model
+
+  ///< Map a spectrum band associated with an RU to the RU specification
+  typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;
+
+  std::map<uint16_t, RuBand> m_ruBands;  /**< For each channel width, store all the distinct spectrum
+                                              bands associated with every RU in a channel of that width */
   bool m_disableWifiReception;                              //!< forces this PHY to fail to sync on any signal
   TracedCallback<bool, uint32_t, double, Time> m_signalCb;  //!< Signal callback
 

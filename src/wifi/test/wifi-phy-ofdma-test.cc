@@ -1493,7 +1493,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   //Schedule OFDMA part
   Ptr<HePpdu> ppduOfdma = DynamicCast<HePpdu> (ppdu->Copy ()); //since flag will be modified
   ppduOfdma->SetTxPsdFlag (HePpdu::PSD_HE_TB_OFDMA_PORTION);
-  WifiSpectrumBand band = m_phy->GetHePhy ()->GetRuBand (txVector, staId);
+  WifiSpectrumBand band = m_phy->GetHePhy ()->GetRuBandForRx (txVector, staId);
   Ptr<SpectrumValue> rxPsdOfdma = WifiSpectrumValueHelper::CreateHeMuOfdmTxPowerSpectralDensity (DEFAULT_FREQUENCY, DEFAULT_CHANNEL_WIDTH, txPowerWatts, DEFAULT_GUARD_WIDTH, band);
   Ptr<WifiSpectrumSignalParameters> rxParamsOfdma = Create<WifiSpectrumSignalParameters> ();
   rxParamsOfdma->psd = rxPsd;
@@ -2306,7 +2306,7 @@ TestUlOfdmaPhyTransmission::SchedulePowerMeasurementChecks (Time delay, double r
   std::vector<double> rxPowerNonOfdma { rxPowerNonOfdmaRu1, rxPowerNonOfdmaRu2 };
   std::vector<WifiSpectrumBand> nonOfdmaBand { hePhy->GetNonOfdmaBand (txVectorSta1, 1), hePhy->GetNonOfdmaBand (txVectorSta2, 2) };
   std::vector<double> rxPowerOfdma { rxPowerOfdmaRu1, rxPowerOfdmaRu2 };
-  std::vector<WifiSpectrumBand> ofdmaBand { hePhy->GetRuBand (txVectorSta1, 1), hePhy->GetRuBand (txVectorSta2, 2) };
+  std::vector<WifiSpectrumBand> ofdmaBand { hePhy->GetRuBandForRx (txVectorSta1, 1), hePhy->GetRuBandForRx (txVectorSta2, 2) };
 
   for (uint8_t i = 0; i < 2; ++i)
     {

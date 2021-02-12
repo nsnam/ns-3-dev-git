@@ -1908,7 +1908,8 @@ WifiPhy::MaybeCcaBusyDuration (uint16_t channelWidth)
 }
 
 WifiSpectrumBand
-WifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const
+WifiPhy::ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandwidth,
+                                 HeRu::SubcarrierRange range, uint8_t bandIndex) const
 {
   NS_ASSERT_MSG (false, "802.11ax can only be used with SpectrumWifiPhy");
   WifiSpectrumBand convertedSubcarriers;

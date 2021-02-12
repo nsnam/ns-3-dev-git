@@ -94,6 +94,7 @@ SpectrumWifiPhy::DoDispose (void)
   m_wifiSpectrumPhyInterface = 0;
   m_antenna = 0;
   m_rxSpectrumModel = 0;
+  m_ruBands.clear ();
   WifiPhy::DoDispose ();
 }
 
@@ -162,16 +163,38 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
     }
   if (GetPhyStandard () >= WIFI_PHY_STANDARD_80211ax)
     {
-      for (unsigned int type = 0; type < 7; type++)
+      // For a given RU type, some RUs over a channel occupy the same tones as
+      // the corresponding RUs over a subchannel, while some others not. For instance,
+      // the first nine 26-tone RUs over an 80 MHz channel occupy the same tones as
+      // the first nine 26-tone RUs over the lowest 40 MHz subchannel. Therefore, we
+      // need to store all the bands in a set (which removes duplicates) and then
+      // pass the elements in the set to AddBand (to which we cannot pass duplicates)
+      if (m_ruBands[channelWidth].empty ())
         {
-          HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
-          for (std::size_t index = 1; index <= HeRu::GetNRus (channelWidth, ruType); index++)
+          for (uint16_t bw = 160; bw >= 20; bw = bw / 2)
             {
-              HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ruType, index);
-              HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
-              WifiSpectrumBand band = ConvertHeRuSubcarriers (channelWidth, range);
-              m_interference.AddBand (band);
+              for (uint8_t i = 0; i < (channelWidth / bw); ++i)
+                {
+                  for (unsigned int type = 0; type < 7; type++)
+                    {
+                      HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
+                      std::size_t nRus = HeRu::GetNRus (bw, ruType);
+                      for (std::size_t index = 1; index <= nRus; index++)
+                        {
+                          HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (bw, ruType, index);
+                          HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
+                          WifiSpectrumBand band = ConvertHeRuSubcarriers (bw, GetGuardBandwidth (channelWidth),
+                                                                          range, i);
+                          bool primary80 = (channelWidth < 160 || index <= nRus / 2);
+                          m_ruBands[channelWidth].insert ({band, HeRu::RuSpec {primary80, ruType, index}});
+                        }
+                    }
+                }
             }
+        }
+      for (const auto& bandRuPair : m_ruBands[channelWidth])
+        {
+          m_interference.AddBand (bandRuPair.first);
         }
     }
 }
@@ -310,21 +333,15 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   
   if (GetPhyStandard () >= WIFI_PHY_STANDARD_80211ax)
     {
-      for (unsigned int type = 0; type < 7; type++)
+      NS_ASSERT (!m_ruBands[channelWidth].empty ());
+      for (const auto& bandRuPair : m_ruBands[channelWidth])
         {
-          HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
-          for (std::size_t index = 1; index <= HeRu::GetNRus (channelWidth, ruType); index++)
-            {
-              HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ruType, index);
-              HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
-              WifiSpectrumBand band = ConvertHeRuSubcarriers (channelWidth, range);
-              Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), channelWidth, GetBandBandwidth (), GetGuardBandwidth (channelWidth), band);
-              SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
-              NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << ruType << " and range (" << range.first << "; " << range.second << ") -> (" << band.first << "; " << band.second <<  "): " << Integral (filteredSignal));
-              double rxPowerPerBandW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
-              NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << ruType << " and range (" << range.first << "; " << range.second << ") -> (" << band.first << "; " << band.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
-              rxPowerW.insert ({band, rxPowerPerBandW});
-            }
+          Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), channelWidth, GetBandBandwidth (), GetGuardBandwidth (channelWidth), bandRuPair.first);
+          SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
+          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << Integral (filteredSignal));
+          double rxPowerPerBandW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
+          NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
+          rxPowerW.insert ({bandRuPair.first, rxPowerPerBandW});
         }
     }
 
@@ -489,12 +506,13 @@ SpectrumWifiPhy::GetBand (uint16_t bandWidth, uint8_t bandIndex)
 }
 
 WifiSpectrumBand
-SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const
+SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t bandWidth, uint16_t guardBandwidth,
+                                         HeRu::SubcarrierRange range, uint8_t bandIndex) const
 {
   WifiSpectrumBand convertedSubcarriers;
-  uint32_t nGuardBands = static_cast<uint32_t> (((2 * GetGuardBandwidth (channelWidth) * 1e6) / GetBandBandwidth ()) + 0.5);
+  uint32_t nGuardBands = static_cast<uint32_t> (((2 * guardBandwidth * 1e6) / GetBandBandwidth ()) + 0.5);
   uint32_t centerFrequencyIndex = 0;
-  switch (channelWidth)
+  switch (bandWidth)
     {
     case 20:
       centerFrequencyIndex = (nGuardBands / 2) + 6 + 122;
@@ -509,9 +527,13 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::Subcarrier
       centerFrequencyIndex = (nGuardBands / 2) + 12 + 1012;
       break;
     default:
-      NS_FATAL_ERROR ("ChannelWidth " << channelWidth << " unsupported");
+      NS_FATAL_ERROR ("ChannelWidth " << bandWidth << " unsupported");
       break;
     }
+
+  size_t numBandsInBand = static_cast<size_t> (bandWidth * 1e6 / GetBandBandwidth ());
+  centerFrequencyIndex += numBandsInBand * bandIndex;
+
   convertedSubcarriers.first = centerFrequencyIndex + range.first;
   convertedSubcarriers.second = centerFrequencyIndex + range.second;
   return convertedSubcarriers;

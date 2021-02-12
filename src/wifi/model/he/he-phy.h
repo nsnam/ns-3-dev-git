@@ -128,14 +128,25 @@ public:
   Time CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const;
 
   /**
-   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   * Get the band in the TX spectrum associated with the RU used by the PSDU
+   * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
    *
    * \param txVector the TXVECTOR used for the transmission
-   * \param staId the STA-ID of the recipient
+   * \param staId the STA-ID of the station
    *
-   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   * \return the RU band in the TX spectrum
    */
-  WifiSpectrumBand GetRuBand (const WifiTxVector& txVector, uint16_t staId) const;
+  WifiSpectrumBand GetRuBandForTx (const WifiTxVector& txVector, uint16_t staId) const;
+  /**
+   * Get the band in the RX spectrum associated with the RU used by the PSDU
+   * transmitted to/by a given STA in a DL MU PPDU/HE TB PPDU
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the station
+   *
+   * \return the RU band in the RX spectrum
+   */
+  WifiSpectrumBand GetRuBandForRx (const WifiTxVector& txVector, uint16_t staId) const;
   /**
    * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
    *
