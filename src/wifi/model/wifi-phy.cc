@@ -1525,7 +1525,7 @@ WifiPhy::ResumeFromSleep (void)
     case WifiPhyState::SLEEP:
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetBand (GetMeasurementChannelWidth (nullptr)));
+        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (GetMeasurementChannelWidth (nullptr)));
         m_state->SwitchFromSleep (delayUntilCcaEnd);
         break;
       }
@@ -1556,7 +1556,7 @@ WifiPhy::ResumeFromOff (void)
     case WifiPhyState::OFF:
       {
         NS_LOG_DEBUG ("resuming from off mode");
-        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetBand (GetMeasurementChannelWidth (nullptr)));
+        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (GetMeasurementChannelWidth (nullptr)));
         m_state->SwitchFromOff (delayUntilCcaEnd);
         break;
       }
@@ -1900,7 +1900,7 @@ WifiPhy::MaybeCcaBusyDuration (uint16_t channelWidth)
   //not going to be able to synchronize on it
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetBand (channelWidth));
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (channelWidth));
   if (!delayUntilCcaEnd.IsZero ())
     {
       m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
@@ -2141,7 +2141,7 @@ WifiPhy::SwitchMaybeToCcaBusy (uint16_t channelWidth)
   //not going to be able to synchronize on it
   //In this model, CCA becomes busy when the aggregation of all signals as
   //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetBand (channelWidth));
+  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (channelWidth));
   if (!delayUntilCcaEnd.IsZero ())
     {
       NS_LOG_DEBUG ("Calling SwitchMaybeToCcaBusy for " << delayUntilCcaEnd.As (Time::S));
@@ -2260,6 +2260,17 @@ WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
   band.first = 0;
   band.second = 0;
   return band;
+}
+
+WifiSpectrumBand
+WifiPhy::GetPrimaryBand (uint16_t bandWidth)
+{
+  if (GetChannelWidth () % 20 != 0)
+    {
+      return GetBand (bandWidth);
+    }
+
+  return GetBand (bandWidth, m_operatingChannel.GetPrimaryChannelIndex (bandWidth));
 }
 
 int64_t

@@ -1111,6 +1111,19 @@ protected:
   virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
 
   /**
+   * If the operating channel width is a multiple of 20 MHz, return the start
+   * band index and the stop band index for the primary channel of the given
+   * bandwidth (which must be a multiple of 20 MHz and not exceed the operating
+   * channel width). Otherwise, this call is equivalent to GetBand with
+   * <i>bandIndex</i> equal to zero.
+   *
+   * \param bandWidth the width of the band to be returned (MHz)
+   *
+   * \return a pair of start and stop indexes that defines the band
+   */
+  WifiSpectrumBand GetPrimaryBand (uint16_t bandWidth);
+
+  /**
    * Add the PHY entity to the map of supported PHY entities for the
    * given modulation class for the WifiPhy instance.
    * This is a wrapper method used to check that the PHY entity is
