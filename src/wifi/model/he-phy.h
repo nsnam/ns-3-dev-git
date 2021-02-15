@@ -73,6 +73,21 @@ public:
   Time GetSigBDuration (WifiTxVector txVector) const override;
   virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
                                    Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
+  Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
+
+  /**
+   * \return the BSS color of this PHY.
+   */
+  uint8_t GetBssColor (void) const;
+
+  /**
+   * Return the STA ID that has been assigned to the station this PHY belongs to.
+   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
+   *
+   * \param ppdu the PPDU for which the STA ID is requested
+   * \return the STA ID
+   */
+  uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
 
   /**
    * \param ppduDuration the duration of the HE TB PPDU
@@ -95,6 +110,11 @@ public:
    * \return the duration of the non-OFDMA portion of the HE TB PPDU.
    */
   Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const;
+
+  /**
+   * \return the UID of the HE TB PPDU being received
+   */
+  uint64_t GetCurrentHeTbPpduUid (void) const;
 
   /**
    * Initialize all HE modes.
@@ -181,6 +201,14 @@ public:
    * \return MCS 11 from HE MCS values
    */
   static WifiMode GetHeMcs11 (void);
+
+protected:
+  // Inherited
+  PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
+  PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
+  virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+
+  uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
 
 private:
   // Inherited

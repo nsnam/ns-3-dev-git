@@ -343,6 +343,11 @@ public:
   static WifiMode GetHtMcs31 (void);
 
 protected:
+  // Inherited
+  virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
+  virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
+  virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+
   /**
    * Build mode list.
    * Should be redone whenever the maximum MCS index per spatial stream
@@ -367,6 +372,15 @@ protected:
   uint8_t m_bssMembershipSelector;     //!< the BSS membership selector
 
 private:
+  /**
+   * End receiving the HT-SIG, perform HT-specific actions, and
+   * provide the status of the reception.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \return status of the reception of the HT-SIG
+   */
+  PhyFieldRxStatus EndReceiveHtSig (Ptr<Event> event);
+
   uint8_t m_maxSupportedNss; //!< Maximum supported number of spatial streams (used to build HT MCS indices)
 
   static const PpduFormats m_htPpduFormats; //!< HT PPDU formats

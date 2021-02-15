@@ -22,7 +22,6 @@
 #ifndef WIFI_PHY_H
 #define WIFI_PHY_H
 
-#include "ns3/event-id.h"
 #include "ns3/error-model.h"
 #include "wifi-standards.h"
 #include "interference-helper.h"
@@ -79,6 +78,7 @@ struct RxSignalInfo
 class WifiPhy : public Object
 {
 public:
+  friend class PhyEntity;
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -1187,7 +1187,7 @@ protected:
    * \param channelWidth the channel width in MHz used for RSSI measurement
    */
   void SwitchMaybeToCcaBusy (uint16_t channelWidth);
-
+public: //TODO find a better way (robust enough for OfdmaSpectrumWifiPhy overload)
   /**
    * Return the STA ID that has been assigned to the station this PHY belongs to.
    * This is typically called for MU PPDUs, in order to pick the correct PSDU.
@@ -1196,7 +1196,7 @@ protected:
    * \return the STA ID
    */
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
-
+protected:
   /**
    * Return the channel width used to measure the RSSI.
    * This corresponds to the primary channel unless it corresponds to the

@@ -23,9 +23,10 @@
 #include "ofdm-phy.h"
 #include "ofdm-ppdu.h"
 #include "wifi-psdu.h"
-#include "wifi-phy.h" //only used for static mode constructor
+#include "wifi-phy.h"
+#include "wifi-utils.h"
+#include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -234,6 +235,63 @@ OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
                     Time /* ppduDuration */, WifiPhyBand band, uint64_t uid) const
 {
   return Create<OfdmPpdu> (psdus.begin ()->second, txVector, band, uid);
+}
+
+PhyEntity::PhyFieldRxStatus
+OfdmPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << field << *event);
+  if (field == WIFI_PPDU_FIELD_NON_HT_HEADER)
+    {
+      return EndReceiveHeader (event); //L-SIG
+    }
+  return PhyEntity::DoEndReceiveField (field, event);
+}
+
+PhyEntity::PhyFieldRxStatus
+OfdmPhy::EndReceiveHeader (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_NON_HT_HEADER, event);
+  NS_LOG_DEBUG ("L-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
+  if (status.isSuccess)
+    {
+      NS_LOG_DEBUG ("Received non-HT PHY header");
+      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_NON_HT_HEADER, event->GetPpdu ()))
+        {
+          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Abort reception because non-HT PHY header reception failed");
+      status.reason = L_SIG_FAILURE;
+      status.actionIfFailure = ABORT;
+    }
+  return status;
+}
+
+bool
+OfdmPhy::IsChannelWidthSupported (Ptr<const WifiPpdu> ppdu) const
+{
+  uint16_t channelWidth = ppdu->GetTxVector ().GetChannelWidth ();
+  if ((channelWidth >= 40) && (channelWidth > m_wifiPhy->GetChannelWidth ()))
+    {
+      NS_LOG_DEBUG ("Packet reception could not be started because not enough channel width (" << channelWidth << " vs " << m_wifiPhy->GetChannelWidth () << ")");
+      return false;
+    }
+  return true;
+}
+
+bool
+OfdmPhy::IsAllConfigSupported (WifiPpduField /* field */, Ptr<const WifiPpdu> ppdu) const
+{
+  if (!IsChannelWidthSupported (ppdu))
+    {
+      return false;
+    }
+  return IsConfigSupported (ppdu);
 }
 
 void

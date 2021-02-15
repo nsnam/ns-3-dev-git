@@ -258,11 +258,15 @@ public:
   static WifiMode GetOfdmRate13_5MbpsBW5MHz (void);
 
 protected:
+  // Inherited
+  virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
+
   /**
    * \param txVector the transmission parameters
    * \return the WifiMode used for the SIGNAL field
    */
   virtual WifiMode GetHeaderMode (WifiTxVector txVector) const;
+
   /**
    * \param txVector the transmission parameters
    * \return the duration of the preamble field
@@ -285,6 +289,32 @@ protected:
    * \return the signal extension duration
    */
   Time GetSignalExtension (WifiPhyBand band) const;
+
+  /**
+   * End receiving the header, perform OFDM-specific actions, and
+   * provide the status of the reception.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \return status of the reception of the header
+   */
+  PhyFieldRxStatus EndReceiveHeader (Ptr<Event> event);
+
+  /**
+   * Checks if the PPDU's bandwidth is supported by the PHY.
+   *
+   * \param ppdu the received PPDU
+   * \return \c true if supported, \c false otherwise
+   */
+  virtual bool IsChannelWidthSupported (Ptr<const WifiPpdu> ppdu) const;
+  /**
+   * Checks if the signaled configuration (including bandwidth)
+   * is supported by the PHY.
+   *
+   * \param field the current PPDU field (SIG used for checking config)
+   * \param ppdu the received PPDU
+   * \return \c true if supported, \c false otherwise
+   */
+  virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const;
 
 private:
   static const PpduFormats m_ofdmPpduFormats; //!< OFDM PPDU formats

@@ -23,6 +23,7 @@
 #include "vht-ppdu.h"
 #include "wifi-psdu.h"
 #include "wifi-phy.h" //only used for static mode constructor
+#include "wifi-utils.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -218,6 +219,99 @@ VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
                    Time ppduDuration, WifiPhyBand band, uint64_t uid) const
 {
   return Create<VhtPpdu> (psdus.begin ()->second, txVector, ppduDuration, band, uid);
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << field << *event);
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_SIG_A:
+        return EndReceiveSigA (event);
+      case WIFI_PPDU_FIELD_SIG_B:
+        return EndReceiveSigB (event);
+      default:
+        return HtPhy::DoEndReceiveField (field, event);
+    }
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::EndReceiveSigA (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  NS_ASSERT (event->GetTxVector ().GetPreambleType () >= WIFI_PREAMBLE_VHT_SU);
+  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_SIG_A, event);
+  NS_LOG_DEBUG ("SIG-A: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
+  if (status.isSuccess)
+    {
+      NS_LOG_DEBUG ("Received SIG-A");
+      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_SIG_A, event->GetPpdu ()))
+        {
+          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+        }
+      status = ProcessSigA (event, status);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Drop packet because SIG-A reception failed");
+      status.reason = SIG_A_FAILURE;
+      status.actionIfFailure = DROP;
+    }
+  return status;
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
+{
+  NS_LOG_FUNCTION (this << *event << status);
+  //TODO see if something should be done here once MU-MIMO is supported
+  return status; //nothing special for VHT
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::EndReceiveSigB (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  NS_ASSERT (event->GetPpdu ()->GetType () == WIFI_PPDU_TYPE_DL_MU);
+  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_SIG_B, event);
+  NS_LOG_DEBUG ("SIG-B: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
+  if (status.isSuccess)
+    {
+      NS_LOG_DEBUG ("Received SIG-B");
+      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_SIG_A, event->GetPpdu ()))
+        {
+          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+        }
+      status = ProcessSigB (event, status);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Drop reception because SIG-B reception failed");
+      status.reason = SIG_B_FAILURE;
+      status.actionIfFailure = DROP;
+    }
+  return status;
+}
+
+PhyEntity::PhyFieldRxStatus
+VhtPhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
+{
+  NS_LOG_FUNCTION (this << *event << status);
+  //TODO see if something should be done here once MU-MIMO is supported
+  return status; //nothing special for VHT
+}
+
+bool
+VhtPhy::IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const
+{
+  if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU && field == WIFI_PPDU_FIELD_SIG_A)
+    {
+      return IsChannelWidthSupported (ppdu); //perform the full check after SIG-B
+    }
+  return HtPhy::IsAllConfigSupported (field, ppdu);
 }
 
 void

@@ -22,7 +22,8 @@
 #include "ht-phy.h"
 #include "ht-ppdu.h"
 #include "wifi-psdu.h"
-#include "wifi-phy.h" //only used for static mode constructor
+#include "wifi-phy.h"
+#include "wifi-utils.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -368,6 +369,76 @@ HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time pp
                   WifiPhyBand band, uint64_t uid) const
 {
   return Create<HtPpdu> (psdus.begin ()->second, txVector, ppduDuration, band, uid);
+}
+
+PhyEntity::PhyFieldRxStatus
+HtPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << field << *event);
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_HT_SIG:
+        return EndReceiveHtSig (event);
+      case WIFI_PPDU_FIELD_TRAINING:
+        return PhyFieldRxStatus (true); //always consider that training has been correctly received
+      case WIFI_PPDU_FIELD_NON_HT_HEADER:
+        NS_ASSERT (event->GetTxVector ().GetPreambleType () != WIFI_PREAMBLE_HT_GF);
+      //no break so as to go to OfdmPhy for processing
+      default:
+        return OfdmPhy::DoEndReceiveField (field, event);
+    }
+}
+
+PhyEntity::PhyFieldRxStatus
+HtPhy::EndReceiveHtSig (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  NS_ASSERT (IsHt (event->GetTxVector ().GetPreambleType ()));
+  SnrPer snrPer = GetPhyHeaderSnrPer (WIFI_PPDU_FIELD_HT_SIG, event);
+  NS_LOG_DEBUG ("HT-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
+  PhyFieldRxStatus status (GetRandomValue () > snrPer.per);
+  if (status.isSuccess)
+    {
+      NS_LOG_DEBUG ("Received HT-SIG");
+      if (!IsAllConfigSupported (WIFI_PPDU_FIELD_HT_SIG, event->GetPpdu ()))
+        {
+          status = PhyFieldRxStatus (false, UNSUPPORTED_SETTINGS, DROP);
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Drop packet because HT-SIG reception failed");
+      status.reason = HT_SIG_FAILURE;
+      status.actionIfFailure = DROP;
+    }
+  return status;
+}
+
+bool
+HtPhy::IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const
+{
+  if (field == WIFI_PPDU_FIELD_NON_HT_HEADER)
+    {
+      return true; //wait till reception of HT-SIG (or SIG-A) to make decision
+    }
+  return OfdmPhy::IsAllConfigSupported (field, ppdu);
+}
+
+bool
+HtPhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  if (txVector.GetNss () > m_wifiPhy->GetMaxSupportedRxSpatialStreams ())
+    {
+      NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
+      return false;
+    }
+  if (!IsModeSupported (txVector.GetMode ()))
+    {
+      NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txVector.GetMode () << ")");
+      return false;
+    }
+  return true;
 }
 
 void

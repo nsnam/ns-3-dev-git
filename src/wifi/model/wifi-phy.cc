@@ -1012,6 +1012,7 @@ WifiPhy::AddPhyEntity (WifiModulationClass modulation, Ptr<PhyEntity> phyEntity)
   NS_LOG_FUNCTION (this << modulation);
   NS_ABORT_MSG_IF (m_staticPhyEntities.find (modulation) == m_staticPhyEntities.end (), "Cannot add an unimplemented PHY to supported list. Update the former first.");
   NS_ASSERT_MSG (m_phyEntities.find (modulation) == m_phyEntities.end (), "The PHY entity has already been added. The setting should only be done once per modulation class");
+  phyEntity->SetOwner (this);
   m_phyEntities[modulation] = phyEntity;
 }
 

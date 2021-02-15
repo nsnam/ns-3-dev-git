@@ -110,6 +110,9 @@ public:
   static WifiMode GetDsssRate11Mbps (void);
 
 private:
+  // Inherited
+  PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
+
   /**
    * \param txVector the transmission parameters
    * \return the WifiMode used for the PHY header field
@@ -128,6 +131,15 @@ private:
    * \return the duration of the PHY header field
    */
   Time GetHeaderDuration (WifiTxVector txVector) const;
+
+  /**
+   * End receiving the header, perform DSSS-specific actions, and
+   * provide the status of the reception.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \return status of the reception of the header
+   */
+  PhyFieldRxStatus EndReceiveHeader (Ptr<Event> event);
 
   static const PpduFormats m_dsssPpduFormats; //!< DSSS and HR/DSSS PPDU formats
 }; //class DsssPhy

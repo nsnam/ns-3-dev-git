@@ -22,7 +22,13 @@
 #include "he-phy.h"
 #include "he-ppdu.h"
 #include "wifi-psdu.h"
-#include "wifi-phy.h" //only used for static mode constructor
+#include "wifi-phy.h"
+#include "he-configuration.h"
+#include "wifi-net-device.h"
+#include "sta-wifi-mac.h"
+#include "wifi-utils.h"
+#include "ns3/uinteger.h"
+#include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
@@ -67,6 +73,7 @@ HePhy::HePhy (bool buildModeList /* = true */)
   m_bssMembershipSelector = HE_PHY;
   m_maxMcsIndexPerSs = 11;
   m_maxSupportedMcsIndexPerSs = m_maxMcsIndexPerSs;
+  m_currentHeTbPpduUid = UINT64_MAX;
   if (buildModeList)
     {
       BuildModeList ();
@@ -298,6 +305,139 @@ HePhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const
 {
   return Create<HePpdu> (psdus, txVector, ppduDuration, band, uid);
+}
+
+Ptr<const WifiPsdu>
+HePhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
+{
+  if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU || ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU)
+    {
+      auto hePpdu = DynamicCast<const HePpdu> (ppdu);
+      NS_ASSERT (hePpdu);
+      return hePpdu->GetPsdu (GetBssColor (), GetStaId (ppdu));
+    }
+  return PhyEntity::GetAddressedPsduInPpdu (ppdu);
+}
+
+uint8_t
+HePhy::GetBssColor (void) const
+{
+  uint8_t bssColor = 0;
+  Ptr<WifiNetDevice> device = DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ());
+  if (device)
+    {
+      Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
+      if (heConfiguration)
+        {
+          UintegerValue bssColorAttribute;
+          heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
+          bssColor = bssColorAttribute.Get ();
+        }
+    }
+  return bssColor;
+}
+
+uint16_t
+HePhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
+{
+  //TODO Move HE-specific logic here
+  return m_wifiPhy->GetStaId (ppdu);
+}
+
+PhyEntity::PhyFieldRxStatus
+HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
+{
+  NS_LOG_FUNCTION (this << *event << status);
+  //Notify end of SIG-A (in all cases)
+  HeSigAParameters params;
+  params.rssiW = GetRxPowerWForPpdu (event);
+  params.bssColor = event->GetTxVector ().GetBssColor ();
+  Simulator::ScheduleNow (&WifiPhy::NotifyEndOfHeSigA, GetPointer (m_wifiPhy), params);
+
+  if (status.isSuccess)
+    {
+      Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+      if (event->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+        {
+          m_currentHeTbPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
+        }
+
+      //Check if PPDU is filtered only if the SIG-A content is supported
+      if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU) //Final decision on content of DL MU is reported to end of SIG-B (unless the PPDU is filtered)
+        {
+          uint8_t bssColor = GetBssColor ();
+          if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
+            {
+              NS_LOG_DEBUG ("The BSS color of this DL MU PPDU does not match the device's. The PPDU is filtered.");
+              return PhyFieldRxStatus (false, FILTERED, ABORT);
+            }
+        }
+      else if (GetAddressedPsduInPpdu (ppdu))
+        {
+          //We are here because the SU or UL MU is addressed to the PPDU, so keep status to success
+        }
+      else
+        {
+          NS_ASSERT (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU);
+          NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
+          return PhyFieldRxStatus (false, FILTERED, ABORT);
+        }
+    }
+  return status;
+}
+
+PhyEntity::PhyFieldRxStatus
+HePhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
+{
+  NS_LOG_FUNCTION (this << *event << status);
+  if (status.isSuccess)
+    {
+      //Check if PPDU is filtered only if the SIG-B content is supported (not explicitly stated but assumed based on behavior for SIG-A)
+      if (!GetAddressedPsduInPpdu (event->GetPpdu ()))
+        {
+          NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
+          return PhyFieldRxStatus (false, FILTERED, ABORT);
+        }
+    }
+  return status;
+}
+
+bool
+HePhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
+{
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  uint16_t staId = GetStaId (ppdu);
+  WifiMode txMode = txVector.GetMode (staId);
+  uint8_t nss = txVector.GetNssMax ();
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_MU)
+    {
+      for (auto info : txVector.GetHeMuUserInfoMap ())
+        {
+          if (info.first == staId)
+            {
+              nss = info.second.nss; //no need to look at other PSDUs
+              break;
+            }
+        }
+    }
+
+  if (nss > m_wifiPhy->GetMaxSupportedRxSpatialStreams ())
+    {
+      NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
+      return false;
+    }
+  if (!IsModeSupported (txMode))
+    {
+      NS_LOG_DEBUG ("Drop packet because it was sent using an unsupported mode (" << txVector.GetMode () << ")");
+      return false;
+    }
+  return true;
+}
+
+uint64_t
+HePhy::GetCurrentHeTbPpduUid (void) const
+{
+  return m_currentHeTbPpduUid;
 }
 
 void
