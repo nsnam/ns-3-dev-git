@@ -1025,6 +1025,29 @@ public:
    */
   uint64_t GetPreviouslyRxPpduUid (void) const;
 
+  /**
+   * \param currentChannelWidth channel width of the current transmission (MHz)
+   * \return the width of the guard band (MHz)
+   *
+   * Note: in order to properly model out of band transmissions for OFDM, the guard
+   * band has been configured so as to expand the modeled spectrum up to the
+   * outermost referenced point in "Transmit spectrum mask" sections' PSDs of
+   * each PHY specification of 802.11-2016 standard. It thus ultimately corresponds
+   * to the current channel bandwidth (which can be different from devices max
+   * channel width).
+   *
+   * This method is only relevant for SpectrumWifiPhy.
+   */
+  virtual uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const = 0;
+  /**
+   * \return a tuple containing the minimum rejection (in dBr) for the inner band,
+   *                            the minimum rejection (in dBr) for the outer band, and
+   *                            the maximum rejection (in dBr) for the outer band
+   *                            for the transmit spectrum mask.
+   *
+   * This method is only relevant for SpectrumWifiPhy.
+   */
+  virtual std::tuple<double, double, double> GetTxMaskRejectionParams (void) const = 0;
 
 protected:
   // Inherited

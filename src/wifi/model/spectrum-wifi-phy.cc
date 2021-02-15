@@ -676,4 +676,12 @@ SpectrumWifiPhy::ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::Subcarrier
   return convertedSubcarriers;
 }
 
+std::tuple<double, double, double>
+SpectrumWifiPhy::GetTxMaskRejectionParams (void) const
+{
+  return std::make_tuple (m_txMaskInnerBandMinimumRejection,
+                          m_txMaskOuterBandMinimumRejection,
+                          m_txMaskOuterBandMaximumRejection);
+}
+
 } //namespace ns3

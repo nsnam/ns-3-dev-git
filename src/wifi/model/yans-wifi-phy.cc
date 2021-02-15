@@ -89,4 +89,18 @@ YansWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
   m_channel->Send (this, ppdu, GetTxPowerForTransmission (ppdu) + GetTxGain ());
 }
 
+uint16_t
+YansWifiPhy::GetGuardBandwidth (uint16_t currentChannelWidth) const
+{
+  NS_ABORT_MSG ("Guard bandwidth not relevant for Yans");
+  return 0;
+}
+
+std::tuple<double, double, double>
+YansWifiPhy::GetTxMaskRejectionParams (void) const
+{
+  NS_ABORT_MSG ("Tx mask rejection params not relevant for Yans");
+  return std::make_tuple (0.0, 0.0, 0.0);
+}
+
 } //namespace ns3

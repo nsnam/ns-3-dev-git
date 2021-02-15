@@ -23,7 +23,6 @@
 #define VHT_PHY_H
 
 #include "ht-phy.h"
-#include <tuple>
 
 /**
  * \file

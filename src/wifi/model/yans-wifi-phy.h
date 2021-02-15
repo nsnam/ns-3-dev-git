@@ -58,8 +58,10 @@ public:
   virtual ~YansWifiPhy ();
 
   // Implementation of pure virtual method.
-  void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel);
-  virtual Ptr<Channel> GetChannel (void) const;
+  void StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel) override;
+  virtual Ptr<Channel> GetChannel (void) const override;
+  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
+  std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
 
   /**
    * Set the YansWifiChannel this YansWifiPhy is to be connected to.
@@ -70,7 +72,7 @@ public:
 
 protected:
   // Inherited
-  virtual void DoDispose (void);
+  virtual void DoDispose (void) override;
 
 
 private:

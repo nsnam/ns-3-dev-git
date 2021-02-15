@@ -1012,4 +1012,16 @@ PhyEntity::ObtainNextUid (const WifiTxVector& /* txVector */)
   return m_globalPpduUid++;
 }
 
+uint16_t
+PhyEntity::GetGuardBandwidth (uint16_t currentChannelWidth) const
+{
+  return m_wifiPhy->GetGuardBandwidth (currentChannelWidth);
+}
+
+std::tuple<double, double, double>
+PhyEntity::GetTxMaskRejectionParams (void) const
+{
+  return m_wifiPhy->GetTxMaskRejectionParams ();
+}
+
 } //namespace ns3

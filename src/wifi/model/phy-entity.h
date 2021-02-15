@@ -35,6 +35,7 @@
 #include "ns3/wifi-spectrum-value-helper.h"
 #include <list>
 #include <map>
+#include <tuple>
 
 /**
  * \file
@@ -687,6 +688,24 @@ protected:
    * \return the UID to use for the PPDU to transmit
    */
   virtual uint64_t ObtainNextUid (const WifiTxVector& txVector);
+
+  /**
+   * \param currentChannelWidth channel width of the current transmission (MHz)
+   * \return the width of the guard band (MHz)
+   *
+   * Wrapper method used by child classes for PSD generation.
+   * Note that this method is necessary for testing UL OFDMA.
+   */
+  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const;
+  /**
+   * \return a tuple containing the minimum rejection (in dBr) for the inner band,
+   *                            the minimum rejection (in dBr) for the outer band, and
+   *                            the maximum rejection (in dBr) for the outer band
+   *                            for the transmit spectrum mask.
+   *
+   * Wrapper method used by child classes for PSD generation.
+   */
+  std::tuple<double, double, double> GetTxMaskRejectionParams (void) const;
 
   Ptr<WifiPhy> m_wifiPhy;          //!< Pointer to the owning WifiPhy
   Ptr<WifiPhyStateHelper> m_state; //!< Pointer to WifiPhyStateHelper of the WifiPhy (to make it reachable for child classes)
