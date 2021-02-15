@@ -137,19 +137,6 @@ std::ostream& operator<< (std::ostream& os, const Event &event);
 class InterferenceHelper
 {
 public:
-  /**
-   * Signal event for a PPDU.
-   */
-
-  /**
-   * A struct for both SNR and PER
-   */
-  struct SnrPer
-  {
-    double snr; ///< SNR in linear scale
-    double per; ///< PER
-  };
-
   InterferenceHelper ();
   ~InterferenceHelper ();
 
@@ -236,7 +223,7 @@ public:
    *
    * \return struct of SNR and PER (with PER being evaluated over the provided time window)
    */
-  struct InterferenceHelper::SnrPer CalculatePayloadSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band,
+  struct PhyEntity::SnrPer CalculatePayloadSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band,
                                                             uint16_t staId, std::pair<Time, Time> relativeMpduStartStop) const;
   /**
    * Calculate the SNIR for the event (starting from now until the event end).
@@ -260,7 +247,7 @@ public:
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculatePhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band,
+  struct PhyEntity::SnrPer CalculatePhyHeaderSnrPer (Ptr<Event> event, uint16_t channelWidth, WifiSpectrumBand band,
                                                               WifiPpduField header) const;
 
   /**

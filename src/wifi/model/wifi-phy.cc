@@ -2386,8 +2386,8 @@ WifiPhy::ContinueReceiveHeader (Ptr<Event> event)
   NS_ASSERT (m_endPhyRxEvent.IsExpired ());
 
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (event->GetPpdu ());
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
-                                                                               WIFI_PPDU_FIELD_NON_HT_HEADER);
+  PhyEntity::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
+                                                                      WIFI_PPDU_FIELD_NON_HT_HEADER);
 
   NS_LOG_DEBUG ("L-SIG/RL-SIG: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
   if (m_random->GetValue () > snrPer.per) //non-HT PHY header reception succeeded
@@ -2648,8 +2648,8 @@ WifiPhy::EndReceiveCommonHeader (Ptr<Event> event)
   if (modulation >= WIFI_MOD_CLASS_HT)
     {
       WifiPpduField header = (modulation == WIFI_MOD_CLASS_HT) ? WIFI_PPDU_FIELD_HT_SIG : WIFI_PPDU_FIELD_SIG_A;
-      InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, measurementBand,
-                                                                                   header);
+      PhyEntity::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, measurementBand,
+                                                                          header);
       NS_LOG_DEBUG (header << ": SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
       commonHeaderReceived = (m_random->GetValue () > snrPer.per);
     }
@@ -2744,8 +2744,8 @@ WifiPhy::EndReceiveSigB (Ptr<Event> event)
 
   //calculate PER of SIG-B on measurement channel
   uint16_t measurementChannelWidth = GetMeasurementChannelWidth (ppdu);
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
-                                                                               WIFI_PPDU_FIELD_SIG_B);
+  PhyEntity::SnrPer snrPer = m_interference.CalculatePhyHeaderSnrPer (event, measurementChannelWidth, GetBand (measurementChannelWidth),
+                                                                      WIFI_PPDU_FIELD_SIG_B);
   NS_LOG_DEBUG ("SIG-B: SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per);
 
   bool success = false;
@@ -3088,7 +3088,7 @@ WifiPhy::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_
     {
       band = GetBand (channelWidth);
     }
-  InterferenceHelper::SnrPer snrPer = m_interference.CalculatePayloadSnrPer (event, channelWidth, band, staId, std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
+  PhyEntity::SnrPer snrPer = m_interference.CalculatePayloadSnrPer (event, channelWidth, band, staId, std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
 
   WifiMode mode = event->GetTxVector ().GetMode (staId);
   NS_LOG_DEBUG ("rate=" << (mode.GetDataRate (event->GetTxVector (), staId)) <<

@@ -52,6 +52,26 @@ class PhyEntity : public SimpleRefCount<PhyEntity>
 {
 public:
   /**
+   * A struct for both SNR and PER
+   */
+  struct SnrPer
+  {
+    double snr {0.0}; ///< SNR in linear scale
+    double per {1.0}; ///< PER
+    /**
+     * Default constructor.
+     */
+    SnrPer () {};
+    /**
+     * Constructor for SnrPer.
+     *
+     * \param s the SNR in linear scale
+     * \param p the PER
+     */
+    SnrPer (double s, double p) : snr (s), per (p) {};
+  };
+
+  /**
    * Destructor for PHY entity
    */
   virtual ~PhyEntity ();
