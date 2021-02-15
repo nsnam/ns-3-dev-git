@@ -340,6 +340,19 @@ public:
   virtual Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const;
 
   /**
+   * Start receiving the PHY preamble of a PPDU (i.e. the first bit of the preamble has arrived).
+   *
+   * This method triggers the start of the preamble detection period (\see
+   * StartPreambleDetectionPeriod) if the PHY can process the PPDU.
+   *
+   * \param ppdu the arriving PPDU
+   * \param rxPowersW the receive power in W per band
+   * \param rxDuration the duration of the PPDU
+   * \param psdFlag the flag indicating the type of Tx PSD to build
+   */
+  virtual void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+                                     Time rxDuration, TxPsdFlag psdFlag);
+  /**
    * Start receiving a given field.
    *
    * This method will call the DoStartReceiveField (which will should
@@ -366,6 +379,44 @@ public:
    * \param event the event holding incoming PPDU's information
    */
   void EndReceiveField (WifiPpduField field, Ptr<Event> event);
+
+  /**
+   * The last symbol of the PPDU has arrived.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void EndReceivePayload (Ptr<Event> event);
+
+  /**
+   * Reset PHY at the end of the PPDU under reception after it has failed the PHY header.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void ResetReceive (Ptr<Event> event);
+
+  /**
+   * Cancel and clear all running events.
+   */
+  virtual void CancelAllEvents (void);
+  /**
+   * \return \c true if there is no end preamble detection event running, \c false otherwise
+   */
+  bool NoEndPreambleDetectionEvents (void) const;
+  /**
+   * Cancel and eventually clear all end preamble detection events.
+   *
+   * \param clear whether to clear the end preamble detection events' list
+   */
+  void CancelRunningEndPreambleDetectionEvents (bool clear = false);
+
+  /**
+   * Return the STA ID that has been assigned to the station this PHY belongs to.
+   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
+   *
+   * \param ppdu the PPDU for which the STA ID is requested
+   * \return the STA ID
+   */
+  virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
 
 protected:
   /**
@@ -404,16 +455,16 @@ protected:
   virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event);
 
   /**
-   * Start receiving the preamble, perform amendment-specific actions, and
-   * signify if it is supported.
+   * Get the event corresponding to the incoming PPDU.
    *
-   * This method triggers the start of the preamble detection period (\see
-   * StartPreambleDetectionPeriod).
+   * We store all incoming preamble events, perform amendment-specific actions,
+   * and a decision is made at the end of the preamble detection window.
    *
-   * \param event the event holding incoming PPDU's information
-   * \return \c true if the preamble is supported, \c false otherwise
+   * \param ppdu the incoming PPDU
+   * \param rxPowersW the receive power in W per band
+   * \return the event holding the incoming PPDU's information
    */
-  virtual bool DoStartReceivePreamble (Ptr<Event> event);
+  virtual Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW);
   /**
    * End receiving the preamble, perform amendment-specific actions, and
    * provide the status of the reception.
@@ -440,6 +491,37 @@ protected:
   void EndPreambleDetectionPeriod (Ptr<Event> event);
 
   /**
+   * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived).
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void StartReceivePayload (Ptr<Event> event);
+
+  /**
+   * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived)
+   * and perform amendment-specific actions.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  virtual void DoStartReceivePayload (Ptr<Event> event);
+
+  /**
+   * Perform amendment-specific actions before resetting PHY at
+   * the end of the PPDU under reception after it has failed the PHY header.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  virtual void DoResetReceive (Ptr<Event> event);
+
+  /**
+   * Perform amendment-specific actions before aborting the
+   * current reception.
+   *
+   * \param reason the reason the reception is aborted
+   */
+  virtual void DoAbortCurrentReception (WifiPhyRxfailureReason reason);
+
+  /**
    * Checks if the signaled configuration (excluding bandwidth)
    * is supported by the PHY.
    *
@@ -449,17 +531,81 @@ protected:
   virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const;
 
   /**
+   * Drop the PPDU and the corresponding preamble detection event, but keep CCA busy
+   * state after the completion of the currently processed event.
+   *
+   * \param ppdu the incoming PPDU
+   * \param reason the reason the PPDU is dropped
+   * \param endRx the end of the incoming PPDU's reception
+   * \param measurementChannelWidth the measurement width (in MHz) to consider for the PPDU
+   */
+  void DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth);
+
+  /**
+   * Erase the event corresponding to the PPDU from the list of preamble events,
+   * but consider it as noise after the completion of the current event.
+   *
+   * \param ppdu the incoming PPDU
+   * \param rxDuration the duration of the PPDU
+   */
+  void ErasePreambleEvent (Ptr<const WifiPpdu> ppdu, Time rxDuration);
+
+  /**
+   * Get the reception status for the provided MPDU and notify.
+   *
+   * \param psdu the arriving MPDU formatted as a PSDU
+   * \param event the event holding incoming PPDU's information
+   * \param staId the station ID of the PSDU (only used for MU)
+   * \param relativeMpduStart the relative start time of the MPDU within the A-MPDU. 0 for normal MPDUs
+   * \param mpduDuration the duration of the MPDU
+   *
+   * \return information on MPDU reception: status, signal power (dBm), and noise power (in dBm)
+   */
+  std::pair<bool, SignalNoiseDbm> GetReceptionStatus (Ptr<const WifiPsdu> psdu,
+                                                      Ptr<Event> event, uint16_t staId,
+                                                      Time relativeMpduStart,
+                                                      Time mpduDuration);
+  /**
+   * The last symbol of an MPDU in an A-MPDU has arrived.
+   *
+   * \param event the event holding incoming PPDU's information
+   * \param psdu the arriving MPDU formatted as a PSDU containing a normal MPDU
+   * \param mpduIndex the index of the MPDU within the A-MPDU
+   * \param relativeStart the relative start time of the MPDU within the A-MPDU.
+   * \param mpduDuration the duration of the MPDU
+   */
+  void EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex, Time relativeStart, Time mpduDuration);
+
+  /**
+   * Schedule end of MPDUs events.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void ScheduleEndOfMpdus (Ptr<Event> event);
+
+  /**
+   * Perform amendment-specific actions at the end of the reception of
+   * the payload.
+   *
+   * \param ppdu the incoming PPDU
+   */
+  virtual void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu);
+
+  /**
+   * Get the channel width and band to use (will be overloaded by child classes).
+   *
+   * \param txVector the transmission parameters
+   * \param staId the station ID of the PSDU
+   * \return a pair of channel width (MHz) and band
+   */
+  virtual std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (WifiTxVector txVector, uint16_t staId) const;
+
+  /**
    * Abort the current reception.
    *
    * \param reason the reason the reception is aborted
    */
   void AbortCurrentReception (WifiPhyRxfailureReason reason);
-  /**
-   * Reset PHY at the end of the PPDU under reception after it has failed the PHY header.
-   *
-   * \param event the event holding incoming PPDU's information
-   */
-  void ResetReceive (Ptr<Event> event);
 
   /**
    * Obtain a random value from the WifiPhy's generator.
@@ -485,11 +631,68 @@ protected:
    * \return the received power (W) for the event over a given band
    */
   double GetRxPowerWForPpdu (Ptr<Event> event) const;
+  /**
+   * Get the pointer to the current event (stored in WifiPhy).
+   * Wrapper used by child classes.
+   *
+   * \return the pointer to the current event
+   */
+  Ptr<const Event> GetCurrentEvent (void) const;
+  /**
+   * Get the map of current preamble events (stored in WifiPhy).
+   * Wrapper used by child classes.
+   *
+   * \return the reference to the map of current preamble events
+   */
+  const std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > & GetCurrentPreambleEvents (void) const;
+  /**
+   * Add an entry to the map of current preamble events (stored in WifiPhy).
+   * Wrapper used by child classes.
+   *
+   * \param event the event holding incoming PPDU's information
+   */
+  void AddPreambleEvent (Ptr<Event> event);
+
+  /**
+   * Create an event using WifiPhy's InterferenceHelper class.
+   * Wrapper used by child classes.
+   *
+   * \copydoc InterferenceHelper::Add(Ptr<const WifiPpdu>, WifiTxVector, Time, RxPowerWattPerChannelBand, bool)
+   */
+  Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  /**
+   * Update an event in WifiPhy's InterferenceHelper class.
+   * Wrapper used by child classes.
+   *
+   * \copydoc InterferenceHelper::UpdateEvent(Ptr<Event>, RxPowerWattPerChannelBand)
+   */
+  void UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
+  /**
+   * Notify WifiPhy's InterferenceHelper of the end of the reception,
+   * clear maps and end of MPDU event, and eventually reset WifiPhy.
+   *
+   * \param reset whether to reset WifiPhy
+   */
+  void NotifyInterferenceRxEndAndClear (bool reset);
 
   Ptr<WifiPhy> m_wifiPhy;          //!< Pointer to the owning WifiPhy
   Ptr<WifiPhyStateHelper> m_state; //!< Pointer to WifiPhyStateHelper of the WifiPhy (to make it reachable for child classes)
 
   std::list<WifiMode> m_modeList;  //!< the list of supported modes
+
+  std::vector <EventId> m_endPreambleDetectionEvents; //!< the end of preamble detection events
+  std::vector <EventId> m_endOfMpduEvents; //!< the end of MPDU events (only used for A-MPDUs)
+
+  std::vector <EventId> m_endRxPayloadEvents; //!< the end of receive events (only one unless UL MU reception)
+
+  /**
+   * A pair of a UID and STA_ID
+   */
+  typedef std::pair <uint64_t /* UID */, uint16_t /* STA-ID */> UidStaIdPair;
+
+  std::map<UidStaIdPair, std::vector<bool> > m_statusPerMpduMap; //!< Map of the current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
+  std::map<UidStaIdPair, SignalNoiseDbm> m_signalNoiseMap; //!< Map of the latest signal power and noise power in dBm (noise power includes the noise figure)
+
 }; //class PhyEntity
 
 /**

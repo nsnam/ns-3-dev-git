@@ -24,7 +24,9 @@
 #include "wifi-phy.h"
 #include "wifi-psdu.h"
 #include "preamble-detection-model.h"
+#include "frame-capture-model.h"
 #include "wifi-utils.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -68,7 +70,9 @@ std::ostream & operator << (std::ostream &os, const PhyEntity::PhyFieldRxStatus 
 
 PhyEntity::~PhyEntity ()
 {
+  NS_LOG_FUNCTION (this);
   m_modeList.clear ();
+  CancelAllEvents ();
 }
 
 void
@@ -246,20 +250,12 @@ PhyEntity::StartReceiveField (WifiPpduField field, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << field << *event);
   NS_ASSERT (m_wifiPhy); //no sense if no owner WifiPhy instance
-  NS_ASSERT (m_wifiPhy->m_endPhyRxEvent.IsExpired ()
-             || m_wifiPhy->m_currentPreambleEvents.size () > 1); //TODO find a better way of handling multiple preambles until synching on one after detection period
-
-  //Handle special cases of preamble and data reception (TODO improve this logic later on)
-  if (field == WIFI_PPDU_FIELD_PREAMBLE)
-    {
-      DoStartReceivePreamble (event);
-      return;
-    }
+  NS_ASSERT (m_wifiPhy->m_endPhyRxEvent.IsExpired ());
+  NS_ABORT_MSG_IF (field == WIFI_PPDU_FIELD_PREAMBLE, "Use the StartReceivePreamble method for preamble reception");
+  //Handle special cases of data reception
   if (field == WIFI_PPDU_FIELD_DATA)
     {
-      //TODO improve this logic later on
-      //Hand over to WifiPhy for data processing
-      m_wifiPhy->StartReceivePayload (event);
+      StartReceivePayload (event);
       return;
     }
 
@@ -304,10 +300,11 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
             //Notify drop, keep in CCA busy, and perform same processing as IGNORE case
             m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), status.reason);
             m_state->SwitchMaybeToCcaBusy (GetRemainingDurationAfterField (ppdu, field)); //keep in CCA busy state till the end
+          //no break
           case IGNORE:
             //Keep in Rx state and reset at end
-            m_wifiPhy->m_endRxEvents.push_back (Simulator::Schedule (GetRemainingDurationAfterField (ppdu, field),
-                                                                     &PhyEntity::ResetReceive, this, event));
+            m_endRxPayloadEvents.push_back (Simulator::Schedule (GetRemainingDurationAfterField (ppdu, field),
+                                                                 &PhyEntity::ResetReceive, this, event));
             break;
           default:
             NS_FATAL_ERROR ("Unknown action in case of failure");
@@ -352,13 +349,423 @@ PhyEntity::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
   return PhyFieldRxStatus (false); //failed reception by default
 }
 
-bool
-PhyEntity::DoStartReceivePreamble (Ptr<Event> event)
+void
+PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+                                 Time /* rxDuration */, TxPsdFlag /* psdFlag */)
+{
+  //The total RX power corresponds to the maximum over all the bands
+  auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
+                              [] (const std::pair<WifiSpectrumBand, double> &p1, const std::pair<WifiSpectrumBand, double> &p2) {
+                                return p1.second < p2.second;
+                              });
+  NS_LOG_FUNCTION (this << ppdu << it->second);
+  WifiTxVector txVector = ppdu->GetTxVector ();
+  Time rxDuration = ppdu->GetTxDuration (); //the actual duration of the PPDU should be considered
+
+  Ptr<Event> event = DoGetEvent (ppdu, rxPowersW);
+  if (event == nullptr)
+    {
+      //PPDU should be simply considered as interference (once it has been accounted for in InterferenceHelper)
+      return;
+    }
+
+  Time endRx = Simulator::Now () + rxDuration;
+  if (m_state->GetState () == WifiPhyState::OFF)
+    {
+      NS_LOG_DEBUG ("Cannot start RX because device is OFF");
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          m_wifiPhy->MaybeCcaBusyDuration (m_wifiPhy->GetMeasurementChannelWidth (nullptr));
+        }
+      return;
+    }
+
+  if (ppdu->IsTruncatedTx ())
+    {
+      NS_LOG_DEBUG ("Packet reception stopped because transmitter has been switched off");
+      if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+        {
+          m_wifiPhy->MaybeCcaBusyDuration (m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+        }
+      return;
+    }
+
+  switch (m_state->GetState ())
+    {
+      case WifiPhyState::SWITCHING:
+        NS_LOG_DEBUG ("Drop packet because of channel switching");
+        /*
+         * Packets received on the upcoming channel are added to the event list
+         * during the switching state. This way the medium can be correctly sensed
+         * when the device listens to the channel for the first time after the
+         * switching e.g. after channel switching, the channel may be sensed as
+         * busy due to other devices' transmissions started before the end of
+         * the switching.
+         */
+        DropPreambleEvent (ppdu, CHANNEL_SWITCHING, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+        break;
+      case WifiPhyState::RX:
+        if (m_wifiPhy->m_frameCaptureModel != 0
+            && m_wifiPhy->m_frameCaptureModel->IsInCaptureWindow (m_wifiPhy->m_timeLastPreambleDetected)
+            && m_wifiPhy->m_frameCaptureModel->CaptureNewFrame (m_wifiPhy->m_currentEvent, event))
+          {
+            AbortCurrentReception (FRAME_CAPTURE_PACKET_SWITCH);
+            NS_LOG_DEBUG ("Switch to new packet");
+            StartPreambleDetectionPeriod (event);
+          }
+        else
+          {
+            NS_LOG_DEBUG ("Drop packet because already in Rx");
+            DropPreambleEvent (ppdu, RXING, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+            if (m_wifiPhy->m_currentEvent == 0)
+              {
+                /*
+                 * We are here because the non-legacy PHY header has not been successfully received.
+                 * The PHY is kept in RX state for the duration of the PPDU, but EndReceive function is
+                 * not called when the reception of the PPDU is finished, which is responsible to clear
+                 * m_currentPreambleEvents. As a result, m_currentPreambleEvents should be cleared here.
+                 */
+                m_wifiPhy->m_currentPreambleEvents.clear ();
+              }
+          }
+        break;
+      case WifiPhyState::TX:
+        NS_LOG_DEBUG ("Drop packet because already in Tx");
+        DropPreambleEvent (ppdu, TXING, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+        break;
+      case WifiPhyState::CCA_BUSY:
+        if (m_wifiPhy->m_currentEvent != 0)
+          {
+            if (m_wifiPhy->m_frameCaptureModel != 0
+                && m_wifiPhy->m_frameCaptureModel->IsInCaptureWindow (m_wifiPhy->m_timeLastPreambleDetected)
+                && m_wifiPhy->m_frameCaptureModel->CaptureNewFrame (m_wifiPhy->m_currentEvent, event))
+              {
+                AbortCurrentReception (FRAME_CAPTURE_PACKET_SWITCH);
+                NS_LOG_DEBUG ("Switch to new packet");
+                StartPreambleDetectionPeriod (event);
+              }
+            else
+              {
+                NS_LOG_DEBUG ("Drop packet because already decoding preamble");
+                DropPreambleEvent (ppdu, BUSY_DECODING_PREAMBLE, endRx, m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+              }
+          }
+        else
+          {
+            StartPreambleDetectionPeriod (event);
+          }
+        break;
+      case WifiPhyState::IDLE:
+        NS_ASSERT (m_wifiPhy->m_currentEvent == 0);
+        StartPreambleDetectionPeriod (event);
+        break;
+      case WifiPhyState::SLEEP:
+        NS_LOG_DEBUG ("Drop packet because in sleep mode");
+        DropPreambleEvent (ppdu, SLEEPING, endRx, m_wifiPhy->GetMeasurementChannelWidth (nullptr));
+        break;
+      default:
+        NS_FATAL_ERROR ("Invalid WifiPhy state.");
+        break;
+    }
+}
+
+void
+PhyEntity::DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason reason, Time endRx, uint16_t measurementChannelWidth)
+{
+  NS_LOG_FUNCTION (this << ppdu << reason << endRx << measurementChannelWidth);
+  m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), reason);
+  auto it = m_wifiPhy->m_currentPreambleEvents.find (std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ()));
+  if (it != m_wifiPhy->m_currentPreambleEvents.end ())
+    {
+      m_wifiPhy->m_currentPreambleEvents.erase (it);
+    }
+  if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
+    {
+      //that PPDU will be noise _after_ the end of the current event.
+      m_wifiPhy->MaybeCcaBusyDuration (measurementChannelWidth);
+    }
+}
+
+void
+PhyEntity::ErasePreambleEvent (Ptr<const WifiPpdu> ppdu, Time rxDuration)
+{
+  NS_LOG_FUNCTION (this << ppdu << rxDuration);
+  auto it = m_wifiPhy->m_currentPreambleEvents.find (std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ()));
+  if (it != m_wifiPhy->m_currentPreambleEvents.end ())
+    {
+      m_wifiPhy->m_currentPreambleEvents.erase (it);
+    }
+  if (m_wifiPhy->m_currentPreambleEvents.empty ())
+    {
+      m_wifiPhy->Reset ();
+    }
+
+  if (rxDuration > m_state->GetDelayUntilIdle ())
+    {
+      //this PPDU will be noise _after_ the completion of the current event
+      m_wifiPhy->SwitchMaybeToCcaBusy (m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+    }
+}
+
+uint16_t
+PhyEntity::GetStaId (const Ptr<const WifiPpdu> /* ppdu */) const
+{
+  return SU_STA_ID;
+}
+
+void
+PhyEntity::StartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
-  //TODO handle special cases in WifiPhy::StartReceivePreamble
-  StartPreambleDetectionPeriod (event);
-  return true;
+  NS_ASSERT (m_wifiPhy->m_endPhyRxEvent.IsExpired ());
+  WifiTxVector txVector = event->GetTxVector ();
+  Time payloadDuration = event->GetPpdu ()->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+
+  //TODO: Add method in WifiPhy to clear all other PHYs (since this one is starting Rx)
+  m_state->SwitchToRx (payloadDuration);
+  m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, payloadDuration); //this callback (equivalent to PHY-RXSTART primitive) is triggered only if headers have been correctly decoded and that the mode within is supported
+
+  DoStartReceivePayload (event);
+}
+
+void
+PhyEntity::DoStartReceivePayload (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  NS_LOG_DEBUG ("Receiving PSDU");
+  uint16_t staId = GetStaId (ppdu);
+  m_signalNoiseMap.insert ({std::make_pair (ppdu->GetUid (), staId), SignalNoiseDbm ()});
+  m_statusPerMpduMap.insert ({std::make_pair (ppdu->GetUid (), staId), std::vector<bool> ()});
+  ScheduleEndOfMpdus (event);
+  m_endRxPayloadEvents.push_back (Simulator::Schedule (ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (event->GetTxVector ()),
+                                                       &PhyEntity::EndReceivePayload, this, event));
+}
+
+void
+PhyEntity::ScheduleEndOfMpdus (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
+  WifiTxVector txVector = event->GetTxVector ();
+  uint16_t staId = GetStaId (ppdu);
+  Time endOfMpduDuration = NanoSeconds (0);
+  Time relativeStart = NanoSeconds (0);
+  Time psduDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  Time remainingAmpduDuration = psduDuration;
+  size_t nMpdus = psdu->GetNMpdus ();
+  MpduType mpduType = (nMpdus > 1) ? FIRST_MPDU_IN_AGGREGATE : (psdu->IsSingle () ? SINGLE_MPDU : NORMAL_MPDU);
+  uint32_t totalAmpduSize = 0;
+  double totalAmpduNumSymbols = 0.0;
+  auto mpdu = psdu->begin ();
+  for (size_t i = 0; i < nMpdus && mpdu != psdu->end (); ++mpdu)
+    {
+      uint32_t size = (mpduType == NORMAL_MPDU) ? psdu->GetSize () : psdu->GetAmpduSubframeSize (i);
+      Time mpduDuration = m_wifiPhy->GetPayloadDuration (size, txVector,
+                                                         m_wifiPhy->GetPhyBand (), mpduType, true, totalAmpduSize,
+                                                         totalAmpduNumSymbols, staId);
+
+      remainingAmpduDuration -= mpduDuration;
+      if (i == (nMpdus - 1) && !remainingAmpduDuration.IsZero ()) //no more MPDUs coming
+        {
+          if (remainingAmpduDuration < NanoSeconds (txVector.GetGuardInterval ())) //enables to ignore padding
+            {
+              mpduDuration += remainingAmpduDuration; //apply a correction just in case rounding had induced slight shift
+            }
+        }
+
+      endOfMpduDuration += mpduDuration;
+      NS_LOG_INFO ("Schedule end of MPDU #" << i << " in " << endOfMpduDuration.As (Time::NS) <<
+                   " (relativeStart=" << relativeStart.As (Time::NS) << ", mpduDuration=" << mpduDuration.As (Time::NS) <<
+                   ", remainingAmdpuDuration=" << remainingAmpduDuration.As (Time::NS) << ")");
+      m_endOfMpduEvents.push_back (Simulator::Schedule (endOfMpduDuration, &PhyEntity::EndOfMpdu, this, event, Create<WifiPsdu> (*mpdu, false), i, relativeStart, mpduDuration));
+
+      //Prepare next iteration
+      ++i;
+      relativeStart += mpduDuration;
+      mpduType = (i == (nMpdus - 1)) ? LAST_MPDU_IN_AGGREGATE : MIDDLE_MPDU_IN_AGGREGATE;
+    }
+}
+
+void
+PhyEntity::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduIndex, Time relativeStart, Time mpduDuration)
+{
+  NS_LOG_FUNCTION (this << *event << mpduIndex << relativeStart << mpduDuration);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  WifiTxVector txVector = event->GetTxVector ();
+  uint16_t staId = GetStaId (ppdu);
+  const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
+  double snr = m_wifiPhy->m_interference.CalculateSnr (event, channelWidthAndBand.first, txVector.GetNss (staId), channelWidthAndBand.second);
+
+  std::pair<bool, SignalNoiseDbm> rxInfo = GetReceptionStatus (psdu, event, staId, relativeStart, mpduDuration);
+  NS_LOG_DEBUG ("Extracted MPDU #" << mpduIndex << ": duration: " << mpduDuration.As (Time::NS) <<
+                ", correct reception: " << rxInfo.first << ", Signal/Noise: " << rxInfo.second.signal << "/" << rxInfo.second.noise << "dBm");
+
+  auto signalNoiseIt = m_signalNoiseMap.find (std::make_pair (ppdu->GetUid (), staId));
+  NS_ASSERT (signalNoiseIt != m_signalNoiseMap.end ());
+  signalNoiseIt->second = rxInfo.second;
+
+  RxSignalInfo rxSignalInfo;
+  rxSignalInfo.snr = snr;
+  rxSignalInfo.rssi = rxInfo.second.signal;
+
+  auto statusPerMpduIt = m_statusPerMpduMap.find (std::make_pair (ppdu->GetUid (), staId));
+  NS_ASSERT (statusPerMpduIt != m_statusPerMpduMap.end ());
+  statusPerMpduIt->second.push_back (rxInfo.first);
+
+  if (rxInfo.first && GetAddressedPsduInPpdu (ppdu)->GetNMpdus () > 1)
+    {
+      //only done for correct MPDU that is part of an A-MPDU
+      m_state->ContinueRxNextMpdu (Copy (psdu), rxSignalInfo, txVector);
+    }
+}
+
+void
+PhyEntity::EndReceivePayload (Ptr<Event> event)
+{
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  WifiTxVector txVector = event->GetTxVector ();
+  Time psduDuration = ppdu->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
+  NS_LOG_FUNCTION (this << *event << psduDuration);
+  NS_ASSERT (event->GetEndTime () == Simulator::Now ());
+  uint16_t staId = GetStaId (ppdu);
+  const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
+  double snr = m_wifiPhy->m_interference.CalculateSnr (event, channelWidthAndBand.first, txVector.GetNss (staId), channelWidthAndBand.second);
+
+  Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
+  m_wifiPhy->NotifyRxEnd (psdu);
+
+  auto signalNoiseIt = m_signalNoiseMap.find (std::make_pair (ppdu->GetUid (), staId));
+  NS_ASSERT (signalNoiseIt != m_signalNoiseMap.end ());
+  auto statusPerMpduIt = m_statusPerMpduMap.find (std::make_pair (ppdu->GetUid (), staId));
+  NS_ASSERT (statusPerMpduIt != m_statusPerMpduMap.end ());
+
+  if (std::count (statusPerMpduIt->second.begin (), statusPerMpduIt->second.end (), true))
+    {
+      //At least one MPDU has been successfully received
+      m_wifiPhy->NotifyMonitorSniffRx (psdu, m_wifiPhy->GetFrequency (), txVector, signalNoiseIt->second, statusPerMpduIt->second, staId);
+      RxSignalInfo rxSignalInfo;
+      rxSignalInfo.snr = snr;
+      rxSignalInfo.rssi = signalNoiseIt->second.signal; //same information for all MPDUs
+      m_state->SwitchFromRxEndOk (Copy (psdu), rxSignalInfo, txVector, staId, statusPerMpduIt->second);
+      m_wifiPhy->m_previouslyRxPpduUid = event->GetPpdu ()->GetUid (); //store UID only if reception is successful (because otherwise trigger won't be read by MAC layer)
+    }
+  else
+    {
+      m_state->SwitchFromRxEndError (Copy (psdu), snr);
+    }
+
+  DoEndReceivePayload (ppdu);
+  m_wifiPhy->MaybeCcaBusyDuration (m_wifiPhy->GetMeasurementChannelWidth (ppdu));
+}
+
+void
+PhyEntity::DoEndReceivePayload (Ptr<const WifiPpdu> ppdu)
+{
+  NS_LOG_FUNCTION (this << ppdu);
+  NS_ASSERT (m_wifiPhy->GetLastRxEndTime () == Simulator::Now ());
+  NotifyInterferenceRxEndAndClear (false); //don't reset WifiPhy
+
+  m_wifiPhy->m_currentEvent = 0;
+  m_wifiPhy->m_currentPreambleEvents.clear ();
+  m_endRxPayloadEvents.clear ();
+}
+
+std::pair<bool, SignalNoiseDbm>
+PhyEntity::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint16_t staId,
+                               Time relativeMpduStart, Time mpduDuration)
+{
+  NS_LOG_FUNCTION (this << *psdu << *event << staId << relativeMpduStart << mpduDuration);
+  const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
+  SnrPer snrPer = m_wifiPhy->m_interference.CalculatePayloadSnrPer (event, channelWidthAndBand.first, channelWidthAndBand.second, staId,
+                                                                    std::make_pair (relativeMpduStart, relativeMpduStart + mpduDuration));
+
+  WifiMode mode = event->GetTxVector ().GetMode (staId);
+  NS_LOG_DEBUG ("rate=" << (mode.GetDataRate (event->GetTxVector (), staId)) <<
+                ", SNR(dB)=" << RatioToDb (snrPer.snr) << ", PER=" << snrPer.per << ", size=" << psdu->GetSize () <<
+                ", relativeStart = " << relativeMpduStart.As (Time::NS) << ", duration = " << mpduDuration.As (Time::NS));
+
+  // There are two error checks: PER and receive error model check.
+  // PER check models is typical for Wi-Fi and is based on signal modulation;
+  // Receive error model is optional, if we have an error model and
+  // it indicates that the packet is corrupt, drop the packet.
+  SignalNoiseDbm signalNoise;
+  signalNoise.signal = WToDbm (event->GetRxPowerW (channelWidthAndBand.second));
+  signalNoise.noise = WToDbm (event->GetRxPowerW (channelWidthAndBand.second) / snrPer.snr);
+  if (GetRandomValue () > snrPer.per
+      && !(m_wifiPhy->m_postReceptionErrorModel && m_wifiPhy->m_postReceptionErrorModel->IsCorrupt (psdu->GetPacket ()->Copy ())))
+    {
+      NS_LOG_DEBUG ("Reception succeeded: " << psdu);
+      return std::make_pair (true, signalNoise);
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Reception failed: " << psdu);
+      return std::make_pair (false, signalNoise);
+    }
+}
+
+std::pair<uint16_t, WifiSpectrumBand>
+PhyEntity::GetChannelWidthAndBand (WifiTxVector txVector, uint16_t /* staId */) const
+{
+  uint16_t channelWidth = std::min (m_wifiPhy->GetChannelWidth (), txVector.GetChannelWidth ());
+  return std::make_pair (channelWidth, m_wifiPhy->GetBand (channelWidth));
+}
+
+const std::map <std::pair<uint64_t, WifiPreamble>, Ptr<Event> > &
+PhyEntity::GetCurrentPreambleEvents (void) const
+{
+  return m_wifiPhy->m_currentPreambleEvents;
+}
+
+void
+PhyEntity::AddPreambleEvent (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
+  m_wifiPhy->m_currentPreambleEvents.insert ({std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ()), event});
+}
+
+Ptr<Event>
+PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW)
+{
+  Ptr<Event> event = CreateInterferenceEvent (ppdu, ppdu->GetTxVector (), ppdu->GetTxDuration (), rxPowersW);
+
+  //We store all incoming preamble events, and a decision is made at the end of the preamble detection window.
+  auto uidPreamblePair = std::make_pair (ppdu->GetUid (), ppdu->GetPreamble ());
+  NS_ASSERT (m_wifiPhy->m_currentPreambleEvents.find (uidPreamblePair) == m_wifiPhy->m_currentPreambleEvents.end ());
+  m_wifiPhy->m_currentPreambleEvents.insert ({uidPreamblePair, event});
+  return event;
+}
+
+Ptr<Event>
+PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing /* = false */)
+{
+  return m_wifiPhy->m_interference.Add (ppdu, txVector, duration, rxPower, isStartOfdmaRxing);
+}
+
+void
+PhyEntity::UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower)
+{
+  m_wifiPhy->m_interference.UpdateEvent (event, rxPower);
+}
+
+void
+PhyEntity::NotifyInterferenceRxEndAndClear (bool reset)
+{
+  m_wifiPhy->m_interference.NotifyRxEnd (Simulator::Now ());
+  m_signalNoiseMap.clear ();
+  m_statusPerMpduMap.clear ();
+  for (const auto & endOfMpduEvent : m_endOfMpduEvents)
+    {
+      NS_ASSERT (endOfMpduEvent.IsExpired ());
+    }
+  m_endOfMpduEvents.clear ();
+  if (reset)
+    {
+      m_wifiPhy->Reset ();
+    }
 }
 
 PhyEntity::PhyFieldRxStatus
@@ -375,8 +782,7 @@ PhyEntity::StartPreambleDetectionPeriod (Ptr<Event> event)
   NS_LOG_FUNCTION (this << *event);
   NS_LOG_DEBUG ("Sync to signal (power=" << GetRxPowerWForPpdu (event) << "W)");
   m_wifiPhy->m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
-  //TODO see if preamble detection events cannot be ported here
-  m_wifiPhy->m_endPreambleDetectionEvents.push_back (Simulator::Schedule (m_wifiPhy->GetPreambleDetectionDuration (), &PhyEntity::EndPreambleDetectionPeriod, this, event));
+  m_endPreambleDetectionEvents.push_back (Simulator::Schedule (m_wifiPhy->GetPreambleDetectionDuration (), &PhyEntity::EndPreambleDetectionPeriod, this, event));
 }
 
 void
@@ -424,11 +830,11 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
   if ((!m_wifiPhy->m_preambleDetectionModel && maxRxPowerW > 0.0)
       || (m_wifiPhy->m_preambleDetectionModel && m_wifiPhy->m_preambleDetectionModel->IsPreambleDetected (m_wifiPhy->m_currentEvent->GetRxPowerW (measurementBand), snr, measurementChannelWidth)))
     {
-      for (auto & endPreambleDetectionEvent : m_wifiPhy->m_endPreambleDetectionEvents)
+      //A bit convoluted but it enables to sync all PHYs
+      for (auto & it : m_wifiPhy->m_phyEntities)
         {
-          endPreambleDetectionEvent.Cancel ();
+          it.second->CancelRunningEndPreambleDetectionEvents (true);
         }
-      m_wifiPhy->m_endPreambleDetectionEvents.clear ();
 
       for (auto it = m_wifiPhy->m_currentPreambleEvents.begin (); it != m_wifiPhy->m_currentPreambleEvents.end (); )
         {
@@ -471,7 +877,7 @@ PhyEntity::EndPreambleDetectionPeriod (Ptr<Event> event)
       NS_LOG_DEBUG ("Drop packet because PHY preamble detection failed");
       // Like CCA-SD, CCA-ED is governed by the 4 us CCA window to flag CCA-BUSY
       // for any received signal greater than the CCA-ED threshold.
-      m_wifiPhy->DropPreambleEvent (m_wifiPhy->m_currentEvent->GetPpdu (), PREAMBLE_DETECT_FAILURE, m_wifiPhy->m_currentEvent->GetEndTime (), m_wifiPhy->GetMeasurementChannelWidth (m_wifiPhy->m_currentEvent->GetPpdu ()));
+      DropPreambleEvent (m_wifiPhy->m_currentEvent->GetPpdu (), PREAMBLE_DETECT_FAILURE, m_wifiPhy->m_currentEvent->GetEndTime (), m_wifiPhy->GetMeasurementChannelWidth (m_wifiPhy->m_currentEvent->GetPpdu ()));
       if (m_wifiPhy->m_currentPreambleEvents.empty ())
         {
           //Do not erase events if there are still pending preamble events to be processed
@@ -496,19 +902,81 @@ PhyEntity::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
 }
 
 void
+PhyEntity::CancelAllEvents (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (auto & endPreambleDetectionEvent : m_endPreambleDetectionEvents)
+    {
+      endPreambleDetectionEvent.Cancel ();
+    }
+  m_endPreambleDetectionEvents.clear ();
+  for (auto & endRxPayloadEvent : m_endRxPayloadEvents)
+    {
+      endRxPayloadEvent.Cancel ();
+    }
+  m_endRxPayloadEvents.clear ();
+}
+
+bool
+PhyEntity::NoEndPreambleDetectionEvents (void) const
+{
+  return m_endPreambleDetectionEvents.empty ();
+}
+
+void
+PhyEntity::CancelRunningEndPreambleDetectionEvents (bool clear /* = false */)
+{
+  NS_LOG_FUNCTION (this << clear);
+  for (auto & endPreambleDetectionEvent : m_endPreambleDetectionEvents)
+    {
+      if (endPreambleDetectionEvent.IsRunning ())
+        {
+          endPreambleDetectionEvent.Cancel ();
+        }
+    }
+  if (clear)
+    {
+      m_endPreambleDetectionEvents.clear ();
+    }
+}
+
+void
 PhyEntity::AbortCurrentReception (WifiPhyRxfailureReason reason)
 {
   NS_LOG_FUNCTION (this << reason);
-  //TODO cancel some events here later on
+  DoAbortCurrentReception (reason);
   m_wifiPhy->AbortCurrentReception (reason);
+}
+
+void
+PhyEntity::DoAbortCurrentReception (WifiPhyRxfailureReason reason)
+{
+  NS_LOG_FUNCTION (this << reason);
+  if (m_wifiPhy->m_currentEvent) //Otherwise abort has already been called just before with FILTERED reason
+    {
+      for (auto & endMpduEvent : m_endOfMpduEvents)
+        {
+          endMpduEvent.Cancel ();
+        }
+      m_endOfMpduEvents.clear ();
+    }
 }
 
 void
 PhyEntity::ResetReceive (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
-  NS_ASSERT (event->GetEndTime () == Simulator::Now ()); //TODO: overload for UL MU
+  DoResetReceive (event);
+  NS_ASSERT (m_endRxPayloadEvents.size () == 1 && m_endRxPayloadEvents.front ().IsExpired ());
+  m_endRxPayloadEvents.clear ();
   m_wifiPhy->ResetReceive (event);
+}
+
+void
+PhyEntity::DoResetReceive (Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << *event);
+  NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 }
 
 double
@@ -521,6 +989,12 @@ double
 PhyEntity::GetRxPowerWForPpdu (Ptr<Event> event) const
 {
   return event->GetRxPowerW (m_wifiPhy->GetBand (m_wifiPhy->GetMeasurementChannelWidth (event->GetPpdu ())));
+}
+
+Ptr<const Event>
+PhyEntity::GetCurrentEvent (void) const
+{
+  return m_wifiPhy->m_currentEvent;
 }
 
 } //namespace ns3

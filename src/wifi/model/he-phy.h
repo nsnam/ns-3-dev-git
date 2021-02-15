@@ -74,6 +74,10 @@ public:
   virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
                                    Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+                             Time rxDuration, TxPsdFlag psdFlag) override;
+  void CancelAllEvents (void) override;
+  virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
 
   /**
    * \return the BSS color of this PHY.
@@ -81,21 +85,12 @@ public:
   uint8_t GetBssColor (void) const;
 
   /**
-   * Return the STA ID that has been assigned to the station this PHY belongs to.
-   * This is typically called for MU PPDUs, in order to pick the correct PSDU.
-   *
-   * \param ppdu the PPDU for which the STA ID is requested
-   * \return the STA ID
-   */
-  uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
-
-  /**
    * \param ppduDuration the duration of the HE TB PPDU
    * \param band the frequency band being used
    *
    * \return the L-SIG length value corresponding to that HE TB PPDU duration.
    */
-  uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band) const;
+  static uint16_t ConvertHeTbPpduDurationToLSigLength (Time ppduDuration, WifiPhyBand band);
   /**
    * \param length the L-SIG length value
    * \param txVector the TXVECTOR used for the transmission of this HE TB PPDU
@@ -103,13 +98,32 @@ public:
    *
    * \return the duration of the HE TB PPDU corresponding to that L-SIG length value.
    */
-  Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band) const;
+  static Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band);
   /**
    * \param txVector the transmission parameters used for the HE TB PPDU
    *
    * \return the duration of the non-OFDMA portion of the HE TB PPDU.
    */
   Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const;
+
+  /**
+   * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the recipient
+   *
+   * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
+   */
+  WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId) const;
+  /**
+   * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
+   *
+   * \param txVector the TXVECTOR used for the transmission
+   * \param staId the STA-ID of the station taking part of the UL MU
+   *
+   * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
+   */
+  WifiSpectrumBand GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId) const;
 
   /**
    * \return the UID of the HE TB PPDU being received
@@ -206,9 +220,25 @@ protected:
   // Inherited
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
   PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
+  Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW) override;
   virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+  virtual void DoStartReceivePayload (Ptr<Event> event) override;
+  std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (WifiTxVector txVector, uint16_t staId) const override;
+  void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu) override;
+  void DoResetReceive (Ptr<Event> event) override;
+  void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
+
+  /**
+   * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.
+   * This function is called upon the RX event corresponding to the OFDMA part of the UL MU PPDU.
+   *
+   * \param event the event holding incoming OFDMA part of the PPDU's information
+   */
+  void StartReceiveOfdmaPayload (Ptr<Event> event);
 
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
+
+  std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 
 private:
   // Inherited

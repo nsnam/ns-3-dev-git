@@ -1062,6 +1062,15 @@ public:
   WifiSpectrumBand GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId) const;
 
   /**
+   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
+   * \param range the subcarrier range of the HE RU
+   * \return the converted subcarriers
+   *
+   * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
+   */
+  virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
+
+  /**
    * Add the PHY entity to the map of __implemented__ PHY entities for the
    * given modulation class.
    * Through this method, child classes can add their own PHY entities in
@@ -1132,7 +1141,6 @@ protected:
    * \param channelWidth the channel width in MHz used for RSSI measurement
    */
   void SwitchMaybeToCcaBusy (uint16_t channelWidth);
-public: //TODO find a better way (robust enough for OfdmaSpectrumWifiPhy overload)
   /**
    * Return the STA ID that has been assigned to the station this PHY belongs to.
    * This is typically called for MU PPDUs, in order to pick the correct PSDU.
@@ -1141,7 +1149,6 @@ public: //TODO find a better way (robust enough for OfdmaSpectrumWifiPhy overloa
    * \return the STA ID
    */
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
-protected:
   /**
    * Return the channel width used to measure the RSSI.
    * This corresponds to the primary channel unless it corresponds to the
@@ -1161,15 +1168,6 @@ protected:
    * \return a pair of start and stop indexes that defines the band
    */
   virtual WifiSpectrumBand GetBand (uint16_t bandWidth, uint8_t bandIndex = 0);
-
-  /**
-   * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
-   * \param range the subcarrier range of the HE RU
-   * \return the converted subcarriers
-   *
-   * This is a helper function to convert HE RU subcarriers, which are relative to the center frequency subcarrier, to the indexes used by the Spectrum model.
-   */
-  virtual WifiSpectrumBand ConvertHeRuSubcarriers (uint16_t channelWidth, HeRu::SubcarrierRange range) const;
 
   /**
    * Add the PHY entity to the map of supported PHY entities for the
