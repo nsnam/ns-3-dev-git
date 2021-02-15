@@ -31,11 +31,27 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HePpdu");
 
+std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag)
+{
+  switch (flag)
+    {
+      case HePpdu::PSD_NON_HE_TB:
+        return (os << "PSD_NON_HE_TB");
+      case HePpdu::PSD_HE_TB_NON_OFDMA_PORTION:
+        return (os << "PSD_HE_TB_NON_OFDMA_PORTION");
+      case HePpdu::PSD_HE_TB_OFDMA_PORTION:
+        return (os << "PSD_HE_TB_OFDMA_PORTION");
+      default:
+        NS_FATAL_ERROR ("Invalid PSD flag");
+        return (os << "INVALID");
+    }
+}
+
 HePpdu::HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration,
-                WifiPhyBand band, uint64_t uid)
+                WifiPhyBand band, uint64_t uid, TxPsdFlag flag)
   : OfdmPpdu (psdus.begin ()->second, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
-  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band << uid);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration << band << uid << flag);
 
   //overwrite with map (since only first element used by OfdmPpdu)
   m_psdus.begin ()->second = 0;
@@ -47,6 +63,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppdu
     }
 
   SetPhyHeaders (txVector, ppduDuration);
+  SetTxPsdFlag (flag);
 }
 
 HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration,
@@ -56,6 +73,7 @@ HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDurati
   NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << band << uid);
   NS_ASSERT (!IsMu ());
   SetPhyHeaders (txVector, ppduDuration);
+  SetTxPsdFlag (PSD_NON_HE_TB);
 }
 
 HePpdu::~HePpdu ()
@@ -141,7 +159,7 @@ HePpdu::GetTxDuration (void) const
 Ptr<WifiPpdu>
 HePpdu::Copy (void) const
 {
-  return Create<HePpdu> (m_psdus, GetTxVector (), GetTxDuration (), m_band, m_uid);
+  return Create<HePpdu> (m_psdus, GetTxVector (), GetTxDuration (), m_band, m_uid, m_txPsdFlag);
 }
 
 WifiPpduType
@@ -213,6 +231,19 @@ HePpdu::GetStaId (void) const
   return m_psdus.begin ()->first;
 }
 
+HePpdu::TxPsdFlag
+HePpdu::GetTxPsdFlag (void) const
+{
+  return m_txPsdFlag;
+}
+
+void
+HePpdu::SetTxPsdFlag (TxPsdFlag flag)
+{
+  NS_LOG_FUNCTION (this << flag);
+  NS_ASSERT ((IsUlMu () && flag > PSD_NON_HE_TB) || (!IsUlMu () && flag == PSD_NON_HE_TB));
+  m_txPsdFlag = flag;
+}
 
 std::string
 HePpdu::PrintPayload (void) const
@@ -221,6 +252,7 @@ HePpdu::PrintPayload (void) const
   if (IsMu ())
     {
       ss << m_psdus;
+      ss << ", " << m_txPsdFlag;
     }
   else
     {

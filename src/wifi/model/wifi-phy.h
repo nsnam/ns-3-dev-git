@@ -121,10 +121,8 @@ public:
    * \param ppdu the arriving PPDU
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
-   * \param psdFlag the flag indicating the type of Tx PSD to build
    */
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
-                             Time rxDuration, TxPsdFlag psdFlag = PSD_NON_HE_TB);
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW, Time rxDuration);
 
   /**
    * Reset PHY at the end of the packet under reception after it has failed the PHY header.
@@ -969,12 +967,10 @@ public:
    * The returned power will satisfy the power density constraints
    * after addition of antenna gain.
    *
-   * \param txVector the TXVECTOR
-   * \param staId the STA-ID of the transmitting station, only applicable for HE TB PPDU
-   * \param flag flag indicating the type of Tx PSD to build
+   * \param ppdu the PPDU to transmit
    * \return the transmit power in dBm for the next transmission
    */
-  double GetTxPowerForTransmission (WifiTxVector txVector, uint16_t staId = SU_STA_ID, TxPsdFlag flag = PSD_NON_HE_TB) const;
+  double GetTxPowerForTransmission (Ptr<const WifiPpdu> ppdu) const;
   /**
    * Notify the PHY that an access to the channel was requested.
    * This is typically called by the channel access manager to

@@ -44,6 +44,7 @@
 #include "dsss-phy.h"
 #include "erp-ofdm-phy.h"
 #include "he-phy.h" //includes OFDM, HT, and VHT
+#include "he-ppdu.h" //TODO: remove this once code ported to HePhy
 
 namespace ns3 {
 
@@ -2105,7 +2106,10 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
       return;
     }
 
-  double txPowerW = DbmToW (GetTxPowerForTransmission (txVector) + GetTxGain ());
+  Ptr<WifiPpdu> ppdu = GetPhyEntity (txVector.GetModulationClass ())->BuildPpdu (psdus, txVector, txDuration);
+  m_previouslyRxPpduUid = UINT64_MAX; //reset (after creation of PPDU) to use it only once
+
+  double txPowerW = DbmToW (GetTxPowerForTransmission (ppdu) + GetTxGain ());
   NotifyTxBegin (psdus, txPowerW);
   m_phyTxPsduBeginTrace (psdus, txVector, txPowerW);
   for (auto const& psdu : psdus)
@@ -2113,9 +2117,6 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
       NotifyMonitorSniffTx (psdu.second, GetFrequency (), txVector, psdu.first);
     }
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
-
-  Ptr<WifiPpdu> ppdu = GetPhyEntity (txVector.GetModulationClass ())->BuildPpdu (psdus, txVector, txDuration);
-  m_previouslyRxPpduUid = UINT64_MAX; //reset (after creation of PPDU) to use it only once
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
@@ -2151,14 +2152,13 @@ WifiPhy::Reset (void)
 }
 
 void
-WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
-                               Time rxDuration, TxPsdFlag psdFlag /* = PSD_NON_HE_TB */)
+WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW, Time rxDuration)
 {
   WifiModulationClass modulation = ppdu->GetTxVector ().GetModulationClass ();
   auto it = m_phyEntities.find (modulation);
   if (it != m_phyEntities.end ())
     {
-      it->second->StartReceivePreamble (ppdu, rxPowersW, rxDuration, psdFlag);
+      it->second->StartReceivePreamble (ppdu, rxPowersW, rxDuration);
     }
   else
     {
@@ -2480,9 +2480,10 @@ WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMa
 }
 
 double
-WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector, uint16_t staId /* = SU_STA_ID */, TxPsdFlag flag /* = PSD_NON_HE_TB */) const
+WifiPhy::GetTxPowerForTransmission (Ptr<const WifiPpdu> ppdu) const
 {
-  NS_LOG_FUNCTION (this << m_powerRestricted << txVector << staId << flag);
+  NS_LOG_FUNCTION (this << m_powerRestricted << ppdu);
+  WifiTxVector txVector = ppdu->GetTxVector ();
   // Get transmit power before antenna gain
   double txPowerDbm;
   if (!m_powerRestricted)
@@ -2503,17 +2504,21 @@ WifiPhy::GetTxPowerForTransmission (WifiTxVector txVector, uint16_t staId /* = S
 
   //Apply power density constraint on EIRP
   uint16_t channelWidth = txVector.GetChannelWidth ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && staId != SU_STA_ID)
+  //TODO: Move to HePhy
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && ppdu->GetStaId () != SU_STA_ID)
     {
-      NS_ASSERT (flag > PSD_NON_HE_TB);
-      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
-      channelWidth = (flag == PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
-      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << staId << " for " << flag);
+      auto hePpdu = DynamicCast<const HePpdu> (ppdu);
+      NS_ASSERT (hePpdu);
+      HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
+      NS_ASSERT (flag > HePpdu::PSD_NON_HE_TB);
+      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (ppdu->GetStaId ()).ruType);
+      channelWidth = (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
+      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << ppdu->GetStaId () << " for " << flag);
     }
   double txPowerDbmPerMhz = (txPowerDbm + GetTxGain ()) - RatioToDb (channelWidth); //account for antenna gain since EIRP
   NS_LOG_INFO ("txPowerDbm=" << txPowerDbm << " with txPowerDbmPerMhz=" << txPowerDbmPerMhz << " over " << channelWidth << " MHz");
   txPowerDbm = std::min (txPowerDbmPerMhz, m_powerDensityLimit) + RatioToDb (channelWidth);
-  txPowerDbm -= GetTxGain(); //remove antenna gain since will be added right afterwards
+  txPowerDbm -= GetTxGain (); //remove antenna gain since will be added right afterwards
   NS_LOG_INFO ("txPowerDbm=" << txPowerDbm << " after applying m_powerDensityLimit=" << m_powerDensityLimit);
   return txPowerDbm;
 }

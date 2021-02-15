@@ -152,6 +152,18 @@ public:
   }; //class HeSigHeader
 
   /**
+   * The transmit power spectral density flag, namely used
+   * to correctly build PSD for HE TB PPDU non-OFDMA and
+   * OFDMA portions.
+   */
+  enum TxPsdFlag
+  {
+    PSD_NON_HE_TB = 0,           //!< non-HE TB PPDU transmissions
+    PSD_HE_TB_NON_OFDMA_PORTION, //!< preamble of HE TB PPDU, which should only be sent on minimum subset of 20 MHz channels containing RU
+    PSD_HE_TB_OFDMA_PORTION      //!< OFDMA portion of HE TB PPDU, which should only be sent on RU
+  };
+
+  /**
    * Create an SU HE PPDU, storing a PSDU.
    *
    * \param psdu the PHY payload (PSDU)
@@ -172,9 +184,10 @@ public:
    * \param ppduDuration the transmission duration of this PPDU
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
+   * \param flag the flag indicating the type of Tx PSD to build
    */
   HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration,
-          WifiPhyBand band, uint64_t uid);
+          WifiPhyBand band, uint64_t uid, TxPsdFlag flag);
   /**
    * Destructor for HePpdu.
    */
@@ -194,6 +207,20 @@ public:
    * \return the PSDU
    */
   Ptr<const WifiPsdu> GetPsdu (uint8_t bssColor, uint16_t staId = SU_STA_ID) const;
+
+  /**
+   * \return the transmit PSD flag set for this PPDU
+   *
+   * \see TxPsdFlag
+   */
+  TxPsdFlag GetTxPsdFlag (void) const;
+
+  /**
+   * \param flag the transmit PSD flag set for this PPDU
+   *
+   * \see TxPsdFlag
+   */
+  void SetTxPsdFlag (TxPsdFlag flag);
 
 protected:
   // Inherited
@@ -229,8 +256,18 @@ private:
    */
   void SetPhyHeaders (WifiTxVector txVector, Time ppduDuration);
 
-  HeSigHeader m_heSig;  //!< the HE-SIG PHY header
+  HeSigHeader m_heSig;   //!< the HE-SIG PHY header
+  TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag
 }; //class HePpdu
+
+/**
+* \brief Stream insertion operator.
+*
+* \param os the stream
+* \param flag the transmit power spectral density flag
+* \returns a reference to the stream
+*/
+std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag);
 
 } //namespace ns3
 

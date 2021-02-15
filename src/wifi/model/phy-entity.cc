@@ -353,7 +353,7 @@ PhyEntity::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
 
 void
 PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
-                                 Time /* rxDuration */, TxPsdFlag /* psdFlag */)
+                                 Time /* rxDuration */)
 {
   //The total RX power corresponds to the maximum over all the bands
   auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),

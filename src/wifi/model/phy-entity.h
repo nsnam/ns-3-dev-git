@@ -27,7 +27,6 @@
 #include "wifi-tx-vector.h"
 #include "wifi-phy-band.h"
 #include "wifi-ppdu.h"
-#include "wifi-spectrum-signal-parameters.h"
 #include "wifi-mpdu-type.h"
 #include "wifi-ppdu.h"
 #include "ns3/event-id.h"
@@ -346,10 +345,9 @@ public:
    * \param ppdu the arriving PPDU
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
-   * \param psdFlag the flag indicating the type of Tx PSD to build
    */
   virtual void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
-                                     Time rxDuration, TxPsdFlag psdFlag);
+                                     Time rxDuration);
   /**
    * Start receiving a given field.
    *

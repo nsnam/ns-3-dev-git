@@ -86,7 +86,7 @@ YansWifiPhy::StartTx (Ptr<WifiPpdu> ppdu, uint8_t txPowerLevel)
   WifiTxVector txVector = ppdu->GetTxVector ();
   txVector.SetTxPowerLevel (txPowerLevel);
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
-  m_channel->Send (this, ppdu, GetTxPowerForTransmission (txVector) + GetTxGain ());
+  m_channel->Send (this, ppdu, GetTxPowerForTransmission (ppdu) + GetTxGain ());
 }
 
 } //namespace ns3

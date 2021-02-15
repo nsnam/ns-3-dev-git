@@ -35,7 +35,8 @@
 namespace ns3 {
 
 class WifiSpectrumPhyInterface;
-class WifiPpdu;
+struct WifiSpectrumSignalParameters;
+class HePpdu; //TODO revert to WifiPpdu once Tx refactoring is finished
 
 /**
  * \brief 802.11 PHY layer model
@@ -191,13 +192,12 @@ private:
   /**
    * \param txPowerW power in W to spread across the bands
    * \param ppdu the PPDU that will be transmitted
-   * \param flag flag indicating the type of Tx PSD to build
    * \return Pointer to SpectrumValue
    *
    * This is a helper function to create the right TX PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu, TxPsdFlag flag = PSD_NON_HE_TB);
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<WifiPpdu> ppdu);
 
   /**
    * \param channelWidth the total channel width (MHz) used for the OFDMA transmission
@@ -211,10 +211,9 @@ private:
   /**
    * This function is called to send the OFDMA part of a PPDU.
    *
-   * \param ppdu the PPDU to send
-   * \param txPowerWatts the transmit power in watts
+   * \param ppdu the HE PPDU to send
    */
-  void StartOfdmaTx (Ptr<WifiPpdu> ppdu, double txPowerWatts);
+  void StartOfdmaTx (Ptr<HePpdu> ppdu);
 
   /**
    * This function is sending the signal to the Spectrum channel

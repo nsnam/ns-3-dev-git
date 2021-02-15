@@ -307,18 +307,24 @@ Ptr<WifiPpdu>
 HePhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  HePpdu::TxPsdFlag flag = (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB) ?
+    HePpdu::PSD_HE_TB_NON_OFDMA_PORTION :
+    HePpdu::PSD_NON_HE_TB;
   return Create<HePpdu> (psdus, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
-                         ObtainNextUid (txVector));
+                         ObtainNextUid (txVector), flag);
 }
 
 void
 HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
-                             Time rxDuration, TxPsdFlag psdFlag)
+                             Time rxDuration)
 {
-  NS_LOG_FUNCTION (this << ppdu << rxDuration << psdFlag);
+  NS_LOG_FUNCTION (this << ppdu << rxDuration);
   WifiTxVector txVector = ppdu->GetTxVector ();
+  auto hePpdu = DynamicCast<HePpdu> (ppdu);
+  NS_ASSERT (hePpdu);
+  HePpdu::TxPsdFlag psdFlag = hePpdu->GetTxPsdFlag ();
   if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB
-      && psdFlag == PSD_HE_TB_OFDMA_PORTION)
+      && psdFlag == HePpdu::PSD_HE_TB_OFDMA_PORTION)
     {
       if (m_currentHeTbPpduUid == ppdu->GetUid ()
           && GetCurrentEvent () != 0)
@@ -344,7 +350,7 @@ HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPow
     }
   else
     {
-      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, rxDuration, psdFlag);
+      PhyEntity::StartReceivePreamble (ppdu, rxPowersW, rxDuration);
     }
 }
 
