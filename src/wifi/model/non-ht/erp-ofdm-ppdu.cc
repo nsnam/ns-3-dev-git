@@ -28,7 +28,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ErpOfdmPpdu");
 
-ErpOfdmPpdu::ErpOfdmPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector,
+ErpOfdmPpdu::ErpOfdmPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector,
                           WifiPhyBand band, uint64_t uid)
   : OfdmPpdu (psdu, txVector, band, uid, true) //instantiate LSigHeader of OfdmPpdu
 {

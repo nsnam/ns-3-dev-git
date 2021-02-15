@@ -61,13 +61,13 @@ public:
   virtual ~VhtPhy ();
 
   // Inherited
-  virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
-  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
   virtual Time GetLSigDuration (WifiPreamble preamble) const override;
-  virtual Time GetTrainingDuration (WifiTxVector txVector,
+  virtual Time GetTrainingDuration (const WifiTxVector& txVector,
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * \return the WifiMode used for the SIG-A field
@@ -77,7 +77,7 @@ public:
    * \param txVector the transmission parameters
    * \return the WifiMode used for the SIG-B field
    */
-  virtual WifiMode GetSigBMode (WifiTxVector txVector) const;
+  virtual WifiMode GetSigBMode (const WifiTxVector& txVector) const;
 
   /**
    * \param preamble the type of preamble
@@ -88,7 +88,7 @@ public:
    * \param txVector the transmission parameters
    * \return the duration of the SIG-B field
    */
-  virtual Time GetSigBDuration (WifiTxVector txVector) const;
+  virtual Time GetSigBDuration (const WifiTxVector& txVector) const;
 
   /**
    * Initialize all VHT modes.
@@ -208,7 +208,7 @@ public:
    * \param staId the station ID (only here to have a common signature for all callbacks)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId);
   /**
    * Return the data rate corresponding to
    * the supplied VHT MCS index, channel width,
@@ -246,7 +246,7 @@ protected:
   // Inherited
   WifiMode GetHtSigMode (void) const override;
   Time GetHtSigDuration (void) const override;
-  virtual uint8_t GetNumberBccEncoders (WifiTxVector txVector) const override;
+  virtual uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
   virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
 

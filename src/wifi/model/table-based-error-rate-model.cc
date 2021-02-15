@@ -140,7 +140,7 @@ TableBasedErrorRateModel::GetMcsForMode (WifiMode mode)
 }
 
 double
-TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const
+TableBasedErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
 {
   NS_LOG_FUNCTION (this << mode << txVector << snr << nbits);
   uint64_t size = std::max<uint64_t> (1, (nbits / 8));

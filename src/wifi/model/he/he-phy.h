@@ -80,16 +80,16 @@ public:
   virtual ~HePhy ();
 
   // Inherited
-  WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
+  WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   WifiMode GetSigAMode (void) const override;
-  WifiMode GetSigBMode (WifiTxVector txVector) const override;
+  WifiMode GetSigBMode (const WifiTxVector& txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
   Time GetLSigDuration (WifiPreamble preamble) const override;
-  virtual Time GetTrainingDuration (WifiTxVector txVector,
+  virtual Time GetTrainingDuration (const WifiTxVector& txVector,
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
   Time GetSigADuration (WifiPreamble preamble) const override;
-  Time GetSigBDuration (WifiTxVector txVector) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  Time GetSigBDuration (const WifiTxVector& txVector) const override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
   void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
                              Time rxDuration) override;
@@ -98,7 +98,7 @@ public:
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<WifiPpdu> ppdu) override;
   uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const override;
-  Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const override;
+  Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
 
   /**
    * \return the BSS color of this PHY.
@@ -119,13 +119,13 @@ public:
    *
    * \return the duration of the HE TB PPDU corresponding to that L-SIG length value.
    */
-  static Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, WifiTxVector txVector, WifiPhyBand band);
+  static Time ConvertLSigLengthToHeTbPpduDuration (uint16_t length, const WifiTxVector& txVector, WifiPhyBand band);
   /**
    * \param txVector the transmission parameters used for the HE TB PPDU
    *
    * \return the duration of the non-OFDMA portion of the HE TB PPDU.
    */
-  Time CalculateNonOfdmaDurationForHeTb (WifiTxVector txVector) const;
+  Time CalculateNonOfdmaDurationForHeTb (const WifiTxVector& txVector) const;
 
   /**
    * Get the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
@@ -135,7 +135,7 @@ public:
    *
    * \return the RU band used to transmit a PSDU to a given STA in a HE MU PPDU
    */
-  WifiSpectrumBand GetRuBand (WifiTxVector txVector, uint16_t staId) const;
+  WifiSpectrumBand GetRuBand (const WifiTxVector& txVector, uint16_t staId) const;
   /**
    * Get the band used to transmit the non-OFDMA part of an HE TB PPDU.
    *
@@ -144,7 +144,7 @@ public:
    *
    * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
    */
-  WifiSpectrumBand GetNonOfdmaBand (WifiTxVector txVector, uint16_t staId) const;
+  WifiSpectrumBand GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const;
 
   /**
    * \return the UID of the HE TB PPDU being received
@@ -160,7 +160,7 @@ public:
    * \param staId the STA-ID of the station taking part of the UL MU
    * \return the center frequency in MHz corresponding to the non-OFDMA part of the HE TB PPDU
    */
-  uint16_t GetCenterFrequencyForNonOfdmaPart (WifiTxVector txVector, uint16_t staId) const;
+  uint16_t GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t staId) const;
 
   /**
    * Set a callback for a end of HE-SIG-A.
@@ -304,7 +304,7 @@ public:
    * \param staId the station ID for MU (unused if SU)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId = SU_STA_ID);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId = SU_STA_ID);
   /**
    * Return the data rate corresponding to
    * the supplied HE MCS index, channel width,
@@ -345,7 +345,7 @@ protected:
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW) override;
   virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
   virtual void DoStartReceivePayload (Ptr<Event> event) override;
-  std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (WifiTxVector txVector, uint16_t staId) const override;
+  std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const override;
   void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu) override;
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
@@ -389,8 +389,8 @@ protected:
 private:
   // Inherited
   virtual void BuildModeList (void) override;
-  uint8_t GetNumberBccEncoders (WifiTxVector txVector) const override;
-  virtual Time GetSymbolDuration (WifiTxVector txVector) const override;
+  uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
+  virtual Time GetSymbolDuration (const WifiTxVector& txVector) const override;
 
   /**
    * Create and return the HE MCS corresponding to

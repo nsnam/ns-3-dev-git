@@ -212,7 +212,7 @@ public:
    *
    * This method is overridden by child classes.
    */
-  virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const;
+  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const;
 
   /**
    * \brief Return a const iterator to the first WifiMode
@@ -247,13 +247,13 @@ public:
    *
    * This method is overridden by child classes.
    */
-  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const;
+  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const;
   /**
    * \param txVector the transmission parameters
    *
    * \return the total duration of the PHY preamble and PHY header.
    */
-  Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const;
+  Time CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector) const;
 
   /**
    * \param size the number of bytes in the packet to send
@@ -271,7 +271,7 @@ public:
    *
    * \return the duration of the PSDU
    */
-  virtual Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+  virtual Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                                    bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                                    uint16_t staId) const = 0;
 
@@ -296,7 +296,7 @@ public:
    *
    * \see PhyHeaderSections
    */
-  PhyHeaderSections GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const;
+  PhyHeaderSections GetPhyHeaderSections (const WifiTxVector& txVector, Time ppduStart) const;
 
   /**
    * Build amendment-specific PPDU.
@@ -310,7 +310,7 @@ public:
    * This method is overridden by child classes to create their
    * corresponding PPDU, e.g., HtPhy creates HtPpdu.
    */
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration);
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration);
 
   /**
    * Get the duration of the PPDU up to (but excluding) the given field.
@@ -319,7 +319,7 @@ public:
    * \param txVector the transmission parameters
    * \return the duration from the beginning of the PPDU up to the field
    */
-  Time GetDurationUpToField (WifiPpduField field, WifiTxVector txVector) const;
+  Time GetDurationUpToField (WifiPpduField field, const WifiTxVector& txVector) const;
   /**
    * Get the remaining duration of the PPDU after the end of the given field.
    *
@@ -459,7 +459,7 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
    */
-  virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const;
+  virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const;
 
 protected:
   /**
@@ -651,7 +651,7 @@ protected:
    * \param staId the station ID of the PSDU
    * \return a pair of channel width (MHz) and band
    */
-  virtual std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (WifiTxVector txVector, uint16_t staId) const;
+  virtual std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const;
 
   /**
    * Abort the current reception.
@@ -712,7 +712,7 @@ protected:
    *
    * \copydoc InterferenceHelper::Add(Ptr<const WifiPpdu>, WifiTxVector, Time, RxPowerWattPerChannelBand, bool)
    */
-  Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
   /**
    * Update an event in WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
@@ -755,7 +755,7 @@ protected:
    * \param txVector the TXVECTOR that has the channel width that is to be used
    * \return the center frequency in MHz corresponding to the channel width to be used
    */
-  uint16_t GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const;
+  uint16_t GetCenterFrequencyForChannelWidth (const WifiTxVector& txVector) const;
 
   /**
    * \param currentChannelWidth channel width of the current transmission (MHz)

@@ -55,13 +55,13 @@ public:
   virtual ~DsssPhy ();
 
   // Inherited
-  WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
+  WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   const PpduFormats & GetPpduFormats (void) const override;
-  Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+  Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
+  Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
-  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * Initialize all HR/DSSS modes.
@@ -136,7 +136,7 @@ public:
    * \param staId the station ID (only here to have a common signature for all callbacks)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId);
   /**
    * Return the data rate from the DSSS or HR/DSSS mode's unique name and
    * the supplied parameters. This function is mainly used as a callback
@@ -171,7 +171,7 @@ private:
    * \param txVector the transmission parameters
    * \return the WifiMode used for the PHY header field
    */
-  WifiMode GetHeaderMode (WifiTxVector txVector) const;
+  WifiMode GetHeaderMode (const WifiTxVector& txVector) const;
 
   /**
    * \param txVector the transmission parameters
@@ -179,12 +179,12 @@ private:
    *
    * \see WIFI_PPDU_FIELD_PREAMBLE
    */
-  Time GetPreambleDuration (WifiTxVector txVector) const;
+  Time GetPreambleDuration (const WifiTxVector& txVector) const;
   /**
    * \param txVector the transmission parameters
    * \return the duration of the PHY header field
    */
-  Time GetHeaderDuration (WifiTxVector txVector) const;
+  Time GetHeaderDuration (const WifiTxVector& txVector) const;
 
   /**
    * End receiving the header, perform DSSS-specific actions, and

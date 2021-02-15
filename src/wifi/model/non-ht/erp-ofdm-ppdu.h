@@ -52,7 +52,7 @@ public:
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU
    */
-  ErpOfdmPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector,
+  ErpOfdmPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector,
                WifiPhyBand band, uint64_t uid);
   /**
    * Destructor for ErpOfdmPpdu.

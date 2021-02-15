@@ -88,14 +88,14 @@ public:
    */
   uint64_t GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
-   * \param txVector the WifiTxVector of the signal
+   * \param txVector the const WifiTxVector& of the signal
    *
    * \returns the physical bit rate of this signal in bps.
    *
    * If a transmission mode uses 1/2 FEC, and if its
    * data rate is 3.25Mbps, the PHY rate is 6.5Mbps
    */
-  uint64_t GetPhyRate (WifiTxVector txVector) const;
+  uint64_t GetPhyRate (const WifiTxVector& txVector) const;
   /**
    *
    * \param channelWidth the considered channel width in MHz
@@ -106,12 +106,12 @@ public:
    */
   uint64_t GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const;
   /**
-   * \param txVector the WifiTxVector of the signal
+   * \param txVector the const WifiTxVector& of the signal
    * \param staId the station ID for MU (unused if SU)
    *
    * \returns the data bit rate of this signal.
    */
-  uint64_t GetDataRate (WifiTxVector txVector, uint16_t staId = SU_STA_ID) const;
+  uint64_t GetDataRate (const WifiTxVector& txVector, uint16_t staId = SU_STA_ID) const;
   /**
    * \param channelWidth the considered channel width in MHz
    *
@@ -305,7 +305,7 @@ public:
    * \param staId the station ID
    * \return the data rate  of the signal in bps.
    */
-  typedef Callback<uint64_t, WifiTxVector /* txVector */, uint16_t /* staId */> DataRateFromTxVectorCallback;
+  typedef Callback<uint64_t, const WifiTxVector& /* txVector */, uint16_t /* staId */> DataRateFromTxVectorCallback;
   /**
    * Typedef for callback used to calculate Non-HT Reference Rate of
    * an MCS defined in HT or later amendment. For Non-HT modes (DSSS, OFDM,

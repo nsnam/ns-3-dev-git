@@ -118,7 +118,7 @@ OfdmPhy::~OfdmPhy ()
 }
 
 WifiMode
-OfdmPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
+OfdmPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -131,7 +131,7 @@ OfdmPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
 }
 
 WifiMode
-OfdmPhy::GetHeaderMode (WifiTxVector txVector) const
+OfdmPhy::GetHeaderMode (const WifiTxVector& txVector) const
 {
   switch (txVector.GetChannelWidth ())
     {
@@ -156,7 +156,7 @@ OfdmPhy::GetPpduFormats (void) const
 }
 
 Time
-OfdmPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+OfdmPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -170,7 +170,7 @@ OfdmPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
 }
 
 Time
-OfdmPhy::GetPreambleDuration (WifiTxVector txVector) const
+OfdmPhy::GetPreambleDuration (const WifiTxVector& txVector) const
 {
   switch (txVector.GetChannelWidth ())
     {
@@ -191,7 +191,7 @@ OfdmPhy::GetPreambleDuration (WifiTxVector txVector) const
 }
 
 Time
-OfdmPhy::GetHeaderDuration (WifiTxVector txVector) const
+OfdmPhy::GetHeaderDuration (const WifiTxVector& txVector) const
 {
   switch (txVector.GetChannelWidth ())
     {
@@ -214,7 +214,7 @@ OfdmPhy::GetHeaderDuration (WifiTxVector txVector) const
 }
 
 Time
-OfdmPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType /* mpdutype */,
+OfdmPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType /* mpdutype */,
                              bool /* incFlag */, uint32_t & /* totalAmpduSize */, double & /* totalAmpduNumSymbols */,
                              uint16_t /* staId */) const
 {
@@ -246,7 +246,7 @@ OfdmPhy::GetSignalExtension (WifiPhyBand band) const
 }
 
 Ptr<WifiPpdu>
-OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time /* ppduDuration */)
+OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
   return Create<OfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
@@ -313,7 +313,7 @@ OfdmPhy::IsAllConfigSupported (WifiPpduField /* field */, Ptr<const WifiPpdu> pp
 Ptr<SpectrumValue>
 OfdmPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
-  WifiTxVector txVector = ppdu->GetTxVector ();
+  const WifiTxVector& txVector = ppdu->GetTxVector ();
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
@@ -536,7 +536,7 @@ OfdmPhy::GetCodeRatio (WifiCodeRate codeRate)
 }
 
 uint64_t
-OfdmPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+OfdmPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetDataRate (txVector.GetMode ().GetUniqueName (),
                       txVector.GetChannelWidth (),

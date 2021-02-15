@@ -48,7 +48,7 @@ public:
   ~TableBasedErrorRateModel ();
 
   //Inherited from ErrorRateModel
-  double DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
+  double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
 
   /**
    * \brief Utility function to convert WifiMode to an MCS value
@@ -76,7 +76,7 @@ private:
    * \param nbits the number of bits
    * \return the frame success rate for a given Wi-Fi mode, TXVECTOR, SNR and frame size
    */
-  double FetchFsr (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
+  double FetchFsr (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
 
   Ptr<ErrorRateModel> m_fallbackErrorModel; //!< Error rate model to fallback to if no value is found in the table
 

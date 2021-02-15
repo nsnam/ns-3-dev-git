@@ -31,7 +31,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("HtPpdu");
 
-HtPpdu::HtPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration,
+HtPpdu::HtPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
                 WifiPhyBand band, uint64_t uid)
   : OfdmPpdu (psdu, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
@@ -71,7 +71,7 @@ Time
 HtPpdu::GetTxDuration (void) const
 {
   Time ppduDuration = Seconds (0);
-  WifiTxVector txVector = GetTxVector ();
+  const WifiTxVector& txVector = GetTxVector ();
   ppduDuration = WifiPhy::CalculateTxDuration (m_htSig.GetHtLength (), txVector, m_band);
   return ppduDuration;
 }

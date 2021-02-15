@@ -47,7 +47,7 @@ std::ostream& operator<< (std::ostream& os, const HePpdu::TxPsdFlag &flag)
     }
 }
 
-HePpdu::HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration,
+HePpdu::HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration,
                 WifiPhyBand band, uint64_t uid, TxPsdFlag flag)
   : OfdmPpdu (psdus.begin ()->second, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
@@ -66,7 +66,7 @@ HePpdu::HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppdu
   SetTxPsdFlag (flag);
 }
 
-HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration,
+HePpdu::HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
                 WifiPhyBand band, uint64_t uid)
   : OfdmPpdu (psdu, txVector, band, uid, false) //don't instantiate LSigHeader of OfdmPpdu
 {
@@ -81,7 +81,7 @@ HePpdu::~HePpdu ()
 }
 
 void
-HePpdu::SetPhyHeaders (WifiTxVector txVector, Time ppduDuration)
+HePpdu::SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << txVector << ppduDuration);
   uint8_t sigExtension = 0;
@@ -140,7 +140,7 @@ Time
 HePpdu::GetTxDuration (void) const
 {
   Time ppduDuration = Seconds (0);
-  WifiTxVector txVector = GetTxVector ();
+  const WifiTxVector& txVector = GetTxVector ();
   Time tSymbol = NanoSeconds (12800 + txVector.GetGuardInterval ());
   Time preambleDuration = WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
   uint8_t sigExtension = 0;

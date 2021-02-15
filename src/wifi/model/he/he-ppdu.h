@@ -172,7 +172,7 @@ public:
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU
    */
-  HePpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration,
+  HePpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
           WifiPhyBand band, uint64_t uid);
   /**
    * Create an MU HE PPDU, storing a map of PSDUs.
@@ -186,7 +186,7 @@ public:
    * \param uid the unique ID of this PPDU or of the triggering PPDU if this is an HE TB PPDU
    * \param flag the flag indicating the type of Tx PSD to build
    */
-  HePpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration,
+  HePpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration,
           WifiPhyBand band, uint64_t uid, TxPsdFlag flag);
   /**
    * Destructor for HePpdu.
@@ -254,7 +254,7 @@ private:
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param ppduDuration the transmission duration of this PPDU
    */
-  void SetPhyHeaders (WifiTxVector txVector, Time ppduDuration);
+  void SetPhyHeaders (const WifiTxVector& txVector, Time ppduDuration);
 
   HeSigHeader m_heSig;   //!< the HE-SIG PHY header
   TxPsdFlag m_txPsdFlag; //!< the transmit power spectral density flag

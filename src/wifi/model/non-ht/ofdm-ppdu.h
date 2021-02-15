@@ -113,7 +113,7 @@ public:
    * \param instantiateLSig flag used to instantiate LSigHeader (set LSigHeader's
    *                        rate and length), should be disabled by child classes
    */
-  OfdmPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, WifiPhyBand band, uint64_t uid,
+  OfdmPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, WifiPhyBand band, uint64_t uid,
             bool instantiateLSig = true);
   /**
    * Destructor for OfdmPpdu.

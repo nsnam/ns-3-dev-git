@@ -107,7 +107,7 @@ public:
    * \param ppduDuration the transmission duration of this PPDU
    * \param uid the unique ID of this PPDU
    */
-  DsssPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint64_t uid);
+  DsssPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration, uint64_t uid);
   /**
    * Destructor for DsssPpdu.
    */

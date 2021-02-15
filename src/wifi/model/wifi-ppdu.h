@@ -58,7 +58,7 @@ public:
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, uint64_t uid = UINT64_MAX);
+  WifiPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint64_t uid = UINT64_MAX);
   /**
    * Create a PPDU storing a map of PSDUs.
    *
@@ -66,7 +66,7 @@ public:
    * \param txVector the TXVECTOR that was used for this PPDU
    * \param uid the unique ID of this PPDU
    */
-  WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, uint64_t uid);
+  WifiPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint64_t uid);
   /**
    * Destructor for WifiPpdu.
    */

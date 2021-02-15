@@ -860,7 +860,7 @@ WifiPhy::GetChannelSwitchDelay (void) const
 }
 
 double
-WifiPhy::CalculateSnr (WifiTxVector txVector, double ber) const
+WifiPhy::CalculateSnr (const WifiTxVector& txVector, double ber) const
 {
   return m_interference.GetErrorRateModel ()->CalculateSnr (txVector, ber);
 }
@@ -1807,13 +1807,13 @@ WifiPhy::GetPreambleDetectionDuration (void)
 }
 
 Time
-WifiPhy::GetStartOfPacketDuration (WifiTxVector txVector)
+WifiPhy::GetStartOfPacketDuration (const WifiTxVector& txVector)
 {
   return MicroSeconds (4);
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype, uint16_t staId)
+WifiPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype, uint16_t staId)
 {
   uint32_t totalAmpduSize;
   double totalAmpduNumSymbols;
@@ -1821,7 +1821,7 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand b
 }
 
 Time
-WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+WifiPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                              bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                              uint16_t staId)
 {
@@ -1831,19 +1831,19 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand b
 }
 
 Time
-WifiPhy::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector)
+WifiPhy::CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector)
 {
   return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculatePhyPreambleAndHeaderDuration (txVector);
 }
 
 Time
-WifiPhy::GetPpduFieldDuration (WifiPpduField field, WifiTxVector txVector)
+WifiPhy::GetPpduFieldDuration (WifiPpduField field, const WifiTxVector& txVector)
 {
   return GetStaticPhyEntity (txVector.GetModulationClass ())->GetDuration (field, txVector);
 }
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, uint16_t staId)
+WifiPhy::CalculateTxDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, uint16_t staId)
 {
   Time duration = CalculatePhyPreambleAndHeaderDuration (txVector)
     + GetPayloadDuration (size, txVector, band, NORMAL_MPDU, staId);
@@ -1852,7 +1852,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand 
 }
 
 Time
-WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band)
+WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band)
 {
   return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculateTxDuration (psduMap, txVector, band);
 }
@@ -1983,7 +1983,7 @@ WifiPhy::NotifyMonitorSniffTx (Ptr<const WifiPsdu> psdu, uint16_t channelFreqMhz
 }
 
 void
-WifiPhy::Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector)
+WifiPhy::Send (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *psdu << txVector);
   WifiConstPsduMap psdus;
@@ -2431,7 +2431,7 @@ double
 WifiPhy::GetTxPowerForTransmission (Ptr<const WifiPpdu> ppdu) const
 {
   NS_LOG_FUNCTION (this << m_powerRestricted << ppdu);
-  WifiTxVector txVector = ppdu->GetTxVector ();
+  const WifiTxVector& txVector = ppdu->GetTxVector ();
   // Get transmit power before antenna gain
   double txPowerDbm;
   if (!m_powerRestricted)

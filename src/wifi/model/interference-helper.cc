@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       PHY event class
  ****************************************************************/
 
-Event::Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower)
+Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower)
   : m_ppdu (ppdu),
     m_txVector (txVector),
     m_startTime (Simulator::Now ()),
@@ -187,7 +187,7 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<Event>
-InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPowerW, bool isStartOfdmaRxing)
+InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPowerW, bool isStartOfdmaRxing)
 {
   Ptr<Event> event = Create<Event> (ppdu, txVector, duration, rxPowerW);
   AppendEvent (event, isStartOfdmaRxing);
@@ -384,7 +384,7 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<Event> event, NiChangesPerB
 }
 
 double
-InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const
+InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, const WifiTxVector& txVector) const
 {
   if (duration.IsZero ())
     {
@@ -397,7 +397,7 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
 }
 
 double
-InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector, uint16_t staId) const
+InterferenceHelper::CalculatePayloadChunkSuccessRate (double snir, Time duration, const WifiTxVector& txVector, uint16_t staId) const
 {
   if (duration.IsZero ())
     {
@@ -417,7 +417,7 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
                                          uint16_t staId, std::pair<Time, Time> window) const
 {
   NS_LOG_FUNCTION (this << channelWidth << band.first << band.second << staId << window.first << window.second);
-  const WifiTxVector txVector = event->GetTxVector ();
+  const WifiTxVector& txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
@@ -468,7 +468,7 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr (Ptr<const Event> event, NiChan
                                                   PhyEntity::PhyHeaderSections phyHeaderSections) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second);
-  const WifiTxVector txVector = event->GetTxVector ();
+  const WifiTxVector& txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
@@ -523,7 +523,7 @@ InterferenceHelper::CalculatePhyHeaderPer (Ptr<const Event> event, NiChangesPerB
                                            WifiPpduField header) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second << header);
-  const WifiTxVector txVector = event->GetTxVector ();
+  const WifiTxVector& txVector = event->GetTxVector ();
   auto ni_it = nis->find (band)->second;
   auto phyEntity = WifiPhy::GetStaticPhyEntity (txVector.GetModulationClass ());
 

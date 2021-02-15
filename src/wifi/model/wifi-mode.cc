@@ -66,7 +66,7 @@ WifiMode::GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss
 }
 
 uint64_t
-WifiMode::GetPhyRate (WifiTxVector txVector) const
+WifiMode::GetPhyRate (const WifiTxVector& txVector) const
 {
   return GetPhyRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), txVector.GetNss ());
 }
@@ -78,7 +78,7 @@ WifiMode::GetDataRate (uint16_t channelWidth) const
 }
 
 uint64_t
-WifiMode::GetDataRate (WifiTxVector txVector, uint16_t staId) const
+WifiMode::GetDataRate (const WifiTxVector& txVector, uint16_t staId) const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->GetDataRateFromTxVectorCallback (txVector, staId);
@@ -385,7 +385,7 @@ WifiModeFactory::GetFactory (void)
       item->GetConstellationSizeCallback = MakeNullCallback<uint16_t> ();
       item->GetPhyRateCallback = MakeNullCallback<uint64_t, uint16_t, uint16_t, uint8_t> ();
       item->GetDataRateCallback = MakeNullCallback<uint64_t, uint16_t, uint16_t, uint8_t> ();
-      item->GetDataRateFromTxVectorCallback = MakeNullCallback<uint64_t, WifiTxVector, uint16_t> ();
+      item->GetDataRateFromTxVectorCallback = MakeNullCallback<uint64_t, const WifiTxVector&, uint16_t> ();
       item->GetNonHtReferenceRateCallback = MakeNullCallback<uint64_t> ();
       item->IsModeAllowedCallback = MakeNullCallback<bool, uint16_t, uint8_t> ();
       isFirstTime = false;

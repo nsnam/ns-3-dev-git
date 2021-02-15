@@ -30,7 +30,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsssPpdu");
 
-DsssPpdu::DsssPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration, uint64_t uid)
+DsssPpdu::DsssPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration, uint64_t uid)
   : WifiPpdu (psdu, txVector, uid)
 {
   NS_LOG_FUNCTION (this << psdu << txVector << ppduDuration << uid);
@@ -57,7 +57,7 @@ Time
 DsssPpdu::GetTxDuration (void) const
 {
   Time ppduDuration = Seconds (0);
-  WifiTxVector txVector = GetTxVector ();
+  const WifiTxVector& txVector = GetTxVector ();
   ppduDuration = MicroSeconds (m_dsssSig.GetLength ()) + WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
   return ppduDuration;
 }

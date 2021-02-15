@@ -138,7 +138,7 @@ PhyEntity::end (void) const
 }
 
 WifiMode
-PhyEntity::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
+PhyEntity::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 {
   NS_FATAL_ERROR ("PPDU field is not a SIG field (no sense in retrieving the signaled mode) or is unsupported: " << field);
   return WifiMode (); //should be overloaded
@@ -173,7 +173,7 @@ PhyEntity::GetNextField (WifiPpduField currentField, WifiPreamble preamble) cons
 }
 
 Time
-PhyEntity::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+PhyEntity::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 {
   if (field > WIFI_PPDU_FIELD_SIG_B)
     {
@@ -183,7 +183,7 @@ PhyEntity::GetDuration (WifiPpduField field, WifiTxVector txVector) const
 }
 
 Time
-PhyEntity::CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector) const
+PhyEntity::CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector) const
 {
   Time duration = MicroSeconds (0);
   for (uint8_t field = WIFI_PPDU_FIELD_PREAMBLE; field < WIFI_PPDU_FIELD_DATA; ++field)
@@ -200,7 +200,7 @@ PhyEntity::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
 }
 
 PhyEntity::PhyHeaderSections
-PhyEntity::GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const
+PhyEntity::GetPhyHeaderSections (const WifiTxVector& txVector, Time ppduStart) const
 {
   PhyHeaderSections map;
   WifiPpduField field = WIFI_PPDU_FIELD_PREAMBLE; //preamble always present
@@ -219,7 +219,7 @@ PhyEntity::GetPhyHeaderSections (WifiTxVector txVector, Time ppduStart) const
 }
 
 Ptr<WifiPpdu>
-PhyEntity::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time /* ppduDuration */)
+PhyEntity::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
   NS_FATAL_ERROR ("This method is unsupported for the base PhyEntity class. Use the overloaded version in the amendment-specific subclasses instead!");
@@ -227,7 +227,7 @@ PhyEntity::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Tim
 }
 
 Time
-PhyEntity::GetDurationUpToField (WifiPpduField field, WifiTxVector txVector) const
+PhyEntity::GetDurationUpToField (WifiPpduField field, const WifiTxVector& txVector) const
 {
   if (field == WIFI_PPDU_FIELD_DATA) //this field is not in the map returned by GetPhyHeaderSections
     {
@@ -318,7 +318,7 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
 Time
 PhyEntity::GetRemainingDurationAfterField (Ptr<const WifiPpdu> ppdu, WifiPpduField field) const
 {
-  WifiTxVector txVector = ppdu->GetTxVector ();
+  const WifiTxVector& txVector = ppdu->GetTxVector ();
   return ppdu->GetTxDuration () - (GetDurationUpToField (field, txVector) + GetDuration (field, txVector));
 }
 
@@ -362,7 +362,6 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand r
                                 return p1.second < p2.second;
                               });
   NS_LOG_FUNCTION (this << ppdu << it->second);
-  WifiTxVector txVector = ppdu->GetTxVector ();
   Time rxDuration = ppdu->GetTxDuration (); //the actual duration of the PPDU should be considered
 
   Ptr<Event> event = DoGetEvent (ppdu, rxPowersW);
@@ -521,7 +520,7 @@ PhyEntity::StartReceivePayload (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
   NS_ASSERT (m_wifiPhy->m_endPhyRxEvent.IsExpired ());
-  WifiTxVector txVector = event->GetTxVector ();
+  const WifiTxVector& txVector = event->GetTxVector ();
   Time payloadDuration = event->GetPpdu ()->GetTxDuration () - CalculatePhyPreambleAndHeaderDuration (txVector);
 
   //TODO: Add method in WifiPhy to clear all other PHYs (since this one is starting Rx)
@@ -551,7 +550,7 @@ PhyEntity::ScheduleEndOfMpdus (Ptr<Event> event)
   NS_LOG_FUNCTION (this << *event);
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
   Ptr<const WifiPsdu> psdu = GetAddressedPsduInPpdu (ppdu);
-  WifiTxVector txVector = event->GetTxVector ();
+  const WifiTxVector& txVector = event->GetTxVector ();
   uint16_t staId = GetStaId (ppdu);
   Time endOfMpduDuration = NanoSeconds (0);
   Time relativeStart = NanoSeconds (0);
@@ -710,7 +709,7 @@ PhyEntity::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint1
 }
 
 std::pair<uint16_t, WifiSpectrumBand>
-PhyEntity::GetChannelWidthAndBand (WifiTxVector txVector, uint16_t /* staId */) const
+PhyEntity::GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t /* staId */) const
 {
   uint16_t channelWidth = std::min (m_wifiPhy->GetChannelWidth (), txVector.GetChannelWidth ());
   return std::make_pair (channelWidth, m_wifiPhy->GetBand (channelWidth));
@@ -743,7 +742,7 @@ PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPow
 }
 
 Ptr<Event>
-PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing /* = false */)
+PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing /* = false */)
 {
   return m_wifiPhy->m_interference.Add (ppdu, txVector, duration, rxPower, isStartOfdmaRxing);
 }
@@ -1014,7 +1013,7 @@ PhyEntity::ObtainNextUid (const WifiTxVector& /* txVector */)
 }
 
 uint16_t
-PhyEntity::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
+PhyEntity::GetCenterFrequencyForChannelWidth (const WifiTxVector& txVector) const
 {
   NS_LOG_FUNCTION (this << txVector);
   uint16_t centerFrequencyForSupportedWidth = m_wifiPhy->GetFrequency ();
@@ -1072,7 +1071,7 @@ PhyEntity::GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const
 }
 
 Time
-PhyEntity::CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band) const
+PhyEntity::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const
 {
   NS_ASSERT (psduMap.size () == 1);
   const auto & it = psduMap.begin ();

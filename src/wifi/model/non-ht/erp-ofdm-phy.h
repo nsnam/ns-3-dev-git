@@ -55,7 +55,7 @@ public:
   virtual ~ErpOfdmPhy ();
 
   //Inherited
-  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * Initialize all ERP-OFDM modes.
@@ -167,7 +167,7 @@ public:
    * \param staId the station ID (only here to have a common signature for all callbacks)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId);
   /**
    * Return the data rate from the ERP-OFDM mode's unique name and
    * the supplied parameters. This function calls OfdmPhy::CalculateDataRate
@@ -194,9 +194,9 @@ public:
 
 private:
   // Inherited
-  WifiMode GetHeaderMode (WifiTxVector txVector) const override;
-  Time GetPreambleDuration (WifiTxVector txVector) const override;
-  Time GetHeaderDuration (WifiTxVector txVector) const override;
+  WifiMode GetHeaderMode (const WifiTxVector& txVector) const override;
+  Time GetPreambleDuration (const WifiTxVector& txVector) const override;
+  Time GetHeaderDuration (const WifiTxVector& txVector) const override;
 
   /**
    * Create an ERP-OFDM mode from a unique name, the unique name

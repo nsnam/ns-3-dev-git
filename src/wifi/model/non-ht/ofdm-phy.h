@@ -75,13 +75,13 @@ public:
   virtual ~OfdmPhy ();
 
   // Inherited
-  virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
-  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
-  virtual Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
+  virtual Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                                    bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                                    uint16_t staId) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * Initialize all OFDM modes (for all variants).
@@ -292,7 +292,7 @@ public:
    * \param staId the station ID (only here to have a common signature for all callbacks)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId);
   /**
    * Return the data rate from the OFDM mode's unique name and
    * the supplied parameters. This function calls CalculateDataRate and
@@ -326,7 +326,7 @@ protected:
    * \param txVector the transmission parameters
    * \return the WifiMode used for the SIGNAL field
    */
-  virtual WifiMode GetHeaderMode (WifiTxVector txVector) const;
+  virtual WifiMode GetHeaderMode (const WifiTxVector& txVector) const;
 
   /**
    * \param txVector the transmission parameters
@@ -334,12 +334,12 @@ protected:
    *
    * \see WIFI_PPDU_FIELD_PREAMBLE
    */
-  virtual Time GetPreambleDuration (WifiTxVector txVector) const;
+  virtual Time GetPreambleDuration (const WifiTxVector& txVector) const;
   /**
    * \param txVector the transmission parameters
    * \return the duration of the SIGNAL field
    */
-  virtual Time GetHeaderDuration (WifiTxVector txVector) const;
+  virtual Time GetHeaderDuration (const WifiTxVector& txVector) const;
 
   /**
    * \return the number of service bits

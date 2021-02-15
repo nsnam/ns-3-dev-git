@@ -45,7 +45,7 @@ public:
    * \param duration duration of the PPDU
    * \param rxPower the received power per band (W)
    */
-  Event (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower);
   ~Event ();
 
   /**
@@ -194,7 +194,7 @@ public:
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, WifiTxVector txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
 
   /**
    * Add a non-Wifi signal to interference helper.
@@ -291,7 +291,7 @@ protected:
    *
    * \return the success rate
    */
-  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, WifiTxVector txVector) const;
+  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, const WifiTxVector& txVector) const;
 
 
 private:
@@ -373,7 +373,7 @@ private:
    *
    * \return the success rate
    */
-  double CalculatePayloadChunkSuccessRate (double snir, Time duration, WifiTxVector txVector, uint16_t staId) const;
+  double CalculatePayloadChunkSuccessRate (double snir, Time duration, const WifiTxVector& txVector, uint16_t staId) const;
   /**
    * Calculate the error rate of the given PHY payload only in the provided time
    * window (thus enabling per MPDU PER information). The PHY payload can be divided into

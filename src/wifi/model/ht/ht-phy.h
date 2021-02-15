@@ -67,13 +67,13 @@ public:
   WifiMode GetMcs (uint8_t index) const override;
   bool IsMcsSupported (uint8_t index) const override;
   bool HandlesMcsModes (void) const override;
-  virtual WifiMode GetSigMode (WifiPpduField field, WifiTxVector txVector) const override;
+  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   virtual const PpduFormats & GetPpduFormats (void) const override;
-  virtual Time GetDuration (WifiPpduField field, WifiTxVector txVector) const override;
-  Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
+  Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
 
   /**
    * \return the WifiMode used for the L-SIG (non-HT header) field
@@ -128,7 +128,7 @@ public:
    *
    * \see WIFI_PPDU_FIELD_TRAINING
    */
-  virtual Time GetTrainingDuration (WifiTxVector txVector,
+  virtual Time GetTrainingDuration (const WifiTxVector& txVector,
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const;
   /**
    * \return the duration of the HT-SIG field
@@ -403,7 +403,7 @@ public:
    * \param staId the station ID (only here to have a common signature for all callbacks)
    * \return the data bit rate in bps.
    */
-  static uint64_t GetDataRateFromTxVector (WifiTxVector txVector, uint16_t staId);
+  static uint64_t GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId);
   /**
    * Return the data rate corresponding to the supplied HT
    * MCS index, channel width, guard interval, and number
@@ -456,12 +456,12 @@ protected:
    * \param txVector the transmission parameters
    * \return the number of BCC encoders used for data encoding
    */
-  virtual uint8_t GetNumberBccEncoders (WifiTxVector txVector) const;
+  virtual uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const;
   /**
    * \param txVector the transmission parameters
    * \return the symbol duration (including GI)
    */
-  virtual Time GetSymbolDuration (WifiTxVector txVector) const;
+  virtual Time GetSymbolDuration (const WifiTxVector& txVector) const;
 
   /**
    * Return the PHY rate corresponding to

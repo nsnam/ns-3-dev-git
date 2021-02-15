@@ -179,7 +179,7 @@ YansErrorRateModel::GetFecQamBer (double snr, uint64_t nbits,
 }
 
 double
-YansErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const
+YansErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
 {
   NS_LOG_FUNCTION (this << mode << txVector.GetMode () << snr << nbits);
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM

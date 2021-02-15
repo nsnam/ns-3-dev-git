@@ -146,7 +146,7 @@ public:
    * \param band the WifiPhyBand used for the transmission of this PPDU
    * \param uid the unique ID of this PPDU
    */
-  HtPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, Time ppduDuration,
+  HtPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, Time ppduDuration,
           WifiPhyBand band, uint64_t uid);
   /**
    * Destructor for HtPpdu.

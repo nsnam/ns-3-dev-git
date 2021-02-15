@@ -36,7 +36,7 @@ TypeId ErrorRateModel::GetTypeId (void)
 }
 
 double
-ErrorRateModel::CalculateSnr (WifiTxVector txVector, double ber) const
+ErrorRateModel::CalculateSnr (const WifiTxVector& txVector, double ber) const
 {
   //This is a very simple binary search.
   double low, high, precision;
@@ -60,7 +60,7 @@ ErrorRateModel::CalculateSnr (WifiTxVector txVector, double ber) const
 }
 
 double
-ErrorRateModel::GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const
+ErrorRateModel::GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const
 {
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS || mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS)
     {

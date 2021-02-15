@@ -136,7 +136,7 @@ public:
    *        this PSDU, and txPowerLevel, a power level to use to send the whole PPDU. The real transmission
    *        power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  void Send (Ptr<const WifiPsdu> psdu, WifiTxVector txVector);
+  void Send (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector);
   /**
    * \param psdus the PSDUs to send
    * \param txVector the TXVECTOR that has tx parameters such as mode, the transmission mode to use to send
@@ -225,7 +225,7 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of these bytes.
    */
-  static Time CalculateTxDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band,
+  static Time CalculateTxDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band,
                                    uint16_t staId = SU_STA_ID);
   /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID
@@ -234,14 +234,14 @@ public:
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
    */
-  static Time CalculateTxDuration (WifiConstPsduMap psduMap, WifiTxVector txVector, WifiPhyBand band);
+  static Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band);
 
   /**
    * \param txVector the transmission parameters used for this packet
    *
    * \return the total amount of time this PHY will stay busy for the transmission of the PHY preamble and PHY header.
    */
-  static Time CalculatePhyPreambleAndHeaderDuration (WifiTxVector txVector);
+  static Time CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector);
   /**
    * Get the duration of the PPDU field (or group of fields)
    * for the given transmission parameters.
@@ -251,7 +251,7 @@ public:
    *
    * \return the duration of the PPDU field
    */
-  static Time GetPpduFieldDuration (WifiPpduField field, WifiTxVector txVector);
+  static Time GetPpduFieldDuration (WifiPpduField field, const WifiTxVector& txVector);
   /**
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
    */
@@ -265,7 +265,7 @@ public:
    *
    * \return the duration of the PSDU
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype = NORMAL_MPDU,
+  static Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype = NORMAL_MPDU,
                                   uint16_t staId = SU_STA_ID);
   /**
    * \param size the number of bytes in the packet to send
@@ -283,7 +283,7 @@ public:
    *
    * \return the duration of the PSDU
    */
-  static Time GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+  static Time GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                                   bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                                   uint16_t staId);
   /**
@@ -291,7 +291,7 @@ public:
    *
    * \return the duration until the start of the packet
    */
-  static Time GetStartOfPacketDuration (WifiTxVector txVector);
+  static Time GetStartOfPacketDuration (const WifiTxVector& txVector);
 
   /**
    * The WifiPhy::GetModeList() method is used
@@ -353,7 +353,7 @@ public:
    * \return the minimum SNR which is required to achieve
    *          the requested BER for the specified transmission vector. (W/W)
    */
-  double CalculateSnr (WifiTxVector txVector, double ber) const;
+  double CalculateSnr (const WifiTxVector& txVector, double ber) const;
 
   /**
    * Set the Short Interframe Space (SIFS) for this PHY.

@@ -106,7 +106,7 @@ VhtPhy::GetPpduFormats (void) const
 }
 
 WifiMode
-VhtPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
+VhtPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -135,14 +135,14 @@ VhtPhy::GetSigAMode (void) const
 }
 
 WifiMode
-VhtPhy::GetSigBMode (WifiTxVector txVector) const
+VhtPhy::GetSigBMode (const WifiTxVector& txVector) const
 {
   NS_ABORT_MSG_IF (txVector.GetPreambleType () != WIFI_PREAMBLE_VHT_MU, "VHT-SIG-B only available for VHT MU");
   return GetVhtMcs0 ();
 }
 
 Time
-VhtPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+VhtPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -168,7 +168,7 @@ VhtPhy::GetHtSigDuration (void) const
 }
 
 Time
-VhtPhy::GetTrainingDuration (WifiTxVector txVector,
+VhtPhy::GetTrainingDuration (const WifiTxVector& txVector,
                              uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
 {
   NS_ABORT_MSG_IF (nDataLtf > 8, "Unsupported number of LTFs " << +nDataLtf << " for VHT");
@@ -183,13 +183,13 @@ VhtPhy::GetSigADuration (WifiPreamble /* preamble */) const
 }
 
 Time
-VhtPhy::GetSigBDuration (WifiTxVector txVector) const
+VhtPhy::GetSigBDuration (const WifiTxVector& txVector) const
 {
   return (txVector.GetPreambleType () == WIFI_PREAMBLE_VHT_MU) ? MicroSeconds (4) : MicroSeconds (0); //HE-SIG-B only for MU
 }
 
 uint8_t
-VhtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
+VhtPhy::GetNumberBccEncoders (const WifiTxVector& txVector) const
 {
   WifiMode payloadMode = txVector.GetMode ();
   /**
@@ -215,7 +215,7 @@ VhtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
 }
 
 Ptr<WifiPpdu>
-VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
+VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
   return Create<VhtPpdu> (psdus.begin ()->second, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
@@ -422,7 +422,7 @@ VhtPhy::GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInter
 }
 
 uint64_t
-VhtPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+VhtPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetDataRate (txVector.GetMode ().GetMcsValue (),
                       txVector.GetChannelWidth (),

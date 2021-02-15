@@ -127,7 +127,7 @@ HtPhy::GetPpduFormats (void) const
 }
 
 WifiMode
-HtPhy::GetSigMode (WifiPpduField field, WifiTxVector txVector) const
+HtPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -196,7 +196,7 @@ HtPhy::SetMaxSupportedNss (uint8_t maxNss)
 }
 
 Time
-HtPhy::GetDuration (WifiPpduField field, WifiTxVector txVector) const
+HtPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
 {
   switch (field)
     {
@@ -242,7 +242,7 @@ HtPhy::GetLSigDuration (WifiPreamble preamble) const
 }
 
 Time
-HtPhy::GetTrainingDuration (WifiTxVector txVector,
+HtPhy::GetTrainingDuration (const WifiTxVector& txVector,
                             uint8_t nDataLtf, uint8_t nExtensionLtf /* = 0 */) const
 {
   NS_ABORT_MSG_IF (nDataLtf == 0 || nDataLtf > 4 || nExtensionLtf > 4 || (nDataLtf + nExtensionLtf) > 5,
@@ -258,7 +258,7 @@ HtPhy::GetHtSigDuration (void) const
 }
 
 Time
-HtPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand band, MpduType mpdutype,
+HtPhy::GetPayloadDuration (uint32_t size, const WifiTxVector& txVector, WifiPhyBand band, MpduType mpdutype,
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const
 {
@@ -332,7 +332,7 @@ HtPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand ban
 }
 
 uint8_t
-HtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
+HtPhy::GetNumberBccEncoders (const WifiTxVector& txVector) const
 {
   /**
    * Add an encoder when crossing maxRatePerCoder frontier.
@@ -346,7 +346,7 @@ HtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
 }
 
 Time
-HtPhy::GetSymbolDuration (WifiTxVector txVector) const
+HtPhy::GetSymbolDuration (const WifiTxVector& txVector) const
 {
   uint16_t gi = txVector.GetGuardInterval ();
   NS_ASSERT (gi == 400 || gi == 800);
@@ -354,7 +354,7 @@ HtPhy::GetSymbolDuration (WifiTxVector txVector) const
 }
 
 Ptr<WifiPpdu>
-HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
+HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
 {
   NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
   return Create<HtPpdu> (psdus.begin ()->second, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
@@ -416,7 +416,7 @@ HtPhy::IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) cons
 bool
 HtPhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
 {
-  WifiTxVector txVector = ppdu->GetTxVector ();
+  const WifiTxVector& txVector = ppdu->GetTxVector ();
   if (txVector.GetNss () > m_wifiPhy->GetMaxSupportedRxSpatialStreams ())
     {
       NS_LOG_DEBUG ("Packet reception could not be started because not enough RX antennas");
@@ -433,7 +433,7 @@ HtPhy::IsConfigSupported (Ptr<const WifiPpdu> ppdu) const
 Ptr<SpectrumValue>
 HtPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {
-  WifiTxVector txVector = ppdu->GetTxVector ();
+  const WifiTxVector& txVector = ppdu->GetTxVector ();
   uint16_t centerFrequency = GetCenterFrequencyForChannelWidth (txVector);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_LOG_FUNCTION (this << centerFrequency << channelWidth << txPowerW);
@@ -641,7 +641,7 @@ HtPhy::GetCodeRatio (WifiCodeRate codeRate)
 }
 
 uint64_t
-HtPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+HtPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetDataRate (txVector.GetMode ().GetMcsValue (),
                       txVector.GetChannelWidth (),

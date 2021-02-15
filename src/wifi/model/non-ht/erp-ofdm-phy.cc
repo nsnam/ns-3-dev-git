@@ -67,26 +67,26 @@ ErpOfdmPhy::~ErpOfdmPhy ()
 }
 
 WifiMode
-ErpOfdmPhy::GetHeaderMode (WifiTxVector txVector) const
+ErpOfdmPhy::GetHeaderMode (const WifiTxVector& txVector) const
 {
   NS_ASSERT (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM);
   return GetErpOfdmRate6Mbps ();
 }
 
 Time
-ErpOfdmPhy::GetPreambleDuration (WifiTxVector /* txVector */) const
+ErpOfdmPhy::GetPreambleDuration (const WifiTxVector& /* txVector */) const
 {
   return MicroSeconds (16); //L-STF + L-LTF
 }
 
 Time
-ErpOfdmPhy::GetHeaderDuration (WifiTxVector /* txVector */) const
+ErpOfdmPhy::GetHeaderDuration (const WifiTxVector& /* txVector */) const
 {
   return MicroSeconds (4); //L-SIG
 }
 
 Ptr<WifiPpdu>
-ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time /* ppduDuration */)
+ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time /* ppduDuration */)
 {
   NS_LOG_FUNCTION (this << psdus << txVector);
   return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
@@ -193,7 +193,7 @@ ErpOfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t
 }
 
 uint64_t
-ErpOfdmPhy::GetDataRateFromTxVector (WifiTxVector txVector, uint16_t /* staId */)
+ErpOfdmPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetDataRate (txVector.GetMode ().GetUniqueName (),
                       txVector.GetChannelWidth (),

@@ -48,7 +48,7 @@ public:
    *
    * \return the SNR which corresponds to the requested BER
    */
-  double CalculateSnr (WifiTxVector txVector, double ber) const;
+  double CalculateSnr (const WifiTxVector& txVector, double ber) const;
 
   /**
    * This method returns the probability that the given 'chunk' of the
@@ -75,7 +75,7 @@ public:
    *
    * \return probability of successfully receiving the chunk
    */
-  double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
+  double GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const;
 
 
 private:
@@ -89,7 +89,7 @@ private:
    *
    * \return probability of successfully receiving the chunk
    */
-  virtual double DoGetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const = 0;
+  virtual double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits) const = 0;
 };
 
 } //namespace ns3

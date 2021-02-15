@@ -27,7 +27,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiPpdu");
 
-WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, uint64_t uid /* = UINT64_MAX */)
+WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector, uint64_t uid /* = UINT64_MAX */)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_uid (uid),
@@ -38,7 +38,7 @@ WifiPpdu::WifiPpdu (Ptr<const WifiPsdu> psdu, WifiTxVector txVector, uint64_t ui
   m_psdus.insert (std::make_pair (SU_STA_ID, psdu));
 }
 
-WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, uint64_t uid)
+WifiPpdu::WifiPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, uint64_t uid)
   : m_preamble (txVector.GetPreambleType ()),
     m_modulation (txVector.IsValid () ? txVector.GetMode (psdus.begin()->first).GetModulationClass () : WIFI_MOD_CLASS_UNKNOWN),
     m_uid (uid),
