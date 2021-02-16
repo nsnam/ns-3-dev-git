@@ -870,6 +870,8 @@ bool SetDefaultFailSafe (std::string fullName, const AttributeValue &value)
     {
       return false;
     }
+  struct TypeId::AttributeInformation info;
+  tid.LookupAttributeByName(paramName, &info);
   for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
     {
       struct TypeId::AttributeInformation tmp = tid.GetAttribute (j);

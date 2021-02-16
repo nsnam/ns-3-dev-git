@@ -228,6 +228,12 @@ public:
                      TimeValue (Seconds (-2)),
                      MakeTimeAccessor (&AttributeObjectTest::m_timeWithBounds),
                      MakeTimeChecker (Seconds (-5), Seconds (10)))
+      .AddAttribute ("TestDeprecated", "help text",
+                     BooleanValue (false),
+                     MakeBooleanAccessor (&AttributeObjectTest::m_boolTestDeprecated),
+                     MakeBooleanChecker (),
+                     TypeId::DEPRECATED,
+                     "DEPRECATED test working.")
     ;
 
     return tid;
@@ -320,6 +326,7 @@ private:
 
   bool m_boolTestA;
   bool m_boolTest;
+  bool m_boolTestDeprecated;
   int16_t m_int16;
   int16_t m_int16WithBounds;
   int16_t m_int16SetGet;
@@ -423,6 +430,20 @@ AttributeTestCase<BooleanValue>::DoRun (void)
 
   ok = CheckGetCodePaths (p, "TestBoolName", "true", BooleanValue (true));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Attribute not set properly by default value");
+
+  std::string expected ("Attribute 'TestDeprecated' is deprecated: DEPRECATED test working.\n");
+  // Temporarily redirect std::cerr to a stringstream
+  std::stringstream buffer;
+  std::streambuf *oldBuffer = std::cerr.rdbuf (buffer.rdbuf());
+  // Cause the deprecation warning to be sent to the stringstream
+  Config::SetDefault ("ns3::AttributeObjectTest::TestDeprecated", BooleanValue (true));
+
+  // Compare the obtained actual string with the expected string.
+  NS_TEST_ASSERT_MSG_EQ (buffer.str (), expected, "Deprecated attribute not working");
+  // Restore cerr to its original stream buffer
+  std::cerr.rdbuf (oldBuffer);
+
+
 
   //
   // Set the default value of the BooleanValue the other way and create an object.
