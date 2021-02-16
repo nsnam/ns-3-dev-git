@@ -39,7 +39,7 @@
 #include "he-configuration.h"
 #include "mpdu-aggregator.h"
 #include "wifi-psdu.h"
-#include "he-ppdu.h"
+#include "wifi-ppdu.h"
 #include "ap-wifi-mac.h"
 #include "dsss-phy.h"
 #include "erp-ofdm-phy.h"
@@ -54,8 +54,6 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhy");
  ****************************************************************/
 
 NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
-
-uint64_t WifiPhy::m_globalPpduUid = 0;
 
 /**
  * This table maintains the mapping of valid ChannelNumber to
@@ -525,7 +523,6 @@ WifiPhy::WifiPhy ()
     m_endTxEvent (),
     m_currentEvent (0),
     m_previouslyRxPpduUid (UINT64_MAX),
-    m_previouslyTxPpduUid (UINT64_MAX),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),
     m_band (WIFI_PHY_BAND_UNSPECIFIED),
     m_isConstructed (false),
@@ -2117,21 +2114,8 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
     }
   m_state->SwitchToTx (txDuration, psdus, GetPowerDbm (txVector.GetTxPowerLevel ()), txVector);
 
-  uint64_t uid;
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
-    {
-      //Use UID of PPDU containing trigger frame to identify resulting HE TB PPDUs, since the latter should immediately follow the former
-      NS_ASSERT (m_previouslyRxPpduUid != UINT64_MAX);
-      uid = m_previouslyRxPpduUid;
-    }
-  else
-    {
-      uid = m_globalPpduUid++;
-    }
-  m_previouslyRxPpduUid = UINT64_MAX; //reset to use it only once
-  m_previouslyTxPpduUid = uid; //to be able to identify solicited HE TB PPDUs
-
-  Ptr<WifiPpdu> ppdu = GetPhyEntity (txVector.GetModulationClass ())->BuildPpdu (psdus, txVector, txDuration, GetPhyBand (), uid);
+  Ptr<WifiPpdu> ppdu = GetPhyEntity (txVector.GetModulationClass ())->BuildPpdu (psdus, txVector, txDuration);
+  m_previouslyRxPpduUid = UINT64_MAX; //reset (after creation of PPDU) to use it only once
 
   if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
@@ -2146,6 +2130,12 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
   m_powerRestricted = false;
 
   Simulator::Schedule (txDuration, &WifiPhy::Reset, this);
+}
+
+uint64_t
+WifiPhy::GetPreviouslyRxPpduUid (void) const
+{
+  return m_previouslyRxPpduUid;
 }
 
 void
@@ -2538,27 +2528,13 @@ WifiPhy::GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const
 uint16_t
 WifiPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 {
-  uint16_t channelWidth = GetChannelWidth ();
   if (ppdu == nullptr)
     {
       // Here because PHY was not receiving anything (e.g. resuming from OFF) nor expecting anything (e.g. sleep)
       // nor processing a Wi-Fi signal.
-      return channelWidth >= 40 ? 20 : channelWidth;
+      return GetChannelWidth () >= 40 ? 20 : GetChannelWidth ();
     }
-
-  channelWidth = std::min (channelWidth, ppdu->GetTxVector ().GetChannelWidth ());
-  /**
-   * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does not overlap
-   * the primary channel unless the PHY at an AP receives the HE TB PPDU solicited by the AP. For the HE
-   * TB PPDU solicited by the AP, the PHY shall issue a PHY-RXSTART.indication primitive for a PPDU
-   * received in the primary or at the secondary 20 MHz channel, the secondary 40 MHz channel, or the secondary
-   * 80 MHz channel.
-   */
-  if (channelWidth >= 40 && ppdu->GetUid () != m_previouslyTxPpduUid)
-    {
-      channelWidth = 20;
-    }
-  return channelWidth;
+  return GetPhyEntity (ppdu->GetModulation ())->GetMeasurementChannelWidth (ppdu);
 }
 
 WifiSpectrumBand

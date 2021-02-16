@@ -26,7 +26,6 @@
 #include "wifi-standards.h"
 #include "interference-helper.h"
 #include "wifi-phy-state-helper.h"
-#include "wifi-ppdu.h"
 #include "phy-entity.h"
 
 namespace ns3 {
@@ -1025,6 +1024,11 @@ public:
    */
   const Ptr<const PhyEntity> GetPhyEntity (WifiModulationClass modulation) const;
 
+  /**
+   * \return the UID of the previously received PPDU (reset to UINT64_MAX upon transmission)
+   */
+  uint64_t GetPreviouslyRxPpduUid (void) const;
+
 
 protected:
   // Inherited
@@ -1123,10 +1127,7 @@ protected:
   Ptr<Event> m_currentEvent; //!< Hold the current event
   std::map <std::pair<uint64_t /* UID*/, WifiPreamble>, Ptr<Event> > m_currentPreambleEvents; //!< store event associated to a PPDU (that has a unique ID and preamble combination) whose preamble is being received
 
-  uint64_t m_previouslyRxPpduUid;      //!< UID of the previously received PPDU (reused by HE TB PPDUs), reset to UINT64_MAX upon transmission
-  uint64_t m_previouslyTxPpduUid;      //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
-
-  static uint64_t m_globalPpduUid;     //!< Global counter of the PPDU UID
+  uint64_t m_previouslyRxPpduUid;  //!< UID of the previously received PPDU, reset to UINT64_MAX upon transmission
 
   /**
    * This map holds the supported PHY entities.

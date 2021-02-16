@@ -29,6 +29,7 @@
 #include "wifi-ppdu.h"
 #include "wifi-spectrum-signal-parameters.h"
 #include "wifi-mpdu-type.h"
+#include "wifi-ppdu.h"
 #include "ns3/event-id.h"
 #include "ns3/simple-ref-count.h"
 #include "ns3/nstime.h"
@@ -303,16 +304,13 @@ public:
    * \param psdus the PHY payloads (PSDUs)
    * \param txVector the TXVECTOR that was used for the PPDU
    * \param ppduDuration the transmission duration of the PPDU
-   * \param band the WifiPhyBand used for the transmission of the PPDU
-   * \param uid the unique ID of this PPDU
    *
    * \return the amendment-specific WifiPpdu
    *
    * This method is overridden by child classes to create their
    * corresponding PPDU, e.g., HtPhy creates HtPpdu.
    */
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration);
 
   /**
    * Get the duration of the PPDU up to (but excluding) the given field.
@@ -417,6 +415,14 @@ public:
    * \return the STA ID
    */
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const;
+
+  /**
+   * Return the channel width used to measure the RSSI.
+   *
+   * \param ppdu the PPDU that is being received
+   * \return the channel width (in MHz) used for RSSI measurement
+   */
+  virtual uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const;
 
 protected:
   /**
@@ -675,6 +681,15 @@ protected:
    */
   void NotifyInterferenceRxEndAndClear (bool reset);
 
+  /**
+   * Obtain the next UID for the PPDU to transmit.
+   * Note that the global UID counter could be incremented.
+   *
+   * \param txVector the transmission parameters
+   * \return the UID to use for the PPDU to transmit
+   */
+  virtual uint64_t ObtainNextUid (const WifiTxVector& txVector);
+
   Ptr<WifiPhy> m_wifiPhy;          //!< Pointer to the owning WifiPhy
   Ptr<WifiPhyStateHelper> m_state; //!< Pointer to WifiPhyStateHelper of the WifiPhy (to make it reachable for child classes)
 
@@ -693,6 +708,7 @@ protected:
   std::map<UidStaIdPair, std::vector<bool> > m_statusPerMpduMap; //!< Map of the current reception status per MPDU that is filled in as long as MPDUs are being processed by the PHY in case of an A-MPDU
   std::map<UidStaIdPair, SignalNoiseDbm> m_signalNoiseMap; //!< Map of the latest signal power and noise power in dBm (noise power includes the noise figure)
 
+  static uint64_t m_globalPpduUid; //!< Global counter of the PPDU UID
 }; //class PhyEntity
 
 /**

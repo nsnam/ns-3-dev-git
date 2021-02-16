@@ -72,10 +72,11 @@ ErpOfdmPhy::GetHeaderDuration (WifiTxVector /* txVector */) const
 }
 
 Ptr<WifiPpdu>
-ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                       Time /* ppduDuration */, WifiPhyBand /* band */, uint64_t uid) const
+ErpOfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time /* ppduDuration */)
 {
-  return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, WIFI_PHY_BAND_2_4GHZ, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector);
+  return Create<ErpOfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
+                              ObtainNextUid (txVector));
 }
 
 void

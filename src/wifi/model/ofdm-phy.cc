@@ -231,10 +231,11 @@ OfdmPhy::GetSignalExtension (WifiPhyBand band) const
 }
 
 Ptr<WifiPpdu>
-OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                    Time /* ppduDuration */, WifiPhyBand band, uint64_t uid) const
+OfdmPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time /* ppduDuration */)
 {
-  return Create<OfdmPpdu> (psdus.begin ()->second, txVector, band, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector);
+  return Create<OfdmPpdu> (psdus.begin ()->second, txVector, m_wifiPhy->GetPhyBand (),
+                           ObtainNextUid (txVector));
 }
 
 PhyEntity::PhyFieldRxStatus

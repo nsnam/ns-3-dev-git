@@ -215,10 +215,11 @@ VhtPhy::GetNumberBccEncoders (WifiTxVector txVector) const
 }
 
 Ptr<WifiPpdu>
-VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const
+VhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
 {
-  return Create<VhtPpdu> (psdus.begin ()->second, txVector, ppduDuration, band, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  return Create<VhtPpdu> (psdus.begin ()->second, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
+                          ObtainNextUid (txVector));
 }
 
 PhyEntity::PhyFieldRxStatus

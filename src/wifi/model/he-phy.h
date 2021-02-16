@@ -71,13 +71,13 @@ public:
                                     uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
   Time GetSigADuration (WifiPreamble preamble) const override;
   Time GetSigBDuration (WifiTxVector txVector) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                                   Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
+  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
   void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
                              Time rxDuration, TxPsdFlag psdFlag) override;
   void CancelAllEvents (void) override;
   virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
+  uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
 
   /**
    * \return the BSS color of this PHY.
@@ -227,6 +227,7 @@ protected:
   void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu) override;
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
+  uint64_t ObtainNextUid (const WifiTxVector& txVector) override;
 
   /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.
@@ -236,6 +237,7 @@ protected:
    */
   void StartReceiveOfdmaPayload (Ptr<Event> event);
 
+  uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
 
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)

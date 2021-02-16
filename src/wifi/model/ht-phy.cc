@@ -365,10 +365,11 @@ HtPhy::GetSymbolDuration (WifiTxVector txVector) const
 }
 
 Ptr<WifiPpdu>
-HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration,
-                  WifiPhyBand band, uint64_t uid) const
+HtPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
 {
-  return Create<HtPpdu> (psdus.begin ()->second, txVector, ppduDuration, band, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  return Create<HtPpdu> (psdus.begin ()->second, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
+                         ObtainNextUid (txVector));
 }
 
 PhyEntity::PhyFieldRxStatus

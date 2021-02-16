@@ -55,8 +55,7 @@ public:
   virtual ~ErpOfdmPhy ();
 
   //Inherited
-  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                           Time ppduDuration, WifiPhyBand band, uint64_t uid) const override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration) override;
 
   /**
    * Initialize all ERP-OFDM modes.

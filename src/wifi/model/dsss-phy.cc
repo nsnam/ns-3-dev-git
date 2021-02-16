@@ -156,10 +156,11 @@ DsssPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, WifiPhyBand /
 }
 
 Ptr<WifiPpdu>
-DsssPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                    Time ppduDuration, WifiPhyBand /* band */, uint64_t uid) const
+DsssPhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
 {
-  return Create<DsssPpdu> (psdus.begin ()->second, txVector, ppduDuration, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  return Create<DsssPpdu> (psdus.begin ()->second, txVector, ppduDuration,
+                           ObtainNextUid (txVector));
 }
 
 PhyEntity::PhyFieldRxStatus

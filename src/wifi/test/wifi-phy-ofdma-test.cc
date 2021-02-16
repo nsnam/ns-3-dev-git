@@ -80,6 +80,12 @@ public:
    */
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
 
+  /**
+   * Set the global PPDU UID counter.
+   *
+   * \param uid the value to which the global PPDU UID counter should be set
+   */
+  void SetGlobalPpduUid (uint64_t uid);
 
 private:
   uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
@@ -103,6 +109,12 @@ OfdmaTestHePhy::GetStaId (const Ptr<const WifiPpdu> ppdu) const
       return m_staId;
     }
   return HePhy::GetStaId (ppdu);
+}
+
+void
+OfdmaTestHePhy::SetGlobalPpduUid (uint64_t uid)
+{
+  m_globalPpduUid = uid;
 }
 
 /**
@@ -186,7 +198,7 @@ public:
   Ptr<const HePhy> GetHePhy (void) const;
 
 private:
-  uint16_t m_staId; ///< ID of the STA to which this PHY belongs to
+  Ptr<OfdmaTestHePhy> m_ofdmTestHePhy; ///< Pointer to HE PHY instance used for OFDMA test
   TracedCallback<uint64_t> m_phyTxPpduUidTrace; //!< Callback providing UID of the PPDU that is about to be transmitted
 }; //class OfdmaSpectrumWifiPhy
 
@@ -205,29 +217,29 @@ OfdmaSpectrumWifiPhy::GetTypeId (void)
 }
 
 OfdmaSpectrumWifiPhy::OfdmaSpectrumWifiPhy (uint16_t staId)
-  : SpectrumWifiPhy (),
-    m_staId (staId)
+  : SpectrumWifiPhy ()
 {
+  m_ofdmTestHePhy = Create<OfdmaTestHePhy> (staId);
+  m_ofdmTestHePhy->SetOwner (this);
 }
 
 OfdmaSpectrumWifiPhy::~OfdmaSpectrumWifiPhy()
 {
+  m_ofdmTestHePhy = 0;
 }
 
 void
 OfdmaSpectrumWifiPhy::DoInitialize (void)
 {
   //Replace HE PHY instance with test instance
-  Ptr<OfdmaTestHePhy> hePhy = Create<OfdmaTestHePhy> (m_staId);
-  hePhy->SetOwner (this);
-  m_phyEntities[WIFI_MOD_CLASS_HE] = hePhy;
+  m_phyEntities[WIFI_MOD_CLASS_HE] = m_ofdmTestHePhy;
   SpectrumWifiPhy::DoInitialize ();
 }
 
 void
 OfdmaSpectrumWifiPhy::SetPpduUid (uint64_t uid)
 {
-  m_globalPpduUid = uid;
+  m_ofdmTestHePhy->SetGlobalPpduUid (uid);
   m_previouslyRxPpduUid = uid;
 }
 

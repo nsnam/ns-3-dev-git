@@ -76,6 +76,7 @@ HePhy::HePhy (bool buildModeList /* = true */)
   m_maxMcsIndexPerSs = 11;
   m_maxSupportedMcsIndexPerSs = m_maxMcsIndexPerSs;
   m_currentHeTbPpduUid = UINT64_MAX;
+  m_previouslyTxPpduUid = UINT64_MAX;
   if (buildModeList)
     {
       BuildModeList ();
@@ -303,10 +304,11 @@ HePhy::GetSymbolDuration (WifiTxVector txVector) const
 }
 
 Ptr<WifiPpdu>
-HePhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector,
-                  Time ppduDuration, WifiPhyBand band, uint64_t uid) const
+HePhy::BuildPpdu (const WifiConstPsduMap & psdus, WifiTxVector txVector, Time ppduDuration)
 {
-  return Create<HePpdu> (psdus, txVector, ppduDuration, band, uid);
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  return Create<HePpdu> (psdus, txVector, ppduDuration, m_wifiPhy->GetPhyBand (),
+                         ObtainNextUid (txVector));
 }
 
 void
@@ -746,6 +748,43 @@ uint64_t
 HePhy::GetCurrentHeTbPpduUid (void) const
 {
   return m_currentHeTbPpduUid;
+}
+
+uint16_t
+HePhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
+{
+  uint16_t channelWidth = PhyEntity::GetMeasurementChannelWidth (ppdu);
+  /**
+   * The PHY shall not issue a PHY-RXSTART.indication primitive in response to a PPDU that does not overlap
+   * the primary channel unless the PHY at an AP receives the HE TB PPDU solicited by the AP. For the HE
+   * TB PPDU solicited by the AP, the PHY shall issue a PHY-RXSTART.indication primitive for a PPDU
+   * received in the primary or at the secondary 20 MHz channel, the secondary 40 MHz channel, or the secondary
+   * 80 MHz channel.
+   */
+  if (channelWidth >= 40 && ppdu->GetUid () != m_previouslyTxPpduUid)
+    {
+      channelWidth = 20;
+    }
+  return channelWidth;
+}
+
+uint64_t
+HePhy::ObtainNextUid (const WifiTxVector& txVector)
+{
+  NS_LOG_FUNCTION (this << txVector);
+  uint64_t uid;
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB)
+    {
+      //Use UID of PPDU containing trigger frame to identify resulting HE TB PPDUs, since the latter should immediately follow the former
+      uid = m_wifiPhy->GetPreviouslyRxPpduUid ();
+      NS_ASSERT (uid != UINT64_MAX);
+    }
+  else
+    {
+      uid = m_globalPpduUid++;
+    }
+  m_previouslyTxPpduUid = uid; //to be able to identify solicited HE TB PPDUs
+  return uid;
 }
 
 void
