@@ -632,10 +632,10 @@ MinstrelHtWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 }
 
 void
-MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                                               double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr << dataChannelWidth << +dataNss);
+  NS_LOG_FUNCTION (this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr << dataChannelWidth << +dataNss);
   MinstrelHtWifiRemoteStation *station = static_cast<MinstrelHtWifiRemoteStation*> (st);
 
   CheckInit (station);
@@ -647,7 +647,7 @@ MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSu
   NS_ASSERT_MSG (station->m_isHt, "A-MPDU Tx Status called but no HT or VHT supported.");
 
   NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus=" <<
-                +nSuccessfulMpdus << " FailedMpdus=" << +nFailedMpdus);
+                nSuccessfulMpdus << " FailedMpdus=" << nFailedMpdus);
 
   station->m_ampduPacketCount++;
   station->m_ampduLen += nSuccessfulMpdus + nFailedMpdus;
@@ -793,9 +793,9 @@ MinstrelHtWifiManager::UpdateRetry (MinstrelHtWifiRemoteStation *station)
 }
 
 void
-MinstrelHtWifiManager::UpdatePacketCounters (MinstrelHtWifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus)
+MinstrelHtWifiManager::UpdatePacketCounters (MinstrelHtWifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus)
 {
-  NS_LOG_FUNCTION (this << station << +nSuccessfulMpdus << +nFailedMpdus);
+  NS_LOG_FUNCTION (this << station << nSuccessfulMpdus << nFailedMpdus);
 
   station->m_totalPacketsCount += nSuccessfulMpdus + nFailedMpdus;
   if (station->m_isSampling)

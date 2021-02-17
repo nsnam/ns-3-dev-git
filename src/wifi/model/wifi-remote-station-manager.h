@@ -745,7 +745,7 @@ public:
    * \param dataSnr data SNR reported by remote station
    * \param dataTxVector the TXVECTOR of the MPDUs we sent
    */
-  void ReportAmpduTxStatus (Mac48Address address, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+  void ReportAmpduTxStatus (Mac48Address address, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                             double rxSnr, double dataSnr, WifiTxVector dataTxVector);
 
   /**
@@ -1177,7 +1177,7 @@ private:
    * \param dataChannelWidth the channel width (in MHz) of the A-MPDU we sent
    * \param dataNss the number of spatial streams used to send the A-MPDU
    */
-  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+  virtual void DoReportAmpduTxStatus (WifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                                       double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
 
   /**

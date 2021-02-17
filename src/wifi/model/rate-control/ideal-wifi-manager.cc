@@ -282,10 +282,10 @@ IdealWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode
 }
 
 void
-IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                                          double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss)
 {
-  NS_LOG_FUNCTION (this << st << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr << dataChannelWidth << +dataNss);
+  NS_LOG_FUNCTION (this << st << nSuccessfulMpdus << nFailedMpdus << rxSnr << dataSnr << dataChannelWidth << +dataNss);
   IdealWifiRemoteStation *station = static_cast<IdealWifiRemoteStation*> (st);
   if (dataSnr == 0)
     {

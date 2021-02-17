@@ -235,7 +235,7 @@ private:
   void DoReportFinalDataFailed (WifiRemoteStation *station);
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  void DoReportAmpduTxStatus (WifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
+  void DoReportAmpduTxStatus (WifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
                               double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
   bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
 
@@ -313,7 +313,7 @@ private:
    * \param nSuccessfulMpdus the number of successfully received MPDUs
    * \param nFailedMpdus the number of failed MPDUs
    */
-  void UpdatePacketCounters (MinstrelHtWifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus);
+  void UpdatePacketCounters (MinstrelHtWifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus);
 
   /**
    * Getting the next sample from Sample Table.
