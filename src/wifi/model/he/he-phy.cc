@@ -525,21 +525,14 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
           m_currentHeTbPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
         }
 
-      //Check if PPDU is filtered only if the SIG-A content is supported
-      if (ppdu->GetType () == WIFI_PPDU_TYPE_DL_MU) //Final decision on content of DL MU is reported to end of SIG-B (unless the PPDU is filtered)
+      //Check if PPDU is filtered based on the BSS color
+      uint8_t bssColor = GetBssColor ();
+      if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
         {
-          uint8_t bssColor = GetBssColor ();
-          if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
-            {
-              NS_LOG_DEBUG ("The BSS color of this DL MU PPDU does not match the device's. The PPDU is filtered.");
-              return PhyFieldRxStatus (false, FILTERED, ABORT);
-            }
+          NS_LOG_DEBUG ("The BSS color of this PPDU (" << +event->GetTxVector ().GetBssColor () << ") does not match the device's (" << +bssColor << "). The PPDU is filtered.");
+          return PhyFieldRxStatus (false, FILTERED, ABORT);
         }
-      else if (GetAddressedPsduInPpdu (ppdu))
-        {
-          //We are here because the SU or UL MU is addressed to the PPDU, so keep status to success
-        }
-      else
+      if (ppdu->GetType () != WIFI_PPDU_TYPE_DL_MU && !GetAddressedPsduInPpdu (ppdu)) //Final decision on STA-ID correspondence of DL MU is delayed to end of SIG-B
         {
           NS_ASSERT (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU);
           NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
