@@ -151,7 +151,10 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   NS_LOG_FUNCTION (this << network << networkPrefix << nextHop << interface << metric);
   Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface);
-  m_networkRoutes.push_back (std::make_pair (route, metric));
+  if (!LookupRoute (route, metric))
+    {
+      m_networkRoutes.push_back (std::make_pair (route, metric));
+    }
 }
 
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
@@ -164,7 +167,10 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
 
   Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse);
-  m_networkRoutes.push_back (std::make_pair (route, metric));
+  if (!LookupRoute (route, metric))
+    {
+      m_networkRoutes.push_back (std::make_pair (route, metric));
+    }
 }
 
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface, uint32_t metric)
@@ -172,7 +178,10 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   NS_LOG_FUNCTION (this << network << networkPrefix << interface);
   Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
   *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, interface);
-  m_networkRoutes.push_back (std::make_pair (route, metric));
+  if (!LookupRoute (route, metric))
+    {
+      m_networkRoutes.push_back (std::make_pair (route, metric));
+    }
 }
 
 void Ipv6StaticRouting::SetDefaultRoute (Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)
@@ -278,6 +287,25 @@ bool Ipv6StaticRouting::HasNetworkDest (Ipv6Address network, uint32_t interfaceI
     }
 
   /* beuh!!! not route at all */
+  return false;
+}
+
+bool Ipv6StaticRouting::LookupRoute (Ipv6RoutingTableEntry *route, uint32_t metric)
+{
+  for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end (); j++)
+    {
+      Ipv6RoutingTableEntry* rtentry = j->first;
+
+      if (rtentry->GetDest () == route->GetDest () &&
+          rtentry->GetDestNetworkPrefix () == route->GetDestNetworkPrefix () &&
+          rtentry->GetGateway () == route->GetGateway () &&
+          rtentry->GetInterface () == route->GetInterface () &&
+          rtentry->GetPrefixToUse () == route->GetPrefixToUse () &&
+          j->second == metric)
+        {
+          return true;
+        }
+    }
   return false;
 }
 

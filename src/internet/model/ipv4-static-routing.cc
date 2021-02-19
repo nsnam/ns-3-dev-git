@@ -72,7 +72,10 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
                                                         networkMask,
                                                         nextHop,
                                                         interface);
-  m_networkRoutes.push_back (make_pair (route,metric));
+  if (!LookupRoute (route, metric))
+    {
+      m_networkRoutes.push_back (make_pair (route,metric));
+    }
 }
 
 void 
@@ -86,7 +89,10 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
   *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
                                                         networkMask,
                                                         interface);
-  m_networkRoutes.push_back (make_pair (route,metric));
+  if (!LookupRoute (route, metric))
+    {
+      m_networkRoutes.push_back (make_pair (route,metric));
+    }
 }
 
 void 
@@ -217,6 +223,25 @@ Ipv4StaticRouting::RemoveMulticastRoute (uint32_t index)
         }
       tmp++;
     }
+}
+
+bool
+Ipv4StaticRouting::LookupRoute (Ipv4RoutingTableEntry *route, uint32_t metric)
+{
+  for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end (); j++)
+    {
+      Ipv4RoutingTableEntry* rtentry = j->first;
+
+      if (rtentry->GetDest () == route->GetDest () &&
+          rtentry->GetDestNetworkMask () == route->GetDestNetworkMask () &&
+          rtentry->GetGateway () == route->GetGateway () &&
+          rtentry->GetInterface () == route->GetInterface () &&
+          j->second == metric)
+        {
+          return true;
+        }
+    }
+  return false;
 }
 
 Ptr<Ipv4Route>

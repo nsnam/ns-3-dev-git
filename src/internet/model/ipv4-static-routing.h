@@ -377,6 +377,14 @@ private:
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
 
   /**
+   * \brief Checks if a route is already present in the forwarding table.
+   * \param route route
+   * \param metric metric of route
+   * \return true if the route/metric is already in the forwarding table
+   */
+  bool LookupRoute (Ipv4RoutingTableEntry *route, uint32_t metric);
+
+  /**
    * \brief Lookup in the forwarding table for destination.
    * \param dest destination address
    * \param oif output interface if any (put 0 otherwise)
