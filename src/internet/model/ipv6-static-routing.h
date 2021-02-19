@@ -270,7 +270,7 @@ private:
    * \param metric metric of route
    * \return true if the route/metric is already in the forwarding table
    */
-  bool LookupRoute (Ipv6RoutingTableEntry *route, uint32_t metric);
+  bool LookupRoute (const Ipv6RoutingTableEntry &route, uint32_t metric);
 
   /**
    * \brief Lookup in the forwarding table for destination.

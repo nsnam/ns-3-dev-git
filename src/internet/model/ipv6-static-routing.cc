@@ -149,11 +149,13 @@ void Ipv6StaticRouting::AddHostRouteTo (Ipv6Address dst, uint32_t interface, uin
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << nextHop << interface << metric);
-  Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
-  *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface);
+
+  Ipv6RoutingTableEntry route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface);
+
   if (!LookupRoute (route, metric))
     {
-      m_networkRoutes.push_back (std::make_pair (route, metric));
+      Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
+      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
     }
 }
 
@@ -165,22 +167,23 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
       NS_LOG_WARN ("Ipv6StaticRouting::AddNetworkRouteTo - Next hop should be link-local");
     }
 
-  Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
-  *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse);
+  Ipv6RoutingTableEntry route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, nextHop, interface, prefixToUse);
   if (!LookupRoute (route, metric))
     {
-      m_networkRoutes.push_back (std::make_pair (route, metric));
+      Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
+      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
     }
 }
 
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << interface);
-  Ipv6RoutingTableEntry* route = new Ipv6RoutingTableEntry ();
-  *route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, interface);
+
+  Ipv6RoutingTableEntry route = Ipv6RoutingTableEntry::CreateNetworkRouteTo (network, networkPrefix, interface);
   if (!LookupRoute (route, metric))
     {
-      m_networkRoutes.push_back (std::make_pair (route, metric));
+      Ipv6RoutingTableEntry* routePtr = new Ipv6RoutingTableEntry (route);
+      m_networkRoutes.push_back (std::make_pair (routePtr, metric));
     }
 }
 
@@ -290,17 +293,17 @@ bool Ipv6StaticRouting::HasNetworkDest (Ipv6Address network, uint32_t interfaceI
   return false;
 }
 
-bool Ipv6StaticRouting::LookupRoute (Ipv6RoutingTableEntry *route, uint32_t metric)
+bool Ipv6StaticRouting::LookupRoute (const Ipv6RoutingTableEntry &route, uint32_t metric)
 {
   for (NetworkRoutesI j = m_networkRoutes.begin (); j != m_networkRoutes.end (); j++)
     {
       Ipv6RoutingTableEntry* rtentry = j->first;
 
-      if (rtentry->GetDest () == route->GetDest () &&
-          rtentry->GetDestNetworkPrefix () == route->GetDestNetworkPrefix () &&
-          rtentry->GetGateway () == route->GetGateway () &&
-          rtentry->GetInterface () == route->GetInterface () &&
-          rtentry->GetPrefixToUse () == route->GetPrefixToUse () &&
+      if (rtentry->GetDest () == route.GetDest () &&
+          rtentry->GetDestNetworkPrefix () == route.GetDestNetworkPrefix () &&
+          rtentry->GetGateway () == route.GetGateway () &&
+          rtentry->GetInterface () == route.GetInterface () &&
+          rtentry->GetPrefixToUse () == route.GetPrefixToUse () &&
           j->second == metric)
         {
           return true;
