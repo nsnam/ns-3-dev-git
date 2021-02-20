@@ -381,6 +381,16 @@ public:
   void CancelPendingEvents ();
 
   /**
+   * \brief build handover preparation failure message
+   */
+  EpcX2Sap::HandoverPreparationFailureParams BuildHoPrepFailMsg ();
+
+  /**
+   * \brief build handover cancel message
+   */
+  EpcX2Sap::HandoverCancelParams BuildHoCancelMsg ();
+
+  /**
    * TracedCallback signature for state transition events.
    *
    * \param [in] imsi
@@ -1105,6 +1115,17 @@ public:
        const std::string cause);
 
 
+  /**
+   * TracedCallback signature for handover failure events.
+   *
+   * \param [in] imsi
+   * \param [in] rnti
+   * \param [in] cellId
+   * \param [in] cause
+   */
+  typedef void (*HandoverFailureTracedCallback)
+      (const uint64_t imsi, const uint16_t rnti, const uint16_t cellId, const std::string cause);
+
 private:
 
 
@@ -1691,6 +1712,12 @@ private:
    * which expired.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_rrcTimeoutTrace;
+  /**
+   * The 'HandoverFailure' Trace source. Fired when handover fails due to max preambles
+   * reached.
+   *
+   */
+ TracedCallback<uint64_t, uint16_t, uint16_t, std::string> m_handoverFailureTrace;
 
   uint16_t m_numberOfComponentCarriers; ///< number of component carriers
 

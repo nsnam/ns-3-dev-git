@@ -1415,6 +1415,34 @@ UeManager::CancelPendingEvents ()
   m_handoverLeavingTimeout.Cancel ();
 }
 
+EpcX2Sap::HandoverPreparationFailureParams
+UeManager::BuildHoPrepFailMsg ()
+{
+  NS_LOG_FUNCTION (this);
+  EpcX2Sap::HandoverPreparationFailureParams res;
+  res.oldEnbUeX2apId = m_sourceX2apId;
+  res.sourceCellId = m_sourceCellId;
+  res.targetCellId = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
+  res.cause = 0;
+  res.criticalityDiagnostics = 0;
+
+  return res;
+}
+
+EpcX2Sap::HandoverCancelParams
+UeManager::BuildHoCancelMsg ()
+{
+  NS_LOG_FUNCTION (this);
+  EpcX2Sap::HandoverCancelParams res;
+  res.oldEnbUeX2apId = m_rnti;      //source cell rnti
+  res.newEnbUeX2apId = m_targetX2apId;
+  res.sourceCellId = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
+  res.targetCellId = m_targetCellId;
+  res.cause = 0;
+
+  return res;
+}
+
 uint8_t
 UeManager::AddDataRadioBearerInfo (Ptr<LteDataRadioBearerInfo> drbInfo)
 {
@@ -1934,6 +1962,10 @@ LteEnbRrc::GetTypeId (void)
                      "trace fired when a timer expires",
                      MakeTraceSourceAccessor (&LteEnbRrc::m_rrcTimeoutTrace),
                      "ns3::LteEnbRrc::TimerExpiryTracedCallback")
+    .AddTraceSource ("HandoverFailure",
+                     "trace fired when handover fails",
+                     MakeTraceSourceAccessor (&LteEnbRrc::m_handoverFailureTrace),
+                     "ns3::LteEnbRrc::HandoverFailureTracedCallback")
   ;
   return tid;
 }
@@ -2613,18 +2645,27 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
 
   uint8_t componentCarrierId = CellToComponentCarrierId (req.targetCellId);
   uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING, componentCarrierId);
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  ueManager->SetSource (req.sourceCellId, req.oldEnbUeX2apId);
+  ueManager->SetImsi (req.mmeUeS1apId);
   LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider.at (componentCarrierId)->AllocateNcRaPreamble (rnti);
   if (anrcrv.valid == false)
     {
       NS_LOG_INFO (this << " failed to allocate a preamble for non-contention based RA => cannot accept HO");
-      RemoveUe (rnti);
-      NS_FATAL_ERROR ("should trigger HO Preparation Failure, but it is not implemented");
+      m_handoverFailureTrace (GetUeManager (rnti)->GetImsi (), rnti,
+                              ComponentCarrierToCellId (GetUeManager (rnti)->GetComponentCarrierId ()),
+                              "Handover failure due to max NC preambles reached");
+      /**
+       * When the maximum non-contention based preambles is reached, then it is considered handover has failed
+       * and source cell is notified to release the RRC connection and delete the UE context
+       * at eNodeB and SGW/PGW.
+       */
+      Ptr<UeManager> ueManger = GetUeManager (rnti);
+      EpcX2Sap::HandoverPreparationFailureParams msg = ueManger->BuildHoPrepFailMsg ();
+      m_x2SapProvider->SendHandoverPreparationFailure (msg);
+      RemoveUe (rnti); // reomve the UE from the target eNB
       return;
     }
-
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  ueManager->SetSource (req.sourceCellId, req.oldEnbUeX2apId);
-  ueManager->SetImsi (req.mmeUeS1apId);
 
   EpcX2SapProvider::HandoverRequestAckParams ackParams;
   ackParams.oldEnbUeX2apId = req.oldEnbUeX2apId;
