@@ -222,7 +222,6 @@ NotifyRaResponseTimeoutUe (uint64_t imsi, bool contention,
             << ", preamble Tx Counter " << (uint16_t) preambleTxCounter
             << ", Max Preamble Tx Limit " << (uint16_t) maxPreambleTxLimit
             << ", UE RA response timeout" << std::endl;
-  NS_FATAL_ERROR ("NotifyRaResponseTimeoutUe");
 }
 
 void
