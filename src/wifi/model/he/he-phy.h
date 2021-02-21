@@ -38,7 +38,7 @@ namespace ns3 {
 /**
  * This defines the BSS membership value for HE PHY.
  */
-#define HE_PHY 125
+#define HE_PHY 122
 
 /**
  * Parameters for received HE-SIG-A for OBSS_PD based SR

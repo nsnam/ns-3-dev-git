@@ -27,7 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 
 #define BSS_MEMBERSHIP_SELECTOR_HT_PHY 127
 #define BSS_MEMBERSHIP_SELECTOR_VHT_PHY 126
-#define BSS_MEMBERSHIP_SELECTOR_HE_PHY 125
+#define BSS_MEMBERSHIP_SELECTOR_HE_PHY 122
+#define BSS_MEMBERSHIP_SELECTOR_EHT_PHY 121  // TODO not defined yet as of 802.11be D1.4
 
 SupportedRates::SupportedRates ()
   : extended (this),
@@ -98,8 +99,9 @@ SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
   NS_ASSERT_MSG (bs == BSS_MEMBERSHIP_SELECTOR_HT_PHY ||
- 	         bs == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
- 	         bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY,
+ 	               bs == BSS_MEMBERSHIP_SELECTOR_VHT_PHY ||
+                 bs == BSS_MEMBERSHIP_SELECTOR_HE_PHY ||
+                 bs == BSS_MEMBERSHIP_SELECTOR_EHT_PHY,
                  "Value " << bs << " not a BSS Membership Selector");
   uint8_t rate = static_cast<uint8_t> (bs / 500000);
   for (uint8_t i = 0; i < m_nRates; i++)
@@ -151,7 +153,8 @@ SupportedRates::IsBssMembershipSelectorRate (uint64_t bs) const
   NS_LOG_FUNCTION (this << bs);
   if ((bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY
       || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_VHT_PHY
-      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY)
+      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HE_PHY
+      || (bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_EHT_PHY)
     {
       return true;
     }
