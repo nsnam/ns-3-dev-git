@@ -70,11 +70,11 @@ public:
   void SetChannel (Ptr<SpectrumChannel> c);
   void SetMobility (Ptr<MobilityModel> m);
   void SetDevice (Ptr<NetDevice> d);
-  Ptr<MobilityModel> GetMobility ();
+  Ptr<MobilityModel> GetMobility () const;
   Ptr<NetDevice> GetDevice () const;
   // device does not use Rx but these pure virtual methods must be implemented
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<AntennaModel> GetRxAntenna ();
+  Ptr<AntennaModel> GetRxAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
   /** 

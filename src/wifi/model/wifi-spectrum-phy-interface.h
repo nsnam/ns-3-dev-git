@@ -57,10 +57,10 @@ public:
   Ptr<NetDevice> GetDevice () const;
   void SetDevice (const Ptr<NetDevice> d);
   void SetMobility (const Ptr<MobilityModel> m);
-  Ptr<MobilityModel> GetMobility ();
+  Ptr<MobilityModel> GetMobility () const;
   void SetChannel (const Ptr<SpectrumChannel> c);
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  Ptr<AntennaModel> GetRxAntenna ();
+  Ptr<AntennaModel> GetRxAntenna () const;
   void StartRx (Ptr<SpectrumSignalParameters> params);
 
 

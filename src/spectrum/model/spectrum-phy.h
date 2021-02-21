@@ -81,7 +81,7 @@ public:
    *
    * @return a Ptr to the associated MobilityModel instance
    */
-  virtual Ptr<MobilityModel> GetMobility () = 0;
+  virtual Ptr<MobilityModel> GetMobility () const = 0;
 
   /**
    * Set the channel attached to this device.
@@ -103,7 +103,7 @@ public:
    *
    * @return a Ptr to the AntennaModel used by the NetDevice for reception
    */
-  virtual Ptr<AntennaModel> GetRxAntenna () = 0;
+  virtual Ptr<AntennaModel> GetRxAntenna () const = 0;
 
   /**
    * Notify the SpectrumPhy instance of an incoming signal

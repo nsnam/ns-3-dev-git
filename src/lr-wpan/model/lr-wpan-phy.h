@@ -276,7 +276,7 @@ public:
 
   // inherited from SpectrumPhy
   void SetMobility (Ptr<MobilityModel> m);
-  Ptr<MobilityModel> GetMobility (void);
+  Ptr<MobilityModel> GetMobility (void) const;
   void SetChannel (Ptr<SpectrumChannel> c);
 
   /**
@@ -294,7 +294,7 @@ public:
    * \param a the antenna
    */
   void SetAntenna (Ptr<AntennaModel> a);
-  Ptr<AntennaModel> GetRxAntenna (void);
+  Ptr<AntennaModel> GetRxAntenna (void) const;
   virtual Ptr<const SpectrumModel> GetRxSpectrumModel (void) const;
 
   /**

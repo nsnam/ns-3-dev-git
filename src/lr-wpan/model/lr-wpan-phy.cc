@@ -206,7 +206,7 @@ LrWpanPhy::GetDevice (void) const
 
 
 Ptr<MobilityModel>
-LrWpanPhy::GetMobility (void)
+LrWpanPhy::GetMobility (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_mobility;
@@ -260,7 +260,7 @@ LrWpanPhy::GetRxSpectrumModel (void) const
 }
 
 Ptr<AntennaModel>
-LrWpanPhy::GetRxAntenna (void)
+LrWpanPhy::GetRxAntenna (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_antenna;

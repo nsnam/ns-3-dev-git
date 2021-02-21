@@ -105,7 +105,7 @@ WaveformGenerator::GetDevice () const
 
 
 Ptr<MobilityModel>
-WaveformGenerator::GetMobility ()
+WaveformGenerator::GetMobility () const
 {
   return m_mobility;
 }
@@ -155,7 +155,7 @@ WaveformGenerator::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 }
 
 Ptr<AntennaModel>
-WaveformGenerator::GetRxAntenna ()
+WaveformGenerator::GetRxAntenna () const
 {
   return m_antenna;
 }

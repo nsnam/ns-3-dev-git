@@ -66,7 +66,7 @@ WifiSpectrumPhyInterface::GetDevice () const
 }
 
 Ptr<MobilityModel>
-WifiSpectrumPhyInterface::GetMobility ()
+WifiSpectrumPhyInterface::GetMobility () const
 {
   return m_spectrumWifiPhy->GetMobility ();
 }
@@ -97,7 +97,7 @@ WifiSpectrumPhyInterface::GetRxSpectrumModel () const
 }
 
 Ptr<AntennaModel>
-WifiSpectrumPhyInterface::GetRxAntenna (void)
+WifiSpectrumPhyInterface::GetRxAntenna (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_spectrumWifiPhy->GetRxAntenna ();

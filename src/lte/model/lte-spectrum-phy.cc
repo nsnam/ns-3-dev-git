@@ -267,7 +267,7 @@ LteSpectrumPhy::GetDevice () const
 
 
 Ptr<MobilityModel>
-LteSpectrumPhy::GetMobility ()
+LteSpectrumPhy::GetMobility () const
 {
   NS_LOG_FUNCTION (this);
   return m_mobility;
@@ -404,7 +404,7 @@ LteSpectrumPhy::SetLtePhyUlHarqFeedbackCallback (LtePhyUlHarqFeedbackCallback c)
 
 
 Ptr<AntennaModel>
-LteSpectrumPhy::GetRxAntenna ()
+LteSpectrumPhy::GetRxAntenna () const
 {
   return m_antenna;
 }
