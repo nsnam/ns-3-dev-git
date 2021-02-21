@@ -355,6 +355,33 @@ YansErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& tx
                                    );
             }
         }
+      else if (mode.GetConstellationSize () == 4096)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_5_6)
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   txVector.GetChannelWidth () * 1000000, // signal spread
+                                   mode.GetPhyRate (txVector), //PHY rate
+                                   4096, // m
+                                   4,  // dFree
+                                   14,  // adFree
+                                   69  // adFreePlusOne
+                                   );
+            }
+          else
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   txVector.GetChannelWidth () * 1000000, // signal spread
+                                   mode.GetPhyRate (txVector), //PHY rate
+                                   4096, // m
+                                   5,  // dFree
+                                   8,  // adFree
+                                   31  // adFreePlusOne
+                                   );
+            }
+        }
     }
   return 0;
 }
