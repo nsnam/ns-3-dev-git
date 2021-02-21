@@ -36,6 +36,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/eht-configuration.h"
 #include "ns3/obss-pd-algorithm.h"
 #include "ns3/wifi-mac-trailer.h"
 #include "wifi-helper.h"
@@ -717,6 +718,11 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         {
           Ptr<HeConfiguration> heConfiguration = CreateObject<HeConfiguration> ();
           device->SetHeConfiguration (heConfiguration);
+        }
+      if (m_standard >= WIFI_STANDARD_80211be)
+        {
+          Ptr<EhtConfiguration> ehtConfiguration = CreateObject<EhtConfiguration> ();
+          device->SetEhtConfiguration (ehtConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);

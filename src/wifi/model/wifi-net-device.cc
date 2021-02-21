@@ -30,6 +30,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/vht-configuration.h"
 #include "ns3/he-configuration.h"
+#include "ns3/eht-configuration.h"
 
 namespace ns3 {
 
@@ -83,6 +84,11 @@ WifiNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::GetHeConfiguration),
                    MakePointerChecker<HeConfiguration> ())
+    .AddAttribute ("EhtConfiguration",
+                   "The EhtConfiguration object.",
+                   PointerValue (),
+                   MakePointerAccessor (&WifiNetDevice::GetEhtConfiguration),
+                   MakePointerChecker<EhtConfiguration> ())
   ;
   return tid;
 }
@@ -133,6 +139,11 @@ WifiNetDevice::DoDispose (void)
     {
       m_heConfiguration->Dispose ();
       m_heConfiguration = 0;
+    }
+  if (m_ehtConfiguration)
+    {
+      m_ehtConfiguration->Dispose ();
+      m_ehtConfiguration = 0;
     }
   NetDevice::DoDispose ();
 }
@@ -495,6 +506,18 @@ Ptr<HeConfiguration>
 WifiNetDevice::GetHeConfiguration (void) const
 {
   return (m_standard >= WIFI_STANDARD_80211ax ? m_heConfiguration : nullptr);
+}
+
+void
+WifiNetDevice::SetEhtConfiguration (Ptr<EhtConfiguration> ehtConfiguration)
+{
+  m_ehtConfiguration = ehtConfiguration;
+}
+
+Ptr<EhtConfiguration>
+WifiNetDevice::GetEhtConfiguration (void) const
+{
+  return (m_standard >= WIFI_STANDARD_80211be ? m_ehtConfiguration : nullptr);
 }
 
 } //namespace ns3

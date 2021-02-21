@@ -33,6 +33,7 @@ class WifiMac;
 class HtConfiguration;
 class VhtConfiguration;
 class HeConfiguration;
+class EhtConfiguration;
 
 /// This value conforms to the 802.11 specification
 static const uint16_t MAX_MSDU_SIZE = 2304;
@@ -129,6 +130,14 @@ public:
    * \return pointer to HeConfiguration if it exists
    */
   Ptr<HeConfiguration> GetHeConfiguration (void) const;
+  /**
+   * \param ehtConfiguration pointer to EhtConfiguration
+   */
+  void SetEhtConfiguration (Ptr<EhtConfiguration> ehtConfiguration);
+  /**
+   * \return pointer to EhtConfiguration if it exists
+   */
+  Ptr<EhtConfiguration> GetEhtConfiguration (void) const;
 
   void SetIfIndex (const uint32_t index) override;
   uint32_t GetIfIndex (void) const override;
@@ -193,6 +202,7 @@ private:
   Ptr<HtConfiguration> m_htConfiguration; //!< the HtConfiguration
   Ptr<VhtConfiguration> m_vhtConfiguration; //!< the VhtConfiguration
   Ptr<HeConfiguration> m_heConfiguration; //!< the HeConfiguration
+  Ptr<EhtConfiguration> m_ehtConfiguration; //!< the EhtConfiguration
   NetDevice::ReceiveCallback m_forwardUp; //!< forward up callback
   NetDevice::PromiscReceiveCallback m_promiscRx; //!< promiscuous receive callback
 
