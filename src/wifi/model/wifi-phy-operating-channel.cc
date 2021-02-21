@@ -71,7 +71,7 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
   { std::make_tuple (10, 2457, 40, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_2_4GHZ) },
   { std::make_tuple (11, 2462, 40, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_2_4GHZ) },
 
-  // Now the 5 GHz channels used for 802.11a/n/ac/ax
+  // Now the 5 GHz channels used for 802.11a/n/ac/ax/be
   // 20 MHz channels
   { std::make_tuple (36, 5180, 20, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_5GHZ) },
   { std::make_tuple (40, 5200, 20, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_5GHZ) },
@@ -148,7 +148,7 @@ const std::set<FrequencyChannelInfo> WifiPhyOperatingChannel::m_frequencyChannel
   { std::make_tuple (181, 5910, 5, WIFI_PHY_80211p_CHANNEL, WIFI_PHY_BAND_5GHZ) },
   { std::make_tuple (183, 5920, 5, WIFI_PHY_80211p_CHANNEL, WIFI_PHY_BAND_5GHZ) },
 
-  // Now the 6 GHz channels (802.11ax only)
+  // Now the 6 GHz channels for 802.11ax/be
   // 20 MHz channels
   { std::make_tuple (1, 5945, 20, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ) },
   { std::make_tuple (5, 5965, 20, WIFI_PHY_OFDM_CHANNEL, WIFI_PHY_BAND_6GHZ) },

@@ -44,7 +44,7 @@
 #include "wifi-ppdu.h"
 #include "ns3/dsss-phy.h"
 #include "ns3/erp-ofdm-phy.h"
-#include "ns3/he-phy.h" //includes OFDM, HT, and VHT
+#include "ns3/eht-phy.h" //also includes OFDM, HT, VHT and HE
 
 namespace ns3 {
 
@@ -870,6 +870,7 @@ WifiPhy::Configure80211be (void)
 {
   NS_LOG_FUNCTION (this);
   Configure80211ax ();
+  AddPhyEntity (WIFI_MOD_CLASS_EHT, Create<EhtPhy> ());
 }
 
 void
