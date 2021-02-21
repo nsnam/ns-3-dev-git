@@ -30,10 +30,10 @@ uint16_t
 ConvertGuardIntervalToNanoSeconds (WifiMode mode, const Ptr<WifiNetDevice> device)
 {
   uint16_t gi = 800;
-  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+  if (mode.GetModulationClass () >= WIFI_MOD_CLASS_HE)
     {
       Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
-      NS_ASSERT (heConfiguration); //If HE modulation is used, we should have a HE configuration attached
+      NS_ASSERT (heConfiguration); //If HE/EHT modulation is used, we should have a HE configuration attached
       gi = static_cast<uint16_t> (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
     }
   else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
@@ -49,7 +49,7 @@ uint16_t
 ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval)
 {
   uint16_t gi;
-  if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
+  if (mode.GetModulationClass () >= WIFI_MOD_CLASS_HE)
     {
       gi = static_cast<uint16_t> (heGuardInterval.GetNanoSeconds ());
     }
@@ -94,7 +94,11 @@ GetChannelWidthForTransmission (WifiMode mode, uint16_t operatingChannelWidth,
 WifiPreamble
 GetPreambleForTransmission (WifiModulationClass modulation, bool useShortPreamble)
 {
-  if (modulation == WIFI_MOD_CLASS_HE)
+  if (modulation == WIFI_MOD_CLASS_EHT)
+    {
+      return WIFI_PREAMBLE_EHT_MU;
+    }
+  else if (modulation == WIFI_MOD_CLASS_HE)
     {
       return WIFI_PREAMBLE_HE_SU;
     }
@@ -132,6 +136,7 @@ IsAllowedControlAnswerModulationClass (WifiModulationClass modClassReq, WifiModu
     case WIFI_MOD_CLASS_HT:
     case WIFI_MOD_CLASS_VHT:
     case WIFI_MOD_CLASS_HE:
+    case WIFI_MOD_CLASS_EHT:
       return true;
     default:
       NS_FATAL_ERROR ("Modulation class not defined");
@@ -153,6 +158,8 @@ GetPpduMaxTime (WifiPreamble preamble)
       case WIFI_PREAMBLE_HE_ER_SU:
       case WIFI_PREAMBLE_HE_MU:
       case WIFI_PREAMBLE_HE_TB:
+      case WIFI_PREAMBLE_EHT_MU:
+      case WIFI_PREAMBLE_EHT_TB:
         duration = MicroSeconds (5484);
         break;
       default:
@@ -171,13 +178,13 @@ IsMu (WifiPreamble preamble)
 bool
 IsDlMu (WifiPreamble preamble)
 {
-  return (preamble == WIFI_PREAMBLE_HE_MU);
+  return ((preamble == WIFI_PREAMBLE_HE_MU) || (preamble == WIFI_PREAMBLE_EHT_MU));
 }
 
 bool
 IsUlMu (WifiPreamble preamble)
 {
-  return (preamble == WIFI_PREAMBLE_HE_TB);
+  return ((preamble == WIFI_PREAMBLE_HE_TB) || (preamble == WIFI_PREAMBLE_EHT_TB));
 }
 
 } //namespace ns3
