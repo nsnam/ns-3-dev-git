@@ -996,7 +996,7 @@ LteEnbMac::DoAllocateNcRaPreamble (uint16_t rnti)
        */
       if ((it != m_allocatedNcRaPreambleMap.end ()) && (it->second.expiryTime < Simulator::Now ()))
         {
-          if (!m_cmacSapUser->IsRandomAccessCompleted (rnti))
+          if (!m_cmacSapUser->IsRandomAccessCompleted (it->second.rnti))
             {
               //random access of the UE is not completed,
               //check other preambles
