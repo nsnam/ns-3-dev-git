@@ -178,7 +178,6 @@ FdNetDevice::FdNetDevice ()
     m_stopEvent ()
 {
   NS_LOG_FUNCTION (this);
-  Start (m_tStart);
 }
 
 FdNetDevice::FdNetDevice (FdNetDevice const &)
@@ -188,6 +187,19 @@ FdNetDevice::FdNetDevice (FdNetDevice const &)
 FdNetDevice::~FdNetDevice ()
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+FdNetDevice::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  Start (m_tStart);
+  if (m_tStop != Seconds (0))
+    {
+        Stop (m_tStop);
+    }
+
+  NetDevice::DoInitialize ();
 }
 
 void
@@ -226,7 +238,7 @@ FdNetDevice::Stop (Time tStop)
 {
   NS_LOG_FUNCTION (tStop);
   Simulator::Cancel (m_stopEvent);
-  m_startEvent = Simulator::Schedule (tStop, &FdNetDevice::StopDevice, this);
+  m_stopEvent = Simulator::Schedule (tStop, &FdNetDevice::StopDevice, this);
 }
 
 void
