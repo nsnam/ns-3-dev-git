@@ -278,6 +278,7 @@ def ns3_python_bindings(bld):
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['DEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_34=', 'NS3_DEPRECATED_H'])
     defines.extend(['NS_DEPRECATED_3_32=', 'NS3_DEPRECATED_H'])
     defines.extend(['NS_DEPRECATED_3_31=', 'NS3_DEPRECATED_H'])
     defines.extend(['NS_DEPRECATED_3_30=', 'NS3_DEPRECATED_H'])

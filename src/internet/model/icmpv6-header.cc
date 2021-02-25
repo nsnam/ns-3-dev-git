@@ -503,7 +503,6 @@ Icmpv6RA::Icmpv6RA ()
   NS_LOG_FUNCTION (this);
   SetType (ICMPV6_ND_ROUTER_ADVERTISEMENT);
   SetCode (0);
-  SetFlags (0);
   SetFlagM (0);
   SetFlagO (0);
   SetFlagH (0);
@@ -605,13 +604,12 @@ void Icmpv6RA::SetFlagH (bool h)
 uint8_t Icmpv6RA::GetFlags () const
 {
   NS_LOG_FUNCTION (this);
-  return m_flags;
+  return 0;
 }
 
 void Icmpv6RA::SetFlags (uint8_t f)
 {
   NS_LOG_FUNCTION (this << static_cast<uint32_t> (f));
-  m_flags = f;
 }
 
 void Icmpv6RA::Print (std::ostream& os) const
@@ -674,22 +672,22 @@ uint32_t Icmpv6RA::Deserialize (Buffer::Iterator start)
   SetCode (i.ReadU8 ());
   m_checksum = i.ReadU16 ();
   SetCurHopLimit (i.ReadU8 ());
-  m_flags = i.ReadU8 ();
+  uint8_t flags = i.ReadU8 ();
   m_flagM = false;
   m_flagO = false;
   m_flagH = false;
 
-  if (m_flags & (1 << 7))
+  if (flags & (1 << 7))
     {
       m_flagM = true;
     }
 
-  if (m_flags & (1 << 6))
+  if (flags & (1 << 6))
     {
       m_flagO = true;
     }
 
-  if (m_flags & (1 << 5))
+  if (flags & (1 << 5))
     {
       m_flagH = true;
     }

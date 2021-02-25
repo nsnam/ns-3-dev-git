@@ -64,6 +64,15 @@
 
 /**
  * \ingroup core
+ * \def NS_DEPRECATED_3_34
+ * Tag for things deprecated in version ns-3.34.
+ */
+#ifdef NS_DEPRECATED
+#define NS_DEPRECATED_3_34 NS_DEPRECATED
+#endif
+
+/**
+ * \ingroup core
  * \def NS_DEPRECATED_3_32
  * Tag for things deprecated in version ns-3.32.
  */
