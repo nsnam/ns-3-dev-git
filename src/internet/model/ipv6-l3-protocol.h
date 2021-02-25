@@ -210,10 +210,11 @@ public:
   /**
    * \brief Add an address on interface.
    * \param i interface index
-   * \param address to add
+   * \param address address to add
+   * \param addOnLinkRoute add on-link route to the network (default true)
    * \returns true if the operation succeeded
    */
-  bool AddAddress (uint32_t i, Ipv6InterfaceAddress address);
+  bool AddAddress (uint32_t i, Ipv6InterfaceAddress address, bool addOnLinkRoute = true);
 
   /**
    * \brief Get an address.

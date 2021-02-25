@@ -684,18 +684,23 @@ void Ipv6StaticRouting::NotifyInterfaceUp (uint32_t i)
 {
   for (uint32_t j = 0; j < m_ipv6->GetNAddresses (i); j++)
     {
-      if (m_ipv6->GetAddress (i, j).GetAddress () != Ipv6Address ()
-          && m_ipv6->GetAddress (i, j).GetPrefix () != Ipv6Prefix ())
+      Ipv6InterfaceAddress addr = m_ipv6->GetAddress (i, j);
+
+      if (addr.GetAddress () != Ipv6Address ()
+          && addr.GetPrefix () != Ipv6Prefix ())
         {
-          if (m_ipv6->GetAddress (i, j).GetPrefix () == Ipv6Prefix (128))
+          if (addr.GetPrefix () == Ipv6Prefix (128))
             {
               /* host route */
-              AddHostRouteTo (m_ipv6->GetAddress (i, j).GetAddress (), i);
+              AddHostRouteTo (addr.GetAddress (), i);
             }
           else
             {
-              AddNetworkRouteTo (m_ipv6->GetAddress (i, j).GetAddress ().CombinePrefix (m_ipv6->GetAddress (i, j).GetPrefix ()),
-                                 m_ipv6->GetAddress (i, j).GetPrefix (), i);
+              if (addr.GetOnLink ())
+                {
+                  AddNetworkRouteTo (addr.GetAddress ().CombinePrefix (addr.GetPrefix ()),
+                                     addr.GetPrefix (), i);
+                }
             }
         }
     }
@@ -725,14 +730,6 @@ void Ipv6StaticRouting::NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddre
   if (!m_ipv6->IsUp (interface))
     {
       return;
-    }
-
-  Ipv6Address networkAddress = address.GetAddress ().CombinePrefix (address.GetPrefix ());
-  Ipv6Prefix networkMask = address.GetPrefix ();
-
-  if (address.GetAddress () != Ipv6Address () && address.GetPrefix () != Ipv6Prefix ())
-    {
-      AddNetworkRouteTo (networkAddress, networkMask, interface);
     }
 }
 
@@ -768,7 +765,11 @@ void Ipv6StaticRouting::NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAd
 void Ipv6StaticRouting::NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse)
 {
   NS_LOG_INFO (this << dst << mask << nextHop << interface << prefixToUse);
-  if (dst != Ipv6Address::GetZero ())
+  if (nextHop == Ipv6Address::GetZero ())
+    {
+      AddNetworkRouteTo (dst, mask, interface);
+    }
+  else if (dst != Ipv6Address::GetZero ())
     {
       AddNetworkRouteTo (dst, mask, nextHop, interface);
     }

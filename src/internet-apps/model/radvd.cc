@@ -227,17 +227,17 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 
       if ((*jt)->IsOnLinkFlag ())
         {
-          flags += 1 << 7;
+          flags |= Icmpv6OptionPrefixInformation::ONLINK;
         }
 
       if ((*jt)->IsAutonomousFlag ())
         {
-          flags += 1 << 6;
+          flags |= Icmpv6OptionPrefixInformation::AUTADDRCONF;
         }
 
       if ((*jt)->IsRouterAddrFlag ())
         {
-          flags += 1 << 5;
+          flags |= Icmpv6OptionPrefixInformation::ROUTERADDR;
         }
 
       prefixHdr.SetFlags (flags);

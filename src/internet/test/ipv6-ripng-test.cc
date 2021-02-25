@@ -229,7 +229,7 @@ Ipv6RipngTest::DoRun (void)
   Ipv6AddressHelper ipv6;
 
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer iic1 = ipv6.Assign (net1);
+  Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutOnLink (net1);
   iic1.SetForwarding (1, true);
   iic1.SetDefaultRouteInAllNodes (1);
 
@@ -242,7 +242,7 @@ Ipv6RipngTest::DoRun (void)
   iic3.SetForwarding (1, true);
 
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer iic4 = ipv6.Assign (net4);
+  Ipv6InterfaceContainer iic4 = ipv6.AssignWithoutOnLink (net4);
   iic4.SetForwarding (0, true);
   iic4.SetDefaultRouteInAllNodes (0);
 
@@ -459,7 +459,7 @@ Ipv6RipngCountToInfinityTest::DoRun (void)
   Ipv6AddressHelper ipv6;
 
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer iic1 = ipv6.Assign (net1);
+  Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutOnLink (net1);
   iic1.SetForwarding (1, true);
   iic1.SetDefaultRouteInAllNodes (1);
 
@@ -472,7 +472,7 @@ Ipv6RipngCountToInfinityTest::DoRun (void)
   iic3.SetForwarding (1, true);
 
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer iic4 = ipv6.Assign (net4);
+  Ipv6InterfaceContainer iic4 = ipv6.AssignWithoutOnLink (net4);
   iic4.SetForwarding (0, true);
   iic4.SetDefaultRouteInAllNodes (0);
 
@@ -653,7 +653,7 @@ Ipv6RipngSplitHorizonStrategyTest::DoRun (void)
   Ipv6AddressHelper ipv6;
 
   ipv6.SetBase (Ipv6Address ("2001:1::"), Ipv6Prefix (64));
-  Ipv6InterfaceContainer iic0 = ipv6.Assign (net0);
+  Ipv6InterfaceContainer iic0 = ipv6.AssignWithoutOnLink (net0);
 
   Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutAddress (net1);
   iic1.SetForwarding (0, true);

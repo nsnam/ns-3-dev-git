@@ -35,6 +35,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress ()
     m_prefix (Ipv6Prefix ()),
     m_state (TENTATIVE_OPTIMISTIC),
     m_scope (HOST),
+    m_onLink (true),
     m_nsDadUid (0)
 {
   NS_LOG_FUNCTION (this);
@@ -46,6 +47,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (Ipv6Address address)
   m_prefix = Ipv6Prefix (64);
   SetAddress (address);
   SetState (TENTATIVE_OPTIMISTIC);
+  m_onLink = true;
   m_nsDadUid = 0;
 }
 
@@ -55,6 +57,17 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (Ipv6Address address, Ipv6Prefix pref
   m_prefix = prefix;
   SetAddress (address);
   SetState (TENTATIVE_OPTIMISTIC);
+  m_onLink = true;
+  m_nsDadUid = 0;
+}
+
+Ipv6InterfaceAddress::Ipv6InterfaceAddress (Ipv6Address address, Ipv6Prefix prefix, bool onLink)
+{
+  NS_LOG_FUNCTION (this << address << prefix << onLink);
+  m_prefix = prefix;
+  SetAddress (address);
+  SetState (TENTATIVE_OPTIMISTIC);
+  m_onLink = onLink;
   m_nsDadUid = 0;
 }
 
@@ -63,6 +76,7 @@ Ipv6InterfaceAddress::Ipv6InterfaceAddress (const Ipv6InterfaceAddress& o)
     m_prefix (o.m_prefix),
     m_state (o.m_state),
     m_scope (o.m_scope),
+    m_onLink (o.m_onLink),
     m_nsDadUid (o.m_nsDadUid)
 {
 }
@@ -191,6 +205,18 @@ void Ipv6InterfaceAddress::SetNsDadUid (uint32_t nsDadUid)
 {
   NS_LOG_FUNCTION (this << nsDadUid);
   m_nsDadUid = nsDadUid;
+}
+
+bool Ipv6InterfaceAddress::GetOnLink () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_onLink;
+}
+
+void Ipv6InterfaceAddress::SetOnLink (bool onLink)
+{
+  NS_LOG_FUNCTION (this << onLink);
+  m_onLink = onLink;
 }
 
 #if 0

@@ -210,66 +210,30 @@ void Ipv6AddressHelper::NewNetwork (void)
 Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c)
 {
   NS_LOG_FUNCTION (this);
-  Ipv6InterfaceContainer retval;
-
+  std::vector<bool> withConfiguration;
   for (uint32_t i = 0; i < c.GetN (); ++i) 
     {
-      Ptr<NetDevice> device = c.Get (i);
-
-      Ptr<Node> node = device->GetNode ();
-      NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
-
-      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-      NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
-      int32_t ifIndex = 0;
-
-      ifIndex = ipv6->GetInterfaceForDevice (device);
-      if (ifIndex == -1)
-        {
-          ifIndex = ipv6->AddInterface (device);
-        }
-      NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
-                     "Interface index not found");
-
-      // the first round is to make sure that the interface is set up, including its link-local addresses.
-      ipv6->SetUp (ifIndex);
-
-      Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), Ipv6Prefix (64));
-      ipv6->SetMetric (ifIndex, 1);
-      ipv6->AddAddress (ifIndex, ipv6Addr);
-      ipv6->SetUp (ifIndex);
-
-      retval.Add (ipv6, ifIndex);
-
-      // Install the default traffic control configuration if the traffic
-      // control layer has been aggregated, if this is not
-      // a loopback interface, and there is no queue disc installed already
-      Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
-      if (tc && DynamicCast<LoopbackNetDevice> (device) == 0 && tc->GetRootQueueDiscOnDevice (device) == 0)
-        {
-          Ptr<NetDeviceQueueInterface> ndqi = device->GetObject<NetDeviceQueueInterface> ();
-          // It is useless to install a queue disc if the device has no
-          // NetDeviceQueueInterface attached: the device queue is never
-          // stopped and every packet enqueued in the queue disc is
-          // immediately dequeued, hence there will never be backlog
-          if (ndqi)
-            {
-              std::size_t nTxQueues = ndqi->GetNTxQueues ();
-              NS_LOG_LOGIC ("Installing default traffic control configuration ("
-                            << nTxQueues << " device queue(s))");
-              TrafficControlHelper tcHelper = TrafficControlHelper::Default (nTxQueues);
-              tcHelper.Install (device);
-            }
-        }
+      withConfiguration.push_back (true);
     }
-  return retval;
+  return Assign (c, withConfiguration);
 }
 
 Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration)
 {
   NS_LOG_FUNCTION (this);
+  std::vector<bool> onLink;
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      onLink.push_back (true);
+    }
+  return Assign (c, withConfiguration, onLink);
+}
+
+Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration, std::vector<bool> onLink)
+{
+  NS_LOG_FUNCTION (this);
   Ipv6InterfaceContainer retval;
-  for (uint32_t i = 0; i < c.GetN (); ++i) 
+  for (uint32_t i = 0; i < c.GetN (); ++i)
     {
       Ptr<NetDevice> device = c.Get (i);
 
@@ -294,8 +258,8 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c, s
 
       if (withConfiguration.at (i))
         {
-          Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), Ipv6Prefix (64));
-          ipv6->AddAddress (ifIndex, ipv6Addr);
+          Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), Ipv6Prefix (64), onLink.at(i));
+          ipv6->AddAddress (ifIndex, ipv6Addr, onLink.at(i));
         }
 
       ipv6->SetUp (ifIndex);
@@ -335,6 +299,19 @@ Ipv6InterfaceContainer Ipv6AddressHelper::AssignWithoutAddress (const NetDeviceC
       withConfiguration.push_back (false);
     }
   return Assign (c, withConfiguration);
+}
+
+Ipv6InterfaceContainer Ipv6AddressHelper::AssignWithoutOnLink (const NetDeviceContainer &c)
+{
+  NS_LOG_FUNCTION (this);
+  std::vector<bool> withConfiguration;
+  std::vector<bool> onLink;
+  for (uint32_t i = 0; i < c.GetN (); ++i)
+    {
+      withConfiguration.push_back (true);
+      onLink.push_back (false);
+    }
+  return Assign (c, withConfiguration, onLink);
 }
 
 } /* namespace ns3 */

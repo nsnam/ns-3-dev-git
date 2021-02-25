@@ -185,7 +185,7 @@ Alternatively, it is possible to assign a specific address to a node:
 
 
 Auto-generated IPv6 addresses
-#############################
++++++++++++++++++++++++++++++
 
 This is accomplished by relying on the RADVD protocol, implemented by the class
 :cpp:class:`Radvd`. A helper class is available, which can be used to ease the most
@@ -205,6 +205,17 @@ These addresses will be bases on the RADVD announced prefix and the node's EUI-6
 Examples of RADVD use are shown in ``examples/ipv6/radvd.cc`` 
 and ``examples/ipv6/radvd-two-prefix.cc``.
 
+Note that the router (i.e., the node with :cpp:class:`Radvd`) will have to have a global address,
+while the nodes using the auto-generated addresses (SLAAC) will have to have a link-local address.
+This is accomplised using :cpp:class:`Ipv6AddressHelper::AssignWithoutAddress`, e.g.:
+
+::
+
+    Ipv6AddressHelper ipv6;
+    NetDeviceContainer tmp;
+    tmp.Add (d1.Get (0)); /* n0 */
+    Ipv6InterfaceContainer iic1 = ipv6.AssignWithoutAddress (tmp); /* n0 interface */
+
 
 Random-generated IPv6 addresses
 ###############################
@@ -213,8 +224,27 @@ While IPv6 real nodes will use randomly generated addresses to protect privacy, 
 does NOT have this capability. This feature haven't been so far considered as interesting
 for simulation.
 
+
+Networks with and without the onlink property
++++++++++++++++++++++++++++++++++++++++++++++
+
+IPv6 adds the concept of "on-link" for addresses and prefixes. Simplifying the concept, a
+network with the on-link property behaves roughly as IPv4: a node will assume that any address
+belonging to the on-link prefix is reachable on the link, so it uses Neighbor Discovery Protocol (NDP)
+to find the MAC address corresponding to the IPv6 address.
+If the prefix is not marked as "on-link", then any packet is sent to the defult router.
+
+:cpp:class:`Radvd` can announce prefixes that have the on-link flag not set. Moreover, it is possible
+to add an address to a node without setting the on-link property for the prefix used in the address.
+The function to use is :cpp:class:`Ipv6AddressHelper::AssignWithoutOnLink`.
+
+Note that adding a global address to a node (either manually or using :cpp:class:`Radvd`) will lead to
+a new entry in :cpp:class:`Ipv6StaticRouting`. The lack of :cpp:class:`Ipv6StaticRouting` in a 
+node might trigger an assert.
+
+
 Duplicate Address Detection (DAD)
-#################################
++++++++++++++++++++++++++++++++++
 
 Nodes will perform DAD (it can be disabled using an :cpp:class:`Icmpv6L4Protocol` attribute).
 Upon receiving a DAD, however, nodes will not react to it. As is: DAD reaction is 

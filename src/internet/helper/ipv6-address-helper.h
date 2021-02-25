@@ -155,6 +155,22 @@ public:
   Ipv6InterfaceContainer Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration);
 
   /**
+   * \brief Allocate an Ipv6InterfaceContainer, and control whether the
+   *        interfaces have addresses auto-assigned to them
+   *
+   * \param c netdevice container
+   * \param withConfiguration a vector of values for which, for a
+   *        given device, true : interface automatically addressed,
+   *        false : no automatic address
+   * \param onLink a vector of values for which, for a
+   *        given device, true : on-link property added,
+   *        false : network is not on-link
+   *        Meaningful only if the address is automatically assigned.
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration, std::vector<bool> onLink);
+
+  /**
    * \brief Allocate an Ipv6InterfaceContainer but do not assign any IPv6 addresses
    *
    * This method is used when IPv6 address assignment may occur later
@@ -166,6 +182,18 @@ public:
    * \return newly created Ipv6InterfaceContainer
    */
   Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
+
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer with auto-assigned addresses,
+   * but do not set the on-link property for the network.
+   *
+   * This method will assign a valid global address to the interface but
+   * the routing will not consider the network as "on-link".
+   *
+   * \param c netdevice container
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer AssignWithoutOnLink (const NetDeviceContainer &c);
 
 private:
   Ipv6Address m_network; //!< network address
