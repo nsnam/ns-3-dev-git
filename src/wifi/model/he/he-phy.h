@@ -157,6 +157,13 @@ public:
    * \return the spectrum band used to transmit the non-OFDMA part of an HE TB PPDU
    */
   WifiSpectrumBand GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const;
+  /**
+   * Get the width in MHz of the non-OFDMA portion of an HE TB PPDU
+   *
+   * \param ru the RU in which the HE TB PPDU is sent
+   * \return the width in MHz of the non-OFDMA portion of an HE TB PPDU
+   */
+  uint16_t GetNonOfdmaWidth (HeRu::RuSpec ru) const;
 
   /**
    * \return the UID of the HE TB PPDU being received

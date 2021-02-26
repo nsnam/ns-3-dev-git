@@ -767,8 +767,7 @@ HePhy::GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const
   NS_ASSERT (channelWidth <= m_wifiPhy->GetChannelWidth ());
 
   HeRu::RuSpec ru = txVector.GetRu (staId);
-  uint16_t ruWidth = HeRu::GetBandwidth (ru.ruType);
-  uint16_t nonOfdmaWidth = ruWidth < 20 ? 20 : ruWidth;
+  uint16_t nonOfdmaWidth = GetNonOfdmaWidth (ru);
 
   // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
   HeRu::RuSpec nonOfdmaRu = HeRu::FindOverlappingRu (channelWidth, ru, HeRu::GetRuType (nonOfdmaWidth));
@@ -777,6 +776,18 @@ HePhy::GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const
   HeRu::SubcarrierRange range = std::make_pair (groupPreamble.front ().first, groupPreamble.back ().second);
   return m_wifiPhy->ConvertHeRuSubcarriers (channelWidth, GetGuardBandwidth (m_wifiPhy->GetChannelWidth ()), range,
                                             m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (channelWidth));
+}
+
+uint16_t
+HePhy::GetNonOfdmaWidth (HeRu::RuSpec ru) const
+{
+  if (ru.ruType == HeRu::RU_26_TONE && ru.index == 19)
+    {
+      // the center 26-tone RU in an 80 MHz channel is not fully covered by
+      // any 20 MHz channel, but only by an 80 MHz channel
+      return 80;
+    }
+  return std::max<uint16_t> (HeRu::GetBandwidth (ru.ruType), 20);
 }
 
 uint64_t
@@ -864,8 +875,7 @@ HePhy::GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t
   uint16_t currentWidth = txVector.GetChannelWidth ();
 
   HeRu::RuSpec ru = txVector.GetRu (staId);
-  uint16_t ruWidth = HeRu::GetBandwidth (ru.ruType);
-  uint16_t nonOfdmaWidth = ruWidth < 20 ? 20 : ruWidth;
+  uint16_t nonOfdmaWidth = GetNonOfdmaWidth (ru);
   if (nonOfdmaWidth != currentWidth)
     {
       //Obtain the index of the non-OFDMA portion
