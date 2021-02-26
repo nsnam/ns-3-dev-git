@@ -1071,4 +1071,26 @@ PhyEntity::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& tx
   return WifiPhy::CalculateTxDuration (it->second->GetSize (), txVector, band, it->first);
 }
 
+bool
+PhyEntity::CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const
+{
+  NS_LOG_FUNCTION (this << ppdu << txCenterFreq);
+
+  uint16_t txChannelWidth = ppdu->GetTxVector ().GetChannelWidth ();
+  uint16_t minTxFreq = txCenterFreq - txChannelWidth / 2;
+  uint16_t maxTxFreq = txCenterFreq + txChannelWidth / 2;
+
+  // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
+  uint16_t width = (m_wifiPhy->GetChannelWidth () % 20 == 0 ? 20 : m_wifiPhy->GetChannelWidth ());
+  uint16_t minP20Freq = m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) - width / 2;
+  uint16_t maxP20Freq = m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) + width / 2;
+
+  if (minTxFreq > minP20Freq || maxTxFreq < maxP20Freq)
+    {
+      NS_LOG_INFO ("Received PPDU does not overlap with the primary20 channel");
+      return false;
+    }
+  return true;
+}
+
 } //namespace ns3

@@ -186,7 +186,7 @@ WifiPhyOperatingChannel::SetPrimary20Index (uint8_t index)
 uint16_t
 WifiPhyOperatingChannel::GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const
 {
-  uint16_t freq = GetFrequency () - GetWidth () / 2
+  uint16_t freq = GetFrequency () - GetWidth () / 2.
                   + (GetPrimaryChannelIndex (primaryChannelWidth) + 0.5) * primaryChannelWidth;
 
   NS_LOG_FUNCTION (this << primaryChannelWidth << freq);

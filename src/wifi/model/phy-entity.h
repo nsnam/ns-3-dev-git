@@ -468,6 +468,18 @@ public:
    */
   virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const;
 
+  /**
+   * Check whether the given PPDU can be received by this PHY entity. Normally,
+   * a PPDU can be received if it is transmitted over a channel that overlaps
+   * the primary20 channel of this PHY entity.
+   *
+   * \param ppdu the given PPDU
+   * \param txCenterFreq the center frequency (MHz) of the channel over which the
+   *        PPDU is transmitted
+   * \return true if this PPDU can be received, false otherwise
+   */
+  virtual bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const;
+
 protected:
   /**
    * A map of PPDU field elements per preamble type.

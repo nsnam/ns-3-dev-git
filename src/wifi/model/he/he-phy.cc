@@ -921,6 +921,19 @@ HePhy::GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const
     }
 }
 
+bool
+HePhy::CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const
+{
+  NS_LOG_FUNCTION (this << ppdu << txCenterFreq);
+
+  if (ppdu->GetTxVector ().IsUlMu ())
+    {
+      // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
+      return true;
+    }
+  return VhtPhy::CanReceivePpdu (ppdu, txCenterFreq);
+}
+
 Time
 HePhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const
 {

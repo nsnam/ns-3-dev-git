@@ -26,7 +26,7 @@
 #include "ns3/log.h"
 #include "ns3/double.h"
 #include "ns3/boolean.h"
-#include "ns3/net-device.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "spectrum-wifi-phy.h"
@@ -372,6 +372,26 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
       return;
+    }
+  // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
+  // does not overlap with the receiver's primary20 channel
+  if (wifiRxParams->txPhy != 0)
+    {
+      Ptr<WifiNetDevice> dev = DynamicCast<WifiNetDevice> (rxParams->txPhy->GetDevice ());
+      NS_ASSERT (dev != 0);
+      Ptr<WifiPhy> txPhy = dev->GetPhy ();
+      NS_ASSERT (txPhy != 0);
+      uint16_t txChannelWidth = wifiRxParams->ppdu->GetTxVector ().GetChannelWidth ();
+      uint16_t txCenterFreq = txPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txChannelWidth);
+
+      if (!GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->CanReceivePpdu (wifiRxParams->ppdu, txCenterFreq))
+        {
+          NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
+          m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),
+                              rxDuration, rxPowerW);
+          SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (wifiRxParams->ppdu));
+          return;
+        }
     }
 
   NS_LOG_INFO ("Received Wi-Fi signal");
