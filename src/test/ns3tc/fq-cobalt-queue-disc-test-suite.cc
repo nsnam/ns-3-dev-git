@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2020 NITK Surathkal (adapted for COBALT)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,7 +18,8 @@
  *
  * Authors: Pasquale Imputato <p.imputato@gmail.com>
  *          Stefano Avallone <stefano.avallone@unina.it>
-*/
+ * Modified by: Bhaskar Kataria <bhaskar.k7920@gmail.com> (COBALT changes)
+ */
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"

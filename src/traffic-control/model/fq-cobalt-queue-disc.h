@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2020 NITK Surathkal
+ * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2020 NITK Surathkal (adapted for COBALT)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,8 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Bhaskar Kataria <bhaskar.k7920@gmail.com>
- *          Tom Henderson <tomhend@u.washington.edu> 
+ * Authors: Pasquale Imputato <p.imputato@gmail.com>
+ *          Stefano Avallone <stefano.avallone@unina.it>
+ * Modified by: Bhaskar Kataria <bhaskar.k7920@gmail.com> (for COBALT)
+ *          Tom Henderson <tomhend@u.washington.edu>
  *          Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  *          Vivek Jain <jain.vivek.anand@gmail.com>
  *          Ankit Deepak <adadeepak8@gmail.com>
@@ -38,7 +41,8 @@ namespace ns3 {
  * \brief A flow queue used by the FqCobalt queue disc
  */
 
-class FqCobaltFlow : public QueueDiscClass {
+class FqCobaltFlow : public QueueDiscClass
+{
 public:
   /**
    * \brief Get the type ID.
@@ -57,11 +61,11 @@ public:
    * \brief Used to determine the status of this flow queue
    */
   enum FlowStatus
-    {
-      INACTIVE,
-      NEW_FLOW,
-      OLD_FLOW
-    };
+  {
+    INACTIVE,
+    NEW_FLOW,
+    OLD_FLOW
+  };
 
   /**
    * \brief Set the deficit for this flow
@@ -112,7 +116,8 @@ private:
  * \brief A FqCobalt packet queue disc
  */
 
-class FqCobaltQueueDisc : public QueueDisc {
+class FqCobaltQueueDisc : public QueueDisc
+{
 public:
   /**
    * \brief Get the type ID.
@@ -126,19 +131,19 @@ public:
 
   virtual ~FqCobaltQueueDisc ();
 
-   /**
-    * \brief Set the quantum value.
-    *
-    * \param quantum The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
-    */
-   void SetQuantum (uint32_t quantum);
+  /**
+   * \brief Set the quantum value.
+   *
+   * \param quantum The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
+   */
+  void SetQuantum (uint32_t quantum);
 
-   /**
-    * \brief Get the quantum value.
-    *
-    * \returns The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
-    */
-   uint32_t GetQuantum (void) const;
+  /**
+   * \brief Get the quantum value.
+   *
+   * \returns The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
+   */
+  uint32_t GetQuantum (void) const;
 
   // Reasons for dropping packets
   static constexpr const char* UNCLASSIFIED_DROP = "Unclassified drop";  //!< No packet filter able to classify packet

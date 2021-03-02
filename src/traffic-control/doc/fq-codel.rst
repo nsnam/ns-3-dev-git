@@ -2,6 +2,8 @@
 .. highlight:: cpp
 .. highlight:: bash
 
+.. _sec-fq-codel:
+
 FqCoDel queue disc
 ------------------
 

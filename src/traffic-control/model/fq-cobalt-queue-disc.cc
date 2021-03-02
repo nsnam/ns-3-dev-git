@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2020 NITK Surathkal (adapted for COBALT)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,7 +18,12 @@
  *
  * Authors: Pasquale Imputato <p.imputato@gmail.com>
  *          Stefano Avallone <stefano.avallone@unina.it>
-*/
+ * Modified by: Bhaskar Kataria <bhaskar.k7920@gmail.com> (for COBALT)
+ *          Tom Henderson <tomhend@u.washington.edu>
+ *          Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ *          Vivek Jain <jain.vivek.anand@gmail.com>
+ *          Ankit Deepak <adadeepak8@gmail.com>
+ */
 
 #include "ns3/log.h"
 #include "ns3/string.h"
@@ -405,7 +411,8 @@ FqCobaltQueueDisc::DoDequeue (void)
         {
           NS_LOG_DEBUG ("Dequeued packet " << item->GetPacket ());
         }
-    } while (item == 0);
+    }
+  while (item == 0);
 
   flow->IncreaseDeficit (item->GetSize () * -1);
 
@@ -458,7 +465,7 @@ FqCobaltQueueDisc::CheckConfig (void)
   // If UseL4S attribute is enabled then CE threshold must be set.
   if (m_useL4s)
     {
-      NS_ABORT_MSG_IF (m_ceThreshold == Time::Max(), "CE threshold not set");
+      NS_ABORT_MSG_IF (m_ceThreshold == Time::Max (), "CE threshold not set");
       if (m_useEcn == false)
         {
           NS_LOG_WARN ("Enabling ECN as L4S mode is enabled");
@@ -514,7 +521,8 @@ FqCobaltQueueDisc::FqCobaltDrop (void)
       item = qd->GetInternalQueue (0)->Dequeue ();
       DropAfterDequeue (item, OVERLIMIT_DROP);
       len += item->GetSize ();
-    } while (++count < m_dropBatchSize && len < threshold);
+    }
+  while (++count < m_dropBatchSize && len < threshold);
 
   return index;
 }

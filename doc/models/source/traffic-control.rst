@@ -13,5 +13,6 @@ Traffic Control Layer
    codel
    fq-codel
    cobalt
+   fq-cobalt
    pie
    mq

@@ -84,21 +84,21 @@ public:
    *
    * \returns The target queue delay
    */
-  Time GetTarget (void);
+  Time GetTarget (void) const;
 
   /**
    * \brief Get the interval
    *
    * \returns The interval
    */
-  Time GetInterval (void);
+  Time GetInterval (void) const;
 
   /**
    * \brief Get the time for next packet drop while in the dropping state
    *
-   * \returns The time for next packet drop
+   * \returns The time (in microseconds) for next packet drop
    */
-  int64_t GetDropNext (void);
+  int64_t GetDropNext (void) const;
 
   static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
@@ -110,7 +110,7 @@ public:
    *
    * \returns The current value of Blue's drop probability
    */
-  double GetPdrop ();
+  double GetPdrop () const;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -128,7 +128,7 @@ public:
    * @param t the input Time Object
    * @return the unsigned 32-bit integer representation
    */
-  int64_t Time2CoDel (Time t);
+  int64_t Time2CoDel (Time t) const;
 
 protected:
   /**
@@ -198,17 +198,21 @@ private:
 
   /**
    * Called when the queue becomes full to alter the drop probabilities of Blue
+   * \param now time in CoDel time units (microseconds)
    */
   void CobaltQueueFull (int64_t now);
 
   /**
    * Called when the queue becomes empty to alter the drop probabilities of Blue
+   * \param now time in CoDel time units (microseconds)
    */
   void CobaltQueueEmpty (int64_t now);
 
   /**
    * Called to decide whether the current packet should be dropped based on decisions taken by Blue and Codel working parallely
    * Returns true if the packet should be dropped, false otherwise
+   * \param item current packet
+   * \param now time in CoDel time units (microseconds)
    */
   bool CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now);
 
@@ -225,8 +229,8 @@ private:
   uint32_t m_recInvSqrtCache[REC_INV_SQRT_CACHE] = {0};   //!< Cache to maintain some initial values of InvSqrt
 
   // Supplied by user
-  Time m_interval;                        //!< 100 ms sliding minimum time window width
-  Time m_target;                          //!< 5 ms target queue delay
+  Time m_interval;                        //!< sliding minimum time window width
+  Time m_target;                          //!< target queue delay
   bool m_useEcn;                          //!< True if ECN is used (packets are marked instead of being dropped)
   Time m_ceThreshold;                     //!< Threshold above which to CE mark
   bool m_useL4s;                          //!< True if L4S is used (ECT1 packets are marked at CE threshold)
@@ -240,7 +244,7 @@ private:
   // Supplied by user
   double m_increment;                     //!< increment value for marking probability
   double m_decrement;                     //!< decrement value for marking probability
-  double m_Pdrop;                         //!< Drop Probability
+  double m_pDrop;                         //!< Drop Probability
 
 };
 

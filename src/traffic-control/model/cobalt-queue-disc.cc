@@ -72,7 +72,7 @@ TypeId CobaltQueueDisc::GetTypeId (void)
     .AddAttribute ("Pdrop",
                    "Marking Probability",
                    DoubleValue (0),
-                   MakeDoubleAccessor (&CobaltQueueDisc::m_Pdrop),
+                   MakeDoubleAccessor (&CobaltQueueDisc::m_pDrop),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Increment",
                    "Pdrop increment value",
@@ -159,9 +159,9 @@ CobaltQueueDisc::CobaltQueueDisc ()
   m_uv = CreateObject<UniformRandomVariable> ();
 }
 
-double CobaltQueueDisc::GetPdrop ()
+double CobaltQueueDisc::GetPdrop () const
 {
-  return m_Pdrop;
+  return m_pDrop;
 }
 
 CobaltQueueDisc::~CobaltQueueDisc ()
@@ -204,25 +204,25 @@ CobaltQueueDisc::CoDelTimeAfterEq (int64_t a, int64_t b)
 }
 
 int64_t
-CobaltQueueDisc::Time2CoDel (Time t)
+CobaltQueueDisc::Time2CoDel (Time t) const
 {
   return (t.GetNanoSeconds ());
 }
 
 Time
-CobaltQueueDisc::GetTarget (void)
+CobaltQueueDisc::GetTarget (void) const
 {
   return m_target;
 }
 
 Time
-CobaltQueueDisc::GetInterval (void)
+CobaltQueueDisc::GetInterval (void) const
 {
   return m_interval;
 }
 
 int64_t
-CobaltQueueDisc::GetDropNext (void)
+CobaltQueueDisc::GetDropNext (void) const
 {
   return m_dropNext;
 }
@@ -408,7 +408,7 @@ void CobaltQueueDisc::CobaltQueueFull (int64_t now)
   if (CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
       NS_LOG_LOGIC ("inside IF block");
-      m_Pdrop = min (m_Pdrop + m_increment, (double)1.0);
+      m_pDrop = min (m_pDrop + m_increment, (double)1.0);
       m_lastUpdateTimeBlue = now;
     }
   m_dropping = true;
@@ -423,9 +423,9 @@ void CobaltQueueDisc::CobaltQueueFull (int64_t now)
 void CobaltQueueDisc::CobaltQueueEmpty (int64_t now)
 {
   NS_LOG_FUNCTION (this);
-  if (m_Pdrop && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
+  if (m_pDrop && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
-      m_Pdrop = max (m_Pdrop - m_decrement, (double)0.0);
+      m_pDrop = max (m_pDrop - m_decrement, (double)0.0);
       m_lastUpdateTimeBlue = now;
     }
   m_dropping = false;
@@ -526,19 +526,19 @@ bool CobaltQueueDisc::CobaltShouldDrop (Ptr<QueueDiscItem> item, int64_t now)
     {
       NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
     }
-  
+
   // Enable Blue Enhancement if sojourn time is greater than blueThreshold and its been m_target time until the last time blue was updated
   if (CoDelTimeAfter (sojournTime, Time2CoDel (m_blueThreshold)) && CoDelTimeAfter ((now - m_lastUpdateTimeBlue), Time2CoDel (m_target)))
     {
-      m_Pdrop = min (m_Pdrop + m_increment, (double)1.0);
+      m_pDrop = min (m_pDrop + m_increment, (double)1.0);
       m_lastUpdateTimeBlue = now;
     }
 
   /* Simple BLUE implementation. Lack of ECN is deliberate. */
-  if (m_Pdrop)
+  if (m_pDrop)
     {
       double u = m_uv->GetValue ();
-      drop = drop | (u < m_Pdrop);
+      drop = drop | (u < m_pDrop);
     }
 
   /* Overload the drop_next field as an activity timeout */
