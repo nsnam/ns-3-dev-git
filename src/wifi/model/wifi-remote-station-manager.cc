@@ -566,7 +566,7 @@ WifiRemoteStationManager::GetCtsToSelfTxVector (void)
                        defaultPreamble,
                        ConvertGuardIntervalToNanoSeconds (defaultMode, DynamicCast<WifiNetDevice> (m_wifiPhy->GetDevice ())),
                        GetNumberOfAntennas (),
-                       GetMaxNumberOfTransmitStreams (),
+                       1,
                        0,
                        GetChannelWidthForTransmission (defaultMode, m_wifiPhy->GetChannelWidth ()),
                        false);
