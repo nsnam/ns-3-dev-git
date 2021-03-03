@@ -1359,7 +1359,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
       uint16_t dlBand = scell.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth;
       uint32_t dlEarfcn = scell.cellIdentification.dlCarrierFreq;
       uint8_t txMode = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode;
-      uint8_t srsIndex = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
+      uint16_t srsIndex = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
 
       m_cphySapProvider.at (ccId)->SynchronizeWithEnb (physCellId, dlEarfcn);
       m_cphySapProvider.at (ccId)->SetDlBandwidth (dlBand);
