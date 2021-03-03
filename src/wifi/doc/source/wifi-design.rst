@@ -595,12 +595,11 @@ The validation scenario is set as follows:
 #. Phase tracking, phase correction, phase noise, carrier frequency offset, power amplifier non-linearities etc. are not considered.
 
 Several packets are simulated across the link to obtain PER, the number of packets needed to reliably
-estimate a PER value is computed using the consideration that ratio of the estimation error to the true
-value should be within 10 % with probability 0.95.
-For each SNR value (using 0.2 dB SNR resolution), simulations were run until either a minimum value
-of 400 unsuccessfully decoded packets were observed or a total of 40000 packets were simulated.
+estimate a PER value is computed using the consideration that the ratio of the estimation error to the
+true value should be within 10 % with probability 0.95.
+For each SNR value, simulations were run until a total of 40000 packets were simulated.
 
-The obtained results are very close to original TGn curves as shown in Figure
+The obtained results are very close to TGax curves as shown in Figure
 :ref:`default-table-based-error-model-validation`
 
 .. _default-table-based-error-model-validation:
@@ -608,7 +607,7 @@ The obtained results are very close to original TGn curves as shown in Figure
 .. figure:: figures/default-table-based-error-model-validation.*
    :scale: 75%
   
-   *Comparison of table-based OFDM Error Model with TGn results.*
+   *Comparison of table-based OFDM Error Model with TGax results.*
 
 Legacy ErrorRateModels
 ######################
