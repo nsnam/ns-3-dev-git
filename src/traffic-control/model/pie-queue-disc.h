@@ -162,7 +162,7 @@ private:
   BurstStateT m_burstState;                     //!< Used to determine the current state of burst
   bool m_inMeasurement;                         //!< Indicates whether we are in a measurement cycle
   double m_avgDqRate;                           //!< Time averaged dequeue rate
-  double m_dqStart;                             //!< Start timestamp of current measurement cycle
+  Time m_dqStart;                               //!< Start timestamp of current measurement cycle
   uint64_t m_dqCount;                           //!< Number of bytes departed since current measurement cycle starts
   EventId m_rtrsEvent;                          //!< Event used to decide the decision of interval of drop probability calculation
   Ptr<UniformRandomVariable> m_uv;              //!< Rng stream

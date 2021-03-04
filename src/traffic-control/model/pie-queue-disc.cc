@@ -225,14 +225,14 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (m_activeThreshold != Time::Max () && !m_active && m_qDelay >= m_activeThreshold)
     {
       m_active = true;
-      m_qDelayOld = Time (Seconds (0));
+      m_qDelayOld = Seconds (0);
       m_dropProb = 0;
       m_inMeasurement = true;
       m_dqCount = 0;
       m_avgDqRate = 0;
       m_burstAllowance = m_maxBurst;
       m_accuProb = 0;
-      m_dqStart = Simulator::Now ().GetSeconds ();
+      m_dqStart = Now ();
     }
 
   // If queue has been Idle for a while, Turn OFF PIE
@@ -260,9 +260,9 @@ PieQueueDisc::InitializeParams (void)
   m_dqCount = DQCOUNT_INVALID;
   m_dropProb = 0;
   m_avgDqRate = 0.0;
-  m_dqStart = 0;
+  m_dqStart = Seconds (0);
   m_burstState = NO_BURST;
-  m_qDelayOld = Time (Seconds (0));
+  m_qDelayOld = Seconds (0);
   m_accuProb = 0.0;
   m_active = false;
 }
@@ -342,11 +342,11 @@ void PieQueueDisc::CalculateP ()
     {
       if (m_avgDqRate > 0)
         {
-          qDelay = Time (Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate));
+          qDelay = Seconds (GetInternalQueue (0)->GetNBytes () / m_avgDqRate);
         }
       else
         {
-          qDelay = Time (Seconds (0));
+          qDelay = Seconds (0);
           missingInitFlag = true;
         }
       m_qDelay = qDelay;
@@ -428,7 +428,7 @@ void PieQueueDisc::CalculateP ()
   // Section 4.4 #2
   if (m_burstAllowance < m_tUpdate)
     {
-      m_burstAllowance =  Time (Seconds (0));
+      m_burstAllowance =  Seconds (0);
     }
   else
     {
@@ -479,12 +479,12 @@ PieQueueDisc::DoDequeue ()
     }
 
   Ptr<QueueDiscItem> item = GetInternalQueue (0)->Dequeue ();
-  double now = Simulator::Now ().GetSeconds ();
-  uint32_t pktSize = item->GetSize ();
+  NS_ASSERT_MSG (item != nullptr, "Dequeue null, but internal queue not empty");
 
-  // If L4S is enabled and packet is ECT1, then check if delay is greater than CE threshold and if it is then mark the packet,
-  // and skip PIE steps, and return the item.
-  if (item && m_useL4s)
+  // If L4S is enabled and packet is ECT1, then check if delay is greater
+  // than CE threshold and if it is then mark the packet,
+  // skip PIE steps, and return the item.
+  if (m_useL4s)
     {
       uint8_t tosByte = 0;
       if (item->GetUint8Value (QueueItem::IP_DSFIELD, tosByte) && (((tosByte & 0x3) == 1) || (tosByte & 0x3) == 3))
@@ -497,7 +497,7 @@ PieQueueDisc::DoDequeue ()
             {
               NS_LOG_DEBUG ("CE packet " << static_cast<uint16_t> (tosByte & 0x3));
             }
-          if (Time (Seconds (now - item->GetTimeStamp ().GetSeconds ())) > m_ceThreshold && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
+          if ((Now () - item->GetTimeStamp () > m_ceThreshold) && Mark (item, CE_THRESHOLD_EXCEEDED_MARK))
             {
               NS_LOG_LOGIC ("Marking due to CeThreshold " << m_ceThreshold.GetSeconds ());
             }
@@ -511,30 +511,28 @@ PieQueueDisc::DoDequeue ()
     {
       if ( (GetInternalQueue (0)->GetNBytes () >= m_dqThreshold) && (!m_inMeasurement) )
         {
-          m_dqStart = now;
+          m_dqStart = Now ();
           m_dqCount = 0;
           m_inMeasurement = true;
         }
 
       if (m_inMeasurement)
         {
-          m_dqCount += pktSize;
+          m_dqCount += item->GetSize ();
 
           // done with a measurement cycle
           if (m_dqCount >= m_dqThreshold)
             {
-
-              double tmp = now - m_dqStart;
-
-              if (tmp > 0)
+              Time dqTime = Now () - m_dqStart;
+              if (dqTime > Seconds (0))
                 {
                   if (m_avgDqRate == 0)
                     {
-                      m_avgDqRate = m_dqCount / tmp;
+                      m_avgDqRate = m_dqCount / dqTime.GetSeconds ();
                     }
                   else
                     {
-                      m_avgDqRate = (0.5 * m_avgDqRate) + (0.5 * (m_dqCount / tmp));
+                      m_avgDqRate = (0.5 * m_avgDqRate) + (0.5 * (m_dqCount / dqTime.GetSeconds ()));
                     }
                 }
               NS_LOG_DEBUG ("Average Dequeue Rate after Dequeue: " << m_avgDqRate);
@@ -542,7 +540,7 @@ PieQueueDisc::DoDequeue ()
               // restart a measurement cycle if there is enough data
               if (GetInternalQueue (0)->GetNBytes () > m_dqThreshold)
                 {
-                  m_dqStart = now;
+                  m_dqStart = Now ();
                   m_dqCount = 0;
                   m_inMeasurement = true;
                 }
@@ -556,11 +554,11 @@ PieQueueDisc::DoDequeue ()
     }
   else
     {
-      m_qDelay = Time (Seconds (now - item->GetTimeStamp ().GetSeconds ()));
+      m_qDelay = Now () - item->GetTimeStamp ();
 
       if (GetInternalQueue (0)->GetNBytes () == 0)
         {
-          m_qDelay = Time (Seconds (0));
+          m_qDelay = Seconds (0);
         }
     }
   return item;
