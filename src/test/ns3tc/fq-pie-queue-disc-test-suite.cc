@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2020 NITK Surathkal
+ * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2020 NITK Surathkal (modified for FQ-PIE)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,12 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Bhaskar Kataria <bhaskar.k7920@gmail.com>
- *          Tom Henderson <tomhend@u.washington.edu> 
- *          Mohit P. Tahiliani <tahiliani@nitk.edu.in>
- *          Vivek Jain <jain.vivek.anand@gmail.com>
- *          Ankit Deepak <adadeepak8@gmail.com>
- * 
+ * Authors: Pasquale Imputato <p.imputato@gmail.com>
+ *          Stefano Avallone <stefano.avallone@unina.it>
+ * Modified for FQ-PIE by: Bhaskar Kataria <bhaskar.k7920@gmail.com>
+ *                         Tom Henderson <tomhend@u.washington.edu>
+ *                         Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ *                         Vivek Jain <jain.vivek.anand@gmail.com>
+ *                         Ankit Deepak <adadeepak8@gmail.com>
+ *
 */
 
 #include "ns3/test.h"
@@ -48,7 +51,8 @@ int32_t g_hash;
  * Simple test packet filter able to classify IPv4 packets
  *
  */
-class Ipv4FqPieTestPacketFilter : public Ipv4PacketFilter {
+class Ipv4FqPieTestPacketFilter : public Ipv4PacketFilter
+{
 public:
   /**
    * \brief Get the type ID.
@@ -76,12 +80,10 @@ Ipv4FqPieTestPacketFilter::GetTypeId (void)
 }
 
 Ipv4FqPieTestPacketFilter::Ipv4FqPieTestPacketFilter ()
-{
-}
+{}
 
 Ipv4FqPieTestPacketFilter::~Ipv4FqPieTestPacketFilter ()
-{
-}
+{}
 
 int32_t
 Ipv4FqPieTestPacketFilter::DoClassify (Ptr<QueueDiscItem> item) const
@@ -110,12 +112,10 @@ private:
 
 FqPieQueueDiscNoSuitableFilter::FqPieQueueDiscNoSuitableFilter ()
   : TestCase ("Test packets that are not classified by any filter")
-{
-}
+{}
 
 FqPieQueueDiscNoSuitableFilter::~FqPieQueueDiscNoSuitableFilter ()
-{
-}
+{}
 
 void
 FqPieQueueDiscNoSuitableFilter::DoRun (void)
@@ -162,12 +162,10 @@ private:
 
 FqPieQueueDiscIPFlowsSeparationAndPacketLimit::FqPieQueueDiscIPFlowsSeparationAndPacketLimit ()
   : TestCase ("Test IP flows separation and packet limit")
-{
-}
+{}
 
 FqPieQueueDiscIPFlowsSeparationAndPacketLimit::~FqPieQueueDiscIPFlowsSeparationAndPacketLimit ()
-{
-}
+{}
 
 void
 FqPieQueueDiscIPFlowsSeparationAndPacketLimit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
@@ -231,12 +229,10 @@ private:
 
 FqPieQueueDiscDeficit::FqPieQueueDiscDeficit ()
   : TestCase ("Test credits and flows status")
-{
-}
+{}
 
 FqPieQueueDiscDeficit::~FqPieQueueDiscDeficit ()
-{
-}
+{}
 
 void
 FqPieQueueDiscDeficit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
@@ -250,7 +246,7 @@ FqPieQueueDiscDeficit::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
 void
 FqPieQueueDiscDeficit::DoRun (void)
 {
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ();
+  Ptr<FqPieQueueDisc> queueDisc = CreateObject<FqPieQueueDisc> ();
 
   queueDisc->SetQuantum (90);
   queueDisc->Initialize ();
@@ -373,12 +369,10 @@ private:
 
 FqPieQueueDiscTCPFlowsSeparation::FqPieQueueDiscTCPFlowsSeparation ()
   : TestCase ("Test TCP flows separation")
-{
-}
+{}
 
 FqPieQueueDiscTCPFlowsSeparation::~FqPieQueueDiscTCPFlowsSeparation ()
-{
-}
+{}
 
 void
 FqPieQueueDiscTCPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, TcpHeader tcpHdr)
@@ -459,12 +453,10 @@ private:
 
 FqPieQueueDiscUDPFlowsSeparation::FqPieQueueDiscUDPFlowsSeparation ()
   : TestCase ("Test UDP flows separation")
-{
-}
+{}
 
 FqPieQueueDiscUDPFlowsSeparation::~FqPieQueueDiscUDPFlowsSeparation ()
-{
-}
+{}
 
 void
 FqPieQueueDiscUDPFlowsSeparation::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header ipHdr, UdpHeader udpHdr)
@@ -535,20 +527,20 @@ FqPieQueueDiscUDPFlowsSeparation::DoRun (void)
  * creation capability of set associative hashing in FqPIE.
  * We modified DoClassify () and CheckProtocol () so that we could control
  * the hash returned for each packet. In the beginning, we use flow hashes
- * ranging from 0 to 7. These must go into different queues in the same set. 
- * The set number for these is obtained using outerhash, which is 0.  
+ * ranging from 0 to 7. These must go into different queues in the same set.
+ * The set number for these is obtained using outerhash, which is 0.
  * When a new packet arrives with flow hash 1024, outerhash = 0 is obtained
  * and the first set is iteratively searched.
- * The packet is eventually added to queue 0 since the tags of queues 
- * in the set do not match with the hash of the flow. The tag of queue 0 is 
+ * The packet is eventually added to queue 0 since the tags of queues
+ * in the set do not match with the hash of the flow. The tag of queue 0 is
  * updated as 1024. When a packet with hash 1025 arrives, outerhash = 0
- * is obtained and the first set is iteratively searched. 
+ * is obtained and the first set is iteratively searched.
  * Since there is no match, it is added to queue 0 and the tag of queue 0 is
  * updated to 1025.
  *
  * The variable outerhash stores the nearest multiple of 8 that is lesser than
  * the hash. When a flow hash of 20 arrives, the value of outerhash
- * is 16. Since m_flowIndices[16] wasn’t previously allotted, a new flow
+ * is 16. Since m_flowIndices[16] wasn't previously allotted, a new flow
  * is created, and the tag corresponding to this queue is set to 20.
 */
 
@@ -557,19 +549,18 @@ class FqPieQueueDiscSetLinearProbing : public TestCase
 public:
   FqPieQueueDiscSetLinearProbing ();
   virtual ~FqPieQueueDiscSetLinearProbing ();
+
 private:
   virtual void DoRun (void);
   void AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr);
 };
 
 FqPieQueueDiscSetLinearProbing::FqPieQueueDiscSetLinearProbing ()
-    : TestCase ("Test credits and flows status")
-{
-}
+  : TestCase ("Test credits and flows status")
+{}
 
 FqPieQueueDiscSetLinearProbing::~FqPieQueueDiscSetLinearProbing ()
-{
-}
+{}
 
 void
 FqPieQueueDiscSetLinearProbing::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr)
@@ -651,7 +642,7 @@ FqPieQueueDiscSetLinearProbing::DoRun (void)
  * This class tests L4S mode. This test is divided to sub test one without hash collisions and so ECT0 and ECT1 flows are
  * classified into different flows.
  * Sub Test 1
- * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and dequeued with the delay of 
+ * 70 packets are enqueued into both the flows with the delay of 0.5ms between two enqueues, and dequeued with the delay of
  * 1ms between two dequeues.
  * Sub Test 2
  * 140(70 ECT0 + 70 ECT1) packets are enqueued such that ECT1 packets are enqueued at 0.5ms, 1.5ms, 2.5ms and so on, and ECT0 packets are
@@ -674,12 +665,10 @@ private:
 
 FqPieQueueDiscL4sMode::FqPieQueueDiscL4sMode ()
   : TestCase ("Test L4S mode")
-{
-}
+{}
 
 FqPieQueueDiscL4sMode::~FqPieQueueDiscL4sMode ()
-{
-}
+{}
 
 void
 FqPieQueueDiscL4sMode::AddPacket (Ptr<FqPieQueueDisc> queue, Ipv4Header hdr, uint32_t nPkt)
@@ -728,9 +717,9 @@ FqPieQueueDiscL4sMode::DoRun (void)
   // 2) With hash collisions
 
   // Test case 1, Without hash collisions
-  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), "UseEcn", BooleanValue (true),
-                                                                                  "Perturbation", UintegerValue (0), "UseL4s", BooleanValue (true),
-                                                                                  "CeThreshold", TimeValue (MilliSeconds (2)));
+  Ptr<FqPieQueueDisc> queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), 
+    "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
+    "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
 
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
@@ -756,16 +745,16 @@ FqPieQueueDiscL4sMode::DoRun (void)
   DequeueWithDelay (queueDisc, delay, 140);
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
-  
+
   Ptr<PieQueueDisc> q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
   Ptr<PieQueueDisc> q1 = queueDisc->GetQueueDiscClass (1)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
 
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 66, "There should be 66 marked packets"
-                        "4th packet is enqueued at 2ms and dequeued at 4ms hence the delay of 2ms which not greater than CE threshold"
-                        "5th packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
-                        "greater than CE threshold so all the packets after 4th packet are marked");
+                         "4th packet is enqueued at 2ms and dequeued at 4ms hence the delay of 2ms which not greater than CE threshold"
+                         "5th packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
+                         "greater than CE threshold so all the packets after 4th packet are marked");
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "Queue delay is less than max burst allowance so"
-                        "There should not be any dropped packets");
+                         "There should not be any dropped packets");
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be any marked packets");
   NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be marked packets.");
   NS_TEST_EXPECT_MSG_EQ (q1->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "There should not be any dropped packets");
@@ -773,9 +762,9 @@ FqPieQueueDiscL4sMode::DoRun (void)
   Simulator::Destroy ();
 
   // Test case 2, With hash collisions
-  queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), "UseEcn", BooleanValue (true),
-                                                                                  "Perturbation", UintegerValue (0), "UseL4s", BooleanValue (true),
-                                                                                  "CeThreshold", TimeValue (MilliSeconds (2)));
+  queueDisc = CreateObjectWithAttributes<FqPieQueueDisc> ("MaxSize", StringValue ("10240p"), 
+    "UseEcn", BooleanValue (true), "Perturbation", UintegerValue (0),
+    "UseL4s", BooleanValue (true), "CeThreshold", TimeValue (MilliSeconds (2)));
 
   queueDisc->SetQuantum (1514);
   queueDisc->Initialize ();
@@ -803,11 +792,11 @@ FqPieQueueDiscL4sMode::DoRun (void)
   q0 = queueDisc->GetQueueDiscClass (0)->GetQueueDisc ()->GetObject <PieQueueDisc> ();
 
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::CE_THRESHOLD_EXCEEDED_MARK), 68, "There should be 68 marked packets"
-                        "2nd ECT1 packet is enqueued at 1.5ms and dequeued at 3ms hence the delay of 1.5ms which not greater than CE threshold"
-                        "3rd packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
-                        "greater than CE threshold so all the packets after 2nd packet are marked");
+                         "2nd ECT1 packet is enqueued at 1.5ms and dequeued at 3ms hence the delay of 1.5ms which not greater than CE threshold"
+                         "3rd packet is enqueued at 2.5ms and dequeued at 5ms hence the delay of 2.5ms and subsequent packet also do have delay"
+                         "greater than CE threshold so all the packets after 2nd packet are marked");
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP), 0, "Queue delay is less than max burst allowance so"
-                        "There should not be any dropped packets");
+                         "There should not be any dropped packets");
   NS_TEST_EXPECT_MSG_EQ (q0->GetStats ().GetNMarkedPackets (PieQueueDisc::UNFORCED_MARK), 0, "There should not be any marked packets");
 
   Simulator::Destroy ();

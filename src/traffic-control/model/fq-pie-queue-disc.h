@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2018 NITK Surathkal
+ * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2018 NITK Surathkal (modified for FQ-PIE)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors:  Sumukha PK <sumukhapk46@gmail.com>
- *           Prajval M  <26prajval98@gmail.com>
- *           Ishaan R D <ishaanrd6@gmail.com>
- *           Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ * Authors: Pasquale Imputato <p.imputato@gmail.com>
+ *          Stefano Avallone <stefano.avallone@unina.it>
+ * Modified for FQ-PIE by:  Sumukha PK <sumukhapk46@gmail.com>
+ *                          Prajval M  <26prajval98@gmail.com>
+ *                          Ishaan R D <ishaanrd6@gmail.com>
+ *                          Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  */
 
 #ifndef FQ_PIE_QUEUE_DISC
@@ -37,7 +40,8 @@ namespace ns3 {
  * \brief A flow queue used by the FqPie queue disc
  */
 
-class FqPieFlow : public QueueDiscClass {
+class FqPieFlow : public QueueDiscClass
+{
 public:
   /**
    * \brief Get the type ID.
@@ -56,11 +60,11 @@ public:
    * \brief Used to determine the status of this flow queue
    */
   enum FlowStatus
-    {
-      INACTIVE,
-      NEW_FLOW,
-      OLD_FLOW
-    };
+  {
+    INACTIVE,
+    NEW_FLOW,
+    OLD_FLOW
+  };
 
   /**
    * \brief Set the deficit for this flow
@@ -111,7 +115,8 @@ private:
  * \brief A FqPie packet queue disc
  */
 
-class FqPieQueueDisc : public QueueDisc {
+class FqPieQueueDisc : public QueueDisc
+{
 public:
   /**
    * \brief Get the type ID.
@@ -125,19 +130,19 @@ public:
 
   virtual ~FqPieQueueDisc ();
 
-   /**
-    * \brief Set the quantum value.
-    *
-    * \param quantum The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
-    */
-   void SetQuantum (uint32_t quantum);
+  /**
+   * \brief Set the quantum value.
+   *
+   * \param quantum The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
+   */
+  void SetQuantum (uint32_t quantum);
 
-   /**
-    * \brief Get the quantum value.
-    *
-    * \returns The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
-    */
-   uint32_t GetQuantum (void) const;
+  /**
+   * \brief Get the quantum value.
+   *
+   * \returns The number of bytes each queue gets to dequeue on each round of the scheduling algorithm
+   */
+  uint32_t GetQuantum (void) const;
 
   // Reasons for dropping packets
   static constexpr const char* UNCLASSIFIED_DROP = "Unclassified drop";  //!< No packet filter able to classify packet
@@ -178,7 +183,7 @@ private:
   double m_b;                //!< Parameter to pie controller
   uint32_t m_dqThreshold;    //!< Minimum queue size in bytes before dequeue rate is measured
   bool m_useDqRateEstimator; //!< Enable/Disable usage of dequeue rate estimator for queue delay calculation
-  bool  m_isCapDropAdjustment;//!< Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033
+  bool  m_isCapDropAdjustment; //!< Enable/Disable Cap Drop Adjustment feature mentioned in RFC 8033
   bool m_useDerandomization; //!< Enable Derandomization feature mentioned in RFC 8033
 
   // Fq parameters

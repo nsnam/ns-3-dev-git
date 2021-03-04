@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2018 NITK Surathkal
+ * Copyright (c) 2016 Universita' degli Studi di Napoli Federico II
+ * Copyright (c) 2018 NITK Surathkal (modified for FQ-PIE)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors:  Sumukha PK <sumukhapk46@gmail.com>
- *           Prajval M  <26prajval98@gmail.com>
- *           Ishaan R D <ishaanrd6@gmail.com>
- *           Mohit P. Tahiliani <tahiliani@nitk.edu.in>
+ * Authors: Pasquale Imputato <p.imputato@gmail.com>
+ *          Stefano Avallone <stefano.avallone@unina.it>
+ * Modified for FQ-PIE by:  Sumukha PK <sumukhapk46@gmail.com>
+ *                          Prajval M  <26prajval98@gmail.com>
+ *                          Ishaan R D <ishaanrd6@gmail.com>
+ *                          Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  */
 
 
@@ -139,7 +142,7 @@ TypeId FqPieQueueDisc::GetTypeId (void)
                    "Average of packet size",
                    UintegerValue (1000),
                    MakeUintegerAccessor (&FqPieQueueDisc::m_meanPktSize),
-                   MakeUintegerChecker<uint32_t> ()) 
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("A",
                    "Value of alpha",
                    DoubleValue (0.125),
@@ -437,7 +440,8 @@ FqPieQueueDisc::DoDequeue (void)
         {
           NS_LOG_DEBUG ("Dequeued packet " << item->GetPacket ());
         }
-    } while (item == 0);
+    }
+  while (item == 0);
 
   flow->IncreaseDeficit (item->GetSize () * -1);
 
@@ -490,7 +494,7 @@ FqPieQueueDisc::CheckConfig (void)
   // If UseL4S attribute is enabled then CE threshold must be set.
   if (m_useL4s)
     {
-      NS_ABORT_MSG_IF (m_ceThreshold == Time::Max(), "CE threshold not set");
+      NS_ABORT_MSG_IF (m_ceThreshold == Time::Max (), "CE threshold not set");
       if (m_useEcn == false)
         {
           NS_LOG_WARN ("Enabling ECN as L4S mode is enabled");
@@ -552,7 +556,8 @@ FqPieQueueDisc::FqPieDrop (void)
       item = qd->GetInternalQueue (0)->Dequeue ();
       DropAfterDequeue (item, OVERLIMIT_DROP);
       len += item->GetSize ();
-    } while (++count < m_dropBatchSize && len < threshold);
+    }
+  while (++count < m_dropBatchSize && len < threshold);
 
   return index;
 }
