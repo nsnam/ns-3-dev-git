@@ -68,10 +68,6 @@ InfrastructureWifiMac::SetPcfSupported (bool enable)
   NS_LOG_FUNCTION (this << enable);
   NS_ASSERT_MSG (!(GetQosSupported () && enable), "PCF cannot be enabled when QoS support is activated (not supported)");
   m_pcfSupported = enable;
-  if (m_stationManager != 0)
-    {
-      m_stationManager->SetPcfSupported (enable);
-    }
 }
 
 bool

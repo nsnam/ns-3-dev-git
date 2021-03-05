@@ -146,14 +146,6 @@ StaWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
 }
 
 void
-StaWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
-{
-  NS_LOG_FUNCTION (this << stationManager);
-  RegularWifiMac::SetWifiRemoteStationManager (stationManager);
-  m_stationManager->SetPcfSupported (GetPcfSupported ());
-}
-
-void
 StaWifiMac::SendProbeRequest (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1062,10 +1054,6 @@ StaWifiMac::GetCapabilities (void) const
   CapabilityInformation capabilities;
   capabilities.SetShortPreamble (m_phy->GetShortPhyPreambleSupported () || GetErpSupported ());
   capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
-  if (GetPcfSupported ())
-    {
-      capabilities.SetCfPollable ();
-    }
   return capabilities;
 }
 

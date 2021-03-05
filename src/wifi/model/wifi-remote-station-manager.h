@@ -256,18 +256,6 @@ public:
    */
   bool GetHeSupported (void) const;
   /**
-   * Enable or disable PCF capability support.
-   *
-   * \param enable enable or disable PCF capability support
-   */
-  void SetPcfSupported (bool enable);
-  /**
-   * Return whether the device has PCF capability support enabled.
-   *
-   * \return true if PCF capability support is enabled, false otherwise
-   */
-  bool GetPcfSupported (void) const;
-  /**
    * Return whether the device has LDPC support enabled.
    *
    * \return true if LDPC support is enabled, false otherwise
@@ -1253,7 +1241,6 @@ private:
   WifiMode m_defaultTxMode; //!< The default transmission mode
   WifiMode m_defaultTxMcs;  //!< The default transmission modulation-coding scheme (MCS)
 
-  bool m_pcfSupported; //!< Flag if PCF capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
   uint32_t m_rtsCtsThreshold;             //!< Threshold for RTS/CTS

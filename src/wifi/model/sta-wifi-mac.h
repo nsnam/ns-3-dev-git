@@ -122,13 +122,6 @@ public:
   virtual ~StaWifiMac ();
 
   /**
-   * Set up WifiRemoteStationManager associated with this StaWifiMac.
-   *
-   * \param stationManager the station manager attached to this MAC.
-   */
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-
-  /**
    * \param packet the packet to send.
    * \param to the address to which the packet should be sent.
    *

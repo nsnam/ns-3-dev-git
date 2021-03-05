@@ -117,8 +117,7 @@ WifiRemoteStationManager::GetTypeId (void)
 }
 
 WifiRemoteStationManager::WifiRemoteStationManager ()
-  : m_pcfSupported (false),
-    m_useNonErpProtection (false),
+  : m_useNonErpProtection (false),
     m_useNonHtProtection (false),
     m_shortPreambleEnabled (false),
     m_shortSlotTimeEnabled (false)
@@ -255,18 +254,6 @@ WifiRemoteStationManager::GetHeSupported (void) const
       return true;
     }
   return false;
-}
-
-void
-WifiRemoteStationManager::SetPcfSupported (bool enable)
-{
-  m_pcfSupported = enable;
-}
-
-bool
-WifiRemoteStationManager::GetPcfSupported (void) const
-{
-  return m_pcfSupported;
 }
 
 bool

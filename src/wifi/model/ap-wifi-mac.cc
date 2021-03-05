@@ -101,8 +101,6 @@ ApWifiMac::ApWifiMac ()
 
   //Let the lower layers know that we are acting as an AP.
   SetTypeOfStation (AP);
-
-  m_itCfPollingList = m_cfPollingList.begin ();
 }
 
 ApWifiMac::~ApWifiMac ()
@@ -111,7 +109,6 @@ ApWifiMac::~ApWifiMac ()
   m_staList.clear ();
   m_nonErpStations.clear ();
   m_nonHtStations.clear ();
-  m_cfPollingList.clear ();
 }
 
 void
@@ -122,7 +119,6 @@ ApWifiMac::DoDispose ()
   m_beaconTxop = 0;
   m_enableBeaconGeneration = false;
   m_beaconEvent.Cancel ();
-  m_cfpEvent.Cancel ();
   RegularWifiMac::DoDispose ();
 }
 
@@ -164,7 +160,6 @@ ApWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stat
   NS_LOG_FUNCTION (this << stationManager);
   m_beaconTxop->SetWifiRemoteStationManager (stationManager);
   RegularWifiMac::SetWifiRemoteStationManager (stationManager);
-  m_stationManager->SetPcfSupported (GetPcfSupported ());
 }
 
 void
@@ -428,10 +423,6 @@ ApWifiMac::GetCapabilities (void) const
   capabilities.SetShortPreamble (GetShortPreambleEnabled ());
   capabilities.SetShortSlotTime (GetShortSlotTimeEnabled ());
   capabilities.SetEss ();
-  if (GetPcfSupported ())
-    {
-      capabilities.SetCfPollable ();
-    }
   return capabilities;
 }
 
@@ -1384,14 +1375,6 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                   if ((*j) == from)
                     {
                       m_nonHtStations.erase (j);
-                      break;
-                    }
-                }
-              for (std::list<Mac48Address>::const_iterator j = m_cfPollingList.begin (); j != m_cfPollingList.end (); ++j)
-                {
-                  if ((*j) == from)
-                    {
-                      m_cfPollingList.erase (j);
                       break;
                     }
                 }
