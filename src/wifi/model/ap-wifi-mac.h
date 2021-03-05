@@ -23,7 +23,7 @@
 #ifndef AP_WIFI_MAC_H
 #define AP_WIFI_MAC_H
 
-#include "infrastructure-wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -45,7 +45,7 @@ class CfParameterSet;
  * Handle association, dis-association and authentication,
  * of STAs within an infrastructure BSS.
  */
-class ApWifiMac : public InfrastructureWifiMac
+class ApWifiMac : public RegularWifiMac
 {
 public:
   /**

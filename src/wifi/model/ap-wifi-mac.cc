@@ -48,7 +48,7 @@ TypeId
 ApWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ApWifiMac")
-    .SetParent<InfrastructureWifiMac> ()
+    .SetParent<RegularWifiMac> ()
     .SetGroupName ("Wifi")
     .AddConstructor<ApWifiMac> ()
     .AddAttribute ("BeaconInterval",
