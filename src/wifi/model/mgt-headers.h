@@ -38,7 +38,6 @@
 #include "edca-parameter-set.h"
 #include "ns3/he-capabilities.h"
 #include "ns3/he-operation.h"
-#include "cf-parameter-set.h"
 
 namespace ns3 {
 
@@ -706,12 +705,6 @@ public:
    */
   EdcaParameterSet GetEdcaParameterSet (void) const;
   /**
-   * Return the CF parameter set.
-   *
-   * \return CF parameter set
-   */
-  CfParameterSet GetCfParameterSet (void) const;
-  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -796,12 +789,6 @@ public:
    */
   void SetEdcaParameterSet (EdcaParameterSet edcaParameterSet);
   /**
-   * Set the CF parameter set.
-   *
-   * \param cfParameterSet CF parameter set
-   */
-  void SetCfParameterSet (CfParameterSet cfParameterSet);
-  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -836,7 +823,6 @@ private:
   HeOperation m_heOperation;         //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
-  CfParameterSet m_cfParameterSet;     //!< CF parameter set
 };
 
 
