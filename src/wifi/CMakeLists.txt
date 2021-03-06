@@ -27,6 +27,8 @@ set(source_files
     model/edca-parameter-set.cc
     model/eht/eht-capabilities.cc
     model/eht/eht-configuration.cc
+    model/eht/eht-phy.cc
+    model/eht/eht-ppdu.cc
     model/error-rate-model.cc
     model/extended-capabilities.cc
     model/frame-capture-model.cc
@@ -163,6 +165,8 @@ set(header_files
     model/edca-parameter-set.h
     model/eht/eht-capabilities.h
     model/eht/eht-configuration.h
+    model/eht/eht-phy.h
+    model/eht/eht-ppdu.h
     model/error-rate-model.h
     model/extended-capabilities.h
     model/frame-capture-model.h

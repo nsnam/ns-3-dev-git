@@ -233,17 +233,17 @@ protected:
    * Return true if the PPDU is a MU PPDU
    * \return true if the PPDU is a MU PPDU
    */
-  bool IsMu (void) const;
+  virtual bool IsMu (void) const;
   /**
    * Return true if the PPDU is a DL MU PPDU
    * \return true if the PPDU is a DL MU PPDU
    */
-  bool IsDlMu (void) const;
+  virtual bool IsDlMu (void) const;
   /**
    * Return true if the PPDU is an UL MU PPDU
    * \return true if the PPDU is an UL MU PPDU
    */
-  bool IsUlMu (void) const;
+  virtual bool IsUlMu (void) const;
 
   /**
    * Fill in the HE PHY headers.

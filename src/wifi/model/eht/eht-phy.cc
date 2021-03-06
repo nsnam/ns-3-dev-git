@@ -1,0 +1,381 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2021 DERONNE SOFTWARE ENGINEERING
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
+ */
+
+#include "ns3/wifi-phy.h"
+#include "ns3/wifi-psdu.h"
+#include "ns3/wifi-utils.h"
+#include "ns3/interference-helper.h"
+#include "eht-phy.h"
+#include "eht-ppdu.h"
+
+namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("EhtPhy");
+
+/*******************************************************
+ *       EHT PHY (P802.11be/D1.5)
+ *******************************************************/
+
+/* *NS_CHECK_STYLE_OFF* */
+const PhyEntity::PpduFormats EhtPhy::m_ehtPpduFormats {
+  { WIFI_PREAMBLE_EHT_MU,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
+                               WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
+                               WIFI_PPDU_FIELD_U_SIG,         //U-SIG
+                               WIFI_PPDU_FIELD_EHT_SIG,       //EHT-SIG
+                               WIFI_PPDU_FIELD_TRAINING,      //EHT-STF + EHT-LTFs
+                               WIFI_PPDU_FIELD_DATA } },
+  { WIFI_PREAMBLE_EHT_TB,    { WIFI_PPDU_FIELD_PREAMBLE,      //L-STF + L-LTF
+                               WIFI_PPDU_FIELD_NON_HT_HEADER, //L-SIG + RL-SIG
+                               WIFI_PPDU_FIELD_U_SIG,         //U-SIG
+                               WIFI_PPDU_FIELD_TRAINING,      //EHT-STF + EHT-LTFs
+                               WIFI_PPDU_FIELD_DATA } }
+};
+/* *NS_CHECK_STYLE_ON* */
+
+EhtPhy::EhtPhy (bool buildModeList /* = true */)
+  : HePhy (false) //don't add HE modes to list
+{
+  NS_LOG_FUNCTION (this << buildModeList);
+  m_bssMembershipSelector = EHT_PHY;
+  m_maxMcsIndexPerSs = 13;
+  m_maxSupportedMcsIndexPerSs = m_maxMcsIndexPerSs;
+  if (buildModeList)
+    {
+      BuildModeList ();
+    }
+}
+
+EhtPhy::~EhtPhy ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+EhtPhy::BuildModeList (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_modeList.empty ());
+  NS_ASSERT (m_bssMembershipSelector == EHT_PHY);
+  for (uint8_t index = 0; index <= m_maxSupportedMcsIndexPerSs; ++index)
+    {
+      NS_LOG_LOGIC ("Add EhtMcs" << +index << " to list");
+      m_modeList.emplace_back (CreateEhtMcs (index));
+    }
+}
+
+WifiMode
+EhtPhy::GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_U_SIG:
+        return GetSigAMode (); //U-SIG is similar to SIG-A
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return GetSigBMode (txVector); //EHT-SIG is similar to SIG-B
+      default:
+        return HePhy::GetSigMode (field, txVector);
+    }
+}
+
+Time
+EhtPhy::GetDuration (WifiPpduField field, const WifiTxVector& txVector) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_U_SIG:
+        return GetSigADuration (txVector.GetPreambleType ()); //U-SIG is similar to SIG-A
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return GetSigBDuration (txVector); //EHT-SIG is similar to SIG-B
+      case WIFI_PPDU_FIELD_SIG_A:
+        [[fallthrough]];
+      case WIFI_PPDU_FIELD_SIG_B:
+        return NanoSeconds (0);
+      default:
+        return HePhy::GetDuration (field, txVector);
+    }
+}
+
+const PhyEntity::PpduFormats &
+EhtPhy::GetPpduFormats (void) const
+{
+  return m_ehtPpduFormats;
+}
+
+Ptr<WifiPpdu>
+EhtPhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration)
+{
+  NS_LOG_FUNCTION (this << psdus << txVector << ppduDuration);
+  HePpdu::TxPsdFlag flag = (IsUlMu (txVector.GetPreambleType ())) ?
+    HePpdu::PSD_HE_TB_NON_OFDMA_PORTION :
+    HePpdu::PSD_NON_HE_TB;
+  return Create<EhtPpdu> (psdus, txVector,
+                          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txVector.GetChannelWidth ()),
+                          ppduDuration, m_wifiPhy->GetPhyBand (),
+                          ObtainNextUid (txVector), flag,
+                          m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
+}
+
+PhyEntity::PhyFieldRxStatus
+EhtPhy::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
+{
+  NS_LOG_FUNCTION (this << field << *event);
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_U_SIG:
+        [[fallthrough]];
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return EndReceiveSig (event, field);
+      default:
+        return HePhy::DoEndReceiveField (field, event);
+    }
+}
+
+PhyEntity::PhyFieldRxStatus
+EhtPhy::ProcessSig (Ptr<Event> event, PhyFieldRxStatus status, WifiPpduField field)
+{
+  NS_LOG_FUNCTION (this << *event << status << field);
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_U_SIG:
+        return ProcessSigA (event, status); //U-SIG is similar to SIG-A
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return ProcessSigB (event, status); //EHT-SIG is similar to SIG-B
+      default:
+        return HePhy::ProcessSig (event, status, field);
+    }
+  return status;
+}
+
+WifiPhyRxfailureReason
+EhtPhy::GetFailureReason (WifiPpduField field) const
+{
+  switch (field)
+    {
+      case WIFI_PPDU_FIELD_U_SIG:
+        return U_SIG_FAILURE;
+      case WIFI_PPDU_FIELD_EHT_SIG:
+        return EHT_SIG_FAILURE;
+      default:
+        return HePhy::GetFailureReason (field);
+    }
+}
+
+void
+EhtPhy::InitializeModes (void)
+{
+  for (uint8_t i = 0; i <= 13; ++i)
+    {
+      GetEhtMcs (i);
+    }
+}
+
+WifiMode
+EhtPhy::GetEhtMcs (uint8_t index)
+{
+#define CASE(x) \
+case x: \
+  return GetEhtMcs ## x (); \
+
+  switch (index)
+    {
+      CASE ( 0)
+      CASE ( 1)
+      CASE ( 2)
+      CASE ( 3)
+      CASE ( 4)
+      CASE ( 5)
+      CASE ( 6)
+      CASE ( 7)
+      CASE ( 8)
+      CASE ( 9)
+      CASE (10)
+      CASE (11)
+      CASE (12)
+      CASE (13)
+      default:
+        NS_ABORT_MSG ("Inexistent index (" << +index << ") requested for EHT");
+        return WifiMode ();
+    }
+#undef CASE
+}
+
+#define GET_EHT_MCS(x) \
+WifiMode \
+EhtPhy::GetEhtMcs ## x (void) \
+{ \
+  static WifiMode mcs = CreateEhtMcs (x); \
+  return mcs; \
+}; \
+
+GET_EHT_MCS (0)
+GET_EHT_MCS (1)
+GET_EHT_MCS (2)
+GET_EHT_MCS (3)
+GET_EHT_MCS (4)
+GET_EHT_MCS (5)
+GET_EHT_MCS (6)
+GET_EHT_MCS (7)
+GET_EHT_MCS (8)
+GET_EHT_MCS (9)
+GET_EHT_MCS (10)
+GET_EHT_MCS (11)
+GET_EHT_MCS (12)
+GET_EHT_MCS (13)
+#undef GET_EHT_MCS
+
+WifiMode
+EhtPhy::CreateEhtMcs (uint8_t index)
+{
+  NS_ASSERT_MSG (index <= 13, "EhtMcs index must be <= 13!");
+  return WifiModeFactory::CreateWifiMcs ("EhtMcs" + std::to_string (index),
+                                         index,
+                                         WIFI_MOD_CLASS_EHT,
+                                         false,
+                                         MakeBoundCallback (&GetCodeRate, index),
+                                         MakeBoundCallback (&GetConstellationSize, index),
+                                         MakeCallback (&GetPhyRateFromTxVector),
+                                         MakeCallback (&GetDataRateFromTxVector),
+                                         MakeBoundCallback (&GetNonHtReferenceRate, index),
+                                         MakeCallback (&IsAllowed));
+}
+
+WifiCodeRate
+EhtPhy::GetCodeRate (uint8_t mcsValue)
+{
+  switch (mcsValue)
+    {
+      case 12:
+        return WIFI_CODE_RATE_3_4;
+      case 13:
+        return WIFI_CODE_RATE_5_6;
+      default:
+        return HePhy::GetCodeRate (mcsValue);
+    }
+}
+
+uint16_t
+EhtPhy::GetConstellationSize (uint8_t mcsValue)
+{
+  switch (mcsValue)
+    {
+      case 12:
+        [[fallthrough]];
+      case 13:
+        return 4096;
+      default:
+        return HePhy::GetConstellationSize (mcsValue);
+    }
+}
+
+uint64_t
+EhtPhy::GetPhyRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  WifiCodeRate codeRate = GetCodeRate (mcsValue);
+  uint64_t dataRate = GetDataRate (mcsValue, channelWidth, guardInterval, nss);
+  return HtPhy::CalculatePhyRate (codeRate, dataRate);
+}
+
+uint64_t
+EhtPhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t staId /* = SU_STA_ID */)
+{
+  uint16_t bw = txVector.GetChannelWidth ();
+  if (txVector.IsMu ())
+    {
+      bw = HeRu::GetBandwidth (txVector.GetRu (staId).GetRuType ());
+    }
+  return EhtPhy::GetPhyRate (txVector.GetMode (staId).GetMcsValue (),
+                             bw,
+                             txVector.GetGuardInterval (),
+                             txVector.GetNss (staId));
+}
+
+uint64_t
+EhtPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t staId /* = SU_STA_ID */)
+{
+  uint16_t bw = txVector.GetChannelWidth ();
+  if (txVector.IsMu ())
+    {
+      bw = HeRu::GetBandwidth (txVector.GetRu (staId).GetRuType ());
+    }
+  return EhtPhy::GetDataRate (txVector.GetMode (staId).GetMcsValue (),
+                              bw,
+                              txVector.GetGuardInterval (),
+                              txVector.GetNss (staId));
+}
+
+uint64_t
+EhtPhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+{
+  NS_ASSERT (guardInterval == 800 || guardInterval == 1600 || guardInterval == 3200);
+  NS_ASSERT (nss <= 8);
+  return HtPhy::CalculateDataRate (GetSymbolDuration (NanoSeconds (guardInterval)),
+                                   GetUsableSubcarriers (channelWidth),
+                                   static_cast<uint16_t> (log2 (GetConstellationSize (mcsValue))),
+                                   HtPhy::GetCodeRatio (GetCodeRate (mcsValue)), nss);
+}
+
+uint64_t
+EhtPhy::GetNonHtReferenceRate (uint8_t mcsValue)
+{
+  WifiCodeRate codeRate = GetCodeRate (mcsValue);
+  uint16_t constellationSize = GetConstellationSize (mcsValue);
+  return CalculateNonHtReferenceRate (codeRate, constellationSize);
+}
+
+uint64_t
+EhtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellationSize)
+{
+  uint64_t dataRate;
+  switch (constellationSize)
+    {
+      case 4096:
+        if (codeRate == WIFI_CODE_RATE_3_4 || codeRate == WIFI_CODE_RATE_5_6)
+          {
+            dataRate = 54000000;
+          }
+        else
+          {
+            NS_FATAL_ERROR ("Trying to get reference rate for a MCS with wrong combination of coding rate and modulation");
+          }
+        break;
+      default:
+        dataRate = HePhy::CalculateNonHtReferenceRate (codeRate, constellationSize);
+    }
+  return dataRate;
+}
+
+} //namespace ns3
+
+namespace {
+
+/**
+ * Constructor class for EHT modes
+ */
+static class ConstructorEht
+{
+public:
+  ConstructorEht ()
+  {
+    ns3::EhtPhy::InitializeModes ();
+    ns3::WifiPhy::AddStaticPhyEntity (ns3::WIFI_MOD_CLASS_EHT, ns3::Create<ns3::EhtPhy> ());
+  }
+} g_constructor_eht; ///< the constructor for EHT modes
+
+}

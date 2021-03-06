@@ -852,6 +852,8 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("DsssPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("ErpOfdmPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("ErpOfdmPpdu", LOG_LEVEL_ALL);
+  LogComponentEnable ("EhtPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("EhtPpdu", LOG_LEVEL_ALL);
   LogComponentEnable ("FrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HeConfiguration", LOG_LEVEL_ALL);
   LogComponentEnable ("HeFrameExchangeManager", LOG_LEVEL_ALL);
