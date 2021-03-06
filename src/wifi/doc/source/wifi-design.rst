@@ -91,11 +91,7 @@ beacons, and that accepts every attempt to associate.
 These three MAC high models share a common parent in
 ``ns3::RegularWifiMac``, which exposes, among other MAC
 configuration, an attribute ``QosSupported`` that allows
-configuration of 802.11e/WMM-style QoS support, an attribute
-``HtSupported`` that allows configuration of 802.11n High Throughput
-style support, an attribute ``VhtSupported`` that allows configuration
-of 802.11ac Very High Throughput style support and an attribute ``HeSupported``
-that allows configuration of 802.11ax High Efficiency style support.
+configuration of 802.11e/WMM-style QoS support.
 
 There are also several **rate control algorithms** that can be used by the
 MAC low layer.  A complete list of available rate control algorithms is 
