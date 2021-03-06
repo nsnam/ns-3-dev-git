@@ -39,6 +39,7 @@
 #include "ns3/he-capabilities.h"
 #include "ns3/he-operation.h"
 #include "ns3/mu-edca-parameter-set.h"
+#include "ns3/eht-capabilities.h"
 
 namespace ns3 {
 
@@ -101,6 +102,12 @@ public:
    */
   void SetHeCapabilities (HeCapabilities heCapabilities);
   /**
+   * Set the EHT capabilities.
+   *
+   * \param ehtCapabilities EHT capabilities
+   */
+  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  /**
    * Return the Capability information.
    *
    * \return Capability information
@@ -130,6 +137,12 @@ public:
    * \return HE capabilities
    */
   HeCapabilities GetHeCapabilities (void) const;
+  /**
+   * Return the EHT capabilities.
+   *
+   * \return EHT capabilities
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -171,6 +184,7 @@ private:
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
+  EhtCapabilities m_ehtCapability;    //!< EHT capabilities
 };
 
 
@@ -233,6 +247,12 @@ public:
    */
   void SetHeCapabilities (HeCapabilities heCapabilities);
   /**
+   * Set the EHT capabilities.
+   *
+   * \param ehtCapabilities EHT capabilities
+   */
+  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  /**
    * Return the Capability information.
    *
    * \return Capability information
@@ -262,6 +282,12 @@ public:
    * \return HE capabilities
    */
   HeCapabilities GetHeCapabilities (void) const;
+  /**
+   * Return the EHT capabilities.
+   *
+   * \return EHT capabilities
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
   /**
    * Return the Service Set Identifier (SSID).
    *
@@ -309,6 +335,7 @@ private:
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
+  EhtCapabilities m_ehtCapability;    //!< EHT capabilities
 };
 
 
@@ -382,6 +409,12 @@ public:
    * \return HE operation
    */
   HeOperation GetHeOperation (void) const;
+  /**
+   * Return the EHT capabilities.
+   *
+   * \return EHT capabilities
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
   /**
    * Return the association ID.
    *
@@ -490,6 +523,12 @@ public:
    * \param heOperation HE operation
    */
   void SetHeOperation (HeOperation heOperation);
+  /**
+   * Set the EHT capabilities.
+   *
+   * \param ehtCapabilities EHT capabilities
+   */
+  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
 
   /**
    * Register this type.
@@ -518,6 +557,7 @@ private:
   HeCapabilities m_heCapability; //!< HE capabilities
   HeOperation m_heOperation; //!< HE operation
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
+  EhtCapabilities m_ehtCapability; //!< EHT capabilities
 };
 
 
@@ -567,6 +607,12 @@ public:
    */
   void SetHeCapabilities (HeCapabilities heCapabilities);
   /**
+   * Set the EHT capabilities.
+   *
+   * \param ehtCapabilities EHT capabilities
+   */
+  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
+  /**
    * Return the Service Set Identifier (SSID).
    *
    * \return SSID
@@ -602,6 +648,12 @@ public:
    * \return HE capabilities
    */
   HeCapabilities GetHeCapabilities (void) const;
+  /**
+   * Return the EHT capabilities.
+   *
+   * \return EHT capabilities
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
 
   /**
    * Register this type.
@@ -621,7 +673,8 @@ private:
   ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   HtCapabilities m_htCapability;   //!< HT capabilities
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
-  HeCapabilities m_heCapability; //!< HE capabilities
+  HeCapabilities m_heCapability;   //!< HE capabilities
+  EhtCapabilities m_ehtCapability; //!< EHT capabilities
 };
 
 
@@ -708,6 +761,12 @@ public:
    */
   HeOperation GetHeOperation (void) const;
   /**
+   * Return the EHT capabilities.
+   *
+   * \return EHT capabilities
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -773,6 +832,12 @@ public:
    * \param heOperation HE operation
    */
   void SetHeOperation (HeOperation heOperation);
+  /**
+   * Set the EHT capabilities.
+   *
+   * \param ehtCapabilities EHT capabilities
+   */
+  void SetEhtCapabilities (EhtCapabilities ehtCapabilities);
   /**
    * Set the Service Set Identifier (SSID).
    *
@@ -847,10 +912,11 @@ private:
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities
   VhtOperation m_vhtOperation;         //!< VHT operation
   HeCapabilities m_heCapability;       //!< HE capabilities
-  HeOperation m_heOperation;         //!< HE operation
+  HeOperation m_heOperation;           //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
+  EhtCapabilities m_ehtCapability;     //!< EHT capabilities
 };
 
 

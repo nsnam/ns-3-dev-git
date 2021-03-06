@@ -34,6 +34,7 @@
 #include "ns3/ht-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/he-capabilities.h"
+#include "ns3/eht-capabilities.h"
 
 namespace ns3 {
 
@@ -102,6 +103,8 @@ struct WifiRemoteStationState
   Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
   Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
   Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
+  Ptr<const EhtCapabilities> m_ehtCapabilities; //!< remote station EHT capabilities
+
   uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_ness;             //!< Number of extended spatial streams of the remote station
@@ -239,6 +242,13 @@ public:
    */
   void AddStationHeCapabilities (Mac48Address from, HeCapabilities heCapabilities);
   /**
+   * Records EHT capabilities of the remote station.
+   *
+   * \param from the address of the station being recorded
+   * \param ehtCapabilities the EHT capabilities of the station
+   */
+  void AddStationEhtCapabilities (Mac48Address from, EhtCapabilities ehtCapabilities);
+  /**
    * Return the HT capabilities sent by the remote station.
    *
    * \param from the address of the remote station
@@ -259,6 +269,13 @@ public:
    * \return the HE capabilities sent by the remote station
    */
   Ptr<const HeCapabilities> GetStationHeCapabilities (Mac48Address from);
+  /**
+   * Return the EHT capabilities sent by the remote station.
+   *
+   * \param from the address of the remote station
+   * \return the EHT capabilities sent by the remote station
+   */
+  Ptr<const EhtCapabilities> GetStationEhtCapabilities (Mac48Address from);
   /**
    * Return whether the device has HT capability support enabled.
    *
@@ -572,6 +589,15 @@ public:
    *         false otherwise
    */
   bool GetHeSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports EHT or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if EHT is supported by the station,
+   *         false otherwise
+   */
+  bool GetEhtSupported (Mac48Address address) const;
 
   /**
    * Return a mode for non-unicast packets.
@@ -998,6 +1024,15 @@ protected:
    *         false otherwise
    */
   bool GetHeSupported (const WifiRemoteStation *station) const;
+  /**
+   * Return whether the given station is EHT capable.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station has EHT capabilities,
+   *         false otherwise
+   */
+  bool GetEhtSupported (const WifiRemoteStation *station) const;
   /**
    * Return the WifiMode supported by the specified station at the specified index.
    *

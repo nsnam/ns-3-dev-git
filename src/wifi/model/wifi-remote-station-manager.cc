@@ -1252,6 +1252,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_htCapabilities = 0;
   state->m_vhtCapabilities = 0;
   state->m_heCapabilities = 0;
+  state->m_ehtCapabilities = 0;
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_guardInterval = GetGuardInterval ();
   state->m_ness = 0;
@@ -1293,8 +1294,7 @@ void
 WifiRemoteStationManager::SetQosSupport (Mac48Address from, bool qosSupported)
 {
   NS_LOG_FUNCTION (this << from << qosSupported);
-  WifiRemoteStationState *state;
-  state = LookupState (from);
+  WifiRemoteStationState *state = LookupState (from);
   state->m_qosSupported = qosSupported;
 }
 
@@ -1303,8 +1303,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
 {
   //Used by all stations to record HT capabilities of remote stations
   NS_LOG_FUNCTION (this << from << htCapabilities);
-  WifiRemoteStationState *state;
-  state = LookupState (from);
+  WifiRemoteStationState *state = LookupState (from);
   if (htCapabilities.GetSupportedChannelWidth () == 1)
     {
       state->m_channelWidth = 40;
@@ -1329,8 +1328,7 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
 {
   //Used by all stations to record VHT capabilities of remote stations
   NS_LOG_FUNCTION (this << from << vhtCapabilities);
-  WifiRemoteStationState *state;
-  state = LookupState (from);
+  WifiRemoteStationState *state = LookupState (from);
   if (vhtCapabilities.GetSupportedChannelWidthSet () == 1)
     {
       state->m_channelWidth = 160;
@@ -1363,8 +1361,7 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
 {
   //Used by all stations to record HE capabilities of remote stations
   NS_LOG_FUNCTION (this << from << heCapabilities);
-  WifiRemoteStationState *state;
-  state = LookupState (from);
+  WifiRemoteStationState *state = LookupState (from);
   if ((m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_wifiPhy->GetPhyBand () == WIFI_PHY_BAND_6GHZ))
     {
       if (heCapabilities.GetChannelWidthSet () & 0x04)
@@ -1412,6 +1409,17 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
   SetQosSupport (from, true);
 }
 
+void
+WifiRemoteStationManager::AddStationEhtCapabilities (Mac48Address from, EhtCapabilities ehtCapabilities)
+{
+  //Used by all stations to record EHT capabilities of remote stations
+  NS_LOG_FUNCTION (this << from << ehtCapabilities);
+  WifiRemoteStationState *state = LookupState (from);
+  //TODO: to be completed
+  state->m_ehtCapabilities = Create<const EhtCapabilities> (ehtCapabilities);
+  SetQosSupport (from, true);
+}
+
 Ptr<const HtCapabilities>
 WifiRemoteStationManager::GetStationHtCapabilities (Mac48Address from)
 {
@@ -1428,6 +1436,12 @@ Ptr<const HeCapabilities>
 WifiRemoteStationManager::GetStationHeCapabilities (Mac48Address from)
 {
   return LookupState (from)->m_heCapabilities;
+}
+
+Ptr<const EhtCapabilities>
+WifiRemoteStationManager::GetStationEhtCapabilities (Mac48Address from)
+{
+  return LookupState (from)->m_ehtCapabilities;
 }
 
 bool
@@ -1792,6 +1806,12 @@ WifiRemoteStationManager::GetHeSupported (const WifiRemoteStation *station) cons
   return (station->m_state->m_heCapabilities != 0);
 }
 
+bool
+WifiRemoteStationManager::GetEhtSupported (const WifiRemoteStation *station) const
+{
+  return (station->m_state->m_ehtCapabilities != 0);
+}
+
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported (const WifiRemoteStation *station) const
 {
@@ -1883,6 +1903,12 @@ bool
 WifiRemoteStationManager::GetHeSupported (Mac48Address address) const
 {
   return (LookupState (address)->m_heCapabilities != 0);
+}
+
+bool
+WifiRemoteStationManager::GetEhtSupported (Mac48Address address) const
+{
+  return (LookupState (address)->m_ehtCapabilities != 0);
 }
 
 void

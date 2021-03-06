@@ -193,6 +193,8 @@ typedef uint8_t WifiInformationElementId;
 #define IE_EXT_UORA_PARAMETER_SET               ((WifiInformationElementId)37)
 #define IE_EXT_MU_EDCA_PARAMETER_SET            ((WifiInformationElementId)38)
 
+#define IE_EXT_EHT_CAPABILITIES                 ((WifiInformationElementId)108)
+
 /**
  * \brief Information element, as defined in 802.11-2007 standard
  * \ingroup wifi
@@ -274,7 +276,8 @@ public:
 
   // Each subclass must implement these pure virtual functions:
   /**
-   * \returns Own unique Element ID
+   * Get the wifi information element ID
+   * \returns the wifi information element ID
    */
   virtual WifiInformationElementId ElementId () const = 0;
   /**
@@ -307,7 +310,8 @@ public:
                                                uint8_t length) = 0;
 
   /**
-   * \returns Own unique Element ID Extension
+   * Get the wifi information element ID extension
+   * \returns the wifi information element ID extension
    */
   virtual WifiInformationElementId ElementIdExt () const;
 

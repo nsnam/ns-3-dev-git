@@ -1396,6 +1396,18 @@ WifiMac::GetHeCapabilities (void) const
   return capabilities;
 }
 
+EhtCapabilities
+WifiMac::GetEhtCapabilities (void) const
+{
+  NS_LOG_FUNCTION (this);
+  EhtCapabilities capabilities;
+  if (GetEhtSupported ())
+    {
+      //TODO: fill in EHT capabilities
+    }
+  return capabilities;
+}
+
 uint32_t
 WifiMac::GetMaxAmpduSize (AcIndex ac) const
 {

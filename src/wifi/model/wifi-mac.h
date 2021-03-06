@@ -377,6 +377,12 @@ public:
    * \return the HE capabilities that we support
    */
   HeCapabilities GetHeCapabilities (void) const;
+  /**
+   * Return the EHT capabilities of the device.
+   *
+   * \return the EHT capabilities that we support
+   */
+  EhtCapabilities GetEhtCapabilities (void) const;
 
   /**
    * Return whether the device supports QoS.

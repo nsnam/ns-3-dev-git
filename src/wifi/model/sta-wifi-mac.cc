@@ -1,7 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006, 2009 INRIA
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2009 MIRKO BANCHICONFLICT (content): Merge conflict in src/wifi/model/sta-wifi-mac.cc
+
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -174,6 +175,10 @@ StaWifiMac::SendProbeRequest (void)
     {
       probe.SetHeCapabilities (GetHeCapabilities ());
     }
+  if (GetEhtSupported ())
+    {
+      probe.SetEhtCapabilities (GetEhtCapabilities ());
+    }
   packet->AddHeader (probe);
 
   if (!GetQosSupported ())
@@ -225,6 +230,10 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
         {
           assoc.SetHeCapabilities (GetHeCapabilities ());
         }
+      if (GetEhtSupported ())
+        {
+          assoc.SetEhtCapabilities (GetEhtCapabilities ());
+        }
       packet->AddHeader (assoc);
     }
   else
@@ -247,6 +256,10 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       if (GetHeSupported ())
         {
           reassoc.SetHeCapabilities (GetHeCapabilities ());
+        }
+      if (GetEhtSupported ())
+        {
+          reassoc.SetEhtCapabilities (GetEhtCapabilities ());
         }
       packet->AddHeader (reassoc);
     }
@@ -874,6 +887,12 @@ StaWifiMac::UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr,
                                muEdcaParameters.GetMuAifsn (AC_VO), muEdcaParameters.GetMuEdcaTimer (AC_VO));
         }
     }
+  if (GetEhtSupported ())
+    {
+      EhtCapabilities ehtCapabilities = beacon.GetEhtCapabilities ();
+      //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
+      GetWifiRemoteStationManager ()->AddStationEhtCapabilities (apAddr, ehtCapabilities);
+    }
   GetWifiRemoteStationManager ()->SetShortPreambleEnabled (isShortPreambleEnabled);
   GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
 }
@@ -1026,10 +1045,10 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
     }
   if (GetHeSupported ())
     {
-      HeCapabilities hecapabilities = assocResp.GetHeCapabilities ();
-      if (hecapabilities.GetSupportedMcsAndNss () != 0)
+      HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
+      if (heCapabilities.GetSupportedMcsAndNss () != 0)
         {
-          GetWifiRemoteStationManager ()->AddStationHeCapabilities (apAddr, hecapabilities);
+          GetWifiRemoteStationManager ()->AddStationHeCapabilities (apAddr, heCapabilities);
           HeOperation heOperation = assocResp.GetHeOperation ();
           GetHeConfiguration ()->SetAttribute ("BssColor", UintegerValue (heOperation.GetBssColor ()));
         }
@@ -1046,6 +1065,12 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
           SetMuEdcaParameters (AC_VO, muEdcaParameters.GetMuCwMin (AC_VO), muEdcaParameters.GetMuCwMax (AC_VO),
                                muEdcaParameters.GetMuAifsn (AC_VO), muEdcaParameters.GetMuEdcaTimer (AC_VO));
         }
+    }
+  if (GetEhtSupported ())
+    {
+      EhtCapabilities ehtCapabilities = assocResp.GetEhtCapabilities ();
+      //TODO: once we support non constant rate managers, we should add checks here whether EHT is supported by the peer
+      GetWifiRemoteStationManager ()->AddStationEhtCapabilities (apAddr, ehtCapabilities);
     }
   for (const auto & mode : GetWifiPhy ()->GetModeList ())
     {
@@ -1098,6 +1123,11 @@ StaWifiMac::UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Ad
               //here should add a control to add basic MCS when it is implemented
             }
         }
+    }
+  if (GetEhtSupported ())
+    {
+      EhtCapabilities ehtCapabilities = assocResp.GetEhtCapabilities ();
+      //TODO: to be completed
     }
 }
 

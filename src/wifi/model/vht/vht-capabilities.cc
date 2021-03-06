@@ -71,7 +71,7 @@ VhtCapabilities::SetVhtSupported (uint8_t vhtSupported)
 uint8_t
 VhtCapabilities::GetInformationFieldSize () const
 {
-  //we should not be here if vht is not supported
+  //we should not be here if VHT is not supported
   NS_ASSERT (m_vhtSupported > 0);
   return 12;
 }

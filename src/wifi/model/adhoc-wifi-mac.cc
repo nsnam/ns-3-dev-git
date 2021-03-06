@@ -27,6 +27,7 @@
 #include "ns3/ht-capabilities.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/he-capabilities.h"
+#include "ns3/eht-capabilities.h"
 
 namespace ns3 {
 
@@ -96,6 +97,10 @@ AdhocWifiMac::Enqueue (Ptr<Packet> packet, Mac48Address to)
       if (GetHeSupported ())
         {
           GetWifiRemoteStationManager ()->AddStationHeCapabilities (to, GetHeCapabilities ());
+        }
+      if (GetEhtSupported ())
+        {
+          GetWifiRemoteStationManager ()->AddStationEhtCapabilities (to, GetEhtCapabilities ());
         }
       GetWifiRemoteStationManager ()->AddAllSupportedModes (to);
       GetWifiRemoteStationManager ()->RecordDisassociated (to);
@@ -196,6 +201,10 @@ AdhocWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
       if (GetHeSupported ())
         {
           GetWifiRemoteStationManager ()->AddStationHeCapabilities (from, GetHeCapabilities ());
+        }
+      if (GetEhtSupported ())
+        {
+          GetWifiRemoteStationManager ()->AddStationEhtCapabilities (from, GetEhtCapabilities ());
         }
       GetWifiRemoteStationManager ()->AddAllSupportedModes (from);
       GetWifiRemoteStationManager ()->RecordDisassociated (from);

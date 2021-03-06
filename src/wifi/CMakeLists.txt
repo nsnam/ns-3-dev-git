@@ -25,6 +25,7 @@ set(source_files
     model/channel-access-manager.cc
     model/ctrl-headers.cc
     model/edca-parameter-set.cc
+    model/eht/eht-capabilities.cc
     model/eht/eht-configuration.cc
     model/error-rate-model.cc
     model/extended-capabilities.cc
@@ -160,6 +161,7 @@ set(header_files
     model/channel-access-manager.h
     model/ctrl-headers.h
     model/edca-parameter-set.h
+    model/eht/eht-capabilities.h
     model/eht/eht-configuration.h
     model/error-rate-model.h
     model/extended-capabilities.h
