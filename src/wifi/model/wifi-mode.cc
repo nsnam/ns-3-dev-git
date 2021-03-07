@@ -32,6 +32,11 @@ bool operator == (const WifiMode &a, const WifiMode &b)
   return a.GetUid () == b.GetUid ();
 }
 
+bool operator != (const WifiMode &a, const WifiMode &b)
+{
+  return a.GetUid () != b.GetUid ();
+}
+
 bool operator < (const WifiMode &a, const WifiMode &b)
 {
   return a.GetUid () < b.GetUid ();

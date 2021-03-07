@@ -222,6 +222,18 @@ private:
  *         false otherwise
  */
 bool operator == (const WifiMode &a, const WifiMode &b);
+
+/**
+ * Check if the two WifiModes are different.
+ *
+ * \param a WifiMode
+ * \param b WifiMode
+ *
+ * \return true if the two WifiModes are different,
+ *         false otherwise
+ */
+bool operator != (const WifiMode &a, const WifiMode &b);
+
 /**
  * Compare two WifiModes
  *
@@ -232,6 +244,7 @@ bool operator == (const WifiMode &a, const WifiMode &b);
  *         false otherwise
  */
 bool operator < (const WifiMode &a, const WifiMode &b);
+
 /**
  * Serialize WifiMode to ostream (human-readable).
  *
