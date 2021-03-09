@@ -573,6 +573,8 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
 
   SixLowPanMesh meshHdr;
   SixLowPanBc0 bc0Hdr;
+  uint32_t extraHdrSize = 0;
+
   if (useMesh)
     {
       Address source = src;
@@ -596,7 +598,9 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
       meshHdr.SetFinalDst (destination);
       meshHdr.SetHopsLeft (m_meshUnderHopsLeft);
       destination = m_netDevice->GetBroadcast ();
-      pktSize += meshHdr.GetSerializedSize () + bc0Hdr.GetSerializedSize ();
+      // We are storing sum of mesh and bc0 header sizes. We will need it if packet is fragmented.
+      extraHdrSize = meshHdr.GetSerializedSize () + bc0Hdr.GetSerializedSize ();
+      pktSize +=  extraHdrSize;
     }
 
   if (pktSize < m_compressionThreshold)
@@ -618,7 +622,7 @@ bool SixLowPanNetDevice::DoSend (Ptr<Packet> packet,
       NS_LOG_LOGIC ("Fragmentation: Packet size " << packet->GetSize () << " - Mtu " << m_netDevice->GetMtu () );
       // fragment
       std::list<Ptr<Packet> > fragmentList;
-      DoFragmentation (packet, origPacketSize, origHdrSize, fragmentList);
+      DoFragmentation (packet, origPacketSize, origHdrSize, extraHdrSize, fragmentList);
       std::list<Ptr<Packet> >::iterator it;
       bool success = true;
       for ( it = fragmentList.begin (); it != fragmentList.end (); it++ )
@@ -2250,6 +2254,7 @@ SixLowPanNetDevice::DecompressLowPanUdpNhc (Ptr<Packet> packet, Ipv6Address sadd
 void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
                                           uint32_t origPacketSize,
                                           uint32_t origHdrSize,
+                                          uint32_t extraHdrSize,
                                           std::list<Ptr<Packet> >& listFragments)
 {
   NS_LOG_FUNCTION (this << *packet);
@@ -2272,8 +2277,9 @@ void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
   uint32_t size;
   NS_ASSERT_MSG ( l2Mtu > frag1Hdr.GetSerializedSize (),
                   "6LoWPAN: can not fragment, 6LoWPAN headers are bigger than MTU");
-
-  size = l2Mtu - frag1Hdr.GetSerializedSize () - compressedHeaderSize;
+  
+  // All the headers are substracted to get remaining units for data
+  size = l2Mtu - frag1Hdr.GetSerializedSize () - compressedHeaderSize - extraHdrSize;
   size -= size % 8;
   size += compressedHeaderSize;
 
@@ -2294,7 +2300,7 @@ void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
       fragNHdr.SetDatagramSize (origPacketSize);
       fragNHdr.SetDatagramOffset ((offset) >> 3);
 
-      size = l2Mtu - fragNHdr.GetSerializedSize ();
+      size = l2Mtu - fragNHdr.GetSerializedSize () - extraHdrSize;
       size -= size % 8;
 
       if ( (offsetData + size) > packetSize )

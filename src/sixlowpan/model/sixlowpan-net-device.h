@@ -526,9 +526,10 @@ private:
    * \param [in] packet the packet to be fragmented (with headers already compressed with 6LoWPAN).
    * \param [in] origPacketSize the size of the IP packet before the 6LoWPAN header compression, including the IP/L4 headers.
    * \param [in] origHdrSize the size of the IP header before the 6LoWPAN header compression.
+   * \param [in] extraHdrSize the sum of the sizes of BC0 header and MESH header if mesh routing is used or 0.
    * \param [out] listFragments A reference to the list of the resulting packets, all with the proper headers in place.
    */
-  void DoFragmentation (Ptr<Packet> packet, uint32_t origPacketSize, uint32_t origHdrSize,
+  void DoFragmentation (Ptr<Packet> packet, uint32_t origPacketSize, uint32_t origHdrSize, uint32_t extraHdrSize,
                         std::list<Ptr<Packet> >& listFragments);
 
   /**
