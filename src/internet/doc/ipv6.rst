@@ -238,10 +238,6 @@ If the prefix is not marked as "on-link", then any packet is sent to the defult 
 to add an address to a node without setting the on-link property for the prefix used in the address.
 The function to use is :cpp:class:`Ipv6AddressHelper::AssignWithoutOnLink`.
 
-Note that adding a global address to a node (either manually or using :cpp:class:`Radvd`) will lead to
-a new entry in :cpp:class:`Ipv6StaticRouting`. The lack of :cpp:class:`Ipv6StaticRouting` in a 
-node might trigger an assert.
-
 
 Duplicate Address Detection (DAD)
 +++++++++++++++++++++++++++++++++

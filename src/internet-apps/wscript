@@ -28,6 +28,7 @@ def build(bld):
     applications_test = bld.create_ns3_module_test_library('internet-apps')
     applications_test.source = [
         'test/dhcp-test.cc',
+        'test/ipv6-radvd-test.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
