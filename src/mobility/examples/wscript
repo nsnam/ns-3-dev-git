@@ -27,3 +27,7 @@ def build(bld):
     obj = bld.create_ns3_program('bonnmotion-ns2-example', 
                                  ['core', 'mobility'])
     obj.source = 'bonnmotion-ns2-example.cc'
+
+    obj = bld.create_ns3_program('reference-point-group-mobility-example',
+                                 ['core', 'network', 'mobility'])
+    obj.source = 'reference-point-group-mobility-example.cc'
