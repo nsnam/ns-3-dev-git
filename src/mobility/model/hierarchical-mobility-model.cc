@@ -174,6 +174,15 @@ HierarchicalMobilityModel::ChildChanged (Ptr<const MobilityModel> model)
   MobilityModel::NotifyCourseChange ();
 }
 
+void
+HierarchicalMobilityModel::DoInitialize (void)
+{
+  if (m_parent && !m_parent->IsInitialized ())
+    {
+      m_parent->Initialize ();
+    }
+  m_child->Initialize ();
+}
 
 
 } // namespace ns3

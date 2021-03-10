@@ -101,6 +101,7 @@ private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
+  virtual void DoInitialize (void);
 
   /**
    * Callback for when parent mobility model course change occurs
