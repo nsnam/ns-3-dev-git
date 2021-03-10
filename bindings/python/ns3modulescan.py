@@ -4,7 +4,7 @@ import sys
 import os.path
 
 import pybindgen.settings
-from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning
+from pybindgen.castxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.class_declaration import class_t
@@ -18,7 +18,7 @@ from pygccxml.declarations.calldef import calldef_t
 import ns3modulegen_core_customizations
 
 
-## silence gccxmlparser errors; we only want error handling in the
+## silence castxmlparser errors; we only want error handling in the
 ## generated python script, not while scanning.
 class ErrorHandler(pybindgen.settings.ErrorHandler):
     def handle_error(self, dummy_wrapper, dummy_exception, dummy_traceback_):
