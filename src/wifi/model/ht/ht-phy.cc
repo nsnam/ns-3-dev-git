@@ -768,6 +768,12 @@ HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
   return true;
 }
 
+uint32_t
+HtPhy::GetMaxPsduSize (void) const
+{
+  return 65535;
+}
+
 } //namespace ns3
 
 namespace {

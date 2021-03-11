@@ -323,6 +323,14 @@ protected:
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
+  /**
+   * Get the maximum PSDU size in bytes (see Table 21-29 VHT PHY characteristics
+   * of IEEE 802.11-2016)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
 private:
   // Inherited
   virtual void BuildModeList (void) override;

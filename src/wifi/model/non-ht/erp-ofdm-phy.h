@@ -196,6 +196,14 @@ public:
    */
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
+  /**
+   * Get the maximum PSDU size in bytes (see Table 18-5 ERP characteristics
+   * of IEEE 802.11-2016)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
 private:
   // Inherited
   WifiMode GetHeaderMode (const WifiTxVector& txVector) const override;

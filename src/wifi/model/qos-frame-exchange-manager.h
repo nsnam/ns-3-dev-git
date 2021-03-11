@@ -79,16 +79,17 @@ public:
    * Check whether the transmission time of the frame being built (as described
    * by the given TX parameters) does not exceed the given PPDU duration limit
    * if the size of the PSDU addressed to the given receiver becomes
-   * <i>ppduPayloadSize</i>.
+   * <i>ppduPayloadSize</i>. Also check that the PSDU size does not exceed the
+   * max PSDU size for the modulation class being used.
    *
    * \param ppduPayloadSize the new PSDU size
    * \param receiver the MAC address of the receiver of the PSDU
    * \param txParams the TX parameters describing the frame being built
    * \param ppduDurationLimit the limit on the PPDU duration
-   * \return true if the constraint on the PPDU duration limit is met
+   * \return true if the constraints on the PPDU duration limit and the maximum PSDU size are met
    */
-  virtual bool IsWithinTimeLimit (uint32_t ppduPayloadSize, Mac48Address receiver,
-                                  const WifiTxParameters& txParams, Time ppduDurationLimit) const;
+  virtual bool IsWithinSizeAndTimeLimits (uint32_t ppduPayloadSize, Mac48Address receiver,
+                                          const WifiTxParameters& txParams, Time ppduDurationLimit) const;
 
 protected:
   virtual void DoDispose () override;

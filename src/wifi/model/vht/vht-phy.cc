@@ -510,6 +510,12 @@ VhtPhy::IsModeAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss)
   return true;
 }
 
+uint32_t
+VhtPhy::GetMaxPsduSize (void) const
+{
+  return 4692480;
+}
+
 } //namespace ns3
 
 namespace {

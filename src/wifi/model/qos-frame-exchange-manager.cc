@@ -396,18 +396,26 @@ QosFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mp
 
   // A QoS station only has to check that the MPDU transmission time does not
   // exceed the given limit
-  return IsWithinTimeLimit (mpdu->GetSize (), mpdu->GetHeader ().GetAddr1 (), txParams, ppduDurationLimit);
+  return IsWithinSizeAndTimeLimits (mpdu->GetSize (), mpdu->GetHeader ().GetAddr1 (),
+                                    txParams, ppduDurationLimit);
 }
 
 bool
-QosFrameExchangeManager::IsWithinTimeLimit (uint32_t ppduPayloadSize, Mac48Address receiver,
-                                            const WifiTxParameters& txParams, Time ppduDurationLimit) const
+QosFrameExchangeManager::IsWithinSizeAndTimeLimits (uint32_t ppduPayloadSize, Mac48Address receiver,
+                                                    const WifiTxParameters& txParams,
+                                                    Time ppduDurationLimit) const
 {
   NS_LOG_FUNCTION (this << ppduPayloadSize << receiver << &txParams << ppduDurationLimit);
 
   if (ppduDurationLimit != Time::Min () && ppduDurationLimit.IsNegative ())
     {
       NS_LOG_DEBUG ("ppduDurationLimit is null or negative, time limit is trivially exceeded");
+      return false;
+    }
+
+  if (ppduPayloadSize > WifiPhy::GetMaxPsduSize (txParams.m_txVector.GetModulationClass ()))
+    {
+      NS_LOG_DEBUG ("the frame exceeds the max PSDU size");
       return false;
     }
 

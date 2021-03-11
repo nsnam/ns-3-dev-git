@@ -395,6 +395,14 @@ public:
   Time GetBlockAckTxTime (void) const;
 
   /**
+   * Get the maximum PSDU size in bytes for the given modulation class.
+   *
+   * \param modulation the modulation class
+   * \return the maximum PSDU size in bytes for the given modulation class
+   */
+  static uint32_t GetMaxPsduSize (WifiModulationClass modulation);
+
+  /**
   * The WifiPhy::BssMembershipSelector() method is used
   * (e.g., by a WifiRemoteStationManager) to determine the set of
   * transmission/reception modes that this WifiPhy(-derived class)

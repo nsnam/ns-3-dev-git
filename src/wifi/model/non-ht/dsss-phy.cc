@@ -341,6 +341,12 @@ DsssPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
   return true;
 }
 
+uint32_t
+DsssPhy::GetMaxPsduSize (void) const
+{
+  return 4095;
+}
+
 } //namespace ns3
 
 namespace {

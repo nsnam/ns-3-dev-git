@@ -909,7 +909,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAddMpdu (Ptr<const WifiMacQueueItem> mpd
         }
     }
 
-  return IsWithinTimeLimit (ampduSize, receiver, txParams, ppduDurationLimit);
+  return IsWithinSizeAndTimeLimits (ampduSize, receiver, txParams, ppduDurationLimit);
 }
 
 bool
@@ -1052,7 +1052,7 @@ HtFrameExchangeManager::IsWithinLimitsIfAggregateMsdu (Ptr<const WifiMacQueueIte
         }
     }
 
-  return IsWithinTimeLimit (ret.second, receiver, txParams, ppduDurationLimit);
+  return IsWithinSizeAndTimeLimits (ret.second, receiver, txParams, ppduDurationLimit);
 }
 
 void

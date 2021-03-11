@@ -276,6 +276,13 @@ public:
                                    uint16_t staId) const = 0;
 
   /**
+   * Get the maximum PSDU size in bytes.
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const = 0;
+
+  /**
    * A pair containing information on the PHY header chunk, namely
    * the start and stop times of the chunk and the WifiMode used.
    */

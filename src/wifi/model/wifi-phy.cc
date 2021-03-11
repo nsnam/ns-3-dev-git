@@ -1598,6 +1598,12 @@ WifiPhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVe
   return GetStaticPhyEntity (txVector.GetModulationClass ())->CalculateTxDuration (psduMap, txVector, band);
 }
 
+uint32_t
+WifiPhy::GetMaxPsduSize (WifiModulationClass modulation)
+{
+  return GetStaticPhyEntity (modulation)->GetMaxPsduSize ();
+}
+
 void
 WifiPhy::NotifyTxBegin (WifiConstPsduMap psdus, double txPowerW)
 {

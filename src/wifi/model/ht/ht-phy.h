@@ -525,6 +525,14 @@ protected:
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
+  /**
+   * Get the maximum PSDU size in bytes (see Table 19-25 HT PHY characteristics
+   * of IEEE 802.11-2016)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
   uint8_t m_maxMcsIndexPerSs;          //!< the maximum MCS index per spatial stream as defined by the standard
   uint8_t m_maxSupportedMcsIndexPerSs; //!< the maximum supported MCS index per spatial stream
   uint8_t m_bssMembershipSelector;     //!< the BSS membership selector

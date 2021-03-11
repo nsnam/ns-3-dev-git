@@ -599,6 +599,12 @@ OfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
   return true;
 }
 
+uint32_t
+OfdmPhy::GetMaxPsduSize (void) const
+{
+  return 4095;
+}
+
 } //namespace ns3
 
 namespace {

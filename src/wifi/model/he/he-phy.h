@@ -389,6 +389,14 @@ protected:
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
+  /**
+   * Get the maximum PSDU size in bytes (see Table 27-55 HE PHY characteristics
+   * of IEEE 802.11ax D5.0)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
 

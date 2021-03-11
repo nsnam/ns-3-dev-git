@@ -422,6 +422,14 @@ protected:
                                      uint16_t usableSubCarriers, uint16_t numberOfBitsPerSubcarrier,
                                      double codingRate);
 
+  /**
+   * Get the maximum PSDU size in bytes (see Table 17-21 OFDM PHY characteristics
+   * of IEEE 802.11-2016)
+   *
+   * \return the maximum PSDU size in bytes
+   */
+  virtual uint32_t GetMaxPsduSize (void) const override;
+
 private:
   /**
    * Create an OFDM mode from a unique name, the unique name

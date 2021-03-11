@@ -1143,6 +1143,12 @@ HePhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
   return true;
 }
 
+uint32_t
+HePhy::GetMaxPsduSize (void) const
+{
+  return 6500631;
+}
+
 } //namespace ns3
 
 namespace {
