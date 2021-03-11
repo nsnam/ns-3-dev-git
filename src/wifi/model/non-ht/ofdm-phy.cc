@@ -27,6 +27,7 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include <array>
 
 namespace ns3 {
 

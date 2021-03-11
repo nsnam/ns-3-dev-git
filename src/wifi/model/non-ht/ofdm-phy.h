@@ -24,7 +24,6 @@
 #define OFDM_PHY_H
 
 #include "ns3/phy-entity.h"
-#include <vector>
 
 /**
  * \file
