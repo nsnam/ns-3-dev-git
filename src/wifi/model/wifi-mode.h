@@ -34,25 +34,20 @@ namespace ns3 {
 class WifiTxVector;
 
 /**
- * This enumeration defines the various convolutional coding rates
+ * These constants define the various convolutional coding rates
  * used for the OFDM transmission modes in the IEEE 802.11
  * standard. DSSS (for example) rates which do not have an explicit
  * coding stage in their generation should have this parameter set to
  * WIFI_CODE_RATE_UNDEFINED.
+ * \note This typedef and constants could be converted to an enum or scoped
+ * enum if pybindgen is upgraded to support Callback<WifiCodeRate>
  */
-enum WifiCodeRate
-{
-  /** No explicit coding (e.g., DSSS rates) */
-  WIFI_CODE_RATE_UNDEFINED = 0,
-  /** Rate 1/2 */
-  WIFI_CODE_RATE_1_2,
-  /** Rate 2/3 */
-  WIFI_CODE_RATE_2_3,
-  /** Rate 3/4 */
-  WIFI_CODE_RATE_3_4,
-  /** Rate 5/6 */
-  WIFI_CODE_RATE_5_6
-};
+typedef uint16_t WifiCodeRate;
+const uint16_t WIFI_CODE_RATE_UNDEFINED = 0;
+const uint16_t WIFI_CODE_RATE_1_2 = 1;
+const uint16_t WIFI_CODE_RATE_2_3 = 2;
+const uint16_t WIFI_CODE_RATE_3_4 = 3;
+const uint16_t WIFI_CODE_RATE_5_6 = 4;
 
 /**
  * \brief represent a single transmission mode

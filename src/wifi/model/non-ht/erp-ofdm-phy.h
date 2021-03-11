@@ -69,13 +69,6 @@ public:
    * \return a WifiMode for ERP-OFDM
    */
   static WifiMode GetErpOfdmRate (uint64_t rate);
-  /**
-   * Return the list of rates (in bps) achievable with
-   * ERP-OFDM.
-   *
-   * \return a vector containing the achievable rates in bps
-   */
-  static std::vector<uint64_t> GetErpOfdmRatesBpsList (void);
 
   /**
    * Return a WifiMode for ERP-OFDM at 6 Mbps.

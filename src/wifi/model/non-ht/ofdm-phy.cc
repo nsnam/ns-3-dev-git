@@ -70,7 +70,26 @@ const PhyEntity::ModulationLookupTable OfdmPhy::m_ofdmModulationLookupTable {
   { "OfdmRate12MbpsBW5MHz",   { WIFI_CODE_RATE_2_3, 64 } },
   { "OfdmRate13_5MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 64 } }
 };
+
+// OFDM rates in bits per second
+const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
+   {{ 20, // MHz
+     {  6000000,  9000000, 12000000, 18000000,
+       24000000, 36000000, 48000000, 54000000 }},
+   { 10, // MHz
+     {  3000000,  4500000,  6000000,  9000000,
+       12000000, 18000000, 24000000, 27000000 }},
+   { 5, // MHz
+     {  1500000,  2250000,  3000000,  4500000,
+        6000000,  9000000, 12000000, 13500000 }}};
+
 /* *NS_CHECK_STYLE_ON* */
+
+const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList (void)
+{
+  return s_ofdmRatesBpsList;
+};
+
 
 OfdmPhy::OfdmPhy (OfdmPhyVariant variant /* = OFDM_PHY_DEFAULT */, bool buildModeList /* = true */)
 {
@@ -416,24 +435,6 @@ OfdmPhy::GetOfdmRate (uint64_t rate, uint16_t bw)
         NS_ABORT_MSG ("Inexistent bandwidth (" << +bw << " MHz) requested for 11a OFDM");
         return WifiMode ();
     }
-}
-
-std::map<uint16_t, std::vector<uint64_t> >
-OfdmPhy::GetOfdmRatesBpsList (void)
-{
-  /* *NS_CHECK_STYLE_OFF* */
-  return {
-           { 20, // MHz
-             {  6000000,  9000000, 12000000, 18000000,
-               24000000, 36000000, 48000000, 54000000 }},
-           { 10, // MHz
-             {  3000000,  4500000,  6000000,  9000000,
-               12000000, 18000000, 24000000, 27000000 }},
-           { 5, // MHz
-             {  1500000,  2250000,  3000000,  4500000,
-                6000000,  9000000, 12000000, 13500000 }}
-  };
-  /* *NS_CHECK_STYLE_ON* */
 }
 
 #define GET_OFDM_MODE(x, f) \

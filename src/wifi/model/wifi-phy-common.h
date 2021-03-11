@@ -23,6 +23,7 @@
 #ifndef WIFI_PHY_COMMON_H
 #define WIFI_PHY_COMMON_H
 
+#include <ostream>
 #include "ns3/fatal-error.h"
 
 /**

@@ -187,15 +187,6 @@ std::ostream& operator<< (std::ostream& os, const Ptr<const WifiPpdu> &ppdu);
  * \brief Stream insertion operator.
  *
  * \param os the stream
- * \param ppdu the pointer to the PPDU
- * \returns a reference to the stream
- */
-std::ostream& operator<< (std::ostream& os, const Ptr<WifiPpdu> &ppdu);
-
-/**
- * \brief Stream insertion operator.
- *
- * \param os the stream
  * \param psdus the PSDUs
  * \returns a reference to the stream
  */

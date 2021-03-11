@@ -163,12 +163,6 @@ std::ostream & operator << (std::ostream &os, const Ptr<const WifiPpdu> &ppdu)
   return os;
 }
 
-std::ostream & operator << (std::ostream &os, const Ptr<WifiPpdu> &ppdu)
-{
-  ppdu->Print (os);
-  return os;
-}
-
 std::ostream & operator << (std::ostream &os, const WifiConstPsduMap &psdus)
 {
   for (auto const& psdu : psdus)

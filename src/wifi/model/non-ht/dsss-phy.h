@@ -76,14 +76,6 @@ public:
    */
   static WifiMode GetDsssRate (uint64_t rate);
   /**
-   * Return the list of rates (in bps) achievable with
-   * HR/DSSS.
-   *
-   * \return a vector containing the achievable rates in bps
-   */
-  static std::vector<uint64_t> GetDsssRatesBpsList (void);
-
-  /**
    * Return a WifiMode for DSSS at 1 Mbps.
    *
    * \return a WifiMode for DSSS at 1 Mbps
