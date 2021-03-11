@@ -196,6 +196,52 @@ DataRate::DataRate(uint64_t bps)
   NS_LOG_FUNCTION (this << bps);
 }
 
+DataRate DataRate::operator + (DataRate rhs)
+{
+  return DataRate(m_bps + rhs.m_bps);
+}
+
+DataRate& DataRate::operator += (DataRate rhs)
+{
+  m_bps += rhs.m_bps;
+  return *this;
+}
+
+DataRate DataRate::operator - (DataRate rhs)
+{
+  NS_ASSERT_MSG(m_bps >= rhs.m_bps, "Data Rate cannot be negative.");
+  return DataRate(m_bps - rhs.m_bps);
+}
+
+DataRate& DataRate::operator -= (DataRate rhs)
+{
+  NS_ASSERT_MSG(m_bps >= rhs.m_bps, "Data Rate cannot be negative.");
+  m_bps -= rhs.m_bps;
+  return *this;
+}
+
+DataRate DataRate::operator * (double rhs)
+{
+  return DataRate(((uint64_t)(m_bps * rhs)));
+}
+
+DataRate& DataRate::operator *= (double rhs)
+{
+  m_bps *= rhs;
+  return *this;
+}
+
+DataRate DataRate::operator * (uint64_t rhs)
+{
+  return DataRate(m_bps * rhs);
+}
+
+DataRate& DataRate::operator *= (uint64_t rhs)
+{
+  m_bps *= rhs;
+  return *this;
+}
+
 bool DataRate::operator < (const DataRate& rhs) const
 {
   return m_bps<rhs.m_bps;

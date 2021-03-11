@@ -119,6 +119,75 @@ public:
   DataRate (std::string rate);
 
   /**
+   * \return the DataRate representing the sum of this object with rhs
+   * 
+   * \param the DataRate to add to this DataRate
+   */
+  DataRate operator + (DataRate rhs);
+
+  /**
+   * \return the DataRate representing the sum of this object with rhs
+   * 
+   * \param the DataRate to add to this DataRate
+   */
+  DataRate& operator += (DataRate rhs);
+
+  /**
+   * \return the DataRate representing the difference of this object with rhs
+   * 
+   * \param the DataRate to subtract from this DataRate
+   */
+  DataRate operator - (DataRate rhs);
+
+  /**
+   * \return the DataRate representing the difference of this object with rhs
+   * 
+   * \param the DataRate to subtract from this DataRate
+   */
+  DataRate& operator -= (DataRate rhs);
+
+  /**
+   * \brief Scales the DataRate
+   * 
+   * Multiplies with double and is re-casted to an int
+   * 
+   * \return DataRate object representing the product of this object with rhs 
+   * 
+   * \param rhs the double to multiply to this datarate
+   */
+  DataRate operator * (double rhs);
+
+  /**
+   * \brief Scales the DataRate
+   * 
+   * Multiplies with double and is re-casted to an int 
+   * 
+   * \return DataRate object representing the product of this object with rhs
+   * 
+   * \param rhs the double to multipy to this datarate
+   */
+  DataRate& operator *= (double rhs);
+
+  /**
+   * \brief Scales the DataRate
+   * 
+   * \return DataRate object representing the product of this object with rhs
+   * 
+   * \param rhs the uint64_t to multipy to this datarate
+   */
+  DataRate operator * (uint64_t rhs);
+
+  /**
+   * \brief Scales the DataRate
+   * 
+   * \return DataRate object representing the product of this object with rhs
+   * 
+   * \param rhs the uint64_t to multipy to this datarate
+   */
+  DataRate& operator *= (uint64_t rhs);
+
+
+  /**
    * \return true if this rate is less than rhs
    *
    * \param rhs the datarate to compare to this datarate
