@@ -188,6 +188,62 @@ HtFrameExchangeManager::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16
 }
 
 void
+HtFrameExchangeManager::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
+                                           Mac48Address originator)
+{
+  NS_LOG_FUNCTION (this << originator);
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
+  hdr.SetAddr1 (originator);
+  hdr.SetAddr2 (m_self);
+  hdr.SetAddr3 (m_bssid);
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+
+  MgtAddBaResponseHeader respHdr;
+  StatusCode code;
+  code.SetSuccess ();
+  respHdr.SetStatusCode (code);
+  //Here a control about queues type?
+  respHdr.SetAmsduSupport (reqHdr->IsAmsduSupported ());
+
+  if (reqHdr->IsImmediateBlockAck ())
+    {
+      respHdr.SetImmediateBlockAck ();
+    }
+  else
+    {
+      respHdr.SetDelayedBlockAck ();
+    }
+  respHdr.SetTid (reqHdr->GetTid ());
+
+  respHdr.SetBufferSize (GetSupportedBaBufferSize () - 1);
+  respHdr.SetTimeout (reqHdr->GetTimeout ());
+
+  WifiActionHeader actionHdr;
+  WifiActionHeader::ActionValue action;
+  action.blockAck = WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE;
+  actionHdr.SetAction (WifiActionHeader::BLOCK_ACK, action);
+
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (respHdr);
+  packet->AddHeader (actionHdr);
+
+  CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
+
+  //It is unclear which queue this frame should go into. For now we
+  //bung it into the queue corresponding to the TID for which we are
+  //establishing an agreement, and push it to the head.
+  m_mac->GetQosTxop (reqHdr->GetTid ())->PushFront (packet, hdr);
+}
+
+uint16_t
+HtFrameExchangeManager::GetSupportedBaBufferSize (void) const
+{
+  return 64;
+}
+
+void
 HtFrameExchangeManager::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
 {
   NS_LOG_FUNCTION (this << addr << +tid << byOriginator);

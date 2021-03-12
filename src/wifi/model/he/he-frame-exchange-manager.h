@@ -41,6 +41,9 @@ public:
   static TypeId GetTypeId (void);
   HeFrameExchangeManager ();
   virtual ~HeFrameExchangeManager ();
+
+  // Overridden from VhtFrameExchangeManager
+  virtual uint16_t GetSupportedBaBufferSize (void) const override;
 };
 
 } //namespace ns3

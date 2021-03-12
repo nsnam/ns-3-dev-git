@@ -161,6 +161,22 @@ public:
    * \param tid the TID associated with the Block Ack agreement
    */
   void DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid);
+  /**
+   * This method can be called to accept a received ADDBA Request. An
+   * ADDBA Response will be constructed and queued for transmission.
+   *
+   * \param reqHdr a pointer to the received ADDBA Request header.
+   * \param originator the MAC address of the originator.
+   */
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
+                          Mac48Address originator);
+  /**
+   * Get the maximum supported buffer size for a Block Ack agreement. This value
+   * is typically included in ADDBA Response frames.
+   *
+   * \return the maximum supported buffer size for a Block Ack agreement
+   */
+  virtual uint16_t GetSupportedBaBufferSize (void) const;
 
   /**
    * Return true if a Block Ack agreement has been established with the given

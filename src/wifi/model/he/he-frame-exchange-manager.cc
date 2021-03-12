@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "he-frame-exchange-manager.h"
+#include "he-configuration.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -50,6 +51,17 @@ HeFrameExchangeManager::HeFrameExchangeManager ()
 HeFrameExchangeManager::~HeFrameExchangeManager ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+uint16_t
+HeFrameExchangeManager::GetSupportedBaBufferSize (void) const
+{
+  NS_ASSERT (m_mac->GetHeConfiguration () != 0);
+  if (m_mac->GetHeConfiguration ()->GetMpduBufferSize () > 64)
+    {
+      return 256;
+    }
+  return 64;
 }
 
 } //namespace ns3

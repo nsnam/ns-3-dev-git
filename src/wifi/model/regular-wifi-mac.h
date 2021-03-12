@@ -258,16 +258,6 @@ protected:
   virtual void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
 
   /**
-   * This method can be called to accept a received ADDBA Request. An
-   * ADDBA Response will be constructed and queued for transmission.
-   *
-   * \param reqHdr a pointer to the received ADDBA Request header.
-   * \param originator the MAC address of the originator.
-   */
-  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
-                          Mac48Address originator);
-
-  /**
    * Enable or disable QoS support for the device.
    *
    * \param enable whether QoS is supported

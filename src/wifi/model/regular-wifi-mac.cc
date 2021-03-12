@@ -795,7 +795,12 @@ RegularWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 //We've received an ADDBA Request. Our policy here is
                 //to automatically accept it, so we get the ADDBA
                 //Response on it's way immediately.
-                SendAddBaResponse (&reqHdr, from);
+                NS_ASSERT (m_feManager != 0);
+                Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                if (htFem != 0)
+                  {
+                    htFem->SendAddBaResponse (&reqHdr, from);
+                  }
                 //This frame is now completely dealt with, so we're done.
                 return;
               }
@@ -827,8 +832,11 @@ RegularWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     //agreement exists in HtFrameExchangeManager and we need to
                     //destroy it.
                     NS_ASSERT (m_feManager != 0);
-                    Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_feManager);
-                    htFem->DestroyBlockAckAgreement (from, delBaHdr.GetTid ());
+                    Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                    if (htFem != 0)
+                      {
+                        htFem->DestroyBlockAckAgreement (from, delBaHdr.GetTid ());
+                      }
                   }
                 else
                   {
@@ -862,68 +870,6 @@ RegularWifiMac::DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu)
       ForwardUp (msduPair.first, msduPair.second.GetSourceAddr (),
                  msduPair.second.GetDestinationAddr ());
     }
-}
-
-void
-RegularWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr,
-                                   Mac48Address originator)
-{
-  NS_LOG_FUNCTION (this);
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_MGT_ACTION);
-  hdr.SetAddr1 (originator);
-  hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetBssid ());
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-
-  MgtAddBaResponseHeader respHdr;
-  StatusCode code;
-  code.SetSuccess ();
-  respHdr.SetStatusCode (code);
-  //Here a control about queues type?
-  respHdr.SetAmsduSupport (reqHdr->IsAmsduSupported ());
-
-  if (reqHdr->IsImmediateBlockAck ())
-    {
-      respHdr.SetImmediateBlockAck ();
-    }
-  else
-    {
-      respHdr.SetDelayedBlockAck ();
-    }
-  respHdr.SetTid (reqHdr->GetTid ());
-
-  Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
-  if (heConfiguration && heConfiguration->GetMpduBufferSize () > 64)
-    {
-      respHdr.SetBufferSize (255);
-    }
-  else
-    {
-      respHdr.SetBufferSize (63);
-    }
-  respHdr.SetTimeout (reqHdr->GetTimeout ());
-
-  WifiActionHeader actionHdr;
-  WifiActionHeader::ActionValue action;
-  action.blockAck = WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE;
-  actionHdr.SetAction (WifiActionHeader::BLOCK_ACK, action);
-
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (respHdr);
-  packet->AddHeader (actionHdr);
-
-  //We need to notify our FrameExchangeManager object as it will have to buffer all
-  //correctly received packets for this Block Ack session
-  NS_ASSERT (m_feManager != 0);
-  Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_feManager);
-  htFem->CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
-
-  //It is unclear which queue this frame should go into. For now we
-  //bung it into the queue corresponding to the TID for which we are
-  //establishing an agreement, and push it to the head.
-  m_edca[QosUtilsMapTidToAc (reqHdr->GetTid ())]->PushFront (packet, hdr);
 }
 
 TypeId
