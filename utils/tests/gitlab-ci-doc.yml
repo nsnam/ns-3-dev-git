@@ -22,6 +22,9 @@ doxygen:
 #    - mkdir -p public/doxygen
     - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
+  tags:
+    - nsnam
+    - linux
 
 manual:
   extends: .doc
