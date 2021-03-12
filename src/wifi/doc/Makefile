@@ -12,7 +12,8 @@ IMAGES_DIA = \
 	$(FIGURES)/snir.dia \
 	$(FIGURES)/WifiArchitecture.dia \
 	$(FIGURES)/PhyEntityHierarchy.dia \
-	$(FIGURES)/WifiPpduHierarchy.dia
+	$(FIGURES)/WifiPpduHierarchy.dia \
+	$(FIGURES)/FemHierarchy.dia
 
 # specify eps figures from which .png and .pdf figures need to be built
 
@@ -21,6 +22,7 @@ IMAGES_EPS = \
 	$(FIGURES)/WifiArchitecture.eps \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
+	$(FIGURES)/FemHierarchy.eps \
         $(FIGURES)/clear-channel.eps \
         $(FIGURES)/nist-frame-success-rate.eps \
         $(FIGURES)/nist-frame-success-rate-n.eps \

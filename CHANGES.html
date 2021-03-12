@@ -56,10 +56,11 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>Added <b>FqCobalt</b> queue disc with L4S features and set associative hash.</li>
 <li>Added <b>FqPIE</b> queue disc with <b>L4S</b> mode</li>
+<li>Added the ability to configure the primary 20 MHz channel for 802.11 devices operating on channels of width greater than 20 MHz.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li></li>
+<li>The WifiAckPolicySelector class has been replaced by the WifiAckManager class. Correspondingly, the ConstantWifiAckPolicySelector has been replaced by the WifiDefaultAckManager class. A new WifiProtectionManager abstract base class and WifiDefaultProtectionManager concrete class have been added to implement different protection policies.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -69,6 +70,7 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>The default <b>TCP congestion control</b> has been changed from NewReno to CUBIC.</li>
 <li>The PHY layer of the wifi module has been refactored: the amendment-specific logic has been ported to <b>PhyEntity</b> classes and <b>WifiPpdu</b> classes.</li>
+<li>The MAC layer of the wifi module has been refactored. The MacLow class has been replaced by a hierarchy of FrameExchangeManager classes, each adding support for the frame exchange sequences introduced by a given amendment.</li>
 <li>The 802.11a-like PHY configuration known as <b>Holland</b> has been removed from the wifi module. It was added in the 2005 timeframe for Wi-Fi rate control research but hasn't been used for quite some time.</li>
 <li>Support for <b>Greenfield mode</b> (aka <b>HT_GF</b>) has been dropped from wifi.</li>
 <li>Some wifi/src/model files were moved to <b>non-ht</b>, <b>ht</b>, <b>vht</b>, <b>he</b>, and <b>rate-control</b> subfolders.</li>

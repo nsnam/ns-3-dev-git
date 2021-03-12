@@ -28,9 +28,13 @@ New user-visible features
 -------------------------
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
 - (wifi) The PHY layer has been refactored: the amendment-specific logic has been ported to PhyEntity classes and WifiPpdu classes
+- (wifi) The MAC layer has been refactored. The MacLow class has been replaced by a hierarchy of FrameExchangeManager classes, each adding support for the frame exchange sequences introduced by a given amendment.
 - (wifi) Holland PHY configuration has been removed from the model
 - (wifi) HT Greenfield (HT_GF) preamble support has been removed from the model
+- (wifi) Added the ability to configure the primary 20 MHz channel for 802.11 devices operating on channels of width greater than 20 MHz
 - (wifi) Some wifi/src/model files were moved to the relevant subfolders (non-ht, ht, vht, he, and rate-control)
+- (wifi) Stations perform TXOP recovery if the transmission of a non-initial MPDU in a TXOP fails
+- (wifi) Stations keep track of the TXOP holder and ignore the NAV when they receive an RTS frame from the TXOP holder
 - (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
 - (traffic-control) Added FqPIE queue disc with L4S mode.
 

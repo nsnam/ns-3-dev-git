@@ -139,6 +139,7 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/WifiArchitecture.dia \
 	$(SRC)/wifi/doc/source/figures/PhyEntityHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/WifiPpduHierarchy.dia \
+	$(SRC)/wifi/doc/source/figures/FemHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate.eps \
@@ -358,6 +359,7 @@ IMAGES_EPS = \
 	$(FIGURES)/WifiArchitecture.eps \
 	$(FIGURES)/PhyEntityHierarchy.eps \
 	$(FIGURES)/WifiPpduHierarchy.eps \
+	$(FIGURES)/FemHierarchy.eps \
 	$(FIGURES)/snir.eps \
 	$(FIGURES)/WimaxArchitecture.eps \
 	$(FIGURES)/epc-ctrl-arch.eps \
