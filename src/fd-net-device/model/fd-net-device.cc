@@ -209,7 +209,7 @@ FdNetDevice::DoDispose (void)
 void
 FdNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
 {
-  NS_LOG_FUNCTION (mode);
+  NS_LOG_FUNCTION (this << mode);
   m_encapMode = mode;
   NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
 }
@@ -224,7 +224,7 @@ FdNetDevice::GetEncapsulationMode (void) const
 void
 FdNetDevice::Start (Time tStart)
 {
-  NS_LOG_FUNCTION (tStart);
+  NS_LOG_FUNCTION (this << tStart);
   Simulator::Cancel (m_startEvent);
   m_startEvent = Simulator::Schedule (tStart, &FdNetDevice::StartDevice, this);
 }
@@ -232,7 +232,7 @@ FdNetDevice::Start (Time tStart)
 void
 FdNetDevice::Stop (Time tStop)
 {
-  NS_LOG_FUNCTION (tStop);
+  NS_LOG_FUNCTION (this << tStop);
   Simulator::Cancel (m_stopEvent);
   m_stopEvent = Simulator::Schedule (tStop, &FdNetDevice::StopDevice, this);
 }
@@ -302,7 +302,7 @@ FdNetDevice::StopDevice (void)
 void
 FdNetDevice::ReceiveCallback (uint8_t *buf, ssize_t len)
 {
-  NS_LOG_FUNCTION (this << buf << len);
+  NS_LOG_FUNCTION (this << static_cast<void *> (buf) << len);
   bool skip = false;
 
   {
@@ -410,6 +410,7 @@ FdNetDevice::FreeBuffer (uint8_t *buf)
 void
 FdNetDevice::ForwardUp (void)
 {
+  NS_LOG_FUNCTION (this);
 
   uint8_t *buf = 0;
   ssize_t len = 0;
@@ -423,7 +424,7 @@ FdNetDevice::ForwardUp (void)
     len = next.second;
   }
 
-  NS_LOG_FUNCTION (this << buf << len);
+  NS_LOG_LOGIC ("buffer: " << static_cast<void *> (buf) << " length: " << len);
 
   // We need to remove the PI header and ignore it
   if (m_encapMode == DIXPI)
@@ -634,7 +635,7 @@ FdNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address& de
 ssize_t
 FdNetDevice::Write (uint8_t *buffer, size_t length)
 {
-  NS_LOG_FUNCTION (this << buffer << length);
+  NS_LOG_FUNCTION (this << static_cast<void *> (buffer) << length);
 
   uint32_t ret = write (m_fd, buffer, length);
   return ret;
