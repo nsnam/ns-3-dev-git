@@ -180,10 +180,6 @@ FdNetDevice::FdNetDevice ()
   NS_LOG_FUNCTION (this);
 }
 
-FdNetDevice::FdNetDevice (FdNetDevice const &)
-{
-}
-
 FdNetDevice::~FdNetDevice ()
 {
   NS_LOG_FUNCTION (this);
