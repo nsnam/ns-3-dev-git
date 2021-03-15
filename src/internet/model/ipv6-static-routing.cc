@@ -83,6 +83,11 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
 
   *os << "Node: " << m_ipv6->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
@@ -97,9 +102,9 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
           std::ostringstream dest, gw, mask, flags;
           Ipv6RoutingTableEntry route = GetRoute (j);
           dest << route.GetDest () << "/" << int(route.GetDestNetworkPrefix ().GetPrefixLength ());
-          *os << std::setiosflags (std::ios::left) << std::setw (31) << dest.str ();
+          *os << std::setw (31) << dest.str ();
           gw << route.GetGateway ();
-          *os << std::setiosflags (std::ios::left) << std::setw (27) << gw.str ();
+          *os << std::setw (27) << gw.str ();
           flags << "U";
           if (route.IsHost ())
             {
@@ -109,8 +114,8 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
             {
               flags << "G";
             }
-          *os << std::setiosflags (std::ios::left) << std::setw (5) << flags.str ();
-          *os << std::setiosflags (std::ios::left) << std::setw (4) << GetMetric (j);
+          *os << std::setw (5) << flags.str ();
+          *os << std::setw (4) << GetMetric (j);
           // Ref ct not implemented
           *os << "-" << "   ";
           // Use not implemented
@@ -127,6 +132,8 @@ Ipv6StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
         }
     }
   *os << std::endl;
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 void Ipv6StaticRouting::AddHostRouteTo (Ipv6Address dst, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric)

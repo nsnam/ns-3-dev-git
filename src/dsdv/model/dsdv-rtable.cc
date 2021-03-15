@@ -197,11 +197,29 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop,
 void
 RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit /*= Time::S*/) const
 {
-  *stream->GetStream () << std::setiosflags (std::ios::fixed) << m_ipv4Route->GetDestination () << "\t\t" << m_ipv4Route->GetGateway () << "\t\t"
-                        << m_iface.GetLocal () << "\t\t" << std::setiosflags (std::ios::left)
-                        << std::setw (10) << m_hops << "\t" << std::setw (10) << m_seqNo << "\t"
-                        << std::setprecision (3) << (Simulator::Now () - m_lifeTime).As (unit)
-                        << "\t\t" << m_settlingTime.As (unit) << "\n";
+  std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
+
+  std::ostringstream dest, gw, iface, ltime, stime;
+  dest << m_ipv4Route->GetDestination ();
+  gw << m_ipv4Route->GetGateway ();
+  iface << m_iface.GetLocal ();
+  ltime << std::setprecision (3) << (Simulator::Now () - m_lifeTime).As (unit);
+  stime << m_settlingTime.As (unit);
+
+  *os << std::setw (16) << dest.str ();
+  *os << std::setw (16) << gw.str ();
+  *os << std::setw (16) << iface.str ();
+  *os << std::setw (16) << m_hops;
+  *os << std::setw (16) << m_seqNo;
+  *os << std::setw(16) << ltime.str ();
+  *os << stime.str () << std::endl;
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 void
@@ -251,13 +269,29 @@ RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses
 void
 RoutingTable::Print (Ptr<OutputStreamWrapper> stream, Time::Unit unit /*= Time::S*/) const
 {
-  *stream->GetStream () << "\nDSDV Routing table\n" << "Destination\t\tGateway\t\tInterface\t\tHopCount\t\tSeqNum\t\tLifeTime\t\tSettlingTime\n";
+  std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
+
+  *os << "\nDSDV Routing table\n";
+  *os << std::setw (16) << "Destination";
+  *os << std::setw (16) << "Gateway";
+  *os << std::setw (16) << "Interface";
+  *os << std::setw (16) << "HopCount";
+  *os << std::setw (16) << "SeqNum";
+  *os << std::setw (16) << "LifeTime";
+  *os << "SettlingTime" << std::endl;
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i
        != m_ipv4AddressEntry.end (); ++i)
     {
       i->second.Print (stream, unit);
     }
-  *stream->GetStream () << "\n";
+  *os << std::endl;
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 bool

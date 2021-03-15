@@ -723,6 +723,11 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
 {
   NS_LOG_FUNCTION (this << stream);
   std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
@@ -737,11 +742,11 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
           std::ostringstream dest, gw, mask, flags;
           Ipv4RoutingTableEntry route = GetRoute (j);
           dest << route.GetDest ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str ();
+          *os << std::setw (16) << dest.str ();
           gw << route.GetGateway ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str ();
+          *os << std::setw (16) << gw.str ();
           mask << route.GetDestNetworkMask ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str ();
+          *os << std::setw (16) << mask.str ();
           flags << "U";
           if (route.IsHost ())
             {
@@ -751,8 +756,8 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
             {
               flags << "GS";
             }
-          *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str ();
-          *os << std::setiosflags (std::ios::left) << std::setw (7) << GetMetric (j);
+          *os << std::setw (6) << flags.str ();
+          *os << std::setw (7) << GetMetric (j);
           // Ref ct not implemented
           *os << "-" << "      ";
           // Use not implemented
@@ -769,6 +774,8 @@ Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Uni
         }
     }
   *os << std::endl;
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 } // namespace ns3

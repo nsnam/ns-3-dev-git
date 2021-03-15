@@ -559,6 +559,7 @@ Ipv4ClickRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header,
 void
 Ipv4ClickRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
+  *stream->GetStream () << "\nCLICK Routing table printing is not yet implemented, skipping.\n";
 }
 
 void

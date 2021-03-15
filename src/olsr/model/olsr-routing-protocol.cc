@@ -32,6 +32,7 @@
   if (GetObject<Node> ()) { std::clog << "[node " << GetObject<Node> ()->GetId () << "] "; }
 
 
+#include <iomanip>
 #include "olsr-routing-protocol.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
@@ -270,41 +271,52 @@ void
 RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
       << ", Time: " << Now ().As (unit)
       << ", Local time: " << m_ipv4->GetObject<Node> ()->GetLocalTime ().As (unit)
       << ", OLSR Routing table" << std::endl;
 
-  *os << "Destination\t\tNextHop\t\tInterface\tDistance\n";
+  *os << std::setw (16) << "Destination";
+  *os << std::setw (16) << "NextHop";
+  *os << std::setw (16) << "Interface";
+  *os << "Distance" << std::endl;
 
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
        iter != m_table.end (); iter++)
     {
-      *os << iter->first << "\t\t";
-      *os << iter->second.nextAddr << "\t\t";
+      *os << std::setw (16) << iter->first;
+      *os << std::setw (16) << iter->second.nextAddr;
+      *os << std::setw (16);
       if (Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) != "")
         {
-          *os << Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) << "\t\t";
+          *os << Names::FindName (m_ipv4->GetNetDevice (iter->second.interface));
         }
       else
         {
-          *os << iter->second.interface << "\t\t";
+          *os << iter->second.interface;
         }
-      *os << iter->second.distance << "\t";
-      *os << "\n";
+      *os << iter->second.distance << std::endl;
     }
+  *os << std::endl;
 
   // Also print the HNA routing table
   if (m_hnaRoutingTable->GetNRoutes () > 0)
     {
-      *os << " HNA Routing Table: ";
+      *os << "HNA Routing Table:" << std::endl;
       m_hnaRoutingTable->PrintRoutingTable (stream, unit);
     }
   else
     {
-      *os << " HNA Routing Table: empty" << std::endl;
+      *os << "HNA Routing Table: empty" << std::endl;
     }
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 void RoutingProtocol::DoInitialize ()

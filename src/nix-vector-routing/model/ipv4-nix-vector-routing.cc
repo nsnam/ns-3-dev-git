@@ -747,6 +747,11 @@ Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::
   CheckCacheStateAndFlush ();
 
   std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
 
   *os << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
       << ", Time: " << Now().As (unit)
@@ -761,7 +766,7 @@ Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::
         {
           std::ostringstream dest;
           dest << it->first;
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str ();
+          *os << std::setw (16) << dest.str ();
           *os << *(it->second) << std::endl;
         }
     }
@@ -773,11 +778,11 @@ Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::
         {
           std::ostringstream dest, gw, src;
           dest << it->second->GetDestination ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str ();
+          *os << std::setw (16) << dest.str ();
           gw << it->second->GetGateway ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str ();
+          *os << std::setw (16) << gw.str ();
           src << it->second->GetSource ();
-          *os << std::setiosflags (std::ios::left) << std::setw (16) << src.str ();
+          *os << std::setw (16) << src.str ();
           *os << "  ";
           if (Names::FindName (it->second->GetOutputDevice ()) != "")
             {
@@ -791,6 +796,8 @@ Ipv4NixVectorRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::
         }
     }
   *os << std::endl;
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
 }
 
 // virtual functions from Ipv4RoutingProtocol 
