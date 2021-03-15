@@ -1822,6 +1822,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
       it.second->CancelRunningEndPreambleDetectionEvents ();
     }
   m_currentPreambleEvents.clear ();
+  m_endPhyRxEvent.Cancel ();
 
   if (m_powerRestricted)
     {
