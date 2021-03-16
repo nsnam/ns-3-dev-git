@@ -968,6 +968,127 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
   return false;
 }
 
+void
+Ipv4NixVectorRouting::PrintRoutingPath (Ptr<Node> source, Ipv4Address dest,
+                                        Ptr<OutputStreamWrapper> stream, Time::Unit unit)
+{
+  NS_LOG_FUNCTION (this << source << dest);
+  Ptr<NixVector> nixVectorInCache;
+  Ptr<NixVector> nixVector;
+  Ptr<Ipv4Route> rtentry;
+
+  Ptr<Node> destNode = GetNodeByIp (dest);
+
+  std::ostream* os = stream->GetStream ();
+  // Copy the current ostream state
+  std::ios oldState (nullptr);
+  oldState.copyfmt (*os);
+
+  *os << std::resetiosflags (std::ios::adjustfield) << std::setiosflags (std::ios::left);
+  *os << "Time: " << Now().As (unit)
+      << ", Nix Routing" << std::endl;
+  *os << "Route Path: ";
+  *os << "(Node " << source->GetId () << " to Node " << destNode->GetId () << ", ";
+  *os << "Nix Vector: ";
+
+  nixVectorInCache = GetNixVectorInCache (dest);
+
+  // not in cache
+  if (!nixVectorInCache)
+    {
+      NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
+      // Build the nix-vector, given the source node and the
+      // dest IP address
+      nixVectorInCache = GetNixVector (source, dest, nullptr);
+    }
+
+  if (nixVectorInCache || (!nixVectorInCache && source == destNode))
+    {
+      Ptr<Node> curr = source;
+
+      if (nixVectorInCache)
+        {
+          // cache it
+          m_nixCache.insert (NixMap_t::value_type (dest, nixVectorInCache));
+          // Make a NixVector copy to work with. This is because
+          // we don't want to extract the bits from nixVectorInCache
+          // which is stored in the m_nixCache.
+          nixVector = Create<NixVector> ();
+          nixVector = nixVectorInCache->Copy ();
+
+          *os << *nixVector;
+        }
+      *os << ")" << std::endl;
+
+      if (source == destNode)
+        {
+          std::ostringstream src, dst;
+          src << dest << " (Node " << destNode->GetId () << ")";
+          *os << std::setw (20) << src.str ();
+          dst << "---->   " << dest << " (Node " << destNode->GetId () << ")";
+          *os << dst.str () << std::endl;
+        }
+
+      while (curr != destNode)
+        {
+          // set m_node as current node
+          // and find the total neighbors
+          SetNode (curr);
+          m_totalNeighbors = FindTotalNeighbors ();
+          // Get the number of bits required
+          // to represent all the neighbors
+          uint32_t numberOfBits = nixVector->BitCount (m_totalNeighbors);
+          // Get the nixIndex
+          uint32_t nixIndex = nixVector->ExtractNeighborIndex (numberOfBits);
+          // gatewayIP is the IP of next
+          // node on channel found from nixIndex
+          Ipv4Address gatewayIp;
+          // Get the Net Device index from the nixIndex
+          uint32_t NetDeviceIndex = FindNetDeviceForNixIndex (nixIndex, gatewayIp);
+          // Get the interfaceIndex with the help of NetDeviceIndex.
+          // It will be used to get the IP address on interfaceIndex
+          // interface of 'curr' node.
+          Ptr<Ipv4> ipv4 = curr->GetObject<Ipv4> ();
+          Ptr<NetDevice> outDevice = curr->GetDevice (NetDeviceIndex);
+          uint32_t interfaceIndex = ipv4->GetInterfaceForDevice (outDevice);
+          Ipv4Address sourceIPAddr = ipv4->GetAddress (interfaceIndex, 0).GetLocal ();
+
+          rtentry = GetIpv4RouteInCache (dest);
+          if (!rtentry)
+            {
+              NS_LOG_LOGIC ("Ipv4Route not in cache, build: ");
+              // start filling in the Ipv4Route info
+              rtentry = Create<Ipv4Route> ();
+              rtentry->SetSource (sourceIPAddr);
+
+              rtentry->SetGateway (gatewayIp);
+              rtentry->SetDestination (dest);
+              rtentry->SetOutputDevice (outDevice);
+              // add rtentry to cache
+              m_ipv4RouteCache.insert (Ipv4RouteMap_t::value_type (dest, rtentry));
+            }
+
+          std::ostringstream currNode, nextNode;
+          currNode << sourceIPAddr << " (Node " << curr->GetId () << ")";
+          *os << std::setw (20) << currNode.str ();
+          // Replace curr with the next node
+          curr = GetNodeByIp (gatewayIp);
+          nextNode << "---->   " << gatewayIp << " (Node " << curr->GetId () << ")";
+          *os << nextNode.str () << std::endl;
+        }
+        *os << std::endl;
+    }
+  else
+    {
+      *os << ")" << std::endl;
+      // No Route exists
+      *os << "There does not exist a path from Node " << source->GetId ()
+          << " to Node " << destNode->GetId () << "." << std::endl;
+    }
+  // Restore the previous ostream state
+  (*os).copyfmt (oldState);
+}
+
 void 
 Ipv4NixVectorRouting::CheckCacheStateAndFlush (void) const
 {

@@ -47,4 +47,19 @@ Ipv4NixVectorHelper::Create (Ptr<Node> node) const
   node->AggregateObject (agent);
   return agent;
 }
+
+void
+Ipv4NixVectorHelper::PrintRoutingPathAt (Time printTime, Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
+{
+  Simulator::Schedule (printTime, &Ipv4NixVectorHelper::PrintRoute, source, dest, stream, unit);
+}
+
+void
+Ipv4NixVectorHelper::PrintRoute (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit)
+{
+  Ptr<Ipv4NixVectorRouting> rp = Ipv4RoutingHelper::GetRouting <Ipv4NixVectorRouting> (source->GetObject<Ipv4> ()->GetRoutingProtocol ());
+  NS_ASSERT (rp);
+  rp->PrintRoutingPath (source, dest, stream, unit);
+}
+
 } // namespace ns3

@@ -89,6 +89,16 @@ public:
    */
   void FlushGlobalNixRoutingCache (void) const;
 
+  /**
+   * @brief Print the Routing Path according to Nix Routing
+   * \param source Source node
+   * \param dest Destination node address
+   * \param stream The ostream the Routing path is printed to
+   * \param unit the time unit to be used in the report
+   */
+  void PrintRoutingPath (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit);
+
+
 private:
 
   /**
