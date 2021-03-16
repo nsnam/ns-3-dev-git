@@ -140,11 +140,14 @@ StaWifiMac::GetActiveProbing (void) const
 }
 
 void
-StaWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
+StaWifiMac::SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys)
 {
-  NS_LOG_FUNCTION (this << phy);
-  WifiMac::SetWifiPhy (phy);
-  GetWifiPhy ()->SetCapabilitiesChangedCallback (MakeCallback (&StaWifiMac::PhyCapabilitiesChanged, this));
+  NS_LOG_FUNCTION (this);
+  WifiMac::SetWifiPhys (phys);
+  for (auto& phy : phys)
+    {
+      phy->SetCapabilitiesChangedCallback (MakeCallback (&StaWifiMac::PhyCapabilitiesChanged, this));
+    }
 }
 
 void

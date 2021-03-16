@@ -174,10 +174,15 @@ public:
    * Reset current MAC entity and flush its internal queues.
    */
   void Reset (void);
+  /**
+   * Set the PHY.
+   *
+   * \param phy the PHY object
+   */
+  void SetWifiPhy (Ptr<WifiPhy> phy);
 
   // Inherited from base class
   virtual void ConfigureStandard (enum WifiStandard standard);
-  virtual void SetWifiPhy (Ptr<WifiPhy> phy);
 protected:
   virtual void DoDispose (void);
 private:

@@ -195,7 +195,7 @@ WifiNetDevice::CompleteConfig (void)
       return;
     }
   m_mac->SetWifiRemoteStationManager (m_stationManager);
-  m_mac->SetWifiPhy (m_phys[SINGLE_LINK_OP_ID]);
+  m_mac->SetWifiPhys (m_phys);
   m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
   m_mac->SetLinkDownCallback (MakeCallback (&WifiNetDevice::LinkDown, this));

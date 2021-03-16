@@ -342,12 +342,7 @@ WifiMac::DoDispose ()
 
   m_rxMiddle = 0;
   m_txMiddle = 0;
-
-  if (m_channelAccessManager != nullptr)
-    {
-      m_channelAccessManager->Dispose ();
-    }
-  m_channelAccessManager = 0;
+  m_links.clear ();
 
   if (m_txop != nullptr)
     {
@@ -361,16 +356,21 @@ WifiMac::DoDispose ()
       it->second = 0;
     }
 
-  if (m_feManager != 0)
-    {
-      m_feManager->Dispose ();
-    }
-  m_feManager = 0;
-
   m_stationManager = 0;
-  m_phy = 0;
-
   m_device = 0;
+}
+
+WifiMac::LinkEntity::~LinkEntity ()
+{
+  // WifiMac owns pointers to ChannelAccessManager and FrameExchangeManager
+  if (channelAccessManager != nullptr)
+    {
+      channelAccessManager->Dispose ();
+    }
+  if (feManager != nullptr)
+    {
+      feManager->Dispose ();
+    }
 }
 
 void
@@ -429,9 +429,9 @@ WifiMac::SetBssid (Mac48Address bssid)
 {
   NS_LOG_FUNCTION (this << bssid);
   m_bssid = bssid;
-  if (m_feManager)
+  for (auto& link : m_links)
     {
-      m_feManager->SetBssid (bssid);
+      link->feManager->SetBssid (bssid);
     }
 }
 
@@ -444,8 +444,10 @@ WifiMac::GetBssid (void) const
 void
 WifiMac::SetPromisc (void)
 {
-  NS_ASSERT (m_feManager != 0);
-  m_feManager->SetPromisc ();
+  for (auto& link : m_links)
+    {
+      link->feManager->SetPromisc ();
+    }
 }
 
 Ptr<Txop>
@@ -518,7 +520,7 @@ WifiMac::NotifyChannelSwitching (void)
   // SetupPhy not only resets the remote station manager, but also sets the
   // default TX mode and MCS, which is required when switching to a channel
   // in a different band
-  m_stationManager->SetupPhy (m_phy);
+  m_stationManager->SetupPhy (GetLink (SINGLE_LINK_OP_ID).phy);
 }
 
 void
@@ -656,39 +658,54 @@ WifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   NS_ABORT_IF (standard >= WIFI_STANDARD_80211n && !m_qosSupported);
-  NS_ABORT_MSG_IF (m_phy == nullptr || !m_phy->GetOperatingChannel ().IsSet (),
-                   "PHY must have been set and an operating channel must have been set");
+  NS_ABORT_MSG_IF (m_links.empty (), "No PHY configured yet");
 
-  m_channelAccessManager = CreateObject<ChannelAccessManager> ();
-  m_channelAccessManager->SetupPhyListener (m_phy);
+  for (auto& link : m_links)
+    {
+      NS_ABORT_MSG_IF (link->phy == nullptr || !link->phy->GetOperatingChannel ().IsSet (),
+                       "[LinkID " << link->id << "] PHY must have been set and an operating channel must have been set");
+
+      // do not create a ChannelAccessManager and a FrameExchangeManager if they
+      // already exist (this function may be called after ResetWifiPhys)
+      if (link->channelAccessManager == nullptr)
+        {
+          link->channelAccessManager = CreateObject<ChannelAccessManager> ();
+        }
+      link->channelAccessManager->SetupPhyListener (link->phy);
+
+      if (link->feManager == nullptr)
+        {
+          link->feManager = SetupFrameExchangeManager (standard);
+        }
+      link->feManager->SetWifiPhy (link->phy);
+      link->feManager->SetWifiMac (this);
+      link->channelAccessManager->SetupFrameExchangeManager (link->feManager);
+    }
 
   ConfigurePhyDependentParameters ();
 
-  SetupFrameExchangeManager (standard);
-  m_feManager->SetWifiPhy (m_phy);
-  m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
-
   if (m_txop != nullptr)
     {
-      m_txop->SetChannelAccessManager (m_channelAccessManager);
+      m_txop->SetChannelAccessManager (m_links[SINGLE_LINK_OP_ID]->channelAccessManager);
     }
   for (auto it = m_edca.begin (); it!= m_edca.end (); ++it)
     {
-      it->second->SetChannelAccessManager (m_channelAccessManager);
+      it->second->SetChannelAccessManager (m_links[SINGLE_LINK_OP_ID]->channelAccessManager);
     }
 }
 
 void
 WifiMac::ConfigurePhyDependentParameters (void)
 {
-  WifiPhyBand band = m_phy->GetPhyBand ();
+  auto& link = GetLink (SINGLE_LINK_OP_ID);
+  NS_ASSERT (link.phy != nullptr);
+  WifiPhyBand band = link.phy->GetPhyBand ();
   NS_LOG_FUNCTION (this << band);
 
   uint32_t cwmin = 0;
   uint32_t cwmax = 0;
 
-  NS_ASSERT (m_phy != 0);
-  WifiStandard standard = m_phy->GetStandard ();
+  WifiStandard standard = link.phy->GetStandard ();
 
   if (standard == WIFI_STANDARD_80211b)
     {
@@ -710,60 +727,61 @@ WifiMac::ConfigurePhyDependentParameters (void)
   ConfigureContentionWindow (cwmin, cwmax);
 }
 
-void
+Ptr<FrameExchangeManager>
 WifiMac::SetupFrameExchangeManager (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   NS_ABORT_MSG_IF (standard == WIFI_STANDARD_UNSPECIFIED, "Wifi standard not set");
+  Ptr<FrameExchangeManager> feManager;
 
   if (standard >= WIFI_STANDARD_80211ax)
     {
-      m_feManager = CreateObject<HeFrameExchangeManager> ();
+      feManager = CreateObject<HeFrameExchangeManager> ();
     }
   else if (standard >= WIFI_STANDARD_80211ac)
     {
-      m_feManager = CreateObject<VhtFrameExchangeManager> ();
+      feManager = CreateObject<VhtFrameExchangeManager> ();
     }
   else if (standard >= WIFI_STANDARD_80211n)
     {
-      m_feManager = CreateObject<HtFrameExchangeManager> ();
+      feManager = CreateObject<HtFrameExchangeManager> ();
     }
   else if (m_qosSupported)
     {
-      m_feManager = CreateObject<QosFrameExchangeManager> ();
+      feManager = CreateObject<QosFrameExchangeManager> ();
     }
   else
     {
-      m_feManager = CreateObject<FrameExchangeManager> ();
+      feManager = CreateObject<FrameExchangeManager> ();
     }
 
-  m_feManager->SetWifiMac (this);
-  m_feManager->SetMacTxMiddle (m_txMiddle);
-  m_feManager->SetMacRxMiddle (m_rxMiddle);
-  m_feManager->SetAddress (GetAddress ());
-  m_feManager->SetBssid (GetBssid ());
-  m_feManager->GetWifiTxTimer ().SetMpduResponseTimeoutCallback (MakeCallback (&MpduResponseTimeoutTracedCallback::operator(),
-                                                                               &m_mpduResponseTimeoutCallback));
-  m_feManager->GetWifiTxTimer ().SetPsduResponseTimeoutCallback (MakeCallback (&PsduResponseTimeoutTracedCallback::operator(),
-                                                                               &m_psduResponseTimeoutCallback));
-  m_feManager->GetWifiTxTimer ().SetPsduMapResponseTimeoutCallback (MakeCallback (&PsduMapResponseTimeoutTracedCallback::operator(),
-                                                                                  &m_psduMapResponseTimeoutCallback));
-  m_feManager->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
-                                                     &m_droppedMpduCallback));
-  m_feManager->SetAckedMpduCallback (MakeCallback (&MpduTracedCallback::operator(),
-                                                   &m_ackedMpduCallback));
+  feManager->SetMacTxMiddle (m_txMiddle);
+  feManager->SetMacRxMiddle (m_rxMiddle);
+  feManager->SetAddress (GetAddress ());
+  feManager->SetBssid (GetBssid ());
+  feManager->GetWifiTxTimer ().SetMpduResponseTimeoutCallback (MakeCallback (&MpduResponseTimeoutTracedCallback::operator(),
+                                                                             &m_mpduResponseTimeoutCallback));
+  feManager->GetWifiTxTimer ().SetPsduResponseTimeoutCallback (MakeCallback (&PsduResponseTimeoutTracedCallback::operator(),
+                                                                             &m_psduResponseTimeoutCallback));
+  feManager->GetWifiTxTimer ().SetPsduMapResponseTimeoutCallback (MakeCallback (&PsduMapResponseTimeoutTracedCallback::operator(),
+                                                                                &m_psduMapResponseTimeoutCallback));
+  feManager->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
+                                                   &m_droppedMpduCallback));
+  feManager->SetAckedMpduCallback (MakeCallback (&MpduTracedCallback::operator(),
+                                                 &m_ackedMpduCallback));
+  return feManager;
 }
 
 Ptr<FrameExchangeManager>
-WifiMac::GetFrameExchangeManager (void) const
+WifiMac::GetFrameExchangeManager (uint8_t linkId) const
 {
-  return m_feManager;
+  return GetLink (linkId).feManager;
 }
 
 Ptr<ChannelAccessManager>
-WifiMac::GetChannelAccessManager (void) const
+WifiMac::GetChannelAccessManager (uint8_t linkId) const
 {
-  return m_channelAccessManager;
+  return GetLink (linkId).channelAccessManager;
 }
 
 void
@@ -779,28 +797,74 @@ WifiMac::GetWifiRemoteStationManager () const
   return m_stationManager;
 }
 
-void
-WifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
+std::unique_ptr<WifiMac::LinkEntity>
+WifiMac::CreateLinkEntity (void) const
 {
-  NS_LOG_FUNCTION (this << phy);
-  m_phy = phy;
+  return std::make_unique<LinkEntity> ();
+}
+
+WifiMac::LinkEntity&
+WifiMac::GetLink (uint8_t linkId) const
+{
+  NS_ASSERT (linkId < m_links.size ());
+  NS_ASSERT (m_links.at (linkId));  // check that the pointer owns an object
+  return *m_links.at (linkId);
+}
+
+uint8_t
+WifiMac::GetNLinks (void) const
+{
+  return m_links.size ();
+}
+
+void
+WifiMac::SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys)
+{
+  NS_LOG_FUNCTION (this);
+  ResetWifiPhys ();
+
+  NS_ABORT_MSG_UNLESS (m_links.size () == 0 || m_links.size () == phys.size (),
+                       "If links have been already created, the number of provided "
+                       "PHY objects (" << phys.size () << ") must match the number "
+                       "of links (" << m_links.size () << ")");
+
+  for (std::size_t i = 0; i < phys.size (); i++)
+    {
+      // the link may already exist in case we are setting new PHY objects
+      // (ResetWifiPhys just nullified the PHY(s) but left the links)
+      if (i == m_links.size ())
+        {
+          m_links.push_back (CreateLinkEntity ());
+          m_links.back ()->id = i;
+        }
+      NS_ABORT_IF (i != m_links[i]->id);
+      m_links[i]->phy = phys[i];
+    }
 }
 
 Ptr<WifiPhy>
-WifiMac::GetWifiPhy (void) const
+WifiMac::GetWifiPhy (uint8_t linkId) const
 {
-  NS_LOG_FUNCTION (this);
-  return m_phy;
+  NS_LOG_FUNCTION (this << +linkId);
+  return GetLink (linkId).phy;
 }
 
 void
-WifiMac::ResetWifiPhy (void)
+WifiMac::ResetWifiPhys (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_feManager != 0);
-  m_feManager->ResetPhy ();
-  m_channelAccessManager->RemovePhyListener (m_phy);
-  m_phy = 0;
+  for (auto& link : m_links)
+    {
+      if (link->feManager != nullptr)
+        {
+          link->feManager->ResetPhy ();
+        }
+      if (link->channelAccessManager != nullptr)
+        {
+          link->channelAccessManager->RemovePhyListener (link->phy);
+        }
+      link->phy = nullptr;
+    }
 }
 
 void
@@ -941,6 +1005,7 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
   Ptr<Packet> packet = mpdu->GetPacket ()->Copy ();
   Mac48Address to = hdr->GetAddr1 ();
   Mac48Address from = hdr->GetAddr2 ();
+  auto& link = GetLink (SINGLE_LINK_OP_ID);
 
   //We don't know how to deal with any frame that is not addressed to
   //us (and odds are there is nothing sensible we could do anyway),
@@ -976,8 +1041,8 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 //We've received an ADDBA Request. Our policy here is
                 //to automatically accept it, so we get the ADDBA
                 //Response on it's way immediately.
-                NS_ASSERT (m_feManager != 0);
-                Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                NS_ASSERT (link.feManager != nullptr);
+                auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
                 if (htFem != 0)
                   {
                     htFem->SendAddBaResponse (&reqHdr, from);
@@ -997,7 +1062,7 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                 //and act by locally establishing the agreement on
                 //the appropriate queue.
                 GetQosTxop (respHdr.GetTid ())->GotAddBaResponse (&respHdr, from);
-                auto htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
                 if (htFem != 0)
                   {
                     GetQosTxop (respHdr.GetTid ())->GetBaManager ()->SetBlockAckInactivityCallback (MakeCallback (&HtFrameExchangeManager::SendDelbaFrame, htFem));
@@ -1016,8 +1081,8 @@ WifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                     //this means that an ingoing established
                     //agreement exists in HtFrameExchangeManager and we need to
                     //destroy it.
-                    NS_ASSERT (m_feManager != 0);
-                    Ptr<HtFrameExchangeManager> htFem = DynamicCast<HtFrameExchangeManager> (m_feManager);
+                    NS_ASSERT (link.feManager != nullptr);
+                    auto htFem = DynamicCast<HtFrameExchangeManager> (link.feManager);
                     if (htFem != 0)
                       {
                         htFem->DestroyBlockAckAgreement (from, delBaHdr.GetTid ());
@@ -1352,19 +1417,20 @@ WifiMac::GetHeCapabilities (void) const
   HeCapabilities capabilities;
   if (GetHeSupported ())
     {
+      Ptr<WifiPhy> phy = GetLink (SINGLE_LINK_OP_ID).phy;
       Ptr<HtConfiguration> htConfiguration = GetHtConfiguration ();
       Ptr<HeConfiguration> heConfiguration = GetHeConfiguration ();
       capabilities.SetHeSupported (1);
       uint8_t channelWidthSet = 0;
-      if ((m_phy->GetChannelWidth () >= 40) && (m_phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
+      if ((phy->GetChannelWidth () >= 40) && (phy->GetPhyBand () == WIFI_PHY_BAND_2_4GHZ))
         {
           channelWidthSet |= 0x01;
         }
-      if ((m_phy->GetChannelWidth () >= 80) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
+      if ((phy->GetChannelWidth () >= 80) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x02;
         }
-      if ((m_phy->GetChannelWidth () >= 160) && ((m_phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (m_phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
+      if ((phy->GetChannelWidth () >= 160) && ((phy->GetPhyBand () == WIFI_PHY_BAND_5GHZ) || (phy->GetPhyBand () == WIFI_PHY_BAND_6GHZ)))
         {
           channelWidthSet |= 0x04;
         }
@@ -1386,7 +1452,7 @@ WifiMac::GetHeCapabilities (void) const
       capabilities.SetMaxAmpduLength (std::min (std::max (maxAmpduLength, 1048575u), 8388607u));
 
       uint8_t maxMcs = 0;
-      for (const auto & mcs : m_phy->GetMcsList (WIFI_MOD_CLASS_HE))
+      for (const auto & mcs : phy->GetMcsList (WIFI_MOD_CLASS_HE))
         {
           if (mcs.GetMcsValue () > maxMcs)
             {
@@ -1394,7 +1460,7 @@ WifiMac::GetHeCapabilities (void) const
             }
         }
       capabilities.SetHighestMcsSupported (maxMcs);
-      capabilities.SetHighestNssSupported (m_phy->GetMaxSupportedTxSpatialStreams ());
+      capabilities.SetHighestNssSupported (phy->GetMaxSupportedTxSpatialStreams ());
     }
   return capabilities;
 }

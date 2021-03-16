@@ -167,10 +167,14 @@ FrameExchangeManager::SetWifiPhy (Ptr<WifiPhy> phy)
 void
 FrameExchangeManager::ResetPhy (void)
 {
-  m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
-                                        MakeCallback (&FrameExchangeManager::RxStartIndication, this));
-  m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>> ());
-  m_phy = 0;
+  NS_LOG_FUNCTION (this);
+  if (m_phy != nullptr)
+    {
+      m_phy->TraceDisconnectWithoutContext ("PhyRxPayloadBegin",
+                                            MakeCallback (&FrameExchangeManager::RxStartIndication, this));
+      m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<WifiPsdu>, RxSignalInfo, WifiTxVector, std::vector<bool>> ());
+      m_phy = nullptr;
+    }
 }
 
 void

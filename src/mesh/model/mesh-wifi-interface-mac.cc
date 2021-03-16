@@ -205,7 +205,7 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
    */
   GetWifiPhy ()->SetOperatingChannel (WifiPhy::ChannelTuple {new_id, 0, GetWifiPhy ()->GetPhyBand (), 0});
   // Don't know NAV on new channel
-  m_channelAccessManager->NotifyNavResetNow (Seconds (0));
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifyNavResetNow (Seconds (0));
 }
 //-----------------------------------------------------------------------------
 // Forward frame down

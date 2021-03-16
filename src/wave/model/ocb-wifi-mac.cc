@@ -379,23 +379,24 @@ OcbWifiMac::ConfigureEdca (uint32_t cwmin, uint32_t cwmax, uint32_t aifsn, enum 
       break;
     }
 
-  dcf->SetChannelAccessManager (m_channelAccessManager);
+  dcf->SetChannelAccessManager (GetLink (SINGLE_LINK_OP_ID).channelAccessManager);
 }
 
 void
 OcbWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  WifiMac::SetWifiPhy (phy);
+  WifiMac::SetWifiPhys ({phy});
   NS_ABORT_MSG_IF (!phy->GetOperatingChannel ().IsSet (),
                    "PHY operating channel must have been set");
-  if (m_channelAccessManager != nullptr)
+  auto& link = GetLink (SINGLE_LINK_OP_ID);
+  if (link.channelAccessManager != nullptr)
     {
-      m_channelAccessManager->SetupPhyListener (phy);
+      link.channelAccessManager->SetupPhyListener (phy);
     }
-  if (m_feManager != nullptr)
+  if (link.feManager != nullptr)
     {
-      m_feManager->SetWifiPhy (phy);
+      link.feManager->SetWifiPhy (phy);
     }
 }
 
@@ -405,8 +406,15 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   NS_LOG_FUNCTION (this << standard);
   NS_ASSERT (standard == WIFI_STANDARD_80211p);
 
+  if (GetNLinks () == 0)
+    {
+      WifiMac::SetWifiPhys ({nullptr});  // for the purpose of adding a link
+    }
+
+  auto& link = GetLink (SINGLE_LINK_OP_ID);
+
   // Setup ChannelAccessManager
-  m_channelAccessManager = CreateObject<ChannelAccessManager> ();
+  link.channelAccessManager = CreateObject<ChannelAccessManager> ();
 
   uint32_t cwmin = 15;
   uint32_t cwmax = 1023;
@@ -429,17 +437,18 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
     }
 
   // Setup FrameExchangeManager
-  m_feManager = CreateObject<WaveFrameExchangeManager> ();
-  m_feManager->SetWifiMac (this);
-  m_feManager->SetMacTxMiddle (m_txMiddle);
-  m_feManager->SetMacRxMiddle (m_rxMiddle);
-  m_feManager->SetAddress (GetAddress ());
-  m_channelAccessManager->SetupFrameExchangeManager (m_feManager);
+  auto feManager = CreateObject<WaveFrameExchangeManager> ();
+  feManager->SetWifiMac (this);
+  feManager->SetMacTxMiddle (m_txMiddle);
+  feManager->SetMacRxMiddle (m_rxMiddle);
+  feManager->SetAddress (GetAddress ());
+  link.channelAccessManager->SetupFrameExchangeManager (feManager);
   if (auto phy = GetWifiPhy (); phy != nullptr)
     {
-      m_feManager->SetWifiPhy (phy);
-      m_channelAccessManager->SetupPhyListener (phy);
+      feManager->SetWifiPhy (phy);
+      link.channelAccessManager->SetupPhyListener (phy);
     }
+  link.feManager = feManager;
 }
 
 
@@ -447,8 +456,8 @@ void
 OcbWifiMac::Suspend (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelAccessManager->NotifySleepNow ();
-  m_feManager->NotifySleepNow ();
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifySleepNow ();
+  GetLink (SINGLE_LINK_OP_ID).feManager->NotifySleepNow ();
 }
 
 void
@@ -456,14 +465,14 @@ OcbWifiMac::Resume (void)
 {
   NS_LOG_FUNCTION (this);
   // wake-up operation is not required in m_low object
-  m_channelAccessManager->NotifyWakeupNow ();
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifyWakeupNow ();
 }
 
 void
 OcbWifiMac::MakeVirtualBusy (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
-  m_channelAccessManager->NotifyCcaBusyStartNow (duration, WIFI_CHANLIST_PRIMARY, {});
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifyCcaBusyStartNow (duration, WIFI_CHANLIST_PRIMARY, {});
 }
 
 void
@@ -481,8 +490,8 @@ OcbWifiMac::Reset (void)
 {
   NS_LOG_FUNCTION (this);
   // The switching event is used to notify MAC entity reset its operation.
-  m_channelAccessManager->NotifySwitchingStartNow (Time (0));
-  m_feManager->NotifySwitchingStartNow (Time (0));
+  GetLink (SINGLE_LINK_OP_ID).channelAccessManager->NotifySwitchingStartNow (Time (0));
+  GetLink (SINGLE_LINK_OP_ID).feManager->NotifySwitchingStartNow (Time (0));
 }
 
 void
@@ -490,7 +499,7 @@ OcbWifiMac::EnableForWave (Ptr<WaveNetDevice> device)
 {
   NS_LOG_FUNCTION (this << device);
   // To extend current OcbWifiMac for WAVE 1609.4, we shall use WaveFrameExchangeManager
-  StaticCast<WaveFrameExchangeManager> (m_feManager)->SetWaveNetDevice (device);
+  StaticCast<WaveFrameExchangeManager> (GetLink (SINGLE_LINK_OP_ID).feManager)->SetWaveNetDevice (device);
 }
 
 void

@@ -27,6 +27,8 @@
 #include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
 #include "ssid.h"
+#include <memory>
+#include <vector>
 
 namespace ns3 {
 
@@ -112,17 +114,27 @@ public:
   Ptr<WifiNetDevice> GetDevice (void) const;
 
   /**
-   * Get the Frame Exchange Manager
+   * Get the Frame Exchange Manager associated with the given link
    *
+   * \param linkId the ID of the given link
    * \return the Frame Exchange Manager
    */
-  Ptr<FrameExchangeManager> GetFrameExchangeManager (void) const;
+  Ptr<FrameExchangeManager> GetFrameExchangeManager (uint8_t linkId = SINGLE_LINK_OP_ID) const;
+
   /**
-   * Get the Channel Access Manager
+   * Get the Channel Access Manager associated with the given link
    *
+   * \param linkId the ID of the given link
    * \return the Channel Access Manager
    */
-  Ptr<ChannelAccessManager> GetChannelAccessManager (void) const;
+  Ptr<ChannelAccessManager> GetChannelAccessManager (uint8_t linkId = SINGLE_LINK_OP_ID) const;
+
+  /**
+   * Get the number of links (can be greater than 1 for 11be devices only).
+   *
+   * \return the number of links used by this MAC
+   */
+  uint8_t GetNLinks (void) const;
 
   /**
    * Accessor for the Txop object
@@ -249,17 +261,18 @@ public:
   virtual bool SupportsSendFrom (void) const;
 
   /**
-   * \param phy the physical layer attached to this MAC.
+   * \param phys the physical layers attached to this MAC.
    */
-  virtual void SetWifiPhy (Ptr<WifiPhy> phy);
+  virtual void SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys);
   /**
+   * \param linkId the index (starting at 0) of the PHY object to retrieve
    * \return the physical layer attached to this MAC
    */
-  Ptr<WifiPhy> GetWifiPhy (void) const;
+  Ptr<WifiPhy> GetWifiPhy (uint8_t linkId = SINGLE_LINK_OP_ID) const;
   /**
-   * Remove currently attached WifiPhy device from this MAC.
+   * Remove currently attached WifiPhy objects from this MAC.
    */
-  void ResetWifiPhy (void);
+  void ResetWifiPhys (void);
 
   /**
    * \param stationManager the station manager attached to this MAC.
@@ -544,11 +557,35 @@ protected:
    */
   virtual void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
 
+  /**
+   * Structure holding information specific to a single link. Here, the meaning of
+   * "link" is that of the 11be amendment which introduced multi-link devices. For
+   * previous amendments, only one link can be created. Therefore, "link" has not
+   * to be confused with the general concept of link for a NetDevice (used by the
+   * m_linkUp and m_linkDown callbacks).
+   */
+  struct LinkEntity
+  {
+    /// Destructor (a virtual method is needed to make this struct polymorphic)
+    virtual ~LinkEntity ();
+
+    uint8_t id;                                     //!< Link ID (starting at 0)
+    Ptr<WifiPhy> phy;                               //!< Wifi PHY object
+    Ptr<ChannelAccessManager> channelAccessManager; //!< channel access manager object
+    Ptr<FrameExchangeManager> feManager;            //!< Frame Exchange Manager object
+  };
+
+  /**
+   * Get a reference to the link associated with the given ID.
+   *
+   * \param linkId the given link ID
+   * \return a reference to the link associated with the given ID
+   */
+  LinkEntity& GetLink (uint8_t linkId) const;
+
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)
-  Ptr<ChannelAccessManager> m_channelAccessManager; //!< channel access manager
-  Ptr<FrameExchangeManager> m_feManager;            //!< Frame Exchange Manager
-  Ptr<Txop> m_txop;                                 //!<  TXOP used for transmission of frames to non-QoS peers.
+  Ptr<Txop> m_txop;                                 //!< TXOP used for transmission of frames to non-QoS peers.
 
   Callback<void> m_linkUp;       //!< Callback when a link is up
   Callback<void> m_linkDown;     //!< Callback when a link is down
@@ -584,8 +621,16 @@ private:
    * of the standard.
    *
    * \param standard the supported version of the standard
+   * \return the created Frame Exchange Manager
    */
-  void SetupFrameExchangeManager (WifiStandard standard);
+  Ptr<FrameExchangeManager> SetupFrameExchangeManager (WifiStandard standard);
+
+  /**
+   * Create a LinkEntity object.
+   *
+   * \return a unique pointer to the created LinkEntity object
+   */
+  virtual std::unique_ptr<LinkEntity> CreateLinkEntity (void) const;
 
   /**
    * Enable or disable ERP support for the device.
@@ -681,8 +726,8 @@ private:
   TypeOfStation m_typeOfStation; //!< the type of station
 
   Ptr<WifiNetDevice> m_device;                    //!< Pointer to the device
-  Ptr<WifiPhy> m_phy;                             //!< Wifi PHY
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
+  std::vector<std::unique_ptr<LinkEntity>> m_links; //!< vector of Link objects
 
   Mac48Address m_address; //!< MAC address of this station
   Ssid m_ssid;            //!< Service Set ID (SSID)

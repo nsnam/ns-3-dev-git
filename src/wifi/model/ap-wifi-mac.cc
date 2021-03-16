@@ -148,7 +148,7 @@ ApWifiMac::ConfigureStandard (WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
   WifiMac::ConfigureStandard (standard);
-  m_beaconTxop->SetChannelAccessManager (m_channelAccessManager);
+  m_beaconTxop->SetChannelAccessManager (GetLink (SINGLE_LINK_OP_ID).channelAccessManager);
 }
 
 Ptr<WifiMacQueue>

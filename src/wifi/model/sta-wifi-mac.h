@@ -133,9 +133,9 @@ public:
   bool CanForwardPacketsTo (Mac48Address to) const override;
 
   /**
-   * \param phy the physical layer attached to this MAC.
+   * \param phys the physical layers attached to this MAC.
    */
-  void SetWifiPhy (const Ptr<WifiPhy> phy) override;
+  void SetWifiPhys (const std::vector<Ptr<WifiPhy>>& phys) override;
 
   /**
    * Return whether we are associated with an AP.
