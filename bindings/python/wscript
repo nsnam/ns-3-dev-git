@@ -390,6 +390,8 @@ class apiscan_task(Task.Task):
     def run(self):
         self.inputs = [self.bld.bldnode.find_resource("ns3/{0}-module.h".format(self.module))]
         self.outputs = [self.bld.srcnode.find_resource("src/{}/bindings/modulegen__{}.py".format(self.module, self.target))]
+        if self.outputs[0] is None:
+            self.outputs = [self.bld.srcnode.find_resource("contrib/{}/bindings/modulegen__{}.py".format(self.module, self.target))]
         top_builddir = self.bld.bldnode.abspath()
         module_path = get_module_path(self.bld, self.module)
         headers_map = get_headers_map(self.bld)
