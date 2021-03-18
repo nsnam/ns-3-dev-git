@@ -2998,6 +2998,14 @@ def register_Ns3CapabilityInformation_methods(root_module, cls):
 def register_Ns3DataRate_methods(root_module, cls):
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('!=')
+    cls.add_binary_numeric_operator('*', root_module['ns3::DataRate'], root_module['ns3::DataRate'], param('double', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::DataRate'], root_module['ns3::DataRate'], param('uint64_t', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('double', 'right'))
+    cls.add_inplace_numeric_operator('*=', param('uint64_t', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::DataRate'], root_module['ns3::DataRate'], param('ns3::DataRate', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::DataRate', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::DataRate'], root_module['ns3::DataRate'], param('ns3::DataRate', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::DataRate', 'right'))
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
@@ -11078,6 +11086,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## wifi-phy.h (module 'wifi'): static uint32_t ns3::WifiPhy::GetMaxPsduSize(ns3::WifiModulationClass modulation) [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [param('ns3::WifiModulationClass', 'modulation')], 
+                   is_static=True)
     ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetMaxSupportedRxSpatialStreams() const [member function]
     cls.add_method('GetMaxSupportedRxSpatialStreams', 
                    'uint8_t', 
@@ -19036,6 +19049,11 @@ def register_Ns3PhyEntity_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::WifiPpduField', 'field'), param('ns3::WifiTxVector const &', 'txVector')], 
                    is_const=True)
+    ## phy-entity.h (module 'wifi'): uint32_t ns3::PhyEntity::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_pure_virtual=True, is_virtual=True)
     ## phy-entity.h (module 'wifi'): ns3::WifiMode ns3::PhyEntity::GetMcs(uint8_t index) const [member function]
     cls.add_method('GetMcs', 
                    'ns3::WifiMode', 
@@ -19386,8 +19404,8 @@ def register_Ns3QosFrameExchangeManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'mpdu'), param('ns3::WifiTxParameters const &', 'txParams'), param('ns3::Time', 'ppduDurationLimit')], 
                    is_const=True, is_virtual=True)
-    ## qos-frame-exchange-manager.h (module 'wifi'): bool ns3::QosFrameExchangeManager::IsWithinTimeLimit(uint32_t ppduPayloadSize, ns3::Mac48Address receiver, ns3::WifiTxParameters const & txParams, ns3::Time ppduDurationLimit) const [member function]
-    cls.add_method('IsWithinTimeLimit', 
+    ## qos-frame-exchange-manager.h (module 'wifi'): bool ns3::QosFrameExchangeManager::IsWithinSizeAndTimeLimits(uint32_t ppduPayloadSize, ns3::Mac48Address receiver, ns3::WifiTxParameters const & txParams, ns3::Time ppduDurationLimit) const [member function]
+    cls.add_method('IsWithinSizeAndTimeLimits', 
                    'bool', 
                    [param('uint32_t', 'ppduPayloadSize'), param('ns3::Mac48Address', 'receiver'), param('ns3::WifiTxParameters const &', 'txParams'), param('ns3::Time', 'ppduDurationLimit')], 
                    is_const=True, is_virtual=True)
@@ -23587,6 +23605,11 @@ def register_Ns3DsssPhy_methods(root_module, cls):
                    'ns3::Time', 
                    [param('ns3::WifiPpduField', 'field'), param('ns3::WifiTxVector const &', 'txVector')], 
                    is_const=True, is_virtual=True)
+    ## dsss-phy.h (module 'wifi'): uint32_t ns3::DsssPhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## dsss-phy.h (module 'wifi'): ns3::Time ns3::DsssPhy::GetPayloadDuration(uint32_t size, ns3::WifiTxVector const & txVector, ns3::WifiPhyBand band, ns3::MpduType mpdutype, bool incFlag, uint32_t & totalAmpduSize, double & totalAmpduNumSymbols, uint16_t staId) const [member function]
     cls.add_method('GetPayloadDuration', 
                    'ns3::Time', 
@@ -24337,6 +24360,11 @@ def register_Ns3OfdmPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('ns3::WifiTxVector const &', 'txVector')], 
                    is_const=True, is_virtual=True, visibility='protected')
+    ## ofdm-phy.h (module 'wifi'): uint32_t ns3::OfdmPhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True, visibility='protected')
     ## ofdm-phy.h (module 'wifi'): uint8_t ns3::OfdmPhy::GetNumberServiceBits() const [member function]
     cls.add_method('GetNumberServiceBits', 
                    'uint8_t', 
@@ -24552,6 +24580,11 @@ def register_Ns3ErpOfdmPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
+    ## erp-ofdm-phy.h (module 'wifi'): uint32_t ns3::ErpOfdmPhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## erp-ofdm-phy.h (module 'wifi'): static uint64_t ns3::ErpOfdmPhy::GetPhyRate(std::string const & name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) [member function]
     cls.add_method('GetPhyRate', 
                    'uint64_t', 
@@ -24937,6 +24970,11 @@ def register_Ns3HtPhy_methods(root_module, cls):
                    'double', 
                    [param('uint16_t', 'codeRate')], 
                    is_static=True, visibility='protected')
+    ## ht-phy.h (module 'wifi'): uint32_t ns3::HtPhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True, visibility='protected')
     ## ht-phy.h (module 'wifi'): uint8_t ns3::HtPhy::GetNumberBccEncoders(ns3::WifiTxVector const & txVector) const [member function]
     cls.add_method('GetNumberBccEncoders', 
                    'uint8_t', 
@@ -25152,6 +25190,11 @@ def register_Ns3VhtPhy_methods(root_module, cls):
     ## vht-phy.h (module 'wifi'): ns3::WifiMode ns3::VhtPhy::GetHtSigMode() const [member function]
     cls.add_method('GetHtSigMode', 
                    'ns3::WifiMode', 
+                   [], 
+                   is_const=True, is_virtual=True, visibility='protected')
+    ## vht-phy.h (module 'wifi'): uint32_t ns3::VhtPhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True, visibility='protected')
     ## vht-phy.h (module 'wifi'): uint8_t ns3::VhtPhy::GetNumberBccEncoders(ns3::WifiTxVector const & txVector) const [member function]
@@ -25468,6 +25511,11 @@ def register_Ns3HePhy_methods(root_module, cls):
     cls.add_method('GetChannelWidthAndBand', 
                    'std::pair< unsigned short, std::pair< unsigned int, unsigned int > >', 
                    [param('ns3::WifiTxVector const &', 'txVector'), param('uint16_t', 'staId')], 
+                   is_const=True, is_virtual=True, visibility='protected')
+    ## he-phy.h (module 'wifi'): uint32_t ns3::HePhy::GetMaxPsduSize() const [member function]
+    cls.add_method('GetMaxPsduSize', 
+                   'uint32_t', 
+                   [], 
                    is_const=True, is_virtual=True, visibility='protected')
     ## he-phy.h (module 'wifi'): ns3::Ptr<ns3::SpectrumValue> ns3::HePhy::GetTxPowerSpectralDensity(double txPowerW, ns3::Ptr<const ns3::WifiPpdu> ppdu) const [member function]
     cls.add_method('GetTxPowerSpectralDensity', 
