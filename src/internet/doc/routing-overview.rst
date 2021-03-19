@@ -358,10 +358,10 @@ The reason are the Triggered Updates, together with the fact that when a
 router invalidates a route, it will immediately propagate the route 
 unreachability, thus preventing most of the issues described in the RFC.
 
-However, with complex toplogies, it is still possible to have route 
+However, with complex topologies, it is still possible to have route 
 instability phenomena similar to the one described in the RFC after a 
 link failure. As a consequence, all the considerations about Split Horizon
-remanins valid.
+remains valid.
 
 
 Default routes
@@ -390,7 +390,7 @@ selected on a per-node basis, with the choices being "no split horizon",
 and :rfc:`1058` for a complete discussion on the split horizoning strategies.
 
 Moreover, it is possible to use a non-standard value for Link Down Value (i.e.,
-the value after which a link is considered down). The defaul is value is 16. 
+the value after which a link is considered down). The default is value is 16. 
 
 Limitations
 ~~~~~~~~~~~

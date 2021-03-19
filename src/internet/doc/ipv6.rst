@@ -207,7 +207,7 @@ and ``examples/ipv6/radvd-two-prefix.cc``.
 
 Note that the router (i.e., the node with :cpp:class:`Radvd`) will have to have a global address,
 while the nodes using the auto-generated addresses (SLAAC) will have to have a link-local address.
-This is accomplised using :cpp:class:`Ipv6AddressHelper::AssignWithoutAddress`, e.g.:
+This is accomplished using :cpp:class:`Ipv6AddressHelper::AssignWithoutAddress`, e.g.:
 
 ::
 
@@ -232,7 +232,7 @@ IPv6 adds the concept of "on-link" for addresses and prefixes. Simplifying the c
 network with the on-link property behaves roughly as IPv4: a node will assume that any address
 belonging to the on-link prefix is reachable on the link, so it uses Neighbor Discovery Protocol (NDP)
 to find the MAC address corresponding to the IPv6 address.
-If the prefix is not marked as "on-link", then any packet is sent to the defult router.
+If the prefix is not marked as "on-link", then any packet is sent to the default router.
 
 :cpp:class:`Radvd` can announce prefixes that have the on-link flag not set. Moreover, it is possible
 to add an address to a node without setting the on-link property for the prefix used in the address.
