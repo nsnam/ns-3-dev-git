@@ -20,6 +20,9 @@
  *          Sian Jin <sianjin@uw.edu>
  */
 
+// This file contains table data for the TableBasedErrorRateModel.  For more
+// information on the source of this data, see wifi module documentation.
+
 #ifndef ERROR_RATE_TABLES_H
 #define ERROR_RATE_TABLES_H
 
