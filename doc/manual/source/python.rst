@@ -145,7 +145,7 @@ First of all, keep in mind that not 100% of the API is supported in Python.  Som
 
 #. some of the APIs involve pointers, which require knowledge of what kind of memory passing semantics (who owns what memory). Such knowledge is not part of the function signatures, and is either documented or sometimes not even documented.  Annotations are needed to bind those functions;
 #. Sometimes a unusual fundamental data type or C++ construct is used which is not yet supported by PyBindGen;
-#. GCC-XML does not report template based classes unless they are instantiated. (Note:  Need to confirm this limitation still exists with CastXML)
+#. CastXML does not report template based classes unless they are instantiated. 
 
 Most of the missing APIs can be wrapped, given enough time, patience, and expertise, and will likely be wrapped if bug reports are submitted.  However, don't file a bug report saying "bindings are incomplete", because we do not have manpower to complete 100% of the bindings.
 
@@ -315,10 +315,9 @@ Try the following commands:
 .. sourcecode:: bash
 
     $ cd bake
-    $ export BAKE_HOME=`pwd`
-    $ export PATH=$PATH:$BAKE_HOME/build/bin
-    $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BAKE_HOME/build/lib
-    $ export PYTHONPATH=$PYTHONPATH:$BAKE_HOME/build/lib
+    $ export PATH=`pwd`/build/bin:$PATH
+    $ export LD_LIBRARY_PATH=`pwd`/build/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    $ export PYTHONPATH=`pwd`/build/lib${PYTHONPATH:+:$PYTHONPATH}
     $ mkdir -p build/lib
 
 Configure
@@ -328,63 +327,133 @@ Perform a configuration at the bake level:
 
 .. sourcecode:: bash
 
-    $ ./bake.py configure -e ns-3-dev -e pygccxml-1.9.1
+    $ ./bake.py configure -e ns-3-dev -e pygccxml
 
-The output of ``bake show`` should show something like this: 
+The output of ``./bake.py show`` should show something like this: 
 
 
 .. sourcecode:: bash
 
     $ ./bake.py show
 
-Should say:
+Should say (note:  some are OK to be 'Missing' for Python bindings scanning):
 
 .. sourcecode:: text
 
     -- System Dependencies --
      > clang-dev - OK
+     > cmake - OK
+     > cxxfilt - OK
      > g++ - OK
-     > libxml2-dev - OK
-     > pygoocanvas - OK
-     > pygraphviz - OK
-     > python-dev - OK
-     > qt - OK
+     > gi-cairo - OK or Missing
+     > gir-bindings - OK or Missing
+     > llvm-dev - OK
+     > pygobject - OK or Missing
+     > pygraphviz - OK or Missing
+     > python3-dev - OK
+     > python3-setuptools - OK
+     > qt - OK or Missing
      > setuptools - OK
+
+Note that it is not harmful for Python bindings if some of the items above
+report as Missing.  For Python bindings, the important
+prerequisites are clang-dev, cmake, cxxfilt, llvm-dev, python3-dev,
+and python3-setuptools.  In the following process, the following programs
+and libraries will be locally installed:  castxml, pybindgen, pygccxml,
+and |ns3|. 
+
+Note also that the `ns-3-allinone` target for bake will also include the
+`pygccxml` and `ns-3-dev` targets (among other libraries) and can be
+used instead, e.g.:
+
+.. sourcecode:: bash
+
+    $ ./bake.py configure -e ns-3-allinone
 
 Download
 ########
 
-Try the following command:
+Issue the following download command.  Your output may vary depending on what
+is present or missing on your system.
 
 .. sourcecode:: bash
 
     $ ./bake.py download
-     >> Searching for system dependency python-dev - OK
+     >> Searching for system dependency llvm-dev - OK
      >> Searching for system dependency clang-dev - OK
+     >> Searching for system dependency qt - Problem
+     > Problem: Optional dependency, module "qt" not available
+       This may reduce the  functionality of the final build. 
+       However, bake will continue since "qt" is not an essential dependency.
+       For more information call bake with -v or -vvv, for full verbose mode.
+    
      >> Searching for system dependency g++ - OK
+     >> Searching for system dependency cxxfilt - OK
      >> Searching for system dependency setuptools - OK
-     >> Searching for system dependency pygoocanvas - OK
-     >> Searching for system dependency pygraphviz - OK
-     >> Searching for system dependency qt - OK
+     >> Searching for system dependency python3-setuptools - OK
+     >> Searching for system dependency gi-cairo - Problem
+     > Problem: Optional dependency, module "gi-cairo" not available
+       This may reduce the  functionality of the final build. 
+       However, bake will continue since "gi-cairo" is not an essential dependency.
+       For more information call bake with -v or -vvv, for full verbose mode.
+    
+     >> Searching for system dependency gir-bindings - Problem
+     > Problem: Optional dependency, module "gir-bindings" not available
+       This may reduce the  functionality of the final build. 
+       However, bake will continue since "gir-bindings" is not an essential dependency.
+       For more information call bake with -v or -vvv, for full verbose mode.
+    
+     >> Searching for system dependency pygobject - Problem
+     > Problem: Optional dependency, module "pygobject" not available
+       This may reduce the  functionality of the final build. 
+       However, bake will continue since "pygobject" is not an essential dependency.
+       For more information call bake with -v or -vvv, for full verbose mode.
+    
+     >> Searching for system dependency pygraphviz - Problem
+     > Problem: Optional dependency, module "pygraphviz" not available
+       This may reduce the  functionality of the final build. 
+       However, bake will continue since "pygraphviz" is not an essential dependency.
+       For more information call bake with -v or -vvv, for full verbose mode.
+    
+     >> Searching for system dependency python3-dev - OK
+     >> Searching for system dependency cmake - OK
      >> Downloading castxml - OK
      >> Downloading netanim - OK
-     >> Downloading pygccxml-1.9.1 - OK
-     >> Downloading pygccxml - OK
      >> Downloading pybindgen - OK
+     >> Downloading pygccxml - OK
      >> Downloading ns-3-dev - OK
     
 Build
 #####
 
-Try the following commands:
+Next, try the following command:
 
 .. sourcecode:: bash
 
-    $ mkdir -p build/lib
     $ ./bake.py build
 
-It should fail on the |ns3| bindings complilation.
+A build report should be printed for each package, such as:
 
+::
+
+     >> Building castxml - OK
+     >> Building netanim - OK
+     >> Building pybindgen - OK
+     >> Building pygccxml - OK
+     >> Building ns-3-dev - OK
+
+However, if there is a problem with the bindings compilation (or with the
+C++ code), it will report a failure instead:
+
+::
+
+     >> Building ns-3-dev - Problem
+     > Error:  Critical dependency, module "ns-3-dev" failed 
+       For more information call Bake with --debug and/or -v, -vvv, for full verbose mode (bake --help)
+
+At this point, it is recommended to change into the ns-3-dev directory and
+work further from there, because the API scanning dependencies have been
+built and installed successfully into the `build` directory.
 The output of './waf configure' can be inspected to see if Python API scanning
 support is enabled:
 
@@ -392,15 +461,16 @@ support is enabled:
 
   Python API Scanning Support   : enabled
 
-It may say something like this, if the support is not active:
+It may say something like this, if the support is not active or something
+went wrong in the build process:
 
 .. sourcecode:: text
 
   Python API Scanning Support   : not enabled (Missing 'pygccxml' Python module)
 
-In this case, the user must take steps to install castxml and pygccxml;
-castxml binary must be in the shell's path, and pygccxml must be in the
-Python path.
+In this case, the user must take additional steps to resolve.  For the
+API scanning support to be detected, the castxml binary must be in the
+shell's PATH, and pygccxml must be in the PYTHONPATH.
 
 LP64 vs ILP32 bindings
 ######################
@@ -417,7 +487,7 @@ a 'long' (LP64) or 'long long' (ILP32).
 
 The process (only supported on Linux at present) generates the LP64
 bindings using the toolchain and then copies the LP64 bindings to the
-ILP32 bindings with some type subsitutions automated by Waf scripts.
+ILP32 bindings with some type substitutions automated by Waf scripts.
   
 Rescanning a module
 ###################
@@ -440,7 +510,7 @@ Generating bindings on MacOS
 ############################
 
 In principle, this should work (and should generate the 32-bit bindings).
-However, maintainers have not been able to complete this port as of ns-3.29.
+However, maintainers have not been available to complete this port to date.
 We would welcome suggestions on how to enable scanning for MacOS. 
 
 Organization of the Modular Python Bindings
@@ -456,7 +526,8 @@ The ``src/<module>/bindings`` directory may contain the following files, some of
 * ``module_helpers.cc``: you may add additional files, such as this, to be linked to python extension module, but they have to be registered in the wscript. Look at src/core/wscript for an example of how to do so;
 * ``<module>.py``: if this file exists, it becomes the "frontend" python module for the ns3 module, and the extension module (.so file) becomes _<module>.so instead of <module>.so.  The <module>.py file has to import all symbols from the module _<module> (this is more tricky than it sounds, see src/core/bindings/core.py for an example), and then can add some additional pure-python definitions.   
 
-More Information for Developers
-*******************************
+Historical Information
+**********************
 
-If you are a developer and need more information on |ns3|'s Python bindings, please see the `Python Bindings wiki page <http://www.nsnam.org/wiki/NS-3_Python_Bindings>`_.
+If you are a developer and need more background information on |ns3|'s Python bindings, please see the `Python Bindings wiki page <http://www.nsnam.org/wiki/NS-3_Python_Bindings>`_.  Please note, however, that some information on that
+page is stale.
