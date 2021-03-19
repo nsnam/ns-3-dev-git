@@ -385,8 +385,16 @@ StaWifiMac::MissedBeacons (void)
       return;
     }
   NS_LOG_DEBUG ("beacon missed");
-  SetState (UNASSOCIATED);
-  TryToEnsureAssociated ();
+  // We need to switch to the UNASSOCIATED state. However, if we are receiving
+  // a frame, wait until the RX is completed (otherwise, crashes may occur if
+  // we are receiving a MU frame because its reception requires the STA-ID)
+  Time delay = Seconds (0);
+  if (m_phy->IsStateRx ())
+    {
+      delay = m_phy->GetDelayUntilIdle ();
+    }
+  Simulator::Schedule (delay, &StaWifiMac::SetState, this, UNASSOCIATED);
+  Simulator::Schedule (delay, &StaWifiMac::TryToEnsureAssociated, this);
 }
 
 void
