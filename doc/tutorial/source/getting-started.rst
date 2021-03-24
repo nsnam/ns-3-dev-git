@@ -89,6 +89,18 @@ From this point forward, we are going to assume that the reader is working in
 Linux, macOS, or a Linux emulation environment, and has at least the above
 prerequisites.
 
+**Note:** The |ns3| build system (`Waf`, introduced below) does not
+tolerate spaces in the installation path.  Make sure that you are downloading
+into a directory that does not contain spaces in the full path name.
+
+For example, do not use a directory path such as the below, because one
+of the parent directories contains a space in the directory name:
+
+.. sourcecode:: bash
+
+  $ pwd
+  /home/user/5G simulations/ns-3-allinone/ns-3-dev
+
 Downloading a release of ns-3 as a source archive
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
