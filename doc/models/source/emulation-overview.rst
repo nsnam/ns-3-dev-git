@@ -89,6 +89,6 @@ For more details:
 
 * :doc:`FdNetDevice <fd-net-device>` chapter.
 * :doc:`NetmapNetDevice <netmap-net-device>` chapter.
-* :doc:`DpdkNetDevice <netmap-net-device>` chapter.
+* :doc:`DpdkNetDevice <dpdk-net-device>` chapter.
 * :doc:`TapBridge <tap>` chapter.
 
