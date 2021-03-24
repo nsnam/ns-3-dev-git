@@ -107,6 +107,7 @@ ApWifiMac::~ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_staList.clear ();
+  m_addressIdMap.clear ();
   m_nonErpStations.clear ();
   m_nonHtStations.clear ();
 }
@@ -746,6 +747,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
         {
           aid = GetNextAssociationId ();
           m_staList.insert (std::make_pair (aid, to));
+          m_addressIdMap.insert (std::make_pair (to, aid));
         }
       assoc.SetAssociationId (aid);
     }
@@ -1359,6 +1361,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                   if (j->second == from)
                     {
                       m_staList.erase (j);
+                      m_addressIdMap.erase (from);
                       break;
                     }
                 }
@@ -1465,14 +1468,13 @@ ApWifiMac::GetStaList (void) const
 uint16_t
 ApWifiMac::GetAssociationId (Mac48Address addr) const
 {
-  for (auto & it : m_staList)
+  auto it = m_addressIdMap.find (addr);
+
+  if (it == m_addressIdMap.end ())
     {
-      if (it.second == addr)
-        {
-          return it.first;
-        }
+      return SU_STA_ID;
     }
-  return SU_STA_ID;
+  return it->second;
 }
 
 uint8_t
