@@ -364,6 +364,10 @@ def print_config(env, phase='configure'):
         print("%-30s: %s%s%s" % (caption, Logs.colors(color), status, Logs.colors('NORMAL')))
 
 def configure(conf):
+    # Waf does not work correctly if the absolute path contains whitespaces
+    if (re.search(r"\s", os.getcwd ())):
+        conf.fatal('Waf does not support whitespace in the path to current working directory: %s' % os.getcwd())
+
     conf.load('relocation', tooldir=['waf-tools'])
 
     # attach some extra methods
