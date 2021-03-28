@@ -42,12 +42,9 @@ ts = 1/fs; % sampling period (i.e., 1 subframe duration)
 
 
 % create the channel object
-c = rayleighchan(ts, fd, delays_pedestrianEPA, power_pedestrianEPA);
-%c = rayleighchan(ts, fd, delays_vehicularEVA, power_vehicularEVA);
-%c = rayleighchan(ts, fd, delays_urbanETU, power_urbanETU);
-%c.StorePathGains = 1;
-c.ResetBeforeFiltering = 0;
-c.NormalizePathGains = 1;
+c = comm.RayleighChannel('SampleRate', 1/ts, 'MaximumDopplerShift', fd, 'PathDelays', delays_pedestrianEPA, 'AveragePathGains', power_pedestrianEPA);
+%c = comm.RayleighChannel('SampleRate', 1/ts, 'MaximumDopplerShift', fd, 'PathDelays', delays_vehicularEVA, 'AveragePathGains', power_vehicularEVA);
+%c = comm.RayleighChannel('SampleRate', 1/ts, 'MaximumDopplerShift', fd, 'PathDelays', delays_urbanETU, 'AveragePathGains', power_urbanETU);
 
 TTI = 0.001;
 
@@ -67,7 +64,7 @@ sig(1) = 1; % dirac impulse
 for ii=1:round((traceDuration/TTI))
         
     % y is the frequency response of the channel
-    y = filter(c,sig);   
+    y = c(sig);   
     
 %     [Pxx,F] = PWELCH(X,WINDOW,NOVERLAP,NFFT,Fs) returns a PSD computed as
 %     a function of physical frequency (Hz).  Fs is the sampling frequency
