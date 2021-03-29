@@ -422,7 +422,7 @@ Ipv4Address::GetLoopback (void)
 
 size_t Ipv4AddressHash::operator() (Ipv4Address const &x) const
 { 
-  return x.Get ();
+  return std::hash<uint32_t>()(x.Get ());
 }
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address)

@@ -435,12 +435,15 @@ inline bool operator < (const Ipv4Address &a, const Ipv4Address &b)
  *
  * \brief Class providing an hash for IPv4 addresses
  */
-class Ipv4AddressHash : public std::unary_function<Ipv4Address, size_t> {
+class Ipv4AddressHash {
 public:
   /**
-   * Returns the hash of the address
+   * \brief Returns the hash of an IPv4 address.
    * \param x the address
    * \return the hash
+   *
+   * This method uses std::hash rather than class Hash
+   * as speed is more important than cryptographic robustness.
    */
   size_t operator() (Ipv4Address const &x) const;
 };
