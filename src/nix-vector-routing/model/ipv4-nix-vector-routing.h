@@ -263,22 +263,6 @@ private:
 
 
   /**
-   * \brief Hashing for the ipv4Address class
-   */
-  struct Ipv4AddressHash
-  {
-    /**
-     * \brief operator ()
-     * \param address the IPv4 address to hash
-     * \return the hash of the address
-     */
-    size_t operator() (const Ipv4Address &address) const
-    {
-      return std::hash<uint32_t>()(address.Get ());
-    }
-  };
-
-  /**
    * Mapping of IPv4 address to ns-3 node.
    *
    * Used to avoid linear searching of nodes/devices to find a node in
