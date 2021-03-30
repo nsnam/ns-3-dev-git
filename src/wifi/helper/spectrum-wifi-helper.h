@@ -39,8 +39,10 @@ class SpectrumWifiPhyHelper : public WifiPhyHelper
 public:
   /**
    * Create a PHY helper.
+   *
+   * \param nLinks the number of links to configure (>1 only for 11be devices)
    */
-  SpectrumWifiPhyHelper ();
+  SpectrumWifiPhyHelper (uint8_t nLinks = 1);
 
   /**
    * \param channel the channel to associate to this helper
@@ -54,18 +56,34 @@ public:
    * Every PHY created by a call to Install is associated to this channel.
    */
   void SetChannel (std::string channelName);
+  /**
+   * \param channel the channel to associate to this helper
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   *
+   * The PHY associated with the given link and created by a call to Install
+   * is associated to this channel.
+   */
+  void SetChannel (uint8_t linkId, Ptr<SpectrumChannel> channel);
+  /**
+   * \param channelName The name of the channel to associate to this helper
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   *
+   * The PHY associated with the given link and created by a call to Install
+   * is associated to this channel.
+   */
+  void SetChannel (uint8_t linkId, std::string channelName);
 
 private:
   /**
    * \param node the node on which we wish to create a wifi PHY
    * \param device the device within which this PHY will be created
-   * \returns a newly-created PHY object.
+   * \returns newly-created PHY objects.
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
    */
-  Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
+  std::vector<Ptr<WifiPhy>> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
 
-  Ptr<SpectrumChannel> m_channel; ///< the channel
+  std::vector<Ptr<SpectrumChannel>> m_channels; ///< the channels
 };
 
 } //namespace ns3

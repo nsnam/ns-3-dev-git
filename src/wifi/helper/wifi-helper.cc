@@ -141,9 +141,15 @@ AsciiPhyReceiveSinkWithoutContext (
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << mode << " " << *pCopy << " " << fcs << std::endl;
 }
 
-WifiPhyHelper::WifiPhyHelper ()
+WifiPhyHelper::WifiPhyHelper (uint8_t nLinks)
   : m_pcapDlt (PcapHelper::DLT_IEEE802_11)
 {
+  NS_ABORT_IF (nLinks == 0);
+  m_phy.resize (nLinks);
+  m_errorRateModel.resize (nLinks);
+  m_frameCaptureModel.resize (nLinks);
+  m_preambleDetectionModel.resize (nLinks);
+
   SetPreambleDetectionModel ("ns3::ThresholdPreambleDetectionModel");
 }
 
@@ -154,13 +160,25 @@ WifiPhyHelper::~WifiPhyHelper ()
 void
 WifiPhyHelper::Set (std::string name, const AttributeValue &v)
 {
-  m_phy.Set (name, v);
+  for (auto& phy : m_phy)
+    {
+      phy.Set (name, v);
+    }
+}
+
+void
+WifiPhyHelper::Set (uint8_t linkId, std::string name, const AttributeValue &v)
+{
+  m_phy.at (linkId).Set (name, v);
 }
 
 void
 WifiPhyHelper::DisablePreambleDetectionModel ()
 {
-    m_preambleDetectionModel.SetTypeId (TypeId ());
+  for (auto& preambleDetectionModel : m_preambleDetectionModel)
+    {
+      preambleDetectionModel.SetTypeId (TypeId ());
+    }
 }
 
 void
@@ -760,9 +778,12 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       device->SetRemoteStationManager (manager);
-      Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-      device->SetPhy (phy);
-      phy->ConfigureStandard (m_standard);
+      std::vector<Ptr<WifiPhy>> phys = phyHelper.Create (node, device);
+      device->SetPhys (phys);
+      for (std::size_t i = 0; i < phys.size (); i++)
+        {
+          phys[i]->ConfigureStandard (m_standard);
+        }
       Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       if ((m_standard >= WIFI_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
         {

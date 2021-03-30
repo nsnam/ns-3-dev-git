@@ -183,11 +183,11 @@ private:
   /**
    * \param node the node on which we wish to create a wifi PHY
    * \param device the device within which this PHY will be created
-   * \returns a newly-created PHY object.
+   * \returns newly-created PHY objects.
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
    */
-  Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
+  std::vector<Ptr<WifiPhy>> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const override;
 
   Ptr<YansWifiChannel> m_channel; ///< YANS wifi channel
 };

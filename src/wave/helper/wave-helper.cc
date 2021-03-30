@@ -382,11 +382,12 @@ WaveHelper::Install (const WifiPhyHelper &phyHelper,  const WifiMacHelper &macHe
 
       for (uint32_t j = 0; j != m_physNumber; ++j)
         {
-          Ptr<WifiPhy> phy = phyHelper.Create (node, device);
-          phy->ConfigureStandard (WIFI_STANDARD_80211p);
-          phy->SetOperatingChannel (WifiPhy::ChannelTuple {ChannelManager::GetCch (), 0,
-                                                           WIFI_PHY_BAND_5GHZ, 0});
-          device->AddPhy (phy);
+          std::vector<Ptr<WifiPhy>> phys = phyHelper.Create (node, device);
+          NS_ABORT_IF (phys.size () != 1);
+          phys[0]->ConfigureStandard (WIFI_STANDARD_80211p);
+          phys[0]->SetOperatingChannel (WifiPhy::ChannelTuple {ChannelManager::GetCch (), 0,
+                                                               WIFI_PHY_BAND_5GHZ, 0});
+          device->AddPhy (phys[0]);
         }
 
       for (std::vector<uint32_t>::const_iterator k = m_macsForChannelNumber.begin ();

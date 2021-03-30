@@ -59,29 +59,34 @@ WifiMacHelper::Create (Ptr<WifiNetDevice> device, WifiStandard standard) const
   device->SetMac (mac);
   mac->ConfigureStandard (standard);
 
-  Ptr<FrameExchangeManager> fem = mac->GetFrameExchangeManager ();
-
-  if (fem != nullptr)
+  // WaveNetDevice stores PHY entities in a different member than WifiNetDevice, hence
+  // GetNPhys() would return 0. We have to attach a protection manager and an ack manager
+  // to the unique instance of frame exchange manager anyway
+  for (uint8_t linkId = 0; linkId < std::max<uint8_t> (device->GetNPhys (), 1); ++linkId)
     {
+      auto fem = mac->GetFrameExchangeManager (linkId);
+
       Ptr<WifiProtectionManager> protectionManager = m_protectionManager.Create<WifiProtectionManager> ();
       protectionManager->SetWifiMac (mac);
-      protectionManager->SetLinkId (SINGLE_LINK_OP_ID);
+      protectionManager->SetLinkId (linkId);
       fem->SetProtectionManager (protectionManager);
 
       Ptr<WifiAckManager> ackManager = m_ackManager.Create<WifiAckManager> ();
       ackManager->SetWifiMac (mac);
-      ackManager->SetLinkId (SINGLE_LINK_OP_ID);
+      ackManager->SetLinkId (linkId);
       fem->SetAckManager (ackManager);
-
-      // create and install the Multi User Scheduler if this is an HE AP
-      Ptr<ApWifiMac> apMac = DynamicCast<ApWifiMac> (mac);
-      if (apMac != nullptr && standard >= WIFI_STANDARD_80211ax
-          && m_muScheduler.IsTypeIdSet ())
-        {
-          Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();
-          apMac->AggregateObject (muScheduler);
-        }
     }
+
+  // create and install the Multi User Scheduler if this is an HE AP
+  Ptr<ApWifiMac> apMac;
+  if (standard >= WIFI_STANDARD_80211ax
+      && m_muScheduler.IsTypeIdSet ()
+      && (apMac = DynamicCast<ApWifiMac> (mac)) != nullptr)
+    {
+      Ptr<MultiUserScheduler> muScheduler = m_muScheduler.Create<MultiUserScheduler> ();
+      apMac->AggregateObject (muScheduler);
+    }
+
   return mac;
 }
 

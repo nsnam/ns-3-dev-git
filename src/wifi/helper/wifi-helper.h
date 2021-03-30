@@ -29,6 +29,7 @@
 #include "ns3/deprecated.h"
 #include "wifi-mac-helper.h"
 #include <functional>
+#include <vector>
 
 namespace ns3 {
 
@@ -47,27 +48,41 @@ class WifiPhyHelper : public PcapHelperForDevice,
                       public AsciiTraceHelperForDevice
 {
 public:
-  WifiPhyHelper ();
+  /**
+   * Constructor
+   *
+   * \param nLinks the number of links to configure (>1 only for 11be devices)
+   */
+  WifiPhyHelper (uint8_t nLinks = 1);
   virtual ~WifiPhyHelper ();
 
   /**
-   * \param node the node on which the PHY object will reside
-   * \param device the device within which the PHY object will reside
+   * \param node the node on which the PHY object(s) will reside
+   * \param device the device within which the PHY object(s) will reside
    *
-   * \returns a new PHY object.
+   * \returns new PHY objects.
    *
    * Subclasses must implement this method to allow the ns3::WifiHelper class
    * to create PHY objects from ns3::WifiHelper::Install.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
+  virtual std::vector<Ptr<WifiPhy>> Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const = 0;
 
   /**
    * \param name the name of the attribute to set
    * \param v the value of the attribute
    *
-   * Set an attribute of the underlying PHY object.
+   * Set an attribute of all the underlying PHY object.
    */
   void Set (std::string name, const AttributeValue &v);
+
+  /**
+   * \param name the name of the attribute to set
+   * \param v the value of the attribute
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   *
+   * Set an attribute of the given underlying PHY object.
+   */
+  void Set (uint8_t linkId, std::string name, const AttributeValue &v);
 
   /**
    * Helper function used to set the interference helper.
@@ -90,6 +105,17 @@ public:
   void SetErrorRateModel (std::string type, Args&&... args);
 
   /**
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   * \param type the type of the error rate model to set.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   *
+   * Set the error rate model and its attributes to use for the given link when Install is called.
+   */
+  template <typename... Args>
+  void SetErrorRateModel (uint8_t linkId, std::string type, Args&&... args);
+
+  /**
    * Helper function used to set the frame capture model.
    *
    * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
@@ -98,6 +124,17 @@ public:
    */
   template <typename... Args>
   void SetFrameCaptureModel (std::string type, Args&&... args);
+
+  /**
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   * \param type the type of the frame capture model to set.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   *
+   * Set the frame capture model and its attributes to use for the given link when Install is called.
+   */
+  template <typename... Args>
+  void SetFrameCaptureModel (uint8_t linkId, std::string type, Args&&... args);
 
   /**
    * Helper function used to set the preamble detection model.
@@ -110,7 +147,18 @@ public:
   void SetPreambleDetectionModel (std::string type, Args&&... args);
 
   /**
-   * Disable the preamble detection model.
+   * \tparam Args \deduced Template type parameter pack for the sequence of name-value pairs.
+   * \param linkId ID of the link to configure (>0 only for 11be devices)
+   * \param type the type of the preamble detection model to set.
+   * \param args A sequence of name-value pairs of the attributes to set.
+   *
+   * Set the preamble detection model and its attributes to use for the given link when Install is called.
+   */
+  template <typename... Args>
+  void SetPreambleDetectionModel (uint8_t linkId, std::string type, Args&&... args);
+
+  /**
+   * Disable the preamble detection model on all links.
    */
   void DisablePreambleDetectionModel ();
 
@@ -183,11 +231,11 @@ protected:
                                 SignalNoiseDbm signalNoise,
                                 uint16_t staId = SU_STA_ID);
 
-  ObjectFactory m_phy; ///< PHY object
+  std::vector<ObjectFactory> m_phy; ///< PHY object
   ObjectFactory m_interferenceHelper; ///< interference helper
-  ObjectFactory m_errorRateModel; ///< error rate model
-  ObjectFactory m_frameCaptureModel; ///< frame capture model
-  ObjectFactory m_preambleDetectionModel; ///< preamble detection model
+  std::vector<ObjectFactory> m_errorRateModel; ///< error rate model
+  std::vector<ObjectFactory> m_frameCaptureModel; ///< frame capture model
+  std::vector<ObjectFactory> m_preambleDetectionModel; ///< preamble detection model
 
 
 private:
@@ -482,24 +530,54 @@ template <typename... Args>
 void
 WifiPhyHelper::SetErrorRateModel (std::string type, Args&&... args)
 {
-  m_errorRateModel.SetTypeId (type);
-  m_errorRateModel.Set (args...);
+  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+    {
+      SetErrorRateModel (linkId, type, std::forward<Args> (args)...);
+    }
+}
+
+template <typename... Args>
+void
+WifiPhyHelper::SetErrorRateModel (uint8_t linkId, std::string type, Args&&... args)
+{
+  m_errorRateModel.at (linkId).SetTypeId (type);
+  m_errorRateModel.at (linkId).Set (args...);
 }
 
 template <typename... Args>
 void
 WifiPhyHelper::SetFrameCaptureModel (std::string type, Args&&... args)
 {
-  m_frameCaptureModel.SetTypeId (type);
-  m_frameCaptureModel.Set (args...);
+  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+    {
+      SetFrameCaptureModel (linkId, type, std::forward<Args> (args)...);
+    }
+}
+
+template <typename... Args>
+void
+WifiPhyHelper::SetFrameCaptureModel (uint8_t linkId, std::string type, Args&&... args)
+{
+  m_frameCaptureModel.at (linkId).SetTypeId (type);
+  m_frameCaptureModel.at (linkId).Set (args...);
 }
 
 template <typename... Args>
 void
 WifiPhyHelper::SetPreambleDetectionModel (std::string type, Args&&... args)
 {
-  m_preambleDetectionModel.SetTypeId (type);
-  m_preambleDetectionModel.Set (args...);
+  for (uint8_t linkId = 0; linkId < m_phy.size (); linkId++)
+    {
+      SetPreambleDetectionModel (linkId, type, std::forward<Args> (args)...);
+    }
+}
+
+template <typename... Args>
+void
+WifiPhyHelper::SetPreambleDetectionModel (uint8_t linkId, std::string type, Args&&... args)
+{
+  m_preambleDetectionModel.at (linkId).SetTypeId (type);
+  m_preambleDetectionModel.at (linkId).Set (args...);
 }
 
 template <typename... Args>
