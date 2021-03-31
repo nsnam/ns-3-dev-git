@@ -808,11 +808,11 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
           device->SetHeConfiguration (heConfiguration);
         }
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
-      Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       phy->ConfigureStandardAndBand (it->second.phyStandard, it->second.phyBand);
-      device->SetMac (mac);
       device->SetPhy (phy);
+      Ptr<WifiMac> mac = macHelper.Create (device, m_standard);
+      device->SetMac (mac);
       device->SetRemoteStationManager (manager);
       node->AddDevice (device);
       if ((it->second.phyStandard >= WIFI_PHY_STANDARD_80211ax) && (m_obssPdAlgorithm.IsTypeIdSet ()))
