@@ -2201,15 +2201,15 @@ void
 WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMaxMimo)
 {
   NS_LOG_FUNCTION (this << powerRestricted << txPowerMaxSiso << txPowerMaxMimo);
-  m_powerRestricted = powerRestricted;
-  m_txPowerMaxSiso = txPowerMaxSiso;
-  m_txPowerMaxMimo = txPowerMaxMimo;
   // This method might be called multiple times when receiving TB PPDUs with a BSS color
   // different than the one of the receiver. The first time this method is called, the call
   // to AbortCurrentReception sets m_currentEvent to 0. Therefore, we need to check whether
   // m_currentEvent is not 0 before executing the instructions below.
   if (m_currentEvent != 0)
     {
+      m_powerRestricted = powerRestricted;
+      m_txPowerMaxSiso = txPowerMaxSiso;
+      m_txPowerMaxMimo = txPowerMaxMimo;
       NS_ASSERT ((m_currentEvent->GetEndTime () - Simulator::Now ()).IsPositive ());
       Simulator::Schedule (m_currentEvent->GetEndTime () - Simulator::Now (), &WifiPhy::EndReceiveInterBss, this);
       Simulator::ScheduleNow (&WifiPhy::AbortCurrentReception, this, OBSS_PD_CCA_RESET); //finish processing field first
