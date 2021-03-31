@@ -140,6 +140,11 @@ LrWpanMac::GetTypeId (void)
                      "the sent packet",
                      MakeTraceSourceAccessor (&LrWpanMac::m_sentPktTrace),
                      "ns3::LrWpanMac::SentTracedCallback")
+    .AddTraceSource ("IfsEnd",
+                     "Trace source reporting the end of an "
+                     "Interframe space (IFS) ",
+                     MakeTraceSourceAccessor (&LrWpanMac::m_macIfsEndTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
@@ -390,7 +395,7 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
         {
           // short address and ACK requested.
           Mac16Address shortAddr = macHdr.GetShortDstAddr ();
-          if (shortAddr.IsBroadcast() || shortAddr.IsMulticast())
+          if (shortAddr.IsBroadcast () || shortAddr.IsMulticast ())
             {
               NS_LOG_LOGIC ("LrWpanMac::McpsDataRequest: requested an ACK on broadcast or multicast destination (" << shortAddr << ") - forcefully removing it.");
               macHdr.SetNoAckReq ();
@@ -899,9 +904,13 @@ LrWpanMac::CheckQueue ()
       //TODO: this should check if the node is a coordinator and using the outcoming superframe not just the PAN coordinator
       if (m_csmaCa->IsUnSlottedCsmaCa () || (m_outSuperframeStatus == CAP && m_panCoor) || m_incSuperframeStatus == CAP)
         {
-          TxQueueElement *txQElement = m_txQueue.front ();
-          m_txPkt = txQElement->txQPkt;
-          m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
+          // check MAC is not in a IFS
+          if (!m_ifsEvent.IsRunning ())
+            {
+              TxQueueElement *txQElement = m_txQueue.front ();
+              m_txPkt = txQElement->txQPkt;
+              m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_CSMA);
+            }
         }
     }
 }
@@ -1362,9 +1371,10 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
                           m_mcpsDataConfirmCallback (confirmParams);
                         }
                       RemoveFirstTxQElement ();
-
+                      m_setMacState.Cancel ();
+                      m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
                       // Ack was succesfully received, wait for the Interframe Space (IFS) and then proceed
-                      m_ifsEvent = Simulator::Schedule (ifsWaitTime, &LrWpanMac::IfsWaitTimeout, this);
+                      m_ifsEvent = Simulator::Schedule (ifsWaitTime, &LrWpanMac::IfsWaitTimeout, this, ifsWaitTime);
                     }
                   else
                     {
@@ -1433,7 +1443,7 @@ LrWpanMac::RemoveFirstTxQElement ()
   Ptr<Packet> pkt = p->Copy ();
   LrWpanMacHeader hdr;
   pkt->RemoveHeader (hdr);
-  if (!hdr.GetShortDstAddr ().IsBroadcast () && !hdr.GetShortDstAddr ().IsMulticast())
+  if (!hdr.GetShortDstAddr ().IsBroadcast () && !hdr.GetShortDstAddr ().IsMulticast ())
     {
       m_sentPktTrace (p, m_retransmission + 1, m_numCsmacaRetry);
     }
@@ -1466,11 +1476,27 @@ LrWpanMac::AckWaitTimeout (void)
 }
 
 void
-LrWpanMac::IfsWaitTimeout (void)
+LrWpanMac::IfsWaitTimeout (Time ifsTime)
 {
-  NS_LOG_DEBUG ("IFS Completed");
-  m_setMacState.Cancel ();
-  m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+  uint64_t symbolRate = (uint64_t) m_phy->GetDataOrSymbolRate (false);
+  Time lifsTime = Seconds ((double) m_macLIFSPeriod / symbolRate);
+  Time sifsTime = Seconds ((double) m_macSIFSPeriod / symbolRate);
+
+  if (ifsTime == lifsTime)
+    {
+      NS_LOG_DEBUG ("LIFS of " << m_macLIFSPeriod << " symbols (" << ifsTime.As (Time::S) << ") completed ");
+    }
+  else if (ifsTime == sifsTime)
+    {
+      NS_LOG_DEBUG ("SIFS of " << m_macSIFSPeriod << " symbols (" << ifsTime.As (Time::S) << ") completed ");
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Unknown IFS size (" << ifsTime.As (Time::S) << ") completed ");
+    }
+
+  m_macIfsEndTrace (ifsTime);
+  CheckQueue ();
 }
 
 
@@ -1612,13 +1638,12 @@ LrWpanMac::PdDataConfirm (LrWpanPhyEnumeration status)
 
   if (!ifsWaitTime.IsZero ())
     {
-      m_ifsEvent = Simulator::Schedule (ifsWaitTime, &LrWpanMac::IfsWaitTimeout, this);
+      m_ifsEvent = Simulator::Schedule (ifsWaitTime, &LrWpanMac::IfsWaitTimeout, this, ifsWaitTime);
     }
-  else
-    {
-      m_setMacState.Cancel ();
-      m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
-    }
+
+  m_setMacState.Cancel ();
+  m_setMacState = Simulator::ScheduleNow (&LrWpanMac::SetLrWpanMacState, this, MAC_IDLE);
+
 
 }
 
@@ -1668,7 +1693,13 @@ LrWpanMac::PlmeSetTRXStateConfirm (LrWpanPhyEnumeration status)
   else if (m_lrWpanMacState == MAC_IDLE)
     {
       NS_ASSERT (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS || status == IEEE_802_15_4_PHY_TRX_OFF);
-      // Do nothing special when going idle.
+
+      if (status == IEEE_802_15_4_PHY_RX_ON || status == IEEE_802_15_4_PHY_SUCCESS)
+        {
+          // Check if there is not messages to transmit when going idle
+          CheckQueue ();
+        }
+
     }
   else if (m_lrWpanMacState == MAC_ACK_PENDING)
     {
@@ -1710,7 +1741,7 @@ LrWpanMac::SetLrWpanMacState (LrWpanMacState macState)
           m_phy->PlmeSetTRXStateRequest (IEEE_802_15_4_PHY_TRX_OFF);
         }
 
-      CheckQueue ();
+
     }
   else if (macState == MAC_ACK_PENDING)
     {
@@ -1805,7 +1836,7 @@ LrWpanMac::GetMacMaxFrameRetries (void) const
 void
 LrWpanMac::PrintTransmitQueueSize (void)
 {
-  NS_LOG_DEBUG("Transit Queue Size: "<<m_txQueue.size());
+  NS_LOG_DEBUG ("Transmit Queue Size: " << m_txQueue.size ());
 }
 
 void

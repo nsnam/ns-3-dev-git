@@ -1059,7 +1059,7 @@ private:
    * the mac layer wait an Interframe Space (IFS) time and triggers this function
    * to continue with the MAC flow.
    */
-  void IfsWaitTimeout (void);
+  void IfsWaitTimeout (Time ifsTime);
   /**
    * Check for remaining retransmissions for the packet currently being sent.
    * Drop the packet, if there are no retransmissions left.
@@ -1089,6 +1089,10 @@ private:
     */
   PendingAddrFields GetPendingAddrFields (void);
 
+  /**
+   * The trace source is fired at the end of any Interframe Space (IFS).
+   */
+  TracedCallback<Time> m_macIfsEndTrace;
   /**
    * The trace source fired when packets are considered as successfully sent
    * or the transmission has been given up.
