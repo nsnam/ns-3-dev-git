@@ -520,10 +520,11 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
   if (status.isSuccess)
     {
       //Check if PPDU is filtered based on the BSS color
-      uint8_t bssColor = GetBssColor ();
-      if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
+      uint8_t myBssColor = GetBssColor ();
+      uint8_t rxBssColor = event->GetTxVector ().GetBssColor ();
+      if (myBssColor != 0 && rxBssColor != 0 && myBssColor != rxBssColor)
         {
-          NS_LOG_DEBUG ("The BSS color of this PPDU (" << +event->GetTxVector ().GetBssColor () << ") does not match the device's (" << +bssColor << "). The PPDU is filtered.");
+          NS_LOG_DEBUG ("The BSS color of this PPDU (" << +rxBssColor << ") does not match the device's (" << +myBssColor << "). The PPDU is filtered.");
           return PhyFieldRxStatus (false, FILTERED, DROP);
         }
 

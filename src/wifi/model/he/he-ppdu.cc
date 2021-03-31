@@ -205,14 +205,14 @@ HePpdu::GetPsdu (uint8_t bssColor, uint16_t staId /* = SU_STA_ID */) const
   else if (IsUlMu ())
     {
       NS_ASSERT (m_psdus.size () == 1);
-      if (bssColor == 0 || (bssColor == m_heSig.GetBssColor ()))
+      if (bssColor == 0 || m_heSig.GetBssColor () == 0 || (bssColor == m_heSig.GetBssColor ()))
         {
           return m_psdus.begin ()->second;
         }
     }
   else
     {
-      if (bssColor == 0 || (bssColor == m_heSig.GetBssColor ()))
+      if (bssColor == 0 || m_heSig.GetBssColor () == 0 || (bssColor == m_heSig.GetBssColor ()))
         {
           auto it = m_psdus.find (staId);
           if (it != m_psdus.end ())
