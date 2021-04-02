@@ -1019,6 +1019,136 @@ WifiPrimaryChannelsTest::CheckReceivedTriggerFrames (std::set<uint8_t> txBss, ui
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Test functions returning the indices of primary and secondary channels
+ *        of different width.
+ */
+class Wifi20MHzChannelIndicesTest : public TestCase
+{
+public:
+  /**
+   * Constructor
+   */
+  Wifi20MHzChannelIndicesTest ();
+  virtual ~Wifi20MHzChannelIndicesTest () = default;
+
+  /**
+   * Check that the indices of the 20 MHz channels included in all the primary
+   * and secondary channels are correct when setting the given primary20 channel.
+   *
+   * \param primary20 the index of the primary20 channel to configure
+   * \param secondary20 the expected index of the secondary20 channel
+   * \param primary40 the expected indices of the 20 MHz channels in the primary40 channel
+   * \param secondary40 the expected indices of the 20 MHz channels in the secondary40 channel
+   * \param primary80 the expected indices of the 20 MHz channels in the primary80 channel
+   * \param secondary80 the expected indices of the 20 MHz channels in the secondary80 channel
+   */
+  void RunOne (uint8_t primary20, const std::set<uint8_t>& secondary20,
+               const std::set<uint8_t>& primary40, const std::set<uint8_t>& secondary40,
+               const std::set<uint8_t>& primary80, const std::set<uint8_t>& secondary80);
+
+private:
+  void DoRun (void) override;
+
+  WifiPhyOperatingChannel m_channel;   //!< operating channel
+};
+
+Wifi20MHzChannelIndicesTest::Wifi20MHzChannelIndicesTest ()
+  : TestCase ("Check computation of primary and secondary channel indices")
+{
+}
+
+void
+Wifi20MHzChannelIndicesTest::RunOne (uint8_t primary20,
+                                     const std::set<uint8_t>& secondary20,
+                                     const std::set<uint8_t>& primary40,
+                                     const std::set<uint8_t>& secondary40,
+                                     const std::set<uint8_t>& primary80,
+                                     const std::set<uint8_t>& secondary80)
+{
+  auto printToStr = [](const std::set<uint8_t>& s)
+                    {
+                      std::stringstream ss;
+                      ss << "{";
+                      for (const auto& index : s) ss << +index << " ";
+                      ss << "}";
+                      return ss.str ();
+                    };
+
+  m_channel.SetPrimary20Index (primary20);
+
+  auto actualPrimary20 = m_channel.GetAll20MHzChannelIndicesInPrimary (20);
+  NS_TEST_ASSERT_MSG_EQ ((actualPrimary20 == std::set<uint8_t> {primary20}),
+                         true,
+                         "Expected Primary20 {" << +primary20 << "}"
+                         << " differs from actual " << printToStr (actualPrimary20));
+
+  auto actualSecondary20 = m_channel.GetAll20MHzChannelIndicesInSecondary (actualPrimary20);
+  NS_TEST_ASSERT_MSG_EQ ((actualSecondary20 == secondary20),
+                         true,
+                         "Expected Secondary20 " << printToStr (secondary20)
+                         << " differs from actual " << printToStr (actualSecondary20));
+
+  auto actualPrimary40 = m_channel.GetAll20MHzChannelIndicesInPrimary (40);
+  NS_TEST_ASSERT_MSG_EQ ((actualPrimary40 == primary40),
+                         true,
+                         "Expected Primary40 " << printToStr (primary40)
+                         << " differs from actual " << printToStr (actualPrimary40));
+
+  auto actualSecondary40 = m_channel.GetAll20MHzChannelIndicesInSecondary (primary40);
+  NS_TEST_ASSERT_MSG_EQ ((actualSecondary40 == secondary40),
+                         true,
+                         "Expected Secondary40 " << printToStr (secondary40)
+                         << " differs from actual " << printToStr (actualSecondary40));
+
+  auto actualPrimary80 = m_channel.GetAll20MHzChannelIndicesInPrimary (80);
+  NS_TEST_ASSERT_MSG_EQ ((actualPrimary80 == primary80),
+                         true,
+                         "Expected Primary80 " << printToStr (primary80)
+                         << " differs from actual " << printToStr (actualPrimary80));
+
+  auto actualSecondary80 = m_channel.GetAll20MHzChannelIndicesInSecondary (primary80);
+  NS_TEST_ASSERT_MSG_EQ ((actualSecondary80 == secondary80),
+                         true,
+                         "Expected Secondary80 " << printToStr (secondary80)
+                         << " differs from actual " << printToStr (actualSecondary80));
+}
+
+void
+Wifi20MHzChannelIndicesTest::DoRun ()
+{
+  /* 20 MHz channel */
+  m_channel.SetDefault (20, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  RunOne (0, {}, {}, {}, {}, {});
+
+  /* 40 MHz channel */
+  m_channel.SetDefault (40, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  RunOne (0, {1}, {0, 1}, {}, {}, {});
+  RunOne (1, {0}, {0, 1}, {}, {}, {});
+
+  /* 80 MHz channel */
+  m_channel.SetDefault (80, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  RunOne (0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
+  RunOne (1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {});
+  RunOne (2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
+  RunOne (3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {});
+
+  /* 160 MHz channel */
+  m_channel.SetDefault (160, WIFI_STANDARD_80211ax, WIFI_PHY_BAND_5GHZ);
+  RunOne (0, {1}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
+  RunOne (1, {0}, {0, 1}, {2, 3}, {0, 1, 2, 3}, {4, 5, 6, 7});
+  RunOne (2, {3}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7});
+  RunOne (3, {2}, {2, 3}, {0, 1}, {0, 1, 2, 3}, {4, 5, 6, 7});
+  RunOne (4, {5}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3});
+  RunOne (5, {4}, {4, 5}, {6, 7}, {4, 5, 6, 7}, {0, 1, 2, 3});
+  RunOne (6, {7}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3});
+  RunOne (7, {6}, {6, 7}, {4, 5}, {4, 5, 6, 7}, {0, 1, 2, 3});
+}
+
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi primary channels test suite
  */
 class WifiPrimaryChannelsTestSuite : public TestSuite
@@ -1037,6 +1167,7 @@ WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite ()
   AddTestCase (new WifiPrimaryChannelsTest (80, false), TestCase::EXTENSIVE);
   AddTestCase (new WifiPrimaryChannelsTest (160, true), TestCase::TAKES_FOREVER);
   AddTestCase (new WifiPrimaryChannelsTest (160, false), TestCase::TAKES_FOREVER);
+  AddTestCase (new Wifi20MHzChannelIndicesTest (), TestCase::QUICK);
 }
 
 static WifiPrimaryChannelsTestSuite g_wifiPrimaryChannelsTestSuite; ///< the test suite

@@ -449,4 +449,67 @@ WifiPhyOperatingChannel::GetPrimaryChannelNumber (uint16_t     primaryChannelWid
   return std::get<0> (*primaryChanIt);
 }
 
+std::set<uint8_t>
+WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInPrimary (uint16_t width) const
+{
+  if (width > GetWidth ())
+    {
+      // a primary channel of the given width does not exist
+      return {};
+    }
+
+  uint16_t currWidth = 20;  // MHz
+  std::set<uint8_t> indices;
+  indices.insert (m_primary20Index);
+
+  while (currWidth < width)
+    {
+      indices.merge (GetAll20MHzChannelIndicesInSecondary (indices));
+      currWidth <<= 1;
+    }
+
+  return indices;
+}
+
+std::set<uint8_t>
+WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary (uint16_t width) const
+{
+  return GetAll20MHzChannelIndicesInSecondary (GetAll20MHzChannelIndicesInPrimary (width));
+}
+
+std::set<uint8_t>
+WifiPhyOperatingChannel::GetAll20MHzChannelIndicesInSecondary (const std::set<uint8_t>& primaryIndices) const
+{
+  if (primaryIndices.empty () || GetWidth () == 20)
+    {
+      return {};
+    }
+
+  uint8_t size = 1;
+  uint16_t primaryWidth = 20;  // MHz
+
+  // find the width of the primary channel corresponding to the size of the given set
+  while (size != primaryIndices.size ())
+    {
+      size <<= 1;
+      primaryWidth <<= 1;
+
+      if (primaryWidth >= GetWidth ())
+        {
+          // the width of the primary channel resulting from the given indices
+          // exceeds the width of the operating channel
+          return {};
+        }
+    }
+
+  std::set<uint8_t> secondaryIndices;
+  for (const auto& index : primaryIndices)
+    {
+      secondaryIndices.insert (index ^ size);
+    }
+
+  return secondaryIndices;
+}
+
+
 } //namespace ns3

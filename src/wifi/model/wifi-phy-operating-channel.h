@@ -138,6 +138,41 @@ public:
    */
   uint16_t GetPrimaryChannelCenterFrequency (uint16_t primaryChannelWidth) const;
 
+  /**
+   * Get the channel indices of all the 20 MHz channels included in the primary
+   * channel of the given width, if such primary channel exists, or an empty set,
+   * otherwise.
+   *
+   * \param width the width in MHz of the primary channel
+   * \return the channel indices of all the 20 MHz channels included in the primary
+   *         channel of the given width, if such primary channel exists, or an empty set,
+   *         otherwise
+   */
+  std::set<uint8_t> GetAll20MHzChannelIndicesInPrimary (uint16_t width) const;
+  /**
+   * Get the channel indices of all the 20 MHz channels included in the secondary
+   * channel of the given width, if such secondary channel exists, or an empty set,
+   * otherwise.
+   *
+   * \param width the width in MHz of the secondary channel
+   * \return the channel indices of all the 20 MHz channels included in the secondary
+   *         channel of the given width, if such secondary channel exists, or an empty set,
+   *         otherwise
+   */
+  std::set<uint8_t> GetAll20MHzChannelIndicesInSecondary (uint16_t width) const;
+  /**
+   * Get the channel indices of all the 20 MHz channels included in the secondary
+   * channel corresponding to the given primary channel, if such secondary channel
+   * exists, or an empty set, otherwise.
+   *
+   * \param primaryIndices the channel indices of all the 20 MHz channels included
+   *                       in the primary channel
+   * \return the channel indices of all the 20 MHz channels included in the secondary
+   *         channel corresponding to the given primary channel, if such secondary channel
+   *         exists, or an empty set, otherwise
+   */
+  std::set<uint8_t> GetAll20MHzChannelIndicesInSecondary (const std::set<uint8_t>& primaryIndices) const;
+
   /// Typedef for a const iterator pointing to a channel in the set of available channels
   typedef std::set<FrequencyChannelInfo>::const_iterator ConstIterator;
 
