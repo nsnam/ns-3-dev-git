@@ -20,7 +20,6 @@
 
 #include "ns3/log.h"
 #include "ns3/double.h"
-#include "ns3/uinteger.h"
 #include "obss-pd-algorithm.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-phy.h"
@@ -93,9 +92,7 @@ ObssPdAlgorithm::ResetPhy (HeSigAParameters params)
   // Fetch my BSS color
   Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration ();
   NS_ASSERT (heConfiguration);
-  UintegerValue bssColorAttribute;
-  heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
-  uint8_t bssColor = bssColorAttribute.Get ();
+  uint8_t bssColor = heConfiguration->GetBssColor ();
   NS_LOG_DEBUG ("My BSS color " << (uint16_t) bssColor << " received frame " << (uint16_t) params.bssColor);
 
   Ptr<WifiPhy> phy = m_device->GetPhy ();

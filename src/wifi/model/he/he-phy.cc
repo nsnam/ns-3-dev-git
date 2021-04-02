@@ -28,7 +28,6 @@
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/wifi-utils.h"
-#include "ns3/uinteger.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/assert.h"
@@ -477,9 +476,7 @@ HePhy::GetBssColor (void) const
       Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
       if (heConfiguration)
         {
-          UintegerValue bssColorAttribute;
-          heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
-          bssColor = bssColorAttribute.Get ();
+          bssColor = heConfiguration->GetBssColor ();
         }
     }
   return bssColor;

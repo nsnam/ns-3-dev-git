@@ -22,7 +22,6 @@
 #include "ns3/node.h"
 #include "ns3/config.h"
 #include "ns3/double.h"
-#include "ns3/uinteger.h"
 #include "constant-obss-pd-algorithm.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/wifi-utils.h"
@@ -77,9 +76,7 @@ ConstantObssPdAlgorithm::ReceiveHeSigA (HeSigAParameters params)
 
   Ptr<HeConfiguration> heConfiguration = m_device->GetHeConfiguration ();
   NS_ASSERT (heConfiguration);
-  UintegerValue bssColorAttribute;
-  heConfiguration->GetAttribute ("BssColor", bssColorAttribute);
-  uint8_t bssColor = bssColorAttribute.Get ();
+  uint8_t bssColor = heConfiguration->GetBssColor ();
 
   if (bssColor == 0)
     {

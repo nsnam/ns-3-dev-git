@@ -547,9 +547,7 @@ WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header)
   Ptr<HeConfiguration> heConfiguration = device->GetHeConfiguration ();
   if (heConfiguration)
     {
-      UintegerValue bssColor;
-      heConfiguration->GetAttribute ("BssColor", bssColor);
-      txVector.SetBssColor (bssColor.Get ());
+      txVector.SetBssColor (heConfiguration->GetBssColor ());
     }
   return txVector;
 }
