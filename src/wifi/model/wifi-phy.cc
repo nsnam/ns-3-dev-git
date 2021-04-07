@@ -2165,7 +2165,7 @@ void
 WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
 {
   NS_LOG_FUNCTION (this << reason);
-  if (reason != OBSS_PD_CCA_RESET || m_currentEvent) //Otherwise abort has already been called just before with FILTERED reason
+  if (reason != OBSS_PD_CCA_RESET || m_currentEvent) //Otherwise abort has already been called previously
     {
       for (auto & phyEntity : m_phyEntities)
         {
@@ -2195,10 +2195,6 @@ WifiPhy::AbortCurrentReception (WifiPhyRxfailureReason reason)
         }
       m_currentEvent = 0;
     }
-  else if (reason == OBSS_PD_CCA_RESET)
-    {
-      m_state->SwitchFromRxAbort ();
-    }
 }
 
 void
@@ -2216,7 +2212,7 @@ WifiPhy::ResetCca (bool powerRestricted, double txPowerMaxSiso, double txPowerMa
     {
       NS_ASSERT ((m_currentEvent->GetEndTime () - Simulator::Now ()).IsPositive ());
       Simulator::Schedule (m_currentEvent->GetEndTime () - Simulator::Now (), &WifiPhy::EndReceiveInterBss, this);
-      AbortCurrentReception (OBSS_PD_CCA_RESET);
+      Simulator::ScheduleNow (&WifiPhy::AbortCurrentReception, this, OBSS_PD_CCA_RESET); //finish processing field first
     }
 }
 

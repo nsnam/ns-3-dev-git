@@ -515,28 +515,29 @@ HePhy::ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status)
   HeSigAParameters params;
   params.rssiW = GetRxPowerWForPpdu (event);
   params.bssColor = event->GetTxVector ().GetBssColor ();
-  Simulator::ScheduleNow (&HePhy::NotifyEndOfHeSigA, this, params); //finish field processing first
+  NotifyEndOfHeSigA (params); //if OBSS_PD CCA_RESET, set power restriction first and wait till field is processed before switching to IDLE
 
   if (status.isSuccess)
     {
+      //Check if PPDU is filtered based on the BSS color
+      uint8_t bssColor = GetBssColor ();
+      if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
+        {
+          NS_LOG_DEBUG ("The BSS color of this PPDU (" << +event->GetTxVector ().GetBssColor () << ") does not match the device's (" << +bssColor << "). The PPDU is filtered.");
+          return PhyFieldRxStatus (false, FILTERED, DROP);
+        }
+
       Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
       if (event->GetTxVector ().GetPreambleType () == WIFI_PREAMBLE_HE_TB)
         {
           m_currentHeTbPpduUid = ppdu->GetUid (); //to be able to correctly schedule start of OFDMA payload
         }
 
-      //Check if PPDU is filtered based on the BSS color
-      uint8_t bssColor = GetBssColor ();
-      if (bssColor != 0 && bssColor != event->GetTxVector ().GetBssColor ())
-        {
-          NS_LOG_DEBUG ("The BSS color of this PPDU (" << +event->GetTxVector ().GetBssColor () << ") does not match the device's (" << +bssColor << "). The PPDU is filtered.");
-          return PhyFieldRxStatus (false, FILTERED, ABORT);
-        }
       if (ppdu->GetType () != WIFI_PPDU_TYPE_DL_MU && !GetAddressedPsduInPpdu (ppdu)) //Final decision on STA-ID correspondence of DL MU is delayed to end of SIG-B
         {
           NS_ASSERT (ppdu->GetType () == WIFI_PPDU_TYPE_UL_MU);
           NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
-          return PhyFieldRxStatus (false, FILTERED, ABORT);
+          return PhyFieldRxStatus (false, FILTERED, DROP);
         }
     }
   return status;
@@ -567,7 +568,7 @@ HePhy::ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status)
       if (!GetAddressedPsduInPpdu (event->GetPpdu ()))
         {
           NS_LOG_DEBUG ("No PSDU addressed to that PHY in the received MU PPDU. The PPDU is filtered.");
-          return PhyFieldRxStatus (false, FILTERED, ABORT);
+          return PhyFieldRxStatus (false, FILTERED, DROP);
         }
     }
   return status;

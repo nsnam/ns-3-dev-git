@@ -294,11 +294,6 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
         {
           case ABORT:
             //Abort reception, but consider medium as busy
-            if (status.reason == FILTERED)
-              {
-                //PHY-RXSTART is immediately followed by PHY-RXEND (Filtered)
-                m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, NanoSeconds (0)); //this callback (equivalent to PHY-RXSTART primitive) is also triggered for filtered PPDUs
-              }
             AbortCurrentReception (status.reason);
             if (event->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
               {
@@ -307,6 +302,11 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
             break;
           case DROP:
             //Notify drop, keep in CCA busy, and perform same processing as IGNORE case
+            if (status.reason == FILTERED)
+              {
+                //PHY-RXSTART is immediately followed by PHY-RXEND (Filtered)
+                m_wifiPhy->m_phyRxPayloadBeginTrace (txVector, NanoSeconds (0)); //this callback (equivalent to PHY-RXSTART primitive) is also triggered for filtered PPDUs
+              }
             m_wifiPhy->NotifyRxDrop (GetAddressedPsduInPpdu (ppdu), status.reason);
             m_state->SwitchMaybeToCcaBusy (GetRemainingDurationAfterField (ppdu, field)); //keep in CCA busy state till the end
           //no break
@@ -788,7 +788,7 @@ void
 PhyEntity::StartPreambleDetectionPeriod (Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << *event);
-  NS_LOG_DEBUG ("Sync to signal (power=" << GetRxPowerWForPpdu (event) << "W)");
+  NS_LOG_DEBUG ("Sync to signal (power=" << WToDbm (GetRxPowerWForPpdu (event)) << "dBm)");
   m_wifiPhy->m_interference.NotifyRxStart (); //We need to notify it now so that it starts recording events
   m_endPreambleDetectionEvents.push_back (Simulator::Schedule (m_wifiPhy->GetPreambleDetectionDuration (), &PhyEntity::EndPreambleDetectionPeriod, this, event));
 }
@@ -960,7 +960,7 @@ void
 PhyEntity::DoAbortCurrentReception (WifiPhyRxfailureReason reason)
 {
   NS_LOG_FUNCTION (this << reason);
-  if (m_wifiPhy->m_currentEvent) //Otherwise abort has already been called just before with FILTERED reason
+  if (m_wifiPhy->m_currentEvent) //Otherwise abort has already been called just before
     {
       for (auto & endMpduEvent : m_endOfMpduEvents)
         {
