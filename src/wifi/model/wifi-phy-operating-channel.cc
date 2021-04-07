@@ -152,13 +152,13 @@ WifiPhyOperatingChannel::GetPrimaryChannelIndex (uint16_t primaryChannelWidth) c
 {
   NS_LOG_FUNCTION (this << primaryChannelWidth);
 
-  NS_ASSERT (primaryChannelWidth <= GetWidth ());
-
   if (primaryChannelWidth % 20 != 0)
     {
       NS_LOG_DEBUG ("The operating channel width is not a multiple of 20 MHz; return 0");
       return 0;
     }
+
+  NS_ASSERT (primaryChannelWidth <= GetWidth ());
 
   // the index of primary40 is half the index of primary20; the index of
   // primary80 is half the index of primary40, ...
