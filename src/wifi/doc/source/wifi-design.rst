@@ -1025,7 +1025,7 @@ The algorithm maintains the number of successful transmissions
 set to zero.
 
 To select MCS for a data frame, the algorithm draws a sample frame
-success rate :math:`\p_i` from the beta distribution with shape
+success rate :math:`q_i` from the beta distribution with shape
 parameters :math:`(1 + \alpha_i, 1 + \beta_i)` for each MCS and then
 selects MCS with the highest expected throughput calculated as the
 sample frame success rate multiplied by MCS rate.
