@@ -197,7 +197,7 @@ def ns3_python_bindings(bld):
                       Warning, stacklevel=2)
         return
 
-    if ("ns3-%s" % (module,)) not in env.NS3_ENABLED_MODULES:
+    if ("ns3-%s" % (module,)) not in env.NS3_ENABLED_CONTRIBUTED_MODULES:
         #print "bindings for module %s which is not enabled, skip" % module)
         return
 
@@ -260,6 +260,7 @@ def ns3_python_bindings(bld):
     bindgen.before = ['cxxprogram', 'cxxshlib', 'cxxstlib']
     bindgen.after = 'gen_ns3_module_header'
     bindgen.name = "pybindgen(ns3 module %s)" % module
+    bindgen.module = module
     bindgen.install_path = None
 
     # generate the extension module
@@ -267,7 +268,8 @@ def ns3_python_bindings(bld):
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (module_target_dir, extension_name)
     pymod.name = 'ns3module_%s' % module
-    pymod.use = ["%s" % mod for mod in pymod.env['NS3_ENABLED_MODULES']] #  Should be '"ns3-"+module', but see bug 1117
+    pymod.module = module
+    pymod.use = ["%s" % mod for mod in pymod.env['NS3_ENABLED_CONTRIBUTED_MODULES']]
     if pymod.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
@@ -282,6 +284,10 @@ def ns3_python_bindings(bld):
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['DEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_34=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_32=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_31=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_30=', 'NS3_DEPRECATED_H'])
     if Utils.unversioned_sys_platform() == 'win32':
         try:
             defines.remove('_DEBUG') # causes undefined symbols on win32

@@ -251,7 +251,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
     output_file = open(output_file_name, "wt")
     output_sink = FileCodeSink(output_file)
 
-    # if there exists a scan-header.h file in src/<module>/bindings,
+    # if there exists a scan-header.h file in src/<module>/bindings or contrib/<module>/bindings,
     # scan it, otherwise scan ns3/xxxx-module.h.
     scan_header = os.path.join(os.path.dirname(output_file_name), "scan-header.h")
     if not os.path.exists(scan_header):
