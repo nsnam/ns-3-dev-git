@@ -156,6 +156,16 @@ public:
   virtual void SetupMac (const Ptr<WifiMac> mac);
 
   /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t AssignStreams (int64_t stream);
+
+  /**
    * Sets the maximum STA short retry count (SSRC).
    *
    * \param maxSsrc the maximum SSRC

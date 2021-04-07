@@ -100,13 +100,6 @@ ThompsonSamplingWifiManager::~ThompsonSamplingWifiManager ()
   NS_LOG_FUNCTION (this);
 }
 
-void
-ThompsonSamplingWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
-{
-  NS_LOG_FUNCTION (this << phy);
-  WifiRemoteStationManager::SetupPhy (phy);
-}
-
 WifiRemoteStation *
 ThompsonSamplingWifiManager::DoCreateStation () const
 {

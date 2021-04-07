@@ -167,6 +167,13 @@ WifiRemoteStationManager::SetupMac (const Ptr<WifiMac> mac)
   Reset ();
 }
 
+int64_t
+WifiRemoteStationManager::AssignStreams (int64_t stream)
+{
+  NS_LOG_FUNCTION (this << stream);
+  return 0;
+}
+
 void
 WifiRemoteStationManager::SetMaxSsrc (uint32_t maxSsrc)
 {
