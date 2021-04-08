@@ -676,6 +676,17 @@ private:
   TracedCallback<Time, LrWpanPhyEnumeration, LrWpanPhyEnumeration> m_trxStateLogger;
 
   /**
+   * Calculates the nominal transmit power of the device in decibels relative to 1 mW
+   * according to the representation of the PIB attribute phyTransmitPower.
+   *
+   * The tolerance (2 MSB) is not considered in the calculus.
+   *
+   * \param phyTransmitPower the PIB attribute
+   * \return The nominal transmit power
+   */
+  double GetNominalTxPowerFromPib (uint8_t phyTransmitPower);
+
+  /**
    * The mobility model used by the PHY.
    */
   Ptr<MobilityModel> m_mobility;

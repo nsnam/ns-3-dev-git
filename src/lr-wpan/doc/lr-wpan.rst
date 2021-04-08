@@ -1,9 +1,13 @@
+.. include:: replace.txt
+.. highlight:: cpp
+.. highlight:: bash
+
 PageBreak
 
 Low-Rate Wireless Personal Area Network (LR-WPAN)
 -------------------------------------------------
 
-This chapter describes the implementation of ns-3 models for the
+This chapter describes the implementation of |ns3| models for the
 low-rate, wireless personal area network (LR-WPAN) as specified by
 IEEE standard 802.15.4 (2006).
 
@@ -34,7 +38,7 @@ Zheng and Lee in the future.
 APIs
 ####
 
-The APIs closely follow the standard, adapted for ns-3 naming conventions
+The APIs closely follow the standard, adapted for |ns3| naming conventions
 and idioms.  The APIs are organized around the concept of service primitives
 as shown in the following figure adapted from Figure 14 of 
 IEEE Std. 802.15.4-2006.
@@ -71,7 +75,7 @@ of IEEE 802.15.4-2006):::
                           KeyIndex
                           )
 
-This maps to ns-3 classes and methods such as:::
+This maps to |ns3| classes and methods such as:::
 
   struct McpsDataRequestParameters
   {
@@ -158,7 +162,7 @@ The 64-bit addresses are unique worldwide, and set by the device vendor (in a re
 The 16-bit addresses are not guaranteed to be unique, and they are typically either assigned 
 during the devices deployment, or assigned dynamically during the device bootstrap.
 
-In |ns-3| the device bootstrap is not (yet) present. Hence, both addresses are set when the
+In |ns3| the device bootstrap is not (yet) present. Hence, both addresses are set when the
 device is created.
 
 The other relavant "address" to consider is the PanId (16 bits), which represents the PAN
@@ -180,7 +184,7 @@ while RFC 6282 mandates that the IID part of the IPv6 address is calculated as `
 where ``XXXX`` is the device short address, and ``YYYY`` is the PanId.
 In both cases the U/L bit must be set to local, so in the RFC 4944 the PanId might have one bit flipped.
 
-In order to facilitate interoperability, and to avoid unwanted module dependencies, the |ns-3| 
+In order to facilitate interoperability, and to avoid unwanted module dependencies, the |ns3| 
 implementation moves the IID calculation in the ``LrWpanNetDevice::GetAddress ()``, which will
 return an ``Address`` formatted properly, i.e.:
 
@@ -229,7 +233,7 @@ Usage
 Enabling lr-wpan
 ================
 
-Add ``lr-wpan`` to the list of modules built with ns-3.
+Add ``lr-wpan`` to the list of modules built with |ns3|.
 
 Helper
 ======
