@@ -121,16 +121,19 @@ can be configured as follows:
 
 .. sourcecode:: cpp
 
-  TrafficControlHelper tch;
-  tch.SetRootQueueDisc ("ns3::FqCoDelQueueDisc", "DropBatchSize", UintegerValue (1)
+   TrafficControlHelper tch;
+   tch.SetRootQueueDisc ("ns3::FqCoDelQueueDisc", "DropBatchSize", UintegerValue (1)
                                                  "Perturbation", UintegerValue (256));
-  QueueDiscContainer qdiscs = tch.Install (devices);
+   QueueDiscContainer qdiscs = tch.Install (devices);
 
 The example for FqCoDel's L4S mode is `FqCoDel-L4S-example.cc` located in ``src/traffic-control/examples``.  To run the file (the first invocation below shows the available
 command-line options):
+
 .. sourcecode:: bash
+
    $ ./waf --run "FqCoDel-L4S-example --PrintHelp"
    $ ./waf --run "FqCoDel-L4S-example --scenarioNum=5" 
+
 The expected output from the previous command are .dat files.
 
 Validation
@@ -147,27 +150,33 @@ The FqCoDel model is tested using :cpp:class:`FqCoDelQueueDiscTestSuite` class d
 * Test 7: The seventh test checks the working of set associative hashing and its linear probing capabilities by using TCP packets with different hashes enqueued into different sets and queues.
 * Test 8: The eighth test checks the L4S mode of FqCoDel where ECT1 packets are marked at CE threshold (target delay does not matter) while ECT0 packets continue to be marked at target delay (CE threshold does not matter).
 
-The test suite can be run using the following commands::
+The test suite can be run using the following commands:
 
-  $ ./waf configure --enable-examples --enable-tests
-  $ ./waf build
-  $ ./test.py -s fq-codel-queue-disc
+.. sourcecode:: bash
 
-or::
+   $ ./waf configure --enable-examples --enable-tests
+   $ ./waf build
+   $ ./test.py -s fq-codel-queue-disc
 
-  $ NS_LOG="FqCoDelQueueDisc" ./waf --run "test-runner --suite=fq-codel-queue-disc"
+or:
+
+.. sourcecode:: bash
+
+   $ NS_LOG="FqCoDelQueueDisc" ./waf --run "test-runner --suite=fq-codel-queue-disc"
 
 Set associative hashing is tested by generating a probability collision graph. 
 This graph is then overlapped with the theoretical graph provided in the original 
 CAKE paper (refer to Figure 1 from `CAKE <https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8475045>`_). 
 The generated graph is linked below:
 
-  .. image:: figures/collision_prob.jpeg
-  :alt: Generated Collision Probability Graph
-  
+.. image:: figures/collision_prob.jpeg
+   :alt: Generated Collision Probability Graph
+
+
 The overlapped graph is also linked below:
 
-  .. image:: figures/overlapped.jpeg
-  :alt: Overlapped Image with the graph from CAKE paper
-  
+.. image:: figures/overlapped.jpeg
+   :alt: Overlapped Image with the graph from CAKE paper
+
+
 The steps to replicate this graph are available on this `link <https://github.com/AB261/Set-Associative-Hash-fqCodel>`_.
