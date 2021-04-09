@@ -545,7 +545,8 @@ The error models are described in more detail in outside references.  The
 current OFDM model is based on work published in [patidar2017]_, using
 link simulations results from the MATLAB WLAN Toolbox, and validated against
 IEEE TGn results [erceg2004]_.  For publications related to other error models,
-please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_ and [Frenger]_ for a detailed description of the legacy PER models.
+please refer to [pei80211ofdm]_, [pei80211b]_, [lacage2006yans]_, [Haccoun]_,
+[hepner2015]_ and [Frenger]_ for a detailed description of the legacy PER models.
 
 The current |ns3| error rate models are for additive white gaussian
 noise channels (AWGN) only; any potential frequency-selective fading
@@ -626,7 +627,7 @@ obtained based on work previously done at NIST [miller2003]_.  The results
 were also compared against the CMU wireless network emulator, and details
 of the validation are provided in [pei80211ofdm]_.  Since OFDM modes use
 hard-decision of punctured codes, the coded BER is calculated using
-Chernoff bounds.
+Chernoff bounds [hepner2015]_.
 
 The 802.11b model was split from the OFDM model when the NIST error rate
 model was added, into a new model called DsssErrorRateModel.
