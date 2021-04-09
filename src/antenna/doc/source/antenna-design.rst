@@ -1,9 +1,9 @@
 .. include:: replace.txt
 
 
-++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++
 Design documentation
-++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++
 
 --------
 Overview
@@ -108,6 +108,7 @@ antenna. Note that this radiation pattern is independent of the inclination angl
 :math:`\theta`.
 
 .. _sec-3gpp-antenna-model:
+
 -------------------------
 ThreeGppAntennaArrayModel
 -------------------------
