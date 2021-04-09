@@ -959,6 +959,7 @@ LrWpanPhy::PlmeSetAttributeRequest (LrWpanPibAttributeIdentifier id,
       {
         if (attribute->phyTransmitPower & 0xC0)
           {
+            NS_LOG_LOGIC ("LrWpanPhy::PlmeSetAttributeRequest error - can not change read-only attribute bits.");
             status = IEEE_802_15_4_PHY_INVALID_PARAMETER;
           }
         else
