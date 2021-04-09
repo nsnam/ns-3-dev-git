@@ -360,7 +360,9 @@ WifiPhy::GetTypeId (void)
                    MakeUintegerChecker<uint8_t> (0, 7))
     .AddAttribute ("RxSensitivity",
                    "The energy of a received signal should be higher than "
-                   "this threshold (dBm) for the PHY to detect the signal.",
+                   "this threshold (dBm) for the PHY to detect the signal. "
+                   "This threshold refers to a width of 20 MHz and will be "
+                   "scaled to match the width of the received signal.",
                    DoubleValue (-101.0),
                    MakeDoubleAccessor (&WifiPhy::SetRxSensitivity,
                                        &WifiPhy::GetRxSensitivity),

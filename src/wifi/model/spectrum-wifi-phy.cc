@@ -352,13 +352,6 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // Log the signal arrival to the trace source
   m_signalCb (wifiRxParams ? true : false, senderNodeId, WToDbm (totalRxPowerW), rxDuration);
 
-  // Do no further processing if signal is too weak
-  // Current implementation assumes constant RX power over the PPDU duration
-  if (WToDbm (totalRxPowerW) < GetRxSensitivity ())
-    {
-      NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
-      return;
-    }
   if (wifiRxParams == 0)
     {
       NS_LOG_INFO ("Received non Wi-Fi signal");
@@ -371,6 +364,15 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       NS_LOG_INFO ("Received Wi-Fi signal but blocked from syncing");
       m_interference.AddForeignSignal (rxDuration, rxPowerW);
       SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
+      return;
+    }
+  // Do no further processing if signal is too weak
+  // Current implementation assumes constant RX power over the PPDU duration
+  // Compare received TX power per MHz to normalized RX sensitivity
+  uint16_t txWidth = GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->GetTransmissionChannelWidth (wifiRxParams->ppdu);
+  if (totalRxPowerW < DbmToW (GetRxSensitivity ()) * (txWidth / 20.0))
+    {
+      NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
       return;
     }
   // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
