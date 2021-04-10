@@ -11,9 +11,27 @@ Overview
 
 The Antenna module provides:
 
- #. a new base class (AntennaModel) that provides an interface for the modeling of the radiation pattern of an antenna;
+ #. a class (Angles) and utility functions to deal with angles
+ #. a base class (AntennaModel) that provides an interface for the modeling of the radiation pattern of an antenna;
  #. a set of classes derived from this base class that each models the radiation pattern of different types of antennas;
- #. the class ThreeGppAntennaArrayModel, which implements the antenna model described in 3GPP TR 38.901
+ #. a base class (PhasedArrayModel) that provides a flexible interface for modeling a number of Phase Antenna Array (PAA) models
+ #. a class (UniformPlanarArray) derived from this base class, implementing a Uniform Planar Arraya (UPA) supporting both rectangular and linear lattices
+
+
+------
+Angles
+------
+
+The Angles class holds information about an angle in 3D space using spherical coordinates in radian units.
+Specifically, it uses the azimuth-inclination convention, where
+
+* Inclination is the angle between the zenith direction (positive z-axis) and the desired direction. It is included in the range [0, pi] radians.
+* Azimuth is the signed angle measured from the positive x-axis, where a positive direction goes towards the positive y-axis. It is included in the range [-pi, pi) radians.
+
+Multiple constructors are present, supporting the most common ways to encode information on a direction.
+A static boolean variable allows the user to decide whether angles should be printed in radian or degree units.
+
+A number of angle-related utilities are offered, such as radians/degree conversions, for both scalars and vectors, and angle wrapping.
 
 
 ------------
@@ -107,37 +125,54 @@ beamwidth, and :math:`A_{max}` is the maximum attenuation in dB of the
 antenna. Note that this radiation pattern is independent of the inclination angle
 :math:`\theta`.
 
-.. _sec-3gpp-antenna-model:
 
--------------------------
-ThreeGppAntennaArrayModel
--------------------------
 
-The class ThreeGppAntennaArrayModel implements the antenna model described in
-3GPP TR 38.901 [38901]_, which is used by the classes ThreeGppSpectrumPropagationLossModel
-and ThreeGppChannelModel.
-Each instance of this class models an isotropic rectangular antenna array composed  
-of a single panel with NxM elements, where N is the number of rows and M is the 
-number of columns, configurable through the attributes "NumRows" and "NumColumns". 
-The radiation pattern of the antenna elements follows the model specified in
-Sec. 7.3 of 3GPP TR 38.901; only vertical polarization is considered (i.e.,
-:math:`{\zeta = 0}`).
-The directional gain of the antenna elements can be configured through the
-attribute "ElementGain" (see formula 2.34 in [Mailloux]_ to choose a proper value).
+ThreeGppAntennaModel
+++++++++++++++++++++
+
+This model implements the antenna element described in [38901]_.
+Parameters are fixed from the technical report, thus no attributes nor setters are provided.
+The model is largely based on the `ParabolicAntennaModel`_.
+
+------------------
+Phased Array Model
+------------------
+
+The class PhasedArrayModel has been created with flexibility in mind.
+It abstracts the basic idea of a Phased Antenna Array (PAA) by removing any constraint on the
+position of each element, and instead generalizes the concept of steering and beamforming vectors,
+solely based on the generalized location of the antenna elements.
+
+Derived classes must implement the following functions:
+
+* GetNumberOfElements: returns the number of antenna elements
+* GetElementLocation: returns the location of the antenna element with the specified index, normalized with respect to the wavelength
+* GetElementFieldPattern: returns the horizontal and vertical components of the antenna element field pattern at the specified direction. Only vertical polarization is considered.
+
+The class PhasedArrayModel also assumes that all antenna elements are equal, a typical key assumption which allows to model the PAA field pattern as the sum of the array factor, given by the geometry of the location of the antenna elements, and the element field pattern.
+Any class derived from AntennaModel is a valid antenna element for the PhasedArrayModel, allowing for a great flexibility of the framework.
+
+
+UniformPlanarArray
+++++++++++++++++++
+
+The class UniformPlanarArray is a generic implementation of Uniform Planar Arrays (UPAs),
+supporting rectangular and linear regular lattices.
+It loosesly follows the implementation described in the 3GPP TR 38.901 [38901]_,
+considering only a single a single panel, i.e., :math:`N_{g} = M_{g} = 1`.
+
 By default, the array is orthogonal to the x-axis, pointing towards the positive
 direction, but the orientation can be changed through the attributes "BearingAngle",
 which adjusts the azimuth angle, and "DowntiltAngle", which adjusts the elevation angle.
-The spacing between the horizontal and vertical elements can be configured through
-the attributes "AntennaHorizontalSpacing" and "AntennaVerticalSpacing". 
+The slant angle is instead fixed and assumed to be 0.
 
-**Note:**
+The number of antenna elements in the vertical and horizontal directions can be configured
+through the attributes "NumRows" and "NumColumns", while the spacing between the horizontal
+and vertical elements can be configured through the attributes "AntennaHorizontalSpacing"
+and "AntennaVerticalSpacing". 
 
-  * Currently, the model does not support multi-panel antennas, i.e., 
-    :math:`N_{g} = M_{g} = 1`.
+Note: vertical polarization is assumed for each antenna element, as described in [38901]_ (i.e., :math:`{\zeta = 0}`).
 
-  * Currently, the model supports only single polarized (i.e., P = 1) antenna 
-    panels with vertical polarization (i.e., :math:`{\zeta = 0}`)
-  
 
 .. [Balanis] C.A. Balanis, "Antenna Theory - Analysis and Design",  Wiley, 2nd Ed.
 

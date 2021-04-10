@@ -28,48 +28,89 @@
 namespace ns3 {
 
 /**
- * 
- * \brief Cosine Antenna Model 
  *
- * This class implements the cosine model as described in:
+ * \brief Cosine Antenna Model
  *
- * Li Chunjian, "Efficient Antenna Patterns for Three-Sector WCDMA Systems"
+ * This class implements the cosine model, similarly to what is described in:
+ * Cosine Antenna Element, Mathworks, Phased Array System Toolbox (Sep. 2020)
+ * Available online: https://www.mathworks.com/help/phased/ug/cosine-antenna-element.html
  *
- * Note that only the element factor of the above model is
- * considered. Also, an additional constant gain is added to model the
- * radiation pattern on the vertical plane (to account for the fact
- * that the elevation angle is not included in the model).
+ * The power pattern of the element is equal to:
+  // P(az,el) = cos(az/2)^2m * cos(pi/2 - incl/2)^2n,
+  // where az is the azimuth angle, and incl is the inclination angle.
+ *
+ * Differently from the source, the response is defined for azimuth and elevation angles
+ * between –180 and 180 degrees and is always positive.
+ * There is no response at the backside of a cosine antenna.
+ * The cosine response pattern achieves a maximum value of 1 (0 dB) at 0 degrees azimuth
+ * and 90 degrees inclination.
+ * An extra settable gain is added to the original model, to improve its generality.
  */
 class CosineAntennaModel : public AntennaModel
 {
 public:
-
   // inherited from Object
   static TypeId GetTypeId ();
 
   // inherited from AntennaModel
   virtual double GetGainDb (Angles a);
 
+  /**
+   * Get the vertical 3 dB beamwidth of the cosine antenna model.
+   * \return the vertical beamwidth in degrees
+   */
+  double GetVerticalBeamwidth (void) const;
 
-  // attribute getters/setters
-  void SetBeamwidth (double beamwidthDegrees);
-  double GetBeamwidth () const;
-  void SetOrientation (double orientationDegrees);
-  double GetOrientation () const;
+  /**
+   * Get the horizontal 3 dB beamwidth of the cosine antenna model.
+   * \return the horizontal beamwidth in degrees
+   */
+  double GetHorizontalBeamwidth (void) const;
+
+  /**
+   * Get the horizontal orientation of the antenna element.
+   * \return the horizontal orientation in degrees
+   */
+  double GetOrientation (void) const;
 
 private:
 
   /**
-   * this is the variable "n" in the paper by Chunjian
-   * 
+   * Set the vertical 3 dB beamwidth (bilateral) of the cosine antenna model.
+   * \param verticalBeamwidthDegrees the vertical beamwidth in degrees
    */
-  double m_exponent; 
+  void SetVerticalBeamwidth (double verticalBeamwidthDegrees);
 
-  double m_beamwidthRadians;
+  /**
+   * Set the horizontal 3 dB beamwidth (bilateral) of the cosine antenna model.
+   * \param horizontalBeamwidthDegrees the horizontal beamwidth in degrees
+   */
+  void SetHorizontalBeamwidth (double horizontalBeamwidthDegrees);
 
-  double m_orientationRadians;
+  /**
+   * Set the horizontal orientation of the antenna element.
+   * \param orientationDegrees the horizontal orientation in degrees
+   */
+  void SetOrientation (double orientationDegrees);
 
-  double m_maxGain;
+  /**
+   * Compute the exponent of the cosine antenna model from the beamwidth
+   * \param beamwidthRadians the beamwidth in degrees
+   * \return the exponent
+   */
+  static double GetExponentFromBeamwidth (double beamwidthDegrees);
+  
+  /**
+   * Compute the beamwidth of the cosine antenna model from the exponent
+   * \param exponent the exponent
+   * \return beamwidth in degrees
+   */
+  static double GetBeamwidthFromExponent (double exponent);
+
+  double m_verticalExponent;            //!< exponent of the vertical direction
+  double m_horizontalExponent;          //!< exponent of the horizontal direction
+  double m_orientationRadians;          //!< orientation in radians in the horizontal direction (bearing)
+  double m_maxGain;                     //!< antenna gain in dB towards the main orientation
 };
 
 

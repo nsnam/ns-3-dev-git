@@ -37,7 +37,7 @@ using std::vector;
 int
 main (int argc, char *argv[])
 {
-  CommandLine cmd (__FILE__);
+  CommandLine cmd;
   cmd.Parse (argc, argv);
 
   ConfigStore inputConfig;
@@ -178,20 +178,20 @@ main (int argc, char *argv[])
   // Beam width is made quite narrow so sectors can be noticed in the REM
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (0));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
-  lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
+  lteHelper->SetEnbAntennaModelAttribute ("HorizontalBeamwidth", DoubleValue (100));
+  lteHelper->SetEnbAntennaModelAttribute ("MaxGain", DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (0)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
-  lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
+  lteHelper->SetEnbAntennaModelAttribute ("HorizontalBeamwidth", DoubleValue (100));
+  lteHelper->SetEnbAntennaModelAttribute ("MaxGain", DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (1)));
 
   lteHelper->SetEnbAntennaModelType ("ns3::CosineAntennaModel");
   lteHelper->SetEnbAntennaModelAttribute ("Orientation", DoubleValue (2*360/3));
-  lteHelper->SetEnbAntennaModelAttribute ("Beamwidth",   DoubleValue (100));
-  lteHelper->SetEnbAntennaModelAttribute ("MaxGain",     DoubleValue (0.0));
+  lteHelper->SetEnbAntennaModelAttribute ("HorizontalBeamwidth", DoubleValue (100));
+  lteHelper->SetEnbAntennaModelAttribute ("MaxGain", DoubleValue (0.0));
   enbDevs.Add ( lteHelper->InstallEnbDevice (threeSectorNodes.Get (2)));
 
   for (uint32_t i = 0; i < nEnb; i++)
@@ -205,7 +205,7 @@ main (int argc, char *argv[])
     }
 
   // by default, simulation will anyway stop right after the REM has been generated
-  Simulator::Stop (Seconds (0.0069));  
+  Simulator::Stop (Seconds (0.0069));
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
   remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));

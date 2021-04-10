@@ -41,7 +41,7 @@
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include <fstream>
-#include "ns3/three-gpp-antenna-array-model.h"
+#include "ns3/uniform-planar-array.h"
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/three-gpp-v2v-propagation-loss-model.h"
 #include "ns3/three-gpp-channel-model.h"
@@ -61,9 +61,9 @@ static Ptr<ChannelConditionModel> m_condModel; //!< the ChannelConditionModel ob
  * \param otherDevice the device towards which point the beam
  */
 static void
-DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAntenna, Ptr<NetDevice> otherDevice)
+DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<PhasedArrayModel> thisAntenna, Ptr<NetDevice> otherDevice)
 {
-  ThreeGppAntennaArrayModel::ComplexVector antennaWeights;
+  PhasedArrayModel::ComplexVector antennaWeights;
 
   // retrieve the position of the two devices
   Vector aPos = thisDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
@@ -72,31 +72,8 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAnt
   // compute the azimuth and the elevation angles
   Angles completeAngle (bPos,aPos);
 
-  double hAngleRadian = fmod (completeAngle.phi, 2.0 * M_PI); // the azimuth angle
-  if (hAngleRadian < 0)
-    {
-      hAngleRadian += 2.0 * M_PI;
-    }
-  double vAngleRadian = completeAngle.theta; // the elevation angle
-
-  // retrieve the number of antenna elements
-  int totNoArrayElements = thisAntenna->GetNumberOfElements ();
-
-  // the total power is divided equally among the antenna elements
-  double power = 1 / sqrt (totNoArrayElements);
-
-  // compute the antenna weights
-  for (int ind = 0; ind < totNoArrayElements; ind++)
-    {
-      Vector loc = thisAntenna->GetElementLocation (ind);
-      double phase = -2 * M_PI * (sin (vAngleRadian) * cos (hAngleRadian) * loc.x
-                                  + sin (vAngleRadian) * sin (hAngleRadian) * loc.y
-                                  + cos (vAngleRadian) * loc.z);
-      antennaWeights.push_back (exp (std::complex<double> (0, phase)) * power);
-    }
-
-  // store the antenna weights
-  thisAntenna->SetBeamformingVector (antennaWeights);
+  PhasedArrayModel::ComplexVector bf = thisAntenna->GetBeamformingVector (completeAngle);
+  thisAntenna->SetBeamformingVector (bf);
 }
 
 /**
@@ -212,8 +189,8 @@ main (int argc, char *argv[])
   rxDev->SetNode (nodes.Get (1));
 
   // create the antenna objects and set their dimensions
-  Ptr<ThreeGppAntennaArrayModel> txAntenna = CreateObjectWithAttributes<ThreeGppAntennaArrayModel> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2), "BearingAngle", DoubleValue (-M_PI / 2));
-  Ptr<ThreeGppAntennaArrayModel> rxAntenna = CreateObjectWithAttributes<ThreeGppAntennaArrayModel> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2), "BearingAngle", DoubleValue (M_PI / 2));
+  Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2), "BearingAngle", DoubleValue (-M_PI / 2));
+  Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2), "BearingAngle", DoubleValue (M_PI / 2));
 
   Ptr<MobilityModel> txMob;
   Ptr<MobilityModel> rxMob;

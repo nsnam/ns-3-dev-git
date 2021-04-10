@@ -117,8 +117,8 @@ public:
    */
   Ptr<const ChannelMatrix> GetChannel (Ptr<const MobilityModel> aMob,
                                        Ptr<const MobilityModel> bMob,
-                                       Ptr<const ThreeGppAntennaArrayModel> aAntenna,
-                                       Ptr<const ThreeGppAntennaArrayModel> bAntenna) override;
+                                       Ptr<const PhasedArrayModel> aAntenna,
+                                       Ptr<const PhasedArrayModel> bAntenna) override;
   /**
    * \brief Assign a fixed random variable stream number to the random variables
    * used by this model.
@@ -129,6 +129,20 @@ public:
   int64_t AssignStreams (int64_t stream);
   
 private:
+  /**
+   * Wrap an (azimuth, inclination) angle pair in a valid range.
+   * Specifically, inclination must be in [0, M_PI] and azimuth in [0, 2*M_PI).
+   * If the inclination angle is outside of its range, the azimuth angle is
+   * rotated by M_PI.
+   * This methods aims specifically at solving the problem of generating angles at
+   * the boundaries of the angle domain, specifically, generating angle distributions
+   * close to inclinationRad=0 and inclinationRad=M_PI.
+   *
+   * \param azimuthRad the azimuth angle in radians
+   * \param inclinationRad the inclination angle in radians
+   * \return the wrapped (azimuth, inclination) angle pair in radians
+   */
+  static std::pair<double, double> WrapAngles (double azimuthRad, double inclinationRad);
   /**
    * \brief Shuffle the elements of a simple sequence container of type double
    * \param first Pointer to the first element among the elements to be shuffled
@@ -217,8 +231,8 @@ private:
    * \return the channel realization
    */
   Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, Ptr<const ChannelCondition> channelCondition,
-                                            Ptr<const ThreeGppAntennaArrayModel> sAntenna,
-                                            Ptr<const ThreeGppAntennaArrayModel> uAntenna,
+                                            Ptr<const PhasedArrayModel> sAntenna,
+                                            Ptr<const PhasedArrayModel> uAntenna,
                                             Angles &uAngle, Angles &sAngle,
                                             double dis2D, double hBS, double hUT) const;
 

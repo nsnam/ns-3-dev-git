@@ -93,7 +93,7 @@ ParabolicAntennaModel::GetGainDb (Angles a)
 {
   NS_LOG_FUNCTION (this << a);
   // azimuth angle w.r.t. the reference system of the antenna
-  double phi = a.phi - m_orientationRadians;
+  double phi = a.GetAzimuth () - m_orientationRadians;
 
   // make sure phi is in (-pi, pi]
   while (phi <= -M_PI)

@@ -22,7 +22,7 @@
 
 #include "three-gpp-channel-model.h"
 #include "ns3/log.h"
-#include "ns3/three-gpp-antenna-array-model.h"
+#include "ns3/phased-array-model.h"
 #include "ns3/node.h"
 #include "ns3/double.h"
 #include "ns3/string.h"
@@ -970,8 +970,8 @@ ThreeGppChannelModel::ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix>
 Ptr<const MatrixBasedChannelModel::ChannelMatrix>
 ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
                                   Ptr<const MobilityModel> bMob,
-                                  Ptr<const ThreeGppAntennaArrayModel> aAntenna,
-                                  Ptr<const ThreeGppAntennaArrayModel> bAntenna)
+                                  Ptr<const PhasedArrayModel> aAntenna,
+                                  Ptr<const PhasedArrayModel> bAntenna)
 {
   NS_LOG_FUNCTION (this);
 
@@ -1038,8 +1038,8 @@ ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
 
 Ptr<ThreeGppChannelModel::ThreeGppChannelMatrix>
 ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> channelCondition,
-                                     Ptr<const ThreeGppAntennaArrayModel> sAntenna,
-                                     Ptr<const ThreeGppAntennaArrayModel> uAntenna,
+                                     Ptr<const PhasedArrayModel> sAntenna,
+                                     Ptr<const PhasedArrayModel> uAntenna,
                                      Angles &uAngle, Angles &sAngle,
                                      double dis2D, double hBS, double hUT) const
 {
@@ -1333,17 +1333,17 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
         {
           Xn = -1;
         }
-      clusterAoa[cIndex] = clusterAoa[cIndex] * Xn + (m_normalRv->GetValue () * ASA / 7) + uAngle.phi * 180 / M_PI;        //(7.5-11)
-      clusterAod[cIndex] = clusterAod[cIndex] * Xn + (m_normalRv->GetValue () * ASD / 7) + sAngle.phi * 180 / M_PI;
+      clusterAoa[cIndex] = clusterAoa[cIndex] * Xn + (m_normalRv->GetValue () * ASA / 7) + RadiansToDegrees (uAngle.GetAzimuth ());        //(7.5-11)
+      clusterAod[cIndex] = clusterAod[cIndex] * Xn + (m_normalRv->GetValue () * ASD / 7) + RadiansToDegrees (sAngle.GetAzimuth ());
       if (o2i)
         {
           clusterZoa[cIndex] = clusterZoa[cIndex] * Xn + (m_normalRv->GetValue () * ZSA / 7) + 90;            //(7.5-16)
         }
       else
         {
-          clusterZoa[cIndex] = clusterZoa[cIndex] * Xn + (m_normalRv->GetValue () * ZSA / 7) + uAngle.theta * 180 / M_PI;            //(7.5-16)
+          clusterZoa[cIndex] = clusterZoa[cIndex] * Xn + (m_normalRv->GetValue () * ZSA / 7) + RadiansToDegrees (uAngle.GetInclination ());            //(7.5-16)
         }
-      clusterZod[cIndex] = clusterZod[cIndex] * Xn + (m_normalRv->GetValue () * ZSD / 7) + sAngle.theta * 180 / M_PI + table3gpp->m_offsetZOD;        //(7.5-19)
+      clusterZod[cIndex] = clusterZod[cIndex] * Xn + (m_normalRv->GetValue () * ZSD / 7) + RadiansToDegrees (sAngle.GetInclination ()) + table3gpp->m_offsetZOD;        //(7.5-19)
 
     }
 
@@ -1351,10 +1351,10 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
     {
       //The 7.5-12 can be rewrite as Theta_n,ZOA = Theta_n,ZOA - (Theta_1,ZOA - Theta_LOS,ZOA) = Theta_n,ZOA - diffZOA,
       //Similar as AOD, ZSA and ZSD.
-      double diffAoa = clusterAoa[0] - uAngle.phi * 180 / M_PI;
-      double diffAod = clusterAod[0] - sAngle.phi * 180 / M_PI;
-      double diffZsa = clusterZoa[0] - uAngle.theta * 180 / M_PI;
-      double diffZsd = clusterZod[0] - sAngle.theta * 180 / M_PI;
+      double diffAoa = clusterAoa[0] - RadiansToDegrees (uAngle.GetAzimuth ());
+      double diffAod = clusterAod[0] - RadiansToDegrees (sAngle.GetAzimuth ());
+      double diffZsa = clusterZoa[0] - RadiansToDegrees (uAngle.GetInclination ());
+      double diffZsd = clusterZod[0] - RadiansToDegrees (sAngle.GetInclination ());
 
       for (uint8_t cIndex = 0; cIndex < numReducedCluster; cIndex++)
         {
@@ -1376,69 +1376,12 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
       for (uint8_t mInd = 0; mInd < raysPerCluster; mInd++)
         {
           double tempAoa = clusterAoa[nInd] + table3gpp->m_cASA * offSetAlpha[mInd]; //(7.5-13)
-          while (tempAoa > 360)
-            {
-              tempAoa -= 360;
-            }
-
-          while (tempAoa < 0)
-            {
-              tempAoa += 360;
-
-            }
-          NS_ASSERT_MSG (tempAoa >= 0 && tempAoa <= 360, "the AOA should be the range of [0,360]");
-          rayAoa_radian[nInd][mInd] = tempAoa * M_PI / 180;
-
-          double tempAod = clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd];
-          while (tempAod > 360)
-            {
-              tempAod -= 360;
-            }
-
-          while (tempAod < 0)
-            {
-              tempAod += 360;
-            }
-          NS_ASSERT_MSG (tempAod >= 0 && tempAod <= 360, "the AOD should be the range of [0,360]");
-          rayAod_radian[nInd][mInd] = tempAod * M_PI / 180;
-
           double tempZoa = clusterZoa[nInd] + table3gpp->m_cZSA * offSetAlpha[mInd]; //(7.5-18)
+          std::tie (rayAoa_radian[nInd][mInd], rayZoa_radian[nInd][mInd]) = WrapAngles (DegreesToRadians (tempAoa), DegreesToRadians (tempZoa));
 
-          while (tempZoa > 360)
-            {
-              tempZoa -= 360;
-            }
-
-          while (tempZoa < 0)
-            {
-              tempZoa += 360;
-            }
-
-          if (tempZoa > 180)
-            {
-              tempZoa = 360 - tempZoa;
-            }
-
-          NS_ASSERT_MSG (tempZoa >= 0&&tempZoa <= 180, "the ZOA should be the range of [0,180]");
-          rayZoa_radian[nInd][mInd] = tempZoa * M_PI / 180;
-
-          double tempZod = clusterZod[nInd] + 0.375 * pow (10,table3gpp->m_uLgZSD) * offSetAlpha[mInd];             //(7.5-20)
-
-          while (tempZod > 360)
-            {
-              tempZod -= 360;
-            }
-
-          while (tempZod < 0)
-            {
-              tempZod += 360;
-            }
-          if (tempZod > 180)
-            {
-              tempZod = 360 - tempZod;
-            }
-          NS_ASSERT_MSG (tempZod >= 0&&tempZod <= 180, "the ZOD should be the range of [0,180]");
-          rayZod_radian[nInd][mInd] = tempZod * M_PI / 180;
+          double tempAod = clusterAod[nInd] + table3gpp->m_cASD * offSetAlpha[mInd]; //(7.5-13)
+          double tempZod = clusterZod[nInd] + 0.375 * pow (10,table3gpp->m_uLgZSD) * offSetAlpha[mInd]; //(7.5-20)
+          std::tie (rayAod_radian[nInd][mInd], rayZod_radian[nInd][mInd]) = WrapAngles (DegreesToRadians (tempAod), DegreesToRadians (tempZod));
         }
     }
   DoubleVector angle_degree;
@@ -1712,16 +1655,16 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
           if (los) //(7.5-29) && (7.5-30)
             {
               std::complex<double> ray (0,0);
-              double rxPhaseDiff = 2 * M_PI * (sin (uAngle.theta) * cos (uAngle.phi) * uLoc.x
-                                               + sin (uAngle.theta) * sin (uAngle.phi) * uLoc.y
-                                               + cos (uAngle.theta) * uLoc.z);
-              double txPhaseDiff = 2 * M_PI * (sin (sAngle.theta) * cos (sAngle.phi) * sLoc.x
-                                               + sin (sAngle.theta) * sin (sAngle.phi) * sLoc.y
-                                               + cos (sAngle.theta) * sLoc.z);
+              double rxPhaseDiff = 2 * M_PI * (sin (uAngle.GetInclination ()) * cos (uAngle.GetAzimuth ()) * uLoc.x
+                                               + sin (uAngle.GetInclination ()) * sin (uAngle.GetAzimuth ()) * uLoc.y
+                                               + cos (uAngle.GetInclination ()) * uLoc.z);
+              double txPhaseDiff = 2 * M_PI * (sin (sAngle.GetInclination ()) * cos (sAngle.GetAzimuth ()) * sLoc.x
+                                               + sin (sAngle.GetInclination ()) * sin (sAngle.GetAzimuth ()) * sLoc.y
+                                               + cos (sAngle.GetInclination ()) * sLoc.z);
 
               double rxFieldPatternPhi, rxFieldPatternTheta, txFieldPatternPhi, txFieldPatternTheta;
-              std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (uAngle.phi, uAngle.theta));
-              std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (sAngle.phi, sAngle.theta));
+              std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (uAngle.GetAzimuth (), uAngle.GetInclination ()));
+              std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (sAngle.GetAzimuth (), sAngle.GetInclination ()));
 
               double lambda = 3e8 / m_frequency; // the wavelength of the carrier frequency
 
@@ -1814,6 +1757,27 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
   channelParams->m_angle.push_back (clusterZod);
 
   return channelParams;
+}
+
+std::pair<double, double>
+ThreeGppChannelModel::WrapAngles (double azimuthRad, double inclinationRad)
+{
+  inclinationRad = WrapTo2Pi (inclinationRad);
+  if (inclinationRad > M_PI)
+  {
+    // inclination must be in [0, M_PI]
+    inclinationRad -= M_PI;
+    azimuthRad += M_PI;
+  }
+
+  azimuthRad = WrapTo2Pi (azimuthRad);
+
+  NS_ASSERT_MSG (0 <= inclinationRad && inclinationRad <= M_PI,
+                 "inclinationRad=" << inclinationRad << " not valid, should be in [0, pi]");
+  NS_ASSERT_MSG (0 <= azimuthRad && azimuthRad <= 2 * M_PI,
+                 "azimuthRad=" << azimuthRad << " not valid, should be in [0, 2*pi]");
+
+  return std::make_pair (azimuthRad, inclinationRad);
 }
 
 MatrixBasedChannelModel::DoubleVector
@@ -2018,13 +1982,13 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage (Ptr<ThreeGppChannelModel::Three
                 }
               double lambda = 3e8 / m_frequency;
               double F_A1 = atan (signA1 * M_PI / 2 * sqrt (M_PI / lambda *
-                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (A1 * M_PI / 180) - 1))) / M_PI; //(7.6-23)
+                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (DegreesToRadians (A1)) - 1))) / M_PI; //(7.6-23)
               double F_A2 = atan (signA2 * M_PI / 2 * sqrt (M_PI / lambda *
-                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (A2 * M_PI / 180) - 1))) / M_PI;
+                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (DegreesToRadians (A2)) - 1))) / M_PI;
               double F_Z1 = atan (signZ1 * M_PI / 2 * sqrt (M_PI / lambda *
-                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (Z1 * M_PI / 180) - 1))) / M_PI;
+                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (DegreesToRadians (Z1)) - 1))) / M_PI;
               double F_Z2 = atan (signZ2 * M_PI / 2 * sqrt (M_PI / lambda *
-                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (Z2 * M_PI / 180) - 1))) / M_PI;
+                                                            params->m_nonSelfBlocking[blockInd][R_INDEX] * (1 / cos (DegreesToRadians (Z2)) - 1))) / M_PI;
               double L_dB = -20 * log10 (1 - (F_A1 + F_A2) * (F_Z1 + F_Z2));                  //(7.6-22)
               powerAttenuation[cInd] += L_dB;
               NS_LOG_INFO ("Cluster[" << (int)cInd << "] is blocked by no-self blocking, "

@@ -30,7 +30,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/three-gpp-channel-model.h"
-#include "ns3/three-gpp-antenna-array-model.h"
+#include "ns3/uniform-planar-array.h"
 #include <fstream>
 #include "ns3/three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/net-device.h"
@@ -57,9 +57,9 @@ static Ptr<ThreeGppSpectrumPropagationLossModel> m_spectrumLossModel; //!< the S
  * \param otherDevice the device towards which point the beam
  */
 static void
-DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAntenna, Ptr<NetDevice> otherDevice)
+DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<PhasedArrayModel> thisAntenna, Ptr<NetDevice> otherDevice)
 {
-  ThreeGppAntennaArrayModel::ComplexVector antennaWeights;
+  PhasedArrayModel::ComplexVector antennaWeights;
 
   // retrieve the position of the two devices
   Vector aPos = thisDevice->GetNode ()->GetObject<MobilityModel> ()->GetPosition ();
@@ -67,13 +67,9 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<ThreeGppAntennaArrayModel> thisAnt
 
   // compute the azimuth and the elevation angles
   Angles completeAngle (bPos,aPos);
-
-  double hAngleRadian = fmod (completeAngle.phi, 2.0 * M_PI); // the azimuth angle
-  if (hAngleRadian < 0)
-  {
-    hAngleRadian += 2.0 * M_PI;     
-  } 
-  double vAngleRadian = completeAngle.theta; // the elevation angle
+  double hAngleRadian = completeAngle.GetAzimuth ();
+  
+  double vAngleRadian = completeAngle.GetInclination (); // the elevation angle
 
   // retrieve the number of antenna elements
   int totNoArrayElements = thisAntenna->GetNumberOfElements ();
@@ -232,8 +228,8 @@ main (int argc, char *argv[])
   nodes.Get (1)->AggregateObject (rxMob);
 
   // create the antenna objects and set their dimensions
-  Ptr<ThreeGppAntennaArrayModel> txAntenna = CreateObjectWithAttributes<ThreeGppAntennaArrayModel> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
-  Ptr<ThreeGppAntennaArrayModel> rxAntenna = CreateObjectWithAttributes<ThreeGppAntennaArrayModel> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
+  Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
+  Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
 
   // initialize the devices in the ThreeGppSpectrumPropagationLossModel
   m_spectrumLossModel->AddDevice (txDev, txAntenna);

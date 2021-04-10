@@ -10,7 +10,9 @@ def build(bld):
         'model/isotropic-antenna-model.cc',
         'model/cosine-antenna-model.cc',
         'model/parabolic-antenna-model.cc',
-        'model/three-gpp-antenna-array-model.cc',
+        'model/three-gpp-antenna-model.cc',
+        'model/phased-array-model.cc',
+        'model/uniform-planar-array.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('antenna')
@@ -20,6 +22,7 @@ def build(bld):
         'test/test-isotropic-antenna.cc',
         'test/test-cosine-antenna.cc',
         'test/test-parabolic-antenna.cc',
+        'test/test-uniform-planar-array.cc',
         ]
 
     # Tests encapsulating example programs should be listed here
@@ -36,7 +39,9 @@ def build(bld):
         'model/isotropic-antenna-model.h',
         'model/cosine-antenna-model.h',
         'model/parabolic-antenna-model.h',
-        'model/three-gpp-antenna-array-model.h',
+        'model/three-gpp-antenna-model.h',
+        'model/phased-array-model.h',
+        'model/uniform-planar-array.h',
         ]
 
     bld.ns3_python_bindings()

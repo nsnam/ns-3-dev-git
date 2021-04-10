@@ -586,8 +586,6 @@ the given geographic origin point, and is tested in the ``rand-cart-around-geo``
 test suite by verifying that the generated points do not exceed the given
 maximum distance radius from the origin point.
 
-.. _sec-3gpp-fast-fading-model: 
-
 3GPP TR 38.901 fast fading model
 ================================
 The framework described by TR 38.901 [TR38901]_ is a 3D statistical Spatial
@@ -634,12 +632,12 @@ ThreeGppChannelModel and ThreeGppSpectrumPropagationLossModel.
   * Issue regarding the blockage model: according to 3GPP TR 38.901 v15.0.0
     (2018-06) section 7.6.4.1, the blocking region for self-blocking is provided
     in LCS.
-  
+
     However, here, clusterAOA and clusterZOA are in GCS and blocking check is
     performed for self-blocking similar to non-self blocking, that is in GCS.
     One would expect the angles to be transposed to LCS before checking
     self-blockage.
-  
+
 
 ThreeGppSpectrumPropagationLossModel
 ####################################
@@ -660,7 +658,7 @@ The method DoCalcRxPowerSpectralDensity uses m_deviceAntennaMap to obtain the
 antenna objects associated to the transmitting and receiving devices, and calls
 the method GetCurrentBeamformingVector to retrieve the beamforming vectors.
 For each device using the channel, the m_deviceAntennaMap contains the associated
-antenna object of type ThreeGppAntennaArrayModel. Since the mapping is one-to-one,
+antenna object of type PhasedArrayModel. Since the mapping is one-to-one,
 the model supports a single antenna object for each device.
 The m_deviceAntennaMap has to be initialized by inserting the device-antenna
 pairs using the method AddDevice.
@@ -697,6 +695,7 @@ This is done by deviating the Doppler frequency by a random value, whose
 distribution depends on the parameter :math:`v_{scatt}`. 
 The value of :math:`v_{scatt}` can be configured using the attribute "vScatt" 
 (by default it is set to 0, so that the scattering effect is not considered). 
+
 
 ThreeGppChannelModel
 ####################
@@ -760,7 +759,7 @@ The test suite ThreeGppChannelTestSuite includes three test cases:
   of the class ThreeGppSpectrumPropagationLossModel. It builds a simple
   network composed of two nodes, computes the power spectral density
   received by the receiving node, and
-  
+
     1. Checks if the long term components for the direct and
        the reverse link are the same,
     2. Checks if the long term component is updated when changing
