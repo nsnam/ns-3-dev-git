@@ -177,6 +177,8 @@ inline std::ostream& operator<< (std::ostream& os, WifiStandard standard)
       return (os << "802.11ax-2.4GHz");
     case WIFI_STANDARD_80211ax_5GHZ:
       return (os << "802.11ax-5GHz");
+    case WIFI_STANDARD_80211ax_6GHZ:
+      return (os << "802.11ax-6GHz");
     default:
       return (os << "UNSPECIFIED");
     }

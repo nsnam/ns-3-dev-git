@@ -40,6 +40,22 @@
 namespace ns3 {
 
 /**
+ * These constants define the various convolutional coding rates
+ * used for the OFDM transmission modes in the IEEE 802.11
+ * standard. DSSS (for example) rates which do not have an explicit
+ * coding stage in their generation should have this parameter set to
+ * WIFI_CODE_RATE_UNDEFINED.
+ * \note This typedef and constants could be converted to an enum or scoped
+ * enum if pybindgen is upgraded to support Callback<WifiCodeRate>
+ */
+typedef uint16_t WifiCodeRate;
+const uint16_t WIFI_CODE_RATE_UNDEFINED = 0;
+const uint16_t WIFI_CODE_RATE_1_2 = 1;
+const uint16_t WIFI_CODE_RATE_2_3 = 2;
+const uint16_t WIFI_CODE_RATE_3_4 = 3;
+const uint16_t WIFI_CODE_RATE_5_6 = 4;
+
+/**
  * \ingroup wifi
  * The type of preamble to be used by an IEEE 802.11 transmission
  */
@@ -104,10 +120,10 @@ enum WifiModulationClass
   WIFI_MOD_CLASS_UNKNOWN = 0,
   WIFI_MOD_CLASS_DSSS,     //!< DSSS (Clause 15)
   WIFI_MOD_CLASS_HR_DSSS,  //!< HR/DSSS (Clause 16)
-  WIFI_MOD_CLASS_ERP_OFDM, //:< ERP-OFDM (18.4)
+  WIFI_MOD_CLASS_ERP_OFDM, //!< ERP-OFDM (18.4)
   WIFI_MOD_CLASS_OFDM,     //!< OFDM (Clause 17)
   WIFI_MOD_CLASS_HT,       //!< HT (Clause 19)
-  WIFI_MOD_CLASS_VHT,      //!< VHT (Clause 21)
+  WIFI_MOD_CLASS_VHT,      //!< VHT (Clause 22)
   WIFI_MOD_CLASS_HE        //!< HE (Clause 27)
 };
 
