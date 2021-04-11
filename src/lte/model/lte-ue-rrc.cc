@@ -1345,8 +1345,6 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
 {
   NS_LOG_FUNCTION (this);
 
-  m_sCellToAddModList = nonCec.sCellsToAddModList;
-
   for (std::list<LteRrcSap::SCellToAddMod>::iterator it = nonCec.sCellsToAddModList.begin (); it != nonCec.sCellsToAddModList.end (); it++)
     {
       LteRrcSap::SCellToAddMod scell = *it;
@@ -1374,8 +1372,6 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
       m_cphySapProvider.at (ccId)->SetPa (paDouble);
       m_cphySapProvider.at (ccId)->SetSrsConfigurationIndex (srsIndex);
     }
-
-  m_sCarrierConfiguredTrace (this, m_sCellToAddModList);
 }
 
 void
