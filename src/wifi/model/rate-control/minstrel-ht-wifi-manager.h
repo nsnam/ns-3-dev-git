@@ -212,23 +212,23 @@ public:
 
 private:
   // Overridden from base class.
-  void DoInitialize (void);
-  WifiRemoteStation * DoCreateStation (void) const;
+  void DoInitialize (void) override;
+  WifiRemoteStation * DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,
-                     double rxSnr, WifiMode txMode);
-  void DoReportRtsFailed (WifiRemoteStation *station);
-  void DoReportDataFailed (WifiRemoteStation *station);
+                     double rxSnr, WifiMode txMode) override;
+  void DoReportRtsFailed (WifiRemoteStation *station) override;
+  void DoReportDataFailed (WifiRemoteStation *station) override;
   void DoReportRtsOk (WifiRemoteStation *station,
-                      double ctsSnr, WifiMode ctsMode, double rtsSnr);
+                      double ctsSnr, WifiMode ctsMode, double rtsSnr) override;
   void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
-                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
-  void DoReportFinalRtsFailed (WifiRemoteStation *station);
-  void DoReportFinalDataFailed (WifiRemoteStation *station);
-  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
-  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
+                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
+  void DoReportFinalRtsFailed (WifiRemoteStation *station) override;
+  void DoReportFinalDataFailed (WifiRemoteStation *station) override;
+  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station) override;
+  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) override;
   void DoReportAmpduTxStatus (WifiRemoteStation *station, uint16_t nSuccessfulMpdus, uint16_t nFailedMpdus,
-                              double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
-  bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
+                              double rxSnr, double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
+  bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally) override;
 
   /**
    * Check the validity of a combination of number of streams, chWidth and mode.

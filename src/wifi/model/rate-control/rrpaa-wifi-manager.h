@@ -83,8 +83,8 @@ public:
   virtual ~RrpaaWifiManager ();
 
   // Inherited from WifiRemoteStationManager
-  virtual void SetupPhy (const Ptr<WifiPhy> phy);
-  virtual void SetupMac (const Ptr<WifiMac> mac);
+  void SetupPhy (const Ptr<WifiPhy> phy) override;
+  void SetupMac (const Ptr<WifiMac> mac) override;
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -95,26 +95,26 @@ public:
    *
    * \return the number of stream indices assigned by this model
    */
-  int64_t AssignStreams (int64_t stream);
+  int64_t AssignStreams (int64_t stream) override;
 
 private:
   // Overridden from base class.
-  void DoInitialize (void);
-  virtual WifiRemoteStation * DoCreateStation (void) const;
-  virtual void DoReportRxOk (WifiRemoteStation *station,
-                             double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (WifiRemoteStation *station);
-  virtual void DoReportDataFailed (WifiRemoteStation *station);
-  virtual void DoReportRtsOk (WifiRemoteStation *station,
-                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
-                               double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss);
-  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
-  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
-  virtual WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
-  virtual WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
-  virtual bool DoNeedRts (WifiRemoteStation *st,
-                          uint32_t size, bool normally);
+  void DoInitialize (void) override;
+  WifiRemoteStation * DoCreateStation (void) const override;
+  void DoReportRxOk (WifiRemoteStation *station,
+                     double rxSnr, WifiMode txMode) override;
+  void DoReportRtsFailed (WifiRemoteStation *station) override;
+  void DoReportDataFailed (WifiRemoteStation *station) override;
+  void DoReportRtsOk (WifiRemoteStation *station,
+                      double ctsSnr, WifiMode ctsMode, double rtsSnr) override;
+  void DoReportDataOk (WifiRemoteStation *station, double ackSnr, WifiMode ackMode,
+                       double dataSnr, uint16_t dataChannelWidth, uint8_t dataNss) override;
+  void DoReportFinalRtsFailed (WifiRemoteStation *station) override;
+  void DoReportFinalDataFailed (WifiRemoteStation *station) override;
+  WifiTxVector DoGetDataTxVector (WifiRemoteStation *station) override;
+  WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station) override;
+  bool DoNeedRts (WifiRemoteStation *st,
+                  uint32_t size, bool normally) override;
 
   /**
    * Check for initializations.
