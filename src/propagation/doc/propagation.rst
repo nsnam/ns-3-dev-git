@@ -37,10 +37,11 @@ The following propagation loss models are implemented:
    * ThreeLogDistancePropagationLossModel
    * TwoRayGroundPropagationLossModel
    * ThreeGppPropagationLossModel
-   * ThreeGppRMaPropagationLossModel
-   * ThreeGppUMaPropagationLossModel
-   * ThreeGppUmiStreetCanyonPropagationLossModel
-   * ThreeGppIndoorOfficePropagationLossModel
+
+      * ThreeGppRMaPropagationLossModel
+      * ThreeGppUMaPropagationLossModel
+      * ThreeGppUmiStreetCanyonPropagationLossModel
+      * ThreeGppIndoorOfficePropagationLossModel
 
 Other models could be available thanks to other modules, e.g., the ``building`` module.
 
