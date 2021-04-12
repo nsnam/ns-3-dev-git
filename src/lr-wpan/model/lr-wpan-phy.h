@@ -51,7 +51,7 @@ typedef struct
 {
   double averagePower;    //!< Average measured power
   Time lastUpdate;        //!< Last update time
-  Time measurementLength; //!< Total measuremement period
+  Time measurementLength; //!< Total measurement period
 } LrWpanEdPower;
 
 /**
@@ -158,7 +158,7 @@ typedef struct
 {
   uint8_t phyCurrentChannel;         //!< The RF channel to use
   uint32_t phyChannelsSupported[32]; //!< BitField representing the available channels supported by a channel page.
-  uint8_t phyTransmitPower;          //!< Transmit power
+  uint8_t phyTransmitPower;          //!< 2 MSB: tolerance on the transmit power, 6 LSB: Tx power in dBm relative to 1mW (signed int in 2-complement format)
   uint8_t phyCCAMode;                //!< CCA mode
   uint32_t phyCurrentPage;           //!< Current channel page
   uint32_t phyMaxFrameDuration;      //!< The maximum number of symbols in a frame
@@ -679,12 +679,19 @@ private:
    * Calculates the nominal transmit power of the device in decibels relative to 1 mW
    * according to the representation of the PIB attribute phyTransmitPower.
    *
-   * The tolerance (2 MSB) is not considered in the calculus.
+   * The phyTransmitPower (table 23 of IEEE 802.15.4-2006) is a 8-bit bitmap, stored
+   * as a `uint8_t`. The bitmap has the following meaning:
+   * The 2 MSBs represent the tolerance on the transmit power.
+   * The 6 LSBs represent a signed integer in twos-complement format, corresponding
+   * to the nominal transmit power of the device in decibels relative to 1 mW.
+   *
+   * This function extracts the 6 LSBs corresponding to the nominal transmit power and
+   * converts it to a `int8_t`.
    *
    * \param phyTransmitPower the PIB attribute
-   * \return The nominal transmit power
+   * \return The nominal transmit power in dBm.
    */
-  double GetNominalTxPowerFromPib (uint8_t phyTransmitPower);
+  int8_t GetNominalTxPowerFromPib (uint8_t phyTransmitPower);
 
   /**
    * The mobility model used by the PHY.

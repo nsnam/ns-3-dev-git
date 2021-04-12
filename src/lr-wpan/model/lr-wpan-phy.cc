@@ -1419,12 +1419,21 @@ LrWpanPhy::GetPhySymbolsPerOctet (void) const
   return dataSymbolRates [m_phyOption].symbolRate / (dataSymbolRates [m_phyOption].bitRate / 8);
 }
 
-double
+int8_t
 LrWpanPhy::GetNominalTxPowerFromPib (uint8_t phyTransmitPower)
 {
   NS_LOG_FUNCTION (this << +phyTransmitPower);
 
+  // The nominal Tx power is stored in the PIB as a 6-bit
+  // twos-complement, signed number.
+
+  // The 5 LSBs can be copied - as their representation
+  // is the same for unsigned and signed integers.
   int8_t nominalTxPower = phyTransmitPower & 0x1F;
+
+  // Now check the 6th LSB (the "sign" bit).
+  // It's a twos-complement format, so the "sign"
+  // bit represents -2^5 = -32.
   if (phyTransmitPower & 0x20)
     {
       nominalTxPower -= 32;
