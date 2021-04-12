@@ -21,27 +21,26 @@ fading model (for example), or model separately different fading effects.
 
 The following propagation loss models are implemented:
 
-* Cost231PropagationLossModel
-* FixedRssLossModel
-* FriisPropagationLossModel
-* ItuR1411LosPropagationLossModel
-* ItuR1411NlosOverRooftopPropagationLossModel
-* JakesPropagationLossModel
-* Kun2600MhzPropagationLossModel
-* LogDistancePropagationLossModel
-* MatrixPropagationLossModel
-* NakagamiPropagationLossModel
-* OkumuraHataPropagationLossModel
-* RandomPropagationLossModel
-* RangePropagationLossModel
-* ThreeLogDistancePropagationLossModel
-* TwoRayGroundPropagationLossModel
-* ThreeGppPropagationLossModel
-
-  * ThreeGppRMaPropagationLossModel
-  * ThreeGppUMaPropagationLossModel
-  * ThreeGppUmiStreetCanyonPropagationLossModel
-  * ThreeGppIndoorOfficePropagationLossModel
+   * Cost231PropagationLossModel
+   * FixedRssLossModel
+   * FriisPropagationLossModel
+   * ItuR1411LosPropagationLossModel
+   * ItuR1411NlosOverRooftopPropagationLossModel
+   * JakesPropagationLossModel
+   * Kun2600MhzPropagationLossModel
+   * LogDistancePropagationLossModel
+   * MatrixPropagationLossModel
+   * NakagamiPropagationLossModel
+   * OkumuraHataPropagationLossModel
+   * RandomPropagationLossModel
+   * RangePropagationLossModel
+   * ThreeLogDistancePropagationLossModel
+   * TwoRayGroundPropagationLossModel
+   * ThreeGppPropagationLossModel
+   * ThreeGppRMaPropagationLossModel
+   * ThreeGppUMaPropagationLossModel
+   * ThreeGppUmiStreetCanyonPropagationLossModel
+   * ThreeGppIndoorOfficePropagationLossModel
 
 Other models could be available thanks to other modules, e.g., the ``building`` module.
 
@@ -819,6 +818,7 @@ Vehicular channel condition models
 
 To properly capture channel dynamics in vehicular environments, three different 
 channel conditions have been identified: 
+
   * LOS (Line Of Sight): represents the case in which the direct path between 
     the transmitter and the receiver is not blocked
   * NLOSv (Non Line Of Sight vehicle): when the direct path 
@@ -829,7 +829,8 @@ TR 37.885 includes two models that can be used to determine the condition of
 the wireless channel between a pair of nodes, the first for urban and the second 
 for highway environments. 
 Each model includes both a deterministic and a stochastic part, and works as 
-follows. 
+follows:
+
   1. The model determines the presence of buildings obstructing the direct path 
      between the communicating nodes. This is done in a deterministic way, looking at 
      the possible interceptions between the direct path and the buildings. 
@@ -843,10 +844,12 @@ These models have been implemented by extending the interface
 :cpp:class:`ChannelConditionModel` with the following classes. They have been included in 
 the ``building`` module, because they make use of :cpp:class:`Buildings` objects to determine 
 the presence of obstructions caused by buildings.
+
   * :cpp:class:`ThreeGppV2vUrbanChannelConditionModel`: implements the model 
     described in Table 6.2-1 of TR 37.885 for the urban scenario. 
   * :cpp:class:`ThreeGppV2vHighwayChannelConditionModel`: implements the model 
     described in Table 6.2-1 of TR 37.885 for the highway scenario.   
+
 These models rely on :cpp:class:`Buildings` objects to determine the presence 
 of obstructing buildings. When considering large scenarios with a large number of 
 buildings, this process may become computationally demanding and dramatically 
@@ -862,11 +865,13 @@ To determine the channel condition, these models account for the propagation
 environment, i.e., urban or highway, as well as for the density of vehicles in the 
 scenario, which can be high, medium, or low.
 
-The classes implementing the fully-probabilistic models are: 
+The classes implementing the fully-probabilistic models are:
+
   * :cpp:class:`ProbabilisticV2vUrbanChannelConditionModel`: implements the model 
     described in [Boban2016Modeling]_ for the urban scenario. 
   * :cpp:class:`ProbabilisticV2vHighwayChannelConditionModel`: implements the model 
     described in [Boban2016Modeling]_ for the highway scenario. 
+
 Both the classes own the attribute "Density", which can be used to select the 
 proper value depending on the scenario that have to be simulated. 
 Differently from the hybrid models described above, these classes have been 
@@ -886,11 +891,13 @@ channel condition.
 
 These models have been implemented by extending the interface 
 :cpp:class:`ThreeGppPropagationLossModel` with the following classes, which 
-are part of the ``propagation`` module: 
+are part of the ``propagation`` module:
+
   * :cpp:class:`ThreeGppV2vUrbanPropagationLossModel`: implements the models 
     defined in Table 6.2.1-1 of TR 37.885 for the urban scenario.
   * :cpp:class:`ThreeGppV2vHighwayPropagationLossModel`: implements the models 
     defined in Table 6.2.1-1 of TR 37.885 for the highway scenario.       
+
 As for all the classes extending the interface :cpp:class:`ThreeGppPropagationLossModel`, 
 they have to be paired with an instance of the class :cpp:class:`ChannelConditionModel` 
 which is used to determine the channel condition. 
@@ -944,6 +951,7 @@ The bearing and the downtilt angles are properly configured and the
 optimal beamforming vectors are computed at the beginning of the simulation. 
  
 The simulation script accepts the following command line parameters: 
+
   * *frequency*: the operating frequency in Hz
   * *txPow*: the transmission power in dBm
   * *noiseFigure*: the noise figure in dB
@@ -967,8 +975,10 @@ file is organized as follows:
 
 We also provide the bash script ``three-gpp-v2v-channel-example.sh`` which reads the 
 output file and generates two figures:
+
   1. map.gif, a GIF representing the simulation scenario and vehicle mobility;
   2. snr.png, which represents the behavior of the SNR.
+
 
 References
 **********
