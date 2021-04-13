@@ -618,10 +618,16 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ip
   Ptr<Packet> p = Create<Packet> ();
   Ipv6Header ipHeader;
   Icmpv6RS rs;
-  Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
 
-  NS_LOG_LOGIC ("Send RS ( from " << src << " to " << dst << ")");
-  p->AddHeader (llOption);
+  NS_LOG_LOGIC ("Forge RS (from " << src << " to " << dst << ")");
+  // RFC 4861:
+  // The link-layer address of the sender MUST NOT be included if the Source Address is the unspecified address.
+  // Otherwise, it SHOULD be included on link layers that have addresses.
+  if (!src.IsAny ())
+    {
+      Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
+      p->AddHeader (llOption);
+    }
 
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
@@ -1067,15 +1073,17 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
   NS_LOG_FUNCTION (this << src << dst << hardwareAddress);
   Ptr<Packet> p = Create<Packet> ();
   Icmpv6RS rs;
-  Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);  /* we give our mac address in response */
 
-  /* if the source is unspec, multicast the NA to all-nodes multicast */
-  if (src != Ipv6Address::GetAny ())
+  // RFC 4861:
+  // The link-layer address of the sender MUST NOT be included if the Source Address is the unspecified address.
+  // Otherwise, it SHOULD be included on link layers that have addresses.
+  if (!src.IsAny ())
     {
+      Icmpv6OptionLinkLayerAddress llOption (1, hardwareAddress);
       p->AddHeader (llOption);
     }
 
-  NS_LOG_LOGIC ("Send RS ( from " << src << " to " << dst << ")");
+  NS_LOG_LOGIC ("Send RS (from " << src << " to " << dst << ")");
 
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
