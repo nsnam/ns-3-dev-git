@@ -3546,6 +3546,11 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
               Ptr<const TcpOptionTS> ts;
               ts = DynamicCast<const TcpOptionTS> (tcpHeader.GetOption (TcpOption::TS));
               m = TcpOptionTS::ElapsedTimeFromTsValue (ts->GetEcho ());
+              if (m.IsZero ())
+                {
+                  NS_LOG_LOGIC ("TcpSocketBase::EstimateRtt - RTT calculated from TcpOption::TS is zero, approximating to 1us.");
+                  m = MicroSeconds (1);
+                }
             }
           else
             {
