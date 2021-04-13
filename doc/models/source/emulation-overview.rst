@@ -87,8 +87,9 @@ directly-mapped memory capabilities to improve packet processing efficiency.
 
 For more details:
 
-* :doc:`FdNetDevice <fd-net-device>` chapter.
-* :doc:`NetmapNetDevice <netmap-net-device>` chapter.
-* :doc:`DpdkNetDevice <dpdk-net-device>` chapter.
-* :doc:`TapBridge <tap>` chapter.
+.. toctree::
 
+   fd-net-device
+   netmap-net-device
+   dpdk-net-device
+   tap
