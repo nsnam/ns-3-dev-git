@@ -142,6 +142,7 @@ The class PhasedArrayModel has been created with flexibility in mind.
 It abstracts the basic idea of a Phased Antenna Array (PAA) by removing any constraint on the
 position of each element, and instead generalizes the concept of steering and beamforming vectors,
 solely based on the generalized location of the antenna elements.
+For details on Phased Array Antennas see for instance [Mailloux]_.
 
 Derived classes must implement the following functions:
 
