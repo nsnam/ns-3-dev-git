@@ -15,7 +15,7 @@ The Antenna module provides:
  #. a base class (AntennaModel) that provides an interface for the modeling of the radiation pattern of an antenna;
  #. a set of classes derived from this base class that each models the radiation pattern of different types of antennas;
  #. a base class (PhasedArrayModel) that provides a flexible interface for modeling a number of Phase Antenna Array (PAA) models
- #. a class (UniformPlanarArray) derived from this base class, implementing a Uniform Planar Arraya (UPA) supporting both rectangular and linear lattices
+ #. a class (UniformPlanarArray) derived from this base class, implementing a Uniform Planar Array (UPA) supporting both rectangular and linear lattices
 
 
 ------
@@ -159,7 +159,7 @@ UniformPlanarArray
 
 The class UniformPlanarArray is a generic implementation of Uniform Planar Arrays (UPAs),
 supporting rectangular and linear regular lattices.
-It loosesly follows the implementation described in the 3GPP TR 38.901 [38901]_,
+It loosely follows the implementation described in the 3GPP TR 38.901 [38901]_,
 considering only a single a single panel, i.e., :math:`N_{g} = M_{g} = 1`.
 
 By default, the array is orthogonal to the x-axis, pointing towards the positive
