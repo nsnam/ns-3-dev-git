@@ -1367,7 +1367,7 @@ for ns-3 NewReno there was deviation in the congestion avoidance phase.
    :scale: 70%
    :align: center
 
-   DCE Linux Reno vs. ns-3 Linux Reno
+   DCE Linux Reno vs. ns-3 NewReno
 
 The difference in the cwnd in the early stage of this flow is because of the
 way cwnd is plotted.  As ns-3 provides a trace source for cwnd, an ns-3 Linux
@@ -1375,17 +1375,6 @@ Reno cwnd simple is obtained every time the cwnd value changes, whereas for
 DCE Linux Reno, the kernel does not have a corresponding trace source. 
 Instead, we use the "ss" command of the Linux kernel to obtain
 cwnd values. The "ss" samples cwnd at an interval of 0.5 seconds.
-
-TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
-module documentation.
-
-.. _fig-dce-Linux-reno-vs-ns3-linux-reno:
-
-.. figure:: figures/dce-linux-reno-vs-ns3-linux-reno.*
-   :scale: 70 %
-   :align: center
-
-   DCE Linux Reno vs. ns-3 Linux Reno
 
 Figure :ref:`fig-dctcp-10ms-50mbps-tcp-throughput` shows a long-running
 file transfer using DCTCP over a 50 Mbps bottleneck (running CoDel queue
@@ -1445,6 +1434,10 @@ a similar scenario but with ECN enabled throughout.
    :align: center
 
    CUBIC cwnd evolution for 50ms/50Mbps bottleneck, with ECN
+
+
+TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
+module documentation.
 
 
 Writing a new congestion control algorithm
