@@ -39,9 +39,12 @@ New user-visible features
 - (wifi) Add ThompsonSamplingWifiManager rate control algorithm.
 - (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
 - (traffic-control) Added FqPIE queue disc with L4S mode.
+- (antenna) Added PhasedArrayModel, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models
+- (antenna) Improved the Angles class to be more robust and user-friendly.
 
 Bugs fixed
 ----------
+- (antenna) Fix random angle generation for the 3gpp channel model.
 
 Release 3.33
 ============

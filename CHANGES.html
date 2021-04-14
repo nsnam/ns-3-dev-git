@@ -58,10 +58,14 @@ us a note on ns-developers mailing list.</p>
 <li>Added <b>FqPIE</b> queue disc with <b>L4S</b> mode</li>
 <li>Added the ability to configure the primary 20 MHz channel for 802.11 devices operating on channels of width greater than 20 MHz.</li>
 <li>Added new <b>ThompsonSamplingWifiManager</b> rate control algorithm.</li>
+<li>Added new <b>PhasedArrayModel</b>, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
 <li>The WifiAckPolicySelector class has been replaced by the WifiAckManager class. Correspondingly, the ConstantWifiAckPolicySelector has been replaced by the WifiDefaultAckManager class. A new WifiProtectionManager abstract base class and WifiDefaultProtectionManager concrete class have been added to implement different protection policies.</li>
+<li>The class ThreeGppAntennaArrayModel has been replaced by UniformPlanarArray, extending the PhasedArrayModel interface.</li>
+<li>The Angles struct is now a class, with robust setters and getters (public struct variables phi and theta are now private class variables m_azimuth and m_inclination), overloaded operator&lt;&lt; and operator&gt;&gt; and a number of utilities.</li>
+<li>AntennaModel child classes have been extended to produce 3D radiation patterns. Attributes such as Beamwidth have thus been separated into Vertical/HorizontalBeamwidth.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -77,6 +81,7 @@ us a note on ns-developers mailing list.</p>
 <li>Support for <b>Greenfield mode</b> (aka <b>HT_GF</b>) has been dropped from wifi.</li>
 <li>Some wifi/src/model files were moved to <b>non-ht</b>, <b>ht</b>, <b>vht</b>, <b>he</b>, and <b>rate-control</b> subfolders.</li>
 <li>The wifi BCC AWGN tables have been aligned with the ones provided by MATLAB and users may note a few dB difference when using BCC at high SNR and high MCS.</li>
+<li>ThreeGppChannelModel has been fixed: cluster and sub-cluster angles could have been generated with inclination angles outside the inclination range [0, pi], and have now been constrained to the correct range.</li>
 </ul>
 
 <hr>
