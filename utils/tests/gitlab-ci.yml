@@ -49,7 +49,7 @@ stages:
     #
     # Do not distinguish between branches though to avoid
     # recompilation of all the files when a new branch is created.
-    key: "$CI_JOB_NAME"
+    key: "ccache-$CI_JOB_NAME"
     paths:
       - $CCACHE_BASEDIR_VALUE/
   timeout: 9h
