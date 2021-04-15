@@ -32,14 +32,66 @@
 namespace ns3 {
 
 /**
+ * Compile time check if type T has const iterator.
+ */
+template<typename T>
+struct has_const_iterator
+{
+private:
+    typedef char                      yes;
+    typedef struct { char array[2]; } no;
+
+    template<typename C> static yes test(typename C::const_iterator*);
+    template<typename C> static no  test(...);
+public:
+    static const bool value = sizeof(test<T>(0)) == sizeof(yes);
+    typedef T type;
+};
+
+/**
+ * Compile time check if type T has begin() and end() methods.
+ */
+template <typename T>
+struct has_begin_end
+{
+    template<typename C> static char (&f(typename std::enable_if<
+      std::is_same<decltype(static_cast<typename C::const_iterator (C::*)() const>(&C::begin)),
+      typename C::const_iterator(C::*)() const>::value, void>::type*))[1];
+
+    template<typename C> static char (&f(...))[2];
+
+    template<typename C> static char (&g(typename std::enable_if<
+      std::is_same<decltype(static_cast<typename C::const_iterator (C::*)() const>(&C::end)),
+      typename C::const_iterator(C::*)() const>::value, void>::type*))[1];
+
+    template<typename C> static char (&g(...))[2];
+
+    static bool const beg_value = sizeof(f<T>(0)) == 1;
+    static bool const end_value = sizeof(g<T>(0)) == 1;
+};
+
+/**
+ * Compile time check if type T is a container.
+ *
+ * Container here means has an iterator and supports begin() and end()
+ * methods.
+ * 
+ * Can be used when defining specializations when a type T is an STL
+ * like container.
+ */
+template<typename T> 
+struct is_container : std::integral_constant<bool, has_const_iterator<T>::value && has_begin_end<T>::beg_value && has_begin_end<T>::end_value> 
+{ };
+
+/**
  * \ingroup attributeimpl
  *
  * DoMakeAccessorHelperOne specialization for member containers
  *
- * The template parameter list contains an extra parameter that disambiguates
- * the templated Ptr type from container types by taking advantage of the fact
- * that container types have multiple template arguments and Ptr has only one.
- * This disambiguation works but is not sufficiently robust as a long term solution.
+ * The template parameter list contains an extra parameter that is
+ * intended to disambiguate an attribute container from any other
+ * templated attribute, e.g Ptr or Callback.  Disambiguation is based
+ * on begin/end and iterator.
  *
  * \tparam V  \explicit The specific AttributeValue type to use to represent
  *            the Attribute.
@@ -50,7 +102,7 @@ namespace ns3 {
  * \returns The AttributeAccessor.
  */
 template <typename V, typename T, template <typename...> class U, typename ...I,
-          typename = typename std::enable_if< (sizeof...(I) > 1), void>::type >
+          typename = typename std::enable_if< ( is_container< U<I...> >::value ), void>::type >
 inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U<I...> T::*memberContainer)
