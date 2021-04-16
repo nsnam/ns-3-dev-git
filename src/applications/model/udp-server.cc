@@ -176,12 +176,13 @@ UdpServer::HandleRead (Ptr<Socket> socket)
       m_rxTraceWithAddresses (packet, from, localAddress);
       if (packet->GetSize () > 0)
         {
+          uint32_t receivedSize = packet->GetSize ();
           SeqTsHeader seqTs;
           packet->RemoveHeader (seqTs);
           uint32_t currentSequenceNumber = seqTs.GetSeq ();
           if (InetSocketAddress::IsMatchingType (from))
             {
-              NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
+              NS_LOG_INFO ("TraceDelay: RX " << receivedSize <<
                            " bytes from "<< InetSocketAddress::ConvertFrom (from).GetIpv4 () <<
                            " Sequence Number: " << currentSequenceNumber <<
                            " Uid: " << packet->GetUid () <<
@@ -191,7 +192,7 @@ UdpServer::HandleRead (Ptr<Socket> socket)
             }
           else if (Inet6SocketAddress::IsMatchingType (from))
             {
-              NS_LOG_INFO ("TraceDelay: RX " << packet->GetSize () <<
+              NS_LOG_INFO ("TraceDelay: RX " << receivedSize <<
                            " bytes from "<< Inet6SocketAddress::ConvertFrom (from).GetIpv6 () <<
                            " Sequence Number: " << currentSequenceNumber <<
                            " Uid: " << packet->GetUid () <<
