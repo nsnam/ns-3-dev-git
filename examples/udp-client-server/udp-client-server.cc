@@ -25,7 +25,8 @@
 //       =======
 //         LAN (CSMA)
 //
-// - UDP flow from n0 to n1 of 320 packets of 1024 bytes at intervals of 50 ms
+// - UDP flow from n0 to n1 of 1024 byte packets at intervals of 50 ms
+//   - maximum of 320 packets sent (or limited by simulation duration)
 //   - option to use IPv4 or IPv6 addressing
 //   - option to disable logging statements
 
