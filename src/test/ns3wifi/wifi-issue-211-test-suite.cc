@@ -125,7 +125,6 @@ Issue211Test::DoRun (void)
   spectrumChannel->SetPropagationDelayModel (delayModel);
 
   SpectrumWifiPhyHelper phy;
-  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (spectrumChannel);
 
   WifiHelper wifi;

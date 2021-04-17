@@ -648,6 +648,7 @@ int main (int argc, char *argv[])
 
       if (enablePcap)
         {
+          phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
           std::stringstream ss;
           ss << "wifi-spectrum-saturation-example-" << i;
           phy.EnablePcap (ss.str (), apDevice);

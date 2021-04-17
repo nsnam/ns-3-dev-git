@@ -136,6 +136,7 @@ def main(argv):
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                   "DataMode", ns.core.StringValue("OfdmRate54Mbps"))
     wifiPhy = ns.wifi.YansWifiPhyHelper()
+    wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())
     backboneDevices = wifi.Install(wifiPhy, mac, backbone)

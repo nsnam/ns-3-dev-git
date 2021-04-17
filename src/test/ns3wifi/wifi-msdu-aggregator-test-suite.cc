@@ -150,6 +150,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // Enable tracing at the AP
   if (m_writeResults)
     {
+      wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
       wifiPhy.EnablePcap ("wifi-amsdu-throughput", sta.Get (0)->GetId (), 0);
     }
 

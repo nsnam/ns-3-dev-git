@@ -164,7 +164,6 @@ WifiTxopTest::DoRun (void)
   spectrumChannel->SetPropagationDelayModel (delayModel);
 
   SpectrumWifiPhyHelper phy;
-  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (spectrumChannel);
 
   Config::SetDefault ("ns3::QosFrameExchangeManager::PifsRecovery", BooleanValue (m_pifsRecovery));

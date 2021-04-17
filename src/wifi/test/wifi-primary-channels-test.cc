@@ -353,7 +353,6 @@ WifiPrimaryChannelsTest::DoSetup (void)
   spectrumChannel->SetPropagationDelayModel (delayModel);
 
   SpectrumWifiPhyHelper phy;
-  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (spectrumChannel);
   phy.Set ("Frequency", UintegerValue (frequency));  // same frequency for all BSSes
 
