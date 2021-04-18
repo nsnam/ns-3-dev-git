@@ -1,4 +1,4 @@
- /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2020 Universita' degli Studi di Napoli Federico II
  *
@@ -19,32 +19,19 @@
  */
 
 #include "ns3/test.h"
-#include "ns3/string.h"
-#include "ns3/qos-utils.h"
-#include "ns3/packet.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/wifi-mac-header.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/multi-model-spectrum-channel.h"
-#include "ns3/packet-socket-server.h"
-#include "ns3/packet-socket-client.h"
-#include "ns3/packet-socket-helper.h"
 #include "ns3/config.h"
-#include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/wifi-psdu.h"
-#include "ns3/wifi-ppdu.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
 #include "ns3/he-phy.h"
 #include "ns3/he-configuration.h"
 #include "ns3/ctrl-headers.h"
-#include <cmath>
 #include <bitset>
-#include <vector>
-#include <set>
-#include <numeric>
 #include <algorithm>
 
 using namespace ns3;
@@ -214,7 +201,7 @@ private:
 };
 
 WifiPrimaryChannelsTest::WifiPrimaryChannelsTest (uint16_t channelWidth, bool useDistinctBssColors)
-  : TestCase ("Check correct operation within TXOPs"),
+  : TestCase ("Check correct transmissions for various primary channel settings"),
     m_channelWidth (channelWidth),
     m_useDistinctBssColors (useDistinctBssColors)
 {
@@ -1017,7 +1004,7 @@ WifiPrimaryChannelsTest::CheckReceivedTriggerFrames (std::set<uint8_t> txBss, ui
  * \ingroup wifi-test
  * \ingroup tests
  *
- * \brief wifi TXOP Test Suite
+ * \brief wifi primary channels test suite
  */
 class WifiPrimaryChannelsTestSuite : public TestSuite
 {
@@ -1037,4 +1024,4 @@ WifiPrimaryChannelsTestSuite::WifiPrimaryChannelsTestSuite ()
   AddTestCase (new WifiPrimaryChannelsTest (160, false), TestCase::TAKES_FOREVER);
 }
 
-static WifiPrimaryChannelsTestSuite g_wifiTxopTestSuite; ///< the test suite
+static WifiPrimaryChannelsTestSuite g_wifiPrimaryChannelsTestSuite; ///< the test suite
