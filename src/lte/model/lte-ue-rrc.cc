@@ -926,7 +926,7 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
           // in this case the measurement received is related to secondary carriers
           // measurements related to secondary carriers are saved on a different portion of memory
           SaveScellUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
-                                   newMeasIt->m_rsrq, useLayer3Filtering,
+                                   newMeasIt->m_rsrq, useLayer3Filtering, 
                                    params.m_componentCarrierId );
         }
       else
@@ -1894,227 +1894,445 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
 
   switch (reportConfigEutra.eventId)
     {
-      case LteRrcSap::ReportConfigEutra::EVENT_A1:
-        {
-          /*
-           * Event A1 (Serving becomes better than threshold)
-           * Please refer to 3GPP TS 36.331 Section 5.5.4.2
-           */
+    case LteRrcSap::ReportConfigEutra::EVENT_A1:
+      {
+        /*
+         * Event A1 (Serving becomes better than threshold)
+         * Please refer to 3GPP TS 36.331 Section 5.5.4.2
+         */
 
-          double ms; // Ms, the measurement result of the serving cell
-          double thresh; // Thresh, the threshold parameter for this event
-          // Hys, the hysteresis parameter for this event.
-          double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+        double ms; // Ms, the measurement result of the serving cell
+        double thresh; // Thresh, the threshold parameter for this event
+        // Hys, the hysteresis parameter for this event.
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
-          switch (reportConfigEutra.triggerQuantity)
-            {
+        switch (reportConfigEutra.triggerQuantity)
+          {
+          case LteRrcSap::ReportConfigEutra::RSRP:
+            ms = m_storedMeasValues[m_cellId].rsrp;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+            break;
+          case LteRrcSap::ReportConfigEutra::RSRQ:
+            ms = m_storedMeasValues[m_cellId].rsrq;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+            break;
+          default:
+            NS_FATAL_ERROR ("unsupported triggerQuantity");
+            break;
+          }
+
+        // Inequality A1-1 (Entering condition): Ms - Hys > Thresh
+        bool entryCond = ms - hys > thresh;
+
+        if (entryCond)
+          {
+            if (!isMeasIdInReportList)
+              {
+                concernedCellsEntry.push_back (m_cellId);
+                eventEntryCondApplicable = true;
+              }
+            else
+              {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelEnteringTrigger (measId);
+          }
+
+        // Inequality A1-2 (Leaving condition): Ms + Hys < Thresh
+        bool leavingCond = ms + hys < thresh;
+
+        if (leavingCond)
+          {
+            if (isMeasIdInReportList)
+              {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
+                concernedCellsLeaving.push_back (m_cellId);
+                eventLeavingCondApplicable = true;
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelLeavingTrigger (measId);
+          }
+
+        NS_LOG_LOGIC (this << " event A1: serving cell " << m_cellId
+                           << " ms=" << ms << " thresh=" << thresh
+                           << " entryCond=" << entryCond
+                           << " leavingCond=" << leavingCond);
+
+      } // end of case LteRrcSap::ReportConfigEutra::EVENT_A1
+
+      break;
+
+    case LteRrcSap::ReportConfigEutra::EVENT_A2:
+      {
+        /*
+         * Event A2 (Serving becomes worse than threshold)
+         * Please refer to 3GPP TS 36.331 Section 5.5.4.3
+         */
+
+        double ms; // Ms, the measurement result of the serving cell
+        double thresh; // Thresh, the threshold parameter for this event
+        // Hys, the hysteresis parameter for this event.
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+
+        switch (reportConfigEutra.triggerQuantity)
+          {
+          case LteRrcSap::ReportConfigEutra::RSRP:
+            ms = m_storedMeasValues[m_cellId].rsrp;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+            break;
+          case LteRrcSap::ReportConfigEutra::RSRQ:
+            ms = m_storedMeasValues[m_cellId].rsrq;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+            break;
+          default:
+            NS_FATAL_ERROR ("unsupported triggerQuantity");
+            break;
+          }
+
+        // Inequality A2-1 (Entering condition): Ms + Hys < Thresh
+        bool entryCond = ms + hys < thresh;
+
+        if (entryCond)
+          {
+            if (!isMeasIdInReportList)
+              {
+                concernedCellsEntry.push_back (m_cellId);
+                eventEntryCondApplicable = true;
+              }
+            else
+              {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelEnteringTrigger (measId);
+          }
+
+        // Inequality A2-2 (Leaving condition): Ms - Hys > Thresh
+        bool leavingCond = ms - hys > thresh;
+
+        if (leavingCond)
+          {
+            if (isMeasIdInReportList)
+              {
+                /*
+                 * This is to check that the triggered cell recorded in the
+                 * VarMeasReportList is the serving cell.
+                 */
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                           != measReportIt->second.cellsTriggeredList.end ());
+                concernedCellsLeaving.push_back (m_cellId);
+                eventLeavingCondApplicable = true;
+              }
+          }
+        else if (reportConfigEutra.timeToTrigger > 0)
+          {
+            CancelLeavingTrigger (measId);
+          }
+
+        NS_LOG_LOGIC (this << " event A2: serving cell " << m_cellId
+                           << " ms=" << ms << " thresh=" << thresh
+                           << " entryCond=" << entryCond
+                           << " leavingCond=" << leavingCond);
+
+      } // end of case LteRrcSap::ReportConfigEutra::EVENT_A2
+
+      break;
+
+    case LteRrcSap::ReportConfigEutra::EVENT_A3:
+      {
+        /*
+         * Event A3 (Neighbour becomes offset better than PCell)
+         * Please refer to 3GPP TS 36.331 Section 5.5.4.4
+         */
+
+        double mn; // Mn, the measurement result of the neighbouring cell
+        double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
+        double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
+        double mp; // Mp, the measurement result of the PCell
+        double ofp = measObjectEutra.offsetFreq; // Ofp, the frequency specific offset of the primary frequency
+        double ocp = 0.0; // Ocp, the cell specific offset of the PCell
+        // Off, the offset parameter for this event.
+        double off = EutranMeasurementMapping::IeValue2ActualA3Offset (reportConfigEutra.a3Offset);
+        // Hys, the hysteresis parameter for this event.
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+
+        switch (reportConfigEutra.triggerQuantity)
+          {
+          case LteRrcSap::ReportConfigEutra::RSRP:
+            mp = m_storedMeasValues[m_cellId].rsrp;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            break;
+          case LteRrcSap::ReportConfigEutra::RSRQ:
+            mp = m_storedMeasValues[m_cellId].rsrq;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            break;
+          default:
+            NS_FATAL_ERROR ("unsupported triggerQuantity");
+            break;
+          }
+
+        for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+             storedMeasIt != m_storedMeasValues.end ();
+             ++storedMeasIt)
+          {
+            uint16_t cellId = storedMeasIt->first;
+            if (cellId == m_cellId)
+              {
+                continue;
+              }
+
+            switch (reportConfigEutra.triggerQuantity)
+              {
               case LteRrcSap::ReportConfigEutra::RSRP:
-                ms = m_storedMeasValues[m_cellId].rsrp;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+                mn = storedMeasIt->second.rsrp;
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
-                ms = m_storedMeasValues[m_cellId].rsrq;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+                mn = storedMeasIt->second.rsrq;
                 break;
               default:
                 NS_FATAL_ERROR ("unsupported triggerQuantity");
                 break;
-            }
+              }
 
-          // Inequality A1-1 (Entering condition): Ms - Hys > Thresh
-          bool entryCond = ms - hys > thresh;
+            bool hasTriggered = isMeasIdInReportList
+              && (measReportIt->second.cellsTriggeredList.find (cellId)
+                  != measReportIt->second.cellsTriggeredList.end ());
 
-          if (entryCond)
-            {
-              if (!isMeasIdInReportList)
-                {
-                  concernedCellsEntry.push_back (m_cellId);
-                  eventEntryCondApplicable = true;
-                }
-              else
-                {
-                  /*
-                   * This is to check that the triggered cell recorded in the
-                   * VarMeasReportList is the serving cell.
-                   */
-                  NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
-                             != measReportIt->second.cellsTriggeredList.end ());
-                }
-            }
-          else if (reportConfigEutra.timeToTrigger > 0)
-            {
-              CancelEnteringTrigger (measId);
-            }
+            // Inequality A3-1 (Entering condition): Mn + Ofn + Ocn - Hys > Mp + Ofp + Ocp + Off
+            bool entryCond = mn + ofn + ocn - hys > mp + ofp + ocp + off;
 
-          // Inequality A1-2 (Leaving condition): Ms + Hys < Thresh
-          bool leavingCond = ms + hys < thresh;
+            if (entryCond)
+              {
+                if (!hasTriggered)
+                  {
+                    concernedCellsEntry.push_back (cellId);
+                    eventEntryCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId, cellId);
+              }
 
-          if (leavingCond)
-            {
-              if (isMeasIdInReportList)
-                {
-                  /*
-                   * This is to check that the triggered cell recorded in the
-                   * VarMeasReportList is the serving cell.
-                   */
-                  NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
-                             != measReportIt->second.cellsTriggeredList.end ());
-                  concernedCellsLeaving.push_back (m_cellId);
-                  eventLeavingCondApplicable = true;
-                }
-            }
-          else if (reportConfigEutra.timeToTrigger > 0)
-            {
-              CancelLeavingTrigger (measId);
-            }
+            // Inequality A3-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Mp + Ofp + Ocp + Off
+            bool leavingCond = mn + ofn + ocn + hys < mp + ofp + ocp + off;
 
-          NS_LOG_LOGIC (this << " event A1: serving cell " << m_cellId
-                             << " ms=" << ms << " thresh=" << thresh
-                             << " entryCond=" << entryCond
-                             << " leavingCond=" << leavingCond);
+            if (leavingCond)
+              {
+                if (hasTriggered)
+                  {
+                    concernedCellsLeaving.push_back (cellId);
+                    eventLeavingCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelLeavingTrigger (measId, cellId);
+              }
 
-        } // end of case LteRrcSap::ReportConfigEutra::EVENT_A1
+            NS_LOG_LOGIC (this << " event A3: neighbor cell " << cellId
+                               << " mn=" << mn << " mp=" << mp << " offset=" << off
+                               << " entryCond=" << entryCond
+                               << " leavingCond=" << leavingCond);
 
-        break;
+          } // end of for (storedMeasIt)
 
-      case LteRrcSap::ReportConfigEutra::EVENT_A2:
-        {
-          /*
-           * Event A2 (Serving becomes worse than threshold)
-           * Please refer to 3GPP TS 36.331 Section 5.5.4.3
-           */
+      } // end of case LteRrcSap::ReportConfigEutra::EVENT_A3
 
-          double ms; // Ms, the measurement result of the serving cell
-          double thresh; // Thresh, the threshold parameter for this event
-          // Hys, the hysteresis parameter for this event.
-          double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+      break;
 
-          switch (reportConfigEutra.triggerQuantity)
-            {
+    case LteRrcSap::ReportConfigEutra::EVENT_A4:
+      {
+        /*
+         * Event A4 (Neighbour becomes better than threshold)
+         * Please refer to 3GPP TS 36.331 Section 5.5.4.5
+         */
+
+        double mn; // Mn, the measurement result of the neighbouring cell
+        double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
+        double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
+        double thresh; // Thresh, the threshold parameter for this event
+        // Hys, the hysteresis parameter for this event.
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+
+        switch (reportConfigEutra.triggerQuantity)
+          {
+          case LteRrcSap::ReportConfigEutra::RSRP:
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+            break;
+          case LteRrcSap::ReportConfigEutra::RSRQ:
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+            break;
+          default:
+            NS_FATAL_ERROR ("unsupported triggerQuantity");
+            break;
+          }
+
+        for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+             storedMeasIt != m_storedMeasValues.end ();
+             ++storedMeasIt)
+          {
+            uint16_t cellId = storedMeasIt->first;
+            if (cellId == m_cellId)
+              {
+                continue;
+              }
+
+            switch (reportConfigEutra.triggerQuantity)
+              {
               case LteRrcSap::ReportConfigEutra::RSRP:
-                ms = m_storedMeasValues[m_cellId].rsrp;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+                mn = storedMeasIt->second.rsrp;
                 break;
               case LteRrcSap::ReportConfigEutra::RSRQ:
-                ms = m_storedMeasValues[m_cellId].rsrq;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+                mn = storedMeasIt->second.rsrq;
                 break;
               default:
                 NS_FATAL_ERROR ("unsupported triggerQuantity");
                 break;
-            }
+              }
 
-          // Inequality A2-1 (Entering condition): Ms + Hys < Thresh
-          bool entryCond = ms + hys < thresh;
+            bool hasTriggered = isMeasIdInReportList
+              && (measReportIt->second.cellsTriggeredList.find (cellId)
+                  != measReportIt->second.cellsTriggeredList.end ());
 
-          if (entryCond)
-            {
-              if (!isMeasIdInReportList)
-                {
-                  concernedCellsEntry.push_back (m_cellId);
-                  eventEntryCondApplicable = true;
-                }
-              else
-                {
-                  /*
-                   * This is to check that the triggered cell recorded in the
-                   * VarMeasReportList is the serving cell.
-                   */
-                  NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
-                             != measReportIt->second.cellsTriggeredList.end ());
-                }
-            }
-          else if (reportConfigEutra.timeToTrigger > 0)
-            {
-              CancelEnteringTrigger (measId);
-            }
+            // Inequality A4-1 (Entering condition): Mn + Ofn + Ocn - Hys > Thresh
+            bool entryCond = mn + ofn + ocn - hys > thresh;
 
-          // Inequality A2-2 (Leaving condition): Ms - Hys > Thresh
-          bool leavingCond = ms - hys > thresh;
+            if (entryCond)
+              {
+                if (!hasTriggered)
+                  {
+                    concernedCellsEntry.push_back (cellId);
+                    eventEntryCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId, cellId);
+              }
 
-          if (leavingCond)
-            {
-              if (isMeasIdInReportList)
-                {
-                  /*
-                   * This is to check that the triggered cell recorded in the
-                   * VarMeasReportList is the serving cell.
-                   */
-                  NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
-                             != measReportIt->second.cellsTriggeredList.end ());
-                  concernedCellsLeaving.push_back (m_cellId);
-                  eventLeavingCondApplicable = true;
-                }
-            }
-          else if (reportConfigEutra.timeToTrigger > 0)
-            {
-              CancelLeavingTrigger (measId);
-            }
+            // Inequality A4-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Thresh
+            bool leavingCond = mn + ofn + ocn + hys < thresh;
 
-          NS_LOG_LOGIC (this << " event A2: serving cell " << m_cellId
-                             << " ms=" << ms << " thresh=" << thresh
-                             << " entryCond=" << entryCond
-                             << " leavingCond=" << leavingCond);
+            if (leavingCond)
+              {
+                if (hasTriggered)
+                  {
+                    concernedCellsLeaving.push_back (cellId);
+                    eventLeavingCondApplicable = true;
+                  }
+              }
+            else if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelLeavingTrigger (measId, cellId);
+              }
 
-        } // end of case LteRrcSap::ReportConfigEutra::EVENT_A2
+            NS_LOG_LOGIC (this << " event A4: neighbor cell " << cellId
+                               << " mn=" << mn << " thresh=" << thresh
+                               << " entryCond=" << entryCond
+                               << " leavingCond=" << leavingCond);
 
-        break;
+          } // end of for (storedMeasIt)
 
-      case LteRrcSap::ReportConfigEutra::EVENT_A3:
-        {
-          /*
-           * Event A3 (Neighbour becomes offset better than PCell)
-           * Please refer to 3GPP TS 36.331 Section 5.5.4.4
-           */
+      } // end of case LteRrcSap::ReportConfigEutra::EVENT_A4
 
-          double mn; // Mn, the measurement result of the neighbouring cell
-          double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
-          double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
-          double mp; // Mp, the measurement result of the PCell
-          double ofp = measObjectEutra.offsetFreq; // Ofp, the frequency specific offset of the primary frequency
-          double ocp = 0.0; // Ocp, the cell specific offset of the PCell
-          // Off, the offset parameter for this event.
-          double off = EutranMeasurementMapping::IeValue2ActualA3Offset (reportConfigEutra.a3Offset);
-          // Hys, the hysteresis parameter for this event.
-          double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+      break;
 
-          switch (reportConfigEutra.triggerQuantity)
-            {
-              case LteRrcSap::ReportConfigEutra::RSRP:
-                mp = m_storedMeasValues[m_cellId].rsrp;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                break;
-              case LteRrcSap::ReportConfigEutra::RSRQ:
-                mp = m_storedMeasValues[m_cellId].rsrq;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                break;
-              default:
-                NS_FATAL_ERROR ("unsupported triggerQuantity");
-                break;
-            }
+    case LteRrcSap::ReportConfigEutra::EVENT_A5:
+      {
+        /*
+         * Event A5 (PCell becomes worse than threshold1 and neighbour
+         * becomes better than threshold2)
+         * Please refer to 3GPP TS 36.331 Section 5.5.4.6
+         */
 
-          for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-               storedMeasIt != m_storedMeasValues.end ();
-               ++storedMeasIt)
-            {
-              uint16_t cellId = storedMeasIt->first;
-              if (cellId == m_cellId)
-                {
-                  continue;
-                }
+        double mp; // Mp, the measurement result of the PCell
+        double mn; // Mn, the measurement result of the neighbouring cell
+        double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
+        double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
+        double thresh1; // Thresh1, the threshold parameter for this event
+        double thresh2; // Thresh2, the threshold parameter for this event
+        // Hys, the hysteresis parameter for this event.
+        double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
 
-              switch (reportConfigEutra.triggerQuantity)
-                {
+        switch (reportConfigEutra.triggerQuantity)
+          {
+          case LteRrcSap::ReportConfigEutra::RSRP:
+            mp = m_storedMeasValues[m_cellId].rsrp;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            NS_ASSERT (reportConfigEutra.threshold2.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
+            thresh1 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
+            thresh2 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold2.range);
+            break;
+          case LteRrcSap::ReportConfigEutra::RSRQ:
+            mp = m_storedMeasValues[m_cellId].rsrq;
+            NS_ASSERT (reportConfigEutra.threshold1.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            NS_ASSERT (reportConfigEutra.threshold2.choice
+                       == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
+            thresh1 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
+            thresh2 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold2.range);
+            break;
+          default:
+            NS_FATAL_ERROR ("unsupported triggerQuantity");
+            break;
+          }
+
+        // Inequality A5-1 (Entering condition 1): Mp + Hys < Thresh1
+        bool entryCond = mp + hys < thresh1;
+
+        if (entryCond)
+          {
+            for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                 storedMeasIt != m_storedMeasValues.end ();
+                 ++storedMeasIt)
+              {
+                uint16_t cellId = storedMeasIt->first;
+                if (cellId == m_cellId)
+                  {
+                    continue;
+                  }
+
+                switch (reportConfigEutra.triggerQuantity)
+                  {
                   case LteRrcSap::ReportConfigEutra::RSRP:
                     mn = storedMeasIt->second.rsrp;
                     break;
@@ -2124,386 +2342,98 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                   default:
                     NS_FATAL_ERROR ("unsupported triggerQuantity");
                     break;
-                }
+                  }
 
-              bool hasTriggered = isMeasIdInReportList
-                && (measReportIt->second.cellsTriggeredList.find (cellId)
-                    != measReportIt->second.cellsTriggeredList.end ());
+                bool hasTriggered = isMeasIdInReportList
+                  && (measReportIt->second.cellsTriggeredList.find (cellId)
+                      != measReportIt->second.cellsTriggeredList.end ());
 
-              // Inequality A3-1 (Entering condition): Mn + Ofn + Ocn - Hys > Mp + Ofp + Ocp + Off
-              bool entryCond = mn + ofn + ocn - hys > mp + ofp + ocp + off;
+                // Inequality A5-2 (Entering condition 2): Mn + Ofn + Ocn - Hys > Thresh2
 
-              if (entryCond)
-                {
-                  if (!hasTriggered)
-                    {
-                      concernedCellsEntry.push_back (cellId);
-                      eventEntryCondApplicable = true;
-                    }
-                }
-              else if (reportConfigEutra.timeToTrigger > 0)
-                {
-                  CancelEnteringTrigger (measId, cellId);
-                }
+                entryCond = mn + ofn + ocn - hys > thresh2;
 
-              // Inequality A3-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Mp + Ofp + Ocp + Off
-              bool leavingCond = mn + ofn + ocn + hys < mp + ofp + ocp + off;
+                if (entryCond)
+                  {
+                    if (!hasTriggered)
+                      {
+                        concernedCellsEntry.push_back (cellId);
+                        eventEntryCondApplicable = true;
+                      }
+                  }
+                else if (reportConfigEutra.timeToTrigger > 0)
+                  {
+                    CancelEnteringTrigger (measId, cellId);
+                  }
 
-              if (leavingCond)
-                {
-                  if (hasTriggered)
-                    {
-                      concernedCellsLeaving.push_back (cellId);
-                      eventLeavingCondApplicable = true;
-                    }
-                }
-              else if (reportConfigEutra.timeToTrigger > 0)
-                {
-                  CancelLeavingTrigger (measId, cellId);
-                }
+                NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
+                                   << " mn=" << mn << " mp=" << mp
+                                   << " thresh2=" << thresh2
+                                   << " thresh1=" << thresh1
+                                   << " entryCond=" << entryCond);
 
-              NS_LOG_LOGIC (this << " event A3: neighbor cell " << cellId
-                                 << " mn=" << mn << " mp=" << mp << " offset=" << off
-                                 << " entryCond=" << entryCond
-                                 << " leavingCond=" << leavingCond);
+              } // end of for (storedMeasIt)
 
-            } // end of for (storedMeasIt)
+          } // end of if (entryCond)
+        else
+          {
+            NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
+                               << " mp=" << mp << " thresh1=" << thresh1
+                               << " entryCond=" << entryCond);
 
-        } // end of case LteRrcSap::ReportConfigEutra::EVENT_A3
+            if (reportConfigEutra.timeToTrigger > 0)
+              {
+                CancelEnteringTrigger (measId);
+              }
+          }
 
-        break;
+        if (isMeasIdInReportList)
+          {
+            // Inequality A5-3 (Leaving condition 1): Mp - Hys > Thresh1
+            bool leavingCond = mp - hys > thresh1;
 
-      case LteRrcSap::ReportConfigEutra::EVENT_A4:
-        {
-          /*
-           * Event A4 (Neighbour becomes better than threshold)
-           * Please refer to 3GPP TS 36.331 Section 5.5.4.5
-           */
+            if (leavingCond)
+              {
+                if (reportConfigEutra.timeToTrigger == 0)
+                  {
+                    // leaving condition #2 does not have to be checked
 
-          double mn; // Mn, the measurement result of the neighbouring cell
-          double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
-          double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
-          double thresh; // Thresh, the threshold parameter for this event
-          // Hys, the hysteresis parameter for this event.
-          double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
+                    for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                         storedMeasIt != m_storedMeasValues.end ();
+                         ++storedMeasIt)
+                      {
+                        uint16_t cellId = storedMeasIt->first;
+                        if (cellId == m_cellId)
+                          {
+                            continue;
+                          }
 
-          switch (reportConfigEutra.triggerQuantity)
-            {
-              case LteRrcSap::ReportConfigEutra::RSRP:
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
-                break;
-              case LteRrcSap::ReportConfigEutra::RSRQ:
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
-                break;
-              default:
-                NS_FATAL_ERROR ("unsupported triggerQuantity");
-                break;
-            }
+                        if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            != measReportIt->second.cellsTriggeredList.end ())
+                          {
+                            concernedCellsLeaving.push_back (cellId);
+                            eventLeavingCondApplicable = true;
+                          }
+                      }
+                  } // end of if (reportConfigEutra.timeToTrigger == 0)
+                else
+                  {
+                    // leaving condition #2 has to be checked to cancel time-to-trigger
 
-          for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-               storedMeasIt != m_storedMeasValues.end ();
-               ++storedMeasIt)
-            {
-              uint16_t cellId = storedMeasIt->first;
-              if (cellId == m_cellId)
-                {
-                  continue;
-                }
+                    for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                         storedMeasIt != m_storedMeasValues.end ();
+                         ++storedMeasIt)
+                      {
+                        uint16_t cellId = storedMeasIt->first;
+                        if (cellId == m_cellId)
+                          {
+                            continue;
+                          }
 
-              switch (reportConfigEutra.triggerQuantity)
-                {
-                  case LteRrcSap::ReportConfigEutra::RSRP:
-                    mn = storedMeasIt->second.rsrp;
-                    break;
-                  case LteRrcSap::ReportConfigEutra::RSRQ:
-                    mn = storedMeasIt->second.rsrq;
-                    break;
-                  default:
-                    NS_FATAL_ERROR ("unsupported triggerQuantity");
-                    break;
-                }
-
-              bool hasTriggered = isMeasIdInReportList
-                && (measReportIt->second.cellsTriggeredList.find (cellId)
-                    != measReportIt->second.cellsTriggeredList.end ());
-
-              // Inequality A4-1 (Entering condition): Mn + Ofn + Ocn - Hys > Thresh
-              bool entryCond = mn + ofn + ocn - hys > thresh;
-
-              if (entryCond)
-                {
-                  if (!hasTriggered)
-                    {
-                      concernedCellsEntry.push_back (cellId);
-                      eventEntryCondApplicable = true;
-                    }
-                }
-              else if (reportConfigEutra.timeToTrigger > 0)
-                {
-                  CancelEnteringTrigger (measId, cellId);
-                }
-
-              // Inequality A4-2 (Leaving condition): Mn + Ofn + Ocn + Hys < Thresh
-              bool leavingCond = mn + ofn + ocn + hys < thresh;
-
-              if (leavingCond)
-                {
-                  if (hasTriggered)
-                    {
-                      concernedCellsLeaving.push_back (cellId);
-                      eventLeavingCondApplicable = true;
-                    }
-                }
-              else if (reportConfigEutra.timeToTrigger > 0)
-                {
-                  CancelLeavingTrigger (measId, cellId);
-                }
-
-              NS_LOG_LOGIC (this << " event A4: neighbor cell " << cellId
-                                 << " mn=" << mn << " thresh=" << thresh
-                                 << " entryCond=" << entryCond
-                                 << " leavingCond=" << leavingCond);
-
-            } // end of for (storedMeasIt)
-
-        } // end of case LteRrcSap::ReportConfigEutra::EVENT_A4
-
-        break;
-
-      case LteRrcSap::ReportConfigEutra::EVENT_A5:
-        {
-          /*
-           * Event A5 (PCell becomes worse than threshold1 and neighbour
-           * becomes better than threshold2)
-           * Please refer to 3GPP TS 36.331 Section 5.5.4.6
-           */
-
-          double mp; // Mp, the measurement result of the PCell
-          double mn; // Mn, the measurement result of the neighbouring cell
-          double ofn = measObjectEutra.offsetFreq; // Ofn, the frequency specific offset of the frequency of the
-          double ocn = 0.0; // Ocn, the cell specific offset of the neighbour cell
-          double thresh1; // Thresh1, the threshold parameter for this event
-          double thresh2; // Thresh2, the threshold parameter for this event
-          // Hys, the hysteresis parameter for this event.
-          double hys = EutranMeasurementMapping::IeValue2ActualHysteresis (reportConfigEutra.hysteresis);
-
-          switch (reportConfigEutra.triggerQuantity)
-            {
-              case LteRrcSap::ReportConfigEutra::RSRP:
-                mp = m_storedMeasValues[m_cellId].rsrp;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                NS_ASSERT (reportConfigEutra.threshold2.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
-                thresh1 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
-                thresh2 = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold2.range);
-                break;
-              case LteRrcSap::ReportConfigEutra::RSRQ:
-                mp = m_storedMeasValues[m_cellId].rsrq;
-                NS_ASSERT (reportConfigEutra.threshold1.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                NS_ASSERT (reportConfigEutra.threshold2.choice
-                           == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
-                thresh1 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
-                thresh2 = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold2.range);
-                break;
-              default:
-                NS_FATAL_ERROR ("unsupported triggerQuantity");
-                break;
-            }
-
-          // Inequality A5-1 (Entering condition 1): Mp + Hys < Thresh1
-          bool entryCond = mp + hys < thresh1;
-
-          if (entryCond)
-            {
-              for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-                   storedMeasIt != m_storedMeasValues.end ();
-                   ++storedMeasIt)
-                {
-                  uint16_t cellId = storedMeasIt->first;
-                  if (cellId == m_cellId)
-                    {
-                      continue;
-                    }
-
-                  switch (reportConfigEutra.triggerQuantity)
-                    {
-                      case LteRrcSap::ReportConfigEutra::RSRP:
-                        mn = storedMeasIt->second.rsrp;
-                        break;
-                      case LteRrcSap::ReportConfigEutra::RSRQ:
-                        mn = storedMeasIt->second.rsrq;
-                        break;
-                      default:
-                        NS_FATAL_ERROR ("unsupported triggerQuantity");
-                        break;
-                    }
-
-                  bool hasTriggered = isMeasIdInReportList
-                    && (measReportIt->second.cellsTriggeredList.find (cellId)
-                        != measReportIt->second.cellsTriggeredList.end ());
-
-                  // Inequality A5-2 (Entering condition 2): Mn + Ofn + Ocn - Hys > Thresh2
-
-                  entryCond = mn + ofn + ocn - hys > thresh2;
-
-                  if (entryCond)
-                    {
-                      if (!hasTriggered)
-                        {
-                          concernedCellsEntry.push_back (cellId);
-                          eventEntryCondApplicable = true;
-                        }
-                    }
-                  else if (reportConfigEutra.timeToTrigger > 0)
-                    {
-                      CancelEnteringTrigger (measId, cellId);
-                    }
-
-                  NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
-                                     << " mn=" << mn << " mp=" << mp
-                                     << " thresh2=" << thresh2
-                                     << " thresh1=" << thresh1
-                                     << " entryCond=" << entryCond);
-
-                } // end of for (storedMeasIt)
-
-            } // end of if (entryCond)
-          else
-            {
-              NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
-                                 << " mp=" << mp << " thresh1=" << thresh1
-                                 << " entryCond=" << entryCond);
-
-              if (reportConfigEutra.timeToTrigger > 0)
-                {
-                  CancelEnteringTrigger (measId);
-                }
-            }
-
-          if (isMeasIdInReportList)
-            {
-              // Inequality A5-3 (Leaving condition 1): Mp - Hys > Thresh1
-              bool leavingCond = mp - hys > thresh1;
-
-              if (leavingCond)
-                {
-                  if (reportConfigEutra.timeToTrigger == 0)
-                    {
-                      // leaving condition #2 does not have to be checked
-
-                      for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-                           storedMeasIt != m_storedMeasValues.end ();
-                           ++storedMeasIt)
-                        {
-                          uint16_t cellId = storedMeasIt->first;
-                          if (cellId == m_cellId)
-                            {
-                              continue;
-                            }
-
-                          if (measReportIt->second.cellsTriggeredList.find (cellId)
-                              != measReportIt->second.cellsTriggeredList.end ())
-                            {
-                              concernedCellsLeaving.push_back (cellId);
-                              eventLeavingCondApplicable = true;
-                            }
-                        }
-                    } // end of if (reportConfigEutra.timeToTrigger == 0)
-                  else
-                    {
-                      // leaving condition #2 has to be checked to cancel time-to-trigger
-
-                      for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-                           storedMeasIt != m_storedMeasValues.end ();
-                           ++storedMeasIt)
-                        {
-                          uint16_t cellId = storedMeasIt->first;
-                          if (cellId == m_cellId)
-                            {
-                              continue;
-                            }
-
-                          if (measReportIt->second.cellsTriggeredList.find (cellId)
-                              != measReportIt->second.cellsTriggeredList.end ())
-                            {
-                              switch (reportConfigEutra.triggerQuantity)
-                                {
-                                  case LteRrcSap::ReportConfigEutra::RSRP:
-                                    mn = storedMeasIt->second.rsrp;
-                                    break;
-                                  case LteRrcSap::ReportConfigEutra::RSRQ:
-                                    mn = storedMeasIt->second.rsrq;
-                                    break;
-                                  default:
-                                    NS_FATAL_ERROR ("unsupported triggerQuantity");
-                                    break;
-                                }
-
-                              // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
-
-                              leavingCond = mn + ofn + ocn + hys < thresh2;
-
-                              if (!leavingCond)
-                                {
-                                  CancelLeavingTrigger (measId, cellId);
-                                }
-
-                              /*
-                               * Whatever the result of leaving condition #2, this
-                               * cell is still "in", because leaving condition #1
-                               * is already true.
-                               */
-                              concernedCellsLeaving.push_back (cellId);
-                              eventLeavingCondApplicable = true;
-
-                              NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
-                                                 << " mn=" << mn << " mp=" << mp
-                                                 << " thresh2=" << thresh2
-                                                 << " thresh1=" << thresh1
-                                                 << " leavingCond=" << leavingCond);
-
-                            } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
-                              //            != measReportIt->second.cellsTriggeredList.end ())
-
-                        } // end of for (storedMeasIt)
-
-                    } // end of else of if (reportConfigEutra.timeToTrigger == 0)
-
-                  NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
-                                     << " mp=" << mp << " thresh1=" << thresh1
-                                     << " leavingCond=" << leavingCond);
-
-                } // end of if (leavingCond)
-              else
-                {
-                  if (reportConfigEutra.timeToTrigger > 0)
-                    {
-                      CancelLeavingTrigger (measId);
-                    }
-
-                  // check leaving condition #2
-
-                  for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
-                       storedMeasIt != m_storedMeasValues.end ();
-                       ++storedMeasIt)
-                    {
-                      uint16_t cellId = storedMeasIt->first;
-                      if (cellId == m_cellId)
-                        {
-                          continue;
-                        }
-
-                      if (measReportIt->second.cellsTriggeredList.find (cellId)
-                          != measReportIt->second.cellsTriggeredList.end ())
-                        {
-                          switch (reportConfigEutra.triggerQuantity)
-                            {
+                        if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            != measReportIt->second.cellsTriggeredList.end ())
+                          {
+                            switch (reportConfigEutra.triggerQuantity)
+                              {
                               case LteRrcSap::ReportConfigEutra::RSRP:
                                 mn = storedMeasIt->second.rsrp;
                                 break;
@@ -2513,39 +2443,109 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                               default:
                                 NS_FATAL_ERROR ("unsupported triggerQuantity");
                                 break;
-                            }
+                              }
 
-                          // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
-                          leavingCond = mn + ofn + ocn + hys < thresh2;
+                            // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
 
-                          if (leavingCond)
-                            {
-                              concernedCellsLeaving.push_back (cellId);
-                              eventLeavingCondApplicable = true;
-                            }
+                            leavingCond = mn + ofn + ocn + hys < thresh2;
 
-                          NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
-                                             << " mn=" << mn << " mp=" << mp
-                                             << " thresh2=" << thresh2
-                                             << " thresh1=" << thresh1
-                                             << " leavingCond=" << leavingCond);
+                            if (!leavingCond)
+                              {
+                                CancelLeavingTrigger (measId, cellId);
+                              }
 
-                        } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
-                          //            != measReportIt->second.cellsTriggeredList.end ())
+                            /*
+                             * Whatever the result of leaving condition #2, this
+                             * cell is still "in", because leaving condition #1
+                             * is already true.
+                             */
+                            concernedCellsLeaving.push_back (cellId);
+                            eventLeavingCondApplicable = true;
 
-                    } // end of for (storedMeasIt)
+                            NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
+                                               << " mn=" << mn << " mp=" << mp
+                                               << " thresh2=" << thresh2
+                                               << " thresh1=" << thresh1
+                                               << " leavingCond=" << leavingCond);
 
-                } // end of else of if (leavingCond)
+                          } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
+                            //            != measReportIt->second.cellsTriggeredList.end ())
 
-            } // end of if (isMeasIdInReportList)
+                      } // end of for (storedMeasIt)
 
-        } // end of case LteRrcSap::ReportConfigEutra::EVENT_A5
+                  } // end of else of if (reportConfigEutra.timeToTrigger == 0)
 
-        break;
+                NS_LOG_LOGIC (this << " event A5: serving cell " << m_cellId
+                                   << " mp=" << mp << " thresh1=" << thresh1
+                                   << " leavingCond=" << leavingCond);
 
-      default:
-        NS_FATAL_ERROR ("unsupported eventId " << reportConfigEutra.eventId);
-        break;
+              } // end of if (leavingCond)
+            else
+              {
+                if (reportConfigEutra.timeToTrigger > 0)
+                  {
+                    CancelLeavingTrigger (measId);
+                  }
+
+                // check leaving condition #2
+
+                for (std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.begin ();
+                     storedMeasIt != m_storedMeasValues.end ();
+                     ++storedMeasIt)
+                  {
+                    uint16_t cellId = storedMeasIt->first;
+                    if (cellId == m_cellId)
+                      {
+                        continue;
+                      }
+
+                    if (measReportIt->second.cellsTriggeredList.find (cellId)
+                        != measReportIt->second.cellsTriggeredList.end ())
+                      {
+                        switch (reportConfigEutra.triggerQuantity)
+                          {
+                          case LteRrcSap::ReportConfigEutra::RSRP:
+                            mn = storedMeasIt->second.rsrp;
+                            break;
+                          case LteRrcSap::ReportConfigEutra::RSRQ:
+                            mn = storedMeasIt->second.rsrq;
+                            break;
+                          default:
+                            NS_FATAL_ERROR ("unsupported triggerQuantity");
+                            break;
+                          }
+
+                        // Inequality A5-4 (Leaving condition 2): Mn + Ofn + Ocn + Hys < Thresh2
+                        leavingCond = mn + ofn + ocn + hys < thresh2;
+
+                        if (leavingCond)
+                          {
+                            concernedCellsLeaving.push_back (cellId);
+                            eventLeavingCondApplicable = true;
+                          }
+
+                        NS_LOG_LOGIC (this << " event A5: neighbor cell " << cellId
+                                           << " mn=" << mn << " mp=" << mp
+                                           << " thresh2=" << thresh2
+                                           << " thresh1=" << thresh1
+                                           << " leavingCond=" << leavingCond);
+
+                      } // end of if (measReportIt->second.cellsTriggeredList.find (cellId)
+                        //            != measReportIt->second.cellsTriggeredList.end ())
+
+                  } // end of for (storedMeasIt)
+
+              } // end of else of if (leavingCond)
+
+          } // end of if (isMeasIdInReportList)
+
+      } // end of case LteRrcSap::ReportConfigEutra::EVENT_A5
+
+      break;
+
+    default:
+      NS_FATAL_ERROR ("unsupported eventId " << reportConfigEutra.eventId);
+      break;
 
     } // switch (event type)
 
