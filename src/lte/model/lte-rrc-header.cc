@@ -650,24 +650,24 @@ RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
       measResults.haveMeasResultNeighCells = false;
     }
 
-    std::bitset<4> measResultOptional;
-    measResultOptional.set (3,  measResults.haveScellsMeas);
-    measResultOptional.set (2, false); //LocationInfo-r10
-    measResultOptional.set (1, false); // MeasResultForECID-r9
-    measResultOptional.set (0, measResults.haveMeasResultNeighCells);
-    SerializeSequence(measResultOptional,true);
+  std::bitset<4> measResultOptional;
+  measResultOptional.set (3,  measResults.haveMeasResultServFreqList);
+  measResultOptional.set (2, false); //LocationInfo-r10
+  measResultOptional.set (1, false); // MeasResultForECID-r9
+  measResultOptional.set (0, measResults.haveMeasResultNeighCells);
+  SerializeSequence (measResultOptional, true);
 
   // Serialize measId
   SerializeInteger (measResults.measId,1,MAX_MEAS_ID);
 
-  // Serialize measResultServCell sequence
-  SerializeSequence (std::bitset<0> (0),false);
+  // Serialize measResultPCell sequence
+  SerializeSequence (std::bitset<0> (0), false);
 
   // Serialize rsrpResult
-  SerializeInteger (measResults.rsrpResult,0,97);
+  SerializeInteger (measResults.measResultPCell.rsrpResult,0,97);
 
   // Serialize rsrqResult
-  SerializeInteger (measResults.rsrqResult,0,34);
+  SerializeInteger (measResults.measResultPCell.rsrqResult,0,34);
 
   if (measResults.haveMeasResultNeighCells)
     {
@@ -728,40 +728,48 @@ RrcAsn1Header::SerializeMeasResults (LteRrcSap::MeasResults measResults) const
             }
         }
     }
-    if (measResults.haveScellsMeas)
-      {
-        // Serialize measResultNeighCells
-        SerializeSequenceOf (measResults.measScellResultList.measResultScell.size (),MAX_SCELL_REPORT,1);
-        // serialize MeasResultServFreqList-r10 elements in the list
-        std::list<LteRrcSap::MeasResultScell>::iterator it;
-        for (it = measResults.measScellResultList.measResultScell.begin (); it != measResults.measScellResultList.measResultScell.end (); it++)
-          {
-            // Serialize measId
-            SerializeInteger (it->servFreqId,0,MAX_MEAS_ID); // ToDo: change with FreqId, currently is the componentCarrierId
-             // Serialize MeasResultServFreqList
-            std::bitset<2> measResultScellPresent;
-            measResultScellPresent[0] = measResults.measScellResultList.haveMeasurementResultsServingSCells;
-            measResultScellPresent[1] = measResults.measScellResultList.haveMeasurementResultsNeighCell; // Not implemented
-            SerializeSequence (measResultScellPresent,true);
 
-            // Serialize measResult
-            std::bitset<2> measResultScellFieldsPresent;
-            measResultScellFieldsPresent[1] = it->haveRsrpResult;
-            measResultScellFieldsPresent[0] = it->haveRsrqResult;
-            SerializeSequence (measResultScellFieldsPresent,true);
+  // measResultServFreqList-r10 serialization
+  if (measResults.haveMeasResultServFreqList)
+    {
+      // Serialize measResultServFreqList-r10
+      SerializeSequenceOf (measResults.measResultServFreqList.size (), MAX_SCELL_REPORT, 1);
+      // serialize MeasResultServFreqList-r10 elements in the list
+      for (const auto &it: measResults.measResultServFreqList)
+        {
+          // Serialize MeasResultServFreq-r10
+          std::bitset<2> measResultServFreqPresent;
+          measResultServFreqPresent[0] = it.haveMeasResultSCell;
+          measResultServFreqPresent[1] = it.haveMeasResultBestNeighCell;
+          SerializeSequence (measResultServFreqPresent, true);
 
-            if (it->haveRsrpResult)
-              {
-                SerializeInteger (it->rsrpResult,0,97);
-              }
+          // Serialize servFreqId-r10
+          SerializeInteger (it.servFreqId, 0, 7);
 
-            if (it->haveRsrqResult)
-              {
-                SerializeInteger (it->rsrqResult,0,34);
-              }
-            
-          }
-      }
+          if (it.haveMeasResultSCell)
+            {
+              // Serialize rsrpResultSCell-r10
+              SerializeInteger (it.measResultSCell.rsrpResult, 0, 97);
+
+              // Serialize rsrqResultSCell-r10
+              SerializeInteger (it.measResultSCell.rsrqResult, 0, 34);
+            }
+
+          if (it.haveMeasResultBestNeighCell)
+            {
+              // Serialize physCellId-r10
+              SerializeInteger (it.measResultBestNeighCell.physCellId, 0, 503);
+
+              // Serialize rsrpResultNCell-r10
+              SerializeInteger (it.measResultBestNeighCell.rsrpResult, 0, 97);
+
+              // Serialize rsrqResultNCell-r10
+              SerializeInteger (it.measResultBestNeighCell.rsrqResult, 0, 34);
+            }
+
+          NS_ASSERT (!it.haveMeasResultBestNeighCell); // Not implemented
+        }
+    }
 }
 
 void
@@ -1729,22 +1737,32 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
   {
     // 3 optional fields. Extension marker not present.
     std::bitset<3> noncriticalExtension_v1020;
-    noncriticalExtension_v1020.set (2,0); // No sCellToRealeaseList-r10
-    noncriticalExtension_v1020.set (1,1); // sCellToAddModList-r10
-    noncriticalExtension_v1020.set (0,0); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
+    noncriticalExtension_v1020.set (2, !nonCriticalExtension.sCellToReleaseList.empty ()); // sCellToReleaseList-r10
+    noncriticalExtension_v1020.set (1, !nonCriticalExtension.sCellToAddModList.empty ()); // sCellToAddModList-r10
+    noncriticalExtension_v1020.set (0, 0); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
     SerializeSequence (noncriticalExtension_v1020,false);
-    if (!nonCriticalExtension.sCellsToAddModList.empty ())
+
+    if (!nonCriticalExtension.sCellToReleaseList.empty ())
       {
-        SerializeSequenceOf (nonCriticalExtension.sCellsToAddModList.size (),MAX_OBJECT_ID,1);
-        for (std::list<LteRrcSap::SCellToAddMod>::iterator it = nonCriticalExtension.sCellsToAddModList.begin (); it != nonCriticalExtension.sCellsToAddModList.end (); it++)
+        SerializeSequenceOf (nonCriticalExtension.sCellToReleaseList.size (), MAX_OBJECT_ID, 1);
+        for (uint8_t sCellIndex: nonCriticalExtension.sCellToReleaseList)
+          {
+            SerializeInteger (sCellIndex, 1, 7); // sCellIndex-r10
+          }
+      }
+
+    if (!nonCriticalExtension.sCellToAddModList.empty ())
+      {
+        SerializeSequenceOf (nonCriticalExtension.sCellToAddModList.size (), MAX_OBJECT_ID, 1);
+        for (auto &it: nonCriticalExtension.sCellToAddModList)
           {
             std::bitset<4> sCellToAddMod_r10;
             sCellToAddMod_r10.set (3,1); // sCellIndex
             sCellToAddMod_r10.set (2,1); // CellIdentification
             sCellToAddMod_r10.set (1,1); // RadioResourceConfigCommonSCell
-            sCellToAddMod_r10.set (0,it->haveRadioResourceConfigDedicatedSCell); // No nonCriticalExtension RRC
+            sCellToAddMod_r10.set (0, it.haveRadioResourceConfigDedicatedSCell); // No nonCriticalExtension RRC
             SerializeSequence (sCellToAddMod_r10, false);
-            SerializeInteger (it->sCellIndex,1,MAX_OBJECT_ID); //sCellIndex
+            SerializeInteger (it.sCellIndex, 1, 7); // sCellIndex-r10
 
             // Serialize CellIdentification
             std::bitset<2> cellIdentification_r10;
@@ -1752,25 +1770,20 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
             cellIdentification_r10.set(0,1); // dl-CarrierFreq-r10
             SerializeSequence (cellIdentification_r10, false);
 
-            SerializeInteger (it->cellIdentification.physCellId,1,65536);
-            SerializeInteger (it->cellIdentification.dlCarrierFreq,1,MAX_EARFCN);
+            SerializeInteger (it.cellIdentification.physCellId, 1, 65536);
+            SerializeInteger (it.cellIdentification.dlCarrierFreq, 1, MAX_EARFCN);
             
             //Serialize RadioResourceConfigCommonSCell
-            SerializeRadioResourceConfigCommonSCell (it->radioResourceConfigCommonSCell);
+            SerializeRadioResourceConfigCommonSCell (it.radioResourceConfigCommonSCell);
             
-            if (it->haveRadioResourceConfigDedicatedSCell)
+            if (it.haveRadioResourceConfigDedicatedSCell)
               {
                 //Serialize RadioResourceConfigDedicatedSCell
-                SerializeRadioResourceDedicatedSCell (it->radioResourceConfigDedicateSCell);
+                SerializeRadioResourceDedicatedSCell (it.radioResourceConfigDedicatedSCell);
               }
             
           }
       }
-    else
-      {
-        //        NS_ASSERT_MSG ( this << "NonCriticalExtension.sCellsToAddModList cannot be empty ", false);
-      }
-  
   }
   void
   RrcAsn1Header::SerializeRadioResourceConfigCommonSCell (LteRrcSap::RadioResourceConfigCommonSCell rrccsc) const
@@ -2600,44 +2613,64 @@ RrcAsn1Header::Print (std::ostream &os) const
         bIterator = DeserializeSequence (&nonCriticalExtension_v920, false, bIterator);
         if (nonCriticalExtension_v920[0])
           {
-            // Continue to deserialize futere Release optional fields
+            // Continue to deserialize future Release optional fields
             std::bitset<3> nonCriticalExtension_v1020;
             bIterator = DeserializeSequence (&nonCriticalExtension_v1020, false, bIterator);
-            NS_ASSERT (!nonCriticalExtension_v1020[2]); // No sCellToRealeaseList-r10
-            NS_ASSERT (nonCriticalExtension_v1020[1]); // sCellToAddModList-r10
-            NS_ASSERT (!nonCriticalExtension_v1020[0]); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
 
-            int numElems;
-            bIterator = DeserializeSequenceOf (&numElems,MAX_OBJECT_ID,1,bIterator);
-            nonCriticalExtension->sCellsToAddModList.clear ();
-            // Deserialize SCellToAddMod
-            for (int i = 0; i < numElems; i++)
+            if (nonCriticalExtension_v1020[2])
               {
-                std::bitset<4> sCellToAddMod_r10;
-                bIterator = DeserializeSequence (&sCellToAddMod_r10, false, bIterator); 
-                
-                LteRrcSap::SCellToAddMod sctam;
-                // Deserialize sCellIndex
-                NS_ASSERT (sCellToAddMod_r10[3]); // sCellIndex
-                int n;
-                bIterator = DeserializeInteger (&n,1,MAX_OBJECT_ID,bIterator);
-                sctam.sCellIndex = n;
-                // Deserialize CellIdentification
-                NS_ASSERT (sCellToAddMod_r10[2]); // CellIdentification
-                bIterator = DeserializeCellIdentification (&sctam.cellIdentification, bIterator);
+                // sCellToReleaseList-r10
+                int numElems;
 
-                // Deserialize RadioResourceConfigCommonSCell
-                NS_ASSERT (sCellToAddMod_r10[1]);
-                bIterator = DeserializeRadioResourceConfigCommonSCell (&sctam.radioResourceConfigCommonSCell, bIterator);
-                sctam.haveRadioResourceConfigDedicatedSCell = sCellToAddMod_r10[0];
-                if (sCellToAddMod_r10[0])
+                bIterator = DeserializeSequenceOf (&numElems, MAX_OBJECT_ID, 1, bIterator);
+                nonCriticalExtension->sCellToReleaseList.clear ();
+
+                for (int i = 0; i < numElems; i++)
                   {
-                    //Deserialize RadioResourceConfigDedicatedSCell
-                    bIterator = DeserializeRadioResourceConfigDedicatedSCell (&sctam.radioResourceConfigDedicateSCell, bIterator);
+                    // Deserialize SCellIndex-r10
+                    int sCellIndex;
+                    bIterator = DeserializeInteger (&sCellIndex, 1, 7, bIterator);
+                    nonCriticalExtension->sCellToReleaseList.push_back (sCellIndex);
                   }
-
-                nonCriticalExtension->sCellsToAddModList.insert (nonCriticalExtension->sCellsToAddModList.end (), sctam);
               }
+
+            if (nonCriticalExtension_v1020[1])
+              {
+                // sCellToAddModList-r10
+
+                int numElems;
+                bIterator = DeserializeSequenceOf (&numElems, MAX_OBJECT_ID, 1, bIterator);
+                nonCriticalExtension->sCellToAddModList.clear ();
+                // Deserialize SCellToAddMod
+                for (int i = 0; i < numElems; i++)
+                  {
+                    std::bitset<4> sCellToAddMod_r10;
+                    bIterator = DeserializeSequence (&sCellToAddMod_r10, false, bIterator);
+
+                    LteRrcSap::SCellToAddMod sctam;
+                    // Deserialize sCellIndex
+                    NS_ASSERT (sCellToAddMod_r10[3]); // sCellIndex
+                    int n;
+                    bIterator = DeserializeInteger (&n, 1, 7, bIterator);
+                    sctam.sCellIndex = n;
+                    // Deserialize CellIdentification
+                    NS_ASSERT (sCellToAddMod_r10[2]); // CellIdentification
+                    bIterator = DeserializeCellIdentification (&sctam.cellIdentification, bIterator);
+
+                    // Deserialize RadioResourceConfigCommonSCell
+                    NS_ASSERT (sCellToAddMod_r10[1]);
+                    bIterator = DeserializeRadioResourceConfigCommonSCell (&sctam.radioResourceConfigCommonSCell, bIterator);
+                    if (sCellToAddMod_r10[0])
+                      {
+                        //Deserialize RadioResourceConfigDedicatedSCell
+                        bIterator = DeserializeRadioResourceConfigDedicatedSCell (&sctam.radioResourceConfigDedicatedSCell, bIterator);
+                      }
+
+                    nonCriticalExtension->sCellToAddModList.push_back (sctam);
+                  }
+              }
+
+            NS_ASSERT (!nonCriticalExtension_v1020[0]); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
           }
       }
 
@@ -2829,7 +2862,7 @@ RrcAsn1Header::Print (std::ostream &os) const
 
                  int txmode;
                  bIterator = DeserializeEnum (8,&txmode,bIterator);
-                 pcdsc->antennaInfoUl.transmissionMode = txmode;
+                 pcdsc->antennaInfo.transmissionMode = txmode;
 
                  if (codebookSubsetRestrictionPresent[0])
                    {
@@ -3553,14 +3586,14 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
 
   // Deserialize rsrpResult
   bIterator = DeserializeInteger (&n, 0, 97, bIterator);
-  measResults->rsrpResult = n;
+  measResults->measResultPCell.rsrpResult = n;
 
   // Deserialize rsrqResult
   bIterator = DeserializeInteger (&n, 0, 34, bIterator);
-  measResults->rsrqResult = n;
+  measResults->measResultPCell.rsrqResult = n;
 
   measResults->haveMeasResultNeighCells = measResultOptionalPresent[0];
-  measResults->haveScellsMeas = measResultOptionalPresent[3];
+  measResults->haveMeasResultServFreqList = measResultOptionalPresent[3];
   if ( measResults->haveMeasResultNeighCells)
     {
       int measResultNeighCellsChoice;
@@ -3663,52 +3696,54 @@ RrcAsn1Header::DeserializeMeasResults (LteRrcSap::MeasResults *measResults, Buff
           // ...
         }
     }
-    if (measResults->haveScellsMeas)
-      {
+  if (measResults->haveMeasResultServFreqList)
+    {
+      int numElems;
+      bIterator = DeserializeSequenceOf (&numElems, MAX_SCELL_REPORT, 1, bIterator);
+      for (int i = 0; i < numElems; i++)
+        {
+          LteRrcSap::MeasResultServFreq measResultServFreq;
 
-        int numElems;
-        bIterator = DeserializeSequenceOf (&numElems,MAX_SCELL_REPORT,1,bIterator);
-        for (int i = 0; i < numElems; i++)
-          {
-            LteRrcSap::MeasResultScell measResultScell;
-            int measScellId;
-            // Deserialize measId
-            bIterator = DeserializeInteger (&measScellId, 1,MAX_SCELL_REPORT,bIterator);
-            measResultScell.servFreqId = measScellId;
-            std::bitset<2> measResultScellPresent;
-            bIterator = DeserializeSequence (&measResultScellPresent,true,bIterator);
-            measResults->measScellResultList.haveMeasurementResultsServingSCells = measResultScellPresent[0];
-           measResults->measScellResultList.haveMeasurementResultsNeighCell = measResultScellPresent[1];
-           if (measResults->measScellResultList.haveMeasurementResultsServingSCells)
-             {
-               // Deserialize measResult
-               std::bitset<2> measResultOpts;
-               bIterator = DeserializeSequence (&measResultOpts, true, bIterator);
+          // Deserialize MeasResultServFreq-r10
+          std::bitset<2> measResultScellPresent;
+          bIterator = DeserializeSequence (&measResultScellPresent, true, bIterator);
+          measResultServFreq.haveMeasResultSCell = measResultScellPresent[0];
+          measResultServFreq.haveMeasResultBestNeighCell = measResultScellPresent[1];
 
-               measResultScell.haveRsrpResult = measResultOpts[1];
-               if (measResultOpts[1])
-                 {
-                   // Deserialize rsrpResult
-                   bIterator = DeserializeInteger (&n,0,97,bIterator);
-                   measResultScell.rsrpResult = n;
-                 }
+          // Deserialize servFreqId-r10
+          int servFreqId;
+          bIterator = DeserializeInteger (&servFreqId, 0, 7, bIterator);
+          measResultServFreq.servFreqId = servFreqId;
 
-               measResultScell.haveRsrqResult = measResultOpts[0];
-               if (measResultOpts[0])
-                 {
-                   // Deserialize rsrqResult
-                   bIterator = DeserializeInteger (&n,0,34,bIterator);
-                   measResultScell.rsrqResult = n;
-                 }
-             }
-           if (measResults->measScellResultList.haveMeasurementResultsNeighCell)
-             {
-               // Deserialize measResultBestNeighCell
-             }
-           measResults->measScellResultList.measResultScell.push_back (measResultScell);
-          }
-        
-      }
+          if (measResultServFreq.haveMeasResultSCell)
+            {
+              // Deserialize rsrpResult
+              bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+              measResultServFreq.measResultSCell.rsrpResult = n;
+
+              // Deserialize rsrqResult
+              bIterator = DeserializeInteger (&n, 0, 34, bIterator);
+              measResultServFreq.measResultSCell.rsrqResult = n;
+            }
+
+          if (measResultServFreq.haveMeasResultBestNeighCell)
+            {
+              // Deserialize physCellId-r10
+              bIterator = DeserializeInteger (&n, 0, 503, bIterator);
+              measResultServFreq.measResultBestNeighCell.physCellId = n;
+
+              // Deserialize rsrpResultNCell-r10
+              bIterator = DeserializeInteger (&n, 0, 97, bIterator);
+              measResultServFreq.measResultBestNeighCell.rsrpResult = n;
+
+              // Deserialize rsrqResultNCell-r10
+              bIterator = DeserializeInteger (&n, 0, 34, bIterator);
+              measResultServFreq.measResultBestNeighCell.rsrqResult = n;
+            }
+
+          measResults->measResultServFreqList.push_back (measResultServFreq);
+        }
+    }
   return bIterator;
 }
 
@@ -5197,7 +5232,7 @@ RrcConnectionReconfigurationHeader::PreSerialize () const
         // Serialize NonCriticalExtension RRCConnectionReconfiguration-v920-IEs sequence:
         // 3 optional fields. Extension marker not present.
         std::bitset<3> noncriticalExtension_v920;
-        noncriticalExtension_v920.set (1,0); // No otehrConfig-r9
+        noncriticalExtension_v920.set (1,0); // No otherConfig-r9
         noncriticalExtension_v920.set (1,0); // No fullConfig-r9
         //Enable RRCCoonectionReconfiguration-v1020-IEs
         noncriticalExtension_v920.set (0,m_haveNonCriticalExtension); // Implemented nonCriticalExtension because compatibility with R10 - CA
@@ -6754,8 +6789,8 @@ void
 MeasurementReportHeader::Print (std::ostream &os) const
 {
   os << "measId = " << (int)m_measurementReport.measResults.measId << std::endl;
-  os << "rsrpResult = " << (int)m_measurementReport.measResults.rsrpResult << std::endl;
-  os << "rsrqResult = " << (int)m_measurementReport.measResults.rsrqResult << std::endl;
+  os << "rsrpResult = " << (int)m_measurementReport.measResults.measResultPCell.rsrpResult << std::endl;
+  os << "rsrqResult = " << (int)m_measurementReport.measResults.measResultPCell.rsrqResult << std::endl;
   os << "haveMeasResultNeighCells = " << (int)m_measurementReport.measResults.haveMeasResultNeighCells << std::endl;
 
   if (m_measurementReport.measResults.haveMeasResultNeighCells)

@@ -104,6 +104,18 @@ public:
   virtual void SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn) = 0;
 
   /**
+   * \brief Get PHY cell ID
+   * \return cell ID this PHY is synchronized to
+   */
+  virtual uint16_t GetCellId () = 0;
+
+  /**
+   * \brief Get PHY DL EARFCN
+   * \return DL EARFCN this PHY is synchronized to
+   */
+  virtual uint32_t GetDlEarfcn () = 0;
+
+  /**
    * \param dlBandwidth the DL bandwidth in number of PRBs
    */
   virtual void SetDlBandwidth (uint16_t dlBandwidth) = 0;
@@ -316,6 +328,8 @@ public:
   virtual void StartCellSearch (uint32_t dlEarfcn);
   virtual void SynchronizeWithEnb (uint16_t cellId);
   virtual void SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn);
+  virtual uint16_t GetCellId ();
+  virtual uint32_t GetDlEarfcn ();
   virtual void SetDlBandwidth (uint16_t dlBandwidth);
   virtual void ConfigureUplink (uint32_t ulEarfcn, uint16_t ulBandwidth);
   virtual void ConfigureReferenceSignalPower (int8_t referenceSignalPower);
@@ -371,6 +385,20 @@ void
 MemberLteUeCphySapProvider<C>::SynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn)
 {
   m_owner->DoSynchronizeWithEnb (cellId, dlEarfcn);
+}
+
+template <class C>
+uint16_t
+MemberLteUeCphySapProvider<C>::GetCellId ()
+{
+  return m_owner->DoGetCellId ();
+}
+
+template <class C>
+uint32_t
+MemberLteUeCphySapProvider<C>::GetDlEarfcn ()
+{
+  return m_owner->DoGetDlEarfcn ();
 }
 
 template <class C>

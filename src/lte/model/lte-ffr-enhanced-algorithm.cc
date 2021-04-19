@@ -861,8 +861,8 @@ LteFfrEnhancedAlgorithm::DoReportUeMeas (uint16_t rnti,
 {
   NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
   NS_LOG_INFO ("RNTI :" << rnti << " MeasId: " << (uint16_t) measResults.measId
-                        << " RSRP: " << (uint16_t)measResults.rsrpResult
-                        << " RSRQ: " << (uint16_t)measResults.rsrqResult);
+                        << " RSRP: " << (uint16_t)measResults.measResultPCell.rsrpResult
+                        << " RSRQ: " << (uint16_t)measResults.measResultPCell.rsrqResult);
 
   if (measResults.measId != m_measId)
     {
@@ -877,7 +877,7 @@ LteFfrEnhancedAlgorithm::DoReportUeMeas (uint16_t rnti,
         }
 
       it = m_ues.find (rnti);
-      if (measResults.rsrqResult < m_rsrqThreshold)
+      if (measResults.measResultPCell.rsrqResult < m_rsrqThreshold)
         {
           if (it->second != EdgeArea)
             {

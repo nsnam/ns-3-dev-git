@@ -148,7 +148,7 @@ NS_OBJECT_ENSURE_REGISTERED (UeManager);
 
 UeManager::UeManager ()
 {
-  NS_FATAL_ERROR ("this constructor is not expected to be used");
+  NS_FATAL_ERROR ("this constructor is not espected to be used");
 }
 
 
@@ -640,44 +640,101 @@ UeManager::PrepareHandover (uint16_t cellId)
     case CONNECTED_NORMALLY:
       {
         m_targetCellId = cellId;
-        EpcX2SapProvider::HandoverRequestParams params;
-        params.oldEnbUeX2apId = m_rnti;
-        params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
-        params.sourceCellId   = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
-        params.targetCellId   = cellId;
-        params.mmeUeS1apId    = m_imsi;
-        params.ueAggregateMaxBitRateDownlink = 200 * 1000;
-        params.ueAggregateMaxBitRateUplink = 100 * 1000;
-        params.bearers = GetErabList ();
 
-        LteRrcSap::HandoverPreparationInfo hpi;
-        hpi.asConfig.sourceUeIdentity = m_rnti;
-        hpi.asConfig.sourceDlCarrierFreq = m_rrc->m_dlEarfcn;
-        hpi.asConfig.sourceMeasConfig = m_rrc->m_ueMeasConfig;
-        hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
-        hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
-        hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIndication;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIdentity;
-        LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->GetRachConfig ();
-        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
-        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
-        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
-        hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
-        hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulCarrierFreq = m_rrc->m_ulEarfcn;
-        hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulBandwidth = m_rrc->m_ulBandwidth;
-        params.rrcContext = m_rrc->m_rrcSapUser->EncodeHandoverPreparationInformation (hpi);
+        auto sourceComponentCarrier = DynamicCast<ComponentCarrierEnb> (m_rrc->m_componentCarrierPhyConf.at (m_componentCarrierId));
+        NS_ASSERT (m_targetCellId != sourceComponentCarrier->GetCellId ());
 
-        NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
-        NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
-        NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
-        NS_LOG_LOGIC ("mmeUeS1apId = " << params.mmeUeS1apId);
-        NS_LOG_LOGIC ("rrcContext   = " << params.rrcContext);
+        if (m_rrc->HasCellId (cellId))
+          {
+            // Intra-eNB handover
+            uint8_t componentCarrierId = m_rrc->CellToComponentCarrierId (cellId);
+            uint16_t rnti = m_rrc->AddUe (UeManager::HANDOVER_JOINING, componentCarrierId);
+            LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_rrc->m_cmacSapProvider.at (componentCarrierId)->AllocateNcRaPreamble (rnti);
+            if (anrcrv.valid == false)
+              {
+                NS_LOG_INFO (this << " failed to allocate a preamble for non-contention based RA => cannot perform HO");
+                NS_FATAL_ERROR ("should trigger HO Preparation Failure, but it is not implemented");
+                return;
+              }
 
-        m_rrc->m_x2SapProvider->SendHandoverRequest (params);
-        SwitchToState (HANDOVER_PREPARATION);
+            Ptr<UeManager> ueManager = m_rrc->GetUeManager (rnti);
+            ueManager->SetSource (sourceComponentCarrier->GetCellId (), m_rnti);
+            ueManager->SetImsi (m_imsi);
+
+            // Setup data radio bearers
+            for (auto &it: m_drbMap)
+              {
+                ueManager->SetupDataRadioBearer (it.second->m_epsBearer,
+                                                 it.second->m_epsBearerIdentity,
+                                                 it.second->m_gtpTeid,
+                                                 it.second->m_transportLayerAddress);
+
+              }
+
+            LteRrcSap::RrcConnectionReconfiguration handoverCommand = GetRrcConnectionReconfigurationForHandover (componentCarrierId);
+
+            handoverCommand.mobilityControlInfo.newUeIdentity = rnti;
+            handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
+            handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
+            handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
+
+            LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider.at (componentCarrierId)->GetRachConfig ();
+            handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+            handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+            handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+
+            m_rrc->m_rrcSapUser->SendRrcConnectionReconfiguration (m_rnti, handoverCommand);
+
+            // We skip handover preparation
+            SwitchToState (HANDOVER_LEAVING);
+            m_handoverLeavingTimeout = Simulator::Schedule (m_rrc->m_handoverLeavingTimeoutDuration,
+                                                            &LteEnbRrc::HandoverLeavingTimeout,
+                                                            m_rrc, m_rnti);
+            m_rrc->m_handoverStartTrace (m_imsi, sourceComponentCarrier->GetCellId (), m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
+          }
+        else
+          {
+            // Inter-eNB aka X2 handover
+
+            EpcX2SapProvider::HandoverRequestParams params;
+            params.oldEnbUeX2apId = m_rnti;
+            params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
+            params.sourceCellId   = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
+            params.targetCellId   = cellId;
+            params.mmeUeS1apId    = m_imsi;
+            params.ueAggregateMaxBitRateDownlink = 200 * 1000;
+            params.ueAggregateMaxBitRateUplink = 100 * 1000;
+            params.bearers = GetErabList ();
+
+            LteRrcSap::HandoverPreparationInfo hpi;
+            hpi.asConfig.sourceUeIdentity = m_rnti;
+            hpi.asConfig.sourceDlCarrierFreq = sourceComponentCarrier->GetDlEarfcn ();
+            hpi.asConfig.sourceMeasConfig = m_rrc->m_ueMeasConfig;
+            hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
+            hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = sourceComponentCarrier->GetDlBandwidth ();
+            hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
+            hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
+            hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
+            hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIndication;
+            hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIdentity;
+            LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->GetRachConfig ();
+            hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+            hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+            hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+            hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.txFailParam.connEstFailCount = rc.connEstFailCount;
+            hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulCarrierFreq = sourceComponentCarrier->GetUlEarfcn ();
+            hpi.asConfig.sourceSystemInformationBlockType2.freqInfo.ulBandwidth = sourceComponentCarrier->GetUlBandwidth ();
+            params.rrcContext = m_rrc->m_rrcSapUser->EncodeHandoverPreparationInformation (hpi);
+
+            NS_LOG_LOGIC ("oldEnbUeX2apId = " << params.oldEnbUeX2apId);
+            NS_LOG_LOGIC ("sourceCellId = " << params.sourceCellId);
+            NS_LOG_LOGIC ("targetCellId = " << params.targetCellId);
+            NS_LOG_LOGIC ("mmeUeS1apId = " << params.mmeUeS1apId);
+            NS_LOG_LOGIC ("rrcContext   = " << params.rrcContext);
+
+            m_rrc->m_x2SapProvider->SendHandoverRequest (params);
+            SwitchToState (HANDOVER_PREPARATION);
+          }
       }
       break;
 
@@ -706,12 +763,12 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = m_rrc->m_rrcSapUser->DecodeHandoverCommand (encodedHandoverCommand);
   if (handoverCommand.haveNonCriticalExtension)
     {
-      //Total number of component carriers = handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1 (Primary carrier)
-      if (handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1 != m_rrc->m_numberOfComponentCarriers)
+      //Total number of component carriers = handoverCommand.nonCriticalExtension.sCellToAddModList.size() + 1 (Primary carrier)
+      if (handoverCommand.nonCriticalExtension.sCellToAddModList.size() + 1 != m_rrc->m_numberOfComponentCarriers)
         {
           //Currently handover is only possible if source and target eNBs have equal number of component carriers
           NS_FATAL_ERROR ("The source and target eNBs have unequal number of component carriers. Target eNB CCs = "
-                           << handoverCommand.nonCriticalExtension.sCellsToAddModList.size() + 1
+                           << handoverCommand.nonCriticalExtension.sCellToAddModList.size() + 1
                            << " Source eNB CCs = " << m_rrc->m_numberOfComponentCarriers);
         }
     }
@@ -758,10 +815,49 @@ UeManager::GetRadioResourceConfigForHandoverPreparationInfo ()
 }
 
 LteRrcSap::RrcConnectionReconfiguration 
-UeManager::GetRrcConnectionReconfigurationForHandover ()
+UeManager::GetRrcConnectionReconfigurationForHandover (uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
-  return BuildRrcConnectionReconfiguration ();
+
+  LteRrcSap::RrcConnectionReconfiguration result = BuildRrcConnectionReconfiguration ();
+
+  auto targetComponentCarrier = DynamicCast<ComponentCarrierEnb> (m_rrc->m_componentCarrierPhyConf.at (componentCarrierId));
+  result.haveMobilityControlInfo = true;
+  result.mobilityControlInfo.targetPhysCellId = targetComponentCarrier->GetCellId ();
+  result.mobilityControlInfo.haveCarrierFreq = true;
+  result.mobilityControlInfo.carrierFreq.dlCarrierFreq = targetComponentCarrier->GetDlEarfcn ();
+  result.mobilityControlInfo.carrierFreq.ulCarrierFreq = targetComponentCarrier->GetUlEarfcn ();
+  result.mobilityControlInfo.haveCarrierBandwidth = true;
+  result.mobilityControlInfo.carrierBandwidth.dlBandwidth = targetComponentCarrier->GetDlBandwidth ();
+  result.mobilityControlInfo.carrierBandwidth.ulBandwidth = targetComponentCarrier->GetUlBandwidth ();
+
+  if (m_caSupportConfigured && m_rrc->m_numberOfComponentCarriers > 1)
+    {
+      // Release sCells
+      result.haveNonCriticalExtension = true;
+
+      for (auto &it: m_rrc->m_componentCarrierPhyConf)
+        {
+          uint8_t ccId = it.first;
+
+          if (ccId == m_componentCarrierId)
+            {
+              // Skip primary CC.
+              continue;
+            }
+          else if (ccId < m_componentCarrierId)
+            {
+              // Shift all IDs below PCC forward so PCC can use CC ID 1.
+              result.nonCriticalExtension.sCellToReleaseList.push_back (ccId + 1);
+            }
+        }
+    }
+  else
+    {
+      result.haveNonCriticalExtension = false;
+    }
+
+  return result;
 }
 
 void
@@ -869,7 +965,15 @@ UeManager::SendUeContextRelease ()
       ueCtxReleaseParams.newEnbUeX2apId = m_rnti;
       ueCtxReleaseParams.sourceCellId = m_sourceCellId;
       ueCtxReleaseParams.targetCellId = m_targetCellId;
-      m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
+      if (!m_rrc->HasCellId (m_sourceCellId))
+        {
+          m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
+        }
+      else
+        {
+          NS_LOG_INFO ("Not sending UE CONTEXT RELEASE because handover is internal");
+          m_rrc->DoRecvUeContextRelease (ueCtxReleaseParams);
+        }
       SwitchToState (CONNECTED_NORMALLY);
       m_rrc->m_handoverEndOkTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti);
       break;
@@ -1138,11 +1242,11 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
   NS_LOG_LOGIC ("measId " << (uint16_t) measId
                           << " haveMeasResultNeighCells " << msg.measResults.haveMeasResultNeighCells
                           << " measResultListEutra " << msg.measResults.measResultListEutra.size ()
-                          << " haveScellsMeas " << msg.measResults.haveScellsMeas
-                          << " measScellResultList " << msg.measResults.measScellResultList.measResultScell.size ());
+                          << " haveMeasResultServFreqList " << msg.measResults.haveMeasResultServFreqList
+                          << " measResultServFreqList " << msg.measResults.measResultServFreqList.size ());
   NS_LOG_LOGIC ("serving cellId " << m_rrc->ComponentCarrierToCellId (m_componentCarrierId)
-                                  << " RSRP " << (uint16_t) msg.measResults.rsrpResult
-                                  << " RSRQ " << (uint16_t) msg.measResults.rsrqResult);
+                                  << " RSRP " << (uint16_t) msg.measResults.measResultPCell.rsrpResult
+                                  << " RSRQ " << (uint16_t) msg.measResults.measResultPCell.rsrqResult);
 
   for (std::list <LteRrcSap::MeasResultEutra>::iterator it = msg.measResults.measResultListEutra.begin ();
        it != msg.measResults.measResultListEutra.end ();
@@ -1182,15 +1286,13 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
       // this measurement was requested by the FFR function
       m_rrc->m_ffrRrcSapProvider.at (0)->ReportUeMeas (m_rnti, msg.measResults);
     }
-  if (msg.measResults.haveScellsMeas == true)
+  if (msg.measResults.haveMeasResultServFreqList)
     {
-      for (std::list <LteRrcSap::MeasResultScell>::iterator it = msg.measResults.measScellResultList.measResultScell.begin ();
-           it != msg.measResults.measScellResultList.measResultScell.end ();
-           ++it)
+      for (const auto &it: msg.measResults.measResultServFreqList)
         {
-          m_rrc->m_ffrRrcSapProvider.at (it->servFreqId)->ReportUeMeas (m_rnti, msg.measResults);
           /// ToDo: implement on Ffr algorithm the code to properly parsing the new measResults message format
-          /// alternatively it is needed to 'repack' properly the measResults message before sending to Ffr 
+          /// alternatively it is needed to 'repack' properly the measResults message before sending to Ffr
+          m_rrc->m_ffrRrcSapProvider.at (it.servFreqId)->ReportUeMeas (m_rnti, msg.measResults);
         }
     }
 
@@ -1373,7 +1475,7 @@ UeManager::BuildRrcConnectionReconfiguration ()
       m_caSupportConfigured = true;
       NS_LOG_FUNCTION ( this << "CA not configured. Configure now!" );
       msg.haveNonCriticalExtension = true;
-      msg.nonCriticalExtension = BuildNonCriticalExtentionConfigurationCa ();
+      msg.nonCriticalExtension = BuildNonCriticalExtensionConfigurationCa ();
       NS_LOG_FUNCTION ( this << " haveNonCriticalExtension " << msg.haveNonCriticalExtension );
     }
   else
@@ -1514,16 +1616,11 @@ UeManager::SwitchToState (State newState)
 }
 
 LteRrcSap::NonCriticalExtensionConfiguration
-UeManager::BuildNonCriticalExtentionConfigurationCa ()
+UeManager::BuildNonCriticalExtensionConfigurationCa ()
 {
   NS_LOG_FUNCTION ( this );
   LteRrcSap::NonCriticalExtensionConfiguration ncec;
   
-  //  LteRrcSap::SCellToAddMod scell;
-  std::list<LteRrcSap::SCellToAddMod> SccCon;
-
-  // sCellToReleaseList is always empty since no Scc is released
-
   for (auto &it: m_rrc->m_componentCarrierPhyConf)
     {
       uint8_t ccId = it.first;
@@ -1557,33 +1654,26 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
       component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.srsBandwidthConfig = 0;
       component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.srsSubframeConfig = 0;
       component.radioResourceConfigCommonSCell.ulConfiguration.prachConfigSCell.index = 0;
-    
-      if (true)
-        {
-          component.haveRadioResourceConfigDedicatedSCell = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveNonUlConfiguration = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveAntennaInfoDedicated = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode = m_rrc->m_defaultTransmissionMode;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.crossCarrierSchedulingConfig = false;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.havePdschConfigDedicated = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveUlConfiguration = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveAntennaInfoUlDedicated = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfoUl.transmissionMode = m_rrc->m_defaultTransmissionMode;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.pushConfigDedicatedSCell.nPuschIdentity = 0;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.ulPowerControlDedicatedSCell.pSrsOffset = 0;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.haveSoundingRsUlConfigDedicated = true;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex = GetSrsConfigurationIndex();
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
-          component.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsBandwidth = 0;
-        }
-      else 
-        {
-          component.haveRadioResourceConfigDedicatedSCell = false;
-        }
-      SccCon.push_back (component);
+
+      component.haveRadioResourceConfigDedicatedSCell = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveNonUlConfiguration = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveAntennaInfoDedicated = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode = m_rrc->m_defaultTransmissionMode;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.crossCarrierSchedulingConfig = false;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.havePdschConfigDedicated = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.pdschConfigDedicated.pa = LteRrcSap::PdschConfigDedicated::dB0;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveUlConfiguration = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveAntennaInfoDedicated = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.antennaInfoUl.transmissionMode = m_rrc->m_defaultTransmissionMode;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.pushConfigDedicatedSCell.nPuschIdentity = 0;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.ulPowerControlDedicatedSCell.pSrsOffset = 0;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.haveSoundingRsUlConfigDedicated = true;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex = GetSrsConfigurationIndex();
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
+      component.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsBandwidth = 0;
+
+      ncec.sCellToAddModList.push_back (component);
     }
-  ncec.sCellsToAddModList = SccCon;
 
   return ncec;
 }
@@ -2082,14 +2172,14 @@ LteEnbRrc::GetUeManager (uint16_t rnti)
   return it->second;
 }
 
-uint8_t
+std::vector<uint8_t>
 LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 {
   NS_LOG_FUNCTION (this);
 
   // SANITY CHECK
 
-  NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size (),
+  NS_ASSERT_MSG (m_ueMeasConfig.measIdToAddModList.size () == m_ueMeasConfig.reportConfigToAddModList.size () * m_numberOfComponentCarriers,
                  "Measurement identities and reporting configuration should not have different quantity");
 
   if (Simulator::Now () != Seconds (0))
@@ -2157,17 +2247,27 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
   reportConfig.reportConfigId = nextId;
   reportConfig.reportConfigEutra = config;
 
-  // create the measurement identity
-  LteRrcSap::MeasIdToAddMod measId;
-  measId.measId = nextId;
-  measId.measObjectId = 1;
-  measId.reportConfigId = nextId;
-
-  // add both to the list of UE measurement configuration
+  // add reporting configuration to UE measurement configuration
   m_ueMeasConfig.reportConfigToAddModList.push_back (reportConfig);
-  m_ueMeasConfig.measIdToAddModList.push_back (measId);
 
-  return nextId;
+  std::vector<uint8_t> measIds;
+
+  // create measurement identities, linking reporting configuration to all objects
+  for (uint8_t componentCarrier = 0; componentCarrier < m_numberOfComponentCarriers; componentCarrier++)
+    {
+      LteRrcSap::MeasIdToAddMod measIdToAddMod;
+
+      uint8_t measId = m_ueMeasConfig.measIdToAddModList.size () + 1;
+
+      measIdToAddMod.measId = measId;
+      measIdToAddMod.measObjectId = componentCarrier + 1;
+      measIdToAddMod.reportConfigId = nextId;
+
+      m_ueMeasConfig.measIdToAddModList.push_back (measIdToAddMod);
+      measIds.push_back (measId);
+    }
+
+  return measIds;
 }
 
 void
@@ -2202,21 +2302,24 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierBaseStation>> cc
   m_ulBandwidth = ulBandwidth;
 
   /*
-   * Initializing the list of UE measurement configuration (m_ueMeasConfig).
-   * Only intra-frequency measurements are supported, so only one measurement
-   * object is created.
+   * Initializing the list of measurement objects.
+   * Only intra-frequency measurements are supported,
+   * so one measurement object is created for each carrier frequency.
    */
+  for (const auto &it: ccPhyConf)
+    {
+      LteRrcSap::MeasObjectToAddMod measObject;
+      measObject.measObjectId = it.first + 1;
+      measObject.measObjectEutra.carrierFreq = it.second->GetDlEarfcn ();
+      measObject.measObjectEutra.allowedMeasBandwidth = it.second->GetDlBandwidth ();
+      measObject.measObjectEutra.presenceAntennaPort1 = false;
+      measObject.measObjectEutra.neighCellConfig = 0;
+      measObject.measObjectEutra.offsetFreq = 0;
+      measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
 
-  LteRrcSap::MeasObjectToAddMod measObject;
-  measObject.measObjectId = 1;
-  measObject.measObjectEutra.carrierFreq = m_dlEarfcn;
-  measObject.measObjectEutra.allowedMeasBandwidth = m_dlBandwidth;
-  measObject.measObjectEutra.presenceAntennaPort1 = false;
-  measObject.measObjectEutra.neighCellConfig = 0;
-  measObject.measObjectEutra.offsetFreq = 0;
-  measObject.measObjectEutra.haveCellForWhichToReportCGI = false;
+      m_ueMeasConfig.measObjectToAddModList.push_back (measObject);
+    }
 
-  m_ueMeasConfig.measObjectToAddModList.push_back (measObject);
   m_ueMeasConfig.haveQuantityConfig = true;
   m_ueMeasConfig.quantityConfig.filterCoefficientRSRP = m_rsrpFilterCoefficient;
   m_ueMeasConfig.quantityConfig.filterCoefficientRSRQ = m_rsrqFilterCoefficient;
@@ -2293,6 +2396,19 @@ LteEnbRrc::ComponentCarrierToCellId (uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this << +componentCarrierId);
   return m_componentCarrierPhyConf.at (componentCarrierId)->GetCellId ();
+}
+
+bool
+LteEnbRrc::HasCellId (uint16_t cellId) const
+{
+  for (auto &it: m_componentCarrierPhyConf)
+    {
+      if (it.second->GetCellId () == cellId)
+        {
+          return true;
+        }
+    }
+  return false;
 }
 
 bool
@@ -2494,8 +2610,9 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
       return;
     }
 
-  uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING, CellToComponentCarrierId (req.targetCellId));
-  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider.at (0)->AllocateNcRaPreamble (rnti);
+  uint8_t componentCarrierId = CellToComponentCarrierId (req.targetCellId);
+  uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING, componentCarrierId);
+  LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider.at (componentCarrierId)->AllocateNcRaPreamble (rnti);
   if (anrcrv.valid == false)
     {
       NS_LOG_INFO (this << " failed to allocate a preamble for non-contention based RA => cannot accept HO");
@@ -2524,21 +2641,14 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
       ackParams.admittedBearers.push_back (i);
     }
 
-  LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
-  handoverCommand.haveMobilityControlInfo = true;
-  handoverCommand.mobilityControlInfo.targetPhysCellId = req.targetCellId;
-  handoverCommand.mobilityControlInfo.haveCarrierFreq = true;
-  handoverCommand.mobilityControlInfo.carrierFreq.dlCarrierFreq = m_dlEarfcn;
-  handoverCommand.mobilityControlInfo.carrierFreq.ulCarrierFreq = m_ulEarfcn;
-  handoverCommand.mobilityControlInfo.haveCarrierBandwidth = true;
-  handoverCommand.mobilityControlInfo.carrierBandwidth.dlBandwidth = m_dlBandwidth;
-  handoverCommand.mobilityControlInfo.carrierBandwidth.ulBandwidth = m_ulBandwidth;
+  LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover (componentCarrierId);
+
   handoverCommand.mobilityControlInfo.newUeIdentity = rnti;
   handoverCommand.mobilityControlInfo.haveRachConfigDedicated = true;
   handoverCommand.mobilityControlInfo.rachConfigDedicated.raPreambleIndex = anrcrv.raPreambleId;
   handoverCommand.mobilityControlInfo.rachConfigDedicated.raPrachMaskIndex = anrcrv.raPrachMaskIndex;
 
-  LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider.at (0)->GetRachConfig ();
+  LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider.at (componentCarrierId)->GetRachConfig ();
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
   handoverCommand.mobilityControlInfo.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
@@ -2696,20 +2806,20 @@ LteEnbRrc::DoNotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 }
 
 
-uint8_t
+std::vector<uint8_t>
 LteEnbRrc::DoAddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t measId = AddUeMeasReportConfig (reportConfig);
-  m_handoverMeasIds.insert (measId);
-  return measId;
+  std::vector<uint8_t> measIds = AddUeMeasReportConfig (reportConfig);
+  m_handoverMeasIds.insert (measIds.begin (), measIds.end());
+  return measIds;
 }
 
 uint8_t
 LteEnbRrc::DoAddUeMeasReportConfigForComponentCarrier (LteRrcSap::ReportConfigEutra reportConfig)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t measId = AddUeMeasReportConfig (reportConfig);
+  uint8_t measId = AddUeMeasReportConfig (reportConfig).at (0);
   m_componentCarrierMeasIds.insert (measId);
   return measId;
 }
@@ -2730,7 +2840,7 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
   Ptr<UeManager> ueManager = GetUeManager (rnti);
   NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
 
-  if (m_anrSapProvider != 0)
+  if (m_anrSapProvider != 0 && !HasCellId (targetCellId))
     {
       // ensure that proper neighbour relationship exists between source and target cells
       bool noHo = m_anrSapProvider->GetNoHo (targetCellId);
@@ -2766,7 +2876,7 @@ uint8_t
 LteEnbRrc::DoAddUeMeasReportConfigForAnr (LteRrcSap::ReportConfigEutra reportConfig)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t measId = AddUeMeasReportConfig (reportConfig);
+  uint8_t measId = AddUeMeasReportConfig (reportConfig).at (0);
   m_anrMeasIds.insert (measId);
   return measId;
 }
@@ -2775,7 +2885,7 @@ uint8_t
 LteEnbRrc::DoAddUeMeasReportConfigForFfr (LteRrcSap::ReportConfigEutra reportConfig)
 {
   NS_LOG_FUNCTION (this);
-  uint8_t measId = AddUeMeasReportConfig (reportConfig);
+  uint8_t measId = AddUeMeasReportConfig (reportConfig).at (0);
   m_ffrMeasIds.insert (measId);
   return measId;
 }

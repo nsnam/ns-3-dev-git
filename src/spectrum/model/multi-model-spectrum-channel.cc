@@ -106,15 +106,9 @@ MultiModelSpectrumChannel::GetTypeId (void)
 }
 
 void
-MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
+MultiModelSpectrumChannel::RemoveRx (Ptr<SpectrumPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-
-  Ptr<const SpectrumModel> rxSpectrumModel = phy->GetRxSpectrumModel ();
-
-  NS_ASSERT_MSG ((0 != rxSpectrumModel), "phy->GetRxSpectrumModel () returned 0. Please check that the RxSpectrumModel is already set for the phy before calling MultiModelSpectrumChannel::AddRx (phy)");
-
-  SpectrumModelUid_t rxSpectrumModelUid = rxSpectrumModel->GetUid ();
 
   // remove a previous entry of this phy if it exists
   // we need to scan for all rxSpectrumModel values since we don't
@@ -130,8 +124,22 @@ MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
           rxInfoIterator->second.m_rxPhys.erase (phyIt);
           --m_numDevices;
           break; // there should be at most one entry
-        }       
+        }
     }
+}
+
+void
+MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+
+  Ptr<const SpectrumModel> rxSpectrumModel = phy->GetRxSpectrumModel ();
+
+  NS_ASSERT_MSG ((0 != rxSpectrumModel), "phy->GetRxSpectrumModel () returned 0. Please check that the RxSpectrumModel is already set for the phy before calling MultiModelSpectrumChannel::AddRx (phy)");
+
+  SpectrumModelUid_t rxSpectrumModelUid = rxSpectrumModel->GetUid ();
+
+  RemoveRx (phy);
 
   ++m_numDevices;
 

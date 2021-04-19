@@ -827,8 +827,8 @@ private:
   LteRrcSap::MobilityControlInfo m_mobilityControlInfo; ///< the modility control info
   bool m_haveRadioResourceConfigDedicated; ///< have radio resource config dedicated?
   LteRrcSap::RadioResourceConfigDedicated m_radioResourceConfigDedicated; ///< the radio resource config dedicated
-  bool m_haveNonCriticalExtension; ///< Have critical extension
-  LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension; ///< the critical extension
+  bool m_haveNonCriticalExtension; ///< Have non-critical extension
+  LteRrcSap::NonCriticalExtensionConfiguration m_nonCriticalExtension; ///< the non-critical extension
 };
 
 /**

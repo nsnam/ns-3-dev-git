@@ -226,17 +226,22 @@ LteEnbNetDevice::GetCellId () const
   return m_cellId;
 }
 
+std::vector<uint16_t>
+LteEnbNetDevice::GetCellIds () const
+{
+  std::vector<uint16_t> cellIds;
+
+  for (auto &it: m_ccMap)
+    {
+      cellIds.push_back (it.second->GetCellId ());
+    }
+  return cellIds;
+}
+
 bool
 LteEnbNetDevice::HasCellId (uint16_t cellId) const
 {
-  for (auto &it: m_ccMap)
-    {
-      if (it.second->GetCellId () == cellId)
-        {
-          return true;
-        }
-    }
-  return false;
+  return m_rrc->HasCellId (cellId);
 }
 
 uint16_t

@@ -102,7 +102,7 @@ private:
   bool IsValidNeighbour (uint16_t cellId);
 
   /// The expected measurement identity for A3 measurements.
-  uint8_t m_measId;
+  std::vector<uint8_t> m_measIds;
 
   /**
    * The `Hysteresis` attribute. Handover margin (hysteresis) in dB (rounded to

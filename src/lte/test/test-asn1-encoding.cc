@@ -1024,8 +1024,8 @@ MeasurementReportTestCase::DoRun (void)
 
   LteRrcSap::MeasurementReport msg;
   msg.measResults.measId = 5;
-  msg.measResults.rsrpResult = 18;
-  msg.measResults.rsrqResult = 21;
+  msg.measResults.measResultPCell.rsrpResult = 18;
+  msg.measResults.measResultPCell.rsrqResult = 21;
   msg.measResults.haveMeasResultNeighCells = true;
 
   LteRrcSap::MeasResultEutra mResEutra;
@@ -1040,7 +1040,7 @@ MeasurementReportTestCase::DoRun (void)
   mResEutra.cgiInfo.trackingAreaCode = 5;
   msg.measResults.measResultListEutra.push_back (mResEutra);
 
-  msg.measResults.haveScellsMeas = false;
+  msg.measResults.haveMeasResultServFreqList = false;
 
   MeasurementReportHeader source;
   source.SetMessage (msg);
@@ -1066,8 +1066,8 @@ MeasurementReportTestCase::DoRun (void)
   LteRrcSap::MeasResults dstMeas = destination.GetMessage ().measResults;
 
   NS_TEST_ASSERT_MSG_EQ (srcMeas.measId, dstMeas.measId, "Different measId!");
-  NS_TEST_ASSERT_MSG_EQ (srcMeas.rsrpResult, dstMeas.rsrpResult, "Different rsrpResult!");
-  NS_TEST_ASSERT_MSG_EQ (srcMeas.rsrqResult, dstMeas.rsrqResult, "Different rsrqResult!");
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.measResultPCell.rsrpResult, dstMeas.measResultPCell.rsrpResult, "Different rsrpResult!");
+  NS_TEST_ASSERT_MSG_EQ (srcMeas.measResultPCell.rsrqResult, dstMeas.measResultPCell.rsrqResult, "Different rsrqResult!");
   NS_TEST_ASSERT_MSG_EQ (srcMeas.haveMeasResultNeighCells, dstMeas.haveMeasResultNeighCells, "Different haveMeasResultNeighCells!");
 
   if (srcMeas.haveMeasResultNeighCells)

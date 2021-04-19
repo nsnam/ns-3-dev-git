@@ -114,22 +114,21 @@ EmuEpcHelper::DoDispose ()
 
 
 void
-EmuEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId)
+EmuEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellId);
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.at (0));
 
-  NoBackhaulEpcHelper::AddEnb (enb, lteEnbNetDevice, cellId);
+  NoBackhaulEpcHelper::AddEnb (enb, lteEnbNetDevice, cellIds);
 
   // Create an EmuFdNetDevice for the eNB to connect with the SGW and other eNBs
   EmuFdNetDeviceHelper emu;
-  NS_LOG_LOGIC ("eNB cellId: " << cellId);
+  NS_LOG_LOGIC ("eNB cellId: " << cellIds.at (0));
   NS_LOG_LOGIC ("eNB device: " << m_enbDeviceName);
   emu.SetDeviceName (m_enbDeviceName);
   NetDeviceContainer enbDevices = emu.Install (enb);
 
-  NS_ABORT_IF ((cellId == 0) || (cellId > 255));
   std::ostringstream enbMacAddress;
-  enbMacAddress << m_enbMacAddressBase << ":" << std::hex << std::setfill ('0') << std::setw (2) << cellId;
+  enbMacAddress << m_enbMacAddressBase << ":" << std::hex << std::setfill ('0') << std::setw (2) << cellIds.at (0);
   NS_LOG_LOGIC ("eNB MAC address: " << enbMacAddress.str ());
   Ptr<NetDevice> enbDev = enbDevices.Get (0);
   enbDev->SetAttribute ("Address", Mac48AddressValue (enbMacAddress.str ().c_str ()));
@@ -143,7 +142,7 @@ EmuEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t ce
   Ipv4Address enbAddress = enbIpIfaces.GetAddress (0);
   Ipv4Address sgwAddress = m_sgwIpIfaces.GetAddress (0);
 
-  NoBackhaulEpcHelper::AddS1Interface (enb, enbAddress, sgwAddress, cellId);
+  NoBackhaulEpcHelper::AddS1Interface (enb, enbAddress, sgwAddress, cellIds);
 }
 
 
@@ -181,16 +180,18 @@ EmuEpcHelper::AddX2Interface (Ptr<Node> enb1, Ptr<Node> enb2)
   // Add X2 interface to both eNBs' X2 entities
   Ptr<EpcX2> enb1X2 = enb1->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb1LteDev = enb1->GetDevice (0)->GetObject<LteEnbNetDevice> ();
-  uint16_t enb1CellId = enb1LteDev->GetCellId ();
+  std::vector<uint16_t> enb1CellIds = enb1LteDev->GetCellIds ();
+  uint16_t enb1CellId = enb1CellIds.at (0);
   NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
 
   Ptr<EpcX2> enb2X2 = enb2->GetObject<EpcX2> ();
   Ptr<LteEnbNetDevice> enb2LteDev = enb2->GetDevice (0)->GetObject<LteEnbNetDevice> ();
-  uint16_t enb2CellId = enb2LteDev->GetCellId ();
+  std::vector<uint16_t> enb2CellIds = enb2LteDev->GetCellIds ();
+  uint16_t enb2CellId = enb2CellIds.at (0);
   NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
 
-  enb1X2->AddX2Interface (enb1CellId, enb1Addr, enb2CellId, enb2Addr);
-  enb2X2->AddX2Interface (enb2CellId, enb2Addr, enb1CellId, enb1Addr);
+  enb1X2->AddX2Interface (enb1CellId, enb1Addr, enb2CellIds, enb2Addr);
+  enb2X2->AddX2Interface (enb2CellId, enb2Addr, enb1CellIds, enb1Addr);
 
   enb1LteDev->GetRrc ()->AddX2Neighbour (enb2LteDev->GetCellId ());
   enb2LteDev->GetRrc ()->AddX2Neighbour (enb1LteDev->GetCellId ());

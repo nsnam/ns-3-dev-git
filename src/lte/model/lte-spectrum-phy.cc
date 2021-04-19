@@ -348,6 +348,13 @@ LteSpectrumPhy::Reset ()
   m_rxPacketBurstList.clear ();
   m_txPacketBurst = 0;
   m_rxSpectrumModel = 0;
+
+  // Detach from the channel, because receiving any signal without
+  // spectrum model is an error.
+  if (m_channel)
+    {
+      m_channel->RemoveRx (this);
+    }
 }
 
 

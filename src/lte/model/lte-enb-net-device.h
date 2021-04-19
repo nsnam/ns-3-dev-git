@@ -108,6 +108,11 @@ public:
   uint16_t GetCellId () const;
 
   /**
+   * \return the identifiers of cells served by this eNB
+   */
+  std::vector<uint16_t> GetCellIds () const;
+
+  /**
    * \param cellId cell ID
    * \return true if cellId is served by this eNB
    */

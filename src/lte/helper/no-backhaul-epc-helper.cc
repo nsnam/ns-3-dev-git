@@ -307,9 +307,9 @@ NoBackhaulEpcHelper::DoDispose ()
 
 
 void
-NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId)
+NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellId);
+  NS_LOG_FUNCTION (this << enb << lteEnbNetDevice << cellIds.at (0));
   NS_ASSERT (enb == lteEnbNetDevice->GetNode ());
 
   int retval;
@@ -348,7 +348,7 @@ NoBackhaulEpcHelper::AddEnb (Ptr<Node> enb, Ptr<NetDevice> lteEnbNetDevice, uint
   NS_ASSERT (retval == 0);  
 
   NS_LOG_INFO ("Create EpcEnbApplication");
-  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, cellId);
+  Ptr<EpcEnbApplication> enbApp = CreateObject<EpcEnbApplication> (enbLteSocket, enbLteSocket6, cellIds.at (0));
   enb->AddApplication (enbApp);
   NS_ASSERT (enb->GetNApplications () == 1);
   NS_ASSERT_MSG (enb->GetApplication (0)->GetObject<EpcEnbApplication> () != 0, "cannot retrieve EpcEnbApplication");
@@ -412,14 +412,17 @@ NoBackhaulEpcHelper::DoAddX2Interface (const Ptr<EpcX2> &enb1X2, const Ptr<NetDe
   NS_ABORT_MSG_IF (enb1LteDevice == nullptr , "Unable to find LteEnbNetDevice for the first eNB");
   NS_ABORT_MSG_IF (enb2LteDevice == nullptr , "Unable to find LteEnbNetDevice for the second eNB");
 
-  uint16_t enb1CellId = enb1LteDevice->GetCellId ();
-  uint16_t enb2CellId = enb2LteDevice->GetCellId ();
+  std::vector<uint16_t> enb1CellIds = enb1LteDevice->GetCellIds ();
+  std::vector<uint16_t> enb2CellIds = enb2LteDevice->GetCellIds ();
+
+  uint16_t enb1CellId = enb1CellIds.at (0);
+  uint16_t enb2CellId = enb2CellIds.at (0);
 
   NS_LOG_LOGIC ("LteEnbNetDevice #1 = " << enb1LteDev << " - CellId = " << enb1CellId);
   NS_LOG_LOGIC ("LteEnbNetDevice #2 = " << enb2LteDev << " - CellId = " << enb2CellId);
 
-  enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellId, enb2X2Address);
-  enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellId, enb1X2Address);
+  enb1X2->AddX2Interface (enb1CellId, enb1X2Address, enb2CellIds, enb2X2Address);
+  enb2X2->AddX2Interface (enb2CellId, enb2X2Address, enb1CellIds, enb1X2Address);
 
   enb1LteDevice->GetRrc ()->AddX2Neighbour (enb2CellId);
   enb2LteDevice->GetRrc ()->AddX2Neighbour (enb1CellId);
@@ -542,9 +545,9 @@ NoBackhaulEpcHelper::GetSgwNode () const
 
 
 void
-NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, uint16_t cellId)
+NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4Address sgwAddress, std::vector<uint16_t> cellIds)
 {
-  NS_LOG_FUNCTION (this << enb << enbAddress << sgwAddress << cellId);
+  NS_LOG_FUNCTION (this << enb << enbAddress << sgwAddress << cellIds.at (0));
 
   // create S1-U socket for the ENB
   Ptr<Socket> enbS1uSocket = Socket::CreateSocket (enb, TypeId::LookupByName ("ns3::UdpSocketFactory"));
@@ -556,14 +559,11 @@ NoBackhaulEpcHelper::AddS1Interface (Ptr<Node> enb, Ipv4Address enbAddress, Ipv4
   enbApp->AddS1Interface (enbS1uSocket, enbAddress, sgwAddress);
 
   NS_LOG_INFO ("Connect S1-AP interface");
-  if (cellId == 0)
+  for (uint16_t cellId : cellIds)
     {
-      Ptr<LteEnbNetDevice> enbLteDev = enb->GetDevice (0)->GetObject<LteEnbNetDevice> ();
-      NS_ASSERT_MSG (enbLteDev, "LteEnbNetDevice is missing");
-      cellId = enbLteDev->GetCellId ();
+      m_mmeApp->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
+      m_sgwApp->AddEnb (cellId, enbAddress, sgwAddress);
     }
-  m_mmeApp->AddEnb (cellId, enbAddress, enbApp->GetS1apSapEnb ());
-  m_sgwApp->AddEnb (cellId, enbAddress, sgwAddress);
   enbApp->SetS1apSapMme (m_mmeApp->GetS1apSapMme ());
 }
 

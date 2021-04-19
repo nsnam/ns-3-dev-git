@@ -402,7 +402,9 @@ EpcS1uUlTestCase::DoRun ()
       Ptr<NetDevice> enbDevice = cellDevices.Get (cellDevices.GetN () - 1);
 
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
-      epcHelper->AddEnb (enb, enbDevice, cellId);
+      std::vector<uint16_t> cellIds;
+      cellIds.push_back (cellId);
+      epcHelper->AddEnb (enb, enbDevice, cellIds);
 
       // Plug test RRC entity
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();

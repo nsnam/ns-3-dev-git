@@ -116,6 +116,7 @@ public:
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumChannel
+  virtual void RemoveRx (Ptr<SpectrumPhy> phy);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
   virtual void StartTx (Ptr<SpectrumSignalParameters> params);
 

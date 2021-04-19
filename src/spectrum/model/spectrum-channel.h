@@ -124,6 +124,21 @@ public:
   virtual void StartTx (Ptr<SpectrumSignalParameters> params) = 0;
 
   /**
+   * \brief Remove a SpectrumPhy from a channel
+   *
+   * This method is used to detach a SpectrumPhy instance from a
+   * SpectrumChannel instance, so that the SpectrumPhy does not receive
+   * packets sent on that channel.
+   *
+   * This method is to be implemented by all classes inheriting from
+   * SpectrumChannel.
+   *
+   * @param phy the SpectrumPhy instance to be removed from the channel as
+   * a receiver.
+   */
+  virtual void RemoveRx (Ptr<SpectrumPhy> phy) = 0;
+
+  /**
    * \brief Add a SpectrumPhy to a channel, so it can receive packets
    *
    * This method is used to attach a SpectrumPhy instance to a

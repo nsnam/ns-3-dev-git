@@ -404,6 +404,7 @@ public:
    * \brief Manual attachment of a UE device to the network via a given eNodeB.
    * \param ueDevice the UE device to be attached
    * \param enbDevice the destination eNodeB device
+   * \param componentCarrierId the destination eNodeB component carrier
    *
    * In addition, the function also instructs the UE to immediately enter
    * CONNECTED mode and activates the default EPS bearer.
@@ -412,7 +413,7 @@ public:
    * Note that this function will disable Idle mode initial cell selection
    * procedure.
    */
-  void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice);
+  void Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t componentCarrierId = 0);
 
   /** 
    * \brief Manual attachment of a set of UE devices to the network via the

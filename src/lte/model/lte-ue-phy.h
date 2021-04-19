@@ -507,7 +507,18 @@ private:
    */
   void DoSynchronizeWithEnb (uint16_t cellId, uint32_t dlEarfcn);
   /**
-   * \brief Set DL bandwidth function
+   *
+   * Get cell ID
+   * \returns cell ID
+   */
+  uint16_t DoGetCellId ();
+  /**
+   * Get DL EARFCN
+   * \returns DL EARFCN
+   */
+  uint32_t DoGetDlEarfcn ();
+  /**
+   * Set DL bandwidth function
    *
    * \param dlBandwidth the DL bandwidth
    */

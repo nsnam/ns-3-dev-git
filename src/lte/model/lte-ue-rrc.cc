@@ -472,6 +472,20 @@ LteUeRrc::GetCellId () const
   return m_cellId;
 }
 
+bool
+LteUeRrc::IsServingCell (uint16_t cellId) const
+{
+  NS_LOG_FUNCTION (this);
+  for (auto &cphySap: m_cphySapProvider)
+    {
+      if (cellId == cphySap->GetCellId ())
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
 
 uint8_t
 LteUeRrc::GetUlBandwidth () const
@@ -924,16 +938,10 @@ LteUeRrc::DoReportUeMeasurements (LteUeCphySapUser::UeMeasurementsParameters par
         {
           triggering = false; // report is triggered only when an event is on the primary carrier
           // in this case the measurement received is related to secondary carriers
-          // measurements related to secondary carriers are saved on a different portion of memory
-          SaveScellUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
-                                   newMeasIt->m_rsrq, useLayer3Filtering, 
-                                   params.m_componentCarrierId );
         }
-      else
-        {
-          SaveUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
-                              newMeasIt->m_rsrq, useLayer3Filtering);
-        }
+      SaveUeMeasurements (newMeasIt->m_cellId, newMeasIt->m_rsrp,
+                          newMeasIt->m_rsrq, useLayer3Filtering,
+                          params.m_componentCarrierId);
     }
 
   if (m_state == IDLE_CELL_SEARCH)
@@ -1063,27 +1071,34 @@ LteUeRrc::DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfigur
           {
             NS_LOG_INFO ("haveMobilityControlInfo == true");
             SwitchToState (CONNECTED_HANDOVER);
+            if (m_radioLinkFailureDetected.IsRunning ())
+              {
+                ResetRlfParams ();
+              }
             const LteRrcSap::MobilityControlInfo& mci = msg.mobilityControlInfo;
             m_handoverStartTrace (m_imsi, m_cellId, m_rnti, mci.targetPhysCellId);
             //We should reset the MACs and PHYs for all the component carriers
-            for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+            for (auto cmacSapProvider: m_cmacSapProvider)
               {
-                m_cmacSapProvider.at (i)->Reset ();
-                m_cphySapProvider.at (i)->Reset ();
+                cmacSapProvider->Reset ();
               }
-            m_ccmRrcSapProvider->Reset ();
+            for (auto cphySapProvider: m_cphySapProvider)
+              {
+                cphySapProvider->Reset ();
+              }
+            m_ccmRrcSapProvider->Reset();
             StorePreviousCellId (m_cellId);
             m_cellId = mci.targetPhysCellId;
             NS_ASSERT (mci.haveCarrierFreq);
             NS_ASSERT (mci.haveCarrierBandwidth);
-            m_cphySapProvider.at (0)->SynchronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq);
-            m_cphySapProvider.at (0)->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
-            m_cphySapProvider.at (0)->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth);
+            m_cphySapProvider.at(0)->SynchronizeWithEnb (m_cellId, mci.carrierFreq.dlCarrierFreq);
+            m_cphySapProvider.at(0)->SetDlBandwidth ( mci.carrierBandwidth.dlBandwidth);
+            m_cphySapProvider.at(0)->ConfigureUplink (mci.carrierFreq.ulCarrierFreq, mci.carrierBandwidth.ulBandwidth);
             m_rnti = msg.mobilityControlInfo.newUeIdentity;
             m_srb0->m_rlc->SetRnti (m_rnti);
             NS_ASSERT_MSG (mci.haveRachConfigDedicated, "handover is only supported with non-contention-based random access procedure");
-            m_cmacSapProvider.at (0)->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
-            m_cphySapProvider.at (0)->SetRnti (m_rnti);
+            m_cmacSapProvider.at(0)->StartNonContentionBasedRandomAccessProcedure (m_rnti, mci.rachConfigDedicated.raPreambleIndex, mci.rachConfigDedicated.raPrachMaskIndex);
+            m_cphySapProvider.at(0)->SetRnti (m_rnti);
             m_lastRrcTransactionIdentifier = msg.rrcTransactionIdentifier;
             NS_ASSERT (msg.haveRadioResourceConfigDedicated);
 
@@ -1345,9 +1360,14 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
 {
   NS_LOG_FUNCTION (this);
 
-  for (std::list<LteRrcSap::SCellToAddMod>::iterator it = nonCec.sCellsToAddModList.begin (); it != nonCec.sCellsToAddModList.end (); it++)
+  for (uint32_t sCellIndex: nonCec.sCellToReleaseList)
     {
-      LteRrcSap::SCellToAddMod scell = *it;
+      m_cphySapProvider.at (sCellIndex)->Reset ();
+      m_cmacSapProvider.at (sCellIndex)->Reset ();
+    }
+
+  for(auto &scell: nonCec.sCellToAddModList)
+    {
       uint8_t ccId = scell.sCellIndex;
 
 
@@ -1356,8 +1376,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
       uint32_t ulEarfcn = scell.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulCarrierFreq;
       uint16_t dlBand = scell.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth;
       uint32_t dlEarfcn = scell.cellIdentification.dlCarrierFreq;
-      uint8_t txMode = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode;
-      uint16_t srsIndex = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
+      uint8_t txMode = scell.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.antennaInfo.transmissionMode;
+      uint16_t srsIndex = scell.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.soundingRsUlConfigDedicated.srsConfigIndex;
 
       m_cphySapProvider.at (ccId)->SynchronizeWithEnb (physCellId, dlEarfcn);
       m_cphySapProvider.at (ccId)->SetDlBandwidth (dlBand);
@@ -1367,7 +1387,7 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
       m_cphySapProvider.at (ccId)->SetRnti (m_rnti);
       m_cmacSapProvider.at (ccId)->SetRnti (m_rnti);
       // update PdschConfigDedicated (i.e. P_A value)
-      LteRrcSap::PdschConfigDedicated pdschConfigDedicated = scell.radioResourceConfigDedicateSCell.physicalConfigDedicatedSCell.pdschConfigDedicated;
+      LteRrcSap::PdschConfigDedicated pdschConfigDedicated = scell.radioResourceConfigDedicatedSCell.physicalConfigDedicatedSCell.pdschConfigDedicated;
       double paDouble = LteRrcSap::ConvertPdschConfigDedicated2Double (pdschConfigDedicated);
       m_cphySapProvider.at (ccId)->SetPa (paDouble);
       m_cphySapProvider.at (ccId)->SetSrsConfigurationIndex (srsIndex);
@@ -1803,9 +1823,9 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
 
 void
 LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
-                              bool useLayer3Filtering)
+                              bool useLayer3Filtering, uint8_t componentCarrierId)
 {
-  NS_LOG_FUNCTION (this << cellId << rsrp << rsrq << useLayer3Filtering);
+  NS_LOG_FUNCTION (this << cellId << +componentCarrierId << rsrp << rsrq << useLayer3Filtering);
 
   std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedMeasValues.find (cellId);
 
@@ -1840,6 +1860,8 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
       MeasValues v;
       v.rsrp = rsrp;
       v.rsrq = rsrq;
+      v.carrierFreq = m_cphySapProvider.at (componentCarrierId)->GetDlEarfcn ();
+
       std::pair<uint16_t, MeasValues> val (cellId, v);
       std::pair<std::map<uint16_t, MeasValues>::iterator, bool>
       ret = m_storedMeasValues.insert (val);
@@ -1848,10 +1870,10 @@ LteUeRrc::SaveUeMeasurements (uint16_t cellId, double rsrp, double rsrq,
     }
 
   NS_LOG_DEBUG (this << " IMSI " << m_imsi << " state " << ToString (m_state)
-                     << ", measured cell " << m_cellId
+                     << ", measured cell " << cellId
+                     << ", carrier component Id " << componentCarrierId
                      << ", new RSRP " << rsrp << " stored " << storedMeasIt->second.rsrp
                      << ", new RSRQ " << rsrq << " stored " << storedMeasIt->second.rsrq);
-  storedMeasIt->second.timestamp = Simulator::Now ();
 
 } // end of void SaveUeMeasurements
 
@@ -1892,6 +1914,27 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
   ConcernedCells_t concernedCellsEntry;
   ConcernedCells_t concernedCellsLeaving;
 
+  /*
+   * Find which serving cell corresponds to measObjectEutra.carrierFreq
+   * It is used, for example, by A1 event:
+   * See TS 36.331 5.5.4.2: "for this measurement, consider the primary or
+   * secondary cell that is configured on the frequency indicated in the
+   * associated measObjectEUTRA to be the serving cell"
+   */
+  uint16_t servingCellId = 0;
+  for (auto cphySapProvider: m_cphySapProvider)
+    {
+      if (cphySapProvider->GetDlEarfcn () == measObjectEutra.carrierFreq)
+        {
+          servingCellId = cphySapProvider->GetCellId ();
+        }
+    }
+
+  if (servingCellId == 0)
+    {
+      return;
+    }
+
   switch (reportConfigEutra.eventId)
     {
     case LteRrcSap::ReportConfigEutra::EVENT_A1:
@@ -1909,13 +1952,14 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         switch (reportConfigEutra.triggerQuantity)
           {
           case LteRrcSap::ReportConfigEutra::RSRP:
-            ms = m_storedMeasValues[m_cellId].rsrp;
+            ms = m_storedMeasValues[servingCellId].rsrp;
+
             NS_ASSERT (reportConfigEutra.threshold1.choice
                        == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
             thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
             break;
           case LteRrcSap::ReportConfigEutra::RSRQ:
-            ms = m_storedMeasValues[m_cellId].rsrq;
+            ms = m_storedMeasValues[servingCellId].rsrq;
             NS_ASSERT (reportConfigEutra.threshold1.choice
                        == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
             thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
@@ -1932,7 +1976,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           {
             if (!isMeasIdInReportList)
               {
-                concernedCellsEntry.push_back (m_cellId);
+                concernedCellsEntry.push_back (servingCellId);
                 eventEntryCondApplicable = true;
               }
             else
@@ -1941,7 +1985,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                  * This is to check that the triggered cell recorded in the
                  * VarMeasReportList is the serving cell.
                  */
-                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (servingCellId)
                            != measReportIt->second.cellsTriggeredList.end ());
               }
           }
@@ -1972,7 +2016,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
             CancelLeavingTrigger (measId);
           }
 
-        NS_LOG_LOGIC (this << " event A1: serving cell " << m_cellId
+        NS_LOG_LOGIC (this << " event A1: serving cell " << servingCellId
                            << " ms=" << ms << " thresh=" << thresh
                            << " entryCond=" << entryCond
                            << " leavingCond=" << leavingCond);
@@ -1996,13 +2040,13 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
         switch (reportConfigEutra.triggerQuantity)
           {
           case LteRrcSap::ReportConfigEutra::RSRP:
-            ms = m_storedMeasValues[m_cellId].rsrp;
+            ms = m_storedMeasValues[servingCellId].rsrp;
             NS_ASSERT (reportConfigEutra.threshold1.choice
                        == LteRrcSap::ThresholdEutra::THRESHOLD_RSRP);
             thresh = EutranMeasurementMapping::RsrpRange2Dbm (reportConfigEutra.threshold1.range);
             break;
           case LteRrcSap::ReportConfigEutra::RSRQ:
-            ms = m_storedMeasValues[m_cellId].rsrq;
+            ms = m_storedMeasValues[servingCellId].rsrq;
             NS_ASSERT (reportConfigEutra.threshold1.choice
                        == LteRrcSap::ThresholdEutra::THRESHOLD_RSRQ);
             thresh = EutranMeasurementMapping::RsrqRange2Db (reportConfigEutra.threshold1.range);
@@ -2019,7 +2063,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           {
             if (!isMeasIdInReportList)
               {
-                concernedCellsEntry.push_back (m_cellId);
+                concernedCellsEntry.push_back (servingCellId);
                 eventEntryCondApplicable = true;
               }
             else
@@ -2028,7 +2072,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                  * This is to check that the triggered cell recorded in the
                  * VarMeasReportList is the serving cell.
                  */
-                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (servingCellId)
                            != measReportIt->second.cellsTriggeredList.end ());
               }
           }
@@ -2048,9 +2092,9 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
                  * This is to check that the triggered cell recorded in the
                  * VarMeasReportList is the serving cell.
                  */
-                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (m_cellId)
+                NS_ASSERT (measReportIt->second.cellsTriggeredList.find (servingCellId)
                            != measReportIt->second.cellsTriggeredList.end ());
-                concernedCellsLeaving.push_back (m_cellId);
+                concernedCellsLeaving.push_back (servingCellId);
                 eventLeavingCondApplicable = true;
               }
           }
@@ -2059,7 +2103,7 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
             CancelLeavingTrigger (measId);
           }
 
-        NS_LOG_LOGIC (this << " event A2: serving cell " << m_cellId
+        NS_LOG_LOGIC (this << " event A2: serving cell " << servingCellId
                            << " ms=" << ms << " thresh=" << thresh
                            << " entryCond=" << entryCond
                            << " leavingCond=" << leavingCond);
@@ -2109,6 +2153,12 @@ LteUeRrc::MeasurementReportTriggering (uint8_t measId)
           {
             uint16_t cellId = storedMeasIt->first;
             if (cellId == m_cellId)
+              {
+                continue;
+              }
+
+            // Only cell(s) on the frequency indicated in the associated measObject can trigger event.
+            if (m_storedMeasValues.at (cellId).carrierFreq != measObjectEutra.carrierFreq)
               {
                 continue;
               }
@@ -2895,14 +2945,6 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
   LteRrcSap::MeasResults& measResults = measurementReport.measResults;
   measResults.measId = measId;
 
-  std::map<uint16_t, MeasValues>::iterator servingMeasIt = m_storedMeasValues.find (m_cellId);
-  NS_ASSERT (servingMeasIt != m_storedMeasValues.end ());
-  measResults.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (servingMeasIt->second.rsrp);
-  measResults.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (servingMeasIt->second.rsrq);
-  NS_LOG_INFO (this << " reporting serving cell "
-               "RSRP " << (uint32_t) measResults.rsrpResult << " (" << servingMeasIt->second.rsrp << " dBm) "
-               "RSRQ " << (uint32_t) measResults.rsrqResult << " (" << servingMeasIt->second.rsrq << " dB)");
-  measResults.haveMeasResultNeighCells = false;
   std::map<uint8_t, VarMeasReport>::iterator measReportIt = m_varMeasReportList.find (measId);
   if (measReportIt == m_varMeasReportList.end ())
     {
@@ -2910,6 +2952,34 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
     }
   else
     {
+      std::map<uint16_t, MeasValues>::iterator servingMeasIt = m_storedMeasValues.find (m_cellId);
+      NS_ASSERT (servingMeasIt != m_storedMeasValues.end ());
+      measResults.measResultPCell.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (servingMeasIt->second.rsrp);
+      measResults.measResultPCell.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (servingMeasIt->second.rsrq);
+      NS_LOG_INFO (this << " reporting serving cell "
+                   "RSRP " << +measResults.measResultPCell.rsrpResult << " (" << servingMeasIt->second.rsrp << " dBm) "
+                   "RSRQ " << +measResults.measResultPCell.rsrqResult << " (" << servingMeasIt->second.rsrq << " dB)");
+
+      measResults.haveMeasResultServFreqList = false;
+      for (uint8_t componentCarrierId = 1; componentCarrierId < m_numberOfComponentCarriers; componentCarrierId++)
+        {
+          const uint16_t cellId = m_cphySapProvider.at (componentCarrierId)->GetCellId ();
+          auto measValuesIt = m_storedMeasValues.find (cellId);
+          if (measValuesIt != m_storedMeasValues.end ())
+            {
+              measResults.haveMeasResultServFreqList = true;
+              LteRrcSap::MeasResultServFreq measResultServFreq;
+              measResultServFreq.servFreqId = componentCarrierId;
+              measResultServFreq.haveMeasResultSCell = true;
+              measResultServFreq.measResultSCell.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (measValuesIt->second.rsrp);
+              measResultServFreq.measResultSCell.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (measValuesIt->second.rsrq);
+              measResultServFreq.haveMeasResultBestNeighCell = false;
+              measResults.measResultServFreqList.push_back (measResultServFreq);
+            }
+        }
+
+      measResults.haveMeasResultNeighCells = false;
+
       if (!(measReportIt->second.cellsTriggeredList.empty ()))
         {
           std::multimap<double, uint16_t> sortedNeighCells;
@@ -2966,28 +3036,6 @@ LteUeRrc::SendMeasurementReport (uint8_t measId)
       else
         {
           NS_LOG_WARN (this << " cellsTriggeredList is empty");
-        }
-
-      measResults.haveScellsMeas = false;
-      std::map<uint16_t, MeasValues>::iterator sCellsMeasIt =  m_storedScellMeasValues.begin ();
-      if (sCellsMeasIt != m_storedScellMeasValues.end ())
-        {
-          measResults.haveScellsMeas = true;
-          measResults.measScellResultList.haveMeasurementResultsServingSCells = true;
-          measResults.measScellResultList.haveMeasurementResultsNeighCell = false;
-
-
-          for ( sCellsMeasIt = m_storedScellMeasValues.begin ();
-                sCellsMeasIt != m_storedScellMeasValues.end (); ++sCellsMeasIt)
-            {
-              LteRrcSap::MeasResultScell measResultScell;
-              measResultScell.servFreqId = sCellsMeasIt->first;
-              measResultScell.haveRsrpResult =  true;
-              measResultScell.haveRsrqResult =  true;
-              measResultScell.rsrpResult = EutranMeasurementMapping::Dbm2RsrpRange (sCellsMeasIt->second.rsrp);
-              measResultScell.rsrqResult = EutranMeasurementMapping::Db2RsrqRange (sCellsMeasIt->second.rsrq);
-              measResults.measScellResultList.measResultScell.push_back (measResultScell);
-            }
         }
 
       /*
@@ -3221,67 +3269,6 @@ LteUeRrc::SwitchToState (State newState)
 }
 
 
-void
-LteUeRrc::SaveScellUeMeasurements (uint16_t sCellId, double rsrp, double rsrq,
-                                   bool useLayer3Filtering, uint16_t componentCarrierId)
-{
-  NS_LOG_FUNCTION (this << sCellId << componentCarrierId << rsrp << rsrq << useLayer3Filtering);
-  if (sCellId == m_cellId)
-    {
-
-      std::map<uint16_t, MeasValues>::iterator storedMeasIt = m_storedScellMeasValues.find (componentCarrierId);
-
-      if (storedMeasIt != m_storedScellMeasValues.end ())
-        {
-          if (useLayer3Filtering)
-            {
-              // F_n = (1-a) F_{n-1} + a M_n
-              storedMeasIt->second.rsrp = (1 - m_varMeasConfig.aRsrp) * storedMeasIt->second.rsrp
-                + m_varMeasConfig.aRsrp * rsrp;
-
-              if (std::isnan (storedMeasIt->second.rsrq))
-                {
-                  // the previous RSRQ measurements provided UE PHY are invalid
-                  storedMeasIt->second.rsrq = rsrq;   // replace it with unfiltered value
-                }
-              else
-                {
-                  storedMeasIt->second.rsrq = (1 - m_varMeasConfig.aRsrq) * storedMeasIt->second.rsrq
-                    + m_varMeasConfig.aRsrq * rsrq;
-                }
-            }
-          else
-            {
-              storedMeasIt->second.rsrp = rsrp;
-              storedMeasIt->second.rsrq = rsrq;
-            }
-        }
-      else
-        {
-          // first value is always unfiltered
-          MeasValues v;
-          v.rsrp = rsrp;
-          v.rsrq = rsrq;
-          std::pair<uint16_t, MeasValues> val (componentCarrierId, v);
-          std::pair<std::map<uint16_t, MeasValues>::iterator, bool>
-          ret = m_storedScellMeasValues.insert (val);
-          NS_ASSERT_MSG (ret.second == true, "element already existed");
-          storedMeasIt = ret.first;
-        }
-
-      NS_LOG_DEBUG (this << " IMSI " << m_imsi << " state " << ToString (m_state)
-                         << ", measured cell " << sCellId
-                         << ", carrier component Id " << componentCarrierId
-                         << ", new RSRP " << rsrp << " stored " << storedMeasIt->second.rsrp
-                         << ", new RSRQ " << rsrq << " stored " << storedMeasIt->second.rsrq);
-      storedMeasIt->second.timestamp = Simulator::Now ();
-    }
-  else
-    {
-      NS_LOG_DEBUG (this << " IMSI " << m_imsi << "measurement on SCC from not serving cell ");
-    }
-
-}   // end of void SaveUeMeasurements
 
 void
 LteUeRrc::RadioLinkFailureDetected ()

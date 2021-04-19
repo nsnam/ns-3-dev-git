@@ -73,7 +73,7 @@ public:
    * \brief Request a certain reporting configuration to be fulfilled by the UEs
    *        attached to the eNodeB entity.
    * \param reportConfig the UE measurement reporting configuration
-   * \return the measurement identity associated with this newly added
+   * \return the measurement identities associated with this newly added
    *         reporting configuration
    *
    * The eNodeB RRC entity is expected to configure the same reporting
@@ -85,7 +85,7 @@ public:
    *
    * \note This function is only valid before the simulation begins.
    */
-  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig) = 0;
+  virtual std::vector<uint8_t> AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig) = 0;
 
   /**
    * \brief Instruct the eNodeB RRC entity to prepare a handover.
@@ -165,7 +165,7 @@ public:
   MemberLteHandoverManagementSapUser (C* owner);
 
   // inherited from LteHandoverManagementSapUser
-  virtual uint8_t AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
+  virtual std::vector<uint8_t> AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig);
   virtual void TriggerHandover (uint16_t rnti, uint16_t targetCellId);
 
 private:
@@ -183,7 +183,7 @@ MemberLteHandoverManagementSapUser<C>::MemberLteHandoverManagementSapUser (C* ow
 
 
 template <class C>
-uint8_t
+std::vector<uint8_t>
 MemberLteHandoverManagementSapUser<C>::AddUeMeasReportConfigForHandover (LteRrcSap::ReportConfigEutra reportConfig)
 {
   return m_owner->DoAddUeMeasReportConfigForHandover (reportConfig);

@@ -34,6 +34,7 @@
 #include <ns3/antenna-model.h>
 #include <ns3/angles.h>
 
+#include <algorithm>
 
 #include "single-model-spectrum-channel.h"
 
@@ -70,6 +71,17 @@ SingleModelSpectrumChannel::GetTypeId (void)
   return tid;
 }
 
+
+void
+SingleModelSpectrumChannel::RemoveRx (Ptr<SpectrumPhy> phy)
+{
+  NS_LOG_FUNCTION (this << phy);
+  auto it = std::find (begin (m_phyList), end (m_phyList), phy);
+  if (it != std::end (m_phyList))
+    {
+      m_phyList.erase (it);
+    }
+}
 
 void
 SingleModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)

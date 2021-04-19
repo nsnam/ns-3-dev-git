@@ -632,6 +632,13 @@ public:
     std::list<uint32_t> plmnIdentityList; ///< PLMN identity list
   };
 
+  /// MeasResultPCell structure
+  struct MeasResultPCell
+  {
+    uint8_t rsrpResult; ///< the RSRP result
+    uint8_t rsrqResult; ///< the RSRQ result
+  };
+
   /// MeasResultEutra structure
   struct MeasResultEutra
   {
@@ -644,46 +651,39 @@ public:
     uint8_t rsrqResult; ///< RSRQ result
   };
 
-  /// MeasResultScell structure
-  struct MeasResultScell
+  /// MeasResultSCell structure
+  struct MeasResultSCell
   {
-    uint16_t servFreqId; ///< service frequency ID
-    bool haveRsrpResult; ///< have RSRP result?
     uint8_t rsrpResult; ///< the RSRP result
-    bool haveRsrqResult; ///< have RSRQ result?
     uint8_t rsrqResult; ///< the RSRQ result
   };
 
   /// MeasResultBestNeighCell structure
   struct MeasResultBestNeighCell
   {
-    uint16_t servFreqId; ///< service frequency ID
     uint16_t physCellId; ///< physical cell ID
-    bool haveRsrpResult; ///< have RSRP result?
     uint8_t rsrpResult; ///< the RSRP result
-    bool haveRsrqResult; ///< have RSRQ result?
     uint8_t rsrqResult; ///< the RSRQ result
   };
 
-  /// MeasResultServFreqList
-  struct MeasResultServFreqList
-  {
-    bool haveMeasurementResultsServingSCells; ///< have measure results serving Scells
-    std::list<MeasResultScell> measResultScell; ///< measure results Scells
-    bool haveMeasurementResultsNeighCell; ///< always false since not implemented
-    std::list<MeasResultBestNeighCell> measResultBestNeighCell; ///< measure result best neighbor cell
+  /// MeasResultServFreq structure
+  struct MeasResultServFreq {
+    uint16_t servFreqId; //< serving cell index
+    bool haveMeasResultSCell; //< have measResultSCell?
+    MeasResultSCell measResultSCell; //< SCell measurement results
+    bool haveMeasResultBestNeighCell; //< have measResultBestNeighCell?
+    MeasResultBestNeighCell measResultBestNeighCell; //< best neighbor cell measurement results
   };
 
   /// MeasResults structure
   struct MeasResults
   {
     uint8_t measId; ///< measure ID
-    uint8_t rsrpResult; ///< RSRP result
-    uint8_t rsrqResult; ///< RSRQ result
+    MeasResultPCell measResultPCell;
     bool haveMeasResultNeighCells; ///< have measure result neighbor cells
     std::list<MeasResultEutra> measResultListEutra; ///< measure result list eutra
-    bool haveScellsMeas; ///< has SCells measure
-    MeasResultServFreqList measScellResultList; ///< measure SCell result list
+    bool haveMeasResultServFreqList; ///< has measResultServFreqList-r10
+    std::list<MeasResultServFreq> measResultServFreqList; ///< MeasResultServFreqList-r10
   };
 
   // Messages
@@ -822,14 +822,14 @@ public:
     CellIdentification cellIdentification; ///< cell identification
     RadioResourceConfigCommonSCell radioResourceConfigCommonSCell; ///< radio resource config common SCell
     bool haveRadioResourceConfigDedicatedSCell; ///< have radio resource config dedicated SCell?
-    RadioResourceConfigDedicatedSCell radioResourceConfigDedicateSCell; ///< radio resource config dedicated SCell
+    RadioResourceConfigDedicatedSCell radioResourceConfigDedicatedSCell; ///< radio resource config dedicated SCell
   };
 
   /// NonCriticalExtensionConfiguration structure
   struct NonCriticalExtensionConfiguration
   {
-    std::list<SCellToAddMod> sCellsToAddModList; ///< SCell to add mod list
-    std::list<uint32_t> sCellToReleaseList; ///< SCell to release list
+    std::list<SCellToAddMod> sCellToAddModList; ///< SCell to add mod list
+    std::list<uint8_t> sCellToReleaseList; ///< SCell to release list
   };
 
   /// RrcConnectionReconfiguration structure

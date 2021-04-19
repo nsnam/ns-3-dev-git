@@ -23,6 +23,7 @@
 #include <ns3/log.h>
 #include <ns3/double.h>
 #include <ns3/lte-common.h>
+#include <algorithm>
 #include <list>
 
 namespace ns3 {
@@ -105,7 +106,7 @@ A3RsrpHandoverAlgorithm::DoInitialize ()
   reportConfig.reportOnLeave = false;
   reportConfig.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRP;
   reportConfig.reportInterval = LteRrcSap::ReportConfigEutra::MS1024;
-  m_measId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfig);
+  m_measIds = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfig);
 
   LteHandoverAlgorithm::DoInitialize ();
 }
@@ -125,53 +126,52 @@ A3RsrpHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
 {
   NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
 
-  if (measResults.measId != m_measId)
+  if (std::find (begin (m_measIds), end (m_measIds), measResults.measId) == std::end (m_measIds))
     {
       NS_LOG_WARN ("Ignoring measId " << (uint16_t) measResults.measId);
+      return;
+    }
+
+  if (measResults.haveMeasResultNeighCells
+      && !measResults.measResultListEutra.empty ())
+    {
+      uint16_t bestNeighbourCellId = 0;
+      uint8_t bestNeighbourRsrp = 0;
+
+      for (std::list <LteRrcSap::MeasResultEutra>::iterator it = measResults.measResultListEutra.begin ();
+           it != measResults.measResultListEutra.end ();
+           ++it)
+        {
+          if (it->haveRsrpResult)
+            {
+              if ((bestNeighbourRsrp < it->rsrpResult)
+                  && IsValidNeighbour (it->physCellId))
+                {
+                  bestNeighbourCellId = it->physCellId;
+                  bestNeighbourRsrp = it->rsrpResult;
+                }
+            }
+          else
+            {
+              NS_LOG_WARN ("RSRP measurement is missing from cell ID " << it->physCellId);
+            }
+        }
+
+      if (bestNeighbourCellId > 0)
+        {
+          NS_LOG_LOGIC ("Trigger Handover to cellId " << bestNeighbourCellId);
+          NS_LOG_LOGIC ("target cell RSRP " << (uint16_t) bestNeighbourRsrp);
+          NS_LOG_LOGIC ("serving cell RSRP " << (uint16_t) measResults.measResultPCell.rsrpResult);
+
+          // Inform eNodeB RRC about handover
+          m_handoverManagementSapUser->TriggerHandover (rnti,
+                                                        bestNeighbourCellId);
+        }
     }
   else
     {
-      if (measResults.haveMeasResultNeighCells
-          && !measResults.measResultListEutra.empty ())
-        {
-          uint16_t bestNeighbourCellId = 0;
-          uint8_t bestNeighbourRsrp = 0;
-
-          for (std::list <LteRrcSap::MeasResultEutra>::iterator it = measResults.measResultListEutra.begin ();
-               it != measResults.measResultListEutra.end ();
-               ++it)
-            {
-              if (it->haveRsrpResult)
-                {
-                  if ((bestNeighbourRsrp < it->rsrpResult)
-                      && IsValidNeighbour (it->physCellId))
-                    {
-                      bestNeighbourCellId = it->physCellId;
-                      bestNeighbourRsrp = it->rsrpResult;
-                    }
-                }
-              else
-                {
-                  NS_LOG_WARN ("RSRP measurement is missing from cell ID " << it->physCellId);
-                }
-            }
-
-          if (bestNeighbourCellId > 0)
-            {
-              NS_LOG_LOGIC ("Trigger Handover to cellId " << bestNeighbourCellId);
-              NS_LOG_LOGIC ("target cell RSRP " << (uint16_t) bestNeighbourRsrp);
-              NS_LOG_LOGIC ("serving cell RSRP " << (uint16_t) measResults.rsrpResult);
-
-              // Inform eNodeB RRC about handover
-              m_handoverManagementSapUser->TriggerHandover (rnti,
-                                                            bestNeighbourCellId);
-            }
-        }
-      else
-        {
-          NS_LOG_WARN (this << " Event A3 received without measurement results from neighbouring cells");
-        }
-    } // end of else of if (measResults.measId != m_measId)
+      NS_LOG_WARN (this << " Event A3 received without measurement results from neighbouring cells");
+    }
 
 } // end of DoReportUeMeas
 

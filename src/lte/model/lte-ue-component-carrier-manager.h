@@ -106,7 +106,7 @@ protected:
 
   std::map<uint8_t, LteMacSapUser*> m_lcAttached; //!< Map of pointers to SAP interfaces of the RLC instance of the flows of this UE.
   std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*> > m_componentCarrierLcMap; //!< Flow configuration per flow Id of this UE.
-  uint16_t m_noOfComponentCarriers; //!<// The number of component carriers that this UE can support.
+  uint8_t m_noOfComponentCarriers; //!<// The number of component carriers that this UE can support.
   std::map <uint8_t, LteMacSapProvider*> m_macSapProvidersMap; //!< Map of pointers to SAP to interfaces of the MAC instance if the flows of this UE.
 
 }; // end of class LteUeComponentCarrierManager

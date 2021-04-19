@@ -28,6 +28,7 @@
 #include "a2-a4-rsrq-handover-algorithm.h"
 #include <ns3/log.h>
 #include <ns3/uinteger.h>
+#include <algorithm>
 
 namespace ns3 {
 
@@ -42,9 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (A2A4RsrqHandoverAlgorithm);
 
 
 A2A4RsrqHandoverAlgorithm::A2A4RsrqHandoverAlgorithm ()
-  : m_a2MeasId (0),
-    m_a4MeasId (0),
-    m_servingCellThreshold (30),
+  : m_servingCellThreshold (30),
     m_neighbourCellOffset (1),
     m_handoverManagementSapUser (0)
 {
@@ -115,7 +114,7 @@ A2A4RsrqHandoverAlgorithm::DoInitialize ()
   reportConfigA2.threshold1.range = m_servingCellThreshold;
   reportConfigA2.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA2.reportInterval = LteRrcSap::ReportConfigEutra::MS240;
-  m_a2MeasId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA2);
+  m_a2MeasIds = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA2);
 
   NS_LOG_LOGIC (this << " requesting Event A4 measurements"
                      << " (threshold=0)");
@@ -125,7 +124,7 @@ A2A4RsrqHandoverAlgorithm::DoInitialize ()
   reportConfigA4.threshold1.range = 0; // intentionally very low threshold
   reportConfigA4.triggerQuantity = LteRrcSap::ReportConfigEutra::RSRQ;
   reportConfigA4.reportInterval = LteRrcSap::ReportConfigEutra::MS480;
-  m_a4MeasId = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
+  m_a4MeasIds = m_handoverManagementSapUser->AddUeMeasReportConfigForHandover (reportConfigA4);
 
   LteHandoverAlgorithm::DoInitialize ();
 }
@@ -145,13 +144,13 @@ A2A4RsrqHandoverAlgorithm::DoReportUeMeas (uint16_t rnti,
 {
   NS_LOG_FUNCTION (this << rnti << (uint16_t) measResults.measId);
 
-  if (measResults.measId == m_a2MeasId)
+  if (std::find (begin (m_a2MeasIds), end (m_a2MeasIds), measResults.measId) != std::end (m_a2MeasIds))
     {
-      NS_ASSERT_MSG (measResults.rsrqResult <= m_servingCellThreshold,
+      NS_ASSERT_MSG (measResults.measResultPCell.rsrqResult <= m_servingCellThreshold,
                      "Invalid UE measurement report");
-      EvaluateHandover (rnti, measResults.rsrqResult);
+      EvaluateHandover (rnti, measResults.measResultPCell.rsrqResult);
     }
-  else if (measResults.measId == m_a4MeasId)
+  else if (std::find (begin (m_a4MeasIds), end (m_a4MeasIds), measResults.measId) != std::end (m_a4MeasIds))
     {
       if (measResults.haveMeasResultNeighCells
           && !measResults.measResultListEutra.empty ())

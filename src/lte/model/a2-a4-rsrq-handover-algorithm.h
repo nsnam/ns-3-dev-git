@@ -137,10 +137,10 @@ private:
   void UpdateNeighbourMeasurements (uint16_t rnti, uint16_t cellId,
                                     uint8_t rsrq);
 
-  /// The expected measurement identity for A2 measurements.
-  uint8_t m_a2MeasId;
-  /// The expected measurement identity for A4 measurements.
-  uint8_t m_a4MeasId;
+  /// The expected measurement identities for A2 measurements.
+  std::vector<uint8_t> m_a2MeasIds;
+  /// The expected measurement identities for A4 measurements.
+  std::vector<uint8_t> m_a4MeasIds;
 
   /**
    * Measurements reported by a UE for a cell ID. The values are quantized

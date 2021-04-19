@@ -249,13 +249,13 @@ LteUeMeasurementsTestCase::RecvMeasurementReport (uint64_t imsi, uint16_t cellId
         {
           NS_LOG_DEBUG (this << "Serving Cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti
                              << " thr " << (uint16_t) EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell)
-                             << " RSRP " << (uint16_t) meas.measResults.rsrpResult
-                             << " RSRQ " << (uint16_t)meas.measResults.rsrqResult
+                             << " RSRP " << (uint16_t) meas.measResults.measResultPCell.rsrpResult
+                             << " RSRQ " << (uint16_t)meas.measResults.measResultPCell.rsrqResult
                              << " thr " << (uint16_t) EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell));
-          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult,
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.measResultPCell.rsrpResult,
                                  EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeServingCell),
                                  "Wrong RSRP ");
-          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult,
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.measResultPCell.rsrqResult,
                                  EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeServingCell),
                                  "Wrong RSRQ ");
         }
@@ -263,13 +263,13 @@ LteUeMeasurementsTestCase::RecvMeasurementReport (uint64_t imsi, uint16_t cellId
         {
           NS_LOG_DEBUG (this << "Neighbor cell: received IMSI " << imsi << " CellId " << cellId << " RNTI " << rnti
                              << " thr " << (uint16_t) EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell)
-                             << " RSRP " << (uint16_t) meas.measResults.rsrpResult
-                             << " RSRQ " << (uint16_t)meas.measResults.rsrqResult
+                             << " RSRP " << (uint16_t) meas.measResults.measResultPCell.rsrpResult
+                             << " RSRQ " << (uint16_t)meas.measResults.measResultPCell.rsrqResult
                              << " thr " << (uint16_t) EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell));
-          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrpResult,
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.measResultPCell.rsrpResult,
                                  EutranMeasurementMapping::Dbm2RsrpRange (m_rsrpDbmUeNeighborCell),
                                  "Wrong RSRP ");
-          NS_TEST_ASSERT_MSG_EQ (meas.measResults.rsrqResult,
+          NS_TEST_ASSERT_MSG_EQ (meas.measResults.measResultPCell.rsrqResult,
                                  EutranMeasurementMapping::Db2RsrqRange (m_rsrqDbUeNeighborCell),
                                  "Wrong RSRQ ");
         }
@@ -598,7 +598,7 @@ LteUeMeasurementsPiecewiseTestCase1::DoRun ()
 
   // Setup UE measurement configuration
   Ptr<LteEnbRrc> enbRrc = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  m_expectedMeasId = enbRrc->AddUeMeasReportConfig (m_config);
+  m_expectedMeasId = enbRrc->AddUeMeasReportConfig (m_config).at (0);
 
   // Attach UE to eNodeB
   lteHelper->Attach (ueDevs.Get (0), enbDevs.Get (0));
@@ -674,10 +674,10 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
     {
       // verifying the report completeness
       LteRrcSap::MeasResults measResults = report.measResults;
-      NS_LOG_DEBUG (this << " rsrp=" << (uint16_t) measResults.rsrpResult
-                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult) << " dBm)"
-                         << " rsrq=" << (uint16_t) measResults.rsrqResult
-                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult) << " dB)");
+      NS_LOG_DEBUG (this << " rsrp=" << (uint16_t) measResults.measResultPCell.rsrpResult
+                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.measResultPCell.rsrpResult) << " dBm)"
+                         << " rsrq=" << (uint16_t) measResults.measResultPCell.rsrqResult
+                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.measResultPCell.rsrqResult) << " dB)");
       NS_TEST_ASSERT_MSG_EQ (measResults.haveMeasResultNeighCells, false,
                              "Report should not have neighboring cells information");
       NS_TEST_ASSERT_MSG_EQ (measResults.measResultListEutra.size (), 0,
@@ -697,7 +697,7 @@ LteUeMeasurementsPiecewiseTestCase1::RecvMeasurementReportCallback (
           uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
           m_itExpectedTime++;
 
-          uint16_t observedRsrp = measResults.rsrpResult;
+          uint16_t observedRsrp = measResults.measResultPCell.rsrpResult;
           uint16_t referenceRsrp = *m_itExpectedRsrp;
           m_itExpectedRsrp++;
 
@@ -1184,7 +1184,7 @@ LteUeMeasurementsPiecewiseTestCase2::DoRun ()
 
   // Setup UE measurement configuration in serving cell
   Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  m_expectedMeasId = enbRrc1->AddUeMeasReportConfig (m_config);
+  m_expectedMeasId = enbRrc1->AddUeMeasReportConfig (m_config).at (0);
 
   // Disable handover in neighbour cell
   Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetRrc ();
@@ -1265,10 +1265,10 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
       // verifying the report completeness
       LteRrcSap::MeasResults measResults = report.measResults;
       NS_LOG_DEBUG (this << " Serving cellId=" << cellId
-                         << " rsrp=" << (uint16_t) measResults.rsrpResult
-                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult) << " dBm)"
-                         << " rsrq=" << (uint16_t) measResults.rsrqResult
-                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult) << " dB)");
+                         << " rsrp=" << (uint16_t) measResults.measResultPCell.rsrpResult
+                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.measResultPCell.rsrpResult) << " dBm)"
+                         << " rsrq=" << (uint16_t) measResults.measResultPCell.rsrqResult
+                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.measResultPCell.rsrqResult) << " dB)");
 
       // verifying reported best cells
       if (measResults.measResultListEutra.size () == 0)
@@ -1312,7 +1312,7 @@ LteUeMeasurementsPiecewiseTestCase2::RecvMeasurementReportCallback (
           uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
           m_itExpectedTime++;
 
-          uint16_t observedRsrp = measResults.rsrpResult;
+          uint16_t observedRsrp = measResults.measResultPCell.rsrpResult;
           uint16_t referenceRsrp = *m_itExpectedRsrp;
           m_itExpectedRsrp++;
 
@@ -1478,7 +1478,7 @@ LteUeMeasurementsPiecewiseTestCase3::DoRun ()
 
   // Setup UE measurement configuration in serving cell
   Ptr<LteEnbRrc> enbRrc1 = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ()->GetRrc ();
-  m_expectedMeasId = enbRrc1->AddUeMeasReportConfig (m_config);
+  m_expectedMeasId = enbRrc1->AddUeMeasReportConfig (m_config).at (0);
 
   // Disable handover in neighbour cells
   Ptr<LteEnbRrc> enbRrc2 = enbDevs.Get (1)->GetObject<LteEnbNetDevice> ()->GetRrc ();
@@ -1538,10 +1538,10 @@ LteUeMeasurementsPiecewiseTestCase3::RecvMeasurementReportCallback (
       // verifying the report completeness
       LteRrcSap::MeasResults measResults = report.measResults;
       NS_LOG_DEBUG (this << " Serving cellId=" << cellId
-                         << " rsrp=" << (uint16_t) measResults.rsrpResult
-                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult) << " dBm)"
-                         << " rsrq=" << (uint16_t) measResults.rsrqResult
-                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult) << " dB)");
+                         << " rsrp=" << (uint16_t) measResults.measResultPCell.rsrpResult
+                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.measResultPCell.rsrpResult) << " dBm)"
+                         << " rsrq=" << (uint16_t) measResults.measResultPCell.rsrqResult
+                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.measResultPCell.rsrqResult) << " dB)");
 
       // verifying reported best cells
       if (measResults.measResultListEutra.size () == 0)
@@ -2015,14 +2015,14 @@ LteUeMeasurementsHandoverTestCase::DoRun ()
   for (itReportConfig = m_sourceConfigList.begin ();
        itReportConfig != m_sourceConfigList.end (); itReportConfig++)
     {
-      measId = enbRrc1->AddUeMeasReportConfig (*itReportConfig);
+      measId = enbRrc1->AddUeMeasReportConfig (*itReportConfig).at (0);
       m_expectedSourceCellMeasId.insert (measId);
     }
 
   for (itReportConfig = m_targetConfigList.begin ();
        itReportConfig != m_targetConfigList.end (); itReportConfig++)
     {
-      measId = enbRrc2->AddUeMeasReportConfig (*itReportConfig);
+      measId = enbRrc2->AddUeMeasReportConfig (*itReportConfig).at (0);
       m_expectedTargetCellMeasId.insert (measId);
     }
 
@@ -2107,10 +2107,10 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
       // verifying the report completeness
       LteRrcSap::MeasResults measResults = report.measResults;
       NS_LOG_DEBUG (this << " Serving cellId=" << cellId
-                         << " rsrp=" << (uint16_t) measResults.rsrpResult
-                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.rsrpResult) << " dBm)"
-                         << " rsrq=" << (uint16_t) measResults.rsrqResult
-                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.rsrqResult) << " dB)");
+                         << " rsrp=" << (uint16_t) measResults.measResultPCell.rsrpResult
+                         << " (" << EutranMeasurementMapping::RsrpRange2Dbm (measResults.measResultPCell.rsrpResult) << " dBm)"
+                         << " rsrq=" << (uint16_t) measResults.measResultPCell.rsrqResult
+                         << " (" << EutranMeasurementMapping::RsrqRange2Db (measResults.measResultPCell.rsrqResult) << " dB)");
 
       // verifying reported best cells
       if (measResults.measResultListEutra.size () == 0)
@@ -2155,7 +2155,7 @@ LteUeMeasurementsHandoverTestCase::RecvMeasurementReportCallback (
           uint64_t timeExpectedMs = m_itExpectedTime->GetMilliSeconds ();
           m_itExpectedTime++;
 
-          uint16_t observedRsrp = measResults.rsrpResult;
+          uint16_t observedRsrp = measResults.measResultPCell.rsrpResult;
           uint16_t referenceRsrp = *m_itExpectedRsrp;
           m_itExpectedRsrp++;
 

@@ -1375,6 +1375,10 @@ LteUePhy::DoReset ()
   m_a30CqiLast = Simulator::Now ();
   m_paLinear = 1;
 
+  m_rsReceivedPowerUpdated = false;
+  m_rsInterferencePowerUpdated = false;
+  m_dataInterferencePowerUpdated = false;
+
   m_packetBurstQueue.clear ();
   m_controlMessagesQueue.clear ();
   m_subChannelsForTransmissionQueue.clear ();
@@ -1439,6 +1443,18 @@ LteUePhy::DoSynchronizeWithEnb (uint16_t cellId)
   m_ulConfigured = false;
 
   SwitchToState (SYNCHRONIZED);
+}
+
+uint16_t
+LteUePhy::DoGetCellId ()
+{
+  return m_cellId;
+}
+
+uint32_t
+LteUePhy::DoGetDlEarfcn ()
+{
+  return m_dlEarfcn;
 }
 
 void
