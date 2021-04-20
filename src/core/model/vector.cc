@@ -89,6 +89,19 @@ Vector2D::GetLength () const
 }
 
 double
+Vector3D::GetLengthSquared () const
+{
+  NS_LOG_FUNCTION (this);
+  return x * x + y * y + z * z;
+}
+double
+Vector2D::GetLengthSquared () const
+{
+  NS_LOG_FUNCTION (this);
+  return x * x + y * y;
+}
+
+double
 CalculateDistance (const Vector3D &a, const Vector3D &b)
 {
   NS_LOG_FUNCTION (a << b);
@@ -99,6 +112,19 @@ CalculateDistance (const Vector2D &a, const Vector2D &b)
 {
   NS_LOG_FUNCTION (a << b);
   return (b - a).GetLength ();
+}
+
+double
+CalculateDistanceSquared (const Vector3D &a, const Vector3D &b)
+{
+  NS_LOG_FUNCTION (a << b);
+  return (b - a).GetLengthSquared ();
+}
+double
+CalculateDistanceSquared (const Vector2D &a, const Vector2D &b)
+{
+  NS_LOG_FUNCTION (a << b);
+  return (b - a).GetLengthSquared ();
 }
 
 std::ostream &operator << (std::ostream &os, const Vector3D &vector)

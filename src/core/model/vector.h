@@ -67,12 +67,26 @@ public:
   double GetLength () const;
 
   /**
+   * Compute the squared length of the vector.
+   * \returns the vector length squared.
+   */
+  double GetLengthSquared () const;
+
+  /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
    * \param [in] b Another point
    * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector3D &a, const Vector3D &b);
+
+  /**
+   * \brief Calculate the squared Cartesian distance between two points.
+   * \param [in] a One point
+   * \param [in] b Another point
+   * \returns The distance between \pname{a} and \pname{b}.
+   */
+  friend double CalculateDistanceSquared (const Vector3D &a, const Vector3D &b);
 
   /**
    * Output streamer.
@@ -184,6 +198,9 @@ public:
   /** \copydoc Vector3D::GetLength() */
   double GetLength () const;
 
+  /** \copydoc Vector3D::GetLengthSquared() */
+  double GetLengthSquared () const;
+
   /**
    * \brief Calculate the Cartesian distance between two points.
    * \param [in] a One point
@@ -191,6 +208,14 @@ public:
    * \returns The distance between \pname{a} and \pname{b}.
    */
   friend double CalculateDistance (const Vector2D &a, const Vector2D &b);
+
+  /**
+   * \brief Calculate the squared Cartesian distance between two points.
+   * \param [in] a One point
+   * \param [in] b Another point
+   * \returns The distance between \pname{a} and \pname{b}.
+   */
+  friend double CalculateDistanceSquared (const Vector2D &a, const Vector2D &b);
 
   /**
    * Output streamer.
@@ -280,6 +305,8 @@ public:
 
 double CalculateDistance (const Vector3D &a, const Vector3D &b);
 double CalculateDistance (const Vector2D &a, const Vector2D &b);
+double CalculateDistanceSquared (const Vector3D &a, const Vector3D &b);
+double CalculateDistanceSquared (const Vector2D &a, const Vector2D &b);
 std::ostream &operator << (std::ostream &os, const Vector3D &vector);
 std::ostream &operator << (std::ostream &os, const Vector2D &vector);
 std::istream &operator >> (std::istream &is, Vector3D &vector);
