@@ -90,7 +90,7 @@ wifiStaNodes.Create(nWifi)
 wifiApNode = p2pNodes.Get(0)
 
 channel = ns.wifi.YansWifiChannelHelper.Default()
-phy = ns.wifi.YansWifiPhyHelper.Default()
+phy = ns.wifi.YansWifiPhyHelper()
 phy.SetChannel(channel.Create())
 
 wifi = ns.wifi.WifiHelper()
@@ -152,7 +152,7 @@ ns.internet.Ipv4GlobalRoutingHelper.PopulateRoutingTables()
 ns.core.Simulator.Stop(ns.core.Seconds(10.0))
 
 if tracing == "True":
-  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
+	phy.SetPcapDataLinkType(phy.DLT_IEEE802_11_RADIO)
 	pointToPoint.EnablePcapAll ("third")
 	phy.EnablePcap ("third", apDevices.Get (0))
 	csma.EnablePcap ("third", csmaDevices.Get (0), True)
