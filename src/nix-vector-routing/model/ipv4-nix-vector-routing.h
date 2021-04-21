@@ -96,7 +96,7 @@ public:
    * \param stream The ostream the Routing path is printed to
    * \param unit the time unit to be used in the report
    */
-  void PrintRoutingPath (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit);
+  void PrintRoutingPath (Ptr<Node> source, Ipv4Address dest, Ptr<OutputStreamWrapper> stream, Time::Unit unit) const;
 
 
 private:
@@ -130,14 +130,14 @@ private:
    * \param oif Preferred output interface
    * \returns The NixVector to be used in routing.
    */
-  Ptr<NixVector> GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif);
+  Ptr<NixVector> GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif) const;
 
   /**
    * Checks the cache based on dest IP for the nix-vector
    * \param address Address to check
    * \returns The NixVector to be used in routing.
    */
-  Ptr<NixVector> GetNixVectorInCache (Ipv4Address address);
+  Ptr<NixVector> GetNixVectorInCache (Ipv4Address address) const;
 
   /**
    * Checks the cache based on dest IP for the Ipv4Route
@@ -153,7 +153,7 @@ private:
    * \param [in] channel the channel to check
    * \param [out] netDeviceContainer the NetDeviceContainer of the NetDevices in the channel.
    */
-  void GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channel> channel, NetDeviceContainer & netDeviceContainer);
+  void GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channel> channel, NetDeviceContainer & netDeviceContainer) const;
 
   /**
    * Iterates through the node list and finds the one
@@ -161,7 +161,7 @@ private:
    * \param dest destination node IP
    * \return The node with the specified IP.
    */
-  Ptr<Node> GetNodeByIp (Ipv4Address dest);
+  Ptr<Node> GetNodeByIp (Ipv4Address dest) const;
 
   /**
    * Recurses the parent vector, created by BFS and actually builds the nixvector
@@ -171,7 +171,7 @@ private:
    * \param [out] nixVector the NixVector to be used for routing
    * \returns true on success, false otherwise.
    */
-  bool BuildNixVector (const std::vector< Ptr<Node> > & parentVector, uint32_t source, uint32_t dest, Ptr<NixVector> nixVector);
+  bool BuildNixVector (const std::vector< Ptr<Node> > & parentVector, uint32_t source, uint32_t dest, Ptr<NixVector> nixVector) const;
 
   /**
    * Special variation of BuildNixVector for when a node is sending to itself
@@ -181,11 +181,13 @@ private:
   bool BuildNixVectorLocal (Ptr<NixVector> nixVector);
 
   /**
-   * Simple iterates through the nodes net-devices and determines
-   * how many neighbors it has
-   * \returns the number of neighbors.
+   * Simply iterates through the nodes net-devices and determines
+   * how many neighbors the node has.
+   * \param [in] node node pointer
+   * \returns the number of neighbors of m_node.
    */
-  uint32_t FindTotalNeighbors (void);
+  uint32_t FindTotalNeighbors (Ptr<Node> node) const;
+
 
   /**
    * Determine if the NetDevice is bridged
@@ -198,11 +200,12 @@ private:
   /**
    * Nix index is with respect to the neighbors.  The net-device index must be
    * derived from this
+   * \param [in] node the current node under consideration
    * \param [in] nodeIndex Nix Node index
    * \param [out] gatewayIp IP address of the gateway
    * \returns the index of the NetDevice in the node.
    */
-  uint32_t FindNetDeviceForNixIndex (uint32_t nodeIndex, Ipv4Address & gatewayIp);
+  uint32_t FindNetDeviceForNixIndex (Ptr<Node> node, uint32_t nodeIndex, Ipv4Address & gatewayIp) const;
 
   /**
    * \brief Breadth first search algorithm.
@@ -217,7 +220,7 @@ private:
             Ptr<Node> source,
             Ptr<Node> dest,
             std::vector< Ptr<Node> > & parentVector,
-            Ptr<NetDevice> oif);
+            Ptr<NetDevice> oif) const;
 
   void DoDispose (void);
 
@@ -241,7 +244,7 @@ private:
   /**
    * Build map from IPv4 Address to Node for faster lookup.
    */
-  void BuildIpv4AddressToNodeMap (void);
+  void BuildIpv4AddressToNodeMap (void) const;
 
   /**
    * Flag to mark when caches are dirty and need to be flushed.  
