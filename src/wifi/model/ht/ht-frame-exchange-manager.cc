@@ -1338,7 +1338,7 @@ HtFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           CtrlBAckResponseHeader blockAck;
           mpdu->GetPacket ()->PeekHeader (blockAck);
           uint8_t tid = blockAck.GetTidInfo ();
-          GetBaManager (tid)->NotifyGotBlockAck (&blockAck, hdr.GetAddr2 (), {tid}, rxSnr,
+          GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (), {tid}, rxSnr,
                                                  tag.Get (), m_txParams.m_txVector);
 
           // cancel the timer

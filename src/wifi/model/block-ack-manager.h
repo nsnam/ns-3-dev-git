@@ -208,7 +208,7 @@ public:
    * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
    * using All-ack context.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient,
+  void NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
                           const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
                           const WifiTxVector& dataTxVector, size_t index = 0);
   /**
