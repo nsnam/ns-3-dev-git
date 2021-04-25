@@ -251,6 +251,9 @@ int main (int argc, char *argv[])
   // Tracing
   wifiPhy.EnablePcap ("olsr-hna", devices);
   csma.EnablePcap ("olsr-hna", csmaDevices, false);
+  AsciiTraceHelper ascii;
+  wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("olsr-hna-wifi.tr"));
+  csma.EnableAsciiAll (ascii.CreateFileStream ("olsr-hna-csma.tr"));
 
   Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
                                   Seconds (15.0), &GenerateTraffic,
