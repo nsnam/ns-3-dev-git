@@ -64,6 +64,12 @@ WifiNoAck::WifiNoAck ()
   acknowledgmentTime = Seconds (0);
 }
 
+std::unique_ptr<WifiAcknowledgment>
+WifiNoAck::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiNoAck (*this));
+}
+
 bool
 WifiNoAck::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const
 {
@@ -90,6 +96,12 @@ WifiNormalAck::WifiNormalAck ()
 {
 }
 
+std::unique_ptr<WifiAcknowledgment>
+WifiNormalAck::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiNormalAck (*this));
+}
+
 bool
 WifiNormalAck::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const
 {
@@ -113,6 +125,12 @@ WifiNormalAck::Print (std::ostream &os) const
 WifiBlockAck::WifiBlockAck ()
   : WifiAcknowledgment (BLOCK_ACK)
 {
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiBlockAck::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiBlockAck (*this));
 }
 
 bool
@@ -141,6 +159,12 @@ WifiBarBlockAck::WifiBarBlockAck ()
 {
 }
 
+std::unique_ptr<WifiAcknowledgment>
+WifiBarBlockAck::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiBarBlockAck (*this));
+}
+
 bool
 WifiBarBlockAck::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const
 {
@@ -165,6 +189,12 @@ WifiBarBlockAck::Print (std::ostream &os) const
 WifiDlMuBarBaSequence::WifiDlMuBarBaSequence ()
   : WifiAcknowledgment (DL_MU_BAR_BA_SEQUENCE)
 {
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiDlMuBarBaSequence::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiDlMuBarBaSequence (*this));
 }
 
 bool
@@ -227,6 +257,12 @@ WifiDlMuTfMuBar::WifiDlMuTfMuBar ()
 {
 }
 
+std::unique_ptr<WifiAcknowledgment>
+WifiDlMuTfMuBar::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiDlMuTfMuBar (*this));
+}
+
 bool
 WifiDlMuTfMuBar::CheckQosAckPolicy (Mac48Address receiver, uint8_t tid,
                                     WifiMacHeader::QosAckPolicy ackPolicy) const
@@ -260,6 +296,12 @@ WifiDlMuAggregateTf::WifiDlMuAggregateTf ()
   : WifiAcknowledgment (DL_MU_AGGREGATE_TF),
     ulLength (0)
 {
+}
+
+std::unique_ptr<WifiAcknowledgment>
+WifiDlMuAggregateTf::Copy (void) const
+{
+  return std::unique_ptr<WifiAcknowledgment> (new WifiDlMuAggregateTf (*this));
 }
 
 bool

@@ -48,6 +48,12 @@ WifiNoProtection::WifiNoProtection ()
   protectionTime = Seconds (0);
 }
 
+std::unique_ptr<WifiProtection>
+WifiNoProtection::Copy (void) const
+{
+  return std::unique_ptr<WifiProtection> (new WifiNoProtection (*this));
+}
+
 void
 WifiNoProtection::Print (std::ostream &os) const
 {
@@ -64,6 +70,12 @@ WifiRtsCtsProtection::WifiRtsCtsProtection ()
 {
 }
 
+std::unique_ptr<WifiProtection>
+WifiRtsCtsProtection::Copy (void) const
+{
+  return std::unique_ptr<WifiProtection> (new WifiRtsCtsProtection (*this));
+}
+
 void
 WifiRtsCtsProtection::Print (std::ostream &os) const
 {
@@ -78,6 +90,12 @@ WifiRtsCtsProtection::Print (std::ostream &os) const
 WifiCtsToSelfProtection::WifiCtsToSelfProtection ()
   : WifiProtection (CTS_TO_SELF)
 {
+}
+
+std::unique_ptr<WifiProtection>
+WifiCtsToSelfProtection::Copy (void) const
+{
+  return std::unique_ptr<WifiProtection> (new WifiCtsToSelfProtection (*this));
 }
 
 void

@@ -27,6 +27,7 @@
 #include "wifi-mac-header.h"
 #include "ctrl-headers.h"
 #include <map>
+#include <memory>
 
 
 namespace ns3 {
@@ -63,6 +64,12 @@ struct WifiAcknowledgment
    */
   WifiAcknowledgment (Method m);
   virtual ~WifiAcknowledgment ();
+
+  /**
+   * Clone this object.
+   * \return a pointer to the cloned object
+   */
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const = 0;
 
   /**
    * Get the QoS Ack policy to use for the MPDUs addressed to the given receiver
@@ -122,6 +129,7 @@ struct WifiNoAck : public WifiAcknowledgment
   WifiNoAck ();
 
   // Overridden from WifiAcknowledgment
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 };
@@ -137,6 +145,7 @@ struct WifiNormalAck : public WifiAcknowledgment
   WifiNormalAck ();
 
   // Overridden from WifiAcknowledgment
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -154,8 +163,9 @@ struct WifiBlockAck : public WifiAcknowledgment
   WifiBlockAck ();
 
   // Overridden from WifiAcknowledgment
-  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
-  void Print (std::ostream &os) const;
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
 
   WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
   BlockAckType baType;                 //!< BlockAck type
@@ -172,8 +182,9 @@ struct WifiBarBlockAck : public WifiAcknowledgment
   WifiBarBlockAck ();
 
   // Overridden from WifiAcknowledgment
-  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const;
-  void Print (std::ostream &os) const;
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
+  void Print (std::ostream &os) const override;
 
   WifiTxVector blockAckReqTxVector;    //!< BlockAckReq TXVECTOR
   WifiTxVector blockAckTxVector;       //!< BlockAck TXVECTOR
@@ -194,6 +205,7 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
   WifiDlMuBarBaSequence ();
 
   // Overridden from WifiAcknowledgment
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -238,6 +250,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
   WifiDlMuTfMuBar ();
 
   // Overridden from WifiAcknowledgment
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -269,6 +282,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
   WifiDlMuAggregateTf ();
 
   // Overridden from WifiAcknowledgment
+  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
