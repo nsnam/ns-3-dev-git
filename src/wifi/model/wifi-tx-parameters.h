@@ -44,6 +44,15 @@ struct WifiAcknowledgment;
 class WifiTxParameters
 {
 public:
+  WifiTxParameters ();
+  WifiTxParameters (const WifiTxParameters& txParams);
+
+  /**
+   * Copy assignment operator.
+   * \param txParams the TX parameters to assign to this object
+   */
+  WifiTxParameters& operator= (const WifiTxParameters& txParams);
+
   WifiTxVector m_txVector;                               //!< TXVECTOR of the frame being prepared
   std::unique_ptr<WifiProtection> m_protection;          //!< protection method
   std::unique_ptr<WifiAcknowledgment> m_acknowledgment;  //!< acknowledgment method

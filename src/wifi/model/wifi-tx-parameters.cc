@@ -32,6 +32,36 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiTxParameters");
 
+WifiTxParameters::WifiTxParameters ()
+{
+}
+
+WifiTxParameters::WifiTxParameters (const WifiTxParameters& txParams)
+{
+  m_txVector = txParams.m_txVector;
+  m_protection = (txParams.m_protection ? txParams.m_protection->Copy () : nullptr);
+  m_acknowledgment = (txParams.m_acknowledgment ? txParams.m_acknowledgment->Copy () : nullptr);
+  m_txDuration = txParams.m_txDuration;
+  m_info = txParams.m_info;
+}
+
+WifiTxParameters&
+WifiTxParameters::operator= (const WifiTxParameters& txParams)
+{
+  // check for self-assignment
+  if (&txParams == this)
+    {
+      return *this;
+    }
+
+  m_txVector = txParams.m_txVector;
+  m_protection = (txParams.m_protection ? txParams.m_protection->Copy () : nullptr);
+  m_acknowledgment = (txParams.m_acknowledgment ? txParams.m_acknowledgment->Copy () : nullptr);
+  m_txDuration = txParams.m_txDuration;
+  m_info = txParams.m_info;
+
+  return *this;
+}
 
 void
 WifiTxParameters::Clear (void)
