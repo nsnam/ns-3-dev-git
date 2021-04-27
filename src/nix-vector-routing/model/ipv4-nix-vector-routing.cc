@@ -372,14 +372,18 @@ Ipv4NixVectorRouting::BuildIpv4AddressToNodeMap (void) const
                   int32_t interfaceIndex = (ipv4)->GetInterfaceForDevice (node->GetDevice (deviceId));
                   if (interfaceIndex != -1)
                     {
-                      Ipv4InterfaceAddress ifAddr = ipv4->GetAddress (interfaceIndex, 0);
-                      Ipv4Address addr = ifAddr.GetLocal ();
+                      uint32_t numberOfAddresses = ipv4->GetNAddresses (interfaceIndex);
+                      for (uint32_t addressIndex = 0; addressIndex < numberOfAddresses; addressIndex++)
+                        {
+                          Ipv4InterfaceAddress ifAddr = ipv4->GetAddress (interfaceIndex, addressIndex);
+                          Ipv4Address addr = ifAddr.GetLocal ();
 
-                      NS_ABORT_MSG_IF (g_ipv4AddressToNodeMap.count (addr),
-                                       "Duplicate IPv4 address (" << addr << ") found during NIX Vector map construction for node " << node->GetId ());
+                          NS_ABORT_MSG_IF (g_ipv4AddressToNodeMap.count (addr),
+                                          "Duplicate IPv4 address (" << addr << ") found during NIX Vector map construction for node " << node->GetId ());
 
-                      NS_LOG_LOGIC ("Adding IPv4 address " << addr << " for node " << node->GetId () << " to NIX Vector IPv4 address to node map");
-                      g_ipv4AddressToNodeMap[addr] = node;
+                          NS_LOG_LOGIC ("Adding IPv4 address " << addr << " for node " << node->GetId () << " to NIX Vector IPv4 address to node map");
+                          g_ipv4AddressToNodeMap[addr] = node;
+                        }
                     }
                 }
             }
@@ -611,11 +615,11 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
 
           NS_ASSERT_MSG (interfaceIndex != -1, "Interface index not found for device");
 
-          Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (interfaceIndex, 0);
+          Ipv4Address sourceIPAddr = m_ipv4->SourceAddressSelection (interfaceIndex, header.GetDestination ());
 
           // start filling in the Ipv4Route info
           rtentry = Create<Ipv4Route> ();
-          rtentry->SetSource (ifAddr.GetLocal ());
+          rtentry->SetSource (sourceIPAddr);
 
           rtentry->SetGateway (gatewayIp);
           rtentry->SetDestination (header.GetDestination ());
@@ -1054,14 +1058,24 @@ Ipv4NixVectorRouting::PrintRoutingPath (Ptr<Node> source, Ipv4Address dest,
           Ptr<Ipv4> ipv4 = curr->GetObject<Ipv4> ();
           Ptr<NetDevice> outDevice = curr->GetDevice (NetDeviceIndex);
           uint32_t interfaceIndex = ipv4->GetInterfaceForDevice (outDevice);
-          Ipv4Address sourceIPAddr = ipv4->GetAddress (interfaceIndex, 0).GetLocal ();
+          Ipv4Address sourceIPAddr;
+          if (curr == source)
+            {
+              sourceIPAddr = ipv4->SourceAddressSelection (interfaceIndex, dest);
+            }
+          else
+            {
+              // We use the first address because it's indifferent which one
+              // we use to identify intermediate routers
+              sourceIPAddr = ipv4->GetAddress (interfaceIndex, 0).GetLocal ();
+            }
 
           std::ostringstream currNode, nextNode;
           currNode << sourceIPAddr << " (Node " << curr->GetId () << ")";
           *os << std::setw (20) << currNode.str ();
           // Replace curr with the next node
           curr = GetNodeByIp (gatewayIp);
-          nextNode << "---->   " << gatewayIp << " (Node " << curr->GetId () << ")";
+          nextNode << "---->   " << ((curr == destNode) ? dest : gatewayIp) << " (Node " << curr->GetId () << ")";
           *os << nextNode.str () << std::endl;
         }
         *os << std::endl;

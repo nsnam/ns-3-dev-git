@@ -37,6 +37,11 @@ current node extracts the appropriate neighbor-index from the
 nix-vector and transmits the packet through the corresponding 
 net-device.  This continues until the packet reaches the destination.
 
+NixVectorRouting bases its routing decisions on the nodes addresses,
+and it does **not** check that the nodes are in the proper subnets.
+In other terms, using NixVectorRouting you could have an (apparently)
+working network that violates every good practice in IP address assignments.
+
 Scope and Limitations
 =====================
 
