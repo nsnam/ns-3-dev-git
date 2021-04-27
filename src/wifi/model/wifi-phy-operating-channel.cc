@@ -393,6 +393,13 @@ WifiPhyOperatingChannel::GetWidth (void) const
   return std::get<2> (*m_channelIt);
 }
 
+WifiPhyBand
+WifiPhyOperatingChannel::GetPhyBand (void) const
+{
+  NS_ASSERT (IsSet ());
+  return std::get<4> (*m_channelIt);
+}
+
 bool
 WifiPhyOperatingChannel::IsOfdm (void) const
 {

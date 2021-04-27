@@ -114,6 +114,12 @@ public:
    */
   uint16_t GetWidth (void) const;
   /**
+   * Return the PHY band of the operating channel
+   *
+   * \return the PHY band of the operating channel
+   */
+  WifiPhyBand GetPhyBand (void) const;
+  /**
    * Return whether the operating channel is an OFDM channel.
    *
    * \return whether the operating channel is an OFDM channel
