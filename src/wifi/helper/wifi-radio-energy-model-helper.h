@@ -52,7 +52,7 @@ public:
    *
    * Sets an attribute of the underlying PHY object.
    */
-  void Set (std::string name, const AttributeValue &v);
+  void Set (std::string name, const AttributeValue &v) override;
 
   /**
    * \param callback Callback function for energy depletion handling.
@@ -108,7 +108,7 @@ private:
    * Implements DeviceEnergyModel::Install.
    */
   virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
-                                            Ptr<EnergySource> source) const;
+                                            Ptr<EnergySource> source) const override;
 
 private:
   ObjectFactory m_radioEnergy; ///< radio energy

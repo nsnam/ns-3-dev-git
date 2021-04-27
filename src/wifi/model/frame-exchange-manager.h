@@ -235,7 +235,7 @@ public:
   void NotifyOffNow (void);
 
 protected:
-  virtual void DoDispose ();
+  virtual void DoDispose () override;
 
   /**
    * Fragment the given MPDU if needed. If fragmentation is needed, return the

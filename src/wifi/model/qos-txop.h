@@ -84,13 +84,13 @@ public:
   virtual ~QosTxop ();
 
   // Overridden from Txop
-  bool IsQosTxop (void) const;
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
-  virtual bool HasFramesToTransmit (void);
-  void NotifyInternalCollision (void);
-  virtual void NotifyChannelAccessed (Time txopDuration);
-  void NotifyChannelReleased (void);
-  void SetDroppedMpduCallback (DroppedMpdu callback);
+  bool IsQosTxop (void) const override;
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager) override;
+  virtual bool HasFramesToTransmit (void) override;
+  void NotifyInternalCollision (void) override;
+  virtual void NotifyChannelAccessed (Time txopDuration) override;
+  void NotifyChannelReleased (void) override;
+  void SetDroppedMpduCallback (DroppedMpdu callback) override;
 
   /**
    * Set the Frame Exchange Manager associated with this QoS STA.
@@ -394,14 +394,14 @@ public:
 
 protected:
   // Overridden from Txop
-  void DoDispose (void);
+  void DoDispose (void) override;
 
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
   // Overridden from Txop
-  void DoInitialize (void);
+  void DoInitialize (void) override;
 
   /**
    * Check if the given MPDU is to be considered old according to the current

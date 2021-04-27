@@ -294,7 +294,7 @@ private:
   virtual void EnablePcapInternal (std::string prefix,
                                    Ptr<NetDevice> nd,
                                    bool promiscuous,
-                                   bool explicitFilename);
+                                   bool explicitFilename) override;
 
   /**
    * \brief Enable ASCII trace output on the indicated net device.
@@ -310,7 +310,7 @@ private:
   virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
                                     std::string prefix,
                                     Ptr<NetDevice> nd,
-                                    bool explicitFilename);
+                                    bool explicitFilename) override;
 
   PcapHelper::DataLinkType m_pcapDlt; ///< PCAP data link type
 };

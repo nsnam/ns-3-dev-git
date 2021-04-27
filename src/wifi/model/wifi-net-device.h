@@ -113,35 +113,35 @@ public:
   Ptr<HeConfiguration> GetHeConfiguration (void) const;
 
   //inherited from NetDevice base class.
-  void SetIfIndex (const uint32_t index);
-  uint32_t GetIfIndex (void) const;
-  Ptr<Channel> GetChannel (void) const;
-  void SetAddress (Address address);
-  Address GetAddress (void) const;
-  bool SetMtu (const uint16_t mtu);
-  uint16_t GetMtu (void) const;
-  bool IsLinkUp (void) const;
-  void AddLinkChangeCallback (Callback<void> callback);
-  bool IsBroadcast (void) const;
-  Address GetBroadcast (void) const;
-  bool IsMulticast (void) const;
-  Address GetMulticast (Ipv4Address multicastGroup) const;
-  bool IsPointToPoint (void) const;
-  bool IsBridge (void) const;
-  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
-  Ptr<Node> GetNode (void) const;
-  void SetNode (const Ptr<Node> node);
-  bool NeedsArp (void) const;
-  void SetReceiveCallback (NetDevice::ReceiveCallback cb);
-  Address GetMulticast (Ipv6Address addr) const;
-  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber);
-  void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
-  bool SupportsSendFrom (void) const;
+  void SetIfIndex (const uint32_t index) override;
+  uint32_t GetIfIndex (void) const override;
+  Ptr<Channel> GetChannel (void) const override;
+  void SetAddress (Address address) override;
+  Address GetAddress (void) const override;
+  bool SetMtu (const uint16_t mtu) override;
+  uint16_t GetMtu (void) const override;
+  bool IsLinkUp (void) const override;
+  void AddLinkChangeCallback (Callback<void> callback) override;
+  bool IsBroadcast (void) const override;
+  Address GetBroadcast (void) const override;
+  bool IsMulticast (void) const override;
+  Address GetMulticast (Ipv4Address multicastGroup) const override;
+  bool IsPointToPoint (void) const override;
+  bool IsBridge (void) const override;
+  bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) override;
+  Ptr<Node> GetNode (void) const override;
+  void SetNode (const Ptr<Node> node) override;
+  bool NeedsArp (void) const override;
+  void SetReceiveCallback (NetDevice::ReceiveCallback cb) override;
+  Address GetMulticast (Ipv6Address addr) const override;
+  bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber) override;
+  void SetPromiscReceiveCallback (PromiscReceiveCallback cb) override;
+  bool SupportsSendFrom (void) const override;
 
 
 protected:
-  void DoDispose (void);
-  void DoInitialize (void);
+  void DoDispose (void) override;
+  void DoInitialize (void) override;
   /**
    * Receive a packet from the lower layer and pass the
    * packet up the stack.

@@ -60,39 +60,29 @@ public:
   virtual ~RegularWifiMac ();
 
   // Implementations of pure virtual methods.
-  void SetShortSlotTimeSupported (bool enable);
-  void SetSsid (Ssid ssid);
-  void SetAddress (Mac48Address address);
-  void SetPromisc (void);
-  bool GetShortSlotTimeSupported (void) const;
-  Ssid GetSsid (void) const;
-  Mac48Address GetAddress (void) const;
-  Mac48Address GetBssid (void) const;
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-  virtual bool SupportsSendFrom (void) const;
-  virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
-  Ptr<WifiPhy> GetWifiPhy (void) const;
-  void ResetWifiPhy (void);
-  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-  void ConfigureStandard (WifiStandard standard);
-  TypeOfStation GetTypeOfStation (void) const;
-
-  /**
-   * This type defines the callback of a higher layer that a
-   * WifiMac(-derived) object invokes to pass a packet up the stack.
-   *
-   * \param packet the packet that has been received.
-   * \param from the MAC address of the device that sent the packet.
-   * \param to the MAC address of the device that the packet is destined for.
-   */
-  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
-
-  void SetForwardUpCallback (ForwardUpCallback upCallback);
-  void SetLinkUpCallback (Callback<void> linkUp);
-  void SetLinkDownCallback (Callback<void> linkDown);
+  void SetShortSlotTimeSupported (bool enable) override;
+  void SetSsid (Ssid ssid) override;
+  void SetAddress (Mac48Address address) override;
+  void SetPromisc (void) override;
+  bool GetShortSlotTimeSupported (void) const override;
+  Ssid GetSsid (void) const override;
+  Mac48Address GetAddress (void) const override;
+  Mac48Address GetBssid (void) const override;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
+  virtual bool SupportsSendFrom (void) const override;
+  virtual void SetWifiPhy (const Ptr<WifiPhy> phy) override;
+  Ptr<WifiPhy> GetWifiPhy (void) const override;
+  void ResetWifiPhy (void) override;
+  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
+  void ConfigureStandard (WifiStandard standard) override;
+  TypeOfStation GetTypeOfStation (void) const override;
+  void SetForwardUpCallback (ForwardUpCallback upCallback) override;
+  void SetLinkUpCallback (Callback<void> linkUp) override;
+  void SetLinkDownCallback (Callback<void> linkDown) override;
+  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const override;
 
   // Should be implemented by child classes
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) override = 0;
 
   /**
    * Get the Frame Exchange Manager
@@ -112,11 +102,6 @@ public:
    * \param bssid the BSSID of the network that this device belongs to.
    */
   void SetBssid (Mac48Address bssid);
-
-  /**
-   * \return the station manager attached to this MAC.
-   */
-  Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
 
   /**
    * Accessor for the DCF object
@@ -165,9 +150,9 @@ public:
   HeCapabilities GetHeCapabilities (void) const;
 
 protected:
-  virtual void DoInitialize ();
-  virtual void DoDispose ();
-  void SetTypeOfStation (TypeOfStation type);
+  virtual void DoInitialize () override;
+  virtual void DoDispose () override;
+  void SetTypeOfStation (TypeOfStation type) override;
 
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;                      //!< TX middle (aggregation etc.)

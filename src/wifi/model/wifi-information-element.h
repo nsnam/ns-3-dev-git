@@ -239,7 +239,7 @@ public:
    *
    * \return an iterator
    */
-  Buffer::Iterator Serialize (Buffer::Iterator i) const;
+  virtual Buffer::Iterator Serialize (Buffer::Iterator i) const;
   /**
    * Deserialize entire IE, which must be present. The iterator
    * passed in must be pointing at the Element ID (i.e., the very
@@ -268,7 +268,7 @@ public:
    *
    * \return the size of the serialized IE in bytes
    */
-  uint16_t GetSerializedSize () const;
+  virtual uint16_t GetSerializedSize () const;
 
   // Each subclass must implement these pure virtual functions:
   /**

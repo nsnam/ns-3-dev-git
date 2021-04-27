@@ -68,8 +68,8 @@ public:
   virtual ~SpectrumWifiPhyBasicTest ();
 
 protected:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
+  virtual void DoSetup (void) override;
+  virtual void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Make signal function
@@ -99,7 +99,7 @@ protected:
   uint32_t m_count; ///< count
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 
   uint64_t m_uid;
 };
@@ -232,43 +232,43 @@ public:
   virtual ~TestPhyListener ()
   {
   }
-  virtual void NotifyRxStart (Time duration)
+  virtual void NotifyRxStart (Time duration) override
   {
     NS_LOG_FUNCTION (this << duration);
     ++m_notifyRxStart;
   }
-  virtual void NotifyRxEndOk (void)
+  virtual void NotifyRxEndOk (void) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndOk;
   }
-  virtual void NotifyRxEndError (void)
+  virtual void NotifyRxEndError (void) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndError;
   }
-  virtual void NotifyTxStart (Time duration, double txPowerDbm)
+  virtual void NotifyTxStart (Time duration, double txPowerDbm) override
   {
     NS_LOG_FUNCTION (this << duration << txPowerDbm);
   }
-  virtual void NotifyMaybeCcaBusyStart (Time duration)
+  virtual void NotifyMaybeCcaBusyStart (Time duration) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyMaybeCcaBusyStart;
   }
-  virtual void NotifySwitchingStart (Time duration)
+  virtual void NotifySwitchingStart (Time duration) override
   {
   }
-  virtual void NotifySleep (void)
+  virtual void NotifySleep (void) override
   {
   }
-  virtual void NotifyOff (void)
+  virtual void NotifyOff (void) override
   {
   }
-  virtual void NotifyWakeup (void)
+  virtual void NotifyWakeup (void) override
   {
   }
-  virtual void NotifyOn (void)
+  virtual void NotifyOn (void) override
   {
   }
   uint32_t m_notifyRxStart; ///< notify receive start
@@ -290,8 +290,8 @@ public:
   SpectrumWifiPhyListenerTest ();
   virtual ~SpectrumWifiPhyListenerTest ();
 private:
-  virtual void DoSetup (void);
-  virtual void DoRun (void);
+  virtual void DoSetup (void) override;
+  virtual void DoRun (void) override;
   TestPhyListener* m_listener; ///< listener
 };
 
@@ -347,9 +347,9 @@ public:
   virtual ~SpectrumWifiPhyFilterTest ();
 
 private:
-  virtual void DoSetup (void);
-  virtual void DoTeardown (void);
-  virtual void DoRun (void);
+  virtual void DoSetup (void) override;
+  virtual void DoTeardown (void) override;
+  virtual void DoRun (void) override;
 
   /**
    * Run one function

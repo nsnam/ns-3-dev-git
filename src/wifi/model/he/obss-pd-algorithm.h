@@ -82,8 +82,9 @@ public:
    */
   typedef void (* ResetTracedCallback)(uint8_t bssColor, double rssiDbm, bool powerRestricted, double txPowerMaxDbmSiso, double txPowerMaxDbmMimo);
 
+
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose (void) override;
 
   Ptr<WifiNetDevice> m_device; ///< Pointer to the WifiNetDevice
   double m_obssPdLevel;        ///< Current OBSS PD level (dBm)

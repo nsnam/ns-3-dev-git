@@ -39,17 +39,18 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
 
   /**
    * Create a SnrTag with the default SNR 0
    */
   SnrTag ();
 
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (TagBuffer i) const;
-  void Deserialize (TagBuffer i);
-  void Print (std::ostream &os) const;
+  // Inherited
+  TypeId GetInstanceTypeId (void) const override;
+  uint32_t GetSerializedSize (void) const override;
+  void Serialize (TagBuffer i) const override;
+  void Deserialize (TagBuffer i) override;
+  void Print (std::ostream &os) const override;
 
   /**
    * Set the SNR to the given value.

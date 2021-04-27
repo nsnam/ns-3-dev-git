@@ -112,7 +112,7 @@ public:
    *
    * \return starting sequence number
    */
-  uint16_t GetStartingSequence (void) const;
+  virtual uint16_t GetStartingSequence (void) const;
   /**
    * Return the starting sequence control
    *

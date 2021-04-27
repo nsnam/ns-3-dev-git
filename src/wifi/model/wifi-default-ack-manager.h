@@ -48,9 +48,9 @@ public:
 
   // Overridden from WifiAckManager
   virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
-                                                          const WifiTxParameters& txParams);
+                                                          const WifiTxParameters& txParams) override;
   virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
-                                                                const WifiTxParameters& txParams);
+                                                                const WifiTxParameters& txParams) override;
 
   /**
    * Get the maximum distance between the starting sequence number of the Block

@@ -71,7 +71,7 @@ public:
    *
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyRxStart (Time duration);
+  void NotifyRxStart (Time duration) override;
 
   /**
    * \brief Switches the WifiRadioEnergyModel back to IDLE state.
@@ -81,7 +81,7 @@ public:
    * Note that for the WifiRadioEnergyModel, the behavior of the function is the
    * same as NotifyRxEndError.
    */
-  void NotifyRxEndOk (void);
+  void NotifyRxEndOk (void) override;
 
   /**
    * \brief Switches the WifiRadioEnergyModel back to IDLE state.
@@ -91,7 +91,7 @@ public:
    * Note that for the WifiRadioEnergyModel, the behavior of the function is the
    * same as NotifyRxEndOk.
    */
-  void NotifyRxEndError (void);
+  void NotifyRxEndError (void) override;
 
   /**
    * \brief Switches the WifiRadioEnergyModel to TX state and switches back to
@@ -102,41 +102,41 @@ public:
    *
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyTxStart (Time duration, double txPowerDbm);
+  void NotifyTxStart (Time duration, double txPowerDbm) override;
 
   /**
    * \param duration the expected busy duration.
    *
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyMaybeCcaBusyStart (Time duration);
+  void NotifyMaybeCcaBusyStart (Time duration) override;
 
   /**
    * \param duration the expected channel switching duration.
    *
    * Defined in ns3::WifiPhyListener
    */
-  void NotifySwitchingStart (Time duration);
+  void NotifySwitchingStart (Time duration) override;
 
   /**
    * Defined in ns3::WifiPhyListener
    */
-  void NotifySleep (void);
+  void NotifySleep (void) override;
 
   /**
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyOff (void);
+  void NotifyOff (void) override;
 
   /**
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyWakeup (void);
+  void NotifyWakeup (void) override;
 
   /**
    * Defined in ns3::WifiPhyListener
    */
-  void NotifyOn (void);
+  void NotifyOn (void) override;
 
 
 private:

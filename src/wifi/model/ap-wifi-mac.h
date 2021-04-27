@@ -58,12 +58,12 @@ public:
   virtual ~ApWifiMac ();
 
   // Implementations of pure virtual methods, or overridden from base class.
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
-  void SetLinkUpCallback (Callback<void> linkUp);
-  void Enqueue (Ptr<Packet> packet, Mac48Address to);
-  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from);
-  bool SupportsSendFrom (void) const;
-  void SetAddress (Mac48Address address);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
+  void SetLinkUpCallback (Callback<void> linkUp) override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
+  bool SupportsSendFrom (void) const override;
+  void SetAddress (Mac48Address address) override;
 
   /**
    * \param interval the interval between two beacon transmissions.
@@ -144,7 +144,8 @@ public:
   uint8_t GetMaxBufferStatus (Mac48Address address) const;
 
 private:
-  void Receive (Ptr<WifiMacQueueItem> mpdu);
+  // Inherited
+  void Receive (Ptr<WifiMacQueueItem> mpdu)  override;
   /**
    * The packet we sent was successfully received by the receiver
    * (i.e. we received an Ack from the receiver).  If the packet
@@ -174,7 +175,7 @@ private:
    *
    * \param mpdu the MPDU containing the A-MSDU.
    */
-  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu);
+  void DeaggregateAmsduAndForward (Ptr<WifiMacQueueItem> mpdu) override;
   /**
    * Forward the packet down to DCF/EDCAF (enqueue the packet). This method
    * is a wrapper for ForwardDown with traffic id.
@@ -293,8 +294,8 @@ private:
    */
   bool GetUseNonErpProtection (void) const;
 
-  void DoDispose (void);
-  void DoInitialize (void);
+  void DoDispose (void) override;
+  void DoInitialize (void) override;
 
   /**
    * \return the next Association ID to be allocated by the AP

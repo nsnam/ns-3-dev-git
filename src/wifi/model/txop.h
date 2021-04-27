@@ -265,8 +265,8 @@ protected:
   ///< ChannelAccessManager associated class
   friend class ChannelAccessManager;
 
-  virtual void DoDispose (void);
-  virtual void DoInitialize (void);
+  virtual void DoDispose (void) override;
+  virtual void DoInitialize (void) override;
 
   /* Txop notifications forwarded here */
   /**

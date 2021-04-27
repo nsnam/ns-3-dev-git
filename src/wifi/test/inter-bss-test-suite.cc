@@ -81,7 +81,7 @@ public:
   TestInterBssConstantObssPdAlgo ();
   ~TestInterBssConstantObssPdAlgo ();
 
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 
 private:
   /**

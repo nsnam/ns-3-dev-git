@@ -129,12 +129,12 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  void Enqueue (Ptr<Packet> packet, Mac48Address to);
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
 
   /**
    * \param phy the physical layer attached to this MAC.
    */
-  void SetWifiPhy (const Ptr<WifiPhy> phy);
+  void SetWifiPhy (const Ptr<WifiPhy> phy) override;
 
   /**
    * Return whether we are associated with an AP.
@@ -182,7 +182,7 @@ private:
    *
    * \param mpdu the received MPDU
    */
-  void Receive (Ptr<WifiMacQueueItem> mpdu);
+  void Receive (Ptr<WifiMacQueueItem> mpdu) override;
   /**
    * Update associated AP's information from beacon. If STA is not associated,
    * this information will used for the association process.
@@ -302,7 +302,7 @@ private:
    */
   void PhyCapabilitiesChanged (void);
 
-  void DoInitialize (void);
+  void DoInitialize (void) override;
 
   MacState m_state;            ///< MAC state
   uint16_t m_aid;              ///< Association AID

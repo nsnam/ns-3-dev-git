@@ -43,7 +43,7 @@ class PowerRateAdaptationTest : public TestCase
 public:
   PowerRateAdaptationTest ();
 
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 private:
   /// Test parf function
   void TestParf ();

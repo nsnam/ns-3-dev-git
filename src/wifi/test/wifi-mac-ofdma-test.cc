@@ -361,7 +361,7 @@ public:
   void CheckResults (Time sifs, Time slotTime, uint8_t aifsn);
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 
   /// Information about transmitted frames
   struct FrameInfo

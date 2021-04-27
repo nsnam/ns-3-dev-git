@@ -59,8 +59,14 @@ private:
   friend class ChannelAccessManagerTest<TxopType>;
 
   /// Inherited
-  void DoDispose (void);
-  void NotifyChannelAccessed (Time txopDuration = Seconds (0));
+  void DoDispose (void) override;
+  void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
+  void NotifyInternalCollision (void) override;
+  bool HasFramesToTransmit (void) override;
+  void NotifyChannelSwitching (void) override;
+  void NotifySleep (void) override;
+  void NotifyWakeUp (void) override;
+  void GenerateBackoff (void) override;
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
   typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
@@ -77,31 +83,9 @@ private:
   ExpectedGrants m_expectedGrants; //!< expected grants
 
   /**
-   * Notify the Txop that internal collision has occurred.
-   */
-  void NotifyInternalCollision (void);
-  /**
-   * Generate a new backoff now.
-   */
-  void GenerateBackoff (void);
-  /**
    * Check if the Txop has frames to transmit.
    * \return true if the Txop has frames to transmit.
    */
-  bool HasFramesToTransmit (void);
-  /**
-   * When a channel switching occurs, enqueued packets are removed.
-   */
-  void NotifyChannelSwitching (void);
-  /**
-   * When sleep operation occurs, if there is a pending packet transmission,
-   * it will be reinserted to the front of the queue.
-   */
-  void NotifySleep (void);
-  /**
-   * When wake up operation occurs, channel access will be restarted.
-   */
-  void NotifyWakeUp (void);
 
   ChannelAccessManagerTest<TxopType> *m_test; //!< the test DCF/EDCA manager
   uint32_t m_i; //!< the index of the Txop
@@ -149,17 +133,17 @@ public:
 
 private:
   // Inherited from base class
-  Time GetSifs (void) const
+  Time GetSifs (void) const override
   {
     return m_sifs;
   }
 
-  Time GetSlot (void) const
+  Time GetSlot (void) const override
   {
     return m_slot;
   }
 
-  Time GetEifsNoDifs (void) const
+  Time GetEifsNoDifs (void) const override
   {
     return m_eifsNoDifs;
   }
@@ -188,7 +172,7 @@ public:
    *            the DCF on non-QoS stations and an EDCA on QoS stations.
    * \return true if a frame exchange sequence was started, false otherwise
    */
-  bool StartTransmission (Ptr<Txop> dcf)
+  bool StartTransmission (Ptr<Txop> dcf) override
   {
     dcf->NotifyChannelAccessed ();
     return true;
@@ -206,7 +190,7 @@ class ChannelAccessManagerTest : public TestCase
 {
 public:
   ChannelAccessManagerTest ();
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 
   /**
    * Notify access granted function

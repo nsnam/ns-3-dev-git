@@ -128,9 +128,10 @@ protected:
    */
   TxFormat GetLastTxFormat (void) const;
 
-  virtual void DoDispose (void);
-  virtual void NotifyNewAggregate (void);
-  virtual void DoInitialize (void);
+  // Inherited
+  virtual void DoDispose (void) override;
+  virtual void NotifyNewAggregate (void) override;
+  virtual void DoInitialize (void) override;
 
   Ptr<ApWifiMac> m_apMac;                //!< the AP wifi MAC
   Ptr<HeFrameExchangeManager> m_heFem;   //!< HE Frame Exchange Manager

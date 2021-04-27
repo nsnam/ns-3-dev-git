@@ -53,7 +53,7 @@ public:
    * \return true if the preamble has been detected,
    *         false otherwise
    */
-  bool IsPreambleDetected (double rssi, double snr, double channelWidth) const;
+  bool IsPreambleDetected (double rssi, double snr, double channelWidth) const override;
 
 
 private:

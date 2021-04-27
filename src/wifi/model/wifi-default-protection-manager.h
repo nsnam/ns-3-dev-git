@@ -50,9 +50,9 @@ public:
 
   // Overridden from WifiProtectionManager
   virtual std::unique_ptr<WifiProtection> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
-                                                      const WifiTxParameters& txParams);
+                                                      const WifiTxParameters& txParams) override;
   virtual std::unique_ptr<WifiProtection> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,
-                                                            const WifiTxParameters& txParams);
+                                                            const WifiTxParameters& txParams) override;
 
 protected:
   /**

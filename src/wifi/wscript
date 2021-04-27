@@ -141,7 +141,7 @@ def build(bld):
         'test/tx-duration-test.cc',
         'test/power-rate-adaptation-test.cc',
         'test/wifi-test.cc',
-        'test/wifi-txop.cc',
+        'test/wifi-txop-test.cc',
         'test/spectrum-wifi-phy-test.cc',
         'test/wifi-primary-channels-test.cc',
         'test/wifi-aggregation-test.cc',
@@ -152,7 +152,7 @@ def build(bld):
         'test/inter-bss-test-suite.cc',
         'test/wifi-mac-ofdma-test.cc',
         'test/wifi-phy-ofdma-test.cc',
-        'test/wifi-mac-queue.cc',
+        'test/wifi-mac-queue-test.cc',
         ]
 
     # Tests encapsulating example programs should be listed here

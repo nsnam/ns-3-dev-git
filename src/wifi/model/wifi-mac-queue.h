@@ -99,7 +99,7 @@ public:
    * \param item the Wifi MAC queue item to be enqueued at the end
    * \return true if success, false if the packet has been dropped
    */
-  bool Enqueue (Ptr<WifiMacQueueItem> item);
+  bool Enqueue (Ptr<WifiMacQueueItem> item) override;
   /**
    * Enqueue the given Wifi MAC queue item at the <i>front</i> of the queue.
    *
@@ -120,7 +120,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> Dequeue (void);
+  Ptr<WifiMacQueueItem> Dequeue (void) override;
   /**
    * Search and return, if present in the queue, the first packet (either Data
    * frame or QoS Data frame) having the receiver address equal to <i>addr</i>.
@@ -182,7 +182,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<const WifiMacQueueItem> Peek (void) const;
+  Ptr<const WifiMacQueueItem> Peek (void) const override;
   /**
    * Search and return, if present in the queue, the first packet (either Data
    * frame or QoS Data frame) having the receiver address equal to <i>addr</i>.
@@ -238,7 +238,7 @@ public:
    *
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> Remove (void);
+  Ptr<WifiMacQueueItem> Remove (void) override;
   /**
    * If exists, removes <i>packet</i> from queue and returns true. Otherwise it
    * takes no effects and return false. Deletion of the packet is

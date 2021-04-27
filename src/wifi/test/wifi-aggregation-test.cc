@@ -67,7 +67,7 @@ private:
    */
   void MpduDiscarded (WifiMacDropReason reason, Ptr<const WifiMacQueueItem> mpdu);
 
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
@@ -326,7 +326,7 @@ public:
   TwoLevelAggregationTest ();
 
 private:
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
   Ptr<WifiNetDevice> m_device; ///<WifiNetDevice
   Ptr<StaWifiMac> m_mac; ///< Mac
   Ptr<YansWifiPhy> m_phy; ///< Phy
@@ -551,7 +551,7 @@ public:
   HeAggregationTest ();
 
 private:
-  void DoRun (void);
+  void DoRun (void) override;
   /**
    * Run test for a given buffer size
    *
@@ -742,7 +742,7 @@ public:
   PreservePacketsInAmpdus ();
   virtual ~PreservePacketsInAmpdus ();
 
-  virtual void DoRun (void);
+  virtual void DoRun (void) override;
 
 
 private:

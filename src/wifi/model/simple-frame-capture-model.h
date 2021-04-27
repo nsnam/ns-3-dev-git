@@ -69,7 +69,7 @@ public:
    * \return true if the reception should be switched to a new incoming frame,
    *         false otherwise
    */
-  bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const;
+  bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const override;
 
 
 private:

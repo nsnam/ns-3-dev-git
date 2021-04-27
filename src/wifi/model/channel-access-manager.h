@@ -214,7 +214,7 @@ public:
 
 protected:
   // Inherited from ns3::Object
-  void DoDispose (void);
+  void DoDispose (void) override;
 
 
 private:

@@ -50,19 +50,9 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  /**
-   * Connect the WifiNetDevice and setup eventual callbacks.
-   *
-   * \param device the WifiNetDevice
-   */
-  void ConnectWifiNetDevice (const Ptr<WifiNetDevice> device);
-
-  /**
-   * \param params the HE-SIG-A parameters
-   *
-   * Evaluate the receipt of HE-SIG-A.
-   */
-  void ReceiveHeSigA (HeSigAParameters params);
+  // Inherited
+  void ConnectWifiNetDevice (const Ptr<WifiNetDevice> device) override;
+  void ReceiveHeSigA (HeSigAParameters params) override;
 };
 
 } //namespace ns3

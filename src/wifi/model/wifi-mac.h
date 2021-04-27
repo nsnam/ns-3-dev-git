@@ -198,10 +198,20 @@ public:
   virtual Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const = 0;
 
   /**
+   * This type defines the callback of a higher layer that a
+   * WifiMac(-derived) object invokes to pass a packet up the stack.
+   *
+   * \param packet the packet that has been received.
+   * \param from the MAC address of the device that sent the packet.
+   * \param to the MAC address of the device that the packet is destined for.
+   */
+  typedef Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
+
+  /**
    * \param upCallback the callback to invoke when a packet must be
    *        forwarded up the stack.
    */
-  virtual void SetForwardUpCallback (Callback<void, Ptr<const Packet>, Mac48Address, Mac48Address> upCallback) = 0;
+  virtual void SetForwardUpCallback (ForwardUpCallback upCallback) = 0;
   /**
    * \param linkUp the callback to invoke when the link becomes up.
    */
