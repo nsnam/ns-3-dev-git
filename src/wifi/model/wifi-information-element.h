@@ -183,7 +183,9 @@ typedef uint8_t WifiInformationElementId;
 #define IE_AID                                  ((WifiInformationElementId)197)
 #define IE_QUIET_CHANNEL                        ((WifiInformationElementId)198)
 #define IE_OPERATING_MODE_NOTIFICATION          ((WifiInformationElementId)199)
-// 200 to 220 are reserved
+#define IE_UPSIM                                ((WifiInformationElementId)200)
+#define IE_REDUCED_NEIGHBOR_REPORT              ((WifiInformationElementId)201)
+// TODO Add 202 to 220. See Table 9-92 of 802.11-2020
 #define IE_VENDOR_SPECIFIC                      ((WifiInformationElementId)221)
 // 222 to 254 are reserved
 #define IE_EXTENSION                            ((WifiInformationElementId)255)
