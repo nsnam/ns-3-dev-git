@@ -26,7 +26,7 @@
 # Run the test.py script with files compiled in debug mode
 daily-test-debug:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: debug
@@ -43,7 +43,7 @@ daily-test-debug:
 # Run the test.py script with files compiled in release mode
 daily-test-release:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: release
@@ -57,7 +57,7 @@ daily-test-release:
 # Run the test.py script with files compiled in optimized mode
 daily-test-optimized:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized
@@ -72,7 +72,7 @@ daily-test-optimized:
 # Run the test.py script with files compiled in optimized mode + valgrind (daily)
 daily-test-optimized-valgrind:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized
@@ -90,7 +90,7 @@ daily-test-optimized-valgrind:
 # Run the test.py script with files compiled in debug mode
 weekly-test-debug-valgrind:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: debug
@@ -108,7 +108,7 @@ weekly-test-debug-valgrind:
 # Run the test.py script with files compiled in release mode
 weekly-test-release-valgrind:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: release
@@ -126,7 +126,7 @@ weekly-test-release-valgrind:
 # Run the test.py script with files compiled in optimized mode
 weekly-test-optimized-valgrind:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized
@@ -144,7 +144,7 @@ weekly-test-optimized-valgrind:
 # Do a check for the TAKES_FOREVER jobs, only in optimized mode
 weekly-test-takes-forever-optimized:
   extends: .base-test
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized

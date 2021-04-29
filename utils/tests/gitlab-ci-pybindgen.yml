@@ -1,6 +1,6 @@
 pybindgen:
   stage: build
-  image: archlinux/base
+  image: archlinux
   only:
     variables:
       - $PYBINDGEN == "True"

@@ -64,7 +64,7 @@ per-commit-compile-debug:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: debug
@@ -79,7 +79,7 @@ per-commit-compile-release:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: release
@@ -94,7 +94,7 @@ per-commit-compile-optimized:
       - $PYBINDGEN == "True"
       - $RELEASE == "weekly"
       - $RELEASE == "daily"
-  image: archlinux/base
+  image: archlinux
   variables:
     COMPILER: g++
     MODE: optimized
