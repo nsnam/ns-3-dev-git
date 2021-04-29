@@ -293,12 +293,6 @@ def ns3_python_bindings(bld):
     pymod.includes = Context.out_dir + ' ' + Context.out_dir + '/src/core/bindings'
     pymod.install_path = '${PYTHONARCHDIR}/ns'
 
-    # Workaround to a WAF bug, remove this when ns-3 upgrades to WAF > 1.6.10
-    # https://www.nsnam.org/bugzilla/show_bug.cgi?id=1335
-    # http://code.google.com/p/waf/issues/detail?id=1098
-    if Utils.unversioned_sys_platform() == 'darwin':
-        pymod.mac_bundle = True
-
     return pymod
 
 
