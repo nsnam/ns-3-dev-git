@@ -351,6 +351,11 @@ public:
                            LocalDeliverCallback lcb,
                            ErrorCallback ecb);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+
+  /**
+   * \returns the ipv4 object this routing protocol is associated with
+   */
+  NS_DEPRECATED_3_34
   virtual Ptr<Ipv4> GetIpv4 (void) const;
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 

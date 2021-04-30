@@ -49,8 +49,10 @@ public:
   /**
    * \brief Construct an OlsrHelper from another previously initialized instance
    * (Copy Constructor).
+   *
+   * \param o object to copy
    */
-  OlsrHelper (const OlsrHelper &);
+  OlsrHelper (const OlsrHelper &o);
 
   /**
    * \returns pointer to clone of this OlsrHelper
