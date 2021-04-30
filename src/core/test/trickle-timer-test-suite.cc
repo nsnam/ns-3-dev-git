@@ -82,7 +82,7 @@ public:
    * \param interval Interval
    * \param tricklePtr Pointer to the TrickleTimer
    */
-  void ConsistentEvent (Time unit, TrickleTimer* tricklePtr);
+  void ConsistentEvent (Time interval, TrickleTimer* tricklePtr);
 
   bool m_enableDataCollection;     //!< Collect data if true
 };
@@ -170,10 +170,10 @@ TrickleTimerTestCase::TestRedundancy (Time unit)
 }
 
 void
-TrickleTimerTestCase::ConsistentEvent (Time unit, TrickleTimer* tricklePtr)
+TrickleTimerTestCase::ConsistentEvent (Time interval, TrickleTimer* tricklePtr)
 {
   tricklePtr->ConsistentEvent ();
-  Simulator::Schedule (unit, &TrickleTimerTestCase::ConsistentEvent, this, unit, tricklePtr);
+  Simulator::Schedule (interval, &TrickleTimerTestCase::ConsistentEvent, this, interval, tricklePtr);
 }
 
 

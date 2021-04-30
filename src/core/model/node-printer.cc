@@ -34,12 +34,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NodePrinter");
 
-/**
- * \ingroup logging
- * Default node id printer implementation.
- *
- * \param [in,out] os The output stream to print the node id on.
- */
 void
 DefaultNodePrinter (std::ostream &os)
 {
