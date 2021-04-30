@@ -57,7 +57,8 @@ public:
     DLT_PRISM_HEADER = 119,
     DLT_IEEE802_11_RADIO = 127,
     DLT_IEEE802_15_4 = 195,
-    DLT_NETLINK = 253
+    DLT_NETLINK = 253,
+    DLT_LORATAP = 270
   };
 
   /**
