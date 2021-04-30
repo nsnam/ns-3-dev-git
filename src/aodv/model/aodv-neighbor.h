@@ -166,8 +166,11 @@ private:
    * \returns the MAC address for the IP address
    */
   Mac48Address LookupMacAddress (Ipv4Address addr);
-  /// Process layer 2 TX error notification
-  void ProcessTxError (WifiMacHeader const &);
+  /**
+   * Process layer 2 TX error notification
+   * \param hdr header of the packet
+   */
+  void ProcessTxError (WifiMacHeader const &hdr);
 };
 
 }  // namespace aodv
