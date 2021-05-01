@@ -53,12 +53,26 @@ public:
 private:
   virtual void DoRun (void);
 
+  /**
+   * Checks the addresses on the selected NetDevices.
+   * \param n0Dev node 0 device
+   * \param r0Dev router device toward node 0
+   * \param r1Dev router device toward node 1
+   * \param n1Dev node 1 device
+   */
   void CheckAddresses (Ptr<NetDevice> n0Dev, Ptr<NetDevice> r0Dev, Ptr<NetDevice> r1Dev, Ptr<NetDevice> n1Dev);
+  /**
+   * Checks the routing between the selected NetDevices.
+   * \param n0Dev node 0 device
+   * \param r0Dev router device toward node 0
+   * \param r1Dev router device toward node 1
+   * \param n1Dev node 1 device
+   */
   void CheckRouting (Ptr<NetDevice> n0Dev, Ptr<NetDevice> r0Dev, Ptr<NetDevice> r1Dev, Ptr<NetDevice> n1Dev);
 
-  std::vector<Ipv6Address> m_addresses;
-  std::vector<Socket::SocketErrno> m_routingResults;
-  std::vector<Ptr<Ipv6Route> > m_routes;
+  std::vector<Ipv6Address> m_addresses; //!< Addresses on the nodes
+  std::vector<Socket::SocketErrno> m_routingResults; //!< Routing call return values
+  std::vector<Ptr<Ipv6Route> > m_routes; //!< Routing call results
 };
 
 RadvdTestCase::RadvdTestCase ()

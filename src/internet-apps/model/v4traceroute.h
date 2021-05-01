@@ -59,6 +59,7 @@ public:
   virtual ~V4TraceRoute ();
   /**
    * \brief Prints the application traced routes into a given OutputStream.
+   * \param stream the output stream
    */
   void Print (Ptr<OutputStreamWrapper> stream);
 
