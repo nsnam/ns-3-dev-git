@@ -70,13 +70,39 @@ class SixlowpanIphcStatefulImplTest : public TestCase
   std::vector<Data> m_txPackets; //!< Transmitted packets
   std::vector<Data> m_rxPackets; //!< Received packets
 
+  /**
+   * Receive from a MockDevice.
+   * \param device a pointer to the net device which is calling this function
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   * \param source the address of the sender
+   * \param destination the address of the receiver
+   * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+   * \returns true.
+   */
   bool ReceiveFromMockDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                               Address const &source, Address const &destination, NetDevice::PacketType packetType);
 
+  /**
+   * Promiscuous receive from a SixLowPanNetDevice.
+   * \param device a pointer to the net device which is calling this function
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   * \param source the address of the sender
+   * \param destination the address of the receiver
+   * \param packetType type of packet received (broadcast/multicast/unicast/otherhost)
+   * \returns true.
+   */
   bool PromiscReceiveFromSixLowPanDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                                           Address const &source, Address const &destination, NetDevice::PacketType packetType);
 
-  void SendOnePacket (NetDeviceContainer devices, Ipv6Address from, Ipv6Address to);
+  /**
+   * Send one packet.
+   * \param device the device to send from
+   * \param from sender address
+   * \param to destination address
+   */
+  void SendOnePacket (Ptr<NetDevice> device, Ipv6Address from, Ipv6Address to);
 
   NetDeviceContainer m_mockDevices; //!< MockNetDevice container
   NetDeviceContainer m_sixDevices; //!< SixLowPanNetDevice container
@@ -124,7 +150,7 @@ SixlowpanIphcStatefulImplTest::PromiscReceiveFromSixLowPanDevice (Ptr<NetDevice>
 }
 
 void
-SixlowpanIphcStatefulImplTest::SendOnePacket (NetDeviceContainer devices, Ipv6Address from, Ipv6Address to)
+SixlowpanIphcStatefulImplTest::SendOnePacket (Ptr<NetDevice> device, Ipv6Address from, Ipv6Address to)
 {
   Ptr<Packet> pkt = Create<Packet> (10);
   Ipv6Header ipHdr;
@@ -135,7 +161,7 @@ SixlowpanIphcStatefulImplTest::SendOnePacket (NetDeviceContainer devices, Ipv6Ad
   ipHdr.SetNextHeader (0xff);
   pkt->AddHeader (ipHdr);
 
-  devices.Get (0)->Send (pkt, Mac48Address ("00:00:00:00:00:02"), 0);
+  device->Send (pkt, Mac48Address ("00:00:00:00:00:02"), 0);
 }
 
 void
@@ -196,19 +222,19 @@ SixlowpanIphcStatefulImplTest::DoRun (void)
   Ipv6Address srcElided = deviceInterfaces.GetAddress (0, 1);
   Ipv6Address dstElided = Ipv6Address::MakeAutoconfiguredAddress (Mac48Address ("00:00:00:00:00:02"), Ipv6Prefix ("2001:2::", 64));
 
-  Simulator::Schedule (Seconds (1), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices,
+  Simulator::Schedule (Seconds (1), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices.Get (0),
                        Ipv6Address::GetAny (),
                        dstElided);
 
-  Simulator::Schedule (Seconds (2), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices,
+  Simulator::Schedule (Seconds (2), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices.Get (0),
                        Ipv6Address ("2001:2::f00d:f00d:cafe:cafe"),
                        Ipv6Address ("2001:1::0000:00ff:fe00:cafe"));
 
-  Simulator::Schedule (Seconds (3), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices,
+  Simulator::Schedule (Seconds (3), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices.Get (0),
                        Ipv6Address ("2001:1::0000:00ff:fe00:cafe"),
                        Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"));
 
-  Simulator::Schedule (Seconds (4), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices,
+  Simulator::Schedule (Seconds (4), &SixlowpanIphcStatefulImplTest::SendOnePacket, this, m_sixDevices.Get (0),
                        srcElided,
                        Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"));
 
