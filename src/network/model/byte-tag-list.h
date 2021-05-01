@@ -152,7 +152,6 @@ private:
    * Copy constructor, copies the data and increases reference count
    *
    * \param o The ByteTagList to copy
-   * \returns The newly created ByteTagList
    *
    */
   ByteTagList (const ByteTagList &o);
