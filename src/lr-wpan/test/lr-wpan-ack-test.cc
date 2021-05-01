@@ -56,12 +56,15 @@ class LrWpanAckTestCase : public TestCase
 {
 public:
 
+  /**
+   * Test modes
+   */
   typedef enum
   {
-    EXTENDED_ADDRESS_UNICAST,
-    SHORT_ADDRESS_UNICAST,
-    SHORT_ADDRESS_MULTICAST,
-    SHORT_ADDRESS_BROADCAST,
+    EXTENDED_ADDRESS_UNICAST,   //!< extended addresses
+    SHORT_ADDRESS_UNICAST,      //!< short addresses, unicast
+    SHORT_ADDRESS_MULTICAST,    //!< short addresses, multicast
+    SHORT_ADDRESS_BROADCAST,    //!< short addresses, broadcast
   } TestMode_e;
 
   /**
@@ -74,27 +77,23 @@ public:
 
   /**
    * \brief Function called when DataIndication is hit on dev0.
-   * \param testCase The TestCase.
    * \param params The MCPS params.
    * \param p the packet.
    */
   void DataIndicationDev0 (McpsDataIndicationParams params, Ptr<Packet> p);
   /**
    * \brief Function called when DataIndication is hit on dev1.
-   * \param testCase The TestCase.
    * \param params The MCPS params.
    * \param p the packet.
    */
   void DataIndicationDev1 (McpsDataIndicationParams params, Ptr<Packet> p);
   /**
    * \brief Function called when DataConfirm is hit on dev0.
-   * \param testCase The TestCase.
    * \param params The MCPS params.
    */
   void DataConfirmDev0 (McpsDataConfirmParams params);
   /**
    * \brief Function called when DataConfirm is hit on dev1.
-   * \param testCase The TestCase.
    * \param params The MCPS params.
    */
   void DataConfirmDev1 (McpsDataConfirmParams params);

@@ -76,7 +76,7 @@ public:
    * \return The GTS fields.
    */
   GtsFields GetGtsFields (void) const;
-  /***
+  /**
    * Get the pending address fields from the beacon payload header.
    * \return The Pending Address fields.
    */
@@ -146,10 +146,12 @@ public:
 
   /**
    * Set the command frame type
+   * \param macCmd the command frame type
    */
-  void SetCommandFrameType (MacCommand  macCmd);
+  void SetCommandFrameType (MacCommand macCmd);
   /**
    * Get the command frame type
+   * \return the command frame type
    */
   MacCommand GetCommandFrameType (void) const;
 

@@ -29,12 +29,23 @@
 
 using namespace ns3;
 
-void GetSetTRXStateConfirm (LrWpanPhyEnumeration status)
+/**
+ * Function called when a the PHY state change is confirmed
+ * \param status PHY state
+ */
+void
+GetSetTRXStateConfirm (LrWpanPhyEnumeration status)
 {
   NS_LOG_UNCOND ("At: " << Simulator::Now ()
                         << " Received Set TRX Confirm: " << status);
 }
 
+/**
+ * Function called when a the PHY receives a packet
+ * \param psduLength PSDU length
+ * \param p packet
+ * \param lqi link quality indication
+ */
 void
 ReceivePdDataIndication (uint32_t psduLength,
                          Ptr<Packet> p,
@@ -45,7 +56,13 @@ ReceivePdDataIndication (uint32_t psduLength,
                  (uint16_t) lqi);
 }
 
-void SendOnePacket (Ptr<LrWpanPhy> sender, Ptr<LrWpanPhy> receiver)
+/**
+ * Send one packet
+ * \param sender sender PHY
+ * \param receiver receiver PHY
+ */
+void
+SendOnePacket (Ptr<LrWpanPhy> sender, Ptr<LrWpanPhy> receiver)
 {
   uint32_t n = 10;
   Ptr<Packet> p = Create<Packet> (n);

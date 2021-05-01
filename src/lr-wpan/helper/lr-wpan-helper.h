@@ -116,7 +116,7 @@ public:
    * \brief Associate the nodes to the same PAN and initiate beacon enabled mode.
    *
    * \param c a set of nodes
-   * \param panID the PAN id
+   * \param panId the PAN id
    * \param coor the address of the PAN coordinator
    * \param bcnOrd indicates the interval between beacons.
    *               The value must be an int between 0 and 14.

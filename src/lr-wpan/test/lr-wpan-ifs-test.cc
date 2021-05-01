@@ -51,26 +51,52 @@ public:
   virtual ~LrWpanDataIfsTestCase ();
 
 private:
+  /**
+   * \brief Function called when DataConfirm is hit.
+   * \param testcase pointer to the testcase
+   * \param dev originating NetDevice
+   * \param params the MCPS params
+   */
   static void DataConfirm (LrWpanDataIfsTestCase *testcase,
                            Ptr<LrWpanNetDevice> dev,
                            McpsDataConfirmParams params);
 
-  static void DataConfirm1 (LrWpanDataIfsTestCase *testcase,
-                            Ptr<LrWpanNetDevice> dev,
-                            McpsDataConfirmParams params);
+  /**
+   * \brief Function called when DataReceived is hit.
+   * \param testcase pointer to the testcase
+   * \param dev originating NetDevice
+   * \param p packet
+   */
+  static void DataReceivedDev0 (LrWpanDataIfsTestCase *testcase,
+                                Ptr<LrWpanNetDevice> dev,
+                                Ptr<const Packet> p);
 
-  static void DataReceived (LrWpanDataIfsTestCase *testcase,
-                            Ptr<LrWpanNetDevice> dev,
-                            Ptr<const Packet>);
-
+  /**
+   * \brief Function called when PhyDataRxStart is hit.
+   * \param testcase pointer to the testcase
+   * \param dev originating NetDevice
+   * \param p packet
+   */
   static void PhyDataRxStart (LrWpanDataIfsTestCase *testcase,
                               Ptr<LrWpanNetDevice> dev,
-                              Ptr<const Packet>);
+                              Ptr<const Packet> p);
 
-  static void DataReceived2 (LrWpanDataIfsTestCase *testcase,
-                             Ptr<LrWpanNetDevice> dev,
-                             Ptr<const Packet>);
+  /**
+   * \brief Function called when DataConfirm is hit.
+   * \param testcase pointer to the testcase
+   * \param dev originating NetDevice
+   * \param p packet
+   */
+  static void DataReceivedDev1 (LrWpanDataIfsTestCase *testcase,
+                                Ptr<LrWpanNetDevice> dev,
+                                Ptr<const Packet>);
 
+  /**
+   * \brief Function called when the IFS ends.
+   * \param testcase pointer to the testcase
+   * \param dev originating NetDevice
+   * \param IfsTime the IFS time
+   */
   static void IfsEnd (LrWpanDataIfsTestCase *testcase,
                       Ptr<LrWpanNetDevice> dev,
                       Time IfsTime);
@@ -97,19 +123,12 @@ LrWpanDataIfsTestCase::~LrWpanDataIfsTestCase ()
 void
 LrWpanDataIfsTestCase::DataConfirm (LrWpanDataIfsTestCase *testcase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params)
 {
-  // get the end time of tranmissions from dev 0 (Node 0)
+  // get the end time of transmission
   testcase->m_lastTxTime = Simulator::Now ();
 }
 
 void
-LrWpanDataIfsTestCase::DataConfirm1 (LrWpanDataIfsTestCase *testcase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params)
-{
-  // get the end time of tranmissions from dev 1 (Node 1)
-  testcase->m_lastTxTime = Simulator::Now ();
-}
-
-void
-LrWpanDataIfsTestCase::DataReceived (LrWpanDataIfsTestCase *testcase,Ptr<LrWpanNetDevice> dev, Ptr<const Packet> p)
+LrWpanDataIfsTestCase::DataReceivedDev0 (LrWpanDataIfsTestCase *testcase, Ptr<LrWpanNetDevice> dev, Ptr<const Packet> p)
 {
   // Callback for Data received in the Dev0
   Ptr<Packet> RxPacket = p->Copy ();
@@ -136,7 +155,7 @@ LrWpanDataIfsTestCase::PhyDataRxStart (LrWpanDataIfsTestCase *testcase, Ptr<LrWp
 }
 
 void
-LrWpanDataIfsTestCase::DataReceived2 (LrWpanDataIfsTestCase *testcase,Ptr<LrWpanNetDevice> dev, Ptr<const Packet> p)
+LrWpanDataIfsTestCase::DataReceivedDev1 (LrWpanDataIfsTestCase *testcase, Ptr<LrWpanNetDevice> dev, Ptr<const Packet> p)
 {
   // Callback for Data received in the Dev1
   Ptr<Packet> RxPacket = p->Copy ();
@@ -165,7 +184,7 @@ LrWpanDataIfsTestCase::DataReceived2 (LrWpanDataIfsTestCase *testcase,Ptr<LrWpan
 
 
 void
-LrWpanDataIfsTestCase::IfsEnd (LrWpanDataIfsTestCase *testcase,Ptr<LrWpanNetDevice> dev, Time IfsTime)
+LrWpanDataIfsTestCase::IfsEnd (LrWpanDataIfsTestCase *testcase, Ptr<LrWpanNetDevice> dev, Time IfsTime)
 {
   // take the time of the end of the IFS
   testcase->m_endIfs = Simulator::Now ();
@@ -215,9 +234,9 @@ LrWpanDataIfsTestCase::DoRun ()
 
   // Connect to trace files in the MAC layer
   dev0->GetMac ()->TraceConnectWithoutContext ("IfsEnd", MakeBoundCallback (&LrWpanDataIfsTestCase::IfsEnd, this, dev0));
-  dev0->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&LrWpanDataIfsTestCase::DataReceived, this, dev0));
+  dev0->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&LrWpanDataIfsTestCase::DataReceivedDev0, this, dev0));
   dev0->GetPhy ()->TraceConnectWithoutContext ("PhyRxBegin", MakeBoundCallback (&LrWpanDataIfsTestCase::PhyDataRxStart, this, dev0));
-  dev1->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&LrWpanDataIfsTestCase::DataReceived2, this, dev1));
+  dev1->GetMac ()->TraceConnectWithoutContext ("MacRx", MakeBoundCallback (&LrWpanDataIfsTestCase::DataReceivedDev1, this, dev1));
 
   Ptr<ConstantPositionMobilityModel> sender0Mobility = CreateObject<ConstantPositionMobilityModel> ();
   sender0Mobility->SetPosition (Vector (0,0,0));
@@ -232,7 +251,7 @@ LrWpanDataIfsTestCase::DoRun ()
   dev0->GetMac ()->SetMcpsDataConfirmCallback (cb0);
 
   McpsDataConfirmCallback cb1;
-  cb1 = MakeBoundCallback (&LrWpanDataIfsTestCase::DataConfirm1, this, dev1);
+  cb1 = MakeBoundCallback (&LrWpanDataIfsTestCase::DataConfirm, this, dev1);
   dev1->GetMac ()->SetMcpsDataConfirmCallback (cb1);
 
   Ptr<Packet> p0 = Create<Packet> (2);

@@ -39,16 +39,32 @@
 
 using namespace ns3;
 
+/**
+ * Function called when a Data indication is invoked
+ * \param params MCPS data indication parameters
+ * \param p packet
+ */
 static void DataIndication (McpsDataIndicationParams params, Ptr<Packet> p)
 {
   NS_LOG_UNCOND ("Received packet of size " << p->GetSize ());
 }
 
+/**
+ * Function called when a Data confirm is invoked
+ * \param params MCPS data confirm parameters
+ */
 static void DataConfirm (McpsDataConfirmParams params)
 {
   NS_LOG_UNCOND ("LrWpanMcpsDataConfirmStatus = " << params.m_status);
 }
 
+/**
+ * Function called when a the PHY state changes
+ * \param context context
+ * \param now time at which the function is called
+ * \param oldState old PHY state
+ * \param newState new PHY state
+ */
 static void StateChangeNotification (std::string context, Time now, LrWpanPhyEnumeration oldState, LrWpanPhyEnumeration newState)
 {
   NS_LOG_UNCOND (context << " state change at " << now.As (Time::S)

@@ -215,7 +215,7 @@ private:
    * As a consequence, here we set it to 1.
    *
    * \param panId The PanID
-   * \param shortMac The Short MAC address
+   * \param shortAddr The Short MAC address
    * \return a Pseudo-Mac48Adress
    */
   Mac48Address BuildPseudoMacAddress (uint16_t panId, Mac16Address shortAddr) const;
