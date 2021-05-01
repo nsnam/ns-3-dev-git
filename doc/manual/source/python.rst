@@ -276,13 +276,13 @@ Process Overview
 
 |ns3| has an automated process to regenerate Python bindings from the C++
 header files.  The process is only supported for Linux at the moment
-(ns-3.29) because we are in the midst of transition to new tools.  The
-current process is outlined below.  In short, the process currently 
-requires the following steps.
+(ns-3.33) because the project has not found a contributor yet to test and
+document the capability on macOS. In short, the process currently 
+requires the following steps on a Linux machine.
 
 1.  Prepare the system for scanning by installing the prerequisites,
     including a development version of ``clang``, the ``CastXML`` package,
-    and ``pygccxml``.
+    ``pygccxml``, and ``pybindgen``.
 2.  Perform a scan of the module of interest or all modules
 
 Installing a clang development environment
@@ -290,20 +290,17 @@ Installing a clang development environment
 
 Make sure you have a development version of the clang compiler installed
 on your system.  This can take a long time to build from source.  Linux
-distributions provide binary library packages such as ``clang-dev`` or
-``clang-devel``.  The version should not be too important; version 3.8 is 
-known to work.  Note that there is a problem with the Ubuntu
-package installation of ``clang-dev``; see the Installation wiki page for 
-details on how to fix using some symlinks.
+distributions provide binary library packages such as ``libclang-dev``
+(Ubuntu) or ``clang-devel`` (Fedora).
 
 Installing other prerequisites
 ##############################
 
-``cxxfilt`` is a new requirement, typically installed using ``pip``; e.g.
+``cxxfilt`` is a new requirement, typically installed using ``pip`` or ``pip3``; e.g.
 
 .. sourcecode:: bash
 
-    sudo pip install cxxfilt
+    sudo pip3 install --user cxxfilt
 
 See also the wiki for installation notes for your system.
 
