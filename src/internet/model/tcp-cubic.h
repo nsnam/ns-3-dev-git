@@ -77,6 +77,11 @@ public:
   static TypeId GetTypeId (void);
 
   TcpCubic ();
+
+  /**
+   * Copy constructor
+   * \param sock Socket to copy
+   */
   TcpCubic (const TcpCubic& sock);
 
   virtual std::string GetName () const;
@@ -133,13 +138,20 @@ private:
 private:
   /**
    * \brief Reset HyStart parameters
+   * \param tcb Transmission Control Block of the connection
    */
   void HystartReset (Ptr<const TcpSocketState> tcb);
 
+  /**
+   * \brief Reset Cubic parameters
+   * \param tcb Transmission Control Block of the connection
+   */
   void CubicReset (Ptr<const TcpSocketState> tcb);
 
   /**
    * \brief Cubic window update after a new ack received
+   * \param tcb Transmission Control Block of the connection
+   * \returns the congestion window update counter
    */
   uint32_t Update (Ptr<TcpSocketState> tcb);
 

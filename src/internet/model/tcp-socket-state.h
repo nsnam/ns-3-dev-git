@@ -88,6 +88,9 @@ public:
   } TcpCongState_t;
 
   // Note: "not triggered" events are currently not triggered by the code.
+  /**
+   * \brief Congestion avoidance events
+   */
   typedef enum
   {
     CA_EVENT_TX_START,     /**< first transmit when no packets in flight */
@@ -224,6 +227,9 @@ public:
     return m_ssThresh / m_segmentSize;
   }
 
+  /**
+   * Callback to send an empty packet
+   */
   Callback <void, uint8_t> m_sendEmptyPacketCallback;
 };
 

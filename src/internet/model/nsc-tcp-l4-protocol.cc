@@ -89,8 +89,12 @@ private:
    *
    * Its also used by the cradle code to add a timestamp to
    * printk/printf/debug output.
+   *
+   * \param [out] sec seconds
+   * \param [out] usec microseconds
+   *
    */
-  virtual void gettime (unsigned int *, unsigned int *);
+  virtual void gettime (unsigned int *sec, unsigned int *usec);
 private:
   Ptr<NscTcpL4Protocol> m_prot; //!< the NSC TCP protocol
 };

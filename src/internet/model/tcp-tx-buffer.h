@@ -168,6 +168,7 @@ public:
 
   /**
    * \brief check whether SACK is used on the corresponding TCP socket
+   * \return true if SACK is used
    */
   bool IsSackEnabled (void) const;
 
@@ -304,8 +305,6 @@ public:
    * as lost for an external class
    *
    * \param seq sequence to check
-   * \param dupThresh dupAck threshold
-   * \param segmentSize segment size
    * \return true if the sequence is supposed to be lost, false otherwise
    */
   bool IsLost (const SequenceNumber32 &seq) const;

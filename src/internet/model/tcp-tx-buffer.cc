@@ -582,11 +582,6 @@ TcpTxBuffer::GetPacketFromList (PacketList &list, const SequenceNumber32 &listSt
   NS_FATAL_ERROR ("This point is not reachable");
 }
 
-static bool AreEquals (const bool &first, const bool &second)
-{
-  return first ? second : !second;
-}
-
 void
 TcpTxBuffer::MergeItems (TcpTxItem *t1, TcpTxItem *t2) const
 {
@@ -594,15 +589,15 @@ TcpTxBuffer::MergeItems (TcpTxItem *t1, TcpTxItem *t2) const
   NS_LOG_FUNCTION (this << *t1 << *t2);
   NS_LOG_INFO ("Merging " << *t2 << " into " << *t1);
 
-  NS_ASSERT_MSG (AreEquals (t1->m_sacked, t2->m_sacked),
+  NS_ASSERT_MSG (t1->m_sacked == t2->m_sacked,
                  "Merging one sacked and another not sacked. Impossible");
-  NS_ASSERT_MSG (AreEquals (t1->m_lost, t2->m_lost),
+  NS_ASSERT_MSG (t1->m_lost == t2->m_lost,
                  "Merging one lost and another not lost. Impossible");
 
   // If one is retrans and the other is not, cancel the retransmitted flag.
   // We are merging this segment for the retransmit, so the count will
   // be updated in MarkTransmittedSegment.
-  if (! AreEquals (t1->m_retrans, t2->m_retrans))
+  if (t1->m_retrans != t2->m_retrans)
     {
       if (t1->m_retrans)
         {

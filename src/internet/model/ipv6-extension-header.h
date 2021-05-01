@@ -89,7 +89,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -248,7 +247,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -305,7 +303,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -398,7 +395,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -490,7 +486,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -590,7 +585,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -658,7 +652,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 
@@ -715,7 +708,6 @@ public:
   /**
    * \brief Print some information about the packet.
    * \param os output stream
-   * \return info about this packet
    */
   virtual void Print (std::ostream &os) const;
 

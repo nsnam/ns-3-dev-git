@@ -3520,13 +3520,6 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
     }
 }
 
-/**
- * \brief Estimate the RTT
- *
- * Called by ForwardUp() to estimate RTT.
- *
- * \param tcpHeader TCP header for the incoming packet
- */
 void
 TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
 {

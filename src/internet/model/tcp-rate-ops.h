@@ -75,7 +75,7 @@ public:
 
   /**
    * \brief If a gap is detected between sends, it means we are app-limited.
-   * \return TODO What the Linux kernel is setting in tp->app_limited?
+   * TODO What the Linux kernel is setting in tp->app_limited?
    * https://elixir.bootlin.com/linux/latest/source/net/ipv4/tcp_rate.c#L177
    *
    * \param cWnd Congestion Window
@@ -104,6 +104,7 @@ public:
    * (S)ACK received
    * \param lost number of segments that we detected as lost after the reception
    * of the most recent (S)ACK
+   * \param priorInFlight number of segments previously considered in flight
    * \param is_sack_reneg Is SACK reneged?
    * \param minRtt Minimum RTT so far
    * \return The TcpRateSample that will be used for CA

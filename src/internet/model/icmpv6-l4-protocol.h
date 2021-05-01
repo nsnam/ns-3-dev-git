@@ -316,7 +316,6 @@ public:
 
   /**
    * \brief Function called when DAD timeout.
-   * \param icmpv6 Icmpv6L4Protocol instance
    * \param interface the interface
    * \param addr the IPv6 address
    */

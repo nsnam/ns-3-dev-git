@@ -737,8 +737,9 @@ public:
 
 /**
  * @brief Debugging routine; allow client code to supply a pre-built LSDB
+ * @param lsdb the pre-built LSDB
  */
-  void DebugUseLsdb (GlobalRouteManagerLSDB*);
+  void DebugUseLsdb (GlobalRouteManagerLSDB* lsdb);
 
 /**
  * @brief Debugging routine; call the core SPF from the unit tests

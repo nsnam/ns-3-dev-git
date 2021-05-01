@@ -120,7 +120,6 @@ public:
    * The function is called when the TcpSocketState is changed from CA_RECOVERY.
    *
    * \param tcb internal congestion state
-   * \param isSackEnabled
    */
   virtual void ExitRecovery (Ptr<TcpSocketState> tcb) = 0;
 
