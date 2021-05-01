@@ -619,7 +619,7 @@ protected:
    * \brief Enable or disable pacing of the initial window
    * 
    * \param who socket
-   * \param pacing Boolean to enable or disable pacing of initial window
+   * \param paceWindow Boolean to enable or disable pacing of initial window
    */
   void SetPaceInitialWindow (SocketWho who, bool paceWindow);
 
@@ -682,7 +682,7 @@ protected:
    *
    * \param recovery typeid of the recovery algorithm
    */
-  void SetRecoveryAlgorithm (TypeId reccovery) { m_recoveryTypeId = reccovery; }
+  void SetRecoveryAlgorithm (TypeId recovery) { m_recoveryTypeId = recovery; }
 
   /**
    * \brief MTU of the bottleneck link

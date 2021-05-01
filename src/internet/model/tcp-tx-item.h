@@ -102,7 +102,7 @@ public:
   bool m_retrans       {false};      //!< Indicates if the segment is retransmitted
 
 private:
-  // Only TcpTxBuffer is allower to touch this part of the TcpTxItem, to manage
+  // Only TcpTxBuffer is allowed to touch this part of the TcpTxItem, to manage
   // its internal lists and counters
   friend class TcpTxBuffer;
 

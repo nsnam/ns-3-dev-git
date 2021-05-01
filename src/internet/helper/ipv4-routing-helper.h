@@ -119,6 +119,7 @@ public:
    * \brief prints the neighbor cache of all nodes at a particular time.
    * \param printTime the time at which the neighbor cache is supposed to be printed.
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
@@ -134,6 +135,7 @@ public:
    * \brief prints the neighbor cache of all nodes at regular intervals specified by user.
    * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
@@ -150,6 +152,7 @@ public:
    * \param printTime the time at which the neighbor cache is supposed to be printed.
    * \param node The node ptr for which we need the neighbor cache to be printed
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
@@ -166,6 +169,7 @@ public:
    * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
    * \param node The node ptr for which we need the neighbor cache to be printed
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
@@ -219,6 +223,7 @@ private:
    * \brief prints the neighbor cache of a node.
    * \param node The node ptr for which we need the neighbor cache to be printed
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the
@@ -235,6 +240,7 @@ private:
    * \param printInterval the time interval for which the neighbor cache is supposed to be printed.
    * \param node The node ptr for which we need the neighbor cache to be printed
    * \param stream The output stream object to use
+   * \param unit The time unit to be used in the report
    *
    * This method calls the PrintArpCache() method of the
    * ArpCache associated with each Ipv4Interface stored in the Ipv4 object, for all nodes at the

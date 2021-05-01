@@ -113,6 +113,10 @@ class Ipv4FragmentationTest: public TestCase
 
 public:
   virtual void DoRun (void);
+  /**
+   * Constructor
+   * \param broadcast send broadcast packets (true) or unicast packets (false)
+   */
   Ipv4FragmentationTest (bool broadcast);
   ~Ipv4FragmentationTest ();
 

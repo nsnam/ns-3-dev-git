@@ -126,19 +126,35 @@ class Ipv4DeduplicationTest : public TestCase
    */
   void CheckDrops (const std::string &name);
 
-  static const Time DELAY;
+  static const Time DELAY; //!< Channel delay
+
+  /**
+   * Creates the test name according to the parameters
+   * \param enable deduplication enabled
+   * \param expire expiration delay for duplicate cache entries
+   * \returns A string describing the test
+   */
   static std::string MakeName (bool enable, Time expire);
 
+  /**
+   * Enum of test types
+   */
   enum MODE {ENABLED = 0,
              DISABLED,
              DEGENERATE};  // enabled, but expiration time too low
-  MODE m_mode;
-  Time m_expire;
-  std::map<std::string, uint32_t> m_packetCountMap;
-  std::map<std::string, uint32_t> m_dropCountMap;
+  MODE m_mode; //!< Test type
+  Time m_expire; //!< Expiration delay for duplicate cache entries
+  std::map<std::string, uint32_t> m_packetCountMap; //!< map of received packets (node name, counter)
+  std::map<std::string, uint32_t> m_dropCountMap; //!< map of received packets (node name, counter)
 
 public:
   virtual void DoRun (void);
+
+  /**
+   * Constructor
+   * \param enable deduplication enabled
+   * \param expire expiration delay for duplicate cache entries
+   */
   Ipv4DeduplicationTest (bool enable, Time expire = Seconds (1));
 
   /**
@@ -532,9 +548,16 @@ class Ipv4DeduplicationPerformanceTest : public TestCase
     Ipv4DeduplicationPerformanceTest (void);
     virtual void DoRun (void);
   private:
-    std::vector <Ptr<Socket> > m_sockets;
-    std::vector <uint8_t> m_txPackets;
-    uint8_t m_target;
+    std::vector <Ptr<Socket> > m_sockets; //!< sockets in use
+    std::vector <uint8_t> m_txPackets;  //!< transmitted packets for each socket
+    uint8_t m_target; //!< number of packets to transmit on each socket
+
+    /**
+     * Send data
+     * \param socket output socket
+     * \param to destination address
+     * \param socketIndex index of the socket
+     */
     void DoSendData (Ptr<Socket> socket, Address to, uint8_t socketIndex);
 };
 

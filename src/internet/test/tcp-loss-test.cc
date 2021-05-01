@@ -74,12 +74,12 @@ protected:
                        const TcpSocketState::TcpCongState_t newValue);
   Ptr<ErrorModel> CreateReceiverErrorModel ();
 private:
-  uint32_t m_firstLoss;
-  uint32_t m_secondLoss;
-  uint32_t m_sent {0};
-  uint32_t m_received {0};
-  uint32_t m_lastSegment {0};
-  std::list<int> m_expectedStates;
+  uint32_t m_firstLoss;             //!< First segment loss
+  uint32_t m_secondLoss;            //!< Second segment loss
+  uint32_t m_sent {0};              //!< Number of segments sent
+  uint32_t m_received {0};          //!< Number of segments received
+  uint32_t m_lastSegment {0};       //!< Last received segment
+  std::list<int> m_expectedStates;  //!< Expected TCP states
 };
 
 TcpLargeTransferLossTest::TcpLargeTransferLossTest (uint32_t firstLoss, uint32_t secondLoss, uint32_t lastSegment, const std::string &desc)

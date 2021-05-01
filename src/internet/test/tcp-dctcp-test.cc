@@ -21,8 +21,8 @@
 
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
-#include "../model/ipv4-end-point.h"
-#include "../model/ipv6-end-point.h"
+#include "ns3/ipv4-end-point.h"
+#include "ns3/ipv6-end-point.h"
 #include "tcp-general-test.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
@@ -63,10 +63,10 @@ protected:
   void ConfigureEnvironment ();
 
 private:
-  uint32_t m_senderSent;
-  uint32_t m_receiverSent;
-  uint32_t m_senderReceived;
-  uint8_t m_testCase;
+  uint32_t m_senderSent;      //!< Number of packets sent by the sender
+  uint32_t m_receiverSent;    //!< Number of packets sent by the receiver
+  uint32_t m_senderReceived;  //!< Number of packets received by the sender
+  uint8_t m_testCase;         //!< Test type
 };
 
 TcpDctcpCodePointsTest::TcpDctcpCodePointsTest (uint8_t testCase, const std::string &desc)
@@ -197,8 +197,8 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  uint32_t m_dataPacketSent;
-  uint8_t m_testCase;
+  uint32_t m_dataPacketSent;  //!< Number of packets sent
+  uint8_t m_testCase;         //!< Test type
 
   TcpDctcpCongestedRouter ()
     : TcpSocketMsgBase ()
@@ -215,6 +215,10 @@ public:
   {
   }
 
+  /**
+   * Set the test case type
+   * \param testCase test case type
+   */
   void SetTestCase (uint8_t testCase);
 protected:
   virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);

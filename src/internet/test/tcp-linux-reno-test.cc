@@ -29,15 +29,21 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpLinuxRenoTest");
 
-// This unit test checks that the slow start and congestion avoidance
-// behavior matches Linux behavior as follows:
-// 1) in both slow start and congestion avoidance phases, presence or
-//    absence of delayed acks does not alter the window growth
-// 2) in congestion avoidance phase, the arithmetic for counting the number
-//    of segments acked and deciding when to increment the congestion window
-//    (i.e. following the Linux function tcp_cong_avoid_ai()) is followed.
-// Different segment sizes (524 bytes and 1500 bytes) are tested.
-
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * This unit test checks that the slow start and congestion avoidance
+ * behavior matches Linux behavior as follows:
+ * 1) in both slow start and congestion avoidance phases, presence or
+ *    absence of delayed acks does not alter the window growth
+ * 2) in congestion avoidance phase, the arithmetic for counting the number
+ *    of segments acked and deciding when to increment the congestion window
+ *    (i.e. following the Linux function tcp_cong_avoid_ai()) is followed.
+ * Different segment sizes (524 bytes and 1500 bytes) are tested.
+ *
+ * This is the Slow Start test.
+ */
 class
 TcpLinuxRenoSSTest : public TcpGeneralTest
 {
@@ -181,6 +187,21 @@ TcpLinuxRenoSSTest::DoTeardown (void)
   TcpGeneralTest::DoTeardown (); // call up to base class method to finish
 }
 
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * This unit test checks that the slow start and congestion avoidance
+ * behavior matches Linux behavior as follows:
+ * 1) in both slow start and congestion avoidance phases, presence or
+ *    absence of delayed acks does not alter the window growth
+ * 2) in congestion avoidance phase, the arithmetic for counting the number
+ *    of segments acked and deciding when to increment the congestion window
+ *    (i.e. following the Linux function tcp_cong_avoid_ai()) is followed.
+ * Different segment sizes (524 bytes and 1500 bytes) are tested.
+ *
+ * This is the Congestion avoidance test.
+ */
 class
 TcpLinuxRenoCongAvoidTest : public TcpGeneralTest
 {

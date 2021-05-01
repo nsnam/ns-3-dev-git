@@ -55,10 +55,14 @@ protected:
       m_recvClose = true;
   }
 
+  /**
+   * Called when a packet is dropped.
+   * \param ipH IP header
+   * \param tcpH TCP header
+   * \param pkt packet
+   */
   void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> pkt);
   
-  virtual void BytesAvailable (uint32_t size, SocketWho who);
-
 private:
   Ptr<TcpSeqErrorModel> m_errorModel; //!< The error model
   bool m_sendClose;                   //!< true when the sender has closed
@@ -108,18 +112,6 @@ TcpCloseWithLossTestCase::CreateReceiverErrorModel ()
 
   return m_errorModel;
 }
-  
-void TcpCloseWithLossTestCase::BytesAvailable(uint32_t size, SocketWho who)
-  {
-    if (m_synReceived && (who == SENDER))
-    {
-      this->GetSenderSocket()->Close();
-    }
-    else
-    {
-      m_synReceived = true;
-    }
-  }
 
 void
 TcpCloseWithLossTestCase::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> pkt)
@@ -154,8 +146,8 @@ TcpCloseWithLossTestCase::Rx (const Ptr<const Packet> p, const TcpHeader &h, Soc
 }
 
 /**
-  * Check if the TCP is correctly closing its state
-  */
+ * Check if the TCP is correctly closing its state
+ */
 class TcpTcpCloseTestSuite : public TestSuite
 {
 public:

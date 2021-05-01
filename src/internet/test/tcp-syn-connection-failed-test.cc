@@ -51,8 +51,8 @@ public:
   virtual void DoRun ();
 
 private:
-  bool m_connectionFailed{false};
-  bool m_useEcn {false};
+  bool m_connectionFailed{false}; //!< Connection failure indicator
+  bool m_useEcn {false}; //!< Use ECN (true or false)
 };
 
 TcpSynConnectionFailedTest::TcpSynConnectionFailedTest (std::string desc, bool useEcn) : TestCase (desc), m_useEcn (useEcn)

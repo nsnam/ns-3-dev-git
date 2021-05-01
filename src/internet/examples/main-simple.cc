@@ -26,21 +26,34 @@
 
 using namespace ns3;
 
+/**
+ * Generates traffic.
+ *
+ * The first call sends a packet of the specified size, and then
+ * the function is scheduled to send a packet of (size-50) after 0.5s.
+ * The process is iterated until the packet size is zero.
+ *
+ * \param socket output socket
+ * \param size packet size
+ */
 static void
-GenerateTraffic (Ptr<Socket> socket, uint32_t size)
+GenerateTraffic (Ptr<Socket> socket, int32_t size)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
-  socket->Send (Create<Packet> (size));
-  if (size > 0)
-    {
-      Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
-    }
-  else
+  if (size <= 0)
     {
       socket->Close ();
+      return;
     }
+
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
+  socket->Send (Create<Packet> (size));
+  Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
 }
 
+/**
+ * Prints the packets received by a socket
+ * \param socket input socket
+ */
 static void
 SocketPrinter (Ptr<Socket> socket)
 {
@@ -51,15 +64,11 @@ SocketPrinter (Ptr<Socket> socket)
     }
 }
 
-static void
-PrintTraffic (Ptr<Socket> socket)
+int main (int argc, char *argv[])
 {
-  socket->SetRecvCallback (MakeCallback (&SocketPrinter));
-}
+  CommandLine cmd (__FILE__);
+  cmd.Parse (argc, argv);
 
-void
-RunSimulation (void)
-{
   NodeContainer c;
   c.Create (1);
 
@@ -77,20 +86,11 @@ RunSimulation (void)
   source->Connect (remote);
 
   GenerateTraffic (source, 500);
-  PrintTraffic (sink);
-
+  sink->SetRecvCallback (MakeCallback (&SocketPrinter));
 
   Simulator::Run ();
 
   Simulator::Destroy ();
-}
-
-int main (int argc, char *argv[])
-{
-  CommandLine cmd (__FILE__);
-  cmd.Parse (argc, argv);
-  
-  RunSimulation ();
 
   return 0;
 }

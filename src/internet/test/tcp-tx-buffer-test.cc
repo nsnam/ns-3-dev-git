@@ -53,7 +53,10 @@ private:
   /** \brief Test the logic of merging items in GetTransmittedSegment()
    * which is triggered by CopyFromSequence()*/
   void TestMergeItemsWhenGetTransmittedSegment ();
-  /** \brief Callback to provide a value of receiver window */
+  /**
+   * \brief Callback to provide a value of receiver window
+   * \returns the receiver window size
+   */
   uint32_t GetRWnd (void) const;
 };
 

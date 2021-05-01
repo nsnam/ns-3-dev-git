@@ -25,8 +25,8 @@
 #include "ns3/ipv6-route.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv6-routing-protocol.h"
-#include "../model/ipv4-end-point.h"
-#include "../model/ipv6-end-point.h"
+#include "ns3/ipv4-end-point.h"
+#include "ns3/ipv6-end-point.h"
 #include "tcp-general-test.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
@@ -69,11 +69,11 @@ protected:
   void ConfigureProperties ();
 
 private:
-  uint32_t m_cwndChangeCount;
-  uint32_t m_senderSent;
-  uint32_t m_senderReceived;
-  uint32_t m_receiverReceived;
-  uint32_t m_testcase;
+  uint32_t m_cwndChangeCount;     //!< Number of times the congestion window did change
+  uint32_t m_senderSent;          //!< Number of segments sent by the sender
+  uint32_t m_senderReceived;      //!< Number of segments received by the sender
+  uint32_t m_receiverReceived;    //!< Number of segments received by the receiver
+  uint32_t m_testcase;            //!< Test case type
 };
 
 
@@ -98,8 +98,8 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  uint32_t m_dataPacketSent;
-  uint8_t m_testcase;
+  uint32_t m_dataPacketSent;  //!< Number of packets sent
+  uint8_t m_testcase;         //!< Test case type
 
   TcpSocketCongestedRouter ()
     : TcpSocketMsgBase ()
@@ -116,6 +116,10 @@ public:
   {
   }
 
+  /**
+   * Set the test case type
+   * \param testCase Test case type
+   */
   void SetTestCase (uint8_t testCase);
 
 protected:
@@ -528,7 +532,7 @@ TcpEcnTest::CreateSenderSocket (Ptr<Node> node)
  *
  * \brief TCP ECN TestSuite
  */
-static class TcpEcnTestSuite : public TestSuite
+class TcpEcnTestSuite : public TestSuite
 {
 public:
   TcpEcnTestSuite () : TestSuite ("tcp-ecn-test", UNIT)
@@ -546,6 +550,8 @@ public:
     AddTestCase (new TcpEcnTest (6, "Congestion Window Reduction Test :ECN capable sender and ECN capable receiver"),
                  TestCase::QUICK);
   }
-} g_tcpECNTestSuite;
+};
+
+static TcpEcnTestSuite g_tcpECNTestSuite; //!< static var for test initialization
 
 } // namespace ns3

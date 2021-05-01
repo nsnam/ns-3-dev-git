@@ -53,8 +53,9 @@ public:
   /**
    * \brief Construct an Ipv6ListRoutingHelper from another previously 
    * initialized instance (Copy Constructor).
+   * \param o object to be copied
    */
-  Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &);
+  Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &o);
 
   /**
    * \returns pointer to clone of this Ipv6ListRoutingHelper 

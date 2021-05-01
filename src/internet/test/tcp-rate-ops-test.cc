@@ -44,31 +44,47 @@ class MimicCongControl;
 class TcpRateLinuxBasicTest : public TestCase
 {
 public:
+
+  /**
+   * Constructor
+   * \param cWnd Congestion window size
+   * \param tailSeq Tail sequence number
+   * \param nextTx Tx next sequence number
+   * \param testCase test case type
+   * \param testName test name
+   */
   TcpRateLinuxBasicTest (uint32_t cWnd, SequenceNumber32 tailSeq, SequenceNumber32 nextTx,
-                         uint32_t lostOut, uint32_t retransOut, uint32_t testCase,
-                         std::string testName);
+                         uint32_t testCase, std::string testName);
 
 private:
   virtual void DoRun (void);
 
+  /**
+   * Send an application packet
+   * \param skb the data to send
+   */
   void SendSkb (TcpTxItem * skb);
+  /**
+   * Deliver an application packet
+   * \param skb the data to deliver
+   */
   void SkbDelivered (TcpTxItem * skb);
 
-  TcpRateLinux              m_rateOps;
-  uint32_t                  m_cWnd;
-  uint32_t                  m_inFlight;
-  uint32_t                  m_segmentSize;
-  uint32_t                  m_delivered;
-  Time                      m_deliveredTime;
-  SequenceNumber32          m_tailSeq;
-  SequenceNumber32          m_nextTx;
-  uint32_t                  m_testCase;
-  std::vector <TcpTxItem *> m_skbs;
+  TcpRateLinux              m_rateOps;        //!< Rate information for TCP
+  uint32_t                  m_cWnd;           //!< Congestion window size
+  uint32_t                  m_inFlight;       //!< Number of packets in-flight
+  uint32_t                  m_segmentSize;    //!< Segment size
+  uint32_t                  m_delivered;      //!< Number of segments delivered
+  Time                      m_deliveredTime;  //!< Last time of a delivery
+  SequenceNumber32          m_tailSeq;        //!< Tail sequence number
+  SequenceNumber32          m_nextTx;         //!< Tx next sequence number
+  uint32_t                  m_testCase;       //!< Test case type
+  std::vector <TcpTxItem *> m_skbs;           //!< Application packets
 };
 
 TcpRateLinuxBasicTest::TcpRateLinuxBasicTest (uint32_t cWnd, SequenceNumber32 tailSeq,
-                                              SequenceNumber32 nextTx, uint32_t lostOut,
-                                              uint32_t retransOut, uint32_t testCase, std::string testName)
+                                              SequenceNumber32 nextTx,
+                                              uint32_t testCase, std::string testName)
   : TestCase (testName),
   m_cWnd (cWnd),
   m_inFlight (0),
@@ -548,8 +564,8 @@ public:
   TcpRateOpsTestSuite ()
     : TestSuite ("tcp-rate-ops", UNIT)
   {
-    AddTestCase (new TcpRateLinuxBasicTest (1000, SequenceNumber32 (20), SequenceNumber32 (11), 1, 0, 0, "Testing SkbDelivered and SkbSent"), TestCase::QUICK);
-    AddTestCase (new TcpRateLinuxBasicTest (1000, SequenceNumber32 (11), SequenceNumber32 (11), 2, 0, 0, "Testing SkbDelivered and SkbSent with app limited data"), TestCase::QUICK);
+    AddTestCase (new TcpRateLinuxBasicTest (1000, SequenceNumber32 (20), SequenceNumber32 (11), 1, "Testing SkbDelivered and SkbSent"), TestCase::QUICK);
+    AddTestCase (new TcpRateLinuxBasicTest (1000, SequenceNumber32 (11), SequenceNumber32 (11), 2, "Testing SkbDelivered and SkbSent with app limited data"), TestCase::QUICK);
 
     std::vector<uint32_t> toDrop;
     toDrop.push_back (4001);
