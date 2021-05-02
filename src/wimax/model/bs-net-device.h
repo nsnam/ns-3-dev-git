@@ -282,8 +282,9 @@ public:
   Ptr<BsServiceFlowManager> GetServiceFlowManager (void) const;
   /**
    * \brief Set service flow manager
+   * \param sfm the service flow manager
    */
-  void SetServiceFlowManager (Ptr<BsServiceFlowManager> );
+  void SetServiceFlowManager (Ptr<BsServiceFlowManager> sfm);
 private:
   virtual void DoDispose (void);
   /**

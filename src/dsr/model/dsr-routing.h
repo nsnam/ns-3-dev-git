@@ -153,86 +153,150 @@ public:
     */
   Ptr<dsr::DsrPassiveBuffer> GetPassiveBuffer () const;
 
-  /// functions used to direct to route cache
-  //\{
+  /**
+   * \brief Checks if the link is cached in the route cache
+   * See also DsrRouteCache::IsLinkCache
+   *
+   * \return true if the link is cached
+   */
   bool IsLinkCache ();
-  void UseExtends (DsrRouteCacheEntry::IP_VECTOR rt);
-  bool LookupRoute (Ipv4Address id, DsrRouteCacheEntry & rt);
-  bool AddRoute_Link (DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
-  bool AddRoute (DsrRouteCacheEntry & rt);
-  void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
-  bool UpdateRouteEntry (Ipv4Address dst);
-  bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
-  //\}
 
   /**
-    * \brief Get the netdevice from the context.
-    * \param context context
-    * \return the netdevice we are looking for
-    */
+   * \brief Extends the lifetime of a route cache entry.
+   * See also DsrRouteCache::UseExtends
+   *
+   * \param rt the route to extend
+   */
+  void UseExtends (DsrRouteCacheEntry::IP_VECTOR rt);
+
+  /**
+   * \brief Lookup route cache entry with destination address dst
+   * See also DsrRouteCache::LookupRoute
+   *
+   * \param id destination address
+   * \param rt entry with destination address id, if exists
+   * \return true on success
+   */
+  bool LookupRoute (Ipv4Address id, DsrRouteCacheEntry & rt);
+
+  /**
+   * \brief dd route link to cache
+   * See also DsrRouteCache::AddRoute_Link
+   *
+   * \param nodelist vector of nodes
+   * \param source ip address of node to add
+   * \return true if the link is cached
+   */
+  bool AddRoute_Link (DsrRouteCacheEntry::IP_VECTOR nodelist, Ipv4Address source);
+
+  /**
+   * \brief Add route cache entry if it doesn't yet exist in route cache
+   * See also DsrRouteCache::AddRoute
+   *
+   * \param rt route cache entry
+   * \return true on success
+   */
+  bool AddRoute (DsrRouteCacheEntry & rt);
+
+  /**
+   * \brief Delete all the routes which includes the link from next hop address that has just been notified
+   * as unreachable.
+   * See also DsrRouteCache::DeleteAllRoutesIncludeLink
+   *
+   * \param errorSrc The error source address
+   * \param unreachNode The unreachable node
+   * \param node This node's ip address
+   */
+  void DeleteAllRoutesIncludeLink (Ipv4Address errorSrc, Ipv4Address unreachNode, Ipv4Address node);
+
+  /**
+   * \brief Update route cache entry if it has been recently used and successfully delivered the data packet.
+   * See also DsrRouteCache::UpdateRouteEntry
+   *
+   * \param dst destination address of the route
+   * \return true in success
+   */
+  bool UpdateRouteEntry (Ipv4Address dst);
+
+  /**
+   * Find the source request entry in the route request queue, return false if not found.
+   * See also DsrRreqTable::FindSourceEntry
+   *
+   * \param src the source address we just received the source request
+   * \param dst the destination address the request is targeted at
+   * \param id the identification number for this request
+   * \return true if found, false otherwise
+   */
+  bool FindSourceEntry (Ipv4Address src, Ipv4Address dst, uint16_t id);
+
+  /**
+   * \brief Get the netdevice from the context.
+   * \param context context
+   * \return the netdevice we are looking for
+   */
   Ptr<NetDevice> GetNetDeviceFromContext (std::string context);
   /**
-    * \brief Get the elements from the tracing context.
-    * \param context context
-    * \return the elements we are looking for
-    */
+   * \brief Get the elements from the tracing context.
+   * \param context context
+   * \return the elements we are looking for
+   */
   std::vector<std::string> GetElementsFromContext (std::string context);
   /**
-    * \brief Get the node id from ip address.
-    * \param address IPv4 address
-    * \return the node id
-    */
+   * \brief Get the node id from ip address.
+   * \param address IPv4 address
+   * \return the node id
+   */
   uint16_t GetIDfromIP (Ipv4Address address);
   /**
-    * \brief Get the ip address from id.
-    * \param id unique ID
-    * \return the ip address for the id
-    */
+   * \brief Get the ip address from id.
+   * \param id unique ID
+   * \return the ip address for the id
+   */
   Ipv4Address GetIPfromID (uint16_t id);
   /**
-    * \brief Get the Ip address from mac address.
-    * \param address Mac48Address
-    * \return the ip address
-    */
+   * \brief Get the Ip address from mac address.
+   * \param address Mac48Address
+   * \return the ip address
+   */
   Ipv4Address GetIPfromMAC (Mac48Address address);
   /**
-    * \brief Get the node with give ip address.
-    * \param ipv4Address IPv4 address
-    * \return the node associated with the ip address
-    */
+   * \brief Get the node with give ip address.
+   * \param ipv4Address IPv4 address
+   * \return the node associated with the ip address
+   */
   Ptr<Node> GetNodeWithAddress (Ipv4Address ipv4Address);
   /**
-    * \brief Print the route vector.
-    * \param vec the vector to print.
-    */
+   * \brief Print the route vector.
+   * \param vec the vector to print.
+   */
   void PrintVector (std::vector<Ipv4Address>& vec);
   /**
-    * \brief Get the next hop of the route.
-    * \param ipv4Address
-    * \param vec Route
-    * \return the next hop address of the route
-    */
+   * \brief Get the next hop of the route.
+   * \param ipv4Address
+   * \param vec Route
+   * \return the next hop address of the route
+   */
   Ipv4Address SearchNextHop (Ipv4Address ipv4Address, std::vector<Ipv4Address>& vec);
   /**
-    * \brief Get the dsr protocol number.
-    * \return protocol number
-    */
+   * \brief Get the dsr protocol number.
+   * \return protocol number
+   */
   int GetProtocolNumber (void) const;
   /**
-    * \brief The send buffer timer expire.
-    */
+   * \brief The send buffer timer expire.
+   */
   void SendBuffTimerExpire ();
   /**
-    * \brief Check the send buffer of packets with route when send buffer timer expire.
-    */
+   * \brief Check the send buffer of packets with route when send buffer timer expire.
+   */
   void CheckSendBuffer ();
   /**
-    * \brief When route vector corrupted, originate a new packet, normally not happening.
-    * \param packet to route
-    * \param source address
-    * \param destination address
-    * \param protocol number
-    */
+   * \brief When route vector corrupted, originate a new packet, normally not happening.
+   * \param packet to route
+   * \param source address
+   * \param destination address
+   * \param protocol number
+   */
   void PacketNewRoute (Ptr<Packet> packet,
                        Ipv4Address source,
                        Ipv4Address destination,

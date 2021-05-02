@@ -57,8 +57,9 @@ public:
   /**
    * \brief Construct an DsrMainHelper from another previously initialized instance
    * (Copy Constructor).
+   * \param o object to copy from
    */
-  DsrMainHelper (const DsrMainHelper &);
+  DsrMainHelper (const DsrMainHelper &o);
   /**
    * Install routing to the nodes
    * \param dsrHelper The DSR helper class

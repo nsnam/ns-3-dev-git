@@ -80,24 +80,29 @@ public:
 
   /**
    * \brief set the snr value
+   * \param snrValue the SNR value
    */
-  void SetSNRValue (double);
+  void SetSNRValue (double snrValue);
   /**
    * \brief set the BER value
+   * \param bitErrorRate the bit error rate value
    */
-  void SetBitErrorRate (double);
+  void SetBitErrorRate (double bitErrorRate);
   /**
    * \brief set the BlcER value
+   * \param blockErrorRate the block error rate value
    */
-  void SetBlockErrorRate (double);
+  void SetBlockErrorRate (double blockErrorRate);
   /**
    * \brief set the lower boundary of the confidence interval
+   * \param i1 the lower boundary of the confidence interval
    */
-  void SetI1 (double);
+  void SetI1 (double i1);
   /**
    * \brief set the upper boundary of the confidence interval
+   * \param i2 the upper boundary of the confidence interval
    */
-  void SetI2 (double);
+  void SetI2 (double i2);
 
 private:
   double m_snrValue; ///< SNR value

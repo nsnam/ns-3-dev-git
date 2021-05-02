@@ -706,28 +706,36 @@ public:
   }
   /**
    * \brief Add ARP cache to be used to allow layer 2 notifications processing
+   * \param a ARP cache
    */
-  void AddArpCache (Ptr<ArpCache>);
+  void AddArpCache (Ptr<ArpCache> a);
   /**
    * \brief Don't use the provided ARP cache any more (interface is down)
+   * \param a ARP cache
    */
   void DelArpCache (Ptr<ArpCache>);
   /**
    * \brief Get callback to ProcessTxError, this callback is trying to use the wifi mac tx error header to notify a link layer drop event, however,
    * it is not fully supported yet
+   * \return The callback to ProcessTxError
    */
   Callback<void, WifiMacHeader const &> GetTxErrorCallback () const
   {
     return m_txErrorCallback;
   }
 
-  /// Handle link failure callback
-  /// \param cb the callback to be set
+  /**
+   * Handle link failure callback
+   * \param cb the callback to be set
+   */
   void SetCallback (Callback<void, Ipv4Address, uint8_t > cb)
   {
     m_handleLinkFailure = cb;
   }
-  /// Handle link failure callback
+  /**
+   * Handle link failure callback
+   * \return The callback to LinkFailure
+   */
   Callback<void, Ipv4Address, uint8_t > GetCallback () const
   {
     return m_handleLinkFailure;

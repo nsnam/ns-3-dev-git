@@ -183,8 +183,7 @@ public:
   /**
    * \brief Remove the duplicates from the route
    *
-   * \param vec List of IPv4 addresses to be clean
-   * \return the route after route shorten
+   * \param [in,out] vec List of IPv4 addresses to clean
    */
   void RemoveDuplicates (std::vector<Ipv4Address>& vec);
   /**

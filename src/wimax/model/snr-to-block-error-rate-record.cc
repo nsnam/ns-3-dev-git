@@ -103,14 +103,14 @@ SNRToBlockErrorRateRecord::SetBlockErrorRate (double blockErrorRate)
   m_blockErrorRate = blockErrorRate;
 }
 void
-SNRToBlockErrorRateRecord::SetI1 (double I1)
+SNRToBlockErrorRateRecord::SetI1 (double i1)
 {
-  m_i1 = I1;
+  m_i1 = i1;
 }
 void
-SNRToBlockErrorRateRecord::SetI2 (double I2)
+SNRToBlockErrorRateRecord::SetI2 (double i2)
 {
-  m_i2 = I2;
+  m_i2 = i2;
 }
 
 }

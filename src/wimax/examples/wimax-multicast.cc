@@ -61,20 +61,18 @@
 #include "ns3/global-route-manager.h"
 #include "ns3/internet-module.h"
 #include "ns3/vector.h"
+#include <vector>
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WimaxMulticastSimulation");
-
-#define MAXSS 1000
-#define MAXDIST 10 // km
 
 int main (int argc, char *argv[])
 {
   bool verbose = false;
 
   NodeContainer ssNodes;
-  Ptr<SubscriberStationNetDevice> ss[MAXSS];
+  std::vector<Ptr<SubscriberStationNetDevice> > ss;
   NetDeviceContainer ssDevs;
   Ipv4InterfaceContainer SSinterfaces;
 
@@ -83,8 +81,6 @@ int main (int argc, char *argv[])
   NetDeviceContainer bsDevs, bsDevsOne;
   Ipv4InterfaceContainer BSinterfaces;
 
-  UdpServerHelper udpServer[MAXSS];
-  ApplicationContainer serverApps[MAXSS];
   UdpTraceClientHelper udpClient;
   ApplicationContainer clientApps;
 
@@ -93,8 +89,8 @@ int main (int argc, char *argv[])
   NodeContainer ASNGW_Node;
 
   Ptr<ConstantPositionMobilityModel> BSPosition;
-  Ptr<RandomWaypointMobilityModel> SSPosition[MAXSS];
-  Ptr<RandomRectanglePositionAllocator> SSPosAllocator[MAXSS];
+  std::vector<Ptr<RandomWaypointMobilityModel> > SSPosition;
+  std::vector<Ptr<RandomRectanglePositionAllocator> > SSPosAllocator;
 
   // default values
   int nbSS = 10, duration = 7, schedType = 0;
@@ -124,6 +120,10 @@ int main (int argc, char *argv[])
     default:
       scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
     }
+
+  ss.resize (nbSS);
+  SSPosition.resize (nbSS);
+  SSPosAllocator.resize (nbSS);
 
   ssNodes.Create (nbSS);
   bsNodes.Create (1);
@@ -267,13 +267,11 @@ int main (int argc, char *argv[])
 
   uint16_t multicast_port = 100;
 
-  for (int i = 0; i < nbSS; i++)
-    {
-      udpServer[i] = UdpServerHelper (multicast_port);
-      serverApps[i] = udpServer[i].Install (ssNodes.Get (i));
-      serverApps[i].Start (Seconds (6));
-      serverApps[i].Stop (Seconds (duration));
-    }
+  UdpServerHelper udpServerHelper = UdpServerHelper (multicast_port);
+  ApplicationContainer serverApps;
+  serverApps = udpServerHelper.Install (ssNodes);
+  serverApps.Start (Seconds (6));
+  serverApps.Stop (Seconds (duration));
 
   udpClient = UdpTraceClientHelper (multicastGroup, multicast_port, "");
 

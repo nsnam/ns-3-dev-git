@@ -146,7 +146,17 @@ public:
   virtual bool SupportsSendFrom (void) const;
   virtual void AddLinkChangeCallback (Callback<void> callback);
   virtual void SetAddress (Address address);
+
+  /**
+   * Get the Tx mode index (Modulation type).
+   * \return the Tx mode index
+   */
   uint32_t GetTxModeIndex ();
+
+  /**
+   * Set the Tx mode index (Modulation type).
+   * \param txModeIndex the Tx mode index
+   */
   void SetTxModeIndex (uint32_t txModeIndex);
 
   /**
