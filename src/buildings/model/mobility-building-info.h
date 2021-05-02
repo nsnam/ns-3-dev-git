@@ -71,20 +71,6 @@ public:
   bool IsIndoor (void);
 
   /** 
-   * 
-   * \brief Is outdoor function
-   *
-   * \return true if the MobilityBuildingInfo instance is outdoor, false otherwise
-   *
-   * \deprecated This method will go away in a future release of ns-3.
-   *  Calling \c IsIndoor () method of \c MobilityBuildingInfo class
-   *  will satisfy the need to determine if a node is inside or outside
-   *  a building.
-   */
-  NS_DEPRECATED_3_31
-  bool IsOutdoor (void);
-
-  /** 
    * \brief Mark this MobilityBuildingInfo instance as indoor
    * 
    * \param building the building into which the MobilityBuildingInfo instance is located

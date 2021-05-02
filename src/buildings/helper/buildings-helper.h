@@ -48,33 +48,7 @@ public:
   * \param c the NodeContainer including the nodes to be updated
   */
   static void Install (NodeContainer c);     // for any nodes
-  /**
-  * \brief This method goes through the whole NodeList and, for each node in
-  * the list, calls BuildingsHelper::MakeConsistent() passing to it
-  * the MobilityModel of that node.
-  *
-  * \deprecated This method will go away in future release of ns-3.
-  * A node position will be make consistent by the method \c IsInside () of
-  * \c MobilityBuildingInfo class.
-  *
-  */
-  NS_DEPRECATED_3_31
-  static void MakeMobilityModelConsistent ();
-  /**
-   * \brief Make the given mobility model consistent, by determining whether
-   * its position falls inside any of the building in BuildingList, and
-   * updating accordingly the BuildingInfo aggregated with the MobilityModel.
-   *
-   * \param mm the mobility model to be made consistent
-   *
-   * \deprecated This method will go away in future release of ns-3.
-   * See instead \c MakeConsistent method of \c MobilityBuildingInfo class.
-   */
-  NS_DEPRECATED
-  static void MakeConsistent (Ptr<MobilityModel> mm);
-  
 };
-
 
 }
 
