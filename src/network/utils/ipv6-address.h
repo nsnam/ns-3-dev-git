@@ -406,7 +406,6 @@ public:
   /**
    * \brief Get the bytes corresponding to the address.
    * \param buf buffer to store the data
-   * \return bytes of the address
    */
   void GetBytes (uint8_t buf[16]) const;
 

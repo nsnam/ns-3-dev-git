@@ -872,11 +872,11 @@ RadiotapHeader::SetHeMuFields (uint16_t flags1, uint16_t flags2, const std::arra
 }
 
 void
-RadiotapHeader::SetHeMuPerUserFields (uint16_t per_user_1, uint16_t per_user_2, uint8_t perUserPosition, uint8_t perUserKnown)
+RadiotapHeader::SetHeMuPerUserFields (uint16_t perUser1, uint16_t perUser2, uint8_t perUserPosition, uint8_t perUserKnown)
 {
-  NS_LOG_FUNCTION (this << per_user_1 << per_user_2 << +perUserPosition << +perUserKnown);
-  m_heMuPerUser1 = per_user_1;
-  m_heMuPerUser2 = per_user_2;
+  NS_LOG_FUNCTION (this << perUser1 << perUser2 << +perUserPosition << +perUserKnown);
+  m_heMuPerUser1 = perUser1;
+  m_heMuPerUser2 = perUser2;
   m_heMuPerUserPosition = perUserPosition;
   m_heMuPerUserKnown = perUserKnown;
   if (!(m_present & RADIOTAP_HE_MU_OTHER_USER))

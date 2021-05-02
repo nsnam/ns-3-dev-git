@@ -396,35 +396,16 @@ std::istream & operator >> (std::istream &is, Ipv4Address &address);
  */
 std::istream & operator >> (std::istream &is, Ipv4Mask &mask);
 
-/**
- * \brief Equal to operator.
- *
- * \param a the first operand
- * \param b the first operand
- * \returns true if the operands are equal
- */
 inline bool operator == (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address == b.m_address);
 }
-/**
- * \brief Not equal to operator.
- *
- * \param a the first operand
- * \param b the first operand
- * \returns true if the operands are not equal
- */
+
 inline bool operator != (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address != b.m_address);
 }
-/**
- * \brief Less than operator.
- *
- * \param a the first operand
- * \param b the first operand
- * \returns true if the operand a is less than operand b
- */
+
 inline bool operator < (const Ipv4Address &a, const Ipv4Address &b)
 {
   return (a.m_address < b.m_address);
@@ -448,25 +429,11 @@ public:
   size_t operator() (Ipv4Address const &x) const;
 };
 
-/**
- * \brief Equal to operator.
- *
- * \param a the first operand
- * \param b the first operand
- * \returns true if the operands are equal
- */
 inline bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
 {
   return (a.m_mask == b.m_mask);
 }
 
-/**
- * \brief Not equal to operator.
- *
- * \param a the first operand
- * \param b the first operand
- * \returns true if the operands are not equal
- */
 inline bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
 {
   return (a.m_mask != b.m_mask);

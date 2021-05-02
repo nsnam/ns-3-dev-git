@@ -111,12 +111,14 @@ public:
 
   /**
    * Get the waypoint that this object is traveling towards.
+   * \returns The waypoint
    */
   Waypoint GetNextWaypoint (void) const;
 
   /**
    * Get the number of waypoints left for this object, excluding
    * the next one.
+   * \returns The number of waypoints left
    */
   uint32_t WaypointsLeft (void) const;
 

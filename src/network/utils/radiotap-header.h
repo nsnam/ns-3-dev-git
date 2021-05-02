@@ -429,7 +429,7 @@ public:
    * @param perUserPosition The per_user_position field.
    * @param perUserKnown The per_user_known field.
    */
-  void SetHeMuPerUserFields (uint16_t per_user_1, uint16_t per_user_2, uint8_t perUserPosition, uint8_t perUserKnown);
+  void SetHeMuPerUserFields (uint16_t perUser1, uint16_t perUser2, uint8_t perUserPosition, uint8_t perUserKnown);
 
 private:
   /**

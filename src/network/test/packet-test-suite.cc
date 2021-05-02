@@ -449,6 +449,14 @@ private:
    * \param ... The variable arguments
    */
   void DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
+  /**
+   * Checks the packet and its data
+   * \param p The packet
+   * \param file The file name
+   * \param line The line number
+   * \param n The number of variable arguments
+   * \param ... The variable arguments
+   */
   void DoCheckData (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
 };
 

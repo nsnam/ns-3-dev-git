@@ -104,10 +104,12 @@ private:
 
   /**
    * Callback for when parent mobility model course change occurs
+   * \param model mobility mode (unused)
    */
   void ParentChanged (Ptr<const MobilityModel> model);
   /**
    * Callback for when child mobility model course change occurs
+   * \param model mobility mode (unused)
    */
   void ChildChanged (Ptr<const MobilityModel> model);
 

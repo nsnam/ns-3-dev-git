@@ -30,7 +30,7 @@ namespace ns3 {
  *
  * \brief Quick and dirty delay and jitter estimation,
  * implementing the jitter algorithm originally from
- * \RFC{1889} (RTP), and unchanged in \RFC(3550) 
+ * \RFC{1889} (RTP), and unchanged in \RFC{3550}
  *
  * This implementation uses the integer variant of the algorithm
  * given in RFC 1889 Appendix A.8 ,p. 71, and repeated in

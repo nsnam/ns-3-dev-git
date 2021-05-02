@@ -121,28 +121,28 @@ public:
   /**
    * \return the DataRate representing the sum of this object with rhs
    * 
-   * \param the DataRate to add to this DataRate
+   * \param rhs the DataRate to add to this DataRate
    */
   DataRate operator + (DataRate rhs);
 
   /**
    * \return the DataRate representing the sum of this object with rhs
    * 
-   * \param the DataRate to add to this DataRate
+   * \param rhs the DataRate to add to this DataRate
    */
   DataRate& operator += (DataRate rhs);
 
   /**
    * \return the DataRate representing the difference of this object with rhs
    * 
-   * \param the DataRate to subtract from this DataRate
+   * \param rhs the DataRate to subtract from this DataRate
    */
   DataRate operator - (DataRate rhs);
 
   /**
    * \return the DataRate representing the difference of this object with rhs
    * 
-   * \param the DataRate to subtract from this DataRate
+   * \param rhs the DataRate to subtract from this DataRate
    */
   DataRate& operator -= (DataRate rhs);
 

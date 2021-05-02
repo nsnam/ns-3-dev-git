@@ -197,6 +197,10 @@ Ipv4Mask::GetPrefixLength (void) const
   return tmp; 
 }
 
+/**
+ *  Value of a not-yet-initialized IPv4 address, corresponding to 102.102.102.102.
+ *  This is totally arbitrary.
+ */
 static constexpr uint32_t UNINITIALIZED = 0x66666666U;
 
 Ipv4Address::Ipv4Address ()

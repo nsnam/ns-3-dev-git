@@ -136,7 +136,7 @@ public:
   }
 
   /**
-   * Checks if two counters are comparable (i.e., not desynchronized).
+   * Checks if the counter is comparable with another counter (i.e., not desynchronized).
    *
    * If the absolute magnitude of difference of the two
    * sequence counters is greater than Sequence Window, then a
@@ -146,7 +146,8 @@ public:
    * Sequence Window is equal to 2^N where N is (by default) half the number
    * of digits of the underlying type.
    *
-   * \returns true if the two counters are comparable.
+   * \param val counter to compare
+   * \returns true if the counters are comparable.
    */
   bool IsComparable (const LollipopCounter &val) const
   {

@@ -110,6 +110,7 @@ public:
    * bits 3-7 within DST[15].  The initial 3-bit pattern of "100" follows
    * the 16-bit address format for multicast addresses (Section 12).
    *
+   * \param address base IPv6 address
    * \returns the multicast 16-bit address.
    */
 

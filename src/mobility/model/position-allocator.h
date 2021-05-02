@@ -88,7 +88,7 @@ public:
    * \brief Add the positions listed in a file.
    * The file should be a simple text file, with one position per line,
    * either X and Y, or X, Y and Z, in meters.  The delimiter can
-   * be any character, such as ',' or '\t'; the default is a comma ','.
+   * be any character, such as ',' or '\\t'; the default is a comma ','.
    *
    * The file is read using CsvReader, which explains how comments
    * and whitespace are handled.
