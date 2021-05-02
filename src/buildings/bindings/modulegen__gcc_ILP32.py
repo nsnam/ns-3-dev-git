@@ -97,12 +97,16 @@ def register_types(module):
     module.add_class('Ipv4Address', import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Address [class]
     root_module['ns3::Ipv4Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash [class]
+    module.add_class('Ipv4AddressHash', import_from_module='ns.network')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Mask [class]
     module.add_class('Ipv4Mask', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
     module.add_class('Ipv6Address', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
     root_module['ns3::Ipv6Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash [class]
+    module.add_class('Ipv6AddressHash', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogComponent [class]
@@ -588,8 +592,10 @@ def register_methods(root_module):
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3Hasher_methods(root_module, root_module['ns3::Hasher'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
+    register_Ns3Ipv4AddressHash_methods(root_module, root_module['ns3::Ipv4AddressHash'])
     register_Ns3Ipv4Mask_methods(root_module, root_module['ns3::Ipv4Mask'])
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
+    register_Ns3Ipv6AddressHash_methods(root_module, root_module['ns3::Ipv6AddressHash'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
@@ -1235,16 +1241,6 @@ def register_Ns3BuildingsHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::NodeContainer', 'c')], 
                    is_static=True)
-    ## buildings-helper.h (module 'buildings'): static void ns3::BuildingsHelper::MakeConsistent(ns3::Ptr<ns3::MobilityModel> mm) [member function]
-    cls.add_method('MakeConsistent', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'mm')], 
-                   deprecated=True, is_static=True)
-    ## buildings-helper.h (module 'buildings'): static void ns3::BuildingsHelper::MakeMobilityModelConsistent() [member function]
-    cls.add_method('MakeMobilityModelConsistent', 
-                   'void', 
-                   [], 
-                   deprecated=True, is_static=True)
     return
 
 def register_Ns3ByteTagIterator_methods(root_module, cls):
@@ -1749,6 +1745,18 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
                    [param('char const *', 'address')])
     return
 
+def register_Ns3Ipv4AddressHash_methods(root_module, cls):
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash::Ipv4AddressHash() [constructor]
+    cls.add_constructor([])
+    ## ipv4-address.h (module 'network'): ns3::Ipv4AddressHash::Ipv4AddressHash(ns3::Ipv4AddressHash const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Ipv4AddressHash const &', 'arg0')])
+    ## ipv4-address.h (module 'network'): size_t ns3::Ipv4AddressHash::operator()(ns3::Ipv4Address const & x) const [member operator]
+    cls.add_method('operator()', 
+                   'size_t', 
+                   [param('ns3::Ipv4Address const &', 'x')], 
+                   custom_name='__call__', is_const=True)
+    return
+
 def register_Ns3Ipv4Mask_methods(root_module, cls):
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('==')
@@ -1962,6 +1970,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Address addr, ns3::Ipv6Prefix prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Address', 'addr'), param('ns3::Ipv6Prefix', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac16Address addr, ns3::Ipv6Address prefix) [member function]
     cls.add_method('MakeAutoconfiguredAddress', 
                    'ns3::Ipv6Address', 
@@ -2035,6 +2048,18 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('uint8_t *', 'address')])
+    return
+
+def register_Ns3Ipv6AddressHash_methods(root_module, cls):
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash::Ipv6AddressHash() [constructor]
+    cls.add_constructor([])
+    ## ipv6-address.h (module 'network'): ns3::Ipv6AddressHash::Ipv6AddressHash(ns3::Ipv6AddressHash const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Ipv6AddressHash const &', 'arg0')])
+    ## ipv6-address.h (module 'network'): size_t ns3::Ipv6AddressHash::operator()(ns3::Ipv6Address const & x) const [member operator]
+    cls.add_method('operator()', 
+                   'size_t', 
+                   [param('ns3::Ipv6Address const &', 'x')], 
+                   custom_name='__call__', is_const=True)
     return
 
 def register_Ns3Ipv6Prefix_methods(root_module, cls):
@@ -5703,11 +5728,6 @@ def register_Ns3MobilityBuildingInfo_methods(root_module, cls):
     cls.add_method('IsIndoor', 
                    'bool', 
                    [])
-    ## mobility-building-info.h (module 'buildings'): bool ns3::MobilityBuildingInfo::IsOutdoor() [member function]
-    cls.add_method('IsOutdoor', 
-                   'bool', 
-                   [], 
-                   deprecated=True)
     ## mobility-building-info.h (module 'buildings'): void ns3::MobilityBuildingInfo::MakeConsistent(ns3::Ptr<ns3::MobilityModel> mm) [member function]
     cls.add_method('MakeConsistent', 
                    'void', 
