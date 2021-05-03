@@ -19,6 +19,7 @@
 doxygen:
   extends: .doc
   script:
+    - apt-get --quiet install gcc g++ python python3 python-dev qt5-default openmpi-bin openmpi-common openmpi-doc libopenmpi-dev gsl-bin libgsl-dev ccache flex bison libfl-dev sqlite sqlite3 libsqlite3-dev libxml2 libxml2-dev libgtk-3-dev libboost-all-dev --yes
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
