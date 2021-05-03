@@ -114,7 +114,7 @@ WifiTxParameters::AddMpdu (Ptr<const WifiMacQueueItem> mpdu)
 
       // Insert the info about the given frame
       m_info.emplace (hdr.GetAddr1 (),
-                      PsduInfo {hdr, static_cast<uint16_t> (mpdu->GetPacketSize ()), 0, seqNumbers});
+                      PsduInfo {hdr, mpdu->GetPacketSize (), 0, seqNumbers});
       return;
     }
 
@@ -183,7 +183,7 @@ WifiTxParameters::AggregateMsdu (Ptr<const WifiMacQueueItem> msdu)
   infoIt->second.header.SetQosAmsdu ();
 }
 
-std::pair<uint16_t, uint32_t>
+std::pair<uint32_t, uint32_t>
 WifiTxParameters::GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) const
 {
   NS_LOG_FUNCTION (this << *msdu);
@@ -204,7 +204,7 @@ WifiTxParameters::GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) cons
                  "At least one MPDU with the same TID must have been added previously");
 
   // all checks passed
-  uint16_t currAmsduSize = infoIt->second.amsduSize;
+  uint32_t currAmsduSize = infoIt->second.amsduSize;
 
   if (!infoIt->second.header.IsQosAmsdu ())
     {
@@ -212,7 +212,7 @@ WifiTxParameters::GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) cons
       currAmsduSize = MsduAggregator::GetSizeIfAggregated (currAmsduSize, 0);
     }
 
-  uint16_t newAmsduSize = MsduAggregator::GetSizeIfAggregated (msdu->GetPacket ()->GetSize (), currAmsduSize);
+  uint32_t newAmsduSize = MsduAggregator::GetSizeIfAggregated (msdu->GetPacket ()->GetSize (), currAmsduSize);
   uint32_t newMpduSize = infoIt->second.header.GetSize () + newAmsduSize + WIFI_MAC_FCS_LENGTH;
 
   if (infoIt->second.ampduSize > 0 || m_txVector.GetModulationClass () >= WIFI_MOD_CLASS_VHT)

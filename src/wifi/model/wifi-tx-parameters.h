@@ -100,7 +100,7 @@ public:
    * \return a pair (size in bytes of the current A-MSDU, size in bytes of the frame)
              in case the given MSDU is aggregated
    */
-  std::pair<uint16_t, uint32_t> GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) const;
+  std::pair<uint32_t, uint32_t> GetSizeIfAggregateMsdu (Ptr<const WifiMacQueueItem> msdu) const;
 
   /**
    * Get the size in bytes of the (A-)MPDU addressed to the given receiver.
@@ -114,7 +114,7 @@ public:
   struct PsduInfo
     {
       WifiMacHeader header;                             //!< MAC header of the last MPDU added
-      uint16_t amsduSize;                               //!< the size in bytes of the MSDU or A-MSDU
+      uint32_t amsduSize;                               //!< the size in bytes of the MSDU or A-MSDU
                                                         //!< included in the last MPDU added
       uint32_t ampduSize;                               //!< the size in bytes of the A-MPDU if multiple
                                                         //!< MPDUs have been added, and zero otherwise
