@@ -22,7 +22,7 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d $MODE
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts
     - ./waf
 #    - mkdir -p public/doxygen
     - doc/doxygen.warnings.report.sh -f "$(git diff --name-only  --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
