@@ -19,10 +19,29 @@
 doxygen:
   extends: .doc
   script:
+    - mkdir -p $CCACHE_BASEDIR_VALUE
+    - export CCACHE_BASEDIR=${PWD}
+    - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d $MODE
+    - ./waf
 #    - mkdir -p public/doxygen
     - doc/doxygen.warnings.report.sh -f "$(git diff --name-only  --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
 #    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
+  cache:
+    # Use separate key for each (debug/optimized/release) jobs because
+    # they run in parallel and will otherwise overwrite each other
+    # cache when they upload the cache archive at the end of the job,
+    # resulting in only the cache for the last finished configuration
+    # being stored.
+    #
+    # Do not distinguish between branches though to avoid
+    # recompilation of all the files when a new branch is created.
+    key: "ccache-$CI_JOB_NAME"
+    paths:
+      - $CCACHE_BASEDIR_VALUE/
+  variables:
+    CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
   artifacts:
     paths:
       - doc/doxygen.warnings.log
