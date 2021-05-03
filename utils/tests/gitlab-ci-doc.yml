@@ -11,9 +11,9 @@
     - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-6/policy.xml
     - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-6/policy.xml
   image: ubuntu
-  artifacts:
-    paths:
-      - public
+#  artifacts:
+#    paths:
+#      - public
 
 doxygen:
   extends: .doc
@@ -41,6 +41,7 @@ doxygen:
       - $CCACHE_BASEDIR_VALUE/
   variables:
     CCACHE_BASEDIR_VALUE: ns-3-ccache-storage
+    COMPILER: g++
   artifacts:
     paths:
       - doc/doxygen.warnings.log
