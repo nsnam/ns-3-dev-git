@@ -21,10 +21,12 @@ doxygen:
     - mkdir -p $CCACHE_BASEDIR_VALUE
     - export CCACHE_BASEDIR=${PWD}
     - export CCACHE_DIR=${PWD}/$CCACHE_BASEDIR_VALUE
-    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts
+    - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d release
     - ./waf
 #    - mkdir -p public/doxygen
-    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only  --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
+    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git
+    - git fetch ns-3-origin
+    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
 #    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
   cache:
