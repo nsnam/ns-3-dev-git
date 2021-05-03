@@ -20,11 +20,15 @@ doxygen:
   extends: .doc
   script:
 #    - mkdir -p public/doxygen
-    - doxygen doc/doxygen.conf
+    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only  --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
+#    - doxygen doc/doxygen.conf
 #    - mv doc/html/ public/doxygen
-  tags:
-    - nsnam
-    - linux
+  artifacts:
+    paths:
+      - doc/doxygen.warnings.log
+#  tags:
+#    - nsnam
+#    - linux
 
 manual:
   extends: .doc

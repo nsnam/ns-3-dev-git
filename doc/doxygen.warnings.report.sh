@@ -1,5 +1,5 @@
 #!/bin/bash
-# -*- indent-tabs-mode:nil; -*- 
+# -*- indent-tabs-mode:nil; -*-
 
 
 # Process doxygen log to generate sorted list of top offenders.
@@ -42,12 +42,12 @@ function usage
 {
     synopsis_short
     cat <<-EOF
-    
+
     Run doxygen to generate all errors; report error counts
     by module and file.
-    
+
     -i  Skip the build, try print-introspected-doxygen anyway.
-    
+
     -s  Skip doxygen run; use existing <log-file>.
     -w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
     -l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
@@ -61,7 +61,7 @@ function usage
 
     -v  Show detailed output from each step.
     -h  Print this usage message
-        
+
     The default behavior is to modify doxygen.conf temporarily to
     report all undocumented elements, and to reduce the run time.
     The output of this special run is kept in doc/$WARNINGSLOGFILE.
@@ -73,13 +73,13 @@ function usage
     The first two use a specified or the standard log file;
     the -s option uses the warnings log from a prior run.
     Only the first of -f <log-file>, -s, or -l will have effect.
-            
+
     The -e and -t options exclude examples and test directories
     from the counts.  The -m option only includes a specific module.
     The -F option only includes files (or warnings) matching the <regex>.
     The -m and -F options append the relevant warnings after the
     numerical report.  These can be used in any combination.
-    
+
 EOF
     exit 0
 }
@@ -129,7 +129,7 @@ function status_report
         fi
     fi
 }
-   
+
 
 # Argument processing ------------------
 #
@@ -140,9 +140,9 @@ logfile_arg=
 # -l
 use_standard=0
 # skip doxygen run; using existing log file
-skip_doxy=0 
-# skip print-introspected-doxygen, avoiding a build 
-skip_intro=0 
+skip_doxy=0
+# skip print-introspected-doxygen, avoiding a build
+skip_intro=0
 
 # Filtering flags
 filter_blacklist=1
@@ -156,7 +156,7 @@ while getopts :bef:F:hilm:s:tvw option ; do
 
     case $option in
     (b)  filter_blacklist=0       ;;
-    
+
     (e)  filter_examples=1        ;;
 
     (f)  filter_in="$OPTARG"      ;;
@@ -164,9 +164,9 @@ while getopts :bef:F:hilm:s:tvw option ; do
     (F)  filter_out="$OPTARG"     ;;
 
     (h)  usage                    ;;
-    
+
     (i)  skip_intro=1             ;;
-    
+
     (l)  use_standard=1           ;;
 
     (m)  filter_module="$OPTARG"  ;;
@@ -184,11 +184,11 @@ while getopts :bef:F:hilm:s:tvw option ; do
     (w)  use_filearg=1
          logfile_arg="$DIR/$WARNINGSLOGFILE"
          ;;
-         
+
     (:)  echo "$me: Missing argument to -$OPTARG" ; synopsis ;;
-    
+
     (\?) echo "$me: Invalid option: -$OPTARG"     ; synopsis ;;
-        
+
     esac
 done
 
@@ -202,7 +202,7 @@ function checklogfile
         synopsis
     fi
 }
-    
+
 # Log file -----------------------------
 #
 
@@ -304,7 +304,7 @@ else
     conf=doc/doxygen.conf
     cp $conf ${conf}.bak
     cat <<-EOF >> $conf
-    
+
     # doxygen.warnings.report.sh:
     EXTRACT_ALL = no
     HAVE_DOT = no
@@ -338,7 +338,7 @@ EOF
     verbose -n "Rebuilding doxygen docs with full errors"
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
     status_report $? "./waf --doxygen-no-build"
-    
+
     # Swap back to original config
     rm -f $conf
     mv -f $conf.bak $conf
@@ -394,7 +394,7 @@ modcount=$(                         \
 # Doxygen prints the additional parameters on separate lines,
 # so they don't show up in the totals above.
 # Rather than work too hard to get the exact number for each file,
-# we just list the total here. 
+# we just list the total here.
 addlparam=$(                                  \
     grep "^  parameter '" "$LOG"            | \
     wc -l                                   | \
@@ -464,7 +464,7 @@ echo
 echo
 echo "Warnings by file (alphabetical)"
 echo
-echo "Count File" 
+echo "Count File"
 echo "----- ----------------------------------"
 echo "$undocfiles"
 echo "----------------------------------------"
@@ -473,7 +473,7 @@ echo
 echo
 echo "Warnings by file (numerical)"
 echo
-echo "Count File" 
+echo "Count File"
 echo "----- ----------------------------------"
 echo "$undocsort"
 echo "----------------------------------------"
@@ -486,12 +486,22 @@ printf "%6d directories\n" $modcount
 printf "%6d files\n" $filecount
 printf "%6d warnings\n" $warncount
 
-if [ "$filterin" != "" ] ; then
-    echo
-    echo
-    echo "Filtered Warnings"
-    echo "========================================"
-    echo "$filterin"
+# Return status based on warnings
+exit_status=$((warncount > 0))
+
+if [ "${filter_inRE:-}" != "" ] ; then
+    if [ "$filterin" != "" ] ; then
+        echo
+        echo
+        echo "Filtered Warnings"
+        echo "========================================"
+        echo "$filterin"
+        exit_status=1
+    else
+        exit_status=0
+    fi
 fi
 
 status_report 0 $me
+
+exit $exit_status
