@@ -40,6 +40,7 @@
 #include "ns3/ht-configuration.h"
 #include "ns3/he-configuration.h"
 #include "qos-txop.h"
+#include "reduced-neighbor-report.h"
 
 namespace ns3 {
 
@@ -592,6 +593,37 @@ ApWifiMac::GetMuEdcaParameterSet (void) const
   return muEdcaParameters;
 }
 
+Ptr<ReducedNeighborReport>
+ApWifiMac::GetReducedNeighborReport (uint8_t linkId) const
+{
+  NS_LOG_FUNCTION (this << +linkId);
+
+  if (GetNLinks () <= 1)
+    {
+      return nullptr;
+    }
+
+  NS_ABORT_IF (!GetEhtSupported ());
+  auto rnr = Create<ReducedNeighborReport> ();
+
+  for (uint8_t index = 0; index < GetNLinks (); ++index)
+    {
+      if (index != linkId)  // all links but the one used to send this Beacon frame
+        {
+          rnr->AddNbrApInfoField ();
+          std::size_t nbrId = rnr->GetNNbrApInfoFields () - 1;
+          rnr->SetOperatingChannel (nbrId, GetLink (index).phy->GetOperatingChannel ());
+          rnr->AddTbttInformationField (nbrId);
+          rnr->SetBssid (nbrId, 0, GetLink (index).feManager->GetAddress ());
+          rnr->SetShortSsid (nbrId, 0, 0);
+          rnr->SetBssParameters (nbrId, 0, 0);
+          rnr->SetPsd20MHz (nbrId, 0, 0);
+          rnr->SetMldParameters (nbrId, 0, 0, index, 0);
+        }
+    }
+  return rnr;
+}
+
 HtOperation
 ApWifiMac::GetHtOperation (void) const
 {
@@ -761,7 +793,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_MGT_PROBE_RESPONSE);
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (GetAddress ());
+  hdr.SetAddr2 (GetAddress ());  // TODO set the correct address
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
@@ -805,6 +837,18 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   if (GetEhtSupported ())
     {
       probe.SetEhtCapabilities (GetEhtCapabilities ());
+
+      if (GetNLinks () > 1)
+        {
+          /*
+           * If an AP is affiliated with an AP MLD and does not correspond to a nontransmitted
+           * BSSID, then the Beacon and Probe Response frames transmitted by the AP shall
+           * include a TBTT Information field in a Reduced Neighbor Report element with the
+           * TBTT Information Length field set to 16 or higher, for each of the other APs
+           * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
+           */
+          probe.SetReducedNeighborReport (GetReducedNeighborReport (*GetLinkIdByAddress (GetAddress ()))); // TODO check the address
+        }
     }
   packet->AddHeader (probe);
 
@@ -989,6 +1033,18 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
   if (GetEhtSupported ())
     {
       beacon.SetEhtCapabilities (GetEhtCapabilities ());
+
+      if (GetNLinks () > 1)
+        {
+          /*
+           * If an AP is affiliated with an AP MLD and does not correspond to a nontransmitted
+           * BSSID, then the Beacon and Probe Response frames transmitted by the AP shall
+           * include a TBTT Information field in a Reduced Neighbor Report element with the
+           * TBTT Information Length field set to 16 or higher, for each of the other APs
+           * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
+           */
+          beacon.SetReducedNeighborReport (GetReducedNeighborReport (linkId));
+        }
     }
   packet->AddHeader (beacon);
 

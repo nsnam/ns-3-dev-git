@@ -34,6 +34,7 @@ class DsssParameterSet;
 class ErpInformation;
 class EdcaParameterSet;
 class MuEdcaParameterSet;
+class ReducedNeighborReport;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
@@ -263,6 +264,14 @@ private:
    * \return the MU EDCA Parameter Set that we support
    */
   MuEdcaParameterSet GetMuEdcaParameterSet (void) const;
+  /**
+   * Return the Reduced Neighbor Report (RNR) element that the current AP sends
+   * on the given link
+   *
+   * \param linkId the ID of the link to send the RNR element onto
+   * \return the Reduced Neighbor Report element
+   */
+  Ptr<ReducedNeighborReport> GetReducedNeighborReport (uint8_t linkId) const;
   /**
    * Return the HT operation of the current AP.
    *

@@ -40,6 +40,7 @@
 #include "ns3/he-operation.h"
 #include "ns3/mu-edca-parameter-set.h"
 #include "ns3/eht-capabilities.h"
+#include "reduced-neighbor-report.h"
 
 namespace ns3 {
 
@@ -940,6 +941,12 @@ public:
   const MuEdcaParameterSet& GetMuEdcaParameterSet (void) const;
 
   /**
+   * Return the Reduced Neighbor Report information element.
+   *
+   * \return the Reduced Neighbor Report information element
+   */
+  Ptr<ReducedNeighborReport> GetReducedNeighborReport (void) const;
+  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -1097,6 +1104,12 @@ public:
   void SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParameterSet);
 
   /**
+   * Set the Reduced Neighbor Report information element
+   *
+   * \param reducedNeighborReport the Reduced Neighbor Report information element
+   */
+  void SetReducedNeighborReport (Ptr<ReducedNeighborReport> reducedNeighborReport);
+  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -1133,6 +1146,7 @@ private:
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   EhtCapabilities m_ehtCapability;     //!< EHT capabilities
+  Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
 };
 
 

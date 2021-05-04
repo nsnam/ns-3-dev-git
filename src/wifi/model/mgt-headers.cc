@@ -526,6 +526,12 @@ MgtProbeResponseHeader::SetMuEdcaParameterSet (MuEdcaParameterSet&& muEdcaParame
   m_muEdcaParameterSet = std::move (muEdcaParameters);
 }
 
+void
+MgtProbeResponseHeader::SetReducedNeighborReport (Ptr<ReducedNeighborReport> reducedNeighborReport)
+{
+  m_reducedNeighborReport = reducedNeighborReport;
+}
+
 const EdcaParameterSet&
 MgtProbeResponseHeader::GetEdcaParameterSet (void) const
 {
@@ -536,6 +542,12 @@ const MuEdcaParameterSet&
 MgtProbeResponseHeader::GetMuEdcaParameterSet (void) const
 {
   return m_muEdcaParameterSet;
+}
+
+Ptr<ReducedNeighborReport>
+MgtProbeResponseHeader::GetReducedNeighborReport (void) const
+{
+  return m_reducedNeighborReport;
 }
 
 TypeId
@@ -577,6 +589,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_heOperation.GetSerializedSize ();
   size += m_muEdcaParameterSet.GetSerializedSize ();
   size += m_ehtCapability.GetSerializedSize ();
+  if (m_reducedNeighborReport != nullptr) size += m_reducedNeighborReport->GetSerializedSize ();
   return size;
 }
 
@@ -618,12 +631,13 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_heOperation.Serialize (i);
   i = m_muEdcaParameterSet.Serialize (i);
   i = m_ehtCapability.Serialize (i);
+  if (m_reducedNeighborReport != nullptr) i = m_reducedNeighborReport->Serialize (i);
 }
 
 uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
+  Buffer::Iterator tmp, i = start;
   m_timestamp = i.ReadLsbtohU64 ();
   m_beaconInterval = i.ReadLsbtohU16 ();
   m_beaconInterval *= 1024;
@@ -643,6 +657,9 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_heOperation.DeserializeIfPresent (i);
   i = m_muEdcaParameterSet.DeserializeIfPresent (i);
   i = m_ehtCapability.DeserializeIfPresent (i);
+  i = (m_reducedNeighborReport = Create<ReducedNeighborReport> ())->DeserializeIfPresent (tmp = i);
+  if (i.GetDistanceFrom (tmp) == 0) m_reducedNeighborReport = nullptr;
+
   return i.GetDistanceFrom (start);
 }
 
