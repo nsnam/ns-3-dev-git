@@ -237,18 +237,13 @@ FrameExchangeManager::RxStartIndication (WifiTxVector txVector, Time psduDuratio
   NS_LOG_FUNCTION (this << "PSDU reception started for " << psduDuration.As (Time::US)
                    << " (txVector: " << txVector << ")");
 
-  if (psduDuration.IsZero ())
-    {
-      // PHY-RXEND immediately follows PHY-RXSTART (e.g. when PPDU has been filtered),
-      // no need to reschedule timeouts (CCA will take over)
-      return;
-    }
-
-  NS_ASSERT (psduDuration.IsStrictlyPositive ());
   NS_ASSERT_MSG (!m_txTimer.IsRunning () || !m_navResetEvent.IsRunning (),
                  "The TX timer and the NAV reset event cannot be both running");
 
-  if (m_txTimer.IsRunning ())
+  // No need to reschedule timeouts if PSDU duration is null. In this case,
+  // PHY-RXEND immediately follows PHY-RXSTART (e.g. when PPDU has been filtered)
+  // and CCA will take over
+  if (m_txTimer.IsRunning () && psduDuration.IsStrictlyPositive ())
     {
       // we are waiting for a response and something arrived
       NS_LOG_DEBUG ("Rescheduling timeout event");
@@ -256,7 +251,8 @@ FrameExchangeManager::RxStartIndication (WifiTxVector txVector, Time psduDuratio
       // PHY has switched to RX, so we can reset the ack timeout
       m_channelAccessManager->NotifyAckTimeoutResetNow ();
     }
-  else if (m_navResetEvent.IsRunning ())
+
+  if (m_navResetEvent.IsRunning ())
     {
       m_navResetEvent.Cancel ();
     }
@@ -973,6 +969,7 @@ FrameExchangeManager::UpdateNav (Ptr<const WifiPsdu> psdu, const WifiTxVector& t
           m_navResetEvent = Simulator::Schedule (navResetDelay, &FrameExchangeManager::NavResetTimeout, this);
         }
     }
+  NS_LOG_DEBUG ("Current NAV=" << m_navEnd);
 
   m_channelAccessManager->NotifyNavStartNow (duration);
 }
@@ -980,6 +977,7 @@ FrameExchangeManager::UpdateNav (Ptr<const WifiPsdu> psdu, const WifiTxVector& t
 void
 FrameExchangeManager::NavResetTimeout (void)
 {
+  NS_LOG_FUNCTION (this);
   m_navEnd = Simulator::Now ();
   m_channelAccessManager->NotifyNavResetNow (Seconds (0));
 }
