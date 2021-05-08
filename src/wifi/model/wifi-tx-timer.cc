@@ -79,6 +79,8 @@ case WAIT_ ## x: \
     FOO (CTS);
     FOO (NORMAL_ACK);
     FOO (BLOCK_ACK);
+    FOO (NORMAL_ACK_AFTER_DL_MU_PPDU);
+    FOO (BLOCK_ACKS_IN_TB_PPDU);
     default:
       NS_ABORT_MSG ("Unknown reason");
     }

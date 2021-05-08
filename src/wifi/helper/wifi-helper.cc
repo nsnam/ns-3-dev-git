@@ -997,6 +997,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("WifiSpectrumSignalParameters", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiTxCurrentModel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiTxParameters", LOG_LEVEL_ALL);
+  LogComponentEnable ("WifiTxTimer", LOG_LEVEL_ALL);
   LogComponentEnable ("YansErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
