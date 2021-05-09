@@ -449,6 +449,8 @@ public:
    */
   bool IsRegisteredMulticastAddress (Ipv6Address address, uint32_t interface) const;
 
+  bool ReachabilityHint (uint32_t ipInterfaceIndex, Ipv6Address address);
+
 protected:
   /**
    * \brief Dispose object.

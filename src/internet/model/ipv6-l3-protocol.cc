@@ -1601,5 +1601,54 @@ bool Ipv6L3Protocol::IsRegisteredMulticastAddress (Ipv6Address address) const
   return true;
 }
 
+bool Ipv6L3Protocol::ReachabilityHint (uint32_t ipInterfaceIndex, Ipv6Address address)
+{
+  if (ipInterfaceIndex >= m_interfaces.size ())
+    {
+      return false;
+    }
+
+  Ptr<NdiscCache> ndiscCache = m_interfaces[ipInterfaceIndex]->GetNdiscCache ();
+  if (!ndiscCache)
+    {
+      return false;
+    }
+
+  NdiscCache::Entry* entry = ndiscCache->Lookup (address);
+  if (!entry || entry->IsIncomplete ())
+    {
+      return false;
+    }
+
+
+  if (entry->IsReachable ())
+    {
+      entry->UpdateReachableTimer ();
+    }
+  else if (entry->IsPermanent ())
+    {
+      return true;
+    }
+  else if (entry->IsProbe ())
+    {
+      // we just confirm the entry's MAC address to get the waiting packets (if any)
+      std::list<NdiscCache::Ipv6PayloadHeaderPair> waiting = entry->MarkReachable (entry->GetMacAddress ());
+      for (std::list<NdiscCache::Ipv6PayloadHeaderPair>::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+        {
+          ndiscCache->GetInterface ()->Send (it->first, it->second, it->second.GetSourceAddress ());
+        }
+      entry->ClearWaitingPacket ();
+      entry->StartReachableTimer ();
+    }
+  else // STALE OR DELAY
+    {
+      entry->MarkReachable ();
+      entry->StartReachableTimer ();
+    }
+
+
+  return true;
+}
+
 } /* namespace ns3 */
 
