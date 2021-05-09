@@ -105,6 +105,7 @@ main (int argc, char *argv[])
 
   NS_LOG_UNCOND("Setting up the Application...");
 
+  // TCP
   uint16_t receiverPort = 5001;
   AddressValue receiverAddress (InetSocketAddress (h1h2_interfaces.GetAddress (1),
                                                    receiverPort));
@@ -126,6 +127,33 @@ main (int argc, char *argv[])
   sourceApp.Stop (Seconds ((double)time));
 
   Simulator::Schedule (Seconds (TRACE_START_TIME), &TraceEstimatedBW, estimatedBWStream);
+
+  // UDP
+  uint16_t port = 10003;
+  AddressValue addr (InetSocketAddress (h1h2_interfaces.GetAddress (1),
+                                                   port));
+  PacketSinkHelper udpReceiverHelper ("ns3::UdpSocketFactory",
+                                   addr.Get());
+
+  ApplicationContainer udpReceiverApp = udpReceiverHelper.Install (h2);
+  udpReceiverApp.Start (Seconds (0.0));
+  udpReceiverApp.Stop (Seconds ((double)time));
+
+  OnOffHelper udpOnOffHelper ("ns3::UdpSocketFactory", Address ());
+  udpOnOffHelper.SetConstantRate (DataRate ("1Mb/s"));
+  udpOnOffHelper.SetAttribute ("Remote", addr);
+
+  ApplicationContainer udpOnOffApp1 = udpOnOffHelper.Install (h1);
+  udpOnOffApp1.Start (Seconds (25.0));
+  udpOnOffApp1.Stop (Seconds (200.0));
+
+  ApplicationContainer udpOnOffApp2 = udpOnOffHelper.Install (h1);
+  udpOnOffApp2.Start (Seconds (50.0));
+  udpOnOffApp2.Stop (Seconds (75.0));
+
+  ApplicationContainer udpOnOffApp3 = udpOnOffHelper.Install (h1);
+  udpOnOffApp3.Start (Seconds (125.0));
+  udpOnOffApp3.Stop (Seconds (175.0));
 
   NS_LOG_UNCOND("Running the Simulation...");
   Simulator::Stop (Seconds ((double)time));
