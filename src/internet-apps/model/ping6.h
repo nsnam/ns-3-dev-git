@@ -29,6 +29,7 @@ namespace ns3
 
 class Packet;
 class Socket;
+class Ipv6L3Protocol;
 
 /**
  * \ingroup internet-apps
@@ -139,7 +140,7 @@ private:
   uint32_t m_size;
 
   /**
-   * \brief Intervall between packets sent.
+   * \brief Interval between packets sent.
    */
   Time m_interval;
 
@@ -147,6 +148,16 @@ private:
    * \brief Local address.
    */
   Ipv6Address m_localAddress;
+
+  /**
+   * \brief IP interface index relative to the local address.
+   */
+  uint32_t m_ipInterfaceIndex;
+
+  /**
+   * \brief IP interface index relative to the local address.
+   */
+  Ptr<Ipv6L3Protocol> m_ipv6Protocol;
 
   /**
    * \brief Peer address.
