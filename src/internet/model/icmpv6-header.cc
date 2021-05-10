@@ -991,7 +991,8 @@ void Icmpv6Echo::Print (std::ostream& os) const
 {
   NS_LOG_FUNCTION (this << &os);
   os << "( type = " << (GetType () == 128 ? "128 (Request)" : "129 (Reply)") << 
-  " code = " << (uint32_t)GetCode () <<
+  " Id = " << (uint32_t)GetId () <<
+  " SeqNo = " << (uint32_t)GetSeq () <<
   " checksum = "  << (uint32_t)GetChecksum () << ")";
 }
 
