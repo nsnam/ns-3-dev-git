@@ -7,8 +7,10 @@
     - pacman -Syu --noconfirm
     - pacman -Sy base-devel python ccache gsl libgcrypt gtk3 boost --noconfirm
     - pacman -Sy git doxygen graphviz imagemagick dia texlive-core texlive-bin texlive-latexextra python-sphinx --noconfirm
-    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
-    - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-7/policy.xml
+    # no policy is a good policy.
+    - mv /etc/ImageMagick-7/policy.xml /etc/ImageMagick-7/policy.xml.bak
+#    - sed -i "s/EPS,PDF,//g" /etc/ImageMagick-7/policy.xml
+#    - sed -i "s/none/read\ |\ write/g" /etc/ImageMagick-7/policy.xml
   image: archlinux
   timeout: 2h
 #  artifacts:
