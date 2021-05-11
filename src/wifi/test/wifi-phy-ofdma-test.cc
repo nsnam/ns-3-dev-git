@@ -53,6 +53,7 @@ NS_LOG_COMPONENT_DEFINE ("WifiPhyOfdmaTest");
 
 static const uint8_t DEFAULT_CHANNEL_NUMBER = 36;
 static const uint32_t DEFAULT_FREQUENCY = 5180; // MHz
+static const WifiPhyBand DEFAULT_WIFI_BAND = WIFI_PHY_BAND_5GHZ;
 static const uint16_t DEFAULT_CHANNEL_WIDTH = 20; // MHz
 static const uint16_t DEFAULT_GUARD_WIDTH = DEFAULT_CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
@@ -3326,7 +3327,6 @@ TestUlOfdmaPowerControl::SetupBa (Address destination)
 void
 TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 {
-#ifdef NOTYET
   NS_ASSERT (!staIds.empty () && staIds.size () <= 2);
 
   //Build MU-BAR trigger frame
@@ -3410,12 +3410,11 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
 
   Time nav = m_apDev->GetPhy ()->GetSifs ();
   uint16_t staId = staIds.front (); //either will do
-  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_FREQUENCY, staId);
+  nav += m_phyAp->CalculateTxDuration (GetBlockAckSize (BlockAckType::COMPRESSED), muBar.GetHeTbTxVector (staId), DEFAULT_WIFI_BAND, staId);
   psdu->SetDuration (nav);
   psdus.insert (std::make_pair (SU_STA_ID, psdu));
 
   m_phyAp->Send (psdus, txVector);
-#endif
 }
 
 void
@@ -3683,7 +3682,7 @@ WifiPhyOfdmaTestSuite::WifiPhyOfdmaTestSuite ()
   AddTestCase (new TestMultipleHeTbPreambles, TestCase::QUICK);
   AddTestCase (new TestUlOfdmaPhyTransmission, TestCase::QUICK);
   AddTestCase (new TestPhyPaddingExclusion, TestCase::QUICK);
-  AddTestCase (new TestUlOfdmaPowerControl, TestCase::QUICK); //FIXME: requires changes at MAC layer
+  AddTestCase (new TestUlOfdmaPowerControl, TestCase::QUICK);
 }
 
 static WifiPhyOfdmaTestSuite wifiPhyOfdmaTestSuite; ///< the test suite
