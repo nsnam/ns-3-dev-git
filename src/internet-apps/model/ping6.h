@@ -23,13 +23,13 @@
 
 #include "ns3/application.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/ipv6-l3-protocol.h"
 
 namespace ns3
 {
 
 class Packet;
 class Socket;
-class Ipv6L3Protocol;
 
 /**
  * \ingroup internet-apps

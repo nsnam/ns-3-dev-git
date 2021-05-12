@@ -26,7 +26,6 @@
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/uinteger.h"
-#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/icmpv6-header.h"
 #include "ns3/ipv6-raw-socket-factory.h"
