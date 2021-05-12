@@ -345,6 +345,18 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
           return;
         }
     }
+  if ((mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS) || (mode.GetModulationClass () == WIFI_MOD_CLASS_HR_DSSS))
+    {
+      state->m_dsssSupported = true;
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+    {
+      state->m_erpOfdmSupported = true;
+    }
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
+    {
+      state->m_ofdmSupported = true;
+    }
   state->m_operationalRateSet.push_back (mode);
 }
 
@@ -1228,6 +1240,9 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_address = address;
   state->m_operationalRateSet.push_back (GetDefaultMode ());
   state->m_operationalMcsSet.push_back (GetDefaultMcs ());
+  state->m_dsssSupported = false;
+  state->m_erpOfdmSupported = false;
+  state->m_ofdmSupported = false;
   state->m_htCapabilities = 0;
   state->m_vhtCapabilities = 0;
   state->m_heCapabilities = 0;
@@ -1797,6 +1812,24 @@ uint8_t
 WifiRemoteStationManager::GetNMcsSupported (Mac48Address address) const
 {
   return static_cast<uint8_t> (LookupState (address)->m_operationalMcsSet.size ());
+}
+
+bool
+WifiRemoteStationManager::GetDsssSupported (const Mac48Address& address) const
+{
+  return (LookupState (address)->m_dsssSupported);
+}
+
+bool
+WifiRemoteStationManager::GetErpOfdmSupported (const Mac48Address& address) const
+{
+  return (LookupState (address)->m_erpOfdmSupported);
+}
+
+bool
+WifiRemoteStationManager::GetOfdmSupported (const Mac48Address& address) const
+{
+  return (LookupState (address)->m_ofdmSupported);
 }
 
 bool

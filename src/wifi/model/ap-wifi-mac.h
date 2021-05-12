@@ -73,23 +73,7 @@ public:
    * \return the interval between two beacon transmissions.
    */
   Time GetBeaconInterval (void) const;
-  /**
-   * Determine whether short slot time should be enabled or not in the BSS.
-   * Typically, true is returned only when there is no non-ERP stations associated
-   * to the AP, and that short slot time is supported by the AP and by all other
-   * ERP stations that are associated to the AP. Otherwise, false is returned.
-   *
-   * \returns whether short slot time should be enabled or not in the BSS.
-   */
-  bool GetShortSlotTimeEnabled (void) const;
-  /**
-   * Determine whether short preamble should be enabled or not in the BSS.
-   * Typically, true is returned only when the AP and all associated
-   * stations support short PHY preamble.
-   *
-   * \returns whether short preamble should be enabled or not in the BSS.
-   */
-  bool GetShortPreambleEnabled (void) const;
+
   /**
    * Determine the VHT operational channel width (in MHz).
    *
@@ -286,6 +270,21 @@ private:
    * \param enable enable or disable beacon generation
    */
   void SetBeaconGeneration (bool enable);
+
+  /**
+   * Update whether short slot time should be enabled or not in the BSS.
+   * Typically, short slot time is enabled only when there is no non-ERP station
+   * associated  to the AP, and that short slot time is supported by the AP and by all
+   * other ERP stations that are associated to the AP. Otherwise, it is disabled.
+   */
+  void UpdateShortSlotTimeEnabled (void);
+  /**
+   * Update whether short preamble should be enabled or not in the BSS.
+   * Typically, short preamble is enabled only when the AP and all associated
+   * stations support short PHY preamble. Otherwise, it is disabled.
+   */
+  void UpdateShortPreambleEnabled (void);
+
   /**
    * Return whether protection for non-ERP stations is used in the BSS.
    *
@@ -311,8 +310,10 @@ private:
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
   //!< Maps MAC addresses of associated stations to their association ID
   std::unordered_map<Mac48Address, uint16_t, WifiAddressHash> m_addressIdMap;
-  std::list<Mac48Address> m_nonErpStations;  //!< List of all non-ERP stations currently associated to the AP
-  std::list<Mac48Address> m_nonHtStations;   //!< List of all non-HT stations currently associated to the AP
+  uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
+  uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
+  bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS
+  bool m_shortPreambleEnabled;               //!< Flag whether short preamble is enabled in the BSS
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
   Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
   //!< store value and timestamp for each Buffer Status Report

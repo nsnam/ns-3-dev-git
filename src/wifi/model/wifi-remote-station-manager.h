@@ -93,10 +93,12 @@ struct WifiRemoteStationState
   WifiModeList m_operationalMcsSet;  //!< operational MCS set
   Mac48Address m_address;            //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info;      //!< remote station info
+  bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
+  bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
+  bool m_ofdmSupported;              //!< Flag if OFDM is supported by the remote station
   Ptr<const HtCapabilities> m_htCapabilities;   //!< remote station HT capabilities
   Ptr<const VhtCapabilities> m_vhtCapabilities; //!< remote station VHT capabilities
   Ptr<const HeCapabilities> m_heCapabilities;   //!< remote station HE capabilities
-
   uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_ness;             //!< Number of extended spatial streams of the remote station
@@ -486,6 +488,33 @@ public:
    * \return the number of MCS supported by the station
    */
   uint8_t GetNMcsSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports DSSS or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if DSSS is supported by the station,
+   *         false otherwise
+   */
+  bool GetDsssSupported (const Mac48Address& address) const;
+  /**
+   * Return whether the station supports ERP OFDM or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if ERP OFDM is supported by the station,
+   *         false otherwise
+   */
+  bool GetErpOfdmSupported (const Mac48Address& address) const;
+  /**
+   * Return whether the station supports OFDM or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if OFDM is supported by the station,
+   *         false otherwise
+   */
+  bool GetOfdmSupported (const Mac48Address& address) const;
   /**
    * Return whether the station supports HT or not.
    *
