@@ -20,43 +20,43 @@
   variables:
     COMPILER: g++
 
-# GCC 5
-weekly-build-gcc-5-debug:
-  extends: .weekly-build-gcc
-  image: gcc:5
-  variables:
-    MODE: debug
-
-weekly-build-gcc-5-release:
-  extends: .weekly-build-gcc
-  image: gcc:5
-  variables:
-    MODE: release
-
-weekly-build-gcc-5-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:5
-  variables:
-    MODE: optimized
-
-# GCC 6
-weekly-build-gcc-6-debug:
-  extends: .weekly-build-gcc
-  image: gcc:6
-  variables:
-    MODE: debug
-
-weekly-build-gcc-6-release:
-  extends: .weekly-build-gcc
-  image: gcc:6
-  variables:
-    MODE: release
-
-weekly-build-gcc-6-optimized:
-  extends: .weekly-build-gcc
-  image: gcc:6
-  variables:
-    MODE: optimized
+# # GCC 5
+# weekly-build-gcc-5-debug:
+#   extends: .weekly-build-gcc
+#   image: gcc:5
+#   variables:
+#     MODE: debug
+# 
+# weekly-build-gcc-5-release:
+#   extends: .weekly-build-gcc
+#   image: gcc:5
+#   variables:
+#     MODE: release
+# 
+# weekly-build-gcc-5-optimized:
+#   extends: .weekly-build-gcc
+#   image: gcc:5
+#   variables:
+#     MODE: optimized
+# 
+# # GCC 6
+# weekly-build-gcc-6-debug:
+#   extends: .weekly-build-gcc
+#   image: gcc:6
+#   variables:
+#     MODE: debug
+# 
+# weekly-build-gcc-6-release:
+#   extends: .weekly-build-gcc
+#   image: gcc:6
+#   variables:
+#     MODE: release
+# 
+# weekly-build-gcc-6-optimized:
+#   extends: .weekly-build-gcc
+#   image: gcc:6
+#   variables:
+#     MODE: optimized
 
 # GCC 7
 weekly-build-gcc-7-debug:

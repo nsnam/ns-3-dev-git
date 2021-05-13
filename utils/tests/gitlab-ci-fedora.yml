@@ -74,3 +74,22 @@ weekly-build-fedora-33-optimized:
   image: fedora:33
   variables:
     MODE: optimized
+
+# Fedora 34
+weekly-build-fedora-34-debug:
+  extends: .weekly-build-fedora
+  image: fedora:34
+  variables:
+    MODE: debug
+
+weekly-build-fedora-34-release:
+  extends: .weekly-build-fedora
+  image: fedora:34
+  variables:
+    MODE: release
+
+weekly-build-fedora-34-optimized:
+  extends: .weekly-build-fedora
+  image: fedora:34
+  variables:
+    MODE: optimized
