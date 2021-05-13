@@ -1107,6 +1107,15 @@ void Ipv6Prefix::GetBytes (uint8_t buf[16]) const
   memcpy (buf, m_prefix, 16);
 }
 
+Ipv6Address Ipv6Prefix::ConvertToIpv6Address () const
+{
+  uint8_t prefixBytes[16];
+  memcpy (prefixBytes, m_prefix, 16);
+
+  Ipv6Address convertedPrefix = Ipv6Address (prefixBytes);
+  return convertedPrefix;
+}
+
 uint8_t Ipv6Prefix::GetPrefixLength () const
 {
   NS_LOG_FUNCTION (this);
