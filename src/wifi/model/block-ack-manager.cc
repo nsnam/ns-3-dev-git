@@ -25,7 +25,6 @@
 #include "ctrl-headers.h"
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
-#include "mac-tx-middle.h"
 #include "qos-utils.h"
 #include "wifi-tx-vector.h"
 
@@ -917,13 +916,6 @@ BlockAckManager::SetUnblockDestinationCallback (Callback<void, Mac48Address, uin
 {
   NS_LOG_FUNCTION (this << &callback);
   m_unblockPackets = callback;
-}
-
-void
-BlockAckManager::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
-{
-  NS_LOG_FUNCTION (this << txMiddle);
-  m_txMiddle = txMiddle;
 }
 
 void

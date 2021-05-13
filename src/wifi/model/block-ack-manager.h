@@ -37,7 +37,6 @@ class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
 class CtrlBAckRequestHeader;
-class MacTxMiddle;
 class WifiMacQueue;
 class WifiMode;
 class Packet;
@@ -291,11 +290,6 @@ public:
    * \param queue The WifiMacQueue object.
    */
   void SetQueue (const Ptr<WifiMacQueue> queue);
-  /**
-   * Set the MacTxMiddle
-   * \param txMiddle the MacTxMiddle
-   */
-  void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
   /**
    * Set block ack inactivity callback
@@ -531,8 +525,6 @@ private:
   std::list<Bar> m_bars; ///< list of BARs
 
   uint8_t m_blockAckThreshold; ///< block ack threshold
-  Ptr<MacTxMiddle> m_txMiddle; ///< the MacTxMiddle
-  Mac48Address m_address;      ///< address
   Ptr<WifiMacQueue> m_queue;   ///< queue
   Callback<void, Mac48Address, uint8_t, bool> m_blockAckInactivityTimeout; ///< BlockAck inactivity timeout callback
   Callback<void, Mac48Address, uint8_t> m_blockPackets;   ///< block packets callback

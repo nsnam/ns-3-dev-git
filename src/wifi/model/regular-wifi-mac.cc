@@ -477,7 +477,6 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   edca->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
                                               &m_droppedMpduCallback));
   edca->SetAccessCategory (ac);
-  edca->CompleteConfig ();
 
   m_edca.insert (std::make_pair (ac, edca));
 }

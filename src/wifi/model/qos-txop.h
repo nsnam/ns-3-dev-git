@@ -228,11 +228,6 @@ public:
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
 
   /**
-   * Complete block ack configuration.
-   */
-  void CompleteConfig (void);
-
-  /**
    * Set threshold for block ack mechanism. If number of packets in the
    * queue reaches the threshold, block ack mechanism is used.
    *

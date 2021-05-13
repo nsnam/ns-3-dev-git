@@ -682,13 +682,6 @@ QosTxop::CompleteMpduTx (Ptr<WifiMacQueueItem> mpdu)
 }
 
 void
-QosTxop::CompleteConfig (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_baManager->SetTxMiddle (m_txMiddle);
-}
-
-void
 QosTxop::SetBlockAckThreshold (uint8_t threshold)
 {
   NS_LOG_FUNCTION (this << +threshold);
