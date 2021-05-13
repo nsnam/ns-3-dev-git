@@ -343,6 +343,12 @@ public:
      * \param ipv6Address IPv6 address
      */
     void SetIpv6Address (Ipv6Address ipv6Address);
+    
+    /**
+     * \brief Get the IPv6 address.
+     * \returns The IPv6 address
+     */
+    Ipv6Address GetIpv6Address (void) const;
 
     /**
      * \brief Print this entry to the given output stream.

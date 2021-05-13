@@ -409,6 +409,12 @@ void NdiscCache::Entry::SetIpv6Address (Ipv6Address ipv6Address)
   m_ipv6Address = ipv6Address;
 }
 
+Ipv6Address NdiscCache::Entry::GetIpv6Address (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_ipv6Address;
+}
+
 Time NdiscCache::Entry::GetLastReachabilityConfirmation () const
 {
   NS_LOG_FUNCTION (this);
