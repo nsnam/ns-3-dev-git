@@ -32,7 +32,6 @@
 
 namespace ns3 {
 
-class WifiRemoteStationManager;
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class CtrlBAckResponseHeader;
@@ -91,12 +90,6 @@ public:
   ~BlockAckManager ();
 
   /**
-   * Set up WifiRemoteStationManager associated with this BlockAckManager.
-   *
-   * \param manager WifiRemoteStationManager associated with this BlockAckManager
-   */
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
-  /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
@@ -121,11 +114,12 @@ public:
   /**
    * \param reqHdr Relative Add block ack request (action frame).
    * \param recipient Address of peer station involved in block ack mechanism.
+   * \param htSupported Whether both originator and recipient support HT
    *
    * Creates a new block ack agreement in pending state. When a ADDBA response
    * with a successful status code is received, the relative agreement becomes established.
    */
-  void CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient);
+  void CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient, bool htSupported = true);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid traffic ID of transmitted packet.
@@ -194,11 +188,10 @@ public:
    * \param blockAck The received BlockAck frame.
    * \param recipient Sender of BlockAck frame.
    * \param tids the set of TIDs the acknowledged MPDUs belong to
-   * \param rxSnr received SNR of the BlockAck frame itself
-   * \param dataSnr data SNR reported by remote station
-   * \param dataTxVector the TXVECTOR used to send the Data
    * \param index the index of the Per AID TID Info subfield, in case of Multi-STA
    *              Block Ack, or 0, otherwise
+   * \return a pair of values indicating the number of successfully received MPDUs
+   *         and the number of failed MPDUs
    *
    * Invoked upon receipt of a BlockAck frame. Typically, this function, is called
    * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
@@ -207,9 +200,9 @@ public:
    * Note that <i>tids</i> is only used if <i>blockAck</i> is a Multi-STA Block Ack
    * using All-ack context.
    */
-  void NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
-                          const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
-                          const WifiTxVector& dataTxVector, size_t index = 0);
+  std::pair<uint16_t,uint16_t> NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck,
+                                                  Mac48Address recipient, const std::set<uint8_t>& tids,
+                                                  size_t index = 0);
   /**
    * \param recipient Sender of the expected BlockAck frame.
    * \param tid Traffic ID.
@@ -534,7 +527,6 @@ private:
   Callback<void, Mac48Address, uint8_t> m_unblockPackets; ///< unblock packets callback
   TxOk m_txOkCallback;                                    ///< transmit OK callback
   TxFailed m_txFailedCallback;                            ///< transmit failed callback
-  Ptr<WifiRemoteStationManager> m_stationManager;         ///< the station manager
 
   /**
    * The trace source fired when a state transition occurred.

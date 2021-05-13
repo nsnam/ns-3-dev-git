@@ -1428,8 +1428,10 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
           CtrlBAckResponseHeader blockAck;
           mpdu->GetPacket ()->PeekHeader (blockAck);
           uint8_t tid = blockAck.GetTidInfo ();
-          GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (), {tid}, rxSignalInfo.snr,
-                                                 tag.Get (), m_txParams.m_txVector);
+          std::pair<uint16_t,uint16_t> ret = GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (),
+                                                                                    {tid});
+          m_mac->GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first, ret.second,
+                                                                      rxSignalInfo.snr, tag.Get (), m_txParams.m_txVector);
 
           // remove the sender from the set of stations that are expected to send a BlockAck
           if (m_staExpectTbPpduFrom.erase (sender) == 0)
@@ -1497,9 +1499,12 @@ HeFrameExchangeManager::ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rx
                       tid = *tids.begin ();
                     }
 
-                  GetBaManager (tid)->NotifyGotBlockAck (blockAck, hdr.GetAddr2 (), {tid},
-                                                         rxSignalInfo.snr, tag.Get (staId),
-                                                         m_txParams.m_txVector, index);
+                  std::pair<uint16_t,uint16_t> ret = GetBaManager (tid)->NotifyGotBlockAck (blockAck,
+                                                                                            hdr.GetAddr2 (),
+                                                                                            {tid}, index);
+                  m_mac->GetWifiRemoteStationManager ()->ReportAmpduTxStatus (hdr.GetAddr2 (), ret.first,
+                                                                              ret.second, rxSignalInfo.snr,
+                                                                              tag.Get (staId),  m_txParams.m_txVector);
                 }
             }
 

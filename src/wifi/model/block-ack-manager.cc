@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "block-ack-manager.h"
-#include "wifi-remote-station-manager.h"
+#include "wifi-utils.h"
 #include "ctrl-headers.h"
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
@@ -82,7 +82,6 @@ BlockAckManager::DoDispose ()
   m_retryPackets = nullptr;
   m_bars.clear ();
   m_queue = nullptr;
-  m_stationManager = nullptr;
 }
 
 bool
@@ -120,9 +119,9 @@ BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
 }
 
 void
-BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient)
+BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Address recipient, bool htSupported)
 {
-  NS_LOG_FUNCTION (this << reqHdr << recipient);
+  NS_LOG_FUNCTION (this << reqHdr << recipient << htSupported);
   std::pair<Mac48Address, uint8_t> key (recipient, reqHdr->GetTid ());
   OriginatorBlockAckAgreement agreement (recipient, reqHdr->GetTid ());
   agreement.SetStartingSequence (reqHdr->GetStartingSequence ());
@@ -131,7 +130,7 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   agreement.SetBufferSize (reqHdr->GetBufferSize());
   agreement.SetTimeout (reqHdr->GetTimeout ());
   agreement.SetAmsduSupport (reqHdr->IsAmsduSupported ());
-  agreement.SetHtSupported (m_stationManager->GetHtSupported () && m_stationManager->GetHtSupported (recipient));
+  agreement.SetHtSupported (htSupported);
   if (reqHdr->IsImmediateBlockAck ())
     {
       agreement.SetImmediateBlockAck ();
@@ -394,13 +393,6 @@ BlockAckManager::SetBlockAckThreshold (uint8_t nPackets)
 }
 
 void
-BlockAckManager::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
-{
-  NS_LOG_FUNCTION (this << manager);
-  m_stationManager = manager;
-}
-
-void
 BlockAckManager::NotifyGotAck (Ptr<const WifiMacQueueItem> mpdu)
 {
   NS_LOG_FUNCTION (this << *mpdu);
@@ -462,12 +454,14 @@ BlockAckManager::NotifyMissedAck (Ptr<WifiMacQueueItem> mpdu)
   InsertInRetryQueue (mpdu);
 }
 
-void
+std::pair<uint16_t,uint16_t>
 BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac48Address recipient,
-                                    const std::set<uint8_t>& tids, double rxSnr, double dataSnr,
-                                    const WifiTxVector& dataTxVector, size_t index)
+                                    const std::set<uint8_t>& tids, size_t index)
 {
-  NS_LOG_FUNCTION (this << blockAck << recipient << rxSnr << dataSnr << dataTxVector << index);
+  NS_LOG_FUNCTION (this << blockAck << recipient << index);
+  uint16_t nSuccessfulMpdus = 0;
+  uint16_t nFailedMpdus = 0;
+
   if (!blockAck.IsMultiTid ())
     {
       uint8_t tid = blockAck.GetTidInfo (index);
@@ -481,8 +475,6 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
       if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
         {
           bool foundFirstLost = false;
-          uint16_t nSuccessfulMpdus = 0;
-          uint16_t nFailedMpdus = 0;
           AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
           PacketQueueI queueEnd = it->second.second.end ();
 
@@ -558,7 +550,6 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
                   queueIt = it->second.second.erase (queueIt);
                 }
             }
-          m_stationManager->ReportAmpduTxStatus (recipient, nSuccessfulMpdus, nFailedMpdus, rxSnr, dataSnr, dataTxVector);
         }
     }
   else
@@ -566,6 +557,7 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader& blockAck, Mac4
       //NOT SUPPORTED FOR NOW
       NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
     }
+  return {nSuccessfulMpdus, nFailedMpdus};
 }
   
 void

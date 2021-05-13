@@ -203,14 +203,6 @@ QosTxop::ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued)
   m_baManager->ScheduleBar (bar, skipIfNoDataQueued);
 }
 
-void
-QosTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
-{
-  Txop::SetWifiRemoteStationManager (remoteManager);
-  NS_LOG_FUNCTION (this << remoteManager);
-  m_baManager->SetWifiRemoteStationManager (m_stationManager);
-}
-
 bool
 QosTxop::UseExplicitBarAfterMissedBlockAck (void) const
 {
