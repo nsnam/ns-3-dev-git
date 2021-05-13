@@ -22,6 +22,7 @@
 #include "log.h"
 #include <algorithm>  // find_if
 #include <sstream>
+#include <numeric> // std::accumulate
 
 /**
  * \file
@@ -112,7 +113,17 @@ EnumChecker::GetValue (const std::string name) const
   auto it = std::find_if (m_valueSet.begin (), m_valueSet.end (),
                           [name] (Value v) { return v.second == name; } );
   NS_ASSERT_MSG (it != m_valueSet.end (),
-                 "name " << name << " not a valid enum value. Missed entry in MakeEnumChecker?");
+                 "name " << name << " is not a valid enum value. Missed entry in MakeEnumChecker?\nAvailable values: " <<
+                 std::accumulate (m_valueSet.begin (), m_valueSet.end (), std::string{}, [](std::string a, Value v) {
+                   if (a.empty ())
+                     {
+                       return v.second;
+                     }
+                   else
+                     {
+                       return std::move (a) + ", " + v.second;
+                     }
+                 }));
   return it->first;
 }
 bool
