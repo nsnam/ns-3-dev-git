@@ -57,7 +57,6 @@ public:
   ApWifiMac ();
   virtual ~ApWifiMac ();
 
-  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
   void SetLinkUpCallback (Callback<void> linkUp) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;

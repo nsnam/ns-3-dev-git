@@ -104,6 +104,7 @@ ApWifiMac::ApWifiMac ()
 {
   NS_LOG_FUNCTION (this);
   m_beaconTxop = CreateObject<Txop> ();
+  m_beaconTxop->SetWifiMac (this);
   m_beaconTxop->SetAifsn (1);
   m_beaconTxop->SetMinCw (0);
   m_beaconTxop->SetMaxCw (0);
@@ -161,14 +162,6 @@ ApWifiMac::GetBeaconInterval (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_beaconInterval;
-}
-
-void
-ApWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
-{
-  NS_LOG_FUNCTION (this << stationManager);
-  m_beaconTxop->SetWifiRemoteStationManager (stationManager);
-  RegularWifiMac::SetWifiRemoteStationManager (stationManager);
 }
 
 void

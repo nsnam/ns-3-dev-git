@@ -25,14 +25,13 @@
 #include "ns3/socket.h"
 #include "txop.h"
 #include "channel-access-manager.h"
-#include "wifi-mac.h"
+#include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "wifi-remote-station-manager.h"
 #include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_stationManager != 0 && m_stationManager->GetMac () != 0) { std::clog << "[mac=" << m_stationManager->GetMac ()->GetAddress () << "] "; }
+#define NS_LOG_APPEND_CONTEXT if (m_mac != 0) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -108,7 +107,7 @@ Txop::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue = 0;
-  m_stationManager = 0;
+  m_mac = 0;
   m_rng = 0;
   m_txMiddle = 0;
   m_channelAccessManager = 0;
@@ -129,10 +128,10 @@ void Txop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 }
 
 void
-Txop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
+Txop::SetWifiMac (const Ptr<RegularWifiMac> mac)
 {
-  NS_LOG_FUNCTION (this << remoteManager);
-  m_stationManager = remoteManager;
+  NS_LOG_FUNCTION (this << mac);
+  m_mac = mac;
 }
 
 void

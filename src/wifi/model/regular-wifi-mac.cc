@@ -59,6 +59,7 @@ RegularWifiMac::RegularWifiMac ()
 
   m_txop = CreateObject<Txop> ();
   m_txop->SetChannelAccessManager (m_channelAccessManager);
+  m_txop->SetWifiMac (this);
   m_txop->SetTxMiddle (m_txMiddle);
   m_txop->SetDroppedMpduCallback (MakeCallback (&DroppedMpduTracedCallback::operator(),
                                                 &m_droppedMpduCallback));
@@ -182,11 +183,6 @@ RegularWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager>
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  m_txop->SetWifiRemoteStationManager (stationManager);
-  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
-    {
-      i->second->SetWifiRemoteStationManager (stationManager);
-    }
 }
 
 Ptr<WifiRemoteStationManager>
@@ -469,6 +465,7 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
 
   Ptr<QosTxop> edca = CreateObject<QosTxop> ();
   edca->SetChannelAccessManager (m_channelAccessManager);
+  edca->SetWifiMac (this);
   edca->SetTxMiddle (m_txMiddle);
   edca->GetBaManager ()->SetTxOkCallback (MakeCallback (&MpduTracedCallback::operator(),
                                                         &m_ackedMpduCallback));

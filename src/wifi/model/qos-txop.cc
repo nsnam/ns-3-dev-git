@@ -32,7 +32,6 @@
 #include "wifi-mac-trailer.h"
 #include "wifi-mac-queue.h"
 #include "qos-blocked-destinations.h"
-#include "wifi-remote-station-manager.h"
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
 #include "ctrl-headers.h"
@@ -42,7 +41,7 @@
 #include "wifi-tx-parameters.h"
 
 #undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_stationManager != 0 && m_stationManager->GetMac () != 0) { std::clog << "[mac=" << m_stationManager->GetMac ()->GetAddress () << "] "; }
+#define NS_LOG_APPEND_CONTEXT if (m_mac != 0) { std::clog << "[mac=" << m_mac->GetAddress () << "] "; }
 
 namespace ns3 {
 
@@ -183,7 +182,7 @@ QosTxop::PrepareBlockAckRequest (Mac48Address recipient, uint8_t tid) const
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_BACKREQ);
   hdr.SetAddr1 (recipient);
-  hdr.SetAddr2 (m_stationManager->GetMac ()->GetAddress ());
+  hdr.SetAddr2 (m_mac->GetAddress ());
   hdr.SetDsNotTo ();
   hdr.SetDsNotFrom ();
   hdr.SetNoRetry ();
@@ -415,7 +414,7 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
                                 GetBaBufferSize (recipient, tid)));
 
       // try A-MSDU aggregation
-      if (m_stationManager->GetHtSupported () && !recipient.IsBroadcast ()
+      if (m_mac->GetHtSupported () && !recipient.IsBroadcast ()
           && !peekedItem->GetHeader ().IsRetry () && !peekedItem->IsFragment ())
         {
           Ptr<HtFrameExchangeManager> htFem = StaticCast<HtFrameExchangeManager> (m_qosFem);

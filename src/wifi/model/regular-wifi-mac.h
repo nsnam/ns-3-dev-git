@@ -125,6 +125,43 @@ public:
   Ptr<QosTxop> GetQosTxop (uint8_t tid) const;
 
   /**
+   * Return whether the device supports QoS.
+   *
+   * \return true if QoS is supported, false otherwise
+   */
+  bool GetQosSupported () const;
+  /**
+   * Return whether the device supports ERP.
+   *
+   * \return true if ERP is supported, false otherwise
+   */
+  bool GetErpSupported () const;
+  /**
+   * Return whether the device supports DSSS.
+   *
+   * \return true if DSSS is supported, false otherwise
+   */
+  bool GetDsssSupported () const;
+  /**
+   * Return whether the device supports HT.
+   *
+   * \return true if HT is supported, false otherwise
+   */
+  bool GetHtSupported () const;
+  /**
+   * Return whether the device supports VHT.
+   *
+   * \return true if VHT is supported, false otherwise
+   */
+  bool GetVhtSupported () const;
+  /**
+   * Return whether the device supports HE.
+   *
+   * \return true if HE is supported, false otherwise
+   */
+  bool GetHeSupported () const;
+
+  /**
    * Return the extended capabilities of the device.
    *
    * \return the extended capabilities that we support
@@ -267,12 +304,6 @@ protected:
    * \param enable whether QoS is supported
    */
   virtual void SetQosSupported (bool enable);
-  /**
-   * Return whether the device supports QoS.
-   *
-   * \return true if QoS is supported, false otherwise
-   */
-  bool GetQosSupported () const;
 
   /**
    * Create a Frame Exchange Manager depending on the supported version
@@ -281,31 +312,11 @@ protected:
   void SetupFrameExchangeManager (void);
 
   /**
-   * Return whether the device supports HT.
-   *
-   * \return true if HT is supported, false otherwise
-   */
-  bool GetHtSupported () const;
-
-  /**
-   * Return whether the device supports VHT.
-   *
-   * \return true if VHT is supported, false otherwise
-   */
-  bool GetVhtSupported () const;
-
-  /**
    * Enable or disable ERP support for the device.
    *
    * \param enable whether ERP is supported
    */
   void SetErpSupported (bool enable);
-  /**
-   * Return whether the device supports ERP.
-   *
-   * \return true if ERP is supported, false otherwise
-   */
-  bool GetErpSupported () const;
 
   /**
    * Enable or disable DSSS support for the device.
@@ -313,19 +324,6 @@ protected:
    * \param enable whether DSSS is supported
    */
   void SetDsssSupported (bool enable);
-  /**
-   * Return whether the device supports DSSS.
-   *
-   * \return true if DSSS is supported, false otherwise
-   */
-  bool GetDsssSupported () const;
-
-  /**
-   * Return whether the device supports HE.
-   *
-   * \return true if HE is supported, false otherwise
-   */
-  bool GetHeSupported () const;
 
 private:
   /// type conversion operator
