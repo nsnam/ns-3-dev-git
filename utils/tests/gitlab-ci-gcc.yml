@@ -133,4 +133,22 @@ weekly-build-gcc-10-optimized:
   image: gcc:10
   variables:
     MODE: optimized
-    
+
+# GCC 11
+weekly-build-gcc-11-debug:
+  extends: .weekly-build-gcc
+  image: gcc:11
+  variables:
+    MODE: debug
+
+weekly-build-gcc-11-release:
+  extends: .weekly-build-gcc
+  image: gcc:11
+  variables:
+    MODE: release
+
+weekly-build-gcc-11-optimized:
+  extends: .weekly-build-gcc
+  image: gcc:11
+  variables:
+    MODE: optimized
