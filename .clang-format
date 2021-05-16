@@ -27,6 +27,7 @@ BraceWrapping:
   AfterStruct: true
   IndentBraces: true
   BeforeElse: true
+  BeforeCatch: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
 ColumnLimit: 100
