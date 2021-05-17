@@ -138,8 +138,8 @@ public:
   virtual ~OfdmaSpectrumWifiPhy ();
 
   // Inherited
-  virtual void DoInitialize (void) override;
-  virtual void DoDispose (void) override;
+  void DoInitialize (void) override;
+  void DoDispose (void) override;
 
   using WifiPhy::Reset;
 
@@ -308,9 +308,9 @@ public:
   virtual ~TestDlOfdmaPhyTransmission ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Receive success function for STA 1
@@ -965,9 +965,9 @@ public:
   virtual ~TestUlOfdmaPpduUid ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Transmitted PPDU information function for AP
@@ -1345,9 +1345,9 @@ public:
   virtual ~TestMultipleHeTbPreambles ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Receive HE TB PPDU function.
@@ -1657,9 +1657,9 @@ public:
   virtual ~TestUlOfdmaPhyTransmission ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Get TXVECTOR for HE TB PPDU.
@@ -2807,9 +2807,9 @@ public:
   virtual ~TestPhyPaddingExclusion ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Send HE TB PPDU function
@@ -3226,9 +3226,9 @@ public:
   virtual ~TestUlOfdmaPowerControl ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Send a MU BAR through the AP to the STAs listed in the provided vector.

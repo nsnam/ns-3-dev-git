@@ -186,7 +186,7 @@ private:
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiPhyHelper.
    */
-  virtual Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const override;
+  Ptr<WifiPhy> Create (Ptr<Node> node, Ptr<NetDevice> device) const override;
 
   Ptr<YansWifiChannel> m_channel; ///< YANS wifi channel
 };

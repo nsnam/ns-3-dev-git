@@ -84,7 +84,7 @@ public:
 
 
 protected:
-  virtual void DoDispose (void) override;
+  void DoDispose (void) override;
 
   Ptr<WifiNetDevice> m_device; ///< Pointer to the WifiNetDevice
   double m_obssPdLevel;        ///< Current OBSS PD level (dBm)

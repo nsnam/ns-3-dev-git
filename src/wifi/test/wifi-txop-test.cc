@@ -79,7 +79,7 @@ public:
   void CheckResults (void);
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /// Information about transmitted frames
   struct FrameInfo

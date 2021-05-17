@@ -58,7 +58,7 @@ public:
 
   // Implementation of pure virtual method.
   void StartTx (Ptr<WifiPpdu> ppdu) override;
-  virtual Ptr<Channel> GetChannel (void) const override;
+  Ptr<Channel> GetChannel (void) const override;
   uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const override;
   std::tuple<double, double, double> GetTxMaskRejectionParams (void) const override;
 
@@ -71,7 +71,7 @@ public:
 
 protected:
   // Inherited
-  virtual void DoDispose (void) override;
+  void DoDispose (void) override;
 
 
 private:

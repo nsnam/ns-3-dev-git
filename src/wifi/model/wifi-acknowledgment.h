@@ -131,7 +131,7 @@ struct WifiNoAck : public WifiAcknowledgment
   WifiNoAck ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 };
@@ -147,7 +147,7 @@ struct WifiNormalAck : public WifiAcknowledgment
   WifiNormalAck ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -165,7 +165,7 @@ struct WifiBlockAck : public WifiAcknowledgment
   WifiBlockAck ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -184,7 +184,7 @@ struct WifiBarBlockAck : public WifiAcknowledgment
   WifiBarBlockAck ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -207,7 +207,7 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
   WifiDlMuBarBaSequence ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -252,7 +252,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
   WifiDlMuTfMuBar ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -284,7 +284,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
   WifiDlMuAggregateTf ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -314,7 +314,7 @@ struct WifiUlMuMultiStaBa : public WifiAcknowledgment
   WifiUlMuMultiStaBa ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
@@ -340,7 +340,7 @@ struct WifiAckAfterTbPpdu : public WifiAcknowledgment
   WifiAckAfterTbPpdu ();
 
   // Overridden from WifiAcknowledgment
-  virtual std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
+  std::unique_ptr<WifiAcknowledgment> Copy (void) const override;
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 };

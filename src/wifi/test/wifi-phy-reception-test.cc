@@ -61,8 +61,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithoutFrameCapture ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -87,7 +87,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -426,8 +426,8 @@ public:
   virtual ~TestThresholdPreambleDetectionWithFrameCapture ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -452,7 +452,7 @@ protected:
   uint32_t m_countRxFailure; ///< count RX failure
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -931,11 +931,11 @@ public:
   virtual ~TestSimpleFrameCaptureModel ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Reset function
@@ -1184,8 +1184,8 @@ public:
   virtual ~TestPhyHeadersReception ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Send packet function
@@ -1194,7 +1194,7 @@ protected:
   void SendPacket (double rxPowerDbm);
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Schedule now to check  the PHY state
@@ -1436,11 +1436,11 @@ public:
   virtual ~TestAmpduReception ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * RX success function

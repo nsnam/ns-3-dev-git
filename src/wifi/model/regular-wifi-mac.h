@@ -68,12 +68,12 @@ public:
   Ssid GetSsid (void) const override;
   Mac48Address GetAddress (void) const override;
   Mac48Address GetBssid (void) const override;
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
-  virtual bool SupportsSendFrom (void) const override;
-  virtual void SetWifiPhy (const Ptr<WifiPhy> phy) override;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to, Mac48Address from) override;
+  bool SupportsSendFrom (void) const override;
+  void SetWifiPhy (const Ptr<WifiPhy> phy) override;
   Ptr<WifiPhy> GetWifiPhy (void) const override;
   void ResetWifiPhy (void) override;
-  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
   void ConfigureStandard (WifiStandard standard) override;
   TypeOfStation GetTypeOfStation (void) const override;
   void SetForwardUpCallback (ForwardUpCallback upCallback) override;
@@ -82,7 +82,7 @@ public:
   Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const override;
 
   // Should be implemented by child classes
-  virtual void Enqueue (Ptr<Packet> packet, Mac48Address to) override = 0;
+  void Enqueue (Ptr<Packet> packet, Mac48Address to) override = 0;
 
   /**
    * Get the Frame Exchange Manager
@@ -150,8 +150,8 @@ public:
   HeCapabilities GetHeCapabilities (void) const;
 
 protected:
-  virtual void DoInitialize () override;
-  virtual void DoDispose () override;
+  void DoInitialize () override;
+  void DoDispose () override;
   void SetTypeOfStation (TypeOfStation type) override;
 
   Ptr<MacRxMiddle> m_rxMiddle;                      //!< RX middle (defragmentation etc.)

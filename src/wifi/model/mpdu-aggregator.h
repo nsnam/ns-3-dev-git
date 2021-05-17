@@ -154,7 +154,7 @@ public:
   static AmpduSubframeHeader GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle);
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
 private:
   Ptr<RegularWifiMac> m_mac;   //!< the MAC of this station

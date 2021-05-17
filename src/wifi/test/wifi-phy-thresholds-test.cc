@@ -116,8 +116,8 @@ protected:
   uint32_t m_ccabusyStateCount; ///< count number of PHY state change to CCA_BUSY state
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
 };
 
 WifiPhyThresholdsTest::WifiPhyThresholdsTest (std::string test_name)

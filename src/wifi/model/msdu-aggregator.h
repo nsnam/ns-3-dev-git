@@ -140,7 +140,7 @@ public:
   static uint8_t CalculatePadding (uint16_t amsduSize);
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
 private:
   Ptr<RegularWifiMac> m_mac;            //!< the MAC of this station

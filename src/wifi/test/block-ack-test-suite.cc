@@ -82,7 +82,7 @@ public:
   PacketBufferingCaseA ();
   virtual ~PacketBufferingCaseA ();
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
@@ -179,7 +179,7 @@ public:
   PacketBufferingCaseB ();
   virtual ~PacketBufferingCaseB ();
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
   std::list<uint16_t> m_expectedBuffer; ///< expected test buffer
 };
 
@@ -265,7 +265,7 @@ class OriginatorBlockAckWindowTest : public TestCase
 public:
   OriginatorBlockAckWindowTest ();
 private:
-  virtual void DoRun () override;
+  void DoRun (void) override;
 };
 
 OriginatorBlockAckWindowTest::OriginatorBlockAckWindowTest ()
@@ -560,7 +560,7 @@ class CtrlBAckResponseHeaderTest : public TestCase
 public:
   CtrlBAckResponseHeaderTest ();
 private:
-  virtual void DoRun () override;
+  void DoRun (void) override;
   CtrlBAckResponseHeader m_blockAckHdr; ///< block ack header
 };
 
@@ -660,7 +660,7 @@ public:
   BlockAckRecipientBufferTest (uint16_t ssn);
   virtual ~BlockAckRecipientBufferTest ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Keep track of MPDUs that are forwarded up.
@@ -876,7 +876,7 @@ class MultiStaCtrlBAckResponseHeaderTest : public TestCase
 public:
   MultiStaCtrlBAckResponseHeaderTest ();
 private:
-  virtual void DoRun ();
+  virtual void DoRun (void);
 };
 
 MultiStaCtrlBAckResponseHeaderTest::MultiStaCtrlBAckResponseHeaderTest ()
@@ -1362,7 +1362,7 @@ public:
   BlockAckAggregationDisabledTest (bool txop);
   virtual ~BlockAckAggregationDisabledTest ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:

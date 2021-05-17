@@ -83,23 +83,27 @@ public:
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   WifiMode GetSigAMode (void) const override;
   WifiMode GetSigBMode (const WifiTxVector& txVector) const override;
-  virtual const PpduFormats & GetPpduFormats (void) const override;
+  const PpduFormats & GetPpduFormats (void) const override;
   Time GetLSigDuration (WifiPreamble preamble) const override;
-  virtual Time GetTrainingDuration (const WifiTxVector& txVector,
-                                    uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
+  Time GetTrainingDuration (const WifiTxVector& txVector,
+                            uint8_t nDataLtf,
+                            uint8_t nExtensionLtf = 0) const override;
   Time GetSigADuration (WifiPreamble preamble) const override;
   Time GetSigBDuration (const WifiTxVector& txVector) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus,
+                           const WifiTxVector& txVector,
+                           Time ppduDuration) override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu,
+                             RxPowerWattPerChannelBand rxPowersW,
                              Time rxDuration) override;
   void CancelAllEvents (void) override;
-  virtual uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
+  uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<WifiPpdu> ppdu) override;
   uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
-  virtual bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const override;
+  bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const override;
 
   /**
    * \return the BSS color of this PHY.
@@ -371,14 +375,16 @@ protected:
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
   PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW) override;
-  virtual bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
-  virtual void DoStartReceivePayload (Ptr<Event> event) override;
+  bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
+  void DoStartReceivePayload (Ptr<Event> event) override;
   std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const override;
   void DoEndReceivePayload (Ptr<const WifiPpdu> ppdu) override;
   void DoResetReceive (Ptr<Event> event) override;
   void DoAbortCurrentReception (WifiPhyRxfailureReason reason) override;
   uint64_t ObtainNextUid (const WifiTxVector& txVector) override;
-  virtual Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  uint32_t GetMaxPsduSize (void) const override;
+  WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
 
   /**
    * Start receiving the PSDU (i.e. the first symbol of the PSDU has arrived) of an UL-OFDMA transmission.
@@ -408,27 +414,18 @@ protected:
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
-  /**
-   * Get the maximum PSDU size in bytes (see Table 27-55 HE PHY characteristics
-   * of IEEE 802.11ax D5.0)
-   *
-   * \return the maximum PSDU size in bytes
-   */
-  virtual uint32_t GetMaxPsduSize (void) const override;
-
-  virtual WifiConstPsduMap GetWifiConstPsduMap (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) const override;
-
   uint64_t m_previouslyTxPpduUid;  //!< UID of the previously sent PPDU, used by AP to recognize response HE TB PPDUs
   uint64_t m_currentHeTbPpduUid;   //!< UID of the HE TB PPDU being received
 
   std::map <uint16_t /* STA-ID */, EventId> m_beginOfdmaPayloadRxEvents; //!< the beginning of the OFDMA payload reception events (indexed by STA-ID)
 
   EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
+
 private:
   // Inherited
-  virtual void BuildModeList (void) override;
+  void BuildModeList (void) override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
-  virtual Time GetSymbolDuration (const WifiTxVector& txVector) const override;
+  Time GetSymbolDuration (const WifiTxVector& txVector) const override;
 
   /**
    * Create and return the HE MCS corresponding to

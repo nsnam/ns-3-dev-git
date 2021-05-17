@@ -65,7 +65,7 @@ public:
 
 
 private:
-  virtual void DoDispose (void) override;
+  void DoDispose (void) override;
 
   Ptr<SpectrumWifiPhy> m_spectrumWifiPhy; ///< spectrum PHY
   Ptr<NetDevice> m_netDevice; ///< the device

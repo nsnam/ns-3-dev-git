@@ -86,9 +86,9 @@ public:
   // Overridden from Txop
   bool IsQosTxop (void) const override;
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager) override;
-  virtual bool HasFramesToTransmit (void) override;
+  bool HasFramesToTransmit (void) override;
   void NotifyInternalCollision (void) override;
-  virtual void NotifyChannelAccessed (Time txopDuration) override;
+  void NotifyChannelAccessed (Time txopDuration) override;
   void NotifyChannelReleased (void) override;
   void SetDroppedMpduCallback (DroppedMpdu callback) override;
 

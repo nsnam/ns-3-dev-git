@@ -178,11 +178,9 @@ public:
    */
   void CheckReceivedTriggerFrames (std::set<uint8_t> txBss, uint16_t txChannelWidth);
 
-protected:
-  virtual void DoSetup (void) override;
-
 private:
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoRun (void) override;
 
   uint16_t m_channelWidth;                       ///< operating channel width in MHz
   bool m_useDistinctBssColors;                   ///< true to set distinct BSS colors to BSSes

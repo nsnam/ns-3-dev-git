@@ -83,7 +83,7 @@ struct WifiNoProtection : public WifiProtection
   WifiNoProtection ();
 
   // Overridden from WifiProtection
-  virtual std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 };
 
@@ -98,7 +98,7 @@ struct WifiRtsCtsProtection : public WifiProtection
   WifiRtsCtsProtection ();
 
   // Overridden from WifiProtection
-  virtual std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 
   WifiTxVector rtsTxVector;       //!< RTS TXVECTOR
@@ -116,7 +116,7 @@ struct WifiCtsToSelfProtection : public WifiProtection
   WifiCtsToSelfProtection ();
 
   // Overridden from WifiProtection
-  virtual std::unique_ptr<WifiProtection> Copy (void) const override;
+  std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 
   WifiTxVector ctsTxVector;       //!< CTS TXVECTOR

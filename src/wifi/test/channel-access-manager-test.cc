@@ -190,7 +190,7 @@ class ChannelAccessManagerTest : public TestCase
 {
 public:
   ChannelAccessManagerTest ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /**
    * Notify access granted function

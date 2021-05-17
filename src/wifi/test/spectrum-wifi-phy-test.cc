@@ -68,8 +68,8 @@ public:
   virtual ~SpectrumWifiPhyBasicTest ();
 
 protected:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
   Ptr<SpectrumWifiPhy> m_phy; ///< Phy
   /**
    * Make signal function
@@ -99,7 +99,7 @@ protected:
   uint32_t m_count; ///< count
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   uint64_t m_uid;
 };
@@ -232,50 +232,49 @@ public:
   virtual ~TestPhyListener ()
   {
   }
-  virtual void NotifyRxStart (Time duration) override
+  void NotifyRxStart (Time duration) override
   {
     NS_LOG_FUNCTION (this << duration);
     ++m_notifyRxStart;
   }
-  virtual void NotifyRxEndOk (void) override
+  void NotifyRxEndOk (void) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndOk;
   }
-  virtual void NotifyRxEndError (void) override
+  void NotifyRxEndError (void) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyRxEndError;
   }
-  virtual void NotifyTxStart (Time duration, double txPowerDbm) override
+  void NotifyTxStart (Time duration, double txPowerDbm) override
   {
     NS_LOG_FUNCTION (this << duration << txPowerDbm);
   }
-  virtual void NotifyMaybeCcaBusyStart (Time duration) override
+  void NotifyMaybeCcaBusyStart (Time duration) override
   {
     NS_LOG_FUNCTION (this);
     ++m_notifyMaybeCcaBusyStart;
   }
-  virtual void NotifySwitchingStart (Time duration) override
+  void NotifySwitchingStart (Time duration) override
   {
   }
-  virtual void NotifySleep (void) override
+  void NotifySleep (void) override
   {
   }
-  virtual void NotifyOff (void) override
+  void NotifyOff (void) override
   {
   }
-  virtual void NotifyWakeup (void) override
+  void NotifyWakeup (void) override
   {
   }
-  virtual void NotifyOn (void) override
+  void NotifyOn (void) override
   {
   }
   uint32_t m_notifyRxStart; ///< notify receive start
   uint32_t m_notifyRxEndOk; ///< notify receive end OK
   uint32_t m_notifyRxEndError; ///< notify receive end error
   uint32_t m_notifyMaybeCcaBusyStart; ///< notify maybe CCA busy start
-private:
 };
 
 /**
@@ -290,8 +289,8 @@ public:
   SpectrumWifiPhyListenerTest ();
   virtual ~SpectrumWifiPhyListenerTest ();
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoRun (void) override;
   TestPhyListener* m_listener; ///< listener
 };
 
@@ -347,9 +346,9 @@ public:
   virtual ~SpectrumWifiPhyFilterTest ();
 
 private:
-  virtual void DoSetup (void) override;
-  virtual void DoTeardown (void) override;
-  virtual void DoRun (void) override;
+  void DoSetup (void) override;
+  void DoTeardown (void) override;
+  void DoRun (void) override;
 
   /**
    * Run one function

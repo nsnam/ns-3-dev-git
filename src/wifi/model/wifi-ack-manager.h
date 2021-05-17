@@ -99,7 +99,7 @@ public:
                                                                 const WifiTxParameters& txParams) = 0;
 
 protected:
-  virtual void DoDispose (void) override;
+  void DoDispose (void) override;
 
   Ptr<RegularWifiMac> m_mac;     //!< MAC which is using this Acknowledgment Manager
 };

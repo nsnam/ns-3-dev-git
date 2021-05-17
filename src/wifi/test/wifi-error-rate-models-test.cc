@@ -58,7 +58,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseDsss ();
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 };
 
 WifiErrorRateModelsTestCaseDsss::WifiErrorRateModelsTestCaseDsss ()
@@ -167,7 +167,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseNist ();
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 };
 
 WifiErrorRateModelsTestCaseNist::WifiErrorRateModelsTestCaseNist ()
@@ -317,7 +317,7 @@ public:
   virtual ~WifiErrorRateModelsTestCaseMimo ();
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 };
 
 WifiErrorRateModelsTestCaseMimo::WifiErrorRateModelsTestCaseMimo ()
@@ -1462,7 +1462,7 @@ public:
   virtual ~TableBasedErrorRateTestCase ();
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   std::string m_testName; ///< The name of the test to run
   WifiMode m_mode;        ///< The WifiMode to test

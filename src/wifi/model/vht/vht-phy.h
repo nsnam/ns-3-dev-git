@@ -61,13 +61,16 @@ public:
   virtual ~VhtPhy ();
 
   // Inherited
-  virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
-  virtual const PpduFormats & GetPpduFormats (void) const override;
-  virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
-  virtual Time GetLSigDuration (WifiPreamble preamble) const override;
-  virtual Time GetTrainingDuration (const WifiTxVector& txVector,
-                                    uint8_t nDataLtf, uint8_t nExtensionLtf = 0) const override;
-  virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
+  WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
+  const PpduFormats & GetPpduFormats (void) const override;
+  Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
+  Time GetLSigDuration (WifiPreamble preamble) const override;
+  Time GetTrainingDuration (const WifiTxVector& txVector,
+                            uint8_t nDataLtf,
+                            uint8_t nExtensionLtf = 0) const override;
+  Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus,
+                           const WifiTxVector& txVector,
+                           Time ppduDuration) override;
 
   /**
    * \return the WifiMode used for the SIG-A field
@@ -257,9 +260,10 @@ protected:
   // Inherited
   WifiMode GetHtSigMode (void) const override;
   Time GetHtSigDuration (void) const override;
-  virtual uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
-  virtual PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
-  virtual bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
+  uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
+  PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
+  bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
+  uint32_t GetMaxPsduSize (void) const override;
 
   /**
    * End receiving the SIG-A, perform VHT-specific actions, and
@@ -323,17 +327,9 @@ protected:
    */
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
-  /**
-   * Get the maximum PSDU size in bytes (see Table 21-29 VHT PHY characteristics
-   * of IEEE 802.11-2016)
-   *
-   * \return the maximum PSDU size in bytes
-   */
-  virtual uint32_t GetMaxPsduSize (void) const override;
-
 private:
   // Inherited
-  virtual void BuildModeList (void) override;
+  void BuildModeList (void) override;
 
   /**
    * Return the VHT MCS corresponding to

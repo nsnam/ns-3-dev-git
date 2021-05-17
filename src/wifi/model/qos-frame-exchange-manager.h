@@ -45,7 +45,7 @@ public:
   virtual ~QosFrameExchangeManager ();
 
   // Overridden from FrameExchangeManager
-  virtual bool StartTransmission (Ptr<Txop> edca) override;
+  bool StartTransmission (Ptr<Txop> edca) override;
 
   /**
    * Recompute the protection and acknowledgment methods to use if the given MPDU
@@ -92,21 +92,21 @@ public:
                                           const WifiTxParameters& txParams, Time ppduDurationLimit) const;
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
   // Overridden from FrameExchangeManager
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
-                            const WifiTxVector& txVector, bool inAmpdu) override;
-  virtual void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
-  virtual Time GetFrameDurationId (const WifiMacHeader& header, uint32_t size,
-                                   const WifiTxParameters& txParams,
-                                   Ptr<Packet> fragmentedPacket) const override;
-  virtual Time GetRtsDurationId (const WifiTxVector& rtsTxVector, Time txDuration,
-                                 Time response) const override;
-  virtual Time GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector, Time txDuration,
-                                       Time response) const override;
-  virtual void TransmissionSucceeded (void) override;
-  virtual void TransmissionFailed (void) override;
+  void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+                    const WifiTxVector& txVector, bool inAmpdu) override;
+  void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;
+  Time GetFrameDurationId (const WifiMacHeader& header, uint32_t size,
+                           const WifiTxParameters& txParams,
+                           Ptr<Packet> fragmentedPacket) const override;
+  Time GetRtsDurationId (const WifiTxVector& rtsTxVector, Time txDuration,
+                         Time response) const override;
+  Time GetCtsToSelfDurationId (const WifiTxVector& ctsTxVector, Time txDuration,
+                               Time response) const override;
+  void TransmissionSucceeded (void) override;
+  void TransmissionFailed (void) override;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.

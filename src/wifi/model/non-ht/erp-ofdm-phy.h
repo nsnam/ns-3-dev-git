@@ -56,6 +56,7 @@ public:
 
   //Inherited
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
+  uint32_t GetMaxPsduSize (void) const override;
 
   /**
    * Initialize all ERP-OFDM modes.
@@ -195,14 +196,6 @@ public:
    * \returns true.
    */
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
-
-  /**
-   * Get the maximum PSDU size in bytes (see Table 18-5 ERP characteristics
-   * of IEEE 802.11-2016)
-   *
-   * \return the maximum PSDU size in bytes
-   */
-  virtual uint32_t GetMaxPsduSize (void) const override;
 
 private:
   // Inherited

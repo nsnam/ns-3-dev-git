@@ -70,9 +70,9 @@ public:
 
 private:
   // Implementation of pure virtual methods of MultiUserScheduler class
-  virtual TxFormat SelectTxFormat (void) override;
-  virtual DlMuInfo ComputeDlMuInfo (void) override;
-  virtual UlMuInfo ComputeUlMuInfo (void) override;
+  TxFormat SelectTxFormat (void) override;
+  DlMuInfo ComputeDlMuInfo (void) override;
+  UlMuInfo ComputeUlMuInfo (void) override;
 
   /**
    * Compute the TX vector to use for MU PPDUs.
@@ -361,7 +361,7 @@ public:
   void CheckResults (Time sifs, Time slotTime, uint8_t aifsn);
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
   /// Information about transmitted frames
   struct FrameInfo

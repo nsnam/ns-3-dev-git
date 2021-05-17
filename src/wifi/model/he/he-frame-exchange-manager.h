@@ -54,10 +54,10 @@ public:
   virtual ~HeFrameExchangeManager ();
 
   // Overridden from VhtFrameExchangeManager
-  virtual uint16_t GetSupportedBaBufferSize (void) const override;
-  virtual bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
-  virtual void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
-  virtual void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
+  uint16_t GetSupportedBaBufferSize (void) const override;
+  bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+  void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
+  void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
 
   /**
    * Set the Multi-user Scheduler associated with this Frame Exchange Manager.
@@ -85,16 +85,16 @@ public:
   virtual void SetTargetRssi (CtrlTriggerHeader& trigger) const;
 
 protected:
-  virtual void DoDispose () override;
+  void DoDispose () override;
 
   // Overridden from VhtFrameExchangeManager
-  virtual void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
-                            const WifiTxVector& txVector, bool inAmpdu) override;
-  virtual void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
-                                const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
-  virtual Time GetTxDuration (uint32_t ppduPayloadSize, Mac48Address receiver,
-                              const WifiTxParameters& txParams) const override;
-  virtual bool SendMpduFromBaManager (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
+  void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
+                    const WifiTxVector& txVector, bool inAmpdu) override;
+  void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,
+                        const WifiTxVector& txVector, const std::vector<bool>& perMpduStatus) override;
+  Time GetTxDuration (uint32_t ppduPayloadSize, Mac48Address receiver,
+                      const WifiTxParameters& txParams) const override;
+  bool SendMpduFromBaManager (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
 
   /**
    * Send a map of PSDUs as a DL MU PPDU.

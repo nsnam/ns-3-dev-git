@@ -62,6 +62,7 @@ public:
                            bool incFlag, uint32_t &totalAmpduSize, double &totalAmpduNumSymbols,
                            uint16_t staId) const override;
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
+  uint32_t GetMaxPsduSize (void) const override;
 
   /**
    * Initialize all HR/DSSS modes.
@@ -153,13 +154,6 @@ public:
    * \returns true.
    */
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
-  /**
-   * Get the maximum PSDU size in bytes (see Table 15-5 DSSS PHY characteristics
-   * of IEEE 802.11-2016)
-   *
-   * \return the maximum PSDU size in bytes
-   */
-  virtual uint32_t GetMaxPsduSize (void) const override;
 
 private:
   // Inherited

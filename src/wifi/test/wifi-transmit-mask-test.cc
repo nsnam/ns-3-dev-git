@@ -74,7 +74,7 @@ protected:
   double m_tolerance;                  ///< tolerance (in dB)
 
 private:
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
   /**
    * Interpolate PSD values for indexes between provided start and stop and append to provided
    * vector.

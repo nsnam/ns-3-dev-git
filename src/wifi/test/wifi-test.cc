@@ -98,7 +98,7 @@ class WifiTest : public TestCase
 public:
   WifiTest ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -233,7 +233,7 @@ public:
   QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket")
   {
   }
-  virtual void DoRun (void) override
+  void DoRun (void) override
   {
     //startingSeq=0, seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
@@ -263,7 +263,7 @@ class InterferenceHelperSequenceTest : public TestCase
 public:
   InterferenceHelperSequenceTest ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -445,7 +445,7 @@ class DcfImmediateAccessBroadcastTestCase : public TestCase
 public:
   DcfImmediateAccessBroadcastTestCase ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -599,7 +599,7 @@ public:
   Bug730TestCase ();
   virtual ~Bug730TestCase ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -736,7 +736,7 @@ public:
   QosFragmentationTestCase ();
   virtual ~QosFragmentationTestCase ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -896,7 +896,7 @@ class SetChannelFrequencyTest : public TestCase
 public:
   SetChannelFrequencyTest ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -1317,7 +1317,7 @@ public:
   Bug2222TestCase ();
   virtual ~Bug2222TestCase ();
 
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 
 private:
@@ -1453,7 +1453,7 @@ class Bug2843TestCase : public TestCase
 public:
   Bug2843TestCase ();
   virtual ~Bug2843TestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -1629,7 +1629,7 @@ class Bug2831TestCase : public TestCase
 public:
   Bug2831TestCase ();
   virtual ~Bug2831TestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -1826,7 +1826,7 @@ class StaWifiMacScanningTestCase : public TestCase
 public:
   StaWifiMacScanningTestCase ();
   virtual ~StaWifiMacScanningTestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -2018,7 +2018,7 @@ class Bug2470TestCase : public TestCase
 public:
   Bug2470TestCase ();
   virtual ~Bug2470TestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -2304,7 +2304,7 @@ class Issue40TestCase : public TestCase
 public:
   Issue40TestCase ();
   virtual ~Issue40TestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -2490,7 +2490,7 @@ class Issue169TestCase : public TestCase
 public:
   Issue169TestCase ();
   virtual ~Issue169TestCase ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -2620,7 +2620,7 @@ class IdealRateManagerChannelWidthTest : public TestCase
 public:
   IdealRateManagerChannelWidthTest ();
   virtual ~IdealRateManagerChannelWidthTest ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -2790,7 +2790,7 @@ class IdealRateManagerMimoTest : public TestCase
 public:
   IdealRateManagerMimoTest ();
   virtual ~IdealRateManagerMimoTest ();
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 
 private:
   /**
@@ -3085,7 +3085,7 @@ private:
    * \returns true if data rates are the same, false otherwise
    */
   bool CheckDataRate (HeRu::RuType ruType, std::string mcs, uint8_t nss, uint16_t guardInterval, uint16_t expectedDataRate);
-  virtual void DoRun (void) override;
+  void DoRun (void) override;
 };
 
 HeRuMcsDataRateTestCase::HeRuMcsDataRateTestCase ()

@@ -44,7 +44,7 @@ public:
 
 protected:
   // Overridden from HtFrameExchangeManager
-  virtual Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const override;
+  Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const override;
 };
 
 } //namespace ns3

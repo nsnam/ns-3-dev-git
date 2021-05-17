@@ -121,8 +121,8 @@ public:
   virtual ~OfdmPpdu ();
 
   // Inherited
-  virtual Time GetTxDuration (void) const override;
-  virtual Ptr<WifiPpdu> Copy (void) const override;
+  Time GetTxDuration (void) const override;
+  Ptr<WifiPpdu> Copy (void) const override;
 
 protected:
   WifiPhyBand m_band;       //!< the WifiPhyBand used to transmit that PPDU
@@ -131,7 +131,7 @@ protected:
 
 private:
   // Inherited
-  virtual WifiTxVector DoGetTxVector (void) const override;
+  WifiTxVector DoGetTxVector (void) const override;
 }; //class OfdmPpdu
 
 } //namespace ns3
