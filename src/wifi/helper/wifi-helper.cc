@@ -972,6 +972,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("StaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
   LogComponentEnable ("TableBasedErrorRateModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("ThompsonSamplingWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ThresholdPreambleDetectionModel", LOG_LEVEL_ALL);
   LogComponentEnable ("Txop", LOG_LEVEL_ALL);
   LogComponentEnable ("VhtConfiguration", LOG_LEVEL_ALL);
