@@ -48,7 +48,6 @@ public:
    */
   static TypeId GetTypeId ();
 
-  // Inherited
   TypeId GetInstanceTypeId () const override;
   uint32_t GetSerializedSize () const override;
   void Serialize (Buffer::Iterator start) const override;

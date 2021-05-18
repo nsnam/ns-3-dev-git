@@ -59,11 +59,9 @@ public:
    */
   virtual ~ErpOfdmPpdu ();
 
-  // Inherited
   Ptr<WifiPpdu> Copy (void) const override;
 
 private:
-  // Inherited
   WifiTxVector DoGetTxVector (void) const override;
 }; //class ErpOfdmPpdu
 

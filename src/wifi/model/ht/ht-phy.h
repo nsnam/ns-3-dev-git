@@ -63,7 +63,6 @@ public:
    */
   virtual ~HtPhy ();
 
-  // Inherited
   WifiMode GetMcs (uint8_t index) const override;
   bool IsMcsSupported (uint8_t index) const override;
   bool HandlesMcsModes (void) const override;
@@ -449,7 +448,6 @@ public:
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
 protected:
-  // Inherited
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   bool IsAllConfigSupported (WifiPpduField field, Ptr<const WifiPpdu> ppdu) const override;
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;

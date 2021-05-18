@@ -54,7 +54,6 @@ public:
   YansWifiChannel ();
   virtual ~YansWifiChannel ();
 
-  //inherited from Channel.
   std::size_t GetNDevices (void) const override;
   Ptr<NetDevice> GetDevice (std::size_t i) const override;
 

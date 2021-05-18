@@ -46,7 +46,6 @@ public:
   WifiDefaultAckManager ();
   virtual ~WifiDefaultAckManager ();
 
-  // Overridden from WifiAckManager
   virtual std::unique_ptr<WifiAcknowledgment> TryAddMpdu (Ptr<const WifiMacQueueItem> mpdu,
                                                           const WifiTxParameters& txParams) override;
   virtual std::unique_ptr<WifiAcknowledgment> TryAggregateMsdu (Ptr<const WifiMacQueueItem> msdu,

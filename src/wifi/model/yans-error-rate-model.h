@@ -63,7 +63,6 @@ public:
 
 
 private:
-  //Inherited from ErrorRateModel
   double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const override;
   /**
    * Return BER of BPSK with the given parameters.

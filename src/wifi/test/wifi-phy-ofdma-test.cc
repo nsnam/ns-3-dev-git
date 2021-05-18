@@ -137,7 +137,6 @@ public:
   OfdmaSpectrumWifiPhy (uint16_t staId);
   virtual ~OfdmaSpectrumWifiPhy ();
 
-  // Inherited
   void DoInitialize (void) override;
   void DoDispose (void) override;
 

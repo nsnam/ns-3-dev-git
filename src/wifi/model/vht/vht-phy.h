@@ -60,7 +60,6 @@ public:
    */
   virtual ~VhtPhy ();
 
-  // Inherited
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   const PpduFormats & GetPpduFormats (void) const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
@@ -257,7 +256,6 @@ public:
   static bool IsModeAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss);
 
 protected:
-  // Inherited
   WifiMode GetHtSigMode (void) const override;
   Time GetHtSigDuration (void) const override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
@@ -328,7 +326,6 @@ protected:
   static uint16_t GetUsableSubcarriers (uint16_t channelWidth);
 
 private:
-  // Inherited
   void BuildModeList (void) override;
 
   /**

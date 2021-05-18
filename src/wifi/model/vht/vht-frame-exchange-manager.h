@@ -43,7 +43,6 @@ public:
   virtual ~VhtFrameExchangeManager ();
 
 protected:
-  // Overridden from HtFrameExchangeManager
   Ptr<WifiPsdu> GetWifiPsdu (Ptr<WifiMacQueueItem> mpdu, const WifiTxVector& txVector) const override;
 };
 

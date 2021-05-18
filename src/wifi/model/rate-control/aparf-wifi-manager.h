@@ -53,7 +53,6 @@ public:
   AparfWifiManager ();
   virtual ~AparfWifiManager ();
 
-  // Inherited from WifiRemoteStationManager
   void SetupPhy (const Ptr<WifiPhy> phy) override;
 
   /**
@@ -68,7 +67,6 @@ public:
 
 
 private:
-  // Overridden from base class.
   void DoInitialize (void) override;
   WifiRemoteStation * DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,

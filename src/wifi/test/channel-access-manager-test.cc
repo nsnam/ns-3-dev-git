@@ -58,7 +58,6 @@ private:
   /// allow ChannelAccessManagerTest class access
   friend class ChannelAccessManagerTest<TxopType>;
 
-  /// Inherited
   void DoDispose (void) override;
   void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
   void NotifyInternalCollision (void) override;
@@ -132,7 +131,6 @@ public:
   }
 
 private:
-  // Inherited from base class
   Time GetSifs (void) const override
   {
     return m_sifs;

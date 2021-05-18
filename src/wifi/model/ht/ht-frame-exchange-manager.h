@@ -59,7 +59,6 @@ public:
   HtFrameExchangeManager ();
   virtual ~HtFrameExchangeManager ();
 
-  // Overridden from QosFrameExchangeManager
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
   void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
   void CalculateAcknowledgmentTime (WifiAcknowledgment* acknowledgment) const override;
@@ -202,7 +201,6 @@ public:
 protected:
   void DoDispose () override;
 
-  // Overridden from QosFrameExchangeManager
   void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,

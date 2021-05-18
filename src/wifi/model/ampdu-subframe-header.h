@@ -41,7 +41,6 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  // Inherited
   TypeId GetInstanceTypeId (void) const override;
   void Print (std::ostream &os) const override;
   uint32_t GetSerializedSize (void) const override;

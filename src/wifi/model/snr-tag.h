@@ -45,7 +45,6 @@ public:
    */
   SnrTag ();
 
-  // Inherited
   TypeId GetInstanceTypeId (void) const override;
   uint32_t GetSerializedSize (void) const override;
   void Serialize (TagBuffer i) const override;

@@ -209,8 +209,6 @@ public:
    * \param txVector the transmission parameters
    *
    * \return the WifiMode used for the SIG field
-   *
-   * This method is overridden by child classes.
    */
   virtual WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const;
 
@@ -244,8 +242,6 @@ public:
    * \param txVector the transmission parameters
    *
    * \return the duration of the PPDU field
-   *
-   * This method is overridden by child classes.
    */
   virtual Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const;
   /**
@@ -324,9 +320,6 @@ public:
    * \param ppduDuration the transmission duration of the PPDU
    *
    * \return the amendment-specific WifiPpdu
-   *
-   * This method is overridden by child classes to create their
-   * corresponding PPDU, e.g., HtPhy creates HtPpdu.
    */
   virtual Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration);
 
@@ -370,8 +363,7 @@ public:
   /**
    * Start receiving a given field.
    *
-   * This method will call the DoStartReceiveField (which will should
-   * be overridden by child classes).
+   * This method will call the DoStartReceiveField.
    * EndReceiveField is also scheduled after the duration of the field
    * (except for the special case of preambles \see DoStartReceivePreamble).
    * The PHY is kept in CCA busy during the reception of the field (except for
@@ -384,8 +376,7 @@ public:
   /**
    * End receiving a given field.
    *
-   * This method will call the DoEndReceiveField (which will should
-   * be overridden by child classes) to obtain the outcome of the reception.
+   * This method will call the DoEndReceiveField  to obtain the outcome of the reception.
    * In case of success, reception of the next field is triggered.
    * In case of failure, the indications in the returned \see PhyFieldRxStatus
    * are performed.
@@ -510,9 +501,6 @@ protected:
 
   /**
    * Return the PPDU formats of the PHY.
-   *
-   * This method should be implemented (overridden) by each child
-   * class introducing new formats.
    *
    * \return the PPDU formats of the PHY
    */

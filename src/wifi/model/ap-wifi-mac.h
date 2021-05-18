@@ -57,7 +57,6 @@ public:
   ApWifiMac ();
   virtual ~ApWifiMac ();
 
-  // Implementations of pure virtual methods, or overridden from base class.
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager) override;
   void SetLinkUpCallback (Callback<void> linkUp) override;
   void Enqueue (Ptr<Packet> packet, Mac48Address to) override;
@@ -144,7 +143,6 @@ public:
   uint8_t GetMaxBufferStatus (Mac48Address address) const;
 
 private:
-  // Inherited
   void Receive (Ptr<WifiMacQueueItem> mpdu)  override;
   /**
    * The packet we sent was successfully received by the receiver

@@ -128,7 +128,6 @@ protected:
    */
   TxFormat GetLastTxFormat (void) const;
 
-  // Inherited
   void DoDispose (void) override;
   void NotifyNewAggregate (void) override;
   void DoInitialize (void) override;

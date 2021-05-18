@@ -151,7 +151,6 @@ public:
   void Transmit (Ptr<WifiSpectrumSignalParameters> txParams);
 
 protected:
-  // Inherited
   void DoDispose (void) override;
   void DoInitialize (void) override;
 

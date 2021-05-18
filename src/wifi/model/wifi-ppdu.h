@@ -99,8 +99,6 @@ public:
   /**
    * Get the total transmission duration of the PPDU.
    *
-   * This method is overridden by child classes.
-   *
    * \return the transmission duration of the PPDU
    */
   virtual Time GetTxDuration (void) const;
@@ -162,8 +160,6 @@ protected:
 private:
   /**
    * Get the TXVECTOR used to send the PPDU.
-   *
-   * This method should be overridden by child classes.
    *
    * \return the TXVECTOR of the PPDU.
    */

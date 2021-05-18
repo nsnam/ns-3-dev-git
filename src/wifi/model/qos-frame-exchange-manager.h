@@ -44,7 +44,6 @@ public:
   QosFrameExchangeManager ();
   virtual ~QosFrameExchangeManager ();
 
-  // Overridden from FrameExchangeManager
   bool StartTransmission (Ptr<Txop> edca) override;
 
   /**
@@ -94,7 +93,6 @@ public:
 protected:
   void DoDispose () override;
 
-  // Overridden from FrameExchangeManager
   void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void PreProcessFrame (Ptr<const WifiPsdu> psdu, const WifiTxVector& txVector) override;

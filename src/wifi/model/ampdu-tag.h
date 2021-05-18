@@ -42,7 +42,6 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  // Inherited
   TypeId GetInstanceTypeId (void) const override;
   void Serialize (TagBuffer i) const override;
   void Deserialize (TagBuffer i) override;

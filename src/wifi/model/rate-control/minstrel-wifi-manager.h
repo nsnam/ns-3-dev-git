@@ -165,7 +165,6 @@ public:
   MinstrelWifiManager ();
   virtual ~MinstrelWifiManager ();
 
-  // Inherited from WifiRemoteStationManager
   void SetupPhy (const Ptr<WifiPhy> phy) override;
   void SetupMac (const Ptr<WifiMac> mac) override;
   int64_t AssignStreams (int64_t stream) override;
@@ -245,7 +244,6 @@ public:
   void InitSampleTable (MinstrelWifiRemoteStation *station);
 
 private:
-  // Overridden from base class.
   void DoInitialize (void) override;
   WifiRemoteStation * DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,

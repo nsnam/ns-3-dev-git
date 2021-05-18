@@ -54,7 +54,6 @@ public:
    */
   virtual ~ErpOfdmPhy ();
 
-  //Inherited
   Ptr<WifiPpdu> BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, Time ppduDuration) override;
   uint32_t GetMaxPsduSize (void) const override;
 
@@ -198,7 +197,6 @@ public:
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
 private:
-  // Inherited
   WifiMode GetHeaderMode (const WifiTxVector& txVector) const override;
   Time GetPreambleDuration (const WifiTxVector& txVector) const override;
   Time GetHeaderDuration (const WifiTxVector& txVector) const override;

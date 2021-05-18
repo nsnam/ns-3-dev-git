@@ -54,7 +54,6 @@ public:
    */
   virtual ~DsssPhy ();
 
-  // Inherited
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   const PpduFormats & GetPpduFormats (void) const override;
   Time GetDuration (WifiPpduField field, const WifiTxVector& txVector) const override;
@@ -156,7 +155,6 @@ public:
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
 private:
-  // Inherited
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
 

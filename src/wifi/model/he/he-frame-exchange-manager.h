@@ -53,7 +53,6 @@ public:
   HeFrameExchangeManager ();
   virtual ~HeFrameExchangeManager ();
 
-  // Overridden from VhtFrameExchangeManager
   uint16_t GetSupportedBaBufferSize (void) const override;
   bool StartFrameExchange (Ptr<QosTxop> edca, Time availableTime, bool initialFrame) override;
   void SetWifiMac (const Ptr<RegularWifiMac> mac) override;
@@ -87,7 +86,6 @@ public:
 protected:
   void DoDispose () override;
 
-  // Overridden from VhtFrameExchangeManager
   void ReceiveMpdu (Ptr<WifiMacQueueItem> mpdu, RxSignalInfo rxSignalInfo,
                     const WifiTxVector& txVector, bool inAmpdu) override;
   void EndReceiveAmpdu (Ptr<const WifiPsdu> psdu, const RxSignalInfo& rxSignalInfo,

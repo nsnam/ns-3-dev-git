@@ -61,7 +61,6 @@ public:
      */
     static TypeId GetTypeId (void);
 
-    // Inherited
     TypeId GetInstanceTypeId (void) const override;
     void Print (std::ostream &os) const override;
     uint32_t GetSerializedSize (void) const override;
@@ -153,12 +152,10 @@ public:
    */
   virtual ~HtPpdu ();
 
-  // Inherited
   Time GetTxDuration (void) const override;
   Ptr<WifiPpdu> Copy (void) const override;
 
 private:
-  // Inherited
   WifiTxVector DoGetTxVector (void) const override;
 
   HtSigHeader m_htSig;  //!< the HT-SIG PHY header

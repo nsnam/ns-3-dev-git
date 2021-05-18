@@ -50,7 +50,6 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  // Inherited
   void ConnectWifiNetDevice (const Ptr<WifiNetDevice> device) override;
   void ReceiveHeSigA (HeSigAParameters params) override;
 };

@@ -1096,7 +1096,6 @@ public:
   virtual std::tuple<double, double, double> GetTxMaskRejectionParams (void) const = 0;
 
 protected:
-  // Inherited
   virtual void DoDispose (void);
 
   /*

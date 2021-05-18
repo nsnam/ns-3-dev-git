@@ -64,7 +64,6 @@ public:
      */
     static TypeId GetTypeId (void);
 
-    // Inherited
     TypeId GetInstanceTypeId (void) const override;
     void Print (std::ostream &os) const override;
     uint32_t GetSerializedSize (void) const override;
@@ -120,7 +119,6 @@ public:
    */
   virtual ~OfdmPpdu ();
 
-  // Inherited
   Time GetTxDuration (void) const override;
   Ptr<WifiPpdu> Copy (void) const override;
 
@@ -130,7 +128,6 @@ protected:
   LSigHeader m_lSig;        //!< the L-SIG PHY header
 
 private:
-  // Inherited
   WifiTxVector DoGetTxVector (void) const override;
 }; //class OfdmPpdu
 

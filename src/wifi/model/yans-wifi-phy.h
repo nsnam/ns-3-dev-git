@@ -70,7 +70,6 @@ public:
   void SetChannel (const Ptr<YansWifiChannel> channel);
 
 protected:
-  // Inherited
   void DoDispose (void) override;
 
 

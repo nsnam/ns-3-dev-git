@@ -82,7 +82,6 @@ struct WifiNoProtection : public WifiProtection
 {
   WifiNoProtection ();
 
-  // Overridden from WifiProtection
   std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 };
@@ -97,7 +96,6 @@ struct WifiRtsCtsProtection : public WifiProtection
 {
   WifiRtsCtsProtection ();
 
-  // Overridden from WifiProtection
   std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 
@@ -115,7 +113,6 @@ struct WifiCtsToSelfProtection : public WifiProtection
 {
   WifiCtsToSelfProtection ();
 
-  // Overridden from WifiProtection
   std::unique_ptr<WifiProtection> Copy (void) const override;
   void Print (std::ostream &os) const override;
 

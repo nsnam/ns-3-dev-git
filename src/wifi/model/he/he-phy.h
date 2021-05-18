@@ -79,7 +79,6 @@ public:
    */
   virtual ~HePhy ();
 
-  // Inherited
   WifiMode GetSigMode (WifiPpduField field, const WifiTxVector& txVector) const override;
   WifiMode GetSigAMode (void) const override;
   WifiMode GetSigBMode (const WifiTxVector& txVector) const override;
@@ -371,7 +370,6 @@ public:
   static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
 
 protected:
-  // Inherited
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
   PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
   Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW) override;
@@ -422,7 +420,6 @@ protected:
   EndOfHeSigACallback m_endOfHeSigACallback; //!< end of HE-SIG-A callback
 
 private:
-  // Inherited
   void BuildModeList (void) override;
   uint8_t GetNumberBccEncoders (const WifiTxVector& txVector) const override;
   Time GetSymbolDuration (const WifiTxVector& txVector) const override;

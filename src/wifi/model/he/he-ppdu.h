@@ -60,7 +60,6 @@ public:
      */
     static TypeId GetTypeId (void);
 
-    // Inherited
     TypeId GetInstanceTypeId (void) const override;
     void Print (std::ostream &os) const override;
     uint32_t GetSerializedSize (void) const override;
@@ -193,7 +192,6 @@ public:
    */
   virtual ~HePpdu ();
 
-  // Inherited
   Time GetTxDuration (void) const override;
   Ptr<WifiPpdu> Copy (void) const override;
   WifiPpduType GetType (void) const override;
@@ -223,7 +221,6 @@ public:
   void SetTxPsdFlag (TxPsdFlag flag);
 
 protected:
-  // Inherited
   std::string PrintPayload (void) const override;
 
   /**
@@ -245,7 +242,6 @@ protected:
   WifiTxVector::HeMuUserInfoMap m_muUserInfos; //!< the HE MU specific per-user information (to be removed once HE-SIG-B headers are implemented)
 
 private:
-  // Inherited
   WifiTxVector DoGetTxVector (void) const override;
 
   /**

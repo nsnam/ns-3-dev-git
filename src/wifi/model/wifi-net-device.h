@@ -112,7 +112,6 @@ public:
    */
   Ptr<HeConfiguration> GetHeConfiguration (void) const;
 
-  //inherited from NetDevice base class.
   void SetIfIndex (const uint32_t index) override;
   uint32_t GetIfIndex (void) const override;
   Ptr<Channel> GetChannel (void) const override;

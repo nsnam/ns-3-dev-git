@@ -67,13 +67,11 @@ public:
   RraaWifiManager ();
   virtual ~RraaWifiManager ();
 
-  // Inherited from WifiRemoteStationManager
   void SetupPhy (const Ptr<WifiPhy> phy) override;
   void SetupMac (const Ptr<WifiMac> mac) override;
 
 
 private:
-  // Overridden from base class.
   void DoInitialize (void) override;
   WifiRemoteStation * DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,

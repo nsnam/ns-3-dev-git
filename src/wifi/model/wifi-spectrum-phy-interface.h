@@ -53,7 +53,6 @@ public:
    */
   void SetSpectrumWifiPhy (const Ptr<SpectrumWifiPhy> phy);
 
-  // Inherited from SpectrumPhy
   Ptr<NetDevice> GetDevice () const override;
   void SetDevice (const Ptr<NetDevice> d) override;
   void SetMobility (const Ptr<MobilityModel> m) override;

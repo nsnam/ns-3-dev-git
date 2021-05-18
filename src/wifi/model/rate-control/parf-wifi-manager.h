@@ -51,12 +51,10 @@ public:
   ParfWifiManager ();
   virtual ~ParfWifiManager ();
 
-  // Inherited from WifiRemoteStationManager
   void SetupPhy (const Ptr<WifiPhy> phy) override;
 
 
 private:
-  // Overridden from base class.
   void DoInitialize (void) override;
   WifiRemoteStation * DoCreateStation (void) const override;
   void DoReportRxOk (WifiRemoteStation *station,

@@ -83,7 +83,6 @@ public:
   QosTxop ();
   virtual ~QosTxop ();
 
-  // Overridden from Txop
   bool IsQosTxop (void) const override;
   void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager) override;
   bool HasFramesToTransmit (void) override;
@@ -393,14 +392,12 @@ public:
   virtual Time GetRemainingTxop (void) const;
 
 protected:
-  // Overridden from Txop
   void DoDispose (void) override;
 
 private:
   /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
-  // Overridden from Txop
   void DoInitialize (void) override;
 
   /**
