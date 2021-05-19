@@ -691,6 +691,21 @@ class Experiment
 {
 public:
   Experiment ();
+
+  /**
+   * Configure and run the experiment.
+   *
+   * \param wifi the pre-configured WifiHelper
+   * \param wifiPhy the pre-configured YansWifiPhyHelper
+   * \param wifiMac the pre-configured WifiMacHelper
+   * \param wifiChannel the pre-configured YansWifiChannelHelper
+   * \param trialNumber the trial index
+   * \param networkSize the number of stations
+   * \param duration the duration (in seconds) of each simulation run
+   * \param pcap flag to enable/disable PCAP files generation
+   * \param infra flag to enable infrastructure model, ring adhoc network if not set
+   * \return 0 if all went well
+   */
   int Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel,
            uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra);
 };

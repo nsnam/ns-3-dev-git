@@ -126,8 +126,8 @@ private:
   struct Input m_input; ///< input
   bool m_droppedA; ///< flag to indicate whether packet A has been dropped
   bool m_droppedB; ///< flag to indicate whether packet B has been dropped
-  mutable uint64_t m_uidA;
-  mutable uint64_t m_uidB;
+  mutable uint64_t m_uidA; ///< UID to use for packet A
+  mutable uint64_t m_uidB; ///< UID to use for packet B
 };
 
 void
