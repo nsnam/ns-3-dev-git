@@ -142,10 +142,10 @@ public:
   struct RelativeNarrowbandTxBand
   {
     std::vector <bool> rntpPerPrbList; ///< RNTP per prb list
-    int16_t     rntpThreshold; ///< RNTP threshold
-    uint16_t    antennaPorts; ///< antenna ports
-    uint16_t    pB; ///< PB
-    uint16_t    pdcchInterferenceImpact; ///< PDC channel interference list
+    int16_t     rntpThreshold {INT16_MIN}; ///< RNTP threshold
+    uint16_t    antennaPorts {UINT16_MAX}; ///< antenna ports
+    uint16_t    pB {UINT16_MAX}; ///< PB
+    uint16_t    pdcchInterferenceImpact {UINT16_MAX}; ///< PDC channel interference list
   };
 
   /**
@@ -302,7 +302,7 @@ public:
    */
   struct LoadInformationParams
   {
-    uint16_t            targetCellId; ///< target cell ID
+    uint16_t            targetCellId {UINT16_MAX}; ///< target cell ID
     std::vector <CellInformationItem> cellInformationList; ///< cell information list
   };
 

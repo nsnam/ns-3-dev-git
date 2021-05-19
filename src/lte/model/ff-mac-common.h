@@ -92,44 +92,44 @@ enum NormalExtended_e
  */
 struct DlDciListElement_s
 {
-  uint16_t  m_rnti; ///< RNTI
-  uint32_t  m_rbBitmap; ///< RB bitmap
-  uint8_t   m_rbShift; ///< RB shift
-  uint8_t   m_resAlloc; ///< The type of resource allocation
+  uint16_t  m_rnti {UINT16_MAX}; ///< RNTI
+  uint32_t  m_rbBitmap {UINT8_MAX}; ///< RB bitmap
+  uint8_t   m_rbShift {UINT8_MAX}; ///< RB shift
+  uint8_t   m_resAlloc {UINT8_MAX}; ///< The type of resource allocation
   std::vector <uint16_t>  m_tbsSize; ///< The TBs size
   std::vector <uint8_t>   m_mcs; ///< MCS
   std::vector <uint8_t>   m_ndi; ///< New data indicator
   std::vector <uint8_t>   m_rv; ///< Redundancy version
-  uint8_t   m_cceIndex; ///< Control Channel Element index
-  uint8_t   m_aggrLevel; ///< The aggregation level
-  uint8_t   m_precodingInfo; ///< precoding info
+  uint8_t   m_cceIndex {UINT8_MAX}; ///< Control Channel Element index
+  uint8_t   m_aggrLevel {UINT8_MAX}; ///< The aggregation level
+  uint8_t   m_precodingInfo {UINT8_MAX}; ///< precoding info
   /// Format enumeration
   enum Format_e
   {
     ONE, ONE_A, ONE_B, ONE_C, ONE_D, TWO, TWO_A, TWO_B
-  } m_format; ///< the format
-  uint8_t   m_tpc; ///< Tx power control command
-  uint8_t   m_harqProcess; ///< HARQ process
-  uint8_t   m_dai; ///< DL assignment index
+  } m_format {ONE}; ///< the format
+  uint8_t   m_tpc {UINT8_MAX}; ///< Tx power control command
+  uint8_t   m_harqProcess {UINT8_MAX}; ///< HARQ process
+  uint8_t   m_dai {UINT8_MAX}; ///< DL assignment index
   /// Vrb Format enum
   enum VrbFormat_e
   {
     VRB_DISTRIBUTED,
     VRB_LOCALIZED
-  } m_vrbFormat; ///< the format
-  bool      m_tbSwap; ///< swap?
-  bool      m_spsRelease; ///< release?
-  bool      m_pdcchOrder; ///< cch order?
-  uint8_t   m_preambleIndex; ///< preamble index
-  uint8_t   m_prachMaskIndex; ///< RACH mask index
+  } m_vrbFormat {VRB_DISTRIBUTED}; ///< the format
+  bool      m_tbSwap {false}; ///< swap?
+  bool      m_spsRelease {false}; ///< release?
+  bool      m_pdcchOrder {false}; ///< cch order?
+  uint8_t   m_preambleIndex {UINT8_MAX}; ///< preamble index
+  uint8_t   m_prachMaskIndex {UINT8_MAX}; ///< RACH mask index
   /// Ngap enum
   enum Ngap_e
   {
     GAP1, GAP2
-  } m_nGap; ///< the gap
-  uint8_t   m_tbsIdx; ///< tbs index
-  uint8_t   m_dlPowerOffset; ///< DL power offset
-  uint8_t   m_pdcchPowerOffset; ///<  CCH power offset
+  } m_nGap {GAP1}; ///< the gap
+  uint8_t   m_tbsIdx {UINT8_MAX}; ///< tbs index
+  uint8_t   m_dlPowerOffset {UINT8_MAX}; ///< DL power offset
+  uint8_t   m_pdcchPowerOffset {UINT8_MAX}; ///<  CCH power offset
 };
 
 /**
