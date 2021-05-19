@@ -94,14 +94,14 @@ protected:
   /**
    * Spectrum wifi receive failure function
    * \param psdu the PSDU
--   */
+   */
   void SpectrumWifiPhyRxFailure (Ptr<WifiPsdu> psdu);
   uint32_t m_count; ///< count
 
 private:
   void DoRun (void) override;
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyBasicTest ()
@@ -362,7 +362,6 @@ private:
 
   /**
    * Callback triggered when a packet is received by the PHYs
-   * \param context the context
    * \param p the received packet
    * \param rxPowersW the received power per channel band in watts
    */

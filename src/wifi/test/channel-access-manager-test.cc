@@ -58,13 +58,21 @@ private:
   /// allow ChannelAccessManagerTest class access
   friend class ChannelAccessManagerTest<TxopType>;
 
+  /// \copydoc ns3::Txop::DoDispose
   void DoDispose (void) override;
+  /// \copydoc ns3::Txop::NotifyChannelAccessed
   void NotifyChannelAccessed (Time txopDuration = Seconds (0)) override;
+  /// \copydoc ns3::Txop::NotifyInternalCollision
   void NotifyInternalCollision (void) override;
+  /// \copydoc ns3::Txop::HasFramesToTransmit
   bool HasFramesToTransmit (void) override;
+  /// \copydoc ns3::Txop::NotifyChannelSwitching
   void NotifyChannelSwitching (void) override;
+  /// \copydoc ns3::Txop::NotifySleep
   void NotifySleep (void) override;
+  /// \copydoc ns3::Txop::NotifyWakeUp
   void NotifyWakeUp (void) override;
+  /// \copydoc ns3::Txop::GenerateBackoff
   void GenerateBackoff (void) override;
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
@@ -146,9 +154,9 @@ private:
     return m_eifsNoDifs;
   }
 
-  Time m_slot;        // slot duration
-  Time m_sifs;        // SIFS duration
-  Time m_eifsNoDifs;  // EIFS duration minus a DIFS
+  Time m_slot;        //!< slot duration
+  Time m_sifs;        //!< SIFS duration
+  Time m_eifsNoDifs;  //!< EIFS duration minus a DIFS
 };
 
 /**

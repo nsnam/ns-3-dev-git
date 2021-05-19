@@ -106,7 +106,7 @@ private:
    */
   void CheckRxPacketCount (uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestThresholdPreambleDetectionWithoutFrameCapture::TestThresholdPreambleDetectionWithoutFrameCapture ()
@@ -471,7 +471,7 @@ private:
    */
   void CheckRxPacketCount (uint32_t expectedSuccessCount, uint32_t expectedFailureCount);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestThresholdPreambleDetectionWithFrameCapture::TestThresholdPreambleDetectionWithFrameCapture ()
@@ -987,7 +987,7 @@ private:
   bool m_rxDropped1000B; ///< count dropped packets with 1000B payload
   bool m_rxDropped1500B; ///< count dropped packets with 1500B payload
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestSimpleFrameCaptureModel::TestSimpleFrameCaptureModel ()
@@ -1207,7 +1207,7 @@ private:
    */
   void DoCheckPhyState (WifiPhyState expectedState);
 
-  uint64_t m_uid;
+  uint64_t m_uid; //!< the UID to use for the PPDU
 };
 
 TestPhyHeadersReception::TestPhyHeadersReception ()

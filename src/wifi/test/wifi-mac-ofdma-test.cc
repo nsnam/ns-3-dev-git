@@ -331,10 +331,10 @@ public:
    * \param dlType the DL MU ack sequence type
    * \param maxAmpduSize the maximum A-MPDU size in bytes
    * \param txopLimit the TXOP limit in microseconds
-   * \param numPktsPerSta number of packets to send to/receive from each station
+   * \param nPktsPerSta number of packets to send to/receive from each station
    */
   OfdmaAckSequenceTest (uint16_t width, WifiAcknowledgment::Method dlType, uint32_t maxAmpduSize,
-                          uint16_t txopLimit, uint16_t nPktsPerSta);
+                        uint16_t txopLimit, uint16_t nPktsPerSta);
   virtual ~OfdmaAckSequenceTest ();
 
   /**

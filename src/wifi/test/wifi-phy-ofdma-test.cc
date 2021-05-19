@@ -168,6 +168,8 @@ public:
 
   /**
    * Since we assume trigger frame was previously received from AP, this is used to set its UID
+   *
+   * \param uid the PPDU UID of the trigger frame
    */
   void SetTriggerFrameUid (uint64_t uid);
 
@@ -1665,6 +1667,7 @@ private:
    * \param txStaId the ID of the TX STA
    * \param index the RU index used for the transmission
    * \param bssColor the BSS color of the TX STA
+   * \return the TXVECTOR for HE TB PPDU
    */
   WifiTxVector GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_t index, uint8_t bssColor) const;
   /**
@@ -1758,6 +1761,7 @@ private:
    * \param expectedState the expected state of the PHY
    */
   void CheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
+  /// \copydoc CheckPhyState
   void DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
   /**
@@ -2862,6 +2866,7 @@ private:
    * \param expectedState the expected state of the PHY
    */
   void CheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
+  /// \copydoc CheckPhyState
   void DoCheckPhyState (Ptr<OfdmaSpectrumWifiPhy> phy, WifiPhyState expectedState);
 
   /**

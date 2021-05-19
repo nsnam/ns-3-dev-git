@@ -73,7 +73,7 @@ private:
   Ptr<YansWifiPhy> m_phy; ///< Phy
   Ptr<WifiRemoteStationManager> m_manager; ///< remote station manager
   ObjectFactory m_factory; ///< factory
-  bool m_discarded;
+  bool m_discarded; ///< whether the packet should be discarded
 };
 
 AmpduAggregationTest::AmpduAggregationTest ()

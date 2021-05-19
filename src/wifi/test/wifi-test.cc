@@ -1328,7 +1328,7 @@ private:
    * \param context the context
    * \param adr the MAC address
    */
-  void TxDataFailedTrace (std::string context, Mac48Address adress);
+  void TxDataFailedTrace (std::string context, Mac48Address adr);
 };
 
 Bug2222TestCase::Bug2222TestCase ()
@@ -2329,7 +2329,7 @@ private:
   /**
    * Transmit final data failed function
    * \param context the context
-   * \param adr the MAC address
+   * \param address the MAC address
    */
   void TxFinalDataFailedCallback (std::string context, Mac48Address address);
 
@@ -2505,7 +2505,7 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psduMap the PSDU map to transmit
+   * \param psdus the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
@@ -2607,7 +2607,7 @@ Issue169TestCase::DoRun (void)
  * The scenario considers an access point and a fixed station.
  * The access point first sends a 80 MHz PPDU to the station,
  * for which Ideal rate manager should select VH-MCS 0 based
- * on the distance (no interference generatd in this test). Then,
+ * on the distance (no interference generated in this test). Then,
  * the access point sends a 20 MHz PPDU to the station,
  * which corresponds to a SNR 6 dB higher than previously, hence
  * VHT-MCS 2 should be selected. Finally, the access point sends a
@@ -2815,7 +2815,7 @@ private:
   /**
    * Callback that indicates a PSDU is being transmitted
    * \param context the context
-   * \param psduMap the PSDU map to transmit
+   * \param psdus the PSDU map to transmit
    * \param txVector the TX vector
    * \param txPowerW the TX power (W)
    */
