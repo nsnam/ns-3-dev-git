@@ -44,7 +44,7 @@ public:
    * \param tid the TID
    */
   BlockAckAgreement (Mac48Address peer, uint8_t tid);
-  ~BlockAckAgreement ();
+  virtual ~BlockAckAgreement ();
   /**
    * Set buffer size.
    *
