@@ -34,6 +34,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Throughput test for MsduAggregator
+ */
 class WifiMsduAggregatorThroughputTest : public TestCase
 {
 public:
@@ -41,7 +47,7 @@ public:
   virtual void DoRun (void);
 
 private:
-  bool m_writeResults;
+  bool m_writeResults; //!< flag whether to generate pcap
 };
 
 WifiMsduAggregatorThroughputTest::WifiMsduAggregatorThroughputTest ()
@@ -182,9 +188,16 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
 }
 
 
-// For now the MSDU Aggregator Test Suite contains only the one test
-// that is defined in this file, so it's class definition and
-// instantiation can live here.
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief MsduAggregator Test Suite
+ *
+ * For now the MSDU Aggregator Test Suite contains only the one test
+ * that is defined in this file, so it's class definition and
+ * instantiation can live here.
+ */
 class WifiMsduAggregatorTestSuite : public TestSuite
 {
 public:

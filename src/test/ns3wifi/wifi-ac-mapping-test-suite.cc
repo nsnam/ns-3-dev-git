@@ -41,19 +41,47 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiAcMappingTest");
 
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Test for User priority to Access Category mapping
+ */
 class WifiAcMappingTest : public TestCase
 {
 public:
+  /**
+   * Constructor for WifiAcMappingTest
+   *
+   * \param tos the type of service
+   * \param expectedQueue the expected queue disc index
+   */
   WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue);
   virtual void DoRun (void);
 
 private:
+  /**
+   * Function called whenever a packet is enqueued in
+   * a queue disc.
+   *
+   * \param tos the type of service
+   * \param count the pointer to the packet counter
+   * \param item the enqueued item
+   */
   static void PacketEnqueuedInQueueDisc (uint8_t tos, uint16_t* count, Ptr<const QueueDiscItem> item);
+  /**
+   * Function called whenever a packet is enqueued in
+   * a Wi-Fi MAC queue.
+   *
+   * \param tos the type of service
+   * \param count the pointer to the packet counter
+   * \param item the enqueued item
+   */
   static void PacketEnqueuedInWifiMacQueue (uint8_t tos, uint16_t* count, Ptr<const WifiMacQueueItem> item);
-  uint8_t m_tos;
-  uint16_t m_expectedQueue;
-  uint16_t m_QueueDiscCount[4];
-  uint16_t m_WifiMacQueueCount[4];
+  uint8_t m_tos; //!< type of service
+  uint16_t m_expectedQueue; //!< expected queue disc index
+  uint16_t m_QueueDiscCount[4]; //!< packet counter per queue disc
+  uint16_t m_WifiMacQueueCount[4]; //!< packet counter per Wi-Fi MAC queue
 };
 
 WifiAcMappingTest::WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue)
@@ -242,7 +270,12 @@ WifiAcMappingTest::DoRun (void)
   Simulator::Destroy ();
 }
 
-
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
+ * \brief Access category mapping Test Suite
+ */
 class WifiAcMappingTestSuite : public TestSuite
 {
 public:
