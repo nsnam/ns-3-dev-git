@@ -271,14 +271,14 @@ public:
 
   /**
    * Remove an item from the Queue (each subclass defines the position),
-   * counting it as dequeued
+   * counting it and tracing it as dequeued
    * \return 0 if the operation was not successful; the item otherwise.
    */
   virtual Ptr<Item> Dequeue (void) = 0;
 
   /**
    * Remove an item from the Queue (each subclass defines the position),
-   * counting it as dropped
+   * counting it and tracing it as both dequeued and dropped
    * \return 0 if the operation was not successful; the item otherwise.
    */
   virtual Ptr<Item>  Remove (void) = 0;
@@ -291,7 +291,9 @@ public:
   virtual Ptr<const Item> Peek (void) const = 0;
 
   /**
-   * Flush the queue.
+   * Flush the queue by calling Remove() on each item enqueued.  Note that
+   * this operation will cause dequeue and drop counts to be incremented and
+   * traces to be triggered for each Remove() action.
    */
   void Flush (void);
 
@@ -426,6 +428,8 @@ protected:
    * dropped for other reasons after being dequeued.
    */
   void DropAfterDequeue (Ptr<Item> item);
+
+  void DoDispose (void) override;
 
 private:
   std::list<Ptr<Item> > m_packets;          //!< the items in the queue
@@ -592,6 +596,15 @@ Queue<Item>::Flush (void)
     {
       Remove ();
     }
+}
+
+template <typename Item>
+void
+Queue<Item>::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_packets.clear ();
+  Object::DoDispose ();
 }
 
 template <typename Item>
