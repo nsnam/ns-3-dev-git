@@ -116,10 +116,8 @@ WifiTxTimer::SetMpduResponseTimeoutCallback (MpduResponseTimeout callback) const
   m_mpduResponseTimeoutCallback = callback;
 }
 
-template<>
 void
-WifiTxTimer::FeedTraceSource<Ptr<WifiMacQueueItem>, WifiTxVector> (Ptr<WifiMacQueueItem> item,
-                                                                   WifiTxVector txVector)
+WifiTxTimer::FeedTraceSource (Ptr<WifiMacQueueItem> item, WifiTxVector txVector)
 {
   if (!m_mpduResponseTimeoutCallback.IsNull ())
     {
@@ -133,10 +131,8 @@ WifiTxTimer::SetPsduResponseTimeoutCallback (PsduResponseTimeout callback) const
   m_psduResponseTimeoutCallback = callback;
 }
 
-template<>
 void
-WifiTxTimer::FeedTraceSource<Ptr<WifiPsdu>, WifiTxVector> (Ptr<WifiPsdu> psdu,
-                                                           WifiTxVector txVector)
+WifiTxTimer::FeedTraceSource (Ptr<WifiPsdu> psdu, WifiTxVector txVector)
 {
   if (!m_psduResponseTimeoutCallback.IsNull ())
     {
@@ -150,11 +146,9 @@ WifiTxTimer::SetPsduMapResponseTimeoutCallback (PsduMapResponseTimeout callback)
   m_psduMapResponseTimeoutCallback = callback;
 }
 
-template<>
 void
-WifiTxTimer::FeedTraceSource<WifiPsduMap*, std::set<Mac48Address>*, std::size_t> (WifiPsduMap* psduMap,
-                                                                                  std::set<Mac48Address>* missingStations,
-                                                                                  std::size_t nTotalStations)
+WifiTxTimer::FeedTraceSource (WifiPsduMap* psduMap, std::set<Mac48Address>* missingStations,
+                              std::size_t nTotalStations)
 {
   if (!m_psduMapResponseTimeoutCallback.IsNull ())
     {
