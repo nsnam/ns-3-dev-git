@@ -106,7 +106,7 @@ struct DlDciListElement_s
   /// Format enumeration
   enum Format_e
   {
-    ONE, ONE_A, ONE_B, ONE_C, ONE_D, TWO, TWO_A, TWO_B
+    ONE, ONE_A, ONE_B, ONE_C, ONE_D, TWO, TWO_A, TWO_B, NotValid_Dci_Format
   } m_format {ONE}; ///< the format
   uint8_t   m_tpc {UINT8_MAX}; ///< Tx power control command
   uint8_t   m_harqProcess {UINT8_MAX}; ///< HARQ process
@@ -115,7 +115,8 @@ struct DlDciListElement_s
   enum VrbFormat_e
   {
     VRB_DISTRIBUTED,
-    VRB_LOCALIZED
+    VRB_LOCALIZED,
+    NotValid_VRB_Format
   } m_vrbFormat {VRB_DISTRIBUTED}; ///< the format
   bool      m_tbSwap {false}; ///< swap?
   bool      m_spsRelease {false}; ///< release?
@@ -125,7 +126,7 @@ struct DlDciListElement_s
   /// Ngap enum
   enum Ngap_e
   {
-    GAP1, GAP2
+    GAP1, GAP2, NotValid_Ngap
   } m_nGap {GAP1}; ///< the gap
   uint8_t   m_tbsIdx {UINT8_MAX}; ///< tbs index
   uint8_t   m_dlPowerOffset {UINT8_MAX}; ///< DL power offset
@@ -191,14 +192,16 @@ struct LogicalChannelConfigListElement_s
   {
     DIR_UL,
     DIR_DL,
-    DIR_BOTH
+    DIR_BOTH,
+    NotValid
   } m_direction; ///< the direction
 
   /// QosBearerType enum
   enum QosBearerType_e
   {
     QBT_NON_GBR,
-    QBT_GBR
+    QBT_GBR,
+    NotValid_QosBearerType
   } m_qosBearerType; ///< the QOS bearer type
 
   uint8_t   m_qci; ///< QCI
@@ -228,7 +231,7 @@ struct PhichListElement_s
   /// Phich enum
   enum Phich_e
   {
-    ACK, NACK
+    ACK, NACK, NotValid
   } m_phich; ///< the phich
 };
 
@@ -288,7 +291,7 @@ struct BuildBroadcastListElement_s
   /// Type enum
   enum Type_e
   {
-    BCCH, PCCH
+    BCCH, PCCH, NotValid
   } m_type; ///< the type
   uint8_t m_index; ///< index
   struct DlDciListElement_s m_dci; ///< DCI
@@ -336,7 +339,7 @@ struct MacCeListElement_s
   /// MAC CE type enum
   enum MacCeType_e
   {
-    BSR, PHR, CRNTI
+    BSR, PHR, CRNTI, NotValid
   } m_macCeType; ///< MAC CE type
   struct MacCeValue_u m_macCeValue; ///< MAC CE value
 };
@@ -484,7 +487,7 @@ struct CqiListElement_s
   /// CqiType_e enumeration
   enum CqiType_e
   {
-    P10, P11, P20, P21, A12, A22, A20, A30, A31
+    P10, P11, P20, P21, A12, A22, A20, A30, A31, NotValid
   } m_cqiType; ///< CQI type
   std::vector <uint8_t> m_wbCqi; ///< wb CQI
   uint8_t   m_wbPmi; ///< wb PMI
@@ -505,7 +508,8 @@ struct UlCqi_s
     PUSCH,
     PUCCH_1,
     PUCCH_2,
-    PRACH
+    PRACH,
+    NotValid
   } m_type; ///< type
 };
 
