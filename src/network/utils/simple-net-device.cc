@@ -539,7 +539,7 @@ SimpleNetDevice::DoDispose (void)
   m_channel = 0;
   m_node = 0;
   m_receiveErrorModel = 0;
-  m_queue->Flush ();
+  m_queue->Dispose ();
   if (FinishTransmissionEvent.IsRunning ())
     {
       FinishTransmissionEvent.Cancel ();
