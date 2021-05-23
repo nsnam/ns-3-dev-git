@@ -63,6 +63,7 @@ MultiUserScheduler::DoDispose (void)
   m_dlInfo.psduMap.clear ();
   m_dlInfo.txParams.Clear ();
   m_ulInfo.txParams.Clear ();
+  m_ulInfo.trigger = 0;
   Object::DoDispose ();
 }
 

@@ -67,6 +67,7 @@ void
 HtFrameExchangeManager::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_agreements.clear ();
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   m_psdu = 0;
