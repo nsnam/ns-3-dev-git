@@ -57,3 +57,8 @@ def build(bld):
                                  ['point-to-point', 'internet', 'applications', 'traffic-control', 'network', 'internet-apps'])
 
     obj.source = 'tcp-validation.cc'
+
+    obj = bld.create_ns3_program('tcp-bbr-example',
+                                 ['point-to-point', 'internet', 'applications', 'traffic-control', 'network', 'internet-apps', 'flow-monitor'])
+
+    obj.source = 'tcp-bbr-example.cc'
