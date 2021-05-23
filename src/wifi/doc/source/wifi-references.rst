@@ -60,3 +60,7 @@ References
 .. [porat2016] \ R. Porat et al., "11ax Evaluation Methodology", IEE P802.11 Wireless LANs, 11-14-0571r3, 2016. 
 
 .. [krotov2020rate] \ A. Krotov, A. Kiryanov, E. Khorov., `Rate Control With Spatial Reuse for Wi-Fi 6 Dense Deployments <https://doi.org/10.1109/ACCESS.2020.3023552>`__, IEEE Access, September 2020
+
+.. [magrin2021mu] \ D. Magrin, S. Avallone, S. Roy, and M. Zorzi, 'Validation of the ns-3 802.11ax OFDMA implementation', in Proceedings of WNS3 2021.
+
+.. [avallone2021wcm] \ S. Avallone, P. Imputato, G. Redieteab, C. Ghosh and S. Roy, "Will OFDMA Improve the Performance of 802.11 WiFi Networks?", in IEEE Wireless Communications Magazine, DOI: 10.1109/MWC.001.2000332, to appear.

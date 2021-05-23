@@ -291,3 +291,12 @@ When run for 802.11g 6 Mbit/s in infrastucture mode, the output is:
    :align: center
 
    Bianchi throughput validation results for 802.11g 6 Mbps in infrastructure configuration
+
+Multi-user transmissions validation
+***********************************
+
+The implementation of the OFDMA support has been validated against a theoretical model [magrin2021mu]_ .
+
+A preliminary evaluation of the usage of OFDMA in 802.11ax, in terms of latency in non-saturated
+conditions, throughput in saturated conditions and transmission range with UL OFDMA, is provided
+in [avallone2021wcm]_ .

@@ -599,6 +599,22 @@ in an infrastructure network where the AP has SSID ``ns-3-ssid``::
                           "BE_MaxAmsduSize", UintegerValue (7935),
                           "ActiveProbing", BooleanValue (false));
 
+802.11ax APs support sending multi-user frames via DL OFDMA and UL OFDMA if a Multi-User Scheduler is
+aggregated to the wifi MAC (by default no scheduler is aggregated). WifiMacHelper enables to aggregate
+a Multi-User Scheduler to an AP and set its parameters::
+
+    WifiMacHelper wifiMacHelper;
+    wifiMacHelper.SetMultiUserScheduler ("ns3::RrMultiUserScheduler",
+                                        "EnableUlOfdma", BooleanValue (true),
+                                        "EnableBsrp", BooleanValue (false));
+
+The Ack Manager is in charge of selecting the acknowledgment method among the three
+available methods (see section :ref:`wifi-mu-ack-sequences` ). The default ack manager
+enables to select the acknowledgment method, e.g.::
+
+    Config::SetDefault ("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                       EnumValue (WifiAcknowledgment::DL_MU_AGGREGATE_TF));
+
 Selection of the Access Category (AC)
 +++++++++++++++++++++++++++++++++++++
 

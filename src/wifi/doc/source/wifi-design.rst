@@ -22,6 +22,7 @@ on the IEEE 802.11 standard [ieee80211]_. We will go into more detail below but 
 * basic 802.11 DCF with **infrastructure** and **adhoc** modes
 * **802.11a**, **802.11b**, **802.11g**, **802.11n** (both 2.4 and 5 GHz bands), **802.11ac** and **802.11ax** (2.4, 5 and 6 GHz bands) physical layers
 * **MSDU aggregation** and **MPDU aggregation** extensions of 802.11n, and both can be combined together (two-level aggregation)
+* 802.11ax **DL OFDMA** and **UL OFDMA**
 * QoS-based EDCA and queueing extensions of **802.11e**
 * the ability to use different propagation loss models and propagation delay models,
   please see the chapter on :ref:`Propagation` for more detail
@@ -163,14 +164,13 @@ packets.  Interference from other wireless technologies is only modeled
 when the SpectrumWifiPhy is used.
 The following details pertain to the physical layer and channel models:
 
-* 802.11ax OFDMA is not supported (but some code changes are progressively being added)
+* 802.11ax MU-RTS/CTS and the MU EDCA Parameter set are not yet supported
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
 * 802.11n RIFS is not supported
 * 802.11 PCF/HCF/HCCA are not implemented
 * Authentication and encryption are missing
 * Processing delays are not modeled
-* The current implementation assumes that secondary channels are always higher than primary channels
 * Channel bonding implementation only supports the use of the configured channel width
   and does not perform CCA on secondary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
@@ -872,7 +872,95 @@ The features supported by every FrameExchangeManager class are as follows:
 * ``HtFrameExchangeManager`` adds support for Block Ack (compressed variant),
   A-MSDU and A-MPDU aggregation, Implicit Block Ack Request policy
 * ``VhtFrameExchangeManager`` adds support for S-MPDUs
-* ``HeFrameExchangeManager`` is empty for now
+* ``HeFrameExchangeManager`` adds support for the transmission and reception of
+  multi-user frames via DL OFDMA and UL OFDMA, as detailed below.
+
+.. _wifi-mu-ack-sequences:
+
+Multi-user transmissions
+########################
+
+Since the introduction of the IEEE 802.11ax amendment, multi-user (MU) transmissions are
+possible, both in downlink (DL) and uplink (UL), by using OFDMA and/or MU-MIMO. Currently,
+ns-3 only supports multi-user transmissions via OFDMA. Three acknowledgment sequences are
+implemented for DL OFDMA.
+
+The first acknowledgment sequence is made of multiple BlockAckRequest/BlockAck frames sent
+as single-user frames, as shown in Figure :ref:`fig-ack-su-format-80211ax`.
+
+.. _fig-ack-su-format-80211ax:
+
+.. figure:: figures/ack-su-format.*
+   :align: center
+
+   Acknowledgment of DL MU frames in single-user format
+
+For the second acknowledgment sequence, an MU-BAR Trigger Frame is sent (as a single-user
+frame) to solicit BlockAck responses sent in TB PPDUs, as shown in Figure :ref:`fig-mu-bar-80211ax`.
+
+.. _fig-mu-bar-80211ax:
+
+.. figure:: figures/mu-bar.*
+   :align: center
+
+   Acknowledgment of DL MU frames via MU-BAR Trigger Frame sent as single-user frame
+
+For the third acknowledgment sequence, an MU-BAR Trigger Frame is aggregated to every PSDU
+included in the DL MU PPDU and the BlockAck responses are sent in TB PPDUs, as shown in
+Figure :ref:`fig-aggr-mu-bar-80211ax`.
+
+.. _fig-aggr-mu-bar-80211ax:
+
+.. figure:: figures/aggr-mu-bar.*
+   :align: center
+
+   Acknowledgment of DL MU frames via aggregated MU-BAR Trigger Frames
+
+For UL OFDMA, both BSRP Trigger Frames and Basic Trigger Frames are supported, as shown in
+Figure :ref:`fig-ul-ofdma-80211ax`. A BSRP Trigger Frame is sent by an AP to solicit stations
+to send QoS Null frames containing Buffer Status Reports. A Basic Trigger Frame is sent by an AP
+to solicit stations to send data frames in TB PPDUs, which are acknowledged by the AP via a
+Multi-STA BlockAck frame.
+
+.. _fig-ul-ofdma-80211ax:
+
+.. figure:: figures/ul-ofdma.*
+   :align: center
+
+   Acknowledgment of DL MU frames via aggregated MU-BAR Trigger Frames
+
+Multi-User Scheduler
+####################
+
+A new component, named **MultiUserScheduler**, is in charge of determining what frame exchange
+sequence the aggregated AP has to perform when gaining a TXOP (DL OFDMA, UL OFDMA or BSRP Trigger
+Frame), along with the information needed to perform the selected frame exchange sequence (e.g.,
+the set of PSDUs to send in case of DL OFDMA). ``MultiUserScheduler`` is an abstract base class.
+Currently, the only available subclass is **RrMultiUserScheduler**. By default, no multi-user
+scheduler is aggregated to an AP (hence, OFDMA is not enabled).
+
+Round-robin Multi-User Scheduler
+################################
+The Round-robin Multi-User Scheduler dynamically assigns a priority to each station to ensure
+airtime fairness in the selection of stations for DL multi-user transmissions. The ``NStations``
+attribute enables to set the maximum number of stations that can be the recipients of a DL
+multi-user frame. Therefore, every time an HE AP accesses the channel to transmit a DL
+multi-user frame, the scheduler determines the number of stations the AP has frames to send
+to (capped at the value specified through the mentioned attribute) and attempts to allocate
+equal sized RUs to as many such stations as possible without leaving RUs of the same size
+unused. For instance, if the channel bandwidth is 40 MHz and the determined number of stations
+is 5, the first 4 stations (in order of priority) are allocated a 106-tone RU each (if 52-tone
+RUs were allocated, we would have three 52-tone RUs unused). If central 26-tone RUs can be
+allocated (as determined by the ``UseCentral26TonesRus`` attribute), possible stations that
+have not been allocated an RU are assigned one of such 26-tone RU. In the previous example,
+the fifth station would have been allocated one of the two available central 26-tone RUs.
+
+When UL OFDMA is enabled (via the ``EnableUlOfdma`` attribute), every DL OFDMA frame exchange
+is followed by an UL OFDMA frame exchange involving the same set of stations and the same RU
+allocation as the preceding DL multi-user frame. The transmission of a BSRP Trigger Frame can
+optionally (depending on the value of the ``EnableBsrp`` attribute) precede the transmission
+of a Basic Trigger Frame in order for the AP to collect information about the buffer status
+of the stations.
 
 Ack manager
 ###########
@@ -896,16 +984,20 @@ WifiDefaultAckManager
 The ``WifiDefaultAckManager`` allows to determine which acknowledgment policy
 to use depending on the value of its attributes:
 
-* UseExplicitBar: used to determine the ack policy to use when a response is needed from
+* ``UseExplicitBar``: used to determine the ack policy to use when a response is needed from
   the recipient and the current transmission includes multiple frames (A-MPDU) or there are
   frames transmitted previously for which an acknowledgment is needed. If this attribute is
   true, the *Block Ack* policy is used. Otherwise, the *Implicit Block Ack Request* policy is used.
-* BaThreshold: used to determine when the originator of a Block Ack agreement needs to
+* ``BaThreshold``: used to determine when the originator of a Block Ack agreement needs to
   request a response from the recipient. A value of zero means that a response is requested
   at every frame transmission. Otherwise, a non-zero value (less than or equal to 1) means
   that a response is requested upon transmission of a frame whose sequence number is distant
   at least BaThreshold multiplied by the transmit window size from the starting sequence
   number of the transmit window.
+* ``DlMuAckSequenceType``: used to select the acknowledgment sequence for DL MU frames
+  (acknowledgment in single-user format, acknowledgment via MU-BAR Trigger Frame sent as
+  single-user frame, or acknowledgment via MU-BAR Trigger Frames aggregated to the data
+  frames).
 
 Protection manager
 ##################

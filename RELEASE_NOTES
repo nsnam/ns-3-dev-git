@@ -37,6 +37,7 @@ New user-visible features
 - (wifi) Stations keep track of the TXOP holder and ignore the NAV when they receive an RTS frame from the TXOP holder
 - (wifi) The TxOkHeader and TxErrHeader trace sources of RegularWifiMac have been obsoleted and replaced by trace sources that better capture the result of a transmission (AckedMpdu, NAckedMpdu, DroppedMpdu, MpduResponseTimeout and PsduResponseTimeout)
 - (wifi) Add ThompsonSamplingWifiManager rate control algorithm.
+- (wifi) Add support for 802.11ax DL and UL OFDMA
 - (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
 - (traffic-control) Added FqPIE queue disc with L4S mode.
 - (antenna) Added PhasedArrayModel, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models

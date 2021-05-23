@@ -141,6 +141,14 @@ SOURCEFIGS = \
 	$(SRC)/wifi/doc/source/figures/WifiPpduHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/FemHierarchy.dia \
 	$(SRC)/wifi/doc/source/figures/snir.dia \
+	$(SRC)/wifi/doc/source/figures/ack-su-format.pdf \
+	$(SRC)/wifi/doc/source/figures/ack-su-format.png \
+	$(SRC)/wifi/doc/source/figures/mu-bar.pdf \
+	$(SRC)/wifi/doc/source/figures/mu-bar.png \
+	$(SRC)/wifi/doc/source/figures/aggr-mu-bar.pdf \
+	$(SRC)/wifi/doc/source/figures/aggr-mu-bar.png \
+	$(SRC)/wifi/doc/source/figures/ul-ofdma.pdf \
+	$(SRC)/wifi/doc/source/figures/ul-ofdma.png \
 	$(SRC)/wifi/doc/source/figures/clear-channel.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate.eps \
 	$(SRC)/wifi/doc/source/figures/nist-frame-success-rate-n.eps \
