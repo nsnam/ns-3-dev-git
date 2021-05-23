@@ -143,6 +143,7 @@ private:
                                        ///< for retransmission 
   std::vector <RetxPdu> m_retxBuffer;  ///< Buffer for PDUs considered for retransmission
 
+    uint32_t m_maxTxBufferSize; ///< maximum transmission buffer size
     uint32_t m_txonBufferSize; ///< transmit on buffer size
     uint32_t m_retxBufferSize; ///< retransmit buffer size
     uint32_t m_txedBufferSize; ///< transmit ed buffer size

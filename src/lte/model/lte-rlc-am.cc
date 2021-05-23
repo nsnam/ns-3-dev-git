@@ -119,7 +119,11 @@ LteRlcAm::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&LteRlcAm::m_txOpportunityForRetxAlwaysBigEnough),
                    MakeBooleanChecker ())
-
+    .AddAttribute ("MaxTxBufferSize",
+                   "Maximum Size of the Transmission Buffer (in Bytes)",
+                   UintegerValue (10 * 1024),
+                   MakeUintegerAccessor (&LteRlcAm::m_maxTxBufferSize),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
@@ -133,6 +137,7 @@ LteRlcAm::DoDispose ()
   m_statusProhibitTimer.Cancel ();
   m_rbsTimer.Cancel ();
 
+  m_maxTxBufferSize = 0;
   m_txonBuffer.clear ();
   m_txonBufferSize = 0;
   m_txedBuffer.clear ();
@@ -157,17 +162,28 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
-  /** Store PDCP PDU */
+  if (m_txonBufferSize + p->GetSize () <= m_maxTxBufferSize)
+    {
+      /** Store PDCP PDU */
+      LteRlcSduStatusTag tag;
+      tag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
+      p->AddPacketTag (tag);
 
-  LteRlcSduStatusTag tag;
-  tag.SetStatus (LteRlcSduStatusTag::FULL_SDU);
-  p->AddPacketTag (tag);
-
-  NS_LOG_LOGIC ("Txon Buffer: New packet added");
-  m_txonBuffer.push_back (TxPdu (p, Simulator::Now ()));
-  m_txonBufferSize += p->GetSize ();
-  NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size() );
-  NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
+      NS_LOG_LOGIC ("Txon Buffer: New packet added");
+      m_txonBuffer.push_back (TxPdu (p, Simulator::Now ()));
+      m_txonBufferSize += p->GetSize ();
+      NS_LOG_LOGIC ("NumOfBuffers = " << m_txonBuffer.size() );
+      NS_LOG_LOGIC ("txonBufferSize = " << m_txonBufferSize);
+    }
+  else
+    {
+      // Discard full RLC SDU
+      NS_LOG_LOGIC ("TxonBuffer is full. RLC SDU discarded");
+      NS_LOG_LOGIC ("MaxTxBufferSize = " << m_maxTxBufferSize);
+      NS_LOG_LOGIC ("txonBufferSize    = " << m_txonBufferSize);
+      NS_LOG_LOGIC ("packet size     = " << p->GetSize ());
+      m_txDropTrace (p);
+    }
 
   /** Report Buffer Status */
   DoReportBufferStatus ();

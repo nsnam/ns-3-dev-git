@@ -176,6 +176,11 @@ protected:
    * Used to inform of a PDU reception from the MAC SAP user
    */
   TracedCallback<uint16_t, uint8_t, uint32_t, uint64_t> m_rxPdu;
+  /**
+   * The trace source fired when the RLC drops a packet before
+   * transmission.
+   */
+  TracedCallback<Ptr<const Packet> > m_txDropTrace;
 
 };
 

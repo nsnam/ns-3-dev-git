@@ -112,6 +112,11 @@ TypeId LteRlc::GetTypeId (void)
                      "PDU received.",
                      MakeTraceSourceAccessor (&LteRlc::m_rxPdu),
                      "ns3::LteRlc::ReceiveTracedCallback")
+    .AddTraceSource ("TxDrop",
+                     "Trace source indicating a packet "
+                     "has been dropped before transmission",
+                     MakeTraceSourceAccessor (&LteRlc::m_txDropTrace),
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
