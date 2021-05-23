@@ -24,8 +24,9 @@
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/string.h"
+#include "ns3/enum.h"
 #include "ns3/log.h"
-#include "ns3/yans-wifi-helper.h"
+#include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -35,7 +36,9 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/packet-sink.h"
-#include "ns3/yans-wifi-channel.h"
+#include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/wifi-acknowledgment.h"
+#include "ns3/rng-seed-manager.h"
 
 // This is a simple example in order to show how to configure an IEEE 802.11ax Wi-Fi network.
 //
@@ -44,14 +47,16 @@
 // The PHY bitrate is constant over all the simulation run. The user can also specify the distance between
 // the access point and the station: the larger the distance the smaller the goodput.
 //
-// The simulation assumes a single station in an infrastructure network:
+// The simulation assumes a configurable number of stations in an infrastructure network:
 //
 //  STA     AP
 //    *     *
 //    |     |
 //   n1     n2
 //
-//Packets in this simulation belong to BestEffort Access Class (AC_BE).
+// Packets in this simulation belong to BestEffort Access Class (AC_BE).
+// By selecting an acknowledgment sequence for DL MU PPDUs, it is possible to aggregate a
+// Round Robin scheduler to the AP, so that DL MU PPDUs are sent by the AP via DL OFDMA.
 
 using namespace ns3;
 
@@ -59,15 +64,18 @@ NS_LOG_COMPONENT_DEFINE ("he-wifi-network");
 
 int main (int argc, char *argv[])
 {
-  bool udp = true;
-  bool useRts = false;
-  bool useExtendedBlockAck = false;
-  double simulationTime = 10; //seconds
-  double distance = 1.0; //meters
-  double frequency = 5; //whether 2.4, 5 or 6 GHz
-  int mcs = -1; // -1 indicates an unset value
-  double minExpectedThroughput = 0;
-  double maxExpectedThroughput = 0;
+  bool udp {true};
+  bool useRts {false};
+  bool useExtendedBlockAck {false};
+  double simulationTime {10}; //seconds
+  double distance {1.0}; //meters
+  double frequency {5}; //whether 2.4, 5 or 6 GHz
+  std::size_t nStations {1};
+  std::string dlAckSeqType {"NO-OFDMA"};
+  int mcs {-1}; // -1 indicates an unset value
+  uint32_t payloadSize = 700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
+  double minExpectedThroughput {0};
+  double maxExpectedThroughput {0};
 
   CommandLine cmd (__FILE__);
   cmd.AddValue ("frequency", "Whether working in the 2.4, 5 or 6 GHz band (other values gets rejected)", frequency);
@@ -76,7 +84,11 @@ int main (int argc, char *argv[])
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
   cmd.AddValue ("useRts", "Enable/disable RTS/CTS", useRts);
   cmd.AddValue ("useExtendedBlockAck", "Enable/disable use of extended BACK", useExtendedBlockAck);
+  cmd.AddValue ("nStations", "Number of non-AP HE stations", nStations);
+  cmd.AddValue ("dlAckType", "Ack sequence type for DL OFDMA (NO-OFDMA, ACK-SU-FORMAT, MU-BAR, AGGR-MU-BAR)",
+                dlAckSeqType);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
+  cmd.AddValue ("payloadSize", "The application payload size in bytes", payloadSize);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
@@ -84,6 +96,26 @@ int main (int argc, char *argv[])
   if (useRts)
     {
       Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
+    }
+
+  if (dlAckSeqType == "ACK-SU-FORMAT")
+    {
+      Config::SetDefault ("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                          EnumValue (WifiAcknowledgment::DL_MU_BAR_BA_SEQUENCE));
+    }
+  else if (dlAckSeqType == "MU-BAR")
+    {
+      Config::SetDefault ("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                          EnumValue (WifiAcknowledgment::DL_MU_TF_MU_BAR));
+    }
+  else if (dlAckSeqType == "AGGR-MU-BAR")
+    {
+      Config::SetDefault ("ns3::WifiDefaultAckManager::DlMuAckSequenceType",
+                          EnumValue (WifiAcknowledgment::DL_MU_AGGREGATE_TF));
+    }
+  else if (dlAckSeqType != "NO-OFDMA")
+    {
+      NS_ABORT_MSG ("Invalid DL ack sequence type (must be NO-OFDMA, ACK-SU-FORMAT, MU-BAR or AGGR-MU-BAR)");
     }
 
   double prevThroughput [12];
@@ -108,25 +140,33 @@ int main (int argc, char *argv[])
         {
           for (int gi = 3200; gi >= 800; ) //Nanoseconds
             {
-              uint32_t payloadSize; //1500 byte IP packet
-              if (udp)
+              if (!udp)
                 {
-                  payloadSize = 1472; //bytes
-                }
-              else
-                {
-                  payloadSize = 1448; //bytes
                   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (payloadSize));
                 }
 
-              NodeContainer wifiStaNode;
-              wifiStaNode.Create (1);
+              NodeContainer wifiStaNodes;
+              wifiStaNodes.Create (nStations);
               NodeContainer wifiApNode;
               wifiApNode.Create (1);
 
-              YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
-              YansWifiPhyHelper phy;
-              phy.SetChannel (channel.Create ());
+              /*
+               * SingleModelSpectrumChannel cannot be used with 802.11ax because two
+               * spectrum models are required: one with 78.125 kHz bands for HE PPDUs
+               * and one with 312.5 kHz bands for, e.g., non-HT PPDUs (for more details,
+               * see issue #408 (CLOSED))
+               */
+              Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+              Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
+              spectrumChannel->AddPropagationLossModel (lossModel);
+              Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
+              spectrumChannel->SetPropagationDelayModel (delayModel);
+
+              SpectrumWifiPhyHelper phy;
+              phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
+              phy.SetErrorRateModel ("ns3::TableBasedErrorRateModel",
+                                     "FallbackErrorRateModel", StringValue ("ns3::NistErrorRateModel"));
+              phy.SetChannel (spectrumChannel);
 
               WifiMacHelper mac;
               WifiHelper wifi;
@@ -161,9 +201,15 @@ int main (int argc, char *argv[])
                            "Ssid", SsidValue (ssid));
               phy.Set ("ChannelWidth", UintegerValue (channelWidth));
 
-              NetDeviceContainer staDevice;
-              staDevice = wifi.Install (phy, mac, wifiStaNode);
+              NetDeviceContainer staDevices;
+              staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
+              if (dlAckSeqType != "NO-OFDMA")
+                {
+                  mac.SetMultiUserScheduler ("ns3::RrMultiUserScheduler",
+                                             "EnableUlOfdma", BooleanValue (false),
+                                             "EnableBsrp", BooleanValue (false));
+                }
               mac.SetType ("ns3::ApWifiMac",
                            "EnableBeaconJitter", BooleanValue (false),
                            "Ssid", SsidValue (ssid));
@@ -171,6 +217,12 @@ int main (int argc, char *argv[])
 
               NetDeviceContainer apDevice;
               apDevice = wifi.Install (phy, mac, wifiApNode);
+
+              RngSeedManager::SetSeed (1);
+              RngSeedManager::SetRun (1);
+              int64_t streamNumber = 100;
+              streamNumber += wifi.AssignStreams (apDevice, streamNumber);
+              streamNumber += wifi.AssignStreams (staDevices, streamNumber);
 
               // Set guard interval and MPDU buffer size
               Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (gi)));
@@ -187,19 +239,19 @@ int main (int argc, char *argv[])
               mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
               mobility.Install (wifiApNode);
-              mobility.Install (wifiStaNode);
+              mobility.Install (wifiStaNodes);
 
               /* Internet stack*/
               InternetStackHelper stack;
               stack.Install (wifiApNode);
-              stack.Install (wifiStaNode);
+              stack.Install (wifiStaNodes);
 
               Ipv4AddressHelper address;
               address.SetBase ("192.168.1.0", "255.255.255.0");
-              Ipv4InterfaceContainer staNodeInterface;
+              Ipv4InterfaceContainer staNodeInterfaces;
               Ipv4InterfaceContainer apNodeInterface;
 
-              staNodeInterface = address.Assign (staDevice);
+              staNodeInterfaces = address.Assign (staDevices);
               apNodeInterface = address.Assign (apDevice);
 
               /* Setting applications */
@@ -209,17 +261,20 @@ int main (int argc, char *argv[])
                   //UDP flow
                   uint16_t port = 9;
                   UdpServerHelper server (port);
-                  serverApp = server.Install (wifiStaNode.Get (0));
+                  serverApp = server.Install (wifiStaNodes);
                   serverApp.Start (Seconds (0.0));
                   serverApp.Stop (Seconds (simulationTime + 1));
 
-                  UdpClientHelper client (staNodeInterface.GetAddress (0), port);
-                  client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
-                  client.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
-                  client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
-                  ApplicationContainer clientApp = client.Install (wifiApNode.Get (0));
-                  clientApp.Start (Seconds (1.0));
-                  clientApp.Stop (Seconds (simulationTime + 1));
+                  for (std::size_t i = 0; i < nStations; i++)
+                    {
+                      UdpClientHelper client (staNodeInterfaces.GetAddress (i), port);
+                      client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
+                      client.SetAttribute ("Interval", TimeValue (Time ("0.00001"))); //packets/s
+                      client.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+                      ApplicationContainer clientApp = client.Install (wifiApNode.Get (0));
+                      clientApp.Start (Seconds (1.0));
+                      clientApp.Stop (Seconds (simulationTime + 1));
+                    }
                 }
               else
                 {
@@ -227,35 +282,48 @@ int main (int argc, char *argv[])
                   uint16_t port = 50000;
                   Address localAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
                   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", localAddress);
-                  serverApp = packetSinkHelper.Install (wifiStaNode.Get (0));
+                  serverApp = packetSinkHelper.Install (wifiStaNodes);
                   serverApp.Start (Seconds (0.0));
                   serverApp.Stop (Seconds (simulationTime + 1));
 
-                  OnOffHelper onoff ("ns3::TcpSocketFactory", Ipv4Address::GetAny ());
-                  onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
-                  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-                  onoff.SetAttribute ("PacketSize", UintegerValue (payloadSize));
-                  onoff.SetAttribute ("DataRate", DataRateValue (1000000000)); //bit/s
-                  AddressValue remoteAddress (InetSocketAddress (staNodeInterface.GetAddress (0), port));
-                  onoff.SetAttribute ("Remote", remoteAddress);
-                  ApplicationContainer clientApp = onoff.Install (wifiApNode.Get (0));
-                  clientApp.Start (Seconds (1.0));
-                  clientApp.Stop (Seconds (simulationTime + 1));
+                  for (std::size_t i = 0; i < nStations; i++)
+                    {
+                      OnOffHelper onoff ("ns3::TcpSocketFactory", Ipv4Address::GetAny ());
+                      onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+                      onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+                      onoff.SetAttribute ("PacketSize", UintegerValue (payloadSize));
+                      onoff.SetAttribute ("DataRate", DataRateValue (1000000000)); //bit/s
+                      AddressValue remoteAddress (InetSocketAddress (staNodeInterfaces.GetAddress (i), port));
+                      onoff.SetAttribute ("Remote", remoteAddress);
+                      ApplicationContainer clientApp = onoff.Install (wifiApNode.Get (0));
+                      clientApp.Start (Seconds (1.0));
+                      clientApp.Stop (Seconds (simulationTime + 1));
+                    }
                 }
 
-              Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+              Simulator::Schedule (Seconds (0), &Ipv4GlobalRoutingHelper::PopulateRoutingTables);
 
               Simulator::Stop (Seconds (simulationTime + 1));
               Simulator::Run ();
 
+              // When multiple stations are used, there are chances that association requests collide
+              // and hence the throughput may be lower than expected. Therefore, we relax the check
+              // that the throughput cannot decrease by introducing a scaling factor (or tolerance)
+              double tolerance = 0.10;
               uint64_t rxBytes = 0;
               if (udp)
                 {
-                  rxBytes = payloadSize * DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+                  for (uint32_t i = 0; i < serverApp.GetN (); i++)
+                    {
+                      rxBytes += payloadSize * DynamicCast<UdpServer> (serverApp.Get (i))->GetReceived ();
+                    }
                 }
               else
                 {
-                  rxBytes = DynamicCast<PacketSink> (serverApp.Get (0))->GetTotalRx ();
+                  for (uint32_t i = 0; i < serverApp.GetN (); i++)
+                    {
+                      rxBytes += DynamicCast<PacketSink> (serverApp.Get (i))->GetTotalRx ();
+                    }
                 }
               double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
 
@@ -266,7 +334,7 @@ int main (int argc, char *argv[])
               //test first element
               if (mcs == 0 && channelWidth == 20 && gi == 3200)
                 {
-                  if (throughput < minExpectedThroughput)
+                  if (throughput * (1 + tolerance) < minExpectedThroughput)
                     {
                       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                       exit (1);
@@ -275,14 +343,14 @@ int main (int argc, char *argv[])
               //test last element
               if (mcs == 11 && channelWidth == 160 && gi == 800)
                 {
-                  if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput)
+                  if (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput * (1 + tolerance))
                     {
                       NS_LOG_ERROR ("Obtained throughput " << throughput << " is not expected!");
                       exit (1);
                     }
                 }
               //test previous throughput is smaller (for the same mcs)
-              if (throughput > previous)
+              if (throughput * (1 + tolerance) > previous)
                 {
                   previous = throughput;
                 }
@@ -292,7 +360,7 @@ int main (int argc, char *argv[])
                   exit (1);
                 }
               //test previous throughput is smaller (for the same channel width and GI)
-              if (throughput > prevThroughput [index])
+              if (throughput * (1 + tolerance) > prevThroughput [index])
                 {
                   prevThroughput [index] = throughput;
                 }
