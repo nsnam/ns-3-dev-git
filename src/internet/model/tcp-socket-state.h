@@ -207,7 +207,7 @@ public:
 
   EcnCodePoint_t         m_ectCodePoint {Ect0};  //!< ECT code point to use
 
-  uint32_t               m_lastAckedSackedBytes {0}; //!< Last acked and sacked recorded upon receiving last acknowledgment
+  uint32_t               m_lastAckedSackedBytes {0}; //!< The number of bytes acked and sacked as indicated by the current ACK received. This is similar to acked_sacked variable in Linux
 
   /**
    * \brief Get cwnd in segments rather than bytes

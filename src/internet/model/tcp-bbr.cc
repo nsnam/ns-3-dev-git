@@ -39,6 +39,11 @@ TcpBbr::GetTypeId (void)
     .SetParent<TcpCongestionOps> ()
     .AddConstructor<TcpBbr> ()
     .SetGroupName ("Internet")
+    .AddAttribute ("Stream",
+                   "Random number stream (default is set to 4 to align with Linux results)",
+                   UintegerValue (4),
+                   MakeUintegerAccessor (&TcpBbr::SetStream),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("HighGain",
                    "Value of high gain",
                    DoubleValue (2.89),
@@ -50,12 +55,12 @@ TcpBbr::GetTypeId (void)
                    MakeUintegerAccessor (&TcpBbr::m_bandwidthWindowLength),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RttWindowLength",
-                   "Length of bandwidth windowed filter",
+                   "Length of RTT windowed filter",
                    TimeValue (Seconds (10)),
                    MakeTimeAccessor (&TcpBbr::m_rtPropFilterLen),
                    MakeTimeChecker ())
     .AddAttribute ("ProbeRttDuration",
-                   "Length of bandwidth windowed filter",
+                   "Time to be spent in PROBE_RTT phase",
                    TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&TcpBbr::m_probeRttDuration),
                    MakeTimeChecker ())
@@ -109,6 +114,7 @@ TcpBbr::TcpBbr (const TcpBbr &sock)
     m_rtPropFilterLen (sock.m_rtPropFilterLen),
     m_rtPropStamp (sock.m_rtPropStamp),
     m_isInitialized (sock.m_isInitialized),
+    m_uv (sock.m_uv),
     m_delivered (sock.m_delivered),
     m_appLimited (sock.m_appLimited),  
     m_txItemDelivered (sock.m_txItemDelivered),  
@@ -122,15 +128,13 @@ TcpBbr::TcpBbr (const TcpBbr &sock)
     m_hasSeenRtt (sock.m_hasSeenRtt)
 {
   NS_LOG_FUNCTION (this);
-  m_uv = CreateObject<UniformRandomVariable> ();
 }
 
-int64_t
-TcpBbr::AssignStreams (int64_t stream)
+void
+TcpBbr::SetStream (uint32_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
   m_uv->SetStream (stream);
-  return 1;
 }
 
 void

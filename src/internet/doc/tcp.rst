@@ -51,10 +51,11 @@ connection setup and close logic. Several congestion control algorithms
 are supported, with CUBIC the default, and NewReno, Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
-(LEDBAT), TCP Low Priority (TCP-LP) and and Data Center TCP (DCTCP) also supported. The model also supports
-Selective Acknowledgements (SACK), Proportional Rate Reduction (PRR) and
-Explicit Congestion Notification (ECN). Multipath-TCP is not yet supported in
-the |ns3| releases.
+(LEDBAT), TCP Low Priority (TCP-LP), Data Center TCP (DCTCP) and Bottleneck
+Bandwidth and RTT (BBR) also supported. The model also supports Selective
+Acknowledgements (SACK), Proportional Rate Reduction (PRR) and Explicit
+Congestion Notification (ECN). Multipath-TCP is not yet supported in the |ns3|
+releases.
 
 Model history
 +++++++++++++
@@ -1040,6 +1041,85 @@ environment. Some differences were noted:
 More information about DCTCP is available in the RFC 8257:
 https://tools.ietf.org/html/rfc8257
 
+BBR
+^^^
+BBR (class :cpp:class:`TcpBbr`) is a congestion control algorithm that
+regulates the sending rate by deriving an estimate of the bottleneck's
+available bandwidth and RTT of the path. It seeks to operate at an optimal
+point where sender experiences maximum delivery rate with minimum RTT. It
+creates a network model comprising maximum delivery rate with minimum RTT
+observed so far, and then estimates BDP (maximum bandwidth * minimum RTT)
+to control the maximum amount of inflight data. BBR controls congestion by
+limiting the rate at which packets are sent. It caps the cwnd to one BDP
+and paces out packets at a rate which is adjusted based on the latest estimate
+of delivery rate. BBR algorithm is agnostic to packet losses and ECN marks.
+
+pacing_gain controls the rate of sending data and cwnd_gain controls the amount
+of data to send.
+
+The following is a high level overview of BBR congestion control algorithm:
+
+On receiving an ACK:
+    rtt = now - packet.sent_time
+    update_minimum_rtt (rtt)
+    delivery_rate = estimate_delivery_rate (packet)
+    update_maximum_bandwidth (delivery_rate)
+
+After transmitting a data packet:
+    bdp = max_bandwidth * min_rtt
+    if (cwnd * bdp < inflight)
+      return
+    if (now > nextSendTime)
+      {
+        transmit (packet)
+        nextSendTime = now + packet.size / (pacing_gain * max_bandwidth)
+      }
+    else
+      return
+    Schedule (nextSendTime, Send)
+
+To enable BBR on all TCP sockets, the following configuration can be used:
+
+::
+
+  Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpBbr::GetTypeId ()));
+
+To enable BBR on a chosen TCP socket, the following configuration can be used
+(note that an appropriate Node ID must be used instead of 1):
+
+::
+
+  Config::Set ("$ns3::NodeListPriv/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue (TcpBbr::GetTypeId ()));
+
+The ns-3 implementation of BBR is based on its Linux implementation. Linux 5.4
+kernel implementation has been used to validate the behavior of ns-3
+implementation of BBR (See below section on Validation).
+
+In addition, the following unit tests have been written to validate the
+implementation of BBR in ns-3:
+
+* BBR should enable (if not already done) TCP pacing feature.
+* Test to validate the values of pacing_gain and cwnd_gain in different phases
+of BBR.
+
+An example program, examples/tcp/tcp-bbr-example.cc, is provided to experiment
+with BBR for one long running flow. This example uses a simple topology
+consisting of one sender, one receiver and two routers to examine congestion
+window, throughput and queue control. A program similar to this has been run
+using the Network Stack Tester (NeST) using BBR from Linux kernel 5.4, and the
+results were compared against ns-3 results.
+
+More information about BBR is available in the following Internet Draft:
+https://tools.ietf.org/html/draft-cardwell-iccrg-bbr-congestion-control-00
+
+More information about Delivery Rate Estimation is in the following draft:
+https://tools.ietf.org/html/draft-cheng-iccrg-delivery-rate-estimation-00
+
+For an academic peer-reviewed paper on the BBR implementation in ns-3,
+please refer to:
+
+* Vivek Jain, Viyom Mittal and Mohit P. Tahiliani. "Design and Implementation of TCP BBR in ns-3." In Proceedings of the 10th Workshop on ns-3, pp. 16-22. 2018. (https://dl.acm.org/doi/abs/10.1145/3199902.3199911)
+
 Support for Explicit Congestion Notification (ECN)
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1312,6 +1392,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-ledbat-test:** Unit tests on the LEDBAT congestion control
 * **tcp-lp-test:** Unit tests on the TCP-LP congestion control
 * **tcp-dctcp-test:** Unit tests on the DCTCP congestion control
+* **tcp-bbr-test:** Unit tests on the BBR congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO occurs
@@ -1438,6 +1519,32 @@ a similar scenario but with ECN enabled throughout.
 
 TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
 module documentation.
+
+Like DCTCP and TCP CUBIC, the ns-3 implementation of TCP BBR was validated
+against the BBR implementation of Linux kernel 5.4 using Network Stack Tester
+(NeST). NeST is a python package which allows the users to emulate kernel space
+protocols using Linux network namespaces. Figure :ref:`fig-ns3-bbr-vs-linux-bbr`
+compares the congestion window evolution between ns-3 and Linux for a single
+flow operating over a 10 Mbps link with 10 ms base RTT and FIFO queue
+discipline.
+
+.. _fig-ns3-bbr-vs-linux-bbr:
+
+.. figure:: figures/ns3-bbr-vs-linux-bbr.*
+   :scale: 80 %
+   :align: center
+
+   Congestion window evolution: ns-3 BBR vs. Linux BBR (using NeST)
+
+It can be observed that the congestion window traces for ns-3 BBR closely
+overlap with Linux BBR. The periodic drops in congestion window every 10
+seconds depict the PROBE_RTT phase of the BBR algorithm. In this phase, BBR
+algorithm keeps the congestion window fixed to 4 segments.
+
+The example program, examples/tcp-bbr-example.cc has been used to obtain the
+congestion window curve shown in Figure :ref:`fig-ns3-bbr-vs-linux-bbr`. The
+detailed instructions to reproduce ns-3 plot and NeST plot can be found at:
+https://github.com/mohittahiliani/BBR-Validation
 
 
 Writing a new congestion control algorithm

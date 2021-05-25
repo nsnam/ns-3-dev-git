@@ -48,8 +48,7 @@ private:
 TcpBbrPacingEnableTest::TcpBbrPacingEnableTest (bool pacing, const std::string &name)
   : TestCase (name),
     m_pacing (pacing)
-{
-}
+{}
 
 void
 TcpBbrPacingEnableTest::DoRun ()
@@ -93,8 +92,7 @@ TcpBbrCheckGainValuesTest::TcpBbrCheckGainValuesTest (TcpBbr::BbrMode_t state,
   : TestCase (name),
     m_mode (state),
     m_highGain (highGain)
-{
-}
+{}
 
 void
 TcpBbrCheckGainValuesTest::DoRun ()
@@ -113,34 +111,40 @@ TcpBbrCheckGainValuesTest::ExecuteTest ()
   TcpBbr::BbrMode_t desiredMode;
   switch (m_mode)
     {
-    case TcpBbr::BBR_STARTUP:
-      cong->EnterStartup ();
-      desiredPacingGain = m_highGain;
-      desiredCwndGain  = m_highGain;
-      actualPacingGain = cong->GetPacingGain ();
-      actualCwndGain = cong->GetCwndGain ();
-      desiredMode = TcpBbr::BBR_STARTUP;
-      break;
-    case TcpBbr::BBR_DRAIN:
-      cong->EnterDrain ();
-      desiredPacingGain = 1 / m_highGain;
-      desiredCwndGain  = m_highGain;
-      desiredMode = TcpBbr::BBR_DRAIN;
-      break;
-    case TcpBbr::BBR_PROBE_BW:
-      cong->EnterProbeBW ();
-      desiredPacingGain = 1;
-      desiredCwndGain  = 2;
-      desiredMode = TcpBbr::BBR_PROBE_BW;
-      break;
-    case TcpBbr::BBR_PROBE_RTT:
-      cong->EnterProbeRTT ();
-      desiredPacingGain = 1;
-      desiredCwndGain  = 1;
-      desiredMode = TcpBbr::BBR_PROBE_RTT;
-      break;
-    default:
-      NS_ASSERT (false);
+      case TcpBbr::BBR_STARTUP:
+        cong->EnterStartup ();
+        desiredPacingGain = m_highGain;
+        desiredCwndGain  = m_highGain;
+        actualPacingGain = cong->GetPacingGain ();
+        actualCwndGain = cong->GetCwndGain ();
+        desiredMode = TcpBbr::BBR_STARTUP;
+        break;
+      case TcpBbr::BBR_DRAIN:
+        cong->EnterDrain ();
+        desiredPacingGain = 1 / m_highGain;
+        desiredCwndGain  = m_highGain;
+        desiredMode = TcpBbr::BBR_DRAIN;
+        break;
+      case TcpBbr::BBR_PROBE_BW:
+        cong->EnterProbeBW ();
+        // The value of desiredPacingGain is sensitive to the setting of random
+        // variable stream. The value of 1.25 has been used in this test with a
+        // stream value of 4 (default for TCP BBR). Note that if the stream value
+        // is changed, this test might fail because when BBR enters the PROBE_BW
+        // phase, the value of actualPacingGain is chosen randomly from 1.25,
+        // 0.75, 1, 1, 1, 1, 1, 1.
+        desiredPacingGain = 1.25;
+        desiredCwndGain  = 2;
+        desiredMode = TcpBbr::BBR_PROBE_BW;
+        break;
+      case TcpBbr::BBR_PROBE_RTT:
+        cong->EnterProbeRTT ();
+        desiredPacingGain = 1;
+        desiredCwndGain  = 1;
+        desiredMode = TcpBbr::BBR_PROBE_RTT;
+        break;
+      default:
+        NS_ASSERT (false);
     }
 
   actualPacingGain = cong->GetPacingGain ();

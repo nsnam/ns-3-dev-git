@@ -31,7 +31,8 @@
 //
 // This program runs by default for 100 seconds and creates a new directory
 // called 'bbr-results' in the ns-3 root directory. The program creates one
-// sub-directory in 'bbr-results' directory and three .plotme files.
+// sub-directory called 'pcap' in 'bbr-results' directory (if pcap generation
+// is enabled) and three .dat files.
 //
 // (1) 'pcap' sub-directory contains six PCAP files:
 //     * bbr-0-0.pcap for the interface on Sender
@@ -40,9 +41,17 @@
 //     * bbr-2-1.pcap for the second interface on R1
 //     * bbr-3-0.pcap for the first interface on R2
 //     * bbr-3-1.pcap for the second interface on R2
-// (2) cwnd.plotme contains congestion window trace for the sender node
-// (3) throughput.plotme contains sender side throughput trace
-// (4) queueSize.plotme contains queue length trace from the bottleneck link
+// (2) cwnd.dat file contains congestion window trace for the sender node
+// (3) throughput.dat file contains sender side throughput trace
+// (4) queueSize.dat file contains queue length trace from the bottleneck link
+//
+// BBR algorithm enters PROBE_RTT phase in every 10 seconds. The congestion
+// window is fixed to 4 segments in this phase with a goal to achieve a better
+// estimate of minimum RTT (because queue at the bottleneck link tends to drain
+// when the congestion window is reduced to 4 segments).
+//
+// The congestion window and queue occupancy traces output by this program show
+// periodic drops every 10 seconds when BBR algorithm is in PROBE_RTT phase.
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -54,13 +63,9 @@
 
 using namespace ns3;
 
-Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
-double stopTime = 100;
-
 std::string dir;
-std::string str;
 uint32_t prev = 0;
-double prevtime = 0;
+Time prevTime = Seconds (0);
 
 // Calculate throughput
 static void
@@ -68,10 +73,10 @@ TraceThroughput (Ptr<FlowMonitor> monitor)
 {
   FlowMonitor::FlowStatsContainer stats = monitor->GetFlowStats ();
   auto itr = stats.begin ();
-  double curtime = Simulator::Now ().GetSeconds ();
-  std::ofstream thr (dir + "/throughput.plotme", std::ios::out | std::ios::app);
-  thr <<  curtime << " " << 8 * (itr->second.txBytes - prev) / (1000 * 1000 * (curtime - prevtime)) << std::endl;
-  prevtime = curtime;
+  Time curTime = Now ();
+  std::ofstream thr (dir + "/throughput.dat", std::ios::out | std::ios::app);
+  thr <<  curTime << " " << 8 * (itr->second.txBytes - prev) / (1000 * 1000 * (curTime.GetSeconds () - prevTime.GetSeconds ())) << std::endl;
+  prevTime = curTime;
   prev = itr->second.txBytes;
   Simulator::Schedule (Seconds (0.2), &TraceThroughput, monitor);
 }
@@ -81,7 +86,7 @@ void CheckQueueSize (Ptr<QueueDisc> qd)
 {
   uint32_t qsize = qd->GetCurrentSize ().GetValue ();
   Simulator::Schedule (Seconds (0.2), &CheckQueueSize, qd);
-  std::ofstream q (dir + "/queueSize.plotme", std::ios::out | std::ios::app);
+  std::ofstream q (dir + "/queueSize.dat", std::ios::out | std::ios::app);
   q << Simulator::Now ().GetSeconds () << " " << qsize << std::endl;
   q.close ();
 }
@@ -95,7 +100,7 @@ static void CwndTracer (Ptr<OutputStreamWrapper> stream, uint32_t oldval, uint32
 void TraceCwnd (uint32_t nodeId, uint32_t socketId)
 {
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dir + "/cwnd.plotme");
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream (dir + "/cwnd.dat");
   Config::ConnectWithoutContext ("/NodeList/" + std::to_string (nodeId) + "/$ns3::TcpL4Protocol/SocketList/" + std::to_string (socketId) + "/CongestionWindow", MakeBoundCallback (&CwndTracer, stream));
 }
 
@@ -110,20 +115,19 @@ int main (int argc, char *argv [])
   strftime (buffer, sizeof (buffer), "%d-%m-%Y-%I-%M-%S", timeinfo);
   std::string currentTime (buffer);
 
-  uint32_t stream = 1;
   std::string tcpTypeId = "TcpBbr";
   std::string queueDisc = "FifoQueueDisc";
   uint32_t delAckCount = 2;
   bool bql = true;
+  bool enablePcap = false;
+  Time stopTime = Seconds (100);
 
   CommandLine cmd (__FILE__);
-  cmd.AddValue ("stream", "Seed value for random variable", stream);
   cmd.AddValue ("tcpTypeId", "Transport protocol to use: TcpNewReno, TcpBbr", tcpTypeId);
   cmd.AddValue ("delAckCount", "Delayed ACK count", delAckCount);
+  cmd.AddValue ("enablePcap", "Enable/Disable pcap file generation", enablePcap);
   cmd.AddValue ("stopTime", "Stop time for applications / simulation time will be stopTime + 1", stopTime);
   cmd.Parse (argc, argv);
-
-  uv->SetStream (stream);
 
   queueDisc = std::string ("ns3::") + queueDisc;
 
@@ -198,19 +202,18 @@ int main (int argc, char *argv [])
   ApplicationContainer sourceApps = source.Install (sender.Get (0));
   sourceApps.Start (Seconds (0.0));
   Simulator::Schedule (Seconds (0.2), &TraceCwnd, 0, 0);
-  sourceApps.Stop (Seconds (stopTime));
+  sourceApps.Stop (stopTime);
 
   // Install application on the receiver
   PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
   ApplicationContainer sinkApps = sink.Install (receiver.Get (0));
   sinkApps.Start (Seconds (0.0));
-  sinkApps.Stop (Seconds (stopTime));
+  sinkApps.Stop (stopTime);
 
   // Create a new directory to store the output of the program
   dir = "bbr-results/" + currentTime + "/";
   std::string dirToSave = "mkdir -p " + dir;
   system (dirToSave.c_str ());
-  system ((dirToSave + "/pcap/").c_str ());
 
   // The plotting scripts are provided in the following repository, if needed:
   // https://github.com/mohittahiliani/BBR-Validation/
@@ -219,7 +222,7 @@ int main (int argc, char *argv [])
   // from the link given above and place it in the ns-3 root directory.
   // Uncomment the following three lines to generate plots for Congestion
   // Window, sender side throughput and queue occupancy on the bottleneck link.
-  // 
+  //
   // system (("cp -R PlotScripts/gnuplotScriptCwnd " + dir).c_str ());
   // system (("cp -R PlotScripts/gnuplotScriptThroughput " + dir).c_str ());
   // system (("cp -R PlotScripts/gnuplotScriptQueueSize " + dir).c_str ());
@@ -230,15 +233,19 @@ int main (int argc, char *argv [])
   qd = tch.Install (routers.Get (0)->GetDevice (1));
   Simulator::ScheduleNow (&CheckQueueSize, qd.Get (0));
 
-  // Enable PCAP traces
-  bottleneckLink.EnablePcapAll (dir + "/pcap/bbr", true);
+  // Generate PCAP traces if it is enabled
+  if (enablePcap)
+    {
+      system ((dirToSave + "/pcap/").c_str ());
+      bottleneckLink.EnablePcapAll (dir + "/pcap/bbr", true);
+    }
 
   // Check for dropped packets using Flow Monitor
   FlowMonitorHelper flowmon;
   Ptr<FlowMonitor> monitor = flowmon.InstallAll ();
   Simulator::Schedule (Seconds (0 + 0.000001), &TraceThroughput, monitor);
 
-  Simulator::Stop (Seconds (stopTime));
+  Simulator::Stop (stopTime + TimeStep (1));
   Simulator::Run ();
   Simulator::Destroy ();
 

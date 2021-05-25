@@ -80,13 +80,11 @@ public:
 
   /**
    * Assign a fixed random variable stream number to the random variables
-   * used by this model.  Return the number of streams (possibly zero) that
-   * have been assigned.
+   * used by this model.
    *
    * \param stream first stream index to use
-   * \return the number of stream indices assigned by this model
    */
-  virtual int64_t AssignStreams (int64_t stream);
+  virtual void SetStream (uint32_t stream);
 
   virtual std::string GetName () const;
   virtual bool HasCongControl () const;
@@ -353,7 +351,7 @@ private:
   Time        m_probeRtPropStamp            {Seconds (0)};       //!< The wall clock time at which the current BBR.RTProp sample was obtained.
   Time        m_probeRttDoneStamp           {Seconds (0)};       //!< Time to exit from BBR_PROBE_RTT state
   bool        m_probeRttRoundDone           {false};             //!< True when it is time to exit BBR_PROBE_RTT
-  bool        m_packetConservation          {false};             //!<
+  bool        m_packetConservation          {false};             //!< Enable/Disable packet conservation mode
   uint32_t    m_priorCwnd                   {0};                 //!< The last-known good congestion window
   bool        m_idleRestart                 {false};             //!< When restarting from idle, set it true
   uint32_t    m_targetCWnd                  {0};                 //!< Target value for congestion window, adapted to the estimated BDP
@@ -370,9 +368,9 @@ private:
   Ptr<UniformRandomVariable> m_uv           {nullptr};           //!< Uniform Random Variable
   uint64_t    m_delivered                   {0};                 //!< The total amount of data in bytes delivered so far
   uint32_t    m_appLimited                  {0};                 //!< The index of the last transmitted packet marked as application-limited
-  uint32_t    m_txItemDelivered             {0};                 //!< 
+  uint32_t    m_txItemDelivered             {0};                 //!< The number of bytes already delivered at the time of new packet transmission
   uint32_t    m_extraAckedGain              {1};                 //!< Gain factor for adding extra ack to cwnd
-  uint32_t    m_extraAcked[2]               {0, 0};              //!< Maximum excess data acked in epoch
+  uint32_t    m_extraAcked [2]              {0, 0};              //!< Maximum excess data acked in epoch
   uint32_t    m_extraAckedWinRtt            {0};                 //!< Age of extra acked in rtt
   uint32_t    m_extraAckedWinRttLength      {5};                 //!< Window length of extra acked window
   uint32_t    m_ackEpochAckedResetThresh    {1 << 17};           //!< Max allowed val for m_ackEpochAcked, after which sampling epoch is reset 
