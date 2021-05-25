@@ -49,11 +49,11 @@ namespace ns3 {
  * enum if pybindgen is upgraded to support Callback<WifiCodeRate>
  */
 typedef uint16_t WifiCodeRate;
-const uint16_t WIFI_CODE_RATE_UNDEFINED = 0;
-const uint16_t WIFI_CODE_RATE_1_2 = 1;
-const uint16_t WIFI_CODE_RATE_2_3 = 2;
-const uint16_t WIFI_CODE_RATE_3_4 = 3;
-const uint16_t WIFI_CODE_RATE_5_6 = 4;
+const uint16_t WIFI_CODE_RATE_UNDEFINED = 0; //!< undefined coding rate
+const uint16_t WIFI_CODE_RATE_1_2 = 1;       //!< 1/2 coding rate
+const uint16_t WIFI_CODE_RATE_2_3 = 2;       //!< 2/3 coding rate
+const uint16_t WIFI_CODE_RATE_3_4 = 3;       //!< 3/4 coding rate
+const uint16_t WIFI_CODE_RATE_5_6 = 4;       //!< 5/6 coding rate
 
 /**
  * \ingroup wifi

@@ -416,9 +416,9 @@ VhtCapabilities::GetRxHighestSupportedLgiDataRate () const
 }
 
 std::ostream &
-operator << (std::ostream &os, const VhtCapabilities &VhtCapabilities)
+operator << (std::ostream &os, const VhtCapabilities &vhtCapabilities)
 {
-  os <<  VhtCapabilities.GetVhtCapabilitiesInfo () << "|" << VhtCapabilities.GetSupportedMcsAndNssSet ();
+  os <<  vhtCapabilities.GetVhtCapabilitiesInfo () << "|" << vhtCapabilities.GetSupportedMcsAndNssSet ();
 
   return os;
 }

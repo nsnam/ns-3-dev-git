@@ -28,14 +28,16 @@
 
 namespace ns3 {
 
-const uint16_t ERROR_TABLE_BCC_SMALL_FRAME_SIZE = 32;
-const uint16_t ERROR_TABLE_BCC_LARGE_FRAME_SIZE = 1458;
-const uint16_t ERROR_TABLE_LDPC_FRAME_SIZE = 1458;
-const uint8_t ERROR_TABLE_BCC_MAX_NUM_MCS = 9;
-const uint8_t ERROR_TABLE_LDPC_MAX_NUM_MCS = 11;
+const uint16_t ERROR_TABLE_BCC_SMALL_FRAME_SIZE = 32;   //!< reference size (bytes) of small frames for BCC
+const uint16_t ERROR_TABLE_BCC_LARGE_FRAME_SIZE = 1458; //!< reference size (bytes) of large frames for BCC
+const uint16_t ERROR_TABLE_LDPC_FRAME_SIZE = 1458;      //!< reference size (bytes) for LDPC
+const uint8_t ERROR_TABLE_BCC_MAX_NUM_MCS = 9;          //!< maximum number of MCSs for BCC
+const uint8_t ERROR_TABLE_LDPC_MAX_NUM_MCS = 11;        //!< maximum number of MCSs for LDPC
 
+/// Table of SNR (dB) and PER pairs
 typedef std::vector<std::pair<double /* SNR (dB) */, double /* PER */> > SnrPerTable;
 
+/// AWGN error table for BCC with reference size of 32 bytes
 static const SnrPerTable AwgnErrorTableBcc32 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] = {
   // MCS-0
   {
@@ -113,6 +115,7 @@ static const SnrPerTable AwgnErrorTableBcc32 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] =
   },
 };
 
+/// AWGN error table for BCC with reference size of 1458 bytes
 static const SnrPerTable AwgnErrorTableBcc1458 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1] = {
   // MCS-0
   {
@@ -179,6 +182,7 @@ static const SnrPerTable AwgnErrorTableBcc1458 [ERROR_TABLE_BCC_MAX_NUM_MCS + 1]
   },
 };
 
+/// AWGN error table for LDPC with reference size of 1458 bytes
 static const SnrPerTable AwgnErrorTableLdpc1458 [ERROR_TABLE_LDPC_MAX_NUM_MCS + 1] = {
   // MCS-0
   {

@@ -259,11 +259,11 @@ private:
  * output stream output operator
  *
  * \param os the output stream
- * \param VhtCapabilities the VHT capabilities
+ * \param vhtCapabilities the VHT capabilities
  *
  * \returns output stream
  */
-std::ostream &operator << (std::ostream &os, const VhtCapabilities &vhtcapabilities);
+std::ostream &operator << (std::ostream &os, const VhtCapabilities &vhtCapabilities);
 
 } //namespace ns3
 

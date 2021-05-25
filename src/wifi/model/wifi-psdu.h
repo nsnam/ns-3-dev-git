@@ -125,13 +125,14 @@ public:
 
   /**
    * \brief Get a copy of the i-th A-MPDU subframe (includes subframe header, MPDU, and possibly padding)
+   * \param i the index in the list of A-MPDU subframes
    * \return the i-th A-MPDU subframe.
    */
   Ptr<Packet> GetAmpduSubframe (std::size_t i) const;
 
   /**
    * \brief Return the size of the i-th A-MPDU subframe.
-   *
+   * \param i the index in the list of A-MPDU subframes
    * \return the size of the i-th A-MPDU subframe.
    */
   std::size_t GetAmpduSubframeSize (std::size_t i) const;

@@ -163,6 +163,7 @@ public:
   /**
    * \param recipient Address of recipient.
    * \param tid traffic ID.
+   * \return the BlockAckRequest to send
    *
    * Prepare a BlockAckRequest to be sent to <i>recipient</i> for Traffic ID
    * <i>tid</i>. The header for the BlockAckRequest is requested to the QosTxop

@@ -236,6 +236,7 @@ protected:
    *
    * \param txDuration the duration of the PSDU transmission
    * \param txParams the TX parameters used to send the PSDU
+   * \return the value for the Duration/ID field
    */
   virtual Time GetPsduDurationId (Time txDuration, const WifiTxParameters& txParams) const;
 
@@ -286,13 +287,15 @@ protected:
    * \param initialFrame true if the frame being transmitted is the initial frame
    *                     of the TXOP. This is used to determine whether the TXOP
    *                     limit can be exceeded
+   * \return true if frame is transmitted, false otherwise
    */
   virtual bool SendMpduFromBaManager (Ptr<QosTxop> edca, Time availableTime, bool initialFrame);
 
   /**
-   * TODO Transmit a data frame, if data is available and its trasmission plus the
-   * response  fits within the given available time, if the latter is not
-   * Time::Min() and this is not the initial frame of a TXOP.
+   * Given a non-broadcast QoS data frame, prepare the PSDU to transmit by attempting
+   * A-MSDU and A-MPDU aggregation (if enabled), while making sure that the frame
+   * exchange (possibly including protection and acknowledgment) is completed within
+   * the given available time.
    *
    * \param peekedItem the given non-broadcast QoS data frame
    * \param availableTime the amount of time allowed for the frame exchange. Equals
@@ -300,6 +303,7 @@ protected:
    * \param initialFrame true if the frame being transmitted is the initial frame
    *                     of the TXOP. This is used to determine whether the TXOP
    *                     limit can be exceeded
+   * \return true if frame is transmitted, false otherwise
    */
   virtual bool SendDataFrame (Ptr<const WifiMacQueueItem> peekedItem,
                               Time availableTime, bool initialFrame);
@@ -312,6 +316,8 @@ protected:
    * - MPDU aggregation is enabled and there is more than one packet in the queue OR
    * - the station is a VHT station
    *
+   * \param recipient address of the recipient.
+   * \param tid traffic ID.
    * \return true if a Block Ack agreement needs to be established, false otherwise.
    */
   virtual bool NeedSetupBlockAck (Mac48Address recipient, uint8_t tid);

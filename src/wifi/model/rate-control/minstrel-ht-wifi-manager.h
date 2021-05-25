@@ -472,17 +472,6 @@ private:
   void UpdateRate (MinstrelHtWifiRemoteStation *station);
 
   /**
-   * For managing rates from different groups, a global index for
-   * all rates in all groups is used.
-   * The group order is fixed by BW -> SGI -> streams.
-   * Following functions convert from groupId and rateId to
-   * global index and vice versa.
-   *
-   * \param index the index
-   * \returns the rate ID
-   */
-
-  /**
    * Return the rateId inside a group, from the global index.
    *
    * \param index the index
@@ -500,6 +489,10 @@ private:
 
   /**
    * Returns the global index corresponding to the groupId and rateId.
+   *
+   * For managing rates from different groups, a global index for
+   * all rates in all groups is used.
+   * The group order is fixed by BW -> SGI -> streams.
    *
    * \param groupId the group ID
    * \param rateId the rate ID

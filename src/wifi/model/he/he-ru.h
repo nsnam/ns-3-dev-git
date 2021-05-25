@@ -153,7 +153,7 @@ public:
   /// map (bandwidth, number of tones) pairs to the group of subcarrier ranges
   typedef std::map<BwTonesPair, std::vector<SubcarrierGroup> > SubcarrierGroups;
 
-  //!< Subcarrier groups for all RUs (with indices being applicable to primary 80 MHz channel)
+  /// Subcarrier groups for all RUs (with indices being applicable to primary 80 MHz channel)
   static const SubcarrierGroups  m_heRuSubcarrierGroups;
 };
 

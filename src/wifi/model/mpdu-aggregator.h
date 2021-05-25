@@ -150,6 +150,7 @@ public:
    *
    * \param mpduSize size of the MPDU in bytes.
    * \param isSingle true if S-MPDU.
+   * \return the A-MPDU subframe header
    */
   static AmpduSubframeHeader GetAmpduSubframeHeader (uint16_t mpduSize, bool isSingle);
 

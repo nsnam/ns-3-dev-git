@@ -453,6 +453,8 @@ public:
   /**
    * Reset the bitmap to 0. For Multi-STA Block Acks, reset the bitmap included
    * in the Per AID TID Info subfield identified by <i>index</i>.
+   *
+   * \param index the index of the Per AID TID Info subfield (Multi-STA Block Ack only)
    */
   void ResetBitmap (std::size_t index = 0);
 
@@ -587,6 +589,9 @@ public:
   CtrlTriggerUserInfoField (uint8_t triggerType);
   /**
    * Copy assignment operator.
+   *
+   * \param userInfo the User Info field to copy
+   * \return a reference to the copied object
    *
    * Checks that the given User Info fields is included in the same type
    * of Trigger Frame.
@@ -900,6 +905,9 @@ public:
   ~CtrlTriggerHeader ();
   /**
    * Copy assignment operator.
+   *
+   * \param trigger the Trigger frame to copy
+   * \return a reference to the copied object
    *
    * Ensure that the type of this Trigger Frame is set to the type of the given
    * Trigger Frame before copying the User Info fields.

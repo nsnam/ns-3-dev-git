@@ -419,6 +419,7 @@ public:
   /**
    * \param recipient the recipient
    * \param tid the TID
+   * \return the BlockAckRequest header for the established BA agreement
    *
    * Get the BlockAckRequest header for the established BA agreement
    * (<i>recipient</i>,<i>tid</i>).

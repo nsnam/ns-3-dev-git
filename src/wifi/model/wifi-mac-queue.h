@@ -373,9 +373,9 @@ private:
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
   mutable bool m_expiredPacketsPresent;     //!< True if expired packets are in the queue
 
-  //!< Per (MAC address, TID) pair queued packets
+  /// Per (MAC address, TID) pair queued packets
   std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedPackets;
-  //!< Per (MAC address, TID) pair queued bytes
+  /// Per (MAC address, TID) pair queued bytes
   std::unordered_map<WifiAddressTidPair, uint32_t, WifiAddressTidHash> m_nQueuedBytes;
 
   /// Traced callback: fired when a packet is dropped due to lifetime expiration

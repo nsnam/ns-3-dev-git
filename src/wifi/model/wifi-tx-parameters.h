@@ -45,11 +45,17 @@ class WifiTxParameters
 {
 public:
   WifiTxParameters ();
+  /**
+   * Copy constructor.
+   *
+   * \param txParams the WifiTxParameters to copy
+   */
   WifiTxParameters (const WifiTxParameters& txParams);
 
   /**
    * Copy assignment operator.
    * \param txParams the TX parameters to assign to this object
+   * \return the reference to this object
    */
   WifiTxParameters& operator= (const WifiTxParameters& txParams);
 

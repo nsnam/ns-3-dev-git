@@ -38,6 +38,12 @@ typedef std::pair<Mac48Address, uint8_t> WifiAddressTidPair;  //!< (MAC address,
  */
 struct WifiAddressTidHash
 {
+  /**
+   * Functional operator for (MAC address, TID) hash computation.
+   *
+   * \param addressTidPair the (MAC address, TID) pair
+   * \return the hash
+   */
   std::size_t operator() (const WifiAddressTidPair& addressTidPair) const;
 };
 
@@ -46,6 +52,12 @@ struct WifiAddressTidHash
  */
 struct WifiAddressHash
 {
+  /**
+   * Functional operator for MAC address hash computation.
+   *
+   * \param address the MAC address
+   * \return the hash
+   */
   std::size_t operator() (const Mac48Address& address) const;
 };
 
@@ -235,12 +247,11 @@ bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
 
 /**
  * \ingroup wifi
- * Next function is useful to get traffic id of different packet types.
+ * This function is useful to get traffic id of different packet types.
  *
  * \param packet packet to check
  * \param hdr 802.11 header for packet to check
- *
- * Returns TID of different packet types
+ * \return the TID of different packet types
  */
 uint8_t GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr);
 

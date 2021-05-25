@@ -47,9 +47,23 @@ struct BlockAckType
   enum Variant m_variant;           //!< Block Ack variant
   std::vector<uint8_t> m_bitmapLen; //!< Length (bytes) of included bitmaps
 
-  /// Constructors
+  /**
+   * Default constructor for BlockAckType.
+   */
   BlockAckType ();
+  /**
+   * Constructor for BlockAckType with given variant.
+   *
+   * \param v the Block Ack variant
+   */
   BlockAckType (Variant v);
+  /**
+   * Constructor for BlockAckType with given variant
+   * and bitmap length.
+   *
+   * \param v the Block Ack variant
+   * \param l the length (bytes) of included bitmaps
+   */
   BlockAckType (Variant v, std::vector<uint8_t> l);
 };
 
@@ -74,9 +88,23 @@ struct BlockAckReqType
   uint8_t m_nSeqControls;           //!< Number of included Starting Sequence Control fields.
                                     //!< This member is added for future support of Multi-TID BARs
 
-  /// Constructors
+  /**
+   * Default constructor for BlockAckReqType.
+   */
   BlockAckReqType ();
+  /**
+   * Constructor for BlockAckReqType with given variant.
+   *
+   * \param v the Block Ack Request variant
+   */
   BlockAckReqType (Variant v);
+  /**
+   * Constructor for BlockAckReqType with given variant
+   * and number of SSC fields.
+   *
+   * \param v the Block Ack Request variant
+   * \param nSeqControls the number of included Starting Sequence Control fields
+   */
   BlockAckReqType (Variant v, uint8_t nSeqControls);
 };
 

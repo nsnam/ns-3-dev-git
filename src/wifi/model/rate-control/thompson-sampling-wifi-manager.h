@@ -102,6 +102,7 @@ private:
    *
    * \param st Remote STA.
    * \param mode The WifiMode.
+   * \return the guard interval in nanoseconds
    */
   uint16_t GetModeGuardInterval (WifiRemoteStation *st, WifiMode mode) const;
 
@@ -113,9 +114,9 @@ private:
    */
   double SampleBetaVariable (uint64_t alpha, uint64_t beta) const;
 
-  Ptr<GammaRandomVariable> m_gammaRandomVariable; //< Variable used to sample beta-distributed random variables
+  Ptr<GammaRandomVariable> m_gammaRandomVariable; //!< Variable used to sample beta-distributed random variables
 
-  double m_decay; //< Exponential decay coefficient, Hz
+  double m_decay; //!< Exponential decay coefficient, Hz
 
   TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };

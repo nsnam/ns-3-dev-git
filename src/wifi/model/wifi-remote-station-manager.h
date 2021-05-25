@@ -1069,6 +1069,10 @@ private:
    * If the given TXVECTOR is used for a MU transmission, return the STAID of
    * the station with the given address if we are an AP or our own STAID if we
    * are a STA associated with some AP. Otherwise, return SU_STA_ID.
+   *
+   * \param address the address of the station
+   * \param txVector the TXVECTOR used for a MU transmission
+   * \return the STA-ID of the station
    */
   uint16_t GetStaId (Mac48Address address, const WifiTxVector& txVector) const;
 

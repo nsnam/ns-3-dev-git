@@ -72,7 +72,7 @@ const PhyEntity::ModulationLookupTable OfdmPhy::m_ofdmModulationLookupTable {
   { "OfdmRate13_5MbpsBW5MHz", { WIFI_CODE_RATE_3_4, 64 } }
 };
 
-// OFDM rates in bits per second
+/// OFDM rates in bits per second for each bandwidth (MHz)
 const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
    {{ 20, // MHz
      {  6000000,  9000000, 12000000, 18000000,
@@ -86,6 +86,11 @@ const std::map<uint16_t, std::array<uint64_t, 8> > s_ofdmRatesBpsList =
 
 /* *NS_CHECK_STYLE_ON* */
 
+/**
+ * Get the array of possible OFDM rates for each bandwidth (MHz).
+ *
+ * \return the OFDM rates in bits per second
+ */
 const std::map<uint16_t, std::array<uint64_t, 8> >& GetOfdmRatesBpsList (void)
 {
   return s_ofdmRatesBpsList;

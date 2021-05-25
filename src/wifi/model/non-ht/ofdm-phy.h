@@ -411,7 +411,7 @@ protected:
    *
    * \param symbolDuration the symbol duration (in us) excluding guard interval
    * \param guardInterval the considered guard interval duration in nanoseconds
-   * \param usableSubarriers the number of usable subcarriers for data
+   * \param usableSubCarriers the number of usable subcarriers for data
    * \param numberOfBitsPerSubcarrier the number of data bits per subcarrier
    * \param codingRate the coding rate
    *

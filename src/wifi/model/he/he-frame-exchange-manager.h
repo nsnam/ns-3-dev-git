@@ -33,7 +33,13 @@ class ApWifiMac;
 class StaWifiMac;
 class CtrlTriggerHeader;
 
+/**
+ * Map of PSDUs indexed by STA-ID
+ */
 typedef std::unordered_map <uint16_t /* staId */, Ptr<WifiPsdu> /* PSDU */> WifiPsduMap;
+/**
+ * Map of const PSDUs indexed by STA-ID
+ */
 typedef std::unordered_map <uint16_t /* staId */, Ptr<const WifiPsdu> /* PSDU */> WifiConstPsduMap;
 
 /**
@@ -71,6 +77,7 @@ public:
    *
    * \param to the MAC address
    * \param psduMap the PSDU map
+   * \return the PSDU, if any, or a null pointer, otherwise
    */
   static Ptr<WifiPsdu> GetPsduTo (Mac48Address to, const WifiPsduMap& psduMap);
 

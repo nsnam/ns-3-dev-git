@@ -728,14 +728,14 @@ protected:
    * Create an event using WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
    *
-   * \copydoc InterferenceHelper::Add(Ptr<const WifiPpdu>, WifiTxVector, Time, RxPowerWattPerChannelBand, bool)
+   * \copydoc InterferenceHelper::Add
    */
   Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
   /**
    * Update an event in WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
    *
-   * \copydoc InterferenceHelper::UpdateEvent(Ptr<Event>, RxPowerWattPerChannelBand)
+   * \copydoc InterferenceHelper::UpdateEvent
    */
   void UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
   /**

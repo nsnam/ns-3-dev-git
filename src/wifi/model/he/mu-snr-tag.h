@@ -66,6 +66,7 @@ public:
   /**
    * Return true if the SNR value for the given STA-ID is present
    *
+   * \param staId the STA-ID
    * \return true if the SNR value for the given STA-ID is present
    */
   bool IsPresent (uint16_t staId) const;

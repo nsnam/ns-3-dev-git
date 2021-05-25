@@ -201,11 +201,11 @@ private:
   Ptr<EventImpl> m_endRxEvent;       //!< event to schedule upon RXSTART.indication
   bool m_rescheduled;             //!< whether the timer has been already rescheduled
 
-  //!< the MPDU response timeout callback
+  /// the MPDU response timeout callback
   mutable MpduResponseTimeout m_mpduResponseTimeoutCallback;
-  //!< the PSDU response timeout callback
+  /// the PSDU response timeout callback
   mutable PsduResponseTimeout m_psduResponseTimeoutCallback;
-  //!< the PSDU map response timeout callback
+  /// the PSDU map response timeout callback
   mutable PsduMapResponseTimeout m_psduMapResponseTimeoutCallback;
 };
 

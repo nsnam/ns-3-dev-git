@@ -101,7 +101,7 @@ public:
    * Update the received power (W) for all bands, i.e. add up the received power
    * to the current received power, for each band.
    *
-   * \param the received power (W) for all bands.
+   * \param rxPower the received power (W) for all bands.
    */
   void UpdateRxPowerW (RxPowerWattPerChannelBand rxPower);
 

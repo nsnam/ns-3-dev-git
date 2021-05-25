@@ -226,11 +226,11 @@ struct WifiDlMuBarBaSequence : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with an Ack frame (no more than one)
+  /// Set of stations replying with an Ack frame (no more than one)
   std::map<Mac48Address, AckInfo> stationsReplyingWithNormalAck;
-  ///< Set of stations replying with a BlockAck frame (no more than one)
+  /// Set of stations replying with a BlockAck frame (no more than one)
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
-  ///< Set of stations receiving a BlockAckReq frame and replying with a BlockAck frame
+  /// Set of stations receiving a BlockAckReq frame and replying with a BlockAck frame
   std::map<Mac48Address, BlockAckReqInfo> stationsSendBlockAckReqTo;
 };
 
@@ -258,7 +258,7 @@ struct WifiDlMuTfMuBar : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with a BlockAck frame
+  /// Set of stations replying with a BlockAck frame
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
   std::list<BlockAckReqType> barTypes; //!< BAR types
   uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frame
@@ -290,7 +290,7 @@ struct WifiDlMuAggregateTf : public WifiAcknowledgment
     BlockAckType baType;               //!< BlockAck type
   };
 
-  ///< Set of stations replying with a BlockAck frame
+  /// Set of stations replying with a BlockAck frame
   std::map<Mac48Address, BlockAckInfo> stationsReplyingWithBlockAck;
   uint16_t ulLength;                   //!< the UL Length field of the MU-BAR Trigger Frames
 };
@@ -310,7 +310,7 @@ struct WifiUlMuMultiStaBa : public WifiAcknowledgment
   bool CheckQosAckPolicy (Mac48Address receiver, uint8_t tid, WifiMacHeader::QosAckPolicy ackPolicy) const override;
   void Print (std::ostream &os) const override;
 
-  ///< Map (originator, tid) pairs to the their index in baType
+  /// Map (originator, tid) pairs to the their index in baType
   std::map<std::pair<Mac48Address, uint8_t>, std::size_t> stationsReceivingMultiStaBa;
   BlockAckType baType;                 //!< BlockAck type
   WifiTxVector tbPpduTxVector;         //!< TXVECTOR for a TB PPDU

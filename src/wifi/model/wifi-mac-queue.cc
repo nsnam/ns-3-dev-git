@@ -75,7 +75,7 @@ WifiMacQueue::~WifiMacQueue ()
   m_nQueuedBytes.clear ();
 }
 
-static std::list<Ptr<WifiMacQueueItem>> g_emptyWifiMacQueue;
+static std::list<Ptr<WifiMacQueueItem>> g_emptyWifiMacQueue; //!< empty Wi-Fi MAC queue
 
 const WifiMacQueue::ConstIterator WifiMacQueue::EMPTY = g_emptyWifiMacQueue.end ();
 

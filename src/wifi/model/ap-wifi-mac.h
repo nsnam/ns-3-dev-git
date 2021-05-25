@@ -307,7 +307,7 @@ private:
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
-  //!< Maps MAC addresses of associated stations to their association ID
+  /// Maps MAC addresses of associated stations to their association ID
   std::unordered_map<Mac48Address, uint16_t, WifiAddressHash> m_addressIdMap;
   uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
   uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
@@ -315,9 +315,13 @@ private:
   bool m_shortPreambleEnabled;               //!< Flag whether short preamble is enabled in the BSS
   bool m_enableNonErpProtection;             //!< Flag whether protection mechanism is used or not when non-ERP STAs are present within the BSS
   Time m_bsrLifetime;                        //!< Lifetime of Buffer Status Reports
-  //!< store value and timestamp for each Buffer Status Report
-  typedef struct { uint8_t value; Time timestamp; } bsrType;
-  //!< Per (MAC address, TID) buffer status reports
+  /// store value and timestamp for each Buffer Status Report
+  typedef struct
+  {
+    uint8_t value;  //!< value of BSR
+    Time timestamp; //!< timestamp of BSR
+  } bsrType;
+  /// Per (MAC address, TID) buffer status reports
   std::unordered_map<WifiAddressTidPair, bsrType, WifiAddressTidHash> m_bufferStatus;
 };
 

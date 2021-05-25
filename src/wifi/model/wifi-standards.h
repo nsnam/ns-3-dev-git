@@ -189,9 +189,9 @@ inline std::ostream& operator<< (std::ostream& os, WifiStandard standard)
  */
 struct WifiStandardInfo
 {
-  WifiPhyStandard phyStandard;
-  WifiPhyBand phyBand;
-  WifiMacStandard macStandard;
+  WifiPhyStandard phyStandard; //!< the PHY standard
+  WifiPhyBand phyBand;         //!< the PHY band
+  WifiMacStandard macStandard; //!< the MAC standard
 };
 
 /**

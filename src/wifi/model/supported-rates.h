@@ -97,8 +97,12 @@ class SupportedRates : public WifiInformationElement
 public:
   SupportedRates ();
 
-  /// type conversion operator
-  SupportedRates (const SupportedRates &);
+  /**
+   * Type conversion operator
+   *
+   * \param rates the reference const SupportedRates
+   */
+  SupportedRates (const SupportedRates & rates);
 
   // Implementations of pure virtual methods of WifiInformationElement
   WifiInformationElementId ElementId () const;
@@ -108,7 +112,7 @@ public:
                                        uint8_t length);
 
   /**
-   * assignment operator
+   * Assignment operator
    *
    * \param rates the rates to assign
    * \returns the assigned value

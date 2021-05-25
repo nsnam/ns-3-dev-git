@@ -161,6 +161,8 @@ public:
    * of the items in the queue. The list is empty if the item is not stored in
    * a queue. The list contains multiple iterators in case of A-MSDU that is not
    * stored in the Block Ack Manager retransmit queue.
+   *
+   * \return the list of iterators pointing to the positions of the items in the queue
    */
   const std::list<QueueIteratorPair>& GetQueueIteratorPairs (void) const;
 

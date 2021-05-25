@@ -193,7 +193,7 @@ private:
   Ptr<AntennaModel> m_antenna;                              //!< antenna model
   mutable Ptr<const SpectrumModel> m_rxSpectrumModel;       //!< receive spectrum model
 
-  ///< Map a spectrum band associated with an RU to the RU specification
+  /// Map a spectrum band associated with an RU to the RU specification
   typedef std::map<WifiSpectrumBand, HeRu::RuSpec> RuBand;
 
   std::map<uint16_t, RuBand> m_ruBands;  /**< For each channel width, store all the distinct spectrum

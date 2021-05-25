@@ -118,6 +118,13 @@ private:
   /// Comparison functor used to sort the buffered MPDUs
   struct Compare
   {
+    /**
+     * Functional operator for sorting the buffered MPDUs.
+     *
+     * \param a the key of first buffered MPDU (\see Key)
+     * \param b the key of second buffered MPDU (\see Key)
+     * \return true if first key is smaller than second
+     */
     bool operator() (const Key& a, const Key& b) const;
   };
 
