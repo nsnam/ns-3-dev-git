@@ -261,14 +261,14 @@ DsssPhy::Get ## x (void) \
 { \
   static WifiMode mode = CreateDsssMode (#x, WIFI_MOD_CLASS_ ## m); \
   return mode; \
-} \
+}; \
 
 // Clause 15 rates (DSSS)
-GET_DSSS_MODE (DsssRate1Mbps,   DSSS);
-GET_DSSS_MODE (DsssRate2Mbps,   DSSS);
+GET_DSSS_MODE (DsssRate1Mbps,   DSSS)
+GET_DSSS_MODE (DsssRate2Mbps,   DSSS)
 // Clause 16 rates (HR/DSSS)
-GET_DSSS_MODE (DsssRate5_5Mbps, HR_DSSS);
-GET_DSSS_MODE (DsssRate11Mbps,  HR_DSSS);
+GET_DSSS_MODE (DsssRate5_5Mbps, HR_DSSS)
+GET_DSSS_MODE (DsssRate11Mbps,  HR_DSSS)
 #undef GET_DSSS_MODE
 
 WifiMode

@@ -356,18 +356,18 @@ VhtPhy::GetVhtMcs ## x (void) \
 { \
   static WifiMode mcs = CreateVhtMcs (x); \
   return mcs; \
-} \
+}; \
 
-GET_VHT_MCS (0);
-GET_VHT_MCS (1);
-GET_VHT_MCS (2);
-GET_VHT_MCS (3);
-GET_VHT_MCS (4);
-GET_VHT_MCS (5);
-GET_VHT_MCS (6);
-GET_VHT_MCS (7);
-GET_VHT_MCS (8);
-GET_VHT_MCS (9);
+GET_VHT_MCS (0)
+GET_VHT_MCS (1)
+GET_VHT_MCS (2)
+GET_VHT_MCS (3)
+GET_VHT_MCS (4)
+GET_VHT_MCS (5)
+GET_VHT_MCS (6)
+GET_VHT_MCS (7)
+GET_VHT_MCS (8)
+GET_VHT_MCS (9)
 #undef GET_VHT_MCS
 
 WifiMode

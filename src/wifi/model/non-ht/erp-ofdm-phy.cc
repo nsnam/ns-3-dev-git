@@ -147,16 +147,16 @@ ErpOfdmPhy::Get ## x (void) \
 { \
   static WifiMode mode = CreateErpOfdmMode (#x, f); \
   return mode; \
-} \
+}; \
 
-GET_ERP_OFDM_MODE (ErpOfdmRate6Mbps,  true );
-GET_ERP_OFDM_MODE (ErpOfdmRate9Mbps,  false);
-GET_ERP_OFDM_MODE (ErpOfdmRate12Mbps, true );
-GET_ERP_OFDM_MODE (ErpOfdmRate18Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate24Mbps, true );
-GET_ERP_OFDM_MODE (ErpOfdmRate36Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate48Mbps, false);
-GET_ERP_OFDM_MODE (ErpOfdmRate54Mbps, false);
+GET_ERP_OFDM_MODE (ErpOfdmRate6Mbps,  true)
+GET_ERP_OFDM_MODE (ErpOfdmRate9Mbps,  false)
+GET_ERP_OFDM_MODE (ErpOfdmRate12Mbps, true)
+GET_ERP_OFDM_MODE (ErpOfdmRate18Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate24Mbps, true)
+GET_ERP_OFDM_MODE (ErpOfdmRate36Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate48Mbps, false)
+GET_ERP_OFDM_MODE (ErpOfdmRate54Mbps, false)
 #undef GET_ERP_OFDM_MODE
 
 WifiMode

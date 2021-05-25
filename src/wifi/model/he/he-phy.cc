@@ -1013,20 +1013,20 @@ HePhy::GetHeMcs ## x (void) \
 { \
   static WifiMode mcs = CreateHeMcs (x); \
   return mcs; \
-} \
+}; \
 
-GET_HE_MCS (0);
-GET_HE_MCS (1);
-GET_HE_MCS (2);
-GET_HE_MCS (3);
-GET_HE_MCS (4);
-GET_HE_MCS (5);
-GET_HE_MCS (6);
-GET_HE_MCS (7);
-GET_HE_MCS (8);
-GET_HE_MCS (9);
-GET_HE_MCS (10);
-GET_HE_MCS (11);
+GET_HE_MCS (0)
+GET_HE_MCS (1)
+GET_HE_MCS (2)
+GET_HE_MCS (3)
+GET_HE_MCS (4)
+GET_HE_MCS (5)
+GET_HE_MCS (6)
+GET_HE_MCS (7)
+GET_HE_MCS (8)
+GET_HE_MCS (9)
+GET_HE_MCS (10)
+GET_HE_MCS (11)
 #undef GET_HE_MCS
 
 WifiMode
