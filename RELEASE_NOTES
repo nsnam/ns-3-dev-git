@@ -42,6 +42,7 @@ New user-visible features
 - (traffic-control) Added FqPIE queue disc with L4S mode.
 - (antenna) Added PhasedArrayModel, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models
 - (antenna) Improved the Angles class to be more robust and user-friendly.
+- (wifi) Added 802.11ax support to MinstrelHt rate control algorithm.
 
 Bugs fixed
 ----------
