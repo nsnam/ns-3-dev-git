@@ -220,6 +220,22 @@ DsssPhy::EndReceiveHeader (Ptr<Event> event)
   return status;
 }
 
+uint16_t
+DsssPhy::GetRxChannelWidth (const WifiTxVector& txVector) const
+{
+  if (m_wifiPhy->GetChannelWidth () > 20)
+    {
+      /*
+       * This is a workaround necessary with HE-capable PHYs,
+       * since their DSSS entity will reuse its RxSpectrumModel.
+       * Without this hack, SpectrumWifiPhy::GetBand will crash.
+       * FIXME: see issue #402 for a better solution.
+       */
+      return 20;
+    }
+  return PhyEntity::GetRxChannelWidth (txVector);
+}
+
 Ptr<SpectrumValue>
 DsssPhy::GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const
 {

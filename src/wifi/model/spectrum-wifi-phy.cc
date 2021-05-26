@@ -311,10 +311,10 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
           WifiSpectrumBand filteredBand = GetBand (bw, i);
           Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), channelWidth, GetBandBandwidth (), GetGuardBandwidth (channelWidth), filteredBand);
           SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
-          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for" << bw << " MHz channel band " << +i << ": " << Integral (filteredSignal));
+          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for " << bw << " MHz channel band " << +i << ": " << Integral (filteredSignal));
           double rxPowerPerBandW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
           rxPowerW.insert ({filteredBand, rxPowerPerBandW});
-          NS_LOG_DEBUG ("Signal power received after antenna gain for" << bw << " MHz channel band " << +i << ": " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
+          NS_LOG_DEBUG ("Signal power received after antenna gain for " << bw << " MHz channel band " << +i << ": " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
         }
     }
 

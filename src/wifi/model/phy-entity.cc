@@ -717,7 +717,7 @@ PhyEntity::GetReceptionStatus (Ptr<const WifiPsdu> psdu, Ptr<Event> event, uint1
 std::pair<uint16_t, WifiSpectrumBand>
 PhyEntity::GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t /* staId */) const
 {
-  uint16_t channelWidth = std::min (m_wifiPhy->GetChannelWidth (), txVector.GetChannelWidth ());
+  uint16_t channelWidth = GetRxChannelWidth (txVector);
   return std::make_pair (channelWidth, m_wifiPhy->GetPrimaryBand (channelWidth));
 }
 
@@ -1008,7 +1008,13 @@ PhyEntity::GetCurrentEvent (void) const
 uint16_t
 PhyEntity::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
 {
-  return std::min (m_wifiPhy->GetChannelWidth (), ppdu->GetTxVector ().GetChannelWidth ());
+  return GetRxChannelWidth (ppdu->GetTxVector ());
+}
+
+uint16_t
+PhyEntity::GetRxChannelWidth (const WifiTxVector& txVector) const
+{
+  return std::min (m_wifiPhy->GetChannelWidth (), txVector.GetChannelWidth ());
 }
 
 uint64_t

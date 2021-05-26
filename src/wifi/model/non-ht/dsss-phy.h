@@ -157,6 +157,7 @@ public:
 private:
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
   Ptr<SpectrumValue> GetTxPowerSpectralDensity (double txPowerW, Ptr<const WifiPpdu> ppdu) const override;
+  uint16_t GetRxChannelWidth (const WifiTxVector& txVector) const override;
 
   /**
    * \param txVector the transmission parameters
