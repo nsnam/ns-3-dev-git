@@ -273,7 +273,7 @@ private:
    * are unique so mapping can be done without duplication.
    **/
   typedef std::unordered_map<Ipv4Address, ns3::Ptr<ns3::Node>, Ipv4AddressHash > Ipv4AddressToNodeMap;
-  static Ipv4AddressToNodeMap g_ipv4AddressToNodeMap;
+  static Ipv4AddressToNodeMap g_ipv4AddressToNodeMap; //!< Address to node map.
 };
 } // namespace ns3
 

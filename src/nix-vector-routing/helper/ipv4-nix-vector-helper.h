@@ -47,8 +47,10 @@ public:
   /**
    * \brief Construct an Ipv4NixVectorHelper from another previously 
    * initialized instance (Copy Constructor).
+   *
+   * \param o object to copy
    */
-  Ipv4NixVectorHelper (const Ipv4NixVectorHelper &);
+  Ipv4NixVectorHelper (const Ipv4NixVectorHelper &o);
 
   /**
    * \returns pointer to clone of this Ipv4NixVectorHelper 
