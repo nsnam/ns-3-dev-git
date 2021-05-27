@@ -323,6 +323,17 @@ private:
   } bsrType;
   /// Per (MAC address, TID) buffer status reports
   std::unordered_map<WifiAddressTidPair, bsrType, WifiAddressTidHash> m_bufferStatus;
+
+  /**
+   * TracedCallback signature for association/deassociation events.
+   *
+   * \param aid the AID of the station
+   * \param address the MAC address of the station
+   */
+  typedef void (* AssociationCallback)(uint16_t aid, Mac48Address address);
+
+  TracedCallback<uint16_t /* AID */, Mac48Address> m_assocLogger;   ///< association logger
+  TracedCallback<uint16_t /* AID */, Mac48Address> m_deAssocLogger; ///< deassociation logger
 };
 
 } //namespace ns3

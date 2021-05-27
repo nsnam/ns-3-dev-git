@@ -83,6 +83,14 @@ ApWifiMac::GetTypeId (void)
                    TimeValue (MilliSeconds (20)),
                    MakeTimeAccessor (&ApWifiMac::m_bsrLifetime),
                    MakeTimeChecker ())
+    .AddTraceSource ("AssociatedSta",
+                     "A station associated with this access point.",
+                     MakeTraceSourceAccessor (&ApWifiMac::m_assocLogger),
+                     "ns3::ApWifiMac::AssociationCallback")
+    .AddTraceSource ("DeAssociatedSta",
+                     "A station lost association with this access point.",
+                     MakeTraceSourceAccessor (&ApWifiMac::m_deAssocLogger),
+                     "ns3::ApWifiMac::AssociationCallback")
   ;
   return tid;
 }
@@ -754,6 +762,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
         {
           aid = GetNextAssociationId ();
           m_staList.insert (std::make_pair (aid, to));
+          m_assocLogger (aid, to);
           m_addressIdMap.insert (std::make_pair (to, aid));
           if (m_stationManager->GetDsssSupported (to) && !m_stationManager->GetErpOfdmSupported (to))
             {
@@ -1284,6 +1293,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu)
                   if (it->second == from)
                     {
                       m_staList.erase (it);
+                      m_deAssocLogger (it->first, it->second);
                       m_addressIdMap.erase (from);
                       if (m_stationManager->GetDsssSupported (from) && !m_stationManager->GetErpOfdmSupported (from))
                         {
