@@ -57,6 +57,8 @@ using namespace ns3;
 
 /**
  * \ingroup http
+ * \ingroup applications-test
+ * \ingroup tests
  * A test class which verifies that each HTTP object sent is also received the
  * same size.
  *
@@ -785,6 +787,8 @@ ThreeGppHttpObjectTestCase::DeviceDropCallback (Ptr<const Packet> packet)
 
 /**
  * \ingroup http
+ * \ingroup applications-test
+ * \ingroup tests
  * A test class for running several system tests which validate the web
  * browsing traffic model.
  *
