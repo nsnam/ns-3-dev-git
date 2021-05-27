@@ -42,6 +42,7 @@ class YansWavePhyHelper : public YansWifiPhyHelper
 public:
   /**
    * Create a phy helper in a default working state.
+   * \return A phy helper
    */
   static YansWavePhyHelper Default (void);
 

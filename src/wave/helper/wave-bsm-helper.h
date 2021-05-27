@@ -46,7 +46,6 @@ class WaveBsmHelper
 public:
   /**
    * \brief Constructor
-   * \return none
    */
   WaveBsmHelper ();
 
@@ -92,7 +91,6 @@ public:
    * \param ranges the expected transmission range, in m.
    * \param chAccessMode channel access mode (0=continuous; 1=switching)
    * \param txMaxDelay max delay prior to transmit
-   * \return none
    */
   void Install (Ipv4InterfaceContainer & i,
                 Time totalTime,          // seconds

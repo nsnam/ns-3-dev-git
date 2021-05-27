@@ -61,7 +61,11 @@ public:
    * \param length identifier length
    */
   OrganizationIdentifier (const uint8_t *str, uint32_t length);
-  /// assignment operator
+  /**
+   * Assignment operator
+   * \param oi object to copy from
+   * \return reference to the new object
+   */
   OrganizationIdentifier& operator= (const OrganizationIdentifier& oi);
   virtual ~OrganizationIdentifier (void);
 
@@ -167,7 +171,11 @@ public:
    */
   OrganizationIdentifier GetOrganizationIdentifier (void) const;
   /**
-   * the category field shall be CATEGORY_OF_VSA
+   * Get the category field
+   *
+   * The category field shall be CATEGORY_OF_VSA
+   *
+   * \return The category field
    */
   uint8_t GetCategory (void) const;
 

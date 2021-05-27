@@ -101,6 +101,7 @@ public:
   /**
    * This method shall not be used in WAVE environment and
    * here it will overloaded to log warn message
+   * \return An invalid BSSID.
    */
   virtual Mac48Address GetBssid (void) const;
   /**

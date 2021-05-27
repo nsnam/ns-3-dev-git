@@ -137,7 +137,6 @@ class RoutingStats
 public:
   /**
    * \brief Constructor
-   * \return none
    */
   RoutingStats ();
 
@@ -169,27 +168,23 @@ public:
    * \brief Increments the number of (application-data)
    * bytes received, not including MAC/PHY overhead
    * \param rxBytes the number of bytes received
-   * \return none
    */
   void IncRxBytes (uint32_t rxBytes);
 
   /**
    * \brief Increments the count of packets received
-   * \return none
    */
   void IncRxPkts ();
 
   /**
    * \brief Sets the number of bytes received.
    * \param rxBytes the number of bytes received
-   * \return none
    */
   void SetRxBytes (uint32_t rxBytes);
 
   /**
    * \brief Sets the number of packets received
    * \param rxPkts the number of packets received
-   * \return none
    */
   void SetRxPkts (uint32_t rxPkts);
 
@@ -201,7 +196,7 @@ public:
 
   /**
    * \brief Returns the cumulative number of bytes transmitted
-   * \return none
+   * \return the cumulative number of bytes transmitted
    */
   uint32_t GetCumulativeTxBytes ();
 
@@ -220,27 +215,23 @@ public:
   /**
    * \brief Increment the number of bytes transmitted
    * \param txBytes the number of additional bytes transmitted
-   * \return none
    */
   void IncTxBytes (uint32_t txBytes);
 
   /**
    * \brief Increment the count of packets transmitted
-   * \return none
    */
   void IncTxPkts ();
 
   /**
    * \brief Sets the number of bytes transmitted
    * \param txBytes the number of bytes transmitted
-   * \return none
    */
   void SetTxBytes (uint32_t txBytes);
 
   /**
    * \brief Sets the number of packets transmitted
    * \param txPkts the number of packets transmitted
-   * \return none
    */
   void SetTxPkts (uint32_t txPkts);
 
@@ -388,13 +379,11 @@ public:
 
   /**
    * \brief Constructor
-   * \return none
    */
   RoutingHelper ();
 
   /**
    * \brief Destructor
-   * \return none
    */
   virtual ~RoutingHelper ();
 
@@ -409,7 +398,6 @@ public:
    * \param protocol the routing protocol (1=OLSR;2=AODV;3=DSDV;4=DSR)
    * \param nSinks the number of nodes which will act as data sinks
    * \param routingTables dump routing tables at t=5 seconds (0=no;1=yes)
-   * \return none
    */
   void Install (NodeContainer & c,
                 NetDeviceContainer & d,
@@ -423,7 +411,6 @@ public:
    * \brief Trace the receipt of an on-off-application generated packet
    * \param context this object
    * \param packet a received packet
-   * \return none
    */
   void OnOffTrace (std::string context, Ptr<const Packet> packet);
 
@@ -436,7 +423,6 @@ public:
   /**
    * \brief Enable/disable logging
    * \param log non-zero to enable logging
-   * \return none
    */
   void SetLogging (int log);
 
@@ -444,7 +430,6 @@ private:
   /**
    * \brief Sets up the protocol protocol on the nodes
    * \param c node container
-   * \return none
    */
   void SetupRoutingProtocol (NodeContainer & c);
 
@@ -452,7 +437,6 @@ private:
    * \brief Assigns IPv4 addresses to net devices and their interfaces
    * \param d net device container
    * \param adhocTxInterfaces IPv4 interface container
-   * \return none
    */
   void AssignIpAddresses (NetDeviceContainer & d,
                           Ipv4InterfaceContainer & adhocTxInterfaces);
@@ -461,7 +445,6 @@ private:
    * \brief Sets up routing messages on the nodes and their interfaces
    * \param c node container
    * \param adhocTxInterfaces IPv4 interface container
-   * \return none
    */
   void SetupRoutingMessages (NodeContainer & c,
                              Ipv4InterfaceContainer & adhocTxInterfaces);
@@ -477,7 +460,6 @@ private:
   /**
    * \brief Process a received routing packet
    * \param socket the receiving socket
-   * \return none
    */
   void ReceiveRoutingPacket (Ptr<Socket> socket);
 
@@ -659,6 +641,13 @@ RoutingHelper::SetupRoutingMessages (NodeContainer & c,
     }
 }
 
+/**
+ * Print a received routing packet on a string
+ * \param socket Rx socket
+ * \param packet Rx packet
+ * \param srcAddress source address
+ * \return the built string
+ */
 static inline std::string
 PrintReceivedRoutingPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address srcAddress)
 {
@@ -730,13 +719,11 @@ public:
 
   /**
    * \brief Constructor
-   * \return none
    */
   WifiPhyStats ();
 
   /**
    * \brief Destructor
-   * \return none
    */
   virtual ~WifiPhyStats ();
 
@@ -754,7 +741,6 @@ public:
    * \param mode wifi mode
    * \param preamble wifi preamble
    * \param txPower transmission power
-   * \return none
    */
   void PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower);
 
@@ -762,7 +748,6 @@ public:
    * \brief Callback signiture for Phy/TxDrop
    * \param context this object
    * \param packet the tx packet being dropped
-   * \return none
    */
   void PhyTxDrop (std::string context, Ptr<const Packet> packet);
 
@@ -771,7 +756,6 @@ public:
    * \param context this object
    * \param packet the rx packet being dropped
    * \param reason the reason for the drop
-   * \return none
    */
   void PhyRxDrop (std::string context, Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
 
@@ -839,13 +823,11 @@ class WifiApp
 public:
   /**
    * \brief Constructor
-   * \return none
    */
   WifiApp ();
 
   /**
    * \brief Destructor
-   * \return none
    */
   virtual ~WifiApp ();
 
@@ -853,14 +835,12 @@ public:
    * \brief Enacts simulation of an ns-3 wifi application
    * \param argc program arguments count
    * \param argv program arguments
-   * \return none
    */
   void Simulate (int argc, char **argv);
 
 protected:
   /**
    * \brief Sets default attribute values
-   * \return none
    */
   virtual void SetDefaultAttributeValues ();
 
@@ -868,55 +848,46 @@ protected:
    * \brief Process command line arguments
    * \param argc program arguments count
    * \param argv program arguments
-   * \return none
    */
   virtual void ParseCommandLineArguments (int argc, char **argv);
 
   /**
    * \brief Configure nodes
-   * \return none
    */
   virtual void ConfigureNodes ();
 
   /**
    * \brief Configure channels
-   * \return none
    */
   virtual void ConfigureChannels ();
 
   /**
    * \brief Configure devices
-   * \return none
    */
   virtual void ConfigureDevices ();
 
   /**
    * \brief Configure mobility
-   * \return none
    */
   virtual void ConfigureMobility ();
 
   /**
    * \brief Configure applications
-   * \return none
    */
   virtual void ConfigureApplications ();
 
   /**
    * \brief Configure tracing
-   * \return none
    */
   virtual void ConfigureTracing ();
 
   /**
    * \brief Run the simulation
-   * \return none
    */
   virtual void RunSimulation ();
 
   /**
    * \brief Process outputs
-   * \return none
    */
   virtual void ProcessOutputs ();
 };
@@ -1021,21 +992,18 @@ class ConfigStoreHelper
 public:
   /**
    * \brief Constructor
-   * \return none
    */
   ConfigStoreHelper ();
 
   /**
    * \brief Loads a saved config-store raw text configuration from a given named file
    * \param configFilename the name of the config-store raw text file
-   * \return none
    */
   void LoadConfig (std::string configFilename);
 
   /**
    * \brief Saves a configuration to a given named config-store raw text configuration file
    * \param configFilename the name of the config-store raw text file
-   * \return none
    */
   void SaveConfig (std::string configFilename);
 };
@@ -1082,14 +1050,12 @@ class VanetRoutingExperiment : public WifiApp
 public:
   /**
    * \brief Constructor
-   * \return none
    */
   VanetRoutingExperiment ();
 
 protected:
   /**
    * \brief Sets default attribute values
-   * \return none
    */
   virtual void SetDefaultAttributeValues ();
 
@@ -1097,62 +1063,52 @@ protected:
    * \brief Process command line arguments
    * \param argc program arguments count
    * \param argv program arguments
-   * \return none
    */
   virtual void ParseCommandLineArguments (int argc, char **argv);
 
   /**
    * \brief Configure nodes
-   * \return none
    */
   virtual void ConfigureNodes ();
 
   /**
    * \brief Configure channels
-   * \return none
    */
   virtual void ConfigureChannels ();
 
   /**
    * \brief Configure devices
-   * \return none
    */
   virtual void ConfigureDevices ();
 
   /**
    * \brief Configure mobility
-   * \return none
    */
   virtual void ConfigureMobility ();
 
   /**
    * \brief Configure applications
-   * \return none
    */
   virtual void ConfigureApplications ();
 
   /**
    * \brief Configure tracing
-   * \return none
    */
   virtual void ConfigureTracing ();
 
   /**
    * \brief Run the simulation
-   * \return none
    */
   virtual void RunSimulation ();
 
   /**
    * \brief Process outputs
-   * \return none
    */
   virtual void ProcessOutputs ();
 
 private:
   /**
    * \brief Run the simulation
-   * \return none
    */
   void Run ();
 
@@ -1160,44 +1116,37 @@ private:
    * \brief Run the simulation
    * \param argc command line argument count
    * \param argv command line parameters
-   * \return none
    */
   void CommandSetup (int argc, char **argv);
 
   /**
    * \brief Checks the throughput and outputs summary to CSV file1.
    * This is scheduled and called once per second
-   * \return none
    */
   void CheckThroughput ();
 
   /**
    * \brief Set up log file
-   * \return none
    */
   void SetupLogFile ();
 
   /**
    * \brief Set up logging
-   * \return none
    */
   void SetupLogging ();
 
   /**
    * \brief Configure default attributes
-   * \return none
    */
   void ConfigureDefaults ();
 
   /**
    * \brief Set up the adhoc mobility nodes
-   * \return none
    */
   void SetupAdhocMobilityNodes ();
 
   /**
    * \brief Set up the adhoc devices
-   * \return none
    */
   void SetupAdhocDevices ();
 
@@ -1206,38 +1155,32 @@ private:
    * as a Basic Safety Message (BSM).  The BSM is typically
    * a ~200-byte packets broadcast by all vehicles at a nominal
    * rate of 10 Hz
-   * \return none
    */
   void SetupWaveMessages ();
 
   /**
    * \brief Set up generation of packets to be routed
    * through the vehicular network
-   * \return none
    */
   void SetupRoutingMessages ();
 
   /**
    * \brief Set up a prescribed scenario
-   * \return none
    */
   void SetupScenario ();
 
   /**
    * \brief Write the header line to the CSV file1
-   * \return none
    */
   void WriteCsvHeader ();
 
   /**
    * \brief Set up configuration parameter from the global variables
-   * \return none
    */
   void SetConfigFromGlobals ();
 
   /**
    * \brief Set up the global variables from the configuration parameters
-   * \return none
    */
   void SetGlobalsFromConfig ();
 
@@ -1383,171 +1326,248 @@ VanetRoutingExperiment::SetDefaultAttributeValues ()
 }
 
 // important configuration items stored in global values
+
+/// Port
 static ns3::GlobalValue g_port ("VRCport",
                                 "Port",
                                 ns3::UintegerValue (9),
                                 ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Number of sink nodes for routing non-BSM traffic
 static ns3::GlobalValue g_nSinks ("VRCnSinks",
                                   "Number of sink nodes for routing non-BSM traffic",
                                   ns3::UintegerValue (10),
                                   ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Trace mobility 1=yes;0=no
 static ns3::GlobalValue g_traceMobility ("VRCtraceMobility",
                                          "Trace mobility 1=yes;0=no",
                                          ns3::UintegerValue (0),
                                          ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Routing protocol
 static ns3::GlobalValue g_protocol ("VRCprotocol",
                                     "Routing protocol",
                                     ns3::UintegerValue (2),
                                     ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Propagation Loss Model
 static ns3::GlobalValue g_lossModel ("VRClossModel",
                                      "Propagation Loss Model",
                                      ns3::UintegerValue (3),
                                      ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Fast Fading Model
 static ns3::GlobalValue g_fading ("VRCfading",
                                   "Fast Fading Model",
                                   ns3::UintegerValue (0),
                                   ns3::MakeUintegerChecker<uint32_t> ());
+
+/// 802.11 mode (0=802.11a;1=802.11p)
 static ns3::GlobalValue g_80211mode ("VRC80211mode",
                                      "802.11 mode (0=802.11a;1=802.11p)",
                                      ns3::UintegerValue (1),
                                      ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Mobility mode 0=random waypoint;1=mobility trace file
 static ns3::GlobalValue g_mobility ("VRCmobility",
                                     "Mobility mode 0=random waypoint;1=mobility trace file",
                                     ns3::UintegerValue (1),
                                     ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Number of nodes (vehicles)
 static ns3::GlobalValue g_nNodes ("VRCnNodes",
                                   "Number of nodes (vehicles)",
                                   ns3::UintegerValue (156),
                                   ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Node speed (m/s) for RWP model
 static ns3::GlobalValue g_nodeSpeed ("VRCnodeSpeed",
                                      "Node speed (m/s) for RWP model",
                                      ns3::UintegerValue (20),
                                      ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Node pause time (s) for RWP model
 static ns3::GlobalValue g_nodePause ("VRCnodePause",
                                      "Node pause time (s) for RWP model",
                                      ns3::UintegerValue (0),
                                      ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Size in bytes of WAVE BSM
 static ns3::GlobalValue g_wavePacketSize ("VRCwavePacketSize",
                                           "Size in bytes of WAVE BSM",
                                           ns3::UintegerValue (200),
                                           ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Verbose 0=no;1=yes
 static ns3::GlobalValue g_verbose ("VRCverbose",
                                    "Verbose 0=no;1=yes",
                                    ns3::UintegerValue (0),
                                    ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Scenario
 static ns3::GlobalValue g_scenario ("VRCscenario",
                                     "Scenario",
                                     ns3::UintegerValue (1),
                                     ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Dump routing tables at t=5 seconds 0=no;1=yes
 static ns3::GlobalValue g_routingTables ("VRCroutingTables",
                                          "Dump routing tables at t=5 seconds 0=no;1=yes",
                                          ns3::UintegerValue (0),
                                          ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Dump ASCII trace 0=no;1=yes
 static ns3::GlobalValue g_asciiTrace ("VRCasciiTrace",
                                       "Dump ASCII trace 0=no;1=yes",
                                       ns3::UintegerValue (0),
                                       ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Generate PCAP files 0=no;1=yes
 static ns3::GlobalValue g_pcap ("VRCpcap",
                                 "Generate PCAP files 0=no;1=yes",
                                 ns3::UintegerValue (0),
                                 ns3::MakeUintegerChecker<uint32_t> ());
+
+/// Simulation start time for capturing cumulative BSM
 static ns3::GlobalValue g_cumulativeBsmCaptureStart ("VRCcumulativeBsmCaptureStart",
                                                      "Simulation start time for capturing cumulative BSM",
                                                      ns3::TimeValue (Seconds (0)),
                                                      ns3::MakeTimeChecker ());
 
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange1 ("VRCtxSafetyRange1",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (50.0),
                                           ns3::MakeDoubleChecker<double> ());
 
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange2 ("VRCtxSafetyRange2",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (100.0),
                                           ns3::MakeDoubleChecker<double> ());
 
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange3 ("VRCtxSafetyRange3",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (150.0),
                                           ns3::MakeDoubleChecker<double> ());
 
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange4 ("VRCtxSafetyRange4",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (200.0),
                                           ns3::MakeDoubleChecker<double> ());
 
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange5 ("VRCtxSafetyRange5",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (250.0),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange6 ("VRCtxSafetyRange6",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (300.0),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange7 ("VRCtxSafetyRange7",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (350.0),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange8 ("VRCtxSafetyRange8",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (400.0),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange9 ("VRCtxSafetyRange9",
                                           "BSM range for PDR inclusion",
                                           ns3::DoubleValue (450.0),
                                           ns3::MakeDoubleChecker<double> ());
+
+/// BSM range for PDR inclusion
 static ns3::GlobalValue g_txSafetyRange10 ("VRCtxSafetyRange10",
                                            "BSM range for PDR inclusion",
                                            ns3::DoubleValue (500.0),
                                            ns3::MakeDoubleChecker<double> ());
+
+/// Transmission power dBm
 static ns3::GlobalValue g_txp ("VRCtxp",
                                "Transmission power dBm",
                                ns3::DoubleValue (7.5),
                                ns3::MakeDoubleChecker<double> ());
+
+/// Total simulation time (s)
 static ns3::GlobalValue g_totalTime ("VRCtotalTime",
                                      "Total simulation time (s)",
                                      ns3::DoubleValue (300.01),
                                      ns3::MakeDoubleChecker<double> ());
+
+/// Interval (s) between WAVE BSMs
 static ns3::GlobalValue g_waveInterval ("VRCwaveInterval",
                                         "Interval (s) between WAVE BSMs",
                                         ns3::DoubleValue (0.1),
                                         ns3::MakeDoubleChecker<double> ());
+
+/// GPS sync accuracy (ns)
 static ns3::GlobalValue g_gpsAccuracyNs ("VRCgpsAccuracyNs",
                                          "GPS sync accuracy (ns)",
                                          ns3::DoubleValue (40),
                                          ns3::MakeDoubleChecker<double> ());
+
+/// Tx May Delay (ms)
 static ns3::GlobalValue g_txMaxDelayMs ("VRCtxMaxDelayMs",
                                         "Tx May Delay (ms)",
                                         ns3::DoubleValue (10),
                                         ns3::MakeDoubleChecker<double> ());
+
+/// CSV filename (for time series data)
 static ns3::GlobalValue g_CSVfileName ("VRCCSVfileName",
                                        "CSV filename (for time series data)",
                                        ns3::StringValue ("vanet-routing.output.csv"),
                                        ns3::MakeStringChecker ());
+
+/// CSV filename 2 (for overall simulation scenario results)
 static ns3::GlobalValue g_CSVfileName2 ("VRCCSVfileName2",
                                         "CSV filename 2 (for overall simulation scenario results)",
                                         ns3::StringValue ("vanet-routing.output2.csv"),
                                         ns3::MakeStringChecker ());
+
+/// PHY mode (802.11p)
 static ns3::GlobalValue g_phyMode ("VRCphyMode",
                                    "PHY mode (802.11p)",
                                    ns3::StringValue ("OfdmRate6MbpsBW10MHz"),
                                    ns3::MakeStringChecker ());
+
+/// Mobility trace filename
 static ns3::GlobalValue g_traceFile ("VRCtraceFile",
                                      "Mobility trace filename",
                                      ns3::StringValue ("./src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob"),
                                      ns3::MakeStringChecker ());
+
+/// Log filename
 static ns3::GlobalValue g_logFile ("VRClogFile",
                                    "Log filename",
                                    ns3::StringValue ("low99-ct-unterstrass-1day.filt.7.adj.log"),
                                    ns3::MakeStringChecker ());
+
+/// Data rate
 static ns3::GlobalValue g_rate ("VRCrate",
                                 "Data rate",
                                 ns3::StringValue ("2048bps"),
                                 ns3::MakeStringChecker ());
+
+/// PHY mode (802.11a)
 static ns3::GlobalValue g_phyModeB ("VRCphyModeB",
                                     "PHY mode (802.11a)",
                                     ns3::StringValue ("DsssRate11Mbps"),
                                     ns3::MakeStringChecker ());
+
+/// Trace name)
 static ns3::GlobalValue g_trName ("VRCtrName",
                                   "Trace name",
                                   ns3::StringValue ("vanet-routing-compare"),

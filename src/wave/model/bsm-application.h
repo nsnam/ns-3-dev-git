@@ -48,7 +48,6 @@ public:
 
   /**
    * \brief Constructor
-   * \return none
    */
   BsmApplication ();
   virtual ~BsmApplication ();
@@ -70,7 +69,6 @@ public:
    * \param nodesMoving of whether or not node(s) are moving
    * \param mode
    * \param txDelay
-   * \return none
    */
   void Setup (Ipv4InterfaceContainer & i,
               int nodeId,
@@ -116,7 +114,6 @@ private:
    * \param pktInterval the interval, in seconds, until the next packet
    * should be transmitted
    * \param sendingNodeId
-   * \return none
    */
   void GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
                             uint32_t pktCount, Time pktInterval,
@@ -125,7 +122,6 @@ private:
   /**
    * \brief Receive a WAVE BSM packet
    * \param socket the receiving socket
-   * \return none
    */
   void ReceiveWavePacket (Ptr<Socket> socket);
 
@@ -133,7 +129,6 @@ private:
    * \brief Handle the receipt of a WAVE BSM packet from sender to receiver
    * \param txNode the sending node
    * \param rxNode the receiving node
-   * \return none
    */
   void HandleReceivedBsmPacket (Ptr<Node> txNode,
                                 Ptr<Node> rxNode);

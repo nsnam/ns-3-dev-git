@@ -132,7 +132,10 @@ public:
    */
   void SetWaveNetDevice (Ptr<WaveNetDevice> device);
 
-  /// set wave vsa callback function
+  /**
+   * Set wave vsa callback function
+   * \param vsaCallback the callback
+   */
   void SetWaveVsaCallback (Callback<bool, Ptr<const Packet>,const Address &, uint32_t, uint32_t>  vsaCallback);
 
   /**

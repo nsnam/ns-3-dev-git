@@ -74,6 +74,10 @@ NS_LOG_COMPONENT_DEFINE ("WifiSimpleOcb");
  * MAC class that enables OCB mode.
  */
 
+/**
+ * Receive a packet
+ * \param socket Rx socket
+ */
 void ReceivePacket (Ptr<Socket> socket)
 {
   while (socket->Recv ())
@@ -82,6 +86,13 @@ void ReceivePacket (Ptr<Socket> socket)
     }
 }
 
+/**
+ * Geerate traffic
+ * \param socket Tx socket
+ * \param pktSize packet size
+ * \param pktCount number of packets
+ * \param pktInterval interval between packet generation
+ */
 static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
                              uint32_t pktCount, Time pktInterval )
 {

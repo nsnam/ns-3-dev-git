@@ -115,6 +115,7 @@ public:
 
   /**
    * Create a mac helper in a default working state.
+   * \return A mac helper
    */
   static QosWaveMacHelper Default (void);
 

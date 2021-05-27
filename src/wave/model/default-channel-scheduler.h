@@ -87,6 +87,7 @@ private:
   virtual bool AssignContinuousAccess (uint32_t channelNumber, bool immediate);
   /**
    * \param channelNumber the specific channel
+   * \param extends extension duration
    * \param immediate indicate whether channel switch to channel
    * \return whether the channel access is assigned successfully
    *
