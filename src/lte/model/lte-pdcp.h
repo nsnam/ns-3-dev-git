@@ -145,9 +145,9 @@ protected:
   /**
    * Interface provided to upper RRC entity
    *
-   * \param p packet
+   * \param params the TransmitPdcpSduParameters
    */
-  virtual void DoTransmitPdcpSdu (Ptr<Packet> p);
+  virtual void DoTransmitPdcpSdu (LtePdcpSapProvider::TransmitPdcpSduParameters params);
 
   LtePdcpSapUser* m_pdcpSapUser; ///< PDCP SAP user
   LtePdcpSapProvider* m_pdcpSapProvider; ///< PDCP SAP provider

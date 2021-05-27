@@ -48,9 +48,10 @@ public:
   };
 
   /**
-   * Send a RRC PDU to the RDCP for transmission
-   * This method is to be called
-   * when upper RRC entity has a RRC PDU ready to send   
+   * Send RRC PDU parameters to the PDCP for transmission
+   *
+   * This method is to be called when upper RRC entity has a
+   * RRC PDU ready to send
    * 
    * \param params 
    */
@@ -123,7 +124,7 @@ LtePdcpSpecificLtePdcpSapProvider<C>::LtePdcpSpecificLtePdcpSapProvider ()
 template <class C>
 void LtePdcpSpecificLtePdcpSapProvider<C>::TransmitPdcpSdu (TransmitPdcpSduParameters params)
 {
-  m_pdcp->DoTransmitPdcpSdu (params.pdcpSdu);
+  m_pdcp->DoTransmitPdcpSdu (params);
 }
 
 
