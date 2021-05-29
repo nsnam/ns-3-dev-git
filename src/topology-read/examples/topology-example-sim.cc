@@ -68,8 +68,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TopologyCreationExperiment");
 
-static std::list<unsigned int> data;
-
+/**
+ * Print the TTL of received packet
+ * \param p received packet
+ * \param ad sender address
+ */
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
   Ipv4Header ipv4;
@@ -130,7 +133,7 @@ int main (int argc, char *argv[])
   stack.SetRoutingHelper (nixRouting);  // has effect on the next Install ()
   stack.Install (nodes);
 
-  NS_LOG_INFO ("creating ip4 addresses");
+  NS_LOG_INFO ("creating IPv4 addresses");
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.252");
 
@@ -157,7 +160,7 @@ int main (int argc, char *argv[])
     }
 
   // it crates little subnets, one for each couple of nodes.
-  NS_LOG_INFO ("creating ipv4 interfaces");
+  NS_LOG_INFO ("creating IPv4 interfaces");
   Ipv4InterfaceContainer* ipic = new Ipv4InterfaceContainer[totlinks];
   for (int i = 0; i < totlinks; i++)
     {

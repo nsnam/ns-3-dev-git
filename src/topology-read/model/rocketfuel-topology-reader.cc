@@ -65,13 +65,19 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
 /* uid @loc [+] [bb] (num_neigh) [&ext] -> <nuid-1> <nuid-2> ... {-euid} ... =name[!] rn */
 
 
+/// Maximum nuber of matches in a regex query
 #define REGMATCH_MAX 16
 
+/// Start of a line
 #define START "^"
+/// End of a line
 #define END "$"
+/// One or more spaces
 #define SPACE "[ \t]+"
+/// Zero or more spaces
 #define MAYSPACE "[ \t]*"
 
+/// Regex expression matching a MAP line
 #define ROCKETFUEL_MAPS_LINE \
   START "(-*[0-9]+)" SPACE "(@[?A-Za-z0-9,+]+)" SPACE \
   "(\\+)*" MAYSPACE "(bb)*" MAYSPACE \
@@ -81,6 +87,7 @@ RocketfuelTopologyReader::~RocketfuelTopologyReader ()
   "=([A-Za-z0-9.!-]+)" SPACE "r([0-9])" \
   MAYSPACE END
 
+/// Regex expression matching a WEIGHT line
 #define ROCKETFUEL_WEIGHTS_LINE \
   START "([^ \t]+)" SPACE "([^ \t]+)" SPACE "([0-9.]+)" MAYSPACE END
 
