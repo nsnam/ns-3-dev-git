@@ -87,8 +87,7 @@ private:
    *
    * \note type name ObjectVectorValue is an alias for ObjectPtrContainerValue
    *
-   * \param object the object on which the attribute of type ObjectVectorValue
-resides
+   * \param object the object on which the attribute of type ObjectVectorValue resides
    * \param name the attribute name provided
    * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute 
    */
@@ -161,8 +160,7 @@ resides
    *
    * \note type name ObjectVectorValue is an alias for ObjectPtrContainerValue
    *
-   * \param object the object on which the attribute of type ObjectVectorValue
-resides
+   * \param object the object on which the attribute of type ObjectVectorValue resides
    * \param name the attribute name provided
    * \param [in] vector the ObjectPtrContainerValue corresponding to the named attribute 
    */
