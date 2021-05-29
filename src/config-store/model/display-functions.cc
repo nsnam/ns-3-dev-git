@@ -24,7 +24,7 @@
 #include "ns3/pointer.h"
 
 namespace ns3 {
-/**
+/*
  * This function includes the name of the attribute or the editable value
  * in the second column
  */
@@ -51,7 +51,7 @@ cell_data_function_col_1 (GtkTreeViewColumn *col, GtkCellRenderer *renderer,
       g_object_set (renderer, "editable", FALSE, (char*) 0);
     }
 }
-/**
+/*
  * This function includes the name of the object, pointer, vector or vector item
  * in the first column
  */
@@ -91,7 +91,7 @@ cell_data_function_col_0 (GtkTreeViewColumn *col, GtkCellRenderer *renderer, Gtk
   }
 }
 
-/**
+/*
  * This is the callback called when the value of an attribute is changed
  */
 void
@@ -111,7 +111,7 @@ cell_edited_callback (GtkCellRendererText *cell, gchar *path_string,
   node->object->SetAttribute (node->name, StringValue (new_text));
 }
 
-/**
+/*
  * This function gets the column number 0 or 1 from the mouse
  * click
  */
@@ -128,7 +128,7 @@ get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
   return num;
 }
 
-/**
+/*
  * This function displays the tooltip for an object, pointer, vector
  * item or an attribute
  */
@@ -230,7 +230,7 @@ cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
   return FALSE;
 }
 
-/**
+/*
  * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes...
  */
@@ -271,7 +271,7 @@ create_view (GtkTreeStore *model)
   return view;
 }
 
-/**
+/*
  * Exit the window when exit button is pressed
  */
 void
@@ -281,7 +281,7 @@ exit_clicked_callback (GtkButton *button, gpointer user_data)
   gtk_widget_hide (GTK_WIDGET (user_data));
 }
 
-/**
+/*
  * Exit the application
  */
 gboolean
@@ -292,7 +292,7 @@ delete_event_callback (GtkWidget *widget, GdkEvent *event, gpointer user_data)
   return TRUE;
 }
 
-/**
+/*
  * Delete the tree model contents
  */
 gboolean
@@ -310,8 +310,8 @@ clean_model_callback (GtkTreeModel *model, GtkTreePath *path,
   return FALSE;
 }
 
-/**************************     display functions used by default configurator **********************/
-/**
+//     display functions used by default configurator
+/*
  * This function writes data in the second column, this data is going to be editable
  * if it is a NODE_ATTRIBUTE
  */
@@ -337,7 +337,7 @@ cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer
       g_object_set (renderer, "editable", FALSE, (char*) 0);
     }
 }
-/**
+/*
  * This function writes the attribute or typeid name in the column 0
  */
 void
@@ -364,7 +364,7 @@ cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer
 }
 
 
-/**
+/*
  *  This functions is called whenever there is a change in the value of an attribute
  *  If the input value is ok, it will be updated in the default value and in the
  *  gui, otherwise, it won't be updated in both.
@@ -389,12 +389,12 @@ cell_edited_callback_config_default (GtkCellRendererText *cell, gchar *path_stri
     }
 }
 
-/**
+/*
  * This function is used to display a tooltip whenever the user puts the mouse
  * over a type ID or an attribute. It will give the type and the possible values of
  * an attribute value and the type of the object for an attribute object or a
  * typeID object
-
+ *
  * \param widget is the display object
  * \param x is the x position
  * \param y is the y position
@@ -464,7 +464,7 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
   return FALSE;
 }
 
-/**
+/*
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
  *
@@ -507,7 +507,7 @@ save_clicked_default (GtkButton *button, gpointer user_data)
   g_object_unref (native);
 }
 
-/**
+/*
  * If the user presses the button load, it will load the config file into memory.
  *
  * \param button (unused)
@@ -542,7 +542,7 @@ load_clicked_default (GtkButton *button, gpointer user_data)
   g_object_unref (native);
 }
 
-/**
+/*
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
  *
@@ -585,7 +585,7 @@ save_clicked_attribute (GtkButton *button, gpointer user_data)
   g_object_unref (native);
 }
 
-/**
+/*
  * If the user presses the button load, it will load the config file into memory.
  *
  * \param button (unused)
@@ -620,7 +620,7 @@ load_clicked_attribute (GtkButton *button, gpointer user_data)
   g_object_unref (native);
 }
 
-/**
+/*
  * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes
  */
@@ -661,7 +661,7 @@ create_view_config_default (GtkTreeStore *model)
   return view;
 }
 
-/**
+/*
  * Delete the tree model contents
  */
 gboolean

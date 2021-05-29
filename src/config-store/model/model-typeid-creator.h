@@ -66,15 +66,22 @@ public:
   /**
    * \brief This method will iterate on typeIds having default attributes and create a model
    * for them, this model will be used by the view.
+   *
+   * \param treestore the GtkTreeStore.
    */
   void Build (GtkTreeStore *treestore);
 private:
   /**
    * \brief This method will add a ModelTypeid to the GtkTreeIterator
+   * \param tid TypeId
+   * \param name attribute name
+   * \param defaultValue default value
+   * \param index index of the attribute in the specified Typeid
    */
   virtual void VisitAttribute (TypeId tid, std::string name, std::string defaultValue, uint32_t index);
   /**
    * \brief Add a node for the new TypeId object
+   * \param name TypeId name
    */
   virtual void StartVisitTypeId (std::string name);
   /**
@@ -83,6 +90,7 @@ private:
   virtual void EndVisitTypeId (void);
   /**
    * \brief Adds a treestore iterator to m_treestore model
+   * \param node the node to be added
    */
   void Add (ModelTypeid *node);
   /**

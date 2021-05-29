@@ -121,12 +121,21 @@ private:
 };
 
 /**
- * @{
- * \ingroup configstore
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] mode The configStore mode.
+ * \returns The reference to the output stream.
  */
 std::ostream & operator << (std::ostream & os, ConfigStore::Mode & mode);
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] format The configStore file format.
+ * \returns The reference to the output stream.
+ */
 std::ostream & operator << (std::ostream & os, ConfigStore::FileFormat & format);
-/**@}*/
 
 }  // namespace ns3
 
