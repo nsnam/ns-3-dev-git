@@ -81,29 +81,73 @@ public:
    * with address (Mac48Address) was opened (bool is true) or closed (bool is false) 
    */
   void  SetLinkStatusCallback (Callback<void, uint32_t, Mac48Address, bool> cb);
+  /// \name Peer link getters/setters
+  ///@{
   /**
-   * \name Peer link getters/setters
-   * \{
+   * Set the peer address
+   * \param macaddr the peer mac address
    */
   void SetPeerAddress (Mac48Address macaddr);
+  /**
+   * Set the peer mesh point address
+   * \param macaddr the peer mesh point address
+   */
   void SetPeerMeshPointAddress (Mac48Address macaddr);
+  /**
+   * Set the interface
+   * \param interface the interface
+   */
   void SetInterface (uint32_t interface);
+  /**
+   * Set the local link ID
+   * \param id the local link ID
+   */
   void SetLocalLinkId (uint16_t id);
+  /**
+   * Set the local association ID
+   * \param aid the local association ID
+   */
   void SetLocalAid (uint16_t aid);
+  /**
+   * Set the peer association ID
+   * \return The peer association ID
+   */
   uint16_t GetPeerAid () const;
+  /**
+   * Set the beacon timing element
+   * \param beaconTiming the beacon timing element
+   */
   void SetBeaconTimingElement (IeBeaconTiming beaconTiming);
+  /**
+   * Get the peer address
+   * \return The peer address
+   */
   Mac48Address GetPeerAddress () const;
+  /**
+   * Get the local association ID
+   * \return The local association ID
+   */
   uint16_t GetLocalAid () const;
+  /**
+   * Get the time of the last received beacon
+   * \return The time of the last received beacon
+   */
   Time GetLastBeacon () const;
+  /**
+   * Get the beacon interval
+   * \return The beacon interval
+   */
   Time GetBeaconInterval () const;
+  /**
+   * Get the beacon timing element
+   * \return The beacon timing element
+   */
   IeBeaconTiming GetBeaconTimingElement () const;
   //IePeerManagement GetPeerLinkDescriptorElement ()const;
-  //\}
+  ///@}
 
-  /**
-   * \name MLME
-   * \{
-   */
+  /// \name MLME
+  ///@{
   /**
    * MLME-CancelPeerLink.request
    * \param reason the reason for the request
@@ -123,7 +167,8 @@ public:
   /// Reports about transmission success/failure
   void TransmissionSuccess ();
   void TransmissionFailure ();
-  //\}
+  ///@}
+
   /**
    * \brief Statistics
    * \param os the output stream
@@ -159,8 +204,8 @@ private:
    * \attention In all this methods {local/peer}LinkID correspond to _peer_ station, as written in
    * received frame, e.g. I am peerLinkID and peer link is localLinkID .
    *
-   * \{
    */
+  ///@{
   /**
    * Close link
    *
@@ -218,7 +263,8 @@ private:
     Mac48Address peerMp,
     PmpReasonCode reason
     );
-  //\}
+  ///@}
+
   /**
    * \returns True if link is established
    */
@@ -235,33 +281,49 @@ private:
   void SetMacPlugin (Ptr<PeerManagementProtocolMac> plugin);
   /**
    * \name Event handlers
-   * \{
    */
+  ///@{
+  /// Clear the retry timer
   void ClearRetryTimer ();
+  /// Clear the confirm timer
   void ClearConfirmTimer ();
+  /// Clear the holding timer
   void ClearHoldingTimer ();
+  /// Set the holding timer
   void SetHoldingTimer ();
+  /// Set the retry timer
   void SetRetryTimer ();
+  /// Set the confirm timer
   void SetConfirmTimer ();
-  //\}
+  ///@}
 
   /**
    * \name Work with management frames
-   * \{
+   */
+  ///@{
+  /**
+   * Send a peer link close
+   * \param reasoncode reason for closing the line
    */
   void SendPeerLinkClose (PmpReasonCode reasoncode);
+  /// Send a peer link open
   void SendPeerLinkOpen ();
+  /// Send a peer link confirm
   void SendPeerLinkConfirm ();
-  //\}
+  ///@}
 
   /**
    * \name Timeout handlers
-   * \{
    */
+  ///@{
+  /// Holding Timeout event handler
   void HoldingTimeout ();
+  /// Retry Timeout event handler
   void RetryTimeout ();
+  /// Confirm Timeout event handler
   void ConfirmTimeout ();
-  //\}
+  ///@}
+
   /// Several successive beacons were lost, close link
   void BeaconLoss ();
 private:
@@ -273,10 +335,10 @@ private:
    */
   PeerLink& operator= (const PeerLink & link);
   /**
-   * type conversion operator
-   * \returns the peer link
+   * Copy constructor. Intentionally unimplemented
+   * \param o object to copy
    */
-  PeerLink (const PeerLink &);
+  PeerLink (const PeerLink & o);
 
   /// The number of interface I am associated with
   uint32_t m_interface;
@@ -315,21 +377,22 @@ private:
 
   /**
    * \name Timers & counters used for internal state transitions
-   * \{
    */
-  uint16_t m_dot11MeshMaxRetries;
-  Time     m_dot11MeshRetryTimeout;
-  Time     m_dot11MeshHoldingTimeout;
-  Time     m_dot11MeshConfirmTimeout;
+  ///@{
+  uint16_t m_dot11MeshMaxRetries;     //!< Maximum number of retries
+  Time     m_dot11MeshRetryTimeout;   //!< Retry timeout
+  Time     m_dot11MeshHoldingTimeout; //!< Holding timeout
+  Time     m_dot11MeshConfirmTimeout; //!< Confirm timeout
 
-  EventId  m_retryTimer;
-  EventId  m_holdingTimer;
-  EventId  m_confirmTimer;
-  uint16_t m_retryCounter;
-  EventId  m_beaconLossTimer;
-  uint16_t m_maxBeaconLoss;
-  uint16_t m_maxPacketFail;
-  // \}
+  EventId  m_retryTimer;            //!< Retry timer
+  EventId  m_holdingTimer;          //!< Holding timer
+  EventId  m_confirmTimer;          //!< Confirm timer
+  uint16_t m_retryCounter;          //!< Retry counter
+  EventId  m_beaconLossTimer;       //!< Beacon loss timer
+  uint16_t m_maxBeaconLoss;         //!< Maximum number of lost beacons before link will be closed
+  uint16_t m_maxPacketFail;         //!< Maximum number of failed packets before link will be closed
+  ///@}
+
   /// How to report my status change
   SignalStatusCallback m_linkStatusCallback;
 };

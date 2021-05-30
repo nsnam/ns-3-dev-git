@@ -86,42 +86,100 @@ public:
   ~HwmpRtable ();
   void DoDispose ();
 
-  ///\name Add/delete paths
-  //\{
-  void AddReactivePath (
-    Mac48Address destination,
-    Mac48Address retransmitter,
-    uint32_t interface,
-    uint32_t metric,
-    Time  lifetime,
-    uint32_t seqnum
-    );
-  void AddProactivePath (
-    uint32_t metric,
-    Mac48Address root,
-    Mac48Address retransmitter,
-    uint32_t interface,
-    Time  lifetime,
-    uint32_t seqnum
-    );
-  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
-  PrecursorList GetPrecursors (Mac48Address destination);
-  void DeleteProactivePath ();
-  void DeleteProactivePath (Mac48Address root);
-  void DeleteReactivePath (Mac48Address destination);
-  //\}
+  /// \name Add/delete paths
+  ///@{
 
-  ///\name Lookup
-  //\{
-  /// Lookup path to destination
+  /**
+   * Add a reactive path
+   * \param destination the destination address
+   * \param retransmitter the retransmitter address
+   * \param interface the interface
+   * \param metric  the metric
+   * \param lifetime  the lifetime
+   * \param seqnum  the sequence number
+   */
+  void AddReactivePath (
+      Mac48Address destination,
+      Mac48Address retransmitter,
+      uint32_t interface,
+      uint32_t metric,
+      Time  lifetime,
+      uint32_t seqnum
+  );
+  /**
+   * Add a proactive path
+   * \param metric  the metric
+   * \param root the address of the root
+   * \param retransmitter the retransmitter address
+   * \param interface the interface
+   * \param lifetime  the lifetime
+   * \param seqnum  the sequence number
+   */
+  void AddProactivePath (
+      uint32_t metric,
+      Mac48Address root,
+      Mac48Address retransmitter,
+      uint32_t interface,
+      Time  lifetime,
+      uint32_t seqnum
+  );
+   /**
+    * Add a precursor
+   * \param destination the destination address
+    * \param precursorInterface the precursor interface
+    * \param precursorAddress the address of the precursor
+    * \param lifetime the lifetime
+    */
+  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
+
+  /**
+   * Get the precursors list
+   * \param destination the destination
+   * \return the precursors list
+   */
+  PrecursorList GetPrecursors (Mac48Address destination);
+
+  /**
+   * Delete all the proactive paths
+   */
+  void DeleteProactivePath ();
+  /**
+   * Delete all the proactive paths from a given root
+   * \param root the address of the root
+   */
+  void DeleteProactivePath (Mac48Address root);
+  /**
+   * Delete the reactive paths toward a destination
+   * \param destination the destination
+   */
+  void DeleteReactivePath (Mac48Address destination);
+  ///@}
+
+  /// \name Lookup
+  ///@{
+  /**
+   * Lookup path to destination
+   * \param destination the destination
+   * \return The lookup result
+   */
   LookupResult LookupReactive (Mac48Address destination);
-  /// Return all reactive paths, including expired
+  /**
+   * Return all reactive paths, including expired
+   * \param destination the destination
+   * \return The lookup result
+   */
   LookupResult LookupReactiveExpired (Mac48Address destination);
-  /// Find proactive path to tree root. Note that calling this method has side effect of deleting expired proactive path
+  /**
+   * Find proactive path to tree root. Note that calling this method has side effect of deleting expired proactive path
+   * \return The lookup result
+   */
   LookupResult LookupProactive ();
-  /// Return all proactive paths, including expired
+  /**
+   * Return all proactive paths, including expired
+   * \return The lookup result
+   */
   LookupResult LookupProactiveExpired ();
-  //\}
+  ///@}
 
   /**
    * When peer link with a given MAC-address fails - it returns list of unreachable destination addresses

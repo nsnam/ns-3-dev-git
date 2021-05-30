@@ -27,6 +27,7 @@
 
 namespace ns3 {
 namespace dot11s {
+
 /**
  * \brief a IEEE 802.11 Mesh ID element (Section 8.4.2.101 of IEEE 802.11-2012)
  * \see attribute_IeMeshId
@@ -81,9 +82,15 @@ private:
 
 };
 
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param [in] os The reference to the output stream.
+ * \param [in] meshId The IeMeshId object.
+ * \returns The reference to the output stream.
+ */
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);
 
-ATTRIBUTE_HELPER_HEADER (IeMeshId);
   
 } // namespace dot11s
 } // namespace ns3

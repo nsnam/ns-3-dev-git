@@ -89,12 +89,23 @@ public:
    * \return the assigned stream
    */
   int64_t AssignStreams (int64_t stream);
-  ///\name Statistics
-  // \{
+
+  /// \name Statistics
+  ///@{
+  /**
+   * \brief Report statistics
+   * \param os the output stream
+   */
   void Report (std::ostream &) const;
+  /// Reset stats
   void ResetStats ();
+  /**
+   * Get the link metric
+   * \param peerAddress the peer address
+   * \return The metric
+   */
   uint32_t GetLinkMetric (Mac48Address peerAddress);
-  // \}
+  ///@}
 
 private:
   /**

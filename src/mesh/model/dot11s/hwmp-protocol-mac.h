@@ -52,15 +52,14 @@ public:
    */
   HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol);
   ~HwmpProtocolMac ();
-  ///\name Inherited from MAC plugin
-  //\{
+
+  // Inherited from MAC plugin
   void SetParent (Ptr<MeshWifiInterfaceMac> parent);
   bool Receive (Ptr<Packet> packet, const WifiMacHeader & header);
   bool UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & header, Mac48Address from, Mac48Address to);
-  /// Update beacon is empty, because HWMP does not know anything about beacons
+  // Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   int64_t AssignStreams (int64_t stream);
-  //\}
 
 private:
   /// allow HwmpProtocol class friend access
@@ -69,8 +68,8 @@ private:
    * \returns a path selection action header
    */
   static WifiActionHeader GetWifiActionHeader ();
-  ///\name Interaction with HWMP:
-  //\{
+  /// \name Interaction with HWMP:
+  ///@{
   /**
    * Send PREQ function
    * \param preq the PREQ
@@ -107,7 +106,7 @@ private:
    * \param dst_seqno is a sequence number taken from routing table
    */
   void RequestDestination (Mac48Address dest, uint32_t originator_seqno, uint32_t dst_seqno);
-  //\}
+  ///@}
 
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
   void SendMyPreq ();
@@ -135,13 +134,14 @@ private:
   uint32_t m_ifIndex; ///< IF index
   Ptr<HwmpProtocol> m_protocol; ///< protocol
 
-  ///\name my PREQ and PREQ timer:
-  //\{
-  EventId m_preqTimer; 
-  std::vector<IePreq>  m_myPreq;
-  //\}
-  ///\name PERR timer and stored path error
-  //\{
+  /// \name my PREQ and PREQ timer:
+  ///@{
+  EventId m_preqTimer; //!< Timer for PREQs
+  std::vector<IePreq>  m_myPreq; //!< container of PREQs
+  ///@}
+
+  /// \name PERR timer and stored path error
+  ///@{
   EventId m_perrTimer;
   /// MyPerr structure
   struct MyPerr {
@@ -149,9 +149,14 @@ private:
     std::vector<Mac48Address> receivers; ///< receivers
   };
   MyPerr m_myPerr; ///< PERR
-  ///\name Statistics:
-  //\{
-  /// Statistics structure
+  ///@}
+
+  /// \name Statistics
+  ///@{
+
+  /**
+   * Statistics structure
+   */
   struct Statistics
   {
     uint16_t txPreq; ///< transmit PREQ
@@ -175,8 +180,10 @@ private:
     void Print (std::ostream & os) const;
     Statistics ();
   };
+
   Statistics m_stats; ///< statistics
-  //\}
+  ///@}
+
 private:
   /**
    * Receive data frame

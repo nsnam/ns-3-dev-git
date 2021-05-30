@@ -65,16 +65,32 @@ public:
   virtual void  Enqueue (Ptr<Packet> packet, Mac48Address to);
   virtual bool  SupportsSendFrom () const;
   virtual void  SetLinkUpCallback (Callback<void> linkUp);
-  ///\name Each mesh point interface must know the mesh point address
-  // \{
-  void SetMeshPointAddress (Mac48Address);
+
+  /// \name Each mesh point interface must know the mesh point address
+  ///@{
+  /**
+   * Set the mesh point address
+   * \param addr the mesh point address
+   */
+  void SetMeshPointAddress (Mac48Address addr);
+  /**
+   * Get the mesh point address
+   * \return The mesh point address
+   */
   Mac48Address GetMeshPointAddress () const;
-  // \}
-  ///\name Beacons
-  // \{
-  /// Set maximum initial random delay before first beacon
+  ///@}
+
+  /// \name Beacons
+  ///@{
+  /**
+   *  Set maximum initial random delay before first beacon
+   *  \param interval maximum random interval
+   */
   void SetRandomStartDelay (Time interval);
-  /// Set interval between two successive beacons
+  /**
+   *  Set interval between two successive beacons
+   *  \param interval beacon interval
+   */
   void SetBeaconInterval (Time interval);
   /// \return interval between two beacons
   Time GetBeaconInterval () const;
@@ -94,7 +110,7 @@ public:
    * \attention User of ShiftTbtt () must take care to not shift it to the past.
    */
   void ShiftTbtt (Time shift);
-  // \}
+  ///@}
 
   /**
    * Install plugin.
@@ -140,15 +156,30 @@ public:
   bool CheckSupportedRates (SupportedRates rates) const;
   /// \return list of supported bitrates
   SupportedRates GetSupportedRates () const;
-  ///\name Metric Calculation routines:
-  // \{
+
+  /// \name Metric Calculation routines:
+  ///@{
+  /**
+   * Set the link metric callback
+   * \param cb the callback
+   */
   void SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb);
+  /**
+   * Get the link metric
+   * \param peerAddress the peer address
+   * \return The metric
+   */
   uint32_t GetLinkMetric (Mac48Address peerAddress);
-  // \}
-  ///\brief Statistics:
-  void Report (std::ostream &) const;
-  /// Reset statistics
+  ///@}
+
+  /**
+   * \brief Report statistics
+   * \param os the output stream
+   */
+  void Report (std::ostream & os) const;
+  /// Reset statistics function
   void ResetStats ();
+
   /**
    * Enable/disable beacons
    *
@@ -203,8 +234,8 @@ private:
 
   virtual void DoInitialize ();
 
-  ///\name Mesh timing intervals
-  // \{
+  /// \name Mesh timing intervals
+  ///@{
   /// whether beaconing is enabled
   bool m_beaconEnable;
   /// Beaconing interval.
@@ -213,7 +244,7 @@ private:
   Time m_randomStart;
   /// Time for the next frame
   Time m_tbtt;
-  // \}
+  ///@}
 
   /// Mesh point address
   Mac48Address m_mpAddress;

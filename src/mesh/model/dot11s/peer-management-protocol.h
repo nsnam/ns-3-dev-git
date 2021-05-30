@@ -59,6 +59,7 @@ public:
   void DoDispose ();
   /**
    * \brief Install PMP on given mesh point.
+   * \param mp the MeshPointDevice to install onto
    * \return true if successful
    *
    * Installing protocol causes installation of its interface MAC plugins.
@@ -66,13 +67,13 @@ public:
    * Also MP aggregates all installed protocols, PMP protocol can be accessed
    * via MeshPointDevice::GetObject<PeerManagementProtocol>();
    */
-  bool Install (Ptr<MeshPointDevice>);
+  bool Install (Ptr<MeshPointDevice> mp);
   /**
    * \brief Methods that handle beacon sending/receiving procedure.
    *
    * \name This methods interact with MAC_layer plug-in
-   * \{
    */
+  ///@{
   /**
    * \brief When we are sending a beacon - we fill beacon timing
    * element
@@ -88,19 +89,17 @@ public:
    * \param beaconTiming beacon timing element (needed by BCA)
    */
   void ReceiveBeacon (uint32_t interface, Mac48Address peerAddress, Time beaconInterval, Ptr<IeBeaconTiming> beaconTiming);
-  // \}
+  ///@}
+
   /**
-   * \brief Methods that handle Peer link management frames
-   * interaction:
-   * \{
+   * \name Methods that handle Peer link management frames interaction:
    */
+  ///@{
   /**
    * Deliver Peer link management information to the protocol-part
-   * \param interface is a interface ID of a given MAC (interfaceID rather
-   * than MAC address, because many interfaces may have the same MAC)
+   * \param interface is a interface ID of a given MAC (interfaceID rather than MAC address, because many interfaces may have the same MAC)
    * \param peerAddress is address of peer
-   * \param peerMeshPointAddress is address of peer mesh point device (equal
-   * to peer address when only one interface)
+   * \param peerMeshPointAddress is address of peer mesh point device (equal to peer address when only one interface)
    * \param aid is association ID, which peer has assigned to us
    * \param peerManagementElement is peer link management element
    * \param meshConfig is mesh configuration element taken from the peer management frame
@@ -116,30 +115,55 @@ public:
   /**
    * \brief Cancels peer link due to broken configuration (Mesh ID or Supported
    * rates)
+   * \param interface interface of the link to cancel
+   * \param peerAddress peer address of the link to cancel
    */
   void ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress);
   /**
    * \brief Cancels peer link due to successive transmission failures
+   * \param interface interface of the link to cancel
+   * \param peerAddress peer address of the link to cancel
    */
   void TransmissionFailure (uint32_t interface, const Mac48Address peerAddress);
   /**
    * \brief resets transmission failure statistics
+   * \param interface interface of the link to reset
+   * \param peerAddress peer address of the link to reset
    */
   void TransmissionSuccess (uint32_t interface, const Mac48Address peerAddress);
   /**
    * \brief Checks if there is established link
+   * \param interface interface of the link to check
+   * \param peerAddress peer address of the link to check
+   * \return true if the link is active
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
-  // \}
-  ///\name Interface to other protocols (MLME)
-  // \{
-  /// Set peer link status change callback
+  ///@}
+
+  /// \name Interface to other protocols (MLME)
+  ///@{
+  /**
+   *  Set peer link status change callback
+   *  \param cb the callback
+   */
   void SetPeerLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
-  /// Find active peer link by my interface and peer interface MAC
+  /**
+   * Find active peer link by my interface and peer interface MAC
+   * \param interface interface of the link to find
+   * \param peerAddress peer address of the link to find
+   * \return The peer link (null if not found)
+   */
   Ptr<PeerLink> FindPeerLink (uint32_t interface, Mac48Address peerAddress);
-  /// Get list of all active peer links
+  /**
+   * Get list of all active peer links
+   * \return a list of all the active peer links
+   */
   std::vector < Ptr<PeerLink> > GetPeerLinks () const;
-  /// Get list of active peers of my given interface
+  /**
+   * Get list of active peers of my given interface
+   * \param interface the interface
+   * \return a list of all the active peer links on an interface
+   */
   std::vector<Mac48Address> GetPeers (uint32_t interface) const;
   /**
    * Get mesh point address. \todo this used by plugins only. Now MAC plugins can ask MP address directly from main MAC
@@ -178,10 +202,10 @@ public:
    * \param beaconInterval the beacon interval
    */
   void NotifyBeaconSent (uint32_t interface, Time beaconInterval);
-  // \}
+  ///@}
   
   /**
-   * \brief: Report statistics
+   * \brief Report statistics
    * \param os the output stream
    */
   void Report (std::ostream & os) const;
@@ -255,36 +279,67 @@ private:
     Mac48Address peerMeshPointAddress
     );
   /**
-   * \name External peer-chooser
+   * \brief External peer-chooser
    * \param interface the interface to use
    * \param peerAddress the peer address
    * \returns true is should send an open
    */
   bool ShouldSendOpen (uint32_t interface, Mac48Address peerAddress);
   /**
-   * \name External peer-chooser
+   * \brief External peer-chooser
+   * \param interface the interface to use
+   * \param peerAddress the peer address
+   * \param reasonCode reason code
+   * \returns true is should send an open
    */
   bool ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress, PmpReasonCode & reasonCode);
   /**
    * \brief Indicates changes in peer links
+   * \param interface the interface
+   * \param peerAddress the peer address
+   * \param peerMeshPointAddres the peer mesh point address
+   * \param ostate old state
+   * \param nstate new state
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, PeerLink::PeerState ostate, PeerLink::PeerState nstate);
-  ///\brief BCA
+  /**
+   * \brief BCA
+   * \param interface interface
+   */
   void CheckBeaconCollisions (uint32_t interface);
-  /// Shift own beacon function
+  /**
+   * Shift own beacon function
+   * \param interface interface
+   */
   void ShiftOwnBeacon (uint32_t interface);
   /**
-   * \name Time<-->TU converters:
+   * \brief Time<-->TU converters:
+   * \param x TU
+   * \return Time
    */
   Time TuToTime (int x);
   /**
-   * \name Time<-->TU converters:
+   * \brief Time<-->TU converters:
+   * \param x Time
+   * \return TU
    */
   int TimeToTu (Time x);
 
-  /// Aux. method to register open links
+  /**
+   * Aux. method to register open links
+   * \param peerMp peer mesh point address
+   * \param peerIface peer address
+   * \param myIface my address
+   * \param interface interface
+   */
   void NotifyLinkOpen (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
-  /// Aux. method to register closed links
+  /**
+   * Aux. method to register closed links
+   * \param peerMp peer mesh point address
+   * \param peerIface peer address
+   * \param myIface my address
+   * \param interface interface
+   */
   void NotifyLinkClose (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
 private:
   PeerManagementProtocolMacMap m_plugins; ///< plugins

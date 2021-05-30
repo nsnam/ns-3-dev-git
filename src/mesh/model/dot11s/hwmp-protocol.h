@@ -70,16 +70,16 @@ public:
   HwmpProtocol ();
   ~HwmpProtocol ();
   void DoDispose ();
+
   /**
    * \brief structure of unreachable destination - address and sequence number
    */
-  struct FailedDestination
+  typedef struct
   {
     Mac48Address destination; ///< destination address
     uint32_t seqnum; ///< sequence number
-  };
+  } FailedDestination;
 
-  typedef struct FailedDestination FailedDestination;
   /**
    * Route request, inherited from MeshL2RoutingProtocol
    *
@@ -107,6 +107,7 @@ public:
                            const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
   /**
    * \brief Install HWMP on given mesh point.
+   * \param mp the MeshPointDevice
    * \returns true if successful
    *
    * Installing protocol causes installation of its interface MAC plugins.
@@ -114,7 +115,7 @@ public:
    * Also MP aggregates all installed protocols, HWMP protocol can be accessed
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
-  bool Install (Ptr<MeshPointDevice>);
+  bool Install (Ptr<MeshPointDevice> mp);
   /**
    * Peer link status function
    * \param meshPontAddress The MAC address of the mesh point
@@ -128,15 +129,25 @@ public:
    * \param cb is a callback, which returns a list of addresses on given interface (uint32_t)
    */
   void SetNeighboursCallback (Callback<std::vector<Mac48Address>, uint32_t> cb);
-  ///\name Proactive PREQ mechanism:
-  ///\{
+  /// \name Proactive PREQ mechanism:
+  ///@{
+  /// Set the current node as root
   void SetRoot ();
+  /// Unset the current node as root
   void UnsetRoot ();
-  ///\}
-  ///\brief Statistics:
-  void Report (std::ostream &) const;
+  ///@}
+
+  /// \brief Statistics:
+  ///@{
+  /**
+   *  Print statistics counters
+   *  \param os the output stream
+   */
+  void Report (std::ostream & os) const;
   ///\brief Reset Statistics:
   void ResetStats ();
+  ///@}
+
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
@@ -166,10 +177,10 @@ private:
    */
   HwmpProtocol& operator= (const HwmpProtocol & hwmp);
   /**
-   * type conversion
-   * \returns the HWMP protocol
+   * Copy constructor - defined but not implemented (on purpose)
+   * \param hwmp the HWMP protocol
    */
-  HwmpProtocol (const HwmpProtocol &);
+  HwmpProtocol (const HwmpProtocol & hwmp);
 
   /**
    * \brief Structure of path error: IePerr and list of receivers:
@@ -208,8 +219,8 @@ private:
   bool ForwardUnicast (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
                        Ptr<Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply, uint32_t ttl);
 
-  ///\name Interaction with HWMP MAC plugin
-  //\{
+  /// \name Interaction with HWMP MAC plugin
+  ///@{
   /**
    * \brief Handler for receiving Path Request
    *
@@ -307,23 +318,47 @@ private:
    * \param source is the source address
    */
   bool DropDataFrame (uint32_t seqno, Mac48Address source);
-  //\}
+  ///@}
+
   /// Route discovery time:
   TracedCallback<Time> m_routeDiscoveryTimeCallback;
   /// RouteChangeTracedCallback typedef
   typedef TracedCallback <struct RouteChange> RouteChangeTracedCallback;
   /// Route change trace source
   TracedCallback<struct RouteChange> m_routeChangeTraceSource;
-  ///\name Methods related to Queue/Dequeue procedures
-  ///\{
+
+  // /\name Methods related to Queue/Dequeue procedures
+  ///@{
+  /**
+   * Queue a packet
+   * \param packet the packet to be queued
+   * \return true on success
+   */
   bool QueuePacket (QueuedPacket packet);
+  /**
+   * Dequeue the first packet for a given destination
+   * \param dst the destination
+   * \return the dequeued packet
+   */
   QueuedPacket  DequeueFirstPacketByDst (Mac48Address dst);
+  /**
+   * Dequeue the first packet in the queue
+   * \return the dequeued packet
+   */
   QueuedPacket  DequeueFirstPacket ();
+  /**
+   * Signal the protocol that the reactive path toward a destination is now available
+   * \param dst the destination
+   */
   void ReactivePathResolved (Mac48Address dst);
+  /**
+   * Signal the protocol that the proactive path is now available
+   */
   void ProactivePathResolved ();
-  ///\}
-  ///\name Methods responsible for path discovery retry procedure:
-  ///\{
+  ///@}
+
+  /// \name Methods responsible for path discovery retry procedure:
+  ///@{
   /**
    * \brief checks when the last path discovery procedure was started for a given destination.
    * \return true if should send PREQ
@@ -343,10 +378,12 @@ private:
   void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
   /// Proactive Preq routines:
   void SendProactivePreq ();
-  ///\}
+  ///@}
+
   ///\return address of MeshPointDevice
   Mac48Address GetAddress ();
-  ///\name Methods needed by HwmpMacLugin to access protocol parameters:
+  /// \name Methods needed by HwmpMacLugin to access protocol parameters:
+  ///@{
   /**
    * Get do flag function
    * \returns DO flag
@@ -392,6 +429,8 @@ private:
    * \returns the unicast PERR threshold
    */
   uint8_t GetUnicastPerrThreshold ();
+  ///@}
+
 private:
   /// Statistics structure
   struct Statistics
@@ -421,13 +460,13 @@ private:
   uint32_t m_dataSeqno; ///< data sequence no
   uint32_t m_hwmpSeqno; ///< HWMP sequence no
   uint32_t m_preqId; ///< PREQ ID
-  ///\name Sequence number filters
-  ///\{
+  /// \name Sequence number filters
+  ///@{
   /// Data sequence number database
   std::map<Mac48Address, uint32_t> m_lastDataSeqno;
   /// keeps HWMP seqno (first in pair) and HWMP metric (second in pair) for each address
   std::map<Mac48Address, std::pair<uint32_t, uint32_t> > m_hwmpSeqnoMetricDatabase;
-  ///\}
+  ///@}
 
   /// Routing table
   Ptr<HwmpRtable> m_rtable;
@@ -447,24 +486,24 @@ private:
   
   /// \name HWMP-protocol parameters
   /// These are all Attributes
-  /// \{
-  uint16_t m_maxQueueSize;
-  uint8_t m_dot11MeshHWMPmaxPREQretries;
-  Time m_dot11MeshHWMPnetDiameterTraversalTime;
-  Time m_dot11MeshHWMPpreqMinInterval;
-  Time m_dot11MeshHWMPperrMinInterval;
-  Time m_dot11MeshHWMPactiveRootTimeout;
-  Time m_dot11MeshHWMPactivePathTimeout;
-  Time m_dot11MeshHWMPpathToRootInterval;
-  Time m_dot11MeshHWMPrannInterval;
-  bool m_isRoot;
-  uint8_t m_maxTtl;
-  uint8_t m_unicastPerrThreshold;
-  uint8_t m_unicastPreqThreshold;
-  uint8_t m_unicastDataThreshold;
-  bool m_doFlag;
-  bool m_rfFlag;
-  ///\}
+  ///@{
+  uint16_t m_maxQueueSize;                        //!< Maximum number of packets we can store when resolving route
+  uint8_t m_dot11MeshHWMPmaxPREQretries;          //!< Maximum number of retries before we suppose the destination to be unreachable
+  Time m_dot11MeshHWMPnetDiameterTraversalTime;   //!< Time we suppose the packet to go from one edge of the network to another
+  Time m_dot11MeshHWMPpreqMinInterval;            //!< Minimal interval between to successive PREQs
+  Time m_dot11MeshHWMPperrMinInterval;            //!< Minimal interval between to successive PREQs
+  Time m_dot11MeshHWMPactiveRootTimeout;          //!< Lifetime of proactive routing information
+  Time m_dot11MeshHWMPactivePathTimeout;          //!< Lifetime of reactive routing information
+  Time m_dot11MeshHWMPpathToRootInterval;         //!< Interval between two successive proactive PREQs
+  Time m_dot11MeshHWMPrannInterval;               //!< Lifetime of proactive routing information
+  bool m_isRoot;                                  //!< True if the node is a root
+  uint8_t m_maxTtl;                               //!< Initial value of Time To Live field
+  uint8_t m_unicastPerrThreshold;                 //!< Maximum number of PERR receivers, when we send a PERR as a chain of unicasts
+  uint8_t m_unicastPreqThreshold;                 //!< Maximum number of PREQ receivers, when we send a PREQ as a chain of unicasts
+  uint8_t m_unicastDataThreshold;                 //!< Maximum number of broadcast receivers, when we send a broadcast as a chain of unicasts
+  bool m_doFlag;                                  //!< Destination only HWMP flag
+  bool m_rfFlag;                                  //!< Reply and forward flag
+  ///@}
   
   /// Random variable for random start time
   Ptr<UniformRandomVariable> m_coefficient; ///< coefficient

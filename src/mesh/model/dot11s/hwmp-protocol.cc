@@ -92,7 +92,7 @@ HwmpProtocol::GetTypeId ()
                     MakeTimeChecker ()
                     )
     .AddAttribute ( "Dot11MeshHWMPactiveRootTimeout",
-                    "Lifetime of poractive routing information",
+                    "Lifetime of proactive routing information",
                     TimeValue (MicroSeconds (1024*5000)),
                     MakeTimeAccessor (
                       &HwmpProtocol::m_dot11MeshHWMPactiveRootTimeout),
@@ -113,7 +113,7 @@ HwmpProtocol::GetTypeId ()
                     MakeTimeChecker ()
                     )
     .AddAttribute ( "Dot11MeshHWMPrannInterval",
-                    "Lifetime of poractive routing information",
+                    "Lifetime of proactive routing information",
                     TimeValue (MicroSeconds (1024*5000)),
                     MakeTimeAccessor (
                       &HwmpProtocol::m_dot11MeshHWMPrannInterval),
@@ -141,7 +141,7 @@ HwmpProtocol::GetTypeId ()
                     MakeUintegerChecker<uint8_t> (1)
                     )
     .AddAttribute ( "UnicastDataThreshold",
-                    "Maximum number ofbroadcast receivers, when we send a broadcast as a chain of unicasts",
+                    "Maximum number of broadcast receivers, when we send a broadcast as a chain of unicasts",
                     UintegerValue (1),
                     MakeUintegerAccessor (
                       &HwmpProtocol::m_unicastDataThreshold),
