@@ -350,12 +350,19 @@ public:
     */
    void SetHeMuUserInfo (uint16_t staId, HeMuUserInfo userInfo);
    /**
-    * Get the map HE MU user-specific transmission information indexed by STA-ID.
+    * Get a const reference to the map HE MU user-specific transmission information indexed by STA-ID.
     * This is applicable only for HE MU.
     *
-    * \return the map of HE MU user-specific information indexed by STA-ID
+    * \return a const reference to the map of HE MU user-specific information indexed by STA-ID
     */
    const HeMuUserInfoMap& GetHeMuUserInfoMap (void) const;
+   /**
+    * Get a reference to the map HE MU user-specific transmission information indexed by STA-ID.
+    * This is applicable only for HE MU.
+    *
+    * \return a reference to the map of HE MU user-specific information indexed by STA-ID
+    */
+   HeMuUserInfoMap& GetHeMuUserInfoMap (void);
    /**
     * Get the number of RUs per HE-SIG-B content channel.
     * This is applicable only for HE MU. MU-MIMO (i.e. multiple stations

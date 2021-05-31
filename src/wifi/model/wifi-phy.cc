@@ -1805,6 +1805,16 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
       return;
     }
   
+  // Set RU PHY indices
+  if (txVector.IsMu ())
+    {
+      for (auto& heMuUserInfo : txVector.GetHeMuUserInfoMap ())
+        {
+          heMuUserInfo.second.ru.SetPhyIndex (txVector.GetChannelWidth (),
+                                              m_operatingChannel.GetPrimaryChannelIndex (20));
+        }
+    }
+
   Time txDuration = CalculateTxDuration (psdus, txVector, GetPhyBand ());
 
   bool noEndPreambleDetectionEvent = true;

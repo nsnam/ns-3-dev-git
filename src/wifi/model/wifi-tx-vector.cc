@@ -423,6 +423,13 @@ WifiTxVector::GetHeMuUserInfoMap (void) const
   return m_muUserInfos;
 }
 
+WifiTxVector::HeMuUserInfoMap&
+WifiTxVector::GetHeMuUserInfoMap (void)
+{
+  NS_ABORT_MSG_IF (!IsMu (), "HE MU user info map only available for MU");
+  return m_muUserInfos;
+}
+
 std::pair<std::size_t, std::size_t>
 WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
 {
