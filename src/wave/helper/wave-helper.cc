@@ -433,7 +433,7 @@ WaveHelper::EnableLogComponents (void)
   LogComponentEnable ("VsaManager", LOG_LEVEL_ALL);
   LogComponentEnable ("OcbWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("VendorSpecificAction", LOG_LEVEL_ALL);
-  LogComponentEnable ("WaveMacLow", LOG_LEVEL_ALL);
+  LogComponentEnable ("WaveFrameExchangeManager", LOG_LEVEL_ALL);
   LogComponentEnable ("HigherLayerTxVectorTag", LOG_LEVEL_ALL);
 }
 
