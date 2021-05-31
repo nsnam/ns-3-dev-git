@@ -110,6 +110,10 @@ RrMultiUserScheduler::DoInitialize (void)
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationAssociated, this));
   m_apMac->TraceConnectWithoutContext ("DeAssociatedSta",
                                        MakeCallback (&RrMultiUserScheduler::NotifyStationDeassociated, this));
+  for (const auto& ac : wifiAcList)
+    {
+      m_staList.insert ({ac.first, {}});
+    }
   MultiUserScheduler::DoInitialize ();
 }
 
