@@ -1295,7 +1295,11 @@ CtrlTriggerUserInfoField::SetRuAllocation (HeRu::RuSpec ru)
 
   NS_ABORT_MSG_IF (m_ruAllocation > 68, "Reserved value.");
 
-  m_ruAllocation += (ru.primary80MHz ? 0 : 0x80);
+  m_ruAllocation <<= 1;
+  if (!ru.primary80MHz)
+    {
+      m_ruAllocation++;
+    }
 }
 
 HeRu::RuSpec
@@ -1303,9 +1307,9 @@ CtrlTriggerUserInfoField::GetRuAllocation (void) const
 {
   HeRu::RuSpec ru;
 
-  ru.primary80MHz = ((m_ruAllocation & 0x80) == 0);
+  ru.primary80MHz = ((m_ruAllocation & 0x01) == 0);
 
-  uint8_t val = m_ruAllocation & 0x7f;
+  uint8_t val = m_ruAllocation >> 1;
 
   if (val < 37)
     {
