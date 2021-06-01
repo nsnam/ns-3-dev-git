@@ -161,20 +161,20 @@ public:
   static std::vector<HeRu::RuSpec> GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType);
 
   /**
-   * Get the subcarrier group of the RU having the given index among all the
+   * Get the subcarrier group of the RU having the given PHY index among all the
    * RUs of the given type (number of tones) available in a HE PPDU of the
    * given bandwidth. A subcarrier group is defined as one or more pairs
    * indicating the lowest frequency index and the highest frequency index.
    * Note that for channel width of 160 MHz the returned range is relative to
-   * the 160 MHz channel (i.e. -1012 to 1012). The index parameter is used to
-   * distinguish between primary and secondary 80 MHz subchannels.
+   * the 160 MHz channel (i.e. -1012 to 1012). The PHY index parameter is used to
+   * distinguish between lower and higher 80 MHz subchannels.
    *
    * \param bw the bandwidth (MHz) of the HE PPDU (20, 40, 80, 160)
    * \param ruType the RU type (number of tones)
-   * \param index the index (starting at 1) of the RU
+   * \param phyIndex the PHY index (starting at 1) of the RU
    * \return the subcarrier range of the specified RU
    */
-  static SubcarrierGroup GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index);
+  static SubcarrierGroup GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t phyIndex);
 
   /**
    * Check whether the given RU overlaps with the given set of RUs.

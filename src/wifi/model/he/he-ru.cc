@@ -310,7 +310,7 @@ HeRu::GetCentral26TonesRus (uint16_t bw, HeRu::RuType ruType)
 }
 
 HeRu::SubcarrierGroup
-HeRu::GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index)
+HeRu::GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t phyIndex)
 {
   if (ruType == HeRu::RU_2x996_TONE) //handle special case of RU covering 160 MHz channel
     {
@@ -319,24 +319,24 @@ HeRu::GetSubcarrierGroup (uint16_t bw, RuType ruType, std::size_t index)
     }
 
   // Determine the shift to apply to tone indices for 160 MHz channel (i.e. -1012 to 1012), since
-  // m_heRuSubcarrierGroups contains indices for primary 80 MHz subchannel (i.e. from -500 to 500).
-  // The index is used to that aim.
-  std::size_t indexInPrimary80MHz = index;
+  // m_heRuSubcarrierGroups contains indices for lower 80 MHz subchannel (i.e. from -500 to 500).
+  // The phyIndex is used to that aim.
+  std::size_t indexInLower80MHz = phyIndex;
   std::size_t numRus = GetNRus (bw, ruType);
   int16_t shift = (bw == 160) ? -512 : 0;
-  if (bw == 160 && index > (numRus / 2))
+  if (bw == 160 && phyIndex > (numRus / 2))
     {
-      // The provided index is that of the secondary 80 MHz subchannel
-      indexInPrimary80MHz = index - (numRus / 2);
+      // The provided index is that of the upper 80 MHz subchannel
+      indexInLower80MHz = phyIndex - (numRus / 2);
       shift = 512;
     }
 
   auto it = m_heRuSubcarrierGroups.find ({(bw == 160 ? 80 : bw), ruType});
 
   NS_ABORT_MSG_IF (it == m_heRuSubcarrierGroups.end (), "RU not found");
-  NS_ABORT_MSG_IF (!indexInPrimary80MHz || indexInPrimary80MHz > it->second.size (), "RU index not available");
+  NS_ABORT_MSG_IF (indexInLower80MHz > it->second.size (), "RU index not available");
 
-  SubcarrierGroup group = it->second.at (indexInPrimary80MHz - 1);
+  SubcarrierGroup group = it->second.at (indexInLower80MHz - 1);
   if (bw == 160)
     {
       for (auto & range : group)
@@ -357,7 +357,11 @@ HeRu::DoesOverlap (uint16_t bw, RuSpec ru, const std::vector<RuSpec> &v)
       return true;
     }
 
-  SubcarrierGroup groups = GetSubcarrierGroup (bw, ru.GetRuType (), ru.GetIndex ());
+  // This function may be called by the MAC layer, hence the PHY index may have
+  // not been set yet. Hence, we pass the "MAC" index to GetSubcarrierGroup instead
+  // of the PHY index. This is fine because we compare the primary 80 MHz bands of
+  // the two RUs below.
+  SubcarrierGroup rangesRu = GetSubcarrierGroup (bw, ru.GetRuType (), ru.GetIndex ());
   for (auto& p : v)
     {
       if (ru.GetPrimary80MHz () != p.GetPrimary80MHz ())
@@ -365,9 +369,16 @@ HeRu::DoesOverlap (uint16_t bw, RuSpec ru, const std::vector<RuSpec> &v)
           // the two RUs are located in distinct 80MHz bands
           continue;
         }
-      if (DoesOverlap (bw, p, groups))
+      for (const auto& rangeRu : rangesRu)
         {
-          return true;
+          SubcarrierGroup rangesP = GetSubcarrierGroup (bw, p.GetRuType (), p.GetIndex ());
+          for (auto& rangeP : rangesP)
+            {
+              if (rangeP.second >= rangeRu.first && rangeRu.second >= rangeP.first)
+                {
+                  return true;
+                }
+            }
         }
     }
   return false;
@@ -383,7 +394,7 @@ HeRu::DoesOverlap (uint16_t bw, RuSpec ru, const SubcarrierGroup &toneRanges)
           return true;
         }
 
-      SubcarrierGroup rangesRu = GetSubcarrierGroup (bw, ru.GetRuType (), ru.GetIndex ());
+      SubcarrierGroup rangesRu = GetSubcarrierGroup (bw, ru.GetRuType (), ru.GetPhyIndex ());
       for (auto& r : rangesRu)
         {
           if (range.second >= r.first && r.second >= range.first)
@@ -406,7 +417,7 @@ HeRu::FindOverlappingRu (uint16_t bw, RuSpec referenceRu, RuType searchedRuType)
     {
       primary80MhzFlags.push_back (true);
       primary80MhzFlags.push_back (false);
-      numRusPer80Mhz = numRus / 2;
+      numRusPer80Mhz = (searchedRuType == HeRu::RU_2x996_TONE ? 1 : numRus / 2);
     }
   else
     {
@@ -414,9 +425,9 @@ HeRu::FindOverlappingRu (uint16_t bw, RuSpec referenceRu, RuType searchedRuType)
       numRusPer80Mhz = numRus;
     }
 
-  std::size_t index = 1;
   for (const auto primary80MHz : primary80MhzFlags)
     {
+      std::size_t index = 1;
       for (std::size_t indexPer80Mhz = 1; indexPer80Mhz <= numRusPer80Mhz; ++indexPer80Mhz, ++index)
         {
           RuSpec searchedRu (searchedRuType, index, primary80MHz);

@@ -505,7 +505,7 @@ TestDlOfdmaPhyTransmission::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2)
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector.SetNss (1, rxStaId1);
 
-  HeRu::RuSpec ru2 (ruType, 2, (m_channelWidth == 160 ? false : true));
+  HeRu::RuSpec ru2 (ruType, (m_channelWidth == 160 ? 1 : 2), (m_channelWidth == 160 ? false : true));
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
@@ -1440,6 +1440,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
 
   HeRu::RuSpec ru (HeRu::RU_106_TONE, staId, false);
+  ru.SetPhyIndex (DEFAULT_CHANNEL_WIDTH, 0);
   txVector.SetRu (ru, staId);
   txVector.SetMode (HePhy::GetHeMcs7 (), staId);
   txVector.SetNss (1, staId);
@@ -1903,16 +1904,15 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_
       NS_ASSERT_MSG (false, "Unsupported channel width");
     }
 
-  bool primary80MHz;
-  if (m_channelWidth == 160 && (index == 1))
-    {
-      primary80MHz = true;
-    }
-  else
+  bool primary80MHz = true;
+  if (m_channelWidth == 160 && index == 2)
     {
       primary80MHz = false;
+      index = 1;
     }
-  txVector.SetRu (HeRu::RuSpec (ruType, index, primary80MHz), txStaId);
+  HeRu::RuSpec ru (ruType, index, primary80MHz);
+  ru.SetPhyIndex (m_channelWidth, 0);
+  txVector.SetRu (ru, txStaId);
   txVector.SetMode (HePhy::GetHeMcs7 (), txStaId);
   txVector.SetNss (1, txStaId);
   return txVector;

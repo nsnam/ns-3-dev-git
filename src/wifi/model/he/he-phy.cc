@@ -732,7 +732,7 @@ HePhy::GetRuBandForTx (const WifiTxVector& txVector, uint16_t staId) const
   HeRu::RuSpec ru = txVector.GetRu (staId);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_ASSERT (channelWidth <= m_wifiPhy->GetChannelWidth ());
-  HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ru.GetRuType (), ru.GetIndex ());
+  HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ru.GetRuType (), ru.GetPhyIndex ());
   HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
   // for a TX spectrum, the guard bandwidth is a function of the transmission channel width
   // and the spectrum width equals the transmission channel width (hence bandIndex equals 0)
@@ -749,7 +749,7 @@ HePhy::GetRuBandForRx (const WifiTxVector& txVector, uint16_t staId) const
   HeRu::RuSpec ru = txVector.GetRu (staId);
   uint16_t channelWidth = txVector.GetChannelWidth ();
   NS_ASSERT (channelWidth <= m_wifiPhy->GetChannelWidth ());
-  HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ru.GetRuType (), ru.GetIndex ());
+  HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (channelWidth, ru.GetRuType (), ru.GetPhyIndex ());
   HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
   // for an RX spectrum, the guard bandwidth is a function of the operating channel width
   // and the spectrum width equals the operating channel width
@@ -770,8 +770,9 @@ HePhy::GetNonOfdmaBand (const WifiTxVector& txVector, uint16_t staId) const
 
   // Find the RU that encompasses the non-OFDMA part of the HE TB PPDU for the STA-ID
   HeRu::RuSpec nonOfdmaRu = HeRu::FindOverlappingRu (channelWidth, ru, HeRu::GetRuType (nonOfdmaWidth));
+  nonOfdmaRu.SetPhyIndex (channelWidth, m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 
-  HeRu::SubcarrierGroup groupPreamble = HeRu::GetSubcarrierGroup (channelWidth, nonOfdmaRu.GetRuType (), nonOfdmaRu.GetIndex ());
+  HeRu::SubcarrierGroup groupPreamble = HeRu::GetSubcarrierGroup (channelWidth, nonOfdmaRu.GetRuType (), nonOfdmaRu.GetPhyIndex ());
   HeRu::SubcarrierRange range = std::make_pair (groupPreamble.front ().first, groupPreamble.back ().second);
   return m_wifiPhy->ConvertHeRuSubcarriers (channelWidth, GetGuardBandwidth (m_wifiPhy->GetChannelWidth ()), range,
                                             m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (channelWidth));
@@ -879,9 +880,10 @@ HePhy::GetCenterFrequencyForNonOfdmaPart (const WifiTxVector& txVector, uint16_t
     {
       //Obtain the index of the non-OFDMA portion
       HeRu::RuSpec nonOfdmaRu = HeRu::FindOverlappingRu (currentWidth, ru, HeRu::GetRuType (nonOfdmaWidth));
+      nonOfdmaRu.SetPhyIndex (currentWidth, m_wifiPhy->GetOperatingChannel ().GetPrimaryChannelIndex (20));
 
       uint16_t startingFrequency = centerFrequency - (currentWidth / 2);
-      centerFrequency = startingFrequency + nonOfdmaWidth * (nonOfdmaRu.GetIndex () - 1) + nonOfdmaWidth / 2;
+      centerFrequency = startingFrequency + nonOfdmaWidth * (nonOfdmaRu.GetPhyIndex () - 1) + nonOfdmaWidth / 2;
     }
   return centerFrequency;
 }

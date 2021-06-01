@@ -179,14 +179,24 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
                     {
                       HeRu::RuType ruType = static_cast <HeRu::RuType> (type);
                       std::size_t nRus = HeRu::GetNRus (bw, ruType);
-                      for (std::size_t index = 1; index <= nRus; index++)
+                      for (std::size_t phyIndex = 1; phyIndex <= nRus; phyIndex++)
                         {
-                          HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (bw, ruType, index);
+                          HeRu::SubcarrierGroup group = HeRu::GetSubcarrierGroup (bw, ruType, phyIndex);
                           HeRu::SubcarrierRange range = std::make_pair (group.front ().first, group.back ().second);
                           WifiSpectrumBand band = ConvertHeRuSubcarriers (bw, GetGuardBandwidth (channelWidth),
                                                                           range, i);
-                          bool primary80 = (channelWidth < 160 || index <= nRus / 2);
-                          m_ruBands[channelWidth].insert ({band, HeRu::RuSpec (ruType, index, primary80)});
+                          std::size_t index = (bw == 160 && phyIndex > nRus / 2
+                                               ? phyIndex - nRus / 2 : phyIndex);
+                          bool primary80IsLower80 = (GetOperatingChannel ().GetPrimaryChannelIndex (20)
+                                                     < bw / 40);
+                          bool primary80 = (bw < 160
+                                            || ruType == HeRu::RU_2x996_TONE
+                                            || (primary80IsLower80 && phyIndex <= nRus / 2)
+                                            || (!primary80IsLower80 && phyIndex > nRus / 2));
+                          HeRu::RuSpec ru (ruType, index, primary80);
+                          ru.SetPhyIndex (bw, GetOperatingChannel ().GetPrimaryChannelIndex (20));
+                          NS_ABORT_IF (ru.GetPhyIndex () != phyIndex);
+                          m_ruBands[channelWidth].insert ({band, ru});
                         }
                     }
                 }

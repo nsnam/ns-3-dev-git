@@ -480,6 +480,12 @@ WifiTxVector::GetNumRusPerHeSigBContentChannel (void) const
   for (auto & userInfo : m_muUserInfos)
     {
       HeRu::RuSpec ru = userInfo.second.ru;
+      if (!ru.IsPhyIndexSet ())
+        {
+          // this method can be called when calculating the TX duration of a frame
+          // and at that time the RU PHY index may have not been set yet
+          ru.SetPhyIndex (m_channelWidth, 0);
+        }
       if (HeRu::DoesOverlap (m_channelWidth, ru, toneRangesContentChannel1))
         {
           numRusContentChannel1++;
