@@ -31,7 +31,6 @@ class WifiActionHeader;
 
 namespace dot11s {
 
-class HwmpProtocol;
 class IePreq;
 class IePrep;
 class IePerr;
