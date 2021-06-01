@@ -67,6 +67,7 @@ us a note on ns-developers mailing list.</p>
 <li>The class ThreeGppAntennaArrayModel has been replaced by UniformPlanarArray, extending the PhasedArrayModel interface.</li>
 <li>The Angles struct is now a class, with robust setters and getters (public struct variables phi and theta are now private class variables m_azimuth and m_inclination), overloaded operator&lt;&lt; and operator&gt;&gt; and a number of utilities.</li>
 <li>AntennaModel child classes have been extended to produce 3D radiation patterns. Attributes such as Beamwidth have thus been separated into Vertical/HorizontalBeamwidth.</li>
+<li>The attribute <b>UseVhtOnly</b> in MinstrelHtWifiManager has been replaced by a new attribute called <b>UseLatestAmendmentOnly</b>.
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
