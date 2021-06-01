@@ -74,11 +74,11 @@ public:
   /**
    * \brief structure of unreachable destination - address and sequence number
    */
-  typedef struct
+  struct FailedDestination
   {
     Mac48Address destination; ///< destination address
     uint32_t seqnum; ///< sequence number
-  } FailedDestination;
+  };
 
   /**
    * Route request, inherited from MeshL2RoutingProtocol
