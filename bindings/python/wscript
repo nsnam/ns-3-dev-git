@@ -20,7 +20,7 @@ from waflib.Errors import WafError
 # on 'git describe --tags' command.  Example, if the latest release was 0.21.0,
 # and 'git describe --tags' reports "0.21.0-6-g8e7c0a9", then write the
 # PYBINDGEN version string below as '0.21.0.post6+ng8e7c0a9'
-REQUIRED_PYBINDGEN_VERSION = '0.21.0.post20+ng71852b1'
+REQUIRED_PYBINDGEN_VERSION = '0.22.0'
 REQUIRED_PYGCCXML_VERSION = (2, 0, 1)
 REQUIRED_CASTXML_VERSION = '0.2'
 
