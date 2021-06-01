@@ -599,17 +599,16 @@ private:
    */
   WifiModeList GetHtDeviceMcsList (void) const;
 
-  Time m_updateStats;        //!< How frequent do we calculate the stats.
-  Time m_legacyUpdateStats;  //!< How frequent do we calculate the stats for legacy MinstrelWifiManager.
-  uint8_t m_lookAroundRate;  //!< The % to try other rates than our current rate.
-  uint8_t m_ewmaLevel;       //!< Exponential weighted moving average level (or coefficient).
-  uint8_t m_nSampleCol;      //!< Number of sample columns.
-  uint32_t m_frameLength;    //!< Frame length used for calculate modes TxTime in bytes.
-  uint8_t m_numGroups;       //!< Number of groups Minstrel should consider.
-  uint8_t m_numRates;        //!< Number of rates per group Minstrel should consider.
-  bool m_useVhtOnly;         //!< If only VHT MCS should be used, instead of HT and VHT.
-  bool m_useHeOnly;          //!< If only HE MCS should be used, instead of HT, VHT and HE.
-  bool m_printStats;         //!< If statistics table should be printed.
+  Time m_updateStats;            //!< How frequent do we calculate the stats.
+  Time m_legacyUpdateStats;      //!< How frequent do we calculate the stats for legacy MinstrelWifiManager.
+  uint8_t m_lookAroundRate;      //!< The % to try other rates than our current rate.
+  uint8_t m_ewmaLevel;           //!< Exponential weighted moving average level (or coefficient).
+  uint8_t m_nSampleCol;          //!< Number of sample columns.
+  uint32_t m_frameLength;        //!< Frame length used for calculate modes TxTime in bytes.
+  uint8_t m_numGroups;           //!< Number of groups Minstrel should consider.
+  uint8_t m_numRates;            //!< Number of rates per group Minstrel should consider.
+  bool m_useLatestAmendmentOnly; //!< Flag if only the latest supported amendment by both peers should be used.
+  bool m_printStats;             //!< If statistics table should be printed.
 
   MinstrelMcsGroups m_minstrelGroups;                 //!< Global array for groups information.
 

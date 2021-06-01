@@ -109,15 +109,10 @@ MinstrelHtWifiManager::GetTypeId (void)
                    UintegerValue (1200),
                    MakeUintegerAccessor (&MinstrelHtWifiManager::m_frameLength),
                    MakeUintegerChecker <uint32_t> ())
-    .AddAttribute ("UseVhtOnly",
-                   "Use only VHT MCSs (and not HT) when VHT is available",
+    .AddAttribute ("UseLatestAmendmentOnly",
+                   "Use only the latest amendment when it is supported by both peers",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&MinstrelHtWifiManager::m_useVhtOnly),
-                   MakeBooleanChecker ())
-    .AddAttribute ("UseHeOnly",
-                   "Use only HE MCSs (and not HT nor VHT) when HE is available",
-                   BooleanValue (true),
-                   MakeBooleanAccessor (&MinstrelHtWifiManager::m_useHeOnly),
+                   MakeBooleanAccessor (&MinstrelHtWifiManager::m_useLatestAmendmentOnly),
                    MakeBooleanChecker ())
     .AddAttribute ("PrintStats",
                    "Control the printing of the statistics table",
@@ -1501,14 +1496,14 @@ MinstrelHtWifiManager::RateInit (MinstrelHtWifiRemoteStation *station)
               //It is a VHT group but the receiver does not support VHT: skip
               continue;
             }
-          if ((m_minstrelGroups[groupId].type != GROUP_HE) && GetHeSupported (station) && m_useHeOnly)
+          if ((m_minstrelGroups[groupId].type != GROUP_HE) && GetHeSupported (station) && m_useLatestAmendmentOnly)
             {
-              //It is not a HE group and the receiver supports HE: skip since UseHeOnly attribute is enabled
+              //It is not a HE group and the receiver supports HE: skip since UseLatestAmendmentOnly attribute is enabled
               continue;
             }
-          if (!GetHeSupported (station) && (m_minstrelGroups[groupId].type != GROUP_VHT) && GetVhtSupported (station) && m_useVhtOnly)
+          if (!GetHeSupported (station) && (m_minstrelGroups[groupId].type != GROUP_VHT) && GetVhtSupported (station) && m_useLatestAmendmentOnly)
             {
-              //It is not a VHT group and the receiver supports VHT (but not HE): skip since UseVhtOnly attribute is enabled
+              //It is not a VHT group and the receiver supports VHT (but not HE): skip since UseLatestAmendmentOnly attribute is enabled
               continue;
             }
           if (((m_minstrelGroups[groupId].type == GROUP_HT) || (m_minstrelGroups[groupId].type == GROUP_VHT))
