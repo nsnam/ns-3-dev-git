@@ -264,16 +264,6 @@ public:
    */
   static Time CalculatePhyPreambleAndHeaderDuration (const WifiTxVector& txVector);
   /**
-   * Get the duration of the PPDU field (or group of fields)
-   * for the given transmission parameters.
-   *
-   * \param field the PPDU field (or group of fields)
-   * \param txVector the transmission parameters
-   *
-   * \return the duration of the PPDU field
-   */
-  static Time GetPpduFieldDuration (WifiPpduField field, const WifiTxVector& txVector);
-  /**
    * \return the preamble detection duration, which is the time correlation needs to detect the start of an incoming frame.
    */
   static Time GetPreambleDetectionDuration (void);
