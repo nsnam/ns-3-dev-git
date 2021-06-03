@@ -851,7 +851,7 @@ main (int argc, char *argv[])
       PrintGnuplottableUeListToFile ("ues.txt");
 
       remHelper = CreateObject<RadioEnvironmentMapHelper> ();
-      remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+      remHelper->SetAttribute ("Channel", PointerValue (lteHelper->GetDownlinkSpectrumChannel ()));
       remHelper->SetAttribute ("OutputFile", StringValue ("lena-dual-stripe.rem"));
       remHelper->SetAttribute ("XMin", DoubleValue (macroUeBox.xMin));
       remHelper->SetAttribute ("XMax", DoubleValue (macroUeBox.xMax));

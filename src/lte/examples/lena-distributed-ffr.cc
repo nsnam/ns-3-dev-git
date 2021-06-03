@@ -355,7 +355,7 @@ int main (int argc, char *argv[])
       Ptr<SpectrumChannel> dlChannel = enbDlSpectrumPhy->GetChannel ();
       uint32_t dlChannelId = dlChannel->GetId ();
       NS_LOG_INFO ("DL ChannelId: " << dlChannelId);
-      remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/1"));
+      remHelper->SetAttribute ("Channel", PointerValue (dlChannel));
       remHelper->SetAttribute ("OutputFile", StringValue ("lena-distributed-ffr.rem"));
       remHelper->SetAttribute ("XMin", DoubleValue (macroUeBox.xMin));
       remHelper->SetAttribute ("XMax", DoubleValue (macroUeBox.xMax));

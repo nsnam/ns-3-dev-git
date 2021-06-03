@@ -684,7 +684,7 @@ To do this, you just need to add the following code to your simulation
 program towards the end, right before the call to Simulator::Run ()::
 
   Ptr<RadioEnvironmentMapHelper> remHelper = CreateObject<RadioEnvironmentMapHelper> ();
-  remHelper->SetAttribute ("ChannelPath", StringValue ("/ChannelList/0"));
+  remHelper->SetAttribute ("Channel", PointerValue (lteHelper->GetDownlinkSpectrumChannel ()));
   remHelper->SetAttribute ("OutputFile", StringValue ("rem.out"));
   remHelper->SetAttribute ("XMin", DoubleValue (-400.0));
   remHelper->SetAttribute ("XMax", DoubleValue (400.0));
