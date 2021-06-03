@@ -491,8 +491,8 @@ WifiPhyHelper::GetRadiotapHeader (
         {
           data2 |= RadiotapHeader::HE_DATA2_RU_OFFSET_KNOWN;
           //HeRu indices start at 1 whereas RadioTap starts at 0
-          data2 |= (((txVector.GetHeMuUserInfo (staId).ru.index - 1) << 8) & 0x3f00);
-          data2 |= (((!txVector.GetHeMuUserInfo (staId).ru.primary80MHz) << 15) & 0x8000);
+          data2 |= (((txVector.GetHeMuUserInfo (staId).ru.GetIndex () - 1) << 8) & 0x3f00);
+          data2 |= (((!txVector.GetHeMuUserInfo (staId).ru.GetPrimary80MHz ()) << 15) & 0x8000);
         }
 
       uint16_t data3 = 0;
@@ -508,7 +508,7 @@ WifiPhyHelper::GetRadiotapHeader (
       uint16_t data5 = 0;
       if (preamble == WIFI_PREAMBLE_HE_MU || preamble == WIFI_PREAMBLE_HE_TB)
         {
-          HeRu::RuType ruType = txVector.GetHeMuUserInfo (staId).ru.ruType;
+          HeRu::RuType ruType = txVector.GetHeMuUserInfo (staId).ru.GetRuType ();
           switch (ruType)
             {
             case HeRu::RU_26_TONE:

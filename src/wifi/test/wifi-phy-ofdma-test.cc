@@ -500,18 +500,12 @@ TestDlOfdmaPhyTransmission::SendMuPpdu (uint16_t rxStaId1, uint16_t rxStaId2)
       NS_ASSERT_MSG (false, "Unsupported channel width");
     }
   
-  HeRu::RuSpec ru1;
-  ru1.primary80MHz = true;
-  ru1.ruType = ruType;
-  ru1.index = 1;
+  HeRu::RuSpec ru1 (ruType, 1, true);
   txVector.SetRu (ru1, rxStaId1);
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector.SetNss (1, rxStaId1);
 
-  HeRu::RuSpec ru2;
-  ru2.primary80MHz = (m_channelWidth == 160) ? false : true;
-  ru2.ruType = ruType;
-  ru2.index = 2;
+  HeRu::RuSpec ru2 (ruType, 2, (m_channelWidth == 160 ? false : true));
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
@@ -1167,19 +1161,13 @@ TestUlOfdmaPpduUid::SendMuPpdu (void)
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_MU, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
 
   uint16_t rxStaId1 = 1;
-  HeRu::RuSpec ru1;
-  ru1.primary80MHz = false;
-  ru1.ruType = HeRu::RU_106_TONE;
-  ru1.index = 1;
+  HeRu::RuSpec ru1 (HeRu::RU_106_TONE, 1, false);
   txVector.SetRu (ru1, rxStaId1);
   txVector.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector.SetNss (1, rxStaId1);
 
   uint16_t rxStaId2 = 2;
-  HeRu::RuSpec ru2;
-  ru2.primary80MHz = false;
-  ru2.ruType = HeRu::RU_106_TONE;
-  ru2.index = 2;
+  HeRu::RuSpec ru2 (HeRu::RU_106_TONE, 2, false);
   txVector.SetRu (ru2, rxStaId2);
   txVector.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector.SetNss (1, rxStaId2);
@@ -1214,10 +1202,7 @@ TestUlOfdmaPpduUid::SendTbPpdu (void)
   WifiTxVector txVector2 = txVector1;
 
   uint16_t rxStaId1 = 1;
-  HeRu::RuSpec ru1;
-  ru1.primary80MHz = false;
-  ru1.ruType = HeRu::RU_106_TONE;
-  ru1.index = 1;
+  HeRu::RuSpec ru1 (HeRu::RU_106_TONE, 1, false);
   txVector1.SetRu (ru1, rxStaId1);
   txVector1.SetMode (HePhy::GetHeMcs7 (), rxStaId1);
   txVector1.SetNss (1, rxStaId1);
@@ -1232,10 +1217,7 @@ TestUlOfdmaPpduUid::SendTbPpdu (void)
   psdus1.insert (std::make_pair (rxStaId1, psdu1));
 
   uint16_t rxStaId2 = 2;
-  HeRu::RuSpec ru2;
-  ru2.primary80MHz = false;
-  ru2.ruType = HeRu::RU_106_TONE;
-  ru2.index = 2;
+  HeRu::RuSpec ru2 (HeRu::RU_106_TONE, 2, false);
   txVector2.SetRu (ru2, rxStaId2);
   txVector2.SetMode (HePhy::GetHeMcs9 (), rxStaId2);
   txVector2.SetNss (1, rxStaId2);
@@ -1457,10 +1439,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   WifiConstPsduMap psdus;
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false);
 
-  HeRu::RuSpec ru;
-  ru.primary80MHz = false;
-  ru.ruType = HeRu::RU_106_TONE;
-  ru.index = staId;
+  HeRu::RuSpec ru (HeRu::RU_106_TONE, staId, false);
   txVector.SetRu (ru, staId);
   txVector.SetMode (HePhy::GetHeMcs7 (), staId);
   txVector.SetNss (1, staId);
@@ -1481,7 +1460,7 @@ TestMultipleHeTbPreambles::RxHeTbPpdu (uint64_t uid, uint16_t staId, double txPo
   //Send non-OFDMA part
   Time nonOfdmaDuration = m_phy->GetHePhy ()->CalculateNonOfdmaDurationForHeTb (txVector);
   uint32_t centerFrequency = m_phy->GetHePhy ()->GetCenterFrequencyForNonOfdmaPart (txVector, staId);
-  uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).ruType);
+  uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (staId).GetRuType ());
   uint16_t channelWidth = ruWidth < 20 ? 20 : ruWidth;
   Ptr<SpectrumValue> rxPsd = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (centerFrequency, channelWidth, txPowerWatts, m_phy->GetGuardBandwidth (channelWidth));
   Ptr<WifiSpectrumSignalParameters> rxParams = Create<WifiSpectrumSignalParameters> ();
@@ -1924,18 +1903,16 @@ TestUlOfdmaPhyTransmission::GetTxVectorForHeTbPpdu (uint16_t txStaId, std::size_
       NS_ASSERT_MSG (false, "Unsupported channel width");
     }
 
-  HeRu::RuSpec ru;
+  bool primary80MHz;
   if (m_channelWidth == 160 && (index == 1))
     {
-      ru.primary80MHz = true;
+      primary80MHz = true;
     }
   else
     {
-      ru.primary80MHz = false;
+      primary80MHz = false;
     }
-  ru.ruType = ruType;
-  ru.index = index;
-  txVector.SetRu (ru, txStaId);
+  txVector.SetRu (HeRu::RuSpec (ruType, index, primary80MHz), txStaId);
   txVector.SetMode (HePhy::GetHeMcs7 (), txStaId);
   txVector.SetNss (1, txStaId);
   return txVector;
@@ -2921,10 +2898,7 @@ TestPhyPaddingExclusion::SendHeTbPpdu (uint16_t txStaId, std::size_t index, std:
 
   WifiTxVector txVector = WifiTxVector (HePhy::GetHeMcs7 (), 0, WIFI_PREAMBLE_HE_TB, 800, 1, 1, 0, DEFAULT_CHANNEL_WIDTH, false, false, 1);
 
-  HeRu::RuSpec ru;
-  ru.primary80MHz = false;
-  ru.ruType = HeRu::RU_106_TONE;
-  ru.index = index;
+  HeRu::RuSpec ru (HeRu::RU_106_TONE, index, false);
   txVector.SetRu (ru, txStaId);
   txVector.SetMode (HePhy::GetHeMcs7 (), txStaId);
   txVector.SetNss (1, txStaId);
@@ -3351,7 +3325,7 @@ TestUlOfdmaPowerControl::SendMuBar (std::vector <uint16_t> staIds)
     {
       CtrlTriggerUserInfoField& ui = muBar.AddUserInfoField ();
       ui.SetAid12 (staId);
-      ui.SetRuAllocation ({true, ru, index});
+      ui.SetRuAllocation ({ru, index, true});
       ui.SetUlFecCodingType (true);
       ui.SetUlMcs (7);
       ui.SetUlDcm (false);

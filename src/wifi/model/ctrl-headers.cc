@@ -1263,24 +1263,24 @@ CtrlTriggerUserInfoField::HasRaRuForUnassociatedSta (void) const
 void
 CtrlTriggerUserInfoField::SetRuAllocation (HeRu::RuSpec ru)
 {
-  NS_ABORT_MSG_IF (ru.index == 0, "Valid indices start at 1");
+  NS_ABORT_MSG_IF (ru.GetIndex () == 0, "Valid indices start at 1");
 
-  switch (ru.ruType)
+  switch (ru.GetRuType ())
     {
     case HeRu::RU_26_TONE:
-      m_ruAllocation = ru.index - 1;
+      m_ruAllocation = ru.GetIndex () - 1;
       break;
     case HeRu::RU_52_TONE:
-      m_ruAllocation = ru.index + 36;
+      m_ruAllocation = ru.GetIndex () + 36;
       break;
     case HeRu::RU_106_TONE:
-      m_ruAllocation = ru.index + 52;
+      m_ruAllocation = ru.GetIndex () + 52;
       break;
     case HeRu::RU_242_TONE:
-      m_ruAllocation = ru.index + 60;
+      m_ruAllocation = ru.GetIndex () + 60;
       break;
     case HeRu::RU_484_TONE:
-      m_ruAllocation = ru.index + 64;
+      m_ruAllocation = ru.GetIndex () + 64;
       break;
     case HeRu::RU_996_TONE:
       m_ruAllocation = 67;
@@ -1296,7 +1296,7 @@ CtrlTriggerUserInfoField::SetRuAllocation (HeRu::RuSpec ru)
   NS_ABORT_MSG_IF (m_ruAllocation > 68, "Reserved value.");
 
   m_ruAllocation <<= 1;
-  if (!ru.primary80MHz)
+  if (!ru.GetPrimary80MHz ())
     {
       m_ruAllocation++;
     }
@@ -1305,53 +1305,54 @@ CtrlTriggerUserInfoField::SetRuAllocation (HeRu::RuSpec ru)
 HeRu::RuSpec
 CtrlTriggerUserInfoField::GetRuAllocation (void) const
 {
-  HeRu::RuSpec ru;
+  HeRu::RuType ruType;
+  std::size_t index;
 
-  ru.primary80MHz = ((m_ruAllocation & 0x01) == 0);
+  bool primary80MHz = ((m_ruAllocation & 0x01) == 0);
 
   uint8_t val = m_ruAllocation >> 1;
 
   if (val < 37)
     {
-      ru.ruType = HeRu::RU_26_TONE;
-      ru.index = val + 1;
+      ruType = HeRu::RU_26_TONE;
+      index = val + 1;
     }
   else if (val < 53)
     {
-      ru.ruType = HeRu::RU_52_TONE;
-      ru.index = val - 36;
+      ruType = HeRu::RU_52_TONE;
+      index = val - 36;
     }
   else if (val < 61)
     {
-      ru.ruType = HeRu::RU_106_TONE;
-      ru.index = val - 52;
+      ruType = HeRu::RU_106_TONE;
+      index = val - 52;
     }
   else if (val < 65)
     {
-      ru.ruType = HeRu::RU_242_TONE;
-      ru.index = val - 60;
+      ruType = HeRu::RU_242_TONE;
+      index = val - 60;
     }
   else if (val < 67)
     {
-      ru.ruType = HeRu::RU_484_TONE;
-      ru.index = val - 64;
+      ruType = HeRu::RU_484_TONE;
+      index = val - 64;
     }
   else if (val == 67)
     {
-      ru.ruType = HeRu::RU_996_TONE;
-      ru.index = 1;
+      ruType = HeRu::RU_996_TONE;
+      index = 1;
     }
   else if (val == 68)
     {
-      ru.ruType = HeRu::RU_2x996_TONE;
-      ru.index = 1;
+      ruType = HeRu::RU_2x996_TONE;
+      index = 1;
     }
   else
     {
       NS_FATAL_ERROR ("Reserved value.");
     }
 
-  return ru;
+  return HeRu::RuSpec (ruType, index, primary80MHz);
 }
 
 void

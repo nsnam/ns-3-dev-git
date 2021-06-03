@@ -186,7 +186,7 @@ SpectrumWifiPhy::UpdateInterferenceHelperBands (void)
                           WifiSpectrumBand band = ConvertHeRuSubcarriers (bw, GetGuardBandwidth (channelWidth),
                                                                           range, i);
                           bool primary80 = (channelWidth < 160 || index <= nRus / 2);
-                          m_ruBands[channelWidth].insert ({band, HeRu::RuSpec {primary80, ruType, index}});
+                          m_ruBands[channelWidth].insert ({band, HeRu::RuSpec (ruType, index, primary80)});
                         }
                     }
                 }
@@ -338,9 +338,9 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
         {
           Ptr<SpectrumValue> filter = WifiSpectrumValueHelper::CreateRfFilter (GetFrequency (), channelWidth, GetBandBandwidth (), GetGuardBandwidth (channelWidth), bandRuPair.first);
           SpectrumValue filteredSignal = (*filter) * (*receivedSignalPsd);
-          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << Integral (filteredSignal));
+          NS_LOG_DEBUG ("Signal power received (watts) before antenna gain for RU with type " << bandRuPair.second.GetRuType () << " and index " << bandRuPair.second.GetIndex () << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << Integral (filteredSignal));
           double rxPowerPerBandW = Integral (filteredSignal) * DbToRatio (GetRxGain ());
-          NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << bandRuPair.second.ruType << " and index " << bandRuPair.second.index << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
+          NS_LOG_DEBUG ("Signal power received after antenna gain for RU with type " << bandRuPair.second.GetRuType () << " and index " << bandRuPair.second.GetIndex () << " -> (" << bandRuPair.first.first << "; " << bandRuPair.first.second <<  "): " << rxPowerPerBandW << " W (" << WToDbm (rxPowerPerBandW) << " dBm)");
           rxPowerW.insert ({bandRuPair.first, rxPowerPerBandW});
         }
     }

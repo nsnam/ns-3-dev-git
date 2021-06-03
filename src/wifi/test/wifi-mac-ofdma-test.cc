@@ -288,7 +288,7 @@ TestMultiUserScheduler::ComputeWifiTxVector (void)
           primary80 = false;
         }
       m_txVector.SetHeMuUserInfo (sta.first,
-                                  {{primary80, ruType, ruIndex++}, WifiMode ("HeMcs11"), 1});
+                                  {{ruType, ruIndex++, primary80}, WifiMode ("HeMcs11"), 1});
     }
 }
 

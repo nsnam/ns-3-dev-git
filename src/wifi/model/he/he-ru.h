@@ -61,11 +61,45 @@ public:
    * subfield of the User Info field of Trigger frames. Note that primary80MHz
    * must be true if ruType is RU_2x996_TONE.
    */
-  struct RuSpec
+  class RuSpec
   {
-    bool primary80MHz;   //!< true if the RU is allocated in the primary 80MHz channel
-    RuType ruType;       //!< RU type
-    std::size_t index;   //!< index (starting at 1)
+  public:
+    /**
+     * Default constructor
+     */
+    RuSpec ();
+    /**
+     * Constructor
+     *
+     * \param ruType the RU type
+     * \param index the RU index (starting at 1)
+     * \param primary80MHz whether the RU is allocated in the primary 80MHz channel
+     */
+    RuSpec (RuType ruType, std::size_t index, bool primary80MHz);
+
+    /**
+     * Get the RU type
+     *
+     * \return the RU type
+     */
+    RuType GetRuType (void) const;
+    /**
+     * Get the RU index
+     *
+     * \return the RU index
+     */
+    std::size_t GetIndex (void) const;
+    /**
+     * Get the primary 80 MHz flag
+     *
+     * \return true if the RU is in the primary 80 MHz channel and false otherwise
+     */
+    bool GetPrimary80MHz (void) const;
+
+  private:
+    RuType m_ruType;         //!< RU type
+    std::size_t m_index;     //!< index (starting at 1)
+    bool m_primary80MHz;     //!< true if the RU is allocated in the primary 80MHz channel
   };
 
 
