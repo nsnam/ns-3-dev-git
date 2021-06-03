@@ -1486,7 +1486,7 @@ At the traffic-control layer, these are the options:
 * FifoQueueDisc: The default maximum size is 1000 packets
 * RedQueueDisc: The default maximum size is 25 packets
 * CoDelQueueDisc: The default maximum size is 1500 kilobytes
-* FqCoDelQueueDisc: The default maximum size is 10024 packets
+* FqCoDelQueueDisc: The default maximum size is 10240 packets
 * PieQueueDisc: The default maximum size is 25 packets
 * MqQueueDisc: This queue disc has no limits on its capacity
 * TbfQueueDisc: The default maximum size is 1000 packets
