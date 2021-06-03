@@ -57,9 +57,12 @@ public:
 
 
   /**
-   * RU Specification. Stores the information carried by the RU Allocation
-   * subfield of the User Info field of Trigger frames. Note that primary80MHz
-   * must be true if ruType is RU_2x996_TONE.
+   * RU Specification. Stores the information carried by the RU Allocation subfield
+   * of the User Info field of Trigger frames (see 9.3.1.22.1 of 802.11ax D8.0).
+   * Note that primary80MHz must be true if ruType is RU_2x996_TONE.
+   * Internally, this class also stores the RU PHY index (ranging from 1 to the number
+   * of RUs of the given type in a channel of the considered width), so that this class
+   * contains all the information needed to locate the RU in a 160 MHz channel.
    */
   class RuSpec
   {
@@ -95,11 +98,35 @@ public:
      * \return true if the RU is in the primary 80 MHz channel and false otherwise
      */
     bool GetPrimary80MHz (void) const;
+    /**
+     * Set the RU PHY index
+     *
+     * \param bw the width of the channel of which the RU is part (in MHz)
+     * \param p20Index the index of the primary20 channel
+     */
+    void SetPhyIndex (uint16_t bw, uint8_t p20Index);
+    /**
+     * Return true if the RU PHY index has been set, false otherwise
+     *
+     * \return true if the RU PHY index has been set, false otherwise
+     */
+    bool IsPhyIndexSet (void) const;
+    /**
+     * Get the RU PHY index
+     *
+     * \return the RU PHY index
+     */
+    std::size_t GetPhyIndex (void) const;
 
   private:
     RuType m_ruType;         //!< RU type
-    std::size_t m_index;     //!< index (starting at 1)
+    std::size_t m_index;     /**< RU index (starting at 1) as defined by Tables 27-7
+                                  to 27-9 of 802.11ax D8.0 */
     bool m_primary80MHz;     //!< true if the RU is allocated in the primary 80MHz channel
+    std::size_t m_phyIndex;  /**< the RU PHY index, which is used to indicate whether an
+                                  RU is located in the lower half or the higher half of
+                                  a 160MHz channel. For channel widths less than 160MHz,
+                                  the RU PHY index equals the RU index */
   };
 
 
