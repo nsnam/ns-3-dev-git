@@ -49,6 +49,12 @@ public:
   double CalculateSnr (const WifiTxVector& txVector, double ber) const;
 
   /**
+   * \return true if the model is for AWGN channels,
+   *         false otherwise
+   */
+  virtual bool IsAwgn (void) const;
+
+  /**
    * This method returns the probability that the given 'chunk' of the
    * packet will be successfully received by the PHY.
    *
@@ -70,11 +76,25 @@ public:
    * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   * \param numRxAntennas the number of active RX antennas (1 if not provided)
+   * \param field the PPDU field to which the chunk belongs to (assumes this is for the payload part if not provided)
    * \param staId the station ID for MU
    *
    * \return probability of successfully receiving the chunk
    */
-  double GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId = SU_STA_ID) const;
+  double GetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits,
+                              uint8_t numRxAntennas = 1, WifiPpduField field = WIFI_PPDU_FIELD_DATA,
+                              uint16_t staId = SU_STA_ID) const;
+
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model. Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
+  virtual int64_t AssignStreams (int64_t stream);
 
 
 private:
@@ -85,11 +105,14 @@ private:
    * \param txVector TXVECTOR of the overall transmission
    * \param snr the SNR of the chunk
    * \param nbits the number of bits in this chunk
+   * \param numRxAntennas the number of active RX antennas
+   * \param field the PPDU field to which the chunk belongs to
    * \param staId the station ID for MU
    *
    * \return probability of successfully receiving the chunk
    */
-  virtual double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits, uint16_t staId) const = 0;
+  virtual double DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& txVector, double snr, uint64_t nbits,
+                                        uint8_t numRxAntennas, WifiPpduField field, uint16_t staId) const = 0;
 };
 
 } //namespace ns3

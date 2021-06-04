@@ -300,7 +300,7 @@ class TestInterferenceHelper : public InterferenceHelper
 {
 public:
   using InterferenceHelper::InterferenceHelper;
-  using InterferenceHelper::CalculateChunkSuccessRate;
+  using InterferenceHelper::CalculatePayloadChunkSuccessRate;
   using InterferenceHelper::CalculateSnr;
 };
 
@@ -352,7 +352,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   double snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr, 0.1, "Attempt to set initial SNR to known value failed");
   Time duration = MilliSeconds (2);
-  double chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  double chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_EQ_TOL (chunkSuccess, 0.905685, 0.000001, "CSR not within tolerance for SISO");
   double sisoChunkSuccess = chunkSuccess;
 
@@ -361,7 +361,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   txVector.SetNTx (2);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr, 0.1, "SNR not within tolerance for 2x1:2 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_EQ_TOL (chunkSuccess, 0.905685, 0.000001, "CSR not within tolerance for SISO");
 
   // MIMO 1x2:1: expect that SNR is increased by a factor of 3 dB (10 log 2/1) compared to SISO thanks to RX diversity
@@ -370,7 +370,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (2);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 3, 0.1, "SNR not within tolerance for 1x2:1 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 1x2:1 MIMO");
 
   // MIMO 2x2:1: expect that SNR is increased by a factor of 3 dB (10 log 2/1) compared to SISO thanks to RX diversity
@@ -379,7 +379,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (2);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 3, 0.1, "SNR not equal within tolerance for 2x2:1 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 2x2:1 MIMO");
 
  // MIMO 2x2:2: expect no SNR gain in AWGN channel
@@ -388,7 +388,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (2);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr, 0.1, "SNR not equal within tolerance for 2x2:2 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_EQ_TOL (chunkSuccess, sisoChunkSuccess, 0.000001, "CSR not within tolerance for 2x2:2 MIMO");
 
   // MIMO 3x3:1: expect that SNR is increased by a factor of 4.8 dB (10 log 3/1) compared to SISO thanks to RX diversity
@@ -397,7 +397,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (3);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 4.8, 0.1, "SNR not within tolerance for 3x3:1 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 3x3:1 MIMO");
 
   // MIMO 3x3:2: expect that SNR is increased by a factor of 1.8 dB (10 log 3/2) compared to SISO thanks to RX diversity
@@ -406,7 +406,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (3);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 1.8, 0.1, "SNR not within tolerance for 3x3:2 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 3x3:2 MIMO");
 
   // MIMO 3x3:3: expect no SNR gain in AWGN channel
@@ -415,7 +415,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (3);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr, 0.1, "SNR not within tolerance for 3x3:3 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_EQ_TOL (chunkSuccess, sisoChunkSuccess, 0.000001, "CSR not equal within tolerance for 3x3:3 MIMO");
 
   // MIMO 4x4:1: expect that SNR is increased by a factor of 6 dB (10 log 4/1) compared to SISO thanks to RX diversity
@@ -424,7 +424,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (4);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 6, 0.1, "SNR not within tolerance for 4x4:1 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 4x4:1 MIMO");
 
   // MIMO 4x4:2: expect that SNR is increased by a factor of 3 dB (10 log 4/2) compared to SISO thanks to RX diversity
@@ -433,7 +433,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (4);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 3, 0.1, "SNR not within tolerance for 4x4:2 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 4x4:2 MIMO");
 
   // MIMO 4x4:3: expect that SNR is increased by a factor of 1.2 dB (10 log 4/3) compared to SISO thanks to RX diversity
@@ -442,7 +442,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (4);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr + 1.2, 0.1, "SNR not within tolerance for 4x4:3 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_GT (chunkSuccess, sisoChunkSuccess, "CSR not within tolerance for 4x4:1 MIMO");
 
   // MIMO 4x4:4: expect no SNR gain in AWGN channel
@@ -451,7 +451,7 @@ WifiErrorRateModelsTestCaseMimo::DoRun (void)
   interference.SetNumberOfReceiveAntennas (4);
   snr = interference.CalculateSnr (0.001, 0.001 / DbToRatio (initialSnr), txVector.GetChannelWidth (), txVector.GetNss ());
   NS_TEST_ASSERT_MSG_EQ_TOL (RatioToDb (snr), initialSnr, 0.1, "SNR not within tolerance for 4x4:4 MIMO");
-  chunkSuccess = interference.CalculateChunkSuccessRate (snr, duration, mode, txVector);
+  chunkSuccess = interference.CalculatePayloadChunkSuccessRate (snr, duration, txVector);
   NS_TEST_ASSERT_MSG_EQ_TOL (chunkSuccess, sisoChunkSuccess, 0.000001, "CSR not within tolerance for 4x4:4 MIMO");
 }
 

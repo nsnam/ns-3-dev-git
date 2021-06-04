@@ -2294,8 +2294,10 @@ int64_t
 WifiPhy::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
-  m_random->SetStream (stream);
-  return 1;
+  int64_t currentStream = stream;
+  m_random->SetStream (currentStream++);
+  currentStream += m_interference.GetErrorRateModel ()->AssignStreams (currentStream);
+  return (currentStream - stream);
 }
 
 std::ostream& operator<< (std::ostream& os, RxSignalInfo rxSignalInfo)

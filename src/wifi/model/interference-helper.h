@@ -281,18 +281,30 @@ protected:
    */
   double CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth, uint8_t nss) const;
   /**
-   * Calculate the success rate of the chunk given the SINR, duration, and Wi-Fi mode.
-   * The duration and mode are used to calculate how many bits are present in the chunk.
+   * Calculate the success rate of the chunk given the SINR, duration, and TXVECTOR.
+   * The duration and TXVECTOR are used to calculate how many bits are present in the chunk.
    *
    * \param snir the SINR
    * \param duration the duration of the chunk
    * \param mode the WifiMode
    * \param txVector the TXVECTOR
+   * \param field the PPDU field to which the chunk belongs to
    *
    * \return the success rate
    */
-  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, const WifiTxVector& txVector) const;
-
+  double CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode, const WifiTxVector& txVector, WifiPpduField field) const;
+  /**
+   * Calculate the success rate of the payload chunk given the SINR, duration, and TXVECTOR.
+   * The duration and TXVECTOR are used to calculate how many bits are present in the payload chunk.
+   *
+   * \param snir the SINR
+   * \param duration the duration of the chunk
+   * \param txVector the TXVECTOR
+   * \param staId the station ID of the PSDU (only used for MU)
+   *
+   * \return the success rate
+   */
+  double CalculatePayloadChunkSuccessRate (double snir, Time duration, const WifiTxVector& txVector, uint16_t staId = SU_STA_ID) const;
 
 private:
   /**
@@ -362,18 +374,6 @@ private:
    * \return noise and interference power
    */
   double CalculateNoiseInterferenceW (Ptr<Event> event, NiChangesPerBand *nis, WifiSpectrumBand band) const;
-  /**
-   * Calculate the success rate of the payload chunk given the SINR, duration, and Wi-Fi mode.
-   * The duration and mode are used to calculate how many bits are present in the chunk.
-   *
-   * \param snir the SINR
-   * \param duration the duration of the chunk
-   * \param txVector the TXVECTOR
-   * \param staId the station ID of the PSDU (only used for MU)
-   *
-   * \return the success rate
-   */
-  double CalculatePayloadChunkSuccessRate (double snir, Time duration, const WifiTxVector& txVector, uint16_t staId) const;
   /**
    * Calculate the error rate of the given PHY payload only in the provided time
    * window (thus enabling per MPDU PER information). The PHY payload can be divided into
