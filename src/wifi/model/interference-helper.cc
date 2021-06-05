@@ -103,7 +103,7 @@ Event::GetRxPowerWPerBand (void) const
   return m_rxPowerW;
 }
 
-WifiTxVector
+const WifiTxVector&
 Event::GetTxVector (void) const
 {
   return m_txVector;
@@ -420,16 +420,15 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
                                          uint16_t staId, std::pair<Time, Time> window) const
 {
   NS_LOG_FUNCTION (this << channelWidth << band.first << band.second << staId << window.first << window.second);
-  const WifiTxVector txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
   Time previous = j->first;
-  WifiMode payloadMode = txVector.GetMode (staId);
+  WifiMode payloadMode = event->GetTxVector ().GetMode (staId);
   Time phyPayloadStart = j->first;
   if (event->GetPpdu ()->GetType () != WIFI_PPDU_TYPE_UL_MU) //j->first corresponds to the start of the UL-OFDMA payload
     {
-      phyPayloadStart = j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration (txVector);
+      phyPayloadStart = j->first + WifiPhy::CalculatePhyPreambleAndHeaderDuration (event->GetTxVector ());
     }
   Time windowStart = phyPayloadStart + window.first;
   Time windowEnd = phyPayloadStart + window.second;
@@ -440,17 +439,17 @@ InterferenceHelper::CalculatePayloadPer (Ptr<const Event> event, uint16_t channe
       Time current = j->first;
       NS_LOG_DEBUG ("previous= " << previous << ", current=" << current);
       NS_ASSERT (current >= previous);
-      double snr = CalculateSnr (powerW, noiseInterferenceW, channelWidth, txVector.GetNss (staId));
+      double snr = CalculateSnr (powerW, noiseInterferenceW, channelWidth, event->GetTxVector ().GetNss (staId));
       //Case 1: Both previous and current point to the windowed payload
       if (previous >= windowStart)
         {
-          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - previous, txVector, staId);
+          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - previous, event->GetTxVector (), staId);
           NS_LOG_DEBUG ("Both previous and current point to the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       //Case 2: previous is before windowed payload and current is in the windowed payload
       else if (current >= windowStart)
         {
-          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - windowStart, txVector, staId);
+          psr *= CalculatePayloadChunkSuccessRate (snr, Min (windowEnd, current) - windowStart, event->GetTxVector (), staId);
           NS_LOG_DEBUG ("previous is before windowed payload and current is in the windowed payload: mode=" << payloadMode << ", psr=" << psr);
         }
       noiseInterferenceW = j->second.GetPower () - powerW;
@@ -471,7 +470,6 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr (Ptr<const Event> event, NiChan
                                                   PhyEntity::PhyHeaderSections phyHeaderSections) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second);
-  const WifiTxVector txVector = event->GetTxVector ();
   double psr = 1.0; /* Packet Success Rate */
   auto ni_it = nis->find (band)->second;
   auto j = ni_it.begin ();
@@ -505,12 +503,12 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr (Ptr<const Event> event, NiChan
                   WifiMode mode = section.second.second;
                   if (mode.GetModulationClass () < WIFI_MOD_CLASS_OFDM)
                     {
-                      psr *= CalculateChunkSuccessRate (snr, duration, mode, txVector, WIFI_PPDU_FIELD_NON_HT_HEADER);
+                      psr *= CalculateChunkSuccessRate (snr, duration, mode, event->GetTxVector (), WIFI_PPDU_FIELD_NON_HT_HEADER);
                     }
                   else
                     {
                       //FIXME: this will be directly available with PHY refactoring, hence assume HT-SIG for now since error rate model do not differentiate these non-HT PHY headers yet
-                      psr *= CalculateChunkSuccessRate (snr, duration, mode, txVector, WIFI_PPDU_FIELD_HT_SIG);
+                      psr *= CalculateChunkSuccessRate (snr, duration, mode, event->GetTxVector (), WIFI_PPDU_FIELD_HT_SIG);
                     }
                   NS_LOG_DEBUG ("Current NI change in " << section.first << " [" << start << ", " << stop << "] for "
                                 << duration.As (Time::NS) << ": mode=" << mode << ", psr=" << psr);
@@ -534,12 +532,11 @@ InterferenceHelper::CalculatePhyHeaderPer (Ptr<const Event> event, NiChangesPerB
                                            WifiPpduField header) const
 {
   NS_LOG_FUNCTION (this << band.first << band.second << header);
-  const WifiTxVector txVector = event->GetTxVector ();
   auto ni_it = nis->find (band)->second;
-  auto phyEntity = WifiPhy::GetStaticPhyEntity (txVector.GetModulationClass ());
+  auto phyEntity = WifiPhy::GetStaticPhyEntity (event->GetTxVector ().GetModulationClass ());
 
   PhyEntity::PhyHeaderSections sections;
-  for (const auto & section : phyEntity->GetPhyHeaderSections (txVector, ni_it.begin ()->first))
+  for (const auto & section : phyEntity->GetPhyHeaderSections (event->GetTxVector (), ni_it.begin ()->first))
     {
       if (section.first == header)
         {

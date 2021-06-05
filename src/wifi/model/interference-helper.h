@@ -96,7 +96,7 @@ public:
    *
    * \return the TXVECTOR of the PPDU
    */
-  WifiTxVector GetTxVector (void) const;
+  const WifiTxVector& GetTxVector (void) const;
   /**
    * Update the received power (W) for all bands, i.e. add up the received power
    * to the current received power, for each band.
