@@ -500,18 +500,9 @@ InterferenceHelper::CalculatePhyHeaderSectionPsr (Ptr<const Event> event, NiChan
               Time duration = Min (stop, current) - Max (start, previous);
               if (duration.IsStrictlyPositive ())
                 {
-                  WifiMode mode = section.second.second;
-                  if (mode.GetModulationClass () < WIFI_MOD_CLASS_OFDM)
-                    {
-                      psr *= CalculateChunkSuccessRate (snr, duration, mode, event->GetTxVector (), WIFI_PPDU_FIELD_NON_HT_HEADER);
-                    }
-                  else
-                    {
-                      //FIXME: this will be directly available with PHY refactoring, hence assume HT-SIG for now since error rate model do not differentiate these non-HT PHY headers yet
-                      psr *= CalculateChunkSuccessRate (snr, duration, mode, event->GetTxVector (), WIFI_PPDU_FIELD_HT_SIG);
-                    }
+                  psr *= CalculateChunkSuccessRate (snr, duration, section.second.second, event->GetTxVector (), section.first);
                   NS_LOG_DEBUG ("Current NI change in " << section.first << " [" << start << ", " << stop << "] for "
-                                << duration.As (Time::NS) << ": mode=" << mode << ", psr=" << psr);
+                                << duration.As (Time::NS) << ": mode=" << section.second.second << ", psr=" << psr);
                 }
             }
         }
