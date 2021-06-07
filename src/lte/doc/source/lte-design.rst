@@ -1542,8 +1542,8 @@ transmit operations:
     * **Transmission Buffer**: it is the RLC SDU queue. 
       When the AM RLC entity receives a SDU in the TransmitPdcpPdu service primitive from the
       upper PDCP entity, it enqueues it in the Transmission Buffer. We
-      put a limit on the RLC buffer size and just silently drop SDUs
-      when the buffer is full. 
+      put a limit on the RLC buffer size and the LteRlc TxDrop trace source
+      is called when a drop due to a full buffer occurs. 
 
     * **Transmitted PDUs Buffer**: it is the queue of transmitted RLC PDUs for which an ACK/NACK has not
       been received yet. When the AM RLC entity sends a PDU to the MAC

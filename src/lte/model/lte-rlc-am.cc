@@ -120,7 +120,7 @@ LteRlcAm::GetTypeId (void)
                    MakeBooleanAccessor (&LteRlcAm::m_txOpportunityForRetxAlwaysBigEnough),
                    MakeBooleanChecker ())
     .AddAttribute ("MaxTxBufferSize",
-                   "Maximum Size of the Transmission Buffer (in Bytes)",
+                   "Maximum Size of the Transmission Buffer (in Bytes).  If zero is configured, the buffer is unlimited.",
                    UintegerValue (10 * 1024),
                    MakeUintegerAccessor (&LteRlcAm::m_maxTxBufferSize),
                    MakeUintegerChecker<uint32_t> ())
@@ -162,7 +162,7 @@ LteRlcAm::DoTransmitPdcpPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
-  if (m_txonBufferSize + p->GetSize () <= m_maxTxBufferSize)
+  if (m_txonBufferSize + p->GetSize () <= m_maxTxBufferSize || (m_maxTxBufferSize == 0))
     {
       /** Store PDCP PDU */
       LteRlcSduStatusTag tag;

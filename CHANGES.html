@@ -84,6 +84,7 @@ us a note on ns-developers mailing list.</p>
 <li>Some wifi/src/model files were moved to <b>non-ht</b>, <b>ht</b>, <b>vht</b>, <b>he</b>, and <b>rate-control</b> subfolders.</li>
 <li>The wifi BCC AWGN tables have been aligned with the ones provided by MATLAB and users may note a few dB difference when using BCC at high SNR and high MCS.</li>
 <li>ThreeGppChannelModel has been fixed: cluster and sub-cluster angles could have been generated with inclination angles outside the inclination range [0, pi], and have now been constrained to the correct range.</li>
+<li>The LTE RLC Acknowledged Mode (AM) transmit buffer is now limited by default to a size of (1024 * 10) bytes.  Configuration of unlimited behavior can still be made by passing the value of zero to the new attribute <b>MaxTxBufferSize</b>.</li>
 </ul>
 
 <hr>

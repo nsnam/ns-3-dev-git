@@ -149,6 +149,8 @@ LteRlcAmE2eTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteRlcAm::PollRetransmitTimer", TimeValue (MilliSeconds (20)));
   Config::SetDefault ("ns3::LteRlcAm::ReorderingTimer", TimeValue (MilliSeconds (10)));
   Config::SetDefault ("ns3::LteRlcAm::StatusProhibitTimer", TimeValue (MilliSeconds (40)));
+  // This test was written for an unlimited transmit buffer (special value of 0)
+  Config::SetDefault ("ns3::LteRlcAm::MaxTxBufferSize", UintegerValue (0));
 
   Ptr<LteSimpleHelper> lteSimpleHelper = CreateObject<LteSimpleHelper> ();
   // lteSimpleHelper->EnableLogComponents ();
