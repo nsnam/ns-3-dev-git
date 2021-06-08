@@ -1941,13 +1941,13 @@ void
 PhyRxOkTrace (std::string context, Ptr<const Packet> p, double snr, WifiMode mode, WifiPreamble preamble)
 {
   uint8_t nMpdus = (p->GetSize () / pktSize);
-  NS_LOG_INFO ("PHY-RX-OK time=" << Simulator::Now () << " node="
-                                 << ContextToNodeId (context) << " size="
-                                 << p->GetSize () << " nMPDUs="
-                                 << p->GetSize () / pktSize << " snr="
-                                 << snr << " mode="
-                                 << mode << " preamble="
-                                 << preamble);
+  NS_LOG_INFO ("PHY-RX-OK time=" << Simulator::Now ().As (Time::S)
+                                 << " node=" << ContextToNodeId (context)
+                                 << " size=" << p->GetSize ()
+                                 << " nMPDUs=" << +nMpdus
+                                 << " snr=" << snr
+                                 << " mode=" << mode
+                                 << " preamble=" << preamble);
   if ((maxMpdus != 0) && (nMpdus != 0) && (nMpdus != maxMpdus))
     {
       if (nMpdus > maxMpdus)
@@ -2077,14 +2077,19 @@ public:
    * \param wifiChannel the pre-configured YansWifiChannelHelper
    * \param trialNumber the trial index
    * \param networkSize the number of stations
-   * \param duration the duration (in seconds) of each simulation run
+   * \param duration the duration of each simulation run
    * \param pcap flag to enable/disable PCAP files generation
    * \param infra flag to enable infrastructure model, ring adhoc network if not set
+   * \param guardIntervalNs the guard interval in ns
+   * \param distanceM the distance in meters
+   * \param apTxPowerDbm the AP transmit power in dBm
+   * \param staTxPowerDbm the STA transmit power in dBm
+   * \param pktInterval the packet interval
    * \return 0 if all went well
    */
   int Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy, const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel,
-           uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra, uint16_t channelWidth, uint16_t guardIntervalNs,
-           double distance, double apTxPower, double staTxPower, uint16_t pktInterval);
+           uint32_t trialNumber, uint32_t networkSize, Time duration, bool pcap, bool infra, uint16_t guardIntervalNs,
+           double distanceM, double apTxPowerDbm, double staTxPowerDbm, Time pktInterval);
 };
 
 Experiment::Experiment ()
@@ -2093,8 +2098,8 @@ Experiment::Experiment ()
 
 int
 Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, const WifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel,
-                 uint32_t trialNumber, uint32_t networkSize, double duration, bool pcap, bool infra, uint16_t channelWidth, uint16_t guardIntervalNs,
-                 double distance, double apTxPower, double staTxPower, uint16_t pktInterval)
+                 uint32_t trialNumber, uint32_t networkSize, Time duration, bool pcap, bool infra, uint16_t guardIntervalNs,
+                 double distance, double apTxPowerDbm, double staTxPowerDbm, Time pktInterval)
 {
   NodeContainer wifiNodes;
   if (infra)
@@ -2118,19 +2123,19 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   if (infra)
     {
       Ssid ssid = Ssid ("wifi-bianchi");
-      uint64_t beaconInterval = std::min<uint64_t> ((ceil ((duration * 1000000) / 1024) * 1024), (65535 * 1024)); //beacon interval needs to be a multiple of time units (1024 us)
+      uint64_t beaconInterval = std::min<uint64_t> ((ceil ((duration.GetSeconds () * 1000000) / 1024) * 1024), (65535 * 1024)); //beacon interval needs to be a multiple of time units (1024 us)
       mac.SetType ("ns3::ApWifiMac",
                    "BeaconInterval", TimeValue (MicroSeconds (beaconInterval)),
                    "Ssid", SsidValue (ssid));
-      phy.Set ("TxPowerStart", DoubleValue (apTxPower)); 
-      phy.Set ("TxPowerEnd", DoubleValue (apTxPower));
+      phy.Set ("TxPowerStart", DoubleValue (apTxPowerDbm)); 
+      phy.Set ("TxPowerEnd", DoubleValue (apTxPowerDbm));
       devices = wifi.Install (phy, mac, wifiNodes.Get (0));
 
       mac.SetType ("ns3::StaWifiMac",
                    "MaxMissedBeacons", UintegerValue (std::numeric_limits<uint32_t>::max ()),
                    "Ssid", SsidValue (ssid));
-      phy.Set ("TxPowerStart", DoubleValue (staTxPower)); 
-      phy.Set ("TxPowerEnd", DoubleValue (staTxPower));
+      phy.Set ("TxPowerStart", DoubleValue (staTxPowerDbm)); 
+      phy.Set ("TxPowerEnd", DoubleValue (staTxPowerDbm));
       for (uint32_t i = 1; i < nNodes; ++i)
         {
           devices.Add (wifi.Install (phy, mac, wifiNodes.Get (i)));
@@ -2139,14 +2144,13 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   else
     {
       mac.SetType ("ns3::AdhocWifiMac");
-      phy.Set ("TxPowerStart", DoubleValue (staTxPower));
-      phy.Set ("TxPowerEnd", DoubleValue (staTxPower));
+      phy.Set ("TxPowerStart", DoubleValue (staTxPowerDbm));
+      phy.Set ("TxPowerEnd", DoubleValue (staTxPowerDbm));
       devices = wifi.Install (phy, mac, wifiNodes);
     }
 
   wifi.AssignStreams (devices, trialNumber);
 
-  Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", UintegerValue (channelWidth));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HtConfiguration/ShortGuardIntervalSupported", BooleanValue (guardIntervalNs == 400 ? true : false));
   Config::Set ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/HeConfiguration/GuardInterval", TimeValue (NanoSeconds (guardIntervalNs)));
 
@@ -2199,7 +2203,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
       wifiNodes.Get (i)->AddApplication (client);
       client->SetAttribute ("PacketSize", UintegerValue (pktSize));
       client->SetAttribute ("MaxPackets", UintegerValue (0));
-      client->SetAttribute ("Interval", TimeValue (MicroSeconds (pktInterval)));
+      client->SetAttribute ("Interval", TimeValue (pktInterval));
       double start = startTime->GetValue ();
       NS_LOG_DEBUG ("Client " << i << " starting at " << start);
       client->SetStartTime (Seconds (start));
@@ -2247,7 +2251,7 @@ Experiment::Run (const WifiHelper &helper, const YansWifiPhyHelper &wifiPhy, con
   Config::Connect ("/NodeList/*/$ns3::Node/ApplicationList/*/$ns3::PacketSocketClient/Tx", MakeCallback (&SocketSendTrace));
 
   Simulator::Schedule (Seconds (10), &RestartCalc);
-  Simulator::Stop (Seconds (10 + duration));
+  Simulator::Stop (Seconds (10) + duration);
 
   if (pcap)
     {
@@ -2293,12 +2297,12 @@ int main (int argc, char *argv[])
   bool pcap = false;                      ///< Flag to enable/disable PCAP files generation
   bool infra = false;                     ///< Flag to enable infrastructure model, ring adhoc network if not set
   std::string workDir = "./";             ///< the working directory to store generated files
-  std::string phyMode = "OfdmRate54Mbps"; ///< the constant PHY mode used to transmit frames
+  std::string phyMode = "OfdmRate54Mbps"; ///< the constant PHY mode string used to transmit frames
   std::string standard ("11a");           ///< the 802.11 standard
   bool validate = false;                  ///< Flag used for regression in order to verify ns-3 results are in the expected boundaries
-  uint8_t plotBianchiModel = 0x01;        ///< First bit corresponds to the DIFS model, second bit to the EIFS model
+  uint16_t plotBianchiModel = 0x01;        ///< First bit corresponds to the DIFS model, second bit to the EIFS model
   double maxRelativeError = 0.015;        ///< Maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)
-  double frequency = 5;                   ///< The operating frequency band: 2.4, 5 or 6
+  double frequency = 5;                   ///< The operating frequency band in GHz: 2.4, 5 or 6
   uint16_t channelWidth = 20;             ///< The constant channel width in MHz (only for 11n/ac/ax)
   uint16_t guardIntervalNs = 800;         ///< The guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or 3200 for 11 ax)
   uint16_t pktInterval = 1000;            ///< The socket packet interval in microseconds (a higher value is needed to reach saturation conditions as the channel bandwidth or the MCS increases)
@@ -2333,7 +2337,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("plotBianchiModel", "First bit corresponds to the DIFS model, second bit to the EIFS model", plotBianchiModel);
   cmd.AddValue ("validate", "Enable/disable validation of the ns-3 simulations against the Bianchi model", validate);
   cmd.AddValue ("maxRelativeError", "The maximum relative error tolerated between ns-3 results and the Bianchi model (used for regression, i.e. when the validate flag is set)", maxRelativeError);
-  cmd.AddValue ("frequency", "Set the operating frequency band: 2.4, 5 or 6", frequency);
+  cmd.AddValue ("frequency", "Set the operating frequency band in GHz: 2.4, 5 or 6", frequency);
   cmd.AddValue ("channelWidth", "Set the constant channel width in MHz (only for 11n/ac/ax)", channelWidth);
   cmd.AddValue ("guardIntervalNs", "Set the the guard interval in nanoseconds (800 or 400 for 11n/ac, 800 or 1600 or 3200 for 11 ax)", guardIntervalNs);
   cmd.AddValue ("maxMpdus", "Set the maximum number of MPDUs in A-MPDUs (0 to disable MPDU aggregation)", maxMpdus);
@@ -2390,6 +2394,7 @@ int main (int argc, char *argv[])
       WifiHelper::EnableLogComponents ();
     }
 
+  Config::SetDefault ("ns3::WifiPhy::ChannelWidth", UintegerValue (channelWidth));
   std::stringstream phyModeStr;
   phyModeStr << phyMode;
   if (phyMode.find ("Mcs") != std::string::npos)
@@ -2435,7 +2440,7 @@ int main (int argc, char *argv[])
         }
       else
         {
-          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " MHz for standard " << standard);
+          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " GHz for standard " << standard);
         }
     }
   else if (standard == "11ac")
@@ -2459,7 +2464,7 @@ int main (int argc, char *argv[])
         }
       else
         {
-          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " MHz for standard " << standard);
+          NS_FATAL_ERROR ("Unsupported frequency band " << frequency << " GHz for standard " << standard);
         }
     }
   else
@@ -2544,7 +2549,7 @@ int main (int argc, char *argv[])
               macRxTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
               socketSendTraceFile << "# Trial " << runIndex + 1 << " of " << trials << "; " << phyModeStr.str () << " for " << n << " nodes" << std::endl;
             }
-          experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, runIndex, n, duration, pcap, infra, channelWidth, guardIntervalNs, distance, apTxPower, staTxPower, pktInterval);
+          experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, runIndex, n, Seconds (duration), pcap, infra, guardIntervalNs, distance, apTxPower, staTxPower, MicroSeconds (pktInterval));
           uint32_t k = 0;
           if (bytesReceived.size () != n)
             {
@@ -2712,17 +2717,17 @@ int main (int argc, char *argv[])
      << "set style line 8 linewidth 5\n"
      << "set style increment user";
   gnuplot.SetExtra (ss.str ());
-  if (plotBianchiModel & 0x01)
+  if (plotBianchiModel & 0x0001)
     {
       datasetBianchiDifs.SetTitle ("Bianchi");
       gnuplot.AddDataset (datasetBianchiDifs);
     }
-  if (plotBianchiModel & 0x02)
+  if (plotBianchiModel & 0x0002)
     {
       datasetBianchiEifs.SetTitle ("Bianchi");
       gnuplot.AddDataset (datasetBianchiEifs);
     }
-  if (plotBianchiModel == 0x03)
+  if (plotBianchiModel == 0x0003)
     {
       datasetBianchiEifs.SetTitle ("Bianchi (EIFS - lower bound)");
       datasetBianchiDifs.SetTitle ("Bianchi (DIFS - upper bound)");
