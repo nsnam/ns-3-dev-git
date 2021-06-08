@@ -652,6 +652,7 @@ TcpBbr::WhichState (BbrMode_t mode) const
       return "BBR_PROBE_RTT";
     }
   NS_ASSERT (false);
+  return "";
 }
 
 void

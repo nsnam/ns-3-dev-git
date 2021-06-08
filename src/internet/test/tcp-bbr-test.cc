@@ -107,8 +107,8 @@ TcpBbrCheckGainValuesTest::ExecuteTest ()
 {
   Ptr<TcpBbr> cong = CreateObject <TcpBbr> ();
   cong->SetAttribute ("HighGain", DoubleValue (m_highGain));
-  double actualPacingGain, actualCwndGain, desiredPacingGain, desiredCwndGain;
-  TcpBbr::BbrMode_t desiredMode;
+  double actualPacingGain, actualCwndGain, desiredPacingGain = m_highGain, desiredCwndGain = m_highGain;
+  TcpBbr::BbrMode_t desiredMode = TcpBbr::BBR_STARTUP;
   switch (m_mode)
     {
       case TcpBbr::BBR_STARTUP:
