@@ -85,7 +85,7 @@ public:
    *
    * @return
    */
-  SpectrumModel (std::vector<double> centerFreqs);
+  SpectrumModel (const std::vector<double>& centerFreqs);
 
 
   /**
@@ -96,7 +96,7 @@ public:
    *
    * @return
    */
-  SpectrumModel (Bands bands);
+  SpectrumModel (const Bands& bands);
 
   /**
    *

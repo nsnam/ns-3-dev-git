@@ -38,7 +38,7 @@ bool operator== (const SpectrumModel& lhs, const SpectrumModel& rhs)
 
 SpectrumModelUid_t SpectrumModel::m_uidCount = 0;
 
-SpectrumModel::SpectrumModel (std::vector<double> centerFreqs)
+SpectrumModel::SpectrumModel (const std::vector<double>& centerFreqs)
 {
   NS_ASSERT (centerFreqs.size () > 1);
   m_uid = ++m_uidCount;
@@ -70,7 +70,7 @@ SpectrumModel::SpectrumModel (std::vector<double> centerFreqs)
     }
 }
 
-SpectrumModel::SpectrumModel (Bands bands)
+SpectrumModel::SpectrumModel (const Bands& bands)
 {
   m_uid = ++m_uidCount;
   NS_LOG_INFO ("creating new SpectrumModel, m_uid=" << m_uid);
