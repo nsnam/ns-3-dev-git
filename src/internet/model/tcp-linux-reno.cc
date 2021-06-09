@@ -77,6 +77,13 @@ TcpLinuxReno::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAck
   NS_LOG_FUNCTION (this << tcb << segmentsAcked);
 
   uint32_t w = tcb->m_cWnd / tcb->m_segmentSize;
+
+  // Floor w to 1 if w == 0 
+  if (w == 0)
+    {
+      w = 1;
+    }
+
   NS_LOG_DEBUG ("w in segments " << w << " m_cWndCnt " << m_cWndCnt << " segments acked " << segmentsAcked);
   if (m_cWndCnt >= w)
     {
