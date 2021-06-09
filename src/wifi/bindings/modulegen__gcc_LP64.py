@@ -4022,10 +4022,15 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('UpdateEvent', 
                    'void', 
                    [param('ns3::Ptr< ns3::Event >', 'event'), param('std::map< std::pair< unsigned int, unsigned int >, double >', 'rxPower')])
-    ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculateChunkSuccessRate(double snir, ns3::Time duration, ns3::WifiMode mode, ns3::WifiTxVector const & txVector) const [member function]
+    ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculateChunkSuccessRate(double snir, ns3::Time duration, ns3::WifiMode mode, ns3::WifiTxVector const & txVector, ns3::WifiPpduField field) const [member function]
     cls.add_method('CalculateChunkSuccessRate', 
                    'double', 
-                   [param('double', 'snir'), param('ns3::Time', 'duration'), param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector')], 
+                   [param('double', 'snir'), param('ns3::Time', 'duration'), param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::WifiPpduField', 'field')], 
+                   is_const=True, visibility='protected')
+    ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculatePayloadChunkSuccessRate(double snir, ns3::Time duration, ns3::WifiTxVector const & txVector, uint16_t staId=65535) const [member function]
+    cls.add_method('CalculatePayloadChunkSuccessRate', 
+                   'double', 
+                   [param('double', 'snir'), param('ns3::Time', 'duration'), param('ns3::WifiTxVector const &', 'txVector'), param('uint16_t', 'staId', default_value='65535')], 
                    is_const=True, visibility='protected')
     ## interference-helper.h (module 'wifi'): double ns3::InterferenceHelper::CalculateSnr(double signal, double noiseInterference, uint16_t channelWidth, uint8_t nss) const [member function]
     cls.add_method('CalculateSnr', 
@@ -16713,25 +16718,35 @@ def register_Ns3ErrorRateModel_methods(root_module, cls):
     cls.add_constructor([])
     ## error-rate-model.h (module 'wifi'): ns3::ErrorRateModel::ErrorRateModel(ns3::ErrorRateModel const & arg0) [constructor]
     cls.add_constructor([param('ns3::ErrorRateModel const &', 'arg0')])
+    ## error-rate-model.h (module 'wifi'): int64_t ns3::ErrorRateModel::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')], 
+                   is_virtual=True)
     ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::CalculateSnr(ns3::WifiTxVector const & txVector, double ber) const [member function]
     cls.add_method('CalculateSnr', 
                    'double', 
                    [param('ns3::WifiTxVector const &', 'txVector'), param('double', 'ber')], 
                    is_const=True)
-    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::GetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint16_t staId=65535) const [member function]
+    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::GetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint8_t numRxAntennas=1, ns3::WifiPpduField field=::ns3::WifiPpduField::WIFI_PPDU_FIELD_DATA, uint16_t staId=65535) const [member function]
     cls.add_method('GetChunkSuccessRate', 
                    'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint16_t', 'staId', default_value='65535')], 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint8_t', 'numRxAntennas', default_value='1'), param('ns3::WifiPpduField', 'field', default_value='::ns3::WifiPpduField::WIFI_PPDU_FIELD_DATA'), param('uint16_t', 'staId', default_value='65535')], 
                    is_const=True)
     ## error-rate-model.h (module 'wifi'): static ns3::TypeId ns3::ErrorRateModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint16_t staId) const [member function]
+    ## error-rate-model.h (module 'wifi'): bool ns3::ErrorRateModel::IsAwgn() const [member function]
+    cls.add_method('IsAwgn', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint8_t numRxAntennas, ns3::WifiPpduField field, uint16_t staId) const [member function]
     cls.add_method('DoGetChunkSuccessRate', 
                    'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint16_t', 'staId')], 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint8_t', 'numRxAntennas'), param('ns3::WifiPpduField', 'field'), param('uint16_t', 'staId')], 
                    is_const=True, is_pure_virtual=True, is_virtual=True, visibility='private')
     return
 
@@ -16776,9 +16791,9 @@ def register_Ns3Event_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
-    ## interference-helper.h (module 'wifi'): ns3::WifiTxVector ns3::Event::GetTxVector() const [member function]
+    ## interference-helper.h (module 'wifi'): ns3::WifiTxVector const & ns3::Event::GetTxVector() const [member function]
     cls.add_method('GetTxVector', 
-                   'ns3::WifiTxVector', 
+                   'ns3::WifiTxVector const &', 
                    [], 
                    is_const=True)
     ## interference-helper.h (module 'wifi'): void ns3::Event::UpdateRxPowerW(ns3::RxPowerWattPerChannelBand rxPower) [member function]
@@ -19468,10 +19483,10 @@ def register_Ns3NistErrorRateModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## nist-error-rate-model.h (module 'wifi'): double ns3::NistErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint16_t staId) const [member function]
+    ## nist-error-rate-model.h (module 'wifi'): double ns3::NistErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint8_t numRxAntennas, ns3::WifiPpduField field, uint16_t staId) const [member function]
     cls.add_method('DoGetChunkSuccessRate', 
                    'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint16_t', 'staId')], 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint8_t', 'numRxAntennas'), param('ns3::WifiPpduField', 'field'), param('uint16_t', 'staId')], 
                    is_const=True, is_virtual=True, visibility='private')
     return
 
@@ -22211,11 +22226,6 @@ def register_Ns3TableBasedErrorRateModel_methods(root_module, cls):
     cls.add_constructor([param('ns3::TableBasedErrorRateModel const &', 'arg0')])
     ## table-based-error-rate-model.h (module 'wifi'): ns3::TableBasedErrorRateModel::TableBasedErrorRateModel() [constructor]
     cls.add_constructor([])
-    ## table-based-error-rate-model.h (module 'wifi'): double ns3::TableBasedErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint16_t staId) const [member function]
-    cls.add_method('DoGetChunkSuccessRate', 
-                   'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint16_t', 'staId')], 
-                   is_const=True, is_virtual=True)
     ## table-based-error-rate-model.h (module 'wifi'): static uint8_t ns3::TableBasedErrorRateModel::GetMcsForMode(ns3::WifiMode mode) [member function]
     cls.add_method('GetMcsForMode', 
                    'uint8_t', 
@@ -22226,6 +22236,11 @@ def register_Ns3TableBasedErrorRateModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## table-based-error-rate-model.h (module 'wifi'): double ns3::TableBasedErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint8_t numRxAntennas, ns3::WifiPpduField field, uint16_t staId) const [member function]
+    cls.add_method('DoGetChunkSuccessRate', 
+                   'double', 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint8_t', 'numRxAntennas'), param('ns3::WifiPpduField', 'field'), param('uint16_t', 'staId')], 
+                   is_const=True, is_virtual=True, visibility='private')
     return
 
 def register_Ns3ThompsonSamplingWifiManager_methods(root_module, cls):
@@ -23540,10 +23555,10 @@ def register_Ns3YansErrorRateModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## yans-error-rate-model.h (module 'wifi'): double ns3::YansErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint16_t staId) const [member function]
+    ## yans-error-rate-model.h (module 'wifi'): double ns3::YansErrorRateModel::DoGetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector const & txVector, double snr, uint64_t nbits, uint8_t numRxAntennas, ns3::WifiPpduField field, uint16_t staId) const [member function]
     cls.add_method('DoGetChunkSuccessRate', 
                    'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint16_t', 'staId')], 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector const &', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits'), param('uint8_t', 'numRxAntennas'), param('ns3::WifiPpduField', 'field'), param('uint16_t', 'staId')], 
                    is_const=True, is_virtual=True, visibility='private')
     return
 
