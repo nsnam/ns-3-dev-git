@@ -26,7 +26,7 @@ doxygen:
     - CXX="ccache $COMPILER" ./waf configure --enable-examples --enable-tests --enable-asserts -d release
     - ./waf
 #    - mkdir -p public/doxygen
-    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git
+    - git remote add ns-3-origin https://gitlab.com/nsnam/ns-3-dev.git || true
     - git fetch ns-3-origin
 #    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
     - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
