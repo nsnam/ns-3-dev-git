@@ -158,6 +158,27 @@ Here is an example of setting up PATH and LD_LIBRARY_PATH using a bash shell:
 These lines can be added into ~/.bash_profile or ~/.bashrc to avoid having to
 retype them when a new shell is opened.
 
+Note 2:  There is a separate issue on recent Fedora distributions, which is
+that the libraries are built with AVX instructions.  On older machines or
+some virtual machines, this results in an illegal instruction 
+being thrown.  This is not an |ns3| issue, a simple MPI test case will also
+fail.  The AVX instructions are being called during initialization.
+
+The symptom of this is that attempts to run an ns-3 MPI program will fail
+with the error: `terminated with signal SIGILL`.  To check if this is the
+problem, run::
+
+    $ grep avx /proc/cpuinfo
+
+and it will not return anything if AVX is not present.
+
+If AVX is not supported, it is recommended to switch to a different MPI
+implementation such as MPICH::
+
+    $ dnf remove openmpi openmpi-devel
+    $ dnf install mpich mpich-devel environment-modules
+    $ module load mpi/mpich-x86_64
+
 Building and Running Examples
 +++++++++++++++++++++++++++++
 
@@ -177,15 +198,18 @@ Next, build |ns3|::
     $ ./waf
 
 After building |ns3| with mpi enabled, the example programs are now
-ready to run with mpirun. Here are a few examples (from the root |ns3|
-directory)::
+ready to run with `mpiexec`.  It is advised to avoid running Waf directly
+with `mpiexec`; two options that should be more robust are to either use
+the `--command-template` way of running the mpiexec program, or to use
+`./waf shell` and run the executables directly on the command line.
+Here are a few examples (from the root |ns3| directory)::
 
-    $ mpirun -np 2 ./waf --run simple-distributed
-    $ mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
+    $ ./waf --command-template="mpiexec -np 2 %s" --run simple-distributed
+    $ ./waf --command-template="mpiexec -np 2 -machinefile mpihosts %s --nix=0" --run nms-p2p-nix-distributed
             
-An examle using the null message synchronization algorithm::
+An example using the null message synchronization algorithm::
 
-    $ mpirun -np 2 ./waf --run simple-distributed --nullmsg
+    $ ./waf --command-template="mpiexec -np 2 %s --nullmsg" --run simple-distributed
 
 The np switch is the number of logical processors to use. The machinefile switch
 is which machines to use. In order to use machinefile, the target file must
@@ -200,12 +224,14 @@ exist (in this case mpihosts). This can simply contain something like:
 
 Or if you have a cluster of machines, you can name them.
 
-NOTE: Some users have experienced issues using mpirun and waf together. An
-alternative way to run distributed examples is shown below::
+The other alternative to `command-template` is to use `./waf shell`.  Here
+are the equivalent examples to the above (assuming optimized build profile)::
 
     $ ./waf shell
-    $ cd build/debug
-    $ mpirun -np 2 src/mpi/examples/simple-distributed
+    $ cd build/src/mpi/examples
+    $ mpiexec -np 2 ns3-dev-simple-distributed-optimized
+    $ mpiexec -np 2 -machinefile mpihosts ns3-dev-nms-p2p-nix-distributed-optimized --nix=0
+    $ mpiexec -np 2 ns3-dev-simple-distributed-optimized --nullmsg
 
 Setting synchronization algorithm to use
 ++++++++++++++++++++++++++++++++++++++++
