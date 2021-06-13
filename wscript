@@ -259,7 +259,7 @@ def options(opt):
                    dest='enable_desmetrics')
     opt.add_option('--cxx-standard',
                    help=('Compile NS-3 with the given C++ standard'),
-                   type='string', default='-std=c++11', dest='cxx_standard')
+                   type='string', dest='cxx_standard')
     opt.add_option('--enable-asserts',
                    help=('Enable the asserts regardless of the compile mode'),
                    action="store_true", default=False,
@@ -486,12 +486,51 @@ def configure(conf):
                 conf.report_optional_feature("static", "Static build", False,
                                              "Link flag -Wl,--whole-archive,-Bstatic does not work")
 
-    # Enables C++-11 support by default, unless user specified another option
-    # Warn the user if the CXX Standard flag provided was not recognized
-    if conf.check_compilation_flag(Options.options.cxx_standard):
-        env.append_value('CXXFLAGS', Options.options.cxx_standard)
-    else:
-        Logs.warn("CXX Standard flag " + Options.options.cxx_standard + " was not recognized, using compiler's default")
+    # Checks if environment variable specifies the C++ language standard and/or
+    # if the user has specified the standard via the -cxx-standard argument
+    # to 'waf configure'.  The following precedence and behavior is implemented:
+    # 1) if user does not specify anything, Waf will use the default standard
+    #    configured for ns-3, which is configured below
+    # 2) if user specifies the '-cxx-standard' option, it will be used instead
+    #    of the default.
+    #    Example:  ./waf configure --cxx-standard=-std=c++14
+    # 3) if user specifies the C++ standard via the CXXFLAGS environment
+    #    variable, it will be used instead of the default.
+    #    Example: CXXFLAGS="-std=c++14" ./waf configure
+    # 4) if user specifies both the CXXFLAGS environment variable and the
+    #    -cxx-standard argument, the latter will take precedence and a warning
+    #    will be emitted in the configure output if there were conflicting
+    #    standards between the two.
+    #    Example: CXXFLAGS="-std=c++14" ./waf configure --cxx-standard=-std=c++17
+    #    (in the above scenario, Waf will use c++17 but warn about it)
+    # Note: If the C++ standard is not recognized, configuration will error exit
+    cxx_standard = ""
+    cxx_standard_env = ""
+    for flag in env['CXXFLAGS']:
+        if flag[:5] == "-std=":
+            cxx_standard_env = flag
+
+    if not cxx_standard_env and Options.options.cxx_standard:
+        cxx_standard = Options.options.cxx_standard
+        env.append_value('CXXFLAGS', cxx_standard)
+    elif cxx_standard_env and not Options.options.cxx_standard:
+        cxx_standard = cxx_standard_env
+        # No need to change CXXFLAGS
+    elif cxx_standard_env and Options.options.cxx_standard and cxx_standard_env != Options.options.cxx_standard:
+        Logs.warn("user-specified --cxx-standard (" + 
+            Options.options.cxx_standard + ") does not match the value in CXXFLAGS (" + cxx_standard_env + "); Waf will use the --cxx-standard value")
+        cxx_standard = Options.options.cxx_standard
+        env['CXXFLAGS'].remove(cxx_standard_env)
+        env.append_value('CXXFLAGS', cxx_standard)
+    elif cxx_standard_env and Options.options.cxx_standard and cxx_standard_env == Options.options.cxx_standard:
+        cxx_standard = Options.options.cxx_standard
+        # No need to change CXXFLAGS
+    elif not cxx_standard and not Options.options.cxx_standard:
+        cxx_standard = "-std=c++11"
+        env.append_value('CXXFLAGS', cxx_standard)
+
+    if not conf.check_compilation_flag(cxx_standard):
+        raise Errors.ConfigurationError("Exiting because C++ standard value " + cxx_standard + " is not recognized")
 
     # Find Boost libraries by modules
     conf.env['REQUIRED_BOOST_LIBS'] = []
