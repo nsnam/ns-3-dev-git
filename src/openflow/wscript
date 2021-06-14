@@ -38,6 +38,10 @@ def configure(conf):
         conf.env['MODULES_NOT_BUILT'].append('openflow')
         return 
 
+    if not conf.require_boost_incs('openflow', 'NS-3 OpenFlow Integration'):
+        conf.env['MODULES_NOT_BUILT'].append('openflow')
+        return 
+
     test_code = '''
 #include "openflow/openflow.h"
 #include "openflow/nicira-ext.h"
@@ -122,6 +126,7 @@ def build(bld):
 
     # Build the Switch module
     obj = bld.create_ns3_module('openflow', ['internet'])
+    obj.use.append('BOOST')
     obj.source = [
         ]
 
