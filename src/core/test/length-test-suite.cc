@@ -24,7 +24,7 @@
 #include "ns3/string.h"
 #include "ns3/test.h"
 
-#ifdef HAVE_BOOST_UNITS
+#ifdef HAVE_BOOST
 #include <boost/units/base_units/us/foot.hpp>
 #include <boost/units/systems/si.hpp>
 #include <boost/units/systems/si/prefixes.hpp>

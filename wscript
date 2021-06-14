@@ -138,6 +138,7 @@ def options(opt):
     opt.load('compiler_cxx')
     opt.load('cflags')
     opt.load('gnu_dirs')
+    opt.load('boost', tooldir=['waf-tools'])
 
     opt.add_option('--check-config',
                    help=('Print the current configuration.'),
@@ -364,6 +365,205 @@ def print_config(env, phase='configure'):
             color = 'RED'
         print("%-30s: %s%s%s" % (caption, Logs.colors(color), status, Logs.colors('NORMAL')))
 
+#  Checking for boost headers and libraries
+#
+#  There are four cases:
+#    A.  Only need headers, and they are required
+#    B.  Also need compiled libraries, and they are required
+#    C.  Only use headers, but they are not required
+#    D.  Use compiled libraries, but they are not required
+#
+#  A.  If you only need includes there are just two steps:
+#
+#    A1.  Add this in your module wscript configure function:
+#
+#        if not conf.require_boost_incs('my-module', 'my module caption'):
+#            return
+#
+#    A2.  Do step FINAL below.
+#
+#  B.  If you also need some compiled boost libraries there are 
+#      three steps (instead of the above):
+#
+#    B1.  Declare the libraries you need by adding to your module wscript:
+#
+#        REQUIRED_BOOST_LIBS = ['lib1', 'lib2'...]
+#
+#        def required_boost_libs(conf):
+#            conf.env['REQUIRED_BOOST_LIBS'] += REQUIRED_BOOST_LIBS
+#
+#    B2.  Check that the libs are present in your module wscript configure function:
+#      
+#        if conf.missing_boost_libs('my-module', 'my module caption', REQUIRED_BOOST_LIBS):
+#            return
+#
+#    B3.  Do step FINAL below.
+#
+#  Finally,
+#
+#    FINAL.  Add boost to your module wscript build function:
+#
+#        # Assuming you have
+#        #  module = bld.create_ns3_module('my-module')
+#        module.use.append('BOOST')
+#
+#  If your use of boost is optional it's even simpler.
+#
+#  C.  For optional headers only, the two steps above are modified a little:
+#
+#    C1.  Add this to your module wscript configure function:
+#
+#        conf.require_boost_incs('my-module', 'my module caption', required=False)
+#        # Continue with config, adjusting for missing boost
+#
+#    C2.  Modify step FINAL as follows
+#
+#        if bld.env['INCLUDES_BOOST']:
+#            module.use.append('BOOST')
+#
+#  D.  For compiled boost libraries
+#
+#    D1.  Do B1 above to declare the libraries you would like to use
+#
+#    D2.  If you need to take action at configure time, 
+#         add to your module wscript configure function:
+#
+#        missing_boost_libs = conf.missing_boost_libs('my-module', 'my module caption', REQUIRED_BOOST_LIBS, required=False)
+#        # Continue with config, adjusting for missing boost libs
+#
+#         At this point you can inspect missing_boost_libs to see 
+#         what libs were found and do the right thing.  
+#         See below for preprocessor symbols which will be available 
+#         in your source files.
+#
+#    D3.  If any of your libraries are present add to your 
+#         module wscript build function:
+#
+#        missing_boost_libs = bld.missing_boost_libs('lib-opt', REQUIRED_BOOST_LIBS)
+#        # Continue with build, adjusting for missing boost libs
+#  
+#         At this point you can inspect missing_boost_libs to see 
+#         what libs were found and do the right thing.  
+#
+#  In all cases you can test for boost in your code with
+#
+#      #ifdef HAVE_BOOST
+#
+#  Each boost compiled library will be indicated with a 'HAVE_BOOST_<lib>' 
+#  preprocessor symbol, which you can test.  For example, for the boost 
+#  Signals2 library:
+#
+#      #ifdef HAVE_BOOST_SIGNALS2
+#
+
+def require_boost_incs(conf, module, caption, required=True):
+
+    conf.to_log('boost: %s wants incs, required: %s' % (module, required))
+    if conf.env['INCLUDES_BOOST']:
+        conf.to_log('boost: %s: have boost' % module)
+        return True
+    elif not required:
+        conf.to_log('boost: %s: no boost, but not required' % module)
+        return False
+    else:
+        conf.to_log('boost: %s: no boost, but required' % module)
+        conf.report_optional_feature(module, caption, False,
+                                     "boost headers required but not found")
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append(module)
+        return False
+
+#  Report any required boost libs which are missing
+#  Return values of truthy are bad; falsey is good:
+#    If all are present return False (non missing)
+#    If boost not present, or no libs return True
+#    If some libs present, return the list of missing libs
+def conf_missing_boost_libs(conf, module, caption, libs, required= True):
+    conf.to_log('boost: %s wants %s, required: %s' % (module, libs, required))
+
+    if not conf.require_boost_incs(module, caption, required):
+        # No headers found, so the libs aren't there either
+        return libs
+
+    missing_boost_libs = [lib for lib in libs if lib not in conf.boost_libs]
+
+    if required and missing_boost_libs:
+        if not conf.env['LIB_BOOST']:
+            conf.to_log('boost: %s requires libs, but none found' % module)
+            conf.report_optional_feature(module, caption, False,
+                                         "No boost libraries were found")
+        else:
+            conf.to_log('boost: %s requires libs, but missing %s' % (module, missing_boost_libs))
+            conf.report_optional_feature(module, caption, False,
+                                         "Required boost libraries not found, missing: %s" % missing_boost_libs)
+
+        # Add this module to the list of modules that won't be built
+        # if they are enabled.
+        conf.env['MODULES_NOT_BUILT'].append(module)
+        return missing_boost_libs
+
+    # Required libraries were found, or are not required
+    return missing_boost_libs
+
+def get_boost_libs(libs):
+    names = set()
+    for lib in libs:
+        if lib.startswith("boost_"):
+            lib = lib[6:]
+        if lib.endswith("-mt"):
+            lib = lib[:-3]
+        names.add(lib)
+    return names
+
+def configure_boost(conf):
+    conf.to_log('boost: loading conf')
+    conf.load('boost')
+
+    # Find Boost libraries by modules
+    conf.to_log('boost: scanning for required libs')
+    conf.env['REQUIRED_BOOST_LIBS'] = []
+    for modules_dir in ['src', 'contrib']:
+        conf.recurse (modules_dir, name="get_required_boost_libs", mandatory=False)
+    # Check for any required boost libraries
+    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
+        conf.env['REQUIRED_BOOST_LIBS'] = list(set(conf.env['REQUIRED_BOOST_LIBS']))
+        conf.to_log("boost: libs required: %s" % conf.env['REQUIRED_BOOST_LIBS'])
+        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False, required=False)
+        if not conf.env['LIB_BOOST']:
+            conf.env['LIB_BOOST'] = []
+    else:
+        # Check with no libs, so we find the includes
+        conf.check_boost(mandatory=False, required=False)
+
+    conf.to_log('boost: checking if we should define HAVE_BOOST')
+    if conf.env['INCLUDES_BOOST']:
+        conf.to_log('boost: defining HAVE_BOOST')
+        conf.env.append_value ('CPPFLAGS', '-DHAVE_BOOST')
+
+    # Some boost libraries may have been found.  
+    # Add preprocessor symbols for them
+    conf.to_log('boost: checking which libs are present')
+    if conf.env['LIB_BOOST']:
+        conf.boost_libs = get_boost_libs(conf.env['LIB_BOOST'])
+        for lib in conf.boost_libs:
+            msg='boost: lib present: ' + lib
+            if lib in conf.env['REQUIRED_BOOST_LIBS']:
+                have = '-DHAVE_BOOST_' + lib.upper()
+                conf.to_log('%s, requested, adding %s' % (msg, have))
+                conf.env.append_value('CPPFLAGS', have)
+            else:
+                conf.to_log('%s, not required, ignoring' % msg)
+
+    boost_libs_missing = [lib for lib in conf.env['REQUIRED_BOOST_LIBS'] if lib not in conf.boost_libs]
+    for lib in boost_libs_missing:
+        conf.to_log('boost: lib missing: %s' % lib)
+
+def bld_missing_boost_libs (bld, module, libs):
+    missing_boost_libs = [lib for lib in libs if lib not in bld.boost_libs]
+    return missing_boost_libs
+
 def configure(conf):
     # Waf does not work correctly if the absolute path contains whitespaces
     if (re.search(r"\s", os.getcwd ())):
@@ -376,6 +576,9 @@ def configure(conf):
     conf.check_compilation_flag = types.MethodType(_check_compilation_flag, conf)
     conf.report_optional_feature = types.MethodType(report_optional_feature, conf)
     conf.check_optional_feature = types.MethodType(check_optional_feature, conf)
+    conf.require_boost_incs = types.MethodType(require_boost_incs, conf)
+    conf.missing_boost_libs = types.MethodType(conf_missing_boost_libs, conf)
+    conf.boost_libs = set()
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.load('compiler_c')
@@ -462,13 +665,19 @@ def configure(conf):
         if Utils.unversioned_sys_platform() == 'darwin':
             if tuple(map(int, conf.env['CC_VERSION'])) >= darwin_clang_version_warn_unused_local_typedefs:
                 env.append_value('CXXFLAGS', '-Wno-unused-local-typedefs')
+
             if tuple(map(int, conf.env['CC_VERSION'])) >= darwin_clang_version_warn_potentially_evaluated:
+
                 env.append_value('CXXFLAGS', '-Wno-potentially-evaluated-expression')
+
         else:
             if tuple(map(int, conf.env['CC_VERSION'])) >= clang_version_warn_unused_local_typedefs:
+
                 env.append_value('CXXFLAGS', '-Wno-unused-local-typedefs')
+
             if tuple(map(int, conf.env['CC_VERSION'])) >= clang_version_warn_potentially_evaluated:
                 env.append_value('CXXFLAGS', '-Wno-potentially-evaluated-expression')
+
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
         if Utils.unversioned_sys_platform() == 'darwin':
@@ -532,18 +741,8 @@ def configure(conf):
     if not conf.check_compilation_flag(cxx_standard):
         raise Errors.ConfigurationError("Exiting because C++ standard value " + cxx_standard + " is not recognized")
 
-    # Find Boost libraries by modules
-    conf.env['REQUIRED_BOOST_LIBS'] = []
-    for modules_dir in ['src', 'contrib']:
-        conf.recurse (modules_dir, name="get_required_boost_libs", mandatory=False)
-
-    if conf.env['REQUIRED_BOOST_LIBS'] is not []:
-        conf.load('boost')
-        conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), mandatory=False)
-        if not conf.env['LIB_BOOST']:
-            conf.check_boost(lib=' '.join (conf.env['REQUIRED_BOOST_LIBS']), libpath="/usr/lib64", mandatory=False)
-            if not conf.env['LIB_BOOST']:
-                conf.env['LIB_BOOST'] = []
+    # Handle boost
+    configure_boost(conf)
 
     # Set this so that the lists won't be printed at the end of this
     # configure command.
@@ -953,10 +1152,17 @@ def build(bld):
     bld.__class__.all_task_gen = property(_get_all_task_gen)
     bld.exclude_taskgen = types.MethodType(_exclude_taskgen, bld)
     bld.find_ns3_module = types.MethodType(_find_ns3_module, bld)
+    bld.missing_boost_libs = types.MethodType(bld_missing_boost_libs, bld)
 
     # Clean documentation build directories; other cleaning happens later
     if bld.cmd == 'clean':
         _cleandocs()
+
+    # Cache available boost lib names
+    bld.boost_libs = set()
+    if bld.env['LIB_BOOST']:
+        bld.boost_libs = get_boost_libs(bld.env['LIB_BOOST'])
+
 
     # process subfolders from here
     bld.recurse('src')

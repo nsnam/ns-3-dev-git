@@ -24,7 +24,7 @@
 #include "attribute.h"
 #include "attribute-helper.h"
 
-#ifdef HAVE_BOOST_UNITS
+#ifdef HAVE_BOOST
 #include <boost/units/quantity.hpp>
 #include <boost/units/systems/si.hpp>
 #endif

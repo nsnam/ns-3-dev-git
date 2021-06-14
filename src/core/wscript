@@ -57,6 +57,8 @@ def configure(conf):
 
     conf.load('versioning', ['waf-tools'])
 
+    conf.require_boost_incs('core', 'ns-3 core module', required=False);
+
     int64x64_impl = Options.options.int64x64_impl
     if int64x64_impl == 'default' or int64x64_impl == 'int128':
 
@@ -165,28 +167,6 @@ int main ()
         conf.env.append_value('DEFINES', 'ENABLE_BUILD_VERSION=1')
     else:
         conf.env['ENABLE_BUILD_VERSION'] = False 
-
-    # Check for boost::units
-    if 'INCLUDES_BOOST' in conf.env:
-        fragment = r"""
-#include <boost/units/systems/si.hpp>
-int main ()
-{
-    auto q = 2 * boost::units::si::meter;
-    q.value ();
-}
-""" 
-        test_env = conf.env.derive()
-        test_env.append_value('INCLUDES', conf.env['INCLUDES_BOOST'])
-
-        ret = conf.check_nonfatal(compiler='cxx',
-                            define_name='HAVE_BOOST_UNITS',
-                            header_name='boost/units/systems/si.hpp',
-                            env=test_env,
-                            fragment=fragment,
-                            errmsg='not found')
-
-        conf.env.append_value ('CPPFLAGS', '-DHAVE_BOOST_UNITS')
 
     conf.write_config_header('ns3/core-config.h', top=True)
 
@@ -481,6 +461,9 @@ def build(bld):
         core.source.append('model/version.cc')
 
         headers.source.append('model/version.h')
+
+    if bld.env['INCLUDES_BOOST']:
+       core.use.append('BOOST')
 
     if Options.options.check_version:
         print_version(bld, vers_tg)

@@ -54,8 +54,7 @@ from waflib import Utils, Logs, Errors
 from waflib.Configure import conf
 from waflib.TaskGen import feature, after_method
 
-BOOST_LIBS = ['/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu',
-			  '/usr/lib', '/usr/local/lib', '/opt/local/lib', '/sw/lib', '/lib']
+BOOST_LIBS = ['/usr/lib/x86_64-linux-gnu', '/usr/lib/i386-linux-gnu', '/usr/lib', '/usr/local/lib', '/opt/local/lib', '/sw/lib', '/lib']
 BOOST_INCLUDES = ['/usr/include', '/usr/local/include', '/opt/local/include', '/sw/include']
 BOOST_VERSION_FILE = 'boost/version.hpp'
 BOOST_VERSION_CODE = '''
@@ -212,9 +211,9 @@ def __boost_get_libs_path(self, *k, **kw):
 	if not path:
 		if libs:
 			self.end_msg('libs not found in %s' % libs)
-			self.fatal('The configuration failed')
 		else:
 			self.end_msg('libs not found, please provide a --boost-libs argument (see help)')
+		if kw.get('required', True):
 			self.fatal('The configuration failed')
 
 	self.to_log('Found the boost path in %r with the libraries:' % path)
@@ -284,8 +283,10 @@ def boost_get_libs(self, *k, **kw):
 					libs.append(format_lib_name(file.name))
 					break
 			else:
-				self.end_msg('lib %s not found in %s' % (lib, path.abspath()))
-				self.fatal('The configuration failed')
+				self.to_log('Failed looking for boost lib %s' % lib)
+				if kw.get('required', True):
+					self.end_msg('lib %s not found in %s' % (lib, path.abspath()))
+					self.fatal('The configuration failed')
 		return libs
 
 	return  path.abspath(), match_libs(kw.get('lib', None), False), match_libs(kw.get('stlib', None), True)
@@ -304,7 +305,8 @@ def check_boost(self, *k, **kw):
 
 	params = {
 		'lib': k and k[0] or kw.get('lib', None),
-		'stlib': kw.get('stlib', None)
+		'stlib': kw.get('stlib', None),
+		'required': kw.get('required', True)
 	}
 	for key, value in self.options.__dict__.items():
 		if not key.startswith('boost_'):
@@ -317,7 +319,7 @@ def check_boost(self, *k, **kw):
 	self.start_msg('Checking boost includes')
 	self.env['INCLUDES_%s' % var] = inc = self.boost_get_includes(**params)
 	self.env.BOOST_VERSION = self.boost_get_version(inc)
-	self.end_msg(self.env.BOOST_VERSION)
+	self.end_msg(self.env.BOOST_VERSION + ' ' + inc)
 	if Logs.verbose:
 		Logs.pprint('CYAN', '	path : %s' % self.env['INCLUDES_%s' % var])
 
@@ -331,7 +333,7 @@ def check_boost(self, *k, **kw):
 	self.env['STLIBPATH_%s' % var] = [path]
 	self.env['LIB_%s' % var] = libs
 	self.env['STLIB_%s' % var] = stlibs
-	self.end_msg('ok')
+	self.end_msg('ok' + ' ' + path)
 	if Logs.verbose:
 		Logs.pprint('CYAN', '	path : %s' % path)
 		Logs.pprint('CYAN', '	shared libs : %s' % libs)

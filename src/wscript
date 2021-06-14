@@ -45,7 +45,6 @@ def options(opt):
                    help=("Build only these modules (and dependencies)"),
                    dest='enable_modules')
 
-    opt.load('boost', tooldir=['waf-tools'])
 
     for module in all_modules:
         opt.recurse(module, mandatory=False)
