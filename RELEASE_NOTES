@@ -47,6 +47,8 @@ New user-visible features
 Bugs fixed
 ----------
 - (antenna) Fix random angle generation for the 3gpp channel model.
+- (wifi) #418 - Fix HE A-MPDU Max Size Upper Bound
+
 
 Release 3.33
 ============

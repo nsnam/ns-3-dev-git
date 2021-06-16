@@ -19,6 +19,7 @@
  */
 
 #include "he-capabilities.h"
+#include <algorithm>
 
 namespace ns3 {
 
@@ -499,7 +500,7 @@ HeCapabilities::GetHighestNssSupported (void) const
 uint32_t
 HeCapabilities::GetMaxAmpduLength (void) const
 {
-  return (1ul << (20 + m_maxAmpduLengthExponent)) - 1;
+  return std::min<uint32_t> ((1ul << (20 + m_maxAmpduLengthExponent)) - 1, 6500631);
 }
 
 std::ostream &
