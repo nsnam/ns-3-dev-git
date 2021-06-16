@@ -15,3 +15,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('lollipop-comparisions', ['core', 'network'])
     obj.source = 'lollipop-comparisions.cc'
+
+    obj = bld.create_ns3_program('bit-serializer', ['core', 'network'])
+    obj.source = 'bit-serializer.cc'

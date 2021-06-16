@@ -24,6 +24,8 @@ def build(bld):
         'model/tag-buffer.cc',
         'model/trailer.cc',
         'utils/address-utils.cc',
+        'utils/bit-deserializer.cc',
+        'utils/bit-serializer.cc',
         'utils/crc32.cc',
         'utils/data-rate.cc',
         'utils/drop-tail-queue.cc',
@@ -74,6 +76,7 @@ def build(bld):
 
     network_test = bld.create_ns3_module_test_library('network')
     network_test.source = [
+        'test/bit-serializer-test.cc',
         'test/buffer-test.cc',
         'test/drop-tail-queue-test-suite.cc',
         'test/error-model-test-suite.cc',
@@ -118,6 +121,8 @@ def build(bld):
         'model/tag-buffer.h',
         'model/trailer.h',
         'utils/address-utils.h',
+        'utils/bit-deserializer.h',
+        'utils/bit-serializer.h',
         'utils/crc32.h',
         'utils/data-rate.h',
         'utils/drop-tail-queue.h',
