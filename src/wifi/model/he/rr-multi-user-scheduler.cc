@@ -541,10 +541,14 @@ RrMultiUserScheduler::TrySendingDlMuPpdu (void)
       tids.push_back (currTid);
     }
 
+  Ptr<HeConfiguration> heConfiguration = m_apMac->GetHeConfiguration ();
+  NS_ASSERT (heConfiguration != 0);
+
   m_txParams.Clear ();
   m_txParams.m_txVector.SetPreambleType (WIFI_PREAMBLE_HE_MU);
   m_txParams.m_txVector.SetChannelWidth (m_apMac->GetWifiPhy ()->GetChannelWidth ());
-  m_txParams.m_txVector.SetGuardInterval (m_apMac->GetHeConfiguration ()->GetGuardInterval ().GetNanoSeconds ());
+  m_txParams.m_txVector.SetGuardInterval (heConfiguration->GetGuardInterval ().GetNanoSeconds ());
+  m_txParams.m_txVector.SetBssColor (heConfiguration->GetBssColor ());
 
   // The TXOP limit can be exceeded by the TXOP holder if it does not transmit more
   // than one Data or Management frame in the TXOP and the frame is not in an A-MPDU
@@ -664,6 +668,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
   dlMuInfo.txParams.m_txVector.SetPreambleType (m_txParams.m_txVector.GetPreambleType ());
   dlMuInfo.txParams.m_txVector.SetChannelWidth (m_txParams.m_txVector.GetChannelWidth ());
   dlMuInfo.txParams.m_txVector.SetGuardInterval (m_txParams.m_txVector.GetGuardInterval ());
+  dlMuInfo.txParams.m_txVector.SetBssColor (m_txParams.m_txVector.GetBssColor ());
 
   auto candidateIt = m_candidates.begin (); // iterator over the list of candidate receivers
 
