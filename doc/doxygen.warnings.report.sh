@@ -343,7 +343,8 @@ EOF
     fi
 
     # Waf insists on writing cruft to stdout
-    sed -i -E '/^Waf:/d' doc/$intro_h
+    sed -i.bak -E '/^Waf:/d' doc/$intro_h
+    rm doc/$intro_h.bak
 
     verbose -n "Rebuilding doxygen docs with full errors"
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
