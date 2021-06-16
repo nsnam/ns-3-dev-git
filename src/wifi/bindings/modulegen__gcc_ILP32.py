@@ -196,7 +196,7 @@ def register_types(module):
     module.add_class('HeRu')
     ## he-ru.h (module 'wifi'): ns3::HeRu::RuType [enumeration]
     module.add_enum('RuType', ['RU_26_TONE', 'RU_52_TONE', 'RU_106_TONE', 'RU_242_TONE', 'RU_484_TONE', 'RU_996_TONE', 'RU_2x996_TONE'], outer_class=root_module['ns3::HeRu'])
-    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec [struct]
+    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec [class]
     module.add_class('RuSpec', outer_class=root_module['ns3::HeRu'])
     typehandlers.add_type_alias('std::pair< short, short >', 'ns3::HeRu::SubcarrierRange')
     typehandlers.add_type_alias('std::pair< short, short >*', 'ns3::HeRu::SubcarrierRange*')
@@ -3915,10 +3915,10 @@ def register_Ns3HeRu_methods(root_module, cls):
                    'std::vector< ns3::HeRu::RuSpec >', 
                    [param('uint16_t', 'bw'), param('ns3::HeRu::RuType', 'ruType')], 
                    is_static=True)
-    ## he-ru.h (module 'wifi'): static ns3::HeRu::SubcarrierGroup ns3::HeRu::GetSubcarrierGroup(uint16_t bw, ns3::HeRu::RuType ruType, std::size_t index) [member function]
+    ## he-ru.h (module 'wifi'): static ns3::HeRu::SubcarrierGroup ns3::HeRu::GetSubcarrierGroup(uint16_t bw, ns3::HeRu::RuType ruType, std::size_t phyIndex) [member function]
     cls.add_method('GetSubcarrierGroup', 
                    'ns3::HeRu::SubcarrierGroup', 
-                   [param('uint16_t', 'bw'), param('ns3::HeRu::RuType', 'ruType'), param('std::size_t', 'index')], 
+                   [param('uint16_t', 'bw'), param('ns3::HeRu::RuType', 'ruType'), param('std::size_t', 'phyIndex')], 
                    is_static=True)
     ## he-ru.h (module 'wifi'): ns3::HeRu::m_heRuSubcarrierGroups [variable]
     cls.add_static_attribute('m_heRuSubcarrierGroups', 'ns3::HeRu::SubcarrierGroups const', is_const=True)
@@ -3926,16 +3926,41 @@ def register_Ns3HeRu_methods(root_module, cls):
 
 def register_Ns3HeRuRuSpec_methods(root_module, cls):
     cls.add_output_stream_operator()
-    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec() [constructor]
-    cls.add_constructor([])
     ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec(ns3::HeRu::RuSpec const & arg0) [constructor]
     cls.add_constructor([param('ns3::HeRu::RuSpec const &', 'arg0')])
-    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::index [variable]
-    cls.add_instance_attribute('index', 'std::size_t', is_const=False)
-    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::primary80MHz [variable]
-    cls.add_instance_attribute('primary80MHz', 'bool', is_const=False)
-    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::ruType [variable]
-    cls.add_instance_attribute('ruType', 'ns3::HeRu::RuType', is_const=False)
+    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec() [constructor]
+    cls.add_constructor([])
+    ## he-ru.h (module 'wifi'): ns3::HeRu::RuSpec::RuSpec(ns3::HeRu::RuType ruType, std::size_t index, bool primary80MHz) [constructor]
+    cls.add_constructor([param('ns3::HeRu::RuType', 'ruType'), param('std::size_t', 'index'), param('bool', 'primary80MHz')])
+    ## he-ru.h (module 'wifi'): std::size_t ns3::HeRu::RuSpec::GetIndex() const [member function]
+    cls.add_method('GetIndex', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## he-ru.h (module 'wifi'): std::size_t ns3::HeRu::RuSpec::GetPhyIndex() const [member function]
+    cls.add_method('GetPhyIndex', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## he-ru.h (module 'wifi'): bool ns3::HeRu::RuSpec::GetPrimary80MHz() const [member function]
+    cls.add_method('GetPrimary80MHz', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## he-ru.h (module 'wifi'): ns3::HeRu::RuType ns3::HeRu::RuSpec::GetRuType() const [member function]
+    cls.add_method('GetRuType', 
+                   'ns3::HeRu::RuType', 
+                   [], 
+                   is_const=True)
+    ## he-ru.h (module 'wifi'): bool ns3::HeRu::RuSpec::IsPhyIndexSet() const [member function]
+    cls.add_method('IsPhyIndexSet', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## he-ru.h (module 'wifi'): void ns3::HeRu::RuSpec::SetPhyIndex(uint16_t bw, uint8_t p20Index) [member function]
+    cls.add_method('SetPhyIndex', 
+                   'void', 
+                   [param('uint16_t', 'bw'), param('uint8_t', 'p20Index')])
     return
 
 def register_Ns3HeSigAParameters_methods(root_module, cls):
@@ -7565,6 +7590,10 @@ def register_Ns3WifiTxVector_methods(root_module, cls):
                    'ns3::WifiTxVector::HeMuUserInfoMap const &', 
                    [], 
                    is_const=True)
+    ## wifi-tx-vector.h (module 'wifi'): ns3::WifiTxVector::HeMuUserInfoMap & ns3::WifiTxVector::GetHeMuUserInfoMap() [member function]
+    cls.add_method('GetHeMuUserInfoMap', 
+                   'ns3::WifiTxVector::HeMuUserInfoMap &', 
+                   [])
     ## wifi-tx-vector.h (module 'wifi'): uint16_t ns3::WifiTxVector::GetLength() const [member function]
     cls.add_method('GetLength', 
                    'uint16_t', 
@@ -11933,11 +11962,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [param('uint8_t', 'power')], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPpduFieldDuration(ns3::WifiPpduField field, ns3::WifiTxVector const & txVector) [member function]
-    cls.add_method('GetPpduFieldDuration', 
-                   'ns3::Time', 
-                   [param('ns3::WifiPpduField', 'field'), param('ns3::WifiTxVector const &', 'txVector')], 
-                   is_static=True)
     ## wifi-phy.h (module 'wifi'): static ns3::Time ns3::WifiPhy::GetPreambleDetectionDuration() [member function]
     cls.add_method('GetPreambleDetectionDuration', 
                    'ns3::Time', 
