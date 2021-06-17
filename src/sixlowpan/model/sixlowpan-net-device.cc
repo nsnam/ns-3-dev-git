@@ -2309,16 +2309,18 @@ void SixLowPanNetDevice::DoFragmentation (Ptr<Packet> packet,
           moreFrag = false;
         }
 
-      NS_LOG_LOGIC ("Fragment creation - " << offset << ", " << offset );
-      Ptr<Packet> fragment = p->CreateFragment (offsetData, size);
-      NS_LOG_LOGIC ("Fragment created - " << offset << ", " << fragment->GetSize () );
+      if (size > 0)
+        {
+          NS_LOG_LOGIC ("Fragment creation - " << offset << ", " << offset );
+          Ptr<Packet> fragment = p->CreateFragment (offsetData, size);
+          NS_LOG_LOGIC ("Fragment created - " << offset << ", " << fragment->GetSize () );
 
-      offset += size;
-      offsetData += size;
+          offset += size;
+          offsetData += size;
 
-      fragment->AddHeader (fragNHdr);
-      listFragments.push_back (fragment);
-
+          fragment->AddHeader (fragNHdr);
+          listFragments.push_back (fragment);
+        }
     }
   while (moreFrag);
 
