@@ -328,10 +328,12 @@ protected:
    *
    * \param recipient address of the recipient.
    * \param tid traffic ID.
+   * \param startingSeq the BA agreement starting sequence number
    * \param timeout timeout value.
    * \param immediateBAck flag to indicate whether immediate BlockAck is used.
    */
-  void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t timeout, bool immediateBAck);
+  void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startingSeq,
+                         uint16_t timeout, bool immediateBAck);
 
   /**
    * Sends DELBA frame to cancel a block ack agreement with STA
