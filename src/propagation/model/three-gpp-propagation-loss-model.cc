@@ -357,7 +357,7 @@ ThreeGppRmaPropagationLossModel::GetLossLos (double distance2D, double distance3
   double distanceBp = GetBpDistance (m_frequency, hBs, hUt);
   NS_LOG_DEBUG ("breakpoint distance " << distanceBp);
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 10.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -405,7 +405,7 @@ ThreeGppRmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // range and the warning message is printed (hBS for the UT-UT case and hUT
   // for the BS-BS case).
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -589,7 +589,7 @@ ThreeGppUmaPropagationLossModel::GetLossLos (double distance2D, double distance3
   double distanceBp = GetBpDistance (hUt, hBs, distance2D);
   NS_LOG_DEBUG ("breakpoint distance " << distanceBp);
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -636,7 +636,7 @@ ThreeGppUmaPropagationLossModel::GetLossNlos (double distance2D, double distance
   // range and the warning message is printed (hBS for the UT-UT case and hUT
   // for the BS-BS case).
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -777,7 +777,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossLos (double distance2D, doub
   double distanceBp = GetBpDistance (hUt, hBs, distance2D);
   NS_LOG_DEBUG ("breakpoint distance " << distanceBp);
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -824,7 +824,7 @@ ThreeGppUmiStreetCanyonPropagationLossModel::GetLossNlos (double distance2D, dou
   // range and the warning message is printed (hBS for the UT-UT case and hUT
   // for the BS-BS case).
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance2D < 10.0 || distance2D > 5.0e3)
     {
       NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
@@ -951,10 +951,10 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossLos (double distance2D, double 
   NS_UNUSED (hUt);
   NS_UNUSED (hBs);
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance3D < 1.0 || distance3D > 150.0)
     {
-      NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
+      NS_LOG_WARN ("The 3D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
   // compute the pathloss (see 3GPP TR 38.901, Table 7.4.1-1)
@@ -970,10 +970,10 @@ ThreeGppIndoorOfficePropagationLossModel::GetLossNlos (double distance2D, double
 {
   NS_LOG_FUNCTION (this);
 
-  // check if the distace is outside the validity range
+  // check if the distance is outside the validity range
   if (distance3D < 1.0 || distance3D > 150.0)
     {
-      NS_LOG_WARN ("The 2D distance is outside the validity range, the pathloss value may not be accurate");
+      NS_LOG_WARN ("The 3D distance is outside the validity range, the pathloss value may not be accurate");
     }
 
   // compute the pathloss
