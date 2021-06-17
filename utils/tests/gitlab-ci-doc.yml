@@ -30,8 +30,8 @@ doxygen:
     - git fetch ns-3-origin
 #    - doc/doxygen.warnings.report.sh -f "$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')"
     - export CHANGED_FILES=$(git diff --name-only ns-3-origin/master --diff-filter=d | tr '\n' ' ' | sed 's/ $//g;s/ /\\\|/g')
-    - doc/doxygen.warnings.report.sh -f \"$CHANGED_FILES\"
-#    - doc/doxygen.warnings.report.sh -f \"$CHANGED_FILES\" || EXIT_CODE=$?
+    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES"
+#    - doc/doxygen.warnings.report.sh -f "$CHANGED_FILES" || EXIT_CODE=$?
 #    - if [ -z $EXIT_CODE ]; then export EXIT_CODE=0; fi;
 #    - if [ $EXIT_CODE -ne 0 ]; then if [ -z $CHANGED_FILES ]; then exit 0; fi; fi;
 #    - exit $EXIT_CODE
