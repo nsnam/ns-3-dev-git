@@ -500,17 +500,28 @@ printf "%6d warnings\n" $warncount
 # Return status based on warnings
 exit_status=$((warncount > 0))
 
-if [ "${filter_inRE:-}" != "" ] ; then
-    if [ "$filterin" != "" ] ; then
-        echo
-        echo
-        echo "Filtered Warnings"
-        echo "========================================"
-        echo "$filterin"
-        exit_status=1
-    else
-        exit_status=0
-    fi
+# if [ "${filter_inRE:-}" != "" ] ; then
+#     if [ "$filterin" != "" ] ; then
+#         echo
+#         echo
+#         echo "Filtered Warnings"
+#         echo "========================================"
+#         echo "$filterin"
+#         exit_status=1
+#     else
+#         exit_status=0
+#     fi
+# fi
+
+if [ "$filterin" != "" ] ; then
+    echo
+    echo
+    echo "Filtered Warnings"
+    echo "========================================"
+    echo "$filterin"
+    exit_status=1
+else
+    exit_status=0
 fi
 
 status_report 0 $me
