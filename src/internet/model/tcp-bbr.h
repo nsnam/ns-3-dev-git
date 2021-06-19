@@ -63,20 +63,22 @@ public:
    */
   TcpBbr (const TcpBbr &sock);
 
-  /* BBR has the following modes for deciding how fast to send: */
+  /**
+   * \brief BBR has the following 4 modes for deciding how fast to send:
+   */
   typedef enum
   {
-    BBR_STARTUP,        /* ramp up sending rate rapidly to fill pipe */
-    BBR_DRAIN,          /* drain any queue created during startup */
-    BBR_PROBE_BW,       /* discover, share bw: pace around estimated bw */
-    BBR_PROBE_RTT,      /* cut inflight to min to probe min_rtt */
+    BBR_STARTUP,        /**< Ramp up sending rate rapidly to fill pipe */
+    BBR_DRAIN,          /**< Drain any queue created during startup */
+    BBR_PROBE_BW,       /**< Discover, share bw: pace around estimated bw */
+    BBR_PROBE_RTT,      /**< Cut inflight to min to probe min_rtt */
   } BbrMode_t;
 
   typedef WindowedFilter<DataRate,
                          MaxFilter<DataRate>,
                          uint32_t,
                          uint32_t>
-  MaxBandwidthFilter_t;
+  MaxBandwidthFilter_t; //!< Definition of max bandwidth filter.
 
   /**
    * \brief Literal names of BBR mode for use in log messages
@@ -139,6 +141,7 @@ protected:
   /**
    * \brief This method handles the steps related to the ProbeRTT state
    * \param tcb the socket state.
+   * \param rs rate sample.
    */
   void CheckProbeRTT (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 
@@ -202,6 +205,7 @@ protected:
    * \brief Estimates the target value for congestion window
    * \param tcb  the socket state.
    * \param gain cwnd gain.
+   * \return returns congestion window based on max bandwidth and min RTT.
    */
   uint32_t InFlight (Ptr<TcpSocketState> tcb, double gain);
 
@@ -239,6 +243,7 @@ protected:
    * \brief Modulates congestion window in CA_RECOVERY.
    * \param tcb the socket state.
    * \param rs rate sample.
+   * \return true if congestion window is updated in CA_RECOVERY.
    */
   bool ModulateCwndForRecovery (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpRateSample &rs);
 

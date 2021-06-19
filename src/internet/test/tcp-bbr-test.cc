@@ -37,12 +37,20 @@ NS_LOG_COMPONENT_DEFINE ("TcpBbrTestSuite");
 class TcpBbrPacingEnableTest : public TestCase
 {
 public:
+  /**
+   * \brief constructor
+   * \param pacing pacing configuration
+   * \param name description of the test
+   */
   TcpBbrPacingEnableTest (bool pacing, const std::string &name);
 
 private:
   virtual void DoRun (void);
+  /**
+   * \brief Execute the test.
+   */
   void ExecuteTest (void);
-  bool m_pacing;
+  bool m_pacing; //!< Initial pacing configuration.
 };
 
 TcpBbrPacingEnableTest::TcpBbrPacingEnableTest (bool pacing, const std::string &name)
@@ -78,13 +86,22 @@ TcpBbrPacingEnableTest::ExecuteTest ()
 class TcpBbrCheckGainValuesTest : public TestCase
 {
 public:
+  /**
+   * \brief constructor
+   * \param state BBR state/mode under test
+   * \param highGain value of pacing and cwnd gain
+   * \param name description of the test
+   */
   TcpBbrCheckGainValuesTest (TcpBbr::BbrMode_t state, double highGain, const std::string &name);
 
 private:
   virtual void DoRun (void);
+  /**
+   * \brief Execute the test.
+   */
   void ExecuteTest (void);
-  TcpBbr::BbrMode_t m_mode;
-  double m_highGain;
+  TcpBbr::BbrMode_t m_mode; //!< BBR mode under test
+  double m_highGain;        //!< Value of BBR high gain
 };
 
 TcpBbrCheckGainValuesTest::TcpBbrCheckGainValuesTest (TcpBbr::BbrMode_t state,
@@ -154,9 +171,18 @@ TcpBbrCheckGainValuesTest::ExecuteTest ()
   NS_TEST_ASSERT_MSG_EQ (actualCwndGain, desiredCwndGain, "BBR has not updated into desired cwnd gain");
 }
 
-static class TcpBbrTestSuite : public TestSuite
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
+ * \brief TCP BBR TestSuite
+ */
+class TcpBbrTestSuite : public TestSuite
 {
 public:
+  /**
+   * \brief constructor
+   */
   TcpBbrTestSuite () : TestSuite ("tcp-bbr-test", UNIT)
   {
     AddTestCase (new TcpBbrPacingEnableTest (true, "BBR must keep pacing feature on"), TestCase::QUICK);
@@ -171,6 +197,7 @@ public:
 
     AddTestCase (new TcpBbrCheckGainValuesTest (TcpBbr::BBR_PROBE_RTT, 4, "BBR should enter to BBR_PROBE_RTT phase and set cwnd and pacing gain accordingly"), TestCase::QUICK);
   }
-} g_tcpBbrTest;
+};
 
+static TcpBbrTestSuite g_tcpBbrTest; //!< static variable for test initialization
 }
