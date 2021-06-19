@@ -130,6 +130,12 @@ TcpBbr::TcpBbr (const TcpBbr &sock)
   NS_LOG_FUNCTION (this);
 }
 
+const char* const
+TcpBbr::BbrModeName[BBR_PROBE_RTT + 1] =
+{
+  "BBR_STARTUP", "BBR_DRAIN", "BBR_PROBE_BW", "BBR_PROBE_RTT"
+};
+
 void
 TcpBbr::SetStream (uint32_t stream)
 {
@@ -637,29 +643,11 @@ TcpBbr::UpdateControlParameters (Ptr<TcpSocketState> tcb, const TcpRateOps::TcpR
   SetCwnd (tcb, rs);
 }
 
-std::string
-TcpBbr::WhichState (BbrMode_t mode) const
-{
-  switch (mode)
-    {
-    case 0:
-      return "BBR_STARTUP";
-    case 1:
-      return "BBR_DRAIN";
-    case 2:
-      return "BBR_PROBE_BW";
-    case 3:
-      return "BBR_PROBE_RTT";
-    }
-  NS_ASSERT (false);
-  return "";
-}
-
 void
 TcpBbr::SetBbrState (BbrMode_t mode)
 {
   NS_LOG_FUNCTION (this << mode);
-  NS_LOG_DEBUG (Simulator::Now () << " Changing from " << WhichState (m_state) << " to " << WhichState (mode));
+  NS_LOG_DEBUG (Simulator::Now () << " Changing from " << BbrModeName[m_state] << " to " << BbrModeName[mode]);
   m_state = mode;
 }
 

@@ -79,6 +79,11 @@ public:
   MaxBandwidthFilter_t;
 
   /**
+   * \brief Literal names of BBR mode for use in log messages
+   */
+  static const char* const BbrModeName[BBR_PROBE_RTT + 1];
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.
    *
@@ -315,12 +320,6 @@ protected:
    * \param state BBR state.
    */
   void SetBbrState (BbrMode_t state);
-
-  /**
-   * \brief Maps mode into string.
-   * \return string translation of mode value.
-   */
-  std::string WhichState (BbrMode_t state) const;
 
   /**
   * \brief Find Cwnd increment based on ack aggregation.
