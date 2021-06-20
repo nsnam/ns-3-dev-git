@@ -160,7 +160,7 @@ def options(opt):
 		       help=('print out current build profile'),
 		       default=False, dest='check_profile', action="store_true")
 	opt.add_option('--disable-werror',
-		       help=('disable -Werror flag (warnings treated as errors'),
+		       help=('disable -Werror flag (warnings treated as errors, e.g., deprecated functions)'),
 		       default=False, dest='disable_werror', action="store_true")
 def configure(conf):
 	cc = conf.env['COMPILER_CC'] or None
