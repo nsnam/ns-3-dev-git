@@ -22,11 +22,8 @@
 #include "ns3/abort.h"
 #include "qos-frame-exchange-manager.h"
 #include "wifi-mac-queue.h"
-#include "channel-access-manager.h"
 #include "wifi-mac-trailer.h"
 #include "ap-wifi-mac.h"
-#include "wifi-protection-manager.h"
-#include "wifi-ack-manager.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "

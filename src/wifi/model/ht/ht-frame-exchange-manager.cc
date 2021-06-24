@@ -27,9 +27,6 @@
 #include "ns3/wifi-utils.h"
 #include "ns3/snr-tag.h"
 #include "ns3/ctrl-headers.h"
-#include "ns3/channel-access-manager.h"
-#include "ns3/wifi-protection-manager.h"
-#include "ns3/wifi-ack-manager.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "

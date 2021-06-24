@@ -31,14 +31,15 @@
 #include "wifi-phy.h"
 #include "wifi-tx-timer.h"
 #include "wifi-tx-parameters.h"
+// Needed to compile wave bindings
+#include "ns3/wifi-protection-manager.h"
+#include "ns3/wifi-ack-manager.h"
+#include "channel-access-manager.h"
 
 namespace ns3 {
 
-class ChannelAccessManager;
 struct RxSignalInfo;
-class WifiProtectionManager;
 struct WifiProtection;
-class WifiAckManager;
 struct WifiAcknowledgment;
 
 /**

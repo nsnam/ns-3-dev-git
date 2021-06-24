@@ -22,13 +22,10 @@
 #include "ns3/abort.h"
 #include "he-frame-exchange-manager.h"
 #include "he-configuration.h"
-#include "ns3/wifi-protection-manager.h"
-#include "ns3/wifi-ack-manager.h"
 #include "ns3/recipient-block-ack-agreement.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/sta-wifi-mac.h"
 #include "multi-user-scheduler.h"
-#include "ns3/channel-access-manager.h"
 #include "ns3/snr-tag.h"
 #include "he-phy.h"
 #include <algorithm>

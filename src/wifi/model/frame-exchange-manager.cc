@@ -21,12 +21,9 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "frame-exchange-manager.h"
-#include "channel-access-manager.h"
 #include "wifi-utils.h"
 #include "snr-tag.h"
 #include "wifi-mac-queue.h"
-#include "wifi-default-protection-manager.h"
-#include "wifi-default-ack-manager.h"
 #include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
