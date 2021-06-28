@@ -26,6 +26,7 @@
 #include "ns3/string.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
 #include "ns3/spectrum-wifi-helper.h"
 #include "ns3/ssid.h"
 #include "ns3/mobility-helper.h"
@@ -36,6 +37,7 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/packet-sink.h"
+#include "ns3/yans-wifi-channel.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/wifi-acknowledgment.h"
 #include "ns3/rng-seed-manager.h"
@@ -74,6 +76,7 @@ int main (int argc, char *argv[])
   std::string dlAckSeqType {"NO-OFDMA"};
   int mcs {-1}; // -1 indicates an unset value
   uint32_t payloadSize = 700; // must fit in the max TX duration when transmitting at MCS 0 over an RU of 26 tones
+  std::string phyModel {"Yans"};
   double minExpectedThroughput {0};
   double maxExpectedThroughput {0};
 
@@ -89,6 +92,7 @@ int main (int argc, char *argv[])
                 dlAckSeqType);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-11)", mcs);
   cmd.AddValue ("payloadSize", "The application payload size in bytes", payloadSize);
+  cmd.AddValue ("phyModel", "PHY model to use when OFDMA is disabled (Yans or Spectrum). If OFDMA is enabled then Spectrum is automatically selected", phyModel);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
@@ -116,6 +120,16 @@ int main (int argc, char *argv[])
   else if (dlAckSeqType != "NO-OFDMA")
     {
       NS_ABORT_MSG ("Invalid DL ack sequence type (must be NO-OFDMA, ACK-SU-FORMAT, MU-BAR or AGGR-MU-BAR)");
+    }
+
+  if (phyModel != "Yans" && phyModel != "Spectrum")
+    {
+      NS_ABORT_MSG ("Invalid PHY model (must be Yans or Spectrum)");
+    }
+  if (dlAckSeqType != "NO-OFDMA")
+    {
+      // SpectrumWifiPhy is required for OFDMA
+      phyModel = "Spectrum";
     }
 
   double prevThroughput [12];
@@ -150,26 +164,10 @@ int main (int argc, char *argv[])
               NodeContainer wifiApNode;
               wifiApNode.Create (1);
 
-              /*
-               * SingleModelSpectrumChannel cannot be used with 802.11ax because two
-               * spectrum models are required: one with 78.125 kHz bands for HE PPDUs
-               * and one with 312.5 kHz bands for, e.g., non-HT PPDUs (for more details,
-               * see issue #408 (CLOSED))
-               */
-              Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
-              Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
-              spectrumChannel->AddPropagationLossModel (lossModel);
-              Ptr<ConstantSpeedPropagationDelayModel> delayModel = CreateObject<ConstantSpeedPropagationDelayModel> ();
-              spectrumChannel->SetPropagationDelayModel (delayModel);
-
-              SpectrumWifiPhyHelper phy;
-              phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
-              phy.SetErrorRateModel ("ns3::TableBasedErrorRateModel",
-                                     "FallbackErrorRateModel", StringValue ("ns3::NistErrorRateModel"));
-              phy.SetChannel (spectrumChannel);
-
+              NetDeviceContainer apDevice, staDevices;
               WifiMacHelper mac;
               WifiHelper wifi;
+
               if (frequency == 6)
                 {
                   wifi.SetStandard (WIFI_STANDARD_80211ax_6GHZ);
@@ -197,26 +195,54 @@ int main (int argc, char *argv[])
 
               Ssid ssid = Ssid ("ns3-80211ax");
 
-              mac.SetType ("ns3::StaWifiMac",
-                           "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
-
-              NetDeviceContainer staDevices;
-              staDevices = wifi.Install (phy, mac, wifiStaNodes);
-
-              if (dlAckSeqType != "NO-OFDMA")
+              if (phyModel == "Spectrum")
                 {
-                  mac.SetMultiUserScheduler ("ns3::RrMultiUserScheduler",
-                                             "EnableUlOfdma", BooleanValue (false),
-                                             "EnableBsrp", BooleanValue (false));
-                }
-              mac.SetType ("ns3::ApWifiMac",
-                           "EnableBeaconJitter", BooleanValue (false),
-                           "Ssid", SsidValue (ssid));
-              phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  /*
+                  * SingleModelSpectrumChannel cannot be used with 802.11ax because two
+                  * spectrum models are required: one with 78.125 kHz bands for HE PPDUs
+                  * and one with 312.5 kHz bands for, e.g., non-HT PPDUs (for more details,
+                  * see issue #408 (CLOSED))
+                  */
+                  Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+                  SpectrumWifiPhyHelper phy;
+                  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
+                  phy.SetChannel (spectrumChannel);
 
-              NetDeviceContainer apDevice;
-              apDevice = wifi.Install (phy, mac, wifiApNode);
+                  mac.SetType ("ns3::StaWifiMac",
+                              "Ssid", SsidValue (ssid));
+                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  staDevices = wifi.Install (phy, mac, wifiStaNodes);
+
+                  if (dlAckSeqType != "NO-OFDMA")
+                    {
+                      mac.SetMultiUserScheduler ("ns3::RrMultiUserScheduler",
+                                                "EnableUlOfdma", BooleanValue (false),
+                                                "EnableBsrp", BooleanValue (false));
+                    }
+                  mac.SetType ("ns3::ApWifiMac",
+                              "EnableBeaconJitter", BooleanValue (false),
+                              "Ssid", SsidValue (ssid));
+                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  apDevice = wifi.Install (phy, mac, wifiApNode);
+                }
+              else
+                {
+                  YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
+                  YansWifiPhyHelper phy;
+                  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
+                  phy.SetChannel (channel.Create ());
+
+                  mac.SetType ("ns3::StaWifiMac",
+                              "Ssid", SsidValue (ssid));
+                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  staDevices = wifi.Install (phy, mac, wifiStaNodes);
+
+                  mac.SetType ("ns3::ApWifiMac",
+                              "EnableBeaconJitter", BooleanValue (false),
+                              "Ssid", SsidValue (ssid));
+                  phy.Set ("ChannelWidth", UintegerValue (channelWidth));
+                  apDevice = wifi.Install (phy, mac, wifiApNode);
+                }
 
               RngSeedManager::SetSeed (1);
               RngSeedManager::SetRun (1);
