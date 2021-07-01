@@ -31,6 +31,7 @@ class PacketBurst;
 class SpectrumChannel;
 class MobilityModel;
 class AntennaModel;
+class PhasedArrayModel;
 class SpectrumValue;
 class SpectrumModel;
 class NetDevice;
@@ -115,6 +116,49 @@ public:
    * @param params the parameters of the signals being received
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params) = 0;
+};
+
+/**
+ * \ingroup spectrum
+ *
+ * Abstract base class for Spectrum-aware PHY layers that use
+ * PhasedArrayModel type of antenna for TX/RX
+ *
+ */
+class PhasedArraySpectrumPhy  : public SpectrumPhy
+{
+
+public:
+  PhasedArraySpectrumPhy ();
+  virtual ~PhasedArraySpectrumPhy ();
+
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * Get the PhasedArrayModel used by the NetDevice for TX/RX.
+   *
+   * @return a Ptr to the PhasedArrayModel used by the NetDevice for TX/RX
+   */
+  virtual Ptr<const PhasedArrayModel> GetPhasedArrayModel () const = 0;
+
+private:
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   */
+  PhasedArraySpectrumPhy (PhasedArraySpectrumPhy const &);
+  /**
+   * \brief Copy constructor
+   *
+   * Defined and unimplemented to avoid misuse
+   * \returns
+   */
+  PhasedArraySpectrumPhy& operator= (PhasedArraySpectrumPhy const &);
 };
 
 } // namespace ns3

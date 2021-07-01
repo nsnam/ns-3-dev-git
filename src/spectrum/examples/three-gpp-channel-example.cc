@@ -51,6 +51,41 @@ static Ptr<ThreeGppPropagationLossModel> m_propagationLossModel; //!< the Propag
 static Ptr<ThreeGppSpectrumPropagationLossModel> m_spectrumLossModel; //!< the SpectrumPropagationLossModel object
 
 /**
+ * \brief A structure that holds the parameters for the
+ * ComputeSnr function. In this way the problem with the limited
+ * number of parameters of method Schedule is avoided.
+ */
+struct ComputeSnrParams
+{
+  Ptr<MobilityModel> txMob; //!< the tx mobility model
+  Ptr<MobilityModel> rxMob; //!< the rx mobility model
+  double txPow; //!< the tx power in dBm
+  double noiseFigure; //!< the noise figure in dB
+  Ptr<PhasedArrayModel> txAntenna; //!< the tx antenna array
+  Ptr<PhasedArrayModel> rxAntenna; //!< the rx antenna array
+
+  /**
+   * \brief Constructor
+   * \param pTxMob the tx mobility model
+   * \param pRxMob the rx mobility model
+   * \param pTxPow the tx power in dBm
+   * \param pNoiseFigure the noise figure in dB
+   * \param pTxAntenna the tx antenna array
+   * \param pRxAntenna the rx antenna array
+   */
+  ComputeSnrParams (Ptr<MobilityModel> pTxMob, Ptr<MobilityModel> pRxMob, double pTxPow, double pNoiseFigure,
+                    Ptr<PhasedArrayModel> pTxAntenna, Ptr<PhasedArrayModel> pRxAntenna)
+  {
+    txMob = pTxMob;
+    rxMob = pRxMob;
+    txPow = pTxPow;
+    noiseFigure = pNoiseFigure;
+    txAntenna = pTxAntenna;
+    rxAntenna = pRxAntenna;
+  }
+};
+
+/**
  * Perform the beamforming using the DFT beamforming method
  * \param thisDevice the device performing the beamforming
  * \param thisAntenna the antenna object associated to thisDevice
@@ -93,13 +128,10 @@ DoBeamforming (Ptr<NetDevice> thisDevice, Ptr<PhasedArrayModel> thisAntenna, Ptr
 
 /**
  * Compute the average SNR
- * \param txMob the tx mobility model
- * \param rxMob the rx mobility model
- * \param txPow the transmitting power in dBm
- * \param noiseFigure the noise figure in dB
+ * \param params A structure that holds the parameters that are needed to perform calculations in ComputeSnr
  */
 static void
-ComputeSnr (Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, double txPow, double noiseFigure)
+ComputeSnr (ComputeSnrParams& params)
 {
   // Create the tx PSD using the LteSpectrumValueHelper
   // 100 RBs corresponds to 18 MHz (1 RB = 180 kHz)
@@ -109,23 +141,39 @@ ComputeSnr (Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, double txPow, do
   {
     activeRbs0[i] = i;
   }
-  Ptr<SpectrumValue> txPsd = LteSpectrumValueHelper::CreateTxPowerSpectralDensity (2100, 100, txPow, activeRbs0);
+  Ptr<SpectrumValue> txPsd = LteSpectrumValueHelper::CreateTxPowerSpectralDensity (2100, 100, params.txPow, activeRbs0);
   Ptr<SpectrumValue> rxPsd = txPsd->Copy ();
   NS_LOG_DEBUG ("Average tx power " << 10*log10(Sum (*txPsd) * 180e3) << " dB");
 
   // create the noise PSD
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (2100, 100, noiseFigure);
+  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (2100, 100, params.noiseFigure);
   NS_LOG_DEBUG ("Average noise power " << 10*log10 (Sum (*noisePsd) * 180e3) << " dB");
 
   // apply the pathloss
-  double propagationGainDb = m_propagationLossModel->CalcRxPower (0, txMob, rxMob);
+  double propagationGainDb = m_propagationLossModel->CalcRxPower (0, params.txMob, params.rxMob);
   NS_LOG_DEBUG ("Pathloss " << -propagationGainDb << " dB");
   double propagationGainLinear = std::pow (10.0, (propagationGainDb) / 10.0);
   *(rxPsd) *= propagationGainLinear;
 
+  if (params.txAntenna == nullptr)
+    {
+      NS_ABORT_MSG("params.txAntenna is nullptr!");
+    }
+  else if (params.rxAntenna == nullptr)
+    {
+      NS_ABORT_MSG("params.rxAntenna is nullptr!");
+    }
+
+
+  Ptr<const PhasedArrayModel> a = params.txAntenna;
+  if (a == nullptr)
+    {
+      NS_ABORT_MSG("params.txAntenna is nullptr!");
+    }
+
   // apply the fast fading and the beamforming gain
-  rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity (rxPsd, txMob, rxMob);
-  NS_LOG_DEBUG ("Average rx power " << 10*log10 (Sum (*rxPsd) * 180e3) << " dB");
+  rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity (rxPsd, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
+  NS_LOG_DEBUG ("Average rx power " << 10 * log10 (Sum (*rxPsd) * 180e3) << " dB");
 
   // compute the SNR
   NS_LOG_DEBUG ("Average SNR " << 10 * log10 (Sum (*rxPsd) / Sum (*noisePsd)) << " dB");
@@ -231,17 +279,13 @@ main (int argc, char *argv[])
   Ptr<PhasedArrayModel> txAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
   Ptr<PhasedArrayModel> rxAntenna = CreateObjectWithAttributes<UniformPlanarArray> ("NumColumns", UintegerValue (2), "NumRows", UintegerValue (2));
 
-  // initialize the devices in the ThreeGppSpectrumPropagationLossModel
-  m_spectrumLossModel->AddDevice (txDev, txAntenna);
-  m_spectrumLossModel->AddDevice (rxDev, rxAntenna);
-
   // set the beamforming vectors
   DoBeamforming (txDev, txAntenna, rxDev);
   DoBeamforming (rxDev, rxAntenna, txDev);
 
   for (int i = 0; i < floor (simTime / timeRes); i++)
   {
-    Simulator::Schedule (MilliSeconds (timeRes*i), &ComputeSnr, txMob, rxMob, txPow, noiseFigure);
+    Simulator::Schedule (MilliSeconds (timeRes*i), &ComputeSnr, ComputeSnrParams (txMob, rxMob, txPow, noiseFigure, txAntenna, rxAntenna));
   }
 
   Simulator::Run ();

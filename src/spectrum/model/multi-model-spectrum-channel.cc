@@ -269,6 +269,19 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 
           if ((*rxPhyIterator) != txParams->txPhy)
             {
+              Ptr<NetDevice> rxNetDevice = (*rxPhyIterator)->GetDevice ();
+              Ptr<NetDevice> txNetDevice = txParams->txPhy->GetDevice ();
+
+              if (rxNetDevice && txNetDevice)
+                {
+                  // we assume that devices are attached to a node
+                  if (rxNetDevice->GetNode()->GetId() == txNetDevice->GetNode()->GetId())
+                    {
+                      NS_LOG_DEBUG ("Skipping the pathloss calculation among different antennas of the same node, not supported yet by any pathloss model in ns-3.");
+                      continue;
+                    }
+                }
+
               NS_LOG_LOGIC ("copying signal parameters " << txParams);
               Ptr<SpectrumSignalParameters> rxParams = txParams->Copy ();
               rxParams->psd = Copy<SpectrumValue> (convertedTxPowerSpectrum);
@@ -320,6 +333,21 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                     {
                       rxParams->psd = m_spectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams->psd, txMobility, receiverMobility);
                     }
+                  else if (m_phasedArraySpectrumPropagationLoss)
+                    {
+                      // they cannot be combined, this case is not supported yet by any propagation model in ns-3
+                      NS_ASSERT_MSG (rxParams->txAntenna == nullptr && rxAntenna == nullptr, " Either AntennaModel or PhasedArrayModel can be used on a pair of TX/RX device");
+
+                      Ptr<PhasedArraySpectrumPhy> txPhasedArraySpectrumPhy = DynamicCast<PhasedArraySpectrumPhy> (txParams->txPhy);
+                      Ptr<PhasedArraySpectrumPhy> rxPhasedArraySpectrumPhy = DynamicCast<PhasedArraySpectrumPhy> (*rxPhyIterator);
+
+                      NS_ASSERT_MSG (txPhasedArraySpectrumPhy && rxPhasedArraySpectrumPhy, "PhasedArraySpectrumPhy should be installed at both TX and RX in order to use PhasedArraySpectrumPropagationLoss.");
+                      Ptr<const PhasedArrayModel> txPhasedArrayModel = txPhasedArraySpectrumPhy->GetPhasedArrayModel ();
+                      Ptr<const PhasedArrayModel> rxPhasedArrayModel = rxPhasedArraySpectrumPhy->GetPhasedArrayModel ();
+                      NS_ASSERT_MSG (txPhasedArrayModel && rxPhasedArrayModel, "PhasedArrayModel instances should be installed at both TX and RX SpectrumPhy in order to use PhasedArraySpectrumPropagationLoss.");
+
+                      rxParams->psd = m_phasedArraySpectrumPropagationLoss->CalcRxPowerSpectralDensity (rxParams->psd, txMobility, receiverMobility, txPhasedArrayModel, rxPhasedArrayModel);
+                     }
 
                   if (m_propagationDelay)
                     {
@@ -327,11 +355,10 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                     }
                 }
 
-              Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
-              if (netDev)
+              if (rxNetDevice)
                 {
                   // the receiver has a NetDevice, so we expect that it is attached to a Node
-                  uint32_t dstNode =  netDev->GetNode ()->GetId ();
+                  uint32_t dstNode = rxNetDevice->GetNode ()->GetId ();
                   Simulator::ScheduleWithContext (dstNode, delay, &MultiModelSpectrumChannel::StartRx, this,
                                                   rxParams, *rxPhyIterator);
                 }

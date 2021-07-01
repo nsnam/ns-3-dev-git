@@ -27,6 +27,7 @@
 #include <ns3/channel.h>
 #include <ns3/spectrum-signal-parameters.h>
 #include <ns3/spectrum-propagation-loss-model.h>
+#include <ns3/phased-array-spectrum-propagation-loss-model.h>
 #include <ns3/propagation-delay-model.h>
 #include <ns3/propagation-loss-model.h>
 #include <ns3/spectrum-phy.h>
@@ -84,6 +85,13 @@ public:
   void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
 
   /**
+   * Add the frequency-dependent propagation loss model
+   * that is compapatible with the phased antenna arrays at the TX and RX
+   * \param loss a pointer to the propagation loss model to be used.
+   */
+  void AddPhasedArraySpectrumPropagationLossModel (Ptr<PhasedArraySpectrumPropagationLossModel> loss);
+
+  /**
    * Set the propagation delay model to be used
    * \param delay Ptr to the propagation delay model to be used.
    */
@@ -94,6 +102,13 @@ public:
    * \returns a pointer to the propagation loss model.
    */
   Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
+
+  /**
+   * Get the frequency-dependent propagation loss model that is
+   * compatible with the phased antenna arrays at TX and RX
+   * \returns a pointer to the propagation loss model.
+   */
+  Ptr<PhasedArraySpectrumPropagationLossModel> GetPhasedArraySpectrumPropagationLossModel (void);
 
   /**
    * Get the propagation loss model.
@@ -197,6 +212,11 @@ protected:
    * Frequency-dependent propagation loss model to be used with this channel.
    */
   Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLoss;
+
+  /**
+   * Frequency-dependent propagation loss model to be used with this channel.
+   */
+  Ptr<PhasedArraySpectrumPropagationLossModel> m_phasedArraySpectrumPropagationLoss;
 
 
 };

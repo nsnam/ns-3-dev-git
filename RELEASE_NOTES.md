@@ -26,8 +26,11 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 ### New user-visible features
 
+- (spectrum) ThreeGppSpectrumPropagationLossModel and ThreeGppChannelModel now support multiple PhasedArrayModel instances per device. This feature can be used to implement MIMO.
 ### Bugs fixed
 
+- (spectrum) Fix condition for channel matrix update in ThreeGppChannelModel (left and right operand were pointing to the same object)
+- (spectrum) Assign stream to random variable for doppler term in ThreeGppChannelModel (moved from ThreeGppSpectrumPropagationLossModel)
 - (wifi) #467 - WiFi: Failed association process
 - (wifi) #468 - WiFi: Wrong txDuration for trigger frame
 - (wifi) #475 - Wi-Fi: Assert when sending OFDMA DL to STAs with different TIDs

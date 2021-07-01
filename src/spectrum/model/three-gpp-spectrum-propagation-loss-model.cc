@@ -52,7 +52,6 @@ ThreeGppSpectrumPropagationLossModel::~ThreeGppSpectrumPropagationLossModel ()
 void
 ThreeGppSpectrumPropagationLossModel::DoDispose ()
 {
-  m_deviceAntennaMap.clear ();
   m_longTermMap.clear ();
   m_channelModel->Dispose ();
   m_channelModel = nullptr;
@@ -62,7 +61,7 @@ TypeId
 ThreeGppSpectrumPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ThreeGppSpectrumPropagationLossModel")
-    .SetParent<SpectrumPropagationLossModel> ()
+    .SetParent<PhasedArraySpectrumPropagationLossModel> ()
     .SetGroupName ("Spectrum")
     .AddConstructor<ThreeGppSpectrumPropagationLossModel> ()
     .AddAttribute ("ChannelModel",
@@ -92,14 +91,6 @@ Ptr<MatrixBasedChannelModel>
 ThreeGppSpectrumPropagationLossModel::GetChannelModel () const
 {
   return m_channelModel;
-}
-
-void
-ThreeGppSpectrumPropagationLossModel::AddDevice (Ptr<NetDevice> n, Ptr<const PhasedArrayModel> a)
-{
-  NS_ASSERT_MSG (m_deviceAntennaMap.find (n->GetNode ()->GetId ()) == m_deviceAntennaMap.end (),
-                 "Device is already present in the map");
-  m_deviceAntennaMap.insert (std::make_pair (n->GetNode ()->GetId (), a));
 }
 
 double
@@ -253,9 +244,7 @@ ThreeGppSpectrumPropagationLossModel::GetLongTerm (uint32_t aId, uint32_t bId,
     }
 
   // compute the long term key, the key is unique for each tx-rx pair
-  uint32_t x1 = std::min (aId, bId);
-  uint32_t x2 = std::max (aId, bId);
-  uint32_t longTermId = MatrixBasedChannelModel::GetKey (x1, x2);
+  uint64_t longTermId = MatrixBasedChannelModel::GetKey (aId, bId);
 
   bool update = false; // indicates whether the long term has to be updated
   bool notFound = false; // indicates if the long term has not been computed yet
@@ -302,7 +291,9 @@ ThreeGppSpectrumPropagationLossModel::GetLongTerm (uint32_t aId, uint32_t bId,
 Ptr<SpectrumValue>
 ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                                     Ptr<const MobilityModel> a,
-                                                                    Ptr<const MobilityModel> b) const
+                                                                    Ptr<const MobilityModel> b,
+                                                                    Ptr<const PhasedArrayModel> aPhasedArrayModel,
+                                                                    Ptr<const PhasedArrayModel> bPhasedArrayModel) const
 {
   NS_LOG_FUNCTION (this);
   uint32_t aId = a->GetObject<Node> ()->GetId (); // id of the node a
@@ -314,20 +305,18 @@ ThreeGppSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity (Ptr<const Sp
   Ptr<SpectrumValue> rxPsd = Copy<SpectrumValue> (txPsd);
 
   // retrieve the antenna of device a
-  NS_ASSERT_MSG (m_deviceAntennaMap.find (aId) != m_deviceAntennaMap.end (), "Antenna not found for node " << aId);
-  Ptr<const PhasedArrayModel> aAntenna = m_deviceAntennaMap.at (aId);
-  NS_LOG_DEBUG ("a node " << a->GetObject<Node> () << " antenna " << aAntenna);
+  NS_ASSERT_MSG (aPhasedArrayModel, "Antenna not found for node " << aId);
+  NS_LOG_DEBUG ("a node " << a->GetObject<Node> () << " antenna " << aPhasedArrayModel);
 
   // retrieve the antenna of the device b
-  NS_ASSERT_MSG (m_deviceAntennaMap.find (bId) != m_deviceAntennaMap.end (), "Antenna not found for device " << bId);
-  Ptr<const PhasedArrayModel> bAntenna = m_deviceAntennaMap.at (bId);
-  NS_LOG_DEBUG ("b node " << bId << " antenna " << bAntenna);
+  NS_ASSERT_MSG (bPhasedArrayModel, "Antenna not found for device " << bId);
+  NS_LOG_DEBUG ("b node " << bId << " antenna " << bPhasedArrayModel);
 
-  Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix = m_channelModel->GetChannel (a, b, aAntenna, bAntenna);
+  Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix = m_channelModel->GetChannel (a, b, aPhasedArrayModel, bPhasedArrayModel);
 
   // get the precoding and combining vectors
-  PhasedArrayModel::ComplexVector aW = aAntenna->GetBeamformingVector ();
-  PhasedArrayModel::ComplexVector bW = bAntenna->GetBeamformingVector ();
+  PhasedArrayModel::ComplexVector aW = aPhasedArrayModel->GetBeamformingVector ();
+  PhasedArrayModel::ComplexVector bW = bPhasedArrayModel->GetBeamformingVector ();
 
   // retrieve the long term component
   PhasedArrayModel::ComplexVector longTerm = GetLongTerm (aId, bId, channelMatrix, aW, bW);

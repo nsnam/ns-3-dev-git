@@ -136,6 +136,18 @@ SpectrumChannel::AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossMod
 }
 
 void
+SpectrumChannel::AddPhasedArraySpectrumPropagationLossModel (Ptr<PhasedArraySpectrumPropagationLossModel> loss)
+{
+  NS_LOG_FUNCTION (this << loss);
+  if (m_phasedArraySpectrumPropagationLoss)
+    {
+      loss->SetNext (m_phasedArraySpectrumPropagationLoss);
+    }
+  m_phasedArraySpectrumPropagationLoss = loss;
+}
+
+
+void
 SpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel> delay)
 {
   NS_ASSERT (m_propagationDelay == 0);
@@ -147,6 +159,13 @@ SpectrumChannel::GetSpectrumPropagationLossModel (void)
 {
   NS_LOG_FUNCTION (this);
   return m_spectrumPropagationLoss;
+}
+
+Ptr<PhasedArraySpectrumPropagationLossModel>
+SpectrumChannel::GetPhasedArraySpectrumPropagationLossModel (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_phasedArraySpectrumPropagationLoss;
 }
 
 Ptr<PropagationLossModel>

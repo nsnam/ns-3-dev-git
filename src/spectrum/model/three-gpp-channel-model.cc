@@ -1064,9 +1064,7 @@ ThreeGppChannelModel::GetChannel (Ptr<const MobilityModel> aMob,
   NS_LOG_FUNCTION (this);
 
   // Compute the channel key. The key is reciprocal, i.e., key (a, b) = key (b, a)
-  uint32_t x1 = std::min (aMob->GetObject<Node> ()->GetId (), bMob->GetObject<Node> ()->GetId ());
-  uint32_t x2 = std::max (aMob->GetObject<Node> ()->GetId (), bMob->GetObject<Node> ()->GetId ());
-  uint32_t channelId = GetKey (x1, x2);
+  uint32_t channelId = GetKey (aMob->GetObject<Node> ()->GetId (), bMob->GetObject<Node> ()->GetId ());
 
   // retrieve the channel condition
   Ptr<const ChannelCondition> condition = m_channelConditionModel->GetChannelCondition (aMob, bMob);
@@ -1647,6 +1645,7 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
                       std::tie (rxFieldPatternPhi, rxFieldPatternTheta) = uAntenna->GetElementFieldPattern (Angles (rayAoaRadian[nIndex][mIndex], rayZoaRadian[nIndex][mIndex]));
                       std::tie (txFieldPatternPhi, txFieldPatternTheta) = sAntenna->GetElementFieldPattern (Angles (rayAodRadian[nIndex][mIndex], rayZodRadian[nIndex][mIndex]));
 
+                      NS_ASSERT (4 <= initialPhase.size ());
                       rays += (std::complex<double> (cos (initialPhase[0]), sin (initialPhase[0])) * rxFieldPatternTheta * txFieldPatternTheta +
                                std::complex<double> (cos (initialPhase[1]), sin (initialPhase[1])) * std::sqrt (1 / k) * rxFieldPatternTheta * txFieldPatternPhi +
                                std::complex<double> (cos (initialPhase[2]), sin (initialPhase[2])) * std::sqrt (1 / k) * rxFieldPatternPhi * txFieldPatternTheta +

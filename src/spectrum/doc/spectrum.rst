@@ -123,7 +123,7 @@ The module provides two ``SpectrumChannel`` implementations:
 ``SingleModelSpectrumChannel`` and ``MultiModelSpectrumChannel``. They
 both provide this functionality:
 
- * Propagation loss modeling, in two forms:
+ * Propagation loss modeling, in three forms:
 
    - you can plug models based on ``PropagationLossModel`` on these
      channels. Only linear models (where the loss value does not
@@ -135,6 +135,14 @@ both provide this functionality:
      channels. These models can have frequency-dependent loss, i.e.,
      a separate loss value is calculated and applied to each component
      of the power spectral density.
+
+   - you can plug models based on ``PhasedArraySpectrumPropagationLossModel`` 
+     on these channels. These models can have frequency-dependent loss, i.e.,
+     a separate loss value is calculated and applied to each component
+     of the power spectral density. Additionally, these models support 
+     the phased antenna array at the transmitter and the receiver, i.e., 
+     ns-3 antenna type ``PhasedArrayModel``.
+
 
  * Propagation delay modeling, by plugging a model based on
    ``PropagationDelayModel``. The delay is independent of frequency and
@@ -642,26 +650,24 @@ ThreeGppChannelModel and ThreeGppSpectrumPropagationLossModel.
 ThreeGppSpectrumPropagationLossModel
 ####################################
 
-The class ThreeGppSpectrumPropagationLossModel extends the SpectrumPropagationLossModel
-interface and enables the modeling of frequency
-dependent propagation phenomena. The main method is DoCalcRxPowerSpectralDensity,
-which takes as input the power spectral density (PSD) of the transmitted signal,
-the mobility models of the transmitting node and receiving node, and
-returns the PSD of the received signal.
+The class ThreeGppSpectrumPropagationLossModel implements the 
+PhasedArraySpectrumPropagationLossModel interface and enables the modeling of frequency
+dependent propagation phenomena while taking into account the specific pair of the 
+antenna array at the transmitter and the receiver. The main method is 
+DoCalcRxPowerSpectralDensity, which takes as input the power spectral density (PSD) 
+of the transmitted signal, the mobility models of the transmitting node and receiving node, 
+and the antenna array of the transmitting node, and of the receiving node. 
+Finally, it returns the PSD of the received signal.
 
 Procedure used to compute the PSD of to compute the PSD of the received signal:
 
 1. Retrieve the beamforming vectors
 To account for the beamforming, ThreeGppSpectrumPropagationLossModel has to
 retrieve the beamforming vectors of the transmitting and receiving antennas.
-The method DoCalcRxPowerSpectralDensity uses m_deviceAntennaMap to obtain the
-antenna objects associated to the transmitting and receiving devices, and calls
-the method GetCurrentBeamformingVector to retrieve the beamforming vectors.
-For each device using the channel, the m_deviceAntennaMap contains the associated
-antenna object of type PhasedArrayModel. Since the mapping is one-to-one,
-the model supports a single antenna object for each device.
-The m_deviceAntennaMap has to be initialized by inserting the device-antenna
-pairs using the method AddDevice.
+The method DoCalcRxPowerSpectralDensity uses the antenna objects 
+that are passed as parameters for both the transmitting and receiving devices, 
+and calls the method GetCurrentBeamformingVector to retrieve the beamforming vectors 
+of these antenna objects.
 
 2. Retrieve the channel matrix
 The ThreeGppSpectrumPropagationLossModel relies on the ThreeGppChannelModel class

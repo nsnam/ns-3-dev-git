@@ -56,11 +56,15 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>The helpers of the NetDevices supporting flow control (PointToPointHelper, CsmaHelper, SimpleNetDeviceHelper, WifiHelper) now provide a <b>DisableFlowControl</b> method to disable flow control. If flow control is disabled, the Traffic Control layer forwards packets down to the NetDevice even if there is no room for them in the NetDevice queue(s)</li>
 <li>Added a new trace source <b>TcDrop</b> in TrafficControlLayer for tracing packets that have been dropped because no queue disc is installed on the device, the device supports flow control and the device queue is full.</li>
+<li>Added a new class <b>PhasedArraySpectrumPropagationLossModel</b>, and its <b>DoCalcRxPowerSpectralDensity</b> function has two additional parameters: TX and RX antenna arrays. Should be inherited by models that need to know antenna arrays in order to calculate RX PSD.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
 <li>internet: Support for Network Simulation Cradle (NSC) TCP has been removed.</li>
 <li>fd-net-device: Support for PlanetLabFdNetDeviceHelper has been removed.</li>
+<li><b>ThreeGppSpectrumPropagationLossModel</b> now inherits <b>PhasedArraySpectrumPropagationLossModel</b>. The modules that use <b>ThreeGppSpectrumPropagationLossModel</b> should implement <b>SpectrumPhy::GetAntenna</b> that will return the instance of <b>PhasedArrayModel</b>.</li>
+<li><b>AddDevice</b> function is removed from <b>ThreeGppSpectrumPropagationLossModel</b> to support multiple arrays per device.</li>
+<li><b>SpectrumPhy</b> function <b>GetRxAntenna</b> is renamed to <b>GetAntenna</b>, and its return value is changed to <b>Ptr<Object></b> instead of <b>Ptr<AntennaModel></b> to support also <b>PhasedArrayModel</b> type of antenna.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

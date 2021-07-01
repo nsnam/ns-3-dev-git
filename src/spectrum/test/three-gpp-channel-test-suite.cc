@@ -346,6 +346,45 @@ ThreeGppChannelMatrixUpdateTest::DoRun (void)
 }
 
 /**
+ * \brief A structure that holds the parameters for the function
+ * CheckLongTermUpdate. In this way the problem with the limited
+ * number of parameters of method Schedule is avoided.
+ */
+struct CheckLongTermUpdateParams
+{
+  Ptr<ThreeGppSpectrumPropagationLossModel> lossModel; //!< the ThreeGppSpectrumPropagationLossModel object used to compute the rx PSD
+  Ptr<SpectrumValue> txPsd; //!< the PSD of the tx signal
+  Ptr<MobilityModel> txMob; //!< the mobility model of the tx device
+  Ptr<MobilityModel> rxMob; //!< the mobility model of the rx device
+  Ptr<SpectrumValue> rxPsdOld; //!< the previously received PSD
+  Ptr<PhasedArrayModel> txAntenna; //!< the antenna array of the tx device
+  Ptr<PhasedArrayModel> rxAntenna; //!< the antenna array of the rx device
+
+  /**
+   * \brief Constructor
+   * \param pLossModel the ThreeGppSpectrumPropagationLossModel object used to compute the rx PSD
+   * \param pTxPsd the PSD of the tx signal
+   * \param pTxMob the tx mobility model
+   * \param pRxMob the rx mobility model
+   * \param pRxPsdOld the previously received PSD
+   * \param pTxAntenna the tx antenna array
+   * \param pRxAntenna the rx antenna array
+   */
+  CheckLongTermUpdateParams (Ptr<ThreeGppSpectrumPropagationLossModel> pLossModel, Ptr<SpectrumValue> pTxPsd,
+                             Ptr<MobilityModel> pTxMob, Ptr<MobilityModel> pRxMob, Ptr<SpectrumValue> pRxPsdOld,
+                             Ptr<PhasedArrayModel> pTxAntenna, Ptr<PhasedArrayModel> pRxAntenna)
+  {
+    lossModel = pLossModel;
+    txPsd = pTxPsd;
+    txMob = pTxMob;
+    rxMob = pRxMob;
+    rxPsdOld = pRxPsdOld;
+    txAntenna = pTxAntenna;
+    rxAntenna = pRxAntenna;
+  }
+};
+
+/**
  * Test case for the ThreeGppSpectrumPropagationLossModelTest class.
  * 1) checks if the long term components for the direct and the reverse link
  *    are the same
@@ -384,14 +423,9 @@ private:
   /**
    * Test of the long term component is correctly updated when the channel
    * matrix is recomputed
-   * \param lossModel the ThreeGppSpectrumPropagationLossModel object used to
-   *        compute the rx PSD
-   * \param txPsd the PSD of the transmitted signal
-   * \param txMob the mobility model of the tx device
-   * \param rxMob the mobility model of the rx device
-   * \param rxPsdOld the previously received PSD
+   * \param params a structure that contains the set of parameters needed by CheckLongTermUpdate in order to perform calculations
    */
-  void CheckLongTermUpdate (Ptr<ThreeGppSpectrumPropagationLossModel> lossModel, Ptr<SpectrumValue> txPsd, Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, Ptr<SpectrumValue> rxPsdOld);
+  void CheckLongTermUpdate (CheckLongTermUpdateParams &params);
 
   /**
    * Checks if two PSDs are equal
@@ -440,10 +474,10 @@ ThreeGppSpectrumPropagationLossModelTest::ArePsdEqual (Ptr<SpectrumValue> first,
 }
 
 void
-ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate (Ptr<ThreeGppSpectrumPropagationLossModel> lossModel, Ptr<SpectrumValue> txPsd, Ptr<MobilityModel> txMob, Ptr<MobilityModel> rxMob, Ptr<SpectrumValue> rxPsdOld)
+ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate (CheckLongTermUpdateParams &params)
 {
-  Ptr<SpectrumValue> rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, txMob, rxMob);
-  NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (rxPsdOld, rxPsdNew),  false, "The long term is not updated when the channel matrix is recomputed");
+  Ptr<SpectrumValue> rxPsdNew = params.lossModel->DoCalcRxPowerSpectralDensity (params.txPsd, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);
+  NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (params.rxPsdOld, rxPsdNew),  false, "The long term is not updated when the channel matrix is recomputed");
 }
 
 void
@@ -498,10 +532,6 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
                                                                                     "NumRows", UintegerValue (rxAntennaElements [1]),
                                                                                     "AntennaElement", PointerValue(CreateObject<IsotropicAntennaModel> ()));
   
-  // initialize ThreeGppSpectrumPropagationLossModel
-  lossModel->AddDevice (txDev, txAntenna);
-  lossModel->AddDevice (rxDev, rxAntenna);
-
   // set the beamforming vectors
   DoBeamforming (txDev, txAntenna, rxDev, rxAntenna);
   DoBeamforming (rxDev, rxAntenna, txDev, txAntenna);
@@ -513,10 +543,10 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
   Ptr<SpectrumValue> txPsd =  sf.CreateTxPowerSpectralDensity (txPower, channelNumber);
 
   // compute the rx psd
-  Ptr<SpectrumValue> rxPsdOld = lossModel->DoCalcRxPowerSpectralDensity (txPsd, txMob, rxMob);
+  Ptr<SpectrumValue> rxPsdOld = lossModel->DoCalcRxPowerSpectralDensity (txPsd, txMob, rxMob, txAntenna, rxAntenna);
 
   // 1) check that the rx PSD is equal for both the direct and the reverse channel
-  Ptr<SpectrumValue> rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob);
+  Ptr<SpectrumValue> rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob, rxAntenna, txAntenna);
   NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (rxPsdOld, rxPsdNew),  true, "The long term for the direct and the reverse channel are different");
 
   // 2) check if the long term is updated when changing the BF vector
@@ -526,7 +556,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
   txBfVector [0] = std::complex<double> (0.0, 0.0);
   txAntenna->SetBeamformingVector (txBfVector);
 
-  rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob);
+  rxPsdNew = lossModel->DoCalcRxPowerSpectralDensity (txPsd, rxMob, txMob, rxAntenna, txAntenna);
   NS_TEST_ASSERT_MSG_EQ (ArePsdEqual (rxPsdOld, rxPsdNew),  false, "Changing the BF vectors the rx PSD does not change");
 
   // update rxPsdOld
@@ -534,7 +564,7 @@ ThreeGppSpectrumPropagationLossModelTest::DoRun ()
 
   // 3) check if the long term is updated when the channel matrix is recomputed
   Simulator::Schedule (MilliSeconds (101), &ThreeGppSpectrumPropagationLossModelTest::CheckLongTermUpdate,
-                       this, lossModel, txPsd, txMob, rxMob, rxPsdOld);
+                       this, CheckLongTermUpdateParams (lossModel, txPsd, txMob, rxMob, rxPsdOld, txAntenna, rxAntenna));
 
   Simulator::Run ();
   Simulator::Destroy ();

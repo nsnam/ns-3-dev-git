@@ -22,7 +22,7 @@
 #ifndef THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 #define THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 
-#include "ns3/spectrum-propagation-loss-model.h"
+#include "ns3/phased-array-spectrum-propagation-loss-model.h"
 #include <complex.h>
 #include <map>
 #include <unordered_map>
@@ -49,7 +49,7 @@ class ChannelCondition;
  * \see PhasedArrayModel
  * \see ChannelCondition
  */
-class ThreeGppSpectrumPropagationLossModel : public SpectrumPropagationLossModel
+class ThreeGppSpectrumPropagationLossModel : public PhasedArraySpectrumPropagationLossModel
 {
 public:
   /**
@@ -81,13 +81,6 @@ public:
    * \return a pointer to the object implementing the MatrixBasedChannelModel interface
    */
   Ptr<MatrixBasedChannelModel> GetChannelModel () const;
-
-  /**
-   * Add a device-antenna pair
-   * \param n a pointer to the NetDevice
-   * \param a a pointer to the associated PhasedArrayModel
-   */
-  void AddDevice (Ptr<NetDevice> n, Ptr<const PhasedArrayModel> a);
 
   /**
    * Sets the value of an attribute belonging to the associated
@@ -122,12 +115,15 @@ public:
    * \param txPsd tx PSD
    * \param a first node mobility model
    * \param b second node mobility model
-   *
+   * \param aPhasedArrayModel the antenna array of the first node
+   * \param bPhasedArrayModel the antenna array of the second node
    * \return the received PSD
    */
   Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                    Ptr<const MobilityModel> a,
-                                                   Ptr<const MobilityModel> b) const override;
+                                                   Ptr<const MobilityModel> b,
+                                                   Ptr<const PhasedArrayModel> aPhasedArrayModel,
+                                                   Ptr<const PhasedArrayModel> bPhasedArrayModel) const override;
 
 private:
   /**
@@ -188,8 +184,7 @@ private:
                                           Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
                                           const Vector &sSpeed, const Vector &uSpeed) const;
 
-  std::unordered_map <uint32_t, Ptr<const PhasedArrayModel> > m_deviceAntennaMap; //!< map containig the <node, antenna> associations
-  mutable std::unordered_map < uint32_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
+  mutable std::unordered_map < uint64_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
   Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
 
   // Variable used to compute the additional Doppler contribution for the delayed

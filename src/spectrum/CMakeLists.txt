@@ -27,6 +27,7 @@ set(source_files
     model/spectrum-model.cc
     model/spectrum-phy.cc
     model/spectrum-propagation-loss-model.cc
+    model/phased-array-spectrum-propagation-loss-model.cc
     model/spectrum-signal-parameters.cc
     model/spectrum-value.cc
     model/three-gpp-channel-model.cc
@@ -64,6 +65,7 @@ set(header_files
     model/spectrum-model.h
     model/spectrum-phy.h
     model/spectrum-propagation-loss-model.h
+    model/phased-array-spectrum-propagation-loss-model.h
     model/spectrum-signal-parameters.h
     model/spectrum-value.h
     model/three-gpp-channel-model.h

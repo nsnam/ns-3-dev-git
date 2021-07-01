@@ -112,14 +112,15 @@ public:
                                                Ptr<const PhasedArrayModel> bAntenna) = 0;
   
   /**
-   * Calculate the channel key using the Cantor function
-   * \param x1 first value
-   * \param x2 second value
-   * \return \f$ (((x1 + x2) * (x1 + x2 + 1))/2) + x2; \f$
+   * Generate a unique value for the pair of unsigned integer of 32 bits,
+   * where the order does not matter, i.e., the same value will be returned for (a,b) and (b,a).
+   * \param a the first value
+   * \param b the second value
+   * \return return an integer representing a unique value for the pair of values
    */
-  static constexpr uint32_t GetKey (uint32_t x1, uint32_t x2)
+  static uint64_t GetKey (uint32_t a, uint32_t b)
   {
-   return (((x1 + x2) * (x1 + x2 + 1)) / 2) + x2;
+   return (uint64_t) std::min (a, b) << 32 | std::max (a, b);
   }
 
   static const uint8_t AOA_INDEX = 0; //!< index of the AOA value in the m_angle array

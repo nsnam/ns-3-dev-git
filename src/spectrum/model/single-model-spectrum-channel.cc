@@ -110,6 +110,19 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
        rxPhyIterator != m_phyList.end ();
        ++rxPhyIterator)
     {
+      Ptr<NetDevice> rxNetDevice = (*rxPhyIterator)->GetDevice ();
+      Ptr<NetDevice> txNetDevice = txParams->txPhy->GetDevice ();
+
+      if (rxNetDevice && txNetDevice)
+        {
+          // we assume that devices are attached to a node
+          if (rxNetDevice->GetNode()->GetId() == txNetDevice->GetNode()->GetId())
+            {
+              NS_LOG_DEBUG ("Skipping the pathloss calculation among different antennas of the same node, not supported yet by any pathloss model in ns-3.");
+              continue;
+            }
+        }
+
       if ((*rxPhyIterator) != txParams->txPhy)
         {
           Time delay  = MicroSeconds (0);
@@ -170,11 +183,10 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
             }
 
 
-          Ptr<NetDevice> netDev = (*rxPhyIterator)->GetDevice ();
-          if (netDev)
+          if (rxNetDevice)
             {
               // the receiver has a NetDevice, so we expect that it is attached to a Node
-              uint32_t dstNode =  netDev->GetNode ()->GetId ();
+              uint32_t dstNode =  rxNetDevice->GetNode ()->GetId ();
               Simulator::ScheduleWithContext (dstNode, delay, &SingleModelSpectrumChannel::StartRx, this, rxParams, *rxPhyIterator);
             }
           else

@@ -256,7 +256,7 @@ private:
    */
   bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix> channelMatrix, Ptr<const ChannelCondition> channelCondition) const;
 
-  std::unordered_map<uint32_t, Ptr<ThreeGppChannelMatrix> > m_channelMap; //!< map containing the channel realizations
+  std::unordered_map<uint64_t, Ptr<ThreeGppChannelMatrix> > m_channelMap; //!< map containing the channel realizations
   Time m_updatePeriod; //!< the channel update period
   double m_frequency; //!< the operating frequency
   std::string m_scenario; //!< the 3GPP scenario
