@@ -189,7 +189,7 @@ YansErrorRateModel::DoGetChunkSuccessRate (WifiMode mode, const WifiTxVector& tx
       || mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       uint64_t phyRate;
-      if ((mode != txVector.GetMode ()) || (txVector.IsMu () && (staId == SU_STA_ID)))
+      if ((txVector.IsMu () && (staId == SU_STA_ID)) || (mode != txVector.GetMode ()))
         {
           phyRate = mode.GetPhyRate (txVector.GetChannelWidth () >= 40 ? 20 : txVector.GetChannelWidth ()); //This is the PHY header
         }
