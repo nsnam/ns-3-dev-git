@@ -59,8 +59,18 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
 bool
 WifiMode::IsAllowed (uint16_t channelWidth, uint8_t nss) const
 {
+  WifiTxVector txVector;
+  txVector.SetMode (WifiMode (m_uid));
+  txVector.SetChannelWidth (channelWidth);
+  txVector.SetNss (nss);
+  return IsAllowed (txVector);
+}
+
+bool
+WifiMode::IsAllowed (const WifiTxVector& txVector) const
+{
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->IsModeAllowedCallback (channelWidth, nss);
+  return item->IsAllowedCallback (txVector);
 }
 
 uint64_t
@@ -72,15 +82,19 @@ WifiMode::GetPhyRate (uint16_t channelWidth) const
 uint64_t
 WifiMode::GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
-  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->GetPhyRateCallback (channelWidth, guardInterval, nss);
+  WifiTxVector txVector;
+  txVector.SetMode (WifiMode (m_uid));
+  txVector.SetChannelWidth (channelWidth);
+  txVector.SetGuardInterval (guardInterval);
+  txVector.SetNss (nss);
+  return GetPhyRate (txVector);
 }
 
 uint64_t
 WifiMode::GetPhyRate (const WifiTxVector& txVector, uint16_t staId) const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->GetPhyRateFromTxVectorCallback (txVector, staId);
+  return item->GetPhyRateCallback (txVector, staId);
 }
 
 uint64_t
@@ -93,15 +107,19 @@ uint64_t
 WifiMode::GetDataRate (const WifiTxVector& txVector, uint16_t staId) const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->GetDataRateFromTxVectorCallback (txVector, staId);
+  return item->GetDataRateCallback (txVector, staId);
 }
 
 uint64_t
 WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
   NS_ASSERT (nss <= 8);
-  WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->GetDataRateCallback (channelWidth, guardInterval, nss);
+  WifiTxVector txVector;
+  txVector.SetMode (WifiMode (m_uid));
+  txVector.SetChannelWidth (channelWidth);
+  txVector.SetGuardInterval (guardInterval);
+  txVector.SetNss (nss);
+  return GetDataRate (txVector);
 }
 
 WifiCodeRate
@@ -245,10 +263,8 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
                                  CodeRateCallback codeRateCallback,
                                  ConstellationSizeCallback constellationSizeCallback,
                                  PhyRateCallback phyRateCallback,
-                                 PhyRateFromTxVectorCallback phyRateFromTxVectorCallback,
                                  DataRateCallback dataRateCallback,
-                                 DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
-                                 ModeAllowedCallback isModeAllowedCallback)
+                                 AllowedCallback isAllowedCallback)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -274,11 +290,9 @@ WifiModeFactory::CreateWifiMode (std::string uniqueName,
   item->GetCodeRateCallback = codeRateCallback;
   item->GetConstellationSizeCallback = constellationSizeCallback;
   item->GetPhyRateCallback = phyRateCallback;
-  item->GetPhyRateFromTxVectorCallback = phyRateFromTxVectorCallback;
   item->GetDataRateCallback = dataRateCallback;
-  item->GetDataRateFromTxVectorCallback = dataRateFromTxVectorCallback;
   item->GetNonHtReferenceRateCallback = MakeNullCallback<uint64_t> ();
-  item->IsModeAllowedCallback = isModeAllowedCallback;
+  item->IsAllowedCallback = isAllowedCallback;
 
   NS_ASSERT (modClass < WIFI_MOD_CLASS_HT);
   //fill unused MCS item with a dummy value
@@ -294,11 +308,9 @@ WifiModeFactory::CreateWifiMcs (std::string uniqueName,
                                 CodeRateCallback codeRateCallback,
                                 ConstellationSizeCallback constellationSizeCallback,
                                 PhyRateCallback phyRateCallback,
-                                PhyRateFromTxVectorCallback phyRateFromTxVectorCallback,
                                 DataRateCallback dataRateCallback,
-                                DataRateFromTxVectorCallback dataRateFromTxVectorCallback,
                                 NonHtReferenceRateCallback nonHtReferenceRateCallback,
-                                ModeAllowedCallback isModeAllowedCallback)
+                                AllowedCallback isAllowedCallback)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
@@ -312,11 +324,9 @@ WifiModeFactory::CreateWifiMcs (std::string uniqueName,
   item->GetCodeRateCallback = codeRateCallback;
   item->GetConstellationSizeCallback = constellationSizeCallback;
   item->GetPhyRateCallback = phyRateCallback;
-  item->GetPhyRateFromTxVectorCallback = phyRateFromTxVectorCallback;
   item->GetDataRateCallback = dataRateCallback;
-  item->GetDataRateFromTxVectorCallback = dataRateFromTxVectorCallback;
   item->GetNonHtReferenceRateCallback = nonHtReferenceRateCallback;
-  item->IsModeAllowedCallback = isModeAllowedCallback;
+  item->IsAllowedCallback = isAllowedCallback;
 
   //fill unused items with dummy values
   item->isMandatory = false;
@@ -399,12 +409,10 @@ WifiModeFactory::GetFactory (void)
       item->mcsValue = 0;
       item->GetCodeRateCallback = MakeNullCallback<WifiCodeRate> ();
       item->GetConstellationSizeCallback = MakeNullCallback<uint16_t> ();
-      item->GetPhyRateCallback = MakeNullCallback<uint64_t, uint16_t, uint16_t, uint8_t> ();
-      item->GetPhyRateFromTxVectorCallback = MakeNullCallback<uint64_t, const WifiTxVector&, uint16_t> ();
-      item->GetDataRateCallback = MakeNullCallback<uint64_t, uint16_t, uint16_t, uint8_t> ();
-      item->GetDataRateFromTxVectorCallback = MakeNullCallback<uint64_t, const WifiTxVector&, uint16_t> ();
+      item->GetPhyRateCallback = MakeNullCallback<uint64_t, const WifiTxVector&, uint16_t> ();
+      item->GetDataRateCallback = MakeNullCallback<uint64_t, const WifiTxVector&, uint16_t> ();
       item->GetNonHtReferenceRateCallback = MakeNullCallback<uint64_t> ();
-      item->IsModeAllowedCallback = MakeNullCallback<bool, uint16_t, uint8_t> ();
+      item->IsAllowedCallback = MakeNullCallback<bool, const WifiTxVector&> ();
       isFirstTime = false;
     }
   return &factory;

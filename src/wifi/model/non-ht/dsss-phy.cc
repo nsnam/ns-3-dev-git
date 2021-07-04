@@ -306,11 +306,9 @@ DsssPhy::CreateDsssMode (std::string uniqueName,
                                           true,
                                           MakeBoundCallback (&GetCodeRate, uniqueName),
                                           MakeBoundCallback (&GetConstellationSize, uniqueName),
-                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass), //PhyRate is equivalent to DataRate
                                           MakeCallback (&GetDataRateFromTxVector), //PhyRate is equivalent to DataRate
-                                          MakeBoundCallback (&GetDataRate, uniqueName, modClass),
                                           MakeCallback (&GetDataRateFromTxVector),
-                                          MakeCallback (&IsModeAllowed));
+                                          MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -330,12 +328,11 @@ DsssPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staI
 {
   WifiMode mode = txVector.GetMode ();
   return DsssPhy::GetDataRate (mode.GetUniqueName (),
-                               mode.GetModulationClass (),
-                               22, 0, 1); //dummy values since unused
+                               mode.GetModulationClass ());
 }
 
 uint64_t
-DsssPhy::GetDataRate (const std::string& name, WifiModulationClass modClass, uint16_t /* channelWidth */, uint16_t /* guardInterval */, uint8_t /* nss */)
+DsssPhy::GetDataRate (const std::string& name, WifiModulationClass modClass)
 {
   uint16_t constellationSize = GetConstellationSize (name);
   uint16_t divisor = 0;
@@ -357,7 +354,7 @@ DsssPhy::GetDataRate (const std::string& name, WifiModulationClass modClass, uin
 }
 
 bool
-DsssPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+DsssPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

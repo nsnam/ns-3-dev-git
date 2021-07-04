@@ -265,12 +265,10 @@ public:
    *
    * \param name the unique name of the OFDM mode
    * \param channelWidth the considered channel width in MHz
-   * \param guardInterval the considered guard interval duration in nanoseconds
-   * \param nss the considered number of streams
    *
    * \return the physical bit rate of this signal in bps.
    */
-  static uint64_t GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  static uint64_t GetPhyRate (const std::string& name, uint16_t channelWidth);
 
   /**
    * Return the PHY rate corresponding to
@@ -301,22 +299,18 @@ public:
    *
    * \param name the unique name of the OFDM mode
    * \param channelWidth the considered channel width in MHz
-   * \param guardInterval the considered guard interval duration in nanoseconds
-   * \param nss the considered number of streams
    *
    * \return the data bit rate of this signal in bps.
    */
-  static uint64_t GetDataRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss);
+  static uint64_t GetDataRate (const std::string& name, uint16_t channelWidth);
   /**
-   * Check whether the combination of <WifiMode, channel width, NSS> is allowed.
-   * This function is used as a callback for WifiMode operation, and always
-   * returns true since there is no limitation for any mode in OfdmPhy.
+   * Check whether the combination in TXVECTOR is allowed.
+   * This function is used as a callback for WifiMode operation.
    *
-   * \param channelWidth the considered channel width in MHz
-   * \param nss the considered number of streams
-   * \returns true.
+   * \param txVector the TXVECTOR
+   * \returns true if this combination is allowed, false otherwise.
    */
-  static bool IsModeAllowed (uint16_t channelWidth, uint8_t nss);
+  static bool IsAllowed (const WifiTxVector& txVector);
 
 protected:
   PhyFieldRxStatus DoEndReceiveField (WifiPpduField field, Ptr<Event> event) override;
@@ -399,13 +393,10 @@ protected:
    * \param codeRate the code rate of the mode
    * \param constellationSize the size of modulation constellation
    * \param channelWidth the considered channel width in MHz
-   * \param guardInterval the considered guard interval duration in nanoseconds
-   * \param nss the considered number of streams
    *
    * \return the data bit rate of this signal in bps.
    */
-  static uint64_t CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth,
-                                     uint16_t guardInterval, uint8_t nss);
+  static uint64_t CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth);
   /**
    * Calculates data rate from the supplied parameters.
    *

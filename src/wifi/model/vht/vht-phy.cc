@@ -379,12 +379,10 @@ VhtPhy::CreateVhtMcs (uint8_t index)
                                          WIFI_MOD_CLASS_VHT,
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
-                                         MakeBoundCallback (&GetPhyRate, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
-                                         MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
-                                         MakeBoundCallback (&IsModeAllowed, index));
+                                         MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -445,7 +443,7 @@ VhtPhy::GetDataRate (uint8_t mcsValue, uint16_t channelWidth, uint16_t guardInte
 {
   NS_ASSERT (guardInterval == 800 || guardInterval == 400);
   NS_ASSERT (nss <= 8);
-  NS_ASSERT_MSG (IsModeAllowed (mcsValue, channelWidth, nss), "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is " << +nss);
+  NS_ASSERT_MSG (IsCombinationAllowed (mcsValue, channelWidth, nss), "VHT MCS " << +mcsValue << " forbidden at " << channelWidth << " MHz when NSS is " << +nss);
   return HtPhy::CalculateDataRate (3.2, guardInterval,
                                    GetUsableSubcarriers (channelWidth),
                                    static_cast<uint16_t> (log2 (GetConstellationSize (mcsValue))),
@@ -497,7 +495,15 @@ VhtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellati
 }
 
 bool
-VhtPhy::IsModeAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss)
+VhtPhy::IsAllowed (const WifiTxVector& txVector)
+{
+  return IsCombinationAllowed (txVector.GetMode ().GetMcsValue (),
+                               txVector.GetChannelWidth (),
+                               txVector.GetNss ());
+}
+
+bool
+VhtPhy::IsCombinationAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss)
 {
   if (mcsValue == 9 && channelWidth == 20 && nss != 3)
     {

@@ -492,11 +492,9 @@ OfdmPhy::CreateOfdmMode (std::string uniqueName, bool isMandatory)
                                           isMandatory,
                                           MakeBoundCallback (&GetCodeRate, uniqueName),
                                           MakeBoundCallback (&GetConstellationSize, uniqueName),
-                                          MakeBoundCallback (&GetPhyRate, uniqueName),
                                           MakeCallback (&GetPhyRateFromTxVector),
-                                          MakeBoundCallback (&GetDataRate, uniqueName),
                                           MakeCallback (&GetDataRateFromTxVector),
-                                          MakeCallback (&IsModeAllowed));
+                                          MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -512,10 +510,10 @@ OfdmPhy::GetConstellationSize (const std::string& name)
 }
 
 uint64_t
-OfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+OfdmPhy::GetPhyRate (const std::string& name, uint16_t channelWidth)
 {
   WifiCodeRate codeRate = GetCodeRate (name);
-  uint64_t dataRate = GetDataRate (name, channelWidth, guardInterval, nss);
+  uint64_t dataRate = GetDataRate (name, channelWidth);
   return CalculatePhyRate (codeRate, dataRate);
 }
 
@@ -529,9 +527,7 @@ uint64_t
 OfdmPhy::GetPhyRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetPhyRate (txVector.GetMode ().GetUniqueName (),
-                     txVector.GetChannelWidth (),
-                     txVector.GetGuardInterval (),
-                     txVector.GetNss ());
+                     txVector.GetChannelWidth ());
 }
 
 double
@@ -556,21 +552,19 @@ uint64_t
 OfdmPhy::GetDataRateFromTxVector (const WifiTxVector& txVector, uint16_t /* staId */)
 {
   return GetDataRate (txVector.GetMode ().GetUniqueName (),
-                      txVector.GetChannelWidth (),
-                      txVector.GetGuardInterval (),
-                      txVector.GetNss ());
+                      txVector.GetChannelWidth ());
 }
 
 uint64_t
-OfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth, uint16_t guardInterval, uint8_t nss)
+OfdmPhy::GetDataRate (const std::string& name, uint16_t channelWidth)
 {
   WifiCodeRate codeRate = GetCodeRate (name);
   uint16_t constellationSize = GetConstellationSize (name);
-  return CalculateDataRate (codeRate, constellationSize, channelWidth, guardInterval, nss);
+  return CalculateDataRate (codeRate, constellationSize, channelWidth);
 }
 
 uint64_t
-OfdmPhy::CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth, uint16_t /* guardInterval */, uint8_t /* nss */)
+OfdmPhy::CalculateDataRate (WifiCodeRate codeRate, uint16_t constellationSize, uint16_t channelWidth)
 {
   double symbolDuration = 3.2; //in us
   uint16_t guardInterval = 800; //in ns
@@ -599,7 +593,7 @@ OfdmPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
 }
 
 bool
-OfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+OfdmPhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

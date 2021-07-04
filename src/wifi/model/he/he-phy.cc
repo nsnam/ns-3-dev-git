@@ -1034,12 +1034,10 @@ HePhy::CreateHeMcs (uint8_t index)
                                          WIFI_MOD_CLASS_HE,
                                          MakeBoundCallback (&GetCodeRate, index),
                                          MakeBoundCallback (&GetConstellationSize, index),
-                                         MakeBoundCallback (&GetPhyRate, index),
                                          MakeCallback (&GetPhyRateFromTxVector),
-                                         MakeBoundCallback (&GetDataRate, index),
                                          MakeCallback (&GetDataRateFromTxVector),
                                          MakeBoundCallback (&GetNonHtReferenceRate, index),
-                                         MakeCallback (&IsModeAllowed));
+                                         MakeCallback (&IsAllowed));
 }
 
 WifiCodeRate
@@ -1170,7 +1168,7 @@ HePhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellatio
 }
 
 bool
-HePhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+HePhy::IsAllowed (const WifiTxVector& /*txVector*/)
 {
   return true;
 }

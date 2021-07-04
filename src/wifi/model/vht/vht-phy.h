@@ -253,7 +253,15 @@ public:
    * \param nss the considered number of streams
    * \returns true if this <MCS, channel width, NSS> combination is allowed, false otherwise.
    */
-  static bool IsModeAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss);
+  static bool IsCombinationAllowed (uint8_t mcsValue, uint16_t channelWidth, uint8_t nss);
+  /**
+   * Check whether the combination in TXVECTOR is allowed.
+   * This function is used as a callback for WifiMode operation.
+   *
+   * \param txVector the TXVECTOR
+   * \returns true if this combination is allowed, false otherwise.
+   */
+  static bool IsAllowed (const WifiTxVector& txVector);
 
 protected:
   WifiMode GetHtSigMode (void) const override;
