@@ -95,8 +95,6 @@ WifiMacQueue::GetMaxDelay (void) const
 bool
 WifiMacQueue::TtlExceeded (ConstIterator &it)
 {
-  NS_LOG_FUNCTION (this);
-
   if (Simulator::Now () > (*it)->GetTimeStamp () + m_maxDelay)
     {
       NS_LOG_DEBUG ("Removing packet that stayed in the queue for too long (" <<
