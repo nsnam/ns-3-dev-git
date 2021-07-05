@@ -129,7 +129,7 @@ struct StandardInfo
 };
 
 void
-ChangeSignalAndReportRate (Ptr<FixedRssLossModel> rssModel, struct Step step, double rss, Gnuplot2dDataset& rateDataset, Gnuplot2dDataset& actualDataset)
+ChangeSignalAndReportRate (Ptr<FixedRssLossModel> rssModel, Step step, double rss, Gnuplot2dDataset& rateDataset, Gnuplot2dDataset& actualDataset)
 {
   NS_LOG_FUNCTION (rssModel << step.stepSize << step.stepTime << rss);
   double snr = rss - noiseDbm;
@@ -437,7 +437,7 @@ int main (int argc, char *argv[])
 
   Gnuplot2dDataset rateDataset (clientSelectedStandard.m_name + std::string ("-rate selected"));
   Gnuplot2dDataset actualDataset (clientSelectedStandard.m_name + std::string ("-observed"));
-  struct Step step;
+  Step step;
   step.stepSize = stepSize;
   step.stepTime = stepTime;
 
@@ -472,7 +472,7 @@ int main (int argc, char *argv[])
            || serverSelectedStandard.m_name == "802.11ax-5GHz"
            || serverSelectedStandard.m_name == "802.11ax-2.4GHz")
     {
-      wndServer->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
+      wndServer->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (serverShortGuardInterval));
       wndClient->GetHeConfiguration ()->SetGuardInterval (NanoSeconds (clientShortGuardInterval));
     }
   NS_LOG_DEBUG ("Channel width " << wifiPhyPtrClient->GetChannelWidth () << " noiseDbm " << noiseDbm);
