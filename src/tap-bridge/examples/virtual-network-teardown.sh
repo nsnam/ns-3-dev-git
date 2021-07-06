@@ -1,4 +1,6 @@
 #!/bin/sh
+lxc-stop -n left
+lxc-stop -n right
 lxc-destroy -n left
 lxc-destroy -n right
 ifconfig br-left down
