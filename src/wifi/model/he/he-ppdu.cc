@@ -231,6 +231,39 @@ HePpdu::GetStaId (void) const
   return m_psdus.begin ()->first;
 }
 
+uint16_t
+HePpdu::GetTransmissionChannelWidth (void) const
+{
+  WifiTxVector txVector = GetTxVector ();
+  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && GetStaId () != SU_STA_ID)
+    {
+      TxPsdFlag flag = GetTxPsdFlag ();
+      NS_ASSERT (flag > PSD_NON_HE_TB);
+      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (GetStaId ()).GetRuType ());
+      uint16_t channelWidth = (flag == PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
+      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << GetStaId ()
+                                       << " for " << flag);
+      return channelWidth;
+    }
+  else
+    {
+      return OfdmPpdu::GetTransmissionChannelWidth ();
+    }
+}
+
+bool
+HePpdu::CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20MaxFreq) const
+{
+  NS_LOG_FUNCTION (this << txCenterFreq << p20MinFreq << p20MaxFreq);
+
+  if (GetTxVector ().IsUlMu ())
+    {
+      // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
+      return true;
+    }
+  return OfdmPpdu::CanBeReceived (txCenterFreq, p20MinFreq, p20MaxFreq);
+}
+
 HePpdu::TxPsdFlag
 HePpdu::GetTxPsdFlag (void) const
 {

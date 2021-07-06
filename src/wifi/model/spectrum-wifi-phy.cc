@@ -379,12 +379,13 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   // Do no further processing if signal is too weak
   // Current implementation assumes constant RX power over the PPDU duration
   // Compare received TX power per MHz to normalized RX sensitivity
-  uint16_t txWidth = GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->GetTransmissionChannelWidth (wifiRxParams->ppdu);
+  uint16_t txWidth = wifiRxParams->ppdu->GetTransmissionChannelWidth ();
   if (totalRxPowerW < DbmToW (GetRxSensitivity ()) * (txWidth / 20.0))
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
       return;
     }
+
   // Unless we are receiving a TB PPDU, do not sync with this signal if the PPDU
   // does not overlap with the receiver's primary20 channel
   if (wifiRxParams->txPhy != 0)
@@ -396,7 +397,14 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
       uint16_t txChannelWidth = wifiRxParams->ppdu->GetTxVector ().GetChannelWidth ();
       uint16_t txCenterFreq = txPhy->GetOperatingChannel ().GetPrimaryChannelCenterFrequency (txChannelWidth);
 
-      if (!GetPhyEntity (wifiRxParams->ppdu->GetModulation ())->CanReceivePpdu (wifiRxParams->ppdu, txCenterFreq))
+      // if the channel width is a multiple of 20 MHz, then we consider the primary20 channel
+      uint16_t width = (GetChannelWidth () % 20 == 0 ? 20 : GetChannelWidth ());
+      uint16_t p20MinFreq =
+          GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) - width / 2;
+      uint16_t p20MaxFreq =
+          GetOperatingChannel ().GetPrimaryChannelCenterFrequency (width) + width / 2;
+
+      if (!wifiRxParams->ppdu->CanBeReceived (txCenterFreq, p20MinFreq, p20MaxFreq))
         {
           NS_LOG_INFO ("Cannot receive the PPDU, consider it as interference");
           m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (),

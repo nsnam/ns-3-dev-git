@@ -196,6 +196,9 @@ public:
   Ptr<WifiPpdu> Copy (void) const override;
   WifiPpduType GetType (void) const override;
   uint16_t GetStaId (void) const override;
+  uint16_t GetTransmissionChannelWidth (void) const override;
+  bool CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq,
+                      uint16_t p20MaxFreq) const override;
 
   /**
    * Get the payload of the PPDU.

@@ -911,40 +911,6 @@ HePhy::StartTx (Ptr<WifiPpdu> ppdu)
     }
 }
 
-uint16_t
-HePhy::GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const
-{
-  const WifiTxVector& txVector = ppdu->GetTxVector ();
-  if (txVector.GetPreambleType () == WIFI_PREAMBLE_HE_TB && ppdu->GetStaId () != SU_STA_ID)
-    {
-      auto hePpdu = DynamicCast<const HePpdu> (ppdu);
-      NS_ASSERT (hePpdu);
-      HePpdu::TxPsdFlag flag = hePpdu->GetTxPsdFlag ();
-      NS_ASSERT (flag > HePpdu::PSD_NON_HE_TB);
-      uint16_t ruWidth = HeRu::GetBandwidth (txVector.GetRu (ppdu->GetStaId ()).GetRuType ());
-      uint16_t channelWidth = (flag == HePpdu::PSD_HE_TB_NON_OFDMA_PORTION && ruWidth < 20) ? 20 : ruWidth;
-      NS_LOG_INFO ("Use channelWidth=" << channelWidth << " MHz for HE TB from " << ppdu->GetStaId () << " for " << flag);
-      return channelWidth;
-    }
-  else
-    {
-      return PhyEntity::GetTransmissionChannelWidth (ppdu);
-    }
-}
-
-bool
-HePhy::CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const
-{
-  NS_LOG_FUNCTION (this << ppdu << txCenterFreq);
-
-  if (ppdu->GetTxVector ().IsUlMu ())
-    {
-      // APs are able to receive TB PPDUs sent on a band other than the primary20 channel
-      return true;
-    }
-  return VhtPhy::CanReceivePpdu (ppdu, txCenterFreq);
-}
-
 Time
 HePhy::CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const
 {

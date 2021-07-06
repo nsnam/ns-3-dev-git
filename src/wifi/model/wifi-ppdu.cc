@@ -100,6 +100,31 @@ WifiPpdu::GetModulation (void) const
   return m_modulation;
 }
 
+uint16_t
+WifiPpdu::GetTransmissionChannelWidth (void) const
+{
+  return GetTxVector ().GetChannelWidth ();
+}
+
+bool
+WifiPpdu::CanBeReceived (uint16_t txCenterFreq, uint16_t p20MinFreq,
+                              uint16_t p20MaxFreq) const
+{
+  NS_LOG_FUNCTION (this << txCenterFreq << p20MinFreq << p20MaxFreq);
+
+  uint16_t txChannelWidth = GetTxVector ().GetChannelWidth ();
+  uint16_t minTxFreq = txCenterFreq - txChannelWidth / 2;
+  uint16_t maxTxFreq = txCenterFreq + txChannelWidth / 2;
+
+  if (minTxFreq > p20MinFreq || maxTxFreq < p20MaxFreq)
+    {
+      NS_LOG_INFO ("Received PPDU does not overlap with the primary20 channel");
+      return false;
+    }
+  return true;
+}
+
+
 uint64_t
 WifiPpdu::GetUid (void) const
 {

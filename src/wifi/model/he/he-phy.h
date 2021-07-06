@@ -100,9 +100,7 @@ public:
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
   uint16_t GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const override;
   void StartTx (Ptr<WifiPpdu> ppdu) override;
-  uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const override;
   Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const override;
-  bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const override;
 
   /**
    * \return the BSS color of this PHY.

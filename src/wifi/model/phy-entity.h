@@ -461,15 +461,6 @@ public:
   void Transmit (Time txDuration, Ptr<WifiPpdu> ppdu, std::string type);
 
   /**
-   * Get the channel width over which the PPDU will be effectively
-   * be transmitted.
-   *
-   * \param ppdu the PPDU to send
-   * \return the effective channel width (in MHz) used for the tranmsission
-   */
-  virtual uint16_t GetTransmissionChannelWidth (Ptr<const WifiPpdu> ppdu) const;
-
-  /**
    * \param psduMap the PSDU(s) to transmit indexed by STA-ID
    * \param txVector the TXVECTOR used for the transmission of the PPDU
    * \param band the frequency band being used
@@ -477,18 +468,6 @@ public:
    * \return the total amount of time this PHY will stay busy for the transmission of the PPDU
    */
   virtual Time CalculateTxDuration (WifiConstPsduMap psduMap, const WifiTxVector& txVector, WifiPhyBand band) const;
-
-  /**
-   * Check whether the given PPDU can be received by this PHY entity. Normally,
-   * a PPDU can be received if it is transmitted over a channel that overlaps
-   * the primary20 channel of this PHY entity.
-   *
-   * \param ppdu the given PPDU
-   * \param txCenterFreq the center frequency (MHz) of the channel over which the
-   *        PPDU is transmitted
-   * \return true if this PPDU can be received, false otherwise
-   */
-  virtual bool CanReceivePpdu (Ptr<WifiPpdu> ppdu, uint16_t txCenterFreq) const;
 
 protected:
   /**
