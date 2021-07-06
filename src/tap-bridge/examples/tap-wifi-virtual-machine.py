@@ -61,7 +61,7 @@ def main(argv):
     # Configure the physical layer.
     #
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()
-    wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
+    wifiPhy = ns.wifi.YansWifiPhyHelper()
     wifiPhy.SetChannel(wifiChannel.Create())
 
     #
