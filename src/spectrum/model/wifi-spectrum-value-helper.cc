@@ -124,7 +124,7 @@ WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint16_t ch
           NS_LOG_DEBUG ("creating band " << i << " (" << info.fl << ":" << info.fc << ":" << info.fh << ")");
           bands.push_back (info);
         }
-      ret = Create<SpectrumModel> (bands);
+      ret = Create<SpectrumModel> (std::move (bands));
       g_wifiSpectrumModelMap.insert (std::pair<WifiSpectrumModelId, Ptr<SpectrumModel> > (key, ret));
     }
   NS_LOG_LOGIC ("returning SpectrumModel::GetUid () == " << ret->GetUid ());

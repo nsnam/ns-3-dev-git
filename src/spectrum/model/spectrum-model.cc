@@ -77,6 +77,13 @@ SpectrumModel::SpectrumModel (const Bands& bands)
   m_bands = bands;
 }
 
+SpectrumModel::SpectrumModel (Bands&& bands)
+  : m_bands (std::move (bands))
+{
+  m_uid = ++m_uidCount;
+  NS_LOG_INFO ("creating new SpectrumModel, m_uid=" << m_uid);
+}
+
 Bands::const_iterator
 SpectrumModel::Begin () const
 {
