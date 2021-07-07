@@ -226,7 +226,7 @@ public:
  */
 template <typename T,
           typename... Ts>
-Ptr<T> Create (Ts... args);
+Ptr<T> Create (Ts&&... args);
 
 /** @}*/
 
@@ -402,9 +402,9 @@ namespace ns3 {
  ************************************************/
 
 template <typename T, typename... Ts>
-Ptr<T> Create (Ts... args)
+Ptr<T> Create (Ts&&... args)
 {
-  return Ptr<T> (new T (args...), false);
+  return Ptr<T> (new T (std::forward<Ts> (args)...), false);
 }
 
 template <typename U>
