@@ -184,10 +184,9 @@ PcapFileWrapper::Read (Time &t)
   uint32_t origLen;
   uint32_t readLen;
 
-  uint32_t maxBytes=65536;
-  uint8_t  datbuf[maxBytes];
+  uint8_t  datbuf[65536];
 
-  m_file.Read (datbuf,maxBytes,tsSec,tsUsec,inclLen,origLen,readLen);
+  m_file.Read (datbuf,65536,tsSec,tsUsec,inclLen,origLen,readLen);
 
   if (m_file.Fail())
     {
