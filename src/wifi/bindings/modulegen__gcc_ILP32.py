@@ -12487,6 +12487,11 @@ def register_Ns3WifiPpdu_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ptr< ns3::WifiPsdu const >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector'), param('uint64_t', 'uid', default_value='(18446744073709551615UL)')])
     ## wifi-ppdu.h (module 'wifi'): ns3::WifiPpdu::WifiPpdu(ns3::WifiConstPsduMap const & psdus, ns3::WifiTxVector const & txVector, uint64_t uid) [constructor]
     cls.add_constructor([param('ns3::WifiConstPsduMap const &', 'psdus'), param('ns3::WifiTxVector const &', 'txVector'), param('uint64_t', 'uid')])
+    ## wifi-ppdu.h (module 'wifi'): bool ns3::WifiPpdu::CanBeReceived(uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20MaxFreq) const [member function]
+    cls.add_method('CanBeReceived', 
+                   'bool', 
+                   [param('uint16_t', 'txCenterFreq'), param('uint16_t', 'p20MinFreq'), param('uint16_t', 'p20MaxFreq')], 
+                   is_const=True, is_virtual=True)
     ## wifi-ppdu.h (module 'wifi'): ns3::Ptr<ns3::WifiPpdu> ns3::WifiPpdu::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::WifiPpdu >', 
@@ -12509,6 +12514,11 @@ def register_Ns3WifiPpdu_methods(root_module, cls):
                    is_const=True)
     ## wifi-ppdu.h (module 'wifi'): uint16_t ns3::WifiPpdu::GetStaId() const [member function]
     cls.add_method('GetStaId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-ppdu.h (module 'wifi'): uint16_t ns3::WifiPpdu::GetTransmissionChannelWidth() const [member function]
+    cls.add_method('GetTransmissionChannelWidth', 
                    'uint16_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -20247,11 +20257,6 @@ def register_Ns3PhyEntity_methods(root_module, cls):
                    'ns3::Time', 
                    [param('std::unordered_map< unsigned short, ns3::Ptr< ns3::WifiPsdu const > >', 'psduMap'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::WifiPhyBand', 'band')], 
                    is_const=True, is_virtual=True)
-    ## phy-entity.h (module 'wifi'): bool ns3::PhyEntity::CanReceivePpdu(ns3::Ptr<ns3::WifiPpdu> ppdu, uint16_t txCenterFreq) const [member function]
-    cls.add_method('CanReceivePpdu', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiPpdu >', 'ppdu'), param('uint16_t', 'txCenterFreq')], 
-                   is_const=True, is_virtual=True)
     ## phy-entity.h (module 'wifi'): void ns3::PhyEntity::CancelAllEvents() [member function]
     cls.add_method('CancelAllEvents', 
                    'void', 
@@ -20338,11 +20343,6 @@ def register_Ns3PhyEntity_methods(root_module, cls):
     cls.add_method('GetStaId', 
                    'uint16_t', 
                    [param('ns3::Ptr< ns3::WifiPpdu const > const', 'ppdu')], 
-                   is_const=True, is_virtual=True)
-    ## phy-entity.h (module 'wifi'): uint16_t ns3::PhyEntity::GetTransmissionChannelWidth(ns3::Ptr<const ns3::WifiPpdu> ppdu) const [member function]
-    cls.add_method('GetTransmissionChannelWidth', 
-                   'uint16_t', 
-                   [param('ns3::Ptr< ns3::WifiPpdu const >', 'ppdu')], 
                    is_const=True, is_virtual=True)
     ## phy-entity.h (module 'wifi'): ns3::WifiConstPsduMap ns3::PhyEntity::GetWifiConstPsduMap(ns3::Ptr<const ns3::WifiPsdu> psdu, ns3::WifiTxVector const & txVector) const [member function]
     cls.add_method('GetWifiConstPsduMap', 
@@ -25143,6 +25143,11 @@ def register_Ns3HePpdu_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ptr< ns3::WifiPsdu const >', 'psdu'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time', 'ppduDuration'), param('ns3::WifiPhyBand', 'band'), param('uint64_t', 'uid')])
     ## he-ppdu.h (module 'wifi'): ns3::HePpdu::HePpdu(ns3::WifiConstPsduMap const & psdus, ns3::WifiTxVector const & txVector, ns3::Time ppduDuration, ns3::WifiPhyBand band, uint64_t uid, ns3::HePpdu::TxPsdFlag flag) [constructor]
     cls.add_constructor([param('ns3::WifiConstPsduMap const &', 'psdus'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::Time', 'ppduDuration'), param('ns3::WifiPhyBand', 'band'), param('uint64_t', 'uid'), param('ns3::HePpdu::TxPsdFlag', 'flag')])
+    ## he-ppdu.h (module 'wifi'): bool ns3::HePpdu::CanBeReceived(uint16_t txCenterFreq, uint16_t p20MinFreq, uint16_t p20MaxFreq) const [member function]
+    cls.add_method('CanBeReceived', 
+                   'bool', 
+                   [param('uint16_t', 'txCenterFreq'), param('uint16_t', 'p20MinFreq'), param('uint16_t', 'p20MaxFreq')], 
+                   is_const=True, is_virtual=True)
     ## he-ppdu.h (module 'wifi'): ns3::Ptr<ns3::WifiPpdu> ns3::HePpdu::Copy() const [member function]
     cls.add_method('Copy', 
                    'ns3::Ptr< ns3::WifiPpdu >', 
@@ -25155,6 +25160,11 @@ def register_Ns3HePpdu_methods(root_module, cls):
                    is_const=True)
     ## he-ppdu.h (module 'wifi'): uint16_t ns3::HePpdu::GetStaId() const [member function]
     cls.add_method('GetStaId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## he-ppdu.h (module 'wifi'): uint16_t ns3::HePpdu::GetTransmissionChannelWidth() const [member function]
+    cls.add_method('GetTransmissionChannelWidth', 
                    'uint16_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -26840,11 +26850,6 @@ def register_Ns3HePhy_methods(root_module, cls):
                    'ns3::Time', 
                    [param('std::unordered_map< unsigned short, ns3::Ptr< ns3::WifiPsdu const > >', 'psduMap'), param('ns3::WifiTxVector const &', 'txVector'), param('ns3::WifiPhyBand', 'band')], 
                    is_const=True, is_virtual=True)
-    ## he-phy.h (module 'wifi'): bool ns3::HePhy::CanReceivePpdu(ns3::Ptr<ns3::WifiPpdu> ppdu, uint16_t txCenterFreq) const [member function]
-    cls.add_method('CanReceivePpdu', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiPpdu >', 'ppdu'), param('uint16_t', 'txCenterFreq')], 
-                   is_const=True, is_virtual=True)
     ## he-phy.h (module 'wifi'): void ns3::HePhy::CancelAllEvents() [member function]
     cls.add_method('CancelAllEvents', 
                    'void', 
@@ -27049,11 +27054,6 @@ def register_Ns3HePhy_methods(root_module, cls):
     cls.add_method('GetTrainingDuration', 
                    'ns3::Time', 
                    [param('ns3::WifiTxVector const &', 'txVector'), param('uint8_t', 'nDataLtf'), param('uint8_t', 'nExtensionLtf', default_value='0')], 
-                   is_const=True, is_virtual=True)
-    ## he-phy.h (module 'wifi'): uint16_t ns3::HePhy::GetTransmissionChannelWidth(ns3::Ptr<const ns3::WifiPpdu> ppdu) const [member function]
-    cls.add_method('GetTransmissionChannelWidth', 
-                   'uint16_t', 
-                   [param('ns3::Ptr< ns3::WifiPpdu const >', 'ppdu')], 
                    is_const=True, is_virtual=True)
     ## he-phy.h (module 'wifi'): static void ns3::HePhy::InitializeModes() [member function]
     cls.add_method('InitializeModes', 
