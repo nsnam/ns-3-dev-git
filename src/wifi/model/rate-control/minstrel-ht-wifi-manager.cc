@@ -908,13 +908,14 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                          "," << GetChannelWidth (station) << ")");
         }
       WifiMode mode = GetMcsSupported (station, mcsIndex);
-      uint64_t dataRate = mode.GetDataRate (group.chWidth, group.gi, group.streams);
+      WifiTxVector txVector {mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), group.gi, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling};
+      uint64_t dataRate = mode.GetDataRate (txVector);
       if (m_currentRate != dataRate && !station->m_isSampling)
         {
           NS_LOG_DEBUG ("New datarate: " << dataRate);
           m_currentRate = dataRate;
         }
-      return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), group.gi, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling);
+      return txVector;
     }
 }
 

@@ -234,10 +234,11 @@ ArfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       channelWidth = 20;
     }
   WifiMode mode = GetSupported (station, station->m_rate);
-  if (m_currentRate != mode.GetDataRate (channelWidth))
+  uint64_t rate = mode.GetDataRate (channelWidth);
+  if (m_currentRate != rate)
     {
-      NS_LOG_DEBUG ("New datarate: " << mode.GetDataRate (channelWidth));
-      m_currentRate = mode.GetDataRate (channelWidth);
+      NS_LOG_DEBUG ("New datarate: " << rate);
+      m_currentRate = rate;
     }
   return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
 }
@@ -254,7 +255,6 @@ ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     {
       channelWidth = 20;
     }
-  WifiTxVector rtsTxVector;
   WifiMode mode;
   if (GetUseNonErpProtection () == false)
     {
@@ -264,8 +264,7 @@ ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
     {
       mode = GetNonErpSupported (station, 0);
     }
-  rtsTxVector = WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
-  return rtsTxVector;
+  return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode.GetModulationClass (), GetShortPreambleEnabled ()), 800, 1, 1, 0, channelWidth, GetAggregation (station));
 }
 
 } //namespace ns3

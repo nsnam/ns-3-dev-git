@@ -525,12 +525,14 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     {
       guardInterval = 800;
     }
-  if (m_currentRate != maxMode.GetDataRate (channelWidth, guardInterval, selectedNss))
+  WifiTxVector bestTxVector {maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled ()), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station)};
+  uint64_t maxDataRate = maxMode.GetDataRate (bestTxVector);
+  if (m_currentRate != maxDataRate)
     {
-      NS_LOG_DEBUG ("New datarate: " << maxMode.GetDataRate (channelWidth, guardInterval, selectedNss));
-      m_currentRate = maxMode.GetDataRate (channelWidth, guardInterval, selectedNss);
+      NS_LOG_DEBUG ("New datarate: " << maxDataRate);
+      m_currentRate = maxDataRate;
     }
-  return WifiTxVector (maxMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (maxMode.GetModulationClass (), GetShortPreambleEnabled ()), guardInterval, GetNumberOfAntennas (), selectedNss, 0, GetChannelWidthForTransmission (maxMode, channelWidth), GetAggregation (station));
+  return bestTxVector;
 }
 
 WifiTxVector
