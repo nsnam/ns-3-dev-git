@@ -1106,7 +1106,7 @@ ChannelAccessManagerTest<QosTxop>::DoRun (void)
   StartTest (4, 6, 10);
   AddTxop (1);
   AddRxOkEvt (20, 30);
-  AddAccessRequest (52, 20, 60, 0);
+  AddAccessRequest (58, 20, 60, 0);
   EndTest ();
 
   // Check alignment at slot boundary after successful reception (backoff = 0):
