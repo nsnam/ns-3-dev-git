@@ -32,6 +32,7 @@
 #include "extended-capabilities.h"
 #include "ns3/ht-capabilities.h"
 #include "ns3/ht-operation.h"
+#include "ns3/multi-link-element.h"
 #include "ns3/vht-capabilities.h"
 #include "ns3/vht-operation.h"
 #include "ns3/erp-information.h"
@@ -142,6 +143,12 @@ public:
   void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
 
   /**
+   * Set the Multi-Link Element information element
+   *
+   * \param multiLinkElement the Multi-Link Element information element
+   */
+  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  /**
    * Return the Capability information.
    *
    * \return Capability information
@@ -195,6 +202,14 @@ public:
    * \return the listen interval
    */
   uint16_t GetListenInterval (void) const;
+  /**
+   * Return the Multi-Link Element information element, if present, or a null
+   * pointer, otherwise.
+   *
+   * \return the Multi-Link Element information element, if present, or a null
+   *         pointer, otherwise
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
 
   /**
    * Register this type.
@@ -219,6 +234,7 @@ private:
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   EhtCapabilities m_ehtCapability;    //!< EHT capabilities
+  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -320,6 +336,12 @@ public:
   void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
 
   /**
+   * Set the Multi-Link Element information element
+   *
+   * \param multiLinkElement the Multi-Link Element information element
+   */
+  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  /**
    * Return the Capability information.
    *
    * \return Capability information
@@ -368,6 +390,14 @@ public:
    */
   const SupportedRates& GetSupportedRates (void) const;
   /**
+   * Return the Multi-Link Element information element, if present, or a null
+   * pointer, otherwise.
+   *
+   * \return the Multi-Link Element information element, if present, or a null
+   *         pointer, otherwise
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  /**
    * Return the listen interval.
    *
    * \return the listen interval
@@ -403,6 +433,7 @@ private:
   HeCapabilities m_heCapability;      //!< HE capabilities
   uint16_t m_listenInterval;          //!< listen interval
   EhtCapabilities m_ehtCapability;    //!< EHT capabilities
+  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -482,6 +513,14 @@ public:
    * \return EHT capabilities
    */
   const EhtCapabilities& GetEhtCapabilities (void) const;
+  /**
+   * Return the Multi-Link Element information element, if present, or a null
+   * pointer, otherwise.
+   *
+   * \return the Multi-Link Element information element, if present, or a null
+   *         pointer, otherwise
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
   /**
    * Return the association ID.
    *
@@ -650,6 +689,12 @@ public:
   /** \copydoc SetEhtCapabilities */
   void SetEhtCapabilities (EhtCapabilities&& ehtCapabilities);
 
+  /**
+   * Set the Multi-Link Element information element
+   *
+   * \param multiLinkElement the Multi-Link Element information element
+   */
+  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
 
   /**
    * Register this type.
@@ -679,6 +724,7 @@ private:
   HeOperation m_heOperation; //!< HE operation
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   EhtCapabilities m_ehtCapability; //!< EHT capabilities
+  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 
@@ -947,6 +993,14 @@ public:
    */
   Ptr<ReducedNeighborReport> GetReducedNeighborReport (void) const;
   /**
+   * Return the Multi-Link Element information element, if present, or a null
+   * pointer, otherwise.
+   *
+   * \return the Multi-Link Element information element, if present, or a null
+   *         pointer, otherwise
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (void) const;
+  /**
    * Set the Capability information.
    *
    * \param capabilities Capability information
@@ -1110,6 +1164,12 @@ public:
    */
   void SetReducedNeighborReport (Ptr<ReducedNeighborReport> reducedNeighborReport);
   /**
+   * Set the Multi-Link Element information element
+   *
+   * \param multiLinkElement the Multi-Link Element information element
+   */
+  void SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement);
+  /**
    * Return the time stamp.
    *
    * \return time stamp
@@ -1147,6 +1207,7 @@ private:
   MuEdcaParameterSet m_muEdcaParameterSet; //!< MU EDCA Parameter Set
   EhtCapabilities m_ehtCapability;     //!< EHT capabilities
   Ptr<ReducedNeighborReport> m_reducedNeighborReport; //!< Reduced Neighbor Report information
+  Ptr<MultiLinkElement> m_multiLinkElement; //!< Multi-Link Element
 };
 
 

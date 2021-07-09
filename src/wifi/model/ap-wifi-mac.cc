@@ -41,6 +41,7 @@
 #include "ns3/he-configuration.h"
 #include "qos-txop.h"
 #include "reduced-neighbor-report.h"
+#include "ns3/multi-link-element.h"
 
 namespace ns3 {
 
@@ -614,6 +615,20 @@ ApWifiMac::GetReducedNeighborReport (uint8_t linkId) const
   return rnr;
 }
 
+Ptr<MultiLinkElement>
+ApWifiMac::GetMultiLinkElement (uint8_t linkId, WifiMacType frameType) const
+{
+  NS_LOG_FUNCTION (this << +linkId);
+  NS_ABORT_IF (GetNLinks () == 1);
+
+  auto mle = Create<MultiLinkElement> (MultiLinkElement::BASIC_VARIANT, frameType);
+  mle->SetMldMacAddress (GetAddress ());
+  mle->SetLinkIdInfo (linkId);
+  mle->SetBssParamsChangeCount (0);
+
+  return mle;
+}
+
 HtOperation
 ApWifiMac::GetHtOperation (void) const
 {
@@ -777,14 +792,14 @@ ApWifiMac::GetHeOperation (void) const
 }
 
 void
-ApWifiMac::SendProbeResp (Mac48Address to)
+ApWifiMac::SendProbeResp (Mac48Address to, uint8_t linkId)
 {
-  NS_LOG_FUNCTION (this << to);
+  NS_LOG_FUNCTION (this << to << +linkId);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_MGT_PROBE_RESPONSE);
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (GetAddress ());  // TODO set the correct address
-  hdr.SetAddr3 (GetAddress ());
+  hdr.SetAddr2 (GetLink (linkId).feManager->GetAddress ());
+  hdr.SetAddr3 (GetLink (linkId).feManager->GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Ptr<Packet> packet = Create<Packet> ();
@@ -793,19 +808,19 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   probe.SetSupportedRates (GetSupportedRates ());
   probe.SetBeaconIntervalUs (GetBeaconInterval ().GetMicroSeconds ());
   probe.SetCapabilities (GetCapabilities ());
-  GetWifiRemoteStationManager ()->SetShortPreambleEnabled (m_shortPreambleEnabled);
-  GetWifiRemoteStationManager ()->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
-  if (GetDsssSupported (SINGLE_LINK_OP_ID))
+  GetWifiRemoteStationManager (linkId)->SetShortPreambleEnabled (m_shortPreambleEnabled);
+  GetWifiRemoteStationManager (linkId)->SetShortSlotTimeEnabled (m_shortSlotTimeEnabled);
+  if (GetDsssSupported (linkId))
     {
-      probe.SetDsssParameterSet (GetDsssParameterSet (SINGLE_LINK_OP_ID));
+      probe.SetDsssParameterSet (GetDsssParameterSet (linkId));
     }
-  if (GetErpSupported (SINGLE_LINK_OP_ID))
+  if (GetErpSupported (linkId))
     {
-      probe.SetErpInformation (GetErpInformation (SINGLE_LINK_OP_ID));
+      probe.SetErpInformation (GetErpInformation (linkId));
     }
   if (GetQosSupported ())
     {
-      probe.SetEdcaParameterSet (GetEdcaParameterSet (SINGLE_LINK_OP_ID));
+      probe.SetEdcaParameterSet (GetEdcaParameterSet (linkId));
     }
   if (GetHtSupported ())
     {
@@ -837,7 +852,16 @@ ApWifiMac::SendProbeResp (Mac48Address to)
            * TBTT Information Length field set to 16 or higher, for each of the other APs
            * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
            */
-          probe.SetReducedNeighborReport (GetReducedNeighborReport (*GetLinkIdByAddress (GetAddress ()))); // TODO check the address
+          probe.SetReducedNeighborReport (GetReducedNeighborReport (linkId));
+          /*
+           * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
+           * shall include, in a Beacon frame or a Probe Response frame, which is not a
+           * Multi-Link probe response, only the Common Info field of the Basic Multi-Link
+           * element for the AP MLD unless conditions in 35.3.11 (Multi-link procedures for
+           * channel switching, extended channel switching, and channel quieting) are
+           * satisfied. (Sec. 35.3.4.4 of 802.11be D2.1.1)
+           */
+          probe.SetMultiLinkElement (GetMultiLinkElement (linkId, WIFI_MAC_MGT_PROBE_RESPONSE));
         }
     }
   packet->AddHeader (probe);
@@ -853,7 +877,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   //   AC_BE should be selected.
   // — If category AC_BE was not selected by the previous step, category AC_VO
   //   shall be selected." (Sec. 10.2.3.2 of 802.11-2020)
-  else if (!GetWifiRemoteStationManager ()->GetQosSupported (to))
+  else if (!GetWifiRemoteStationManager (linkId)->GetQosSupported (to))
     {
       GetBEQueue ()->Queue (packet, hdr);
     }
@@ -1034,6 +1058,15 @@ ApWifiMac::SendOneBeacon (uint8_t linkId)
            * (if any) affiliated with the same AP MLD. (Sec. 35.3.4.1 of 802.11be D2.1.1)
            */
           beacon.SetReducedNeighborReport (GetReducedNeighborReport (linkId));
+          /*
+           * If an AP affiliated with an AP MLD is not in a multiple BSSID set [..], the AP
+           * shall include, in a Beacon frame or a Probe Response frame, which is not a
+           * Multi-Link probe response, only the Common Info field of the Basic Multi-Link
+           * element for the AP MLD unless conditions in 35.3.11 (Multi-link procedures for
+           * channel switching, extended channel switching, and channel quieting) are
+           * satisfied. (Sec. 35.3.4.4 of 802.11be D2.1.1)
+           */
+          beacon.SetMultiLinkElement (GetMultiLinkElement (linkId, WIFI_MAC_MGT_BEACON));
         }
     }
   packet->AddHeader (beacon);
@@ -1166,14 +1199,16 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
   else if (hdr->IsMgt ())
     {
       if (hdr->IsProbeReq ()
-          && (hdr->GetAddr1 ().IsGroup () || hdr->GetAddr1 () == GetAddress ()))
+          && (hdr->GetAddr1 ().IsGroup ()
+              || hdr->GetAddr1 () == GetFrameExchangeManager (linkId)->GetAddress ()))
         {
           // In the case where the Address 1 field contains a group address, the
           // Address 3 field also is validated to verify that the group addressed
           // frame originated from a STA in the BSS of which the receiving STA is
           // a member (Section 9.3.3.1 of 802.11-2020)
           if (hdr->GetAddr1 ().IsGroup ()
-              && !hdr->GetAddr3 ().IsBroadcast () && hdr->GetAddr3 () != GetAddress ())
+              && !hdr->GetAddr3 ().IsBroadcast ()
+              && hdr->GetAddr3 () != GetFrameExchangeManager (linkId)->GetAddress ())
             {
               // not addressed to us
               return;
@@ -1184,7 +1219,7 @@ ApWifiMac::Receive (Ptr<WifiMacQueueItem> mpdu, uint8_t linkId)
           if (ssid == GetSsid () || ssid.IsBroadcast ())
             {
               NS_LOG_DEBUG ("Probe request received from " << from << ": send probe response");
-              SendProbeResp (from);
+              SendProbeResp (from, linkId);
             }
           return;
         }

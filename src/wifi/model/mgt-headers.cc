@@ -532,6 +532,12 @@ MgtProbeResponseHeader::SetReducedNeighborReport (Ptr<ReducedNeighborReport> red
   m_reducedNeighborReport = reducedNeighborReport;
 }
 
+void
+MgtProbeResponseHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+{
+  m_multiLinkElement = multiLinkElement;
+}
+
 const EdcaParameterSet&
 MgtProbeResponseHeader::GetEdcaParameterSet (void) const
 {
@@ -548,6 +554,12 @@ Ptr<ReducedNeighborReport>
 MgtProbeResponseHeader::GetReducedNeighborReport (void) const
 {
   return m_reducedNeighborReport;
+}
+
+Ptr<MultiLinkElement>
+MgtProbeResponseHeader::GetMultiLinkElement (void) const
+{
+  return m_multiLinkElement;
 }
 
 TypeId
@@ -590,6 +602,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_muEdcaParameterSet.GetSerializedSize ();
   size += m_ehtCapability.GetSerializedSize ();
   if (m_reducedNeighborReport != nullptr) size += m_reducedNeighborReport->GetSerializedSize ();
+  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -632,6 +645,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_muEdcaParameterSet.Serialize (i);
   i = m_ehtCapability.Serialize (i);
   if (m_reducedNeighborReport != nullptr) i = m_reducedNeighborReport->Serialize (i);
+  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
@@ -659,6 +673,8 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_ehtCapability.DeserializeIfPresent (i);
   i = (m_reducedNeighborReport = Create<ReducedNeighborReport> ())->DeserializeIfPresent (tmp = i);
   if (i.GetDistanceFrom (tmp) == 0) m_reducedNeighborReport = nullptr;
+  i = (m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_BEACON))->DeserializeIfPresent (tmp = i);
+  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
 
   return i.GetDistanceFrom (start);
 }
@@ -836,6 +852,18 @@ MgtAssocRequestHeader::GetEhtCapabilities (void) const
   return m_ehtCapability;
 }
 
+void
+MgtAssocRequestHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+{
+  m_multiLinkElement = multiLinkElement;
+}
+
+Ptr<MultiLinkElement>
+MgtAssocRequestHeader::GetMultiLinkElement (void) const
+{
+  return m_multiLinkElement;
+}
+
 const Ssid&
 MgtAssocRequestHeader::GetSsid (void) const
 {
@@ -885,6 +913,7 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += m_vhtCapability.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
   size += m_ehtCapability.GetSerializedSize ();
+  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -914,12 +943,13 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtCapability.Serialize (i);
   i = m_heCapability.Serialize (i);
   i = m_ehtCapability.Serialize (i);
+  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
 MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
+  Buffer::Iterator tmp, i = start;
   i = m_capability.Deserialize (i);
   m_listenInterval = i.ReadLsbtohU16 ();
   i = m_ssid.Deserialize (i);
@@ -930,6 +960,9 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
   i = m_ehtCapability.DeserializeIfPresent (i);
+  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_REQUEST);
+  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
+  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 
@@ -1087,6 +1120,18 @@ MgtReassocRequestHeader::GetEhtCapabilities (void) const
   return m_ehtCapability;
 }
 
+void
+MgtReassocRequestHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+{
+  m_multiLinkElement = multiLinkElement;
+}
+
+Ptr<MultiLinkElement>
+MgtReassocRequestHeader::GetMultiLinkElement (void) const
+{
+  return m_multiLinkElement;
+}
+
 const Ssid&
 MgtReassocRequestHeader::GetSsid (void) const
 {
@@ -1143,6 +1188,7 @@ MgtReassocRequestHeader::GetSerializedSize (void) const
   size += m_vhtCapability.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
   size += m_ehtCapability.GetSerializedSize ();
+  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -1174,12 +1220,13 @@ MgtReassocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_vhtCapability.Serialize (i);
   i = m_heCapability.Serialize (i);
   i = m_ehtCapability.Serialize (i);
+  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
 MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
+  Buffer::Iterator tmp, i = start;
   i = m_capability.Deserialize (i);
   m_listenInterval = i.ReadLsbtohU16 ();
   ReadFrom (i, m_currentApAddr);
@@ -1191,6 +1238,9 @@ MgtReassocRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
   i = m_ehtCapability.DeserializeIfPresent (i);
+  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_REASSOCIATION_REQUEST);
+  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
+  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 
@@ -1403,6 +1453,18 @@ MgtAssocResponseHeader::GetEhtCapabilities (void) const
 }
 
 void
+MgtAssocResponseHeader::SetMultiLinkElement (Ptr<MultiLinkElement> multiLinkElement)
+{
+  m_multiLinkElement = multiLinkElement;
+}
+
+Ptr<MultiLinkElement>
+MgtAssocResponseHeader::GetMultiLinkElement (void) const
+{
+  return m_multiLinkElement;
+}
+
+void
 MgtAssocResponseHeader::SetAssociationId (uint16_t aid)
 {
   m_aid = aid;
@@ -1505,6 +1567,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_heOperation.GetSerializedSize ();
   size += m_muEdcaParameterSet.GetSerializedSize ();
   size += m_ehtCapability.GetSerializedSize ();
+  if (m_multiLinkElement != nullptr) size += m_multiLinkElement->GetSerializedSize ();
   return size;
 }
 
@@ -1545,12 +1608,13 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_heOperation.Serialize (i);
   i = m_muEdcaParameterSet.Serialize (i);
   i = m_ehtCapability.Serialize (i);
+  if (m_multiLinkElement != nullptr) i = m_multiLinkElement->Serialize (i);
 }
 
 uint32_t
 MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
 {
-  Buffer::Iterator i = start;
+  Buffer::Iterator tmp, i = start;
   i = m_capability.Deserialize (i);
   i = m_code.Deserialize (i);
   m_aid = i.ReadLsbtohU16 ();
@@ -1567,6 +1631,9 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_heOperation.DeserializeIfPresent (i);
   i = m_muEdcaParameterSet.DeserializeIfPresent (i);
   i = m_ehtCapability.DeserializeIfPresent (i);
+  m_multiLinkElement = Create<MultiLinkElement> (WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
+  i = m_multiLinkElement->DeserializeIfPresent (tmp = i);
+  if (i.GetDistanceFrom (tmp) == 0) m_multiLinkElement = nullptr;
   return i.GetDistanceFrom (start);
 }
 

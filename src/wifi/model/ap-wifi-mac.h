@@ -24,6 +24,7 @@
 #define AP_WIFI_MAC_H
 
 #include "wifi-mac.h"
+#include "wifi-mac-header.h"
 #include <unordered_map>
 
 namespace ns3 {
@@ -35,6 +36,7 @@ class ErpInformation;
 class EdcaParameterSet;
 class MuEdcaParameterSet;
 class ReducedNeighborReport;
+class MultiLinkElement;
 class HtOperation;
 class VhtOperation;
 class HeOperation;
@@ -213,12 +215,13 @@ private:
    */
   void ForwardDown (Ptr<Packet> packet, Mac48Address from, Mac48Address to, uint8_t tid);
   /**
-   * Forward a probe response packet to the DCF. The standard is not clear on the correct
-   * queue for management frames if QoS is supported. We always use the DCF.
+   * Send a Probe Response in response to a Probe Request received from the STA with the
+   * given address on the given link.
    *
    * \param to the address of the STA we are sending a probe response to
+   * \param linkId the ID of the given link
    */
-  void SendProbeResp (Mac48Address to);
+  void SendProbeResp (Mac48Address to, uint8_t linkId);
   /**
    * Forward an association or a reassociation response packet to the DCF.
    * The standard is not clear on the correct queue for management frames if QoS is supported.
@@ -271,6 +274,15 @@ private:
    * \return the Reduced Neighbor Report element
    */
   Ptr<ReducedNeighborReport> GetReducedNeighborReport (uint8_t linkId) const;
+  /**
+   * Return the Multi-Link Element that the current AP includes in the management
+   * frames of the given type it transmits on the given link.
+   *
+   * \param linkId the ID of the link to send the Multi-Link Element onto
+   * \param frameType the type of the frame containing the Multi-Link Element
+   * \return the Multi-Link Element
+   */
+  Ptr<MultiLinkElement> GetMultiLinkElement (uint8_t linkId, WifiMacType frameType) const;
   /**
    * Return the HT operation of the current AP.
    *
