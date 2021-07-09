@@ -81,7 +81,8 @@ struct WifiRemoteStationState
     BRAND_NEW,
     DISASSOC,
     WAIT_ASSOC_TX_OK,
-    GOT_ASSOC_TX_OK
+    GOT_ASSOC_TX_OK,
+    ASSOC_REFUSED
   } m_state;
 
   /**
@@ -711,6 +712,19 @@ public:
    * \param address the address of the station
    */
   void RecordDisassociated (Mac48Address address);
+  /**
+   * Return whether we refused an association request from the given station
+   *
+   * \param address the address of the station
+   * \return true if we refused an association request, false otherwise
+   */
+  bool IsAssocRefused (Mac48Address address) const;
+  /**
+   * Records that association request was refused
+   *
+   * \param address the address of the station
+   */
+  void RecordAssocRefused (Mac48Address address);
 
   /**
    * Set the address of the MLD the given station is affiliated with.

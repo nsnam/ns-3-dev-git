@@ -467,6 +467,23 @@ WifiRemoteStationManager::RecordDisassociated (Mac48Address address)
   LookupState (address)->m_state = WifiRemoteStationState::DISASSOC;
 }
 
+bool
+WifiRemoteStationManager::IsAssocRefused (Mac48Address address) const
+{
+  if (address.IsGroup ())
+    {
+      return false;
+    }
+  return LookupState (address)->m_state == WifiRemoteStationState::ASSOC_REFUSED;
+}
+
+void
+WifiRemoteStationManager::RecordAssocRefused (Mac48Address address)
+{
+  NS_ASSERT (!address.IsGroup ());
+  LookupState (address)->m_state = WifiRemoteStationState::ASSOC_REFUSED;
+}
+
 uint16_t
 WifiRemoteStationManager::GetAssociationId (Mac48Address remoteAddress) const
 {
