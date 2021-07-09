@@ -22,6 +22,7 @@
 #define WIFI_REMOTE_STATION_MANAGER_H
 
 #include <array>
+#include <optional>
 #include <unordered_map>
 #include "ns3/traced-callback.h"
 #include "ns3/object.h"
@@ -96,6 +97,8 @@ struct WifiRemoteStationState
   Mac48Address m_address;            //!< Mac48Address of the remote station
   uint16_t m_aid;                    /**< AID of the remote station (unused if this object
                                           is installed on a non-AP station) */
+  std::optional<Mac48Address> m_mldAddress; /**< MLD MAC address if the remote station is
+                                                 affiliated with an MLD */
   WifiRemoteStationInfo m_info;      //!< remote station info
   bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
   bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
@@ -707,6 +710,32 @@ public:
    * \param address the address of the station
    */
   void RecordDisassociated (Mac48Address address);
+
+  /**
+   * Set the address of the MLD the given station is affiliated with.
+   *
+   * \param address the MAC address of the remote station
+   * \param mldAddress the MAC address of the MLD the remote station is
+   *                   affiliated with
+   */
+  void SetMldAddress (const Mac48Address& address, const Mac48Address& mldAddress);
+  /**
+   * Get the address of the MLD the given station is affiliated with, if any,
+   * or the broadcast address, otherwise.
+   *
+   * \param address the MAC address of the remote station
+   * \return the address of the MLD the given station is affiliated with, if any
+   */
+  std::optional<Mac48Address> GetMldAddress (const Mac48Address& address) const;
+  /**
+   * Get the address of the remote station operating on this link and affiliated
+   * with the MLD having the given MAC address, if any.
+   *
+   * \param mldAddress the MLD MAC address
+   * \return the address of the remote station operating on this link and
+   *         affiliated with the MLD, if any
+   */
+  std::optional<Mac48Address> GetAffiliatedStaAddress (const Mac48Address& mldAddress) const;
 
   /**
    * \param header MAC header

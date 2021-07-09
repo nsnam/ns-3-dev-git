@@ -517,6 +517,39 @@ WifiRemoteStationManager::GetStaId (Mac48Address address, const WifiTxVector& tx
   return staId;
 }
 
+void
+WifiRemoteStationManager::SetMldAddress (const Mac48Address& address, const Mac48Address& mldAddress)
+{
+  NS_LOG_FUNCTION (this << address << mldAddress);
+
+  WifiRemoteStationState *state = LookupState (address);
+  state->m_mldAddress = mldAddress;
+  // insert another entry in m_states indexed by the MLD address and pointing to the same state
+  const_cast<WifiRemoteStationManager *> (this)->m_states.insert ({mldAddress, state});
+}
+
+std::optional<Mac48Address>
+WifiRemoteStationManager::GetMldAddress (const Mac48Address& address) const
+{
+  return LookupState (address)->m_mldAddress;
+}
+
+std::optional<Mac48Address>
+WifiRemoteStationManager::GetAffiliatedStaAddress (const Mac48Address& mldAddress) const
+{
+  auto stateIt = m_states.find (mldAddress);
+
+  if (stateIt == m_states.end ())
+    {
+      // MLD address not found
+      return std::optional<Mac48Address> ();
+    }
+
+  NS_ASSERT (stateIt->second->m_mldAddress.has_value ()
+             && *stateIt->second->m_mldAddress == mldAddress);
+  return stateIt->second->m_address;
+}
+
 WifiTxVector
 WifiRemoteStationManager::GetDataTxVector (const WifiMacHeader &header, uint16_t allowedWidth)
 {
