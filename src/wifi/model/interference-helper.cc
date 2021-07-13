@@ -38,12 +38,12 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       PHY event class
  ****************************************************************/
 
-Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower)
+Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand&& rxPower)
   : m_ppdu (ppdu),
     m_txVector (txVector),
     m_startTime (Simulator::Now ()),
     m_endTime (m_startTime + duration),
-    m_rxPowerW (rxPower)
+    m_rxPowerW (std::move (rxPower))
 {
 }
 
@@ -189,7 +189,7 @@ InterferenceHelper::~InterferenceHelper ()
 Ptr<Event>
 InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPowerW, bool isStartOfdmaRxing)
 {
-  Ptr<Event> event = Create<Event> (ppdu, txVector, duration, rxPowerW);
+  Ptr<Event> event = Create<Event> (ppdu, txVector, duration, std::move (rxPowerW));
   AppendEvent (event, isStartOfdmaRxing);
   return event;
 }

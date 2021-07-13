@@ -38,14 +38,15 @@ class Event : public SimpleRefCount<Event>
 {
 public:
   /**
-   * Create an Event with the given parameters.
+   * Create an Event with the given parameters. Note that <i>rxPower</i> will
+   * be moved into this object.
    *
    * \param ppdu the PPDU
    * \param txVector the TXVECTOR
    * \param duration duration of the PPDU
    * \param rxPower the received power per band (W)
    */
-  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration,  RxPowerWattPerChannelBand& rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration,  RxPowerWattPerChannelBand&& rxPower);
   ~Event ();
 
   /**
