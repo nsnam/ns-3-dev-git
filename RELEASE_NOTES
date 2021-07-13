@@ -9,7 +9,7 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
+Release 3.34
 =============
 
 Availability
@@ -20,15 +20,40 @@ Supported platforms
 -------------------
 This release is intended to work on systems with the following minimal
 requirements (Note: not all ns-3 features are available on all systems):
-- g++-5.4 or later, or clang++-8 or later
-- Python 3.5 or later
+- g++-7 or later, or LLVM/clang++-8 or later
+- Python 3.6 or later
 - (macOS only) Xcode 10.1 or later
+
++This release has been tested on the following systems:
++- Fedora 33 with g++-10.2.1 and clang++-11.0.0; Python 3.9.2
++- Ubuntu 21.04 with g++-11.1.0 and Python 3.9.5
++- Ubuntu 20.04 with g++-9.3.0 and Python 3.8.5
++- Ubuntu 18.04 with g++-7.5.0 and Python 3.6.9
++- macOS 10.15.7 (Catalina) with Xcode 12.4 (Apple clang-1200.0.32.29, Python 3.9.1)
++- macOS 10.13.6 (High Sierra) with Xcode 10.1 (Apple clang-1000.11.45.5, Python 3.7.1)
 
 New user-visible features
 -------------------------
+- (antenna) Added PhasedArrayModel, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models
+- (antenna) Replaced the ThreeGppAntennaArrayModel with a UniformPlanarArray model, extending the new PhaseAdrrayModel
+- (antenna) Improved the Angles class to be more robust and user-friendly.
+- (antenna) AntennaModel child classes have been extended to produce 3D radiation patterns
+- (internet) Support for IPv6 stateless address auto-configuration (SLAAC).
+- (network) Improved support for bit fields in header serialization/deserialization.
+- (network) Added support for DLT_LORATAP DataLinkType to PCAP files
+- (network) More arithmetic operators are provided for DataRate objects
+- (nix-vector) Nix-Vector routing supports multiple interface addresse and can print out routing paths.
+- (olsr) Add support for printing OLSR headers
 - (sixlowpan) Added support for stateful (i.e., context-based) RFC6282 compression.
+- (tcp) TCP CUBIC is now the default TCP congestion control, replacing NewReno.
+- (tcp) A BBRv1 congestion control model has been added.
+- (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
+- (traffic-control) Added FqPIE queue disc with L4S mode.
+- (wifi) Add support for 802.11ax DL and UL OFDMA, and a round-robin multi-user scheduler
+- (wifi) Added 802.11ax support to MinstrelHt rate control algorithm.
 - (wifi) The PHY layer has been refactored: the amendment-specific logic has been ported to PhyEntity classes and WifiPpdu classes
 - (wifi) The MAC layer has been refactored. The MacLow class has been replaced by a hierarchy of FrameExchangeManager classes, each adding support for the frame exchange sequences introduced by a given amendment.
+- (wifi) Add ThompsonSamplingWifiManager rate control algorithm.
 - (wifi) Holland PHY configuration has been removed from the model
 - (wifi) HT Greenfield (HT_GF) preamble support has been removed from the model
 - (wifi) Added the ability to configure the primary 20 MHz channel for 802.11 devices operating on channels of width greater than 20 MHz
@@ -36,19 +61,32 @@ New user-visible features
 - (wifi) Stations perform TXOP recovery if the transmission of a non-initial MPDU in a TXOP fails
 - (wifi) Stations keep track of the TXOP holder and ignore the NAV when they receive an RTS frame from the TXOP holder
 - (wifi) The TxOkHeader and TxErrHeader trace sources of RegularWifiMac have been obsoleted and replaced by trace sources that better capture the result of a transmission (AckedMpdu, NAckedMpdu, DroppedMpdu, MpduResponseTimeout and PsduResponseTimeout)
-- (wifi) Add ThompsonSamplingWifiManager rate control algorithm.
-- (wifi) Add support for 802.11ax DL and UL OFDMA
-- (traffic-control) Added FqCobalt queue disc with L4S features and set associative hash.
-- (traffic-control) Added FqPIE queue disc with L4S mode.
-- (antenna) Added PhasedArrayModel, providing a flexible interface for modeling a number of Phase Antenna Array (PAA) models
-- (antenna) Improved the Angles class to be more robust and user-friendly.
-- (wifi) Added 802.11ax support to MinstrelHt rate control algorithm.
+- (wifi) Bianchi example program extended to support 802.11n/ac/ax rates
+- (wifi) ErrorRateModel API extended to support link-to-system models
 
 Bugs fixed
 ----------
 - (antenna) Fix random angle generation for the 3gpp channel model.
+- (build) #52 - Fix and standardize Boost detection
+- (build) #352 - Handle multiple attempts to configure C++ standard
+- (core) #349 - Warn about Config::SetDefault() of deprecated attribute
+- (internet) #385 - IPv6 NA are now sent directly by the NetDevice
+- (lr-wpan) #382 - Fix Tx power calculation from PIB attribute
+- (lte) #285 - Check the RandomAccess status of an RNTI to whom the preamble was assigned
+- (lte) #322 - Add Channel pointer value type attribute to REM helper
+- (lte) #354 - Use uint16_t for srsIndex instead of uint8_t
+- (lte) #395 - Add transmission buffer size for RLC Acknowledged Mode
+- (lte) !555 - Remove assert upon RAR timeout in RLF example and..
+- (lte) !605 - Make sure RNTI exists before removing UE context
+- (lte) - Set UeRrcSapProvider only if RNTI exists at the eNB
+- (nix-vector) #393 - Avoid changing routing-dependent members
+- (sixlowpan) #358 - Use correct fragment size when using mesh routing.
+- (tcp) #374 - Assume TCP RTT is one microseconds if it measures as zero
+- (uan) #129 - EndTx moved to PhyListener
+- (uan) #293 - Fixed integer truncation in window computation
+- (wave) Fix compilation and runtime issues with vanet-routing-compare.cc
 - (wifi) #418 - Fix HE A-MPDU Max Size Upper Bound
-
+- (wifi) - Compare received power per MHz to normalized RX sensitivity
 
 Release 3.33
 ============
