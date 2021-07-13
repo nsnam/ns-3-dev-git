@@ -105,7 +105,7 @@ public:
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
    */
-  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW, Time rxDuration);
+  void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration);
 
   /**
    * Reset PHY at the end of the packet under reception after it has failed the PHY header.
@@ -570,7 +570,7 @@ public:
    * \param psdu the PSDU being transmitted
    * \param rxPowersW the receive power per channel band in Watts
    */
-  void NotifyRxBegin (Ptr<const WifiPsdu> psdu, RxPowerWattPerChannelBand rxPowersW);
+  void NotifyRxBegin (Ptr<const WifiPsdu> psdu, const RxPowerWattPerChannelBand& rxPowersW);
   /**
    * Public method used to fire a PhyRxEnd trace.
    * Implemented for encapsulation purposes.

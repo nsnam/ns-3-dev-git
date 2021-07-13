@@ -94,7 +94,7 @@ public:
                            Time ppduDuration) override;
   Ptr<const WifiPsdu> GetAddressedPsduInPpdu (Ptr<const WifiPpdu> ppdu) const override;
   void StartReceivePreamble (Ptr<WifiPpdu> ppdu,
-                             RxPowerWattPerChannelBand rxPowersW,
+                             RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration) override;
   void CancelAllEvents (void) override;
   uint16_t GetStaId (const Ptr<const WifiPpdu> ppdu) const override;
@@ -370,7 +370,7 @@ public:
 protected:
   PhyFieldRxStatus ProcessSigA (Ptr<Event> event, PhyFieldRxStatus status) override;
   PhyFieldRxStatus ProcessSigB (Ptr<Event> event, PhyFieldRxStatus status) override;
-  Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW) override;
+  Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW) override;
   bool IsConfigSupported (Ptr<const WifiPpdu> ppdu) const override;
   void DoStartReceivePayload (Ptr<Event> event) override;
   std::pair<uint16_t, WifiSpectrumBand> GetChannelWidthAndBand (const WifiTxVector& txVector, uint16_t staId) const override;

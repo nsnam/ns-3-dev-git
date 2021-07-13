@@ -1667,7 +1667,7 @@ WifiPhy::NotifyTxDrop (Ptr<const WifiPsdu> psdu)
 }
 
 void
-WifiPhy::NotifyRxBegin (Ptr<const WifiPsdu> psdu, RxPowerWattPerChannelBand rxPowersW)
+WifiPhy::NotifyRxBegin (Ptr<const WifiPsdu> psdu, const RxPowerWattPerChannelBand& rxPowersW)
 {
   if (psdu)
     {
@@ -1891,7 +1891,7 @@ WifiPhy::Reset (void)
 }
 
 void
-WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW, Time rxDuration)
+WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW, Time rxDuration)
 {
   WifiModulationClass modulation = ppdu->GetTxVector ().GetModulationClass ();
   auto it = m_phyEntities.find (modulation);

@@ -314,7 +314,7 @@ HePhy::BuildPpdu (const WifiConstPsduMap & psdus, const WifiTxVector& txVector, 
 }
 
 void
-HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+HePhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                              Time rxDuration)
 {
   NS_LOG_FUNCTION (this << ppdu << rxDuration);
@@ -399,7 +399,7 @@ HePhy::DoResetReceive (Ptr<Event> event)
 }
 
 Ptr<Event>
-HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW)
+HePhy::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW)
 {
   Ptr<Event> event;
   //We store all incoming preamble events, and a decision is made at the end of the preamble detection window.
@@ -685,12 +685,18 @@ void
 HePhy::StartReceiveOfdmaPayload (Ptr<Event> event)
 {
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
-  RxPowerWattPerChannelBand rxPowersW = event->GetRxPowerWPerBand ();
-  //The total RX power corresponds to the maximum over all the bands
-  auto it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
-                              [] (const std::pair<WifiSpectrumBand, double> &p1, const std::pair<WifiSpectrumBand, double> &p2) {
-                                return p1.second < p2.second;
-                              });
+  const RxPowerWattPerChannelBand& rxPowersW = event->GetRxPowerWPerBand ();
+  //The total RX power corresponds to the maximum over all the bands.
+  //Only perform this computation if the result needs to be logged.
+  auto it = rxPowersW.end ();
+  if (g_log.IsEnabled (ns3::LOG_FUNCTION))
+    {
+      it = std::max_element (rxPowersW.begin (), rxPowersW.end (),
+                             [] (const std::pair<WifiSpectrumBand, double> &p1, const std::pair<WifiSpectrumBand, double> &p2) {
+                               return p1.second < p2.second;
+                             });
+
+    }
   NS_LOG_FUNCTION (this << *event << it->second);
   NS_ASSERT (GetCurrentEvent () != 0);
   auto itEvent = m_beginOfdmaPayloadRxEvents.find (GetStaId (ppdu));

@@ -358,7 +358,7 @@ public:
    * \param rxPowersW the receive power in W per band
    * \param rxDuration the duration of the PPDU
    */
-  virtual void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+  virtual void StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                                      Time rxDuration);
   /**
    * Start receiving a given field.
@@ -522,7 +522,7 @@ protected:
    * \param rxPowersW the receive power in W per band
    * \return the event holding the incoming PPDU's information
    */
-  virtual Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW);
+  virtual Ptr<Event> DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW);
   /**
    * End receiving the preamble, perform amendment-specific actions, and
    * provide the status of the reception.
@@ -717,14 +717,14 @@ protected:
    *
    * \copydoc InterferenceHelper::Add
    */
-  Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  Ptr<Event> CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower, bool isStartOfdmaRxing = false);
   /**
    * Update an event in WifiPhy's InterferenceHelper class.
    * Wrapper used by child classes.
    *
    * \copydoc InterferenceHelper::UpdateEvent
    */
-  void UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
+  void UpdateInterferenceEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
   /**
    * Notify WifiPhy's InterferenceHelper of the end of the reception,
    * clear maps and end of MPDU event, and eventually reset WifiPhy.

@@ -45,7 +45,7 @@ public:
    * \param duration duration of the PPDU
    * \param rxPower the received power per band (W)
    */
-  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower);
+  Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration,  RxPowerWattPerChannelBand& rxPower);
   ~Event ();
 
   /**
@@ -90,7 +90,7 @@ public:
    *
    * \return the received power (W) for all bands.
    */
-  RxPowerWattPerChannelBand GetRxPowerWPerBand (void) const;
+  const RxPowerWattPerChannelBand& GetRxPowerWPerBand (void) const;
   /**
    * Return the TXVECTOR of the PPDU.
    *
@@ -103,7 +103,7 @@ public:
    *
    * \param rxPower the received power (W) for all bands.
    */
-  void UpdateRxPowerW (RxPowerWattPerChannelBand rxPower);
+  void UpdateRxPowerW (const RxPowerWattPerChannelBand& rxPower);
 
 
 private:
@@ -194,14 +194,14 @@ public:
    *
    * \return Event
    */
-  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing = false);
+  Ptr<Event> Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower, bool isStartOfdmaRxing = false);
 
   /**
    * Add a non-Wifi signal to interference helper.
    * \param duration the duration of the signal
    * \param rxPower received power per band (W)
    */
-  void AddForeignSignal (Time duration, RxPowerWattPerChannelBand rxPower);
+  void AddForeignSignal (Time duration, RxPowerWattPerChannelBand& rxPower);
   /**
    * Calculate the SNIR at the start of the payload and accumulate
    * all SNIR changes in the SNIR vector for each MPDU of an A-MPDU.
@@ -265,7 +265,7 @@ public:
    * \param event the event to be updated
    * \param rxPower the received power (W) per band to be added to the current event
    */
-  void UpdateEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower);
+  void UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower);
 
 
 protected:

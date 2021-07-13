@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("InterferenceHelper");
  *       PHY event class
  ****************************************************************/
 
-Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower)
+Event::Event (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower)
   : m_ppdu (ppdu),
     m_txVector (txVector),
     m_startTime (Simulator::Now ()),
@@ -97,7 +97,7 @@ Event::GetRxPowerW (WifiSpectrumBand band) const
   return it->second;
 }
 
-RxPowerWattPerChannelBand
+const RxPowerWattPerChannelBand&
 Event::GetRxPowerWPerBand (void) const
 {
   return m_rxPowerW;
@@ -110,7 +110,7 @@ Event::GetTxVector (void) const
 }
 
 void
-Event::UpdateRxPowerW (RxPowerWattPerChannelBand rxPower)
+Event::UpdateRxPowerW (const RxPowerWattPerChannelBand& rxPower)
 {
   NS_ASSERT (rxPower.size () == m_rxPowerW.size ());
   //Update power band per band
@@ -187,7 +187,7 @@ InterferenceHelper::~InterferenceHelper ()
 }
 
 Ptr<Event>
-InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPowerW, bool isStartOfdmaRxing)
+InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPowerW, bool isStartOfdmaRxing)
 {
   Ptr<Event> event = Create<Event> (ppdu, txVector, duration, rxPowerW);
   AppendEvent (event, isStartOfdmaRxing);
@@ -195,7 +195,7 @@ InterferenceHelper::Add (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector,
 }
 
 void
-InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand rxPowerW)
+InterferenceHelper::AddForeignSignal (Time duration, RxPowerWattPerChannelBand& rxPowerW)
 {
   // Parameters other than duration and rxPowerW are unused for this type
   // of signal, so we provide dummy versions
@@ -279,8 +279,7 @@ void
 InterferenceHelper::AppendEvent (Ptr<Event> event, bool isStartOfdmaRxing)
 {
   NS_LOG_FUNCTION (this << event << isStartOfdmaRxing);
-  RxPowerWattPerChannelBand rxPowerWattPerChannelBand = event->GetRxPowerWPerBand ();
-  for (auto const& it : rxPowerWattPerChannelBand)
+  for (auto const& it : event->GetRxPowerWPerBand ())
     {
       WifiSpectrumBand band = it.first;
       auto ni_it = m_niChangesPerBand.find (band);
@@ -312,7 +311,7 @@ InterferenceHelper::AppendEvent (Ptr<Event> event, bool isStartOfdmaRxing)
 }
 
 void
-InterferenceHelper::UpdateEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower)
+InterferenceHelper::UpdateEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower)
 {
   NS_LOG_FUNCTION (this << event);
   //This is called for UL MU events, in order to scale power as long as UL MU PPDUs arrive

@@ -359,7 +359,7 @@ PhyEntity::DoEndReceiveField (WifiPpduField field, Ptr<Event> event)
 }
 
 void
-PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW,
+PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW,
                                  Time /* rxDuration */)
 {
   //The total RX power corresponds to the maximum over all the bands
@@ -736,7 +736,7 @@ PhyEntity::AddPreambleEvent (Ptr<Event> event)
 }
 
 Ptr<Event>
-PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPowersW)
+PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand& rxPowersW)
 {
   Ptr<Event> event = CreateInterferenceEvent (ppdu, ppdu->GetTxVector (), ppdu->GetTxDuration (), rxPowersW);
 
@@ -748,13 +748,13 @@ PhyEntity::DoGetEvent (Ptr<const WifiPpdu> ppdu, RxPowerWattPerChannelBand rxPow
 }
 
 Ptr<Event>
-PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand rxPower, bool isStartOfdmaRxing /* = false */)
+PhyEntity::CreateInterferenceEvent (Ptr<const WifiPpdu> ppdu, const WifiTxVector& txVector, Time duration, RxPowerWattPerChannelBand& rxPower, bool isStartOfdmaRxing /* = false */)
 {
   return m_wifiPhy->m_interference.Add (ppdu, txVector, duration, rxPower, isStartOfdmaRxing);
 }
 
 void
-PhyEntity::UpdateInterferenceEvent (Ptr<Event> event, RxPowerWattPerChannelBand rxPower)
+PhyEntity::UpdateInterferenceEvent (Ptr<Event> event, const RxPowerWattPerChannelBand& rxPower)
 {
   m_wifiPhy->m_interference.UpdateEvent (event, rxPower);
 }
