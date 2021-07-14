@@ -288,110 +288,144 @@ the release branches can be checked out by using the git tag facility;
 a named release such as 'ns-3.30' can be checked out on a branch by specifying
 the release name 'ns-3.30' (or 'ns-3.30.1' etc.).
 
-To facilitate this, let's look at a toy repository and the git commands
-involved.  This repository is initialized with a few files (``a``, ``b``, 
-``c``, and ``README.md``) and a ``VERSION`` file.  ``VERSION`` is always
-kept on the string ``3-dev`` in the ``master`` branch, but is changed to
-the release number in the release branches.
-
-::
-
-  $ ls
-  a  b  c  README.md  VERSION
-
-The git log command can be appended with some arguments to display the
-branch history:
+A compact way to represent a git history is the following command:
 
 ::
 
   $ git log --graph --decorate --oneline --all
-  * d3e953b (HEAD -> master) Add VERSION file
-  * 62b05c5 Add three files a, b, and c
-  * 3e124c8 (origin/master, origin/HEAD) Initial commit
 
-  $ cat VERSION
-  3-dev
-
-  $ git branch -a
-  * master
-    remotes/origin/HEAD -> origin/master
-    remotes/origin/master
-
-
-Now, let's create a notional ns-3.1 release.
+At the point just before the ns-3.34 release, the log looked like this:
 
 ::
 
-  $ git checkout -b 'ns-3.1-release'
-  Switched to a new branch 'ns-3.1-release'
+  * 9df8ef4 (HEAD -> master) doc: Update ns-3 version in tutorial examples
+  * 9319cdd (origin/master, origin/HEAD) Update CHANGES.html and RELEASE_NOTES
+  * 8da68b5 wifi: Fix typo in channel access manager test
 
-We change the VERSION field from '3-dev' to '3.1'::
+We want the release to create a small branch that is merged (in a special
+way) back to the mainline, yielding something like this:
 
-  $ sed -i 's/3-dev/3.1/g' VERSION
+::
+
+  * 4b27025 (master) Update release files to start next release
+  *   fd075f6 Merge ns-3.34-release branch
+  |\
+  | * 3fab3cf (HEAD, tag: ns-3.34) Update availability in RELEASE_NOTES
+  | * c50aaf7 Update VERSION and documentation tags for ns-3.34 release
+  |/
+  * 9df8ef4 doc: Update ns-3 version in tutorial examples
+  * 9319cdd (origin/master, origin/HEAD) Update CHANGES.html and RELEASE_NOTES
+
+The first commit on the release branch changes the '3-dev' string in VERSION
+and the various documentation conf.py files to '3.34'.  The second commit
+on the release branch updates RELEASE_NOTES to state the URL of the release.
+
+Starting with commit 9df8ef4, the following steps were taken to create the
+ns-3.34 release.  First, this commit hash '9df8ef4' will be used later in
+the merge process.
+
+First, create a new release branch locally:
+
+::
+
+  $ git checkout -b 'ns-3.34-release'
+  Switched to a new branch 'ns-3.34-release'
+
+We change the VERSION field from '3-dev' to '3.34'::
+
+  $ sed -i 's/3-dev/3.34/g' VERSION
   $ cat VERSION
-  3.1
-  $ git commit -m"Update VERSION to 3.1" VERSION
-  
-Let's release this.  Add a git annotated tag as follows::
+  3.34
 
-  $ git tag -a 'ns-3.1' -m"ns-3.1 release"
+We next change the file conf.py in the tutorial, manual, and models directories
+to change the strings 'ns-3-dev' to ns-3.34.
+
+When you are done, the 'git status' command should show:
+
+::
+
+  VERSION                     | 2 +-
+  doc/manual/source/conf.py   | 4 ++--
+  doc/models/source/conf.py   | 4 ++--
+  doc/tutorial/source/conf.py | 4 ++--
+
+Make a commit of these files:
+
+  $ git commit -a -m"Update VERSION and documentation tags for ns-3.34 release"
+
+Next, make the following change to RELEASE_NOTES and commit it:
+
+::
+   Availability
+   ------------
+  -This release is not yet available.
+  +This release is available from:
+  +https://www.nsnam.org/release/ns-allinone-3.34.tar.bz2
+
+  $ git commit -m"Update availability in RELEASE_NOTES" RELEASE_NOTES
+
+Finally, add a git annotated tag:
+  
+::
+
+  $ git tag -a 'ns-3.34' -m"ns-3.34 release"
 
 Now, let's merge back to ``master``.  However, we want to avoid touching
-the ``VERSION`` file on ``master``; we want all other changes and tags
-but this one.  We can accomplish this with a special merge as follows.
+the ``VERSION`` and ``conf.py`` files on ``master``; we want the RELEASE_NOTES
+change and new tag.  We can accomplish this with a special merge as follows.
 
 ::
 
   $ git checkout master
-  $ git merge --no-commit --no-ff ns-3.1-release
+  $ git merge --no-commit --no-ff ns-3.34-release
   Automatic merge went well; stopped before committing as requested
 
 Now, we want to reset VERSION to the previous string, which existed before
 we branched.  We can use ``git reset`` on this file and then finish the merge.
-Recall its commit hash of ``d3e953b`` from above
+Recall its commit hash of ``9df8ef4`` from above.
 
 ::
 
-  $ git reset d3e953b VERSION
+  $ git reset 9df8ef4 VERSION
   Unstaged changes after reset:
   M	VERSION
-  $ sed -i 's/3.1/3-dev/g' VERSION
+  $ sed -i 's/3.34/3-dev/g' VERSION
   $ cat VERSION
   3-dev
+
+Repeat the above resets and change back to ``3-dev`` for each conf.py file.
 
 Finally, commit the branch and delete our local release branch.
 
 ::
 
-  $ git commit -m"Merge ns-3.1-release branch"
-  $ git branch -d ns-3.1-release
+  $ git commit -m"Merge ns-3.34-release branch"
+  $ git branch -d ns-3.34-release
 
 The git history now looks like this::
 
   $ git log --graph --decorate --oneline --all
-  *   80de6c5 (HEAD -> master) Merge ns-3.1-release branch
-  |\  
-  | * 5718d61 (tag: ns-3.1, ns-3.1-release) Update VERSION to 3.1
-  |/  
-  * d3e953b Add VERSION file
-  * 62b05c5 Add three files a, b, and c
-  * 3e124c8 (origin/master, origin/HEAD) Initial commit
-  $ git tag
-  ns-3.1
+  *   fd075f6 (HEAD -> master) Merge ns-3.34-release branch
+  |\
+  | * 3fab3cf (HEAD, tag: ns-3.34) Update availability in RELEASE_NOTES
+  | * c50aaf7 Update VERSION and documentation tags for ns-3.34 release
+  |/
+  * 9df8ef4 doc: Update ns-3 version in tutorial examples
+  * 9319cdd (origin/master, origin/HEAD) Update CHANGES.html and RELEASE_NOTES
 
 This may now be pushed to ``nsnam/ns-3-dev.git`` and development can continue.
 
-**Note:**  When pushing to the remote, don't forget to push the tags::
+**Important:**  When pushing to the remote, don't forget to push the tags::
 
   $ git push --follow-tags
 
-Future users who want to check out the ns-3.1 release will do something like::
+Future users who want to check out the ns-3.34 release will do something like::
 
-  $ git checkout -b my-local-ns-3.1 ns-3.1
-  Switched to a new branch 'my-local-ns-3.1'
+  $ git checkout -b my-local-ns-3.34 ns-3.34
+  Switched to a new branch 'my-local-ns-3.34'
 
 **Note:**  It is a good idea to avoid naming the new branch the same as the tag
-name; in this case, 'ns-3.1'.
+name; in this case, 'ns-3.34'.
 
 Let's assume now that master evolves with new features and bugfixes.  They
 are committed to ``master`` on ``nsnam/ns-3-dev.git`` as usual::
@@ -416,41 +450,41 @@ Now the tree looks like this::
   * 9a3432a some more changes
   * ba28d6d Add new feature
   * e50015a make some changes
-  *   80de6c5 Merge ns-3.1-release branch
-  |\  
-  | * 5718d61 (tag: ns-3.1) Update VERSION to 3.1
-  |/  
-  * d3e953b Add VERSION file
-  * 62b05c5 Add three files a, b, and c
-  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+  *   fd075f6 Merge ns-3.34-release branch
+  |\
+  | * 3fab3cf (tag: ns-3.34) Update availability in RELEASE_NOTES
+  | * c50aaf7 Update VERSION and documentation tags for ns-3.34 release
+  |/
+  * 9df8ef4 doc: Update ns-3 version in tutorial examples
+  * 9319cdd Update CHANGES.html and RELEASE_NOTES
 
 Let's assume that the changeset ``ee37d41`` is considered important to fix in
-the ns-3.1 release, but we don't want the other changes introduced since then.
+the ns-3.34 release, but we don't want the other changes introduced since then.
 The solution will be to create a new branch for a hotfix release, and follow
-similar steps.  The branch for the hotfix should come from commit ``5718d61``,
+similar steps.  The branch for the hotfix should come from commit ``3fab3cf``,
 and should cherry-pick commit ``ee37d41`` (which may require merge if it
 doesn't apply cleanly), and then the hotfix branch can be tagged and merged
 as was done before.
 
 ::
 
-  $ git checkout -b ns-3.1.1-release ns-3.1
+  $ git checkout -b ns-3.34.1-release ns-3.34
   $ git cherry-pick ee37d41
   ... (resolve any conflicts)
   $ git add a
   $ git commit
-  $ sed -i 's/3.1/3.1.1/g' VERSION
+  $ sed -i 's/3.34/3.34.1/g' VERSION
   $ cat VERSION
-  3.1.1
-  $ git commit -m"Update VERSION to 3.1.1" VERSION
-  $ git tag -a 'ns-3.1.1' -m"ns-3.1.1 release"
+  3.34.1
+  $ git commit -m"Update VERSION to 3.34.1" VERSION
+  $ git tag -a 'ns-3.34.1' -m"ns-3.34.1 release"
 
 Now the merge::
 
   $ git checkout master
-  $ git merge --no-commit --no-ff ns-3.1.1-release
+  $ git merge --no-commit --no-ff ns-3.34.1-release
 
-This time we see::
+This time we may see something like::
 
   Auto-merging a
   CONFLICT (content): Merge conflict in a
@@ -480,32 +514,35 @@ We can next hand-edit these files to restore them to original state, so that::
     (use "git commit" to conclude merge)
 
   $ git commit
-  $ git branch -d ns-3.1.1-release
+  $ git branch -d ns-3.34.1-release
 
-The new log should show::
+The new log should show something like the below, with parallel git
+history paths until the merge back again::
   
   $ git log --graph --decorate --oneline --all
-  *   815ce6e (HEAD -> master) Merge branch 'ns-3.1.1-release'
+  *   815ce6e (HEAD -> master) Merge branch 'ns-3.34.1-release'
   |\  
-  | * 12a29ca (tag: ns-3.1.1, ns-3.1.1-release) Update VERSION to 3.1.1
+  | * 12a29ca (tag: ns-3.34.1) Update VERSION to 3.34.1
   | * 21ebdbf Fix missing abc bug on file a
   * | ee37d41 Fix missing abc bug on file a
   * | 9a3432a some more changes
   * | ba28d6d Add new feature
   * | e50015a make some changes
-  * |   80de6c5 Merge ns-3.1-release branch
+  * |   fd075f6 Merge ns-3.34-release branch
   |\ \  
   | |/  
-  | * 5718d61 (tag: ns-3.1) Update VERSION to 3.1
-  |/  
-  * d3e953b Add VERSION file
-  * 62b05c5 Add three files a, b, and c
-  * 3e124c8 (origin/master, origin/HEAD) Initial commit
+  | * 3fab3cf (tag: ns-3.34) Update availability in RELEASE_NOTES
+  | * c50aaf7 Update VERSION and documentation tags for ns-3.34 release
+  |/
+  * 9df8ef4 doc: Update ns-3 version in tutorial examples
+  * 9319cdd Update CHANGES.html and RELEASE_NOTES
+
+  $ git push origin master:master --follow-tags
 
 And we can continue to commit on top of master going forward.  The two
-tags are::
+tags should be found in the ``git tag`` output (among other tags)::
 
   $ git tag
-  ns-3.1
-  ns-3.1.1
+  ns-3.34
+  ns-3.34.1
 
