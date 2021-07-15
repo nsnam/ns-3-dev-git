@@ -33,7 +33,7 @@ namespace ns3 {
  * \brief Class implementing Uniform Planar Array (UPA) model.
  *
  * \note the current implementation supports the modeling of antenna arrays
- * composed of a single panel and with single (vertical) polarization.
+ * composed of a single panel and with single (configured) polarization.
  */
 class UniformPlanarArray : public PhasedArrayModel
 {
@@ -56,7 +56,7 @@ public:
 
   /**
    * Returns the horizontal and vertical components of the antenna element field
-   * pattern at the specified direction. Only vertical polarization is considered.
+   * pattern at the specified direction. Single polarization is considered.
    * \param a the angle indicating the interested direction
    * \return a pair in which the first element is the horizontal component
    *         of the field pattern and the second element is the vertical
@@ -158,7 +158,7 @@ private:
   double m_disH; //!< antenna spacing in the horizontal direction in multiples of wave length
   double m_alpha; //!< the bearing angle in radians
   double m_beta; //!< the downtilt angle in radians
-
+  double m_polSlant; //!< the polarization slant angle in radians
 };
 
 } /* namespace ns3 */

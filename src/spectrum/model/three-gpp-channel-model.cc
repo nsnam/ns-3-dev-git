@@ -1551,7 +1551,8 @@ ThreeGppChannelModel::GetNewChannel (Vector locUT, Ptr<const ChannelCondition> c
 
           for (uint8_t nIndex = 0; nIndex < numReducedCluster; nIndex++)
             {
-              //Compute the N-2 weakest cluster, only vertical polarization. (7.5-22)
+              //Compute the N-2 weakest cluster, assuming 0 slant angle and a
+              //polarization slant angle configured in the array (7.5-22)
               if (nIndex != cluster1st && nIndex != cluster2nd)
                 {
                   std::complex<double> rays (0,0);

@@ -38,7 +38,8 @@ UniformPlanarArray::UniformPlanarArray ()
     m_disV {0.5},
     m_disH {0.5},
     m_alpha {0},
-    m_beta {0}
+    m_beta {0},
+    m_polSlant {0.0}
 {}
 
 UniformPlanarArray::~UniformPlanarArray ()
@@ -84,6 +85,11 @@ UniformPlanarArray::GetTypeId (void)
                    "The downtilt angle in radians",
                    DoubleValue (0.0),
                    MakeDoubleAccessor (&UniformPlanarArray::m_beta),
+                   MakeDoubleChecker<double> (-M_PI, M_PI))
+    .AddAttribute ("PolSlantAngle",
+                   "The polarization slant angle in radians",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&UniformPlanarArray::m_polSlant),
                    MakeDoubleChecker<double> (-M_PI, M_PI))
   ;
   return tid;
@@ -182,12 +188,13 @@ UniformPlanarArray::GetElementFieldPattern (Angles a) const
   Angles aPrime (phiPrime, thetaPrime);
   NS_LOG_DEBUG (a << " -> " << aPrime);
 
-  // compute the antenna element field pattern in the vertical polarization using
-  // eq. 7.3-4 in 3GPP TR 38.901
-  // NOTE we assume vertical polarization, hence the field pattern in the
-  // horizontal polarization is 0
+  // compute the antenna element field patterns using eq. 7.3-4 and 7.3-5 in 3GPP TR 38.901,
+  // using the configured polarization slant angle (m_polSlant)
+  // NOTE: the slant angle (assumed to be 0) differs from the polarization slant angle
+  // (m_polSlant, given by the attribute), in 3GPP TR 38.901
   double aPrimeDb = m_antennaElement->GetGainDb (aPrime);
-  double fieldThetaPrime = pow (10, aPrimeDb / 20); // convert to linear magnitude
+  double fieldThetaPrime = pow (10, aPrimeDb / 20) * cos (m_polSlant); // convert to linear magnitude
+  double fieldPhiPrime = pow (10, aPrimeDb / 20) * sin (m_polSlant); // convert to linear magnitude
 
   // compute psi using eq. 7.1-15 in 3GPP TR 38.901, assuming that the slant
   // angle (gamma) is 0
@@ -196,8 +203,8 @@ UniformPlanarArray::GetElementFieldPattern (Angles a) const
 
   // convert the antenna element field pattern to GCS using eq. 7.1-11
   // in 3GPP TR 38.901
-  double fieldTheta = cos (psi) * fieldThetaPrime;
-  double fieldPhi = sin (psi) * fieldThetaPrime;
+  double fieldTheta = cos (psi) * fieldThetaPrime - sin (psi) * fieldPhiPrime;
+  double fieldPhi = sin (psi) * fieldThetaPrime + cos (psi) * fieldPhiPrime;
   NS_LOG_DEBUG (RadiansToDegrees (a.GetAzimuth ()) << " " << RadiansToDegrees (a.GetInclination ()) << " " << fieldTheta * fieldTheta + fieldPhi * fieldPhi);
 
   return std::make_pair (fieldPhi, fieldTheta);

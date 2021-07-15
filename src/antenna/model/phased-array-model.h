@@ -55,7 +55,7 @@ public:
 
   /**
    * Returns the horizontal and vertical components of the antenna element field
-   * pattern at the specified direction. Only vertical polarization is considered.
+   * pattern at the specified direction. Single polarization is considered.
    * \param a the angle indicating the interested direction
    * \return a pair in which the first element is the horizontal component
    *         of the field pattern and the second element is the vertical
