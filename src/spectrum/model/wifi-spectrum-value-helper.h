@@ -239,6 +239,16 @@ public:
    * \return the equivalent Watts for the given dBm
    */
   static double DbmToW (double dbm);
+
+  /**
+   * Calculate the power of the specified band composed of uniformly-sized sub-bands.
+   *
+   * \param psd received Power Spectral Density in W/Hz
+   * \param band a pair of start and stop indexes that defines the band
+   *
+   * \return band power in W
+   */
+  static double GetBandPowerW (Ptr<SpectrumValue> psd, const WifiSpectrumBand &band);
 };
 
 /**

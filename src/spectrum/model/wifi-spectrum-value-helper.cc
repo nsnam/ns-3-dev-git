@@ -640,6 +640,21 @@ WifiSpectrumValueHelper::DbmToW (double dBm)
   return std::pow (10.0, 0.1 * (dBm - 30.0));
 }
 
+double
+WifiSpectrumValueHelper::GetBandPowerW (Ptr<SpectrumValue> psd, const WifiSpectrumBand &band)
+{
+    double powerWattPerHertz = 0.0;
+    auto valueIt = psd->ConstValuesBegin() + band.first;
+    auto end = psd->ConstValuesBegin() + band.second;
+    auto bandIt = psd->ConstBandsBegin() + band.first;
+    while (valueIt <= end)
+    {
+        powerWattPerHertz += *valueIt;
+        ++valueIt;
+    }
+    return powerWattPerHertz * (bandIt->fh - bandIt->fl);
+}
+
 static Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz; ///< static initializer for the class
 
 WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
