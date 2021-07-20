@@ -93,6 +93,8 @@ struct WifiRemoteStationState
   WifiModeList m_operationalRateSet; //!< operational rate set
   WifiModeList m_operationalMcsSet;  //!< operational MCS set
   Mac48Address m_address;            //!< Mac48Address of the remote station
+  uint16_t m_aid;                    /**< AID of the remote station (unused if this object
+                                          is installed on a non-AP station) */
   WifiRemoteStationInfo m_info;      //!< remote station info
   bool m_dsssSupported;              //!< Flag if DSSS is supported by the remote station
   bool m_erpOfdmSupported;           //!< Flag if ERP OFDM is supported by the remote station
@@ -201,6 +203,13 @@ public:
    */
   void SetFragmentationThreshold (uint32_t threshold);
 
+  /**
+   * Record the AID of a remote station. Should only be called by APs.
+   *
+   * \param remoteAddress the MAC address of the remote station
+   * \param aid the Association ID
+   */
+  void SetAssociationId (Mac48Address remoteAddress, uint16_t aid);
   /**
    * Records QoS support of the remote station.
    *
@@ -422,6 +431,13 @@ public:
    *         false otherwise
    */
   bool GetQosSupported (Mac48Address address) const;
+  /**
+   * Get the AID of a remote station. Should only be called by APs.
+   *
+   * \param remoteAddress the MAC address of the remote station
+   * \return the Association ID if the station is associated, SU_STA_ID otherwise
+   */
+  uint16_t GetAssociationId (Mac48Address remoteAddress) const;
   /**
    * Add a given Modulation and Coding Scheme (MCS) index to
    * the set of basic MCS.

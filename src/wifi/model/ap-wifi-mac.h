@@ -307,8 +307,6 @@ private:
   Ptr<UniformRandomVariable> m_beaconJitter; //!< UniformRandomVariable used to randomize the time of the first beacon
   bool m_enableBeaconJitter;                 //!< Flag whether the first beacon should be generated at random time
   std::map<uint16_t, Mac48Address> m_staList; //!< Map of all stations currently associated to the AP with their association ID
-  /// Maps MAC addresses of associated stations to their association ID
-  std::unordered_map<Mac48Address, uint16_t, WifiAddressHash> m_addressIdMap;
   uint16_t m_numNonErpStations;              //!< Number of non-ERP stations currently associated to the AP
   uint16_t m_numNonHtStations;               //!< Number of non-HT stations currently associated to the AP
   bool m_shortSlotTimeEnabled;               //!< Flag whether short slot time is enabled within the BSS

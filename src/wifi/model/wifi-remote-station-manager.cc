@@ -493,6 +493,18 @@ WifiRemoteStationManager::RecordDisassociated (Mac48Address address)
 }
 
 uint16_t
+WifiRemoteStationManager::GetAssociationId (Mac48Address remoteAddress) const
+{
+  WifiRemoteStationState* state;
+  if (!remoteAddress.IsGroup ()
+      && (state = LookupState (remoteAddress))->m_state == WifiRemoteStationState::GOT_ASSOC_TX_OK)
+    {
+      return state->m_aid;
+    }
+  return SU_STA_ID;
+}
+
+uint16_t
 WifiRemoteStationManager::GetStaId (Mac48Address address, const WifiTxVector& txVector) const
 {
   NS_LOG_FUNCTION (this << address << txVector);
@@ -503,7 +515,7 @@ WifiRemoteStationManager::GetStaId (Mac48Address address, const WifiTxVector& tx
     {
       if (m_wifiMac->GetTypeOfStation () == AP)
         {
-          staId = StaticCast<ApWifiMac> (m_wifiMac)->GetAssociationId (address);
+          staId = GetAssociationId (address);
         }
       else if (m_wifiMac->GetTypeOfStation () == STA)
         {
@@ -1230,6 +1242,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   WifiRemoteStationState *state = new WifiRemoteStationState ();
   state->m_state = WifiRemoteStationState::BRAND_NEW;
   state->m_address = address;
+  state->m_aid = 0;
   state->m_operationalRateSet.push_back (GetDefaultMode ());
   state->m_operationalMcsSet.push_back (GetDefaultMcs ());
   state->m_dsssSupported = false;
@@ -1266,6 +1279,13 @@ WifiRemoteStationManager::Lookup (Mac48Address address) const
   station->m_rssiAndUpdateTimePair = std::make_pair (0, Seconds (0));
   const_cast<WifiRemoteStationManager *> (this)->m_stations.insert ({address, station});
   return station;
+}
+
+void
+WifiRemoteStationManager::SetAssociationId (Mac48Address remoteAddress, uint16_t aid)
+{
+  NS_LOG_FUNCTION (this << remoteAddress << aid);
+  LookupState (remoteAddress)->m_aid = aid;
 }
 
 void
