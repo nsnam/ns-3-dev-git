@@ -1206,20 +1206,12 @@ WifiRemoteStationManager::GetInfo (Mac48Address address)
 double
 WifiRemoteStationManager::GetMostRecentRssi (Mac48Address address) const
 {
-  double rssi = 0.0;
-  Time mostRecentUpdateTime = NanoSeconds (0);
-  for (const auto & station : m_stations)
-    {
-      if (station->m_state->m_address == address) //get most recent RSSI irrespective of TID
-        {
-          if (station->m_rssiAndUpdateTimePair.second >= mostRecentUpdateTime)
-            {
-              rssi = station->m_rssiAndUpdateTimePair.first;
-              mostRecentUpdateTime = station->m_rssiAndUpdateTimePair.second;
-            }
-        }
-    }
-  NS_ASSERT (mostRecentUpdateTime.IsStrictlyPositive ());
+  auto stationIt = m_stations.find (address);
+  NS_ASSERT_MSG (stationIt != m_stations.end(), "Address: " << address << " not found");
+  auto station = stationIt->second;
+  auto rssi = station->m_rssiAndUpdateTimePair.first;
+  auto ts = station->m_rssiAndUpdateTimePair.second;
+  NS_ASSERT_MSG (ts.IsStrictlyPositive(), "address: " << address << " ts:" << ts);
   return rssi;
 }
 
@@ -1227,14 +1219,14 @@ WifiRemoteStationState *
 WifiRemoteStationManager::LookupState (Mac48Address address) const
 {
   NS_LOG_FUNCTION (this << address);
-  for (StationStates::const_iterator i = m_states.begin (); i != m_states.end (); i++)
+  auto stateIt = m_states.find (address);
+
+  if (stateIt != m_states.end ())
     {
-      if ((*i)->m_address == address)
-        {
-          NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning existing state");
-          return (*i);
-        }
+      NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning existing state");
+      return stateIt->second;
     }
+
   WifiRemoteStationState *state = new WifiRemoteStationState ();
   state->m_state = WifiRemoteStationState::BRAND_NEW;
   state->m_address = address;
@@ -1251,7 +1243,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_qosSupported = false;
-  const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
+  const_cast<WifiRemoteStationManager *> (this)->m_states.insert ({address, state});
   NS_LOG_DEBUG ("WifiRemoteStationManager::LookupState returning new state");
   return state;
 }
@@ -1260,19 +1252,19 @@ WifiRemoteStation *
 WifiRemoteStationManager::Lookup (Mac48Address address) const
 {
   NS_LOG_FUNCTION (this << address);
-  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
+  auto stationIt = m_stations.find (address);
+
+  if (stationIt != m_stations.end ())
     {
-      if ((*i)->m_state->m_address == address)
-        {
-          return (*i);
-        }
+      return stationIt->second;
     }
+
   WifiRemoteStationState *state = LookupState (address);
 
   WifiRemoteStation *station = DoCreateStation ();
   station->m_state = state;
   station->m_rssiAndUpdateTimePair = std::make_pair (0, Seconds (0));
-  const_cast<WifiRemoteStationManager *> (this)->m_stations.push_back (station);
+  const_cast<WifiRemoteStationManager *> (this)->m_stations.insert ({address, station});
   return station;
 }
 
@@ -1458,14 +1450,14 @@ void
 WifiRemoteStationManager::Reset (void)
 {
   NS_LOG_FUNCTION (this);
-  for (StationStates::const_iterator i = m_states.begin (); i != m_states.end (); i++)
+  for (auto& state : m_states)
     {
-      delete (*i);
+      delete (state.second);
     }
   m_states.clear ();
-  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
+  for (auto& state: m_stations)
     {
-      delete (*i);
+      delete (state.second);
     }
   m_stations.clear ();
   m_bssBasicRateSet.clear ();

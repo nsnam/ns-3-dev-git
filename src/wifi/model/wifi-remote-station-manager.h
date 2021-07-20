@@ -22,6 +22,7 @@
 #define WIFI_REMOTE_STATION_MANAGER_H
 
 #include <array>
+#include <unordered_map>
 #include "ns3/traced-callback.h"
 #include "ns3/object.h"
 #include "ns3/data-rate.h"
@@ -134,13 +135,13 @@ public:
   };
 
   /**
-   * A vector of WifiRemoteStations
+   * A map of WifiRemoteStations with Mac48Address as key
    */
-  typedef std::vector <WifiRemoteStation *> Stations;
+  using Stations = std::unordered_map <Mac48Address, WifiRemoteStation *, WifiAddressHash>;
   /**
-   * A vector of WifiRemoteStationStates
+   * A map of WifiRemoteStationStates with Mac48Address as key
    */
-  typedef std::vector <WifiRemoteStationState *> StationStates;
+  using StationStates = std::unordered_map <Mac48Address, WifiRemoteStationState *, WifiAddressHash>;
 
   /**
    * Set up PHY associated with this device since it is the object that
