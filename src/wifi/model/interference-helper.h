@@ -432,18 +432,18 @@ private:
    * Returns an iterator to the first NiChange that is later than moment
    *
    * \param moment time to check from
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::iterator GetNextPosition (Time moment, WifiSpectrumBand band);
+  NiChanges::iterator GetNextPosition (Time moment, NiChangesPerBand::iterator niIt);
   /**
    * Returns an iterator to the last NiChange that is before than moment
    *
    * \param moment time to check from
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::iterator GetPreviousPosition (Time moment, WifiSpectrumBand band);
+  NiChanges::iterator GetPreviousPosition (Time moment, NiChangesPerBand::iterator niIt);
 
   /**
    * Add NiChange to the list at the appropriate position and
@@ -451,10 +451,10 @@ private:
    *
    * \param moment time to check from
    * \param change the NiChange to add
-   * \param band identify the band to check
+   * \param niIt iterator of the band to check
    * \returns the iterator of the new event
    */
-  NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change, WifiSpectrumBand band);
+  NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change, NiChangesPerBand::iterator niIt);
 };
 
 } //namespace ns3
