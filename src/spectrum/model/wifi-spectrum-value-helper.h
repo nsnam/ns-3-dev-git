@@ -215,7 +215,6 @@ public:
    * \param minInnerBandDbr the minimum relative power in the inner band (i.e. -20 dBr in the figure above)
    * \param minOuterbandDbr the minimum relative power in the outer band (i.e. -28 dBr in the figure above)
    * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
-   * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
   static void CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::vector <WifiSpectrumBand> allocatedSubBands, WifiSpectrumBand maskBand,
                                          double txPowerPerBandW, uint32_t nGuardBands, uint32_t innerSlopeWidth,
