@@ -379,6 +379,9 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   if (totalRxPowerW < DbmToW (GetRxSensitivity ()) * (txWidth / 20.0))
     {
       NS_LOG_INFO ("Received signal too weak to process: " << WToDbm (totalRxPowerW) << " dBm");
+      m_interference.Add (wifiRxParams->ppdu, wifiRxParams->ppdu->GetTxVector (), rxDuration,
+                          rxPowerW);
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (wifiRxParams->ppdu));
       return;
     }
 

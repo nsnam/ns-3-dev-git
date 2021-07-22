@@ -2570,7 +2570,7 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite ()
   AddTestCase (new TestSimpleFrameCaptureModel, TestCase::QUICK);
   AddTestCase (new TestPhyHeadersReception, TestCase::QUICK);
   AddTestCase (new TestAmpduReception, TestCase::QUICK);
-  // AddTestCase (new TestUnsupportedModulationReception (), TestCase::QUICK);
+  AddTestCase (new TestUnsupportedModulationReception (), TestCase::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite

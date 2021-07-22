@@ -1905,6 +1905,7 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rx
       NS_LOG_DEBUG ("Unsupported modulation received (" << modulation << "), consider as noise");
       if (ppdu->GetTxDuration () > m_state->GetDelayUntilIdle ())
         {
+          m_interference.Add (ppdu, ppdu->GetTxVector (), rxDuration, rxPowersW);
           SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
         }
     }
