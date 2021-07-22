@@ -1254,12 +1254,6 @@ private:
   void AbortCurrentReception (WifiPhyRxfailureReason reason);
 
   /**
-   * Eventually switch to CCA busy
-   * \param channelWidth the channel width in MHz used for RSSI measurement
-   */
-  void MaybeCcaBusyDuration (uint16_t channelWidth);
-
-  /**
    * Get the PSDU addressed to that PHY in a PPDU (useful for MU PPDU).
    *
    * \param ppdu the PPDU to extract the PSDU from

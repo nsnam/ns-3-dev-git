@@ -1820,7 +1820,7 @@ WifiPhy::Send (WifiConstPsduMap psdus, WifiTxVector txVector)
     {
       AbortCurrentReception (RECEPTION_ABORTED_BY_TX);
       //that packet will be noise _after_ the transmission.
-      MaybeCcaBusyDuration (GetMeasurementChannelWidth (m_currentEvent != 0 ? m_currentEvent->GetPpdu () : nullptr));
+      SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (m_currentEvent != 0 ? m_currentEvent->GetPpdu () : nullptr));
     }
 
   for (auto & it : m_phyEntities)
@@ -1905,22 +1905,8 @@ WifiPhy::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& rx
       NS_LOG_DEBUG ("Unsupported modulation received (" << modulation << "), consider as noise");
       if (ppdu->GetTxDuration () > m_state->GetDelayUntilIdle ())
         {
-          MaybeCcaBusyDuration (GetMeasurementChannelWidth (nullptr));
+          SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (nullptr));
         }
-    }
-}
-
-void
-WifiPhy::MaybeCcaBusyDuration (uint16_t channelWidth)
-{
-  //We are here because we have received the first bit of a packet and we are
-  //not going to be able to synchronize on it
-  //In this model, CCA becomes busy when the aggregation of all signals as
-  //tracked by the InterferenceHelper class is higher than the CcaBusyThreshold
-  Time delayUntilCcaEnd = m_interference.GetEnergyDuration (m_ccaEdThresholdW, GetPrimaryBand (channelWidth));
-  if (!delayUntilCcaEnd.IsZero ())
-    {
-      m_state->SwitchMaybeToCcaBusy (delayUntilCcaEnd);
     }
 }
 
@@ -1951,7 +1937,7 @@ WifiPhy::ResetReceive (Ptr<Event> event)
   m_interference.NotifyRxEnd (Simulator::Now ());
   m_currentEvent = 0;
   m_currentPreambleEvents.clear ();
-  MaybeCcaBusyDuration (GetMeasurementChannelWidth (event->GetPpdu ()));
+  SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (event->GetPpdu ()));
 }
 
 void

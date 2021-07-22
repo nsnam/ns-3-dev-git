@@ -297,7 +297,7 @@ PhyEntity::EndReceiveField (WifiPpduField field, Ptr<Event> event)
             AbortCurrentReception (status.reason);
             if (event->GetEndTime () > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
               {
-                m_wifiPhy->MaybeCcaBusyDuration (GetMeasurementChannelWidth (ppdu));
+                m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
               }
             break;
           case DROP:
@@ -383,7 +383,7 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& 
       NS_LOG_DEBUG ("Cannot start RX because device is OFF");
       if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
-          m_wifiPhy->MaybeCcaBusyDuration (m_wifiPhy->GetMeasurementChannelWidth (nullptr));
+          m_wifiPhy->SwitchMaybeToCcaBusy (m_wifiPhy->GetMeasurementChannelWidth (nullptr));
         }
       return;
     }
@@ -393,7 +393,7 @@ PhyEntity::StartReceivePreamble (Ptr<WifiPpdu> ppdu, RxPowerWattPerChannelBand& 
       NS_LOG_DEBUG ("Packet reception stopped because transmitter has been switched off");
       if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
         {
-          m_wifiPhy->MaybeCcaBusyDuration (GetMeasurementChannelWidth (ppdu));
+          m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
         }
       return;
     }
@@ -490,7 +490,7 @@ PhyEntity::DropPreambleEvent (Ptr<const WifiPpdu> ppdu, WifiPhyRxfailureReason r
   if (endRx > (Simulator::Now () + m_state->GetDelayUntilIdle ()))
     {
       //that PPDU will be noise _after_ the end of the current event.
-      m_wifiPhy->MaybeCcaBusyDuration (measurementChannelWidth);
+      m_wifiPhy->SwitchMaybeToCcaBusy (measurementChannelWidth);
     }
 }
 
@@ -665,7 +665,7 @@ PhyEntity::EndReceivePayload (Ptr<Event> event)
     }
 
   DoEndReceivePayload (ppdu);
-  m_wifiPhy->MaybeCcaBusyDuration (GetMeasurementChannelWidth (ppdu));
+  m_wifiPhy->SwitchMaybeToCcaBusy (GetMeasurementChannelWidth (ppdu));
 }
 
 void
