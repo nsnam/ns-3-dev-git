@@ -64,38 +64,20 @@
 
 /**
  * \ingroup core
+ * \def NS_DEPRECATED_3_35
+ * Tag for things deprecated in version ns-3.35.
+ */
+#ifdef NS_DEPRECATED
+#define NS_DEPRECATED_3_35 NS_DEPRECATED
+#endif
+
+/**
+ * \ingroup core
  * \def NS_DEPRECATED_3_34
  * Tag for things deprecated in version ns-3.34.
  */
 #ifdef NS_DEPRECATED
 #define NS_DEPRECATED_3_34 NS_DEPRECATED
-#endif
-
-/**
- * \ingroup core
- * \def NS_DEPRECATED_3_32
- * Tag for things deprecated in version ns-3.32.
- */
-#ifdef NS_DEPRECATED
-#define NS_DEPRECATED_3_32 NS_DEPRECATED
-#endif
-
-/**
- * \ingroup core
- * \def NS_DEPRECATED_3_31
- * Tag for things deprecated in version ns-3.31.
- */
-#ifdef NS_DEPRECATED
-#define NS_DEPRECATED_3_31 NS_DEPRECATED
-#endif
-
-/**
- * \ingroup core
- * \def NS_DEPRECATED_3_30
- * Tag for things deprecated in version ns-3.30.
- */
-#ifdef NS_DEPRECATED
-#define NS_DEPRECATED_3_30 NS_DEPRECATED
 #endif
 
 #endif /* NS3_DEPRECATED_H */
