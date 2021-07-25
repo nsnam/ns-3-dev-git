@@ -337,9 +337,10 @@ private:
    * point to the item that followed the erased one.
    *
    * \param it an iterator pointing to the item
+   * \param now a copy of Simulator::Now()
    * \return true if the item is removed, false otherwise
    */
-  bool TtlExceeded (ConstIterator &it);
+  bool TtlExceeded (ConstIterator &it, const Time& now);
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
