@@ -475,33 +475,6 @@ public:
   virtual void SetStandard (WifiStandard standard);
 
   /**
-   * \param standard the PHY standard to configure during installation
-   *
-   * This method sets standards-compliant defaults for WifiMac
-   * parameters such as SIFS time, slot time, timeout values, etc.,
-   * based on the standard selected.  It results in
-   * WifiMac::ConfigureStandard(standard) being called on each
-   * installed MAC object.
-   *
-   * The default standard of 802.11a will be applied if SetStandard()
-   * is not called.
-   *
-   * Note that WifiMac::ConfigureStandard () will overwrite certain
-   * defaults in the attribute system, so if a user wants to manipulate
-   * any default values affected by ConfigureStandard() while using this
-   * helper, the user should use a post-install configuration such as
-   * Config::Set() on any objects that this helper creates, such as:
-   * \code
-   * Config::Set ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Mac/Slot", TimeValue (MicroSeconds (slot)));
-   * \endcode
-   * \deprecated This method will go away in future release of ns-3.
-   *
-   * \sa Config::Set
-   */
-  NS_DEPRECATED_3_32
-  virtual void SetStandard (WifiPhyStandard standard);
-
-  /**
    * Helper to enable all WifiNetDevice log components with one statement
    */
   static void EnableLogComponents (void);

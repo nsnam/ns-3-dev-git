@@ -39,20 +39,8 @@ enum WifiPhyStandard
   WIFI_PHY_STANDARD_80211b,
   /** ERP-OFDM PHY (Clause 19, Section 19.5) */
   WIFI_PHY_STANDARD_80211g,
-  /** OFDM PHY for the 5 GHz band (Clause 17 with 10 MHz channel bandwidth) */
-  /** this value is NS_DEPRECATED_3_32 */
-  WIFI_PHY_STANDARD_80211_10MHZ,
-  /** OFDM PHY for the 5 GHz band (Clause 17 with 5 MHz channel bandwidth) */
-  /** this value is NS_DEPRECATED_3_32 */
-  WIFI_PHY_STANDARD_80211_5MHZ,
   /** OFDM PHY (Clause 17 - amendment for 10 MHz and 5 MHz channels) */
   WIFI_PHY_STANDARD_80211p,
-  /** HT PHY for the 2.4 GHz band (clause 20) */
-  /** this value is NS_DEPRECATED_3_32 */
-  WIFI_PHY_STANDARD_80211n_2_4GHZ,
-  /** HT PHY for the 5 GHz band (clause 20) */
-  /** this value is NS_DEPRECATED_3_32 */
-  WIFI_PHY_STANDARD_80211n_5GHZ,
   /** HT PHY  (clause 20) */
   WIFI_PHY_STANDARD_80211n,
   /** VHT PHY (clause 22) */

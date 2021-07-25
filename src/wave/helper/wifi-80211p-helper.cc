@@ -63,20 +63,6 @@ Wifi80211pHelper::SetStandard (enum WifiStandard standard)
     }
 }
 
-// NS_DEPRECATED_3_32
-void
-Wifi80211pHelper::SetStandard (enum WifiPhyStandard standard)
-{
-  if ((standard == WIFI_PHY_STANDARD_80211a) || (standard == WIFI_PHY_STANDARD_80211_10MHZ))
-    {
-      WifiHelper::SetStandard (WIFI_STANDARD_80211p);
-    }
-  else
-    {
-      NS_FATAL_ERROR ("802.11p only use 802.11 standard with 10MHz or 20MHz");
-    }
-}
-
 void
 Wifi80211pHelper::EnableLogComponents (void)
 {

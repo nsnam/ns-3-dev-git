@@ -61,16 +61,6 @@ public:
   virtual void SetStandard (enum WifiStandard standard);
 
   /**
-   * \param standard the phy standard to configure during installation
-   *
-   * Users can only configure 802.11p with 10MHz or 5 MHz channel bandwidth.
-   * The default 802.11p standard uses 10MHz.
-   * \deprecated This method will go away in a future release of ns-3.
-   */
-  NS_DEPRECATED_3_32
-  virtual void SetStandard (WifiPhyStandard standard);
-
-  /**
    * \param phy the PHY helper to create PHY objects
    * \param macHelper the MAC helper to create MAC objects
    * \param c the set of nodes on which a wifi device must be created
