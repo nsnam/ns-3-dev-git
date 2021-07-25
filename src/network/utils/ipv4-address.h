@@ -77,19 +77,6 @@ public:
     */
   void Set (char const *address);
   /**
-   * \brief Comparison operation between two Ipv4Addresses
-   *
-   * \deprecated Use the == operator (same functionality)
-   *
-   * \param other address to which to compare this address
-   * \return True if the addresses are equal. False otherwise.
-   */
-  NS_DEPRECATED_3_31
-  bool IsEqual (const Ipv4Address &other) const
-  {
-    return m_address == other.m_address;
-  }
-  /**
    * Serialize this address to a 4-byte buffer
    *
    * \param buf output buffer to which this address gets overwritten with this
@@ -289,15 +276,6 @@ public:
    * corresponding to this mask
    */
   bool IsMatch (Ipv4Address a, Ipv4Address b) const;
-  /**
-   *
-   * \deprecated Use the == operator (same functionality)
-   *
-   * \param other a mask to compare 
-   * \return true if the mask equals the mask passed as input parameter
-   */
-  NS_DEPRECATED_3_31
-  bool IsEqual (Ipv4Mask other) const;
   /** 
    * Get the host-order 32-bit IP mask
    * \return the host-order 32-bit IP mask

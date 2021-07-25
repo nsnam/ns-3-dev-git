@@ -110,17 +110,6 @@ Ipv4Mask::Ipv4Mask (char const *mask)
 }
 
 bool 
-Ipv4Mask::IsEqual (Ipv4Mask other) const
-{
-  NS_LOG_FUNCTION (this << other);
-  if (other.m_mask == m_mask) {
-      return true;
-    } else {
-      return false;
-    }
-}
-
-bool 
 Ipv4Mask::IsMatch (Ipv4Address a, Ipv4Address b) const
 {
   NS_LOG_FUNCTION (this << a << b);
