@@ -165,7 +165,7 @@ ChainRegressionTest::CreateDevices ()
   WifiMacHelper wifiMac;
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy;
-  wifiPhy.DisablePreambleDetectionModel();
+  wifiPhy.DisablePreambleDetectionModel ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ptr<YansWifiChannel> chan = wifiChannel.Create ();
   wifiPhy.SetChannel (chan);
