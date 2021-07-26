@@ -19,11 +19,20 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/config.h"
+#include "ns3/ap-wifi-mac.h"
+#include "ns3/packet-socket-address.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/packet-socket-helper.h"
+#include "ns3/packet-socket-server.h"
 #include "ns3/test.h"
 #include "ns3/double.h"
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/spectrum-wifi-helper.h"
+#include "ns3/wifi-net-device.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
 #include "ns3/nist-error-rate-model.h"
@@ -2345,6 +2354,206 @@ TestAmpduReception::DoRun (void)
  * \ingroup wifi-test
  * \ingroup tests
  *
+ * \brief Unsupported Modulation Reception Test
+ * This test creates a mixed network, in which an HE STA and a VHT
+ * STA are associated to an HE AP and send uplink traffic. In the
+ * simulated deployment the VHT STA's backoff will expire while the
+ * HE STA is sending a packet, and the VHT STA will access the
+ * channel anyway. This happens because the HE STA is using an HeMcs
+ * that the VHT STA is not able to demodulate: the VHT STA will
+ * correctly stop listening to the HE packet, but it will not update
+ * its InterferenceHelper with the HE packet. Later on, this leads to
+ * the STA wrongly assuming the medium is available when its back-off
+ * expires in the middle of the HE packet. We detect that this is
+ * happening by looking at the reason why the AP is failing to decode
+ * the preamble from the VHT STA's transmission: if the reason is
+ * that it's in RX already, the test fails. The test is based on
+ * wifi-txop-test.cc.
+*/
+class TestUnsupportedModulationReception : public TestCase
+{
+public:
+  /**
+   * Constructor
+   */
+  TestUnsupportedModulationReception ();
+  virtual ~TestUnsupportedModulationReception ();
+
+  /**
+   * Callback invoked when PHY drops an incoming packet
+   * \param context the context
+   * \param packet the packet that was dropped
+   * \param reason the reason the packet was dropped
+   */
+  void Dropped (std::string context, Ptr<const Packet> packet, WifiPhyRxfailureReason reason);
+  /**
+   * Check correctness of transmitted frames
+   */
+  void CheckResults (void);
+
+private:
+  void DoRun (void) override;
+  uint16_t m_dropped; ///< number of packets dropped by the AP because it was already receiving
+};
+
+TestUnsupportedModulationReception::TestUnsupportedModulationReception ()
+  : TestCase ("Check correct behavior when a STA is receiving a transmission using an unsupported modulation"),
+    m_dropped (0)
+{
+}
+
+TestUnsupportedModulationReception::~TestUnsupportedModulationReception ()
+{
+}
+
+void
+TestUnsupportedModulationReception::Dropped (std::string context, Ptr<const Packet> packet,
+                                             WifiPhyRxfailureReason reason)
+{
+  // Print if the test is executed through test-runner
+  if (reason == RXING)
+    {
+      std::cout << "Dropped a packet because already receiving" << std::endl;
+      m_dropped++;
+    }
+}
+
+void
+TestUnsupportedModulationReception::DoRun (void)
+{
+  uint16_t m_nStations = 2; ///< number of stations
+  NetDeviceContainer m_staDevices; ///< container for stations' NetDevices
+  NetDeviceContainer m_apDevices; ///< container for AP's NetDevice
+
+  // RngSeedManager::SetSeed (1);
+  // RngSeedManager::SetRun (40);
+  int64_t streamNumber = 100;
+
+  NodeContainer wifiApNode;
+  wifiApNode.Create (1);
+
+  NodeContainer wifiStaNodes;
+  wifiStaNodes.Create (m_nStations);
+
+  Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
+  Ptr<FriisPropagationLossModel> lossModel = CreateObject<FriisPropagationLossModel> ();
+  spectrumChannel->AddPropagationLossModel (lossModel);
+  Ptr<ConstantSpeedPropagationDelayModel> delayModel =
+      CreateObject<ConstantSpeedPropagationDelayModel> ();
+  spectrumChannel->SetPropagationDelayModel (delayModel);
+
+  SpectrumWifiPhyHelper phy;
+  phy.SetChannel (spectrumChannel);
+
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (65535));
+
+  WifiHelper wifi;
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+
+  WifiMacHelper mac;
+  mac.SetType ("ns3::StaWifiMac", "QosSupported", BooleanValue (true), "Ssid",
+               SsidValue (Ssid ("non-existent-ssid")));
+
+  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  m_staDevices.Add (wifi.Install (phy, mac, wifiStaNodes.Get (0)));
+  wifi.SetStandard (WIFI_STANDARD_80211ac);
+  m_staDevices.Add (wifi.Install (phy, mac, wifiStaNodes.Get (1)));
+
+  wifi.SetStandard (WIFI_STANDARD_80211ax_5GHZ);
+  mac.SetType ("ns3::ApWifiMac", "QosSupported", BooleanValue (true), "Ssid",
+               SsidValue (Ssid ("wifi-backoff-ssid")), "BeaconInterval",
+               TimeValue (MicroSeconds (102400)), "EnableBeaconJitter", BooleanValue (false));
+
+  m_apDevices = wifi.Install (phy, mac, wifiApNode);
+
+  // schedule association requests at different times
+  Time init = MilliSeconds (100);
+  Ptr<WifiNetDevice> dev;
+
+  for (uint16_t i = 0; i < m_nStations; i++)
+    {
+      dev = DynamicCast<WifiNetDevice> (m_staDevices.Get (i));
+      Simulator::Schedule (init + i * MicroSeconds (102400), &WifiMac::SetSsid, dev->GetMac (),
+                           Ssid ("wifi-backoff-ssid"));
+    }
+
+  // Assign fixed streams to random variables in use
+  wifi.AssignStreams (m_apDevices, streamNumber);
+
+  MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (1.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (0.0, 1.0, 0.0));
+  positionAlloc->Add (Vector (-1.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.Install (wifiApNode);
+  mobility.Install (wifiStaNodes);
+
+  // set the TXOP limit on BE AC
+  dev = DynamicCast<WifiNetDevice> (m_apDevices.Get (0));
+  PointerValue ptr;
+  dev->GetMac ()->GetAttribute ("BE_Txop", ptr);
+
+  PacketSocketHelper packetSocket;
+  packetSocket.Install (wifiApNode);
+  packetSocket.Install (wifiStaNodes);
+
+  // UL Traffic
+  for (uint16_t i = 0; i < m_nStations; i++)
+    {
+      PacketSocketAddress socket;
+      socket.SetSingleDevice (m_staDevices.Get (0)->GetIfIndex ());
+      socket.SetPhysicalAddress (m_apDevices.Get (0)->GetAddress ());
+      socket.SetProtocol (1);
+      Ptr<PacketSocketClient> client = CreateObject<PacketSocketClient> ();
+      client->SetAttribute ("PacketSize", UintegerValue (1500));
+      client->SetAttribute ("MaxPackets", UintegerValue (200));
+      client->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+      client->SetRemote (socket);
+      wifiStaNodes.Get (i)->AddApplication (client);
+      client->SetStartTime (MicroSeconds (400000));
+      client->SetStopTime (Seconds (1.0));
+      Ptr<PacketSocketClient> legacyStaClient = CreateObject<PacketSocketClient> ();
+      legacyStaClient->SetAttribute ("PacketSize", UintegerValue (1500));
+      legacyStaClient->SetAttribute ("MaxPackets", UintegerValue (200));
+      legacyStaClient->SetAttribute ("Interval", TimeValue (MicroSeconds (0)));
+      legacyStaClient->SetRemote (socket);
+      wifiStaNodes.Get (i)->AddApplication (legacyStaClient);
+      legacyStaClient->SetStartTime (MicroSeconds (400000));
+      legacyStaClient->SetStopTime (Seconds (1.0));
+      Ptr<PacketSocketServer> server = CreateObject<PacketSocketServer> ();
+      server->SetLocal (socket);
+      wifiApNode.Get (0)->AddApplication (server);
+      server->SetStartTime (Seconds (0.0));
+      server->SetStopTime (Seconds (1.0));
+    }
+
+  // Trace dropped packets
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyRxDrop",
+                   MakeCallback (&TestUnsupportedModulationReception::Dropped, this));
+
+  Simulator::Stop (Seconds (1));
+  Simulator::Run ();
+
+  CheckResults ();
+
+  Simulator::Destroy ();
+}
+
+void
+TestUnsupportedModulationReception::CheckResults (void)
+{
+  NS_TEST_EXPECT_MSG_EQ (m_dropped, 0, "Dropped some packets unexpectedly");
+}
+
+/**
+ * \ingroup wifi-test
+ * \ingroup tests
+ *
  * \brief wifi PHY reception Test Suite
  */
 class WifiPhyReceptionTestSuite : public TestSuite
@@ -2361,6 +2570,7 @@ WifiPhyReceptionTestSuite::WifiPhyReceptionTestSuite ()
   AddTestCase (new TestSimpleFrameCaptureModel, TestCase::QUICK);
   AddTestCase (new TestPhyHeadersReception, TestCase::QUICK);
   AddTestCase (new TestAmpduReception, TestCase::QUICK);
+  // AddTestCase (new TestUnsupportedModulationReception (), TestCase::QUICK);
 }
 
 static WifiPhyReceptionTestSuite wifiPhyReceptionTestSuite; ///< the test suite
