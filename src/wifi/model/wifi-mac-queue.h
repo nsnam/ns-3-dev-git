@@ -340,7 +340,7 @@ private:
    * \param now a copy of Simulator::Now()
    * \return true if the item is removed, false otherwise
    */
-  bool TtlExceeded (ConstIterator &it, const Time& now);
+  inline bool TtlExceeded (ConstIterator &it, const Time& now);
   /**
    * Wrapper for the DoEnqueue method provided by the base class that additionally
    * sets the iterator field of the item and updates internal statistics, if
