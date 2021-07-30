@@ -149,6 +149,21 @@ public:
    */
   HeCapabilities GetHeCapabilities (void) const;
 
+  /**
+   * Return the maximum A-MPDU size of the given Access Category.
+   *
+   * \param ac Access Category index
+   * \return the maximum A-MPDU size
+   */
+  uint32_t GetMaxAmpduSize (AcIndex ac) const;
+  /**
+   * Return the maximum A-MSDU size of the given Access Category.
+   *
+   * \param ac Access Category index
+   * \return the maximum A-MSDU size
+   */
+  uint16_t GetMaxAmsduSize (AcIndex ac) const;
+
 protected:
   void DoInitialize () override;
   void DoDispose () override;

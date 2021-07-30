@@ -160,28 +160,7 @@ MsduAggregator::GetMaxAmsduSize (Mac48Address recipient, uint8_t tid,
   AcIndex ac = QosUtilsMapTidToAc (tid);
 
   // Find the A-MSDU max size configured on this device
-  UintegerValue size;
-
-  switch (ac)
-    {
-      case AC_BE:
-        m_mac->GetAttribute ("BE_MaxAmsduSize", size);
-        break;
-      case AC_BK:
-        m_mac->GetAttribute ("BK_MaxAmsduSize", size);
-        break;
-      case AC_VI:
-        m_mac->GetAttribute ("VI_MaxAmsduSize", size);
-        break;
-      case AC_VO:
-        m_mac->GetAttribute ("VO_MaxAmsduSize", size);
-        break;
-      default:
-        NS_ABORT_MSG ("Unknown AC " << ac);
-        return 0;
-    }
-
-  uint16_t maxAmsduSize = size.Get ();
+  uint16_t maxAmsduSize = m_mac->GetMaxAmsduSize (ac);
 
   if (maxAmsduSize == 0)
     {

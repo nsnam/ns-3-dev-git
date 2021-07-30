@@ -1152,4 +1152,54 @@ RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
     }
 }
 
+uint32_t
+RegularWifiMac::GetMaxAmpduSize (AcIndex ac) const
+{
+  uint32_t maxSize = 0;
+  switch (ac)
+    {
+      case AC_BE:
+        maxSize = m_beMaxAmpduSize;
+        break;
+      case AC_BK:
+        maxSize = m_bkMaxAmpduSize;
+        break;
+      case AC_VI:
+        maxSize = m_viMaxAmpduSize;
+        break;
+      case AC_VO:
+        maxSize = m_voMaxAmpduSize;
+        break;
+      default:
+        NS_ABORT_MSG ("Unknown AC " << ac);
+        return 0;
+    }
+  return maxSize;
+}
+
+uint16_t
+RegularWifiMac::GetMaxAmsduSize (AcIndex ac) const
+{
+  uint16_t maxSize = 0;
+  switch (ac)
+    {
+      case AC_BE:
+        maxSize = m_beMaxAmsduSize;
+        break;
+      case AC_BK:
+        maxSize = m_bkMaxAmsduSize;
+        break;
+      case AC_VI:
+        maxSize = m_viMaxAmsduSize;
+        break;
+      case AC_VO:
+        maxSize = m_voMaxAmsduSize;
+        break;
+      default:
+        NS_ABORT_MSG ("Unknown AC " << ac);
+        return 0;
+    }
+  return maxSize;
+}
+
 } //namespace ns3
