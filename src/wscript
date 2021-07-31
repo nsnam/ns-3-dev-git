@@ -1,4 +1,3 @@
-
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 from __future__ import print_function
 import os, os.path
@@ -277,10 +276,8 @@ def ns3_python_bindings(bld):
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['DEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+    defines.extend(['NS_DEPRECATED_3_35=', 'NS3_DEPRECATED_H'])
     defines.extend(['NS_DEPRECATED_3_34=', 'NS3_DEPRECATED_H'])
-    defines.extend(['NS_DEPRECATED_3_32=', 'NS3_DEPRECATED_H'])
-    defines.extend(['NS_DEPRECATED_3_31=', 'NS3_DEPRECATED_H'])
-    defines.extend(['NS_DEPRECATED_3_30=', 'NS3_DEPRECATED_H'])
     if Utils.unversioned_sys_platform()== 'win32':
         try:
             defines.remove('_DEBUG') # causes undefined symbols on win32
