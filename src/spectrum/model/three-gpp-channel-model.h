@@ -119,6 +119,9 @@ public:
                                        Ptr<const PhasedArrayModel> aAntenna,
                                        Ptr<const PhasedArrayModel> bAntenna) override;
 
+
+  Ptr<const ChannelParams> GetParams (Ptr<const MobilityModel> aMob,
+                                      Ptr<const MobilityModel> bMob) const override;
   /**
    * \brief Assign a fixed random variable stream number to the random variables
    * used by this model.
@@ -152,13 +155,12 @@ private:
   void Shuffle (double * first, double * last) const;
 
   /**
-   * Extends the struct ChannelMatrix by including information that are used
-   * within the class ThreeGppChannelModel
+   * Extends the struct ChannelParams by including information that is used
+   * within the ThreeGppChannelModel class
    */
-  struct ThreeGppChannelMatrix : public MatrixBasedChannelModel::ChannelMatrix
+  struct ThreeGppChannelParams : public MatrixBasedChannelModel::ChannelParams
   {
     Ptr<const ChannelCondition> m_channelCondition; //!< the channel condition
-
     // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
     /*The following parameters are stored for spatial consistent updating. The notation is
     that of 3GPP technical reports, but it can apply also to other channel realizations*/
@@ -167,12 +169,22 @@ private:
     Vector m_locUT; //!< location of UT
     MatrixBasedChannelModel::Double2DVector m_norRvAngles; //!< stores the normal variable for random angles angle[cluster][id] generated for equation (7.6-11)-(7.6-14), where id = 0(aoa),1(zoa),2(aod),3(zod)
     double m_DS; //!< delay spread
-    double m_K; //!< K factor
-    uint8_t m_numCluster; //!< reduced cluster number;
+    double m_K_factor; //!< K factor
+    uint8_t m_reducedClusterNumber; //!< reduced cluster number;
+    MatrixBasedChannelModel::Double2DVector m_rayAodRadian; //!< the vector containing AOD angles
+    MatrixBasedChannelModel::Double2DVector m_rayAoaRadian; //!< the vector containing AOA angles
+    MatrixBasedChannelModel::Double2DVector m_rayZodRadian; //!< the vector containing ZOD angles
+    MatrixBasedChannelModel::Double2DVector m_rayZoaRadian; //!< the vector containing ZOA angles
     MatrixBasedChannelModel::Double3DVector m_clusterPhase; //!< the initial random phases
+    MatrixBasedChannelModel::Double2DVector m_crossPolarizationPowerRatios;//!< cross polarization power ratios
     Vector m_speed; //!< velocity
     double m_dis2D; //!< 2D distance between tx and rx
     double m_dis3D; //!< 3D distance between tx and rx
+    DoubleVector m_clusterPower; //!< cluster powers
+    DoubleVector m_attenuation_dB; //!< vector that stores the attenuation of the blockage
+    uint8_t m_cluster1st; //!< index of the first strongest cluster
+    uint8_t m_cluster2nd; //!< index of the second strongest cluster
+
   };
 
   /**
@@ -218,45 +230,80 @@ private:
   virtual Ptr<const ParamsTable> GetThreeGppTable (Ptr<const ChannelCondition> channelCondition, double hBS, double hUT, double distance2D) const;
 
   /**
+   * Prepare 3gpp channel parameters. The function does the followin steps described in
+   * 3GPP 38.901:
+   *
+   * Step 4: Generate large scale parameters. All LSPS are uncorrelated.
+   * Step 5: Generate Delays.
+   * Step 6: Generate cluster powers.
+   * Step 7: Generate arrival and departure angles for both azimuth and elevation.
+   * Step 8: Coupling of rays within a cluster for both azimuth and elevation
+   * shuffle all the arrays to perform random coupling
+   * Step 9: Generate the cross polarization power ratios
+   * Step 10: Draw initial phases
+   *
+   * All relevant generated parameters are added then to ThreeGppChannelParams
+   * which is the return value of this function.
+   * \param channelCondition the channel condition
+   * \param table3gpp the 3gpp parameters from the table
+   * \param uAngle the u node angle
+   * \param sAngle the s node angle
+   * \return ThreeGppChannelParams structure with all the channel parameters generated according 38.901 steps from 4 to 10.
+   */
+  Ptr<ThreeGppChannelParams> GenerateChannelParameters (const Ptr<const ChannelCondition> channelCondition,
+                                                        const Ptr<const ParamsTable> table3gpp,
+                                                        const Angles &uAngle, const Angles &sAngle) const;
+
+  /**
    * Compute the channel matrix between two devices using the procedure
    * described in 3GPP TR 38.901
-   * \param locUT the location of the UT
-   * \param channelCondition the channel condition
+   * \param channelParams the channel parameters
+   * \param table3gpp the 3gpp parameters table
    * \param sAntenna the s node antenna array
    * \param uAntenna the u node antenna array
    * \param uAngle the u node angle
    * \param sAngle the s node angle
-   * \param dis2D the 2D distance between tx and rx
-   * \param hBS the height of the BS
-   * \param hUT the height of the UT
+   * \param distance3D the 3D distance between nodes
    * \return the channel realization
    */
-  Ptr<ThreeGppChannelMatrix> GetNewChannel (Vector locUT, Ptr<const ChannelCondition> channelCondition,
-                                            Ptr<const PhasedArrayModel> sAntenna,
-                                            Ptr<const PhasedArrayModel> uAntenna,
-                                            Angles &uAngle, Angles &sAngle,
-                                            double dis2D, double hBS, double hUT) const;
+  Ptr<ChannelMatrix> GetNewChannel (Ptr<const ThreeGppChannelParams> channelParams,
+                                    Ptr<const ParamsTable> table3gpp,
+                                    Ptr<const PhasedArrayModel> sAntenna,
+                                    Ptr<const PhasedArrayModel> uAntenna,
+                                    Angles &uAngle, Angles &sAngle,
+                                    double distance3D) const;
 
   /**
    * Applies the blockage model A described in 3GPP TR 38.901
-   * \param params the channel matrix
+   * \param channelParams the channel parameters structure
    * \param clusterAOA vector containing the azimuth angle of arrival for each cluster
    * \param clusterZOA vector containing the zenith angle of arrival for each cluster
    * \return vector containing the power attenuation for each cluster
    */
-  DoubleVector CalcAttenuationOfBlockage (Ptr<ThreeGppChannelMatrix> params,
+  DoubleVector CalcAttenuationOfBlockage (const Ptr<ThreeGppChannelModel::ThreeGppChannelParams> channelParams,
                                           const DoubleVector &clusterAOA,
                                           const DoubleVector &clusterZOA) const;
 
   /**
-   * Check if the channel matrix has to be updated
-   * \param channelMatrix channel matrix
+   * Check if the channel params has to be updated
+   * \param channelParams channel params
    * \param channelCondition the channel condition
+   * \return true if the channel params has to be updated, false otherwise
+   */
+  bool ChannelParamsNeedsUpdate (Ptr<const ThreeGppChannelParams> channelParams,
+                                 Ptr<const ChannelCondition> channelCondition) const;
+
+  /**
+   * Check if the channel matrix has to be updated (it needs update when the channel params generation
+   * time is more recent than channel matrix generation time
+   * \param channelParams channel params structure
+   * \param channelMatrix channel matrix structure
    * \return true if the channel matrix has to be updated, false otherwise
    */
-  bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelMatrix> channelMatrix, Ptr<const ChannelCondition> channelCondition) const;
+  bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelParams> channelParams, Ptr<const ChannelMatrix> channelMatrix);
 
-  std::unordered_map<uint64_t, Ptr<ThreeGppChannelMatrix> > m_channelMap; //!< map containing the channel realizations
+  std::unordered_map<PhasedAntennaPair, Ptr<ChannelMatrix>, PhasedAntennaPairHashXor > m_channelMatrixMap; //!< map containing the channel realizations per pair of PhasedAntennaArray instances
+  std::unordered_map<uint64_t, Ptr<ThreeGppChannelParams> > m_channelParamsMap; //!< map containing the common channel parameters per pair of nodes
   Time m_updatePeriod; //!< the channel update period
   double m_frequency; //!< the operating frequency
   std::string m_scenario; //!< the 3GPP scenario

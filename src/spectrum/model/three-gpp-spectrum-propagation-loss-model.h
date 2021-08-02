@@ -22,12 +22,12 @@
 #ifndef THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 #define THREE_GPP_SPECTRUM_PROPAGATION_LOSS_H
 
-#include "ns3/phased-array-spectrum-propagation-loss-model.h"
 #include <complex.h>
 #include <map>
 #include <unordered_map>
 #include "ns3/matrix-based-channel-model.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/phased-array-spectrum-propagation-loss-model.h"
 
 namespace ns3 {
 
@@ -156,9 +156,8 @@ private:
    */
   PhasedArrayModel::ComplexVector GetLongTerm (uint32_t aId, uint32_t bId,
                                                Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
-                                               const PhasedArrayModel::ComplexVector &aW,
-                                               const PhasedArrayModel::ComplexVector &bW) const;
-
+                                               Ptr<const PhasedArrayModel> aPhasedArrayModel,
+                                               Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
   /**
    * Computes the long term component
    * \param channelMatrix the channel matrix H
@@ -181,10 +180,11 @@ private:
    */
   Ptr<SpectrumValue> CalcBeamformingGain (Ptr<SpectrumValue> txPsd,
                                           PhasedArrayModel::ComplexVector longTerm,
-                                          Ptr<const MatrixBasedChannelModel::ChannelMatrix> params,
+                                          Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
+                                          Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
                                           const Vector &sSpeed, const Vector &uSpeed) const;
 
-  mutable std::unordered_map < uint64_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
+  mutable std::unordered_map < MatrixBasedChannelModel::PhasedAntennaPair, Ptr<const LongTerm>, MatrixBasedChannelModel::PhasedAntennaPairHashXor > m_longTermMap; //!< map containing the long term components
   Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
 
   // Variable used to compute the additional Doppler contribution for the delayed

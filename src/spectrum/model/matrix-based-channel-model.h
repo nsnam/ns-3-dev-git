@@ -53,7 +53,15 @@ public:
   typedef std::vector<Double2DVector> Double3DVector; //!< type definition for 3D matrices of doubles
   typedef std::vector<PhasedArrayModel::ComplexVector> Complex2DVector; //!< type definition for complex matrices
   typedef std::vector<Complex2DVector> Complex3DVector; //!< type definition for complex 3D matrices
+  typedef std::pair<Ptr<const PhasedArrayModel>, Ptr<const PhasedArrayModel>> PhasedAntennaPair; //!< the antenna pair for which is generated the specific instance of the channel
 
+  struct PhasedAntennaPairHashXor
+  {
+     std::size_t operator() (const PhasedAntennaPair &pair) const
+     {
+       return std::hash<const PhasedArrayModel*>()(PeekPointer (pair.first)) ^ std::hash<const PhasedArrayModel*>()(PeekPointer (pair.second));
+     }
+  };
 
   /**
    * Data structure that stores a channel realization
@@ -61,10 +69,8 @@ public:
   struct ChannelMatrix : public SimpleRefCount<ChannelMatrix>
   {
     Complex3DVector    m_channel; //!< channel matrix H[u][s][n].
-    DoubleVector       m_delay; //!< cluster delay in nanoseconds.
-    Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD), 3(ZOD) in degree.
     Time               m_generatedTime; //!< generation time
-    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID (the transmitter when the channel was generated), the second element is the u-node ID (the receiver when the channel was generated)
+    PhasedAntennaPair  m_antennaPair; //!< the  first element is the antenna of the s-node antenna (the antenna of the transmitter when the channel was generated), the second element is the u-node antenna (the antenna of the receiver when the channel was generated)
 
     /**
      * Destructor for ChannelMatrix
@@ -74,18 +80,33 @@ public:
     /**
      * Returns true if the ChannelMatrix object was generated
      * considering node b as transmitter and node a as receiver.
-     * \param aId id of the a node
-     * \param bId id of the b node
+     * \param aAntennaModel the antenna array of the a node
+     * \param bAntennaModel the antenna array of the b node
      * \return true if b is the rx and a is the tx, false otherwise
      */
-    bool IsReverse (const uint32_t aId, const uint32_t bId) const
+    bool IsReverse (const Ptr<const PhasedArrayModel> aAntennaModel, const Ptr<const PhasedArrayModel> bAntennaModel) const
     {
-      uint32_t sId, uId;
-      std::tie (sId, uId) = m_nodeIds;
-      NS_ASSERT_MSG ((sId == aId && uId == bId) || (sId == bId && uId == aId),
-                      "This matrix represents the channel between " << sId << " and " << uId);
-      return (sId == bId && uId == aId);
+      Ptr<const PhasedArrayModel> sAntennaModel, uAntennaModel;
+      std::tie (sAntennaModel, uAntennaModel) = m_antennaPair;
+      NS_ASSERT_MSG ((sAntennaModel == aAntennaModel && uAntennaModel == bAntennaModel) || (sAntennaModel == bAntennaModel && uAntennaModel == aAntennaModel),
+                      "This channel matrix does not represent the channel among the provided antenna arrays.");
+      return (sAntennaModel == bAntennaModel && uAntennaModel == aAntennaModel);
     }
+  };
+
+
+  /**
+   * Data structure that stores channel parameters
+   */
+  struct ChannelParams : public SimpleRefCount<ChannelParams>
+  {
+    Time               m_generatedTime; //!< generation time
+    DoubleVector       m_delay; //!< cluster delay in nanoseconds.
+    Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD), 3(ZOD) in degree.
+    /**
+     * Destructor for ChannelParams
+     */
+    virtual ~ChannelParams () = default;
   };
 
   /**
@@ -111,6 +132,9 @@ public:
                                                Ptr<const PhasedArrayModel> aAntenna,
                                                Ptr<const PhasedArrayModel> bAntenna) = 0;
   
+  virtual Ptr<const ChannelParams> GetParams (Ptr<const MobilityModel> aMob,
+                                              Ptr<const MobilityModel> bMob) const = 0;
+
   /**
    * Generate a unique value for the pair of unsigned integer of 32 bits,
    * where the order does not matter, i.e., the same value will be returned for (a,b) and (b,a).
@@ -121,6 +145,11 @@ public:
   static uint64_t GetKey (uint32_t a, uint32_t b)
   {
    return (uint64_t) std::min (a, b) << 32 | std::max (a, b);
+  }
+
+  static PhasedAntennaPair GetOrderedPhasedAntennaPair (const PhasedAntennaPair &pair)
+  {
+    return (pair.first < pair.second) ? pair : PhasedAntennaPair (pair.second, pair.first);
   }
 
   static const uint8_t AOA_INDEX = 0; //!< index of the AOA value in the m_angle array
