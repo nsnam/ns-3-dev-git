@@ -100,7 +100,7 @@ public:
    * Set the LosConditionValue with the information about the LOS/NLOS
    * state of the channel
    *
-   * \param the LosConditionValue
+   * \param losCondition the LosConditionValue
    */
   void SetLosCondition (LosConditionValue losCondition);
   
@@ -169,10 +169,11 @@ public:
   /**
    * Return true if this instance is equivalent to the one passed as argument
    *
-   * \param otherCondition the other instance to compare with this instance
-   * \return true if this instance is equivalent to the one passed as argument
+   * \param losCondition the LOS condition of the other channel condition instance
+   * \param o2iCondition the 02I condition of the other channel condition instance
+   * \return true if the channel LOS and O2i conditions of the instance are equivalent to those passed as arguments
    */
-  bool IsEqual (Ptr<const ChannelCondition> otherCondition) const;
+  bool IsEqual (LosConditionValue losCondition, O2iConditionValue o2iCondition) const;
 
 private:
   LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel

@@ -47,7 +47,9 @@ public:
   virtual ~PhasedArrayModel (void);
 
 
-  // inherited from Object
+  /**
+   * Inherited from Object
+   */
   static TypeId GetTypeId (void);
 
 
@@ -67,7 +69,7 @@ public:
   /**
    * Returns the location of the antenna element with the specified
    * index, normalized with respect to the wavelength.
-   * \param idx index of the antenna element
+   * \param index the index of the antenna element
    * \return the 3D vector that represents the position of the element
    */
   virtual Vector GetElementLocation (uint64_t index) const = 0;
@@ -123,6 +125,12 @@ public:
    */
   Ptr<const AntennaModel> GetAntennaElement (void) const;
 
+  /**
+   * Returns the ID of this antenna array instance
+   * \return the ID value
+   */
+  uint32_t GetId () const;
+
 protected:
   /**
    * Utility method to compute the euclidean norm of a ComplexVector
@@ -134,6 +142,8 @@ protected:
   ComplexVector m_beamformingVector; //!< the beamforming vector in use
   Ptr<AntennaModel> m_antennaElement; //!< the model of the antenna element in use
   bool m_isBfVectorValid; //!< ensures the validity of the beamforming vector
+  static uint32_t m_idCounter; //!< the ID counter that is used to determine the unique antenna array ID
+  uint32_t m_id {0}; //!< the ID of this antenna array instance
 
 };
 

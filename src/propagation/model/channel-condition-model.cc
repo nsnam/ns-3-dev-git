@@ -117,10 +117,9 @@ ChannelCondition::IsI2i () const
 }
 
 bool
-ChannelCondition::IsEqual (Ptr<const ChannelCondition> otherCondition) const
+ChannelCondition::IsEqual (LosConditionValue losCondition, O2iConditionValue o2iCondition) const
 {
-  return (m_o2iCondition == otherCondition->GetO2iCondition ()
-          && m_losCondition == otherCondition->GetLosCondition ());
+  return (m_losCondition == losCondition && m_o2iCondition == o2iCondition);
 }
 
 std::ostream& operator<< (std::ostream& os, ChannelCondition::LosConditionValue cond)

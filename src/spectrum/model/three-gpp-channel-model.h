@@ -68,7 +68,7 @@ public:
 
   /**
    * Set the channel condition model
-   * \param model pointer to the ChannelConditionModel object
+   * \param model a pointer to the ChannelConditionModel object
    */
   void SetChannelConditionModel (Ptr<ChannelConditionModel> model);
 
@@ -103,7 +103,7 @@ public:
   std::string GetScenario (void) const;
 
   /**
-   * Looks for the channel matrix associated to the aMob and bMob pair in m_channelMap.
+   * Looks for the channel matrix associated to the aMob and bMob pair in m_channelMatrixMap.
    * If found, it checks if it has to be updated. If not found or if it has to
    * be updated, it generates a new uncorrelated channel matrix using the
    * method GetNewChannel and updates m_channelMap.
@@ -120,6 +120,14 @@ public:
                                        Ptr<const PhasedArrayModel> bAntenna) override;
 
 
+  /**
+   * Looks for the channel params associated to the aMob and bMob pair in
+   * m_channelParamsMap. If not found it will return a nullptr.
+   *
+   * \param aMob mobility model of the a device
+   * \param bMob mobility model of the b device
+   * \return the channel params
+   */
   Ptr<const ChannelParams> GetParams (Ptr<const MobilityModel> aMob,
                                       Ptr<const MobilityModel> bMob) const override;
   /**
@@ -160,7 +168,8 @@ private:
    */
   struct ThreeGppChannelParams : public MatrixBasedChannelModel::ChannelParams
   {
-    Ptr<const ChannelCondition> m_channelCondition; //!< the channel condition
+    ChannelCondition:: LosConditionValue m_losCondition; //!< contains the information about the LOS state of the channel
+    ChannelCondition::O2iConditionValue m_o2iCondition; //!< contains the information about the O2I state of the channel
     // TODO these are not currently used, they have to be correctly set when including the spatial consistent update procedure
     /*The following parameters are stored for spatial consistent updating. The notation is
     that of 3GPP technical reports, but it can apply also to other channel realizations*/

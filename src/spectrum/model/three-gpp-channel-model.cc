@@ -1039,7 +1039,7 @@ ThreeGppChannelModel::ChannelParamsNeedsUpdate (Ptr<const ThreeGppChannelParams>
   bool update = false;
 
   // if the channel condition is different the channel has to be updated
-  if (!channelParams->m_channelCondition->IsEqual (channelCondition))
+  if (!channelCondition->IsEqual (channelParams->m_losCondition, channelParams->m_o2iCondition))
     {
       NS_LOG_DEBUG ("Update the channel condition");
       update = true;
@@ -1200,12 +1200,13 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
   // create a channel matrix instance
   Ptr<ThreeGppChannelParams> channelParams = Create<ThreeGppChannelParams> ();
   channelParams->m_generatedTime = Simulator::Now ();
-  channelParams->m_channelCondition = channelCondition;  // TODO check if this need to be assigned each time, because the pointer does not change
+  channelParams->m_losCondition = channelCondition->GetLosCondition ();
+  channelParams->m_o2iCondition = channelCondition->GetO2iCondition ();
 
   //Step 4: Generate large scale parameters. All LSPS are uncorrelated.
   DoubleVector LSPsIndep, LSPs;
   uint8_t paramNum = 6;
-  if (channelCondition->IsLos ())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       paramNum = 7;
     }
@@ -1227,7 +1228,7 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
 
   // NOTE the shadowing is generated in the propagation loss model
   double DS, ASD, ASA, ZSA, ZSD, kFactor = 0;
-  if (channelCondition->IsLos())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       kFactor = LSPs[1] * table3gpp->m_sigK + table3gpp->m_uK;
       DS = pow (10, LSPs[2] * table3gpp->m_sigLgDS + table3gpp->m_uLgDS);
@@ -1297,7 +1298,7 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
     }
 
   DoubleVector clusterPowerForAngles; // this power is only for equation (7.5-9) and (7.5-14), not for (7.5-22)
-  if (channelCondition->IsLos())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       double kLinear = pow (10, kFactor / 10);
 
@@ -1346,7 +1347,7 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
   NS_ASSERT (channelParams->m_clusterPower.size () < UINT8_MAX);
   channelParams->m_reducedClusterNumber = channelParams->m_clusterPower.size ();
   // Resume step 5 to compute the delay for LoS condition.
-  if (channelCondition->IsLos())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       double cTau = 0.7705 - 0.0433 * kFactor + 2e-4 * pow (kFactor,2) + 17e-6 * pow (kFactor,3);         //(7.5-3)
       for (uint8_t cIndex = 0; cIndex < channelParams->m_reducedClusterNumber; cIndex++)
@@ -1401,7 +1402,7 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
 
   double cPhi = cNlos;
 
-  if (channelCondition->IsLos())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       cPhi *= (1.1035 - 0.028 * kFactor - 2e-3 * pow (kFactor, 2) + 1e-4 * pow (kFactor, 3)); //(7.5-10))
     }
@@ -1471,7 +1472,7 @@ ThreeGppChannelModel::GenerateChannelParameters (const Ptr<const ChannelConditio
       clusterZod[cIndex] = clusterZod[cIndex] * Xn + (m_normalRv->GetValue () * ZSD / 7) + RadiansToDegrees (sAngle.GetInclination ()) + table3gpp->m_offsetZOD;        //(7.5-19)
     }
 
-  if (channelCondition->IsLos())
+  if (channelParams->m_losCondition == ChannelCondition::LOS)
     {
       // The 7.5-12 can be rewrite as Theta_n,ZOA = Theta_n,ZOA - (Theta_1,ZOA - Theta_LOS,ZOA) = Theta_n,ZOA - diffZOA,
       // Similar as AOD, ZSA and ZSD.
@@ -1860,7 +1861,7 @@ ThreeGppChannelModel::GetNewChannel (Ptr<const ThreeGppChannelParams> channelPar
 
                 }
             }
-          if (channelParams->m_channelCondition->IsLos ()) //(7.5-29) && (7.5-30)
+          if (channelParams->m_losCondition == ChannelCondition::LOS) //(7.5-29) && (7.5-30)
             {
               std::complex<double> ray (0, 0);
               double rxPhaseDiff = 2 * M_PI * (sin (uAngle.GetInclination ()) * cos (uAngle.GetAzimuth ()) * uLoc.x
@@ -1990,7 +1991,7 @@ ThreeGppChannelModel::CalcAttenuationOfBlockage (const Ptr<ThreeGppChannelModel:
             }
           else
             {
-              if (channelParams->m_channelCondition->IsO2i ()) // outdoor to indoor
+              if (channelParams->m_o2iCondition == ChannelCondition::O2I) // outdoor to indoor
                 {
                   corrDis = 5;
                 }

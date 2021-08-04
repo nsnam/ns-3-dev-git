@@ -150,8 +150,8 @@ private:
    * \param aId id of the first node
    * \param bId id of the second node
    * \param channelMatrix the channel matrix
-   * \param aW the beamforming vector of the first device
-   * \param bW the beamforming vector of the second device
+   * \param aPhasedArrayModel the antenna array of the first device
+   * \param bPhasedArrayModel the antenna array of the second device
    * \return vector containing the long term compoenent for each cluster
    */
   PhasedArrayModel::ComplexVector GetLongTerm (uint32_t aId, uint32_t bId,
@@ -173,7 +173,8 @@ private:
    * Computes the beamforming gain and applies it to the tx PSD
    * \param txPsd the tx PSD
    * \param longTerm the long term component
-   * \param params The channel matrix
+   * \param channelMatrix The channel matrix structure
+   * \param channelParams The channel params structure
    * \param sSpeed speed of the first node
    * \param uSpeed speed of the second node
    * \return the rx PSD

@@ -55,14 +55,21 @@ public:
   typedef std::vector<Complex2DVector> Complex3DVector; //!< type definition for complex 3D matrices
   typedef std::pair<Ptr<const PhasedArrayModel>, Ptr<const PhasedArrayModel>> PhasedAntennaPair; //!< the antenna pair for which is generated the specific instance of the channel
 
+  /**
+   * Data structure that implements the hash function for the key made of the pair of Ptrs
+   */
   struct PhasedAntennaPairHashXor
   {
+    /**
+     * Operator () definition to support the call of the hash function
+     * \param pair the pair of pointers to PhasedArrayModel that will be used to calculate the hash value
+     * \return returns the hash function value of the PhasedAntennaPair
+     */
      std::size_t operator() (const PhasedAntennaPair &pair) const
      {
        return std::hash<const PhasedArrayModel*>()(PeekPointer (pair.first)) ^ std::hash<const PhasedArrayModel*>()(PeekPointer (pair.second));
      }
   };
-
   /**
    * Data structure that stores a channel realization
    */
@@ -132,6 +139,14 @@ public:
                                                Ptr<const PhasedArrayModel> aAntenna,
                                                Ptr<const PhasedArrayModel> bAntenna) = 0;
   
+  /**
+   * Returns a channel parameters structure used to obtain the channel between
+   * the nodes with mobility objects passed as input parameters.
+   *
+   * \param aMob mobility model of the a device
+   * \param bMob mobility model of the b device
+   * \return the channel matrix
+   */
   virtual Ptr<const ChannelParams> GetParams (Ptr<const MobilityModel> aMob,
                                               Ptr<const MobilityModel> bMob) const = 0;
 
@@ -147,6 +162,11 @@ public:
    return (uint64_t) std::min (a, b) << 32 | std::max (a, b);
   }
 
+  /**
+   * Put in ascending order the provided pair, if already in ascending order it returns it.
+   * \param pair the pair to be sorted in ascending order
+   * \return the pair in ascending order
+   */
   static PhasedAntennaPair GetOrderedPhasedAntennaPair (const PhasedAntennaPair &pair)
   {
     return (pair.first < pair.second) ? pair : PhasedAntennaPair (pair.second, pair.first);
