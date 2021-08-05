@@ -155,21 +155,8 @@ ComputeSnr (ComputeSnrParams& params)
   double propagationGainLinear = std::pow (10.0, (propagationGainDb) / 10.0);
   *(rxPsd) *= propagationGainLinear;
 
-  if (params.txAntenna == nullptr)
-    {
-      NS_ABORT_MSG("params.txAntenna is nullptr!");
-    }
-  else if (params.rxAntenna == nullptr)
-    {
-      NS_ABORT_MSG("params.rxAntenna is nullptr!");
-    }
-
-
-  Ptr<const PhasedArrayModel> a = params.txAntenna;
-  if (a == nullptr)
-    {
-      NS_ABORT_MSG("params.txAntenna is nullptr!");
-    }
+  NS_ASSERT_MSG (params.txAntenna, "params.txAntenna is nullptr!");
+  NS_ASSERT_MSG (params.rxAntenna, "params.rxAntenna is nullptr!");
 
   // apply the fast fading and the beamforming gain
   rxPsd = m_spectrumLossModel->CalcRxPowerSpectralDensity (rxPsd, params.txMob, params.rxMob, params.txAntenna, params.rxAntenna);

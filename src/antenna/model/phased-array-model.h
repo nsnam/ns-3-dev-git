@@ -144,7 +144,6 @@ protected:
   bool m_isBfVectorValid; //!< ensures the validity of the beamforming vector
   static uint32_t m_idCounter; //!< the ID counter that is used to determine the unique antenna array ID
   uint32_t m_id {0}; //!< the ID of this antenna array instance
-
 };
 
 

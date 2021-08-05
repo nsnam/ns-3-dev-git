@@ -147,15 +147,12 @@ private:
    * Looks for the long term component in m_longTermMap. If found, checks
    * whether it has to be updated. If not found or if it has to be updated,
    * calls the method CalcLongTerm to compute it.
-   * \param aId id of the first node
-   * \param bId id of the second node
    * \param channelMatrix the channel matrix
-   * \param aPhasedArrayModel the antenna array of the first device
-   * \param bPhasedArrayModel the antenna array of the second device
-   * \return vector containing the long term compoenent for each cluster
+   * \param aPhasedArrayModel the antenna array of the tx device
+   * \param bPhasedArrayModel the antenna array of the rx device
+   * \return vector containing the long term component for each cluster
    */
-  PhasedArrayModel::ComplexVector GetLongTerm (uint32_t aId, uint32_t bId,
-                                               Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
+  PhasedArrayModel::ComplexVector GetLongTerm (Ptr<const MatrixBasedChannelModel::ChannelMatrix> channelMatrix,
                                                Ptr<const PhasedArrayModel> aPhasedArrayModel,
                                                Ptr<const PhasedArrayModel> bPhasedArrayModel) const;
   /**
@@ -185,13 +182,8 @@ private:
                                           Ptr<const MatrixBasedChannelModel::ChannelParams> channelParams,
                                           const Vector &sSpeed, const Vector &uSpeed) const;
 
-  mutable std::unordered_map < MatrixBasedChannelModel::PhasedAntennaPair, Ptr<const LongTerm>, MatrixBasedChannelModel::PhasedAntennaPairHashXor > m_longTermMap; //!< map containing the long term components
+  mutable std::unordered_map < uint64_t, Ptr<const LongTerm> > m_longTermMap; //!< map containing the long term components
   Ptr<MatrixBasedChannelModel> m_channelModel; //!< the model to generate the channel matrix
-
-  // Variable used to compute the additional Doppler contribution for the delayed
-  // (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
-  double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed paths
-  Ptr<UniformRandomVariable> m_uniformRv; //!< uniform random variable, used to compute the additional Doppler contribution
 };
 } // namespace ns3
 

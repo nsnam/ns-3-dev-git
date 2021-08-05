@@ -239,8 +239,8 @@ private:
   virtual Ptr<const ParamsTable> GetThreeGppTable (Ptr<const ChannelCondition> channelCondition, double hBS, double hUT, double distance2D) const;
 
   /**
-   * Prepare 3gpp channel parameters. The function does the followin steps described in
-   * 3GPP 38.901:
+   * Prepare 3gpp channel parameters among the nodes a and b.
+   * The function does the followin steps described in 3GPP 38.901:
    *
    * Step 4: Generate large scale parameters. All LSPS are uncorrelated.
    * Step 5: Generate Delays.
@@ -255,33 +255,34 @@ private:
    * which is the return value of this function.
    * \param channelCondition the channel condition
    * \param table3gpp the 3gpp parameters from the table
-   * \param uAngle the u node angle
-   * \param sAngle the s node angle
+   * \param aMob the a node mobility model
+   * \param bMob the b node mobility model
    * \return ThreeGppChannelParams structure with all the channel parameters generated according 38.901 steps from 4 to 10.
    */
   Ptr<ThreeGppChannelParams> GenerateChannelParameters (const Ptr<const ChannelCondition> channelCondition,
                                                         const Ptr<const ParamsTable> table3gpp,
-                                                        const Angles &uAngle, const Angles &sAngle) const;
+                                                        const Ptr<const MobilityModel> aMob,
+                                                        const Ptr<const MobilityModel> bMob) const;
 
   /**
-   * Compute the channel matrix between two devices using the procedure
+   * Compute the channel matrix between two nodes a and b, and their
+   * antenna arrays aAntenna and bAntenna using the procedure
    * described in 3GPP TR 38.901
-   * \param channelParams the channel parameters
+   * \param channelParams the channel parameters previously generated for the pair of nodes a and b
    * \param table3gpp the 3gpp parameters table
-   * \param sAntenna the s node antenna array
-   * \param uAntenna the u node antenna array
-   * \param uAngle the u node angle
-   * \param sAngle the s node angle
-   * \param distance3D the 3D distance between nodes
+   * \param sMob the mobility model of node s
+   * \param uMob the mobility model of node u
+   * \param sAntenna the antenna array of node s
+   * \param uAntenna the antenna array of node u
    * \return the channel realization
    */
+
   Ptr<ChannelMatrix> GetNewChannel (Ptr<const ThreeGppChannelParams> channelParams,
                                     Ptr<const ParamsTable> table3gpp,
+                                    const Ptr<const MobilityModel> sMob,
+                                    const Ptr<const MobilityModel> uMob,
                                     Ptr<const PhasedArrayModel> sAntenna,
-                                    Ptr<const PhasedArrayModel> uAntenna,
-                                    Angles &uAngle, Angles &sAngle,
-                                    double distance3D) const;
-
+                                    Ptr<const PhasedArrayModel> uAntenna) const;
   /**
    * Applies the blockage model A described in 3GPP TR 38.901
    * \param channelParams the channel parameters structure
@@ -311,8 +312,8 @@ private:
    */
   bool ChannelMatrixNeedsUpdate (Ptr<const ThreeGppChannelParams> channelParams, Ptr<const ChannelMatrix> channelMatrix);
 
-  std::unordered_map<PhasedAntennaPair, Ptr<ChannelMatrix>, PhasedAntennaPairHashXor > m_channelMatrixMap; //!< map containing the channel realizations per pair of PhasedAntennaArray instances
-  std::unordered_map<uint64_t, Ptr<ThreeGppChannelParams> > m_channelParamsMap; //!< map containing the common channel parameters per pair of nodes
+  std::unordered_map<uint64_t, Ptr<ChannelMatrix> > m_channelMatrixMap; //!< map containing the channel realizations per pair of PhasedAntennaArray instances, the key of this map is reciprocal uniquely identifies a pair of PhasedAntennaArrays
+  std::unordered_map<uint64_t, Ptr<ThreeGppChannelParams> > m_channelParamsMap; //!< map containing the common channel parameters per pair of nodes, the key of this map is reciprocal and uniquely identifies a pair of nodes
   Time m_updatePeriod; //!< the channel update period
   double m_frequency; //!< the operating frequency
   std::string m_scenario; //!< the 3GPP scenario
@@ -320,6 +321,11 @@ private:
   Ptr<UniformRandomVariable> m_uniformRv; //!< uniform random variable
   Ptr<NormalRandomVariable> m_normalRv; //!< normal random variable
   Ptr<UniformRandomVariable> m_uniformRvShuffle; //!< uniform random variable used to shuffle array in GetNewChannel
+
+  // Variable used to compute the additional Doppler contribution for the delayed
+  // (reflected) paths, as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3.
+  double m_vScatt; //!< value used to compute the additional Doppler contribution for the delayed paths
+  Ptr<UniformRandomVariable> m_uniformRvDoppler; //!< uniform random variable, used to compute the additional Doppler contribution
 
   // parameters for the blockage model
   bool m_blockage; //!< enables the blockage model A

@@ -26,6 +26,8 @@
 
 namespace ns3 {
 
+uint32_t PhasedArrayModel::m_idCounter = 0 ;
+
 NS_LOG_COMPONENT_DEFINE ("PhasedArrayModel");
 
 NS_OBJECT_ENSURE_REGISTERED (PhasedArrayModel);
@@ -61,7 +63,9 @@ operator<< (std::ostream& os, const PhasedArrayModel::ComplexVector& cv)
 
 PhasedArrayModel::PhasedArrayModel ()
   : m_isBfVectorValid {false}
-{}
+{
+  m_id = m_idCounter++;
+}
 
 
 PhasedArrayModel::~PhasedArrayModel ()
@@ -171,6 +175,11 @@ PhasedArrayModel::GetAntennaElement () const
   return m_antennaElement;
 }
 
+uint32_t
+PhasedArrayModel::GetId () const
+{
+  return m_id;
+}
 
 } /* namespace ns3 */
 

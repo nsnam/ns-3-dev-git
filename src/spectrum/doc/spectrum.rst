@@ -653,10 +653,10 @@ ThreeGppSpectrumPropagationLossModel
 The class ThreeGppSpectrumPropagationLossModel implements the 
 PhasedArraySpectrumPropagationLossModel interface and enables the modeling of frequency
 dependent propagation phenomena while taking into account the specific pair of the 
-antenna array at the transmitter and the receiver. The main method is 
+phased antenna array at the transmitter and the receiver. The main method is 
 DoCalcRxPowerSpectralDensity, which takes as input the power spectral density (PSD) 
 of the transmitted signal, the mobility models of the transmitting node and receiving node, 
-and the antenna array of the transmitting node, and of the receiving node. 
+and the phased antenna array of the transmitting node, and of the receiving node. 
 Finally, it returns the PSD of the received signal.
 
 Procedure used to compute the PSD of to compute the PSD of the received signal:
@@ -669,14 +669,39 @@ that are passed as parameters for both the transmitting and receiving devices,
 and calls the method GetCurrentBeamformingVector to retrieve the beamforming vectors 
 of these antenna objects.
 
-2. Retrieve the channel matrix
+2. Retrieve the channel matrix and the channel params
 The ThreeGppSpectrumPropagationLossModel relies on the ThreeGppChannelModel class
-to obtain the channel matrix. In particular, it makes use of the method GetChannel,
+to obtain the channel matrix and channel parameters. 
+In particular, it makes use of the method GetChannel,
 which returns a ChannelMatrix object containing the channel
-matrix and other channel parameters.
+matrix, the generation time, the node pair, and the phased antenna array pair among 
+which is created this channel matrix.
+Apart from the function GetChannel, there is a function called GetParams which 
+returns a ChannelParams object containing the channel parameters.
+Notice that the channel information is split into these two structures 
+(ChannelMatrix and ChannelParams) to support multiple collocate phased antenna arrays at 
+TX/RX node. ChannelParams (also its specialization ThreeGppChannelParams structure) 
+contains parameters which are common for all channels among 
+the same RX/TX node pair, while ChannelMatrix contains the channel matrix for the specific pair 
+of the phased antenna arrays of TX/RX nodes.
+For example, if the TX and the RX node have multiple collocated antenna arrays, 
+then there will be multiple channel matrices among this pair of nodes for different pairs 
+of antenna arrays of the TX and the RX node.
+These channel matrices that are among the same pair of nodes have common channel parameters, 
+i.e., they share the same channel condition, cluster powers, cluster delays, 
+AoD, AoA, ZoD, ZoA, K_factor, delay spread, etc.
+On the other hand, each pair of TX and RX antenna arrays has a specific channel matrix 
+and fading, which depends on the actual antenna element positions and field patterns of 
+each pair of antennas array subpartitions.
 The ThreeGppChannelModel instance is automatically
 created in the the ThreeGppSpectrumPropagationLossModel constructor and it can
 be configured using the method SetChannelModelAttribute ().
+
+Notice that in MultiModelSpectrumChannel in StartTx function we added a 
+condition that checks whether the TX/RX SpectrumPhy instances belong to different 
+TX/RX nodes. This is needed to avoid pathloss models calculations among 
+the phased antenna arrays of the same node, because there are no models yet 
+in ns-3 that support the calculation of this kind of interference.
 
 4. Compute the long term component
 The method GetLongTerm returns the long term component obtained by multiplying

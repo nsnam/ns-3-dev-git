@@ -65,6 +65,8 @@ us a note on ns-developers mailing list.</p>
 <li><b>ThreeGppSpectrumPropagationLossModel</b> now inherits <b>PhasedArraySpectrumPropagationLossModel</b>. The modules that use <b>ThreeGppSpectrumPropagationLossModel</b> should implement <b>SpectrumPhy::GetAntenna</b> that will return the instance of <b>PhasedArrayModel</b>.</li>
 <li><b>AddDevice</b> function is removed from <b>ThreeGppSpectrumPropagationLossModel</b> to support multiple arrays per device.</li>
 <li><b>SpectrumPhy</b> function <b>GetRxAntenna</b> is renamed to <b>GetAntenna</b>, and its return value is changed to <b>Ptr<Object></b> instead of <b>Ptr<AntennaModel></b> to support also <b>PhasedArrayModel</b> type of antenna.</li>
+<li><b>vScatt</b> attribute moved from ThreeGppSpectrumPropagationLossModel to ThreeGppChannelModel.</li>
+<li><b>ChannelCondition::IsEqual</b> now has LOS and O2I parameters instead of a pointer to ChannelCondition.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

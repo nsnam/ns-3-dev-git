@@ -53,23 +53,7 @@ public:
   typedef std::vector<Double2DVector> Double3DVector; //!< type definition for 3D matrices of doubles
   typedef std::vector<PhasedArrayModel::ComplexVector> Complex2DVector; //!< type definition for complex matrices
   typedef std::vector<Complex2DVector> Complex3DVector; //!< type definition for complex 3D matrices
-  typedef std::pair<Ptr<const PhasedArrayModel>, Ptr<const PhasedArrayModel>> PhasedAntennaPair; //!< the antenna pair for which is generated the specific instance of the channel
 
-  /**
-   * Data structure that implements the hash function for the key made of the pair of Ptrs
-   */
-  struct PhasedAntennaPairHashXor
-  {
-    /**
-     * Operator () definition to support the call of the hash function
-     * \param pair the pair of pointers to PhasedArrayModel that will be used to calculate the hash value
-     * \return returns the hash function value of the PhasedAntennaPair
-     */
-     std::size_t operator() (const PhasedAntennaPair &pair) const
-     {
-       return std::hash<const PhasedArrayModel*>()(PeekPointer (pair.first)) ^ std::hash<const PhasedArrayModel*>()(PeekPointer (pair.second));
-     }
-  };
   /**
    * Data structure that stores a channel realization
    */
@@ -77,7 +61,8 @@ public:
   {
     Complex3DVector    m_channel; //!< channel matrix H[u][s][n].
     Time               m_generatedTime; //!< generation time
-    PhasedAntennaPair  m_antennaPair; //!< the  first element is the antenna of the s-node antenna (the antenna of the transmitter when the channel was generated), the second element is the u-node antenna (the antenna of the receiver when the channel was generated)
+    std::pair<uint32_t, uint32_t> m_antennaPair; //!< the first element is the ID of the antenna of the s-node (the antenna of the transmitter when the channel was generated), the second element is ID of the antenna of the u-node antenna (the antenna of the receiver when the channel was generated)
+    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID (the transmitter when the channel was generated), the second element is the u-node ID (the receiver when the channel was generated)
 
     /**
      * Destructor for ChannelMatrix
@@ -87,17 +72,17 @@ public:
     /**
      * Returns true if the ChannelMatrix object was generated
      * considering node b as transmitter and node a as receiver.
-     * \param aAntennaModel the antenna array of the a node
-     * \param bAntennaModel the antenna array of the b node
+     * \param aAntennaModel the ID of the antenna array of the a node
+     * \param bAntennaModel the ID of the antenna array of the b node
      * \return true if b is the rx and a is the tx, false otherwise
      */
-    bool IsReverse (const Ptr<const PhasedArrayModel> aAntennaModel, const Ptr<const PhasedArrayModel> bAntennaModel) const
+    bool IsReverse (uint32_t aAntennaId, uint32_t bAntennaId) const
     {
-      Ptr<const PhasedArrayModel> sAntennaModel, uAntennaModel;
-      std::tie (sAntennaModel, uAntennaModel) = m_antennaPair;
-      NS_ASSERT_MSG ((sAntennaModel == aAntennaModel && uAntennaModel == bAntennaModel) || (sAntennaModel == bAntennaModel && uAntennaModel == aAntennaModel),
-                      "This channel matrix does not represent the channel among the provided antenna arrays.");
-      return (sAntennaModel == bAntennaModel && uAntennaModel == aAntennaModel);
+      uint32_t sAntennaId, uAntennaId;
+      std::tie (sAntennaId, uAntennaId) = m_antennaPair;
+      NS_ASSERT_MSG ((sAntennaId == aAntennaId && uAntennaId == bAntennaId) || (sAntennaId == bAntennaId && uAntennaId == aAntennaId),
+                      "This channel matrix does not represent the channel among the antenna arrays for which are provided IDs.");
+      return (sAntennaId == bAntennaId && uAntennaId == aAntennaId);
     }
   };
 
@@ -110,6 +95,9 @@ public:
     Time               m_generatedTime; //!< generation time
     DoubleVector       m_delay; //!< cluster delay in nanoseconds.
     Double2DVector     m_angle; //!< cluster angle angle[direction][n], where direction = 0(AOA), 1(ZOA), 2(AOD), 3(ZOD) in degree.
+    DoubleVector m_alpha; //!< alpha term per cluster as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3 for calculating doppler
+    DoubleVector m_D; //!< D term per cluster as described in 3GPP TR 37.885 v15.3.0, Sec. 6.2.3 for calculating doppler
+    std::pair<uint32_t, uint32_t> m_nodeIds; //!< the first element is the s-node ID (the transmitter when the channel params were generated), the second element is the u-node ID (the receiver when the channel params were generated generated)
     /**
      * Destructor for ChannelParams
      */
@@ -160,16 +148,6 @@ public:
   static uint64_t GetKey (uint32_t a, uint32_t b)
   {
    return (uint64_t) std::min (a, b) << 32 | std::max (a, b);
-  }
-
-  /**
-   * Put in ascending order the provided pair, if already in ascending order it returns it.
-   * \param pair the pair to be sorted in ascending order
-   * \return the pair in ascending order
-   */
-  static PhasedAntennaPair GetOrderedPhasedAntennaPair (const PhasedAntennaPair &pair)
-  {
-    return (pair.first < pair.second) ? pair : PhasedAntennaPair (pair.second, pair.first);
   }
 
   static const uint8_t AOA_INDEX = 0; //!< index of the AOA value in the m_angle array

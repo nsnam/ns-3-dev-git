@@ -329,10 +329,10 @@ main (int argc, char *argv[])
   channelModel->SetAttribute ("Scenario", StringValue (scenario));
   channelModel->SetAttribute ("Frequency", DoubleValue (frequency));
   channelModel->SetAttribute ("ChannelConditionModel", PointerValue (m_condModel));
+  channelModel->SetAttribute ("vScatt", DoubleValue (vScatt));
 
   // create the spectrum propagation loss model
   m_spectrumLossModel = CreateObjectWithAttributes<ThreeGppSpectrumPropagationLossModel> ("ChannelModel", PointerValue (channelModel));
-  m_spectrumLossModel->SetAttribute ("vScatt", DoubleValue (vScatt));
 
   BuildingsHelper::Install (nodes);
 
