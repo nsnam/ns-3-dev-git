@@ -275,7 +275,6 @@ TypeId
 ThreeGppChannelModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ThreeGppChannelModel")
-    .SetParent<Object> ()
     .SetGroupName ("Spectrum")
     .SetParent<MatrixBasedChannelModel> ()
     .AddConstructor<ThreeGppChannelModel> ()

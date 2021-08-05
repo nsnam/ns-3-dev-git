@@ -138,8 +138,8 @@ public:
    * \return the number of stream indices assigned by this model
    */
   int64_t AssignStreams (int64_t stream);
-
-private:
+  
+protected:
   /**
    * Wrap an (azimuth, inclination) angle pair in a valid range.
    * Specifically, inclination must be in [0, M_PI] and azimuth in [0, 2*M_PI).
@@ -277,7 +277,7 @@ private:
    * \return the channel realization
    */
 
-  Ptr<ChannelMatrix> GetNewChannel (Ptr<const ThreeGppChannelParams> channelParams,
+  virtual Ptr<ChannelMatrix> GetNewChannel (Ptr<const ThreeGppChannelParams> channelParams,
                                     Ptr<const ParamsTable> table3gpp,
                                     const Ptr<const MobilityModel> sMob,
                                     const Ptr<const MobilityModel> uMob,

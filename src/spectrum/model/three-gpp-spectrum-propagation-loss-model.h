@@ -32,8 +32,6 @@
 namespace ns3 {
 
 class NetDevice;
-class ChannelConditionModel;
-class ChannelCondition;
 
 /**
  * \ingroup spectrum

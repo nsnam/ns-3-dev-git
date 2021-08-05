@@ -25,7 +25,6 @@
 #include "three-gpp-spectrum-propagation-loss-model.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
-#include "ns3/channel-condition-model.h"
 #include "ns3/double.h"
 #include "ns3/string.h"
 #include "ns3/simulator.h"
