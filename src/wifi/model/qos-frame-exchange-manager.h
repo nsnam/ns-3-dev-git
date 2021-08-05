@@ -105,6 +105,7 @@ protected:
                                Time response) const override;
   void TransmissionSucceeded (void) override;
   void TransmissionFailed (void) override;
+  void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
 
   /**
    * Request the FrameExchangeManager to start a frame exchange sequence.
@@ -157,6 +158,8 @@ protected:
 
   Ptr<QosTxop> m_edca;                       //!< the EDCAF that gained channel access
   Mac48Address m_txopHolder;                 //!< MAC address of the TXOP holder
+  bool m_setQosQueueSize;                    /**< whether to set the Queue Size subfield of the
+                                                  QoS Control field of QoS data frames */
 
 private:
 

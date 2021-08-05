@@ -368,11 +368,14 @@ public:
   void AssignSequenceNumber (Ptr<WifiMacQueueItem> mpdu) const;
 
   /**
-   * Set the Queue Size subfield of the QoS Control field of the given QoS data frame.
+   * Get the value for the Queue Size subfield of the QoS Control field of a
+   * QoS data frame of the given TID and addressed to the given receiver.
    *
-   * \param mpdu the given QoS data frame
+   * \param tid the Traffic ID
+   * \param receiver the address of the given receiver
+   * \return the value for the Queue Size subfield
    */
-  void SetQosQueueSize (Ptr<WifiMacQueueItem> mpdu);
+  uint8_t GetQosQueueSize (uint8_t tid, Mac48Address receiver) const;
 
   /**
    * Return true if a TXOP has started.
