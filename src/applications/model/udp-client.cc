@@ -156,6 +156,19 @@ UdpClient::StartApplication (void)
         }
     }
 
+#ifdef NS3_LOG_ENABLE
+  std::stringstream peerAddressStringStream;
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      peerAddressStringStream << Ipv4Address::ConvertFrom (m_peerAddress);
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
+    }
+  m_peerAddressString = peerAddressStringStream.str();
+#endif // NS3_LOG_ENABLE
+
   m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
   m_socket->SetAllowBroadcast (true);
   m_sendEvent = Simulator::Schedule (Seconds (0.0), &UdpClient::Send, this);
@@ -178,31 +191,24 @@ UdpClient::Send (void)
   Ptr<Packet> p = Create<Packet> (m_size-(8+4)); // 8+4 : the size of the seqTs header
   p->AddHeader (seqTs);
 
-  std::stringstream peerAddressStringStream;
-  if (Ipv4Address::IsMatchingType (m_peerAddress))
-    {
-      peerAddressStringStream << Ipv4Address::ConvertFrom (m_peerAddress);
-    }
-  else if (Ipv6Address::IsMatchingType (m_peerAddress))
-    {
-      peerAddressStringStream << Ipv6Address::ConvertFrom (m_peerAddress);
-    }
-
   if ((m_socket->Send (p)) >= 0)
     {
       ++m_sent;
       m_totalTx += p->GetSize ();
-      NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
-                                    << peerAddressStringStream.str () << " Uid: "
+#ifdef NS3_LOG_ENABLE
+    NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
+                                    << m_peerAddressString << " Uid: "
                                     << p->GetUid () << " Time: "
                                     << (Simulator::Now ()).As (Time::S));
-
+#endif // NS3_LOG_ENABLE
     }
+#ifdef NS3_LOG_ENABLE
   else
     {
       NS_LOG_INFO ("Error while sending " << m_size << " bytes to "
-                                          << peerAddressStringStream.str ());
+                                          << m_peerAddressString);
     }
+#endif // NS3_LOG_ENABLE
 
   if (m_sent < m_count)
     {

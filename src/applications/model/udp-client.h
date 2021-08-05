@@ -93,7 +93,9 @@ private:
   Address m_peerAddress; //!< Remote peer address
   uint16_t m_peerPort; //!< Remote peer port
   EventId m_sendEvent; //!< Event to send the next packet
-
+#ifdef NS3_LOG_ENABLE
+  std::string m_peerAddressString; //!< Remote peer address string
+#endif // NS3_LOG_ENABLE
 };
 
 } // namespace ns3
