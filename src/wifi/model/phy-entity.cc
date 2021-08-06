@@ -603,8 +603,6 @@ PhyEntity::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduInd
   Ptr<const WifiPpdu> ppdu = event->GetPpdu ();
   WifiTxVector txVector = event->GetTxVector ();
   uint16_t staId = GetStaId (ppdu);
-  const auto & channelWidthAndBand = GetChannelWidthAndBand (event->GetTxVector (), staId);
-  double snr = m_wifiPhy->m_interference.CalculateSnr (event, channelWidthAndBand.first, txVector.GetNss (staId), channelWidthAndBand.second);
 
   std::pair<bool, SignalNoiseDbm> rxInfo = GetReceptionStatus (psdu, event, staId, relativeStart, mpduDuration);
   NS_LOG_DEBUG ("Extracted MPDU #" << mpduIndex << ": duration: " << mpduDuration.As (Time::NS) <<
@@ -615,7 +613,7 @@ PhyEntity::EndOfMpdu (Ptr<Event> event, Ptr<const WifiPsdu> psdu, size_t mpduInd
   signalNoiseIt->second = rxInfo.second;
 
   RxSignalInfo rxSignalInfo;
-  rxSignalInfo.snr = snr;
+  rxSignalInfo.snr = rxInfo.second.signal / rxInfo.second.noise;
   rxSignalInfo.rssi = rxInfo.second.signal;
 
   auto statusPerMpduIt = m_statusPerMpduMap.find (std::make_pair (ppdu->GetUid (), staId));
