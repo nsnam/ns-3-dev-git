@@ -812,14 +812,10 @@ bool
 Buffer::Iterator::CheckNoZero (uint32_t start, uint32_t end) const
 {
   NS_LOG_FUNCTION (this << &start << &end);
-  for (uint32_t i = start; i < end; i++)
-    {
-      if (!Check (i))
-        {
-          return false;
-        }
-    }
-  return true;
+  return !(start < m_dataStart ||
+           end > m_dataEnd ||
+           (end > m_zeroStart && start < m_zeroEnd && m_zeroEnd != m_zeroStart && start != end)
+           );
 }
 bool 
 Buffer::Iterator::Check (uint32_t i) const
