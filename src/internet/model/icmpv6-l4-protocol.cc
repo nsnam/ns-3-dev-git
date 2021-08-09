@@ -224,7 +224,7 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv4H
 
 enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6Header const &header, Ptr<Ipv6Interface> interface)
 {
-  NS_LOG_FUNCTION (this << packet << header.GetSourceAddress () << header.GetDestinationAddress () << interface);
+  NS_LOG_FUNCTION (this << packet << header.GetSource () << header.GetDestination () << interface);
   Ptr<Packet> p = packet->Copy ();
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
 
@@ -237,26 +237,26 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6H
     case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
       if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
         {
-          HandleRS (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+          HandleRS (p, header.GetSource (), header.GetDestination (), interface);
         }
       break;
     case Icmpv6Header::ICMPV6_ND_ROUTER_ADVERTISEMENT:
       if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
         {
-          HandleRA (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+          HandleRA (p, header.GetSource (), header.GetDestination (), interface);
         }
       break;
     case Icmpv6Header::ICMPV6_ND_NEIGHBOR_SOLICITATION:
-      HandleNS (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleNS (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ND_NEIGHBOR_ADVERTISEMENT:
-      HandleNA (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleNA (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ND_REDIRECTION:
-      HandleRedirection (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleRedirection (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ECHO_REQUEST:
-      HandleEchoRequest (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleEchoRequest (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ECHO_REPLY:
       // EchoReply does not contain any info about L4
@@ -264,16 +264,16 @@ enum IpL4Protocol::RxStatus Icmpv6L4Protocol::Receive (Ptr<Packet> packet, Ipv6H
       /// \todo implement request / reply consistency check.
       break;
     case Icmpv6Header::ICMPV6_ERROR_DESTINATION_UNREACHABLE:
-      HandleDestinationUnreachable (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleDestinationUnreachable (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ERROR_PACKET_TOO_BIG:
-      HandlePacketTooBig (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandlePacketTooBig (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ERROR_TIME_EXCEEDED:
-      HandleTimeExceeded (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleTimeExceeded (p, header.GetSource (), header.GetDestination (), interface);
       break;
     case Icmpv6Header::ICMPV6_ERROR_PARAMETER_ERROR:
-      HandleParameterError (p, header.GetSourceAddress (), header.GetDestinationAddress (), interface);
+      HandleParameterError (p, header.GetSource (), header.GetDestination (), interface);
       break;
     default:
       NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << type);
@@ -301,7 +301,7 @@ void Icmpv6L4Protocol::Forward (Ipv6Address source, Icmpv6Header icmp,
       if (l4 != 0)
         {
           l4->ReceiveIcmp (source, ipHeader.GetHopLimit (), icmp.GetType (), icmp.GetCode (),
-                           info, ipHeader.GetSourceAddress (), ipHeader.GetDestinationAddress (), payload);
+                           info, ipHeader.GetSource (), ipHeader.GetDestination (), payload);
         }
     }
 }
@@ -632,8 +632,8 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeRS (Ipv6Address src, Ip
   rs.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + rs.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (rs);
 
-  ipHeader.SetSourceAddress (src);
-  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetSource (src);
+  ipHeader.SetDestination (dst);
   ipHeader.SetNextHeader (PROT_NUMBER);
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
@@ -654,8 +654,8 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeEchoRequest (Ipv6Addres
   req.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + req.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (req);
 
-  ipHeader.SetSourceAddress (src);
-  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetSource (src);
+  ipHeader.SetDestination (dst);
   ipHeader.SetNextHeader (PROT_NUMBER);
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
@@ -924,7 +924,7 @@ void Icmpv6L4Protocol::HandlePacketTooBig (Ptr<Packet> p, Ipv6Address const &src
   origPkt->CopyData (payload, 8);
 
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  ipv6->SetPmtu(ipHeader.GetDestinationAddress(), tooBig.GetMtu ());
+  ipv6->SetPmtu(ipHeader.GetDestination(), tooBig.GetMtu ());
 
   Forward (src, tooBig, tooBig.GetMtu (), ipHeader, payload);
 }
@@ -974,7 +974,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
 
-  header.SetDestinationAddress (dst);
+  header.SetDestination (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);
 
   if (route != 0)
@@ -1278,8 +1278,8 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ip
   na.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + na.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (na);
 
-  ipHeader.SetSourceAddress (src);
-  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetSource (src);
+  ipHeader.SetDestination (dst);
   ipHeader.SetNextHeader (PROT_NUMBER);
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
@@ -1301,8 +1301,8 @@ NdiscCache::Ipv6PayloadHeaderPair Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ip
   ns.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + ns.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (ns);
 
-  ipHeader.SetSourceAddress (src);
-  ipHeader.SetDestinationAddress (dst);
+  ipHeader.SetSource (src);
+  ipHeader.SetDestination (dst);
   ipHeader.SetNextHeader (PROT_NUMBER);
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);

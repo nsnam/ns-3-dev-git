@@ -26,7 +26,8 @@ requirements (Note: not all ns-3 features are available on all systems):
 
 New user-visible features
 -------------------------
-
+- (internet) Added getters and setters for source and destination in Ipv6Header consistent with Ipv4Header naming.
+- (internet) Add new functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively in Ipv4InterfaceAddress to keep consistency with Ipv6InterfaceAddress.
 Bugs fixed
 ----------
 

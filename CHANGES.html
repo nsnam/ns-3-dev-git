@@ -54,11 +54,12 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.34 to ns-3.35</h1>
 <h2>New API:</h2>
 <ul>
-<li></li>
+<li>In class <b>Ipv6Header</b>, new functions SetSource (), SetDestination (), GetSource () and GetDestination () are added, consistent with <b>Ipv4Header</b>. The existing functions had "Address" suffix in each of the function names, and are are deprecated now.</li>
+<li>In class <b>Ipv4InterfaceAddress</b>, new functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively. This is done to keep consistency with <b>Ipv4InterfaceAddress</b>.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-<li></li>
+<li>In class <b>Ipv6Header</b>, the functions SetSourceAddress (), SetDestinationAddress (), GetSourceAddress () and GetDestinationAddress () are deprecated. New corresponding functions are added by removing the "Address" suffix. This change is made for having consistency with <b>Ipv4Header</b>.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

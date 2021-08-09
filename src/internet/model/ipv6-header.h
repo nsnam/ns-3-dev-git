@@ -23,6 +23,7 @@
 
 #include "ns3/header.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -226,24 +227,56 @@ public:
    * \brief Set the "Source address" field.
    * \param src the source address
    */
+  void SetSource (Ipv6Address src);
+
+  /**
+   * \brief Set the "Source address" field.
+   * \deprecated Use SetSource () function instead (same functionality)
+   * \param src the source address
+   */
+  NS_DEPRECATED_3_35
   void SetSourceAddress (Ipv6Address src);
 
   /**
    * \brief Get the "Source address" field.
    * \return the source address
    */
+  Ipv6Address GetSource (void) const;
+
+  /**
+   * \brief Get the "Source address" field.
+   * \deprecated Use GetSource () function instead (same functionality)
+   * \return the source address
+   */
+  NS_DEPRECATED_3_35
   Ipv6Address GetSourceAddress (void) const;
 
   /**
    * \brief Set the "Destination address" field.
    * \param dst the destination address
    */
+  void SetDestination (Ipv6Address dst);
+
+  /**
+   * \brief Set the "Destination address" field.
+   * \deprecated Use SetDestination () function instead (same functionality)
+   * \param dst the destination address
+   */
+  NS_DEPRECATED_3_35
   void SetDestinationAddress (Ipv6Address dst);
 
   /**
    * \brief Get the "Destination address" field.
    * \return the destination address
    */
+  Ipv6Address GetDestination (void) const;
+
+  /**
+   * \brief Get the "Destination address" field.
+   * \deprecated Use GetDestination () function instead (same functionality)
+   * \return the destination address
+   */
+  NS_DEPRECATED_3_35
   Ipv6Address GetDestinationAddress (void) const;
 
   /**

@@ -135,7 +135,7 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet,
 
             case 2:
               NS_LOG_LOGIC ("Unknown Option. Drop!");
-              icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
+              icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSource (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
               optionLength = 0;
               isDropped = true;
               stopProcessing = true;
@@ -145,9 +145,9 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet,
             case 3:
               NS_LOG_LOGIC ("Unknown Option. Drop!");
 
-              if (!ipv6Header.GetDestinationAddress ().IsMulticast ())
+              if (!ipv6Header.GetDestination ().IsMulticast ())
                 {
-                  icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
+                  icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSource (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
                 }
               optionLength = 0;
               isDropped = true;
@@ -368,7 +368,7 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet,
   bool moreFragment = fragmentHeader.GetMoreFragment ();
   uint16_t fragmentOffset = fragmentHeader.GetOffset ();
   uint32_t identification = fragmentHeader.GetIdentification ();
-  Ipv6Address src = ipv6Header.GetSourceAddress ();
+  Ipv6Address src = ipv6Header.GetSource ();
 
   FragmentKey_t fragmentKey = FragmentKey_t (src, identification);
   Ptr<Fragments> fragments;
@@ -608,7 +608,7 @@ void Ipv6ExtensionFragment::HandleFragmentsTimeout (FragmentKey_t fragmentKey,
       Ptr<Packet> p = packet->Copy ();
       p->AddHeader (ipHeader);
       Ptr<Icmpv6L4Protocol> icmp = GetNode ()->GetObject<Icmpv6L4Protocol> ();
-      icmp->SendErrorTimeExceeded (p, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_FRAGTIME);
+      icmp->SendErrorTimeExceeded (p, ipHeader.GetSource (), Icmpv6Header::ICMPV6_FRAGTIME);
     }
 
   Ptr<Ipv6L3Protocol> ipL3 = GetNode ()->GetObject<Ipv6L3Protocol> ();
@@ -855,7 +855,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet,
         {
           NS_LOG_LOGIC ("Malformed header. Drop!");
 
-          icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1);
+          icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSource (), Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1);
           dropReason = Ipv6L3Protocol::DROP_MALFORMED_HEADER;
           isDropped = true;
           stopProcessing = true;
@@ -1001,8 +1001,8 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet,
 
   Ptr<Icmpv6L4Protocol> icmpv6 = GetNode ()->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
 
-  Ipv6Address srcAddress = ipv6header.GetSourceAddress ();
-  Ipv6Address destAddress = ipv6header.GetDestinationAddress ();
+  Ipv6Address srcAddress = ipv6header.GetSource ();
+  Ipv6Address destAddress = ipv6header.GetDestination ();
   uint8_t hopLimit = ipv6header.GetHopLimit ();
   uint8_t segmentsLeft = routingHeader.GetSegmentsLeft ();
   uint8_t length = (routingHeader.GetLength () >> 3) - 1;
@@ -1049,7 +1049,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet,
     }
 
   routingHeader.SetRouterAddress (nextAddressIndex, destAddress);
-  ipv6header.SetDestinationAddress (nextAddress);
+  ipv6header.SetDestination (nextAddress);
 
   if (hopLimit <= 1)
     {

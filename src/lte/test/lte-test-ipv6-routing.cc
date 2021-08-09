@@ -176,8 +176,8 @@ void LteIpv6RoutingTestCase::Checker ()
           Ptr<Packet> p2 = (*it2)->Copy ();
           Ipv6Header ipv6header2;
           p2->RemoveHeader (ipv6header2);
-          Ipv6Address sorceAddress = ipv6header2.GetSourceAddress ();
-          Ipv6Address destinationAddress = ipv6header2.GetDestinationAddress ();
+          Ipv6Address sorceAddress = ipv6header2.GetSource ();
+          Ipv6Address destinationAddress = ipv6header2.GetDestination ();
           UdpHeader udpHeader2;
           p2->RemoveHeader (udpHeader2);
           uint16_t sourcePort;
@@ -186,8 +186,8 @@ void LteIpv6RoutingTestCase::Checker ()
           destinationPort = udpHeader2.GetDestinationPort ();
           //Check whether the uids, addresses and ports match
           if ((p2->GetUid () == p1->GetUid ())
-              && sorceAddress == ipv6header1.GetDestinationAddress ()
-              && destinationAddress == ipv6header1.GetSourceAddress ()
+              && sorceAddress == ipv6header1.GetDestination ()
+              && destinationAddress == ipv6header1.GetSource ()
               && sourcePort == udpHeader1.GetDestinationPort ()
               && destinationPort == udpHeader1.GetSourcePort ())
             {

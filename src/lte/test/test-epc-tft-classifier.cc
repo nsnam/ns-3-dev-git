@@ -133,8 +133,8 @@ EpcTftClassifierTestCase::EpcTftClassifierTestCase (Ptr<EpcTftClassifier> c,
 
   if (m_useIpv6)
     {
-      m_ipv6Header.SetSourceAddress (Ipv6Address::MakeIpv4MappedAddress (Ipv4Address (sa.c_str ())));
-      m_ipv6Header.SetDestinationAddress (Ipv6Address::MakeIpv4MappedAddress (Ipv4Address (da.c_str ())));
+      m_ipv6Header.SetSource (Ipv6Address::MakeIpv4MappedAddress (Ipv4Address (sa.c_str ())));
+      m_ipv6Header.SetDestination (Ipv6Address::MakeIpv4MappedAddress (Ipv4Address (da.c_str ())));
       m_ipv6Header.SetTrafficClass (tos);
       m_ipv6Header.SetPayloadLength (8); // Full UDP header
       m_ipv6Header.SetNextHeader (UdpL4Protocol::PROT_NUMBER);

@@ -354,8 +354,8 @@ UdpL4Protocol::Receive (Ptr<Packet> packet,
           Ipv6Header ipv6Header;
           Ipv6Address src = Ipv6Address::MakeIpv4MappedAddress (header.GetSource ());
           Ipv6Address dst = Ipv6Address::MakeIpv4MappedAddress (header.GetDestination ());
-          ipv6Header.SetSourceAddress (src);
-          ipv6Header.SetDestinationAddress (dst);
+          ipv6Header.SetSource (src);
+          ipv6Header.SetDestination (dst);
           return (this->Receive (packet, ipv6Header, fakeInterface));
         }
 
@@ -378,27 +378,27 @@ UdpL4Protocol::Receive (Ptr<Packet> packet,
                         Ipv6Header const &header,
                         Ptr<Ipv6Interface> interface)
 {
-  NS_LOG_FUNCTION (this << packet << header.GetSourceAddress () << header.GetDestinationAddress ());
+  NS_LOG_FUNCTION (this << packet << header.GetSource () << header.GetDestination ());
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
     {
       udpHeader.EnableChecksums ();
     }
 
-  udpHeader.InitializeChecksum (header.GetSourceAddress (), header.GetDestinationAddress (), PROT_NUMBER);
+  udpHeader.InitializeChecksum (header.GetSource (), header.GetDestination (), PROT_NUMBER);
 
   packet->RemoveHeader (udpHeader);
 
-  if(!udpHeader.IsChecksumOk () && !header.GetSourceAddress ().IsIpv4MappedAddress ())
+  if(!udpHeader.IsChecksumOk () && !header.GetSource ().IsIpv4MappedAddress ())
     {
       NS_LOG_INFO ("Bad checksum : dropping packet!");
       return IpL4Protocol::RX_CSUM_FAILED;
     }
 
-  NS_LOG_DEBUG ("Looking up dst " << header.GetDestinationAddress () << " port " << udpHeader.GetDestinationPort ()); 
+  NS_LOG_DEBUG ("Looking up dst " << header.GetDestination () << " port " << udpHeader.GetDestinationPort ()); 
   Ipv6EndPointDemux::EndPoints endPoints =
-    m_endPoints6->Lookup (header.GetDestinationAddress (), udpHeader.GetDestinationPort (),
-                         header.GetSourceAddress (), udpHeader.GetSourcePort (), interface);
+    m_endPoints6->Lookup (header.GetDestination (), udpHeader.GetDestinationPort (),
+                         header.GetSource (), udpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
       NS_LOG_LOGIC ("RX_ENDPOINT_UNREACH");

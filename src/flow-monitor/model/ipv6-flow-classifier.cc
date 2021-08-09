@@ -105,15 +105,15 @@ bool
 Ipv6FlowClassifier::Classify (const Ipv6Header &ipHeader, Ptr<const Packet> ipPayload,
                               uint32_t *out_flowId, uint32_t *out_packetId)
 {
-  if (ipHeader.GetDestinationAddress ().IsMulticast ())
+  if (ipHeader.GetDestination ().IsMulticast ())
     {
       // we are not prepared to handle multicast yet
       return false;
     }
 
   FiveTuple tuple;
-  tuple.sourceAddress = ipHeader.GetSourceAddress ();
-  tuple.destinationAddress = ipHeader.GetDestinationAddress ();
+  tuple.sourceAddress = ipHeader.GetSource ();
+  tuple.destinationAddress = ipHeader.GetDestination ();
   tuple.protocol = ipHeader.GetNextHeader ();
 
   if ((tuple.protocol != UDP_PROT_NUMBER) && (tuple.protocol != TCP_PROT_NUMBER))

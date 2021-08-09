@@ -154,8 +154,8 @@ SixlowpanIphcStatefulImplTest::SendOnePacket (Ptr<NetDevice> device, Ipv6Address
 {
   Ptr<Packet> pkt = Create<Packet> (10);
   Ipv6Header ipHdr;
-  ipHdr.SetSourceAddress (from);
-  ipHdr.SetDestinationAddress (to);
+  ipHdr.SetSource (from);
+  ipHdr.SetDestination (to);
   ipHdr.SetHopLimit (64);
   ipHdr.SetPayloadLength (10);
   ipHdr.SetNextHeader (0xff);
@@ -261,8 +261,8 @@ SixlowpanIphcStatefulImplTest::DoRun (void)
 
   // first packet received, expected :: -> dstElided
   m_rxPackets[0].packet->RemoveHeader (ipv6Hdr);
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSourceAddress (), Ipv6Address::GetAny (), "Src address wrongly rebuilt");
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestinationAddress (), dstElided, "Dst address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSource (), Ipv6Address::GetAny (), "Src address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestination (), dstElided, "Dst address wrongly rebuilt");
 
   // second packet sent, expected CID(1) SAC(1) SAM (1) M(0) DAC(1) DAM (2)
   m_txPackets[1].packet->RemoveHeader (iphcHdr);
@@ -277,8 +277,8 @@ SixlowpanIphcStatefulImplTest::DoRun (void)
 
   // second packet received, expected 2001:2::f00d:f00d:cafe:cafe -> 2001:1::0000:00ff:fe00:cafe
   m_rxPackets[1].packet->RemoveHeader (ipv6Hdr);
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSourceAddress (), Ipv6Address ("2001:2::f00d:f00d:cafe:cafe"), "Src address wrongly rebuilt");
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestinationAddress (), Ipv6Address ("2001:1::0000:00ff:fe00:cafe"), "Dst address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSource (), Ipv6Address ("2001:2::f00d:f00d:cafe:cafe"), "Src address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestination (), Ipv6Address ("2001:1::0000:00ff:fe00:cafe"), "Dst address wrongly rebuilt");
 
   // third packet sent, expected CID(17) SAC(1) SAM (2) M(0) DAC(1) DAM (1)
   m_txPackets[2].packet->RemoveHeader (iphcHdr);
@@ -293,8 +293,8 @@ SixlowpanIphcStatefulImplTest::DoRun (void)
 
   // third packet received, expected 2001:1::0000:00ff:fe00:cafe -> 2001:1::f00d:f00d:cafe:cafe
   m_rxPackets[2].packet->RemoveHeader (ipv6Hdr);
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSourceAddress (), Ipv6Address ("2001:1::0000:00ff:fe00:cafe"), "Src address wrongly rebuilt");
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestinationAddress (), Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"), "Dst address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSource (), Ipv6Address ("2001:1::0000:00ff:fe00:cafe"), "Src address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestination (), Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"), "Dst address wrongly rebuilt");
 
   // fourth packet sent, expected CID(1) SAC(1) SAM (3) M(0) DAC(1) DAM (1)
   m_txPackets[3].packet->RemoveHeader (iphcHdr);
@@ -309,8 +309,8 @@ SixlowpanIphcStatefulImplTest::DoRun (void)
 
   // fourth packet received, expected srcElided -> 2001:1::f00d:f00d:cafe:cafe
   m_rxPackets[3].packet->RemoveHeader (ipv6Hdr);
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSourceAddress (), srcElided, "Src address wrongly rebuilt");
-  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestinationAddress (), Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"), "Dst address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetSource (), srcElided, "Src address wrongly rebuilt");
+  NS_TEST_EXPECT_MSG_EQ (ipv6Hdr.GetDestination (), Ipv6Address ("2001:1::f00d:f00d:cafe:cafe"), "Dst address wrongly rebuilt");
 
   m_rxPackets.clear ();
   m_txPackets.clear ();

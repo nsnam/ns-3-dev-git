@@ -595,7 +595,7 @@ void Ipv6StaticRouting::RemoveRoute (Ipv6Address network, Ipv6Prefix prefix, uin
 Ptr<Ipv6Route> Ipv6StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header << oif);
-  Ipv6Address destination = header.GetDestinationAddress ();
+  Ipv6Address destination = header.GetDestination ();
   Ptr<Ipv6Route> rtentry = 0;
 
   if (destination.IsMulticast ())
@@ -625,19 +625,19 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
                                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                     LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_LOG_FUNCTION (this << p << header << header.GetSourceAddress () << header.GetDestinationAddress () << idev);
+  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
   NS_ASSERT (m_ipv6 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
-  Ipv6Address dst = header.GetDestinationAddress ();
+  Ipv6Address dst = header.GetDestination ();
 
   // Multicast recognition; handle local delivery here
   if (dst.IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination");
-      Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (header.GetSourceAddress (),
-                                                       header.GetDestinationAddress (), m_ipv6->GetInterfaceForDevice (idev));
+      Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (header.GetSource (),
+                                                       header.GetDestination (), m_ipv6->GetInterfaceForDevice (idev));
 
       // \todo check if we want to forward up the packet
       if (mrtentry)
@@ -665,7 +665,7 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");
-  Ptr<Ipv6Route> rtentry = LookupStatic (header.GetDestinationAddress ());
+  Ptr<Ipv6Route> rtentry = LookupStatic (header.GetDestination ());
 
   if (rtentry != 0)
     {

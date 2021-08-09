@@ -1184,8 +1184,8 @@ TcpSocketBase::ForwardUp6 (Ptr<Packet> packet, Ipv6Header header, uint16_t port,
                 " to " << m_endPoint6->GetLocalAddress () <<
                 ":" << m_endPoint6->GetLocalPort ());
 
-  Address fromAddress = Inet6SocketAddress (header.GetSourceAddress (), port);
-  Address toAddress = Inet6SocketAddress (header.GetDestinationAddress (),
+  Address fromAddress = Inet6SocketAddress (header.GetSource (), port);
+  Address toAddress = Inet6SocketAddress (header.GetDestination (),
                                           m_endPoint6->GetLocalPort ());
 
   TcpHeader tcpHeader;
@@ -2865,7 +2865,7 @@ TcpSocketBase::SetupEndpoint6 ()
   // Create a dummy packet, then ask the routing function for the best output
   // interface's address
   Ipv6Header header;
-  header.SetDestinationAddress (m_endPoint6->GetPeerAddress ());
+  header.SetDestination (m_endPoint6->GetPeerAddress ());
   Socket::SocketErrno errno_;
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif = m_boundnetdevice;

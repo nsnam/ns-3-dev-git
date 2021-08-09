@@ -242,7 +242,7 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
   if (ipv6->GetRoutingProtocol ())
     {
       Ipv6Header hdr;
-      hdr.SetDestinationAddress (dst);
+      hdr.SetDestination (dst);
       SocketErrno err = ERROR_NOTERROR;
       Ptr<Ipv6Route> route = 0;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
@@ -412,8 +412,8 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         }
     }
 
-  if ((m_src == Ipv6Address::GetAny () || hdr.GetDestinationAddress () == m_src) && 
-      (m_dst == Ipv6Address::GetAny () || hdr.GetSourceAddress () == m_dst) &&
+  if ((m_src == Ipv6Address::GetAny () || hdr.GetDestination () == m_src) && 
+      (m_dst == Ipv6Address::GetAny () || hdr.GetSource () == m_dst) &&
       hdr.GetNextHeader () == m_protocol)
     {
       Ptr<Packet> copy = p->Copy ();
@@ -437,7 +437,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
         {
           Ipv6PacketInfoTag tag;
           copy->RemovePacketTag (tag);
-          tag.SetAddress (hdr.GetDestinationAddress ());
+          tag.SetAddress (hdr.GetDestination ());
           tag.SetHoplimit (hdr.GetHopLimit ());
           tag.SetTrafficClass (hdr.GetTrafficClass ());
           tag.SetRecvIf (device->GetIfIndex ());
@@ -462,7 +462,7 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
       copy->AddHeader (hdr);
       Data data;
       data.packet = copy;
-      data.fromIp = hdr.GetSourceAddress ();
+      data.fromIp = hdr.GetSource ();
       data.fromProtocol = hdr.GetNextHeader ();
       m_data.push_back (data);
       NotifyDataRecv ();

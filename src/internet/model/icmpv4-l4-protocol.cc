@@ -288,7 +288,7 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
                            Ipv6Header const &header,
                            Ptr<Ipv6Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << p << header.GetSourceAddress () << header.GetDestinationAddress () << incomingInterface);
+  NS_LOG_FUNCTION (this << p << header.GetSource () << header.GetDestination () << incomingInterface);
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 void 

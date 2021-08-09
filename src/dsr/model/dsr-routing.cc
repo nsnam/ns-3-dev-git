@@ -3487,7 +3487,7 @@ DsrRouting::Receive (Ptr<Packet> p,
                      Ipv6Header const &ip,
                      Ptr<Ipv6Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << p << ip.GetSourceAddress () << ip.GetDestinationAddress () << incomingInterface);
+  NS_LOG_FUNCTION (this << p << ip.GetSource () << ip.GetDestination () << incomingInterface);
   return IpL4Protocol::RX_ENDPOINT_UNREACH;
 }
 

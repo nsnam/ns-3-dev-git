@@ -112,29 +112,29 @@ RadvdTestCase::CheckRouting (Ptr<NetDevice> n0Dev, Ptr<NetDevice> r0Dev, Ptr<Net
   Ptr<Ipv6Route> route;
 
   ipv6 = n0Dev->GetNode ()->GetObject<Ipv6L3Protocol> ();
-  ipHdr.SetSourceAddress (m_addresses[0]);
-  ipHdr.SetDestinationAddress (m_addresses[1]);
+  ipHdr.SetSource (m_addresses[0]);
+  ipHdr.SetDestination (m_addresses[1]);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (p, ipHdr, n0Dev, sockerr);
   m_routingResults.push_back (sockerr);
   m_routes.push_back (route);
 
   ipv6 = r0Dev->GetNode ()->GetObject<Ipv6L3Protocol> ();
-  ipHdr.SetSourceAddress (m_addresses[1]);
-  ipHdr.SetDestinationAddress (m_addresses[0]);
+  ipHdr.SetSource (m_addresses[1]);
+  ipHdr.SetDestination (m_addresses[0]);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (p, ipHdr, r0Dev, sockerr);
   m_routingResults.push_back (sockerr);
   m_routes.push_back (route);
 
   ipv6 = r1Dev->GetNode ()->GetObject<Ipv6L3Protocol> ();
-  ipHdr.SetSourceAddress (m_addresses[2]);
-  ipHdr.SetDestinationAddress (m_addresses[3]);
+  ipHdr.SetSource (m_addresses[2]);
+  ipHdr.SetDestination (m_addresses[3]);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (p, ipHdr, r1Dev, sockerr);
   m_routingResults.push_back (sockerr);
   m_routes.push_back (route);
 
   ipv6 = n1Dev->GetNode ()->GetObject<Ipv6L3Protocol> ();
-  ipHdr.SetSourceAddress (m_addresses[3]);
-  ipHdr.SetDestinationAddress (m_addresses[2]);
+  ipHdr.SetSource (m_addresses[3]);
+  ipHdr.SetDestination (m_addresses[2]);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (p, ipHdr, n1Dev, sockerr);
   m_routingResults.push_back (sockerr);
   m_routes.push_back (route);

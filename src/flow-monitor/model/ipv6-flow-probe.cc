@@ -341,7 +341,7 @@ Ipv6FlowProbe::DropLogger (const Ipv6Header &ipHeader, Ptr<const Packet> ipPaylo
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason 
-                            << ", destIp=" << ipHeader.GetDestinationAddress () << "); "
+                            << ", destIp=" << ipHeader.GetDestination () << "); "
                             << "HDR: " << ipHeader << " PKT: " << *ipPayload);
 
       DropReason myReason;

@@ -197,7 +197,7 @@ EpcPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source,
     {
       Ipv6Header ipv6Header;
       packet->PeekHeader (ipv6Header);
-      Ipv6Address ueAddr =  ipv6Header.GetDestinationAddress ();
+      Ipv6Address ueAddr =  ipv6Header.GetDestination ();
       NS_LOG_LOGIC ("packet addressed to UE " << ueAddr);
 
       // find corresponding UeInfo address

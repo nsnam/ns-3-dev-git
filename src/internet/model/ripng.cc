@@ -183,7 +183,7 @@ Ptr<Ipv6Route> RipNg::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<
 {
   NS_LOG_FUNCTION (this << header << oif);
 
-  Ipv6Address destination = header.GetDestinationAddress ();
+  Ipv6Address destination = header.GetDestination ();
   Ptr<Ipv6Route> rtentry = 0;
 
   if (destination.IsMulticast ())
@@ -213,13 +213,13 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
                         UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                         LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_LOG_FUNCTION (this << p << header << header.GetSourceAddress () << header.GetDestinationAddress () << idev);
+  NS_LOG_FUNCTION (this << p << header << header.GetSource () << header.GetDestination () << idev);
 
   NS_ASSERT (m_ipv6 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
-  Ipv6Address dst = header.GetDestinationAddress ();
+  Ipv6Address dst = header.GetDestination ();
 
   if (dst.IsMulticast ())
     {
@@ -227,8 +227,8 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
       return false; // Let other routing protocols try to handle this
     }
 
-  if (header.GetDestinationAddress ().IsLinkLocal () ||
-      header.GetSourceAddress ().IsLinkLocal ())
+  if (header.GetDestination ().IsLinkLocal () ||
+      header.GetSource ().IsLinkLocal ())
     {
       NS_LOG_LOGIC ("Dropping packet not for me and with src or dst LinkLocal");
       if (!ecb.IsNull ())
@@ -250,7 +250,7 @@ bool RipNg::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const
     }
   // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");
-  Ptr<Ipv6Route> rtentry = Lookup (header.GetDestinationAddress ());
+  Ptr<Ipv6Route> rtentry = Lookup (header.GetDestination ());
 
   if (rtentry != 0)
     {

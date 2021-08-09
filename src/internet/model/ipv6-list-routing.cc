@@ -73,14 +73,14 @@ Ipv6ListRouting::DoDispose (void)
 Ptr<Ipv6Route>
 Ipv6ListRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, enum Socket::SocketErrno &sockerr)
 {
-  NS_LOG_FUNCTION (this << header.GetDestinationAddress () << header.GetSourceAddress () << oif);
+  NS_LOG_FUNCTION (this << header.GetDestination () << header.GetSource () << oif);
   Ptr<Ipv6Route> route;
 
   for (Ipv6RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); i++)
     {
       NS_LOG_LOGIC ("Checking protocol " << (*i).second->GetInstanceTypeId () << " with priority " << (*i).first);
-      NS_LOG_LOGIC ("Requesting source address for destination " << header.GetDestinationAddress ());
+      NS_LOG_LOGIC ("Requesting source address for destination " << header.GetDestination ());
       route = (*i).second->RouteOutput (p, header, oif, sockerr);
       if (route)
         {
@@ -107,7 +107,7 @@ Ipv6ListRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<
   NS_ASSERT (m_ipv6 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
-  Ipv6Address dst = header.GetDestinationAddress ();
+  Ipv6Address dst = header.GetDestination ();
 
   // Check if input device supports IP forwarding
   uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);

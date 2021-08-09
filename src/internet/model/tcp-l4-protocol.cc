@@ -468,8 +468,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 
           src = Ipv6Address::MakeIpv4MappedAddress (incomingIpHeader.GetSource ());
           dst = Ipv6Address::MakeIpv4MappedAddress (incomingIpHeader.GetDestination ());
-          ipv6Header.SetSourceAddress (src);
-          ipv6Header.SetDestinationAddress (dst);
+          ipv6Header.SetSource (src);
+          ipv6Header.SetDestination (dst);
           return (this->Receive (packet, ipv6Header, fakeInterface));
         }
 
@@ -503,8 +503,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
                         Ipv6Header const &incomingIpHeader,
                         Ptr<Ipv6Interface> interface)
 {
-  NS_LOG_FUNCTION (this << packet << incomingIpHeader.GetSourceAddress () <<
-                   incomingIpHeader.GetDestinationAddress ());
+  NS_LOG_FUNCTION (this << packet << incomingIpHeader.GetSource () <<
+                   incomingIpHeader.GetDestination ());
 
   TcpHeader incomingTcpHeader;
   IpL4Protocol::RxStatus checksumControl;
@@ -514,8 +514,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   // order to avoid re-calculating TCP checksums for v4-mapped packets?
 
   checksumControl = PacketReceived (packet, incomingTcpHeader,
-                                    incomingIpHeader.GetSourceAddress (),
-                                    incomingIpHeader.GetDestinationAddress ());
+                                    incomingIpHeader.GetSource (),
+                                    incomingIpHeader.GetDestination ());
 
   if (checksumControl != IpL4Protocol::RX_OK)
     {
@@ -523,21 +523,21 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     }
 
   Ipv6EndPointDemux::EndPoints endPoints =
-    m_endPoints6->Lookup (incomingIpHeader.GetDestinationAddress (),
+    m_endPoints6->Lookup (incomingIpHeader.GetDestination (),
                           incomingTcpHeader.GetDestinationPort (),
-                          incomingIpHeader.GetSourceAddress (),
+                          incomingIpHeader.GetSource (),
                           incomingTcpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
       NS_LOG_LOGIC ("TcpL4Protocol " << this << " received a packet but"
                     " no endpoints matched." <<
-                    " destination IP: " << incomingIpHeader.GetDestinationAddress () <<
+                    " destination IP: " << incomingIpHeader.GetDestination () <<
                     " destination port: "<< incomingTcpHeader.GetDestinationPort () <<
-                    " source IP: " << incomingIpHeader.GetSourceAddress () <<
+                    " source IP: " << incomingIpHeader.GetSource () <<
                     " source port: "<< incomingTcpHeader.GetSourcePort ());
 
-      NoEndPointsFound (incomingTcpHeader, incomingIpHeader.GetSourceAddress (),
-                        incomingIpHeader.GetDestinationAddress ());
+      NoEndPointsFound (incomingTcpHeader, incomingIpHeader.GetSource (),
+                        incomingIpHeader.GetDestination ());
 
       return IpL4Protocol::RX_ENDPOINT_CLOSED;
     }
@@ -635,8 +635,8 @@ TcpL4Protocol::SendPacketV6 (Ptr<Packet> packet, const TcpHeader &outgoing,
   if (ipv6 != 0)
     {
       Ipv6Header header;
-      header.SetSourceAddress (saddr);
-      header.SetDestinationAddress (daddr);
+      header.SetSource (saddr);
+      header.SetDestination (daddr);
       header.SetNextHeader (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv6Route> route;

@@ -206,14 +206,14 @@ EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction, uint16_t
 
       if (direction ==  EpcTft::UPLINK)
         {
-          localAddressIpv6 = ipv6Header.GetSourceAddress ();
-          remoteAddressIpv6 = ipv6Header.GetDestinationAddress ();
+          localAddressIpv6 = ipv6Header.GetSource ();
+          remoteAddressIpv6 = ipv6Header.GetDestination ();
         }
       else
         {
           NS_ASSERT (direction ==  EpcTft::DOWNLINK);
-          remoteAddressIpv6 = ipv6Header.GetSourceAddress ();
-          localAddressIpv6 = ipv6Header.GetDestinationAddress ();
+          remoteAddressIpv6 = ipv6Header.GetSource ();
+          localAddressIpv6 = ipv6Header.GetDestination ();
         }
       NS_LOG_INFO ("local address: " << localAddressIpv6 << " remote address: " << remoteAddressIpv6);
 

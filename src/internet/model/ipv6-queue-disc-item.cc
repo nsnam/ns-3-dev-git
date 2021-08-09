@@ -115,8 +115,8 @@ Ipv6QueueDiscItem::Hash (uint32_t perturbation) const
 {
   NS_LOG_FUNCTION (this << perturbation);
 
-  Ipv6Address src = m_header.GetSourceAddress ();
-  Ipv6Address dest = m_header.GetDestinationAddress ();
+  Ipv6Address src = m_header.GetSource ();
+  Ipv6Address dest = m_header.GetDestination ();
   uint8_t prot = m_header.GetNextHeader ();
 
   TcpHeader tcpHdr;
