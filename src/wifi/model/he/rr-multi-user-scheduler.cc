@@ -137,6 +137,13 @@ RrMultiUserScheduler::SelectTxFormat (void)
 {
   NS_LOG_FUNCTION (this);
 
+  Ptr<const WifiMacQueueItem> mpdu = m_edca->PeekNextMpdu ();
+
+  if (mpdu != 0 && !GetWifiRemoteStationManager ()->GetHeSupported (mpdu->GetHeader ().GetAddr1 ()))
+    {
+      return SU_TX;
+    }
+
   if (m_enableUlOfdma && m_enableBsrp && GetLastTxFormat () == DL_MU_TX)
     {
       return TrySendingBsrpTf ();
