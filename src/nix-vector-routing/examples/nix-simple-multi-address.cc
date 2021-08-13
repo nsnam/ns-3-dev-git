@@ -26,7 +26,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
-#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/nix-vector-helper.h"
 
 /**
  * This program demonstrates a routing and

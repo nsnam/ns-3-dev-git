@@ -47,7 +47,7 @@
 #include "ns3/packet-sink-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/mpi-interface.h"
-#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/nix-vector-helper.h"
 
 #include <fstream>
 #include <vector>

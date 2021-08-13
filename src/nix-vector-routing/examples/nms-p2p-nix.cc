@@ -1,5 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright (c) 2021 NITK Surathkal
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -24,11 +26,14 @@
  * specifications
  *
  * The fundamental unit of the NMS model consists of a campus network. The
- * campus network topology can been seen here:
- * http://www.nsnam.org/~jpelkey3/nms.png
+ * campus network topology can been seen in the model manual.
+ *
  * The number of hosts (default 42) is variable.  Finally, an arbitrary
  * number of these campus networks can be connected together (default 2)
  * to make very large simulations.
+ *
+ * Modified By: Ameya Deshpande <ameyanrd@outlook.com>
+ *              Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
 // for timing functions
@@ -44,7 +49,7 @@
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
 #include "ns3/simulator.h"
-#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/nix-vector-helper.h"
 
 using namespace ns3;
 
@@ -157,13 +162,21 @@ main (int argc, char *argv[])
 
   int nCN = 2, nLANClients = 42;
   bool nix = true;
+  bool useIpv6 = false;
 
   CommandLine cmd (__FILE__);
+  cmd.AddValue ("useIPv6", "Use IPv6 instead of IPv4", useIpv6);
   cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
   cmd.AddValue ("LAN", "Number of nodes per LAN [42]", nLANClients);
   cmd.AddValue ("NIX", "Toggle nix-vector routing", nix);
   cmd.Parse (argc,argv);
 
+  if (useIpv6 && !nix)
+    {
+      std::cout << "This script can work in IPv6 only by using NIX"
+           << std::endl;
+      return 1;
+    }
   if (nCN < 2) 
     {
       std::cout << "Number of total CNs (" << nCN << ") lower than minimum of 2"
@@ -183,15 +196,11 @@ main (int argc, char *argv[])
 
   PointToPointHelper p2p_2gb200ms, p2p_1gb5ms, p2p_100mb1ms;
   InternetStackHelper stack;
-  Ipv4InterfaceContainer ifs;
-  Array2D<Ipv4InterfaceContainer> ifs0(nCN, 3);
-  Array2D<Ipv4InterfaceContainer> ifs1(nCN, 6);
-  Array2D<Ipv4InterfaceContainer> ifs2(nCN, 14);
-  Array2D<Ipv4InterfaceContainer> ifs3(nCN, 9);
-  Array3D<Ipv4InterfaceContainer> ifs2LAN(nCN, 7, nLANClients);
-  Array3D<Ipv4InterfaceContainer> ifs3LAN(nCN, 5, nLANClients);
+  Array3D<Address> ifs2LanRemoteAddress(nCN, 7, nLANClients);
+  Array3D<Address> ifs3LanRemoteAddress(nCN, 5, nLANClients);
 
-  Ipv4AddressHelper address;
+  Ipv4AddressHelper addressHelperv4;
+  Ipv6AddressHelper addressHelperv6;
   std::ostringstream oss;
   p2p_1gb5ms.SetDeviceAttribute ("DataRate", StringValue ("1Gbps"));
   p2p_1gb5ms.SetChannelAttribute ("Delay", StringValue ("5ms"));
@@ -203,8 +212,16 @@ main (int argc, char *argv[])
   // Setup NixVector Routing
   if (nix)
     {
-      Ipv4NixVectorHelper nixRouting;
-      stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
+      if (!useIpv6)
+        {
+          Ipv4NixVectorHelper nixRouting;
+          stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
+        }
+      else
+        {
+          Ipv6NixVectorHelper nixRouting;
+          stack.SetRoutingHelper (nixRouting); // has effect on the next Install ()
+        }
     }
 
   // Create Campus Networks
@@ -254,9 +271,18 @@ main (int argc, char *argv[])
       NetDeviceContainer ndc0_1;
       ndc0_1 = p2p_1gb5ms.Install (net0_1);
       oss.str ("");
-      oss << 10 + z << ".1.252.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc0_1);
+      if (!useIpv6)
+        {
+          oss << 10 + z << ".1.252.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc0_1);
+        }
+      else
+        {
+          oss << 2001 + z << ":1:252::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc0_1);
+        }
       // Create Net2
       std::cout << " 2";
       for (int i = 0; i < 14; ++i) 
@@ -283,20 +309,34 @@ main (int argc, char *argv[])
         {
           ndc2[i] = p2p_1gb5ms.Install (nodes_net2[z][i]);
         }
-///      NetDeviceContainer ndc2LAN[7][nLANClients];
       Array2D<NetDeviceContainer> ndc2LAN(7, nLANClients);
       for (int i = 0; i < 7; ++i) 
         {
           oss.str ("");
-          oss << 10 + z << ".4." << 15 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".4." << 15 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+            }
+          else
+            {
+              oss << 2001 + z << ":4:" << 15 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+            }
           for (int j = 0; j < nLANClients; ++j) 
             {
               nodes_net2LAN[z][i][j].Create (1);
               stack.Install (nodes_net2LAN[z][i][j]);
               nodes_net2LAN[z][i][j].Add (nodes_net2[z][i+7].Get (0));
               ndc2LAN[i][j] = p2p_100mb1ms.Install (nodes_net2LAN[z][i][j]);
-              ifs2LAN[z][i][j] = address.Assign (ndc2LAN[i][j]);
+              if (!useIpv6)
+                {
+                  ifs2LanRemoteAddress[z][i][j] = InetSocketAddress (addressHelperv4.Assign (ndc2LAN[i][j]).GetAddress (0), 9999);
+                }
+              else
+                {
+                  ifs2LanRemoteAddress[z][i][j] = Inet6SocketAddress (addressHelperv6.Assign (ndc2LAN[i][j]).GetAddress (0,1), 9999);
+                }
             }
         }
       // Create Net3
@@ -320,20 +360,35 @@ main (int argc, char *argv[])
         {
           ndc3[i] = p2p_1gb5ms.Install (nodes_net3[z][i]);
         }
-///      NetDeviceContainer ndc3LAN[5][nLANClients];
       Array2D<NetDeviceContainer> ndc3LAN(5, nLANClients);
       for (int i = 0; i < 5; ++i) 
         {
           oss.str ("");
-          oss << 10 + z << ".5." << 10 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.255");
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".5." << 10 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.255");
+            }
+          else
+            {
+              oss << 2001 + z << ":5:" << 10 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+
+            }
           for (int j = 0; j < nLANClients; ++j) 
             {
               nodes_net3LAN[z][i][j].Create (1);
               stack.Install (nodes_net3LAN[z][i][j]);
               nodes_net3LAN[z][i][j].Add (nodes_net3[z][i+4].Get (0));
               ndc3LAN[i][j] = p2p_100mb1ms.Install (nodes_net3LAN[z][i][j]);
-              ifs3LAN[z][i][j] = address.Assign (ndc3LAN[i][j]);
+              if (!useIpv6)
+                {
+                  ifs3LanRemoteAddress[z][i][j] = InetSocketAddress (addressHelperv4.Assign (ndc3LAN[i][j]).GetAddress (0), 9999);
+                }
+              else
+                {
+                  ifs3LanRemoteAddress[z][i][j] = Inet6SocketAddress (addressHelperv6.Assign (ndc3LAN[i][j]).GetAddress (0, 1), 9999);
+                }
             }
         }
       std::cout << "  Connecting Subnets..." << std::endl;
@@ -358,43 +413,98 @@ main (int argc, char *argv[])
       net3_5b.Add (nodes_net3[z][1].Get (0));
       NetDeviceContainer ndc0_4, ndc0_5, ndc2_4a, ndc2_4b, ndc3_5a, ndc3_5b;
       ndc0_4 = p2p_1gb5ms.Install (net0_4);
-      oss.str ("");
-      oss << 10 + z << ".1.253.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc0_4);
       ndc0_5 = p2p_1gb5ms.Install (net0_5);
-      oss.str ("");
-      oss << 10 + z << ".1.254.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc0_5);
       ndc2_4a = p2p_1gb5ms.Install (net2_4a);
-      oss.str ("");
-      oss << 10 + z << ".4.253.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc2_4a);
       ndc2_4b = p2p_1gb5ms.Install (net2_4b);
-      oss.str ("");
-      oss << 10 + z << ".4.254.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc2_4b);
       ndc3_5a = p2p_1gb5ms.Install (net3_5a);
-      oss.str ("");
-      oss << 10 + z << ".5.253.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc3_5a);
       ndc3_5b = p2p_1gb5ms.Install (net3_5b);
-      oss.str ("");
-      oss << 10 + z << ".5.254.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndc3_5b);
+
       // Assign IP addresses
+
+      if (!useIpv6)
+        {
+          // ndc0_4
+          oss.str ("");
+          oss << 10 + z << ".1.253.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc0_4);
+          // ndc0_5
+          oss.str ("");
+          oss << 10 + z << ".1.254.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc0_5);
+          // ndc2_4a
+          oss.str ("");
+          oss << 10 + z << ".4.253.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc2_4a);
+          // ndc2_4b
+          oss.str ("");
+          oss << 10 + z << ".4.254.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc2_4b);
+          // ndc3_5a
+          oss.str ("");
+          oss << 10 + z << ".5.253.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc3_5a);
+          // ndc3_5b
+          oss.str ("");
+          oss << 10 + z << ".5.254.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndc3_5b);
+        }
+      else
+        {
+          // ndc0_4
+          oss.str ("");
+          oss << 2001 + z << ":1:253::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc0_4);
+          // ndc0_5
+          oss.str ("");
+          oss << 2001 + z << ":1:254::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc0_5);
+          // ndc2_4a
+          oss.str ("");
+          oss << 2001 + z << ":4:253::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc2_4a);
+          // ndc2_4b
+          oss.str ("");
+          oss << 2001 + z << ":4:254::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc2_4b);
+          // ndc3_5a
+          oss.str ("");
+          oss << 2001 + z << ":5:253::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc3_5a);
+          // ndc3_5b
+          oss.str ("");
+          oss << 2001 + z << ":5:254::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndc3_5b);
+
+        }
+
       std::cout << "  Assigning IP addresses..." << std::endl;
       for (int i = 0; i < 3; ++i) 
         {
           oss.str ("");
-          oss << 10 + z << ".1." << 1 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
-          ifs0[z][i] = address.Assign (ndc0[i]);
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".1." << 1 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+              addressHelperv4.Assign (ndc0[i]);
+            }
+          else
+            {
+              oss << 2001 + z << ":1:" << 1 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+              addressHelperv6.Assign (ndc0[i]);
+            }
         }
       for (int i = 0; i < 6; ++i) 
         {
@@ -403,27 +513,65 @@ main (int argc, char *argv[])
               continue;
             }
           oss.str ("");
-          oss << 10 + z << ".2." << 1 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
-          ifs1[z][i] = address.Assign (ndc1[i]);
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".2." << 1 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+              addressHelperv4.Assign (ndc1[i]);
+            }
+          else
+            {
+              oss << 2001 + z << ":2:" << 1 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+              addressHelperv6.Assign (ndc1[i]);
+            }
         }
       oss.str ("");
-      oss << 10 + z << ".3.1.0";
-      address.SetBase (oss.str ().c_str (), "255.255.255.0");
-      ifs = address.Assign (ndcLR);
+      if (!useIpv6)
+        {
+          oss << 10 + z << ".3.1.0";
+          addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+          addressHelperv4.Assign (ndcLR);
+        }
+      else
+        {
+          oss << 2001 + z << ":3:1::";
+          addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+          addressHelperv6.Assign (ndcLR);
+
+        }
       for (int i = 0; i < 14; ++i) 
         {
           oss.str ("");
-          oss << 10 + z << ".4." << 1 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
-          ifs2[z][i] = address.Assign (ndc2[i]);
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".4." << 1 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+              addressHelperv4.Assign (ndc2[i]);
+            }
+          else
+            {
+              oss << 2001 + z << ":4:" << 1 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+              addressHelperv6.Assign (ndc2[i]);
+
+            }
         }
       for (int i = 0; i < 9; ++i) 
         {
           oss.str ("");
-          oss << 10 + z << ".5." << 1 + i << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
-          ifs3[z][i] = address.Assign (ndc3[i]);
+          if (!useIpv6)
+            {
+              oss << 10 + z << ".5." << 1 + i << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+              addressHelperv4.Assign (ndc3[i]);
+            }
+          else
+            {
+              oss << 2001 + z << ":5:" << 1 + i << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+              addressHelperv6.Assign (ndc3[i]);
+            }
         }
     }
   // Create Ring Links
@@ -443,9 +591,18 @@ main (int argc, char *argv[])
         {
           ndc_ring[z] = p2p_2gb200ms.Install (nodes_ring[z]);
           oss.str ("");
-          oss << "254.1." << z + 1 << ".0";
-          address.SetBase (oss.str ().c_str (), "255.255.255.0");
-          ifs = address.Assign (ndc_ring[z]);
+          if (!useIpv6)
+            {
+              oss << "254.1." << z + 1 << ".0";
+              addressHelperv4.SetBase (oss.str ().c_str (), "255.255.255.0");
+              addressHelperv4.Assign (ndc_ring[z]);
+            }
+          else
+            {
+              oss << "254:1:" << z + 1 << "::";
+              addressHelperv6.SetBase (oss.str ().c_str (), Ipv6Prefix (64));
+              addressHelperv6.Assign (ndc_ring[z]);
+            }
         }
       delete[] ndc_ring;
       delete[] nodes_ring;
@@ -463,6 +620,17 @@ main (int argc, char *argv[])
   Ptr<UniformRandomVariable> urng = CreateObject<UniformRandomVariable> ();
   int r1;
   double r2;
+
+  Address sinkAddress;
+  if (!useIpv6)
+    {
+      sinkAddress = InetSocketAddress (Ipv4Address::GetAny (), 9999);
+    }
+  else
+    {
+      sinkAddress = Inet6SocketAddress (Ipv6Address::GetAny (), 9999);
+    }
+
   for (int z = 0; z < nCN; ++z) 
     {
       int x = z + 1;
@@ -477,8 +645,7 @@ main (int argc, char *argv[])
           for (int j = 0; j < nLANClients; ++j) 
             {
               // Sinks
-              PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory",
-                                           InetSocketAddress (Ipv4Address::GetAny (), 9999));
+              PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkAddress);
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net2LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
@@ -486,8 +653,7 @@ main (int argc, char *argv[])
               r1 = 2 + (int)(4 * urng->GetValue ());
               r2 = 10 * urng->GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
-              AddressValue remoteAddress (InetSocketAddress (
-                                            ifs2LAN[z][i][j].GetAddress (0), 9999));
+              AddressValue remoteAddress (ifs2LanRemoteAddress[z][i][j]);
               client.SetAttribute ("Remote", remoteAddress);
               ApplicationContainer clientApp;
               clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));
@@ -501,8 +667,7 @@ main (int argc, char *argv[])
           for (int j = 0; j < nLANClients; ++j) 
             {
               // Sinks
-              PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory",
-                                           InetSocketAddress (Ipv4Address::GetAny (), 9999));
+              PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkAddress);
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net3LAN[z][i][j].Get (0));
               sinkApp.Start (Seconds (0.0));
@@ -510,8 +675,7 @@ main (int argc, char *argv[])
               r1 = 2 + (int)(4 * urng->GetValue ());
               r2 = 10 * urng->GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
-              AddressValue remoteAddress (InetSocketAddress (
-                                            ifs3LAN[z][i][j].GetAddress (0), 9999));
+              AddressValue remoteAddress (ifs3LanRemoteAddress[z][i][j]);
               client.SetAttribute ("Remote", remoteAddress);
               ApplicationContainer clientApp;
               clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));

@@ -65,7 +65,7 @@
 #include "ns3/ipv4-list-routing-helper.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/nix-vector-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/on-off-helper.h"
 #include "ns3/packet-sink.h"
