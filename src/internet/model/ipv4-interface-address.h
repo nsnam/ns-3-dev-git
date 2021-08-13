@@ -139,6 +139,13 @@ public:
   Ipv4InterfaceAddress::InterfaceAddressScope_e GetScope (void) const;
 
   /**
+   * \brief Checks if the address is in the same subnet.
+   * \param b the address to check
+   * \return true if the address is in the same subnet.
+   */
+  bool IsInSameSubnet (const Ipv4Address b) const;
+
+  /**
    * \brief Check if the address is a secondary address
    *
    * Secondary address is used for multihoming

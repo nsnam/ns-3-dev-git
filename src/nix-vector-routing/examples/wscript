@@ -12,3 +12,7 @@ def build(bld):
     obj = bld.create_ns3_program('nix-simple-multi-address',
                                  ['point-to-point', 'applications', 'internet', 'nix-vector-routing'])
     obj.source = 'nix-simple-multi-address.cc'
+
+    obj = bld.create_ns3_program('nix-double-wifi',
+                                 ['point-to-point', 'wifi', 'applications', 'internet', 'nix-vector-routing'])
+    obj.source = 'nix-double-wifi.cc'

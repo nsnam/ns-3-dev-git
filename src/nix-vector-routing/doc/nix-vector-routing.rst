@@ -60,15 +60,14 @@ Scope and Limitations
 =====================
 
 Currently, the |ns3| model of nix-vector routing supports IPv4 and IPv6
-p2p links as well as CSMA links.  It does not (yet) provide support for
-efficient adaptation to link failures.  It simply flushes all nix-vector
-routing caches.
+p2p links, CSMA links and multiple WiFi networks with the same channel object.
+It does not (yet) provide support for efficient adaptation to link failures.
+It simply flushes all nix-vector routing caches.
 
-NixVectorRouting bases its routing decisions on the nodes' interface
-addresses and does **not** check whether the nodes are in the proper
-subnets or the addresses have been appropriately assigned. In other
-terms, using Nix-Vector routing, it is possible to have a working
-network that violates every good practice in IP address assignments.
+NixVectorRouting performs a subnet matching check, but it does **not** check
+entirely if the addresses have been appropriately assigned. In other terms,
+using Nix-Vector routing, it is possible to have a working network that
+violates some good practices in IP address assignments.
 
 In case of IPv6, Nix assumes the link-local addresses assigned are **unique**.
 When using the IPv6 stack, the link-local address allocation is unique by
@@ -177,7 +176,7 @@ Thus, the nix-vector for the path from n0 to n3 is 101.
    #. Using IPv6:
    .. code-block:: bash
 
-      # Set ip as "v6" explicity
+      # Use the --useIPv6 flag
       ./waf --run "src/nix-vector-routing/examples/nix-simple --useIPv6"
 
 * nms-p2p-nix.cc
@@ -197,7 +196,7 @@ performs source-based routing (BFS) to have faster routing.
    #. Using IPv6:
    .. code-block:: bash
 
-      # Set ip as "v6" explicity
+      # Use the --useIPv6 flag
       ./waf --run "src/nix-vector-routing/examples/nms-p2p-nix --useIPv6"
 
 *  nix-simple-multi-address.cc
@@ -210,3 +209,25 @@ the all the route caches and Nix caches to flush.
 
    # By default IPv4 network is selected
    ./waf --run src/nix-vector-routing/examples/nix-simple-multi-address
+
+*  nix-double-wifi.cc
+
+This example demonstrates the working of Nix with two Wifi networks
+operating on the same Wifi channel object. The example uses ``ns3::YansWifiChannel``
+for both the wifi networks.
+
+   #. Using IPv4:
+   .. code-block:: bash
+
+      # By default IPv4 network is selected
+      ./waf --run src/nix-vector-routing/examples/nix-double-wifi
+      # Use the --enableNixLog to enable NixVectorRouting logging.
+      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --enableNixLog"
+
+   #. Using IPv6:
+   .. code-block:: bash
+
+      # Use the --useIPv6 flag
+      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --useIPv6"
+      # Use the --enableNixLog to enable NixVectorRouting logging.
+      ./waf --run "src/nix-vector-routing/examples/nix-double-wifi --useIPv6 --enableNixLog"

@@ -125,6 +125,16 @@ Ipv4InterfaceAddress::GetScope (void) const
   return m_scope;
 }
 
+bool Ipv4InterfaceAddress::IsInSameSubnet (const Ipv4Address b) const
+{
+  Ipv4Address aAddr = m_local;
+  aAddr = aAddr.CombineMask(m_mask);
+  Ipv4Address bAddr = b;
+  bAddr = bAddr.CombineMask(m_mask);
+
+  return (aAddr == bAddr);
+}
+
 bool 
 Ipv4InterfaceAddress::IsSecondary (void) const
 {

@@ -34,6 +34,17 @@
 
 #include "nix-vector-routing.h"
 
+/* RunIf code is a candidate for ns-3 core module */
+template <class F, class...Ts>
+void RunIf (std::true_type, F&& f, Ts&&... ts )
+{
+  f (std::forward<Ts>(ts)...);
+}
+template <class...Xs>
+void RunIf (std::false_type, Xs&&...)
+{
+}
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NixVectorRouting");
@@ -149,6 +160,7 @@ NixVectorRouting<T>::FlushGlobalNixRoutingCache (void) const
       NS_LOG_LOGIC ("Flushing Nix caches.");
       rp->FlushNixCache ();
       rp->FlushIpRouteCache ();
+      rp->m_totalNeighbors = 0;
     }
 
   // IP address to node mapping is potentially invalid so clear it.
@@ -372,11 +384,84 @@ NixVectorRouting<T>::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channe
 {
   NS_LOG_FUNCTION (this << netDevice << channel);
 
+  Ptr<Ip> netDeviceIp = netDevice->GetNode ()->GetObject<Ip> ();
+  if (!netDeviceIp)
+    {
+      return;
+    }
+  int32_t netDeviceInterface = netDeviceIp->GetInterfaceForDevice (netDevice);
+  if (netDeviceInterface == -1)
+    {
+      return;
+    }
+  if (!netDeviceIp->IsUp (netDeviceInterface))
+    {
+      return;
+    }
+  uint32_t netDeviceAddresses = netDeviceIp->GetNAddresses (netDeviceInterface);
+
   for (std::size_t i = 0; i < channel->GetNDevices (); i++)
     {
       Ptr<NetDevice> remoteDevice = channel->GetDevice (i);
       if (remoteDevice != netDevice)
         {
+          // Compare if the remoteDevice shares a common subnet with remoteDevice
+          Ptr<Ip> remoteDeviceIp = remoteDevice->GetNode ()->GetObject<Ip> ();
+          if (!remoteDeviceIp)
+            {
+              continue;
+            }
+          int32_t remoteDeviceInterface = remoteDeviceIp->GetInterfaceForDevice (remoteDevice);
+          if (remoteDeviceInterface == -1)
+            {
+              continue;
+            }
+          if (!remoteDeviceIp->IsUp (remoteDeviceInterface))
+            {
+              continue;
+            }
+
+          uint32_t remoteDeviceAddresses = remoteDeviceIp->GetNAddresses (remoteDeviceInterface);
+          bool commonSubnetFound = false;
+
+          for (uint32_t j = 0; j < netDeviceAddresses; ++j)
+            {
+              IpInterfaceAddress netDeviceIfAddr = netDeviceIp->GetAddress (netDeviceInterface, j);
+              bool isNetDeviceAddrLinkLocal = false;
+              RunIf (std::is_same<Ipv6RoutingProtocol,T>{}, [&](Ipv6InterfaceAddress IfAddr, bool &isNetDeviceAddrLinkLocal)
+                {
+                  if (IfAddr.GetScope () == Ipv6InterfaceAddress::LINKLOCAL)
+                    {
+                      isNetDeviceAddrLinkLocal = true;
+                    }
+                },
+              netDeviceIfAddr, isNetDeviceAddrLinkLocal);
+
+              if (isNetDeviceAddrLinkLocal)
+                {
+                  continue;
+                }
+              for (uint32_t k = 0; k < remoteDeviceAddresses; ++k)
+                {
+                  IpInterfaceAddress remoteDeviceIfAddr = remoteDeviceIp->GetAddress (remoteDeviceInterface, k);
+                  if (netDeviceIfAddr.IsInSameSubnet (remoteDeviceIfAddr.GetAddress ()))
+                    {
+                      commonSubnetFound = true;
+                      break;
+                    }
+                }
+
+              if (commonSubnetFound)
+                {
+                  break;
+                }
+            }
+
+          if (!commonSubnetFound)
+            {
+              continue;
+            }
+
           Ptr<BridgeNetDevice> bd = NetDeviceIsBridged (remoteDevice);
           // we have a bridged device, we need to add all 
           // bridged devices
