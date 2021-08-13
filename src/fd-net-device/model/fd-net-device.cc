@@ -295,6 +295,13 @@ FdNetDevice::StopDevice (void)
       close (m_fd);
       m_fd = -1;
     }
+  
+  while (!m_pendingQueue.empty ())
+    {
+      std::pair<uint8_t *, ssize_t> next = m_pendingQueue.front ();
+      m_pendingQueue.pop ();
+      FreeBuffer (next.first);
+    }
 
   DoFinishStoppingDevice ();
 }
