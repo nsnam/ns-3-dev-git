@@ -1346,7 +1346,7 @@ private:
    * ieee80211_input_monitor()
    *
    * \see class CallBackTraceSource
-   * \todo WifiTxVector and signalNoiseDbm should be be passed as
+   * \todo WifiTxVector and signalNoiseDbm should be passed as
    *       const references because of their sizes.
    */
   TracedCallback<Ptr<const Packet>, uint16_t /* frequency (MHz) */, WifiTxVector, MpduInfo, SignalNoiseDbm, uint16_t /* STA-ID*/> m_phyMonitorSniffRxTrace;
