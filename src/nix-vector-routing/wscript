@@ -8,6 +8,11 @@ def build(bld):
         'helper/nix-vector-helper.cc',
         ]
 
+    nix_vector_test = bld.create_ns3_module_test_library('nix-vector-routing')
+    nix_vector_test.source = [
+        'test/nix-test.cc',
+    ]
+
     headers = bld(features='ns3header')
     headers.module = 'nix-vector-routing'
     headers.source = [
