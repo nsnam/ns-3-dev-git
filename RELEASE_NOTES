@@ -28,6 +28,9 @@ New user-visible features
 -------------------------
 - (internet) Added getters and setters for source and destination in Ipv6Header consistent with Ipv4Header naming.
 - (internet) Add new functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively in Ipv4InterfaceAddress to keep consistency with Ipv6InterfaceAddress.
+- (nix-vector-routing) Support for IPv6 Nix-Vector routing. Existing nix-simple and nms-p2p-nix examples are available in IPv6 as well.
+- (nix-vector-routing) ipv4-nix-vector-helper.h has been deprecated in favour of nix-vector-helper.h.
+- (nix-vector-routing) ipv4-nix-vector-routing.h has been deprecated in favour of nix-vector-routing.h.
 Bugs fixed
 ----------
 

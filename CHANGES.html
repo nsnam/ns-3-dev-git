@@ -56,10 +56,12 @@ us a note on ns-developers mailing list.</p>
 <ul>
 <li>In class <b>Ipv6Header</b>, new functions SetSource (), SetDestination (), GetSource () and GetDestination () are added, consistent with <b>Ipv4Header</b>. The existing functions had "Address" suffix in each of the function names, and are are deprecated now.</li>
 <li>In class <b>Ipv4InterfaceAddress</b>, new functions SetAddress () and GetAddress () are added, corresponding to SetLocal () and GetLocal () respectively. This is done to keep consistency with <b>Ipv4InterfaceAddress</b>.</li>
+<li>With the new support for IPv6 Nix-Vector routing, we have all the new APIs corresponding to IPv4 Nix-Vector routing. Specific to the user, there is an Ipv6NixVectorHelper class which can be set in the InternetStackHelper, and works similar to Ipv4NixVectorHelper.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
 <li>In class <b>Ipv6Header</b>, the functions SetSourceAddress (), SetDestinationAddress (), GetSourceAddress () and GetDestinationAddress () are deprecated. New corresponding functions are added by removing the "Address" suffix. This change is made for having consistency with <b>Ipv4Header</b>.</li>
+<li><b>ipv4-nix-vector-helper.h</b> and <b>ipv4-nix-vector-routing.h</b> have been deprecated in favour of <b>nix-vector-helper.h</b> and <b>nix-vector-routing.h</b> respectively.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
