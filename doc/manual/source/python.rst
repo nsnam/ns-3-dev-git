@@ -300,7 +300,7 @@ Installing other prerequisites
 
 .. sourcecode:: bash
 
-    sudo pip3 install --user cxxfilt
+    pip3 install --user cxxfilt
 
 See also the wiki for installation notes for your system.
 
