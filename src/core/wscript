@@ -48,7 +48,7 @@ def options(opt):
                     dest='check_version')
 
     opt.add_option('--enable-build-version',
-                    help=("Check git repository for changes and update build version"
+                    help=("Check git repository for changes and update build version "
                           "during waf build"),
                     action="store_true", default=False,
                     dest='enable_build_version')
@@ -57,7 +57,7 @@ def configure(conf):
 
     conf.load('versioning', ['waf-tools'])
 
-    conf.require_boost_incs('core', 'ns-3 core module', required=False);
+    conf.require_boost_incs('core', 'ns-3 core module', required=False)
 
     int64x64_impl = Options.options.int64x64_impl
     if int64x64_impl == 'default' or int64x64_impl == 'int128':
