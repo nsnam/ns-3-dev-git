@@ -15,7 +15,7 @@ def git_modified_files():
     process = subprocess.Popen(["git","rev-parse","--show-toplevel"],
                                stdout = subprocess.PIPE,
                                stderr = subprocess.PIPE)
-    (root_dir, error) = process.communicate()
+    root_dir, _ = process.communicate()
     if isinstance(root_dir, bytes):
         root_dir=root_dir.decode("utf-8")
     files_changed = [item.strip() for item in files.readlines()]
@@ -23,7 +23,7 @@ def git_modified_files():
     return [root_dir[: -1] + "/" + filename.strip () for filename in files_changed]
 
 def copy_file(filename):
-    [tmp,pathname] = tempfile.mkstemp()
+    _, pathname = tempfile.mkstemp()
     with open(filename, 'r') as src, open(pathname, 'w') as dst:
         for line in src:
             dst.write(line)
@@ -132,7 +132,7 @@ cmt_indent_multi=False # really, do not touch them
 disable_processing_cmt= " *NS_CHECK_STYLE_OFF*"
 enable_processing_cmt=  " *NS_CHECK_STYLE_ON*"
 """
-    [tmp,pathname] = tempfile.mkstemp()
+    _, pathname = tempfile.mkstemp()
     with open(pathname, 'w') as dst:
         dst.write(level0)
         if level >= 1:
@@ -537,9 +537,8 @@ def run_as_main():
                       help="Generate a diff on stdout of the indented files")
     parser.add_option('-i', '--in-place', action='store_true', dest='in_place', default=False,
                       help="Indent the input files in-place")
-    (options,args) = parser.parse_args()
-    debug = options.debug
-    style_is_correct = False;
+    options, _ = parser.parse_args()
+    style_is_correct = False
 
     if options.git:
         files = git_modified_files()
