@@ -431,6 +431,9 @@ public:
    */
   void ScheduleBar (Ptr<const WifiMacQueueItem> bar, bool skipIfNoDataQueued = false);
 
+protected:
+  void DoDispose () override;
+
 private:
   /**
    * Inactivity timeout function

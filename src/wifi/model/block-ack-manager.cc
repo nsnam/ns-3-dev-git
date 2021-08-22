@@ -72,9 +72,17 @@ BlockAckManager::BlockAckManager ()
 BlockAckManager::~BlockAckManager ()
 {
   NS_LOG_FUNCTION (this);
-  m_queue = 0;
+}
+
+void
+BlockAckManager::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
   m_agreements.clear ();
-  m_retryPackets = 0;
+  m_retryPackets = nullptr;
+  m_bars.clear ();
+  m_queue = nullptr;
+  m_stationManager = nullptr;
 }
 
 bool
