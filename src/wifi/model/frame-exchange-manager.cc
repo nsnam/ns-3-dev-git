@@ -395,6 +395,13 @@ FrameExchangeManager::SendMpdu (void)
   if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NONE)
     {
       Simulator::Schedule (txDuration, &FrameExchangeManager::TransmissionSucceeded, this);
+
+      if (!m_mpdu->GetHeader ().IsQosData ()
+          || m_mpdu->GetHeader ().GetQosAckPolicy () == WifiMacHeader::NO_ACK)
+        {
+          // No acknowledgment, hence dequeue the MPDU if it is stored in a queue
+          DequeueMpdu (m_mpdu);
+        }
     }
   else if (m_txParams.m_acknowledgment->method == WifiAcknowledgment::NORMAL_ACK)
     {
@@ -435,9 +442,6 @@ void
 FrameExchangeManager::ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector)
 {
   NS_LOG_FUNCTION (this << *mpdu << txVector);
-
-  // The MPDU is about to be transmitted, we can now dequeue it if it is stored in a queue
-  DequeueMpdu (mpdu);
 
   m_phy->Send (Create<WifiPsdu> (mpdu, false), txVector);
 }
@@ -774,6 +778,8 @@ FrameExchangeManager::NormalAckTimeout (Ptr<WifiMacQueueItem> mpdu, const WifiTx
     {
       NS_LOG_DEBUG ("Missed Ack, discard MPDU");
       NotifyPacketDiscarded (mpdu);
+      // Dequeue the MPDU if it is stored in a queue
+      DequeueMpdu (mpdu);
       m_mac->GetWifiRemoteStationManager ()->ReportFinalDataFailed (mpdu);
       m_dcf->ResetCw ();
     }
@@ -793,9 +799,6 @@ void
 FrameExchangeManager::RetransmitMpduAfterMissedAck (Ptr<WifiMacQueueItem> mpdu) const
 {
   NS_LOG_FUNCTION (this << *mpdu);
-
-  // insert the MPDU in the DCF queue again
-  m_dcf->GetWifiMacQueue ()->PushFront (mpdu);
 }
 
 void
@@ -1177,6 +1180,9 @@ FrameExchangeManager::ReceivedNormalAck (Ptr<WifiMacQueueItem> mpdu, const WifiT
   // The CW shall be reset to aCWmin after every successful attempt to transmit
   // a frame containing all or part of an MSDU or MMPDU (sec. 10.3.3 of 802.11-2016)
   m_dcf->ResetCw ();
+
+  // The MPDU has been acknowledged, we can now dequeue it if it is stored in a queue
+  DequeueMpdu (mpdu);
 
   if (mpdu->GetHeader ().IsMoreFragments ())
     {

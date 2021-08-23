@@ -184,6 +184,8 @@ HtFrameExchangeManager::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16
   txParams.m_protection = std::unique_ptr<WifiProtection> (new WifiNoProtection);
   txParams.m_acknowledgment = GetAckManager ()->TryAddMpdu (mpdu, txParams);
 
+  // Push the MPDU to the front of the queue and transmit it
+  m_mac->GetQosTxop (tid)->GetWifiMacQueue ()->PushFront (mpdu);
   SendMpduWithProtection (mpdu, txParams);
 }
 
@@ -922,7 +924,13 @@ HtFrameExchangeManager::ForwardPsduDown (Ptr<const WifiPsdu> psdu, WifiTxVector&
     }
 
   // The PSDU is about to be transmitted, we can now dequeue the MPDUs
-  DequeuePsdu (psdu);
+  // For the moment, MPDUs are kept in the queue only if a BA agreement
+  // has not been established
+  if (psdu->GetHeader (0).IsQosData ()
+      && m_edca->GetBaAgreementEstablished (psdu->GetAddr1 (), *psdu->GetTids ().begin ()))
+    {
+      DequeuePsdu (psdu);
+    }
 
   m_phy->Send (psdu, txVector);
 }
