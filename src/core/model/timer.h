@@ -106,9 +106,9 @@ public:
   /** The possible states of the Timer. */
   enum State
   {
-    RUNNING,    /** Timer is currently running. */
-    EXPIRED,    /** Timer has already expired. */
-    SUSPENDED,  /** Timer is suspended. */
+    RUNNING,    /**< Timer is currently running. */
+    EXPIRED,    /**< Timer has already expired. */
+    SUSPENDED,  /**< Timer is suspended. */
   };
   /**
    * Create a timer with a default event lifetime management policy:
