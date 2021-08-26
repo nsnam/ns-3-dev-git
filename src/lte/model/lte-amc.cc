@@ -297,7 +297,7 @@ LteAmc::GetDlTbSizeFromMcs (int mcs, int nprb)
   NS_LOG_FUNCTION (mcs);
 
   NS_ASSERT_MSG (mcs < 29, "MCS=" << mcs);
-  NS_ASSERT_MSG (nprb < 111, "NPRB=" << nprb);
+  NS_ASSERT_MSG (nprb > 0 && nprb < 111, "NPRB=" << nprb);
 
   int itbs = McsToItbsDl[mcs];
   return (TransportBlockSizeTable[nprb - 1][itbs]);
@@ -309,7 +309,7 @@ LteAmc::GetUlTbSizeFromMcs (int mcs, int nprb)
   NS_LOG_FUNCTION (mcs);
 
   NS_ASSERT_MSG (mcs < 29, "MCS=" << mcs);
-  NS_ASSERT_MSG (nprb < 111, "NPRB=" << nprb);
+  NS_ASSERT_MSG (nprb > 0 && nprb < 111, "NPRB=" << nprb);
 
   int itbs = McsToItbsUl[mcs];
   return (TransportBlockSizeTable[nprb - 1][itbs]);

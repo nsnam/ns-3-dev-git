@@ -1079,7 +1079,10 @@ TdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           tempMap.push_back (i);
           rbgMap.at (i) = true;
         }
-      allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
+      if (tempMap.size() > 0)
+        {
+          allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax).first, tempMap));
+        }
     }
 
 
