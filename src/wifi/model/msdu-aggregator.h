@@ -88,8 +88,10 @@ public:
    * acknowledgment, as specified by the given TX parameters, does not exceed the
    * given available time (if distinct from Time::Min ())
    *
-   * If it is not possible to aggregate at least two MSDUs, no MSDU is dequeued
-   * from the EDCA queue and a null pointer is returned.
+   * If aggregation succeeds (it was possible to aggregate at least an MSDU to the
+   * given MSDU), all the aggregated MSDUs are dequeued and an MPDU containing the
+   * A-MSDU is enqueued in the queue (replacing the given MPDU) and returned.
+   * Otherwise, no MSDU is dequeued from the EDCA queue and a null pointer is returned.
    *
    * \param peekedItem the MSDU which we attempt to aggregate other MSDUs to
    * \param txParams the TX parameters for the current frame

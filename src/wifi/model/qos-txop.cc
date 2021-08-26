@@ -453,9 +453,7 @@ QosTxop::GetNextMpdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxParameters& 
     }
 
   NS_ASSERT (peekedItem->IsQueued ());
-  NS_ASSERT_MSG (peekedItem->GetQueueIteratorPairs ().size () == 1,
-                 "An item in the MAC queue cannot contain an A-MSDU");
-  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
+  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPair ();
   NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
 
   if (peekedIt.queue == PeekPointer (m_baManager->GetRetransmitQueue ()))

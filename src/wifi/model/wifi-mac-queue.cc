@@ -634,7 +634,7 @@ WifiMacQueue::DoEnqueue (ConstIterator pos, Ptr<WifiMacQueueItem> item)
           m_nQueuedBytes[addressTidPair] += item->GetSize ();
         }
       // set item's information about its position in the queue
-      item->m_queueIts = {{this, ret}};
+      item->m_queueIt = {this, ret};
       return true;
     }
   return false;
@@ -658,8 +658,8 @@ WifiMacQueue::DoDequeue (ConstIterator pos)
 
   if (item != 0)
     {
-      NS_ASSERT (item->m_queueIts.size () == 1);
-      item->m_queueIts.clear ();
+      NS_ASSERT (item->IsQueued ());
+      item->m_queueIt.queue = nullptr;
     }
 
   return item;
@@ -683,11 +683,29 @@ WifiMacQueue::DoRemove (ConstIterator pos)
 
   if (item != 0)
     {
-      NS_ASSERT (item->m_queueIts.size () == 1);
-      item->m_queueIts.clear ();
+      NS_ASSERT (item->IsQueued ());
+      item->m_queueIt.queue = nullptr;
     }
 
   return item;
+}
+
+void
+WifiMacQueue::Aggregate (ConstIterator amsduIt, ConstIterator msduIt)
+{
+  NS_LOG_FUNCTION (this << **amsduIt << **msduIt);
+  NS_ASSERT (amsduIt != msduIt);
+
+  Ptr<WifiMacQueueItem> msdu = DoDequeue (msduIt);
+
+  ConstIterator pos = std::next (amsduIt);
+  Ptr<WifiMacQueueItem> amsdu = DoDequeue (amsduIt);
+  amsdu->Aggregate (msdu);
+
+  bool ret = DoEnqueue (pos, amsdu);
+  // The size of a WifiMacQueue is measured as number of packets. We dequeued
+  // two packets, so there is certainly room for inserting one packet
+  NS_ABORT_IF (!ret);
 }
 
 } //namespace ns3

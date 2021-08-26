@@ -728,7 +728,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
       NS_ASSERT (receiver == candidate.first->address);
 
       NS_ASSERT (mpdu->IsQueued ());
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
+      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPair ();
       NS_ASSERT (queueIt.queue != nullptr);
       Ptr<WifiMacQueueItem> item = *queueIt.it;
       queueIt.it++;
@@ -742,7 +742,7 @@ RrMultiUserScheduler::ComputeDlMuInfo (void)
           if (item == nullptr)
             {
               // A-MSDU aggregation failed or disabled
-              item = *mpdu->GetQueueIteratorPairs ().front ().it;
+              item = *mpdu->GetQueueIteratorPair ().it;
             }
           m_apMac->GetQosTxop (QosUtilsMapTidToAc (tid))->AssignSequenceNumber (item);
         }

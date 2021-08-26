@@ -898,33 +898,13 @@ HtFrameExchangeManager::NotifyTxToEdca (Ptr<const WifiPsdu> psdu) const
 }
 
 void
-HtFrameExchangeManager::DequeueMpdu (Ptr<WifiMacQueueItem> mpdu)
-{
-  DequeuePsdu (Create<const WifiPsdu> (mpdu, true));
-}
-
-void
 HtFrameExchangeManager::DequeuePsdu (Ptr<const WifiPsdu> psdu)
 {
   NS_LOG_DEBUG (this << psdu);
 
   for (const auto& mpdu : *PeekPointer (psdu))
     {
-      if (mpdu->GetQueueIteratorPairs ().size () > 1)
-        {
-          // this MPDU contains an A-MSDU
-          for (const auto& queueIt : mpdu->GetQueueIteratorPairs ())
-            {
-              NS_ASSERT (*queueIt.it != mpdu);
-              queueIt.queue->Dequeue (queueIt.it);
-            }
-        }
-      else if (mpdu->IsQueued ())
-        {
-          WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
-          NS_ASSERT (*queueIt.it == mpdu);
-          queueIt.queue->Dequeue (queueIt.it);
-        }
+      DequeueMpdu (mpdu);
     }
 }
 

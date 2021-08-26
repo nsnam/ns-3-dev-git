@@ -88,10 +88,9 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
 {
   NS_LOG_FUNCTION (this << *peekedItem << &txParams << availableTime);
 
-  NS_ASSERT (peekedItem->IsQueued ());
-  NS_ASSERT (peekedItem->GetQueueIteratorPairs ().size () == 1);
-  WifiMacQueueItem::QueueIteratorPair peekedIt = peekedItem->GetQueueIteratorPairs ().front ();
-  NS_ASSERT ((*peekedIt.it)->GetPacket () == peekedItem->GetPacket ());
+  WifiMacQueue* queue = peekedItem->GetQueueIteratorPair ().queue;
+  WifiMacQueue::ConstIterator it = peekedItem->GetQueueIteratorPair ().it;
+  NS_ASSERT ((*it)->GetPacket () == peekedItem->GetPacket ());
 
   uint8_t tid = peekedItem->GetHeader ().GetQosTid ();
   Mac48Address recipient = peekedItem->GetHeader ().GetAddr1 ();
@@ -120,16 +119,18 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
       return nullptr;
     }
 
-  Ptr<WifiMacQueueItem> amsdu = Copy (peekedItem);
+  Ptr<WifiMacQueueItem> amsdu = *it;  // amsdu points to the peeked MPDU, but it's non-const
   uint8_t nMsdu = 1;
 
-  peekedIt.it++;
+  it++;
 
-  while ((peekedIt.it = peekedIt.queue->PeekByTidAndAddress (tid, recipient, peekedIt.it)) != peekedIt.queue->end ()
-         && m_htFem->TryAggregateMsdu (*peekedIt.it, txParams, availableTime))
+  while ((it = queue->PeekByTidAndAddress (tid, recipient, it)) != queue->end ()
+         && m_htFem->TryAggregateMsdu (*it, txParams, availableTime))
     {
-      amsdu->Aggregate (*peekedIt.it);
-      peekedIt.it++;
+      // Aggregate() dequeues the MSDU being aggregated, so we have to save an iterator
+      // pointing to the next item
+      auto msduIt = it++;
+      queue->Aggregate (amsdu->GetQueueIteratorPair ().it, msduIt);
       nMsdu++;
     }
 
@@ -140,7 +141,7 @@ MsduAggregator::GetNextAmsdu (Ptr<const WifiMacQueueItem> peekedItem, WifiTxPara
     }
 
   // Aggregation succeeded
-  queueIt = peekedIt;
+  queueIt = {queue, it};
 
   return amsdu;
 }

@@ -157,14 +157,14 @@ public:
   bool IsQueued (void) const;
 
   /**
-   * Get a const reference to the list of iterators pointing to the positions
-   * of the items in the queue. The list is empty if the item is not stored in
-   * a queue. The list contains multiple iterators in case of A-MSDU that is not
-   * stored in the Block Ack Manager retransmit queue.
+   * Get a const reference to the QueueIteratorPair struct variable containing
+   * a pointer to the queue where the MPDU is stored and an iterator pointing to
+   * the position of the MPDU in the queue. This method should not be called if
+   * the MPDU is not stored in a queue.
    *
-   * \return the list of iterators pointing to the positions of the items in the queue
+   * \return an iterator pointing to the position of the MPDU in the queue
    */
-  const std::list<QueueIteratorPair>& GetQueueIteratorPairs (void) const;
+  const QueueIteratorPair& GetQueueIteratorPair (void) const;
 
   /**
    * \brief Get the MAC protocol data unit (MPDU) corresponding to this item
@@ -195,7 +195,7 @@ private:
   WifiMacHeader m_header;                       //!< Wifi MAC header associated with the packet
   Time m_tstamp;                                //!< timestamp when the packet arrived at the queue
   DeaggregatedMsdus m_msduList;                 //!< The list of aggregated MSDUs included in this MPDU
-  std::list<QueueIteratorPair> m_queueIts;      //!< Queue iterators pointing to this MSDU(s), if queued
+  QueueIteratorPair m_queueIt;                  //!< Queue iterator pointing to this MPDU, if queued
 };
 
 /**

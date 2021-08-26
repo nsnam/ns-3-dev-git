@@ -133,7 +133,7 @@ WaveFrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
     }
 
   m_dcf->NotifyChannelAccessed ();
-  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPairs ().front ().it;
+  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPair ().it;
   NS_ASSERT (mpdu != 0);
 
   // assign a sequence number if this is not a fragment nor a retransmission

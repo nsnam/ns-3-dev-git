@@ -47,6 +47,7 @@ WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & h
     {
       m_msduList = MsduAggregator::Deaggregate (p->Copy ());
     }
+  m_queueIt.queue = nullptr;
 }
 
 WifiMacQueueItem::~WifiMacQueueItem ()
@@ -123,7 +124,6 @@ WifiMacQueueItem::Aggregate (Ptr<const WifiMacQueueItem> msdu)
       // An MSDU is going to be aggregated to this MPDU, hence this has to be an A-MSDU now
       Ptr<const WifiMacQueueItem> firstMsdu = Create<const WifiMacQueueItem> (*this);
       m_packet = Create<Packet> ();
-      m_queueIts.clear ();
       DoAggregate (firstMsdu);
 
       m_header.SetQosAmsdu ();
@@ -170,7 +170,6 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
   hdr.SetLength (static_cast<uint16_t> (msdu->GetPacket ()->GetSize ()));
 
   m_msduList.push_back ({msdu->GetPacket (), hdr});
-  m_queueIts.insert (m_queueIts.end (), msdu->m_queueIts.begin (), msdu->m_queueIts.end ());
 
   // build the A-MSDU
   NS_ASSERT (m_packet);
@@ -204,13 +203,14 @@ WifiMacQueueItem::DoAggregate (Ptr<const WifiMacQueueItem> msdu)
 bool
 WifiMacQueueItem::IsQueued (void) const
 {
-  return !m_queueIts.empty ();
+  return m_queueIt.queue != nullptr;
 }
 
-const std::list<WifiMacQueueItem::QueueIteratorPair>&
-WifiMacQueueItem::GetQueueIteratorPairs (void) const
+const WifiMacQueueItem::QueueIteratorPair&
+WifiMacQueueItem::GetQueueIteratorPair (void) const
 {
-  return m_queueIts;
+  NS_ASSERT (IsQueued ());
+  return m_queueIt;
 }
 
 WifiMacQueueItem::DeaggregatedMsdusCI

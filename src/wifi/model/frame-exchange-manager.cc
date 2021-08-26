@@ -281,7 +281,7 @@ FrameExchangeManager::StartTransmission (Ptr<Txop> dcf)
     }
 
   m_dcf->NotifyChannelAccessed ();
-  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPairs ().front ().it;
+  Ptr<WifiMacQueueItem> mpdu = *queue->Peek ()->GetQueueIteratorPair ().it;
   NS_ASSERT (mpdu != 0);
   NS_ASSERT (mpdu->GetHeader ().IsData () || mpdu->GetHeader ().IsMgt ());
 
@@ -328,7 +328,7 @@ FrameExchangeManager::GetFirstFragmentIfNeeded (Ptr<WifiMacQueueItem> mpdu)
       NS_LOG_DEBUG ("Fragmenting the MSDU");
       m_fragmentedPacket = mpdu->GetPacket ()->Copy ();
       // dequeue the MSDU
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
+      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPair ();
       queueIt.queue->Dequeue (queueIt.it);
       // create the first fragment
       mpdu->GetHeader ().SetMoreFragments ();
@@ -449,7 +449,7 @@ FrameExchangeManager::DequeueMpdu (Ptr<WifiMacQueueItem> mpdu)
 
   if (mpdu->IsQueued ())
     {
-      WifiMacQueueItem::QueueIteratorPair queueIt = mpdu->GetQueueIteratorPairs ().front ();
+      const WifiMacQueueItem::QueueIteratorPair& queueIt = mpdu->GetQueueIteratorPair ();
       NS_ASSERT (*queueIt.it == mpdu);
       queueIt.queue->Dequeue (queueIt.it);
     }

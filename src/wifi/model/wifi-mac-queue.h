@@ -261,6 +261,16 @@ public:
    */
   ConstIterator Remove (ConstIterator pos, bool removeExpired = false);
   /**
+   * Aggregate the MSDU pointed to by the <i>msduIt</i> iterator (source MPDU)
+   * to the (A-)MSDU pointed to by the <i>amsduIt</i> iterator (destination MPDU).
+   * Both MPDUs are dequeued and an MPDU containing the resulting A-MSDU is
+   * enqueued (replacing the destination MPDU).
+   *
+   * \param amsduIt the destination MPDU
+   * \param msduIt the source MPDU
+   */
+  void Aggregate (ConstIterator amsduIt, ConstIterator msduIt);
+  /**
    * Return the number of packets having destination address specified by
    * <i>dest</i>. The complexity is linear in the size of the queue.
    *

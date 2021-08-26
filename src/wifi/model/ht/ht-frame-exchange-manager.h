@@ -212,7 +212,6 @@ protected:
   void ForwardMpduDown (Ptr<WifiMacQueueItem> mpdu, WifiTxVector& txVector) override;
   void CtsTimeout (Ptr<WifiMacQueueItem> rts, const WifiTxVector& txVector) override;
   void TransmissionSucceeded (void) override;
-  void DequeueMpdu (Ptr<WifiMacQueueItem> mpdu) override;
 
   /**
    * Get a PSDU containing the given MPDU

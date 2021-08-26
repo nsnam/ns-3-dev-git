@@ -451,7 +451,7 @@ TwoLevelAggregationTest::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "A-MSDU aggregation did not fail");
 
-  htFem->DequeueMpdu (*peeked->GetQueueIteratorPairs ().front ().it);
+  htFem->DequeueMpdu (*peeked->GetQueueIteratorPair ().it);
 
   NS_TEST_EXPECT_MSG_EQ (m_mac->GetBEQueue ()->GetWifiMacQueue ()->GetNPackets (), 0, "queue should be empty");
 
