@@ -156,7 +156,7 @@ ServiceFlow::ServiceFlow (Tlv tlv)
           }
         case SfVectorTlvValue::Fixed_length_versus_Variable_length_SDU_Indicator:
           {
-            m_fixedversusVariableSduIndicator = ((U16TlvValue*)((*iter)->PeekValue ()))->GetValue ();
+            m_fixedversusVariableSduIndicator = ((U8TlvValue*)((*iter)->PeekValue ()))->GetValue ();
             break;
           }
         case SfVectorTlvValue::CS_Specification:
