@@ -67,19 +67,51 @@ public:
     RawTextDefaultIterator (std::ostream *os) {
       m_os = os;
     }
+    void SetSaveDeprecated (bool saveDeprecated) {
+      m_saveDeprecated = saveDeprecated;
+    }
+
 private:
     virtual void StartVisitTypeId (std::string name) {
       m_typeId = name;
     }
     virtual void DoVisitAttribute (std::string name, std::string defaultValue) {
       NS_LOG_DEBUG ("Saving " << m_typeId << "::" << name);
-      *m_os << "default " << m_typeId << "::" << name << " \"" << defaultValue << "\"" << std::endl;
-    }
+      TypeId tid = TypeId::LookupByName (m_typeId);
+      ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
+      for (std::size_t i = 0; i < tid.GetAttributeN (); i++)
+        {
+          struct TypeId::AttributeInformation tmp = tid.GetAttribute (i);
+          if (tmp.name == name)
+            {
+              supportLevel = tmp.supportLevel;
+              break;
+            }
+        }
+      if (supportLevel == TypeId::SupportLevel::OBSOLETE)
+        {
+          NS_LOG_WARN ("Global attribute "
+                       << m_typeId << "::" << name
+                       << " was not saved because it is OBSOLETE");
+        }
+      else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) && (m_saveDeprecated == false))
+        {
+          NS_LOG_WARN ("Global attribute " << m_typeId << "::" << name
+                                           << " was not saved because it is DEPRECATED");
+        }
+      else
+        {
+          *m_os << "default " << m_typeId << "::" << name << " \"" << defaultValue << "\""
+                << std::endl;
+        }
+      }
     std::string m_typeId;
     std::ostream *m_os;
+    bool m_saveDeprecated;
   };
 
   RawTextDefaultIterator iterator = RawTextDefaultIterator (m_os);
+  iterator.SetSaveDeprecated (m_saveDeprecated);
   iterator.Iterate ();
 }
 void
@@ -103,17 +135,50 @@ RawTextConfigSave::Attributes (void)
 public:
     RawTextAttributeIterator (std::ostream *os)
       : m_os (os) {}
+    void
+    SetSaveDeprecated (bool saveDeprecated) {
+      m_saveDeprecated = saveDeprecated;
+    }
+
 private:
     virtual void DoVisitAttribute (Ptr<Object> object, std::string name) {
       StringValue str;
-      object->GetAttribute (name, str);
-      NS_LOG_DEBUG ("Saving " << GetCurrentPath ());
-      *m_os << "value " << GetCurrentPath () << " \"" << str.Get () << "\"" << std::endl;
+
+      ns3::TypeId::SupportLevel supportLevel = TypeId::SupportLevel::SUPPORTED;
+      TypeId tid = object->GetInstanceTypeId ();
+
+      for (std::size_t i = 0; i < tid.GetAttributeN (); i++)
+        {
+          struct TypeId::AttributeInformation tmp = tid.GetAttribute (i);
+          if (tmp.name == name)
+            {
+              supportLevel = tmp.supportLevel;
+              break;
+            }
+        }
+      if (supportLevel == TypeId::SupportLevel::OBSOLETE)
+        {
+          NS_LOG_WARN ("Attribute " << GetCurrentPath ()
+                                    << " was not saved because it is OBSOLETE");
+        }
+      else if ((supportLevel == TypeId::SupportLevel::DEPRECATED) && (m_saveDeprecated == false))
+        {
+          NS_LOG_WARN ("Attribute " << GetCurrentPath ()
+                                    << " was not saved because it is DEPRECATED");
+        }
+      else
+        {
+          object->GetAttribute (name, str);
+          NS_LOG_DEBUG ("Saving " << GetCurrentPath ());
+          *m_os << "value " << GetCurrentPath () << " \"" << str.Get () << "\"" << std::endl;
+        }
     }
     std::ostream *m_os;
+    bool m_saveDeprecated;
   };
 
   RawTextAttributeIterator iter = RawTextAttributeIterator (m_os);
+  iter.SetSaveDeprecated (m_saveDeprecated);
   iter.Iterate ();
 }
 

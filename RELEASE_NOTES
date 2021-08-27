@@ -33,6 +33,9 @@ New user-visible features
 - (nix-vector-routing) ipv4-nix-vector-routing.h has been deprecated in favour of nix-vector-routing.h.
 - (internet) Added new function IsInSameSubnet () in Ipv4InterfaceAddress similar to Ipv6InterfaceAddress::IsInSameSubnet (). It checks if the two Ipv4Address are in the same subnet.
 - (nix-vector-routing) Nix-Vector routing supports topologies with multiple WiFi networks using the same WiFi channel object.
+- (config-store) OBSOLETE Attributes are not anymore saved.
+- (config-store) New ConfigStore::SaveDeprecated Attribute (default false) to avoid to save DEPRECATED attributes.
+
 Bugs fixed
 ----------
 

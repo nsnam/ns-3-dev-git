@@ -103,6 +103,11 @@ public:
    * \param filename the file name
    */
   void SetFilename (std::string filename);
+  /**
+   * Set if to save deprecated attributes
+   * \param saveDeprecated the deprecated attributes save policy
+   */
+  void SetSaveDeprecated (bool saveDeprecated);
 
   /**
    * Configure the default values
@@ -116,6 +121,7 @@ public:
 private:
   enum Mode m_mode; ///< store mode
   enum FileFormat m_fileFormat; ///< store format
+  bool m_saveDeprecated; ///< save deprecated attributes
   std::string m_filename; ///< store file name
   FileConfig *m_file; ///< configuration file
 };
