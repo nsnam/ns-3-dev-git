@@ -804,6 +804,10 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 1b:  passed in with route and valid gateway");
       int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
       m_sendOutgoingTrace (ipHeader, packet, interface);
+      if (m_enableDpd && ipHeader.GetDestination ().IsMulticast ())
+        {
+          UpdateDuplicate (packet, ipHeader);
+        }
       SendRealOut (route, packet->Copy (), ipHeader);
       return; 
     }

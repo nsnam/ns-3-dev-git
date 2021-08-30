@@ -38,6 +38,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- (internet) ipv4-l3-protocol.cc duplicate detection now accounts for sent packets, not just forwards.
 
 Release 3.34
 =============

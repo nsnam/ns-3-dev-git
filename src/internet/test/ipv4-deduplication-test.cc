@@ -424,6 +424,11 @@ Ipv4DeduplicationTest::CheckPackets (const std::string &name)
     std::map <std::string, uint32_t> packets = {
       {"A", 14}, {"B", 16}, {"C", 16}, {"D", 16}, {"E", 4}
     };
+
+    // a priori determined packet receptions based on
+    std:: map <std::string, uint32_t> packetsDuped = {
+      {"A", 0}, {"B", 1}, {"C", 1}, {"D", 1}, {"E", 1}
+    };
     // a priori determined packet receptions based on initial TTL of 4, degenerate de-dup
     // There are TTL (4) rounds of packets.  Each round a node will register a
     // received packet if another connected node transmits.  A misses the 1st round
@@ -433,12 +438,10 @@ Ipv4DeduplicationTest::CheckPackets (const std::string &name)
       {"A", 3}, {"B", 4}, {"C", 4}, {"D", 3}, {"E", 2}
     };
 
-    NS_TEST_ASSERT_MSG_NE ((m_packetCountMap.find (name) == m_packetCountMap.end ()), true,
-                          "No packets received for node " << name);
     switch (m_mode)
       {
         case ENABLED:
-          NS_TEST_EXPECT_MSG_EQ (m_packetCountMap[name], 1, "Wrong number of packets received for node " << name);
+          NS_TEST_ASSERT_MSG_EQ (m_packetCountMap[name], packetsDuped[name], "Wrong number of packets received for node " << name);
           break;
         case DISABLED:
           NS_TEST_EXPECT_MSG_EQ (m_packetCountMap[name],  packets[name], "Wrong number of packets received for node " << name);
@@ -457,10 +460,10 @@ Ipv4DeduplicationTest::CheckDrops (const std::string &name)
       {
         case ENABLED:
           // a priori determined packet drops based on initial TTL of 4, enabled de-dup;
-          // A hears from B & C
+          // A hears from B & C -- > 2 drops
           // D hears from B, C, AND E
-          // B (C) hears from A, C (B), D, and A again
-          drops = {{"A", 1}, {"B", 3}, {"C", 3}, {"D", 2}, {"E", 0}};
+          // B (C) hears from A, C (B), D,
+          drops = {{"A", 2}, {"B", 2}, {"C", 2}, {"D", 2}, {"E", 0}};
           break;
         case DISABLED:
           // a priori determined packet drops based on initial TTL of 4, disabled de-dup
