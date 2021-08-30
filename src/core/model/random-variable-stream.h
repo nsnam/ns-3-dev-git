@@ -786,9 +786,6 @@ public:
   virtual uint32_t GetInteger (void);
 
 private:
-  /** The mean parameter for the Pareto distribution returned by this RNG stream. */
-  double m_mean;
-
   /** The scale parameter for the Pareto distribution returned by this RNG stream. */
   double m_scale;
 
