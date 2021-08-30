@@ -161,9 +161,10 @@ private:
   /**
    * Checks the cache based on dest IP for the nix-vector
    * \param address Address to check
+   * \param foundInCache Address found in cache
    * \returns The NixVector to be used in routing.
    */
-  Ptr<NixVector> GetNixVectorInCache (IpAddress address) const;
+  Ptr<NixVector> GetNixVectorInCache (const IpAddress &address,  bool &foundInCache) const;
 
   /**
    * Checks the cache based on dest IP for the IpRoute

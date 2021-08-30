@@ -239,7 +239,7 @@ NixVectorRouting<T>::GetNixVector (Ptr<Node> source, IpAddress dest, Ptr<NetDevi
 
 template <typename T>
 Ptr<NixVector>
-NixVectorRouting<T>::GetNixVectorInCache (IpAddress address) const
+NixVectorRouting<T>::GetNixVectorInCache (const IpAddress &address, bool &foundInCache) const
 {
   NS_LOG_FUNCTION (this << address);
 
@@ -249,10 +249,12 @@ NixVectorRouting<T>::GetNixVectorInCache (IpAddress address) const
   if (iter != m_nixCache.end ())
     {
       NS_LOG_LOGIC ("Found Nix-vector in cache.");
+      foundInCache = true;
       return iter->second;
     }
 
   // not in cache
+  foundInCache = false;
   return 0;
 }
 
@@ -705,11 +707,12 @@ NixVectorRouting<T>::RouteOutput (Ptr<Packet> p, const IpHeader &header, Ptr<Net
 
   NS_LOG_DEBUG ("Dest IP from header: " << destAddress);
 
-  // check if cache
-  nixVectorInCache = GetNixVectorInCache (destAddress);
+  // Check the Nix cache
+  bool foundInCache = false;
+  nixVectorInCache = GetNixVectorInCache (destAddress, foundInCache);
 
   // not in cache
-  if (!nixVectorInCache)
+  if (!foundInCache)
     {
       NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
       // Build the nix-vector, given this node and the
@@ -851,11 +854,12 @@ NixVectorRouting<Ipv6RoutingProtocol>::RouteOutput (Ptr<Packet> p, const IpHeade
   // into a separate function and kept here for better code
   // readability.
 
-  // check if cache
-  nixVectorInCache = GetNixVectorInCache (destAddress);
+  // Check the Nix cache
+  bool foundInCache = false;
+  nixVectorInCache = GetNixVectorInCache (destAddress, foundInCache);
 
   // not in cache
-  if (!nixVectorInCache)
+  if (!foundInCache)
     {
       NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
       // Build the nix-vector, given this node and the
@@ -1173,7 +1177,10 @@ NixVectorRouting<T>::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::U
           std::ostringstream dest;
           dest << it->first;
           *os << std::setw (30) << dest.str ();
-          *os << *(it->second) << std::endl;
+          if (it->second)
+            {
+              *os << *(it->second) << std::endl;
+            }
         }
     }
   *os << "IpRouteCache:" << std::endl;
@@ -1456,15 +1463,19 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
   *os << "(Node " << source->GetId () << " to Node " << destNode->GetId () << ", ";
   *os << "Nix Vector: ";
 
-  nixVectorInCache = GetNixVectorInCache (dest);
+  // Check the Nix cache
+  bool foundInCache = true;
+  nixVectorInCache = GetNixVectorInCache (dest, foundInCache);
 
   // not in cache
-  if (!nixVectorInCache)
+  if (!foundInCache)
     {
       NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
       // Build the nix-vector, given the source node and the
       // dest IP address
       nixVectorInCache = GetNixVector (source, dest, nullptr);
+      // cache it
+      m_nixCache.insert (typename NixMap_t::value_type (dest, nixVectorInCache));
     }
 
   if (nixVectorInCache || (!nixVectorInCache && source == destNode))
@@ -1474,8 +1485,6 @@ NixVectorRouting<T>::PrintRoutingPath (Ptr<Node> source, IpAddress dest,
 
       if (nixVectorInCache)
         {
-          // cache it
-          m_nixCache.insert (typename NixMap_t::value_type (dest, nixVectorInCache));
           // Make a NixVector copy to work with. This is because
           // we don't want to extract the bits from nixVectorInCache
           // which is stored in the m_nixCache.
